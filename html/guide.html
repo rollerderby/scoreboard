@@ -1,0 +1,178 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+
+<script type="text/javascript" src="external/prototype/prototype.js"></script>
+</head>
+
+<body>
+
+<a id="Top">
+<center>
+<img src="/images/teamlogos/Carolina.png" width="320" height="120" />
+<h1>Carolina Rollergirls Browser-based Roller Derby Scoreboard</h1>
+</center>
+</a>
+
+<h2><b>This page needs updating</b></h2>
+If you're seeing this text, and this is a stable (not beta) release,
+please <a href="mailto:Mrtemper@carolinarollergirls.com">email me</a> and
+let me know I forgot to update the guide.html page in the release.
+Note that the info below probably is out of date.
+
+<h2><a id="Contacts">Contacts</a></h2>
+<p>To contact the developers and/or get news about development, <a href="http://lists.sourceforge.net/lists/listinfo/derbyscoreboard-devel">join the mailing list</a>.
+You also can read the <a href="http://sourceforge.net/mailarchive/forum.php?forum_name=derbyscoreboard-devel">mailing list archive</a>.
+<p>If you find any bugs, please report them on the mailing list and/or <a href="http://sourceforge.net/tracker/?group_id=174565&atid=869732">open a bug</a>.
+If you would like to see any new features added, please send an email to the mailing list and/or <a href="http://sourceforge.net/tracker/?group_id=174565&atid=869735">open a feature request</a>.
+
+<h2><a id="Browsers">Notes on Browsers</a></h2>
+<p>There are pros and cons of using the various browsers that are out there.
+<ul>
+<li><h4><a href="http://getfirefox.com/">Firefox</a></h4>
+Firefox does very well and is available pretty much anywhere.  It isn't the best at javascript performance, but it's good.  One notable downside to Firefox is its "fullscreen" mode (toggle via F11) is not really full screen - it leaves a small white border at the top of the screen.  Also, Firefox has a annoying thing called "Offline mode" that will (incorrectly) prevent you from accessing *any* page, including the scoreboard server running on your local machine.  You have to <a href="#OfflineMode">disable offline mode</a> for it to work.
+</li>
+<li><h4><a href="http://chrome.google.com/">Google Chrome</a></h4>
+Google Chrome is usually good and available on most platforms.  It is the best at javascript performance, which is important and good; and it is better than Firefox at fullscreen, as it actually does do fullscreen (no strange white bar at the top).  However, it's got its own problems; it is not as stable as Firefox, and <a href="#OfflineMode">it does not handle "offline" correctly in Linux</a>. 
+</li>
+<li><h4><a href="http://apple.com/safari/">Safari</a></h4>
+Apple Safari is a good browser.  The scoreboard should work fine on it.  There are a couple html/javascript things that do not work perfectly in Safari however, which may be my fault in the coding, and which I am trying to fix in the newer releases.  I would recommend not using Safari right now.  There are better alternatives such as Firefox and Chrome.
+</li>
+<li><h4><a href="http://microsoft.com/windows/internet-explorer/">Internet Explorer</a></h4>
+Internet Explorer has a long history of completely disregarding internet standards, but it's getting slightly better.  However, the scoreboard html/javascript does not 100% work with it just yet; it's a combination of my fault in some of the html/javascript coding, and IE wanting to do its own thing and breaking on otherwise good code.  Using Internet Explorer is not recommended, and it really would not gain you anything anyway - the free, publicly available browsers that are web standard compliant are much faster and more stable anyway.  So don't use IE.
+</li>
+</ul>
+
+<h2><a id="OfflineMode">Using the ScoreBoard with no internet (or local) connection</a></h2>
+<p>You don't need an internet connection to use the scoreboard; since you're running it on your
+own machine, the web browsers should connect to "localhost" (unless you're using multiple computers
+and have set up your own private network).  However, if you are running with no active network interface,
+Firefox goes into "offline mode" and will not let you connect, even to localhost.  You have to click "File"
+then uncheck "Offline mode".  Note that Firefox will automatically re-enter "offline mode" if any of your
+network interfaces change state, for example if you plug in a network cable and then disconnect it.  
+Also, Google Chrome on Linux, when it detects you have no active network interfaces, simply
+won't let you connect to anything, and there's nothing you can do about it.  There is a bug open:<br>
+<a href="http://code.google.com/p/chromium/issues/detail?id=41408">http://code.google.com/p/chromium/issues/detail?id=41408</a>
+
+<h2><a id="QuickReference">Quick Reference</a></h2>
+<font size="+1">
+<script type="text/javascript" >
+  function updateHref(a) {
+    var oId = $("OperatorId").value;
+    var uC = $("ShowUnControls").checked;
+    a.href += (oId ? "?operator="+oId : "");
+    a.href += (uC ? (oId?"&":"?")+"showUnControls" : "");
+  }
+</script>
+<a href="controls/one-operator.html" onclick="updateHref(this);" >Main Operator Control Panel</a>
+Optional Operator Id: <input type="text" size="12" id="OperatorId" />
+Show BETA-level "UN"-controls <input type="checkbox" id="ShowUnControls" />
+<br/>
+<a href="views/scoreboard.html">Main Scoreboard</a><br/>
+<a href="controls/lineups.html">Team Lineup Control Panel</a>
+...Also: <i><a href="controls/lineups.html?Team1Only">Team 1 Only</a> or <a href="controls/lineups.html?Team2Only">Team 2 Only</a></i><br/>
+<a href="views/overlay.html">Video Feed Overlay Scoreboard</a><br/>
+<a href="controls/tree.html">Full ScoreBoard Control Tree</a><br/>
+<a href="controls/save.html">XML Scoreboard save/load and XML Scoreboard Stream recording/reloading</a><br/>
+<a href="controls/image-management.html">Image Management</a><br/>
+<hr>
+<a href="views/archive/scoreboard-0.1.3.html">Archived Main Scoreboard - version 0.1.3</a><br/>
+</font>
+
+<h2><a id="ScoreboardOperationWithSingleLaptop">ScoreBoard operation with a single laptop</a></h2>
+<p>You need a single laptop (or desktop) computer, a projector, and a projection screen (or wall).
+<ol>
+<li>Since you are reading this, you should have already downloaded and started the latest scoreboard code.  If so, skip to the next step.  If you do need to get the code:
+  <ol>
+    <li>Download the latest zipfile from the project <a href="http://sourceforge.net/projects/derbyscoreboard/files/">files page</a>.</li>
+    <li>Extract the files from the zipfile.</li>
+    <li>If you don't already have Java 1.5 or later installed, <a href="http://java.sun.com/" >download</a> and install it.  The latest Java JRE is recommended.</li>
+    <li>Run the script for your system to start the scoreboard program.  You only need to do <b>ONE</b> of the steps below:
+      <ul>
+        <li>On Windows, run (Open or double-click) the <i>start-Windows.bat</i> file.</li>
+        <li>On Linux/UNIX, run the <i>start-Linux.sh</i> file.</li>
+        <li>On Mac, run the <i>start-MacOS.command</i> file.  (Since Mac OS X is a UNIX system, you could run the <i>start-Linux.sh</i> from a Terminal instead)</li>
+        <li>For those familiar with Java, you can run Java directly in whatever way you want.  You need to include all JAR files in the lib/ directory, and the main class is <i>com.carolinarollergirls.scoreboard.ScoreBoardManager</i></li>
+      </ul>
+    </li>
+    <li>Point your web browser at the scoreboard main index page.  The recommended browser is the <a href="http://firefox.com/">latest Firefox</a>, but <a href="http://microsoft.com/ie/">IE 8</a>, <a href="http://opera.com/">Opera</a>, and <a href="http://apple.com/safari/">Safari</a> should work.  You only need to do <b>ONE</b> of the steps below:
+      <ul>
+        <li>Open the <i>start.html</i> file, which will redirect you to the scoreboard index page.</li>
+        <li>Open your browser to <a href="http://localhost:8000/">http://localhost:8000/</a></li>
+      </ul>
+    </li>
+  </ol>
+</li>
+<li>Connect the laptop's video output to the projector.  How to do this depends on your laptop and your projector.</li>
+<li>Configure the laptop displays:
+  <ol>
+    <li>Configure the laptop's video output to the projector as your secondary screen, and your laptop display as your primary display.  You can reverse them if you want, the important thing is to have the laptop screen and projector be separate displays.  These instructions assume your projector is the secondary display.</li>
+    <li>Set the laptop's secondary display resolution to 1024x768, or any other resolution that has a 4:3 aspect ratio (for example, 1024/768 = 4/3 = 1.3333...).  Note that 1280x1024 is 5:4 aspect, not 4:3.</li>
+  </ol>
+</li>
+<li>You already have one browser window open to this page.  Open a new browser window and go to the <a href="views/scoreboard.html">main scoreboard page</a>.</li>
+<li>Drag the secondary browser window, showing the main scoreboard, over to the projector display.</li>
+<li>Put the secondary browser window into full-screen mode.  On Firefox (which is highly recommended as the browser to use) you can do this by pressing F11.</li>
+<li>On the primary browser window, which is still pointing to these instructions, go to the <a href="controls/one-operator.html">single operator control panel</a>.  That panel provides basic functionality.  You can return to this page at any time and the scoreboard will continue to operate.</li>
+<li>At any time, if you want to save the scoreboard to file, or load the scoreboard using a previously saved file, use <a href="controls/save.html">this page</a>.</li>
+</ol>
+
+<h2><a id="MultipleOperators">Mulitple Operators</a></h2>
+<p>The one-operator control panel is currently the only control panel, but you can use multiple operators with it.  The default page shares key control settings across all pages, but each individual operator can
+use their own control keys by using the "operator" parameter to the control page:
+<p>Operator: <input type="text" size="12" id="OperatorId" /> <input type="button" value="Go" onclick="window.location.href = 'controls/one-operator.html?operator='+$('OperatorId').value;" />
+
+<h2><a id="UnControls">BETA-level "UN"-controls</a></h2>
+<p>The one-operator control panel has new "UN"-controls that are, by default, hidden.  You can show the controls by checking the box above in the <a href="#QuickReference">Quick Links</a> section and clicking on the Control Panel link.
+<p>The "UN"-controls allow you to "undo" an accidental "Start Jam", or "Stop Jam", or "Timeout", however they <b>only</b> control the affected clocks,
+and they do not prevent any Policies from running based on the clocks stopping/starting.  Also you cannot undo more than one action,
+so (for example)you should not try to undo a Timeout and then immediately try to undo a StartJam.  Again, the "UN"-controls are <b>BETA</b> level so please use them with that in mind.
+
+<h2><a id="iPhoneOperator">Using an iPhone to control the scoreboard</a></h2>
+<p>While a dedicated iPhone application would be better, the <a href="controls/one-operator.html">operator control panel</a> is designed to be usable from an iPhone.  Just point the iPhone's browser at the page.
+Note that clicking the buttons from an iPhone is not quite as responsive as using an actual computer; for example adding 4 points requires slowly pressing the +1 point team button 4 times.  Fast multiple clicks will
+not all register simply because the iPhone can't (or won't) handle all of the presses.
+
+<h2><a id="ManagingImages">Managing Images</a></h2>
+<p>The main scoreboard uses images in several places; for the Team Logos, the scorboard background, intermission background, countdown background, etc.  All the images can be viewed on the
+<a href="controls/image-management.html">Image Management page</a>.  The images cannot be modified except for their <i>Name</i> attribute.  Their name is used in the drop-down lists that allow selecting an image.
+The images are separated into different types, which allows selecting an image from only the correct type group.  The current groups defined are <i>ad</i>, <i>teamlogo</i>, and <i>fullscreen</i>,
+although you can define any image group in the <a href="#crg.scoreboard.properties"><i>crg.scoreboard.properties</i></a> file.  For example, in the operator control page,
+the drop-down lists that allow setting each Team's Logo only list images that are of type <i>teamlogo</i>.  Also, the main scoreboard's advertisement image that is displayed during Lineups automatically cycles
+randomly among all the images of type <i>ad</i>.
+<p>To remove images, the actual image file must be removed from the image type's directory.  So for example if the <i>teamlogo</i> image type corresponds to the <i>images/teamlogos</i> directory,
+and you want to remove the <i>carolina.png</i> Team Logo image, you would need to remove (or move) the <i>images/teamlogos/carolina.png</i> file.  Once you remove the file, go to the
+<a href="controls/image-management.html">image management page</a> and click the <i>Update Images</i> button at the top.  Any images removed from your system will be completely removed from the scoreboard.
+Any <i>teamlogo</i> images that are in use by a team will clear that team's logo to no image.
+<p>To add images, just drop the image(s) into the appropriate image type directory.  So with the same example as above, if you want to add the <i>carolina.png</i> Team Logo image as a <i>teamlogo</i>
+type image, and the <i>teamlogo</i> image type corresponds to the <i>images/teamlogos</i> directory, just drop the image file into that directory.  Then click the <i>Update Images</i> button as above.
+By default, all new images use their file name as their <i>Name</i>.  You can edit their Name after adding them.  Edited image names will be saved as part of the scoreboard XML file (when saving from the
+<a href="controls/save-load.html">save/load page</a>), but only for those images that currently exist (i.e., once you remove an image any edited <i>Name</i> is lost).
+<p>Images can be any type or size, but the <a href="views/scoreboard.html">current main scoreboard page</a> uses specific aspect ratios.  Use these suggested image sizes
+(or at least stay close to the same aspect ratio) if you are displaying the images with the main scoreboard page.
+<ul>
+  <li>Team Logo images should be 640x240, or aspect ratio 2.667:1</li>
+  <li>Fullscreen images should be 1600x1200, or aspect ratio 4:3 (the main scoreboard is fixed at 4:3 ratio and resizes to fit the browser window)</li>
+  <li>Ad images should be 1600x320, or aspect ratio 5:1</li>
+</ul>
+
+<h2><a id="ConfigurationFiles">Configuration files</a></h2>
+<p>The main configuration file is the <a href="#crg.scoreboard.properties"><i>crg.scoreboard.properties</i></a> Java Properties file.  It is located (by default) in the <i>lib</i> directory.
+<p>The second configuration file is the <i>crg.scoreboard.xml</i> file, also located (by default) in the <i>lib</i> directory.  It contains the default XML settings that are loaded into the scoreboard on startup.
+
+<h2><a id="crg.scoreboard.properties">Settings in the <i>crg.scoreboard.properties</i> file</a></h2>
+<p>The default file itself has documentation as to what each property is.  See the file itself for more details.  For any property ending in <i>.N</i>, it means multiples of that property can
+be defined, and for each one replace the <i>N</i> with a unique identifier, such as sequential numbers.  Some properties use the identifier, and document what its meaning is.
+
+<center>
+<font size=-1>
+To contact us, please visit the <a href="http://sourceforge.net/projects/derbyscoreboard/">Sourceforge Site</a> or email:<br>
+<a href="mailto:MrTemper@carolinarollergirls.com">Mr Temper</a><br>
+<a href="mailto:Violator@carolinarollergirls.com">Violator</a><br>
+<a href="mailto:3db@carolinarollergirls.com">$3 Bill</a><br>
+</font>
+</center>
+
+</body>
+
+</html>

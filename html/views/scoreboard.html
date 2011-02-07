@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html><head><title>CRG ScoreBoard Display</title>
+
+<script type="text/javascript" src="/external/jquery/jquery.js" ></script>
+<script type="text/javascript" src="/javascript/scoreboard.js" ></script>
+
+<script type="text/javascript">
+
+// Set animation interval period (33 ~= 30fps)
+$.fx.interval = 33;
+
+var clockIds = [
+  "Period", "Period_small",
+  "Jam", "Jam_small",
+  "Lineup",
+  "Timeout",
+  "Intermission"
+];
+var clockConversions = {
+  Period: _timeConversions.msToMinSecNoZero,
+  Period_small: _timeConversions.msToMinSecNoZero,
+  Jam: _timeConversions.msToMinSecNoZero,
+  Lineup: _timeConversions.msToMinSecNoZero,
+  Timeout: _timeConversions.msToMinSecNoZero,
+  Intermission: _timeConversions.msToMinSecNoZero
+};
+var animateTime = {
+  ad: 1000,
+  clock: 1000,
+  team: 1000,
+  timeout: 1000,
+  leadjammer: 1000
+};
+
+
+$sb(function() {
+  setupMainDiv($("#mainDiv")); // This needs to be part of scoreboard framework
+  var view = $sbThisPage.$sb("CurrentView");
+  view.$sbBindAndRun("content", function(event, value) {
+    var showDiv = $("#"+value+"Div");
+    if (!showDiv.length)
+      showDiv = $("#scoreboardDiv");
+    $("#mainDiv>div.View").not(showDiv).removeClass("Show", 500)
+    showDiv.addClass("Show", 500);
+  }, [ view.$sbGet() ]);
+
+  $sbThisPage.$sb("View(Image).Option(Filename)").$sbElement("#imageDiv>img");
+  $sbThisPage.$sb("View(Video).Option(Filename)").$sbElement("#videoDiv>video");
+
+  setupAds();
+  setupTeams();
+  setupClocks();
+
+  setupBackgrounds();
+
+//FIXME - move this into setupMainDiv?  But need to run TextContainer sizing last in page init.
+  _crgUtils.bindAndRun($(window), "resize", function() {
+    $("#mainDiv").css(_windowFunctions.get4x3Dimensions());
+    $("div.TextContainer").css("fontSize", $(window).height()+"px");
+  });
+});
+
+// FIXME - needs to be a single call from scoreboard.js
+function setupMainDiv(div) {
+  div.css({ position: "fixed" });
+  $.each( [ "bottom", "top", "left", "right" ], function() {
+    $("<div>")
+      .css( { width: "100%", height: "100%", "z-index": "100", background: "grey", position: "absolute" } )
+      .css(String(this), "100%")
+      .appendTo(div);
+  });
+}
+
+function setupBackgrounds() {
+  $("<img>")
+    .addClass("Background")
+    .attr("src", "/images/white-gradient.png")
+    .appendTo("div.WhiteBox");
+}
+
+
+///////////////
+// Team control
+///////////////
+
+function setupTeams() {
+  $("<div>").attr("id", "Timeouts").appendTo("#scoreboardDiv")
+    .append($("<div><a>Timeouts</a></div>").addClass("Name TextContainer WhiteBox"));
+
+  $.each( [ "1", "2" ], function() {
+    var team = String(this);
+    var id = "Team"+team;
+    var sbTeam = $sb("ScoreBoard.Team("+team+")");
+
+    $("<div>").addClass("Team"+team+" Number TextContainer WhiteBox").appendTo("#Timeouts")
+      .append($("<div>").addClass("Pulse full").css("opacity", 0))
+      .append(sbTeam.$sb("Timeouts").$sbElement("<a>", "Number"));
+
+    var teamDiv = $("<div>").attr("id", id).addClass("Team").appendTo("#scoreboardDiv");
+    $("<div>").addClass("TeamAnimationQueue").appendTo(teamDiv);
+    $("<div>").addClass("TeamAnimationFlag Animation").appendTo(teamDiv);
+    $("<div><a/></div>").addClass("Name TextContainer Animation").appendTo(teamDiv);
+    $("<div><img/></div>").addClass("Logo Animation").appendTo(teamDiv);
+    $("<div><a/></div>").addClass("Score WhiteBox TextContainer").appendTo(teamDiv);
+    $("<div><a/><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
+      .children("a:first").addClass("Jammer").end()
+      .children("a:last").addClass("Pulse").css("opacity", 0);
+
+    var sbElementAttrs = { sbelement: { autoFitText: { max: 15, overage: 15 } } };
+    sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), sbElementAttrs, "Name");
+    sbTeam.$sb("TeamLogo.Filename").$sbElement(teamDiv.find("div.Logo>img"), "Logo");
+    sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), "Score");
+    sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), sbElementAttrs);
+
+// FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
+    sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event, newVal, oldVal) {
+      var sbLogo = $sb(this);
+      teamDiv.children(".TeamAnimationQueue").queue(function(next) {
+        if (!!sbLogo.$sbGet() == teamDiv.find("div.TeamAnimationFlag").hasClass("ShowLogo"))
+          next();
+        else if (sbLogo.$sbGet()) {
+          teamDiv.find("div.Name,div.TeamAnimationFlag").addClass("ShowLogo");
+          var resizedCss = resizeName();
+          teamDiv.find("div.Name").removeClass("ShowLogo"); resizeName();
+          teamDiv.find("div.Name>a").animate(resizedCss, 500, function() {
+            teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();
+            teamDiv.find("div.Logo").addClass("ShowLogo", 500, next);
+          });
+        } else {
+          var curVal = teamDiv.find("div.Logo>img").attr("src");
+          if (!curVal)
+            teamDiv.find("div.Logo>img").attr("src", oldVal);
+          teamDiv.find("div.Logo").removeClass("ShowLogo", 500, function() {
+            if (!curVal)
+              teamDiv.find("div.Logo>img").attr("src", curVal);
+            teamDiv.find("div.Name,div.TeamAnimationFlag").removeClass("ShowLogo");
+            var resizedCss = resizeName();
+            teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();
+            teamDiv.find("div.Name>a").animate(resizedCss, 500, function() {
+              teamDiv.find("div.Name").removeClass("ShowLogo"); resizeName();
+              next();
+            });
+          });
+        }
+      });
+    });
+
+    sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("content", function(event, value) {
+      teamDiv.find("div.Jammer").toggleClass("ShowJammer", !!value, animateTime.leadjammer);
+    });
+    $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("content", function(event, value) {
+      teamDiv.find("div.Jammer").toggleClass("ShowJam", isTrue(value), animateTime.leadjammer);
+    });
+
+    setupPulsate(
+      function() { return sbTeam.$sb("LeadJammer").$sbIsTrue(); },
+      teamDiv.find("div.Jammer>a.Pulse"),
+      animateTime.leadjammer
+    );
+
+    setupPulsate(
+      function() {
+        return ($sb("ScoreBoard.TimeoutOwner").$sbIs(team) &&
+        $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue()); },
+      $("#Timeouts>div.Team"+team+">div.Pulse"),
+      animateTime.timeout
+    );
+  });
+}
+
+////////////////
+// Clock control
+////////////////
+
+function setupClocks() {
+  $("#scoreboardDiv")
+    .append($("<div>").addClass("ClockAnimationQueue"))
+    .append($("<div>").addClass("ClockAnimationFlag Animation"));
+
+  $.each( clockIds, function() {
+//FIXME - should be using class instead of global id attr
+    var id = String(this);
+    var clock = id.replace(/_.*/,"");
+    var sbClock = $sb("ScoreBoard.Clock("+clock+")");
+
+    var clockDiv = $("<div>").attr("id", id).addClass("Clock Animation").appendTo("#scoreboardDiv")
+      .append($("<div><a/></div>").addClass("Name WhiteBox TextContainer"))
+      .append($("<div><a/></div>").addClass("Time WhiteBox TextContainer"));
+
+    sbClock.$sb("Name").$sbElement("<span>", "Name").appendTo(clockDiv.find("div.Name>a"));
+
+    sbClock.$sb("Time")
+      .$sbElement("<span>", { sbelement: { convert: clockConversions[id] } }, "Time")
+      .appendTo(clockDiv.find("div.Time>a"));
+  });
+
+  $("#Period,#Jam").find("div.Name>a").append($("<span>").addClass("space").text(" "))
+  $("#Period,#Period_small").find("div.Name>a")
+    .append($sb("ScoreBoard.Clock(Period).Number").$sbElement("<span>", "Number"));
+  $("#Jam,#Jam_small").find("div.Name>a")
+    .append($sb("ScoreBoard.Clock(Jam).Number").$sbElement("<span>", "Number"));
+  $("#Period_small>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("P"));
+  $("#Jam_small>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("J"));
+  $("#Lineup>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("Line Up"));
+  $("#Timeout>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("Time Out"));
+  $("#Jam_small>div.Time").remove();
+  $("#Timeout>div.Name").prepend($("<div>").addClass("Pulse full").css("opacity", 0));
+  $("#Intermission>div.Name>a>span.Name").remove();
+  var intermissionAutoFitText = _windowFunctions.enableAutoFitText("#Intermission>div.Name>a", { max: 15, overage: 15 });
+  $sbThisPage.$sbBindAddRemoveEach("Intermission", function(event,node) {
+    $("#Intermission>div.Name>a")
+      .append(node.$sb("ShowUnofficial").$sbElement("<span>", { sbelement: {
+        boolean: true,
+        convert: { "true": "Unofficial ", "false": "" }
+      } }, "Unofficial "+node.$sbId))
+      .append(node.$sb("Text").$sbElement("<span>", "Name "+node.$sbId))
+      .children("span."+node.$sbId).toggle($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
+    node.$sb("ShowUnofficial").$sbBindAndRun("content", intermissionAutoFitText);
+    node.$sb("Text").$sbBindAndRun("content", intermissionAutoFitText);
+    node.$sb("HideClock").$sbBindAndRun("content", function(event,value) {
+      if ($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
+        $("#Intermission>div.Time").toggle(!isTrue(value));    
+    });
+  }, function(event,node) {
+    $("#Intermission>div.Name>a>span."+node.$sbId).remove();
+  });
+  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("content", function(event,value) {
+    $("#Intermission>div.Name>a>span")
+      .filter(":not(."+value+")").hide().end()
+      .filter("."+value).show();
+    intermissionAutoFitText();
+    $("#Intermission>div.Time").toggle(!$sbThisPage.$sb("Intermission("+value+").HideClock").$sbIsTrue());
+  });
+
+  var clocks = $sb("ScoreBoard.Clock(Jam).Running")
+    .add($sb("ScoreBoard.Clock(Lineup).Running"))
+    .add($sb("ScoreBoard.Clock(Timeout).Running"))
+    .add($sb("ScoreBoard.Clock(Intermission).Running"));
+  _crgUtils.bindAndRun(clocks, "content", function(event, value) {
+    isTrue(value) && $("#scoreboardDiv>div.ClockAnimationQueue").queue(clockRunningChange);
+  }, [ true ]);
+
+  setupPulsate(
+    function() { return $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue(); },
+    $("#Timeout>div.Name>.Pulse"),
+    animateTime.timeout
+  );
+}
+
+function clockRunningChange(next) {
+  if ($sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue())
+    showClocks("Jam", next);
+  else if ($sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue())
+    showClocks("Timeout", next);
+  else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue())
+    showClocks("Lineup", next);
+  else if ($sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue())
+    showClocks("Intermission", next);
+  else
+    showClocks("Jam", next);
+}
+
+function showClocks(clock, next) {
+  var toClass = "Show"+clock;
+  var fromClasses = "ShowPeriod ShowJam ShowLineup ShowTimeout ShowIntermission".replace(toClass, "");
+  if ($("#scoreboardDiv>div.ClockAnimationFlag").hasClass(toClass))
+    next();
+  else
+    $("#scoreboardDiv>div.Animation").switchClass(fromClasses, toClass, animateTime.clock, "easeInOutExpo",
+      function() { $(this).hasClass("ClockAnimationFlag") && next(); }
+    );
+}
+
+
+/////////////
+// Ad control
+/////////////
+
+function setupAds() {
+  $("<div>").attr("id", "AdBox").addClass("Animation").appendTo("#scoreboardDiv")
+    .append($("<div><img/></div>").addClass("CurrentAd"))
+    .append($("<div><img/></div>").addClass("NextAd"));
+  var getNextAdSrc = function(currentAdSrc) {
+      var ads = $.map($sb("ScoreBoard").find("Image>Type:contains(ad)"), function(e) {
+        return $sb($(e).parent()).$sb("Filename").$sbGet();
+      });
+      ads.sort();
+      var index = $.inArray(currentAdSrc, ads) + 1;
+      if ((0 > index) || (index >= ads.length))
+        index = 0;
+      return ads[index];
+  };
+  var firstSrc = getNextAdSrc();
+  $('#AdBox>div:first>img').attr("src", firstSrc);
+  $('#AdBox>div:last>img').attr("src", getNextAdSrc(firstSrc));
+  var nextImgFunction = function() {
+    var adbox = $("#AdBox");
+    var currentAdSrc = adbox.find("div.NextAd>img").attr("src");
+    adbox.children("div.NextAd").switchClass("NextAd", "CurrentAd", animateTime.ad);
+    adbox.children("div.CurrentAd").switchClass("CurrentAd", "FinishedAd", animateTime.ad, function() {
+      $(this).switchClass("FinishedAd", "NextAd", 0).children("img").attr("src", getNextAdSrc(currentAdSrc));
+    });
+    adbox.delay(5000, "AdChangeQueue").queue("AdChangeQueue", nextImgFunction).dequeue("AdChangeQueue");
+  };
+  nextImgFunction();
+}
+
+
+////////////
+// Animation
+////////////
+
+function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
+  var doPulse = function(next) {
+    if (pulseCondition())
+      pulseTarget.animate({ opacity: .75 }, (pulsePeriod/2)).animate({ opacity: 0 }, (pulsePeriod/2));
+    else
+      pulseTarget.delay(500)
+    pulseTarget.queue(doPulse);
+    next();
+  };
+  doPulse($.noop);
+}
+
+</script>
+
+<style type="text/css" >
+@import url("scoreboard.css");
+</style>
+
+</head>
+
+<body>
+
+<div id="mainDiv" >
+
+  <div id="scoreboardDiv" class="View"></div>
+  <div id="imageDiv" class="View"><img/></div>
+  <div id="videoDiv" class="View"><video/></div>
+
+</div>
+
+</body>
+
+</html>

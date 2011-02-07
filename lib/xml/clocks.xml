@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document >
+  <ScoreBoard >
+    <Clock Id="Period">
+      <Name>Period</Name>
+      <MinimumNumber>1</MinimumNumber>
+      <MaximumNumber>2</MaximumNumber>
+      <Number>1</Number>
+      <MaximumTime>1800000</MaximumTime>
+      <MinimumTime>0</MinimumTime>
+      <Time>1800000</Time>
+      <Running>false</Running>
+      <Direction>true</Direction>
+    </Clock>
+    <Clock Id="Timeout">
+      <Name>Timeout</Name>
+      <MinimumNumber>1</MinimumNumber>
+      <MaximumNumber>999</MaximumNumber>
+      <Number>1</Number>
+      <MinimumTime>0</MinimumTime>
+      <MaximumTime>3600000</MaximumTime>
+      <Time>0</Time>
+      <Running>false</Running>
+      <Direction>false</Direction>
+    </Clock>
+    <Clock Id="Lineup">
+      <Name>Lineup</Name>
+      <MinimumNumber>1</MinimumNumber>
+      <MaximumNumber>999</MaximumNumber>
+      <Number>1</Number>
+      <MinimumTime>0</MinimumTime>
+      <MaximumTime>3600000</MaximumTime>
+      <Time>0</Time>
+      <Running>false</Running>
+      <Direction>false</Direction>
+    </Clock>
+    <Clock Id="Countdown">
+      <Name>Countdown</Name>
+      <MinimumNumber>1</MinimumNumber>
+      <MaximumNumber>999</MaximumNumber>
+      <Number>1</Number>
+      <MinimumTime>0</MinimumTime>
+      <MaximumTime>30000</MaximumTime>
+      <Time>30000</Time>
+      <Running>false</Running>
+      <Direction>true</Direction>
+    </Clock>
+    <Clock Id="Intermission">
+      <Name>Intermission</Name>
+      <MinimumNumber>0</MinimumNumber>
+      <MaximumNumber>999</MaximumNumber>
+      <Number>0</Number>
+      <MinimumTime>0</MinimumTime>
+      <MaximumTime>900000</MaximumTime>
+      <Time>900000</Time>
+      <Running>false</Running>
+      <Direction>true</Direction>
+    </Clock>
+    <Clock Id="Jam">
+      <Name>Jam</Name>
+      <MinimumNumber>1</MinimumNumber>
+      <MaximumNumber>999</MaximumNumber>
+      <Number>1</Number>
+      <MinimumTime>0</MinimumTime>
+      <MaximumTime>120000</MaximumTime>
+      <Time>120000</Time>
+      <Running>false</Running>
+      <Direction>true</Direction>
+    </Clock>
+  </ScoreBoard>
+</document>
+

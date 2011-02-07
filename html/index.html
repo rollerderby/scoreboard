@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html><head></head>
+
+<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+
+<script type="text/javascript">
+
+</script>
+
+<body>
+
+<a id="Top">
+<center>
+<img src="/images/teamlogos/Carolina.png" width="320" height="120" />
+<h1>Carolina Rollergirls Browser-based Roller Derby Scoreboard</h1>
+</center>
+</a>
+
+<p>
+For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
+see <a href="guide.html">the guide</a>.
+
+<h3>Scoreboard view/control pages</h3>
+<script type="text/javascript" >
+  function updateHref(a) {
+    var oId = $("#OperatorId")[0].value;
+    var uC = $("#ShowUnControls")[0].checked;
+    a.href += (oId ? "?operator="+oId : "");
+    a.href += (uC ? (oId?"&":"?")+"showUnControls" : "");
+  }
+</script>
+<a href="controls/operator.html">Main Operator Control Panel</a><br/>
+<a href="views/scoreboard.html">Main Scoreboard</a><br/>
+<a href="controls/lineups.html">Team Lineup Control Panel</a><br/>
+<a href="views/archive/overlay.html">Video Feed Overlay Scoreboard (not updated yet, may not work)</a><br/>
+<a href="controls/archive/image-management.html">Image Management (not updated yet, may not work)</a><br/>
+
+</body>
+
+</html>

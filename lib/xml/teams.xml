@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document>
+  <ScoreBoard>
+    <Team Id="1">
+      <Name>Team 1</Name>
+      <Score>0</Score>
+      <Timeouts>3</Timeouts>
+      <LeadJammer>false</LeadJammer>
+      <TeamLogo>
+        <Id />
+        <Name />
+        <Type />
+        <Directory />
+        <Filename />
+      </TeamLogo>
+      <Position Id="Jammer" />
+      <Position Id="Pivot" />
+      <Position Id="Blocker1" />
+      <Position Id="Blocker2" />
+      <Position Id="Blocker3" />
+    </Team>
+    <Team Id="2">
+      <Name>Team 2</Name>
+      <Score>0</Score>
+      <Timeouts>3</Timeouts>
+      <LeadJammer>false</LeadJammer>
+      <TeamLogo>
+        <Id />
+        <Name />
+        <Type />
+        <Directory />
+        <Filename />
+      </TeamLogo>
+      <Position Id="Jammer" />
+      <Position Id="Pivot" />
+      <Position Id="Blocker1" />
+      <Position Id="Blocker2" />
+      <Position Id="Blocker3" />
+    </Team>
+  </ScoreBoard>
+</document>
+

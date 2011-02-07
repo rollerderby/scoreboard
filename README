@@ -1,0 +1,6 @@
+
+1. Since you're reading this, you should already have the scoreboard code.
+2. If you don't have Java 1.5 or later installed in your system, go get it (http://java.sun.com) and install it.
+3. Run the "start-<OS>.*" script for your appropriate system; i.e. for Windows run "start-Windows.bat", for Mac run "start-MacOS.command", for Linux/UNIX run "start-Linux.sh".
+4. Open the "start.html" page (this will redirect your browser to http://localhost:8000/ so you can also just go there directly instead).
+5. Detailed instructions and documentation are on that page.

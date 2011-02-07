@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html><head><title>Custom Skinned Scoreboard</title>
+
+<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+
+<script type="text/javascript" src="/javascript/scoreboard.js"></script>
+
+<script type="text/javascript" >
+
+function addElement(p, e) {
+  if ($("[data-sbpath="+e.$sbPath+"]").length)
+    return;
+
+  e.$sb("css").bind("content", function(event, value) {
+    $("[data-sbpath="+$sb($(this).parent()).$sbPath+"]").css($sb(event.target).$sbName, value);
+  });
+
+  $("[data-sbpath="+p.$sbPath+"]").append(createElement(e));
+  e.children("box,display").each(function() { addElement(e, $sb(this)); });
+}
+
+function removeElement(p, e) {
+  $("[data-sbpath="+e.$sbPath+"]").remove();
+}
+
+function createElement(e) {
+  var me;
+  if (e.is("box"))
+    me = createBoxElement(e);
+  else if (e.is("display"))
+    me = createDisplayElement(e);
+  else
+    me = $("<span>"); // Unknown element type?
+
+  me.attr("data-sbpath", e.$sbPath);
+  return me;
+}
+
+function createBoxElement(e) {
+  return setCss(e.$sb("css"), $("<div>").addClass("box").css("fontSize", getBoxFontSize()));
+}
+
+function createDisplayElement(e) {
+  var type = e.$sb("type").$sbGet(), sourcetype = e.$sb("sourcetype").$sbGet();
+
+  var display;
+  if (sourcetype == "static")
+    display = e.$sb(sourcetype).$sbElement("<"+type+">");
+  else if (sourcetype == "sbelement")
+    display = $sb(e.$sb(sourcetype).$sbGet()).$sbElement("<"+type+">");
+  else
+    display = $("<span>"); // Unknown sourcetype
+
+  e.children("type,sourcetype,sbelement").one("content", function() { display.replaceWith(createElement(e)); });
+
+  return setCss(e.$sb("css"), display);
+}
+
+function setCss(css, to) {
+  css.children().each(function() { to.css($sb(this).$sbName, $sb(this).$sbGet()); });
+  return to;
+}
+
+// This is a 1-time function for now; remove live() listeners and all display elements before changing skins!
+var Skin;
+function setupSkin(skin) {
+  Skin = $sb("Skins.Skin("+skin+")");
+  $("#mainDiv").attr("data-sbpath", Skin.$sbPath);
+
+  Skin.$sb("aspect").live("content", resizeWindow);
+  $(window).bind("resize", resizeWindow);
+  resizeWindow();
+
+  Skin.live("add:box add:display", function(event, child) {
+    addElement($sb(event.target), $sb(child));
+  });
+  Skin.live("remove:box remove:display", function(event, child) {
+    removeElement($sb(event.target), $sb(child));
+  });
+  Skin.children("box,display").each(function() { addElement(Skin, $sb(this)); });
+}
+
+function getBoxFontSize() {
+  return $("#mainDiv").height()+"px";
+}
+
+function resizeWindow() {
+  if (Skin && (Skin.$sb("aspect.fix").$sbGet() == "true")) {
+    var num = Skin.$sb("aspect.ratio.n").$sbGet() || 1;
+    var den = Skin.$sb("aspect.ratio.d").$sbGet() || 1;
+    var overflow = (Skin.$sb("aspect.overflow").$sbGet() == "true");
+    var d = _windowFunctions.getAspectDimensions(num/den, overflow);
+    $("#mainDiv").css({ top: d.top+"px", left: d.left+"px", width: d.width+"px", height: d.height+"px" });
+  } else {
+    $("#mainDiv").css({ top: "0%", left: "0%", width: "100%", height: "100%" });
+  }
+
+  $("div.box").css("fontSize", getBoxFontSize());
+}
+
+var skinSelectionDialog;
+$sb(function() {
+  skinSelectionDialog = $("<div>").html("Select a skin to display.")
+    .append($("<form>").append("<p><label for=skinSelect >Select skin:</label><select name=skinSelect /></p>"))
+    .dialog({ autoOpen: false, title: "Skin selection",
+      buttons: {
+        "Set Skin": function() {
+          var name = skinSelectionDialog.find("select").val();
+          if (name) {
+            setupSkin(name);
+            $(this).dialog("close");
+          }
+        }
+      }
+    });
+
+  var addSkinNameToDialog = function(name) { if (name) skinSelectionDialog.find("select").append($("<option>").html(name).val(name)); };
+  var removeSkinNameFromDialog = function(name) { skinSelectionDialog.find("option:contains("+name+")").remove(); };
+  $sb("Skins")
+    .live("add:Skin", function(event, node) { addSkinNameToDialog(node.$sbId); })
+    .live("remove:Skin", function(event, node) { removeSkinNameFromDialog(node.$sbId); })
+    .children("Skin").each(function() { addSkinNameToDialog($sb(this).$sbId); });
+
+  var skin = _windowFunctions.getParam("skin");
+  if (skin)
+    setupSkin(skin);
+  else
+    skinSelectionDialog.dialog("open");
+});
+
+</script>
+
+<style type="text/css" >
+
+#mainDiv { position: fixed; }
+
+body { overflow: hidden; }
+div.box,a,img,video { position: absolute; }
+a,img,video { top: 0%; left: 0%; width: 100%; height: 100%; }
+
+</style>
+
+<body>
+<div id="mainDiv"></div>
+</body>
+
+</html>
+

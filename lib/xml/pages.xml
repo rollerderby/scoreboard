@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document SystemTime="1296177648534">
+  <Pages>
+    <Page Id="operator.html">
+      <Operator Id="Mr Temper">
+        <KeyControl Id="StartJam">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="StopJam">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Timeout">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="UnStartJam">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="UnStopJam">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="UnTimeout">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team1ScoreDown">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team1ScoreUp">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team2ScoreUp">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team2ScoreDown">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team1Timeout">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team2Timeout">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team1LeadJammer">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team1NoLeadJammer">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team2NoLeadJammer">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="Team2LeadJammer">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockPeriodNumberDown">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockPeriodNumberUp">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockJamNumberDown">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockJamNumberUp">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockLineupNumberDown">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockLineupNumberUp">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockTimeoutNumberDown">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockTimeoutNumberUp">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockIntermissionNumberDown">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockIntermissionNumberUp">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockPeriodStart">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockPeriodStop">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockJamStart">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockJamStop">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockLineupStart">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockLineupStop">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockTimeoutStart">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockTimeoutStop">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockIntermissionStart">
+          <Key />
+        </KeyControl>
+        <KeyControl Id="ClockIntermissionStop">
+          <Key />
+        </KeyControl>
+      </Operator>
+    </Page>
+  </Pages>
+</document>
+

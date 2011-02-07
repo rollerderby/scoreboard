@@ -1,0 +1,194 @@
+
+#mainDiv div { position: absolute; }
+#mainDiv>div.View { width: 100%; height: 100%; }
+#mainDiv>div.View:not(.Show) { opacity: 0; }
+
+div.full { height: 100%; width: 100%; border-radius: inherit; }
+div.Pulse { background: #ff0000; }
+
+/* background images */
+img.Background {
+  position: absolute;
+  left: 0%; top:0%; width: 100%; height: 100%;
+  border-radius: inherit;
+  z-index: -50;
+}
+
+/* Fixed-size text containers/elements */
+div.TextContainer { text-align: center; }
+div.TextContainer a { width: 100%; position: absolute; }
+
+/* All text elements use the same font and weight, for now */
+a { font-weight: bold; font-family: helvetica; }
+
+
+/* http://net.tutsplus.com/tutorials/html-css-techniques/quick-tip-understanding-css3-gradients/ */
+#scoreboardDiv {
+  z-index: -100;
+  background: #222222;
+  background: -moz-linear-gradient(top, #000000, #222222 50%, #777777 100%);
+  background: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), color-stop(50%, #222222), color-stop(100%, #777777));
+}
+
+/* Views */
+  #imageDiv>img { width: 100%; height: 100%; }
+  #videoDiv>video { width: 100%; height: 100%; }
+/* End Views */
+
+/* Teams */
+  /* Main boxes */
+  div.Team { top: 0%; width: 50%; height: 63%; }
+  #Team1 { left: 0%; }
+  #Team2 { right: 0%; }
+
+  /* Team Name sub-box */
+  div.Team>div.Name { text-align: center; top: 0%; width: 90%; height: 48%; }
+  div.Team>div.Name.ShowLogo { height: 16%; }
+  div.Team>div.Name>a { color: #ffffff; }
+  #Team1>div.Name { left: 5%; }
+  #Team2>div.Name { right: 5%; }
+
+  /* Team Logo sub-box */
+  div.Team>div.Logo { top: 16%; height: 32%; width: 100%; }
+  div.Team>div.Logo>img { top: 0%; height: 100%; display: block; margin-left: auto; margin-right: auto; /* center img */ }
+  #Team1>div.Logo { right: 100%; }
+  #Team2>div.Logo { left: 100%; }
+  #Team1>div.Logo.ShowLogo { right: 0%; }
+  #Team2>div.Logo.ShowLogo { left: 0%; }
+
+  /* Team Score sub-box */
+  div.Team>div.Score { top: 49%; width: 70%; height: 31.5%; border-radius: 12% / 25%; }
+  div.Team>div.Score>a { font-size: 26%; top: -26.5%; }
+  #Team1>div.Score { left: 15%; }
+  #Team2>div.Score { right: 15%; }
+
+  /* Team Jammer sub-box */
+  div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; }
+  #Team1>div.Jammer { right: 100%; }
+  #Team2>div.Jammer { left: 100%; }
+  #Team1>div.Jammer.ShowJammer.ShowJam { right: 5%; }
+  #Team2>div.Jammer.ShowJammer.ShowJam { left: 5%; }
+  div.Team>div.Jammer>a.Pulse { color: #ff0000; }
+  div.Team>div.Jammer>a.Jammer { color: #ffffff; }
+/* End Teams */
+
+/* Timeouts */
+  /* Main box */
+  #Timeouts { left: 43%; top: 31%; width: 13.75%; height: 17%; }
+
+  /* Name sub-box */
+  #Timeouts>div.Name { left: 0%; top: 0%; width: 100%; height: 30%; border-radius: 8% / 25%; }
+  #Timeouts>div.Name>a { font-size: 4%; top: 5%; }
+
+  /* Number sub-boxes */
+  #Timeouts>div.Number { bottom: 0%; width: 45%; height: 50%; border-radius: 25%/ 25%; }
+  #Timeouts>div.Number.Team1 { left: 0%; }
+  #Timeouts>div.Number.Team2 { right: 0%; }
+  #Timeouts>div.Number>a { font-size: 9%; top: -10%; }
+/* End Timeouts */
+
+/* Period */
+  /* Main box */
+  #Period { right: 100%; top: 59%; width: 50%; bottom: 0%; }
+  #Period.ShowJam { right: 50%; }
+
+  /* Name sub-box */
+  #Period>div.Name { top: 15%; left: 18%; width: 64%; height: 24%; border-radius: 8.5% / 30%; }
+  #Period>div.Name>a { font-size: 10%; top: -10%; }
+
+  /* Time sub-box */
+  #Period>div.Time { top: 44%; right: 10%; width: 80%; height: 39%; border-radius: 7% / 24%; }
+  #Period>div.Time>a { font-size: 20%; top: -24%; }
+/* End Period */
+
+/* Period_small */
+  /* Main box */
+  #Period_small { right: 100%; top: 59%; width: 50%; bottom: 0%; }
+  #Period_small.ShowTimeout,#Period_small.ShowLineup { right: 50%; }
+
+  /* Name sub-box */
+  #Period_small>div.Name { top: 0%; left: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
+  #Period_small>div.Name>a { font-size: 12%; top: -10%; }
+
+  /* Time sub-box */
+  #Period_small>div.Time { top: 0%; left: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
+  #Period_small>div.Time>a { font-size: 13%; top: -15%; }
+/* End Period_small */
+
+/* Jam */
+  /* Main box */
+  #Jam { left: 100%; top: 59%; width: 50%; bottom: 0%; }
+  #Jam.ShowJam { left: 50%; }
+
+  /* Name sub-box */
+  #Jam>div.Name { top: 15%; left: 18%; width: 64%; height: 24%; border-radius: 8.5% / 30%; }
+  #Jam>div.Name>a { font-size: 10%; top: -10%; }
+
+  /* Time sub-box */
+  #Jam>div.Time { top: 44%; right: 10%; width: 80%; height: 39%; border-radius: 7% / 24%; }
+  #Jam>div.Time>a { font-size: 20%; top: -24%; }
+/* End Jam */
+
+/* Jam_small */
+  /* Main box */
+  #Jam_small { left: 0%; top: 100%; width: 100%; height: 41%; }
+  #Jam_small.ShowTimeout,#Jam_small.ShowLineup { top: 59%; }
+
+  /* Name sub-box */
+  #Jam_small>div.Name { top: 0%; left: 42%; width: 16.25%; height: 29%; border-radius: 8.5% / 30%; }
+  #Jam_small>div.Name>a { font-size: 12%; top: -10%; }
+/* End Jam_small */
+
+/* Lineup */
+  /* Main box */
+  #Lineup { left: 100%; top: 59%; width: 50%; bottom: 0%; }
+  #Lineup.ShowLineup { left: 50%; }
+
+  /* Name sub-box */
+  #Lineup>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
+  #Lineup>div.Name>a { font-size: 6%; top: 10%; line-height: 75%; }
+
+  /* Time sub-box */
+  #Lineup>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
+  #Lineup>div.Time>a { font-size: 13%; top: -15%; }
+/* End Lineup */
+
+/* Timeout */
+  /* Main box */
+  #Timeout { left: 100%; top: 59%; width: 50%; bottom: 0%; }
+  #Timeout.ShowTimeout { left: 50%; }
+
+  /* Name sub-box */
+  #Timeout>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
+  #Timeout>div.Name>a { font-size: 6%; top: 10%; line-height: 75%; }
+
+  /* Time sub-box */
+  #Timeout>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
+  #Timeout>div.Time>a { font-size: 13%; top: -15%; }
+/* End Timeout */
+
+/* Intermission */
+  /* Main box */
+  #Intermission { left: 0%; top: 100%; width: 100%; height: 41%; }
+  #Intermission.ShowIntermission { top: 59%; }
+
+  /* Name sub-box */
+  #Intermission>div.Name { top: 0%; left: 20%; width: 60%; height: 29%; border-radius: 8.5% / 30%; }
+  #Intermission>div.Name>a { font-size: 13%; top: -15%; }
+
+  /* Time sub-box */
+  #Intermission>div.Time { top: 36.5%; left: 20%; width: 60%; height: 56%; border-radius: 7% / 24%; }
+  #Intermission>div.Time>a { font-size: 28%; top: -22%; }
+/* End Intermission */
+
+/* Ad box */
+  /* Main box */
+  #AdBox { left: 0%; top: 100%; width: 100%; height: 26%; }
+  #AdBox.ShowTimeout,#AdBox.ShowLineup { top: 74%; }
+
+  #AdBox>div { top: 0%; right: 0%; width: 100%; height: 100%; }
+  #AdBox>div.FinishedAd { right: -100%; }
+  #AdBox>div.NextAd { right: 100%; }
+
+  #AdBox>div>img { width: 100%; height: 100%; }
+/* End Ad box */

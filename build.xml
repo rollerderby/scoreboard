@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+
+<project name="Carolina Rollergirls Scoreboard" default="compile">
+	
+	<property name="ant.build.javac.source" value="1.5"/>
+	<property name="ant.build.javac.target" value="1.5"/>
+
+	<property name="src.dir" value="src"/>
+	<property name="dest.dir" value="bin"/>
+	<property name="jdoc.dir" value="jdoc"/>
+
+	<property name="compile.deprecation" value="true"/>
+	<property name="compile.debug" value="true"/>
+	<property name="compile.nowarn" value="true"/>
+	<property name="compile.verbose" value="false"/>
+
+	<property name="jar.dir" value="lib"/>
+	<property name="jar.file" value="crg-scoreboard.jar"/>
+	<property name="manifest.file" value="crg-scoreboard.mf"/>
+	<available property="manifest.exists" file="${jar.dir}/${manifest.file}" />
+
+	<property name="clean.verbose" value="false"/>
+	<property name="clean.quiet" value="false"/>
+
+	<!-- Show help (the different options for this build.xml) -->
+	<target name="help">
+		<echo message="Buildfile for Carolina Rollergirls Scoreboard"/>
+		<echo message=""/>
+		<echo message="Targets:"/>
+		<echo message=""/>
+		<echo message="  all              clean compile jdoc"/>
+		<echo message="  clean            Clean everything"/>
+		<echo message="  compile          Compile all classes and create jarfile (default)"/>
+		<echo message="  manifest         (Re)create the manifest file"/>
+		<echo message="  help             Show this help"/>
+		<echo message="  jdoc             Create JavaDOC"/>
+		<echo message=""/>
+	</target>
+
+	<!-- Compile source files -->
+	<target name="compile" depends="-manifest" >
+		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.0.jar"/>
+
+		<mkdir dir="${dest.dir}"/>
+		<javac srcdir="${src.dir}"
+			destdir="${dest.dir}"
+			deprecation="${compile.deprecation}"
+			debug="${compile.debug}"
+			verbose="${compile.verbose}"
+			nowarn="${compile.nowarn}"
+			includes="com/carolinarollergirls/scoreboard/**" >
+
+			<compilerarg value="-Xlint:unchecked"/>
+			<classpath>
+				<fileset dir="${jar.dir}" includes="deps/*.jar" />
+			</classpath>
+		</javac>
+
+		<mkdir dir="${jar.dir}"/>
+		<jarjar jarfile="${jar.dir}/${jar.file}" manifest="${jar.dir}/${manifest.file}" >
+			<fileset dir="${dest.dir}" excludes="**/*.java" />
+			<zipgroupfileset dir="${jar.dir}" includes="deps/*.jar" />
+		</jarjar>
+	</target>
+
+	<!-- Create Manifest only if file doesn't exist -->
+	<target name="-manifest" unless="manifest.exists" >
+		<echo message="${jar.dir}/${manifest.file} does not exist, creating..." />
+		<antcall target="manifest" />
+	</target>
+
+	<!-- Create Manifest -->
+	<target name="manifest">
+		<manifest file="${jar.dir}/${manifest.file}" >
+			<attribute name="Main-Class" value="com.carolinarollergirls.scoreboard.ScoreBoardManager" />
+			<attribute name="Class-Path" value="." />
+		</manifest>
+		<echo message="Created ${jar.dir}/${manifest.file}" />
+	</target>
+
+	<!-- Create JavaDOC -->
+	<target name="jdoc">
+		<mkdir dir="${jdoc.dir}"/>
+		<javadoc
+			packagenames="com.carolinarollergirls.scoreboard.*"
+			sourcepath="${src.dir}"
+			destdir="${jdoc.dir}"
+		/>
+		<echo message="Java Documentation placed in ${jdoc.dir}"/>
+	</target>
+
+	<!-- Do everything -->
+	<target name="all" depends="clean,compile,jdoc"/>
+
+	<!-- Clean all classfiles -->
+	<target name="clean">
+		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeEmptyDirs="true" failonerror="false">
+			<fileset dir="${dest.dir}" includes="com/carolinarollergirls/scoreboard/**/*.class"/>
+			<fileset dir="${jar.dir}" includes="${jar.file}"/>
+			<fileset dir="${jdoc.dir}"/>
+		</delete>
+	</target>
+
+</project>

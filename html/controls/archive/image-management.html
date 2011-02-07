@@ -1,0 +1,173 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html><head><title>Image Management</title>
+
+<meta name="viewport" content="initial-scale=0.5, minimum-scale=0.5, maximum-scale=0.5, user-scalable=no" />
+
+<script type="text/javascript" src="../../external/prototype/prototype.js"></script>
+<script type="text/javascript" src="../../external/scriptaculous/scriptaculous.js"></script>
+<script type="text/javascript" src="../../javascript/archive/object-util.js"></script>
+<script type="text/javascript" src="../../javascript/archive/xml-util.js"></script>
+<script type="text/javascript" src="../../javascript/archive/window-util.js"></script>
+<script type="text/javascript" src="../../javascript/archive/scoreboard-viewer.js"></script>
+<script type="text/javascript" src="../../javascript/archive/scoreboard-controller.js"></script>
+<script type="text/javascript" src="../../javascript/archive/viewer.js"></script>
+<script type="text/javascript" src="../../javascript/archive/controller.js"></script>
+
+<script type="text/javascript" >
+
+function createInnerTable(type) {
+  var showButton, hideButton;
+  var newRow = Builder.node("tr", [ Builder.node("td", { style: "width: 100%", id: "Type"+type+"Row" }, [
+    Builder.node("table", { className: "InnerTable", id: "Image"+type+"Table" }, [
+      Builder.node("col", { width: "13%" } ),
+      Builder.node("col", { width: "13%" } ),
+      Builder.node("col", { width: "13%" } ),
+      Builder.node("col", { width: "21%" } ),
+      Builder.node("col", { width: "40%" } ),
+      Builder.node("tr", [
+        Builder.node("th", { colspan: "100%" }, [
+          "Images Type : "+type,
+          showButton = Builder.node("button", { className: "HideType"+type }, [ "Show" ] ),
+          hideButton = Builder.node("button", { className: "ShowType"+type }, [ "Hide" ] ),
+        ] )
+      ] ),
+      Builder.node("tr", [
+        Builder.node("th", [ "Name" ] ),
+        Builder.node("th", [ "Id" ] ),
+        Builder.node("th", [ "Directory" ] ),
+        Builder.node("th", [ "Filename" ] ),
+        Builder.node("th", [ "Image" ] ),
+      ]),
+    ]),
+  ]) ]);
+
+  showButton.onclick = function(event) {
+    $$(".HideType"+type).invoke("hide");
+    $$(".ShowType"+type).invoke("show");
+  };
+  hideButton.onclick = function(event) {
+    $$(".ShowType"+type).invoke("hide");
+    $$(".HideType"+type).invoke("show");
+  };
+  showButton.hide();
+
+  newRow.store("type", type);
+
+  var row = $("MainTable").firstChild;
+  while (row != null) {
+    if ((row.nodeName.toLowerCase() == "tr") && (row.retrieve("type") != null) && (row.retrieve("type") > type)) {
+      $("MainTable").insertBefore(newRow, row);
+      return;
+    }
+    row = row.nextSibling;
+  }
+
+  $("MainTable").appendChild(newRow);
+}
+
+function createRow(table, image) {
+  var id = image.getId();
+  var newRow = Builder.node("tr", { className: "ShowType"+image.Type.getContent(), id: "Type"+image.Type.getContent()+"Id"+id }, [
+    Builder.node("td", [
+      image.Name.createElement("a"),
+      Builder.node("br"),
+      image.Name.createHelper("input", { type: "text", size: "16", className: "updateimmediate" } ),
+    ] ),
+    Builder.node("td", [ id ] ),
+    Builder.node("td", [ image.Directory.getContent() ] ),
+    Builder.node("td", [ image.Filename.getContent() ] ),
+    Builder.node("td", { style: "background: #000000" }, [
+      Builder.node("a", { href: image.Filename.getContent() }, [
+        Builder.node("img", { src: "/Image/"+id+"?width=320" } )
+      ] ),
+    ] ),
+  ]);
+
+  newRow.store("Id", id);
+
+  var row = table.firstChild;
+  while (row != null) {
+    if ((row.nodeName.toLowerCase() == "tr") && (row.retrieve("Id") != null) && (row.retrieve("Id") > id)) {
+      table.insertBefore(newRow, row);
+      return;
+    }
+    row = row.nextSibling;
+  }
+
+  table.appendChild(newRow);
+}
+
+function setupWindow() {
+  var addImage = function(image) {
+    var type = image.Type.getContent();
+    if ($("Image"+type+"Table") == null)
+      createInnerTable(type);
+
+    createRow($("Image"+type+"Table"), image);
+  };
+
+  var removeImage = function(image) {
+    var imageRow = $("Type"+image.Type.getContent()+"Id"+image.getId());
+    if (imageRow)
+      imageRow.remove();
+    var typeRow = $("Type"+image.Type.getContent()+"Row");
+    if (typeRow && !$$(".ShowType"+image.Type.getContent()).any())
+      typeRow.remove();
+  };
+
+  ScoreBoard.Image.each(addImage);
+
+  ScoreBoard.observe("Image:add", function(event) { addImage(event.memo.node); });
+  ScoreBoard.observe("Image:remove", function(event) { removeImage(event.memo.node); });
+}
+
+function startAll() {
+  startScoreBoard("controls/image-management.html", 1000, "setupWindow();");
+}
+
+</script>
+
+<style type="text/css" >
+table {
+  border-spacing: 0px;
+  table-layout: inherit;
+}
+
+table.OuterTable {
+  border: 3px solid;
+  width: 800px;
+}
+
+table.InnerTable {
+  border: 2px solid;
+  width: 100%;
+}
+
+th {
+  border: 1px solid;
+  background-color: #eeeeee;
+}
+
+td {
+  border: 1px solid;
+  text-align: center;
+}
+
+</style>
+
+</head>
+
+<body onload="startAll();" >
+
+<table class="OuterTable" id="MainTable" >
+  <tr>
+    <th>
+      Image Management
+      <button onclick="ScoreBoard.updateImages();" >Update Images</button>
+    </th>
+  </tr>
+</table>
+
+</body>
+
+</html>

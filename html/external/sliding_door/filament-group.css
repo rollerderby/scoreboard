@@ -1,0 +1,65 @@
+
+/*
+ * See http://www.filamentgroup.com/lab/update_styling_the_button_element_with_css_sliding_doors_now_with_image_spr/
+ *
+ * Also an alternative is http://www.iwebtoolsonline.com/html-and-css-rounded-corner-button-generator
+ */
+
+/* REQUIRED BUTTON STYLES: */
+button { 
+	position: relative;
+	border: 0; 
+	padding: 0;
+	cursor: pointer;
+	overflow: visible; /* removes extra side padding in IE */
+}
+
+button::-moz-focus-inner {
+	border: none;  /* overrides extra padding in Firefox */
+}
+
+button span { 
+	position: relative;
+	display: block; 
+	white-space: nowrap;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+	/* Safari and Google Chrome only - fix margins */
+	button span {
+		margin-top: -1px;
+		}
+}
+
+
+/* OPTIONAL BUTTON STYLES for applying custom look and feel: */
+button.custom { 
+	padding: 0 15px 0 0; 
+	margin-right:5px; 
+	font-size:2em; 
+	text-align: center; 
+	background: transparent url(btn_blue_sprite.gif) no-repeat right -140px; 
+}
+
+button.green {
+  background-image: url(btn_green_sprite.gif)
+}
+
+button.custom span {
+	padding: 13px 0 0 15px; 
+	height:37px; 
+	background: transparent url(btn_blue_sprite.gif) no-repeat left top; 
+	color:#fff; 
+}
+
+button.green span {
+  background-image: url(btn_green_sprite.gif)
+}
+
+button.custom:hover, button.customHover { /* the redundant class is used to apply the hover state with a script */
+	background-position: right -210px; 
+}
+
+button.custom:hover span, button.customHover span {
+	background-position: 0 -70px;
+}
