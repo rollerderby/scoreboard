@@ -1,5 +1,7 @@
 package com.carolinarollergirls.scoreboard.xml;
 
+import java.util.*;
+
 import org.jdom.*;
 import org.jdom.xpath.*;
 
@@ -25,7 +27,7 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 
 	public void processDocument(Document d) {
 		try {
-			processElement(editor.cloneDocumentToClonedElement((Element)xPath.selectSingleNode(d)));
+			processElement(editor.cloneDocumentToClonedElement((Element)myXPath.selectSingleNode(d)));
 		} catch ( Exception e ) {
 			/* Ignore exceptions in document processing */
 		}
@@ -37,7 +39,7 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 		while (i.hasNext()) {
 			try {
 				processChildElement((Element)i.next());
-			} catch ( Exception e ) {
+			} catch ( Exception ex ) {
 				/* Ignore exceptions in element processing */
 			}
 		}
@@ -55,17 +57,14 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 	protected void update(Document d) { xmlScoreBoard.xmlChange(d); }
 
 	protected Element getXPathElement() throws JDOMException {
-		return (Element)xPath.selectSingleNode(xmlScoreBoard.getDocument());
+		return (Element)myXPath.selectSingleNode(xmlScoreBoard.getDocument());
 	}
-	protected Element createXPathElement() throws JDOMException {
-		return editor.cloneDocumentToElement(getXPathElement(), false);
-	}
-
+	protected abstract Element createXPathElement();
 	protected abstract String getXPathString();
 
 	protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
 	protected XmlScoreBoard xmlScoreBoard;
-	protected XPath xPath = editor.createXPath(getXPathString());
+	protected XPath myXPath = editor.createXPath(getXPathString());
 }
 
