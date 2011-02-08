@@ -39,18 +39,17 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 	protected void get(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
 		String key;
 		XmlListener listener = null;
-		synchronized (clientMap) {
-			if ((null != (key = request.getParameter("key"))) && (null != (listener = (XmlListener)clientMap.get(key)))) {
-				if (listener.isEmpty()) {
-					response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-				} else {
-					response.setContentType("text/xml");
-					editor.sendToWriter(listener.resetDocument(), response.getWriter());
-					response.setStatus(HttpServletResponse.SC_OK);
-				}
+		if ((null != (key = request.getParameter("key"))) && (null != (listener = (XmlListener)clientMap.get(key)))) {
+			Document d = listener.getDocument();
+			if (null == d) {
+				response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
 			} else {
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+				response.setContentType("text/xml");
+				editor.sendToWriter(d, response.getWriter());
+				response.setStatus(HttpServletResponse.SC_OK);
 			}
+		} else {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
 

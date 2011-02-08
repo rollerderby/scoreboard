@@ -30,30 +30,6 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
-	protected void getListenerInfo(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		Document doc = editor.createDocument();
-		synchronized (clientMap) {
-			Iterator listeners = clientMap.values().iterator();
-			while (listeners.hasNext())
-				((XmlListener)listeners.next()).addInfo(doc.getRootElement());
-		}
-
-		response.setContentType("text/xml");
-		editor.sendToWriter(doc, response.getWriter());
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
-
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doPost(request, response);
-
-		try {
-			if ("/getListenerInfo".equals(request.getPathInfo()))
-				getListenerInfo(request, response);
-		} catch ( Exception e ) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, e.getMessage());
-		}
-	}
-
 	protected XmlListener getXmlListenerForRequest(HttpServletRequest request) {
 		return (XmlListener)getRegisteredListenerForRequest(request);
 	}
@@ -66,25 +42,14 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
 
 	protected class XmlListener extends RegisteredListener
 	{
-		public XmlListener(ScoreBoard sb) {
-			xmlScoreBoardListener = new DefaultXmlScoreBoardListener(sb.getXmlScoreBoard());
+		public XmlListener(ScoreBoard sB) {
+			queueListener = new QueueXmlScoreBoardListener(sB.getXmlScoreBoard());
 		}
 
-		public Document getDocument() {
-			return xmlScoreBoardListener.getDocument();
-		}
+		public Document getDocument() { return queueListener.getDocument(); }
 
-		public Document resetDocument() {
-			return xmlScoreBoardListener.resetDocument();
-		}
+		public boolean isEmpty() { return queueListener.isEmpty(); }
 
-		public boolean isEmpty() { return xmlScoreBoardListener.isEmpty(); }
-
-		public void addInfo(Element node) {
-			Element e = editor.addElement(node, "Listener", getKey());
-			editor.addElement(e, "LastRequestTime", null, Long.toString(new Date().getTime() - getLastRequestTime()));
-		}
-
-		protected DefaultXmlScoreBoardListener xmlScoreBoardListener;
+		protected QueueXmlScoreBoardListener queueListener;
 	}
 }

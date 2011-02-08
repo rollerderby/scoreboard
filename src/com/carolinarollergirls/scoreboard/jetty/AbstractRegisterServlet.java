@@ -1,19 +1,13 @@
 package com.carolinarollergirls.scoreboard.jetty;
 
 import java.io.*;
-import java.lang.reflect.*;
 import java.util.*;
-import java.awt.image.*;
-
-import javax.imageio.*;
+import java.util.concurrent.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
 
 import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractRegisterServlet extends DefaultScoreBoardControllerServlet
 {
@@ -50,28 +44,23 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
 
 	protected String addRegisteredListener(RegisteredListener listener) {
 		String oldKey = listener.getKey();
-		synchronized (clientMap) {
-			if (null == oldKey || "".equals(oldKey) || !clientMap.containsKey(oldKey)) {
-				String newKey = getRandomString();
-				while (clientMap.containsKey(newKey))
-					newKey = getRandomString();
-				listener.setKey(newKey);
-				clientMap.put(listener.getKey(), listener);
-			}
+		if (null == oldKey || "".equals(oldKey) || !clientMap.containsKey(oldKey)) {
+//FIXME - use client IP address, port, etc. unique info instead of or in addition to UUID
+			String newKey = UUID.randomUUID().toString();
+			listener.setKey(newKey);
+			clientMap.put(newKey, listener);
 		}
 
 		return listener.getKey();
 	}
 
 	protected void removeRegisteredListener(RegisteredListener listener) {
-		synchronized (clientMap) {
-			clientMap.remove(listener.getKey());
-		}
+		clientMap.remove(listener.getKey());
 	}
 
-	protected Map<String,RegisteredListener> clientMap = new HashMap<String,RegisteredListener>();
+	protected Map<String,RegisteredListener> clientMap = new ConcurrentHashMap<String,RegisteredListener>();
 
-	protected abstract class RegisteredListener
+	protected class RegisteredListener
 	{
 		public void setKey(String k) { key = k; }
 		public String getKey() { return key; }
@@ -88,19 +77,11 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
 	{
 		public void run() {
 			while (true) {
-				Map<String,RegisteredListener> map = AbstractRegisterServlet.this.clientMap;
-				List<RegisteredListener> killList = new ArrayList<RegisteredListener>();
-
-				synchronized (map) {
-					Iterator<RegisteredListener> listeners = map.values().iterator();
-					while (listeners.hasNext()) {
-						RegisteredListener listener = listeners.next();
-						if ((new Date().getTime() - listener.getLastRequestTime()) > MAX_LAST_REQUEST_TIME)
-							killList.add(listener);
-					}
-					for (int i=0; i<killList.size(); i++) {
-						RegisteredListener listener = killList.get(i);
-						map.remove(listener.getKey());
+				Iterator<RegisteredListener> listeners = clientMap.values().iterator();
+				while (listeners.hasNext()) {
+					RegisteredListener listener = listeners.next();
+					if ((new Date().getTime() - listener.getLastRequestTime()) > MAX_LAST_REQUEST_TIME) {
+						listeners.remove();
 System.err.println("Removed listener " + listener.getKey());
 					}
 				}
