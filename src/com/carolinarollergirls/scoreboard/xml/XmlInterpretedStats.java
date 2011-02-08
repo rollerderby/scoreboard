@@ -18,6 +18,8 @@ public class XmlInterpretedStats extends XmlStats
 
 	public void reset() {
 		synchronized (lock) {
+			super.reset();
+
 			periodNumber = scoreBoard.getClock(Clock.ID_PERIOD).getNumber();
 			periodRunning = scoreBoard.getClock(Clock.ID_PERIOD).isRunning();
 			jamNumber = scoreBoard.getClock(Clock.ID_JAM).getNumber();
@@ -34,8 +36,6 @@ public class XmlInterpretedStats extends XmlStats
 			states.put(POSITION_LISTENER, positionListener);
 			states.put(PASS_LISTENER, passListener);
 			states.put(SCORE_LISTENER, scoreListener);
-
-			super.reset();
 		}
 	}
 
@@ -293,6 +293,12 @@ public class XmlInterpretedStats extends XmlStats
 		if (null != number)
 			editor.setElement(newPosition, "Number", null, number);
 		update(newPosition);
+	}
+
+	protected Element createXPathElement() {
+		Element e = new Element("Interpreted");
+		super.createXPathElement().addContent(e);
+		return e;
 	}
 
 	protected String getXPathString() { return super.getXPathString() + "/Interpreted"; }

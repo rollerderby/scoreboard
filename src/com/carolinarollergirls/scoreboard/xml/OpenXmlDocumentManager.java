@@ -20,6 +20,11 @@ public abstract class OpenXmlDocumentManager extends AbstractXmlDocumentManager 
 
 	protected void processElement(Element e) { update(editor.cloneDocumentToClonedElement(e)); }
 
+	protected Element createXPathElement() {
+		Element e = new Element(getTopLevelElementName());
+		createDocument().getRootElement().addContent(e);
+		return e;
+	}
 	protected String getXPathString() { return "/*/"+getTopLevelElementName(); }
 
 	protected abstract String getTopLevelElementName();

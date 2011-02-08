@@ -47,6 +47,12 @@ public class SaveScoreBoard extends AbstractXmlDocumentManager
 		}
 	}
 
+	protected Element createXPathElement() {
+		Element e = new Element("Save");
+		createDocument().getRootElement().addContent(new Element("SaveLoad").addContent(e));
+		return e;
+	}
+
 	protected String getXPathString() { return "/*/SaveLoad/Save"; }
 
 	public static final String DIRECTORY_NAME = "html/save";

@@ -39,6 +39,12 @@ public class LoadScoreBoard extends AbstractXmlDocumentManager
 		}
 	}
 
+	protected Element createXPathElement() {
+		Element e = new Element("Load");
+		createDocument().getRootElement().addContent(new Element("SaveLoad").addContent(e));
+		return e;
+	}
+
 	protected String getXPathString() { return "/*/SaveLoad/Load"; }
 
 	protected ScoreBoardFromXmlFile loadFromFile = new ScoreBoardFromXmlFile(DIRECTORY_NAME);

@@ -22,6 +22,7 @@ public class AutoSaveScoreBoard extends AbstractXmlDocumentManager
 	}
 
 	public void reset() {
+		super.reset();
 		Element e = createXPathElement();
 		e.addContent(new Element("Enabled").setText("false"));
 		update(e);
@@ -60,6 +61,12 @@ public class AutoSaveScoreBoard extends AbstractXmlDocumentManager
 		} catch ( Exception ex ) {
 			// FIXME - maybe add subelement to indicate error msgs
 		}
+	}
+
+	protected Element createXPathElement() {
+		Element e = new Element("AutoSave");
+		createDocument().getRootElement().addContent(new Element("SaveLoad").addContent(e));
+		return e;
 	}
 
 	protected String getXPathString() { return "/*/SaveLoad/AutoSave"; }
