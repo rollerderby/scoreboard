@@ -12,9 +12,8 @@ import com.carolinarollergirls.scoreboard.model.*;
 public abstract class XmlStats extends AbstractXmlDocumentManager implements ScoreBoardListener
 {
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
-		super.setXmlScoreBoard(xsB);
 		scoreBoard = xsB.getScoreBoardModel();
-		reset();
+		super.setXmlScoreBoard(xsB);
 		scoreBoard.addScoreBoardListener(this);
 	}
 
