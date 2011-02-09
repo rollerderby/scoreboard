@@ -220,6 +220,7 @@ public class XmlDocumentEditor
 			}
 
 			/* If doing a merge to a persistent document and the from element is marked as persistentIgnore, ignore it */
+//FIXME - remove this?
 			if (persistent && Boolean.parseBoolean(from.getAttributeValue("persistentIgnore")))
 				return;
 
@@ -235,6 +236,21 @@ public class XmlDocumentEditor
 				mergeElements(getElement(to, child.getName(), child.getAttributeValue("Id")), child, persistent);
 			}
 		}
+	}
+
+	public boolean hasElementRemoval(Document d) {
+		return hasElementRemoval(d.getRootElement());
+	}
+	public boolean hasElementRemoval(Element e) {
+		if ("true".equals(e.getAttributeValue("remove")))
+			return true;
+
+		Iterator i = e.getChildren().iterator();
+		while (i.hasNext())
+			if (hasElementRemoval((Element)i.next()))
+				return true;
+
+		return false;
 	}
 
 	public Element cloneDocumentToClonedElement(Element e) {
