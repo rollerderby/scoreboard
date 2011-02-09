@@ -203,7 +203,10 @@ $sb = function(arg) {
 
 _crgScoreBoard = {
 	scoreBoardRegistrationKey: null,
-	pollRate: 100,
+	POLL_INTERVAL_MIN: 100,
+	POLL_INTERVAL_MAX: 500,
+	POLL_INTERVAL_INCREMENT: 10,
+	pollRate: this.POLL_INTERVAL_MIN,
 	doc: $.xmlDOM("<document></document>").find("document"),
 	sbExtensions: {
 		$sbExtended: true,
@@ -475,18 +478,24 @@ _crgScoreBoard = {
 
 	parseScoreBoardResponse: function(xhr, textStatus) {
 		try {
-			if (xhr.status == 304) {
+			switch (xhr.status) {
+			case 304: /* No change since last poll, increase poll rate */
+				_crgScoreBoard.pollRate += _crgScoreBoard.POLL_INTERVAL_INCREMENT;
 				return;
-			} if (xhr.status == 404) {
+			case 404:
+//FIXME - we could possibly handle this better than reloading the page...
 				window.location.reload();
-			} else if (xhr.status == 200) {
-				this.processScoreBoardXml(xhr.responseXML);
-			} else if (xhr.status == 0) {
-				//FIXME - handle network errors?
-			} else {
-				//FIXME - handle other server response?
+				break;
+			case 200:
+				_crgScoreBoard.processScoreBoardXml(xhr.responseXML);
+				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MIN;
+				break;
+			case 0: /* FIXME - handle network errors? */ break;
+			default: /* FIXME - handle other server response? */ break;
 			}
 		} finally {
+			if (_crgScoreBoard.pollRate > _crgScoreBoard.POLL_INTERVAL_MAX)
+				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MAX;
 			setTimeout(this.pollScoreBoard, this.pollRate);
 		}
 	},
