@@ -580,11 +580,12 @@ function createXmlTreeContent() {
 
 function createSaveLoadTab() {
   $("<table>").attr("id", "SaveLoad")
-    .appendTo(createTab("Save/Load", "SaveLoad"))
+    .appendTo(createTab("Save/Load", "SaveLoadTab"))
     .data("loadContentFunction", createSaveLoadContent);
 }
 
 function createSaveLoadContent() {
+  var sbSave = $sb("SaveLoad.Save");
   var nameTr = $("<tr>").addClass("Name").appendTo("#SaveLoad")
     .append($("<td>").attr("colspan", "3"));
   $("<a>").text("Save ScoreBoard to Server File").appendTo(nameTr.children("td"));
@@ -593,7 +594,11 @@ function createSaveLoadContent() {
     .append($("<td>").addClass("Filename"))
     .append($("<td>").addClass("Save"))
     .append($("<td>").addClass("Message"));
-  $("<div>").append(policy.$sb("Message").$sbElement("<a>"))
+  $("<div>").append(sbSave.$sb("Filename").$sbElement("<input type='text' size='20'>"))
+    .appendTo(contentTr.children("td.Filename"));
+  $("<div>").append(sbSave.$sb("Save").$sbElement("<button>").text("Save").val("true").button())
+    .appendTo(contentTr.children("td.Save"));
+  $("<div>").append(sbSave.$sb("Message").$sbElement("<a>"))
     .appendTo(contentTr.children("td.Message"));
 
   var toggleContent = function() {

@@ -33,7 +33,6 @@ body { margin: 0px; }
   table.IntermissionControlDialog>tbody>tr.Control>td.HideClock { border-bottom-right-radius: 12px; }
 /* End Intermission Control Dialog */
 
-
 /* Team/Time Tab */
   #TeamTime a { font-weight: bold; }
   #TeamTime button.KeyControl.Editing { border: 1px solid #f00; }
@@ -66,7 +65,6 @@ body { margin: 0px; }
   #TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
 /* End Team/Time Tab */
 
-
 /* Policies */
   #Policies tr.ExpandCollapseAll>td { background: #eee; border-radius: 12px; text-align: center; }
   #Policies tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; text-align: center; }
@@ -74,9 +72,6 @@ body { margin: 0px; }
   #Policies tr.Content>td { background: #eee; }
   #Policies tr.Content>td.Description { border-radius: 0px 0px 0px 12px; width: 60%; text-align: left; }
   #Policies tr.Content>td.Controls { border-radius: 0px 0px 12px 0px; width: 40%; text-align: center; }
-
-  #Policies td.Description { }
-  #Policies td.Controls { }
 /* End Policies */
 
 /* ScoreBoard View */
@@ -91,3 +86,11 @@ body { margin: 0px; }
   #XmlTreeControl div.root li:not(.jstree-leaf)>input { display: none; }
   #XmlTreeControl div.root li.NameGroup>span { color: #00f; }
 /* End Xml Tree Control */
+
+/* Save/Load Control */
+  #SaveLoad tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; text-align: center; }
+  #SaveLoad tr.Name>td.Hide { border-radius: 12px; }
+  #SaveLoad tr.Content>td { background: #eee; }
+  #SaveLoad tr.Content>td.Description { border-radius: 0px 0px 0px 12px; width: 60%; text-align: left; }
+  #SaveLoad tr.Content>td.Controls { border-radius: 0px 0px 12px 0px; width: 40%; text-align: center; }
+/* End Save/Load Control */
