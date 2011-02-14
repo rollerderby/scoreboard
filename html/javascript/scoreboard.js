@@ -396,9 +396,10 @@ _crgScoreBoard = {
 				if (v === undefined && isTrue(convertOptions.onlyMatch))
 					v = (sbE["boolean"] ? isTrue(value) : value);
 			}
-			if (e.is("a,span"))
-				e.html(v);
-			else if (e.is("img"))
+			if (e.is("a,span")) {
+				if (e.html() != v)
+					e.html(v);
+			} else if (e.is("img"))
 				e.attr("src", v);
 // FIXME - may need to support multiple video files with multiple source subelements?
 // FIXME - need to start video when visible and when changing src; stop when not visible.
@@ -1211,27 +1212,36 @@ _windowFunctions = {
 
 
 _timeConversions = {
+	/* If needed, this preprends ":" */
 	_formatMinSec: function(time) { return ((String(time).indexOf(":") > -1) ? time : ":"+time); },
+	/* Convert ms to seconds portion of min:sec */
 	_msOnlySec: function(ms) {
-		var s = (Math.floor(ms / 1000) % 60);
+		var s = (_timeConversions.msToSeconds(ms) % 60);
 		if (10 > s) s = "0"+s;
 		return String(s);
 	},
+	/* Convert ms to minutes portion of min:sec */
 	_msOnlyMin: function(ms) { return String(Math.floor(ms / 60000)); },
+	/* Accepts min:sec time, returns only seconds portion */
 	_timeOnlySec: function(time) { return _timeConversions._formatMinSec(time).split(":")[1]; },
+	/* Accepts min:sec time, returns only minutes portion */
 	_timeOnlyMin: function(time) { return _timeConversions._formatMinSec(time).split(":")[0]; },
+	/* Convert ms to seconds */
 	msToSeconds: function(ms) { return Math.floor(ms / 1000); },
+	/* Convert seconds to milliseconds */
 	secondsToMs: function(sec) { return (sec * 1000); },
+	/* Convert milliseconds to min:sec */
 	msToMinSec: function(ms) { return _timeConversions._msOnlyMin(ms)+":"+_timeConversions._msOnlySec(ms); },
+	/* Convert min:sec to milliseconds */
 	minSecToMs: function(time) {
 		var min = Number(_timeConversions._timeOnlyMin(time) || 0);
 		var sec = Number(_timeConversions._timeOnlySec(time) || 0);
 		return ((min * 60) + sec) * 1000;
 	},
+	/* Convert milliseconds to min:sec, if min is 0 return only seconds portion */
 	msToMinSecNoZero: function(ms) {
-		var min = _timeConversions._msOnlyMin(ms);
-		var sec = _timeConversions._msOnlySec(ms);
-		return ((min == "0" ? "" : min+":") + sec);
+		return ((ms >= 60000) ? _timeConversions.msToMinSec(ms) : _timeConversions.msToSeconds(ms));
 	},
+	/* Same as minSecToMs() */
 	minSecNoZeroToMs: function(time) { return _timeConversions.minSecToMs(time); }
 };
