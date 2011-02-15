@@ -14,6 +14,8 @@ $sb(function() {
   createPoliciesTab();
   createScoreBoardViewTab();
   //FIXME - jstree is UNBELIEVABLY SLOW, and the xml editing tab simply isn't usable since it uses jstree right now.
+  //FIXME - possibly we chould change this to lazy-generate each sub-level only when opened, which should
+  //FIXME - improve initial performance a lot
   //createXmlTreeTab();
   createSaveLoadTab();
 
