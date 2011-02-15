@@ -9,7 +9,7 @@ import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.model.*;
 
-public abstract class XmlStats extends AbstractXmlDocumentManager implements ScoreBoardListener
+public abstract class XmlStats extends SegmentedXmlDocumentManager implements ScoreBoardListener
 {
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
 		scoreBoard = xsB.getScoreBoardModel();
@@ -27,13 +27,7 @@ public abstract class XmlStats extends AbstractXmlDocumentManager implements Sco
 
 	protected String getStatsTime() { return Long.toString(new Date().getTime() - statsStartTime); }
 
-	protected Element createXPathElement() {
-		Element e = new Element("Stats");
-		createDocument().getRootElement().addContent(e);
-		return e;
-	}
-
-	protected String getXPathString() { return "/*/Stats"; }
+	protected String getManagedElementName() { return "Stats"; }
 
 	protected ScoreBoard scoreBoard;
 	protected long statsStartTime;

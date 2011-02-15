@@ -42,13 +42,7 @@ public class XmlRealtimeStats extends XmlStats
 			update(editor.addElement(editor.getElement(createXPathElement(), "Skater", s.getId()), p, getStatsTime(), v));
 	}
 
-	protected Element createXPathElement() {
-		Element e = new Element("Realtime");
-		super.createXPathElement().addContent(e);
-		return e;
-	}
-
-	protected String getXPathString() { return super.getXPathString() + "/Realtime"; }
+	protected String getManagedSubElementName() { return "Realtime"; }
 
 	protected Object lock = new Object();
 }

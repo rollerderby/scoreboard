@@ -101,13 +101,7 @@ public class XmlGoogleDocsStats extends XmlStats
 		catch ( Exception e ) { return false; }
 	}
 
-	protected Element createXPathElement() {
-		Element e = new Element("GoogleDocs");
-		super.createXPathElement().addContent(e);
-		return e;
-	}
-
-	protected String getXPathString() { return super.getXPathString() + "/GoogleDocs"; }
+	protected String getManagedSubElementName() { return "GoogleDocs"; }
 
 	protected GoogleDocs googleDocs = new GoogleDocs();
 	protected SpreadsheetEntry spreadsheetEntry;

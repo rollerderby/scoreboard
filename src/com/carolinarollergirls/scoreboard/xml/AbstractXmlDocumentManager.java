@@ -59,8 +59,13 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 	protected Element getXPathElement() throws JDOMException {
 		return (Element)myXPath.selectSingleNode(xmlScoreBoard.getDocument());
 	}
-	protected abstract Element createXPathElement();
-	protected abstract String getXPathString();
+	protected Element createXPathElement() {
+		Element e = new Element(getManagedElementName());
+		createDocument().getRootElement().addContent(e);
+		return e;
+	}
+	protected String getXPathString() { return "/*/"+getManagedElementName(); }
+	protected abstract String getManagedElementName();
 
 	protected XmlDocumentEditor editor = new XmlDocumentEditor();
 

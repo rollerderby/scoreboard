@@ -10,7 +10,7 @@ import org.jdom.output.*;
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.file.*;
 
-public class SaveScoreBoard extends AbstractXmlDocumentManager
+public class SaveScoreBoard extends SegmentedXmlDocumentManager
 {
 	public void reset() {
 		super.reset();
@@ -47,13 +47,8 @@ public class SaveScoreBoard extends AbstractXmlDocumentManager
 		}
 	}
 
-	protected Element createXPathElement() {
-		Element e = new Element("Save");
-		createDocument().getRootElement().addContent(new Element("SaveLoad").addContent(e));
-		return e;
-	}
-
-	protected String getXPathString() { return "/*/SaveLoad/Save"; }
+	protected String getManagedElementName() { return "SaveLoad"; }
+	protected String getManagedSubElementName() { return "Save"; }
 
 	public static final String DIRECTORY_NAME = "html/save";
 

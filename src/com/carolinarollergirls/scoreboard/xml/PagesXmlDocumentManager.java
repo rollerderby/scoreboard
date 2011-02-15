@@ -7,6 +7,6 @@ import com.carolinarollergirls.scoreboard.*;
 
 public class PagesXmlDocumentManager extends OpenXmlDocumentManager implements XmlDocumentManager
 {
-	protected String getTopLevelElementName() { return "Pages"; }
+	protected String getManagedElementName() { return "Pages"; }
 }
 

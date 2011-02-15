@@ -295,13 +295,7 @@ public class XmlInterpretedStats extends XmlStats
 		update(newPosition);
 	}
 
-	protected Element createXPathElement() {
-		Element e = new Element("Interpreted");
-		super.createXPathElement().addContent(e);
-		return e;
-	}
-
-	protected String getXPathString() { return super.getXPathString() + "/Interpreted"; }
+	protected String getManagedSubElementName() { return "Interpreted"; }
 
 	protected XPath positionXPath = editor.createXPath("Period/Jam/Team/Position");
 
