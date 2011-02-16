@@ -113,6 +113,7 @@ function setupTeams() {
     sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), sbElementAttrs);
 
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
+    var resizeName = teamDiv.find("div.Name>a").data("AutoFit");
     sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event, newVal, oldVal) {
       var sbLogo = $sb(this);
       teamDiv.children(".TeamAnimationQueue").queue(function(next) {
