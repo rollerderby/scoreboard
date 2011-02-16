@@ -203,6 +203,7 @@ _crgUtils = {
 		var optionNameElement = params.optionNameElement;
 		var optionValueElement = params.optionValueElement;
 
+//FIXME - need to add code to unbind if/when the option/select is removed from the DOM!
 		var setOptionName = function(option, node) {
 			if (optionNameElement) {
 				node.$sb(optionNameElement).$sbBindAndRun("content", function(event, value) {
