@@ -16,11 +16,13 @@ import com.carolinarollergirls.scoreboard.model.*;
  */
 public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implements XmlDocumentManager,ScoreBoardController
 {
-	public TeamsXmlDocumentManager() {
-		ScoreBoardManager.registerScoreBoardController(this);
+	public TeamsXmlDocumentManager() { ScoreBoardManager.registerScoreBoardController(this); }
+	public void setScoreBoardModel(ScoreBoardModel sbM) { scoreBoardModel = sbM; }
+
+	public void setXmlScoreBoard(XmlScoreBoard xsB) {
+		super.setXmlScoreBoard(xsB);
 		reset();
 	}
-	public void setScoreBoardModel(ScoreBoardModel sbM) { scoreBoardModel = sbM; }
 
 	public void reset() {
 		Element e = createXPathElement();
