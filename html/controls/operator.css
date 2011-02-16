@@ -87,6 +87,14 @@ body { margin: 0px; }
   #XmlTreeControl div.root li.NameGroup>span { color: #00f; }
 /* End Xml Tree Control */
 
+/* Teams Control */
+  #Teams>tbody>tr>td { background: #eee; }
+  #Teams>tbody>tr>td:first-of-type { background: #ccc; border-radius: 12px 12px 0px 0px; }
+  #Teams>tbody>tr>td:last-of-type { border-radius: 0px 0px 12px 12px; }
+  
+  #Teams>tbody>tr>td.Hide { display: none; }
+/* End Teams Control */
+
 /* Save/Load Control */
   #SaveLoad tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; text-align: center; }
   #SaveLoad tr.Name>td.Hide { border-radius: 12px; }

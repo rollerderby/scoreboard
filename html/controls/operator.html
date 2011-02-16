@@ -589,11 +589,78 @@ function createTeamsTab() {
 }
 
 function createTeamsContent() {
-  $("<tr><td/></tr><tr><td/></tr>").appendTo("#Teams");
-  var selectionTr = createRowTable(2).appendTo("#Teams tr:first>td").find("tr");
-  var teamTr = createRowTable(2).appendTo("#Teams tr:last>td").find("tr");
+  $("#Teams")
+    .append("<tr><td/></tr>").append("<tr><td/></tr>").append("<tr><td/></tr>");
+  var selectionTr = createRowTable(2).appendTo("#Teams>tbody>tr:eq(0)>td").find("tr").addClass("Selection");
+  var teamTr = $("<tr>").appendTo($("<table>").appendTo("#Teams>tbody>tr:eq(1)>td").addClass("Team"));
+  teamTr
+    .append($("<td>").addClass("Name"))
+    .append($("<td>").addClass("Logo"));
+  var skatersTable = $("<table><thead/></table>").appendTo("#Teams>tbody>tr:eq(2)>td").addClass("Skaters");
+  skatersTable.children("thead").append($("<tr>")
+      .append("<th><a>Remove</a></th>")
+      .append("<th><a>Name</a></th>")
+      .append("<th><a>Number</a></th>"));
+  var teamRows = $("#Teams>tbody>tr:gt(0)>td");
 
-  
+  var selectTeam = _crgUtils.setupSelect("<select>", {
+    optionParent: "Teams",
+    optionChildName: "Team",
+    firstOption: { text: "No Teams", value: "" }
+  }).appendTo(selectionTr.children("td:eq(0)"));
+  var newTeamName = $("<input type='text' size='20'/>")
+    .appendTo(selectionTr.children("td:eq(1)"));
+  var createNewTeam = $("<button>").text("New Team")
+    .appendTo(selectionTr.children("td:eq(1)"));
+
+  newTeamName.bind("keypress", function(event) {
+    switch (event.which) {
+      case 34: // double quote
+      case 39: // single quote
+      case 40: // (
+      case 41: // )
+        event.preventDefault();
+    }
+  });
+  createNewTeam.click(function(event) {
+    $sb("Teams.Team("+newTeamName.val()+")");
+    newTeamName.val("").focus();
+  });
+
+  _crgUtils.bindAndRun(selectTeam, "change", function(event) {
+    teamRows.toggleClass("Hide", !selectTeam.val());
+    if (!selectTeam.val())
+      return;
+    var t = $sb("Teams.Team("+selectTeam.val()+")");
+    teamTr.children("td.Name").empty()
+      .append(t.$sb("Name").$sbControl("<input type='text'>"));
+    teamTr.children("td.Logo").empty()
+      .append(t.$sb("Logo").$sbControl("<select>", { sbelement: {
+        optionParent: "ScoreBoard",
+        optionChildName: "Image",
+        optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
+        firstOption: { text: "No Logo", value: "" }
+      } }));
+
+//FIXME - really need to implement some way to notify sbElement/sbControl elements when to unbind;
+//FIXME - just removing the elements here won't stop their bound functions from running, since the
+//FIXME - scoreboard element itself to which they are bound does not get removed!
+    skatersTable.find(">tbody>tr").remove();
+    t.$sbBindAddRemoveEach("Skater", function(event,node) {
+      if (skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").length)
+        return;
+      var skaterRow = $("<tr>").attr("data-skaterid", node.$sbId).appendTo(skatersTable);
+      $("<button>").text("Remove").click(function() { node.$sbRemove(); })
+        .appendTo($("<td>").appendTo(skaterRow));
+      node.$sb("Name").$sbControl("<input type='text' size='20'>")
+        .appendTo($("<td>").appendTo(skaterRow));
+      node.$sb("Number").$sbControl("<input type='text' size='20'>")
+        .appendTo($("<td>").appendTo(skaterRow));
+    }, function(event,node) {
+      skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").remove();
+    });
+  });
+
 }
 
 ////////////////
