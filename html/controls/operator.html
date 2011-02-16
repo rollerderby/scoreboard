@@ -13,6 +13,7 @@ $sb(function() {
   createScoreTimeTab();
   createPoliciesTab();
   createScoreBoardViewTab();
+  createTeamsTab();
   //FIXME - jstree is UNBELIEVABLY SLOW, and the xml editing tab simply isn't usable since it uses jstree right now.
   //FIXME - possibly we chould change this to lazy-generate each sub-level only when opened, which should
   //FIXME - improve initial performance a lot
@@ -200,12 +201,12 @@ function createTeamTable() {
         bindClickTo: nameTd
       } }).appendTo(nameTd.addClass("Name"));
 
-    sbTeam.$sb("TeamLogo.Id").$sbControl("<select>", { sbcontrol: {
-        optionParent: $sb("ScoreBoard"),
+    sbTeam.$sb("TeamLogo.Id").$sbControl("<select>", { sbelement: {
+        optionParent: "ScoreBoard",
         optionChildName: "Image",
         optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
         optionNameElement: "Name",
-        firstOption: $("<option>").html("No Logo").val("")
+        firstOption: { text: "No Logo", value: "" }
       } }).appendTo(logoTd.addClass("Logo"));
 
     sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
@@ -236,11 +237,11 @@ function createTeamTable() {
     sbTeam.$sb("LeadJammer").$sbControl("<button>").text("No Lead").val("false")
       .attr("id", "Team"+team+"NoLeadJammer").addClass("KeyControl")
       .appendTo(jammerTr.children("td:eq(1)").addClass("NoLead"));
-    sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbcontrol: {
+    sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
         optionParent: sbTeam,
         optionChildName: "Skater",
         optionNameElement: "Name",
-        firstOption: $("<option>").html("No Jammer").val("")
+        firstOption: { text: "No Jammer", value: "" }
       } }).appendTo(jammerTr.children("td:eq("+(first?"2":"0")+")").addClass("Jammer"));
   });
 
@@ -508,13 +509,13 @@ function createScoreBoardViewContent() {
     $("#ScoreBoardView tr.Options.View"+this.name+">td>div")
       .append("<a>Select "+this.name+":</a>")
       .append($sb("Pages.Page(scoreboard.html).View("+this.name+").Option(Filename)")
-        .$sbControl("<select>", { sbcontrol: {
-          optionParent: $sb("ScoreBoard"),
+        .$sbControl("<select>", { sbelement: {
+          optionParent: "ScoreBoard",
           optionChildName: "Image",
           optionChildFilter: $.proxy(function(e) { return e.$sb("Type").$sbIs(this.type); }, this),
           optionNameElement: "Name",
           optionValueElement: "Filename",
-          firstOption: $("<option>").text("No Image").val("")
+          firstOption: { text: "No Image", value: "" }
         } })
       );
   });
@@ -576,6 +577,25 @@ function createXmlTreeContent() {
   $sb().$sbBindAddRemoveEach({ add: add, remove: remove, subChildren: true, callback: callback });
 }
 
+
+////////////
+// Teams tab
+////////////
+
+function createTeamsTab() {
+  $("<table>").attr("id", "Teams")
+    .appendTo(createTab("Teams", "TeamsTab"))
+    .data("loadContentFunction", createTeamsContent);
+}
+
+function createTeamsContent() {
+  $("<tr><td/></tr><tr><td/></tr>").appendTo("#Teams");
+  var selectionTr = createRowTable(2).appendTo("#Teams tr:first>td").find("tr");
+  var teamTr = createRowTable(2).appendTo("#Teams tr:last>td").find("tr");
+
+  
+}
+
 ////////////////
 // Save/Load tab
 ////////////////
@@ -596,21 +616,10 @@ function createSaveLoadContent() {
     .append($("<td>").addClass("Filename"))
     .append($("<td>").addClass("Save"))
     .append($("<td>").addClass("Message"));
-  $("<div>").append(sbSave.$sb("Filename").$sbElement("<input type='text' size='20'>"))
-    .appendTo(contentTr.children("td.Filename"));
-  $("<div>").append(sbSave.$sb("Save").$sbElement("<button>").text("Save").val("true").button())
-    .appendTo(contentTr.children("td.Save"));
-  $("<div>").append(sbSave.$sb("Message").$sbElement("<a>"))
-    .appendTo(contentTr.children("td.Message"));
-
-  var toggleContent = function() {
-    if ($(this).toggleClass("Hide").hasClass("Hide"))
-      contentTr.find("td>div").hide("blind", 250);
-    else
-      contentTr.find("td>div").show("blind", 250);
-  };
-  _crgUtils.bindAndRun(nameTr.children("td"), "click", toggleContent);
-
+  $("<a>").text("Filename:").appendTo(contentTr.children("td.Filename"));
+  sbSave.$sb("Filename").$sbElement("<input type='text' size='20'>").appendTo(contentTr.children("td.Filename"));
+  sbSave.$sb("Save").$sbElement("<button>").text("Save").val("true").button().appendTo(contentTr.children("td.Save"));
+  sbSave.$sb("Message").$sbElement("<a>").appendTo(contentTr.children("td.Message"));
 
 }
 

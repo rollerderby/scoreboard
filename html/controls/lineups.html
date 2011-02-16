@@ -366,11 +366,12 @@ function createEditJamLineupsPositionDialog(position) {
     .appendTo($("<td>").appendTo(tr));
   var nameSelect = position.$sb("Name").$sbControl("<select>", {
     sbcontrol: {
-      sbSetAttrs: { clearOnEmpty: "true" },
-      firstOption: $("<option>").html("").val(""),
-      optionValueParent: $sb("ScoreBoard.Team("+t+")"),
-      optionValueChildName: "Skater",
-      optionValueChildElement: "Name"
+      sbSetAttrs: { clearOnEmpty: "true" }
+    }, sbelement: {
+      firstOption: "",
+      optionParent: $sb("ScoreBoard.Team("+t+")"),
+      optionChildName: "Skater",
+      optionNameElement: "Name"
     }
   }).appendTo($("<td>").appendTo(tr));
 
@@ -380,12 +381,13 @@ function createEditJamLineupsPositionDialog(position) {
     .appendTo($("<td>").appendTo(tr));
   var numberSelect = position.$sb("Number").$sbControl("<select>", {
     sbcontrol: {
-      sbSetAttrs: { clearOnEmpty: "true" },
-      firstOption: $("<option>").html("").val(""),
-      optionValueParent: $sb("ScoreBoard.Team("+t+")"),
-      optionValueChildName: "Skater",
-      optionValueChildElement: "Number",
-      optionComparator: function(a, b) { return _windowFunctions.numericSortByAttr(a, b, "value"); }
+      sbSetAttrs: { clearOnEmpty: "true" }
+    }, sbelement: {
+      firstOption: "",
+      optionParent: $sb("ScoreBoard.Team("+t+")"),
+      optionChildName: "Skater",
+      optionNameElement: "Number",
+      compareOptions: function(a, b) { return _windowFunctions.numericSortByAttr(a, b, "value"); }
     }
   }).appendTo($("<td>").appendTo(tr));
 
