@@ -115,12 +115,14 @@ public class XmlScoreBoard
 	}
 
 	protected void loadXmlDocumentManagers() {
+//FIXME - this isn't the right way to do this!  use properties file, or xml maybe?
 		new XmlRealtimeStats().setXmlScoreBoard(this);
 		new XmlInterpretedStats().setXmlScoreBoard(this);
 		new XmlGoogleDocsStats().setXmlScoreBoard(this);
 		new AutoSaveScoreBoard().setXmlScoreBoard(this);
 		new LoadScoreBoard().setXmlScoreBoard(this);
 		new PagesXmlDocumentManager().setXmlScoreBoard(this);
+		new TeamsXmlDocumentManager().setXmlScoreBoard(this);
 	}
 
 	protected ScoreBoardModel scoreBoardModel;

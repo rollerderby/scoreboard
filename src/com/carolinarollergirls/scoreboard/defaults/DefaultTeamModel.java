@@ -114,6 +114,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 				throw new SkaterNotFoundException(id);
 		}
 	}
+	public SkaterModel addSkaterModel(String id) { return addSkaterModel(id, "", ""); }
+	public SkaterModel addSkaterModel(String id, String n, String num) {
+		SkaterModel sM = new DefaultSkaterModel(this, id, n, num);
+		addSkaterModel(sM);
+		return sM;
+	}
 	public void addSkaterModel(SkaterModel skater) {
 		synchronized (skaterLock) {
 			if (null == skater.getId() || "".equals(skater.getId()) || skaters.containsKey(skater.getId()))

@@ -520,7 +520,7 @@ public class ScoreBoardXmlConverter
 			String name = (nameE == null ? id : nameE.getText());
 			Element numberE = skater.getChild("Number");
 			String number = (numberE == null ? "" : numberE.getText());
-			teamModel.addSkaterModel(new DefaultSkaterModel(teamModel, id, name, number));
+			teamModel.addSkaterModel(id, name, number);
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 

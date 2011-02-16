@@ -25,6 +25,8 @@ public interface TeamModel extends Team
 	public void changeTimeouts(int change);
 
 	public void addSkaterModel(SkaterModel skater);
+	public SkaterModel addSkaterModel(String id);
+	public SkaterModel addSkaterModel(String id, String name, String number);
 	public void removeSkaterModel(String id) throws SkaterNotFoundException;
 
 	public List<SkaterModel> getSkaterModels();
