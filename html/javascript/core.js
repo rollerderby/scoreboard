@@ -133,6 +133,8 @@
  *     If true, the HTML element text will be auto-fit to the container,
  *     using _windowFunctions.enableAutoFitText() with no options.
  *     If set to an object, that object will be used as the options.
+ *     If needed, the element's auto-fit function can be accessed
+ *     by data("AutoFit").
  *
  * sbcontrol
  * The special "sbcontrol" object can contain any of these fields which
