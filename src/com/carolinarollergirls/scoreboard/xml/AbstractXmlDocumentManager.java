@@ -19,8 +19,6 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 	public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
 	public void reset() {
-//FIXME - update xml-listener so it doesn't keep the remove attr if an element is added back
-//FIXME - this won't work until that change!
 		update(createXPathElement().setAttribute("remove", "true"));
 		update(createXPathElement());
 	}
