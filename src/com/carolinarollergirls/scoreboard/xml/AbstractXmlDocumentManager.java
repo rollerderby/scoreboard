@@ -31,7 +31,7 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 		}
 	}
 
-	protected void processElement(Element e) {
+	protected void processElement(Element e) throws Exception {
 		/* By default, process all child elements. */
 		Iterator i = e.getChildren().iterator();
 		while (i.hasNext()) {
@@ -43,7 +43,7 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 		}
 	}
 
-	protected void processChildElement(Element e) {
+	protected void processChildElement(Element e) throws Exception {
 		/* By default, ignore */
 	}
 
