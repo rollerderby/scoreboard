@@ -111,7 +111,13 @@ _crgUtils = {
 	 * in an object either as the "params" parameter or as part of the
 	 * element's data() using the key "sbelement".  The "params" parameter
 	 * takes precedence if both are specified.  If no parameters at all
-	 * are provided, no changes are made.  This returns the select element.
+	 * are provided, no changes are made.
+	 *
+	 * The select element parameter can be a jQuery object containing
+	 * a select element, a actual select element reference, or a string
+	 * that can be passed to $() to create a new select element.
+	 * This returns the select element.
+	 *
 	 * Parameters are:
 	 *
 	 *   compareOptions: function(a, b)
@@ -172,6 +178,7 @@ _crgUtils = {
 	 *     If not set, the child node's $sbId will be used.
 	 */
 	setupSelect: function(s, params) {
+		s = $(s);
 		var params = params || s.data("sbelement") || {};
 
 		var firstOption;
