@@ -111,7 +111,8 @@ _crgUtils = {
 	 * in an object either as the "params" parameter or as part of the
 	 * element's data() using the key "sbelement".  The "params" parameter
 	 * takes precedence if both are specified.  If no parameters at all
-	 * are provided, no changes are made.  Parameters are:
+	 * are provided, no changes are made.  This returns the select element.
+	 * Parameters are:
 	 *
 	 *   compareOptions: function(a, b)
 	 *     Optional function used in sorting the options.
@@ -243,5 +244,7 @@ _crgUtils = {
 				removeOption(node);
 			});
 		}
+
+		return s;
 	}
 };
