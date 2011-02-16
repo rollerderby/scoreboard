@@ -26,54 +26,41 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 		Element e = createXPathElement();
 		Element t = editor.addElement(e, "Transfer");
 		Element tTo = editor.addElement(t, "To");
-		editor.addElement(tTo, Team.ID_1);
-		editor.addElement(tTo, Team.ID_2);
+		editor.addElement(tTo, "Team1");
+		editor.addElement(tTo, "Team2");
 		Element tFrom = editor.addElement(t, "From");
-		editor.addElement(tFrom, Team.ID_1);
-		editor.addElement(tFrom, Team.ID_2);
+		editor.addElement(tFrom, "Team1");
+		editor.addElement(tFrom, "Team2");
 		Element m = editor.addElement(e, "Merge");
 		Element mTo = editor.addElement(m, "To");
-		editor.addElement(mTo, Team.ID_1);
-		editor.addElement(mTo, Team.ID_2);
+		editor.addElement(mTo, "Team1");
+		editor.addElement(mTo, "Team2");
 		Element mFrom = editor.addElement(m, "From");
-		editor.addElement(mFrom, Team.ID_1);
-		editor.addElement(mFrom, Team.ID_2);
+		editor.addElement(mFrom, "Team1");
+		editor.addElement(mFrom, "Team2");
 		update(e);
 	}
 
-	protected void processElement(Element e) {
+	protected void processElement(Element e) throws JDOMException {
 		Iterator teams = e.getChildren("Team").iterator();
 		while (teams.hasNext())
 			processTeam((Element)teams.next());
 
-		try {
-			Iterator i = transferTo.selectNodes(teams).iterator();
-			while (i.hasNext()) {
-				Element t = (Element)i.next();
-				transferToScoreBoard(t.getText(), t.getName(), true);
+		Iterator<XPath> transferTypes = transferXPaths.iterator();
+		while (transferTypes.hasNext()) {
+			Iterator elements = transferTypes.next().selectNodes(teams).iterator();
+			while (elements.hasNext()) {
+				Element element = (Element)elements.next();
+				String teamId = element.getName();
+				if (!teamId.startsWith("Team"))
+					continue;
+				else
+					teamId = teamId.replaceFirst("Team", "");
+				Element direction = element.getParentElement();
+				Element type = direction.getParentElement();
+				processTransfer(type.getName(), direction.getName(), teamId, element.getText());
 			}
-		} catch ( JDOMException jE ) { }
-		try {
-			Iterator i = mergeTo.selectNodes(teams).iterator();
-			while (i.hasNext()) {
-				Element t = (Element)i.next();
-				transferToScoreBoard(t.getText(), t.getName(), false);
-			}
-		} catch ( JDOMException jE ) { }
-		try {
-			Iterator i = transferFrom.selectNodes(teams).iterator();
-			while (i.hasNext()) {
-				Element t = (Element)i.next();
-				transferFromScoreBoard(t.getText(), t.getName(), true);
-			}
-		} catch ( JDOMException jE ) { }
-		try {
-			Iterator i = mergeFrom.selectNodes(teams).iterator();
-			while (i.hasNext()) {
-				Element t = (Element)i.next();
-				transferFromScoreBoard(t.getText(), t.getName(), false);
-			}
-		} catch ( JDOMException jE ) { }
+		}
 	}
 
 	protected void processTeam(Element team) {
@@ -108,7 +95,17 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 		update(newTeam);
 	}
 
-	protected void transferToScoreBoard(String id, String sbTeamId, boolean reset) throws JDOMException {
+	protected void processTransfer(String type, String direction, String sbTeamId, String teamId) throws JDOMException {
+		if (!"Transfer".equals(type) && !"Merge".equals(type))
+			return;
+		if ("To".equals(direction)) {
+			toScoreBoard(sbTeamId, teamId, "Transfer".equals(type));
+		} else if ("From".equals(direction)) {
+			fromScoreBoard(sbTeamId, teamId, "Transfer".equals(type));
+		}
+	}
+
+	protected void toScoreBoard(String sbTeamId, String id, boolean reset) throws JDOMException {
 		if (!Team.ID_1.equals(sbTeamId) && !Team.ID_2.equals(sbTeamId))
 			return; /* Only process Team 1 or 2 transfers... */
 		Element newTeam = editor.getElement(getXPathElement(), "Team", id, false);
@@ -137,7 +134,7 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 		}
 	}
 
-	protected void transferFromScoreBoard(String id, String sbTeamId, boolean clear) throws JDOMException {
+	protected void fromScoreBoard(String sbTeamId, String id, boolean clear) throws JDOMException {
 		if (!Team.ID_1.equals(sbTeamId) && !Team.ID_2.equals(sbTeamId))
 			return; /* Only process Team 1 or 2 transfers... */
 		Team team = scoreBoardModel.getTeam(sbTeamId);
@@ -161,9 +158,10 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 
 	protected ScoreBoardModel scoreBoardModel;
 
-	protected XPath transferTo = editor.createXPath("Transfer/To/Team/*");
-	protected XPath mergeTo = editor.createXPath("Merge/From/Team/*");
-	protected XPath transferFrom = editor.createXPath("Transfer/To/Team/*");
-	protected XPath mergeFrom = editor.createXPath("Merge/From/Team/*");
+	protected List<XPath> transferXPaths = Arrays.asList(new XPath[]
+		{ editor.createXPath("Transfer/To/*"),
+		  editor.createXPath("Merge/To/*"),
+		  editor.createXPath("Transfer/From/*"),
+		  editor.createXPath("Merge/From/*") });
 }
 
