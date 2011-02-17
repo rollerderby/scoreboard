@@ -690,24 +690,39 @@ function createTeamsContent() {
 }
 
 function createTeamsAssignDialog(teamId) {
-  var dialog = $("<div>");
-  $("<a>").text("Load this team into the Scoreboard as:").appendTo(dialog);
+  var dialog = $("<div>").addClass("TeamsAssignDialog");
+  $("<h4>").text("Load Selected Team's information to ScoreBoard").appendTo(dialog);
+  $("<label>").attr("for", "TeamsAssignDialogCheckboxTo").appendTo(dialog);
+  $("<input type='checkbox'>").attr("id", "TeamsAssignDialogCheckboxTo").appendTo(dialog).button();
+  $("<a>").text(" team info to the Scoreboard as:").appendTo(dialog);
+  $("<button>").text("Team 1").data({ team: "1", dir: "To" }).button().appendTo(dialog);
+  $("<button>").text("Team 2").data({ team: "2", dir: "To" }).button().appendTo(dialog);
   $("<br>").appendTo(dialog);
-  $("<button>").text("Team 1").val("1").data("dir", "To").button().appendTo(dialog);
-  $("<button>").text("Team 2").val("2").data("dir", "To").button().appendTo(dialog);
-  $("<a>").text("Get team info from the Scoreboard from:").appendTo(dialog);
-  $("<br>").appendTo(dialog);
-  $("<button>").text("Team 1").val("1").data("dir", "From").button().appendTo(dialog);
-  $("<button>").text("Team 2").val("2").data("dir", "From").button().appendTo(dialog);
+
+  $("<h4>").text("Get Selected Team's information from ScoreBoard").appendTo(dialog);
+  $("<label>").attr("for", "TeamsAssignDialogCheckboxFrom").appendTo(dialog);
+  $("<input type='checkbox'>").attr("id", "TeamsAssignDialogCheckboxFrom").appendTo(dialog).button();
+  $("<a>").text(" team info from the Scoreboard from:").appendTo(dialog);
+  $("<button>").text("Team 1").data({ team: "1", dir: "From" }).button().appendTo(dialog);
+  $("<button>").text("Team 2").data({ team: "2", dir: "From" }).button().appendTo(dialog);
+
+  $.each( [ "To", "From" ], function() {
+    var label = dialog.children("label[for='TeamsAssignDialogCheckbox"+this+"']");
+    var box = dialog.children("input:checkbox#TeamsAssignDialogCheckbox"+this);
+    _crgUtils.bindAndRun(box, "click", function() {
+      label.children("span").text(this.checked ? "Merge" : "Transfer");
+    });
+  });
 
   dialog.find("button").click(function() {
-    var type = "Transfer";
     var dir = $(this).data("dir");
-    var target = "Team"+$(this).val();
+    var type = dialog.find(">label[for='TeamsAssignDialogCheckbox"+dir+"']>span").text();
+    var target = "Team"+$(this).data("team");
     $sb("Teams").$sb(type).$sb(dir).$sb(target).$sbSet(teamId);
     dialog.dialog("destroy");
   });
   dialog.dialog({
+    width: "700px",
     buttons: { Close: function() { $(this).dialog("destroy"); } }
   });
 }

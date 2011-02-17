@@ -24,6 +24,10 @@ table.RowTable { border-spacing: 0px; }
   table.TimeDialog button.Set>span { padding: 0.1em 1em; }
 /* End Time Control Dialog */
 
+/* Teams Assign Dialog */
+  div.TeamsAssignDialog h4 { text-align: center; }
+/* End Teams Assign Dialog */
+
 /* Intermission Control Dialog */
   table.IntermissionControlDialog { width: 100%; border-spacing: 0px; }
   table.IntermissionControlDialog>tbody>tr>td { text-align: center; }
