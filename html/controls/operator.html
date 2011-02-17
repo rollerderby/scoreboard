@@ -724,6 +724,8 @@ function createTeamsAssignDialog(teamId) {
     $sb("Teams").$sb(type).$sb(dir).$sb(target).$sbSet(teamId);
     dialog.dialog("destroy");
   });
+//FIXME - add way to register on specific element removal (not child removal) and destroy this dialog if removed,
+//FIXME - do same in TeamsRemoveDialog below
   dialog.dialog({
     modal: true,
     width: "700px",
