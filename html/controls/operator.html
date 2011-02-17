@@ -588,30 +588,27 @@ function createTeamsTab() {
     .data("loadContentFunction", createTeamsContent);
 }
 
+//FIXME - clean this up.
 function createTeamsContent() {
   $("#Teams")
-    .append("<tr><td/></tr>").append("<tr><td/></tr>").append("<tr><td/></tr>");
-  var selectionTr = createRowTable(2).appendTo("#Teams>tbody>tr:eq(0)>td").find("tr").addClass("Selection");
-  var teamTr = $("<tr>").appendTo($("<table>").appendTo("#Teams>tbody>tr:eq(1)>td").addClass("Team"));
-  teamTr
-    .append($("<td>").addClass("Name"))
-    .append($("<td>").addClass("Logo"));
-  var skatersTable = $("<table><thead/></table>").appendTo("#Teams>tbody>tr:eq(2)>td").addClass("Skaters");
-  skatersTable.children("thead").append($("<tr>")
-      .append("<th><a>Remove</a></th>")
-      .append("<th><a>Name</a></th>")
-      .append("<th><a>Number</a></th>"));
-  var teamRows = $("#Teams>tbody>tr:gt(0)>td");
+    .append($("<tr><td/></tr>").addClass("Selection"))
+    .append($("<tr><td/></tr>").addClass("Team"))
+    .append($("<tr><td/></tr>").addClass("AddSkater"))
+    .append($("<tr><td/></tr>").addClass("Skaters"));
+  createRowTable(2).appendTo("#Teams>tbody>tr:eq(0)>td").addClass("Selection");
+  createRowTable(2).appendTo("#Teams>tbody>tr:eq(1)>td").addClass("Team");
+  createRowTable(3).appendTo("#Teams>tbody>tr:eq(2)>td").addClass("AddSkater");
+  $("<table>").appendTo("#Teams>tbody>tr:eq(3)>td").addClass("Skaters");
 
   var selectTeam = _crgUtils.setupSelect("<select>", {
     optionParent: "Teams",
     optionChildName: "Team",
     firstOption: { text: "No Teams", value: "" }
-  }).appendTo(selectionTr.children("td:eq(0)"));
-  var newTeamName = $("<input type='text' size='20'/>")
-    .appendTo(selectionTr.children("td:eq(1)"));
-  var createNewTeam = $("<button>").text("New Team")
-    .appendTo(selectionTr.children("td:eq(1)"));
+  }).appendTo("#Teams table.Selection td:eq(0)");
+  var newTeamName = $("<input type='text' size='30'/>")
+    .appendTo("#Teams table.Selection td:eq(1)");
+  var createNewTeam = $("<button>").text("New Team").button()
+    .appendTo("#Teams table.Selection td:eq(1)");
 
   newTeamName.bind("keypress", function(event) {
     switch (event.which) {
@@ -627,18 +624,44 @@ function createTeamsContent() {
     newTeamName.val("").focus();
   });
 
+  var skatersTable = $("#Teams table.Skaters")
+    .append($("<col>").addClass("Name"))
+    .append($("<col>").addClass("Number"))
+    .append($("<col>").addClass("Button"))
+    .append($("<thead>")
+      .append($("<tr>").append("<th colspan='3'><a>Skaters</a></th>"))
+      .append($("<tr>").append("<th><a>Name</a></th><th><a>Number</a></th><th><a>Add</a></th>"))
+      .append($("<tr>").append("<th/><th/><th/>").addClass("AddSkater"))
+      .append($("<tr>").append("<th><a>Name</a></th><th><a>Number</a></th><th><a>Remove</a></th>")));
+
+  var newSkaterName = $("<input type='text' size='30'>")
+    .appendTo("#Teams table.Skaters tr.AddSkater th:eq(0)");
+  var newSkaterNumber = $("<input type='text' size='10'>")
+    .appendTo("#Teams table.Skaters tr.AddSkater th:eq(1)");
+  var newSkaterButton = $("<button>").text("Add Skater").button().addClass("Short")
+    .appendTo("#Teams table.Skaters tr.AddSkater th:eq(2)")
+    .click(function() {
+      var id = _crgUtils.checkSbId(newSkaterName.val());
+      $sb("Teams.Team("+selectTeam.val()+").Skater("+id+").Name").$sbSet(newSkaterName.val());
+      $sb("Teams.Team("+selectTeam.val()+").Skater("+id+").Number").$sbSet(newSkaterNumber.val());
+      newSkaterNumber.val("");
+      newSkaterName.val("").focus();
+      $(this).blur();
+    });
+
   _crgUtils.bindAndRun(selectTeam, "change", function(event) {
-    teamRows.toggleClass("Hide", !selectTeam.val());
+    $("#Teams>tbody>tr>td").toggleClass("HideTeam", !selectTeam.val());
     if (!selectTeam.val())
       return;
     var t = $sb("Teams.Team("+selectTeam.val()+")");
-    teamTr.children("td.Name").empty()
+    $("#Teams table.Team td:eq(0)").empty()
       .append(t.$sb("Name").$sbControl("<input type='text'>"));
-    teamTr.children("td.Logo").empty()
+    $("#Teams table.Team td:eq(1)").empty()
       .append(t.$sb("Logo").$sbControl("<select>", { sbelement: {
         optionParent: "ScoreBoard",
         optionChildName: "Image",
         optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
+        optionNameElement: "Name",
         firstOption: { text: "No Logo", value: "" }
       } }));
 
@@ -650,11 +673,11 @@ function createTeamsContent() {
       if (skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").length)
         return;
       var skaterRow = $("<tr>").attr("data-skaterid", node.$sbId).appendTo(skatersTable);
-      $("<button>").text("Remove").click(function() { node.$sbRemove(); })
-        .appendTo($("<td>").appendTo(skaterRow));
       node.$sb("Name").$sbControl("<input type='text' size='20'>")
         .appendTo($("<td>").appendTo(skaterRow));
       node.$sb("Number").$sbControl("<input type='text' size='20'>")
+        .appendTo($("<td>").appendTo(skaterRow));
+      $("<button>").text("Remove").addClass("Short").button().click(function() { node.$sbRemove(); })
         .appendTo($("<td>").appendTo(skaterRow));
     }, function(event,node) {
       skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").remove();
