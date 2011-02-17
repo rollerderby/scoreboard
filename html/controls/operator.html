@@ -596,7 +596,7 @@ function createTeamsContent() {
     .append($("<tr><td/></tr>").addClass("AddSkater"))
     .append($("<tr><td/></tr>").addClass("Skaters"));
   createRowTable(2).appendTo("#Teams>tbody>tr:eq(0)>td").addClass("Selection");
-  createRowTable(2).appendTo("#Teams>tbody>tr:eq(1)>td").addClass("Team");
+  createRowTable(3).appendTo("#Teams>tbody>tr:eq(1)>td").addClass("Team");
   createRowTable(3).appendTo("#Teams>tbody>tr:eq(2)>td").addClass("AddSkater");
   $("<table>").appendTo("#Teams>tbody>tr:eq(3)>td").addClass("Skaters");
 
@@ -654,16 +654,19 @@ function createTeamsContent() {
     if (!selectTeam.val())
       return;
     var t = $sb("Teams.Team("+selectTeam.val()+")");
-    $("#Teams table.Team td:eq(0)").empty()
-      .append(t.$sb("Name").$sbControl("<input type='text'>"));
-    $("#Teams table.Team td:eq(1)").empty()
-      .append(t.$sb("Logo").$sbControl("<select>", { sbelement: {
-        optionParent: "ScoreBoard",
-        optionChildName: "Image",
-        optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
-        optionNameElement: "Name",
-        firstOption: { text: "No Logo", value: "" }
-      } }));
+    $("#Teams table.Team td").empty();
+    t.$sb("Name").$sbControl("<input type='text'>")
+      .appendTo("#Teams table.Team td:eq(0)");
+    t.$sb("Logo").$sbControl("<select>", { sbelement: {
+      optionParent: "ScoreBoard",
+      optionChildName: "Image",
+      optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
+      optionNameElement: "Name",
+      firstOption: { text: "No Logo", value: "" }
+    } }).appendTo("#Teams table.Team td:eq(1)")
+    $("<button>").text("Assign").button()
+      .click(function() { createTeamsAssignDialog(selectTeam.val()); })
+      .appendTo("#Teams table.Team td:eq(2)")
 
 //FIXME - really need to implement some way to notify sbElement/sbControl elements when to unbind;
 //FIXME - just removing the elements here won't stop their bound functions from running, since the
@@ -684,6 +687,29 @@ function createTeamsContent() {
     });
   });
 
+}
+
+function createTeamsAssignDialog(teamId) {
+  var dialog = $("<div>");
+  $("<a>").text("Load this team into the Scoreboard as:").appendTo(dialog);
+  $("<br>").appendTo(dialog);
+  $("<button>").text("Team 1").val("1").data("dir", "To").button().appendTo(dialog);
+  $("<button>").text("Team 2").val("2").data("dir", "To").button().appendTo(dialog);
+  $("<a>").text("Get team info from the Scoreboard from:").appendTo(dialog);
+  $("<br>").appendTo(dialog);
+  $("<button>").text("Team 1").val("1").data("dir", "From").button().appendTo(dialog);
+  $("<button>").text("Team 2").val("2").data("dir", "From").button().appendTo(dialog);
+
+  dialog.find("button").click(function() {
+    var type = "Transfer";
+    var dir = $(this).data("dir");
+    var target = "Team"+$(this).val();
+    $sb("Teams").$sb(type).$sb(dir).$sb(target).$sbSet(teamId);
+    dialog.dialog("destroy");
+  });
+  dialog.dialog({
+    buttons: { Close: function() { $(this).dialog("destroy"); } }
+  });
 }
 
 ////////////////
