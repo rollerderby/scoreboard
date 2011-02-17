@@ -68,6 +68,12 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 			return; /* Teams MUST have non-empty Id */
 		Element newTeam = editor.addElement(createXPathElement(), "Team", id);
 
+		String remove = team.getAttributeValue("remove");
+		if (null != remove && Boolean.parseBoolean(remove)) {
+			update(newTeam.setAttribute("remove", "true"));
+			return;
+		}
+
 		Element name = team.getChild("Name");
 		if (null != name)
 			editor.addElement(newTeam, "Name", null, name.getText());
