@@ -2,12 +2,10 @@
 
 _crgUtils = {
 	/* Convert a string to a "safe" id.
-	 * This removes any parantheses from the string,
+	 * This removes illegal characters from the string,
 	 * so it's safe to use as an element's id.
-	 * Code should use this function in case any other
-	 * characters are removed later.
 	 */
-	stringToSbId: function(s) {
+	checkSbId: function(s) {
 		return s.replace(/['"()]/g, "");
 	},
 
