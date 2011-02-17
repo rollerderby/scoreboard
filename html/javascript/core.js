@@ -304,6 +304,7 @@ _crgScoreBoard = {
 		e.children(function() { removeScoreBoardElement(e, $sb(this)); });
 		parent.trigger("remove", [ e ]);
 		parent.trigger("remove:"+e.$sbName, [ e ]);
+		e.remove();
 	},
 
 	createScoreBoardElement: function(parent, name, id, text) {
