@@ -48,10 +48,12 @@ _crgKeyControls = {
 				var button = $(this);
 				var key = controlParent.$sb("KeyControl("+button.attr("id")+").Key");
 				key.$sbElement(button.find("span.Key"));
-				var contentChange = function(event,value) { 
-					button.toggleClass("HasControlKey", (value?true:false));
+				var contentChange = function(event,value) {
+					button.toggleClass("HasControlKey", (value?true:false))
+						.find("span.Key")
+						.attr("data-keycontrol", String(value?value.charCodeAt(0):""));
 				};
-				key.$sbBindAndRun("content", contentChange, [ key.$sbGet() ]);
+				key.$sbBindAndRun("content", contentChange);
 				button.data("_crgKeyControls:unbind", function() { key.unbind("content", contentChange); });
 				button.data("_crgKeyControls:Key", key);
 				_crgKeyControls._start();
@@ -122,12 +124,12 @@ _crgKeyControls = {
 		var key = String.fromCharCode(event.which);
 
 		// Perform the corresponding button's action
-		$(":button.KeyControl:not(.Editing):visible").has("span.Key:contains('"+key+"')").click();
+		$(":button.KeyControl:not(.Editing):visible").has("span.Key[data-keycontrol='"+event.which+"']").click();
 
 		// Update the hovered button if in edit mode
 		var editControls = $(":button.KeyControl.Editing");
 		if (editControls.length) {
-			var existingControl = editControls.filter(":not(.hover)").has("span.Key:contains('"+key+"')");
+			var existingControl = editControls.filter(":not(.hover)").has("span.Key[data-keycontrol='"+event.which+"']");
 			if (existingControl.length) {
 				existingControl.effect("highlight", { color: "#f00" }, 300);
 			} else {
