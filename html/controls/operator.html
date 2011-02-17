@@ -603,7 +603,7 @@ function createTeamsContent() {
   var selectTeam = _crgUtils.setupSelect("<select>", {
     optionParent: "Teams",
     optionChildName: "Team",
-    firstOption: { text: "No Teams", value: "" }
+    firstOption: { text: "No Team Selected", value: "" }
   }).appendTo("#Teams table.Selection td:eq(0)");
   var newTeamName = $("<input type='text' size='30'/>")
     .appendTo("#Teams table.Selection td:eq(1)");
