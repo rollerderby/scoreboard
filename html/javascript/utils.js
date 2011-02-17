@@ -226,7 +226,7 @@ _crgUtils = {
 				node.$sb(optionValueElement).$sbBindAndRun("content", function(event, value) {
 					option.val(value);
 					if (option.attr("selected"))
-						option.parent().change(); // Update select with new value
+						s.change(); // Update select with new value
 				});
 			} else
 				option.val(node.$sbId);
@@ -246,10 +246,17 @@ _crgUtils = {
 			return _windowFunctions.alphaSortByAttr(a, b, "text");
 		};
 		var addOption = params.addOption || function(o) {
+			var doChange = !s.find("option").length;
 			_windowFunctions.appendSorted(s, o, compareOptions, (firstOption?1:0));
+			if (doChange)
+				s.change();
 		};
 		var removeOption = params.removeOption || function(node) {
-			s.find("option[data-optionid='"+node.$sbPath+"']").remove();
+			var option = s.find("option[data-optionid='"+node.$sbPath+"']");
+			var selected = option.attr("selected");
+			option.remove();
+			if (selected)
+				s.change();
 		};
 
 		if (optionParent && optionChildName) {
