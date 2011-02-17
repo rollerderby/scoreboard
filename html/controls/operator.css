@@ -28,6 +28,13 @@ table.RowTable { border-spacing: 0px; }
   div.TeamsAssignDialog h4 { text-align: center; }
 /* End Teams Assign Dialog */
 
+/* Teams Remove Dialog */
+  div.TeamsRemoveDialog { text-align: center; }
+  div.TeamsRemoveDialog .AreYouSure { font-weight: bold; }
+  div.TeamsRemoveDialog button.Yes { float: left; }
+  div.TeamsRemoveDialog button.No { float: right; }
+/* End Teams Remove Dialog */
+
 /* Intermission Control Dialog */
   table.IntermissionControlDialog { width: 100%; border-spacing: 0px; }
   table.IntermissionControlDialog>tbody>tr>td { text-align: center; }

@@ -596,7 +596,7 @@ function createTeamsContent() {
     .append($("<tr><td/></tr>").addClass("AddSkater"))
     .append($("<tr><td/></tr>").addClass("Skaters"));
   createRowTable(2).appendTo("#Teams>tbody>tr:eq(0)>td").addClass("Selection");
-  createRowTable(3).appendTo("#Teams>tbody>tr:eq(1)>td").addClass("Team");
+  createRowTable(4).appendTo("#Teams>tbody>tr:eq(1)>td").addClass("Team");
   createRowTable(3).appendTo("#Teams>tbody>tr:eq(2)>td").addClass("AddSkater");
   $("<table>").appendTo("#Teams>tbody>tr:eq(3)>td").addClass("Skaters");
 
@@ -664,9 +664,12 @@ function createTeamsContent() {
       optionNameElement: "Name",
       firstOption: { text: "No Logo", value: "" }
     } }).appendTo("#Teams table.Team td:eq(1)")
-    $("<button>").text("Assign").button()
+    $("<button>").text("Assign Team").button()
       .click(function() { createTeamsAssignDialog(selectTeam.val()); })
       .appendTo("#Teams table.Team td:eq(2)")
+    $("<button>").text("Remove Team").button()
+      .click(function() { createTeamsRemoveDialog(selectTeam.val()); })
+      .appendTo("#Teams table.Team td:eq(3)")
 
 //FIXME - really need to implement some way to notify sbElement/sbControl elements when to unbind;
 //FIXME - just removing the elements here won't stop their bound functions from running, since the
@@ -722,10 +725,32 @@ function createTeamsAssignDialog(teamId) {
     dialog.dialog("destroy");
   });
   dialog.dialog({
+    modal: true,
     width: "700px",
     buttons: { Close: function() { $(this).dialog("destroy"); } }
   });
 }
+
+function createTeamsRemoveDialog(teamId) {
+  var dialog = $("<div>").addClass("TeamsRemoveDialog");
+  $("<h2>").text("Remove Team: "+teamId).appendTo(dialog);
+  $("<a>").addClass("AreYouSure").text("Are you sure?").appendTo(dialog);
+  $("<br>").appendTo(dialog);
+  $("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
+    $sb("Teams.Team("+teamId+")").$sbRemove();
+    dialog.dialog("destroy");
+  }).button();
+  $("<button>").addClass("No").text("No, keep this team.").appendTo(dialog).click(function() {
+    dialog.dialog("destroy");
+  }).button();
+
+  dialog.dialog({
+    modal: true,
+    width: "500px",
+    buttons: { Close: function() { $(this).dialog("destroy"); } }
+  });
+}
+
 
 ////////////////
 // Save/Load tab
