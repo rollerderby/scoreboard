@@ -50,7 +50,7 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 
 		Iterator<XPath> transferTypes = transferXPaths.iterator();
 		while (transferTypes.hasNext()) {
-			Iterator elements = transferTypes.next().selectNodes(teams).iterator();
+			Iterator elements = transferTypes.next().selectNodes(e).iterator();
 			while (elements.hasNext()) {
 				Element element = (Element)elements.next();
 				String teamId = element.getName();
