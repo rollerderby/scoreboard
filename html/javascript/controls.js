@@ -80,10 +80,11 @@ _crgScoreBoardControl = {
 				_crgScoreBoard.setHtmlValue(c, elementValueToControlValue(value));
 		};
 
+		var updateControlIfUnfocused = function(value) {
+			if (!getGroup().hasClass("isFocused")) setControlValue(value);
+		};
+
 		if (c.is("input:text,input:password,textarea")) {
-			var updateControlIfUnfocused = function(value) {
-				if (!getGroup().hasClass("isFocused")) setControlValue(value);
-			};
 			sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
 			setControlValue(sbElement.$sbGet());
 			c.bind("mouseup keyup change", function() { setElementValue(c.val()); });
@@ -91,7 +92,7 @@ _crgScoreBoardControl = {
 // FIXME - total kludge; this adds a small delay to give the next focused element time to get focus,
 // in case it's part of this group.  Otherwise this text area will be cleared out even if
 // changing focus over to a button to actually submit.
-				setTimeout(function () { updateControlIfUnfocused(sbElement.$sbGet()) }, 500);
+				setTimeout(function () { updateControlIfUnfocused(sbElement.$sbGet()); }, 500);
 			});
 		} else if (c.is("a")) {
 			sbElement.bind("content", function(event, value) { setControlValue(value); });
@@ -132,9 +133,10 @@ _crgScoreBoardControl = {
 			c.attr("for", target.attr("id"));
 		} else if (c.is("select")) {
 			_crgUtils.setupSelect(c);
-			sbElement.bind("content", function(event, value) { setControlValue(value); });
+			sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
 			setControlValue(sbElement.$sbGet());
 			c.bind("keyup change", function() { setElementValue($(this).find("option:selected").val()); });
+			c.bind("blur", function() { updateControlIfUnfocused(sbElement.$sbGet()); });
 		}
 
 		if (c.data("sbcontrol").slider) {
