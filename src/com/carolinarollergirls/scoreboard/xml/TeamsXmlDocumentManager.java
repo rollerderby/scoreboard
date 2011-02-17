@@ -141,9 +141,14 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 
 	protected void fromScoreBoard(String sbTeamId, String id, boolean clear) throws JDOMException {
 		Team team = xmlScoreBoard.getScoreBoardModel().getTeam(sbTeamId);
-		if (clear)
-			update(editor.addElement(createXPathElement(), "Team", id).setAttribute("remove", "true"));
 		Element newTeam = (Element)editor.getElement(getXPathElement(), "Team", id).clone();
+		if (clear) {
+			Element clearTeam = (Element)newTeam.clone();
+			Iterator clearSkaters = clearTeam.getChildren("Skater").iterator();
+			while (clearSkaters.hasNext())
+				((Element)clearSkaters.next()).setAttribute("remove", "true");
+			update(createXPathElement().addContent(clearTeam));
+		}
 		createXPathElement().addContent(newTeam);
 		editor.addElement(newTeam, "Name", null, team.getName());
 		editor.addElement(newTeam, "Logo", null, team.getTeamLogo().getId());
