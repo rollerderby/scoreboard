@@ -1,6 +1,16 @@
 
 
 _crgUtils = {
+	/* Convert a string to a "safe" id.
+	 * This removes any parantheses from the string,
+	 * so it's safe to use as an element's id.
+	 * Code should use this function in case any other
+	 * characters are removed later.
+	 */
+	stringToSbId: function(s) {
+		return s.replace(/['"()]/g, "");
+	},
+
 	/* Bind and run a function.
 	 * This is more restrictive than the actual bind() function,
 	 * as only one eventType can be specified, and this does
