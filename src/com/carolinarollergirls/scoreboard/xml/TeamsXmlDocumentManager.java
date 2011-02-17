@@ -14,11 +14,8 @@ import com.carolinarollergirls.scoreboard.model.*;
  * currently in the scoreboard.  It also allows copying one of the scoreboard's current teams
  * out into a saved team element here, or loading a team element here into the scoreboard.
  */
-public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implements XmlDocumentManager,ScoreBoardController
+public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implements XmlDocumentManager
 {
-	public TeamsXmlDocumentManager() { ScoreBoardManager.registerScoreBoardController(this); }
-	public void setScoreBoardModel(ScoreBoardModel sbM) { scoreBoardModel = sbM; }
-
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
 		super.setXmlScoreBoard(xsB);
 		reset();
@@ -98,6 +95,8 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 	}
 
 	protected void processTransfer(String type, String direction, String sbTeamId, String teamId) throws JDOMException {
+		if (!Team.ID_1.equals(sbTeamId) && !Team.ID_2.equals(sbTeamId))
+			return; /* Only process Team 1 or 2 transfers... */
 		if (!"Transfer".equals(type) && !"Merge".equals(type))
 			return;
 		if ("To".equals(direction)) {
@@ -108,12 +107,10 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 	}
 
 	protected void toScoreBoard(String sbTeamId, String id, boolean reset) throws JDOMException {
-		if (!Team.ID_1.equals(sbTeamId) && !Team.ID_2.equals(sbTeamId))
-			return; /* Only process Team 1 or 2 transfers... */
 		Element newTeam = editor.getElement(getXPathElement(), "Team", id, false);
 		if (null == newTeam)
 			return; /* Ignore if no team info exists for given Id */
-		TeamModel team = scoreBoardModel.getTeamModel(sbTeamId);
+		TeamModel team = xmlScoreBoard.getScoreBoardModel().getTeamModel(sbTeamId);
 		if (reset)
 			team.reset();
 		Element name = newTeam.getChild("Name");
@@ -137,9 +134,7 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 	}
 
 	protected void fromScoreBoard(String sbTeamId, String id, boolean clear) throws JDOMException {
-		if (!Team.ID_1.equals(sbTeamId) && !Team.ID_2.equals(sbTeamId))
-			return; /* Only process Team 1 or 2 transfers... */
-		Team team = scoreBoardModel.getTeam(sbTeamId);
+		Team team = xmlScoreBoard.getScoreBoardModel().getTeam(sbTeamId);
 		if (clear)
 			update(editor.addElement(createXPathElement(), "Team", id).setAttribute("remove", "true"));
 		Element newTeam = (Element)editor.getElement(getXPathElement(), "Team", id).clone();
@@ -157,8 +152,6 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 	}
 
 	protected String getManagedElementName() { return "Teams"; }
-
-	protected ScoreBoardModel scoreBoardModel;
 
 	protected List<XPath> transferXPaths = Arrays.asList(new XPath[]
 		{ editor.createXPath("Transfer/To/*"),
