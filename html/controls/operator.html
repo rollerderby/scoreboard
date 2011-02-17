@@ -620,7 +620,7 @@ function createTeamsContent() {
     }
   });
   createNewTeam.click(function(event) {
-    $sb("Teams.Team("+newTeamName.val()+")");
+    $sb("Teams.Team("+newTeamName.val()+").Name").$sbSet(newTeamName.val());
     newTeamName.val("").focus();
   });
 
