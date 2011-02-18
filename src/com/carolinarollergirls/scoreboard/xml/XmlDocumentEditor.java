@@ -187,6 +187,10 @@ public class XmlDocumentEditor
 	public String toString(Document d, Format f) {
 		return (xmlOutputter.getFormat().equals(f) ? xmlOutputter.outputString(d) : new XMLOutputter(f).outputString(d));
 	}
+	public String toString(Element e) { return toString(e, xmlOutputter.getFormat()); }
+	public String toString(Element e, Format f) {
+		return (xmlOutputter.getFormat().equals(f) ? xmlOutputter.outputString(e) : new XMLOutputter(f).outputString(e));
+	}
 
 	public void sendToOutputStream(Document d, OutputStream os) throws IOException { sendToOutputStream(d, os, xmlOutputter.getFormat()); }
 	public void sendToOutputStream(Document d, OutputStream os, Format f) throws IOException {
