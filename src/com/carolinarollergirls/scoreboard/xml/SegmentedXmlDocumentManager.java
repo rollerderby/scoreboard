@@ -13,6 +13,7 @@ public abstract class SegmentedXmlDocumentManager extends AbstractXmlDocumentMan
 		super.createXPathElement().addContent(e);
 		return e;
 	}
+	protected String getXPathString() { return super.getXPathString()+"/"+getManagedSubElementName(); }
 	protected abstract String getManagedSubElementName();
 }
 
