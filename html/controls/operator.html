@@ -145,6 +145,18 @@ function createMetaControlTable() {
       $("#TeamTime table.JamControl tr.UndoControls").toggleClass("ShowUndo", this.checked);
     });
 
+  var selectByLabel = $("<label>").attr("for", "SelectJammerBy")
+    .appendTo(row.children("td:eq(0)"));
+  var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
+    .appendTo(row.children("td:eq(0)"))
+    .button()
+  _crgUtils.bindAndRun(selectByButton, "click", function() {
+    $("#TeamTime table.Team select.Jammer")
+      .filter(".ByName").toggle(this.checked).end()
+      .filter(".ByNumber").toggle(!this.checked);
+    selectByLabel.children("span").text(this.checked ? "Select Jammer by Name" : "Select Jammer by Number");
+  });
+
   return table;
 }
 
@@ -242,7 +254,15 @@ function createTeamTable() {
         optionChildName: "Skater",
         optionNameElement: "Name",
         firstOption: { text: "No Jammer", value: "" }
-      } }).appendTo(jammerTr.children("td:eq("+(first?"2":"0")+")").addClass("Jammer"));
+      } }).addClass("Jammer ByName").hide()
+        .appendTo(jammerTr.children("td:eq("+(first?"2":"0")+")").addClass("Jammer"));
+    sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
+        optionParent: sbTeam,
+        optionChildName: "Skater",
+        optionNameElement: "Number",
+        firstOption: { text: "No Jammer", value: "" }
+      } }).addClass("Jammer ByNumber")
+        .appendTo(jammerTr.children("td:eq("+(first?"2":"0")+")").addClass("Jammer"));
   });
 
   return table;
