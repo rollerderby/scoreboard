@@ -20,7 +20,8 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 
 	public void reset() {
 		update(createXPathElement().setAttribute("remove", "true"));
-		update(createXPathElement());
+		Element reset = new Element("Reset");
+		update(createXPathElement().addContent(reset));
 	}
 
 	public void processDocument(Document d) {
@@ -44,7 +45,9 @@ public abstract class AbstractXmlDocumentManager implements XmlDocumentManager
 	}
 
 	protected void processChildElement(Element e) throws Exception {
-		/* By default, ignore */
+		/* By default, ignore unless this is a Reset */
+		if (e.getName().equals("Reset") && Boolean.parseBoolean(e.getText()))
+			reset();
 	}
 
 	protected Document createDocument() {
