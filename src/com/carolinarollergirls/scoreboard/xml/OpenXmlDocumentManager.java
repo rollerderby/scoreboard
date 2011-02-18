@@ -14,6 +14,11 @@ import com.carolinarollergirls.scoreboard.xml.*;
  */
 public abstract class OpenXmlDocumentManager extends AbstractXmlDocumentManager implements XmlDocumentManager
 {
-	protected void processElement(Element e) { update(editor.cloneDocumentToClonedElement(e)); }
+	/* Write back all child elements except a Reset, which will reset/clear this entire tree */
+	protected void processChildElement(Element e) throws Exception {
+		super.processChildElement(e);
+		if (!e.getName().equals("Reset"))
+			update(editor.cloneDocumentToClonedElement(e));
+	}
 }
 
