@@ -50,9 +50,12 @@ public class XmlGoogleDocsStats extends XmlStats
 //FIXME - implement.
 	}
 
-	protected void processElement(Element e) {
-		setUsername(e.getChild("Username"));
-		login(e.getChild("Password"));
+	protected void processChildElement(Element e) throws Exception {
+		super.processChildElement(e);
+		if (e.getName().equals("Username"))
+			setUsername(e);
+		if (e.getName().equals("Password"))
+			login(e);
 	}
 
 	protected void login(Element password) {

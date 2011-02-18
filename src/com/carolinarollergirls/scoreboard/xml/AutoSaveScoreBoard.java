@@ -51,13 +51,15 @@ public class AutoSaveScoreBoard extends SegmentedXmlDocumentManager
 		}
 	}
 
-	protected void processElement(Element e) {
+	protected void processChildElement(Element e) throws Exception {
+		super.processChildElement(e);
 		try {
-			String doEnable = e.getChild("Enabled").getText();
-			if (doEnable.equalsIgnoreCase("true"))
-				AutoSaveScoreBoard.this.start();
-			else if (doEnable.equalsIgnoreCase("false"))
-				AutoSaveScoreBoard.this.stop();
+			if (e.getName().equals("Enabled")) {
+				if (Boolean.parseBoolean(e.getText()))
+					AutoSaveScoreBoard.this.start();
+				else if ("false".equalsIgnoreCase(e.getText()))
+					AutoSaveScoreBoard.this.stop();
+			}
 		} catch ( Exception ex ) {
 			// FIXME - maybe add subelement to indicate error msgs
 		}

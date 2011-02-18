@@ -26,16 +26,14 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager
 		/* Don't reset anything, as this controls loading. */
 	}
 
-	protected void processElement(Element e) {
-		try {
-			loadFromFile.setFile(e.getChild("LoadFile").getText()); 
+	protected void processChildElement(Element e) throws Exception {
+		super.processChildElement(e);
+		if (e.getName().equals("LoadFile")) {
+			loadFromFile.setFile(e.getText()); 
 			loadFromFile.load(xmlScoreBoard);
-		} catch ( Exception ex ) {
-		}
-		try {
-			loadFromFile.setFile(e.getChild("MergeFile").getText());
+		} else if (e.getName().equals("MergeFile")) {
+			loadFromFile.setFile(e.getText());
 			loadFromFile.merge(xmlScoreBoard);
-		} catch ( Exception ex ) {
 		}
 	}
 
