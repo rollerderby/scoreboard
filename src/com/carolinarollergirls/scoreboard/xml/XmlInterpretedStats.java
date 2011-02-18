@@ -202,15 +202,10 @@ public class XmlInterpretedStats extends XmlStats
 		update(e);
 	}
 
-	protected void processElement(Element e) {
-		try {
-			Iterator i = positionXPath.selectNodes(e).iterator();
-			while (i.hasNext()) {
-				try { processPosition((Element)i.next()); } catch ( Exception e2 ) { }
-			}
-		} catch ( JDOMException jdE ) {
-			/* Ignore JDOMException */
-		}
+	protected void processElement(Element e) throws JDOMException {
+		Iterator i = positionXPath.selectNodes(e).iterator();
+		while (i.hasNext())
+			try { processPosition((Element)i.next()); } catch ( Exception e2 ) { }
 	}
 
 	protected void processPosition(Element position) {
