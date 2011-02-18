@@ -40,11 +40,8 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 		update(e);
 	}
 
-	protected void processElement(Element e) throws JDOMException {
-		Iterator teams = e.getChildren("Team").iterator();
-		while (teams.hasNext())
-			processTeam((Element)teams.next());
-
+	protected void processElement(Element e) throws Exception {
+		super.processElement(e);
 		Iterator<XPath> transferTypes = transferXPaths.iterator();
 		while (transferTypes.hasNext()) {
 			Iterator elements = transferTypes.next().selectNodes(e).iterator();
@@ -60,6 +57,12 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 				processTransfer(type.getName(), direction.getName(), teamId, element.getText());
 			}
 		}
+	}
+
+	protected void processChildElement(Element e) throws Exception {
+		super.processChildElement(e);
+		if (e.getName().equals("Team"))
+			processTeam(e);
 	}
 
 	protected void processTeam(Element team) {
