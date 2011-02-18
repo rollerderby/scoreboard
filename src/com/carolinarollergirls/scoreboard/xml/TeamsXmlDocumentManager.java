@@ -82,22 +82,31 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 			editor.addElement(newTeam, "Logo", null, logo.getText());
 
 		Iterator skaters = team.getChildren("Skater").iterator();
-		while (skaters.hasNext()) {
-			Element skater = (Element)skaters.next();
-			String skaterId = skater.getAttributeValue("Id");
-			if (null == skaterId || "".equals(skaterId.trim()))
-				continue;
-			Element newSkater = editor.addElement(newTeam, "Skater", skaterId);
-
-			Element sName = skater.getChild("Name");
-			if (null != sName)
-				editor.addElement(newSkater, "Name", null, sName.getText());
-			Element sNumber = skater.getChild("Number");
-			if (null != sNumber)
-				editor.addElement(newSkater, "Number", null, sNumber.getText());
-		}
+		while (skaters.hasNext())
+			processSkater(newTeam, (Element)skaters.next());
 
 		update(newTeam);
+	}
+
+	protected void processSkater(Element newTeam, Element skater) {
+		String skaterId = skater.getAttributeValue("Id");
+		if (null == skaterId || "".equals(skaterId.trim()))
+			return;
+		Element newSkater = editor.addElement(newTeam, "Skater", skaterId);
+
+		String remove = skater.getAttributeValue("remove");
+		if (null != remove && Boolean.parseBoolean(remove)) {
+			Element removeSkaterTeam = editor.addElement(createXPathElement(), "Team", newTeam.getAttributeValue("Id"));
+			update(removeSkaterTeam.addContent(((Element)newSkater.detach()).setAttribute("remove", "true")));
+			return;
+		}
+
+		Element sName = skater.getChild("Name");
+		if (null != sName)
+			editor.addElement(newSkater, "Name", null, sName.getText());
+		Element sNumber = skater.getChild("Number");
+		if (null != sNumber)
+			editor.addElement(newSkater, "Number", null, sNumber.getText());
 	}
 
 	protected void processTransfer(String type, String direction, String sbTeamId, String teamId) throws JDOMException {
