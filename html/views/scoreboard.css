@@ -63,7 +63,7 @@ a { font-weight: bold; font-family: helvetica; }
   #Team2>div.Score { right: 15%; }
 
   /* Team Jammer sub-box */
-  div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; }
+  div.Team>div.Jammer { text-align: center; bottom: 0%; width: 90%; height: 18%; }
   #Team1>div.Jammer { right: 100%; }
   #Team2>div.Jammer { left: 100%; }
   #Team1>div.Jammer.ShowJammer.ShowJam { right: 5%; }
