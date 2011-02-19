@@ -191,6 +191,7 @@ _crgScoreBoard = {
 		} else if (!attributes)
 			attributes = {};
 		var sbelement = $.extend(true, {}, attributes.sbelement);
+		attributes = $.extend(true, {}, attributes); // Keep the original attributes object unchanged
 		delete attributes.sbelement;
 		var elements = $(type);
 		elements.find("*").andSelf()
