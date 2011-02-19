@@ -149,7 +149,7 @@ function createMetaControlTable() {
     .appendTo(row.children("td:eq(0)"));
   var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
     .appendTo(row.children("td:eq(0)"))
-    .button()
+    .button();
   _crgUtils.bindAndRun(selectByButton, "click", function() {
     $("#TeamTime table.Team select.Jammer")
       .filter(".ByName").toggle(this.checked).end()
