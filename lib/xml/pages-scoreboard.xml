@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document SystemTime="1298086964658">
+  <Pages>
+    <Page Id="scoreboard.html">
+      <CurrentView>scoreboard</CurrentView>
+      <View Id="Image">
+        <Option Id="Filename">/images/fullscreen/american_flag.jpg</Option>
+      </View>
+      <View Id="Video">
+        <Option Id="Filename">/video/american-flag.mp4</Option>
+      </View>
+      <Intermission Id="0">
+        <HideClock />
+        <ShowUnofficial />
+        <Text>Time to Derby</Text>
+      </Intermission>
+      <Intermission Id="1">
+        <HideClock />
+        <ShowUnofficial />
+        <Text>Halftime</Text>
+      </Intermission>
+      <Intermission Id="2">
+        <ShowUnofficial>true</ShowUnofficial>
+        <Text>Final</Text>
+        <HideClock>true</HideClock>
+      </Intermission>
+    </Page>
+  </Pages>
+</document>
+
