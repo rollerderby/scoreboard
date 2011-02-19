@@ -16,16 +16,16 @@ _timeConversions = {
 	/* Accepts min:sec time, returns only minutes portion */
 	_timeOnlyMin: function(time) { return _timeConversions._formatMinSec(time).split(":")[0]; },
 	/* Convert ms to seconds */
-	msToSeconds: function(ms) { return Math.floor(ms / 1000); },
+	msToSeconds: function(ms) { return String(Math.floor(ms / 1000)); },
 	/* Convert seconds to milliseconds */
-	secondsToMs: function(sec) { return (sec * 1000); },
+	secondsToMs: function(sec) { return String(sec * 1000); },
 	/* Convert milliseconds to min:sec */
 	msToMinSec: function(ms) { return _timeConversions._msOnlyMin(ms)+":"+_timeConversions._msOnlySec(ms); },
 	/* Convert min:sec to milliseconds */
 	minSecToMs: function(time) {
 		var min = Number(_timeConversions._timeOnlyMin(time) || 0);
 		var sec = Number(_timeConversions._timeOnlySec(time) || 0);
-		return ((min * 60) + sec) * 1000;
+		return String(((min * 60) + sec) * 1000);
 	},
 	/* Convert milliseconds to min:sec, if min is 0 return only seconds portion */
 	msToMinSecNoZero: function(ms) {
