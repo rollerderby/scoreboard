@@ -238,7 +238,8 @@ function setupClocks() {
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
     .add($sb("ScoreBoard.Clock(Intermission).Running"));
   _crgUtils.bindAndRun(clocks, "content", function(event, value) {
-    isTrue(value) && $("#scoreboardDiv>div.ClockAnimationQueue").queue(clockRunningChange);
+    if (isTrue(value) || ($sb($(this).parent()).$sbId == "Intermission"))
+      $("#scoreboardDiv>div.ClockAnimationQueue").queue(clockRunningChange);
   }, [ true ]);
 
   setupPulsate(
