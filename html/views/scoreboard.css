@@ -2,6 +2,7 @@
 #mainDiv div { position: absolute; }
 #mainDiv>div.View { width: 100%; height: 100%; }
 #mainDiv>div.View:not(.Show) { opacity: 0; }
+#mainDiv>div.View:not(#scoreboardDiv) { z-index: -500; }
 
 div.full { height: 100%; width: 100%; border-radius: inherit; }
 div.Pulse { background: #ff0000; }
