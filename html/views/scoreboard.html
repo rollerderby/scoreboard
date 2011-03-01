@@ -100,7 +100,8 @@ function setupTeams() {
     $("<div>").addClass("TeamAnimationQueue").appendTo(teamDiv);
     $("<div>").addClass("TeamAnimationFlag Animation").appendTo(teamDiv);
     $("<div><a/></div>").addClass("Name TextContainer Animation").appendTo(teamDiv);
-    $("<div><img/></div>").addClass("Logo Animation").appendTo(teamDiv);
+    $("<div><div><img/></div></div>").addClass("Logo Animation").appendTo(teamDiv)
+      .children("div").addClass("Inner");
     $("<div><a/></div>").addClass("Score WhiteBox TextContainer").appendTo(teamDiv);
     $("<div><a/><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
       .children("a:first").addClass("Jammer").end()
@@ -108,9 +109,13 @@ function setupTeams() {
 
     var sbElementAttrs = { sbelement: { autoFitText: { max: 15, overage: 15 } } };
     sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), sbElementAttrs, "Name");
-    sbTeam.$sb("TeamLogo.Filename").$sbElement(teamDiv.find("div.Logo>img"), "Logo");
+    sbTeam.$sb("TeamLogo.Filename").$sbElement(teamDiv.find("div.Logo img"), "Logo");
     sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), "Score");
     sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), sbElementAttrs);
+
+    sbTeam.$sb("Name").$sbBindAndRun("content", function(event,value) {
+      teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, 500);
+    });
 
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
     var resizeName = teamDiv.find("div.Name>a").data("AutoFit");
@@ -128,12 +133,12 @@ function setupTeams() {
             teamDiv.find("div.Logo").addClass("ShowLogo", 500, next);
           });
         } else {
-          var curVal = teamDiv.find("div.Logo>img").attr("src");
+          var curVal = teamDiv.find("div.Logo img").attr("src");
           if (!curVal)
-            teamDiv.find("div.Logo>img").attr("src", oldVal);
+            teamDiv.find("div.Logo img").attr("src", oldVal);
           teamDiv.find("div.Logo").removeClass("ShowLogo", 500, function() {
             if (!curVal)
-              teamDiv.find("div.Logo>img").attr("src", curVal);
+              teamDiv.find("div.Logo img").attr("src", curVal);
             teamDiv.find("div.Name,div.TeamAnimationFlag").removeClass("ShowLogo");
             var resizedCss = resizeName();
             teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();

@@ -44,14 +44,18 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Team Name sub-box */
   div.Team>div.Name { top: 0%; width: 90%; height: 48%; }
+  div.Team>div.Name.NoName { top: -48%; }
   div.Team>div.Name.ShowLogo { height: 16%; }
+  div.Team>div.Name.NoName.ShowLogo { top: -16%; }
   div.Team>div.Name>a { color: #ffffff; }
   #Team1>div.Name { left: 5%; }
   #Team2>div.Name { right: 5%; }
 
   /* Team Logo sub-box */
   div.Team>div.Logo { top: 16%; height: 32%; width: 100%; }
-  div.Team>div.Logo>img { top: 0%; height: 100%; display: block; margin-left: auto; margin-right: auto; /* center img */ }
+  div.Team>div.Logo.NoName { top: 0%; height: 48%; }
+  div.Team>div.Logo>div.Inner { top: 0%; height: 100%; width: 300%; left: -100%; overflow: hidden; }
+  div.Team>div.Logo img { top: 0%; height: 100%; display: block; margin-left: auto; margin-right: auto; } /* center img */
   #Team1>div.Logo { right: 100%; }
   #Team2>div.Logo { left: 100%; }
   #Team1>div.Logo.ShowLogo { right: 0%; }
