@@ -233,6 +233,23 @@ function createTeamTable() {
       .text("Score +1").val("1")
       .attr("id", "Team"+team+"ScoreUp").addClass("KeyControl")
       .appendTo(scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
+    var scoreChange = $("<a>").addClass("Change").appendTo(scoreTr.children("td:eq(1)"))
+      .css({ position: "absolute", fontSize: "200%", lineHeight: "175%", opacity: "0" });
+    var lastScore = sbTeam.$sb("Score").$sbGet();
+    var scoreChangeTimeout;
+    sbTeam.$sb("Score").bind("content", function(event,value) {
+      var s = (value - lastScore);
+      var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
+      scoreChange.stop(true).css({ opacity: "1", color: c }).text(s<0?s:"+"+s);
+      if (scoreChangeTimeout)
+        clearTimeout(scoreChangeTimeout);
+      scoreChangeTimeout = setTimeout(function() {
+        scoreChange
+          .animate({ color: "#000" }, 2000)
+          .animate({ opacity: "0" }, 6000, "easeInExpo", function() { lastScore = value; });
+        scoreChangeTimeout = null;
+      }, 2000);
+    });
 
     sbTeam.$sb("Timeout").$sbControl("<button>").text("Timeout").val("true")
       .attr("id", "Team"+team+"Timeout").addClass("KeyControl")
