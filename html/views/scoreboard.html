@@ -222,6 +222,11 @@ function setupClocks() {
       .append(node.$sb("Text").$sbElement("<span>", "Name "+node.$sbId))
       .children("span."+node.$sbId).toggle($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
     node.$sb("ShowUnofficial").$sbBindAndRun("content", intermissionAutoFitText);
+    node.$sb("Confirmed").$sbBindAndRun("content", function(event,value) {
+      $("#Intermission>div.Name>a>span.Unofficial."+node.$sbId)
+        .toggle(!isTrue(value) && $sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
+      intermissionAutoFitText();
+    });
     node.$sb("Text").$sbBindAndRun("content", intermissionAutoFitText);
     node.$sb("HideClock").$sbBindAndRun("content", function(event,value) {
       if ($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
