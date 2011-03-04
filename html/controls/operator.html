@@ -158,7 +158,29 @@ function createMetaControlTable() {
     selectByLabel.children("span").text(this.checked ? "Select Jammer by Name" : "Select Jammer by Number");
   });
 
-  return table;
+  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("content", function(event,value) {
+    var confirmedBoxes = td.children(".IntermissionConfirmed");
+    if (!confirmedBoxes.is("."+value)) {
+      var sbConfirmed = $sb("Pages.Page(scoreboard.html).Intermission("+value+").Confirmed");
+      var confirmed = sbConfirmed.$sbControl("<label/><input type='checkbox'/>", { sbelement: {
+          boolean: true,
+          convert: function(v) {
+            $(this).button("option", "label", ((v?"C":"Unc")+"onfirmed Score"));
+            return v;
+          }
+        }, sbcontrol: {
+          button: true
+        } }, "IntermissionConfirmed "+value);
+      if (confirmedBoxes.length)
+        confirmedBoxes.last().after(confirmed);
+      else
+        td.append(confirmed);
+    }
+    td.children(".IntermissionConfirmed").hide()
+      .filter("."+value).show();
+  });
+
+ return table;
 }
 
 function createJamControlTable() {
