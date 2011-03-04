@@ -84,6 +84,22 @@ _crgScoreBoardControl = {
 			if (!getGroup().hasClass("isFocused")) setControlValue(value);
 		};
 
+		if (c.is("input:checkbox,input:radio,input:submit,input:reset,:button") && sbC.button) {
+//FIXME - bug in jquery-ui, it needs to search siblings and their children if there is no parent
+			var fakeParent = $("<div>");
+			if (!c.parent().length)
+				c.add(c.prev("label")).appendTo(fakeParent);
+			if (typeof sbC.button == "boolean")
+				c.button();
+			else
+				c.button(sbC.button);
+			fakeParent.children().detach();
+		}
+
+
+// FIXME - move all setControlValues out of individual sections;
+//         really this all needs to be cleaned up
+//         and specifically it needs a documented API
 		if (c.is("input:text,input:password,textarea")) {
 			sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
 			setControlValue(sbElement.$sbGet());
