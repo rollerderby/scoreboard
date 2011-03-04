@@ -12,38 +12,9 @@ table.RowTable { border-spacing: 0px; }
   button.KeyControl>span { padding: 0.3em !important; }
 /* End Key Control */
 
-/* Time Control Dialog */
-  table.TimeDialog { width: 100%; border-spacing: 0px; }
-  table.TimeDialog table { width: 100%; border-spacing: 0px; }
-  table.TimeDialog>tbody>tr>td { width: 100%; text-align: center; }
-  table.TimeDialog table td.Title { background: #ccc; border-radius: 12px 12px 0px 0px; }
-  table.TimeDialog table td:not(.Title) { background: #eee; }
-  table.TimeDialog table tr:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }
-  table.TimeDialog table tr:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
-  table.TimeDialog a.Time { font-weight: bold; }
-  table.TimeDialog button.Set>span { padding: 0.1em 1em; }
-/* End Time Control Dialog */
 
-/* Teams Assign Dialog */
-  div.TeamsAssignDialog h4 { text-align: center; }
-/* End Teams Assign Dialog */
 
-/* Teams Remove Dialog */
-  div.TeamsRemoveDialog { text-align: center; }
-  div.TeamsRemoveDialog .AreYouSure { font-weight: bold; }
-  div.TeamsRemoveDialog button.Yes { float: left; }
-  div.TeamsRemoveDialog button.No { float: right; }
-/* End Teams Remove Dialog */
-
-/* Intermission Control Dialog */
-  table.IntermissionControlDialog { width: 100%; border-spacing: 0px; }
-  table.IntermissionControlDialog>tbody>tr>td { text-align: center; }
-  table.IntermissionControlDialog>tbody>tr.Name>td { width: 100%; background: #ccc; border-radius: 12px 12px 0px 0px; }
-  table.IntermissionControlDialog>tbody>tr.Control>td { background: #eee; width: 33%; }
-  table.IntermissionControlDialog>tbody>tr.Control>td:nth-of-type(1) { width: 34%; }
-  table.IntermissionControlDialog>tbody>tr.Control>td.ShowUnofficial { border-bottom-left-radius: 12px; }
-  table.IntermissionControlDialog>tbody>tr.Control>td.HideClock { border-bottom-right-radius: 12px; }
-/* End Intermission Control Dialog */
+/*** Tabs ***/
 
 /* Team/Time Tab */
   #TeamTime a { font-weight: bold; }
@@ -125,3 +96,40 @@ table.RowTable { border-spacing: 0px; }
   #SaveLoad tr.Content>td.Description { border-radius: 0px 0px 0px 12px; width: 60%; text-align: left; }
   #SaveLoad tr.Content>td.Controls { border-radius: 0px 0px 12px 0px; width: 40%; text-align: center; }
 /* End Save/Load Control */
+
+
+
+/*** Dialogs ***/
+
+/* Time Control Dialog */
+  table.TimeDialog { width: 100%; border-spacing: 0px; }
+  table.TimeDialog table { width: 100%; border-spacing: 0px; }
+  table.TimeDialog>tbody>tr>td { width: 100%; text-align: center; }
+  table.TimeDialog table td.Title { background: #ccc; border-radius: 12px 12px 0px 0px; }
+  table.TimeDialog table td:not(.Title) { background: #eee; }
+  table.TimeDialog table tr:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }
+  table.TimeDialog table tr:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
+  table.TimeDialog a.Time { font-weight: bold; }
+  table.TimeDialog button.Set>span { padding: 0.1em 1em; }
+/* End Time Control Dialog */
+
+/* Teams Assign Dialog */
+  div.TeamsAssignDialog h4 { text-align: center; }
+/* End Teams Assign Dialog */
+
+/* Teams Remove Dialog */
+  div.TeamsRemoveDialog { text-align: center; }
+  div.TeamsRemoveDialog .AreYouSure { font-weight: bold; }
+  div.TeamsRemoveDialog button.Yes { float: left; }
+  div.TeamsRemoveDialog button.No { float: right; }
+/* End Teams Remove Dialog */
+
+/* Intermission Control Dialog */
+  table.IntermissionControlDialog { width: 100%; border-spacing: 0px; }
+  table.IntermissionControlDialog>tbody>tr>td { text-align: center; }
+  table.IntermissionControlDialog>tbody>tr.Name>td { width: 100%; background: #ccc; border-radius: 12px 12px 0px 0px; }
+  table.IntermissionControlDialog>tbody>tr.Control>td { background: #eee; width: 33%; }
+  table.IntermissionControlDialog>tbody>tr.Control>td:nth-of-type(1) { width: 34%; }
+  table.IntermissionControlDialog>tbody>tr.Control>td.ShowUnofficial { border-bottom-left-radius: 12px; }
+  table.IntermissionControlDialog>tbody>tr.Control>td.HideClock { border-bottom-right-radius: 12px; }
+/* End Intermission Control Dialog */
