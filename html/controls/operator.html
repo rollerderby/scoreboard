@@ -128,27 +128,28 @@ function createScoreTimeContent() {
 function createMetaControlTable() {
   var table = $("<table><tr><td></tr></table>").addClass("MetaControl");
   var row = createRowTable(1).appendTo(table.find("tr>td")).find("tr");
+  var td = row.children("td");
 
   $("<label>").text("Edit Key Control").attr("for", "EditKeyControlButton")
-    .appendTo(row.children("td:eq(0)"));
+    .appendTo(td);
   $("<input type='checkbox'>").attr("id", "EditKeyControlButton")
-    .appendTo(row.children("td:eq(0)"))
+    .appendTo(td)
     .button()
     .click(function() { _crgKeyControls.editKeys(this.checked); });
 
   $("<label>").text("Show UNDO Controls").attr("for", "ShowUndoControlsButton")
-    .appendTo(row.children("td:eq(0)"));
+    .appendTo(td);
   $("<input type='checkbox'>").attr("id", "ShowUndoControlsButton")
-    .appendTo(row.children("td:eq(0)"))
+    .appendTo(td)
     .button()
     .click(function() {
       $("#TeamTime table.JamControl tr.UndoControls").toggleClass("ShowUndo", this.checked);
     });
 
   var selectByLabel = $("<label>").attr("for", "SelectJammerBy")
-    .appendTo(row.children("td:eq(0)"));
+    .appendTo(td);
   var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
-    .appendTo(row.children("td:eq(0)"))
+    .appendTo(td)
     .button();
   _crgUtils.bindAndRun(selectByButton, "click", function() {
     $("#TeamTime table.Team select.Jammer")
