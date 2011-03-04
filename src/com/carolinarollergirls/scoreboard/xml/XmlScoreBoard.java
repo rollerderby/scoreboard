@@ -79,6 +79,18 @@ public class XmlScoreBoard
 	}
 
 	/**
+	 * This is a convenience method for mergeDocument(Document).
+	 */
+	public void mergeDocument(Element e) { mergeDocument(e.getDocument()); }
+
+	/**
+	 * This is similar to mergeDocument(Element), but it
+	 * only merges the provided element (and below),
+	 * instead of the entire document.
+	 */
+	public void mergeElement(Element e) { mergeDocument(editor.cloneDocumentToClonedElement(e)); }
+
+	/**
 	 * This updates all XmlScoreBoardListeners with
 	 * the Document.  This should be called with
 	 * changes from the main ScoreBoard or changes
