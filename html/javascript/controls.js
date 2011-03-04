@@ -55,7 +55,7 @@ _crgScoreBoardControl = {
 
 		var controlValueToElementValue = function(value) {
 			var p = sbC.prefix, s = sbC.suffix, u = sbC.useNumber, t = sbC.trueString, f = sbC.falseString;
-			if (sbC.convert) value = sbC.convert(value);
+			if (sbC.convert) value = sbC.convert.call(c[0], value);
 			if ((typeof t == "string") && (String(value).toLowerCase() == "true")) value = t; else if ((typeof f == "string") && (String(value).toLowerCase() == "false")) value = f;
 			if (u) value = String(Number(value) || 0);
 			if (p && !(value==null)) value = p + value;

@@ -115,9 +115,10 @@
  *     (if applicable) is used.
  *   convert: function(value) || object
  *     If a function, it will be used to convert from the XML element
- *     value into the HTML element value.
- *     If an object, it will be checked for each XML element value
- *     (after converting the value to a String), and if the value exists
+ *     value into the HTML element value.  In the function, 'this'
+ *     points to the XML element whose value is being converted.
+ *     If an object, it will be checked for the XML element value
+ *     (after converting to a String), and if the value exists
  *     as a member of the object, that member value will be used.
  *   convertOptions: object
  *     This object controls specific operation of the convert
@@ -141,7 +142,8 @@
  * control various aspects of the created HTML element(s) operation.
  *   convert: function(value)
  *     This function should convert from the HTML element value into
- *     the XML element value.
+ *     the XML element value.  In the function, 'this' points to the
+ *     HTML element whose value is being converted.
  *   
  */
 
@@ -347,14 +349,15 @@ _crgScoreBoard = {
 				v = isTrue(v);
 			var convertOptions = sbE.convertOptions || {};
 			if (sbE.convert) {
+				var tmpV = v;
 				if (typeof sbE.convert == "function")
-					v = sbE.convert(value);
+					tmpV = sbE.convert.call(this, tmpV);
 				else if (typeof sbE.convert == "object")
-					v = sbE.convert[String(value)];
-				if (v === undefined)
-					v = convertOptions["default"];
-				if (v === undefined && isTrue(convertOptions.onlyMatch))
-					v = (sbE["boolean"] ? isTrue(value) : value);
+					tmpV = sbE.convert[String(tmpV)];
+				if (tmpV === undefined)
+					tmpV = convertOptions["default"];
+				if (!(tmpV === undefined && isTrue(convertOptions.onlyMatch)))
+					v = tmpV;
 			}
 			if (e.is("a,span")) {
 				if (e.html() != v)
