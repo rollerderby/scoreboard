@@ -446,7 +446,7 @@ function createPoliciesContent() {
 function addPolicy(policy) {
   var nameTr = $("<tr>").addClass("Name").appendTo("#Policies")
     .append($("<td>").attr("colspan", "2"));
-  $("<a>").text(policy.$sbId).appendTo(nameTr.children("td"));
+  policy.$sb("Name").$sbElement("<a>").appendTo(nameTr.children("td"));
 
   var contentTr = $("<tr>").addClass("Content").insertAfter(nameTr)
     .append($("<td>").addClass("Description"))
