@@ -11,7 +11,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
 {
 	public PagePolicy_scoreboardhtml() {
-		super("Page(scoreboard.html) Policy");
+		super();
+		setName("Page(scoreboard.html) Policy");
 		setDescription("This controls elements specific to the scoreboard.html page.");
 
 		addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, RESET_INTERMISSION_CONFIRMED, "Boolean", String.valueOf(true)));
