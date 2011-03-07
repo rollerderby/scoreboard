@@ -215,6 +215,8 @@ public class XmlDocumentEditor
 		return to;
 	}
 
+	public void mergeElements(Element to, Element from) { mergeElements(to, from, false); }
+
 	public void mergeElements(Element to, Element from, boolean persistent) {
 		synchronized (to.getDocument()) {
 			/* Remove any nodes with "remove" attribute if document is persistent */
