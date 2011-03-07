@@ -22,7 +22,8 @@ public abstract class DefaultScoreBoardControllerServlet extends HttpServlet imp
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		doPost(request, response);
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Expires", "-1");
 	}
 
 	protected ScoreBoardModel scoreBoardModel;
