@@ -26,34 +26,59 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		super.doGet(request, response);
 
+		Document doc = null;
 		Element node = getXmlScoreBoard().getDocument().getRootElement();
 
-		/* If any path is specified, this attempts to match the
-		 * element(s) for the specified path and return a single
-		 * document with all matched elements and all their
-		 * descendent elements.  Associated attributes, text, etc.
-		 * for all returned elements are preserved.
-		 *
-		 * The path format should be either:
-		 *   ScoreBoard Javascript, e.g. ScoreBoard.Team(1).Name
-		 *   xpath, e.g. ScoreBoard/Team[@Id='1']/Name
-		 * As an exception, ScoreBoard Javascript format may
-		 * be used with forward slashes instead of periods, e.g.
-		 * ScoreBoard/Team(1)/Name
-		 *
-		 * If a Id attribute is omitted for an element with an Id,
-		 * all elements with that name will be included in the results.
-		 *
-		 * examples:
-		 * ScoreBoard.Team(1).Name
-		 * ScoreBoard/Team(1)/Name
-		 * ScoreBoard/Team[@Id='1']/Name
-		 * ScoreBoard/Team/Name
-		 *
-		 * Note the first 3 examples will match only one element, while the
-		 * last example will match the Name element under all/both Team elements.
-		 */
-		String path = request.getPathInfo();
+		String[] pathArray = request.getParameterValues("path");
+		if (pathArray == null) {
+			doc = node.getDocument();
+		} else {
+			Iterator<String> paths = Arrays.asList(pathArray).iterator();
+			while (paths.hasNext()) {
+				String path = paths.next();
+				try {
+					doc = getPathDocument(node, doc, path);
+				} catch ( JDOMException jE ) {
+					/* Ignore invalid path */
+				}
+			}
+		}
+
+		if (doc == null) {
+			response.sendError(HttpServletResponse.SC_NOT_FOUND, "No elements found.");
+		} else {
+			response.setContentType("text/xml");
+			editor.sendToWriter(doc, response.getWriter());
+			response.setStatus(HttpServletResponse.SC_OK);
+		}
+	}
+
+	/* If any path is specified, this attempts to match the
+	 * element(s) for the specified path and return a single
+	 * document with all matched elements and all their
+	 * descendent elements.  Associated attributes, text, etc.
+	 * for all returned elements are preserved.
+	 *
+	 * The path format should be either:
+	 *   ScoreBoard Javascript, e.g. ScoreBoard.Team(1).Name
+	 *   xpath, e.g. ScoreBoard/Team[@Id='1']/Name
+	 * As an exception, ScoreBoard Javascript format may
+	 * be used with forward slashes instead of periods, e.g.
+	 * ScoreBoard/Team(1)/Name
+	 *
+	 * If a Id attribute is omitted for an element with an Id,
+	 * all elements with that name will be included in the results.
+	 *
+	 * examples:
+	 * ScoreBoard.Team(1).Name
+	 * ScoreBoard/Team(1)/Name
+	 * ScoreBoard/Team[@Id='1']/Name
+	 * ScoreBoard/Team/Name
+	 *
+	 * Note the first 3 examples will match only one element, while the
+	 * last example will match the Name element under all/both Team elements.
+	 */
+	protected Document getPathDocument(Element node, Document doc, String path) throws JDOMException {
 		if (path.startsWith("/"))
 			path = path.substring(1);
 		StringBuffer buffer = new StringBuffer();
@@ -67,28 +92,17 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
 		if (path.endsWith("/"))
 			path = path.substring(0, path.length()-1);
 		if (path.length() > 0) {
-			try {
-				Iterator nodes = XPath.selectNodes(node, path).iterator();
-				node = null;
-				while (nodes.hasNext()) {
-					Element n = editor.cloneDocumentToClonedElement((Element)nodes.next());
-					if (node == null)
-						node = n;
-					else
-						editor.mergeDocuments(node.getDocument(), n.getDocument());
-				}
-			} catch ( Exception e ) {
-				node = null;
+			Iterator nodes = XPath.selectNodes(node, path).iterator();
+			while (nodes.hasNext()) {
+				Document d = editor.cloneDocumentToClonedElement((Element)nodes.next()).getDocument();
+				if (doc == null)
+					doc = d;
+				else
+					editor.mergeDocuments(doc, d);
 			}
+			return doc;
 		}
-
-		if (node == null) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "No element found for '"+path+"'");
-		} else {
-			response.setContentType("text/xml");
-			editor.sendToWriter(node.getDocument(), response.getWriter());
-			response.setStatus(HttpServletResponse.SC_OK);
-		}
+		return node.getDocument();
 	}
 
 	protected XmlScoreBoard getXmlScoreBoard() { return scoreBoardModel.getXmlScoreBoard(); }
