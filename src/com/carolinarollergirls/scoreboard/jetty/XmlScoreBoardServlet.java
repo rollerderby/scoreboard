@@ -37,19 +37,21 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 	}
 
 	protected void get(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		String key;
-		XmlListener listener = null;
-		if ((null != (key = request.getParameter("key"))) && (null != (listener = (XmlListener)clientMap.get(key)))) {
-			Document d = listener.getDocument();
-			if (null == d) {
-				response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-			} else {
-				response.setContentType("text/xml");
-				editor.sendToWriter(d, response.getWriter());
-				response.setStatus(HttpServletResponse.SC_OK);
-			}
+		XmlListener listener = getXmlListenerForRequest(request);
+		if (null == listener) {
+			registrationKeyNotFound(request, response);
+			return;
+		}
+
+		Document d = listener.getDocument();
+		if (null == d) {
+			response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
 		} else {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+			if (debugGet)
+				System.err.println("GET to "+listener.getKey()+"\n"+editor.toString(d));
+			response.setContentType("text/xml");
+			editor.sendToWriter(d, response.getWriter());
+			response.setStatus(HttpServletResponse.SC_OK);
 		}
 	}
 
@@ -62,48 +64,21 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 	}
 
 	protected void set(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		Document requestDocument = null;
+		XmlListener listener = getXmlListenerForRequest(request);
+		Document requestDocument = editor.toDocument(request.getReader());
 
-		try {
-			if (ServletFileUpload.isMultipartContent(request)) {
-				ServletFileUpload upload = new ServletFileUpload();
-
-				FileItemIterator iter = upload.getItemIterator(request);
-				while (iter.hasNext()) {
-					FileItemStream item = iter.next();
-					if (!item.isFormField()) {
-						InputStream stream = item.openStream();
-						requestDocument = editor.toDocument(stream);
-						stream.close();
-						break;
-					}
-				}
-			} else {
-				requestDocument = editor.toDocument(request.getReader());
-			}
-		} catch ( FileUploadException fuE ) {
-			response.getWriter().print(fuE.getMessage());
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		if (null == listener) {
+			registrationKeyNotFound(request, response);
 			return;
 		}
 
 		if (null == requestDocument) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 
-//FIXME - uncomment this for debugging XML set requests
-//System.err.println(editor.toString(requestDocument));
-
-		/* This should clear the scoreboard to prepare for loading a new one */
-		/* This does not work with continuous-save-to-file! */
-		if (Boolean.parseBoolean(request.getParameter("clearScoreBoard"))) {
-			reloadListeners(request, response);
-
-			//Document d = converter.toDocument(scoreBoardModel);
-//FIXME - replacing doc is wrong!
-			//documentManager.replaceDocument(d);
-		}
+		if (debugSet)
+			System.err.println("SET from "+listener.getKey()+"\n"+editor.toString(requestDocument));
 
 		scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
 
@@ -111,9 +86,41 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
  
+	protected void setDebug(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		String get = request.getParameter("get");
+		String set = request.getParameter("set");
+
+		if (null != get) {
+			if (get.equals("1") || get.equalsIgnoreCase("true"))
+				debugGet = true;
+			else if (get.equals("0") || get.equalsIgnoreCase("false"))
+				debugGet = false;
+		}
+		if (null != set) {
+			if (set.equals("1") || set.equalsIgnoreCase("true"))
+				debugSet = true;
+			else if (set.equals("0") || set.equalsIgnoreCase("false"))
+				debugSet = false;
+		}
+
+		response.setContentType("text/plain");
+		response.getWriter().println("Debug /get : "+debugGet);
+		response.getWriter().println("Debug /set : "+debugSet);
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		super.doPost(request, response);
-		response.sendError(HttpServletResponse.SC_NOT_FOUND);
+
+		try {
+			if ("/set".equals(request.getPathInfo()))
+				set(request, response);
+			else if (!response.isCommitted())
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
+		} catch ( JDOMException jE ) {
+			response.getWriter().print(jE.getMessage());
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		}
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
@@ -122,16 +129,20 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 		try {
 			if ("/get".equals(request.getPathInfo()))
 				get(request, response);
-			else if ("/set".equals(request.getPathInfo()))
-				set(request, response);
+			else if ("/debug".equals(request.getPathInfo()))
+				setDebug(request, response);
 			else if ("/reloadViewers".equals(request.getPathInfo()))
 				reloadListeners(request, response);
 			else if (request.getPathInfo().endsWith(".xml"))
 				getAll(request, response);
+			else if (!response.isCommitted())
+				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		} catch ( JDOMException jE ) {
 			response.getWriter().print(jE.getMessage());
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
 
+	protected boolean debugGet = false;
+	protected boolean debugSet = false;
 }
