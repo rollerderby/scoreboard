@@ -21,6 +21,11 @@ public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet
 {
 	public String getPath() { return "/LoadXml"; }
 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		super.doGet(request, response);
+		response.sendError(HttpServletResponse.SC_NOT_FOUND);
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		super.doPost(request, response);
 
@@ -49,11 +54,6 @@ public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet
 		} catch ( JDOMException jE ) {
 			response.sendError(HttpServletResponse.SC_BAD_REQUEST, jE.getMessage());
 		}
-	}
-
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doGet(request, response);
-		response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	protected void handleDocument(HttpServletRequest request, HttpServletResponse response, Document doc) throws IOException {
