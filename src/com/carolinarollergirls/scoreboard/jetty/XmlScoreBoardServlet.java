@@ -113,6 +113,11 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
  
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		super.doPost(request, response);
+		response.sendError(HttpServletResponse.SC_NOT_FOUND);
+	}
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		super.doGet(request, response);
 
 		try {
 			if ("/get".equals(request.getPathInfo()))
