@@ -151,14 +151,19 @@ $sb = function(arg) {
 	if (!arg)
 		arg = "";
 
-	if ($.isFunction(arg))
-		_crgScoreBoard.doc.one("load:ScoreBoard", function(event) { arg.call($sb(), event); });
-	else if (typeof arg == "string")
+	if ($.isFunction(arg)) {
+		var callArg = function() { arg.call($sb()); };
+		if (_crgScoreBoard.doc.data("_loaded"))
+			callArg();
+		else
+			_crgScoreBoard.doc.one("load:ScoreBoard", callArg);
+	} else if (typeof arg == "string") {
 		return _crgScoreBoard.findScoreBoardElement(_crgScoreBoard.doc, arg);
-	else if (($.isjQuery(arg) || (arg = $(arg))) && arg[0] && $.isXMLDoc(arg[0]) && (arg[0].ownerDocument == _crgScoreBoard.doc[0].ownerDocument))
+	} else if (($.isjQuery(arg) || (arg = $(arg))) && arg[0] && $.isXMLDoc(arg[0]) && (arg[0].ownerDocument == _crgScoreBoard.doc[0].ownerDocument)) {
 		return _crgScoreBoard.extendScoreBoard(arg);
-	else
+	} else {
 		return null; // FIXME - return "empty" sb element instead?
+	}
 };
 
 _crgScoreBoard = {
@@ -437,7 +442,8 @@ _crgScoreBoard = {
 	processScoreBoardXml: function(xml) {
 		$(xml).find("document").children().each(function(index) { _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this); });
 		$sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
-		_crgScoreBoard.doc.triggerHandler("load:ScoreBoard");
+		if (!_crgScoreBoard.doc.data("_loaded"))
+			_crgScoreBoard.doc.data("_loaded", true).triggerHandler("load:ScoreBoard");
 	},
 
 	parseScoreBoardResponse: function(xhr, textStatus) {
