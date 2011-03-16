@@ -95,6 +95,7 @@ table.RowTable { border-spacing: 0px; }
   #SaveLoad table tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
   #SaveLoad table tr.Content>td:first-of-type { border-radius: 0px 0px 0px 12px; }
   #SaveLoad table tr.Content>td:last-of-type { border-radius: 0px 0px 12px 0px; }
+  #SaveLoad table tr.Content>td:only-of-type { border-radius: 0px 0px 12px 12px; }
 /* End Save/Load Control */
 
 
