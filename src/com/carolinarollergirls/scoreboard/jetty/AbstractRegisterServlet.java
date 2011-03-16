@@ -19,8 +19,8 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
 
 	protected abstract void register(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doPost(request, response);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		super.doGet(request, response);
 
 		if ("/register".equals(request.getPathInfo()))
 			register(request, response);
