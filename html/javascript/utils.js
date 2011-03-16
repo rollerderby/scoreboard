@@ -1,5 +1,12 @@
 
 
+function isTrue(value) {
+	if (typeof value == "boolean")
+		return value;
+	else
+		return (String(value).toLowerCase() == "true");
+}
+
 _crgUtils = {
 	/* Convert a string to a "safe" id.
 	 * This removes illegal characters from the string,

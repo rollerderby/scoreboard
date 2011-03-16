@@ -5,19 +5,11 @@ if (typeof $ == "undefined") {
 	throw("You MUST include jQuery before this file!");
 }
 
-function isTrue(value) {
-	if (typeof value == "boolean")
-		return value;
-	else
-		return (String(value).toLowerCase() == "true");
-}
-
 function _includeUrl(url) {
 	if (/\.[cC][sS][sS](\?.*)?$/.test(url))
 		$("<link>").attr({ href: url, type: "text/css", rel: "stylesheet"}).appendTo("head");
 	else if (/\.[jJ][sS](\?.*)?$/.test(url))
 		$("<script>").attr({ src: url, type: "text/javascript" }).appendTo("head");
-//		$.ajax({ url: url, dataType: "script", async: false });		
 }
 
 function _include(dir, files) {
