@@ -30,6 +30,11 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
 			listener.setLastRequestTime(new Date().getTime());
 	}
 
+	protected void registrationKeyNotFound(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		String key = request.getParameter("key");
+		response.sendError(HttpServletResponse.SC_NOT_FOUND, "Registration key '"+key+"' not found");
+	}
+
 	protected RegisteredListener getRegisteredListenerForRequest(HttpServletRequest request) {
 		String key = null;
 		if (null != (key = request.getParameter("key")))
