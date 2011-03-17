@@ -413,7 +413,7 @@ _crgScoreBoard = {
 			var oldContent = _crgScoreBoard.getXmlElementText(e);
 			if (oldContent !== newContent) {
 				_crgScoreBoard.setXmlElementText(e, newContent);
-				_crgScoreBoard.setHtmlValue($("[data-sbelement="+e.$sbPath+"]"), newContent);
+				_crgScoreBoard.setHtmlValue($("[data-sbelement='"+e.$sbPath+"']"), newContent);
 				triggerObj.fireContent = true;
 				triggerObj.oldContent = oldContent;
 				triggerObj.newContent = newContent;
