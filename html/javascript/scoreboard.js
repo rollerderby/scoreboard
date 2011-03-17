@@ -47,12 +47,6 @@ _include("/javascript", [
 	"utils.js",
 	"windowfunctions.js" ]);
 
-/* Include any custom js and/or css for the current html */
-if (/\.html$/.test(window.location.pathname)) {
-	_include(window.location.pathname.replace(/\.html$/, "-custom.css"));
-	_include(window.location.pathname.replace(/\.html$/, "-custom.js"));
-}
-
 
 /* Start ScoreBoard server polling */
 $(_crgScoreBoard.scoreBoardRegister);

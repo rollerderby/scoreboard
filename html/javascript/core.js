@@ -442,8 +442,17 @@ _crgScoreBoard = {
 	processScoreBoardXml: function(xml) {
 		$(xml).find("document").children().each(function(index) { _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this); });
 		$sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
-		if (!_crgScoreBoard.doc.data("_loaded"))
+		if (!_crgScoreBoard.doc.data("_loaded")) {
 			_crgScoreBoard.doc.data("_loaded", true).triggerHandler("load:ScoreBoard");
+			/*
+			 * After the main page's $sb() functions have been run (above),
+			 * include any custom js and/or css for the current html
+			 */
+			if (/\.html$/.test(window.location.pathname)) {
+				_include(window.location.pathname.replace(/\.html$/, "-custom.css"));
+				_include(window.location.pathname.replace(/\.html$/, "-custom.js"));
+			}
+		}
 	},
 
 	parseScoreBoardResponse: function(xhr, textStatus) {
