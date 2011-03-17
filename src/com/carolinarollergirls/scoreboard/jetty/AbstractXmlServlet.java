@@ -46,7 +46,7 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
 			queueListener = new QueueXmlScoreBoardListener(sB.getXmlScoreBoard());
 		}
 
-		public Document getDocument() { return queueListener.getDocument(); }
+		public Document getDocument() { return queueListener.getNextDocument(); }
 
 		public boolean isEmpty() { return queueListener.isEmpty(); }
 

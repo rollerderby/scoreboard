@@ -23,13 +23,13 @@ public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
 		}
 	}
 
-	public Document getDocument() {
+	public Document getNextDocument() {
 		synchronized (documentsLock) {
 			return documents.poll();
 		}
 	}
 
-	public boolean isEmpty() { return (null != documents.peek()); }
+	public boolean isEmpty() { return (null == documents.peek()); }
 
 	public boolean isQueueOnlyRemovals() { return queueOnlyRemovals; }
 	public void setQueueOnlyRemovals(boolean q) { queueOnlyRemovals = q; }
