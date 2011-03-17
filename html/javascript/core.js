@@ -459,36 +459,35 @@ _crgScoreBoard = {
 		}
 	},
 
-	parseScoreBoardResponse: function(xhr, textStatus) {
-		try {
-			switch (xhr.status) {
-			case 304: /* No change since last poll, increase poll rate */
+	pollScoreBoard: function() {
+		var handlers = {
+			304: function() { /* No change since last poll, increase poll rate */
 				_crgScoreBoard.pollRate += _crgScoreBoard.POLL_INTERVAL_INCREMENT;
-				return;
-			case 404:
+			},
+			404: function() {
 //FIXME - we could possibly handle this better than reloading the page...
 				window.location.reload();
-				break;
-			case 200:
-				_crgScoreBoard.processScoreBoardXml(xhr.responseXML);
+			},
+			200: function(data, textStatus, jqxhr) {
+				_crgScoreBoard.processScoreBoardXml(jqxhr.responseXML);
 				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MIN;
-				break;
-			case 0: /* FIXME - handle network errors? */ break;
-			default: /* FIXME - handle other server response? */ break;
 			}
-		} finally {
+		};
+
+		var schedule = function() {
 			if (_crgScoreBoard.pollRate > _crgScoreBoard.POLL_INTERVAL_MAX)
 				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MAX;
-			setTimeout(this.pollScoreBoard, this.pollRate);
-		}
-	},
+			setTimeout(_crgScoreBoard.pollScoreBoard, _crgScoreBoard.pollRate);
+		};
 
-	pollScoreBoard: function() {
 		$.ajax({
-				url: "/XmlScoreBoard/get",
-				data: { key: _crgScoreBoard.scoreBoardRegistrationKey },
-				complete: function(xhr,textStatus) { _crgScoreBoard.parseScoreBoardResponse(xhr, textStatus); }
-			});
+			global: false,
+			cache: false,
+			url: "/XmlScoreBoard/get",
+			data: { key: _crgScoreBoard.scoreBoardRegistrationKey },
+			complete: schedule,
+			statusCode: handlers
+		});
 	},
 
 	parseRegistrationKey: function(xml, status) {
