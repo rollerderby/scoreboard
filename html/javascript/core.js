@@ -190,6 +190,17 @@ _crgScoreBoard = {
 		$sbControl: function(type, attributes, className) { return _crgScoreBoardControl.create(this, type, attributes, className); },
 	},
 
+	loadCustom: function() {
+		/*
+		 * After the main page's $sb() functions have been run,
+		 * include any custom js and/or css for the current html
+		 */
+		if (/\.html$/.test(window.location.pathname)) {
+			_include(window.location.pathname.replace(/\.html$/, "-custom.css"));
+			_include(window.location.pathname.replace(/\.html$/, "-custom.js"));
+		}
+	},
+
 	create: function(sbElement, type, attributes, className) {
 		/* specifying attributes is optional */
 		if (typeof attributes == "string") {
@@ -444,14 +455,7 @@ _crgScoreBoard = {
 		$sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
 		if (!_crgScoreBoard.doc.data("_loaded")) {
 			_crgScoreBoard.doc.data("_loaded", true).triggerHandler("load:ScoreBoard");
-			/*
-			 * After the main page's $sb() functions have been run (above),
-			 * include any custom js and/or css for the current html
-			 */
-			if (/\.html$/.test(window.location.pathname)) {
-				_include(window.location.pathname.replace(/\.html$/, "-custom.css"));
-				_include(window.location.pathname.replace(/\.html$/, "-custom.js"));
-			}
+			_crgScoreBoard.loadCustom();
 		}
 	},
 
