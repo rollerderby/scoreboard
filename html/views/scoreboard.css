@@ -8,6 +8,7 @@ div.full { height: 100%; width: 100%; border-radius: inherit; }
 div.Pulse { background: #ff0000; }
 
 /* background images */
+div.WhiteBox { font-size: 0px; }
 img.Background {
   position: absolute;
   left: 0%; top:0%; width: 100%; height: 100%;
@@ -191,7 +192,7 @@ a { font-weight: bold; font-family: helvetica; }
   #AdBox { left: 0%; top: 100%; width: 100%; height: 26%; }
   #AdBox.ShowTimeout,#AdBox.ShowLineup { top: 74%; }
 
-  #AdBox>div { top: 0%; right: 0%; width: 100%; height: 100%; }
+  #AdBox>div { top: 0%; right: 0%; width: 100%; height: 100%; font-size: 0px; }
   #AdBox>div.FinishedAd { right: -100%; }
   #AdBox>div.NextAd { right: 100%; }
 
