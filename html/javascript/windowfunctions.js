@@ -29,12 +29,17 @@ _windowFunctions = {
 	 * The auto-fit function can also be accessed via element.data("AutoFit").
 	 */
 	enableAutoFitText: function(e, options) {
+		if (!e)
+			return null;
 		e = $(e);
+		if (!e.length)
+			return null;
 		if (e.data("AutoFit"))
-			return;
+			return e.data("AutoFit");
 		e.data("AutoFit", function() { return _windowFunctions.autoFitText(e, options); });
 		$(window).bind("resize", e.data("AutoFit"));
-		setTimeout(e.data("AutoFit")); // use setTimeout as page may not be laid out fully yet
+		e.data("AutoFit").call();      // auto-fit the text now,
+		setTimeout(e.data("AutoFit")); // and also later as page may not be laid out fully yet
 		return e.data("AutoFit");
 	},
 	disableAutoFitText: function(e) {
