@@ -83,15 +83,18 @@ function setupBackgrounds() {
 ///////////////
 
 function setupTeams() {
-  $("<div>").attr("id", "Timeouts").appendTo("#scoreboardDiv")
-    .append($("<div><a>Timeouts</a></div>").addClass("Name TextContainer WhiteBox"));
+  $("<div>").attr("id", "Timeouts").appendTo("#scoreboardDiv");
+
+  $("<div>").addClass("Name WhiteBox").appendTo("#Timeouts");
+  $("<div><a>Timeouts</a></div>").addClass("Name TextContainer").appendTo("#Timeouts");
 
   $.each( [ "1", "2" ], function() {
     var team = String(this);
     var id = "Team"+team;
     var sbTeam = $sb("ScoreBoard.Team("+team+")");
 
-    $("<div>").addClass("Team"+team+" Number TextContainer WhiteBox").appendTo("#Timeouts")
+    $("<div>").addClass("Team"+team+" Number WhiteBox").appendTo("#Timeouts");
+    $("<div>").addClass("Team"+team+" Number TextContainer").appendTo("#Timeouts")
       .append($("<div>").addClass("Pulse full").css("opacity", 0))
       .append(sbTeam.$sb("Timeouts").$sbElement("<a>", "Number"));
 
@@ -101,23 +104,23 @@ function setupTeams() {
     $("<div><a/></div>").addClass("Name TextContainer Animation").appendTo(teamDiv);
     $("<div><div><img/></div></div>").addClass("Logo Animation").appendTo(teamDiv)
       .children("div").addClass("Inner");
-    $("<div><a/></div>").addClass("Score WhiteBox TextContainer").appendTo(teamDiv);
+    $("<div>").addClass("Score WhiteBox").appendTo(teamDiv);
+    $("<div><a/></div>").addClass("Score TextContainer").appendTo(teamDiv);
     $("<div><a/><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
       .children("a:first").addClass("Jammer").end()
       .children("a:last").addClass("Pulse").css("opacity", 0);
 
-    var sbElementAttrs = { sbelement: { autoFitText: { max: 15, overage: 15 } } };
-    sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), sbElementAttrs, "Name");
+    sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
     sbTeam.$sb("TeamLogo.Filename").$sbElement(teamDiv.find("div.Logo img"), "Logo");
-    sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), "Score");
-    sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), sbElementAttrs);
+    sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 50 } } }, "Score");
+    sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), { sbelement: { autoFitText: true } });
 
     sbTeam.$sb("Name").$sbBindAndRun("content", function(event,value) {
       teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, 500);
     });
 
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
-    var resizeName = teamDiv.find("div.Name>a").data("AutoFit");
+    var resizeName = teamDiv.find("div.Name").data("AutoFit");
     sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event, newVal, oldVal) {
       var sbLogo = $sb(this);
       teamDiv.children(".TeamAnimationQueue").queue(function(next) {
@@ -141,7 +144,7 @@ function setupTeams() {
             teamDiv.find("div.Name,div.TeamAnimationFlag").removeClass("ShowLogo");
             var resizedCss = resizeName();
             teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();
-            teamDiv.find("div.Name>a").animate(resizedCss, 500, function() {
+            teamDiv.find("div.Name").animate(resizedCss, 500, function() {
               teamDiv.find("div.Name").removeClass("ShowLogo"); resizeName();
               next();
             });
@@ -189,21 +192,22 @@ function setupClocks() {
     var sbClock = $sb("ScoreBoard.Clock("+clock+")");
 
     var clockDiv = $("<div>").attr("id", id).addClass("Clock Animation").appendTo("#scoreboardDiv")
-      .append($("<div><a/></div>").addClass("Name WhiteBox TextContainer"))
-      .append($("<div><a/></div>").addClass("Time WhiteBox TextContainer"));
+      .append($("<div>").addClass("Name WhiteBox"))
+      .append($("<div><a><span/></a></div>").addClass("Name TextContainer"))
+      .append($("<div>").addClass("Time WhiteBox"))
+      .append($("<div><a><span/></a></div>").addClass("Time TextContainer"));
 
-    sbClock.$sb("Name").$sbElement("<span>", "Name").appendTo(clockDiv.find("div.Name>a"));
+    sbClock.$sb("Name").$sbElement(clockDiv.find("div.Name>a>span"), "Name");
 
-    sbClock.$sb("Time")
-      .$sbElement("<span>", { sbelement: { convert: clockConversions[id] } }, "Time")
-      .appendTo(clockDiv.find("div.Time>a"));
+    sbClock.$sb("Time").$sbElement(clockDiv.find("div.Time>a>span"),
+      { sbelement: { convert: clockConversions[id] } }, "Time");
   });
 
   $("#Period,#Jam").find("div.Name>a").append($("<span>").addClass("space").text(" "))
-  $("#Period,#Period_small").find("div.Name>a")
-    .append($sb("ScoreBoard.Clock(Period).Number").$sbElement("<span>", "Number"));
-  $("#Jam,#Jam_small").find("div.Name>a")
-    .append($sb("ScoreBoard.Clock(Jam).Number").$sbElement("<span>", "Number"));
+  $("#Period,#Period_small").find("div.Name>a").append($("<span>").addClass("Number"));
+  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#Period>div.Name>a>span.Number,#Period_small>div.Name>a>span.Number");
+  $("#Jam,#Jam_small").find("div.Name>a").append($("<span>").addClass("Number"));
+  $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#Jam>div.Name>a>span.Number,#Jam_small>div.Name>a>span.Number");
   $("#Period_small>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("P"));
   $("#Jam_small>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("J"));
   $("#Lineup>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("Line Up"));
@@ -211,22 +215,29 @@ function setupClocks() {
   $("#Jam_small>div.Time").remove();
   $("#Timeout>div.Name").prepend($("<div>").addClass("Pulse full").css("opacity", 0));
   $("#Intermission>div.Name>a>span.Name").remove();
-  var intermissionAutoFitText = _windowFunctions.enableAutoFitText("#Intermission>div.Name>a", { max: 15, overage: 15 });
+
+// FIXME - this intermission stuff is a mess, can it get fixed up or simplified?!?
+  var intermissionAutoFitText = _windowFunctions.enableAutoFitText("#Intermission>div.Name.TextContainer");
   $sbThisPage.$sbBindAddRemoveEach("Intermission", function(event,node) {
     $("#Intermission>div.Name>a")
-      .append(node.$sb("ShowUnofficial").$sbElement("<span>", { sbelement: {
-        boolean: true,
-        convert: { "true": "Unofficial ", "false": "" }
-      } }, "Unofficial "+node.$sbId))
-      .append(node.$sb("Text").$sbElement("<span>", "Name "+node.$sbId))
-      .children("span."+node.$sbId).toggle($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
-    node.$sb("ShowUnofficial").$sbBindAndRun("content", intermissionAutoFitText);
+      .append($("<span>").addClass("Unofficial "+node.$sbId))
+      .append($("<span>").addClass("Name "+node.$sbId))
+      .children("span."+node.$sbId).toggle($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
+
+    node.$sb("ShowUnofficial").$sbElement("#Intermission>div.Name>a>span.Unofficial."+node.$sbId, { sbelement: {
+      boolean: true,
+      convert: { "true": "Unofficial ", "false": "" },
+      autoFitText: { container: "div" }
+    } });
+    node.$sb("Text").$sbElement("#Intermission>div.Name>a>span.Name."+node.$sbId, { sbelement: {
+      autoFitText: { container: "div" }
+    } });
+
     node.$sb("Confirmed").$sbBindAndRun("content", function(event,value) {
       $("#Intermission>div.Name>a>span.Unofficial."+node.$sbId)
         .toggle(!isTrue(value) && $sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
       intermissionAutoFitText();
     });
-    node.$sb("Text").$sbBindAndRun("content", intermissionAutoFitText);
     node.$sb("HideClock").$sbBindAndRun("content", function(event,value) {
       if ($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
         $("#Intermission>div.Time").toggle(!isTrue(value));    
@@ -237,7 +248,8 @@ function setupClocks() {
   $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("content", function(event,value) {
     $("#Intermission>div.Name>a>span")
       .filter(":not(."+value+")").hide().end()
-      .filter("."+value).show();
+      .filter("."+value).show()
+      .filter(".Unofficial").toggle(!$sbThisPage.$sb("Intermission("+value+").Confirmed").$sbIsTrue());
     intermissionAutoFitText();
     $("#Intermission>div.Time").toggle(!$sbThisPage.$sb("Intermission("+value+").HideClock").$sbIsTrue());
   });
