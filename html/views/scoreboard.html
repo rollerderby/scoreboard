@@ -318,11 +318,13 @@ function setupAds() {
   $('#AdBox>div:last>img').attr("src", getNextAdSrc(firstSrc));
   var nextImgFunction = function() {
     var adbox = $("#AdBox");
-    var currentAdSrc = adbox.find("div.NextAd>img").attr("src");
-    adbox.children("div.NextAd").switchClass("NextAd", "CurrentAd", animateTime.ad);
-    adbox.children("div.CurrentAd").switchClass("CurrentAd", "FinishedAd", animateTime.ad, function() {
-      $(this).switchClass("FinishedAd", "NextAd", 0).children("img").attr("src", getNextAdSrc(currentAdSrc));
-    });
+    if (adbox.hasClass("ShowTimeout") || adbox.hasClass("ShowLineup")) {
+      var currentAdSrc = adbox.find("div.NextAd>img").attr("src");
+      adbox.children("div.NextAd").switchClass("NextAd", "CurrentAd", animateTime.ad);
+      adbox.children("div.CurrentAd").switchClass("CurrentAd", "FinishedAd", animateTime.ad, function() {
+        $(this).switchClass("FinishedAd", "NextAd", 0).children("img").attr("src", getNextAdSrc(currentAdSrc));
+      });
+    }
     adbox.delay(5000, "AdChangeQueue").queue("AdChangeQueue", nextImgFunction).dequeue("AdChangeQueue");
   };
   nextImgFunction();
