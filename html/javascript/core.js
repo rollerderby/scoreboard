@@ -131,11 +131,19 @@
  *       default) will be reset to the pre-conversion value (after
  *       conversion to boolean, if applicable).
  *   autoFitText: boolean || {}
- *     If true, the HTML element text will be auto-fit to the container,
+ *     If true, the HTML element text will be auto-fit to its immediate parent,
  *     using _windowFunctions.enableAutoFitText() with no options.
  *     If set to an object, that object will be used as the options.
- *     If needed, the element's auto-fit function can be accessed
- *     by data("AutoFit").
+ *     If the object has a 'container' parameter set, that will be used
+ *     instead of the immediate parent.  Note that if the container/parent
+ *     already is enabled for auto-fit, it will ignore any new options
+ *     and continue to use its initial options. 
+// FIXME - this isn't optimal, would be better to figure something else out
+ *     Note if the element has no parent (yet), and no container is specified,
+ *     the auto-fit enablement is deferred to setTimeout() which will
+ *     allow the current code to add the element to a parent; however if
+ *     the element still has no parent in the deferred call auto-fit will not
+ *     be enabled.
  *
  * sbcontrol
  * The special "sbcontrol" object can contain any of these fields which
@@ -218,12 +226,29 @@ _crgScoreBoard = {
 			.addClass(className);
 		_crgScoreBoard.setHtmlValue(elements, sbElement.$sbGet());
 		if (sbelement.autoFitText) {
-			var autoFitOptions;
-			if (typeof sbelement.autoFitText == "object")
-				autoFitOptions = sbelement.autoFitText;
+			var options = { };
+			if ($.type(sbelement.autoFitText) == "object")
+				options = sbelement.autoFitText;
 			elements.each(function() {
-				var autoFitFunction = _windowFunctions.enableAutoFitText($(this), autoFitOptions);
-				sbElement.bind("content", autoFitFunction);
+				var e = $(this);
+				var enableAutoFit = function() {
+					var container = e.parent();
+					if ($.isjQuery(options.container))
+						container = options.container;
+					else if ($.type(options.container) == "string")
+						container = e.closest(options.container);
+					else if ($.type(options.container) == "function")
+						container = options.container.call(e);
+					var opts = $.extend({}, options);
+					delete opts.container;
+					if (container && container.length) {
+						sbElement.bind("content", _windowFunctions.enableAutoFitText(container, opts));
+						return true;
+					} else {
+						return false;
+					}
+				};
+				enableAutoFit() || setTimeout(enableAutoFit);
 			});
 		}
 		return elements;
