@@ -51,81 +51,146 @@ _windowFunctions = {
 	/* This should be called each time the text content changes and/or the window resizes.
 	 * It resizes the text element to fit, and returns the current relevant css properties.
 	 * The options are:
-	 *   max: number (default: 100)
-	 *     This sets the maximum font size, in %.
+	 *   referenceFontSize: number (default: window height)
+	 *     This is the reference font size, in px.  If not specified,
+	 *     the window height is used.
+	 *   min: number (default: 1)
+	 *     This sets the minimum font size, in % of the reference font size.
+	 *   max: number (default: 1000)
+	 *     This sets the maximum font size, in % of the reference font size.
 	 *   overage: number (default: 0)
-	 *     This sets the overage, in %.  The overage increases the vertical height allowed,
-	 *     so the auto-sized text element can be vertically larger than its parent container.
+	 *     This sets the overage, in additional % of the container's height.
+	 *     The overage increases the vertical height allowed, so the auto-sized
+	 *     text element can be vertically larger than its parent container.
 	 *     Usually with text elements, there is blank space vertically surrounding the text,
 	 *     so this allows pushing that vertical blank space outside the container, which
 	 *     allows the actual text font to fill up more of the container.
 	 *   percentHeight: number (default: 98)
-	 *     This sets the minimum height value, in %, that indicates a successful fit.
-	 *     Once the element's height is at least this percent of the container's height,
-	 *     after accounting for overage, the auto fitting will stop at the current settings.
-	 *   iterations: number (default: 10)
+	 *     This sets the minimum height value, in % of the container's height,
+	 *     that indicates a successful fit.  Once the element's height is at least
+	 *     this percent of the container's height, after accounting for overage,
+	 *     the auto fitting will stop at the current settings.
+	 *   useMarginBottom: boolean (default: false)
+	 *     This causes the container's marginBottom property to be used to adjust the
+	 *     vertical position instead of the marginTop property.  By default, the
+	 *     marginTop property is used to vertically shift the container so the contained
+	 *     text is vertically centered in the container's normal position.
+	 *   noVerticalAdjust: boolean (default: false)
+	 *     If true, this prevents the marginTop (or marginBottom) property from being set.
+	 *   iterations: number (default: 30)
 	 *     This is the maximum number of iterations to fine-tune the fit.
-	 *     Unless the font size required is a very small number (in %),
-	 *     this should not need adjustment.
+	 *     It's unlikely this needs to be changed.
+	 *
+	 * This returns an object with the relevant css properties that were updated.
 	 */
-	autoFitText: function(text, options) {
-		var container = text.parent();
-		var getTextCss = function() {
-			return { fontSize: text.css("fontSize"), top: text.css("top"), position: text.css("position") };
-		};
-
-		if (!text.text())
-			return getTextCss();
-
+	autoFitText: function(container, options) {
 		if (!options)
 			options = { };
 
+		var cssObject = function() {
+			var obj = { fontSize: container.css("fontSize") };
+			if (!options.noVerticalAdjust) {
+				if (options.useMarginBottom)
+					obj.marginBottom = container.css("marginBottom");
+				else
+					obj.marginTop = container.css("marginTop");
+			}
+			return cssObject;
+		};
+
+		if (!container.text())
+			return cssObject();
+
+		var contents = container.children();
+		if (!contents.length)
+			return cssObject();
+		else if (1 < contents.length)
+			contents = container.wrapInner("<span>").children().addClass("autoFitTextWrapper");
+
+		var min = options.min || 0.1;
 		var max = options.max || 100;
-		var iterations = options.iterations || 10;
+		var iterations = options.iterations || 30;
 		var percentHeight = (options.percentHeight || 98) / 100;
-		var overage = (options.overage || 0) / 100;
+		var overage = options.overage || 0;
 
 		var maxW = container.innerWidth();
 		var maxH = container.innerHeight();
-		var overH = overage * maxH;
-		var targetH = maxH + overH;
+		var targetH = (((100 + overage) / 100) * maxH);
 
-		var topSize = max, bottomSize = max;
+		var referenceFontSize = options.referenceFontSize || $(window).height();
+		var minFontSize = ((min * referenceFontSize) / 100);
+		var maxFontSize = ((max * referenceFontSize) / 100);
+
 		var overSize = function() {
-			return (text.outerWidth(true) > maxW) || (text.outerHeight(true) > targetH);
+			return (contents.outerWidth(true) > maxW) || (contents.outerHeight(true) > targetH);
 		};
 		var atPercentHeight = function() {
-			return (text.outerHeight(true) > (percentHeight * targetH));
+			return (contents.outerHeight(true) > (percentHeight * targetH));
+		};
+		var checkSize = function() {
+			if (overSize())
+				return 1;
+			else if (atPercentHeight())
+				return 0;
+			else
+				return -1;
+		};
+		var lastFontSize = 0;
+		var fontSizeChanged = function() {
+			var changed = (lastFontSize != currentFontSize());
+			lastFontSize = currentFontSize();
+			return changed;
+		};
+		var updateSizes = function(minNewSize, maxNewSize) {
+			minFontSize = Number(minNewSize);
+			maxFontSize = Number(maxNewSize);
+			updateFontSize((minFontSize + maxFontSize) / 2);
+			return fontSizeChanged();
 		};
 		var updateFontSize = function(size) {
-			text.css("fontSize", ((size * $(window).height()) / 100)+"px");
+			container.css("fontSize", size+"px");
+			updateTop();
+		};
+		var updateTop = function() {
+			if (noVerticalAdjust)
+				return;
+			var vShift = ((maxH - contents.outerHeight(true)) / 2);
+			if (options.useMarginBottom)
+				container.css("margin-bottom", (-1*vShift)+"px");
+			else
+				container.css("margin-top", vShift+"px");
+		};
+		var currentFontSize = function() {
+			return Number(container.css("fontSize").replace(/px$/, ""));
+		};
+		var shrinkToFit = function() {
+			var reduceBy = 1;
+			while (overSize()) {
+				updateFontSize(currentFontSize() - reduceBy);
+				if (!fontSizeChanged())
+					reduceBy++;
+			}
 		};
 
-		text.css({ position: "absolute", top: "0px" });
-		updateFontSize(topSize);
+		updateTop();
+		if (currentFontSize() > maxFontSize)
+			container.css("fontSize", maxFontSize);
+		if (currentFontSize() < minFontSize)
+			container.css("fontSize", minFontSize);
 
-		while (overSize() && (bottomSize > 0)) {
-			topSize = bottomSize;
-			updateFontSize(bottomSize--);
+		while (0 < iterations--) {
+			var check = checkSize();
+			if ((-1 == check) && !updateSizes(currentFontSize(), maxFontSize))
+				break;
+			if (0 == check)
+				break;
+			if ((1 == check) && !updateSizes(minFontSize, currentFontSize()))
+				break;
 		}
+		shrinkToFit();
 
-		if (topSize != bottomSize) {
-			for (var i=0; i<iterations; i++) {
-				var newSize = ((bottomSize + topSize) / 2);
-				updateFontSize(newSize);
-				if (overSize())
-					topSize = newSize;
-				else if (atPercentHeight())
-					break;
-				else
-					bottomSize = newSize;
-			}
-			if (overSize())
-				updateFontSize(bottomSize);
-		}
-
-		text.css("top", ((maxH - text.outerHeight(true)) / 2)+"px");
-		return getTextCss();
+		contents.filter(".autoFitTextWrapper").children().unwrap();
+		return cssObject();
 	},
 
 	/* URL parameters */
