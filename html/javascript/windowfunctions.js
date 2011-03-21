@@ -152,7 +152,7 @@ _windowFunctions = {
 			updateTop();
 		};
 		var updateTop = function() {
-			if (noVerticalAdjust)
+			if (options.noVerticalAdjust)
 				return;
 			var vShift = ((maxH - contents.outerHeight(true)) / 2);
 			if (options.useMarginBottom)
