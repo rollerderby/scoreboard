@@ -55,12 +55,6 @@ $sb(function() {
   setupClocks();
 
   setupBackgrounds();
-
-//FIXME - move this into setupMainDiv?  But need to run TextContainer sizing last in page init.
-  _crgUtils.bindAndRun($(window), "resize", function() {
-    $("#mainDiv").css(_windowFunctions.get4x3Dimensions());
-    $("div.TextContainer").css("fontSize", $(window).height()+"px");
-  });
 });
 
 // FIXME - needs to be a single call from scoreboard.js
@@ -72,13 +66,15 @@ function setupMainDiv(div) {
       .css(String(this), "100%")
       .appendTo(div);
   });
+
+  _crgUtils.bindAndRun($(window), "resize", function() {
+    $("#mainDiv").css(_windowFunctions.get4x3Dimensions()).css("fontSize", $(window).height()+"px");
+  });
 }
 
 function setupBackgrounds() {
-  $("<img>")
-    .addClass("Background")
-    .attr("src", "/images/white-gradient.png")
-    .appendTo("div.WhiteBox");
+  $("<img>").addClass("Background").attr("src", "/images/white-gradient.png")
+    .appendTo(".WhiteBox");
 }
 
 
