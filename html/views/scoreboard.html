@@ -73,8 +73,11 @@ function setupMainDiv(div) {
 }
 
 function setupBackgrounds() {
-  $("<img>").addClass("Background").attr("src", "/images/white-gradient.png")
-    .appendTo(".WhiteBox");
+  _crgUtils.bindAndRun($(window), "resize", function() {
+    $("div.WhiteBox").each(function() {
+      $(this).css("fontSize", $(this).height()+"px");
+    });
+  });
 }
 
 
