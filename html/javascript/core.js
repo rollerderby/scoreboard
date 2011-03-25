@@ -180,7 +180,7 @@ _crgScoreBoard = {
 	POLL_INTERVAL_MAX: 500,
 	POLL_INTERVAL_INCREMENT: 10,
 	pollRate: this.POLL_INTERVAL_MIN,
-	doc: $.xmlDOM("<document></document>").find("document"),
+	doc: $("document", $.parseXML("<document></document>")),
 	addEventTriggered: { },
 	sbExtensions: {
 		$sbExtended: true,
