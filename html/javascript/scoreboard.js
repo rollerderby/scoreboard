@@ -52,4 +52,12 @@ _include("/javascript", [
 
 
 /* Start ScoreBoard server polling */
-$(_crgScoreBoard.scoreBoardRegister);
+$(function() {
+	_crgUtils.showBrowserWarning(_crgScoreBoard.scoreBoardRegister, {
+		msie:
+			"Internet Explorer is not supported as it is not w3c standards compliant."+
+			"The scoreboard will not work."+
+			"You should use either Google Chrome or Mozilla Firefox instead."
+	});
+});
+
