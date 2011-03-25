@@ -32,7 +32,7 @@ _crgUtils = {
 	 */
 	bindAndRun: function(target, eventType, eventData, handler, initialParams) {
 		target.bind(eventType, eventData, handler);
-		if (typeof eventData == "function") {
+		if ($.type(eventData) == "function") {
 			initialParams = handler;
 			handler = eventData;
 			eventData = undefined;
