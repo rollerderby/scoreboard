@@ -41,7 +41,7 @@ _crgUtils = {
 			var params = [ ];
 			if (initialParams)
 				params = initialParams;
-			else if (eventType.trim() == "content" && $sb(this))
+			else if ($.trim(eventType) == "content" && $sb(this))
 				params = [ $sb(this).$sbGet(), $sb(this).$sbGet() ];
 //FIXME - call once for each eventType after splitting by spaces?
 			var event = jQuery.Event(eventType);
