@@ -164,7 +164,7 @@ $sb = function(arg) {
 		if (_crgScoreBoard.documentLoaded)
 			callArg();
 		else
-			_crgScoreBoard.doc.one("load:ScoreBoard", callArg);
+			_crgScoreBoard.documentEvents.one("load:ScoreBoard", callArg);
 	} else if (typeof arg == "string") {
 		return _crgScoreBoard.findScoreBoardElement(_crgScoreBoard.doc, arg);
 	} else if (($.isjQuery(arg) || (arg = $(arg))) && arg[0] && $.isXMLDoc(arg[0]) && (arg[0].ownerDocument == _crgScoreBoard.doc[0].ownerDocument)) {
@@ -181,6 +181,8 @@ _crgScoreBoard = {
 	POLL_INTERVAL_INCREMENT: 10,
 	pollRate: this.POLL_INTERVAL_MIN,
 	doc: $("document", $.parseXML("<document></document>")),
+	documentLoaded: false,
+	documentEvents: $("<div>"),
 	addEventTriggered: { },
 	sbExtensions: {
 		$sbExtended: true,
@@ -484,7 +486,7 @@ _crgScoreBoard = {
 		$sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
 		if (!_crgScoreBoard.documentLoaded) {
 			_crgScoreBoard.documentLoaded = true;
-			_crgScoreBoard.doc.triggerHandler("load:ScoreBoard");
+			_crgScoreBoard.documentEvents.triggerHandler("load:ScoreBoard");
 			_crgScoreBoard.loadCustom();
 		}
 	},
