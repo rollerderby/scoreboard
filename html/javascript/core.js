@@ -161,7 +161,7 @@ $sb = function(arg) {
 
 	if ($.isFunction(arg)) {
 		var callArg = function() { arg.call($sb()); };
-		if (_crgScoreBoard.doc.data("_loaded"))
+		if (_crgScoreBoard.documentLoaded)
 			callArg();
 		else
 			_crgScoreBoard.doc.one("load:ScoreBoard", callArg);
@@ -181,6 +181,7 @@ _crgScoreBoard = {
 	POLL_INTERVAL_INCREMENT: 10,
 	pollRate: this.POLL_INTERVAL_MIN,
 	doc: $.xmlDOM("<document></document>").find("document"),
+	addEventTriggered: { },
 	sbExtensions: {
 		$sbExtended: true,
 		$sb: function(arg) { return _crgScoreBoard.findScoreBoardElement(this, arg); },
@@ -346,6 +347,7 @@ _crgScoreBoard = {
 	removeScoreBoardElement: function(parent, e) {
 		if (!e) return;
 		e.children(function() { removeScoreBoardElement(e, $sb(this)); });
+		delete _crgScoreBoard.addEventTriggered[e.$sbPath];
 		parent.trigger("remove", [ e ]);
 		parent.trigger("remove:"+e.$sbName, [ e ]);
 		e.remove();
@@ -464,8 +466,8 @@ _crgScoreBoard = {
 		$element.children().each(function() { _crgScoreBoard.processScoreBoardElement(e, this, triggerArray); });
 		if (fireEvents) {
 			$.each(triggerArray, function() {
-				if (!this.node.data("_crgScoreBoard:addEventTriggered")) {
-					this.node.data("_crgScoreBoard:addEventTriggered", true);
+				if (!_crgScoreBoard.addEventTriggered[this.node.$sbPath]) {
+					_crgScoreBoard.addEventTriggered[this.node.$sbPath] = true;
 					this.node.parent().trigger("add", [ this.node ]);
 					this.node.parent().trigger("add:"+this.node.$sbName, [ this.node ]);
 				}
@@ -476,10 +478,13 @@ _crgScoreBoard = {
 	},
 
 	processScoreBoardXml: function(xml) {
-		$(xml).find("document").children().each(function(index) { _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this); });
+		$(xml).find("document").children().each(function(index) {
+			_crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
+		});
 		$sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
-		if (!_crgScoreBoard.doc.data("_loaded")) {
-			_crgScoreBoard.doc.data("_loaded", true).triggerHandler("load:ScoreBoard");
+		if (!_crgScoreBoard.documentLoaded) {
+			_crgScoreBoard.documentLoaded = true;
+			_crgScoreBoard.doc.triggerHandler("load:ScoreBoard");
 			_crgScoreBoard.loadCustom();
 		}
 	},
