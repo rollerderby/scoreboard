@@ -279,19 +279,10 @@ _crgUtils = {
 	},
 
 	showBrowserWarning: function(next, options) {
-		var showWarning = function(message) {
-			var div = $("<div>");
-			$("<p>").html(message).appendTo(div);
-			div.dialog({
-				title: "Unsupported Browser!",
-				modal: true,
-				buttons: { Ok: function() { $(this).dialog("destroy").remove(); next(); } }
-			});
-		};
 		var callNext = true;
 		$.each(options, function(key,value) {
 			if ($.browser[key]) {
-				showWarning(value);
+				alert(value);
 				return (callNext = false);
 			}
 		});
