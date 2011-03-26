@@ -395,9 +395,9 @@ _crgScoreBoard = {
 			var convertOptions = sbE.convertOptions || {};
 			if (sbE.convert) {
 				var tmpV = v;
-				if (typeof sbE.convert == "function")
+				if ($.type(sbE.convert) == "function")
 					tmpV = sbE.convert.call(this, tmpV);
-				else if (typeof sbE.convert == "object")
+				else if ($.type(sbE.convert) == "object")
 					tmpV = sbE.convert[String(tmpV)];
 				if (tmpV === undefined)
 					tmpV = convertOptions["default"];
