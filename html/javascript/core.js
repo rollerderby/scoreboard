@@ -480,7 +480,7 @@ _crgScoreBoard = {
 	},
 
 	processScoreBoardXml: function(xml) {
-		$(xml).find("document").children().each(function(index) {
+		$(xml).children("document").children().each(function(index) {
 			_crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
 		});
 		$sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
