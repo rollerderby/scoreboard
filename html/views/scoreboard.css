@@ -16,6 +16,7 @@ div.WhiteBox {
 
 /* Fixed-size text containers/elements */
 div.TextContainer { text-align: center; }
+div.TextContainer>a { position: relative; }
 
 /* All text elements use the same font and weight, for now */
 a { font-weight: bold; font-family: helvetica; }
@@ -80,11 +81,12 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Name sub-box */
   #Timeouts>div.Name { left: 0%; top: 0%; width: 100%; height: 30%; border-radius: 8% / 25%; }
-  #Timeouts>div.Name.TextContainer { font-size: 4%; margin-top: 1%; }
+  #Timeouts>div.Name.TextContainer { font-size: 4%; }
 
   /* Number sub-boxes */
   #Timeouts>div.Number { bottom: 0%; width: 45%; height: 50%; border-radius: 25%/ 25%; }
-  #Timeouts>div.Number.TextContainer { font-size: 9%; margin-bottom: 5%; }
+  #Timeouts>div.Number.TextContainer { font-size: 9%; }
+  #Timeouts>div.Number.TextContainer>a { top: -15%; }
   #Timeouts>div.Number.Team1 { left: 0%; }
   #Timeouts>div.Number.Team2 { right: 0%; }
 /* End Timeouts */
@@ -96,11 +98,13 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Name sub-box */
   #Period>div.Name { top: 15%; left: 18%; width: 64%; height: 24%; border-radius: 8.5% / 30%; }
-  #Period>div.Name.TextContainer { font-size: 9.5%; margin-top: -2%; }
+  #Period>div.Name.TextContainer { font-size: 9.5%; }
+  #Period>div.Name.TextContainer>a { top: -10%; }
 
   /* Time sub-box */
   #Period>div.Time { top: 44%; right: 10%; width: 80%; height: 39%; border-radius: 7% / 24%; }
-  #Period>div.Time.TextContainer { font-size: 20%; margin-top: -9%; }
+  #Period>div.Time.TextContainer { font-size: 20%; }
+  #Period>div.Time.TextContainer>a { top: -25%; }
 /* End Period */
 
 /* Period_small */
@@ -110,11 +114,12 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Name sub-box */
   #Period_small>div.Name { top: 0%; left: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
-  #Period_small>div.Name.TextContainer { font-size: 10%; margin-top: 0%; }
+  #Period_small>div.Name.TextContainer { font-size: 10%; }
 
   /* Time sub-box */
   #Period_small>div.Time { top: 0%; left: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-  #Period_small>div.Time.TextContainer { font-size: 13%; margin-top: -4%; }
+  #Period_small>div.Time.TextContainer { font-size: 13%; }
+  #Period_small>div.Time.TextContainer>a { top: -17.5%; }
 /* End Period_small */
 
 /* Jam */
@@ -124,11 +129,13 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Name sub-box */
   #Jam>div.Name { top: 15%; left: 18%; width: 64%; height: 24%; border-radius: 8.5% / 30%; }
-  #Jam>div.Name.TextContainer { font-size: 9.5%; margin-top: -2%; }
+  #Jam>div.Name.TextContainer { font-size: 9.5%; }
+  #Jam>div.Name.TextContainer>a { top: -10%; }
 
   /* Time sub-box */
   #Jam>div.Time { top: 44%; right: 10%; width: 80%; height: 39%; border-radius: 7% / 24%; }
-  #Jam>div.Time.TextContainer { font-size: 20%; margin-top: -9%; }
+  #Jam>div.Time.TextContainer { font-size: 20%; }
+  #Jam>div.Time.TextContainer>a { top: -25%; }
 /* End Jam */
 
 /* Jam_small */
@@ -138,7 +145,7 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Name sub-box */
   #Jam_small>div.Name { top: 0%; left: 42%; width: 16.25%; height: 29%; border-radius: 8.5% / 30%; }
-  #Jam_small>div.Name.TextContainer { font-size: 10%; margin-top: 0%; }
+  #Jam_small>div.Name.TextContainer { font-size: 10%; }
 /* End Jam_small */
 
 /* Lineup */
@@ -148,11 +155,12 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Name sub-box */
   #Lineup>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
-  #Lineup>div.Name.TextContainer { font-size: 5%; margin-top: 0%; }
+  #Lineup>div.Name.TextContainer { font-size: 5%; }
 
   /* Time sub-box */
   #Lineup>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-  #Lineup>div.Time.TextContainer { font-size: 13%; margin-top: -4%; }
+  #Lineup>div.Time.TextContainer { font-size: 13%; }
+  #Lineup>div.Time.TextContainer>a { top: -17.5%; }
 /* End Lineup */
 
 /* Timeout */
@@ -162,11 +170,12 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Name sub-box */
   #Timeout>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
-  #Timeout>div.Name.TextContainer { font-size: 5%; margin-top: 0%; }
+  #Timeout>div.Name.TextContainer { font-size: 5%; }
 
   /* Time sub-box */
   #Timeout>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-  #Timeout>div.Time.TextContainer { font-size: 13%; margin-top: -4%; }
+  #Timeout>div.Time.TextContainer { font-size: 13%; }
+  #Timeout>div.Time.TextContainer>a { top: -17.5%; }
 /* End Timeout */
 
 /* Intermission */
@@ -179,7 +188,8 @@ a { font-weight: bold; font-family: helvetica; }
 
   /* Time sub-box */
   #Intermission>div.Time { top: 36.5%; left: 20%; width: 60%; height: 56%; border-radius: 7% / 24%; }
-  #Intermission>div.Time.TextContainer { font-size: 29%; margin-top: -13%; }
+  #Intermission>div.Time.TextContainer { font-size: 29%; }
+  #Intermission>div.Time.TextContainer>a { top: -25%; }
 /* End Intermission */
 
 /* Ad box */
