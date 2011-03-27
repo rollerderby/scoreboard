@@ -79,10 +79,10 @@ _crgUtils = {
 	 *           (i.e. after the add function is called for all matching children)
 	 */
 	bindAddRemoveEach: function(target, childname, add, remove) {
+		target = $sb(target);
 		var options = { childname: childname, add: add, remove: remove };
 		if (typeof childname == "object")
 			options = childname;
-		target = $sb(target);
 		childname = options.childname || "";
 		add = options.add || $.noop;
 		remove = options.remove || $.noop;
