@@ -27,19 +27,31 @@ public class ScoreBoardManager
 		sbV.setScoreBoard(scoreBoardModel.getScoreBoard());
 	}
 
+	private static void doExit(String err) { doExit(err, null); }
+	private static void doExit(String err, Exception ex) {
+		System.err.println(err);
+		if (ex != null)
+			ex.printStackTrace();
+		System.err.println("Fatal error.  Exiting in 15 seconds.");
+		try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
+		System.exit(1);
+	}
+
 	private static void loadProperties() {
 		InputStream is = ScoreBoardManager.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE_NAME);
 
 		if (null == is) {
-			System.err.println("Could not find properties file " + PROPERTIES_FILE_NAME);
-			System.exit(1);
+			try {
+				is = new FileInputStream(new File(PROPERTIES_DIR_NAME, PROPERTIES_FILE_NAME));
+			} catch ( FileNotFoundException fnfE ) {
+				doExit("Could not find properties file " + PROPERTIES_FILE_NAME);
+			}
 		}
 
 		try {
 			properties.load(is);
 		} catch ( Exception e ) {
-			System.err.println("Could not load " + PROPERTIES_FILE_NAME + " file : " + e.getMessage());
-			System.exit(1);
+			doExit("Could not load " + PROPERTIES_FILE_NAME + " file : " + e.getMessage(), e);
 		}
 
 		try { is.close(); }
@@ -49,18 +61,14 @@ public class ScoreBoardManager
 	private static void loadModel() {
 		String s = properties.getProperty(PROPERTY_MODEL_KEY);
 
-		if (null == s) {
-			System.err.println("No model defined.");
-			System.exit(1);
-		}
+		if (null == s)
+			doExit("No model defined.");
 
 		try {
 			scoreBoardModel = (ScoreBoardModel)Class.forName(s).newInstance();
 			System.out.println("Loaded ScoreBoardModel : "+s);
 		} catch ( Exception e ) {
-			System.err.println("Could not create model : " + e.getMessage());
-			e.printStackTrace();
-			System.exit(1);
+			doExit("Could not create model : " + e.getMessage(), e);
 		}
 	}
 
@@ -84,10 +92,8 @@ public class ScoreBoardManager
 			}
 		}
 
-		if (0 == count) {
-			System.err.println("No controllers created.");
-			System.exit(1);
-		}
+		if (0 == count)
+			doExit("No controllers created.");
 	}
 
 	private static void loadViewers() {
@@ -113,6 +119,7 @@ public class ScoreBoardManager
 
 	private static ScoreBoardModel scoreBoardModel;
 
+	public static final String PROPERTIES_DIR_NAME = "lib";
 	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
 
 	public static final String PROPERTY_MODEL_KEY = ScoreBoardManager.class.getName()+".model";
