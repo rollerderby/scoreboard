@@ -4,11 +4,40 @@
 CRG ScoreBoard Start Page
 </title>
 
-<script type="text/javascript" src="html/external/jquery/jquery.js" />
+<script type="text/javascript" src="html/external/jquery/jquery.js" ></script>
 
 <script type="text/javascript" >
 
+function updateRedirect() {
+  var time = Number($("a#RedirectDelay").text());
+  if (time == 0)
+    window.location.href = "http://localhost:8000/";
+
+  $("a#RedirectDelay").text(String(time-1));
+  setTimeout(updateRedirect, 1000);
+}
+
+function runningCheck() {
+  $("<script type='text/javascript' src='http://localhost:8000/running-test.js'>").appendTo("head");
+}
+
 $(function() {
+  var doCheck = function() {
+    var recheck = setInterval(function() {
+      $("p#Checking").hide();
+      if (window._crgScoreBoardIsRunning) {
+        $("p#NotStarted").hide();
+        $("p#Started").show();
+        clearInterval(recheck);
+        setTimeout(updateRedirect, 1000);
+      } else {
+        runningCheck();
+        $("p#NotStarted").show();
+      }
+    }, 1000);
+  };
+  runningCheck();
+  setTimeout(doCheck, 2000);
 });
 
 </script>
@@ -17,6 +46,8 @@ $(function() {
 
 p#header { text-align: center; font-weight: bold; font-size: 30px; }
 p#header>img { height: 150px; }
+
+p#NotStarted,p#Started { display: none; }
 
 </style>
 
@@ -31,8 +62,36 @@ p#header>img { height: 150px; }
 <hr/>
 </p>
 
+<p id="Checking" >
+Checking if the scoreboard is running...
+</p>
+
 <p id="NotStarted" >
-It appears the CRG ScoreBoard is not running.
+<b>It appears the CRG ScoreBoard is not running - this page will automatically update once you start the scoreboard.</b>
+<br/>
+Please check the instructions in the <a href="README">README</a> file on how to start the scoreboard.
+<br/>
+If you still have problems, please email the mailing list
+<a href="mailto:derbyscoreboard-devel@lists.sourceforge.net">
+derbyscoreboard-devel@lists.sourceforge.net
+</a>
+<br/>
+Also, you can try reading the
+<a href="http://sourceforge.net/mailarchive/forum.php?forum_name=derbyscoreboard-devel">
+mailing list archives</a>.
+<br/>
+You can also
+<a href="http://lists.sourceforge.net/lists/listinfo/derbyscoreboard-devel">
+join the mailing list
+</a>
+to keep up to date with new releases, bugfixes, and features.
+</p>
+
+<p id="Started" >
+CRG ScoreBoard is running - redirecting you to the scoreboard in
+<a id="RedirectDelay">10</a>
+seconds, or just
+<a href="http://localhost:8000/">click here</a>.
 </p>
 
 </body>

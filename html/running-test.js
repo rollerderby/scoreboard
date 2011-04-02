@@ -1,0 +1,2 @@
+
+window._crgScoreBoardIsRunning = true;
