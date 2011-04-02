@@ -86,7 +86,8 @@ _crgScoreBoardControl = {
 		};
 
 		var updateControlIfUnfocused = function(value) {
-			if (!getGroup().hasClass("isFocused") && !getGroup().hasClass("isMouseFocused"))
+			/* NOTE: only checking isMouseFocused for :button elements (currently) */
+			if (!getGroup().hasClass("isFocused") && !getGroup(":button").hasClass("isMouseFocused"))
 				setControlValue(value);
 		};
 
