@@ -10,11 +10,12 @@ CRG ScoreBoard Start Page
 
 function updateRedirect() {
   var time = Number($("a#RedirectDelay").text());
-  if (time == 0)
+  if (time == 0) {
     window.location.href = "http://localhost:8000/";
-
-  $("a#RedirectDelay").text(String(time-1));
-  setTimeout(updateRedirect, 1000);
+  } else {
+    $("a#RedirectDelay").text(String(time-1));
+    setTimeout(updateRedirect, 1000);
+  }
 }
 
 function runningCheck() {
