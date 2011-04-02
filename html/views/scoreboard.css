@@ -113,7 +113,7 @@ a { font-weight: bold; font-family: helvetica; }
   #Period_small.ShowTimeout,#Period_small.ShowLineup { right: 50%; }
 
   /* Name sub-box */
-  #Period_small>div.Name { top: 0%; left: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
+  #Period_small>div.Name { top: 0%; left: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
   #Period_small>div.Name.TextContainer { font-size: 10%; }
 
   /* Time sub-box */
@@ -144,7 +144,7 @@ a { font-weight: bold; font-family: helvetica; }
   #Jam_small.ShowTimeout,#Jam_small.ShowLineup { top: 59%; }
 
   /* Name sub-box */
-  #Jam_small>div.Name { top: 0%; left: 42%; width: 16.25%; height: 29%; border-radius: 8.5% / 30%; }
+  #Jam_small>div.Name { top: 0%; left: 42%; width: 16.25%; height: 29%; border-radius: 15% / 25%; }
   #Jam_small>div.Name.TextContainer { font-size: 10%; }
 /* End Jam_small */
 
@@ -154,7 +154,7 @@ a { font-weight: bold; font-family: helvetica; }
   #Lineup.ShowLineup { left: 50%; }
 
   /* Name sub-box */
-  #Lineup>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
+  #Lineup>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
   #Lineup>div.Name.TextContainer { font-size: 5%; }
 
   /* Time sub-box */
@@ -169,7 +169,7 @@ a { font-weight: bold; font-family: helvetica; }
   #Timeout.ShowTimeout { left: 50%; }
 
   /* Name sub-box */
-  #Timeout>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 8.5% / 30%; }
+  #Timeout>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
   #Timeout>div.Name.TextContainer { font-size: 5%; }
 
   /* Time sub-box */
@@ -184,7 +184,7 @@ a { font-weight: bold; font-family: helvetica; }
   #Intermission.ShowIntermission { top: 59%; }
 
   /* Name sub-box */
-  #Intermission>div.Name { top: 0%; left: 20%; width: 60%; height: 29%; border-radius: 8.5% / 30%; }
+  #Intermission>div.Name { top: 0%; left: 20%; width: 60%; height: 29%; border-radius: 5% / 20%; }
 
   /* Time sub-box */
   #Intermission>div.Time { top: 36.5%; left: 20%; width: 60%; height: 56%; border-radius: 7% / 24%; }
