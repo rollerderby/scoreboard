@@ -51,7 +51,12 @@ _crgScoreBoardControl = {
 			return _crgScoreBoardControl.getControlGroup(from, filter, exclude);
 		};
 
-		c.bind({ focus: function() { $(this).addClass("isFocused"); }, blur: function() { $(this).removeClass("isFocused"); } });
+		c.bind({
+			focus: function() { $(this).addClass("isFocused"); },
+			blur: function() { $(this).removeClass("isFocused"); },
+			mouseenter: function() { $(this).addClass("isMouseFocused"); },
+			mouseleave: function() { $(this).removeClass("isMouseFocused"); }
+		});
 
 		var controlValueToElementValue = function(value) {
 			var p = sbC.prefix, s = sbC.suffix, u = sbC.useNumber, t = sbC.trueString, f = sbC.falseString;
@@ -81,7 +86,8 @@ _crgScoreBoardControl = {
 		};
 
 		var updateControlIfUnfocused = function(value) {
-			if (!getGroup().hasClass("isFocused")) setControlValue(value);
+			if (!getGroup().hasClass("isFocused") && !getGroup().hasClass("isMouseFocused"))
+				setControlValue(value);
 		};
 
 		if (c.is("input:checkbox,input:radio,input:submit,input:reset,:button") && sbC.button) {
@@ -124,10 +130,11 @@ _crgScoreBoardControl = {
 				var associateText = getGroup("input:text,input:password,textarea");
 				if (associateText.length) {
 					setElementValue(associateText.val(), true);
-					$(this).blur();
+					/* Need to include all children, e.g. spans used by jquery-ui */
+					c.find("*").andSelf().blur().mouseleave();
 				} else if (c.data("sbcontrol").getButtonValue)
 //FIXME - not sure if I like getButtonValue API
-					setElementValue(c.data("sbcontrol").getButtonValue.call(this));
+					setElementValue(c.data("sbcontrol").getButtonValue.call(c));
 				else if (c.val())
 					setElementValue(c.val());
 			};
