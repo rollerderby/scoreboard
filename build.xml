@@ -67,16 +67,6 @@
 		</jarjar>
 	</target>
 
-	<!-- Create Windows scoreboard.exe -->
-	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
-	<target name="launcher" >
-		<launch4j>
-			<config outfile="${launch4j.outfile}" dontWrapJar="true" jarPath="${jar.dir}/${jar.file}" headerType="console" chdir="." >
-				<jre minVersion="1.5.0" jdkPreference="preferJre" maxHeapSize="512" />
-			</config>
-		</launch4j>
-	</target>
-
 	<!-- Create Manifest only if file doesn't exist -->
 	<target name="-manifest" unless="manifest.exists" >
 		<echo message="${jar.dir}/${manifest.file} does not exist, creating..." />
@@ -105,6 +95,17 @@
 
 	<!-- Do everything -->
 	<target name="all" depends="clean,compile,jdoc"/>
+
+	<!-- Create Windows scoreboard.exe -->
+	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+	<target name="launcher" >
+		<launch4j>
+			<config outfile="${launch4j.outfile}" dontWrapJar="true" jarPath="${jar.dir}/${jar.file}" stayAlive="true" headerType="gui" chdir="." errTitle="CRG ScoreBoard" cmdLine="--gui" >
+				<jre minVersion="1.5.0" jdkPreference="preferJre" maxHeapSize="512" />
+				<messages jreVersionErr="You do not have Java installed.  Press OK to open the Java download website.  Restart the scoreboard after installing Java.\nError: The scoreboard requires Java JRE minimum version" />
+			</config>
+		</launch4j>
+	</target>
 
 	<!-- Clean all classfiles -->
 	<target name="clean">
