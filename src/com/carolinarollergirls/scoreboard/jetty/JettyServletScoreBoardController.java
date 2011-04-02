@@ -22,7 +22,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 		try {
 			port = Integer.parseInt(ScoreBoardManager.getProperties().getProperty(PROPERTY_PORT_KEY));
 		} catch ( Exception e ) {
-			System.err.println("No server port defined, using default " + DEFAULT_PORT);
+			ScoreBoardManager.printMessage("No server port defined, using default " + DEFAULT_PORT);
 		}
 
 		Server server = new Server(port);
@@ -63,7 +63,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 				Context c = new Context(contexts, sbcS.getPath(), Context.SESSIONS);
 				c.addServlet(new ServletHolder(sbcS), "/*");
 			} catch ( Exception e ) {
-				System.err.println("Could not create Servlet " + servlet + " : " + e.getMessage());
+				ScoreBoardManager.printMessage("Could not create Servlet " + servlet + " : " + e.getMessage());
 				e.printStackTrace();
 			}
 		}

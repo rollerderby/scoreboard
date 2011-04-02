@@ -87,7 +87,7 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
 					RegisteredListener listener = listeners.next();
 					if ((new Date().getTime() - listener.getLastRequestTime()) > MAX_LAST_REQUEST_TIME) {
 						listeners.remove();
-System.err.println("Removed listener " + listener.getKey());
+ScoreBoardManager.printMessage("Removed listener " + listener.getKey());
 					}
 				}
 

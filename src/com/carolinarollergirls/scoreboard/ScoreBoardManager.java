@@ -3,11 +3,19 @@ package com.carolinarollergirls.scoreboard;
 import java.util.*;
 import java.io.*;
 
+import java.awt.*;
+import javax.swing.*;
+
 import com.carolinarollergirls.scoreboard.model.*;
 
 public class ScoreBoardManager
 {
 	public static void main(String argv[]) {
+		for (int i=0; i<argv.length; i++) {
+			if ("--gui".equals(argv[i]) || "-g".equals(argv[i]))
+				createGui();
+		}
+
 		loadProperties();
 
 		loadModel();
@@ -15,6 +23,19 @@ public class ScoreBoardManager
 		loadControllers();
 
 		loadViewers();
+
+		if (guiFrameText != null)
+			guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
+		printMessage("");
+		printMessage("Now double-click/open the 'start.html' file");
+		printMessage("or open a web browser (Google Chrome or Mozilla Firefox) to http://localhost:8000");
+	}
+
+	public static void printMessage(String msg) {
+		if (guiMessages != null)
+			guiMessages.append(msg+"\n");
+		else
+			System.err.println(msg);
 	}
 
 	public static Properties getProperties() { return new Properties(properties); }
@@ -27,12 +48,34 @@ public class ScoreBoardManager
 		sbV.setScoreBoard(scoreBoardModel.getScoreBoard());
 	}
 
+	private static void createGui() {
+		if (guiFrame != null)
+			return;
+
+		guiFrame = new JFrame("Carolina Rollergirls ScoreBoard");
+		guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		guiMessages = new JTextArea();
+		guiMessages.setEditable(false);
+		guiFrameText = new JLabel("ScoreBoard status: starting...");
+		guiFrame.getContentPane().setLayout(new BoxLayout(guiFrame.getContentPane(), BoxLayout.Y_AXIS));
+		guiFrame.getContentPane().add(guiFrameText);
+		guiFrame.getContentPane().add(new JScrollPane(guiMessages));
+		guiFrame.setSize(800, 600);
+		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+		int w = guiFrame.getSize().width;
+		int h = guiFrame.getSize().height;
+		int x = (dim.width-w)/2;
+		int y = (dim.height-h)/2;
+		guiFrame.setLocation(x, y);
+		guiFrame.setVisible(true);
+	}
+
 	private static void doExit(String err) { doExit(err, null); }
 	private static void doExit(String err, Exception ex) {
-		System.err.println(err);
+		printMessage(err);
 		if (ex != null)
 			ex.printStackTrace();
-		System.err.println("Fatal error.  Exiting in 15 seconds.");
+		printMessage("Fatal error.  Exiting in 15 seconds.");
 		try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
 		System.exit(1);
 	}
@@ -66,7 +109,7 @@ public class ScoreBoardManager
 
 		try {
 			scoreBoardModel = (ScoreBoardModel)Class.forName(s).newInstance();
-			System.out.println("Loaded ScoreBoardModel : "+s);
+			printMessage("Loaded ScoreBoardModel : "+s);
 		} catch ( Exception e ) {
 			doExit("Could not create model : " + e.getMessage(), e);
 		}
@@ -84,10 +127,10 @@ public class ScoreBoardManager
 			String value = properties.getProperty(key);
 			try {
 				registerScoreBoardController((ScoreBoardController)Class.forName(value).newInstance());
-				System.out.println("Started ScoreBoardController : "+value);
+				printMessage("Started ScoreBoardController : "+value);
 				count++;
 			} catch ( Exception e ) {
-				System.err.println("Could not create controller " + value + " : " + e.getMessage());
+				printMessage("Could not create controller " + value + " : " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -107,9 +150,9 @@ public class ScoreBoardManager
 			String value = properties.getProperty(key);
 			try {
 				registerScoreBoardViewer((ScoreBoardViewer)Class.forName(value).newInstance());
-				System.out.println("Started ScoreBoardViewer : "+value);
+				printMessage("Started ScoreBoardViewer : "+value);
 			} catch ( Exception e ) {
-				System.err.println("Could not create controller " + value + " : " + e.getMessage());
+				printMessage("Could not create controller " + value + " : " + e.getMessage());
 				e.printStackTrace();
 			}
 		}
@@ -118,6 +161,10 @@ public class ScoreBoardManager
 	private static Properties properties = new Properties();
 
 	private static ScoreBoardModel scoreBoardModel;
+
+	private static JFrame guiFrame = null;
+	private static JTextArea guiMessages = null;
+	private static JLabel guiFrameText = null;
 
 	public static final String PROPERTIES_DIR_NAME = "lib";
 	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";

@@ -48,7 +48,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 			response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
 		} else {
 			if (debugGet)
-				System.err.println("GET to "+listener.getKey()+"\n"+editor.toString(d));
+				ScoreBoardManager.printMessage("GET to "+listener.getKey()+"\n"+editor.toString(d));
 			response.setContentType("text/xml");
 			editor.sendToWriter(d, response.getWriter());
 			response.setStatus(HttpServletResponse.SC_OK);
@@ -78,7 +78,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 		}
 
 		if (debugSet)
-			System.err.println("SET from "+listener.getKey()+"\n"+editor.toString(requestDocument));
+			ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+editor.toString(requestDocument));
 
 		scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
 

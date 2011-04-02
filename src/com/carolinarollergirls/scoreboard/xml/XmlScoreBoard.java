@@ -107,7 +107,7 @@ public class XmlScoreBoard
 	protected void loadDocuments() {
 		File initialDocumentDir = new File(ScoreBoardManager.getProperties().getProperty(DOCUMENT_DIR_KEY, DEFAULT_DOCUMENT_DIR));
 		if (!initialDocumentDir.isDirectory()) {
-			System.err.println("Initial XML document directory '"+initialDocumentDir.getPath()+"' does not exist.");
+			ScoreBoardManager.printMessage("Initial XML document directory '"+initialDocumentDir.getPath()+"' does not exist.");
 			return;
 		}
 
@@ -119,9 +119,9 @@ public class XmlScoreBoard
 			File f = xmlFiles.next();
 			try {
 				mergeDocument(saxBuilder.build(f));
-				System.err.println("Loaded settings from "+f.getName());
+				ScoreBoardManager.printMessage("Loaded settings from "+f.getName());
 			} catch ( Exception e ) {
-				System.err.println("Could not load initial XML document "+f.getName()+" : "+e.getMessage());
+				ScoreBoardManager.printMessage("Could not load initial XML document "+f.getName()+" : "+e.getMessage());
 			}
 		}
 	}

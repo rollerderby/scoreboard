@@ -43,9 +43,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			try {
 				PolicyModel policyModel = (PolicyModel)Class.forName(name).newInstance();
 				addPolicyModel(policyModel);
-				System.err.println("Loaded Policy : "+name);
+				ScoreBoardManager.printMessage("Loaded Policy : "+name);
 			} catch ( Exception e ) {
-				System.err.println("Could not load ScoreBoard policy : " + e.getMessage());
+				ScoreBoardManager.printMessage("Could not load ScoreBoard policy : " + e.getMessage());
 			}
 		}
 	}
@@ -393,7 +393,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 							addScoreBoardImageModel(new DefaultScoreBoardImageModel(DefaultScoreBoardModel.this, id, type, topDirectory, filename, name));
 					}
 				} catch ( Exception e ) {
-					System.err.println("Could not add image type "+type+" file "+files[i].getName());
+					ScoreBoardManager.printMessage("Could not add image type "+type+" file "+files[i].getName());
 				}
 			}
 		}
