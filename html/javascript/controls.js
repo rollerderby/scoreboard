@@ -105,10 +105,11 @@ _crgScoreBoardControl = {
 			setControlValue(sbElement.$sbGet());
 			c.bind("mouseup keyup change", function() { setElementValue(c.val()); });
 			c.bind("blur", function() {
-// FIXME - total kludge; this adds a small delay to give the next focused element time to get focus,
+// FIXME - can we fix this?
+// this defers the update, to give the next focused element time to get focus,
 // in case it's part of this group.  Otherwise this text area will be cleared out even if
 // changing focus over to a button to actually submit.
-				setTimeout(function () { updateControlIfUnfocused(sbElement.$sbGet()); }, 500);
+				setTimeout(function () { updateControlIfUnfocused(sbElement.$sbGet()); });
 			});
 		} else if (c.is("a")) {
 			sbElement.bind("content", function(event, value) { setControlValue(value); });
