@@ -1,7 +1,8 @@
 <?xml version="1.0"?>
 
 <project name="Carolina Rollergirls Scoreboard" default="compile">
-	
+	<property name="version" value="0.2.0-beta2"/>
+
 	<property name="ant.build.javac.source" value="1.5"/>
 	<property name="ant.build.javac.target" value="1.5"/>
 
