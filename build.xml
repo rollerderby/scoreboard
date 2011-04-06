@@ -23,6 +23,10 @@
 	<property name="launch4j.dir" value="launch4j"/>
 	<property name="launch4j.outfile" value="scoreboard.exe"/>
 
+	<property name="distro.dir" value="distribution" />
+	<property name="zip.prefix" value="crg-scoreboard_${version}"/>
+	<property name="zip.file" value="${distro.dir}/${zip.prefix}.zip"/>
+
 	<property name="clean.verbose" value="false"/>
 	<property name="clean.quiet" value="false"/>
 
@@ -39,6 +43,7 @@
 		<echo message="  manifest         (Re)create the manifest file"/>
 		<echo message="  help             Show this help"/>
 		<echo message="  jdoc             Create JavaDOC"/>
+		<echo message="  distro           Create distribution file(s)"/>
 		<echo message=""/>
 	</target>
 
@@ -108,12 +113,29 @@
 		</launch4j>
 	</target>
 
+	<!-- Create distribution zip file -->
+	<target name="distro" depends="clean,compile" >
+		<mkdir dir="${distro.dir}" />
+		<zip destfile="${zip.file}" >
+			<zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
+				<include name="README" />
+				<include name="scoreboard.*" />
+				<include name="start.html" />
+				<include name="html/**" />
+				<include name="lib/crg-scoreboard.jar" />
+				<include name="lib/crg.scoreboard.properties" />
+				<include name="lib/xml/**" />
+			</zipfileset>
+		</zip>
+	</target>
+
 	<!-- Clean all classfiles -->
 	<target name="clean">
 		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${dest.dir}" includes="com/carolinarollergirls/scoreboard/**/*.class"/>
 			<fileset dir="${jar.dir}" includes="${jar.file}"/>
 			<fileset dir="${jdoc.dir}"/>
+			<fileset dir="${distro.dir}"/>
 		</delete>
 	</target>
 
