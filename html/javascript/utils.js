@@ -31,7 +31,8 @@ _crgUtils = {
 	 * first and second initial parameters to the handler.
 	 */
 	bindAndRun: function(target, eventType, eventData, handler, initialParams) {
-		target = $(target);
+		if (!$.isjQuery(target))
+			target = $(target);
 		target.bind(eventType, eventData, handler);
 		if ($.type(eventData) == "function") {
 			initialParams = handler;
