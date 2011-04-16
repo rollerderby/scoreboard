@@ -109,9 +109,10 @@ function setupTeams() {
       .children("div").addClass("Inner");
     $("<div>").addClass("Score WhiteBox").appendTo(teamDiv);
     $("<div><a/></div>").addClass("Score TextContainer").appendTo(teamDiv);
-    $("<div><a/><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
-      .children("a:first").addClass("Jammer").end()
-      .children("a:last").addClass("Pulse").css("opacity", 0);
+    $("<div><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
+      .children("a").addClass("Jammer");
+    $("<div><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
+      .children("a").addClass("Pulse").css("opacity", 0);
 
     sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
     sbTeam.$sb("TeamLogo.Filename").$sbElement(teamDiv.find("div.Logo img"), "Logo");
