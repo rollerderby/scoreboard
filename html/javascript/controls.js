@@ -160,7 +160,7 @@ _crgScoreBoardControl = {
 			_crgUtils.setupSelect(c);
 			sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
 			setControlValue(sbElement.$sbGet());
-			c.bind("keyup change", function() { setElementValue($(this).find("option:selected").val()); });
+			c.bind("change", function() { setElementValue(c.find("option:selected").val()); c.blur(); });
 			c.bind("blur", function() { updateControlIfUnfocused(sbElement.$sbGet()); });
 		}
 
