@@ -1,4 +1,18 @@
 
+/* We have to @import additional stylesheets before any other declarations. */
+
+/* Good places to find fonts are:
+ * http://fontspace.com/
+ * http://fontsquirrel.com/
+ * Also very handy is the @font-face generator at fontsquirrel:
+ * http://www.fontsquirrel.com/fontface/generator
+ */
+@import url('/fonts/liberationsans/stylesheet.css');
+
+
+/* Ok, on to the actual declarations. */
+
+
 #mainDiv div { position: absolute; }
 #mainDiv>div.View { width: 100%; height: 100%; }
 #mainDiv>div.View:not(.Show) { opacity: 0; }
@@ -19,7 +33,7 @@ div.TextContainer { text-align: center; }
 div.TextContainer>a { position: relative; }
 
 /* All text elements use the same font and weight, for now */
-a { font-weight: bold; font-family: helvetica; }
+a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 
 /* http://net.tutsplus.com/tutorials/html-css-techniques/quick-tip-understanding-css3-gradients/ */
