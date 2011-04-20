@@ -383,9 +383,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			for (int i=0; i<files.length; i++) {
 				try {
 					File f = files[i];
-					if (f.isDirectory())
-						continue;
 					String name = f.getName();
+					if (f.isDirectory() || name.startsWith(".") || name.endsWith(".db"))
+						continue;
 					String id = type + "/" + name;
 					String filename = "/" + directoryName + "/" + name;
 					synchronized (scoreBoardImages) {
