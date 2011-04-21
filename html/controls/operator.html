@@ -327,8 +327,8 @@ function createTimeTable() {
 
     sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
     sbClock.$sb("Running").$sbBindAndRun("content", function(event,value) {
-      nameTd.toggleClass("Running", isTrue(value), 500);
-    }, [ sbClock.$sb("Running").$sbGet() ]);
+      nameTd.toggleClass("Running", isTrue(value));
+    });
 
     sbClock.$sb("Number").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("-1").val("-1")
