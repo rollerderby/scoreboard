@@ -236,13 +236,25 @@ function createTeamTable() {
         bindClickTo: nameTd
       } }).appendTo(nameTd.addClass("Name"));
 
+    var teamLogoDialog = $("<div>").addClass("TeamLogoDialog");
     sbTeam.$sb("TeamLogo.Id").$sbControl("<select>", { sbelement: {
         optionParent: "ScoreBoard",
         optionChildName: "Image",
         optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
         optionNameElement: "Name",
         firstOption: { text: "No Logo", value: "" }
-      } }).appendTo(logoTd.addClass("Logo"));
+      } }).appendTo(teamLogoDialog);
+    sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>").appendTo(teamLogoDialog);
+    teamLogoDialog.dialog({
+      autoOpen: false,
+      modal: true,
+      width: "700px",
+      buttons: { Ok: function() { $(this).dialog("close"); } }
+    });
+
+    logoTd.addClass("Logo")
+      .click(function() { teamLogoDialog.dialog("open"); })
+      .append(sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>"));
 
     sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("Score -1").val("-1")
