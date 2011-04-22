@@ -4,9 +4,9 @@ Since you're reading this, you should already have the scoreboard code.
 If you don't have Java 1.5 or later installed in your system, go get it ( http://java.com ) and install it.
 
 Once you have Java installed, run the program for your system (listed below) that is in the same directory as this README.
-Windows: scoreboard.exe
-Mac: scoreboard.command
-Linux: scoreboard.sh
+Windows: scoreboard-Windows.exe
+Mac: scoreboard-Mac.app
+Linux: scoreboard-Linux.sh
 
 Then, open (double-click) the "start.html" page that is in the same directory as this README
 (or, just open a browser to http://localhost:8000/ )
