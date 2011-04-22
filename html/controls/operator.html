@@ -230,34 +230,37 @@ function createTeamTable() {
     var jammerTr = createRowTable(3).appendTo($("<td>").appendTo(jammerRow)).find("tr");
 
     var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
-    sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='20'/>", { sbcontrol: {
+    sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='15'/>", { sbcontrol: {
         editOnClick: true,
         bindClickTo: nameTd
-      } }).appendTo(nameTd);
+      } }).appendTo(nameTd).filter("a").wrap("<div>");
 
+    var logoTd = nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo");
+    var logoNone = $("<a>").html("No Logo").addClass("NoLogo").appendTo(logoTd);
     var logoSelect = sbTeam.$sb("TeamLogo.Id").$sbControl("<select>", { sbelement: {
         optionParent: "ScoreBoard",
         optionChildName: "Image",
         optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
         optionNameElement: "Name",
         firstOption: { text: "No Logo", value: "" }
-      } });
-    var logoImg = sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>");
-    var logoShowHide = function(showImg) {
-      showImg = !!showImg;
-      logoSelect.toggle(!showImg);
-      logoImg.toggle(showImg);
-      if (!showImg)
+      } }).appendTo(logoTd);
+    var logoImg = sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>")
+      .appendTo(logoTd);
+
+    var logoShowSelect = function(show) {
+      var showImg = !!sbTeam.$sb("TeamLogo.Filename").$sbGet();
+      logoImg.toggle(!show && showImg);
+      logoNone.toggle(!show && !showImg);
+      logoSelect.toggle(show);
+      if (show)
         logoSelect.focus();
     };
-    sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event,value) { logoShowHide(value); });
+    sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event,value) { logoShowSelect(false); });
     logoSelect
-      .blur(function() { logoShowHide(sbTeam.$sb("TeamLogo.Filename").$sbGet()); })
+      .blur(function() { logoShowSelect(false); })
       .keyup(function(event) { if (event.which == 27 /* ESC */) $(this).blur(); });
 
-    nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo")
-      .click(function() { if (!logoSelect.is(":visible")) logoShowHide(false); })
-      .append(logoSelect).append(logoImg);
+    logoTd.click(function() { if (!logoSelect.is(":visible")) logoShowSelect(true); })
 
     sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("Score -1").val("-1")
