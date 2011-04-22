@@ -20,11 +20,11 @@ _windowFunctions = {
 	get4x3Dimensions: function(overflow) { return this.getAspectDimensions(4/3, overflow); },
 	get16x9Dimensions: function(overflow) { return this.getAspectDimensions(16/9, overflow); },
 
-	/* This enables the specified element for auto-fitting its text into the parent
-	 * container.  See the autoFitText() function description for details on the
-	 * options.  This returns a reference to a function that should be called,
+	/* This enables the specified element for auto-fitting its contained text.
+	 * See the autoFitText() function description for details on the options.
+	 * This returns a reference to a function that should be called,
 	 * with no parameters, if the autoFitText() function needs to be called manually,
-	 * e.g. if the actual element text changes or its parent container size changes.
+	 * e.g. if the contained text changes or the container size changes.
 	 * The text will only be auto-fit automatically when the browser window resizes.
 	 * The auto-fit function can also be accessed via element.data("AutoFit").
 	 */
@@ -48,9 +48,9 @@ _windowFunctions = {
 		$(window).unbind("resize", e.data("AutoFit"));
 		e.removeData("AutoFit");
 	},
-	/* This should be called each time the text content changes and/or the window resizes.
-	 * It resizes the text element to fit, and returns the current relevant css properties.
-	 * The options are:
+	/* This should be called each time the text content changes, or the window
+	 * or container resizes.  It resizes the text element to fit, and returns the
+	 * current relevant css properties. The options are:
 	 *   referenceFontSize: number (default: window height)
 	 *     This is the reference font size, in px.  If not specified,
 	 *     the window height is used.
