@@ -120,7 +120,9 @@
 		<zip destfile="${zip.file}" >
 			<zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
 				<include name="README" />
-				<include name="scoreboard-*" />
+				<include name="scoreboard-Windows.exe" />
+				<include name="scoreboard-Mac.app/**" />
+				<include name="scoreboard-Linux.sh" />
 				<include name="start.html" />
 				<include name="html/**" />
 				<include name="lib/crg-scoreboard.jar" />
