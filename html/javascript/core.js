@@ -134,16 +134,21 @@
  *     If true, the HTML element text will be auto-fit to its immediate parent,
  *     using _windowFunctions.enableAutoFitText() with no options.
  *     If set to an object, that object will be used as the options.
- *     If the object has a 'container' parameter set, that will be used
- *     instead of the immediate parent.  Note that if the container/parent
- *     already is enabled for auto-fit, it will ignore any new options
- *     and continue to use its initial options. 
+ *     Note that if the container/parent is already is enabled for auto-fit,
+ *     it may ignore any new options and continue to use its initial options
+ *     (see that function for specific details on its behavior).
 // FIXME - this isn't optimal, would be better to figure something else out
- *     Note if the element has no parent (yet), and no container is specified,
- *     the auto-fit enablement is deferred to setTimeout() which will
- *     allow the current code to add the element to a parent; however if
- *     the element still has no parent in the deferred call auto-fit will not
- *     be enabled.
+ *     Note if the element has no container/parent (yet), the auto-fit
+ *     enablement is deferred to setTimeout() which will allow the
+ *     current code to add the element to a parent; however if the element
+ *     still has no parent in the deferred call auto-fit will not be enabled.
+// END FIXME
+ *   autoFitTextTarget: string selector
+ *     If specified, this will restrict the auto-fit to only elements
+ *     matching the selector.
+ *   autoFitTextContainer: jQuery object || string selector || function
+ *     If specified, this will be used instead of the immediate parent
+ *     of the target element.
  *
  * sbcontrol
  * The special "sbcontrol" object can contain any of these fields which
@@ -219,42 +224,45 @@ _crgScoreBoard = {
 			attributes = {};
 		} else if (!attributes)
 			attributes = {};
-		var sbelement = $.extend(true, {}, attributes.sbelement);
 		attributes = $.extend(true, {}, attributes); // Keep the original attributes object unchanged
+		var sbelement = $.extend(true, {}, attributes.sbelement);
 		delete attributes.sbelement;
 		var elements = $(type);
-		elements.find("*").andSelf()
-			.data("sbelement", sbelement)
-			.attr($.extend({ "data-sbelement": _crgScoreBoard.getPath(sbElement), "data-UUID": _crgScoreBoard.newUUID() }, attributes))
-			.addClass(className);
-		_crgScoreBoard.setHtmlValue(elements, sbElement.$sbGet());
+		var allElements = elements.find("*").andSelf();
+		allElements.data("sbelement", sbelement).addClass(className)
+			.attr($.extend({ "data-sbelement": _crgScoreBoard.getPath(sbElement), "data-UUID": _crgScoreBoard.newUUID() }, attributes));
+		_crgScoreBoard.setHtmlValue(allElements, sbElement.$sbGet());
+		_crgScoreBoard.setupScoreBoardElement(sbElement, allElements, sbelement);
+		return elements;
+	},
+
+	setupScoreBoardElement: function(sbElement, allElements, sbelement) {
 		if (sbelement.autoFitText) {
-			var options = { };
-			if ($.type(sbelement.autoFitText) == "object")
-				options = sbelement.autoFitText;
-			elements.each(function() {
+			var options = sbelement.autoFitText;
+			if ($.type(options) != "object")
+				options = { };
+			allElements.each(function() {
 				var e = $(this);
+				var targetSelector = sbelement.autoFitTextTarget;
+				if (($.type(targetSelector) == "string") && !e.is(targetSelector))
+					return;
 				var enableAutoFit = function() {
-					var container = e.parent();
-					if ($.isjQuery(options.container))
-						container = options.container;
-					else if ($.type(options.container) == "string")
-						container = e.closest(options.container);
-					else if ($.type(options.container) == "function")
-						container = options.container.call(e);
+					var container = sbelement.autoFitTextContainer;
+					if ($.type(container) == "string")
+						container = e.closest(container);
+					else if ($.type(container) == "function")
+						container = container.call(e);
+					else if (!$.isjQuery(container))
+						container = e.parent();
 					var opts = $.extend({}, options);
-					delete opts.container;
-					if (container && container.length) {
-						sbElement.bind("content", _windowFunctions.enableAutoFitText(container, opts));
-						return true;
-					} else {
+					if (!$.isjQuery(container) || !container.length)
 						return false;
-					}
+					sbElement.bind("content", _windowFunctions.enableAutoFitText(container, opts));
+					return true;
 				};
 				enableAutoFit() || setTimeout(enableAutoFit);
 			});
 		}
-		return elements;
 	},
 
 	/* From http://www.broofa.com/2008/09/javascript-uuid-function/
