@@ -117,6 +117,8 @@ _windowFunctions = {
 		var maxH = container.innerHeight();
 		var targetH = (((100 + overage) / 100) * maxH);
 
+//FIXME - using window height is wrong, e.g. for fixed-aspect views like the scoreboard,
+//        it should be the aspect-corrected height; maybe referenceFontSize should be mandatory param?
 		var referenceFontSize = options.referenceFontSize || $(window).height();
 		var minFontSize = ((min * referenceFontSize) / 100);
 		var maxFontSize = ((max * referenceFontSize) / 100);
