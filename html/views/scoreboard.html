@@ -232,10 +232,12 @@ function setupClocks() {
     node.$sb("ShowUnofficial").$sbElement("#Intermission>div.Name>a>span.Unofficial."+node.$sbId, { sbelement: {
       boolean: true,
       convert: { "true": "Unofficial ", "false": "" },
-      autoFitText: { container: "div" }
+      autoFitText: true,
+      autoFitTextContainer: "div"
     } });
     node.$sb("Text").$sbElement("#Intermission>div.Name>a>span.Name."+node.$sbId, { sbelement: {
-      autoFitText: { container: "div" }
+      autoFitText: true,
+      autoFitTextContainer: "div"
     } });
 
     node.$sb("Confirmed").$sbBindAndRun("content", function(event,value) {
