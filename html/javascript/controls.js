@@ -9,16 +9,19 @@ _crgScoreBoardControl = {
 			attributes = {};
 		} else if (!attributes)
 			attributes = {};
+		attributes = $.extend(true, {}, attributes); // Keep the original attributes object unchanged
 		var sbcontrol = $.extend(true, {}, attributes.sbcontrol);
 		var sbelement = $.extend(true, {}, attributes.sbelement);
-		attributes.sbcontrol = undefined;
-		attributes.sbelement = undefined;
+		delete attributes.sbcontrol;
+		delete attributes.sbelement;
 		var controls = $(type);
-		controls.find("*").andSelf()
-			.data("sbcontrol", sbcontrol).data("sbelement", sbelement)
+		var allControls = controls.find("*").andSelf();
+		allControls.data("sbcontrol", sbcontrol).data("sbelement", sbelement).addClass(className)
 			.attr($.extend({ "data-sbcontrol": _crgScoreBoard.getPath(sbElement), "data-UUID": _crgScoreBoard.newUUID() }, attributes))
-			.addClass(className)
-			.each(function(index) { _crgScoreBoardControl.addControlFunction($(this), sbElement, index); });
+			.each(function(index) {
+				_crgScoreBoardControl.addControlFunction($(this), sbElement, index);
+			});
+		_crgScoreBoard.setupScoreBoardElement(sbElement, allControls, sbelement);
 		return controls;
 	},
 
