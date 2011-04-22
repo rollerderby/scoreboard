@@ -58,6 +58,7 @@
 			debug="${compile.debug}"
 			verbose="${compile.verbose}"
 			nowarn="${compile.nowarn}"
+			includeAntRuntime="false"
 			includes="com/carolinarollergirls/scoreboard/**" >
 
 			<compilerarg value="-Xlint:unchecked"/>
