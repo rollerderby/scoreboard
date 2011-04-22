@@ -193,7 +193,7 @@ _crgScoreBoardControl = {
 			} else if (index > 0) {
 				c.hide();
 				c.bind("focus", function() { getGroup(true).hide(); c.show().addClass("Editing").trigger("editstart"); });
-				c.bind("blur", function() { c.hide().removeClass("Editing").trigger("editstop"); getGroup(true).show(); });
+				c.bind("blur", function() { getGroup(true).show(); c.hide().removeClass("Editing").trigger("editstop"); });
 				c.bind("keyup", function(event) {
 					switch (event.which) {
 					case 13: /* RET */ if (c.is("textarea") && !event.ctrlKey) break; c.blur(); break;
