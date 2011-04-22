@@ -40,8 +40,7 @@ table.RowTable { border-spacing: 0px; }
 
   #TeamTime table.Team>tbody>tr>td { width: 50%; }
   #TeamTime table.Team tr.Name td.Name a { font-size: 200%; }
-  #TeamTime table.Team tr.Logo td.Logo img { height: 40px; }
-  #TeamTime table.Team tr.Logo td.Logo { height: 100%; }
+  #TeamTime table.Team tr.Name td.Logo img { height: 50px; vertical-align: middle; }
   #TeamTime table.Team tr.Score td.Score a { font-size: 300%; }
   #TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; }
 
@@ -105,10 +104,6 @@ table.RowTable { border-spacing: 0px; }
 
 
 /*** Dialogs ***/
-
-/* Team Logo Dialog */
-  div.TeamLogoDialog img { width: 300px; float: right; }
-/* End Team Logo Dialog */
 
 /* Time Control Dialog */
   table.TimeDialog { width: 100%; border-spacing: 0px; }

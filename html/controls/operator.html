@@ -215,7 +215,6 @@ function createTeamTable() {
   var table = $("<table>").addClass("Team");
   var row = $("<tr></tr>");
   var nameRow = row.clone().addClass("Name").appendTo(table);
-  var logoRow = row.clone().addClass("Logo").appendTo(table);
   var scoreRow = row.clone().addClass("Score").appendTo(table);
   var timeoutRow = row.clone().addClass("Timeout").appendTo(table);
   var jammerRow = row.clone().addClass("Jammer").appendTo(table);
@@ -225,36 +224,40 @@ function createTeamTable() {
     var sbTeam = $sb("ScoreBoard.Team("+team+")");
     var first = (team == "1");
 
-    var nameTd = $("<td>").appendTo(nameRow);
-    var logoTd = $("<td>").appendTo(logoRow);
+    var nameTr = createRowTable(2).appendTo($("<td>").appendTo(nameRow)).find("tr");
     var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
     var timeoutTr = createRowTable(2).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
     var jammerTr = createRowTable(3).appendTo($("<td>").appendTo(jammerRow)).find("tr");
 
-    sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='30'/>", { sbcontrol: {
+    var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
+    sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='20'/>", { sbcontrol: {
         editOnClick: true,
         bindClickTo: nameTd
-      } }).appendTo(nameTd.addClass("Name"));
+      } }).appendTo(nameTd);
 
-    var teamLogoDialog = $("<div>").addClass("TeamLogoDialog");
-    sbTeam.$sb("TeamLogo.Id").$sbControl("<select>", { sbelement: {
+    var logoSelect = sbTeam.$sb("TeamLogo.Id").$sbControl("<select>", { sbelement: {
         optionParent: "ScoreBoard",
         optionChildName: "Image",
         optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
         optionNameElement: "Name",
         firstOption: { text: "No Logo", value: "" }
-      } }).appendTo(teamLogoDialog);
-    sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>").appendTo(teamLogoDialog);
-    teamLogoDialog.dialog({
-      autoOpen: false,
-      modal: true,
-      width: "700px",
-      buttons: { Ok: function() { $(this).dialog("close"); } }
-    });
+      } });
+    var logoImg = sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>");
+    var logoShowHide = function(showImg) {
+      showImg = !!showImg;
+      logoSelect.toggle(!showImg);
+      logoImg.toggle(showImg);
+      if (!showImg)
+        logoSelect.focus();
+    };
+    sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event,value) { logoShowHide(value); });
+    logoSelect
+      .blur(function() { logoShowHide(sbTeam.$sb("TeamLogo.Filename").$sbGet()); })
+      .keyup(function(event) { if (event.which == 27 /* ESC */) $(this).blur(); });
 
-    logoTd.addClass("Logo")
-      .click(function() { teamLogoDialog.dialog("open"); })
-      .append(sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>"));
+    nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo")
+      .click(function() { if (!logoSelect.is(":visible")) logoShowHide(false); })
+      .append(logoSelect).append(logoImg);
 
     sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("Score -1").val("-1")
