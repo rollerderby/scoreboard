@@ -16,6 +16,8 @@ public class ScoreBoardManager
 				createGui();
 		}
 
+		loadVersion();
+
 		loadProperties();
 
 		loadModel();
@@ -29,6 +31,13 @@ public class ScoreBoardManager
 		printMessage("");
 		printMessage("Now double-click/open the 'start.html' file");
 		printMessage("or open a web browser (Google Chrome or Mozilla Firefox) to http://localhost:8000");
+	}
+
+	public static String getVersion() {
+		if ("".equals(versionBuild))
+			return versionRelease;
+		else
+			return versionRelease+"-"+versionBuild;
 	}
 
 	public static void printMessage(String msg) {
@@ -78,6 +87,31 @@ public class ScoreBoardManager
 		printMessage("Fatal error.  Exiting in 15 seconds.");
 		try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
 		System.exit(1);
+	}
+
+	private static void loadVersion() {
+		Properties versionProperties = new Properties();
+		ClassLoader cL = ScoreBoardManager.class.getClassLoader();
+		InputStream releaseIs = cL.getResourceAsStream(VERSION_RELEASE_PROPERTIES_NAME);
+		InputStream buildIs = cL.getResourceAsStream(VERSION_BUILD_PROPERTIES_NAME);
+		if (null == releaseIs)
+			doExit("Could not find version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'");
+		try {
+			versionProperties.load(releaseIs);
+		} catch ( IOException ioE ) {
+			doExit("Could not load version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'", ioE);
+		}
+		try {
+			versionProperties.load(buildIs);
+		} catch ( IOException ioE ) {
+			/* Ignore missing build properties */
+			versionProperties.setProperty(VERSION_BUILD_KEY, "");
+		}
+		try { releaseIs.close(); } catch ( IOException ioE ) { }
+		try { buildIs.close(); } catch ( IOException ioE ) { }
+		versionRelease = versionProperties.getProperty(VERSION_RELEASE_KEY);
+		versionBuild = versionProperties.getProperty(VERSION_BUILD_KEY);
+		printMessage("Carolina Rollergirls Scoreboard version "+getVersion());
 	}
 
 	private static void loadProperties() {
@@ -165,6 +199,15 @@ public class ScoreBoardManager
 	private static JFrame guiFrame = null;
 	private static JTextArea guiMessages = null;
 	private static JLabel guiFrameText = null;
+
+	private static String versionRelease;
+	private static String versionBuild;
+
+	public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
+	public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
+	public static final String VERSION_BUILD_PROPERTIES_NAME = VERSION_PATH+"/build.properties";
+	public static final String VERSION_RELEASE_KEY = "release";
+	public static final String VERSION_BUILD_KEY = "build";
 
 	public static final String PROPERTIES_DIR_NAME = "lib";
 	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
