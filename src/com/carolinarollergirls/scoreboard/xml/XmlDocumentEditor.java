@@ -9,6 +9,8 @@ import org.jdom.input.*;
 import org.jdom.output.*;
 import org.jdom.xpath.*;
 
+import com.carolinarollergirls.scoreboard.*;
+
 public class XmlDocumentEditor
 {
 	public XmlDocumentEditor() { }
@@ -37,6 +39,7 @@ public class XmlDocumentEditor
 	public Document createDocument(String element, String id, String value) {
 		Element e = new Element("document");
 		Document document = new Document(e);
+		addVersion(document);
 		addSystemTime(document);
 		if (null != element)
 			addElement(e, element, id, value);
@@ -145,6 +148,22 @@ public class XmlDocumentEditor
 			else
 				return s;
 		}
+	}
+
+	public Document addVersion(Document doc) {
+		String oldVersion = doc.getRootElement().getAttributeValue("Version");
+		if (oldVersion == null || oldVersion.equals(""))
+			setVersion(doc);
+		return doc;
+	}
+
+	public Document setVersion(Document doc) {
+		doc.getRootElement().setAttribute("Version", ScoreBoardManager.getVersion());
+		return doc;
+	}
+
+	public String getVersion(Document doc) {
+		return doc.getRootElement().getAttributeValue("Version");
 	}
 
 	public Document addSystemTime(Document doc) {
