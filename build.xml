@@ -63,17 +63,17 @@
 
 	<!-- Determine version -->
 	<target name="-version" depends="-buildversion" >
+		<mkdir dir="${version.dest.dir}"/>
+		<copy file="${version.src.dir}/${version.release.file}" todir="${version.dest.dir}"/>
 		<condition property="version" value="${version.release}-${version.build}" else="${version.release}">
 			<isset property="version.build"/>
 		</condition>
 	</target>
 
 	<!-- Compile source files -->
-	<target name="compile" depends="-manifest" >
+	<target name="compile" depends="-version,-manifest" >
 		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.1.jar"/>
 
-		<mkdir dir="${version.dest.dir}"/>
-		<copy file="${version.src.dir}/${version.release.file}" todir="${version.dest.dir}"/>
 		<mkdir dir="${dest.dir}"/>
 		<javac srcdir="${src.dir}"
 			destdir="${dest.dir}"
@@ -165,8 +165,8 @@
 
 	<!-- Clean all classfiles -->
 	<target name="clean">
-		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeEmptyDirs="true" failonerror="false">
-			<fileset dir="${dest.dir}" includes="com/carolinarollergirls/scoreboard/**/*.class"/>
+		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeemptydirs="true" failonerror="false">
+			<fileset dir="${dest.dir}"/>
 			<fileset dir="${jar.dir}" includes="${jar.file}"/>
 			<fileset dir="${jdoc.dir}"/>
 		</delete>
