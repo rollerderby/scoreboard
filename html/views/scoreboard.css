@@ -155,9 +155,9 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Jam_small */
   /* Main box */
-  #Jam_small { left: 0%; top: 100%; width: 100%; height: 41%; }
-  #Jam_small.ShowTimeout,#Jam_small.ShowLineup { top: 59%; }
-  #Jam_small.TransTimeoutLineup,#Jam_small.TransLineupTimeout { top: 59%; }
+  #Jam_small { left: 50%; top: 65%; width: 0%; height: 0%; font-size: 0%; }
+  #Jam_small.ShowTimeout,#Jam_small.ShowLineup,#Jam_small.TransTimeoutLineup,#Jam_small.TransLineupTimeout
+    { top: 59%; left: 0%; width: 100%; height: 41%; font-size: inherit; }
 
   /* Name sub-box */
   #Jam_small>div.Name { top: 0%; left: 42%; width: 16.25%; height: 29%; border-radius: 15% / 25%; }
