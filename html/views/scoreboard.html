@@ -42,7 +42,7 @@ $sb(function() {
   view.$sbBindAndRun("content", function(event, value) {
     var showDiv = $("#"+value+"Div");
     if (!showDiv.length)
-      showDiv = $("#scoreboardDiv");
+      showDiv = $("#sbDiv");
     $("#mainDiv>div.View").not(showDiv).removeClass("Show", 500)
     showDiv.addClass("Show", 500);
   }, [ view.$sbGet() ]);
@@ -87,7 +87,7 @@ function setupBackgrounds() {
 ///////////////
 
 function setupTeams() {
-  $("<div>").attr("id", "Timeouts").appendTo("#scoreboardDiv");
+  $("<div>").attr("id", "Timeouts").appendTo("#sbDiv");
 
   $("<div>").addClass("Name WhiteBox").appendTo("#Timeouts");
   $("<div><a>Timeouts</a></div>").addClass("Name TextContainer").appendTo("#Timeouts");
@@ -102,7 +102,7 @@ function setupTeams() {
       .append($("<div>").addClass("Pulse full").css("opacity", 0))
       .append(sbTeam.$sb("Timeouts").$sbElement("<a>", "Number"));
 
-    var teamDiv = $("<div>").attr("id", id).addClass("Team").appendTo("#scoreboardDiv");
+    var teamDiv = $("<div>").attr("id", id).addClass("Team").appendTo("#sbDiv");
     $("<div>").addClass("TeamAnimationQueue").appendTo(teamDiv);
     $("<div>").addClass("TeamAnimationFlag Animation").appendTo(teamDiv);
     $("<div><a/></div>").addClass("Name TextContainer Animation").appendTo(teamDiv);
@@ -186,7 +186,7 @@ function setupTeams() {
 ////////////////
 
 function setupClocks() {
-  $("#scoreboardDiv")
+  $("#sbDiv")
     .append($("<div>").addClass("ClockAnimationQueue"))
     .append($("<div>").addClass("ClockAnimationFlag Animation"));
 
@@ -196,7 +196,7 @@ function setupClocks() {
     var clock = id.replace(/_.*/,"");
     var sbClock = $sb("ScoreBoard.Clock("+clock+")");
 
-    var clockDiv = $("<div>").attr("id", id).addClass("Clock Animation").appendTo("#scoreboardDiv")
+    var clockDiv = $("<div>").attr("id", id).addClass("Clock Animation").appendTo("#sbDiv")
       .append($("<div>").addClass("Name WhiteBox"))
       .append($("<div><a><span/></a></div>").addClass("Name TextContainer"))
       .append($("<div>").addClass("Time WhiteBox"))
@@ -267,7 +267,7 @@ function setupClocks() {
     .add($sb("ScoreBoard.Clock(Intermission).Running"));
   _crgUtils.bindAndRun(clocks, "content", function(event, value) {
     if (isTrue(value) || ($sb($(this).parent()).$sbId == "Intermission"))
-      $("#scoreboardDiv>div.ClockAnimationQueue").queue(clockRunningChange);
+      $("#sbDiv>div.ClockAnimationQueue").queue(clockRunningChange);
   }, [ true ]);
 
   setupPulsate(
@@ -300,8 +300,8 @@ function showClocks(clock, next) {
   var transClass = "Trans"+currentClock+clock;
   var fromClasses = "ShowPeriod ShowJam ShowLineup ShowTimeout ShowIntermission".replace(toClass, "");
   if (currentClock)
-    $("#scoreboardDiv>div.Animation").switchClass(fromClasses, transClass, animateTime.clock, "easeInQuart");
-  $("#scoreboardDiv>div.Animation").switchClass(transClass, toClass, animateTime.clock, "easeInOutExpo",
+    $("#sbDiv>div.Animation").switchClass(fromClasses, transClass, animateTime.clock, "easeInQuart");
+  $("#sbDiv>div.Animation").switchClass(transClass, toClass, animateTime.clock, "easeInOutExpo",
     function() { $(this).hasClass("ClockAnimationFlag") && next(); }
   );
   currentClock = clock;
@@ -313,7 +313,7 @@ function showClocks(clock, next) {
 /////////////
 
 function setupAds() {
-  $("<div>").attr("id", "AdBox").addClass("Animation").appendTo("#scoreboardDiv")
+  $("<div>").attr("id", "AdBox").addClass("Animation").appendTo("#sbDiv")
     .append($("<div><img/></div>").addClass("CurrentAd"))
     .append($("<div><img/></div>").addClass("NextAd"));
   var getNextAdSrc = function(currentAdSrc) {
@@ -368,7 +368,7 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
 
 <div id="mainDiv" >
 
-  <div id="scoreboardDiv" class="View"></div>
+  <div id="sbDiv" class="View"></div>
   <div id="imageDiv" class="View"><img/></div>
   <div id="videoDiv" class="View"><video/></div>
 
