@@ -27,11 +27,11 @@ var clockConversions = {
   Intermission: _timeConversions.msToMinSecNoZero
 };
 var animateTime = {
-  ad: 1000,
-  clock: 1000,
-  team: 1000,
-  timeout: 1000,
-  leadjammer: 1000
+  ad: 1000, /* time to animate from one ad to the next */
+  clock: 500, /* clocks animate out then in, so the full transition time is 2x this */
+  team: 500, /* show/hide logo/name */
+  timeoutPulse: 1000,
+  leadjammerPulse: 1000
 };
 
 
@@ -121,7 +121,7 @@ function setupTeams() {
     sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), { sbelement: { autoFitText: true } });
 
     sbTeam.$sb("Name").$sbBindAndRun("content", function(event,value) {
-      teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, 500);
+      teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, animateTime.team);
     });
 
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
@@ -135,21 +135,21 @@ function setupTeams() {
           teamDiv.find("div.Name,div.TeamAnimationFlag").addClass("ShowLogo");
           var resizedCss = resizeName();
           teamDiv.find("div.Name").removeClass("ShowLogo"); resizeName();
-          teamDiv.find("div.Name>a").animate(resizedCss, 500, function() {
+          teamDiv.find("div.Name>a").animate(resizedCss, animateTime.team, function() {
             teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();
-            teamDiv.find("div.Logo").addClass("ShowLogo", 500, next);
+            teamDiv.find("div.Logo").addClass("ShowLogo", animateTime.team, next);
           });
         } else {
           var curVal = teamDiv.find("div.Logo img").attr("src");
           if (!curVal)
             teamDiv.find("div.Logo img").attr("src", oldVal);
-          teamDiv.find("div.Logo").removeClass("ShowLogo", 500, function() {
+          teamDiv.find("div.Logo").removeClass("ShowLogo", animateTime.team, function() {
             if (!curVal)
               teamDiv.find("div.Logo img").attr("src", curVal);
             teamDiv.find("div.Name,div.TeamAnimationFlag").removeClass("ShowLogo");
             var resizedCss = resizeName();
             teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();
-            teamDiv.find("div.Name").animate(resizedCss, 500, function() {
+            teamDiv.find("div.Name").animate(resizedCss, animateTime.team, function() {
               teamDiv.find("div.Name").removeClass("ShowLogo"); resizeName();
               next();
             });
@@ -159,16 +159,16 @@ function setupTeams() {
     });
 
     sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("content", function(event, value) {
-      teamDiv.find("div.Jammer").toggleClass("ShowJammer", !!value, animateTime.leadjammer);
+      teamDiv.find("div.Jammer").toggleClass("ShowJammer", !!value, animateTime.clock);
     });
     $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("content", function(event, value) {
-      teamDiv.find("div.Jammer").toggleClass("ShowJam", isTrue(value), animateTime.leadjammer);
+      teamDiv.find("div.Jammer").toggleClass("ShowJam", isTrue(value), animateTime.clock);
     });
 
     setupPulsate(
       function() { return sbTeam.$sb("LeadJammer").$sbIsTrue(); },
       teamDiv.find("div.Jammer>a.Pulse"),
-      animateTime.leadjammer
+      animateTime.leadjammerPulse
     );
 
     setupPulsate(
@@ -176,7 +176,7 @@ function setupTeams() {
         return ($sb("ScoreBoard.TimeoutOwner").$sbIs(team) &&
         $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue()); },
       $("#Timeouts>div.Team"+team+">div.Pulse"),
-      animateTime.timeout
+      animateTime.timeoutPulse
     );
   });
 }
@@ -273,7 +273,7 @@ function setupClocks() {
   setupPulsate(
     function() { return $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue(); },
     $("#Timeout>div.Name>.Pulse"),
-    animateTime.timeout
+    animateTime.timeoutPulse
   );
 }
 
