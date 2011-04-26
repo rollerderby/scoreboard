@@ -138,7 +138,7 @@
 	</target>
 
 	<!-- Create zip file -->
-	<target name="zip" depends="-version,clean,compile" >
+	<target name="zip" depends="clean,-version,compile" >
 		<mkdir dir="${release.dir}" />
 		<property name="zip.prefix" value="crg-scoreboard_${version}"/>
 		<zip destfile="${release.dir}/${zip.prefix}.zip" >
