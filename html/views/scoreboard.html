@@ -301,7 +301,7 @@ function showClocks(clock, next) {
   var fromClasses = "ShowPeriod ShowJam ShowLineup ShowTimeout ShowIntermission".replace(toClass, "");
   if (currentClock)
     $("#sbDiv>div.Animation").switchClass(fromClasses, transClass, animateTime.clock, "easeInQuart");
-  $("#sbDiv>div.Animation").switchClass(transClass, toClass, animateTime.clock, "easeInOutExpo",
+  $("#sbDiv>div.Animation").switchClass(transClass, toClass, animateTime.clock, "easeInOuart",
     function() { $(this).hasClass("ClockAnimationFlag") && next(); }
   );
   currentClock = clock;
