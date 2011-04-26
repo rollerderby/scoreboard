@@ -290,15 +290,21 @@ function clockRunningChange(next) {
     showClocks("Jam", next);
 }
 
+var currentClock = "";
 function showClocks(clock, next) {
-  var toClass = "Show"+clock;
-  var fromClasses = "ShowPeriod ShowJam ShowLineup ShowTimeout ShowIntermission".replace(toClass, "");
-  if ($("#scoreboardDiv>div.ClockAnimationFlag").hasClass(toClass))
+  if (currentClock == clock) {
     next();
-  else
-    $("#scoreboardDiv>div.Animation").switchClass(fromClasses, toClass, animateTime.clock, "easeInOutExpo",
-      function() { $(this).hasClass("ClockAnimationFlag") && next(); }
-    );
+    return;
+  }
+  var toClass = "Show"+clock;
+  var transClass = "Trans"+currentClock+clock;
+  var fromClasses = "ShowPeriod ShowJam ShowLineup ShowTimeout ShowIntermission".replace(toClass, "");
+  if (currentClock)
+    $("#scoreboardDiv>div.Animation").switchClass(fromClasses, transClass, animateTime.clock, "easeInQuart");
+  $("#scoreboardDiv>div.Animation").switchClass(transClass, toClass, animateTime.clock, "easeInOutExpo",
+    function() { $(this).hasClass("ClockAnimationFlag") && next(); }
+  );
+  currentClock = clock;
 }
 
 
