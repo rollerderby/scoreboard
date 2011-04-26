@@ -124,8 +124,8 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 /* Period_small */
   /* Main box */
   #Period_small { right: 100%; top: 59%; width: 50%; bottom: 0%; }
-  #Period_small.ShowTimeout,#Period_small.ShowLineup { right: 50%; }
-  #Period_small.TransTimeoutLineup,#Period_small.TransLineupTimeout { right: 50%; }
+  #Period_small.ShowTimeout,#Period_small.ShowLineup,#Period_small.TransTimeoutLineup,#Period_small.TransLineupTimeout
+    { right: 50%; }
 
   /* Name sub-box */
   #Period_small>div.Name { top: 0%; left: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
@@ -211,8 +211,8 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 /* Ad box */
   /* Main box */
   #AdBox { left: 0%; top: 100%; width: 100%; height: 26%; }
-  #AdBox.ShowTimeout,#AdBox.ShowLineup { top: 74%; }
-  #AdBox.TransTimeoutLineup,#AdBox.TransLineupTimeout { top: 74%; }
+  #AdBox.ShowTimeout,#AdBox.ShowLineup,#AdBox.TransTimeoutLineup,#AdBox.TransLineupTimeout
+    { top: 74%; }
 
   #AdBox>div { top: 0%; right: 0%; width: 100%; height: 100%; font-size: 0px; }
   #AdBox>div.FinishedAd { right: -100%; }
