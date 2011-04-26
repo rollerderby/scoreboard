@@ -38,7 +38,7 @@
 		<echo message=""/>
 		<echo message="Targets:"/>
 		<echo message=""/>
-		<echo message="  all              clean compile jdoc"/>
+		<echo message="  all              clean compile"/>
 		<echo message="  clean            Clean everything"/>
 		<echo message="  compile          Compile all classes and create jarfile (default)"/>
 		<echo message="  launcher         Create Windows scoreboard.exe"/>
@@ -124,7 +124,7 @@
 	</target>
 
 	<!-- Do everything -->
-	<target name="all" depends="clean,compile,jdoc"/>
+	<target name="all" depends="clean,compile"/>
 
 	<!-- Create Windows scoreboard.exe -->
 	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
