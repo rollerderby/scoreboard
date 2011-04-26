@@ -27,9 +27,7 @@
 	<property name="launch4j.dir" value="launch4j"/>
 	<property name="launch4j.outfile" value="scoreboard.exe"/>
 
-	<property name="distro.dir" value="distribution" />
-	<property name="zip.prefix" value="crg-scoreboard_${version}"/>
-	<property name="zip.file" value="${distro.dir}/${zip.prefix}.zip"/>
+	<property name="release.dir" value="release" />
 
 	<property name="clean.verbose" value="false"/>
 	<property name="clean.quiet" value="false"/>
@@ -47,12 +45,13 @@
 		<echo message="  manifest         (Re)create the manifest file"/>
 		<echo message="  help             Show this help"/>
 		<echo message="  jdoc             Create JavaDOC"/>
-		<echo message="  distro           Create distribution file(s)"/>
+		<echo message="  release          Create release zip file"/>
+		<echo message="  zip              Create non-release zip file"/>
 		<echo message=""/>
 	</target>
 
-	<!-- Timestamp for build version -->
-	<target name="-buildversion">
+	<!-- Add build timestamp to version -->
+	<target name="-buildversion" unless="isRelease" >
 		<tstamp>
 			<format property="version.build" pattern="yyyyMMddHHmmss" />
 		</tstamp>
@@ -62,14 +61,19 @@
 		</propertyfile>
 	</target>
 
+	<!-- Determine version -->
+	<target name="-version" depends="-buildversion" >
+		<condition property="version" value="${version.release}-${version.build}" else="${version.release}">
+			<isset property="version.build"/>
+		</condition>
+	</target>
+
 	<!-- Compile source files -->
-	<target name="compile" depends="-buildversion,-manifest" >
-		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.0.jar"/>
+	<target name="compile" depends="-manifest" >
+		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.1.jar"/>
 
 		<mkdir dir="${version.dest.dir}"/>
-		<copy file="${version.src.dir}/${version.release.file}"
-			todir="${version.dest.dir}"
-			overwrite="true" />
+		<copy file="${version.src.dir}/${version.release.file}" todir="${version.dest.dir}"/>
 		<mkdir dir="${dest.dir}"/>
 		<javac srcdir="${src.dir}"
 			destdir="${dest.dir}"
@@ -133,10 +137,11 @@
 		</launch4j>
 	</target>
 
-	<!-- Create distribution zip file -->
-	<target name="distro" depends="clean,compile" >
-		<mkdir dir="${distro.dir}" />
-		<zip destfile="${zip.file}" >
+	<!-- Create zip file -->
+	<target name="zip" depends="-version,clean,compile" >
+		<mkdir dir="${release.dir}" />
+		<property name="zip.prefix" value="crg-scoreboard_${version}"/>
+		<zip destfile="${release.dir}/${zip.prefix}.zip" >
 			<zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
 				<include name="README" />
 				<include name="scoreboard-Windows.exe" />
@@ -151,13 +156,19 @@
 		</zip>
 	</target>
 
+	<!-- Create official release zip file -->
+	<target name="release" >
+		<antcall target="zip">
+			<param name="isRelease" value="true"/>
+		</antcall>
+	</target>
+
 	<!-- Clean all classfiles -->
 	<target name="clean">
 		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeEmptyDirs="true" failonerror="false">
 			<fileset dir="${dest.dir}" includes="com/carolinarollergirls/scoreboard/**/*.class"/>
 			<fileset dir="${jar.dir}" includes="${jar.file}"/>
 			<fileset dir="${jdoc.dir}"/>
-			<fileset dir="${distro.dir}"/>
 		</delete>
 	</target>
 
