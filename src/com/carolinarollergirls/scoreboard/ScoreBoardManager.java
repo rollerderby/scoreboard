@@ -94,21 +94,21 @@ public class ScoreBoardManager
 		ClassLoader cL = ScoreBoardManager.class.getClassLoader();
 		InputStream releaseIs = cL.getResourceAsStream(VERSION_RELEASE_PROPERTIES_NAME);
 		InputStream buildIs = cL.getResourceAsStream(VERSION_BUILD_PROPERTIES_NAME);
-		if (null == releaseIs)
-			doExit("Could not find version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'");
 		try {
 			versionProperties.load(releaseIs);
+		} catch ( NullPointerException npE ) {
+			doExit("Could not find version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'");
 		} catch ( IOException ioE ) {
 			doExit("Could not load version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'", ioE);
 		}
 		try {
 			versionProperties.load(buildIs);
-		} catch ( IOException ioE ) {
+		} catch ( Exception e ) {
 			/* Ignore missing build properties */
 			versionProperties.setProperty(VERSION_BUILD_KEY, "");
 		}
-		try { releaseIs.close(); } catch ( IOException ioE ) { }
-		try { buildIs.close(); } catch ( IOException ioE ) { }
+		try { releaseIs.close(); } catch ( Exception e ) { }
+		try { buildIs.close(); } catch ( Exception e ) { }
 		versionRelease = versionProperties.getProperty(VERSION_RELEASE_KEY);
 		versionBuild = versionProperties.getProperty(VERSION_BUILD_KEY);
 		printMessage("Carolina Rollergirls Scoreboard version "+getVersion());
