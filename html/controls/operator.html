@@ -531,6 +531,15 @@ function createScoreBoardViewContent() {
   $sb("Pages.Page(scoreboard.html).CurrentView").$sbControl(controlTd.find("input:radio"));
   controlTd.buttonset();
 
+  $sb("Pages.Page(scoreboard.html).SwapTeams").$sbControl("<label/><input type='checkbox'/>", { sbcontrol: {
+      button: true
+    }, sbelement: {
+      convert: function(value) {
+        $(this).button("option", "label", (isTrue(value)?"Team sides are swapped":"Team sides are normal"));
+        return value;
+      }
+    } }).appendTo($("<td>").appendTo($("<tr>").addClass("Control").appendTo("#ScoreBoardView")));
+
   $.each( [ "ScoreBoard", "Image", "Video" ], function() {
     var nameTr = $("<tr><td/></tr>").addClass("Name View"+this)
       .appendTo("#ScoreBoardView")

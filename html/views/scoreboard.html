@@ -178,6 +178,10 @@ function setupTeams() {
       animateTime.timeoutPulse
     );
   });
+
+  $sbThisPage.$sb("SwapTeams").$sbBindAndRun("content", function(event,value) {
+    $("#sbDiv>div.Team,#Timeouts>div.Team").toggleClass("SwapTeams", isTrue(value));
+  });
 }
 
 ////////////////
