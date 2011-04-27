@@ -51,42 +51,40 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Teams */
   /* Main boxes */
-  div.Team { top: 0%; width: 50%; height: 63%; }
-  #Team1 { left: 0%; }
-  #Team2 { right: 0%; }
+  #sbDiv>div.Team { top: 0%; width: 50%; height: 63%; }
+  #sbDiv>div.Team1,#sbDiv>div.Team2.SwapTeams { left: 0%; right: auto; }
+  #sbDiv>div.Team2,#sbDiv>div.Team1.SwapTeams { left: auto; right: 0%; }
 
   /* Team Name sub-box */
-  div.Team>div.Name { top: 0%; width: 90%; height: 48%; }
-  div.Team>div.Name.NoName { top: -48%; }
-  div.Team>div.Name.ShowLogo { height: 16%; }
-  div.Team>div.Name.NoName.ShowLogo { top: -16%; }
-  div.Team>div.Name>a { color: #ffffff; }
-  #Team1>div.Name { left: 5%; }
-  #Team2>div.Name { right: 5%; }
+  #sbDiv>div.Team>div.Name { top: 0%; left: 5%; right: 5%; height: 48%; }
+  #sbDiv>div.Team>div.Name.NoName { top: -48%; }
+  #sbDiv>div.Team>div.Name.ShowLogo { height: 16%; }
+  #sbDiv>div.Team>div.Name.NoName.ShowLogo { top: -16%; }
+  #sbDiv>div.Team>div.Name>a { color: #ffffff; }
 
   /* Team Logo sub-box */
-  div.Team>div.Logo { top: 16%; height: 32%; width: 100%; }
-  div.Team>div.Logo.NoName { top: 0%; height: 48%; }
-  div.Team>div.Logo>div.Inner { top: 0%; height: 100%; width: 300%; left: -100%; overflow: hidden; }
-  div.Team>div.Logo img { top: 0%; height: 100%; display: block; margin-left: auto; margin-right: auto; } /* center img */
-  #Team1>div.Logo { right: 100%; }
-  #Team2>div.Logo { left: 100%; }
-  #Team1>div.Logo.ShowLogo { right: 0%; }
-  #Team2>div.Logo.ShowLogo { left: 0%; }
+  #sbDiv>div.Team>div.Logo { top: 16%; height: 32%; width: 100%; }
+  #sbDiv>div.Team>div.Logo.NoName { top: 0%; height: 48%; }
+  #sbDiv>div.Team>div.Logo>div.Inner { top: 0%; height: 100%; width: 300%; left: -100%; overflow: hidden; }
+  #sbDiv>div.Team>div.Logo img { top: 0%; height: 100%; display: block; margin-left: auto; margin-right: auto; } /* center img */
+  #sbDiv>div.Team1>div.Logo,#sbDiv>div.Team2.SwapTeams>div.Logo { left: auto; right: 100%; }
+  #sbDiv>div.Team2>div.Logo,#sbDiv>div.Team1.SwapTeams>div.Logo { left: 100%; right: auto; }
+  #sbDiv>div.Team1>div.Logo.ShowLogo,#sbDiv>div.Team2.SwapTeams>div.Logo.ShowLogo { left: auto; right: 0%; }
+  #sbDiv>div.Team2>div.Logo.ShowLogo,#sbDiv>div.Team1.SwapTeams>div.Logo.ShowLogo { left: 0%; right: auto; }
 
   /* Team Score sub-box */
-  div.Team>div.Score { top: 49%; width: 70%; height: 31.5%; border-radius: 12% / 25%; }
-  #Team1>div.Score { left: 15%; }
-  #Team2>div.Score { right: 15%; }
+  #sbDiv>div.Team>div.Score { top: 49%; left: 15%; right: 15%; height: 31.5%; border-radius: 12% / 25%; }
 
   /* Team Jammer sub-box */
-  div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; }
-  #Team1>div.Jammer { right: 100%; }
-  #Team2>div.Jammer { left: 100%; }
-  #Team1>div.Jammer.ShowJammer.ShowJam { right: 5%; }
-  #Team2>div.Jammer.ShowJammer.ShowJam { left: 5%; }
-  div.Team>div.Jammer>a.Pulse { color: #ff0000; }
-  div.Team>div.Jammer>a.Jammer { color: #ffffff; }
+  #sbDiv>div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; }
+  #sbDiv>div.Team1>div.Jammer,#sbDiv>div.Team2.SwapTeams>div.Jammer { left: auto; right: 100%; }
+  #sbDiv>div.Team2>div.Jammer,#sbDiv>div.Team1.SwapTeams>div.Jammer { left: 100%; right: auto; }
+  #sbDiv>div.Team1>div.Jammer.ShowJammer.ShowJam,#sbDiv>div.Team2.SwapTeams>div.Jammer.ShowJammer.ShowJam
+    { left: auto; right: 5%; }
+  #sbDiv>div.Team2>div.Jammer.ShowJammer.ShowJam,#sbDiv>div.Team1.SwapTeams>div.Jammer.ShowJammer.ShowJam
+    { left: 5%; right: auto; }
+  #sbDiv>div.Team>div.Jammer>a.Pulse { color: #ff0000; }
+  #sbDiv>div.Team>div.Jammer>a.Jammer { color: #ffffff; }
 /* End Teams */
 
 /* Timeouts */
@@ -101,8 +99,8 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   #Timeouts>div.Number { bottom: 0%; width: 45%; height: 50%; border-radius: 25%/ 25%; }
   #Timeouts>div.Number.TextContainer { font-size: 9%; }
   #Timeouts>div.Number.TextContainer>a { top: -15%; }
-  #Timeouts>div.Number.Team1 { left: 0%; }
-  #Timeouts>div.Number.Team2 { right: 0%; }
+  #Timeouts>div.Team1,#Timeouts>div.Team2.SwapTeams { left: 0%; right: auto; }
+  #Timeouts>div.Team2,#Timeouts>div.Team1.SwapTeams { left: auto; right: 0%; }
 /* End Timeouts */
 
 /* Period */
