@@ -94,15 +94,14 @@ function setupTeams() {
 
   $.each( [ "1", "2" ], function() {
     var team = String(this);
-    var id = "Team"+team;
     var sbTeam = $sb("ScoreBoard.Team("+team+")");
 
-    $("<div>").addClass("Team"+team+" Number WhiteBox").appendTo("#Timeouts");
-    $("<div>").addClass("Team"+team+" Number TextContainer").appendTo("#Timeouts")
+    $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#Timeouts");
+    $("<div>").addClass("Team Team"+team+" Number TextContainer").appendTo("#Timeouts")
       .append($("<div>").addClass("Pulse full").css("opacity", 0))
       .append(sbTeam.$sb("Timeouts").$sbElement("<a>", "Number"));
 
-    var teamDiv = $("<div>").attr("id", id).addClass("Team").appendTo("#sbDiv");
+    var teamDiv = $("<div>").addClass("Team Team"+team).appendTo("#sbDiv");
     $("<div>").addClass("TeamAnimationQueue").appendTo(teamDiv);
     $("<div>").addClass("TeamAnimationFlag Animation").appendTo(teamDiv);
     $("<div><a/></div>").addClass("Name TextContainer Animation").appendTo(teamDiv);
