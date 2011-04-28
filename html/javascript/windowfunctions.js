@@ -203,7 +203,7 @@ _windowFunctions = {
 	hasParam: function(param) {
 		return $.string(window.location.search).toQueryParams().hasOwnProperty(param);
 	},
-	checkParam: function(param, value) { return value == getParam(param); },
+	checkParam: function(param, value) { return value == _windowFunctions.getParam(param); },
 
 	/* DOM element sorting */
 	appendSorted: function(parent, newChild, comparator, startIndex) {
