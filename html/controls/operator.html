@@ -517,50 +517,127 @@ function createScoreBoardViewTab() {
     .data("loadContentFunction", createScoreBoardViewContent);
 }
 
-function createScoreBoardViewContent() {
-  var controlTd = $("<td>").append("scoreboard.html view:")
-    .appendTo($("<tr>").addClass("Control").appendTo("#ScoreBoardView"));
-  $("<label>").text("ScoreBoard").attr("for", "ViewScoreBoardRadio").appendTo(controlTd);
-  $("<input type='radio'>").val("scoreboard").attr("id", "ViewScoreBoardRadio").appendTo(controlTd);
-  $("<label>").text("Image").attr("for", "ViewImageRadio").appendTo(controlTd);
-  $("<input type='radio'>").val("image").attr("id", "ViewImageRadio").appendTo(controlTd);
-  $("<label>").text("Video").attr("for", "ViewVideoRadio").appendTo(controlTd);
-  $("<input type='radio'>").val("video").attr("id", "ViewVideoRadio").appendTo(controlTd);
-  $sb("Pages.Page(scoreboard.html).CurrentView").$sbControl(controlTd.find("input:radio"));
-  controlTd.buttonset();
+function createScoreBoardViewContent(table) {
+  var usePreviewButton = $("<label for='UsePreviewButton'/><input type='checkbox' id='UsePreviewButton'/>")
+    .button();
+  var applyPreviewButton = $("<button>Apply Preview</button>").button()
+    .click(function() {
+      $sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
+        var path = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
+        $sb(path).$sbSet($sb(this).$sbGet());
+      });
+    });
+  $("<tr><td><a>Changes affect the </a></td></tr>").appendTo(table)
+    .find("td").addClass("Header NoChildren ChangesAffect")
+    .append(usePreviewButton)
+    .append(applyPreviewButton);
+  _crgUtils.bindAndRun(usePreviewButton.filter("input:checkbox"), "click", function() {
+    $(this).button("option", "label", (isTrue(this.checked)?"Live ScoreBoard":"Preview"));
+    table.toggleClass("UsePreview", !isTrue(this.checked));
+  });
 
-  $sb("Pages.Page(scoreboard.html).SwapTeams").$sbControl("<label/><input type='checkbox'/>", { sbcontrol: {
+  $.each( [ "View", "Preview" ], function(i,p) {
+    createScoreBoardViewPreviewRows(table, p);
+  });
+
+  $("<tr><td/></tr>").appendTo(table)
+    .find("td").addClass("ViewFrames Header")
+    .append(createRowTable(2))
+    .find("td")
+    .first().append("<a>Current</a>")
+    .next().append("<a>Preview</a>");
+
+  $("<tr><td/></tr>").appendTo(table)
+    .find("td").addClass("ViewFrames Footer")
+    .append(createRowTable(2))
+    .find("td").append("<iframe>Your browser does not support iframes.</iframe>")
+    .find("iframe").attr({ scrolling: "no", frameborder: "0" })
+    .first().attr("src", "/views/scoreboard.html").end()
+    .last().attr("src", "/views/scoreboard.html?preview=true");
+}
+
+function createScoreBoardViewPreviewRows(table, type) {
+  var pageSb = $sb("Pages.Page(scoreboard.html)."+type+"Options");
+
+  var currentViewTd = $("<tr><td/></tr>").addClass(type).appendTo(table)
+    .find("td").addClass("Header NoChildren CurrentView")
+    .append("<label>ScoreBoard</label><input type='radio' value='scoreboard'/>")
+    .append("<label>Image</label><input type='radio' value='image'/>")
+    .append("<label>Video</label><input type='radio' value='video'/>")
+    .append("<label>Custom Page</label><input type='radio' value='html'/>");
+
+  pageSb.$sb("CurrentView").$sbControl(currentViewTd.children());
+  currentViewTd.buttonset()
+    .prepend("<a>Current View : </a>");
+
+  $("<tr><td><a>ScoreBoard Options</a></td></tr>").addClass(type).appendTo(table)
+    .find("td").addClass("ScoreBoardOptions Header");
+
+//FIXME - this intermission control should not be on the View tab,
+//FIXME - it should be on the policy or scoreboard operation/behavior tab
+  var intermissionControlDialog = createIntermissionControlDialog();
+  var intermissionControlButton = $("<button>Intermission Control</button>").button()
+    .click(function() { intermissionControlDialog.dialog("open"); });
+  var swapTeamsButton = pageSb.$sb("SwapTeams").$sbControl("<label/><input type='checkbox'/>", { sbcontrol: {
       button: true
     }, sbelement: {
       convert: function(value) {
-        $(this).button("option", "label", (isTrue(value)?"Team sides are swapped":"Team sides are normal"));
+        $(this).button("option", "label", (isTrue(value)?"Team sides swapped":"Team sides normal"));
         return value;
       }
-    } }).appendTo($("<td>").appendTo($("<tr>").addClass("Control").appendTo("#ScoreBoardView")));
+    } });
 
-  $.each( [ "ScoreBoard", "Image", "Video" ], function() {
-    var nameTr = $("<tr><td/></tr>").addClass("Name View"+this)
-      .appendTo("#ScoreBoardView")
-      .children("td").append(this+" View Options").end();
-    var optionsTr = $("<tr><td><div/></td></tr>").addClass("Options View"+this)
-      .appendTo("#ScoreBoardView");
+  $("<tr><td/></tr>").addClass(type).appendTo(table)
+    .find("td").addClass("ScoreBoardOptions Footer")
+    .append(createRowTable(2))
+    .find("td")
+    .first().append(intermissionControlButton)
+    .next().append(swapTeamsButton);
 
-    var toggleContent = function() {
-      if ($(this).toggleClass("Hide").hasClass("Hide"))
-        optionsTr.find("td>div").hide("blind", 250);
-      else
-        optionsTr.find("td>div").show("blind", 250);
-    };
-    nameTr.children("td").bind("click", toggleContent);
-  });
+  $("<tr><td><a>Alternate View Options</a></td></tr>").addClass(type).appendTo(table)
+    .find("td").addClass("AlternateViewOptions Header");
 
-  var scoreBoardViewDiv = $("#ScoreBoardView tr.Options.ViewScoreBoard>td>div");
+  var imageViewSelect = pageSb.$sb("View(Image).Filename").$sbControl("<select>", { sbelement: {
+      optionParent: "ScoreBoard",
+      optionChildName: "Image",
+      optionChildFilter: function(e) { return e.$sb("Type").$sbIs("fullscreen"); },
+      optionNameElement: "Name",
+      optionValueElement: "Filename",
+      firstOption: { text: "No Image", value: "" }
+    } });
+  var videoViewSelect = pageSb.$sb("View(Video).Filename").$sbControl("<select>", { sbelement: {
+      optionParent: "ScoreBoard",
+      optionChildName: "Image",
+      optionChildFilter: function(e) { return e.$sb("Type").$sbIs("video"); },
+      optionNameElement: "Name",
+      optionValueElement: "Filename",
+      firstOption: { text: "No Video", value: "" }
+    } });
+  var customPageViewSelect = pageSb.$sb("View(CustomPage).Filename").$sbControl("<select>", { sbelement: {
+      optionParent: "Pages.Page(scoreboard.html).CustomPages",
+      optionChildName: "Page",
+      optionNameElement: "Name",
+      optionValueElement: "Filename",
+      firstOption: { text: "No Page", value: "" }
+    } });
 
+  $("<tr><td><a>Image View : </a></td></tr>").addClass(type).appendTo(table)
+    .find("td").addClass("AlternateViewOptions")
+    .append(imageViewSelect);
+  $("<tr><td><a>Video View : </a></td></tr>").addClass(type).appendTo(table)
+    .find("td").addClass("AlternateViewOptions")
+    .append(videoViewSelect);
+  $("<tr><td><a>Custom Page View : </a></td></tr>").addClass(type).appendTo(table)
+    .find("td").addClass("AlternateViewOptions Footer")
+    .append(customPageViewSelect);
+}
+
+function createIntermissionControlDialog() {
   var table = $("<table>").addClass("IntermissionControlDialog");
-  $.each( [ "Pregame", "Halftime", "Final" ], function(i) {
+  $.each( [ "Pregame", "Halftime", "Final" ], function(i,title) {
     var intermissionControl = $sb("Pages.Page(scoreboard.html).Intermission("+i+")");
     $("<td>").attr("colspan", "3").addClass("Name")
-      .append($("<a>").text(this+" (Intermission "+i+")"))
+      .append($("<a>").text(title+" (Intermission "+i+")"))
       .appendTo($("<tr>").addClass("Name").appendTo(table));
     var controlRow = $("<tr>").addClass("Control")
       .append($("<td><label><span/></label><input type='checkbox'/></td>").addClass("ShowUnofficial"))
@@ -569,40 +646,22 @@ function createScoreBoardViewContent() {
       .appendTo(table);
     intermissionControl.$sb("ShowUnofficial").$sbBindAndRun("content", function(event,value) {
         controlRow.find(">td.ShowUnofficial>label>span").text(isTrue(value)?"'Unofficial' Showing":"'Unofficial' Hidden");
-      })
-      .$sbControl(controlRow.find(">td.ShowUnofficial>label,>td.ShowUnofficial>input:checkbox"))
-      .filter("input:checkbox").button();
+      }).$sbControl(controlRow.find(">td.ShowUnofficial>label,>td.ShowUnofficial>input:checkbox"), { sbcontrol: {
+        button: true
+      } });
     intermissionControl.$sb("Text").$sbControl(controlRow.find(">td.Text>input:text"), { size: "12" });
     intermissionControl.$sb("HideClock").$sbBindAndRun("content", function(event,value) {
         controlRow.find(">td.HideClock>label>span").text(isTrue(value)?"Clock Hidden":"Clock Showing");
-      })
-      .$sbControl(controlRow.find(">td.HideClock>label,>td.HideClock>input:checkbox"))
-      .filter("input:checkbox").button();
+      }).$sbControl(controlRow.find(">td.HideClock>label,>td.HideClock>input:checkbox"), { sbcontrol: {
+        button: true
+      } });
   });
-  var dialog = $("<div>").append(table).dialog({
+  return $("<div>").append(table).dialog({
     title: "Intermission Display Controls",
     autoOpen: false,
     width: 700,
     modal: true,
     buttons: { Close: function() { $(this).dialog("close"); } }
-  });
-  $("<button>").text("Intermission Control").button()
-    .click(function() { dialog.dialog("open"); })
-    .appendTo(scoreBoardViewDiv);
-
-  $.each( [ { name: "Image", type: "fullscreen" }, { name: "Video", type: "video" } ], function() {
-    $("#ScoreBoardView tr.Options.View"+this.name+">td>div")
-      .append("<a>Select "+this.name+":</a>")
-      .append($sb("Pages.Page(scoreboard.html).View("+this.name+").Option(Filename)")
-        .$sbControl("<select>", { sbelement: {
-          optionParent: "ScoreBoard",
-          optionChildName: "Image",
-          optionChildFilter: $.proxy(function(e) { return e.$sb("Type").$sbIs(this.type); }, this),
-          optionNameElement: "Name",
-          optionValueElement: "Filename",
-          firstOption: { text: "No Image", value: "" }
-        } })
-      );
   });
 }
 
