@@ -421,12 +421,13 @@ _crgScoreBoard = {
 // FIXME - need to start video when visible and when changing src; stop when not visible.
 			else if (e.is("video"))
 				e.attr("src", v);
+			else if (e.is("iframe"))
+				e.attr("src", v);
 			else if (e.is("input:text,input:password,textarea"))
 				e.val(v);
-			else if (e.is("input:checkbox")) {
+			else if (e.is("input:checkbox"))
 				e.attr("checked", isTrue(v));
-				try { e.button("refresh"); } catch (err) { /* checkbox wasn't a button(), ignore err */ }
-			} else if (e.is("input:radio"))
+			else if (e.is("input:radio"))
 				e.attr("checked", (e.val() == v));
 			else if (e.is("input:button,button")) {
 				if (sbC && sbC.setButtonValue)
@@ -440,6 +441,9 @@ _crgScoreBoard = {
 				e.val(v);
 			else
 				alert("ADD SUPPORT FOR ME: node type "+this.nodeName);
+
+			if (e.is(":checkbox,:radio,:button"))
+				try { e.button("refresh"); } catch (err) { /* wasn't a button() */ }
 		});
 		return htmlelements;
 	},
