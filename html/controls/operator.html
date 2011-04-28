@@ -520,6 +520,10 @@ function createScoreBoardViewTab() {
 function createScoreBoardViewContent(table) {
   var usePreviewButton = $("<label for='UsePreviewButton'/><input type='checkbox' id='UsePreviewButton'/>")
     .button();
+  _crgUtils.bindAndRun(usePreviewButton.filter("input:checkbox"), "click", function() {
+    $(this).button("option", "label", (isTrue(this.checked)?"Edit Live ScoreBoard":"Edit Preview"));
+    table.toggleClass("UsePreview", !isTrue(this.checked));
+  });
   var applyPreviewButton = $("<button>Apply Preview</button>").button()
     .click(function() {
       $sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
@@ -527,14 +531,24 @@ function createScoreBoardViewContent(table) {
         $sb(path).$sbSet($sb(this).$sbGet());
       });
     });
-  $("<tr><td><a>Changes affect the </a></td></tr>").appendTo(table)
-    .find("td").addClass("Header NoChildren ChangesAffect")
-    .append(usePreviewButton)
-    .append(applyPreviewButton);
-  _crgUtils.bindAndRun(usePreviewButton.filter("input:checkbox"), "click", function() {
-    $(this).button("option", "label", (isTrue(this.checked)?"Live ScoreBoard":"Preview"));
-    table.toggleClass("UsePreview", !isTrue(this.checked));
+  var viewOptions = $sb("Pages.Page(scoreboard.html)").children("PreviewOptions,ViewOptions");
+  _crgUtils.bindAndRun(viewOptions, "content", function() {
+    var disableApplyButton = true;
+    $sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
+      var viewPath = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
+      if (!$sb(this).$sbIs($sb(viewPath).$sbGet())) {
+        disableApplyButton = false;
+        return false;
+      }
+    });
+    applyPreviewButton.button("option", "disabled", disableApplyButton);
   });
+
+  $("<tr><td/></tr>").appendTo(table)
+    .find("td").addClass("Header NoChildren PreviewControl")
+    .append(createRowTable(3))
+    .find("td:eq(1)").append(usePreviewButton)
+    .next().append(applyPreviewButton);
 
   $.each( [ "View", "Preview" ], function(i,p) {
     createScoreBoardViewPreviewRows(table, p);
