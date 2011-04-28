@@ -5,6 +5,7 @@ import java.util.*;
 import java.util.regex.*;
 
 import org.jdom.*;
+import org.jdom.output.*;
 import org.jdom.xpath.*;
 
 import javax.servlet.*;
@@ -48,7 +49,7 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
 			response.sendError(HttpServletResponse.SC_NOT_FOUND, "No elements found.");
 		} else {
 			response.setContentType("text/xml");
-			editor.sendToWriter(doc, response.getWriter());
+			editor.sendToWriter(doc, response.getWriter(), Format.getPrettyFormat());
 			response.setStatus(HttpServletResponse.SC_OK);
 		}
 	}
