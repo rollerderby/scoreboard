@@ -67,7 +67,7 @@ table.RowTable { border-spacing: 0px; }
   #ScoreBoardView>tbody>tr>td.Header { background: #ccc; border-radius: 12px 12px 0px 0px; }
   #ScoreBoardView>tbody>tr>td.Header.NoChildren { border-radius: 12px; }
   #ScoreBoardView>tbody>tr>td.Footer { border-radius: 0px 0px 12px 12px; }
-  #ScoreBoardView>tbody>tr>td.ChangesAffect>a { font-size: 150%; font-weight: bold; }
+  #ScoreBoardView>tbody>tr>td.PreviewControl a { font-size: 150%; font-weight: bold; }
   #ScoreBoardView>tbody>tr>td.ViewFrames iframe { width: 100%; height: 300px; }
 /* End ScoreBoard View */
 
