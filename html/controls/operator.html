@@ -27,7 +27,7 @@ $sb(function() {
       table.removeData("loadContentFunction");
       setTimeout(function() {
         $(ui.panel).children("div.Loading").remove();
-        loadFunc();
+        loadFunc(table);
       }, 100);
     }, [ { panel: $("#TeamTimeTab") } ]);
 
@@ -109,9 +109,7 @@ function createScoreTimeTab() {
     .data("loadContentFunction", createScoreTimeContent);
 }
 
-function createScoreTimeContent() {
-  var table = $("#TeamTime");
-
+function createScoreTimeContent(table) {
   $("<tr><td/></tr>").appendTo(table).children("td")
     .append(createMetaControlTable());
   $("<tr><td/></tr>").appendTo(table).children("td")
@@ -444,9 +442,9 @@ function createPoliciesTab() {
     .data("loadContentFunction", createPoliciesContent);
 }
 
-function createPoliciesContent() {
+function createPoliciesContent(table) {
   $("<td>").attr("colspan", "2")
-    .appendTo($("<tr>").addClass("ExpandCollapseAll").appendTo("#Policies"))
+    .appendTo($("<tr>").addClass("ExpandCollapseAll").appendTo(table))
     .append("<a>Click to Expand/Collapse all</a>")
     .click(function() {
       if ($("#Policies tr.Name>td.Hide").length)
