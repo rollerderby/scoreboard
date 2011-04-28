@@ -38,23 +38,33 @@ var animateTime = {
 // Main setup function
 $sb(function() {
   setupMainDiv($("#mainDiv")); // This needs to be part of scoreboard framework
-  var view = $sbThisPage.$sb("CurrentView");
+
+  var sbViewOptions = $sbThisPage.$sb("ViewOptions");
+  if (_windowFunctions.checkParam("preview", "true"))
+    sbViewOptions = $sbThisPage.$sb("PreviewOptions");
+
+  var view = sbViewOptions.$sb("CurrentView");
   view.$sbBindAndRun("content", function(event, value) {
     var showDiv = $("#"+value+"Div");
     if (!showDiv.length)
       showDiv = $("#sbDiv");
     $("#mainDiv>div.View").not(showDiv).removeClass("Show", 500)
     showDiv.addClass("Show", 500);
-  }, [ view.$sbGet() ]);
+  });
 
-  $sbThisPage.$sb("View(Image).Option(Filename)").$sbElement("#imageDiv>img");
-  $sbThisPage.$sb("View(Video).Option(Filename)").$sbElement("#videoDiv>video");
+  sbViewOptions.$sb("View(Image).Filename").$sbElement("#imageDiv>img");
+  sbViewOptions.$sb("View(Video).Filename").$sbElement("#videoDiv>video");
+  sbViewOptions.$sb("View(CustomPage).Filename").$sbElement("#customPageDiv>iframe");
 
   setupAds();
   setupTeams();
   setupClocks();
 
   setupBackgrounds();
+
+  sbViewOptions.$sb("SwapTeams").$sbBindAndRun("content", function(event,value) {
+    $("#sbDiv>div.Team,#Timeouts>div.Team").toggleClass("SwapTeams", isTrue(value));
+  });
 });
 
 // FIXME - needs to be a single call from scoreboard.js
@@ -177,10 +187,6 @@ function setupTeams() {
       $("#Timeouts>div.Team"+team+">div.Pulse"),
       animateTime.timeoutPulse
     );
-  });
-
-  $sbThisPage.$sb("SwapTeams").$sbBindAndRun("content", function(event,value) {
-    $("#sbDiv>div.Team,#Timeouts>div.Team").toggleClass("SwapTeams", isTrue(value));
   });
 }
 
@@ -374,6 +380,7 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
   <div id="sbDiv" class="View"></div>
   <div id="imageDiv" class="View"><img/></div>
   <div id="videoDiv" class="View"><video/></div>
+  <div id="customPageDiv" class="View"><iframe/></div>
 
 </div>
 
