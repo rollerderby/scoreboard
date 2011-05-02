@@ -9,9 +9,9 @@ body { margin: 0px; }
 table.RowTable { border-spacing: 0px; }
 
 /* Key Control */
-  button.KeyControl span.Indicator { font-size: 75%; }
-  button.KeyControl:not(.HasControlKey) span.Indicator { display: none; }
-  button.KeyControl>span { padding: 0.3em !important; }
+  .KeyControl span.Indicator { font-size: 75%; }
+  .KeyControl:not(.HasControlKey) span.Indicator { display: none; }
+  .KeyControl>span { padding: .3em .6em !important; }
 /* End Key Control */
 
 
