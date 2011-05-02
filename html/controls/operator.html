@@ -225,7 +225,7 @@ function createTeamTable() {
     var nameTr = createRowTable(2).appendTo($("<td>").appendTo(nameRow)).find("tr");
     var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
     var timeoutTr = createRowTable(2).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
-    var jammerTr = createRowTable(3).appendTo($("<td>").appendTo(jammerRow)).find("tr");
+    var jammerTr = createRowTable(2).appendTo($("<td>").appendTo(jammerRow)).find("tr");
 
     var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
     sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='15'/>", { sbcontrol: {
@@ -298,27 +298,26 @@ function createTeamTable() {
         bindClickTo: timeoutTr.children("td:eq("+(first?"1":"0")+")")
       } }).appendTo(timeoutTr.children("td:eq("+(first?"1":"0")+")").addClass("Timeouts"));
 
-//FIXME - add select lead jammer by number also, make selectable option
-    sbTeam.$sb("LeadJammer").$sbControl("<button>").text("Lead").val("true")
-      .attr("id", "Team"+team+"LeadJammer").addClass("KeyControl")
-      .appendTo(jammerTr.children("td:eq("+(first?"0":"2")+")").addClass("Lead"));
-    sbTeam.$sb("LeadJammer").$sbControl("<button>").text("No Lead").val("false")
-      .attr("id", "Team"+team+"NoLeadJammer").addClass("KeyControl")
-      .appendTo(jammerTr.children("td:eq(1)").addClass("NoLead"));
+    var leadJammerTd = jammerTr.children("td:eq("+(first?"0":"1")+")")
+      .append("<label>Lead</label><input type='radio' value='true'/>")
+      [first?"append":"prepend"]("<label>No Lead</label><input type='radio' value='false'/>");
+    sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
+      .addClass("KeyControl");
+    leadJammerTd.buttonset();
     sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
         optionParent: sbTeam,
         optionChildName: "Skater",
         optionNameElement: "Name",
         firstOption: { text: "No Jammer", value: "" }
       } }).addClass("Jammer ByName").hide()
-        .appendTo(jammerTr.children("td:eq("+(first?"2":"0")+")").addClass("Jammer"));
+        .appendTo(jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer"));
     sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
         optionParent: sbTeam,
         optionChildName: "Skater",
         optionNameElement: "Number",
         firstOption: { text: "No Jammer", value: "" }
       } }).addClass("Jammer ByNumber")
-        .appendTo(jammerTr.children("td:eq("+(first?"2":"0")+")").addClass("Jammer"));
+        .appendTo(jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer"));
   });
 
   return table;
