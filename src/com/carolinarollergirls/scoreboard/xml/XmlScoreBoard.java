@@ -133,8 +133,9 @@ public class XmlScoreBoard
 		new XmlGoogleDocsStats().setXmlScoreBoard(this);
 		new AutoSaveScoreBoard().setXmlScoreBoard(this);
 		new LoadScoreBoard().setXmlScoreBoard(this);
-		new PagesXmlDocumentManager().setXmlScoreBoard(this);
 		new TeamsXmlDocumentManager().setXmlScoreBoard(this);
+		new OpenXmlDocumentManager("Pages").setXmlScoreBoard(this);
+		new OpenXmlDocumentManager("CustomHtml").setXmlScoreBoard(this);
 	}
 
 	protected ScoreBoardModel scoreBoardModel;

@@ -12,6 +12,8 @@ import com.carolinarollergirls.scoreboard.file.*;
 
 public class AutoSaveScoreBoard extends SegmentedXmlDocumentManager
 {
+	public AutoSaveScoreBoard() { super("SaveLoad", "AutoSave"); }
+
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
 		super.setXmlScoreBoard(xsB);
 		savers.add(new SaveToXmlFile(xmlScoreBoard, 1, 10));
@@ -64,9 +66,6 @@ public class AutoSaveScoreBoard extends SegmentedXmlDocumentManager
 			// FIXME - maybe add subelement to indicate error msgs
 		}
 	}
-
-	protected String getManagedElementName() { return "SaveLoad"; }
-	protected String getManagedSubElementName() { return "AutoSave"; }
 
 	protected ScheduledThreadPoolExecutor executor = null;
 

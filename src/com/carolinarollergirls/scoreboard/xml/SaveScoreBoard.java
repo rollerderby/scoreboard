@@ -12,6 +12,8 @@ import com.carolinarollergirls.scoreboard.file.*;
 
 public class SaveScoreBoard extends SegmentedXmlDocumentManager
 {
+	public SaveScoreBoard() { super("SaveLoad", "Save"); }
+
 	public void reset() {
 		super.reset();
 		Element e = createXPathElement();
@@ -46,9 +48,6 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
 			update(updateE);
 		}
 	}
-
-	protected String getManagedElementName() { return "SaveLoad"; }
-	protected String getManagedSubElementName() { return "Save"; }
 
 	public static final String DIRECTORY_NAME = "html/save";
 

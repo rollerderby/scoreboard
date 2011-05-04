@@ -9,6 +9,8 @@ import com.carolinarollergirls.scoreboard.event.*;
 
 public class XmlRealtimeStats extends XmlStats
 {
+	public XmlRealtimeStats() { super("Realtime"); }
+
 	public void scoreBoardChange(ScoreBoardEvent event) {
 		synchronized (lock) {
 			event.reflect(this);
@@ -41,8 +43,6 @@ public class XmlRealtimeStats extends XmlStats
 		if (p.equals("Position") || p.equals("LeadJammer") || p.equals("PenaltyBox"))
 			update(editor.addElement(editor.getElement(createXPathElement(), "Skater", s.getId()), p, getStatsTime(), v));
 	}
-
-	protected String getManagedSubElementName() { return "Realtime"; }
 
 	protected Object lock = new Object();
 }

@@ -11,7 +11,7 @@ import com.carolinarollergirls.scoreboard.event.*;
 public class XmlInterpretedStats extends XmlStats
 {
 	public XmlInterpretedStats() {
-		super();
+		super("Interpreted");
 		/* Period can end on either Period or Jam clock ending. */
 		periodRunningState.addProperty(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE);
 	}
@@ -290,8 +290,6 @@ public class XmlInterpretedStats extends XmlStats
 			editor.setElement(newPosition, "Number", null, number);
 		update(newPosition);
 	}
-
-	protected String getManagedSubElementName() { return "Interpreted"; }
 
 	protected XPath positionXPath = editor.createXPath("Period/Jam/Team/Position");
 

@@ -13,6 +13,8 @@ import com.carolinarollergirls.scoreboard.file.*;
 
 public class LoadScoreBoard extends SegmentedXmlDocumentManager
 {
+	public LoadScoreBoard() { super("SaveLoad", "Load"); }
+
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
 		super.setXmlScoreBoard(xsB);
 
@@ -36,9 +38,6 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager
 			loadFromFile.merge(xmlScoreBoard);
 		}
 	}
-
-	protected String getManagedElementName() { return "SaveLoad"; }
-	protected String getManagedSubElementName() { return "Load"; }
 
 	protected ScoreBoardFromXmlFile loadFromFile = new ScoreBoardFromXmlFile(DIRECTORY_NAME);
 

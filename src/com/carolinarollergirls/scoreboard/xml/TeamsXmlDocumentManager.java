@@ -14,8 +14,10 @@ import com.carolinarollergirls.scoreboard.model.*;
  * currently in the scoreboard.  It also allows copying one of the scoreboard's current teams
  * out into a saved team element here, or loading a team element here into the scoreboard.
  */
-public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implements XmlDocumentManager
+public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implements XmlDocumentManager
 {
+	public TeamsXmlDocumentManager() { super("Teams"); }
+
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
 		super.setXmlScoreBoard(xsB);
 		reset();
@@ -173,8 +175,6 @@ public class TeamsXmlDocumentManager extends AbstractXmlDocumentManager implemen
 		}
 		update(newTeam);
 	}
-
-	protected String getManagedElementName() { return "Teams"; }
 
 	protected List<XPath> transferXPaths = Arrays.asList(new XPath[]
 		{ editor.createXPath("Transfer/To/*"),

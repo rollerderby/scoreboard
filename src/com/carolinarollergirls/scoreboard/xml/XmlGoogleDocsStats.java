@@ -18,6 +18,8 @@ import com.google.gdata.client.docs.*;
 
 public class XmlGoogleDocsStats extends XmlStats
 {
+	public XmlGoogleDocsStats() { super("GoogleDocs"); }
+
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
 		super.setXmlScoreBoard(xsB);
 
@@ -103,8 +105,6 @@ public class XmlGoogleDocsStats extends XmlStats
 		try { return Boolean.parseBoolean(getXPathElement().getChild("Authenticated").getText()); }
 		catch ( Exception e ) { return false; }
 	}
-
-	protected String getManagedSubElementName() { return "GoogleDocs"; }
 
 	protected GoogleDocs googleDocs = new GoogleDocs();
 	protected SpreadsheetEntry spreadsheetEntry;

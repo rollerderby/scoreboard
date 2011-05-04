@@ -11,6 +11,8 @@ import com.carolinarollergirls.scoreboard.model.*;
 
 public abstract class XmlStats extends SegmentedXmlDocumentManager implements ScoreBoardListener
 {
+	public XmlStats(String n) { super("Stats", n); }
+
 	public void setXmlScoreBoard(XmlScoreBoard xsB) {
 		scoreBoard = xsB.getScoreBoardModel();
 		super.setXmlScoreBoard(xsB);
@@ -26,8 +28,6 @@ public abstract class XmlStats extends SegmentedXmlDocumentManager implements Sc
 	public abstract void scoreBoardChange(ScoreBoardEvent event);
 
 	protected String getStatsTime() { return Long.toString(new Date().getTime() - statsStartTime); }
-
-	protected String getManagedElementName() { return "Stats"; }
 
 	protected ScoreBoard scoreBoard;
 	protected long statsStartTime;
