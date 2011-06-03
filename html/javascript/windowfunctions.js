@@ -205,7 +205,25 @@ _windowFunctions = {
 	},
 	checkParam: function(param, value) { return value == _windowFunctions.getParam(param); },
 
-	/* DOM element sorting */
+	/* DOM element sorting
+	 *
+	 * This inserts the provided newChild directly under the parent,
+	 * using the specified comparator to insert at the correct spot.
+	 * If startIndex (which is 0-based) is specified, the newChild
+	 * will be inserted no earlier than that index (unless there
+	 * are not enough children to reach that index, in which case the
+	 * newChild will be appended).	The comparator should accept two
+	 * parameters (both actual DOM elements, not jQuery objects),
+	 * the first being the existing child to compare, and the second
+	 * being the newChild that is being inserted, and it should return 
+	 * true to indicate the newChild is "before" the existing child,
+	 * and false to indicate the newChild is "after" the existing child.
+	 * This insertion function does not attempt to maintain ordering
+	 * for "equal" children, and so the comparator does not provide
+	 * for indicating equality; it can return either true or false
+	 * for "equal" children, which will be sorted in the order they
+	 * are inserted.
+	 */
 	appendSorted: function(parent, newChild, comparator, startIndex) {
 		var child = null;
 		parent.children().each(function(i) {
