@@ -633,11 +633,11 @@ function createScoreBoardViewPreviewRows(table, type) {
       optionValueElement: "Filename",
       firstOption: { text: "No Video", value: "" }
     } });
-  var customPageViewSelect = pageSb.$sb("View(CustomPage).Filename").$sbControl("<select>", { sbelement: {
-      optionParent: "Pages.Page(scoreboard.html).CustomPages",
-      optionChildName: "Page",
+  var customPageViewSelect = pageSb.$sb("View(CustomHtml).Filename").$sbControl("<select>", { sbelement: {
+      optionParent: "CustomHtml.Type(fullscreen)",
+      optionChildName: "Html",
       optionNameElement: "Name",
-      optionValueElement: "Filename",
+      optionValueElement: "Src",
       firstOption: { text: "No Page", value: "" }
     } });
 
