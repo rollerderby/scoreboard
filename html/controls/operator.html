@@ -561,11 +561,17 @@ function createScoreBoardViewContent(table) {
     .first().append("<a>Current</a>")
     .next().append("<a>Preview</a>");
 
+  var previewButton = $("<button>").html("Show Preview").click(function() {
+    $("<iframe>Your browser does not support iframes.</iframe>")
+      .attr({ scrolling: "no", frameborder: "0", src: $(this).attr("src") })
+      .replaceAll(this);
+  });
+
   $("<tr><td/></tr>").appendTo(table)
     .find("td").addClass("ViewFrames Footer")
     .append(createRowTable(2))
-    .find("td").append("<iframe>Your browser does not support iframes.</iframe>")
-    .find("iframe").attr({ scrolling: "no", frameborder: "0" })
+    .find("td").append(previewButton)
+    .find("button")
     .first().attr("src", "/views/scoreboard.html").end()
     .last().attr("src", "/views/scoreboard.html?preview=true");
 }
