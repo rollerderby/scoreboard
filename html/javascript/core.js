@@ -161,390 +161,390 @@
  */
 
 $sb = function(arg) {
-	if (!arg)
-		arg = "";
+  if (!arg)
+    arg = "";
 
-	if ($.isFunction(arg)) {
-		var callArg = function() { arg.call($sb()); };
-		if (_crgScoreBoard.documentLoaded)
-			callArg();
-		else
-			_crgScoreBoard.documentEvents.one("load:ScoreBoard", callArg);
-	} else if (typeof arg == "string") {
-		return _crgScoreBoard.findScoreBoardElement(_crgScoreBoard.doc, arg);
-	} else if (($.isjQuery(arg) || (arg = $(arg))) && arg[0] && $.isXMLDoc(arg[0]) && (arg[0].ownerDocument == _crgScoreBoard.doc[0].ownerDocument)) {
-		return _crgScoreBoard.extendScoreBoard(arg);
-	} else {
-		return null; // FIXME - return "empty" sb element instead?
-	}
+  if ($.isFunction(arg)) {
+    var callArg = function() { arg.call($sb()); };
+    if (_crgScoreBoard.documentLoaded)
+      callArg();
+    else
+      _crgScoreBoard.documentEvents.one("load:ScoreBoard", callArg);
+  } else if (typeof arg == "string") {
+    return _crgScoreBoard.findScoreBoardElement(_crgScoreBoard.doc, arg);
+  } else if (($.isjQuery(arg) || (arg = $(arg))) && arg[0] && $.isXMLDoc(arg[0]) && (arg[0].ownerDocument == _crgScoreBoard.doc[0].ownerDocument)) {
+    return _crgScoreBoard.extendScoreBoard(arg);
+  } else {
+    return null; // FIXME - return "empty" sb element instead?
+  }
 };
 
 _crgScoreBoard = {
-	scoreBoardRegistrationKey: null,
-	POLL_INTERVAL_MIN: 100,
-	POLL_INTERVAL_MAX: 500,
-	POLL_INTERVAL_INCREMENT: 10,
-	pollRate: this.POLL_INTERVAL_MIN,
-	doc: $("document", $.parseXML("<document></document>")),
-	documentLoaded: false,
-	documentEvents: $("<div>"),
-	addEventTriggered: { },
-	sbExtensions: {
-		$sbExtended: true,
-		$sb: function(arg) { return _crgScoreBoard.findScoreBoardElement(this, arg); },
+  scoreBoardRegistrationKey: null,
+  POLL_INTERVAL_MIN: 100,
+  POLL_INTERVAL_MAX: 500,
+  POLL_INTERVAL_INCREMENT: 10,
+  pollRate: this.POLL_INTERVAL_MIN,
+  doc: $("document", $.parseXML("<document></document>")),
+  documentLoaded: false,
+  documentEvents: $("<div>"),
+  addEventTriggered: { },
+  sbExtensions: {
+    $sbExtended: true,
+    $sb: function(arg) { return _crgScoreBoard.findScoreBoardElement(this, arg); },
 /* FIXME - should this paranoid-check for same uuid in specified document, i.e. HTML doc or XML doc? */
-		$sbNewUUID: function() { return _crgScoreBoard.newUUID(true); },
-		$sbGet: function() { return _crgScoreBoard.getXmlElementText(this); },
-		$sbIs: function(value) { return (this.$sbGet() == value); },
-		$sbIsTrue: function() { return isTrue(this.$sbGet()); },
-		$sbSet: function(value, attrs) { _crgScoreBoard.updateServer(_crgScoreBoard.toNewElement(this, value).attr(attrs||{})); },
-		$sbChange: function(value) { this.$sbSet(value, { change: "true" }); },
-		$sbRemove: function() { this.$sbSet(undefined, { remove: "true" }); },
-		$sbBindAndRun: function(eventType, eventData, handler, initParams) { return _crgUtils.bindAndRun(this, eventType, eventData, handler, initParams); },
-		$sbBindAddRemoveEach: function(childName, add, remove) { return _crgUtils.bindAddRemoveEach(this, childName, add, remove); },
-		$sbElement: function(type, attributes, className) { return _crgScoreBoard.create(this, type, attributes, className); },
-		$sbControl: function(type, attributes, className) { return _crgScoreBoardControl.create(this, type, attributes, className); },
-	},
+    $sbNewUUID: function() { return _crgScoreBoard.newUUID(true); },
+    $sbGet: function() { return _crgScoreBoard.getXmlElementText(this); },
+    $sbIs: function(value) { return (this.$sbGet() == value); },
+    $sbIsTrue: function() { return isTrue(this.$sbGet()); },
+    $sbSet: function(value, attrs) { _crgScoreBoard.updateServer(_crgScoreBoard.toNewElement(this, value).attr(attrs||{})); },
+    $sbChange: function(value) { this.$sbSet(value, { change: "true" }); },
+    $sbRemove: function() { this.$sbSet(undefined, { remove: "true" }); },
+    $sbBindAndRun: function(eventType, eventData, handler, initParams) { return _crgUtils.bindAndRun(this, eventType, eventData, handler, initParams); },
+    $sbBindAddRemoveEach: function(childName, add, remove) { return _crgUtils.bindAddRemoveEach(this, childName, add, remove); },
+    $sbElement: function(type, attributes, className) { return _crgScoreBoard.create(this, type, attributes, className); },
+    $sbControl: function(type, attributes, className) { return _crgScoreBoardControl.create(this, type, attributes, className); },
+  },
 
-	loadCustom: function() {
-		/*
-		 * After the main page's $sb() functions have been run,
-		 * include any custom js and/or css for the current html
-		 */
-		if (/\.html$/.test(window.location.pathname)) {
-			_include(window.location.pathname.replace(/\.html$/, "-custom.css"));
-			_include(window.location.pathname.replace(/\.html$/, "-custom.js"));
-		}
-	},
+  loadCustom: function() {
+    /*
+     * After the main page's $sb() functions have been run,
+     * include any custom js and/or css for the current html
+     */
+    if (/\.html$/.test(window.location.pathname)) {
+      _include(window.location.pathname.replace(/\.html$/, "-custom.css"));
+      _include(window.location.pathname.replace(/\.html$/, "-custom.js"));
+    }
+  },
 
-	create: function(sbElement, type, attributes, className) {
-		/* specifying attributes is optional */
-		if (typeof attributes == "string") {
-			className = attributes;
-			attributes = {};
-		} else if (!attributes)
-			attributes = {};
-		attributes = $.extend(true, {}, attributes); // Keep the original attributes object unchanged
-		var sbelement = $.extend(true, {}, attributes.sbelement);
-		delete attributes.sbelement;
-		var elements = $(type);
-		var allElements = elements.find("*").andSelf();
-		allElements.data("sbelement", sbelement).addClass(className)
-			.attr($.extend({ "data-sbelement": _crgScoreBoard.getPath(sbElement), "data-UUID": _crgScoreBoard.newUUID() }, attributes));
-		_crgScoreBoard.setHtmlValue(allElements, sbElement.$sbGet());
-		_crgScoreBoard.setupScoreBoardElement(sbElement, allElements, sbelement);
-		return elements;
-	},
+  create: function(sbElement, type, attributes, className) {
+    /* specifying attributes is optional */
+    if (typeof attributes == "string") {
+      className = attributes;
+      attributes = {};
+    } else if (!attributes)
+      attributes = {};
+    attributes = $.extend(true, {}, attributes); // Keep the original attributes object unchanged
+    var sbelement = $.extend(true, {}, attributes.sbelement);
+    delete attributes.sbelement;
+    var elements = $(type);
+    var allElements = elements.find("*").andSelf();
+    allElements.data("sbelement", sbelement).addClass(className)
+      .attr($.extend({ "data-sbelement": _crgScoreBoard.getPath(sbElement), "data-UUID": _crgScoreBoard.newUUID() }, attributes));
+    _crgScoreBoard.setHtmlValue(allElements, sbElement.$sbGet());
+    _crgScoreBoard.setupScoreBoardElement(sbElement, allElements, sbelement);
+    return elements;
+  },
 
-	setupScoreBoardElement: function(sbElement, allElements, sbelement) {
-		if (sbelement.autoFitText) {
-			var options = sbelement.autoFitText;
-			if ($.type(options) != "object")
-				options = { };
-			allElements.each(function() {
-				var e = $(this);
-				var targetSelector = sbelement.autoFitTextTarget;
-				if (($.type(targetSelector) == "string") && !e.is(targetSelector))
-					return;
-				var enableAutoFit = function() {
-					var container = sbelement.autoFitTextContainer;
-					if ($.type(container) == "string")
-						container = e.closest(container);
-					else if ($.type(container) == "function")
-						container = container.call(e);
-					else if (!$.isjQuery(container))
-						container = e.parent();
-					var opts = $.extend({}, options);
-					if (!$.isjQuery(container) || !container.length)
-						return false;
-					sbElement.bind("content", _windowFunctions.enableAutoFitText(container, opts));
-					return true;
-				};
-				enableAutoFit() || setTimeout(enableAutoFit);
-			});
-		}
-	},
+  setupScoreBoardElement: function(sbElement, allElements, sbelement) {
+    if (sbelement.autoFitText) {
+      var options = sbelement.autoFitText;
+      if ($.type(options) != "object")
+        options = { };
+      allElements.each(function() {
+        var e = $(this);
+        var targetSelector = sbelement.autoFitTextTarget;
+        if (($.type(targetSelector) == "string") && !e.is(targetSelector))
+          return;
+        var enableAutoFit = function() {
+          var container = sbelement.autoFitTextContainer;
+          if ($.type(container) == "string")
+            container = e.closest(container);
+          else if ($.type(container) == "function")
+            container = container.call(e);
+          else if (!$.isjQuery(container))
+            container = e.parent();
+          var opts = $.extend({}, options);
+          if (!$.isjQuery(container) || !container.length)
+            return false;
+          sbElement.bind("content", _windowFunctions.enableAutoFitText(container, opts));
+          return true;
+        };
+        enableAutoFit() || setTimeout(enableAutoFit);
+      });
+    }
+  },
 
-	/* From http://www.broofa.com/2008/09/javascript-uuid-function/
-	 * With additional super-paranoid checking against UUID of all current HTML elements
-	 */
-	newUUID: function(notParanoid) {
-		var uuid;
-		do {
-			uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
-		} while (!notParanoid && $("[data-UUID="+uuid+"]").length);
-		return uuid;
-	},
+  /* From http://www.broofa.com/2008/09/javascript-uuid-function/
+   * With additional super-paranoid checking against UUID of all current HTML elements
+   */
+  newUUID: function(notParanoid) {
+    var uuid;
+    do {
+      uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
+    } while (!notParanoid && $("[data-UUID="+uuid+"]").length);
+    return uuid;
+  },
 
-	updateServer: function(e) {
-		$.ajax({
-				url: "/XmlScoreBoard/set?key="+_crgScoreBoard.scoreBoardRegistrationKey,
-				type: "POST",
-				processData: false,
-				contentType: "text/xml",
-				data: e[0].ownerDocument
-			});
-	},
+  updateServer: function(e) {
+    $.ajax({
+        url: "/XmlScoreBoard/set?key="+_crgScoreBoard.scoreBoardRegistrationKey,
+        type: "POST",
+        processData: false,
+        contentType: "text/xml",
+        data: e[0].ownerDocument
+      });
+  },
 
-	extendScoreBoard: function(e) {
-		if (e.$sbExtended)
-			return e;
+  extendScoreBoard: function(e) {
+    if (e.$sbExtended)
+      return e;
 
-		e.context = _crgScoreBoard.doc[0];
-		e.selector = _crgScoreBoard.getSelector(e);
-		e.$sbName = e[0].nodeName;
-		e.$sbId = $(e).attr("Id");
-		e.$sbFullName = e.$sbName + (e.$sbId==undefined?"":"("+e.$sbId+")");
-		e.$sbPath = _crgScoreBoard.getPath(e);
-		return $.extend(e, _crgScoreBoard.sbExtensions);
-	},
+    e.context = _crgScoreBoard.doc[0];
+    e.selector = _crgScoreBoard.getSelector(e);
+    e.$sbName = e[0].nodeName;
+    e.$sbId = $(e).attr("Id");
+    e.$sbFullName = e.$sbName + (e.$sbId==undefined?"":"("+e.$sbId+")");
+    e.$sbPath = _crgScoreBoard.getPath(e);
+    return $.extend(e, _crgScoreBoard.sbExtensions);
+  },
 
-	getPath: function(e) {
-		if (e[0] == this.doc[0])
-			return "";
-		var name = e[0].nodeName;
-		var id = e.attr("Id");
-		var p = this.getPath(e.parent());
-		return p+(p?".":"")+name+(id?"("+id+")":"");
-	},
+  getPath: function(e) {
+    if (e[0] == this.doc[0])
+      return "";
+    var name = e[0].nodeName;
+    var id = e.attr("Id");
+    var p = this.getPath(e.parent());
+    return p+(p?".":"")+name+(id?"("+id+")":"");
+  },
 
-	getSelector: function(e) {
-		if (e[0] == this.doc[0])
-			return "";
-		var s = this.toSelector(e[0].nodeName, e.attr("Id"));
-		var p = this.getSelector(e.parent());
-		return p+(p?">":"")+s;
-	},
+  getSelector: function(e) {
+    if (e[0] == this.doc[0])
+      return "";
+    var s = this.toSelector(e[0].nodeName, e.attr("Id"));
+    var p = this.getSelector(e.parent());
+    return p+(p?">":"")+s;
+  },
 
-	toSelector: function(name, id) {
-		return name+(id?"[Id='"+id+"']":":not([Id])");
-	},
+  toSelector: function(name, id) {
+    return name+(id?"[Id='"+id+"']":":not([Id])");
+  },
 
-	toNewElement: function(e, newText) {
-		if (!e)
-			e = this;
+  toNewElement: function(e, newText) {
+    if (!e)
+      e = this;
 
-		if (e[0] == _crgScoreBoard.doc[0])
-			return $.xmlDOM("<"+e[0].nodeName+"/>").children(e[0].nodeName);
+    if (e[0] == _crgScoreBoard.doc[0])
+      return $.xmlDOM("<"+e[0].nodeName+"/>").children(e[0].nodeName);
 
-		return _crgScoreBoard.createScoreBoardElement(_crgScoreBoard.toNewElement(e.parent()), e[0].nodeName, e.attr("Id"), newText);
-	},
+    return _crgScoreBoard.createScoreBoardElement(_crgScoreBoard.toNewElement(e.parent()), e[0].nodeName, e.attr("Id"), newText);
+  },
 
-	findScoreBoardElement: function(parent, path, doNotCreate, updateFromServer) {
-		var p = path.match(/[\w\d]+(\([^\(\)]*\))?/g);
-		var me = parent;
-		$.each((p?p:[]), function() {
-				var name = this.replace(/\(.*$/, "");
-				var id = this.match(/\([^\)]*\)/);
-				if (id)
-					id = id.toString().replace(/[\(|\)]/g, "")
-				var child;
-				if (!(child = me.children(_crgScoreBoard.toSelector(name,id))).length) {
-					if (doNotCreate)
-						return (me = false);
-					child = _crgScoreBoard.createScoreBoardElement(me, name, id);
-					if (!updateFromServer)
-						$sb(child).$sbSet();
-				}
-				me = child;
-			});
-		if (me === false)
-			return null;
-		else
-			return $sb(me);
-	},
+  findScoreBoardElement: function(parent, path, doNotCreate, updateFromServer) {
+    var p = path.match(/[\w\d]+(\([^\(\)]*\))?/g);
+    var me = parent;
+    $.each((p?p:[]), function() {
+        var name = this.replace(/\(.*$/, "");
+        var id = this.match(/\([^\)]*\)/);
+        if (id)
+          id = id.toString().replace(/[\(|\)]/g, "")
+        var child;
+        if (!(child = me.children(_crgScoreBoard.toSelector(name,id))).length) {
+          if (doNotCreate)
+            return (me = false);
+          child = _crgScoreBoard.createScoreBoardElement(me, name, id);
+          if (!updateFromServer)
+            $sb(child).$sbSet();
+        }
+        me = child;
+      });
+    if (me === false)
+      return null;
+    else
+      return $sb(me);
+  },
 
-	removeScoreBoardElement: function(parent, e) {
-		if (!e) return;
-		e.children(function() { removeScoreBoardElement(e, $sb(this)); });
-		delete _crgScoreBoard.addEventTriggered[e.$sbPath];
-		parent.trigger("remove", [ e ]);
-		parent.trigger("remove:"+e.$sbName, [ e ]);
-		e.remove();
-	},
+  removeScoreBoardElement: function(parent, e) {
+    if (!e) return;
+    e.children(function() { removeScoreBoardElement(e, $sb(this)); });
+    delete _crgScoreBoard.addEventTriggered[e.$sbPath];
+    parent.trigger("remove", [ e ]);
+    parent.trigger("remove:"+e.$sbName, [ e ]);
+    e.remove();
+  },
 
-	createScoreBoardElement: function(parent, name, id, text) {
-		var e = $(parent[0].ownerDocument.createElement(name));
-		if (id)
-			e.attr("Id", id);
-		_crgScoreBoard.setXmlElementText(e, text);
-		parent.append(e);
-		return e;
-	},
+  createScoreBoardElement: function(parent, name, id, text) {
+    var e = $(parent[0].ownerDocument.createElement(name));
+    if (id)
+      e.attr("Id", id);
+    _crgScoreBoard.setXmlElementText(e, text);
+    parent.append(e);
+    return e;
+  },
 
-	getXmlElementText: function(e) {
-		if (isTrue(e.attr("empty")))
-			return "";
-		var text = "";
-		e.contents().filter(function() { return this.nodeType == 3; }).each(function() { text += this.nodeValue; });
-		return (text || null);
-	},
+  getXmlElementText: function(e) {
+    if (isTrue(e.attr("empty")))
+      return "";
+    var text = "";
+    e.contents().filter(function() { return this.nodeType == 3; }).each(function() { text += this.nodeValue; });
+    return (text || null);
+  },
 
-	setXmlElementText: function(e, text) {
-		e.contents().filter(function() { return this.nodeType == 3; }).remove();
-		if (text)
-			e.removeAttr("empty").append(e[0].ownerDocument.createTextNode(text));
-		else if (text === "")
-			e.attr("empty", "true");
-		else
-			e.removeAttr("empty");
-		return e;
-	},
+  setXmlElementText: function(e, text) {
+    e.contents().filter(function() { return this.nodeType == 3; }).remove();
+    if (text)
+      e.removeAttr("empty").append(e[0].ownerDocument.createTextNode(text));
+    else if (text === "")
+      e.attr("empty", "true");
+    else
+      e.removeAttr("empty");
+    return e;
+  },
 
 //FIXME - move this to windowfunctions
-	setHtmlValue: function(htmlelements, value) {
-		htmlelements.each(function() {
-			var e = $(this);
-			var v = value; // Don't modify the main value, since we are in $.each()
-			var sbC = e.data("sbcontrol") || {};
-			var sbE = e.data("sbelement") || {};
-			if (sbE["boolean"])
-				v = isTrue(v);
-			var convertOptions = sbE.convertOptions || {};
-			if (sbE.convert) {
-				var tmpV = v;
-				if ($.type(sbE.convert) == "function")
-					tmpV = sbE.convert.call(this, tmpV);
-				else if ($.type(sbE.convert) == "object")
-					tmpV = sbE.convert[String(tmpV)];
-				if (tmpV === undefined)
-					tmpV = convertOptions["default"];
-				if (!(tmpV === undefined && isTrue(convertOptions.onlyMatch)))
-					v = tmpV;
-			}
-			if (e.is("a,span")) {
-				if (e.html() != v)
-					e.html(v);
-			} else if (e.is("img"))
-				e.attr("src", v);
+  setHtmlValue: function(htmlelements, value) {
+    htmlelements.each(function() {
+      var e = $(this);
+      var v = value; // Don't modify the main value, since we are in $.each()
+      var sbC = e.data("sbcontrol") || {};
+      var sbE = e.data("sbelement") || {};
+      if (sbE["boolean"])
+        v = isTrue(v);
+      var convertOptions = sbE.convertOptions || {};
+      if (sbE.convert) {
+        var tmpV = v;
+        if ($.type(sbE.convert) == "function")
+          tmpV = sbE.convert.call(this, tmpV);
+        else if ($.type(sbE.convert) == "object")
+          tmpV = sbE.convert[String(tmpV)];
+        if (tmpV === undefined)
+          tmpV = convertOptions["default"];
+        if (!(tmpV === undefined && isTrue(convertOptions.onlyMatch)))
+          v = tmpV;
+      }
+      if (e.is("a,span")) {
+        if (e.html() != v)
+          e.html(v);
+      } else if (e.is("img"))
+        e.attr("src", v);
 // FIXME - may need to support multiple video files with multiple source subelements?
 // FIXME - need to start video when visible and when changing src; stop when not visible.
-			else if (e.is("video"))
-				e.attr("src", v);
-			else if (e.is("iframe"))
-				e.attr("src", v);
-			else if (e.is("input:text,input:password,textarea"))
-				e.val(v);
-			else if (e.is("input:checkbox"))
-				e.attr("checked", isTrue(v));
-			else if (e.is("input:radio"))
-				e.attr("checked", (e.val() == v));
-			else if (e.is("input:button,button")) {
-				if (sbC && sbC.setButtonValue)
-					sbC.setButtonValue.call(this, v);
+      else if (e.is("video"))
+        e.attr("src", v);
+      else if (e.is("iframe"))
+        e.attr("src", v);
+      else if (e.is("input:text,input:password,textarea"))
+        e.val(v);
+      else if (e.is("input:checkbox"))
+        e.attr("checked", isTrue(v));
+      else if (e.is("input:radio"))
+        e.attr("checked", (e.val() == v));
+      else if (e.is("input:button,button")) {
+        if (sbC && sbC.setButtonValue)
+          sbC.setButtonValue.call(this, v);
 /* FIXME - uncomment this once any users of $sbControl(<button>) have added noSetButtonValue parameter
  *         or, add parameter automatically if button linked to input text
-				else if (!sbC || !sbC.noSetButtonValue)
-					e.val(v);
+        else if (!sbC || !sbC.noSetButtonValue)
+          e.val(v);
 */
-			} else if (e.is("select"))
-				e.val(v);
-			else
-				alert("ADD SUPPORT FOR ME: node type "+this.nodeName);
+      } else if (e.is("select"))
+        e.val(v);
+      else
+        alert("ADD SUPPORT FOR ME: node type "+this.nodeName);
 
-			if (e.is(":checkbox,:radio,:button"))
-				try { e.button("refresh"); } catch (err) { /* wasn't a button() */ }
-		});
-		return htmlelements;
-	},
+      if (e.is(":checkbox,:radio,:button"))
+        try { e.button("refresh"); } catch (err) { /* wasn't a button() */ }
+    });
+    return htmlelements;
+  },
 
-	processScoreBoardElement: function(parent, element, triggerArray) {
-		var $element = $(element);
-		var name = element.nodeName;
-		var id = $element.attr("Id");
-		var remove = isTrue($element.attr("remove"));
-		var e = this.findScoreBoardElement(parent, name+(id?"("+id+")":""), remove, true);
-		var triggerObj = { node: e };
-		if (remove) {
+  processScoreBoardElement: function(parent, element, triggerArray) {
+    var $element = $(element);
+    var name = element.nodeName;
+    var id = $element.attr("Id");
+    var remove = isTrue($element.attr("remove"));
+    var e = this.findScoreBoardElement(parent, name+(id?"("+id+")":""), remove, true);
+    var triggerObj = { node: e };
+    if (remove) {
 //FIXME - move the "remove" triggers into group below...
-			this.removeScoreBoardElement(parent, e);
-			return;
-		}
-		var newContent = _crgScoreBoard.getXmlElementText($element);
-		if (newContent !== null) {
-			var oldContent = _crgScoreBoard.getXmlElementText(e);
-			if (oldContent !== newContent) {
-				_crgScoreBoard.setXmlElementText(e, newContent);
-				_crgScoreBoard.setHtmlValue($("[data-sbelement='"+e.$sbPath+"']"), newContent);
-				triggerObj.fireContent = true;
-				triggerObj.oldContent = oldContent;
-				triggerObj.newContent = newContent;
-			}
-		}
-		var fireEvents = false;
-		if (!triggerArray) {
-			triggerArray = [];
-			fireEvents = true;
-		}
-		triggerArray.push(triggerObj);
-		$element.children().each(function() { _crgScoreBoard.processScoreBoardElement(e, this, triggerArray); });
-		if (fireEvents) {
-			$.each(triggerArray, function() {
-				if (!_crgScoreBoard.addEventTriggered[this.node.$sbPath]) {
-					_crgScoreBoard.addEventTriggered[this.node.$sbPath] = true;
-					this.node.parent().trigger("add", [ this.node ]);
-					this.node.parent().trigger("add:"+this.node.$sbName, [ this.node ]);
-				}
-				if (this.fireContent)
-					this.node.trigger("content", [ this.newContent, this.oldContent ]);
-			});
-		}
-	},
+      this.removeScoreBoardElement(parent, e);
+      return;
+    }
+    var newContent = _crgScoreBoard.getXmlElementText($element);
+    if (newContent !== null) {
+      var oldContent = _crgScoreBoard.getXmlElementText(e);
+      if (oldContent !== newContent) {
+        _crgScoreBoard.setXmlElementText(e, newContent);
+        _crgScoreBoard.setHtmlValue($("[data-sbelement='"+e.$sbPath+"']"), newContent);
+        triggerObj.fireContent = true;
+        triggerObj.oldContent = oldContent;
+        triggerObj.newContent = newContent;
+      }
+    }
+    var fireEvents = false;
+    if (!triggerArray) {
+      triggerArray = [];
+      fireEvents = true;
+    }
+    triggerArray.push(triggerObj);
+    $element.children().each(function() { _crgScoreBoard.processScoreBoardElement(e, this, triggerArray); });
+    if (fireEvents) {
+      $.each(triggerArray, function() {
+        if (!_crgScoreBoard.addEventTriggered[this.node.$sbPath]) {
+          _crgScoreBoard.addEventTriggered[this.node.$sbPath] = true;
+          this.node.parent().trigger("add", [ this.node ]);
+          this.node.parent().trigger("add:"+this.node.$sbName, [ this.node ]);
+        }
+        if (this.fireContent)
+          this.node.trigger("content", [ this.newContent, this.oldContent ]);
+      });
+    }
+  },
 
-	processScoreBoardXml: function(xml) {
-		$(xml).children("document").children().each(function(index) {
-			_crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
-		});
-		$sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
-		if (!_crgScoreBoard.documentLoaded) {
-			_crgScoreBoard.documentLoaded = true;
-			_crgScoreBoard.documentEvents.triggerHandler("load:ScoreBoard");
-			_crgScoreBoard.loadCustom();
-		}
-	},
+  processScoreBoardXml: function(xml) {
+    $(xml).children("document").children().each(function(index) {
+      _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
+    });
+    $sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
+    if (!_crgScoreBoard.documentLoaded) {
+      _crgScoreBoard.documentLoaded = true;
+      _crgScoreBoard.documentEvents.triggerHandler("load:ScoreBoard");
+      _crgScoreBoard.loadCustom();
+    }
+  },
 
-	pollScoreBoard: function() {
-		var handlers = {
-			304: function() { /* No change since last poll, increase poll rate */
-				_crgScoreBoard.pollRate += _crgScoreBoard.POLL_INTERVAL_INCREMENT;
-			},
-			404: function() {
+  pollScoreBoard: function() {
+    var handlers = {
+      304: function() { /* No change since last poll, increase poll rate */
+        _crgScoreBoard.pollRate += _crgScoreBoard.POLL_INTERVAL_INCREMENT;
+      },
+      404: function() {
 //FIXME - we could possibly handle this better than reloading the page...
-				window.location.reload();
-			},
-			200: function(data, textStatus, jqxhr) {
-				_crgScoreBoard.processScoreBoardXml(jqxhr.responseXML);
-				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MIN;
-			}
-		};
+        window.location.reload();
+      },
+      200: function(data, textStatus, jqxhr) {
+        _crgScoreBoard.processScoreBoardXml(jqxhr.responseXML);
+        _crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MIN;
+      }
+    };
 
-		var schedule = function() {
-			if (_crgScoreBoard.pollRate > _crgScoreBoard.POLL_INTERVAL_MAX)
-				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MAX;
-			setTimeout(_crgScoreBoard.pollScoreBoard, _crgScoreBoard.pollRate);
-		};
+    var schedule = function() {
+      if (_crgScoreBoard.pollRate > _crgScoreBoard.POLL_INTERVAL_MAX)
+        _crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MAX;
+      setTimeout(_crgScoreBoard.pollScoreBoard, _crgScoreBoard.pollRate);
+    };
 
-		$.ajax({
-			global: false,
-			cache: false,
-			url: "/XmlScoreBoard/get",
-			data: { key: _crgScoreBoard.scoreBoardRegistrationKey },
-			complete: schedule,
-			statusCode: handlers
-		});
-	},
+    $.ajax({
+      global: false,
+      cache: false,
+      url: "/XmlScoreBoard/get",
+      data: { key: _crgScoreBoard.scoreBoardRegistrationKey },
+      complete: schedule,
+      statusCode: handlers
+    });
+  },
 
-	parseRegistrationKey: function(xml, status) {
-		this.scoreBoardRegistrationKey = $(xml).find("document>Key").text();
-		this.pollScoreBoard();
-	},
+  parseRegistrationKey: function(xml, status) {
+    this.scoreBoardRegistrationKey = $(xml).find("document>Key").text();
+    this.pollScoreBoard();
+  },
 
-	scoreBoardRegister: function() {
-		$.ajax({
-				url: "/XmlScoreBoard/register",
-				success: function(xml,status) { _crgScoreBoard.parseRegistrationKey(xml, status); },
-				//FIXME - really handle error
-				error: function() { alert("error registering with scoreboard"); }
-			});
-	}
+  scoreBoardRegister: function() {
+    $.ajax({
+        url: "/XmlScoreBoard/register",
+        success: function(xml,status) { _crgScoreBoard.parseRegistrationKey(xml, status); },
+        //FIXME - really handle error
+        error: function() { alert("error registering with scoreboard"); }
+      });
+  }
 };
