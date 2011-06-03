@@ -24,6 +24,10 @@ public class XmlDocumentEditor
 		}
 	}
 
+	public String checkId(String id) {
+		return id.replaceAll("['\"()]", "");
+	}
+
 	public Document createDocument() {
 		return createDocument(null, null, null);
 	}
