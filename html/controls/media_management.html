@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html><head><title>CRG ScoreBoard: Media Management</title>
+
+<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+
+<script type="text/javascript" src="/javascript/scoreboard.js"></script>
+
+<script type="text/javascript">
+
+$sb(function() {
+  $("#tabsDiv").tabs()
+    .find("div>div.Add>button.Add").button();
+
+  $("body>table.TypeTemplate")
+    .find("tr.Type>th.Type>button.Show").click(function() {
+      $(this).closest("table").removeClass("Hide").addClass("Show");
+    }).button().end()
+    .find("tr.Type>th.Type>button.Hide").click(function() {
+      $(this).closest("table").removeClass("Show").addClass("Hide");
+    }).button().end()
+    .find("tr.Controls>th.Buttons>button.Remove").click(function() {
+      var removed = 0;
+      $(this).closest("table.Type").find("tr.Item").each(function() {
+        if ($(this).find("td.Remove>input:checkbox").is(":checked")) {
+          $(this).data("sb").$sbRemove();
+          removed++;
+        }
+      });
+      if ($(this).closest("table.Type").find("tr.Item").length == removed)
+        $(this).closest("table.Type").data("sb").$sbRemove();
+    }).button().end()
+    .find("tr.Controls>th.Remove>input:checkbox.Remove").click(function() {
+      $(this).closest("table.Type").find("tr.Item>td.Remove>input:checkbox")
+        .attr("checked", this.checked);
+    }).end()
+    .find("tr.Controls>th.Preview>button.Preview").click(function() {
+      $(this).closest("table.Type").find("tr.Item>td.Preview>button").click();
+    }).button().end()
+    .find("tr.ItemTemplate>td.Preview>button.Preview").button().end();
+
+  setupTab("Images", "Image", "<img>");
+  setupTab("Videos", "Video", "<video>");
+  setupTab("CustomHtml", "Html", "<iframe>");
+
+  var imagesDialog = createDialog("Images", "Image");
+  var videosDialog = createDialog("Videos", "Video");
+  var customHtmlDialog = createDialog("CustomHtml", "Html");
+
+  $("#Images>div.Add>button.Add").click(function() { imagesDialog.dialog("open"); });
+  $("#Videos>div.Add>button.Add").click(function() { videosDialog.dialog("open"); });
+  $("#CustomHtml>div.Add>button.Add").click(function() { customHtmlDialog.dialog("open"); });
+
+  // FIXME - for now, default to showing CustomHtml
+  $("#tabsDiv").tabs("select", "CustomHtml");
+});
+
+function setupTab(parentName, childName, previewElement) {
+  var compareType = function(o, n) {
+    return $(o).data("Type") > $(n).data("Type");
+  };
+
+  $sb(parentName).$sbBindAddRemoveEach("Type", function(event,node) {
+    var newTable = $("body>table.TypeTemplate").clone(true)
+      .removeClass("TypeTemplate").addClass("Type").data("Type", node.$sbId).data("sb", node)
+      .find("tr.Type>th.Type>span.Type").html(node.$sbId).end();
+    _windowFunctions.appendSorted($("#"+parentName+">div.Type"), newTable, compareType, 1);
+  }, function(event,node) {
+    $("#"+parentName+">div.Type>table.Type")
+      .filter(function() { return $(this).data("Type") == node.$sbId; })
+      .remove();
+  });
+
+  var compareChildren = function(o, n) {
+    return $(o).data(childName) > $(n).data(childName);
+  };
+
+  $sb(parentName).$sbBindAddRemoveEach({
+    childname: childName,
+    subChildren: true,
+    add: function(event,node) {
+      var table = $("#"+parentName+">div.Type>table.Type").filter(function() {
+        return $(this).data("Type") == $sb(node.parent()).$sbId;
+      });
+      var newRow = table.find("tr.ItemTemplate").clone(true)
+        .removeClass("ItemTemplate").addClass("Item").data(childName, node.$sbId).data("sb", node);
+      node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
+      node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"));
+      newRow.find("td.Preview>button").click(function() {
+        $(this).replaceWith(node.$sb("Src").$sbElement(previewElement));
+      });
+      _windowFunctions.appendSorted(table.children("tbody"), newRow, compareChildren, 1);
+    },
+    remove: function(event,node) {
+      $("#"+parentName+">div.Type>table.Type")
+        .filter(function() { return $(this).data("Type") == $sb(node.parent()).$sbId; })
+        .find("tr.Item")
+        .filter(function() { return $(this).data(childName) == node.$sbId; })
+        .remove();
+    }
+  });
+}
+
+function createDialog(parentName, childName) {
+  var close = function() {
+    $(this).find("input:text").val("");
+    $(this).dialog("close");
+  };
+  return $("body>div.AddDialogTemplate").clone(true)
+    .removeClass("AddDialogTemplate").addClass("AddDialog "+parentName+"Dialog")
+    .dialog({
+      modal: true,
+      autoOpen: false,
+      width: "700px",
+      buttons: { Add: function() {
+          var type = $(this).find("input:text.Type").val();
+          var name = $(this).find("input:text.Name").val();
+          var src = $(this).find("input:text.Src").val();
+          var id = _crgUtils.checkSbId(name);
+          var newChild = $sb(parentName+".Type("+type+")."+childName+"("+id+")");
+          newChild.$sb("Name").$sbSet(name);
+          newChild.$sb("Src").$sbSet(src);
+          close.call(this);
+        }, Close: close
+      }
+    });
+}
+
+</script>
+
+<style type="text/css" >
+@import url("media_management.css");
+</style>
+
+</head>
+
+<body>
+
+<div id="tabsDiv">
+  <ul id="tabBar">
+    <li><a href="#Images">Image</a></li>
+    <li><a href="#Videos">Video</a></li>
+    <li><a href="#CustomHtml">Custom Page</a></li>
+  </ul>
+  <div id="Images">
+    <div class="Add"><button class="Add">Add</button></div>
+    <div class="Type"></div>
+  </div>
+  <div id="Videos">
+    <div class="Add"><button class="Add">Add</button></div>
+    <div class="Type"></div>
+  </div>
+  <div id="CustomHtml">
+    <div class="Add"><button class="Add">Add</button></div>
+    <div class="Type"></div>
+  </div>
+</div>
+
+<table class="TypeTemplate Show">
+  <thead>
+    <tr class="Type">
+      <th colspan="4" class="Type">
+        <span class="Label">Type:</span><span class="Type"></span>
+        <button class="Show">Show</button>
+        <button class="Hide">Hide</button>
+      </th>
+    </tr>
+    <tr class="Controls">
+      <th colspan="1" class="Remove"><input class="Remove" type="checkbox"/></th>
+      <th colspan="2" class="Buttons"><button class="Remove">Remove selected</button></th>
+      <th colspan="1" class="Preview"><button class="Preview">Show all previews</button></th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="ItemTemplate">
+      <td class="Remove"><input class="Remove" type="checkbox"/></td>
+      <td class="Name"><input class="Name" type="text"/></td>
+      <td class="Src"><input class="Src" type="text"/></td>
+      <td class="Preview"><button class="Preview">Show Preview</button></td>
+    </tr>
+  </tbody>
+</table>
+
+<div class="AddDialogTemplate">
+  <a class="Type">Type:</a><input type="text" size="8" class="Type"/>
+  <a class="Name">Name:</a><input type="text" size="8" class="Name"/>
+  <a class="Src">Source:</a><input type="text" size="12" class="Src"/>
+</div>
+
+</body>
+
+</html>
+
