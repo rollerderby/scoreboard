@@ -135,7 +135,9 @@ public class XmlScoreBoard
 		new LoadScoreBoard().setXmlScoreBoard(this);
 		new TeamsXmlDocumentManager().setXmlScoreBoard(this);
 		new OpenXmlDocumentManager("Pages").setXmlScoreBoard(this);
-		new OpenXmlDocumentManager("CustomHtml").setXmlScoreBoard(this);
+		new MediaXmlDocumentManager("Images", "Image").setXmlScoreBoard(this);
+		new MediaXmlDocumentManager("Videos", "Video").setXmlScoreBoard(this);
+		new MediaXmlDocumentManager("CustomHtml", "Html").setXmlScoreBoard(this);
 	}
 
 	protected ScoreBoardModel scoreBoardModel;
