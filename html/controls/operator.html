@@ -546,7 +546,8 @@ function createScoreBoardViewContent(table) {
   $("<tr><td/></tr>").appendTo(table)
     .find("td").addClass("Header NoChildren PreviewControl")
     .append(createRowTable(3))
-    .find("td:eq(1)").append(usePreviewButton)
+    .find("td:first")
+    .next().append(usePreviewButton)
     .next().append(applyPreviewButton);
 
   $.each( [ "View", "Preview" ], function(i,p) {
