@@ -54,7 +54,7 @@ $sb(function() {
 
   sbViewOptions.$sb("View(Image).Filename").$sbElement("#imageDiv>img");
   sbViewOptions.$sb("View(Video).Filename").$sbElement("#videoDiv>video");
-  sbViewOptions.$sb("View(CustomPage).Filename").$sbElement("#customPageDiv>iframe");
+  sbViewOptions.$sb("View(CustomHtml).Filename").$sbElement("#htmlDiv>iframe");
 
   setupAds();
   setupTeams();
@@ -378,9 +378,9 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
 <div id="mainDiv" >
 
   <div id="sbDiv" class="View"></div>
-  <div id="imageDiv" class="View"><img/></div>
-  <div id="videoDiv" class="View"><video/></div>
-  <div id="customPageDiv" class="View"><iframe/></div>
+  <div id="imageDiv" class="View"><img></img></div>
+  <div id="videoDiv" class="View"><video></video></div>
+  <div id="htmlDiv" class="View"><iframe></iframe></div>
 
 </div>
 
