@@ -14,7 +14,7 @@ public interface TeamModel extends Team
 
 	public void setName(String name);
 
-	public TeamLogoModel getTeamLogoModel();
+	public void setLogo(String logo);
 
 	public void timeout();
 

@@ -12,7 +12,7 @@ public interface Team extends ScoreBoardEventProvider
 
 	public String getName();
 
-	public TeamLogo getTeamLogo();
+	public String getLogo();
 
 	public int getScore();
 

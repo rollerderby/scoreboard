@@ -39,10 +39,6 @@ public class ScoreBoardXmlConverter
 		while (teams.hasNext())
 			toElement(sb, teams.next());
 
-		Iterator<ScoreBoardImage> images = scoreBoard.getScoreBoardImages().iterator();
-		while (images.hasNext())
-			toElement(sb, images.next());
-
 		Iterator<Policy> policies = scoreBoard.getPolicies().iterator();
 		while (policies.hasNext())
 			toElement(sb, policies.next());
@@ -77,12 +73,11 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, "Timeout", null, "");
 
 		editor.setElement(e, "Name", null, t.getName());
+		editor.setElement(e, "Logo", null, t.getLogo());
 		editor.setElement(e, "Score", null, String.valueOf(t.getScore()));
 		editor.setElement(e, "Timeouts", null, String.valueOf(t.getTimeouts()));
 		editor.setElement(e, "LeadJammer", null, String.valueOf(t.isLeadJammer()));
 		editor.setElement(e, "Pass", null, String.valueOf(t.getPass()));
-
-		toElement(e, t.getTeamLogo());
 
 		Iterator<Position> positions = t.getPositions().iterator();
 		while (positions.hasNext())
@@ -129,25 +124,6 @@ public class ScoreBoardXmlConverter
 		return e;
 	}
 
-	public Element toElement(Element parent, ScoreBoardImage sbi) {
-		Element e = editor.setElement(parent, "Image", sbi.getId());
-		editor.setElement(e, "Name", null, sbi.getName());
-		editor.setElement(e, "Type", null, sbi.getType());
-		editor.setElement(e, "Directory", null, sbi.getDirectory());
-		editor.setElement(e, "Filename", null, sbi.getFilename());
-		return e;
-	}
-
-	public Element toElement(Element parent, TeamLogo tl) {
-		Element e = editor.setElement(parent, "TeamLogo");
-		editor.setElement(e, "Id", null, tl.getId());
-		editor.setElement(e, "Name", null, tl.getName());
-		editor.setElement(e, "Type", null, tl.getType());
-		editor.setElement(e, "Directory", null, tl.getDirectory());
-		editor.setElement(e, "Filename", null, tl.getFilename());
-		return e;
-	}
-
 	public Element toElement(Element t, Skater s) {
 		Element e = editor.setElement(t, "Skater", s.getId());
 		editor.setElement(e, "Name", null, s.getName());
@@ -190,8 +166,6 @@ public class ScoreBoardXmlConverter
 			scoreBoardModel.unStopJam();
 		else if (call.equalsIgnoreCase("unTimeout"))
 			scoreBoardModel.unTimeout();
-		else if (call.equalsIgnoreCase("updateImages"))
-			scoreBoardModel.updateScoreBoardImageModels();
 /* END DEPRECATED */
 
 		Iterator children = scoreBoard.getChildren().iterator();
@@ -213,16 +187,12 @@ public class ScoreBoardXmlConverter
 					scoreBoardModel.unStopJam();
 				else if (name.equals("UnTimeout") && Boolean.parseBoolean(value))
 					scoreBoardModel.unTimeout();
-				else if (name.equals("UpdateImages") && Boolean.parseBoolean(value))
-					scoreBoardModel.updateScoreBoardImageModels();
 				else if (name.equals("TimeoutOwner"))
 					scoreBoardModel.setTimeoutOwner(value);
 				else if (name.equals("Clock"))
 					processClock(scoreBoardModel, element);
 				else if (name.equals("Team"))
 					processTeam(scoreBoardModel, element);
-				else if (name.equals("ScoreBoardImage"))
-					processScoreBoardImage(scoreBoardModel, element);
 				else if (name.equals("Policy"))
 					processPolicy(scoreBoardModel, element);
 				else
@@ -347,14 +317,14 @@ public class ScoreBoardXmlConverter
 					processSkater(teamModel, element);
 				else if (name.equals("Position"))
 					processPosition(teamModel, element);
-				else if (name.equals("TeamLogo"))
-					processTeamLogo(teamModel, element);
 				else if (null == value)
 					continue;
 				else if (name.equals("Timeout") && Boolean.parseBoolean(value))
 					teamModel.timeout();
 				else if (name.equals("Name"))
 					teamModel.setName(value);
+				else if (name.equals("Logo"))
+					teamModel.setLogo(value);
 				else if (name.equals("Score") && isChange)
 					teamModel.changeScore(Integer.parseInt(value));
 				else if (name.equals("Score") && !isChange)
@@ -397,62 +367,6 @@ public class ScoreBoardXmlConverter
 					positionModel.clear();
 				else if (name.equals("Id"))
 					positionModel.setSkaterModel(value);
-			} catch ( Exception e ) {
-			}
-		}
-	}
-
-	public void processTeamLogo(TeamModel teamModel, Element teamLogo) {
-		TeamLogoModel teamLogoModel = teamModel.getTeamLogoModel();
-
-		Iterator children = teamLogo.getChildren().iterator();
-		while (children.hasNext()) {
-			Element element = (Element)children.next();
-			try {
-				String name = element.getName();
-				String value = editor.getContent(element);
-
-				if (null == value)
-					continue;
-				else if (name.equals("Id"))
-					teamLogoModel.setId(value);
-			} catch ( Exception e ) {
-			}
-		}
-	}
-
-	public void processScoreBoardImage(ScoreBoardModel scoreBoardModel, Element scoreBoardImage) {
-		String id = scoreBoardImage.getAttributeValue("Id");
-		ScoreBoardImageModel scoreBoardImageModel = scoreBoardModel.getScoreBoardImageModel(id);
-
-		if (Boolean.parseBoolean(scoreBoardImage.getAttributeValue("remove"))) {
-			scoreBoardModel.removeScoreBoardImageModel(id);
-			return;
-		}
-
-		if (Boolean.parseBoolean(scoreBoardImage.getAttributeValue("add")) && (scoreBoardImageModel == null)) {
-			String type = editor.getContent(editor.getElement(scoreBoardImage, "Type"));
-			String directory = editor.getContent(editor.getElement(scoreBoardImage, "Directory"));
-			String filename = editor.getContent(editor.getElement(scoreBoardImage, "Filename"));
-			String name = editor.getContent(editor.getElement(scoreBoardImage, "Name"));
-			scoreBoardModel.addScoreBoardImageModel(new DefaultScoreBoardImageModel(scoreBoardModel, id, type, directory, filename, name));
-			scoreBoardImageModel = scoreBoardModel.getScoreBoardImageModel(id);
-		}
-
-		if (scoreBoardImageModel == null)
-			return;
-
-		Iterator children = scoreBoardImage.getChildren().iterator();
-		while (children.hasNext()) {
-			Element element = (Element)children.next();
-			try {
-				String name = element.getName();
-				String value = editor.getContent(element);
-
-				if (null == value)
-					continue;
-				else if (name.equals("Name"))
-					scoreBoardImageModel.setName(value);
 			} catch ( Exception e ) {
 			}
 		}

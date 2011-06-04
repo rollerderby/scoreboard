@@ -23,8 +23,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 		scoreBoardModel = sbm;
 		id = i;
-		teamLogoModel = new DefaultTeamLogoModel(this);
-		teamLogoModel.addScoreBoardListener(this);
 		reset();
 	}
 
@@ -36,6 +34,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public void reset() {
 		setName(DEFAULT_NAME_PREFIX+getId());
+		setLogo(DEFAULT_LOGO);
 		setScore(DEFAULT_SCORE);
 		setTimeouts(DEFAULT_TIMEOUTS);
 		setLeadJammer(DEFAULT_LEADJAMMER);
@@ -48,7 +47,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 		while (p.hasNext())
 			p.next().reset();
-		getTeamLogoModel().reset();
 	}
 
 	public String getId() { return id; }
@@ -61,8 +59,11 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		scoreBoardChange(new ScoreBoardEvent(this, "Name", name));
 	}
 
-	public TeamLogo getTeamLogo() { return getTeamLogoModel().getTeamLogo(); }
-	public TeamLogoModel getTeamLogoModel() { return teamLogoModel; }
+	public String getLogo() { return logo; }
+	public void setLogo(String l) {
+		logo = l;
+		scoreBoardChange(new ScoreBoardEvent(this, "Logo", logo));
+	}
 
 	public void timeout() {
 		if (getTimeouts() > 0) {
@@ -195,7 +196,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	protected String id;
 	protected String name;
-	protected TeamLogoModel teamLogoModel;
+	protected String logo;
 	protected int score;
 	protected int timeouts;
 	protected boolean leadJammer = false;
@@ -206,6 +207,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected Object skaterLock = new Object();
 
 	public static final String DEFAULT_NAME_PREFIX = "Team ";
+	public static final String DEFAULT_LOGO = "";
 	public static final int DEFAULT_SCORE = 0;
 	public static final int DEFAULT_TIMEOUTS = 3;
 	public static final boolean DEFAULT_LEADJAMMER = false;

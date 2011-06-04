@@ -235,25 +235,25 @@ function createTeamTable() {
 
     var logoTd = nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo");
     var logoNone = $("<a>").html("No Logo").addClass("NoLogo").appendTo(logoTd);
-    var logoSelect = sbTeam.$sb("TeamLogo.Id").$sbControl("<select>", { sbelement: {
-        optionParent: "ScoreBoard",
+    var logoSelect = sbTeam.$sb("Logo").$sbControl("<select>", { sbelement: {
+        optionParent: "Images.Type(teamlogo)",
         optionChildName: "Image",
-        optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
         optionNameElement: "Name",
+        optionValueElement: "Src",
         firstOption: { text: "No Logo", value: "" }
       } }).appendTo(logoTd);
-    var logoImg = sbTeam.$sb("TeamLogo.Filename").$sbElement("<img>")
+    var logoImg = sbTeam.$sb("Logo").$sbElement("<img>")
       .appendTo(logoTd);
 
     var logoShowSelect = function(show) {
-      var showImg = !!sbTeam.$sb("TeamLogo.Filename").$sbGet();
+      var showImg = !!sbTeam.$sb("Logo").$sbGet();
       logoImg.toggle(!show && showImg);
       logoNone.toggle(!show && !showImg);
       logoSelect.toggle(show);
       if (show)
         logoSelect.focus();
     };
-    sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event,value) { logoShowSelect(false); });
+    sbTeam.$sb("Logo").$sbBindAndRun("content", function(event,value) { logoShowSelect(false); });
     logoSelect
       .blur(function() { logoShowSelect(false); })
       .keyup(function(event) { if (event.which == 27 /* ESC */) $(this).blur(); });
@@ -617,23 +617,21 @@ function createScoreBoardViewPreviewRows(table, type) {
   $("<tr><td><a>Alternate View Options</a></td></tr>").addClass(type).appendTo(table)
     .find("td").addClass("AlternateViewOptions Header");
 
-  var imageViewSelect = pageSb.$sb("View(Image).Filename").$sbControl("<select>", { sbelement: {
-      optionParent: "ScoreBoard",
+  var imageViewSelect = pageSb.$sb("View(Image).Src").$sbControl("<select>", { sbelement: {
+      optionParent: "Images.Type(fullscreen)",
       optionChildName: "Image",
-      optionChildFilter: function(e) { return e.$sb("Type").$sbIs("fullscreen"); },
       optionNameElement: "Name",
-      optionValueElement: "Filename",
+      optionValueElement: "Src",
       firstOption: { text: "No Image", value: "" }
     } });
-  var videoViewSelect = pageSb.$sb("View(Video).Filename").$sbControl("<select>", { sbelement: {
-      optionParent: "ScoreBoard",
-      optionChildName: "Image",
-      optionChildFilter: function(e) { return e.$sb("Type").$sbIs("video"); },
+  var videoViewSelect = pageSb.$sb("View(Video).Src").$sbControl("<select>", { sbelement: {
+      optionParent: "Videos.Type(fullscreen)",
+      optionChildName: "Video",
       optionNameElement: "Name",
-      optionValueElement: "Filename",
+      optionValueElement: "Src",
       firstOption: { text: "No Video", value: "" }
     } });
-  var customPageViewSelect = pageSb.$sb("View(CustomHtml).Filename").$sbControl("<select>", { sbelement: {
+  var customPageViewSelect = pageSb.$sb("View(CustomHtml).Src").$sbControl("<select>", { sbelement: {
       optionParent: "CustomHtml.Type(fullscreen)",
       optionChildName: "Html",
       optionNameElement: "Name",
@@ -822,10 +820,10 @@ function createTeamsContent() {
     t.$sb("Name").$sbControl("<input type='text'>")
       .appendTo("#Teams table.Team td:eq(0)");
     t.$sb("Logo").$sbControl("<select>", { sbelement: {
-      optionParent: "ScoreBoard",
+      optionParent: "Images.Type(teamlogo)",
       optionChildName: "Image",
-      optionChildFilter: function(e) { return e.$sb("Type").$sbIs("teamlogo"); },
       optionNameElement: "Name",
+      optionValueElement: "Src",
       firstOption: { text: "No Logo", value: "" }
     } }).appendTo("#Teams table.Team td:eq(1)")
     $("<button>").text("Assign Team").button()

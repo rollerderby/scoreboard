@@ -32,13 +32,6 @@ public interface ScoreBoardModel extends ScoreBoard
 	public List<TeamModel> getTeamModels();
 	public TeamModel getTeamModel(String id);
 
-	public List<ScoreBoardImageModel> getScoreBoardImageModels();
-	public List<ScoreBoardImageModel> getScoreBoardImageModels(String type);
-	public ScoreBoardImageModel getScoreBoardImageModel(String id);
-	public void addScoreBoardImageModel(ScoreBoardImageModel model) throws IllegalArgumentException; /* If the model's Id is null/empty */
-	public void removeScoreBoardImageModel(String id);
-	public void updateScoreBoardImageModels();
-
 	public List<PolicyModel> getPolicyModels();
 	public PolicyModel getPolicyModel(String id);
 	public void addPolicyModel(PolicyModel model) throws IllegalArgumentException; /* If the model's Id is null/empty */

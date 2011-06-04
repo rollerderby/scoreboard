@@ -27,7 +27,7 @@ var clockConversions = {
   Intermission: _timeConversions.msToMinSecNoZero
 };
 var animateTime = {
-  ad: 1000, /* time to animate from one ad to the next */
+  sponsor: 1000, /* time to animate from one sponsor banner to the next */
   clock: 500, /* clocks animate out then in, so the full transition time is 2x this */
   team: 500, /* show/hide logo/name */
   timeoutPulse: 1000,
@@ -56,7 +56,7 @@ $sb(function() {
   sbViewOptions.$sb("View(Video).Filename").$sbElement("#videoDiv>video");
   sbViewOptions.$sb("View(CustomHtml).Filename").$sbElement("#htmlDiv>iframe");
 
-  setupAds();
+  setupSponsorBanners();
   setupTeams();
   setupClocks();
 
@@ -125,7 +125,7 @@ function setupTeams() {
       .children("a").addClass("Pulse").css("opacity", 0);
 
     sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
-    sbTeam.$sb("TeamLogo.Filename").$sbElement(teamDiv.find("div.Logo img"), "Logo");
+    sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
     sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 50 } } }, "Score");
     sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), { sbelement: { autoFitText: true } });
 
@@ -135,7 +135,7 @@ function setupTeams() {
 
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
     var resizeName = teamDiv.find("div.Name").data("AutoFit");
-    sbTeam.$sb("TeamLogo.Filename").$sbBindAndRun("content", function(event, newVal, oldVal) {
+    sbTeam.$sb("Logo").$sbBindAndRun("content", function(event, newVal, oldVal) {
       var sbLogo = $sb(this);
       teamDiv.children(".TeamAnimationQueue").queue(function(next) {
         if (!!sbLogo.$sbGet() == teamDiv.find("div.TeamAnimationFlag").hasClass("ShowLogo"))
@@ -317,37 +317,37 @@ function showClocks(clock, next) {
 }
 
 
-/////////////
-// Ad control
-/////////////
+/////////////////////////
+// Sponsor Banner control
+/////////////////////////
 
-function setupAds() {
-  $("<div>").attr("id", "AdBox").addClass("Animation").appendTo("#sbDiv")
-    .append($("<div><img/></div>").addClass("CurrentAd"))
-    .append($("<div><img/></div>").addClass("NextAd"));
-  var getNextAdSrc = function(currentAdSrc) {
-      var ads = $.map($sb("ScoreBoard").find("Image>Type:contains(ad)"), function(e) {
-        return $sb($(e).parent()).$sb("Filename").$sbGet();
+function setupSponsorBanners() {
+  $("<div>").attr("id", "SponsorBox").addClass("Animation").appendTo("#sbDiv")
+    .append($("<div><img/></div>").addClass("CurrentImg"))
+    .append($("<div><img/></div>").addClass("NextImg"));
+  var getNextSrc = function(currentSrc) {
+      var banners = $.map($sb("Images.Type(sponsor_banner)").find("Image>Src"), function(e) {
+        return $sb(e).$sbGet();
       });
-      ads.sort();
-      var index = $.inArray(currentAdSrc, ads) + 1;
-      if ((0 > index) || (index >= ads.length))
+      banners.sort();
+      var index = $.inArray(currentSrc, banners) + 1;
+      if ((0 > index) || (index >= banners.length))
         index = 0;
-      return ads[index];
+      return banners[index];
   };
-  var firstSrc = getNextAdSrc();
-  $('#AdBox>div:first>img').attr("src", firstSrc);
-  $('#AdBox>div:last>img').attr("src", getNextAdSrc(firstSrc));
+  var firstSrc = getNextSrc();
+  $('#SponsorBox>div:first>img').attr("src", firstSrc);
+  $('#SponsorBox>div:last>img').attr("src", getNextSrc(firstSrc));
   var nextImgFunction = function() {
-    var adbox = $("#AdBox");
-    if (adbox.hasClass("ShowTimeout") || adbox.hasClass("ShowLineup")) {
-      var currentAdSrc = adbox.find("div.NextAd>img").attr("src");
-      adbox.children("div.NextAd").switchClass("NextAd", "CurrentAd", animateTime.ad);
-      adbox.children("div.CurrentAd").switchClass("CurrentAd", "FinishedAd", animateTime.ad, function() {
-        $(this).switchClass("FinishedAd", "NextAd", 0).children("img").attr("src", getNextAdSrc(currentAdSrc));
+    var box = $("#SponsorBox");
+    if (box.hasClass("ShowTimeout") || box.hasClass("ShowLineup")) {
+      var currentSrc = box.find("div.NextImg>img").attr("src");
+      box.children("div.NextImg").switchClass("NextImg", "CurrentImg", animateTime.sponsor);
+      box.children("div.CurrentImg").switchClass("CurrentImg", "FinishedImg", animateTime.sponsor, function() {
+        $(this).switchClass("FinishedImg", "NextImg", 0).children("img").attr("src", getNextSrc(currentSrc));
       });
     }
-    adbox.delay(5000, "AdChangeQueue").queue("AdChangeQueue", nextImgFunction).dequeue("AdChangeQueue");
+    box.delay(5000, "SponsorChangeQueue").queue("SponsorChangeQueue", nextImgFunction).dequeue("SponsorChangeQueue");
   };
   nextImgFunction();
 }

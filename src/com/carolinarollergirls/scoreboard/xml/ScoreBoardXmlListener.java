@@ -42,14 +42,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 		String prop = event.getProperty();
 		String v = (event.getValue()==null?null:event.getValue().toString());
 		if (p.getProviderName().equals("ScoreBoard")) {
-			if (prop.equals("AddScoreBoardImage")) {
-				converter.toElement(getScoreBoardElement(), (ScoreBoardImage)event.getValue());
-			} else if (prop.equals("RemoveScoreBoardImage")) {
-				if (isPersistent())
-					editor.removeElement(getScoreBoardElement(), "Image", ((ScoreBoardImage)event.getValue()).getId());
-				else
-					converter.toElement(getScoreBoardElement(), (ScoreBoardImage)event.getValue()).setAttribute("remove", "true");
-			} else if (prop.equals("AddClock")) {
+			if (prop.equals("AddClock")) {
 				converter.toElement(getScoreBoardElement(), (Clock)event.getValue());
 			} else if (prop.equals("RemoveClock")) {
 				if (isPersistent())
@@ -73,8 +66,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 			} else {
 				editor.setElement(getScoreBoardElement(), prop, null, v);
 			}
-		} else if (p.getProviderName().equals("ScoreBoardImage")) {
-			editor.setElement(getScoreBoardImageElement((ScoreBoardImage)p), prop, null, v);
 		} else if (p.getProviderName().equals("Team")) {
 			if (prop.equals("AddSkater")) {
 				Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
@@ -96,8 +87,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 				editor.setElement(e, "Name", null, (s==null?"":s.getName()));
 				editor.setElement(e, "Number", null, (s==null?"":s.getNumber()));
 			}
-		} else if (p.getProviderName().equals("TeamLogo")) {
-			editor.setElement(getTeamLogoElement((TeamLogo)p), prop, null, v);
 		} else if (p.getProviderName().equals("Skater")) {
 			editor.setElement(getSkaterElement((Skater)p), prop, null, v);
 		} else if (p.getProviderName().equals("Clock")) {
@@ -119,10 +108,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 		return editor.getElement(document.getRootElement(), "ScoreBoard");
 	}
 
-	protected Element getScoreBoardImageElement(ScoreBoardImage scoreBoardImage) {
-		return editor.getElement(getScoreBoardElement(), "Image", scoreBoardImage.getId());
-	}
-
 	protected Element getPolicyElement(Policy policy) {
 		return editor.getElement(getScoreBoardElement(), "Policy", policy.getId());
 	}
@@ -141,10 +126,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 
 	protected Element getPositionElement(Position position) {
 		return editor.getElement(getTeamElement(position.getTeam()), "Position", position.getId());
-	}
-
-	protected Element getTeamLogoElement(TeamLogo teamLogo) {
-		return editor.getElement(getTeamElement(teamLogo.getTeam()), "TeamLogo");
 	}
 
 	protected Element getSkaterElement(Skater skater) {

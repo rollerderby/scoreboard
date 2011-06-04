@@ -21,10 +21,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public List<Team> getTeams();
 	public Team getTeam(String id);
 
-	public List<ScoreBoardImage> getScoreBoardImages();
-	public List<ScoreBoardImage> getScoreBoardImages(String type);
-	public ScoreBoardImage getScoreBoardImage(String id);
-
 	public List<Policy> getPolicies();
 	public Policy getPolicy(String id);
 

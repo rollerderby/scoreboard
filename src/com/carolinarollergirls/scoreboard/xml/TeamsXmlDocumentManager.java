@@ -138,7 +138,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 			team.setName(name.getText());
 		Element logo = newTeam.getChild("Logo");
 		if (null != logo)
-			team.getTeamLogoModel().setId(logo.getText());
+			team.setLogo(logo.getText());
 		Iterator skaters = newTeam.getChildren("Skater").iterator();
 		while (skaters.hasNext()) {
 			Element skater = (Element)skaters.next();
@@ -165,7 +165,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		}
 		createXPathElement().addContent(newTeam);
 		editor.addElement(newTeam, "Name", null, team.getName());
-		editor.addElement(newTeam, "Logo", null, team.getTeamLogo().getId());
+		editor.addElement(newTeam, "Logo", null, team.getLogo());
 		Iterator<Skater> skaters = team.getSkaters().iterator();
 		while (skaters.hasNext()) {
 			Skater skater = skaters.next();

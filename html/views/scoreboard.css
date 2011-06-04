@@ -207,15 +207,15 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   #Intermission>div.Time.TextContainer>a { top: -25%; }
 /* End Intermission */
 
-/* Ad box */
+/* Sponsor Banner box */
   /* Main box */
-  #AdBox { left: 0%; top: 100%; width: 100%; height: 26%; }
-  #AdBox.ShowTimeout,#AdBox.ShowLineup,#AdBox.TransTimeoutLineup,#AdBox.TransLineupTimeout
+  #SponsorBox { left: 0%; top: 100%; width: 100%; height: 26%; }
+  #SponsorBox.ShowTimeout,#SponsorBox.ShowLineup,#SponsorBox.TransTimeoutLineup,#SponsorBox.TransLineupTimeout
     { top: 74%; }
 
-  #AdBox>div { top: 0%; right: 0%; width: 100%; height: 100%; font-size: 0px; }
-  #AdBox>div.FinishedAd { right: -100%; }
-  #AdBox>div.NextAd { right: 100%; }
+  #SponsorBox>div { top: 0%; right: 0%; width: 100%; height: 100%; font-size: 0px; }
+  #SponsorBox>div.FinishedImg { right: -100%; }
+  #SponsorBox>div.NextImg { right: 100%; }
 
-  #AdBox>div>img { width: 100%; height: 100%; }
-/* End Ad box */
+  #SponsorBox>div>img { width: 100%; height: 100%; }
+/* End Sponsor Banner box */
