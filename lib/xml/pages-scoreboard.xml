@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document Version="0.2.0-beta5-20110428122329" SystemTime="1304007934537">
+<document Version="0.2.0-beta5-20110603182137" SystemTime="1307151214820">
   <Pages>
     <Page Id="scoreboard.html">
       <Intermission Id="0">
@@ -21,31 +21,32 @@
         <Confirmed />
       </Intermission>
       <ViewOptions>
-        <CurrentView>image</CurrentView>
+        <CurrentView>scoreboard</CurrentView>
         <SwapTeams>false</SwapTeams>
         <View Id="Image">
-          <Filename>/images/fullscreen/american_flag.jpg</Filename>
+          <Src>/images/fullscreen/american_flag.jpg</Src>
         </View>
         <View Id="Video">
-          <Filename>/video/american-flag.mp4</Filename>
+          <Src>/videos/fullscreen/american-flag.mp4</Src>
         </View>
-        <View Id="CustomPage">
-          <Filename />
+        <View Id="CustomHtml">
+          <Src>/customhtml/fullscreen/example.html</Src>
         </View>
       </ViewOptions>
       <PreviewOptions>
-        <CurrentView>image</CurrentView>
+        <CurrentView>scoreboard</CurrentView>
         <SwapTeams>false</SwapTeams>
         <View Id="Image">
-          <Filename>/images/fullscreen/american_flag.jpg</Filename>
+          <Src>/images/fullscreen/american_flag.jpg</Src>
         </View>
         <View Id="Video">
-          <Filename>/video/american-flag.mp4</Filename>
+          <Src>/videos/fullscreen/american-flag.mp4</Src>
         </View>
-        <View Id="CustomPage">
-          <Filename />
+        <View Id="CustomHtml">
+          <Src>/customhtml/fullscreen/example.html</Src>
         </View>
       </PreviewOptions>
     </Page>
   </Pages>
 </document>
+
