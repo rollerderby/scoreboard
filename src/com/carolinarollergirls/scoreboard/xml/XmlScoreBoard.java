@@ -112,9 +112,16 @@ public class XmlScoreBoard
 		}
 
 		FilenameFilter xmlFilter = new FilenameFilter() {
-				public boolean accept(File f, String n) { return n.endsWith(".xml"); }
+				public boolean accept(File f, String n) {
+					return (n.endsWith(".xml") || n.endsWith(".XML"));
+				}
 			};
-		Iterator<File> xmlFiles = Arrays.asList(initialDocumentDir.listFiles(xmlFilter)).iterator();
+		Comparator<File> fileCompare = new Comparator<File>() {
+				public int compare(File a, File b) { return a.getName().compareTo(b.getName()); }
+			};
+		List<File> unsortedXmlFiles = Arrays.asList(initialDocumentDir.listFiles(xmlFilter));
+		Collections.sort(unsortedXmlFiles, fileCompare);
+		Iterator<File> xmlFiles = unsortedXmlFiles.iterator();
 		while (xmlFiles.hasNext()) {
 			File f = xmlFiles.next();
 			try {
