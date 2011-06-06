@@ -8,35 +8,45 @@
 <script type="text/javascript">
 
 $sb(function() {
-  $("#tabsDiv").tabs()
-    .find("div>div.Add>button.Add").button();
-
-  $("body>table.TypeTemplate")
-    .find("tr.Type>th.Type>button.Show").click(function() {
-      $(this).closest("table").removeClass("Hide").addClass("Show");
-    }).button().end()
-    .find("tr.Type>th.Type>button.Hide").click(function() {
-      $(this).closest("table").removeClass("Show").addClass("Hide");
-    }).button().end()
-    .find("tr.Controls>th.Buttons>button.Remove").click(function() {
+  $("body>div.TabTemplate>div.Buttons>button.Remove").click(function() {
+    $(this).parent().next().find("table.Type").each(function() {
       var removed = 0;
-      $(this).closest("table.Type").find("tr.Item").each(function() {
+      $(this).find("tr.Item").each(function() {
         if ($(this).find("td.Remove>input:checkbox").is(":checked")) {
           $(this).data("sb").$sbRemove();
           removed++;
         }
       });
-      if ($(this).closest("table.Type").find("tr.Item").length == removed)
-        $(this).closest("table.Type").data("sb").$sbRemove();
+      if ($(this).find("tr.Item").length == removed)
+        $(this).data("sb").$sbRemove();
+    });
+  }).button();
+
+  $("body>table.TypeTemplate")
+    .find("tr.Type>th.Type>button").click(function() {
+      $(this).closest("table").toggleClass("Hide");
     }).button().end()
     .find("tr.Controls>th.Remove>input:checkbox.Remove").click(function() {
       $(this).closest("table.Type").find("tr.Item>td.Remove>input:checkbox")
         .attr("checked", this.checked);
     }).end()
-    .find("tr.Controls>th.Preview>button.Preview").click(function() {
-      $(this).closest("table.Type").find("tr.Item>td.Preview>button").click();
+    .find("tr.Controls>th.Preview>button.ShowPreview").click(function() {
+      $(this).closest("table.Type").find("tr.Item>td.Preview").addClass("Show");
     }).button().end()
-    .find("tr.ItemTemplate>td.Preview>button.Preview").button().end();
+    .find("tr.Controls>th.Preview>button.HidePreview").click(function() {
+      $(this).closest("table.Type").find("tr.Item>td.Preview").removeClass("Show");
+    }).button().end()
+    .find("tr.ItemTemplate>td.Preview>button.Preview").click(function() {
+      $(this).parent().addClass("Show");
+    }).button().end();
+
+  $.each( [ "Images", "Videos", "CustomHtml" ], function() {
+    $("body>div.TabTemplate").clone()
+      .removeClass("TabTemplate").attr("id", String(this))
+      .appendTo("#tabsDiv");
+  });
+
+  $("#tabsDiv").tabs();
 
   setupTab("Images", "Image", "<img>");
   setupTab("Videos", "Video", "<video>");
@@ -46,12 +56,12 @@ $sb(function() {
   var videosDialog = createDialog("Videos", "Video");
   var customHtmlDialog = createDialog("CustomHtml", "Html");
 
-  $("#Images>div.Add>button.Add").click(function() { imagesDialog.dialog("open"); });
-  $("#Videos>div.Add>button.Add").click(function() { videosDialog.dialog("open"); });
-  $("#CustomHtml>div.Add>button.Add").click(function() { customHtmlDialog.dialog("open"); });
-
-  // FIXME - for now, default to showing CustomHtml
-  $("#tabsDiv").tabs("select", "CustomHtml");
+  $("#Images>div.Buttons>button.Add").button()
+    .click(function() { imagesDialog.dialog("open"); });
+  $("#Videos>div.Buttons>button.Add").button()
+    .click(function() { videosDialog.dialog("open"); });
+  $("#CustomHtml>div.Buttons>button.Add").button()
+    .click(function() { customHtmlDialog.dialog("open"); });
 });
 
 function setupTab(parentName, childName, previewElement) {
@@ -62,7 +72,7 @@ function setupTab(parentName, childName, previewElement) {
   $sb(parentName).$sbBindAddRemoveEach("Type", function(event,node) {
     var newTable = $("body>table.TypeTemplate").clone(true)
       .removeClass("TypeTemplate").addClass("Type").data("Type", node.$sbId).data("sb", node)
-      .find("tr.Type>th.Type>span.Type").html(node.$sbId).end();
+      .find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
     _windowFunctions.appendSorted($("#"+parentName+">div.Type"), newTable, compareType, 1);
   }, function(event,node) {
     $("#"+parentName+">div.Type>table.Type")
@@ -85,9 +95,9 @@ function setupTab(parentName, childName, previewElement) {
         .removeClass("ItemTemplate").addClass("Item").data(childName, node.$sbId).data("sb", node);
       node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
       node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"));
-      newRow.find("td.Preview>button").click(function() {
-        $(this).replaceWith(node.$sb("Src").$sbElement(previewElement));
-      });
+      node.$sb("Src").$sbElement(previewElement).click(function() { 
+        $(this).parent().removeClass("Show");
+      }).appendTo(newRow.find("td.Preview"));
       _windowFunctions.appendSorted(table.children("tbody"), newRow, compareChildren, 1);
     },
     remove: function(event,node) {
@@ -141,33 +151,37 @@ function createDialog(parentName, childName) {
     <li><a href="#Videos">Video</a></li>
     <li><a href="#CustomHtml">Custom Page</a></li>
   </ul>
-  <div id="Images">
-    <div class="Add"><button class="Add">Add</button></div>
-    <div class="Type"></div>
+</div>
+
+<div class="TabTemplate">
+  <div class="Buttons">
+    <button class="Remove">Remove all selected</button>
+    <button class="Add">Add</button>
   </div>
-  <div id="Videos">
-    <div class="Add"><button class="Add">Add</button></div>
-    <div class="Type"></div>
-  </div>
-  <div id="CustomHtml">
-    <div class="Add"><button class="Add">Add</button></div>
-    <div class="Type"></div>
-  </div>
+  <div class="Type"></div>
 </div>
 
 <table class="TypeTemplate Show">
+  <col/><col/><col/><col/>
   <thead>
     <tr class="Type">
       <th colspan="4" class="Type">
-        <span class="Label">Type:</span><span class="Type"></span>
+        <a class="Type">
+          <span class="Label">Type:</span>
+          <span class="Type"></span>
+        </a>
         <button class="Show">Show</button>
         <button class="Hide">Hide</button>
       </th>
     </tr>
     <tr class="Controls">
-      <th colspan="1" class="Remove"><input class="Remove" type="checkbox"/></th>
-      <th colspan="2" class="Buttons"><button class="Remove">Remove selected</button></th>
-      <th colspan="1" class="Preview"><button class="Preview">Show all previews</button></th>
+      <th class="Remove"><input class="Remove" type="checkbox"/></th>
+      <th class="Name">Name</th>
+      <th class="Src">Source</th>
+      <th class="Preview">
+        <button class="ShowPreview">Show all previews</button>
+        <button class="HidePreview">Hide all previews</button>
+      </th>
     </tr>
   </thead>
   <tbody>

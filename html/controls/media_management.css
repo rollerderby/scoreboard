@@ -1,34 +1,45 @@
 
 /* Template */
-  body>table.TypeTemplate,body>div.AddDialogTemplate { display: none; }
+  body>table.TypeTemplate { display: none; }
+  body>div.AddDialogTemplate { display: none; }
+  body>div.TabTemplate { display: none; }
   table tr.ItemTemplate { display: none; }
 /* End Template */
 
-/* common */
+/* Tab divs */
   #tabsDiv>div { padding: 0px; }
-  #tabsDiv>div>div.Add { width: 100%; text-align: center; }
-  #tabsDiv>div>div.Add>button.Add { font-size: 75%; }
+  #tabsDiv>div>div.Buttons { width: 100%; text-align: center; font-size: 75%; }
+  #tabsDiv>div>div.Buttons>button { float: left; }
+/* End Tab divs */
 
+/* Type groups */
+  /* width, font size, text alignment */
   table.Type { width: 100%; border-spacing: 0px; }
+  table.Type tr.Type>th.Type>a.Type { font-size: 150%; }
+  table.Type tr { text-align: center; }
   table.Type button.ui-widget { font-size: 75%; }
-  table.Type tr.Type>th.Type>button { margin-left: 25px; }
-  table.Type.Show tr.Type>th.Type>button.Show { display: none; }
-  table.Type.Hide tr.Type>th.Type>button.Hide { display: none; }
-  table.Type.Hide tr:not(.Type)>th { display: none; }
-  table.Type.Hide tr:not(.Type)>td { display: none; }
-  table.Type tr.Type>th { background: #ccc; border-radius: 12px 12px 0px 0px; }
-  table.Type.Hide tr.Type>th { border-radius: 12px; }
+  table.Type col:nth-of-type(1) { width: 5%; }
+  table.Type col:nth-of-type(2) { width: 25%; }
+  table.Type col:nth-of-type(3) { width: 25%; }
+  table.Type col:nth-of-type(4) { width: 45%; }
+
+  /* Colors, round corners */
+  table.Type tr.Type>th { background: #ccc; }
   table.Type tr.Controls>th { background: #ddd; }
   table.Type tr.Item>td { background: #eee; }
+  table.Type tr.Type>th.Type { border-radius: 12px 12px 0px 0px; }
+  table.Type.Hide tr.Type>th.Type { border-radius: 12px; }
   table.Type tr.Item:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }
   table.Type tr.Item:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
 
-  table.Type tr { text-align: center; }
-  table.Type tr.Controls>th.Buttons>button { float: left; }
-  table.Type tr.Item>td:nth-of-type(1) { width: 5%; }
-  table.Type tr.Item>td:nth-of-type(2) { width: 25%; }
-  table.Type tr.Item>td:nth-of-type(3) { width: 25%; }
-  table.Type tr.Item>td:nth-of-type(4) { width: 45%; }
+  /* Show/Hide Type groups */
+  table.Type:not(.Hide) tr.Type>th.Type>button.Show { display: none; }
+  table.Type.Hide tr.Type>th.Type>button.Hide { display: none; }
+  table.Type.Hide tr:not(.Type)>th { display: none; }
+  table.Type.Hide tr:not(.Type)>td { display: none; }
 
-/* End common */
-
+  /* Show/Hide Preview buttons/elements */
+  table.Type tr.Item>td.Preview:not(.Show)>:not(button) { display: none; }
+  table.Type tr.Item>td.Preview.Show>button { display: none; }
+  table.Type tr.Item>td.Preview>:not(button) { max-width: 400px; max-height: 100px; }
+/* End Type groups */
