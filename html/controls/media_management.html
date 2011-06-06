@@ -66,14 +66,14 @@ $sb(function() {
 
 function setupTab(parentName, childName, previewElement) {
   var compareType = function(o, n) {
-    return $(o).data("Type") > $(n).data("Type");
+    return ($(o).data("Type") > $(n).data("Type"));
   };
 
   $sb(parentName).$sbBindAddRemoveEach("Type", function(event,node) {
     var newTable = $("body>table.TypeTemplate").clone(true)
       .removeClass("TypeTemplate").addClass("Type").data("Type", node.$sbId).data("sb", node)
       .find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
-    _windowFunctions.appendSorted($("#"+parentName+">div.Type"), newTable, compareType, 1);
+    _windowFunctions.appendSorted($("#"+parentName+">div.Type"), newTable, compareType);
   }, function(event,node) {
     $("#"+parentName+">div.Type>table.Type")
       .filter(function() { return $(this).data("Type") == node.$sbId; })
