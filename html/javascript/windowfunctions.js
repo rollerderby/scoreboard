@@ -226,6 +226,7 @@ _windowFunctions = {
    */
   appendSorted: function(parent, newChild, comparator, startIndex) {
     var child = null;
+    startIndex = (startIndex || 0);
     parent.children().each(function(i) {
       if ((startIndex <= i) && comparator(this, newChild[0])) {
         child = this;
