@@ -767,23 +767,48 @@ function createTeamsContent() {
     optionChildName: "Team",
     firstOption: { text: "No Team Selected", value: "" }
   }).appendTo("#Teams table.Selection td:eq(0)");
+  var removeTeam = $("<button>").text("Remove Team").button()
+    .appendTo("#Teams table.Selection td:eq(0)");
   var newTeamName = $("<input type='text' size='30'/>")
     .appendTo("#Teams table.Selection td:eq(1)");
   var createNewTeam = $("<button>").text("New Team").button()
     .appendTo("#Teams table.Selection td:eq(1)");
 
-  newTeamName.bind("keypress", function(event) {
-    switch (event.which) {
-      case 34: // double quote
-      case 39: // single quote
-      case 40: // (
-      case 41: // )
-        event.preventDefault();
-    }
+  _crgUtils.bindAndRun(selectTeam, "change", function() {
+    /* Disable remove team button if actual team not selected */
+    removeTeam.button("option", "disabled", (this.selectedIndex < 1));
+  });
+  removeTeam.click(function(event) {
+    var teamid = selectTeam.val();
+    $("<div>")
+      .append("<a>Are you sure you want to remove team '"+teamid+"'?</a>")
+      .dialog({
+        title: "Remove Team '"+teamid+"'",
+        modal: true,
+        width: "500px",
+        buttons: [
+          {
+            text: "Yes, Remove Team",
+            click: function() {
+              $sb("Teams.Team("+teamid+")").$sbRemove();
+              $(this).dialog("destroy").remove();
+            }
+          },
+          {
+            text: "Oops, no!",
+            click: function() { $(this).dialog("destroy").remove(); }
+          }
+        ]
+      });
+  });
+  _crgUtils.bindAndRun(newTeamName, "keyup", function() {
+    createNewTeam.button("option", "disabled", (!$(this).val()));
   });
   createNewTeam.click(function(event) {
-    $sb("Teams.Team("+newTeamName.val()+").Name").$sbSet(newTeamName.val());
-    newTeamName.val("").focus();
+    var teamname = newTeamName.val();
+    var teamid = _crgUtils.checkSbId(teamname);
+    $sb("Teams.Team("+teamid+").Name").$sbSet(teamname);
+    newTeamName.val("").keyup().focus();
   });
 
   var skatersTable = $("#Teams table.Skaters")
@@ -812,10 +837,11 @@ function createTeamsContent() {
     });
 
   _crgUtils.bindAndRun(selectTeam, "change", function(event) {
-    $("#Teams>tbody>tr>td").toggleClass("HideTeam", !selectTeam.val());
-    if (!selectTeam.val())
+    var teamid = selectTeam.val();
+    $("#Teams>tbody>tr>td").toggleClass("HideTeam", !teamid);
+    if (!teamid)
       return;
-    var t = $sb("Teams.Team("+selectTeam.val()+")");
+    var t = $sb("Teams.Team("+teamid+")");
     $("#Teams table.Team td").empty();
     t.$sb("Name").$sbControl("<input type='text'>")
       .appendTo("#Teams table.Team td:eq(0)");
@@ -827,10 +853,10 @@ function createTeamsContent() {
       firstOption: { text: "No Logo", value: "" }
     } }).appendTo("#Teams table.Team td:eq(1)")
     $("<button>").text("Assign Team").button()
-      .click(function() { createTeamsAssignDialog(selectTeam.val()); })
+      .click(function() { createTeamsAssignDialog(teamid); })
       .appendTo("#Teams table.Team td:eq(2)")
     $("<button>").text("Remove Team").button()
-      .click(function() { createTeamsRemoveDialog(selectTeam.val()); })
+      .click(function() { createTeamsRemoveDialog(teamid); })
       .appendTo("#Teams table.Team td:eq(3)")
 
 //FIXME - really need to implement some way to notify sbElement/sbControl elements when to unbind;
