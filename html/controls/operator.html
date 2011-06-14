@@ -761,20 +761,11 @@ function createTeamsContent() {
     optionChildName: "Team",
     firstOption: { text: "No Team Selected", value: "" }
   }).appendTo("#Teams table.Selection td:eq(0)");
-  var removeTeam = $("<button>").text("Remove Team").button()
-    .appendTo("#Teams table.Selection td:eq(0)");
   var newTeamName = $("<input type='text' size='30'/>")
     .appendTo("#Teams table.Selection td:eq(1)");
   var createNewTeam = $("<button>").text("New Team").button()
     .appendTo("#Teams table.Selection td:eq(1)");
 
-  _crgUtils.bindAndRun(selectTeam, "change", function() {
-    /* Disable remove team button if actual team not selected */
-    removeTeam.button("option", "disabled", (this.selectedIndex < 1));
-  });
-  removeTeam.click(function(event) {
-    createRemoveTeamDialog(selectTeam.val());
-  });
   _crgUtils.bindAndRun(newTeamName, "keyup", function() {
     createNewTeam.button("option", "disabled", (!$(this).val()));
   });
@@ -851,14 +842,16 @@ function createNewTeamTable(team) {
     });
 
   team.$sbBindAddRemoveEach("Skater", function(event,node) {
-    if (skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").length)
+    var skaterid = node.$sbId;
+    if (skatersTable.find("tr[data-skaterid='"+skaterid+"']").length)
       return;
-    var skaterRow = $("<tr>").attr("data-skaterid", node.$sbId).appendTo(skatersTable);
+    var skaterRow = $("<tr>").attr("data-skaterid", skaterid).appendTo(skatersTable);
     node.$sb("Name").$sbControl("<input type='text' size='20'>")
       .appendTo($("<td>").appendTo(skaterRow));
     node.$sb("Number").$sbControl("<input type='text' size='20'>")
       .appendTo($("<td>").appendTo(skaterRow));
-    $("<button>").text("Remove").addClass("RemoveSkater").button().click(function() { node.$sbRemove(); })
+    $("<button>").text("Remove").addClass("RemoveSkater").button()
+      .click(function() { createTeamsSkaterRemoveDialog(teamid, skaterid); })
       .appendTo($("<td>").appendTo(skaterRow));
     skatersTable.removeClass("Empty");
   }, function(event,node) {
@@ -868,25 +861,6 @@ function createNewTeamTable(team) {
   });
 
   return teamTable;
-}
-
-function createRemoveTeamDialog(teamid) {
-  var closeDialog = function() { $(this).dialog("destroy").remove(); };
-  var removeTeam = function() {
-    $sb("Teams.Team("+teamid+")").$sbRemove();
-    closeDialog.call(this);
-  };
-  return $("<div>")
-    .append("<a>Are you sure you want to remove team '"+teamid+"'?</a>")
-    .dialog({
-      title: "Remove Team '"+teamid+"'",
-      modal: true,
-      width: "500px",
-      buttons: [
-        { text: "Yes, Remove Team", click: removeTeam },
-        { text: "Oops, no!", click: closeDialog }
-      ]
-    });
 }
 
 function createTeamsAssignDialog(teamId) {
@@ -944,6 +918,32 @@ function createTeamsRemoveDialog(teamId) {
   }).button();
 
   dialog.dialog({
+    title: "Remove Team",
+    modal: true,
+    width: "500px",
+    buttons: { Close: function() { $(this).dialog("destroy").remove(); } }
+  });
+}
+
+function createTeamsSkaterRemoveDialog(teamId, skaterId) {
+  var teamName = $sb("Teams.Team("+teamId+").Name").$sbGet();
+  var dialog = $("<div>").addClass("TeamsRemoveDialog");
+  $("<h4>").text("Team '"+teamId+"'").appendTo(dialog);
+  if (teamId != teamName)
+    dialog.find("h4").text("Team Id: '"+teamId+"' Name: '"+teamName+"'");
+  $("<h2>").text("Remove Skater: "+skaterId).appendTo(dialog);
+  $("<a>").addClass("AreYouSure").text("Are you sure?").appendTo(dialog);
+  $("<br>").appendTo(dialog);
+  $("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
+    $sb("Teams.Team("+teamId+").Skater("+skaterId+")").$sbRemove();
+    dialog.dialog("destroy").remove();
+  }).button();
+  $("<button>").addClass("No").text("No, keep this skater.").appendTo(dialog).click(function() {
+    dialog.dialog("destroy").remove();
+  }).button();
+
+  dialog.dialog({
+    title: "Remove Skater",
     modal: true,
     width: "500px",
     buttons: { Close: function() { $(this).dialog("destroy").remove(); } }
