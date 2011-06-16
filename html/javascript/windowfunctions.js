@@ -239,10 +239,49 @@ _windowFunctions = {
       parent.append(newChild);
     return parent;
   },
-  appendAlphaSorted: function(parent, newChild, startIndex) { return _windowFunctions.appendSorted(parent, newChild, _windowFunctions.alphaSortByNodeName, startIndex); },
-  appendAttrAlphaSorted: function(parent, newChild, attrName, startIndex) { return _windowFunctions.appendSorted(parent, newChild, function(a,b) { return _windowFunctions.alphaSortByAttr(a, b, attrName); }, startIndex); },
-  appendAttrNumericSorted: function(parent, newChild, attrName, startIndex) { return _windowFunctions.appendSorted(parent, newChild, function(a,b) { return _windowFunctions.numericSortByAttr(a, b, attrName); }, startIndex); },
-  alphaSortByNodeName: function(dom1, dom2) { return dom1.nodeName > dom2.nodeName; },
-  alphaSortByAttr: function(dom1, dom2, name) { return $(dom1).attr(name) > $(dom2).attr(name); },
-  numericSortByAttr: function(dom1, dom2, name) { return Number($(dom1).attr(name)) > Number($(dom2).attr(name)); }
+
+  appendAlphaSorted: function(parent, newChild, startIndex) {
+    var comp = _windowFunctions.alphaCompareByNodeName;
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
+  appendAlphaSortedByAttr: function(parent, newChild, attrName, startIndex) {
+    var comp = function(a, b) { return _windowFunctions.alphaCompareByAttr(attrName, a, b); };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
+  appendAlphaNumSortedByAttr: function(parent, newChild, attrName, startIndex) {
+    var comp = function(a, b) { return _windowFunctions.numCompareByAttr(attrName, a, b); };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
+  appendAlphaSortedByData: function(parent, newChild, dataName, startIndex) {
+    var comp = function(a, b) { return _windowFunctions.alphaCompareByData(dataName, a, b); };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
+  appendAlphaNumSortedByData: function(parent, newChild, dataName, startIndex) {
+    var comp = function(a, b) { return _windowFunctions.numCompareByData(dataName, a, b); };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
+
+  alphaCompare: function(a, b) { return (a > b); },
+  alphaCompareByNodeName: function(a, b) {
+    return _windowFunctions.alphaCompare(a.nodeName, b.nodeName);
+  },
+  alphaCompareByAttr: function(n, a, b) {
+    return _windowFunctions.alphaCompare($(a).attr(n), $(b).attr(n));
+  },
+  alphaCompareByData: function(n, a, b) {
+    return _windowFunctions.alphaCompare($(a).data(n), $(b).data(n));
+  },
+  numCompare: function(a, b) {
+    var numA = Number(a), numB = Number(b);
+    if (isNaN(numA) || isNaN(numB))
+      return _windowFunctions.alphaCompare(a, b);
+    else
+      return _windowFunctions.alphaCompare(numA, numB);
+  },
+  numCompareByAttr: function(n, a, b) {
+    return _windowFunctions.numCompare($(a).attr(n), $(b).attr(n));
+  },
+  numCompareByData: function(n, a, b) {
+    return _windowFunctions.numCompare($(a).data(n), $(b).data(n));
+  }
 };

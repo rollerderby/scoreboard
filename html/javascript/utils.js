@@ -263,7 +263,7 @@ _crgUtils = {
       return option;
     };
     var compareOptions = params.compareOptions || function(a, b) {
-      return _windowFunctions.alphaSortByAttr(a, b, "text");
+      return _windowFunctions.alphaCompareByAttr("text", a, b);
     };
     var addOption = params.addOption || function(o) {
       var doChange = !s.find("option").length;
