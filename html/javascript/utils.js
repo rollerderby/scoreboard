@@ -1,5 +1,4 @@
 
-
 function isTrue(value) {
   if (typeof value == "boolean")
     return value;
@@ -174,6 +173,9 @@ _crgUtils = {
    *     option element.  If an object is passed, its "text" and
    *     "value" fields are used for a newly created option element's
    *     "text" and "value" fields, respectively.
+   *   prependOptions: array (can contain any of type defined in firstOption)
+   *     This is the same as the firstOption parameter, but can be used
+   *     for multiple initial options.
    *
    *   optionParent: $sb || string
    *     This is the main node in the scoreboard.  If a string is passed,
@@ -182,35 +184,44 @@ _crgUtils = {
    *     This is the name of which children to use.
    *   optionChildFilter: function(node)
    *     Optional function to filter out children.
-     *     Its parameter is the child $sb() element, and it returns
+   *     Its parameter is the child $sb() element, and it returns
    *     a boolean indicating if it should be included in the list or not.
    *     By default all children are included.
    *   optionNameElement: string
    *     Optional name of each child subelement value to use
-     *     for the option text.
+   *     for the option text.
    *     If not set, the child node's $sbId will be used.
    *   optionValueElement: string
    *     Optional name of each child subelement value to use
-     *     for the option value.
+   *     for the option value.
    *     If not set, the child node's $sbId will be used.
    */
   setupSelect: function(s, params) {
     s = $(s);
     var params = params || s.data("sbelement") || {};
 
-    var firstOption;
-    if (params.firstOption) {
-      if ($.isjQuery(params.firstOption)) {
-        var o = params.firstOption.filter("option");
+    var initialOptions = 0;
+    var addInitialOption = function(i, opt) {
+      if (!opt)
+        opt = i;
+      var newOpt;
+      if ($.isjQuery(opt)) {
+        var o = opt.filter("option");
         if (o.length == 1)
-          firstOption = o;
-      } else if (typeof params.firstOption == "string")
-        firstOption = $("<option>").text(params.firstOption).val(params.firstOption);
-      else if (typeof params.firstOption == "object")
-        firstOption = $("<option>").text(params.firstOption.text).val(params.firstOption.value);
-    }
-    if (firstOption)
-      s.prepend(firstOption);
+          newOpt = o;
+      } else if (typeof opt == "string")
+        newOpt = $("<option>").text(opt).val(opt);
+      else if (typeof opt == "object")
+        newOpt = $("<option>").text(opt.text).val(opt.value);
+      if (newOpt) {
+        initialOptions++;
+        s.prepend(newOpt);
+      }
+    };
+
+    if ($.isArray(params.prependOptions))
+      $.each($.merge([], params.prependOptions).reverse(), addInitialOption);
+    addInitialOption(params.firstOption);
 
     var optionParent = params.optionParent;
     if (typeof optionParent == "string")
@@ -256,7 +267,7 @@ _crgUtils = {
     };
     var addOption = params.addOption || function(o) {
       var doChange = !s.find("option").length;
-      _windowFunctions.appendSorted(s, o, compareOptions, (firstOption?1:0));
+      _windowFunctions.appendSorted(s, o, compareOptions, initialOptions);
       if (doChange)
         s.change();
     };
