@@ -240,6 +240,16 @@ _windowFunctions = {
     return parent;
   },
 
+  /* Comparator functions
+   *
+   * These are convenience functions to use for various
+   * types of sorting.  The "Alpha" sorting does an
+   * alphabetical sorting using a "greater than" comparison.
+   * The "AlphaNum" sorting puts all pure numbers first
+   * (using the "Alpha" sort but with the params converted to
+   * Numbers) sorted in numerical order, then the rest are given
+   * to the "Alpha" sort.
+   */
   appendAlphaSorted: function(parent, newChild, startIndex) {
     var comp = _windowFunctions.alphaCompareByNodeName;
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
@@ -273,10 +283,12 @@ _windowFunctions = {
   },
   numCompare: function(a, b) {
     var numA = Number(a), numB = Number(b);
-    if (isNaN(numA) || isNaN(numB))
-      return _windowFunctions.alphaCompare(a, b);
-    else
+    if (!isNaN(numA) && !isNaN(numB)) // both numbers
       return _windowFunctions.alphaCompare(numA, numB);
+    else if (isNaN(numA) && isNaN(numB)) // both non-numbers
+      return _windowFunctions.alphaCompare(a, b);
+    else  // b num, a non-num? a>b (true).  a num, b non-num? a<b (false).
+      return (isNaN(numA));
   },
   numCompareByAttr: function(n, a, b) {
     return _windowFunctions.numCompare($(a).attr(n), $(b).attr(n));
