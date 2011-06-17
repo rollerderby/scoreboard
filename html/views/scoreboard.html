@@ -30,8 +30,7 @@ var animateTime = {
   sponsor: 1000, /* time to animate from one sponsor banner to the next */
   clock: 500, /* clocks animate out then in, so the full transition time is 2x this */
   team: 500, /* show/hide logo/name */
-  timeoutPulse: 1000,
-  leadjammerPulse: 1000
+  leadjammerPulse: 2000
 };
 
 
@@ -72,7 +71,7 @@ function setupMainDiv(div) {
   div.css({ position: "fixed" });
   $.each( [ "bottom", "top", "left", "right" ], function() {
     $("<div>")
-      .css( { width: "100%", height: "100%", "z-index": "100", background: "grey", position: "absolute" } )
+      .css( { width: "100%", height: "100%", "z-index": "1000", background: "grey", position: "absolute" } )
       .css(String(this), "100%")
       .appendTo(div);
   });
@@ -106,9 +105,9 @@ function setupTeams() {
     var team = String(this);
     var sbTeam = $sb("ScoreBoard.Team("+team+")");
 
-    $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#Timeouts");
+    $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#Timeouts")
+      .append($("<div>").addClass("RedBox full"));
     $("<div>").addClass("Team Team"+team+" Number TextContainer").appendTo("#Timeouts")
-      .append($("<div>").addClass("Pulse full").css("opacity", 0))
       .append(sbTeam.$sb("Timeouts").$sbElement("<a>", "Number"));
 
     var teamDiv = $("<div>").addClass("Team Team"+team).appendTo("#sbDiv");
@@ -174,18 +173,19 @@ function setupTeams() {
       teamDiv.find("div.Jammer").toggleClass("ShowJam", isTrue(value), animateTime.clock);
     });
 
+    var showTimeoutRedBox = function() {
+      var ownTimeout = $sb("ScoreBoard.TimeoutOwner").$sbIs(team);
+      var timeoutRunning = $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue();
+      $("#Timeouts>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && timeoutRunning);
+    };
+
+    var redBoxTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running"));
+    _crgUtils.bindAndRun(redBoxTriggers, "content", showTimeoutRedBox);
+
     setupPulsate(
       function() { return sbTeam.$sb("LeadJammer").$sbIsTrue(); },
       teamDiv.find("div.Jammer>a.Pulse"),
       animateTime.leadjammerPulse
-    );
-
-    setupPulsate(
-      function() {
-        return ($sb("ScoreBoard.TimeoutOwner").$sbIs(team) &&
-        $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue()); },
-      $("#Timeouts>div.Team"+team+">div.Pulse"),
-      animateTime.timeoutPulse
     );
   });
 }
@@ -227,7 +227,7 @@ function setupClocks() {
   $("#Lineup>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("Line Up"));
   $("#Timeout>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("Time Out"));
   $("#Jam_small>div.Time").remove();
-  $("#Timeout>div.Name").prepend($("<div>").addClass("Pulse full").css("opacity", 0));
+  $("#Timeout>div.Name.WhiteBox").prepend($("<div>").addClass("RedBox full"));
   $("#Intermission>div.Name>a>span.Name").remove();
 
 // FIXME - this intermission stuff is a mess, can it get fixed up or simplified?!?
@@ -278,12 +278,6 @@ function setupClocks() {
     if (isTrue(value) || ($sb($(this).parent()).$sbId == "Intermission"))
       $("#sbDiv>div.ClockAnimationQueue").queue(clockRunningChange);
   }, [ true ]);
-
-  setupPulsate(
-    function() { return $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue(); },
-    $("#Timeout>div.Name>.Pulse"),
-    animateTime.timeoutPulse
-  );
 }
 
 function clockRunningChange(next) {
@@ -360,7 +354,7 @@ function setupSponsorBanners() {
 function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
   var doPulse = function(next) {
     if (pulseCondition())
-      pulseTarget.animate({ opacity: .75 }, (pulsePeriod/2)).animate({ opacity: 0 }, (pulsePeriod/2));
+      pulseTarget.animate({ opacity: .5 }, (pulsePeriod/2)).animate({ opacity: 0 }, (pulsePeriod/2));
     else
       pulseTarget.delay(500)
     pulseTarget.queue(doPulse);
