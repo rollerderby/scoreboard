@@ -71,7 +71,7 @@ function setupMainDiv(div) {
   div.css({ position: "fixed" });
   $.each( [ "bottom", "top", "left", "right" ], function() {
     $("<div>")
-      .css( { width: "100%", height: "100%", "z-index": "1000", background: "grey", position: "absolute" } )
+      .css( { width: "100%", height: "100%", background: "grey", position: "absolute" } )
       .css(String(this), "100%")
       .appendTo(div);
   });
