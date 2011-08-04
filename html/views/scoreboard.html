@@ -353,7 +353,9 @@ function setupSponsorBanners() {
 function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
   var doPulse = function(next) {
     if (pulseCondition())
-      pulseTarget.animate({ opacity: .5 }, (pulsePeriod/2)).animate({ opacity: 0 }, (pulsePeriod/2));
+      pulseTarget
+        .animate({ opacity: 1 }, (pulsePeriod/2), "linear")
+        .animate({ opacity: 0 }, (pulsePeriod/2), "linear");
     else
       pulseTarget.delay(500)
     pulseTarget.queue(doPulse);
