@@ -112,21 +112,23 @@ function setupTeams() {
 
     var teamDiv = $("<div>").addClass("Team Team"+team).appendTo("#sbDiv");
     $("<div>").addClass("TeamAnimationQueue").appendTo(teamDiv);
-    $("<div>").addClass("TeamAnimationFlag Animation").appendTo(teamDiv);
-    $("<div><a/></div>").addClass("Name TextContainer Animation").appendTo(teamDiv);
-    $("<div><div><img/></div></div>").addClass("Logo Animation").appendTo(teamDiv)
+    $("<div>").addClass("TeamAnimationFlag").appendTo(teamDiv);
+    $("<div><a/></div>").addClass("Name TextContainer").appendTo(teamDiv);
+    $("<div><div><img/></div></div>").addClass("Logo").appendTo(teamDiv)
       .children("div").addClass("Inner");
     $("<div>").addClass("Score WhiteBox").appendTo(teamDiv);
     $("<div><a/></div>").addClass("Score TextContainer").appendTo(teamDiv);
-    $("<div><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
+    $("<div><div><a/></div></div>").addClass("Jammer ClockAnimation").appendTo(teamDiv)
+      .children("div").addClass("TextContainer")
       .children("a").addClass("Jammer");
-    $("<div><a/></div>").addClass("Jammer TextContainer Animation").appendTo(teamDiv)
+    $("<div><div><a/></div></div>").addClass("Jammer ClockAnimation").appendTo(teamDiv)
+      .children("div").addClass("TextContainer")
       .children("a").addClass("Pulse").css("opacity", 0);
 
     sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
     sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
     sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 50 } } }, "Score");
-    sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), { sbelement: { autoFitText: true } });
+    sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>div>a"), { sbelement: { autoFitText: true } });
 
     sbTeam.$sb("Name").$sbBindAndRun("content", function(event,value) {
       teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, animateTime.team);
@@ -167,10 +169,7 @@ function setupTeams() {
     });
 
     sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("content", function(event, value) {
-      teamDiv.find("div.Jammer").toggleClass("ShowJammer", !!value, animateTime.clock);
-    });
-    $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("content", function(event, value) {
-      teamDiv.find("div.Jammer").toggleClass("ShowJam", isTrue(value), animateTime.clock);
+      teamDiv.find("div.Jammer>div").toggleClass("ShowJammer", !!value, animateTime.clock, "easeInQuart");
     });
 
     var showTimeoutRedBox = function() {
@@ -184,7 +183,7 @@ function setupTeams() {
 
     setupPulsate(
       function() { return sbTeam.$sb("LeadJammer").$sbIsTrue(); },
-      teamDiv.find("div.Jammer>a.Pulse"),
+      teamDiv.find("div.Jammer>div>a.Pulse"),
       animateTime.leadjammerPulse
     );
   });
@@ -197,7 +196,7 @@ function setupTeams() {
 function setupClocks() {
   $("#sbDiv")
     .append($("<div>").addClass("ClockAnimationQueue"))
-    .append($("<div>").addClass("ClockAnimationFlag Animation"));
+    .append($("<div>").addClass("ClockAnimationFlag ClockAnimation"));
 
   $.each( clockIds, function() {
 //FIXME - should be using class instead of global id attr
@@ -205,7 +204,7 @@ function setupClocks() {
     var clock = id.replace(/_.*/,"");
     var sbClock = $sb("ScoreBoard.Clock("+clock+")");
 
-    var clockDiv = $("<div>").attr("id", id).addClass("Clock Animation").appendTo("#sbDiv")
+    var clockDiv = $("<div>").attr("id", id).addClass("Clock ClockAnimation").appendTo("#sbDiv")
       .append($("<div>").addClass("Name WhiteBox"))
       .append($("<div><a><span/></a></div>").addClass("Name TextContainer"))
       .append($("<div>").addClass("Time WhiteBox"))
@@ -303,8 +302,8 @@ function showClocks(clock, next) {
   var transClass = "Trans"+currentClock+clock;
   var fromClasses = "ShowPeriod ShowJam ShowLineup ShowTimeout ShowIntermission".replace(toClass, "");
   if (currentClock)
-    $("#sbDiv>div.Animation").switchClass(fromClasses, transClass, animateTime.clock, "easeInQuart");
-  $("#sbDiv>div.Animation").switchClass(transClass, toClass, animateTime.clock, "easeInQuart",
+    $("#sbDiv div.ClockAnimation").switchClass(fromClasses, transClass, animateTime.clock, "easeInQuart");
+  $("#sbDiv div.ClockAnimation").switchClass(transClass, toClass, animateTime.clock, "easeInQuart",
     function() { $(this).hasClass("ClockAnimationFlag") && next(); }
   );
   currentClock = clock;
@@ -316,7 +315,7 @@ function showClocks(clock, next) {
 /////////////////////////
 
 function setupSponsorBanners() {
-  $("<div>").attr("id", "SponsorBox").addClass("Animation").appendTo("#sbDiv")
+  $("<div>").attr("id", "SponsorBox").addClass("ClockAnimation").appendTo("#sbDiv")
     .append($("<div><img/></div>").addClass("CurrentImg"))
     .append($("<div><img/></div>").addClass("NextImg"));
   var getNextSrc = function(currentSrc) {
