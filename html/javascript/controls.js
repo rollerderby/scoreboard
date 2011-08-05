@@ -122,7 +122,7 @@ _crgScoreBoardControl = {
       sbElement.bind("content", function(event, value) { setControlValue(value); });
       setControlValue(sbElement.$sbGet());
       var buttonClick = function() {
-//FIXME - can this check get pushed into the _crgKeyControls code instead?
+//FIXME - need a generic indicator to prevent action instead of using .KeyControl.Editing
         if (c.is(".KeyControl.Editing")) // If this button is a KeyControl that's being edited, ignore clicks.
           return;
         var associateText = getGroup("input:text,input:password,textarea");
