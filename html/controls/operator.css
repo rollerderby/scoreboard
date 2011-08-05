@@ -12,6 +12,7 @@ table.RowTable { border-spacing: 0px; }
   .KeyControl span.Indicator { font-size: 75%; }
   .KeyControl:not(.HasControlKey) span.Indicator { display: none; }
   .KeyControl>span { padding: .3em .6em !important; }
+  .KeyControl.Editing { border: 1px solid #f00; }
 /* End Key Control */
 
 
@@ -20,7 +21,6 @@ table.RowTable { border-spacing: 0px; }
 
 /* Team/Time Tab */
   #TeamTime a { font-weight: bold; }
-  #TeamTime button.KeyControl.Editing { border: 1px solid #f00; }
 
   #TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
   #TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
