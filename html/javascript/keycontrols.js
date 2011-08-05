@@ -2,19 +2,22 @@
 
 //FIXME - need to allow setting up groups, maybe custom class to indicate grouping, so per-tab keycontrols are possible
 _crgKeyControls = {
+  /* This selector should be used to match key control buttons. */
+  keySelector: ":button.KeyControl,label.KeyControl",
+
   /* Setup all key control buttons.
    * This finds all button-type elements with the class KeyControl
    * and calls setupKeyControl, using the given controlParent.
    */
   setupKeyControls: function(controlParent) {
-    _crgKeyControls.setupKeyControl($(":button.KeyControl"), controlParent);
+    _crgKeyControls.setupKeyControl($(_crgKeyControls.keySelector), controlParent);
   },
   /* Destroy all key control buttons.
    * This finds all button-type elements with the class KeyControl
    * and calls destroyKeyControl.
    */
-  destroyKeyControls: function(destroyButton) {
-    _crgKeyControls.destroyKeyControl($(":button.KeyControl"), destroyButton);
+  destroyKeyControls: function() {
+    _crgKeyControls.destroyKeyControl($(_crgKeyControls.keySelector));
   },
 
   /* Setup the button for key control.
@@ -22,7 +25,6 @@ _crgKeyControls = {
    * The button must have a (unique) id, and
    * the id must conform to the restrictions of
    * the ScoreBoard id restrictions (e.g. no (, ), ', or ")
-   * If the button is not a jQuery-UI button(), it will be made one.
    * Once setup, any button presses corresponding to the
    * button's key control will cause a button click.
    * If this button has already been setup, it will first be
@@ -36,7 +38,7 @@ _crgKeyControls = {
    * when there is a control key the button has class HasControlKey
    */
   setupKeyControl: function(button, controlParent) {
-    _crgKeyControls.destroyKeyControl(button, true).button()
+    _crgKeyControls.destroyKeyControl(button)
       .addClass("KeyControl")
       .bind("mouseenter mouseleave", _crgKeyControls._hoverFunction)
       .children("span")
@@ -68,13 +70,11 @@ _crgKeyControls = {
    * It returns the button element.
    * Note this does not remove the KeyControl class from the button.
    */
-  destroyKeyControl: function(button, destroyButton) {
+  destroyKeyControl: function(button) {
     button.each(function() { try { $(this).data("_crgKeyControls:unbind")(); } catch(err) { } });
     button.removeData("_crgKeyControls:unbind").removeData("_crgKeyControls:Key");
     button.unbind("mouseenter mouseleave", _crgKeyControls._hoverFunction);
     button.find("span.Indicator").remove();
-    if (destroyButton)
-      try { button.button("destroy"); } catch(err) { }
     return button;
   },
 
@@ -92,7 +92,7 @@ _crgKeyControls = {
    * CSS note: buttons in edit mode have the class "Editing".
    */
   editKeys: function(edit) {
-    $(":button.KeyControl").toggleClass("Editing", edit);
+    $(_crgKeyControls.keySelector).toggleClass("Editing", edit);
   },
 
   addCondition: function(condition) {
@@ -124,10 +124,17 @@ _crgKeyControls = {
     var key = String.fromCharCode(event.which);
 
     // Perform the corresponding button's action
-    $(":button.KeyControl:not(.Editing):visible").has("span.Key[data-keycontrol='"+event.which+"']").click();
+    var target = $(_crgKeyControls.keySelector)
+      .filter(":not(.Editing):visible")
+      .has("span.Key[data-keycontrol='"+event.which+"']")
+      .click();
+    // FIXME - workaround seemingly broken jQuery-UI
+    // which does not fire change event for radio buttons when click() is called on their label...
+    if (target.is("label"))
+      target.filter("label").each(function() { $("#"+$(this).attr("for")).change(); });
 
     // Update the hovered button if in edit mode
-    var editControls = $(":button.KeyControl.Editing");
+    var editControls = $(_crgKeyControls.keySelector).filter(".Editing");
     if (editControls.length) {
       var existingControl = editControls.filter(":not(.hover)").has("span.Key[data-keycontrol='"+event.which+"']");
       if (existingControl.length) {
@@ -147,7 +154,7 @@ _crgKeyControls = {
     switch (event.which) {
     case 8: // Backspace
     case 46: // Delete
-      var sbKey = $(":button.KeyControl.Editing.hover").data("_crgKeyControls:Key");
+      var sbKey = $(_crgKeyControls.keySelector).filter(".Editing.hover").data("_crgKeyControls:Key");
       if (sbKey)
         sbKey.$sbSet("");
     }

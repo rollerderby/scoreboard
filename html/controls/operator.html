@@ -49,7 +49,6 @@ function initialLogin() {
   if (operator) {
     login(operator);
   } else {
-    $("button.KeyControl").button(); /* Set up the buttons visually while first logging in */
     logout();
   }
 }
@@ -187,23 +186,23 @@ function createJamControlTable() {
   var undoTr = controlsTr.next().addClass("UndoControls");
 
   $sb("ScoreBoard.StartJam").$sbControl("<button>").text("Start Jam").val("true")
-    .attr("id", "StartJam").addClass("KeyControl")
+    .attr("id", "StartJam").addClass("KeyControl").button()
     .appendTo(controlsTr.children("td:eq(0)"));
   $sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam").val("true")
-    .attr("id", "StopJam").addClass("KeyControl")
+    .attr("id", "StopJam").addClass("KeyControl").button()
     .appendTo(controlsTr.children("td:eq(1)"));
   $sb("ScoreBoard.Timeout").$sbControl("<button>").text("Timeout").val("true")
-    .attr("id", "Timeout").addClass("KeyControl")
+    .attr("id", "Timeout").addClass("KeyControl").button()
     .appendTo(controlsTr.children("td:eq(2)"));
 
   $sb("ScoreBoard.UnStartJam").$sbControl("<button>").text("UN-Start Jam").val("true")
-    .attr("id", "UnStartJam").addClass("KeyControl")
+    .attr("id", "UnStartJam").addClass("KeyControl").button()
     .appendTo(undoTr.children("td:eq(0)"));
   $sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam").val("true")
-    .attr("id", "UnStopJam").addClass("KeyControl")
+    .attr("id", "UnStopJam").addClass("KeyControl").button()
     .appendTo(undoTr.children("td:eq(1)"));
   $sb("ScoreBoard.UnTimeout").$sbControl("<button>").text("UN-Timeout").val("true")
-    .attr("id", "UnTimeout").addClass("KeyControl")
+    .attr("id", "UnTimeout").addClass("KeyControl").button()
     .appendTo(undoTr.children("td:eq(2)"));
 
   return table;
@@ -262,7 +261,7 @@ function createTeamTable() {
 
     sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("Score -1").val("-1")
-      .attr("id", "Team"+team+"ScoreDown").addClass("KeyControl")
+      .attr("id", "Team"+team+"ScoreDown").addClass("KeyControl").button()
       .appendTo(scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
     sbTeam.$sb("Score").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
         editOnClick: true,
@@ -270,7 +269,7 @@ function createTeamTable() {
       } }).appendTo(scoreTr.children("td:eq(1)").addClass("Score"));
     sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("Score +1").val("1")
-      .attr("id", "Team"+team+"ScoreUp").addClass("KeyControl")
+      .attr("id", "Team"+team+"ScoreUp").addClass("KeyControl").button()
       .appendTo(scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
     var scoreChange = $("<a>").addClass("Change").appendTo(scoreTr.children("td:eq(1)"))
       .css({ position: "absolute", fontSize: "200%", lineHeight: "175%", opacity: "0" });
@@ -291,7 +290,7 @@ function createTeamTable() {
     });
 
     sbTeam.$sb("Timeout").$sbControl("<button>").text("Timeout").val("true")
-      .attr("id", "Team"+team+"Timeout").addClass("KeyControl")
+      .attr("id", "Team"+team+"Timeout").addClass("KeyControl").button()
       .appendTo(timeoutTr.children("td:eq("+(first?"0":"1")+")").addClass("Timeout"));
     sbTeam.$sb("Timeouts").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
         editOnClick: true,
@@ -299,8 +298,8 @@ function createTeamTable() {
       } }).appendTo(timeoutTr.children("td:eq("+(first?"1":"0")+")").addClass("Timeouts"));
 
     var leadJammerTd = jammerTr.children("td:eq("+(first?"0":"1")+")")
-      .append("<label>Lead</label><input type='radio' value='true'/>")
-      [first?"append":"prepend"]("<label>No Lead</label><input type='radio' value='false'/>");
+      .append("<label id='Team"+team+"Lead'>Lead</label><input type='radio' value='true'/>")
+      [first?"append":"prepend"]("<label id='Team"+team+"NoLead'>No Lead</label><input type='radio' value='false'/>");
     sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
       .addClass("KeyControl");
     leadJammerTd.buttonset();
@@ -348,7 +347,7 @@ function createTimeTable() {
 
     sbClock.$sb("Number").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("-1").val("-1")
-      .attr("id", "Clock"+clock+"NumberDown").addClass("KeyControl")
+      .attr("id", "Clock"+clock+"NumberDown").addClass("KeyControl").button()
       .appendTo(numberTr.children("td:eq(0)").addClass("Down").css("width", "40%"));
     sbClock.$sb("Number").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
         editOnClick: true,
@@ -356,14 +355,14 @@ function createTimeTable() {
       } }).appendTo(numberTr.children("td:eq(1)").addClass("Number").css("width", "20%"));
     sbClock.$sb("Number").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
       .text("+1").val("1")
-      .attr("id", "Clock"+clock+"NumberUp").addClass("KeyControl")
+      .attr("id", "Clock"+clock+"NumberUp").addClass("KeyControl").button()
       .appendTo(numberTr.children("td:eq(2)").addClass("Up").css("width", "40%"));
 
     sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
-      .attr("id", "Clock"+clock+"Start").addClass("KeyControl")
+      .attr("id", "Clock"+clock+"Start").addClass("KeyControl").button()
       .appendTo(controlTr.children("td:eq(0)").addClass("Start"));
     sbClock.$sb("Stop").$sbControl("<button>").text("Stop").val("true")
-      .attr("id", "Clock"+clock+"Stop").addClass("KeyControl")
+      .attr("id", "Clock"+clock+"Stop").addClass("KeyControl").button()
       .appendTo(controlTr.children("td:eq(1)").addClass("Stop"));
 
     sbClock.$sb("Time").$sbElement("<a>", { sbelement: { convert: _timeConversions.msToMinSec } })
