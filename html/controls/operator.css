@@ -13,6 +13,7 @@ table.RowTable { border-spacing: 0px; }
   .KeyControl:not(.HasControlKey) span.Indicator { display: none; }
   .KeyControl>span { padding: .3em .6em !important; }
   .KeyControl.Editing { border: 1px solid #f00; }
+  .KeyControl.Editing.hover { border: 2px ridge #f00; }
 /* End Key Control */
 
 
