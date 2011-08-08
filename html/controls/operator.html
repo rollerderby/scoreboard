@@ -55,13 +55,15 @@ function initialLogin() {
 
 function login(name) {
   $("#operatorId").text(name);
-  window.history.replaceState(null, "", "?operator="+$("#operatorId").text());
+  if (window.history.replaceState)
+    window.history.replaceState(null, "", "?operator="+$("#operatorId").text());
   _crgKeyControls.setupKeyControls($sb("Pages.Page(operator.html).Operator("+$("#operatorId").text()+")"));
 }
 
 function logout() {
   $("#operatorId").text("");
-  window.history.replaceState(null, "", "?");
+  if (window.history.replaceState)
+    window.history.replaceState(null, "", "?");
   _crgKeyControls.destroyKeyControls();
   _crgUtils.showLoginDialog("Operator Login", "Operator:", "Login", function(value) {
     if (!value)
