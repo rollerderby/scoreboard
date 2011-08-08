@@ -98,7 +98,7 @@ _crgKeyControls = {
   addCondition: function(condition) {
     _crgKeyControls._conditions.push(condition);
   },
-  _conditions: [ ],
+  _conditions: [ function() { return !$("div.MultipleKeyAssignDialog").length; } ],
 
   _start: function() {
     if (!_crgKeyControls._keyControlStarted) {
@@ -117,32 +117,43 @@ _crgKeyControls = {
     });
     return ok;
   },
+  _existingKeyLast: undefined,
+  _existingKeyCount: 0,
   _keyControlPress: function(event) {
     if (!_crgKeyControls._checkConditions())
       return;
 
     var key = String.fromCharCode(event.which);
 
+    var controls = $(_crgKeyControls.keySelector);
+    var active = controls.filter(":not(.Editing):visible")
+    var editing = controls.filter(".Editing");
+
     // Perform the corresponding button's action
-    var target = $(_crgKeyControls.keySelector)
-      .filter(":not(.Editing):visible")
-      .has("span.Key[data-keycontrol='"+event.which+"']")
-      .click();
+    var target = active.has("span.Key[data-keycontrol='"+event.which+"']").click();
     // FIXME - workaround seemingly broken jQuery-UI
     // which does not fire change event for radio buttons when click() is called on their label...
     if (target.is("label"))
       target.filter("label").each(function() { $("#"+$(this).attr("for")).change(); });
 
     // Update the hovered button if in edit mode
-    var editControls = $(_crgKeyControls.keySelector).filter(".Editing");
-    if (editControls.length) {
-      var existingControl = editControls.filter(":not(.hover)").has("span.Key[data-keycontrol='"+event.which+"']");
+    var editingTarget = editing.filter(".hover");
+    if (editingTarget.length) {
+      var existingControl = editing.filter(":not(.hover)").has("span.Key[data-keycontrol='"+event.which+"']");
       if (existingControl.length) {
-        existingControl.effect("highlight", { color: "#f00" }, 300);
+        if (_crgKeyControls._existingKeyLast != key)
+          _crgKeyControls._existingKeyCount = 1;
+        else
+          _crgKeyControls._existingKeyCount++;
+        _crgKeyControls._existingKeyLast = key;
+        if (_crgKeyControls._existingKeyCount > 2) {
+          _crgKeyControls._showMultipleKeyAssignDialog(existingControl, editingTarget, key);
+          _crgKeyControls._existingKeyCount = 0;
+        } else {
+          existingControl.effect("highlight", { color: "#f00" }, 300);
+        }
       } else {
-        var sbKey = editControls.filter(".hover").data("_crgKeyControls:Key");
-        if (sbKey)
-          sbKey.$sbSet(key);
+        _crgKeyControls._setKey(editingTarget, key);
       }
     }
   },
@@ -154,9 +165,47 @@ _crgKeyControls = {
     switch (event.which) {
     case 8: // Backspace
     case 46: // Delete
-      var sbKey = $(_crgKeyControls.keySelector).filter(".Editing.hover").data("_crgKeyControls:Key");
-      if (sbKey)
-        sbKey.$sbSet("");
+      _crgKeyControls._clearKey($(_crgKeyControls.keySelector).filter(".Editing.hover"));
     }
+  },
+  _clearKey: function(targets) { _crgKeyControls._setKey(targets, ""); },
+  _setKey: function(targets, key) {
+    targets.each(function() {
+      var sbKey = $(this).data("_crgKeyControls:Key");
+      if (sbKey)
+        sbKey.$sbSet(key);
+    });
+  },
+  _showMultipleKeyAssignDialog: function(existing, target, key) {
+    var div = $("<div>").addClass("MultipleKeyAssignDialog");
+    var n = existing.length;
+    var s = (n == 1 ? "" : "s");
+    $("<p>").text("The key '"+key+"' is assigned to "+n+" other control"+s+", what do you want to do?")
+      .appendTo(div);
+    $("<hr>").appendTo(div);
+    $("<button>")
+      .text("Assign '"+key+"' to only this control, remove from the other "+n+" control"+s)
+      .button()
+      .appendTo(div)
+      .click(function() {
+        _crgKeyControls._clearKey(existing);
+        _crgKeyControls._setKey(target, key);
+        div.dialog("close");
+      });
+    $("<br>").appendTo(div);
+    $("<button>")
+      .text("Assign '"+key+"' to this control and the other "+n+" control"+s)
+      .button()
+      .appendTo(div)
+      .click(function() {
+        _crgKeyControls._setKey(target, key);
+        div.dialog("close");
+      });
+    div.dialog({
+      modal: true,
+      width: "700px",
+      buttons: { Cancel: function() { div.dialog("close"); } },
+      close: function() { div.dialog("destroy").remove(); }
+    });
   }
 };
