@@ -62,7 +62,7 @@ _crgKeyControls = {
       });
     return button;
   },
-  _hoverFunction: function() { $(this).toggleClass("hover"); },
+  _hoverFunction: function(event) { $(this).toggleClass("hover", (event.type == "mouseenter")); },
 
   /* Destroy a key control button.
    * This undoes the key control setup. If destroyButton
