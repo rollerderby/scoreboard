@@ -209,7 +209,7 @@ public class ScoreBoardManager
 	public static final String VERSION_RELEASE_KEY = "release";
 	public static final String VERSION_BUILD_KEY = "build";
 
-	public static final String PROPERTIES_DIR_NAME = "lib";
+	public static final String PROPERTIES_DIR_NAME = "config";
 	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
 
 	public static final String PROPERTY_MODEL_KEY = ScoreBoardManager.class.getName()+".model";

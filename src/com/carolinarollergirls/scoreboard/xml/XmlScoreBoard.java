@@ -160,5 +160,5 @@ public class XmlScoreBoard
 	protected ExecutorXmlDocumentManager managers = new ExecutorXmlDocumentManager();
 
 	public static final String DOCUMENT_DIR_KEY = XmlScoreBoard.class.getName() + ".InitialDocumentDirectory";
-	public static final String DEFAULT_DOCUMENT_DIR = "lib/xml";
+	public static final String DEFAULT_DOCUMENT_DIR = "config/xml";
 }
