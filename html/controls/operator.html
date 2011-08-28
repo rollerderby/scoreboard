@@ -1057,6 +1057,40 @@ function createSaveLoadContent() {
   _crgUtils.bindAndRun(uploadForm.children("input:file").button(), "change", function() {
     uploadForm.children("button").button(this.value ? "enable" : "disable");
   });
+
+  // Reset table
+  var sbResetTable = $("<table>").addClass("Reset")
+    .appendTo($("<td>").appendTo($("<tr>").appendTo("#SaveLoad")));
+  $("<tr>").addClass("Name").appendTo(sbResetTable)
+    .append("<td>Reset ScoreBoard</td>");
+  var resetTd = $("<td>")
+    .appendTo($("<tr>").addClass("Content").appendTo(sbResetTable));
+
+  $("<button>").text("Reset the scoreboard").button()
+    .click(showResetScoreBoardDialog)
+    .appendTo(resetTd);
+}
+
+function showResetScoreBoardDialog() {
+  var div = $("<div>").addClass("ResetScoreBoardDialog");
+
+  $("<p>").html("This will completely reset the ScoreBoard to the defaults.<br/>You will LOSE all current information!")
+    .appendTo(div);
+  $sb("Reset").$sbControl("<button>").addClass("Yes")
+    .click(function() { div.dialog("destroy").remove(); })
+    .val(true)
+    .text("Yes, reset the scoreboard to defaults!")
+    .button()
+    .appendTo(div);
+  $("<button>").addClass("No")
+    .text("No, do not reset the scoreboard.")
+    .click(function() { div.dialog("destroy").remove(); })
+    .button()
+    .appendTo(div);
+  div.dialog({
+    modal: true,
+    width: "800px"
+  });
 }
 
 </script>

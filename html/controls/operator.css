@@ -151,3 +151,10 @@ table.RowTable { border-spacing: 0px; }
   table.IntermissionControlDialog>tbody>tr.Control>td.ShowUnofficial { border-bottom-left-radius: 12px; }
   table.IntermissionControlDialog>tbody>tr.Control>td.HideClock { border-bottom-right-radius: 12px; }
 /* End Intermission Control Dialog */
+
+/* Reset ScoreBoard Dialog */
+  div.ResetScoreBoardDialog p { text-align: center; }
+  div.ResetScoreBoardDialog button.Yes { float: left; }
+  div.ResetScoreBoardDialog button.No { float: right; }
+/* End Reset ScoreBoard Dialog */
+

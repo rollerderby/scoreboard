@@ -166,6 +166,7 @@ public class XmlScoreBoard
     new XmlGoogleDocsStats().setXmlScoreBoard(this);
     new LoadScoreBoard().setXmlScoreBoard(this);
     new TeamsXmlDocumentManager().setXmlScoreBoard(this);
+    new ResetScoreBoard().setXmlScoreBoard(this);
     new OpenXmlDocumentManager("Pages").setXmlScoreBoard(this);
     new MediaXmlDocumentManager("Images", "Image").setXmlScoreBoard(this);
     new MediaXmlDocumentManager("Videos", "Video").setXmlScoreBoard(this);
