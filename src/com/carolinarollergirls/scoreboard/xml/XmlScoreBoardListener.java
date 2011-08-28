@@ -4,5 +4,5 @@ import org.jdom.*;
 
 public interface XmlScoreBoardListener
 {
-	public void xmlChange(Document d);
+  public void xmlChange(Document d);
 }
