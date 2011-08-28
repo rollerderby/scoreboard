@@ -24,6 +24,7 @@ public class XmlScoreBoard
 		xmlChange(converter.toDocument(scoreBoardModel));
 		loadXmlDocumentManagers();
 		loadDocuments();
+    startAutoSave();
 	}
 
 	public ScoreBoardModel getScoreBoardModel() { return scoreBoardModel; }
@@ -103,9 +104,34 @@ public class XmlScoreBoard
 		listeners.xmlChange(d);
 	}
 
+  protected void loadDocuments() {
+    if (!loadAutoSaveDocument())
+      loadDefaultDocuments();
+  }
 
-	protected void loadDocuments() {
-		File initialDocumentDir = new File(ScoreBoardManager.getProperties().getProperty(DOCUMENT_DIR_KEY, DEFAULT_DOCUMENT_DIR));
+  protected boolean loadAutoSaveDocument() {
+    File autoSaveDir = new File(AutoSaveScoreBoard.DIRECTORY_NAME);
+    if (!autoSaveDir.exists())
+      return false;
+
+    for (int i=0; i < AutoSaveScoreBoard.BACKUP_FILES; i++) {
+      File f = new File(autoSaveDir, AutoSaveScoreBoard.getName(i));
+      if (!f.exists())
+        continue;
+      try {
+        loadDocument(saxBuilder.build(f));
+        ScoreBoardManager.printMessage("Loaded auto-saved scoreboard XML from "+f.getPath());
+        return true;
+      } catch ( Exception e ) {
+        ScoreBoardManager.printMessage("Could not load auto-saved scoreboard XML file "+f.getPath()+" : "+e.getMessage());
+      }
+    }
+
+    return false;
+  }
+
+	protected void loadDefaultDocuments() {
+		File initialDocumentDir = new File(ScoreBoardManager.getProperties().getProperty(DOCUMENT_DIR_KEY, DEFAULT_DIRECTORY_NAME));
 		if (!initialDocumentDir.isDirectory()) {
 			ScoreBoardManager.printMessage("Initial XML document directory '"+initialDocumentDir.getPath()+"' does not exist.");
 			return;
@@ -138,7 +164,6 @@ public class XmlScoreBoard
 		new XmlRealtimeStats().setXmlScoreBoard(this);
 		new XmlInterpretedStats().setXmlScoreBoard(this);
 		new XmlGoogleDocsStats().setXmlScoreBoard(this);
-		new AutoSaveScoreBoard().setXmlScoreBoard(this);
 		new LoadScoreBoard().setXmlScoreBoard(this);
 		new TeamsXmlDocumentManager().setXmlScoreBoard(this);
 		new OpenXmlDocumentManager("Pages").setXmlScoreBoard(this);
@@ -147,10 +172,16 @@ public class XmlScoreBoard
 		new MediaXmlDocumentManager("CustomHtml", "Html").setXmlScoreBoard(this);
 	}
 
+  protected void startAutoSave() {
+    autoSave = new AutoSaveScoreBoard(this);
+    autoSave.start();
+  }
+
 	protected ScoreBoardModel scoreBoardModel;
 	protected ScoreBoardXmlConverter converter = new ScoreBoardXmlConverter();
 	protected XmlDocumentEditor editor = new XmlDocumentEditor();
 	protected ScoreBoardXmlListener scoreBoardXmlListener;
+  protected AutoSaveScoreBoard autoSave;
 	protected Document document = editor.createDocument();
 	protected Object documentLock = new Object();
 
@@ -160,5 +191,5 @@ public class XmlScoreBoard
 	protected ExecutorXmlDocumentManager managers = new ExecutorXmlDocumentManager();
 
 	public static final String DOCUMENT_DIR_KEY = XmlScoreBoard.class.getName() + ".InitialDocumentDirectory";
-	public static final String DEFAULT_DOCUMENT_DIR = "config/xml";
+	public static final String DEFAULT_DIRECTORY_NAME = "config/default";
 }

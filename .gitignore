@@ -3,3 +3,4 @@
 bin
 release
 lib/crg-scoreboard.jar
+config/autosave
