@@ -167,7 +167,7 @@ $sb = function(arg) {
   if ($.isFunction(arg)) {
     var callArg = function() { arg.call($sb()); };
     if (_crgScoreBoard.documentLoaded)
-      callArg();
+      setTimeout(callArg, 0);
     else
       _crgScoreBoard.documentEvents.one("load:ScoreBoard", callArg);
   } else if (typeof arg == "string") {
