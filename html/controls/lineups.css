@@ -1,0 +1,31 @@
+
+div.tabHeader {
+  padding-bottom: 4px;
+}
+
+div.tabHeader>span {
+  padding: 1px;
+  border: 1px solid black;
+  margin-right: 1px;
+}
+
+table {
+  border: 3px solid;
+  width: 100%;
+}
+
+.buttonTrue { background-color: #00ff00; }
+
+th {
+  border: 1px;
+  background-color: #eeeeee;
+}
+
+td {
+  border: 1px solid;
+  text-align: center;
+}
+
+.ui-tabs-panel { padding: 0.2em !important; }
+.ui-tabs-nav { font-size: 75% !important; }
+
