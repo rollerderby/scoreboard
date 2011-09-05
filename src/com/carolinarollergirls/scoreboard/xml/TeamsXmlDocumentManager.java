@@ -24,6 +24,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
   }
 
   public void reset() {
+    super.reset();
     Element e = createXPathElement();
     Element t = editor.addElement(e, "Transfer");
     Element tTo = editor.addElement(t, "To");
@@ -117,6 +118,8 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
   protected void processTransfer(String type, String direction, String sbTeamId, String teamId) throws JDOMException {
     if (!Team.ID_1.equals(sbTeamId) && !Team.ID_2.equals(sbTeamId))
       return; /* Only process Team 1 or 2 transfers... */
+    if (null == teamId || "".equals(teamId))
+      return; /* Teams.Team elements must have an id */
     if (!"Transfer".equals(type) && !"Merge".equals(type))
       return;
     if ("To".equals(direction)) {
