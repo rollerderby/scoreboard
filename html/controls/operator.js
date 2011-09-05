@@ -782,7 +782,8 @@ function createTeamsContent() {
     .appendTo("#Teams>tbody>tr.Team>td");
 
   _crgUtils.bindAddRemoveEach($sb("Teams"), "Team", function(event, node) {
-    createNewTeamTable(node).appendTo("#Teams>tbody>tr.Team>td");
+    if (node.$sbId) /* skip any invalid team with no id */
+      createNewTeamTable(node).appendTo("#Teams>tbody>tr.Team>td");
   }, function(event, node) {
     $("table.Team", "#Teams")
       .filter(function() { return (node.$sbId == $(this).data("id")); })
