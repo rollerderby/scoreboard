@@ -22,7 +22,7 @@ var animateTime = {
   sponsor: 1000, /* time to animate from one sponsor banner to the next */
   clock: 500, /* clocks animate out then in, so the full transition time is 2x this */
   team: 500, /* show/hide logo/name */
-  leadjammerPulse: 2000
+  leadjammerPulse: 1000
 };
 
 
