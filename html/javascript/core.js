@@ -158,6 +158,12 @@
  *     the XML element value.  In the function, 'this' points to the
  *     HTML element whose value is being converted.
  *   
+ * Global variables
+ *   XML_ELEMENT_SELECTOR
+ *     This optional selector can be used to filter which scoreboard
+ *     XML top-level elements will be processed.  Using this can
+ *     help avoid unnecessary processing of XML elements that the
+ *     page will never use.  This can be useful e.g. in mobile browsers.
  */
 
 $sb = function(arg) {
@@ -492,9 +498,10 @@ _crgScoreBoard = {
   },
 
   processScoreBoardXml: function(xml) {
-    $(xml).children("document").children().each(function(index) {
-      _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
-    });
+    $(xml).children("document").children(window.XML_ELEMENT_SELECTOR)
+      .each(function(index) {
+        _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
+      });
     $sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
     if (!_crgScoreBoard.documentLoaded) {
       _crgScoreBoard.documentLoaded = true;
