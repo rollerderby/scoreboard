@@ -34,10 +34,10 @@ function setupPeriodTimePage() {
   }});
 
   time.$sbControl("#PeriodTimePage input:text.SetTime,#PeriodTimePage button.SetTime", {
-    sbelement: { convert: _timeConversions.msToMinSec },
     sbcontrol: {
       convert: _timeConversions.minSecToMs,
-      delayupdate: true
+      delayupdate: true,
+      noSetControlValue: true
     }
   });
 }
