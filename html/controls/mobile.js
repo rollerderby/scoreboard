@@ -56,8 +56,11 @@ function setupTeamScorePage() {
       sbSetAttrs: { change: true }
     }});
 
-    score.$sbControl("#TeamScorePage input:text.Team"+n+".SetScore,#TeamScorePage button.Team"+n+".SetScore", {
-      sbcontrol: { delayupdate: true }
+    score.$sbControl("#TeamScorePage input[type='number'].Team"+n+".SetScore,#TeamScorePage button.Team"+n+".SetScore", {
+      sbcontrol: {
+        delayupdate: true,
+        noSetControlValue: true
+      }
     });
   });
 }
