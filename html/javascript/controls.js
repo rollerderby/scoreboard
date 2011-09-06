@@ -148,11 +148,14 @@ _crgScoreBoardControl = {
       setControlValue(sbElement.$sbGet());
       c.bind("change", function() { setElementValue($(this).val()); });
     } else if (c.is("label")) {
-      // This requires the target checkbox or radio to immediately follow its label
-      var target = c.next("input:checkbox,input:radio");
+      // This requires the target checkbox or radio to immediately follow *or precede* its label
+      var target = c.prev("input:checkbox,input:radio");
+      if (!target.length || target.attr("id"))
+        target = c.next("input:checkbox,input:radio");
       if (!target.attr("id"))
         target.attr("id", sbElement.$sbNewUUID());
-      c.attr("for", target.attr("id"));
+      if (!c.attr("for"))
+        c.attr("for", target.attr("id"));
     } else if (c.is("select")) {
       _crgUtils.setupSelect(c);
       sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
