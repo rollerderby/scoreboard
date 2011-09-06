@@ -297,7 +297,10 @@ function createTeamTable() {
       [first?"append":"prepend"]("<label id='Team"+team+"NoLead'>No Lead</label><input type='radio' value='false'/>");
     sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
       .addClass("KeyControl");
-    leadJammerTd.buttonset();
+    /* some strange bug, css direction is unset for leadJammerTd
+     * so need to explicitly specify to style the buttonset as ltr
+     */
+    leadJammerTd.css("direction", "ltr").buttonset();
     sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
         optionParent: sbTeam,
         optionChildName: "Skater",
