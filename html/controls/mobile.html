@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html><head><title>CRG ScoreBoard Mobile Operator Controls</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+
+<script type="text/javascript" src="/javascript/scoreboard.js"></script>
+
+<script type="text/javascript" src="mobile.js"></script>
+
+<link rel="stylesheet" type="text/css" href="mobile.css" />
+
+<link rel="stylesheet" type="text/css" href="/external/jquery-mobile/jquery.mobile.css" />
+<script type="text/javascript" src="/external/jquery-mobile/jquery.mobile.js"></script>
+
+</head>
+
+<body>
+
+<div data-role="page" id="Main">
+  <div data-role="header">
+    <h1>CRG SB Controls</h1>
+  </div>
+
+  <div data-role="content">
+    <ul data-role="listview">
+      <li><a href="#JamControlPage">Jam Control</a></li>
+      <li><a href="#PeriodTimePage">Period Time</a></li>
+      <li><a href="#TeamScorePage">Team Score</a></li>
+    </ul>
+  </div>
+</div>
+
+<div data-role="page" data-add-back-btn="true" id="JamControlPage">
+  <div data-role="header">
+    <h1>Jam Control</h1>
+  </div>
+
+  <div data-role="content">
+    <p><button class="StartJam">Start Jam</button></p>
+    <p><hr/></p>
+    <p><button class="StopJam">Stop Jam</button></p>
+    <p><hr/></p>
+    <p><button class="Timeout">Timeout</button></p>
+    <p><hr/></p>
+    <p class="Clocks">
+      <span class="ClockBubble Period">Period</span>
+      <span class="ClockBubble Jam">Jam</span>
+      <span class="ClockBubble Timeout">Timeout</span>
+    </p>
+</div>
+</div>
+
+<div data-role="page" data-add-back-btn="true" id="PeriodTimePage">
+  <div data-role="header">
+    <h1>Period Time</h1>
+  </div>
+
+  <div data-role="content">
+    <p class="Time"><a class="Time"></a></p>
+    <p><hr/></p>
+    <p>
+      <button class="TimeDown" data-inline="true" value="-1000">-1 sec</button>
+      <button class="TimeUp" data-inline="true" value="1000">+1 sec</button>
+    </p>
+    <p><hr/></p>
+    <p><input type="text" class="SetTime"/></p>
+    <p><button class="SetTime" data-inline="true">Set Time</button></p>
+  </div>
+</div>
+
+<div data-role="page" data-add-back-btn="true" id="TeamScorePage">
+  <div data-role="header">
+    <h1>Team Score</h1>
+  </div>
+
+  <div data-role="content">
+    <div><a class="Team1 Name"></a></div>
+    <div>
+      <button class="Team1 ScoreDown" data-inline="true" value="-1">-1 sec</button>
+      <a class="Team1 Score"></a>
+      <button class="Team1 ScoreUp" data-inline="true" value="1">+1 sec</button>
+    </div>
+    <div>
+      <input type="text" class="Team1 SetScore"/>
+      <button class="Team1 SetScore" data-inline="true">Set Score</button>
+    </div>
+
+    <div><a class="Team2 Name"></a></div>
+    <div>
+      <button class="Team2 ScoreDown" data-inline="true" value="-1">-1 sec</button>
+      <a class="Team2 Score"></a>
+      <button class="Team2 ScoreUp" data-inline="true" value="1">+1 sec</button>
+    </div>
+    <div>
+      <input type="text" class="Team2 SetScore"/>
+      <button class="Team2 SetScore" data-inline="true">Set Score</button>
+    </div>
+  </div>
+</div>
+
+</body>
+
+</html>

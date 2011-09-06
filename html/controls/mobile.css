@@ -1,0 +1,22 @@
+
+
+/* ClockBubbles */
+  span.ClockBubble { border-radius: 5px; font-weight: bold; background: rgba(255, 0, 0, 0.5); }
+  span.ClockBubble.Running { background: rgba(0, 255, 0, 0.5); }
+/* END ClockBubbles */
+
+
+/* JamControlPage */
+  #JamControlPage p.Clocks { text-align: center; }
+
+  #JamControlPage p.Clocks>span { padding: 0.5em 0.5em; margin: auto 0.5em; }
+/* END JamControlPage */
+
+/* PeriodTimePage */
+  #PeriodTimePage p { text-align: center; }
+  #PeriodTimePage a.Time { font-size: 150%; }
+/* END PeriodTimePage */
+
+/* TeamScorePage */
+  #TeamScorePage div { text-align: center; }
+/* END TeamScorePage */
