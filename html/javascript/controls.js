@@ -104,7 +104,7 @@ _crgScoreBoardControl = {
 // FIXME - move all setControlValues out of individual sections;
 //         really this all needs to be cleaned up
 //         and specifically it needs a documented API
-    if (c.is("input:text,input:password,textarea")) {
+    if (c.is("input:text,input[type='number'],input:password,textarea")) {
       sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
       setControlValue(sbElement.$sbGet());
       c.bind("mouseup keyup change", function() { setElementValue(c.val()); });
@@ -125,9 +125,10 @@ _crgScoreBoardControl = {
 //FIXME - need a generic indicator to prevent action instead of using .KeyControl.Editing
         if (c.is(".KeyControl.Editing")) // If this button is a KeyControl that's being edited, ignore clicks.
           return;
-        var associateText = getGroup("input:text,input:password,textarea");
+        var associateText = getGroup("input:text,input[type='number'],input:password,textarea");
         if (associateText.length) {
           setElementValue(associateText.val(), true);
+          associateText.val("");
           /* Need to include all children, e.g. spans used by jquery-ui */
           c.find("*").andSelf().blur().mouseleave();
         } else if (c.data("sbcontrol").getButtonValue)

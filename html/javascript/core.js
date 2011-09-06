@@ -429,7 +429,7 @@ _crgScoreBoard = {
         e.attr("src", v);
       else if (e.is("iframe"))
         e.attr("src", v);
-      else if (e.is("input:text,input:password,textarea"))
+      else if (e.is("input:text,input[type='number'],input:password,textarea"))
         e.val(v);
       else if (e.is("input:checkbox"))
         e.prop("checked", isTrue(v));
