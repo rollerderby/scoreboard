@@ -432,9 +432,9 @@ _crgScoreBoard = {
       else if (e.is("input:text,input:password,textarea"))
         e.val(v);
       else if (e.is("input:checkbox"))
-        e.attr("checked", isTrue(v));
+        e.prop("checked", isTrue(v));
       else if (e.is("input:radio"))
-        e.attr("checked", (e.val() == v));
+        e.prop("checked", (e.val() == v));
       else if (e.is("input:button,button")) {
         if (sbC && sbC.setButtonValue)
           sbC.setButtonValue.call(this, v);

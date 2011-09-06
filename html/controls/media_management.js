@@ -21,7 +21,7 @@ $sb(function() {
     }).button().end()
     .find("tr.Controls>th.Remove>input:checkbox.Remove").click(function() {
       $(this).closest("table.Type").find("tr.Item>td.Remove>input:checkbox")
-        .attr("checked", this.checked);
+        .prop("checked", this.checked);
     }).end()
     .find("tr.Controls>th.Preview>button.ShowPreview").click(function() {
       $(this).closest("table.Type").find("tr.Item>td.Preview").addClass("Show");

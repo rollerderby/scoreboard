@@ -262,6 +262,14 @@ _windowFunctions = {
     var comp = function(a, b) { return _windowFunctions.numCompareByAttr(attrName, a, b); };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
+  appendAlphaSortedByProp: function(parent, newChild, propName, startIndex) {
+    var comp = function(a, b) { return _windowFunctions.alphaCompareByProp(propName, a, b); };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
+  appendAlphaNumSortedByProp: function(parent, newChild, propName, startIndex) {
+    var comp = function(a, b) { return _windowFunctions.numCompareByProp(propName, a, b); };
+    return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
+  },
   appendAlphaSortedByData: function(parent, newChild, dataName, startIndex) {
     var comp = function(a, b) { return _windowFunctions.alphaCompareByData(dataName, a, b); };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
@@ -278,6 +286,9 @@ _windowFunctions = {
   alphaCompareByAttr: function(n, a, b) {
     return _windowFunctions.alphaCompare($(a).attr(n), $(b).attr(n));
   },
+  alphaCompareByProp: function(n, a, b) {
+    return _windowFunctions.alphaCompare($(a).prop(n), $(b).prop(n));
+  },
   alphaCompareByData: function(n, a, b) {
     return _windowFunctions.alphaCompare($(a).data(n), $(b).data(n));
   },
@@ -292,6 +303,9 @@ _windowFunctions = {
   },
   numCompareByAttr: function(n, a, b) {
     return _windowFunctions.numCompare($(a).attr(n), $(b).attr(n));
+  },
+  numCompareByProp: function(n, a, b) {
+    return _windowFunctions.numCompare($(a).prop(n), $(b).prop(n));
   },
   numCompareByData: function(n, a, b) {
     return _windowFunctions.numCompare($(a).data(n), $(b).data(n));

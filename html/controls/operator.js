@@ -309,7 +309,7 @@ function createTeamTable() {
         optionParent: sbTeam,
         optionChildName: "Skater",
         optionNameElement: "Number",
-        compareOptions: function(a, b) { return _windowFunctions.numCompareByAttr("text", a, b); },
+        compareOptions: function(a, b) { return _windowFunctions.numCompareByProp("text", a, b); },
         firstOption: { text: "No Jammer", value: "" }
       } }).addClass("Jammer ByNumber")
         .appendTo(jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer"));

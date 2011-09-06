@@ -35,11 +35,11 @@ function createTwoTeamTab(createTableFunction, defaultVertical, title, tabId) {
   $("<a>").html("Alignment: ").appendTo(alignment);
   $("<label for='"+tabId+"AlignmentV'>Vertical</label>").appendTo(alignment);
   $("<input type='radio' name='"+tabId+"Alignment' id='"+tabId+"AlignmentV'>").appendTo(alignment)
-    .attr("defaultChecked", defaultVertical)
+    .prop("defaultChecked", defaultVertical)
     .click(setVertical);
   $("<label for='"+tabId+"AlignmentH'>Horizontal</label>").appendTo(alignment);
   $("<input type='radio' name='"+tabId+"Alignment' id='"+tabId+"AlignmentH'>").appendTo(alignment)
-    .attr("defaultChecked", !defaultVertical)
+    .prop("defaultChecked", !defaultVertical)
     .click(setHorizontal);
   if (defaultVertical)
     setVertical();
@@ -48,17 +48,17 @@ function createTwoTeamTab(createTableFunction, defaultVertical, title, tabId) {
 
   var show = $("<span>").appendTo(header);
   var showTeams = function() {
-    var one = show.children("input:checkbox:eq(0)").attr("checked");
-    var two = show.children("input:checkbox:eq(1)").attr("checked");
+    var one = show.children("input:checkbox:eq(0)").prop("checked");
+    var two = show.children("input:checkbox:eq(1)").prop("checked");
     var alignInput = alignment.children("input:radio");
     if (one == two) {
-      alignInput.attr("disabled", false);
-      if (alignInput.eq(0).attr("checked"))
+      alignInput.prop("disabled", false);
+      if (alignInput.eq(0).prop("checked"))
         setVertical();
-      else if (alignInput.eq(1).attr("checked"))
+      else if (alignInput.eq(1).prop("checked"))
         setHorizontal();
     } else {
-      alignInput.attr("disabled", true);
+      alignInput.prop("disabled", true);
       setVertical();
     }
     if (one) team1.show(); else team1.hide();
@@ -67,11 +67,11 @@ function createTwoTeamTab(createTableFunction, defaultVertical, title, tabId) {
   $("<a>").html("Show Team: ").appendTo(show);
   $("<label for='"+tabId+"ShowTeam1'>1</label>").appendTo(show);
   $("<input type='checkbox' id='"+tabId+"ShowTeam1'>").appendTo(show)
-    .attr("defaultChecked", "true")
+    .prop("defaultChecked", "true")
     .click(showTeams);
   $("<label for='"+tabId+"ShowTeam2'>2</label>").appendTo(show);
   $("<input type='checkbox' id='"+tabId+"ShowTeam2'>").appendTo(show)
-    .attr("defaultChecked", "true")
+    .prop("defaultChecked", "true")
     .click(showTeams);
 
   return tab;
@@ -255,7 +255,7 @@ function createEditJamLineupsTable(team) {
       .append($("<input type='radio'>")
         .attr("name", "team"+team+"SkaterShow")
         .attr("id", "team"+team+"SkaterNumberShow")
-        .attr("defaultChecked", "true")
+        .prop("defaultChecked", "true")
         .change(function() { showFunction("team"+team+"SkaterNumber"); }))
       .append("<label for='team"+team+"SkaterNameShow'>Name</label>")
       .append($("<input type='radio'>")
@@ -388,7 +388,7 @@ function createEditJamLineupsPositionDialog(position) {
     manualSet.click();
 
   manualSet.bind("click", function() {
-    nameSelect.add(numberSelect).attr("disabled", this.checked);
+    nameSelect.add(numberSelect).prop("disabled", this.checked);
     nameInput.data("sbcontrol").sbSetAttrs = numberInput.data("sbcontrol").sbSetAttrs = 
       (this.checked ? { manual: "true" } : undefined );
   });

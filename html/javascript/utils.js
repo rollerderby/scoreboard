@@ -32,11 +32,13 @@ _crgUtils = {
   bindAndRun: function(target, eventType, eventData, handler, initialParams) {
     if (!$.isjQuery(target))
       target = $(target);
-    target.bind(eventType, eventData, handler);
-    if ($.type(eventData) == "function") {
+    if ($.isFunction(eventData)) {
       initialParams = handler;
       handler = eventData;
       eventData = undefined;
+      target.bind(eventType, handler);
+    } else {
+      target.bind(eventType, eventData, handler);
     }
     target.each(function() {
       var params = [ ];
@@ -245,7 +247,7 @@ _crgUtils = {
       if (optionValueElement) {
         node.$sb(optionValueElement).$sbBindAndRun("content", function(event, value) {
           option.val(value);
-          if (option.attr("selected"))
+          if (option.prop("selected"))
             s.change(); // Update select with new value
         });
       } else
@@ -263,7 +265,7 @@ _crgUtils = {
       return option;
     };
     var compareOptions = params.compareOptions || function(a, b) {
-      return _windowFunctions.alphaCompareByAttr("text", a, b);
+      return _windowFunctions.alphaCompareByProp("text", a, b);
     };
     var addOption = params.addOption || function(o) {
       var doChange = !s.find("option").length;
@@ -273,9 +275,8 @@ _crgUtils = {
     };
     var removeOption = params.removeOption || function(node) {
       var option = s.find("option[data-optionid='"+node.$sbPath+"']");
-      var selected = option.attr("selected");
       option.remove();
-      if (selected)
+      if (option.prop("selected"))
         s.change();
     };
 
