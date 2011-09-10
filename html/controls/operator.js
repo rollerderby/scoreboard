@@ -329,6 +329,8 @@ function createTimeTable() {
   var numberRow = row.clone().addClass("Number").appendTo(table);
   var controlRow = row.clone().addClass("Control").appendTo(table);
   var timeRow = row.clone().addClass("Time").appendTo(table);
+  var timeSetRow = row.clone().addClass("TimeSet").appendTo(table);
+  var timeResetRow = row.clone().addClass("TimeReset").appendTo(table);
 
   $.each( [ "Period", "Jam", "Lineup", "Timeout", "Intermission" ], function() {
     var clock = String(this);
@@ -337,7 +339,9 @@ function createTimeTable() {
     var nameTd = $("<td>").appendTo(nameRow);
     var numberTr = createRowTable(3).appendTo($("<td>").appendTo(numberRow)).find("tr");
     var controlTr = createRowTable(2).appendTo($("<td>").appendTo(controlRow)).find("tr");
-    var timeTd = $("<td>").appendTo(timeRow);
+    var timeTr = createRowTable(3).appendTo($("<td>").appendTo(timeRow)).find("tr");
+    var timeSetTr = createRowTable(2).appendTo($("<td>").appendTo(timeSetRow)).find("tr");
+    var timeResetTd = $("<td>").appendTo(timeResetRow);
 
     sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
     sbClock.$sb("Running").$sbBindAndRun("content", function(event,value) {
@@ -364,10 +368,34 @@ function createTimeTable() {
       .attr("id", "Clock"+clock+"Stop").addClass("KeyControl").button()
       .appendTo(controlTr.children("td:eq(1)").addClass("Stop"));
 
+    sbClock.$sb("Time").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: true } } })
+      .text("-1").val("-1000")
+      .attr("id", "Clock"+clock+"TimeDown").addClass("KeyControl").button()
+      .appendTo(timeTr.children("td:eq(0)").addClass("Button"));
     sbClock.$sb("Time").$sbElement("<a>", { sbelement: { convert: _timeConversions.msToMinSec } })
-      .appendTo(timeTd.addClass("Time"));
+      .appendTo(timeTr.children("td:eq(1)").addClass("Time"));
     var timeDialog = createTimeDialog(sbClock);
-    timeTd.click(function() { timeDialog.dialog("open"); });
+    timeTr.children("td:eq(1)").click(function() { timeDialog.dialog("open"); });
+    sbClock.$sb("Time").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: true } } })
+      .text("+1").val("1000")
+      .attr("id", "Clock"+clock+"TimeUp").addClass("KeyControl").button()
+      .appendTo(timeTr.children("td:eq(2)").addClass("Button"));
+
+    $("<input type='text'/>")
+      .attr("size", "6")
+      .appendTo(timeSetTr.children("td:eq(0)"));
+    $("<button/>").text("Set").button()
+      .appendTo(timeSetTr.children("td:eq(1)"));
+    sbClock.$sb("Time").$sbControl(timeSetTr.find("td"), { sbcontrol: {
+      convert: _timeConversions.minSecToMs,
+      delayupdate: true,
+      noSetControlValue: true
+    }});
+
+    sbClock.$sb("ResetTime").$sbControl("<button>")
+      .text("Reset Time").val("true")
+      .attr("id", "Clock"+clock+"ResetTime").addClass("KeyControl").button()
+      .appendTo(timeResetTd);
   });
 
   return table;
