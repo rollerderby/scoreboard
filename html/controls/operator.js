@@ -118,30 +118,35 @@ function createScoreTimeContent(table) {
 }
 
 function createMetaControlTable() {
-  var table = $("<table><tr><td></tr></table>").addClass("MetaControl");
-  var row = createRowTable(1).appendTo(table.find("tr>td")).find("tr");
-  var td = row.children("td");
+  var table = $("<table><tr><td/></tr><tr><td/></tr></table>").addClass("MetaControl");
+  var buttonsTd = createRowTable(1).appendTo(table.find(">tbody>tr:eq(0)>td").addClass("Buttons")).find("tr>td");
+  var helpTd = createRowTable(1).appendTo(table.find(">tbody>tr:eq(1)>td").addClass("Help")).find("tr>td");
 
   $("<label>").text("Edit Key Control").attr("for", "EditKeyControlButton")
-    .appendTo(td);
+    .appendTo(buttonsTd);
   $("<input type='checkbox'>").attr("id", "EditKeyControlButton")
-    .appendTo(td)
+    .appendTo(buttonsTd)
     .button()
-    .click(function() { _crgKeyControls.editKeys(this.checked); });
+    .click(function() {
+      _crgKeyControls.editKeys(this.checked);
+      table.find("td.Help").toggleClass("Visible", this.checked);
+    });
+  $("<a>").text("Key Control Edit mode enabled.  Buttons do not operate in this mode.  Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
+    .appendTo(helpTd);
 
   $("<label>").text("Show UNDO Controls").attr("for", "ShowUndoControlsButton")
-    .appendTo(td);
+    .appendTo(buttonsTd);
   $("<input type='checkbox'>").attr("id", "ShowUndoControlsButton")
-    .appendTo(td)
+    .appendTo(buttonsTd)
     .button()
     .click(function() {
       $("#TeamTime table.JamControl tr.UndoControls").toggleClass("ShowUndo", this.checked);
     });
 
   var selectByLabel = $("<label>").attr("for", "SelectJammerBy")
-    .appendTo(td);
+    .appendTo(buttonsTd);
   var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
-    .appendTo(td)
+    .appendTo(buttonsTd)
     .button();
   _crgUtils.bindAndRun(selectByButton, "click", function() {
     $("#TeamTime table.Team select.Jammer")
@@ -151,7 +156,7 @@ function createMetaControlTable() {
   });
 
   $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("content", function(event,value) {
-    var confirmedBoxes = td.children(".IntermissionConfirmed");
+    var confirmedBoxes = buttonsTd.children(".IntermissionConfirmed");
     if (!confirmedBoxes.is("."+value)) {
       var sbConfirmed = $sb("Pages.Page(scoreboard.html).Intermission("+value+").Confirmed");
       var confirmed = sbConfirmed.$sbControl("<label/><input type='checkbox'/>", { sbelement: {
@@ -166,9 +171,9 @@ function createMetaControlTable() {
       if (confirmedBoxes.length)
         confirmedBoxes.last().after(confirmed);
       else
-        td.append(confirmed);
+        buttonsTd.append(confirmed);
     }
-    td.children(".IntermissionConfirmed").hide()
+    buttonsTd.children(".IntermissionConfirmed").hide()
       .filter("."+value).show();
   });
 

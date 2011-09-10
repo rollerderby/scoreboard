@@ -33,7 +33,9 @@ table.RowTable { border-spacing: 0px; }
 
   #TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
   #TeamTime table.MetaControl { font-size: 65%; }
-  #TeamTime table.MetaControl>tbody>tr>td { background: #eee; text-align: center; }
+  #TeamTime table.MetaControl>tbody>tr>td { background: #eee; border-bottom: none; }
+  #TeamTime table.MetaControl td.Help { border-top: 1px dashed black; }
+  #TeamTime table.MetaControl td.Help:not(.Visible) { display: none; }
 
   #TeamTime table.JamControl>tbody>tr>td { width: 100%; }
   #TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
