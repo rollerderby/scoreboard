@@ -52,6 +52,7 @@ table.RowTable { border-spacing: 0px; }
   #TeamTime table.Time tr.Name td.Name a { font-size: 150%; }
   #TeamTime table.Time tr.Number td.Number a { font-size: 150%; }
   #TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
+  #TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 /* End Team/Time Tab */
 
 /* Policies */

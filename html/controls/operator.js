@@ -383,9 +383,9 @@ function createTimeTable() {
 
     $("<input type='text'/>")
       .attr("size", "6")
-      .appendTo(timeSetTr.children("td:eq(0)"));
+      .appendTo(timeSetTr.children("td:eq(0)").addClass("Text"));
     $("<button/>").text("Set").button()
-      .appendTo(timeSetTr.children("td:eq(1)"));
+      .appendTo(timeSetTr.children("td:eq(1)").addClass("Button"));
     sbClock.$sb("Time").$sbControl(timeSetTr.find("td"), { sbcontrol: {
       convert: _timeConversions.minSecToMs,
       delayupdate: true,
