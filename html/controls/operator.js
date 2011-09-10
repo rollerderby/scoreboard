@@ -7,10 +7,6 @@ $sb(function() {
   createPoliciesTab();
   createScoreBoardViewTab();
   createTeamsTab();
-  //FIXME - jstree is UNBELIEVABLY SLOW, and the xml editing tab simply isn't usable since it uses jstree right now.
-  //FIXME - possibly we chould change this to lazy-generate each sub-level only when opened, which should
-  //FIXME - improve initial performance a lot
-  //createXmlTreeTab();
   createSaveLoadTab();
 
   $("#tabsDiv").tabs();
@@ -686,62 +682,6 @@ function createIntermissionControlDialog() {
   });
 }
 
-
-
-///////////////////
-// Tree Control tab
-///////////////////
-
-function createXmlTreeTab() {
-  $("<table>").attr("id", "XmlTreeControl")
-    .appendTo(createTab("Edit XML", "XmlTreeControlTab"))
-    .data("loadContentFunction", createXmlTreeContent);
-}
-
-function createXmlTreeContent() {
-  var root = $("<div><ul/></div>").appendTo("#XmlTreeControl").addClass("root");
-
-  var initialSetup = true;
-  var add = function(event, node) {
-    var key = $sb(node.parent()).$sbPath;
-    var parent = (key ? root.find("[data-sbPath='"+key+"']") : root);
-    if (node.$sbId) {
-      var newParent = parent.children("ul").children("li[data-group='"+node.$sbName+"']");
-      if (!newParent.length) {
-        if (initialSetup)
-          newParent = $("<li>").appendTo(parent.children("ul"));
-        else
-          newParent = root.jstree("create_node", parent, "last");
-        newParent.addClass("NameGroup").attr("data-group", node.$sbName)
-          .append($("<span>").text("Group: "+node.$sbName)
-            .click(function() { root.jstree("toggle_node", $(this).parent()); }))
-          .append("<ul>");
-      }
-      parent = newParent;
-    }
-    var newNode;
-    if (initialSetup)
-      newNode = $("<li>").appendTo(parent.children("ul"));
-    else
-      newNode = root.jstree("create_node", parent, "last");
-    newNode.children("a").remove();
-    newNode.attr("data-sbPath", node.$sbPath)
-      .append($("<span>").text(node.$sbFullName)
-        .click(function() { root.jstree("toggle_node", $(this).parent()); }))
-      .append("<input type='text' size='10'>")
-      .append("<input type='button' value='Set'>")
-      .append("<ul>");
-    node.$sbControl(newNode.children("input:text,:button"));
-  };
-  var remove = function(event, node) {
-    alert("FIXME: implement xml edit node remove!");
-  };
-  var callback = function() {
-    initialSetup = false;
-    root.jstree();
-  };
-  $sb().$sbBindAddRemoveEach({ add: add, remove: remove, subChildren: true, callback: callback });
-}
 
 
 ////////////
