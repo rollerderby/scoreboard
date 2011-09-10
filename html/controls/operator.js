@@ -428,9 +428,11 @@ function createTimeDialog(clock) {
       .appendTo(rowTable.find("tr:eq(1)>td:eq(2)"));
     $("<input type='text' size='5'>").appendTo(rowTable.find("tr:eq(1)>td:eq(1)"));
     $("<button>").text("Set").addClass("Set").button().appendTo(rowTable.find("tr:eq(1)>td:eq(1)"));
-    e.$sbControl(rowTable.find("tr:eq(1)>td:eq(1)").children(), {
-        sbcontrol: { convert: _timeConversions.minSecToMs, delayupdate: true, useNumber: true },
-        sbelement: { convert: _timeConversions.msToMinSec } });
+    e.$sbControl(rowTable.find("tr:eq(1)>td:eq(1)").children(), { sbcontrol: {
+      convert: _timeConversions.minSecToMs,
+      delayupdate: true,
+      noSetControlValue: true
+    }});
   });
 
   $("<tr><td/><td/><td/></tr>").insertAfter(table.find("tr.Time table tr:eq(0)"));
