@@ -19,55 +19,55 @@ import org.apache.commons.fileupload.servlet.*;
 
 public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet
 {
-	public String getPath() { return "/LoadXml"; }
+  public String getPath() { return "/LoadXml"; }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doGet(request, response);
-		response.sendError(HttpServletResponse.SC_NOT_FOUND);
-	}
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    super.doGet(request, response);
+    response.sendError(HttpServletResponse.SC_NOT_FOUND);
+  }
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doPost(request, response);
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    super.doPost(request, response);
 
-		try {
-			if (!ServletFileUpload.isMultipartContent(request)) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-				return;
-			}
+    try {
+      if (!ServletFileUpload.isMultipartContent(request)) {
+        response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+        return;
+      }
 
-			ServletFileUpload sfU = new ServletFileUpload();
-			FileItemIterator items = sfU.getItemIterator(request);
-			while (items.hasNext()) {
-				FileItemStream item = items.next();
-				if (!item.isFormField()) {
-					InputStream stream = item.openStream();
-					Document doc = editor.toDocument(stream);
-					stream.close();
-					handleDocument(request, response, doc);
-					return;
-				}
-			}
+      ServletFileUpload sfU = new ServletFileUpload();
+      FileItemIterator items = sfU.getItemIterator(request);
+      while (items.hasNext()) {
+        FileItemStream item = items.next();
+        if (!item.isFormField()) {
+          InputStream stream = item.openStream();
+          Document doc = editor.toDocument(stream);
+          stream.close();
+          handleDocument(request, response, doc);
+          return;
+        }
+      }
 
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No XML uploaded");
-		} catch ( FileUploadException fuE ) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
-		} catch ( JDOMException jE ) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, jE.getMessage());
-		}
-	}
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No XML uploaded");
+    } catch ( FileUploadException fuE ) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
+    } catch ( JDOMException jE ) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST, jE.getMessage());
+    }
+  }
 
-	protected void handleDocument(HttpServletRequest request, HttpServletResponse response, Document doc) throws IOException {
-		if (request.getPathInfo().equalsIgnoreCase("/load"))
-			getXmlScoreBoard().loadDocument(doc);
-		else if (request.getPathInfo().equalsIgnoreCase("/merge"))
-			getXmlScoreBoard().loadDocument(doc);
-		else
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge document");
-		response.setContentType("text/plain");
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+  protected void handleDocument(HttpServletRequest request, HttpServletResponse response, Document doc) throws IOException {
+    if (request.getPathInfo().equalsIgnoreCase("/load"))
+      getXmlScoreBoard().loadDocument(doc);
+    else if (request.getPathInfo().equalsIgnoreCase("/merge"))
+      getXmlScoreBoard().loadDocument(doc);
+    else
+      response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge document");
+    response.setContentType("text/plain");
+    response.setStatus(HttpServletResponse.SC_OK);
+  }
 
-	protected XmlScoreBoard getXmlScoreBoard() { return scoreBoardModel.getXmlScoreBoard(); }
+  protected XmlScoreBoard getXmlScoreBoard() { return scoreBoardModel.getXmlScoreBoard(); }
 
-	protected XmlDocumentEditor editor = new XmlDocumentEditor();
+  protected XmlDocumentEditor editor = new XmlDocumentEditor();
 }

@@ -28,121 +28,121 @@ import org.apache.commons.fileupload.servlet.*;
 
 public class XmlScoreBoardServlet extends AbstractXmlServlet
 {
-	public String getPath() { return "/XmlScoreBoard"; }
+  public String getPath() { return "/XmlScoreBoard"; }
 
-	protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		response.setContentType("text/xml");
-		editor.sendToWriter(scoreBoardModel.getXmlScoreBoard().getDocument(), response.getWriter(), Format.getPrettyFormat());
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+  protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
+    response.setContentType("text/xml");
+    editor.sendToWriter(scoreBoardModel.getXmlScoreBoard().getDocument(), response.getWriter(), Format.getPrettyFormat());
+    response.setStatus(HttpServletResponse.SC_OK);
+  }
 
-	protected void get(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		XmlListener listener = getXmlListenerForRequest(request);
-		if (null == listener) {
-			registrationKeyNotFound(request, response);
-			return;
-		}
+  protected void get(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
+    XmlListener listener = getXmlListenerForRequest(request);
+    if (null == listener) {
+      registrationKeyNotFound(request, response);
+      return;
+    }
 
-		Document d = listener.getDocument();
-		if (null == d) {
-			response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-		} else {
-			if (debugGet)
-				ScoreBoardManager.printMessage("GET to "+listener.getKey()+"\n"+editor.toString(d));
-			response.setContentType("text/xml");
-			editor.sendToWriter(d, response.getWriter());
-			response.setStatus(HttpServletResponse.SC_OK);
-		}
-	}
+    Document d = listener.getDocument();
+    if (null == d) {
+      response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+    } else {
+      if (debugGet)
+        ScoreBoardManager.printMessage("GET to "+listener.getKey()+"\n"+editor.toString(d));
+      response.setContentType("text/xml");
+      editor.sendToWriter(d, response.getWriter());
+      response.setStatus(HttpServletResponse.SC_OK);
+    }
+  }
 
-	protected void reloadListeners(HttpServletRequest request, HttpServletResponse response) {
-		Document d = editor.createDocument("Reload");
-		d.getRootElement().setAttribute("persistentIgnore", "true");
-		scoreBoardModel.getXmlScoreBoard().mergeDocument(d);
-		response.setContentType("text/plain");
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+  protected void reloadListeners(HttpServletRequest request, HttpServletResponse response) {
+    Document d = editor.createDocument("Reload");
+    d.getRootElement().setAttribute("persistentIgnore", "true");
+    scoreBoardModel.getXmlScoreBoard().mergeDocument(d);
+    response.setContentType("text/plain");
+    response.setStatus(HttpServletResponse.SC_OK);
+  }
 
-	protected void set(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		XmlListener listener = getXmlListenerForRequest(request);
-		Document requestDocument = editor.toDocument(request.getReader());
+  protected void set(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
+    XmlListener listener = getXmlListenerForRequest(request);
+    Document requestDocument = editor.toDocument(request.getReader());
 
-		if (null == listener) {
-			registrationKeyNotFound(request, response);
-			return;
-		}
+    if (null == listener) {
+      registrationKeyNotFound(request, response);
+      return;
+    }
 
-		if (null == requestDocument) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-			return;
-		}
+    if (null == requestDocument) {
+      response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+      return;
+    }
 
-		if (debugSet)
-			ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+editor.toString(requestDocument));
+    if (debugSet)
+      ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+editor.toString(requestDocument));
 
-		scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
+    scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
 
-		response.setContentType("text/plain");
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+    response.setContentType("text/plain");
+    response.setStatus(HttpServletResponse.SC_OK);
+  }
  
-	protected void setDebug(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		String get = request.getParameter("get");
-		String set = request.getParameter("set");
+  protected void setDebug(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    String get = request.getParameter("get");
+    String set = request.getParameter("set");
 
-		if (null != get) {
-			if (get.equals("1") || get.equalsIgnoreCase("true"))
-				debugGet = true;
-			else if (get.equals("0") || get.equalsIgnoreCase("false"))
-				debugGet = false;
-		}
-		if (null != set) {
-			if (set.equals("1") || set.equalsIgnoreCase("true"))
-				debugSet = true;
-			else if (set.equals("0") || set.equalsIgnoreCase("false"))
-				debugSet = false;
-		}
+    if (null != get) {
+      if (get.equals("1") || get.equalsIgnoreCase("true"))
+        debugGet = true;
+      else if (get.equals("0") || get.equalsIgnoreCase("false"))
+        debugGet = false;
+    }
+    if (null != set) {
+      if (set.equals("1") || set.equalsIgnoreCase("true"))
+        debugSet = true;
+      else if (set.equals("0") || set.equalsIgnoreCase("false"))
+        debugSet = false;
+    }
 
-		response.setContentType("text/plain");
-		response.getWriter().println("Debug /get : "+debugGet);
-		response.getWriter().println("Debug /set : "+debugSet);
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+    response.setContentType("text/plain");
+    response.getWriter().println("Debug /get : "+debugGet);
+    response.getWriter().println("Debug /set : "+debugSet);
+    response.setStatus(HttpServletResponse.SC_OK);
+  }
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doPost(request, response);
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    super.doPost(request, response);
 
-		try {
-			if ("/set".equals(request.getPathInfo()))
-				set(request, response);
-			else if (!response.isCommitted())
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		} catch ( JDOMException jE ) {
-			response.getWriter().print(jE.getMessage());
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
-	}
+    try {
+      if ("/set".equals(request.getPathInfo()))
+        set(request, response);
+      else if (!response.isCommitted())
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } catch ( JDOMException jE ) {
+      response.getWriter().print(jE.getMessage());
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doGet(request, response);
+  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    super.doGet(request, response);
 
-		try {
-			if ("/get".equals(request.getPathInfo()))
-				get(request, response);
-			else if ("/debug".equals(request.getPathInfo()))
-				setDebug(request, response);
-			else if ("/reloadViewers".equals(request.getPathInfo()))
-				reloadListeners(request, response);
-			else if (request.getPathInfo().endsWith(".xml"))
-				getAll(request, response);
-			else if (!response.isCommitted())
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		} catch ( JDOMException jE ) {
-			response.getWriter().print(jE.getMessage());
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
-	}
+    try {
+      if ("/get".equals(request.getPathInfo()))
+        get(request, response);
+      else if ("/debug".equals(request.getPathInfo()))
+        setDebug(request, response);
+      else if ("/reloadViewers".equals(request.getPathInfo()))
+        reloadListeners(request, response);
+      else if (request.getPathInfo().endsWith(".xml"))
+        getAll(request, response);
+      else if (!response.isCommitted())
+        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } catch ( JDOMException jE ) {
+      response.getWriter().print(jE.getMessage());
+      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+    }
+  }
 
-	protected boolean debugGet = false;
-	protected boolean debugSet = false;
+  protected boolean debugGet = false;
+  protected boolean debugSet = false;
 }

@@ -6,5 +6,5 @@ import com.carolinarollergirls.scoreboard.*;
 
 public interface ScoreBoardControllerServlet extends ScoreBoardController,Servlet
 {
-	public String getPath();
+  public String getPath();
 }
