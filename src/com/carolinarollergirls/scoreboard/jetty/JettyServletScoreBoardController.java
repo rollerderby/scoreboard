@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.util.*;
 
 import org.mortbay.jetty.*;
+import org.mortbay.jetty.bio.*;
 import org.mortbay.jetty.handler.*;
 import org.mortbay.jetty.servlet.*;
 
@@ -25,7 +26,20 @@ public class JettyServletScoreBoardController implements ScoreBoardController
       ScoreBoardManager.printMessage("No server port defined, using default " + DEFAULT_PORT);
     }
 
-    Server server = new Server(port);
+    Server server;
+
+    String localhost = ScoreBoardManager.getProperties().getProperty(PROPERTY_LOCALHOST_KEY);
+    if (null != localhost && Boolean.parseBoolean(localhost)) {
+      ScoreBoardManager.printMessage("ScoreBoard configured to listen ONLY on localhost interface.");
+      SocketConnector sC = new SocketConnector();
+      sC.setHost("localhost");
+      sC.setPort(port);
+      server = new Server();
+      server.addConnector(sC);
+    } else {
+      server = new Server(port);
+    }
+
     server.setSendDateHeader(true);
     ContextHandlerCollection contexts = new ContextHandlerCollection();
     server.setHandler(contexts);
@@ -79,6 +93,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 
   public static final int DEFAULT_PORT = 8000;
 
+  public static final String PROPERTY_LOCALHOST_KEY = JettyServletScoreBoardController.class.getName() + ".localhost";
   public static final String PROPERTY_PORT_KEY = JettyServletScoreBoardController.class.getName() + ".port";
   public static final String PROPERTY_SERVLET_KEY = JettyServletScoreBoardController.class.getName() + ".servlet";
   public static final String PROPERTY_HTML_DIR_KEY = JettyServletScoreBoardController.class.getName() + ".html.dir";
