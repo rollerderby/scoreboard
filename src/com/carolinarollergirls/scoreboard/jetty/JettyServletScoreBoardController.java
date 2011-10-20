@@ -77,7 +77,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 
 	protected ScoreBoardModel scoreBoardModel;
 
-	public static final int DEFAULT_PORT = 8080;
+	public static final int DEFAULT_PORT = 8000;
 
 	public static final String PROPERTY_PORT_KEY = JettyServletScoreBoardController.class.getName() + ".port";
 	public static final String PROPERTY_SERVLET_KEY = JettyServletScoreBoardController.class.getName() + ".servlet";
