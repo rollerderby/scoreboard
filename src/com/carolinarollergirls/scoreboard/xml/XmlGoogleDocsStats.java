@@ -10,11 +10,16 @@ import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.gdata.*;
 
+// Disable this incomplete class until we can update
+// to the latest gdata code and complete this functionality
+
+/*
 import com.google.gdata.util.*;
 import com.google.gdata.data.*;
 import com.google.gdata.client.*;
 import com.google.gdata.data.docs.*;
 import com.google.gdata.client.docs.*;
+*/
 
 public class XmlGoogleDocsStats extends XmlStats
 {
@@ -35,6 +40,11 @@ public class XmlGoogleDocsStats extends XmlStats
     update(s);
   }
 
+  public void scoreBoardChange(ScoreBoardEvent event) {
+//FIXME - implement.
+  }
+
+/*
   protected void initializeSpreadsheetEntry() throws IOException,ServiceException,MalformedURLException {
     spreadsheetEntry = googleDocs.createSpreadsheet();
     Element s = createXPathElement();
@@ -46,10 +56,6 @@ public class XmlGoogleDocsStats extends XmlStats
     editor.setElement(s, "Running", null, "true");
     update(s);
 //FIXME - implement parsing out worksheets, rows, etc. to write stats into.
-  }
-
-  public void scoreBoardChange(ScoreBoardEvent event) {
-//FIXME - implement.
   }
 
   protected void processChildElement(Element e) throws Exception {
@@ -87,7 +93,7 @@ public class XmlGoogleDocsStats extends XmlStats
     if (e == null) return;
 
     if (isAuthenticated())
-      { /* handle username update after already authenticated... */ }
+      { } // handle username update after already authenticated...
     else
       update(editor.setElement(createXPathElement(), "Username", null, e.getText()));
   }
@@ -108,4 +114,5 @@ public class XmlGoogleDocsStats extends XmlStats
 
   protected GoogleDocs googleDocs = new GoogleDocs();
   protected SpreadsheetEntry spreadsheetEntry;
+*/
 }
