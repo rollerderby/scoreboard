@@ -1,0 +1,49 @@
+Copyright (C) 2008-2011 Mr Temper <MrTemper@CarolinaRollergirls.com>
+
+This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+The CRG ScoreBoard is licensed under either the GNU General Public
+License version 3 (or later), or the Apache License 2.0, at your option.
+See the file COPYING for details.
+
+
+Additionally, this scoreboard bundles/uses other software packages which
+have their own licenses, as listed below.  Please see each package's
+website for details on their license and terms.
+
+
+These packages use the Apache License 2.0:
+
+JarJar (jarjar-*.jar)
+http://code.google.com/p/jarjar/
+
+Apache James Mime4j (apache-mime4j-*.jar)
+http://james.apache.org/mime4j/
+
+Commons Codec (commons-codec-*.jar)
+http://commons.apache.org/codec/
+
+Commons Fileupload (commons-fileupload-*.jar)
+http://commons.apache.org/fileupload/
+
+Commons Logging (commons-logging-*.jar)
+http://commons.apache.org/logging/
+
+Apache HttpComponents (httpclient-*.jar, httpcore-*.jar, httpmime-*.jar)
+http://hc.apache.org/
+
+Jetty (jetty-*.jar, servlet-api-*.jar)
+http://jetty.codehaus.org/jetty/
+
+
+These packages use an "Apache-like" license:
+
+Jaxen (jaxen-*.jar)
+http://jaxen.codehaus.org/
+"Apache-like license":
+https://fisheye.codehaus.org/browse/~raw,r=1128/jaxen/trunk/jaxen/LICENSE.txt
+
+JDOM (jdom-*.jar)
+http://jdom.org/index.html
+"Apache-style open source license":
+http://jdom.org/docs/faq.html#a0030
+
