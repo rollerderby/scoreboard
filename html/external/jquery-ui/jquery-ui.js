@@ -10408,7 +10408,7 @@ $.effects.animateClass = function(value, duration, easing, callback) {
 
 	return this.queue(function() {
 		var that = $(this),
-			originalStyleAttr = that.attr('style') || ' ',
+			styleDiff,
 			originalStyle = filterStyles(getElementStyles.call(this)),
 			newStyle,
 			className = that.attr('class') || "";
@@ -10421,7 +10421,8 @@ $.effects.animateClass = function(value, duration, easing, callback) {
 		newStyle = filterStyles(getElementStyles.call(this));
 		that.attr('class', className);
 
-		that.animate(styleDifference(originalStyle, newStyle), {
+		styleDiff = styleDifference(originalStyle, newStyle);
+		that.animate(styleDiff, {
 			queue: false,
 			duration: duration,
 			easing: easing,
@@ -10429,13 +10430,9 @@ $.effects.animateClass = function(value, duration, easing, callback) {
 				$.each(classAnimationActions, function(i, action) {
 					if (value[action]) { that[action + 'Class'](value[action]); }
 				});
-				// work around bug in IE by clearing the cssText before setting it
-				if (typeof that.attr('style') == 'object') {
-					that.attr('style').cssText = '';
-					that.attr('style').cssText = originalStyleAttr;
-				} else {
-					that.attr('style', originalStyleAttr);
-				}
+				$.each(styleDiff, function(key) {
+					that.css(key, '');
+				});
 				if (callback) { callback.apply(this, arguments); }
 				$.dequeue( this );
 			}
