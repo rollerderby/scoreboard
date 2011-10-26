@@ -383,7 +383,8 @@ function createTimeTable() {
 
     $("<input type='text'/>")
       .attr("size", "6")
-      .appendTo(timeSetTr.children("td:eq(0)").addClass("Text"));
+      .appendTo(timeSetTr.children("td:eq(0)").addClass("Text"))
+      .focus(function() { createTimeSetWarningDialog($(this)); });
     $("<button/>").text("Set").button()
       .appendTo(timeSetTr.children("td:eq(1)").addClass("Button"));
     sbClock.$sb("Time").$sbControl(timeSetTr.find("td"), { sbcontrol: {
@@ -456,6 +457,41 @@ function createTimeDialog(clock) {
     modal: true,
     width: 400,
     buttons: { Close: function() { $(this).dialog("close"); } }
+  });
+}
+
+var timeSetWarningAck = false;
+var timeSetWarningRefocusing = false;
+function createTimeSetWarningDialog(source) {
+  if (timeSetWarningAck || timeSetWarningRefocusing )
+    return;
+  var dialog = $("<dialog>");
+  $("<p>").text("Warning: key control is still enabled while entering the time!")
+    .appendTo(dialog);
+  $("<p>").html("Any keys you press while entering the time <b>will affect</b> any buttons they are assigned to!")
+    .appendTo(dialog);
+  $("<p>").html("If this is a problem for you, edit the time using the time dialog instead,<br>by clicking on the time display itself.")
+    .appendTo(dialog);
+  dialog.dialog({
+    title: "Caution",
+    modal: true,
+    width: "700px",
+    close: function() {
+      timeSetWarningRefocusing = true;
+      dialog.dialog("destroy").remove();
+      source.focus();
+      timeSetWarningRefocusing = false;
+    },
+    buttons: [
+      {
+        text: "Don't remind me again",
+        click: function() { timeSetWarningAck = true; $(this).dialog("close"); }
+      },
+      {
+        text: "Ok",
+        click: function() { $(this).dialog("close"); }
+      }
+    ]
   });
 }
 
