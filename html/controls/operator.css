@@ -25,17 +25,16 @@ table.RowTable { border-spacing: 0px; }
 
   #TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
   #TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
-  #TeamTime table.TabTable>tbody>tr>td { border-bottom: 1px dashed black; }
-  #TeamTime table.TabTable>tbody>tr:last-of-type>td { border-bottom: 0px; }
-  #TeamTime table.TabTable>tbody>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; }
+  #TeamTime table.TabTable>tbody>tr>td { border-top: 1px dashed black; }
+  #TeamTime table.TabTable>tbody>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; border-top: none; }
   #TeamTime table.TabTable>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; }
   #TeamTime table.TabTable>tbody>tr:only-of-type>td { border-radius: 12px; }
+  #TeamTime table.TabTable>tbody>tr.Hidden>td { display: none; }
 
   #TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
   #TeamTime table.MetaControl { font-size: 65%; }
-  #TeamTime table.MetaControl>tbody>tr>td { background: #eee; border-bottom: none; }
-  #TeamTime table.MetaControl td.Help { border-top: 1px dashed black; }
-  #TeamTime table.MetaControl td.Help:not(.Visible) { display: none; }
+  #TeamTime table.MetaControl>tbody>tr>td { background: #eee; }
+  #TeamTime table.MetaControl label.BoutEndControls { position: absolute; left: 12px; }
 
   #TeamTime table.JamControl>tbody>tr>td { width: 100%; }
   #TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
