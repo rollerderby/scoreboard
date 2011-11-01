@@ -34,7 +34,6 @@ table.RowTable { border-spacing: 0px; }
   #TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
   #TeamTime table.MetaControl { font-size: 65%; }
   #TeamTime table.MetaControl>tbody>tr>td { background: #eee; }
-  #TeamTime table.MetaControl label.BoutEndControls { position: absolute; left: 12px; }
 
   #TeamTime table.JamControl>tbody>tr>td { width: 100%; }
   #TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
