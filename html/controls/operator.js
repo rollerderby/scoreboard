@@ -21,7 +21,7 @@ $sb(function() {
     }, [ { panel: $("#TeamTimeTab") } ]);
 
 // FIXME - is there better way to avoid key controls when a dialog is visible?
-  _crgKeyControls.addCondition(function() { return !$("table.TimeDialog:visible").length; });
+  _crgKeyControls.addCondition(function() { return !$("body>div.ui-dialog").is(":visible"); });
 // FIXME - maybe use something else to check if user is typing into a text input...
 // FIXME - also provide visual feedback that key-control is disabled while typing into input text box?
   _crgKeyControls.addCondition(function() { return !$("#TeamTime input:text.Editing").length; });
