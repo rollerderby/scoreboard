@@ -114,9 +114,17 @@ function createScoreTimeContent(table) {
 }
 
 function createMetaControlTable() {
-  var table = $("<table><tr><td/></tr><tr><td/></tr></table>").addClass("MetaControl");
-  var buttonsTd = createRowTable(1).appendTo(table.find(">tbody>tr:eq(0)>td").addClass("Buttons")).find("tr>td");
-  var helpTd = createRowTable(1).appendTo(table.find(">tbody>tr:eq(1)>td").addClass("Help")).find("tr>td");
+  var table = $("<table><tr><td/></tr><tr><td/></tr><tr><td/></tr></table>")
+    .addClass("MetaControl");
+  var buttonsTd = createRowTable(1)
+    .appendTo(table.find(">tbody>tr:eq(0)").addClass("Buttons").children("td"))
+    .find("tr>td");
+  var helpTd = createRowTable(1)
+    .appendTo(table.find(">tbody>tr:eq(1)").addClass("Help Hidden").children("td"))
+    .find("tr>td");
+  var periodEndTd = createRowTable(1)
+    .appendTo(table.find(">tbody>tr:eq(2)").addClass("PeriodEnd Hidden").children("td"))
+    .find("tr>td");
 
   $("<label>").text("Edit Key Control").attr("for", "EditKeyControlButton")
     .appendTo(buttonsTd);
@@ -125,7 +133,7 @@ function createMetaControlTable() {
     .button()
     .click(function() {
       _crgKeyControls.editKeys(this.checked);
-      table.find("td.Help").toggleClass("Visible", this.checked);
+      table.find("tr.Help").toggleClass("Hidden", !this.checked);
     });
   $("<a>").text("Key Control Edit mode enabled.  Buttons do not operate in this mode.  Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
     .appendTo(helpTd);
@@ -151,29 +159,124 @@ function createMetaControlTable() {
     selectByLabel.children("span").text(this.checked ? "Select Jammer by Name" : "Select Jammer by Number");
   });
 
-  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("content", function(event,value) {
-    var confirmedBoxes = buttonsTd.children(".IntermissionConfirmed");
-    if (!confirmedBoxes.is("."+value)) {
-      var sbConfirmed = $sb("Pages.Page(scoreboard.html).Intermission("+value+").Confirmed");
-      var confirmed = sbConfirmed.$sbControl("<label/><input type='checkbox'/>", { sbelement: {
-          boolean: true,
-          convert: function(v) {
-            $(this).button("option", "label", ((v?"C":"Unc")+"onfirmed Score"));
-            return v;
-          }
-        }, sbcontrol: {
-          button: true
-        } }, "IntermissionConfirmed "+value);
-      if (confirmedBoxes.length)
-        confirmedBoxes.last().after(confirmed);
-      else
-        buttonsTd.append(confirmed);
-    }
-    buttonsTd.children(".IntermissionConfirmed").hide()
-      .filter("."+value).show();
-  });
+  var periodEndControlsLabel = $("<label>").attr("for", "PeriodEndControlsCheckbox")
+    .text("End of Period Controls")
+    .addClass("PeriodEndControls")
+    .appendTo(buttonsTd);
+  $("<input type='checkbox'>").attr("id", "PeriodEndControlsCheckbox")
+    .appendTo(buttonsTd)
+    .button()
+    .click(function() {
+      table.find("tr.PeriodEnd").toggleClass("Hidden", !this.checked);
+    });
+  var doPulseFlag = false;
+  var doPulse = function() {
+    if (doPulseFlag)
+      periodEndControlsLabel.fadeTo(500, 0.25).fadeTo(500, 1, doPulse);
+    else
+      setTimeout(doPulse, 500);
+  };
+  doPulse();
+  var updatePeriodEndDoPulse = function() {
+    var time = $sb("ScoreBoard.Clock(Period).Time").$sbGet();
+    var num = $sb("ScoreBoard.Clock(Period).Number").$sbGet();
+// FIXME - this is hardcoded to 2 periods per bout now,
+// but the sb xml could have a specific field
+// for the # periods per bout in the future, for flexibility
+    doPulseFlag = ((time < 10000) && (num == 2));
+  };
+  $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("content", updatePeriodEndDoPulse);
+  $sb("ScoreBoard.Clock(Period).Number").$sbBindAndRun("content", updatePeriodEndDoPulse);
 
- return table;
+  $sb("Pages.Page(scoreboard.html).ConfirmedScore")
+    .$sbControl("<label/><input type='checkbox'/>", { sbelement: {
+      convert: function(value) {
+        if ($(this).is("input"))
+          $(this).button("option", "label", isTrue(value)?"Official Score":"Unofficial Score");
+        return value;
+      }
+    }, sbcontrol: {
+      button: true
+    } })
+    .appendTo(periodEndTd);
+  var periodEndTimeoutDialog = createPeriodEndTimeoutDialog(periodEndTd);
+  $("<button>").addClass("PeriodEndTimeout").text("Timeout before Period End")
+    .appendTo(periodEndTd)
+    .button()
+    .click(function() { periodEndTimeoutDialog.dialog("open"); });
+  $("<button>").text("Overtime")
+    .appendTo(periodEndTd)
+    .button()
+    .click(createOvertimeDialog);
+
+  return table;
+}
+
+function createPeriodEndTimeoutDialog(td) {
+  var dialog = $("<div>");
+  var applyDiv = $("<div>").addClass("Apply").appendTo(dialog);
+  $("<span>").text("Timeout with ").appendTo(applyDiv);
+  var periodSeconds = $("<input type='text' size='3'>").val("1").appendTo(applyDiv);
+  $("<span>").text(" seconds left on Period clock:").appendTo(applyDiv);
+  $("<button>").addClass("Apply").text("Apply").appendTo(applyDiv).button()
+  var waitDiv = $("<div>").addClass("Wait").appendTo(dialog).hide();
+  $("<span>").text("Starting Timeout when Period clock to reaches ").appendTo(waitDiv);
+  $("<span>").addClass("TargetSeconds").appendTo(waitDiv);
+  $("<span>").text(" seconds...").appendTo(waitDiv);
+  $("<button>").addClass("Cancel").text("Cancel").appendTo(waitDiv).button();
+  var checkTimeFunction = function(event, value) {
+    var currentSecs = Number(_timeConversions.msToSeconds(value));
+    var targetSecs = Number(waitDiv.find("span.TargetSeconds").text());
+    if (currentSecs > targetSecs)
+      return;
+    if ($sb("ScoreBoard.Clock(Period).Running"))
+      $sb("ScoreBoard.Timeout").$sbSet("true");
+    if (currentSecs < targetSecs)
+      $sb("ScoreBoard.Clock(Period).Time").$sbSet(_timeConversions.secondsToMs(targetSecs));
+    $sb("ScoreBoard.Clock(Intermission).Stop").$sbSet("true");
+    $(this).unbind(event);
+    td.find("button.PeriodEndTimeout").button("option", "label", "Timeout before Period End");
+    applyDiv.show();
+    waitDiv.hide();
+    dialog.dialog("close");
+  };
+  applyDiv.find("button.Apply").click(function() {
+    var secs = Number(periodSeconds.val());
+    if (isNaN(secs))
+      return;
+    var ms = _timeConversions.secondsToMs(secs);
+    waitDiv.find("span.TargetSeconds").text(secs);
+    td.find("button.PeriodEndTimeout").button("option", "label", "Timeout at "+secs+" Period seconds");
+    applyDiv.hide();
+    waitDiv.show();
+    $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("content", checkTimeFunction);
+  });
+  waitDiv.find("button.Cancel").click(function() {
+    $sb("ScoreBoard.Clock(Period).Time").unbind("content", checkTimeFunction);
+    td.find("button.PeriodEndTimeout").button("option", "label", "Timeout before Period End");
+    applyDiv.show();
+    waitDiv.hide();
+  });
+  dialog.dialog({
+    title: "Timeout before End of Period",
+    width: "600px",
+    modal: true,
+    autoOpen: false,
+    buttons: { Close: function() { $(this).dialog("close"); } },
+  });
+  return dialog;
+}
+
+function createOvertimeDialog() {
+  var dialog = $("<div>");
+  $("<span>").text("Start Overtime Period").appendTo(dialog);
+  dialog.dialog({
+    title: "Overtime",
+    width: "400px",
+    modal: true,
+    buttons: { Cancel: function() { $(this).dialog("close"); } },
+    close: function() { $(this).dialog("destroy").remove(); }
+  });
 }
 
 function createJamControlTable() {
