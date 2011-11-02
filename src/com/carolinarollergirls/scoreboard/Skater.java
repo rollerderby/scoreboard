@@ -6,19 +6,19 @@ import com.carolinarollergirls.scoreboard.event.*;
 
 public interface Skater extends ScoreBoardEventProvider
 {
-	public Team getTeam();
+  public Team getTeam();
 
-	public String getId();
+  public String getId();
 
-	public String getName();
+  public String getName();
 
-	public String getNumber();
+  public String getNumber();
 
-	public String getPosition();
+  public String getPosition();
 
-	public boolean isLeadJammer();
+  public boolean isLeadJammer();
 
-	public boolean isPenaltyBox();
+  public boolean isPenaltyBox();
 
-	public int getPass();
+  public int getPass();
 }

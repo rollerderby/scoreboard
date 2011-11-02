@@ -4,5 +4,5 @@ import com.carolinarollergirls.scoreboard.model.*;
 
 public interface ScoreBoardController
 {
-	public void setScoreBoardModel(ScoreBoardModel scoreBoardModel);
+  public void setScoreBoardModel(ScoreBoardModel scoreBoardModel);
 }
