@@ -76,7 +76,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
   public void startOvertime() {
     synchronized (runLock) {
       ClockModel pc = getClockModel(Clock.ID_PERIOD);
-      if (pc.isRunning())
+      ClockModel jc = getClockModel(Clock.ID_JAM);
+      if (pc.isRunning() || jc.isRunning())
         return;
       if (pc.getNumber() < pc.getMaximumNumber())
         return;
