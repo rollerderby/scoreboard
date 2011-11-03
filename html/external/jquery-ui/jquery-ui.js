@@ -5658,7 +5658,9 @@ $.widget( "ui.button", {
 					if ( options.disabled ) {
 						return;
 					}
-					if ( startXPos !== event.pageX || startYPos !== event.pageY ) {
+					var driftX = Math.abs( startXPos - event.pageX );
+					var driftY = Math.abs( startYPos - event.pageY );
+					if ( Math.max( driftX, driftY ) > 4 ) {
 						clickDragged = true;
 					}
 			});
