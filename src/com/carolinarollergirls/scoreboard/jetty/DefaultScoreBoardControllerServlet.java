@@ -19,11 +19,13 @@ public abstract class DefaultScoreBoardControllerServlet extends HttpServlet imp
   protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
     response.setHeader("Cache-Control", "no-cache");
     response.setHeader("Expires", "-1");
+    response.setCharacterEncoding("UTF-8");
   }
 
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
     response.setHeader("Cache-Control", "no-cache");
     response.setHeader("Expires", "-1");
+    response.setCharacterEncoding("UTF-8");
   }
 
   protected ScoreBoardModel scoreBoardModel;

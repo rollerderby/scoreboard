@@ -191,7 +191,7 @@ _crgScoreBoard = {
   POLL_INTERVAL_MAX: 500,
   POLL_INTERVAL_INCREMENT: 10,
   pollRate: this.POLL_INTERVAL_MIN,
-  doc: $("document", $.parseXML("<document></document>")),
+  doc: $("document", $.parseXML("<?xml version='1.0' encoding='UTF-8'?><document/>")),
   documentLoaded: false,
   documentEvents: $("<div>"),
   addEventTriggered: { },
@@ -287,7 +287,7 @@ _crgScoreBoard = {
         url: "/XmlScoreBoard/set?key="+_crgScoreBoard.scoreBoardRegistrationKey,
         type: "POST",
         processData: false,
-        contentType: "text/xml",
+        contentType: "text/xml;encoding=UTF-8",
         data: e[0].ownerDocument
       });
   },
@@ -331,7 +331,7 @@ _crgScoreBoard = {
       e = this;
 
     if (e[0] == _crgScoreBoard.doc[0])
-      return $.xmlDOM("<"+e[0].nodeName+"/>").children(e[0].nodeName);
+      return $($.parseXML("<?xml version='1.0' encoding='UTF-8'?><"+e[0].nodeName+"/>")).children(e[0].nodeName);
 
     return _crgScoreBoard.createScoreBoardElement(_crgScoreBoard.toNewElement(e.parent()), e[0].nodeName, e.attr("Id"), newText);
   },

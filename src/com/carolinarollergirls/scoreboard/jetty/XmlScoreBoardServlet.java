@@ -65,7 +65,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 
   protected void set(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
     XmlListener listener = getXmlListenerForRequest(request);
-    Document requestDocument = editor.toDocument(request.getReader());
+    Document requestDocument = editor.toDocument(request.getInputStream());
 
     if (null == listener) {
       registrationKeyNotFound(request, response);
