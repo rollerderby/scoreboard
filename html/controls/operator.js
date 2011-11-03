@@ -270,7 +270,12 @@ function createPeriodEndTimeoutDialog(td) {
 
 function createOvertimeDialog() {
   var dialog = $("<div>");
-  $("<span>").text("Start Overtime Period").appendTo(dialog);
+//FIXME - add logic to only enable button when period clock stopped at period 2 with 0 sec
+  $("<button>").text("Start Overtime").appendTo(dialog)
+    .click(function() {
+      $sb("ScoreBoard.StartOvertime").$sbSet("true");
+      dialog.dialog("close");
+    });
   dialog.dialog({
     title: "Overtime",
     width: "400px",

@@ -27,9 +27,11 @@ public class ScoreBoardXmlConverter
     editor.setElement(sb, "UnStopJam", null, "");
     editor.setElement(sb, "Timeout", null, "");
     editor.setElement(sb, "UnTimeout", null, "");
+    editor.setElement(sb, "StartOvertime", null, "");
     editor.setElement(sb, "UpdateImages", null, "");
 
     editor.setElement(sb, "TimeoutOwner", null, scoreBoard.getTimeoutOwner());
+    editor.setElement(sb, "Overtime", null, String.valueOf(scoreBoard.getOvertime()));
 
     Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
     while (clocks.hasNext())
@@ -174,21 +176,26 @@ public class ScoreBoardXmlConverter
       try {
         String name = element.getName();
         String value = editor.getContent(element);
+        boolean bVal = Boolean.parseBoolean(value);
 
-        if (name.equals("StartJam") && Boolean.parseBoolean(value))
+        if (name.equals("StartJam") && bVal)
           scoreBoardModel.startJam();
-        else if (name.equals("StopJam") && Boolean.parseBoolean(value))
+        else if (name.equals("StopJam") && bVal)
           scoreBoardModel.stopJam();
-        else if (name.equals("Timeout") && Boolean.parseBoolean(value))
+        else if (name.equals("Timeout") && bVal)
           scoreBoardModel.timeout();
-        else if (name.equals("UnStartJam") && Boolean.parseBoolean(value))
+        else if (name.equals("UnStartJam") && bVal)
           scoreBoardModel.unStartJam();
-        else if (name.equals("UnStopJam") && Boolean.parseBoolean(value))
+        else if (name.equals("UnStopJam") && bVal)
           scoreBoardModel.unStopJam();
-        else if (name.equals("UnTimeout") && Boolean.parseBoolean(value))
+        else if (name.equals("UnTimeout") && bVal)
           scoreBoardModel.unTimeout();
+        else if (name.equals("StartOvertime") && bVal)
+          scoreBoardModel.startOvertime();
         else if (name.equals("TimeoutOwner"))
           scoreBoardModel.setTimeoutOwner(value);
+        else if (name.equals("Overtime"))
+          scoreBoardModel.setOvertime(bVal);
         else if (name.equals("Clock"))
           processClock(scoreBoardModel, element);
         else if (name.equals("Team"))

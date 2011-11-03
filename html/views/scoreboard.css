@@ -118,11 +118,14 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   #Period>div.Name { top: 15%; left: 18%; width: 64%; height: 24%; border-radius: 8.5% / 30%; }
   #Period>div.Name.TextContainer { font-size: 9.5%; }
   #Period>div.Name.TextContainer>a { top: -10%; }
+  #Period:not(.Overtime)>div.Name.TextContainer.Overtime { display: none; }
+  #Period.Overtime>div.Name.TextContainer:not(.Overtime) { display: none; }
 
   /* Time sub-box */
   #Period>div.Time { top: 44%; right: 10%; width: 80%; height: 39%; border-radius: 7% / 24%; }
   #Period>div.Time.TextContainer { font-size: 20%; }
   #Period>div.Time.TextContainer>a { top: -25%; }
+  #Period.Overtime>div.Time { display: none; }
 /* End Period */
 
 /* Period_small */
@@ -134,11 +137,14 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   /* Name sub-box */
   #Period_small>div.Name { top: 0%; left: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
   #Period_small>div.Name.TextContainer { font-size: 10%; }
+  #Period_small:not(.Overtime)>div.Name.TextContainer.Overtime { display: none; }
+  #Period_small.Overtime>div.Name.TextContainer:not(.Overtime) { display: none; }
 
   /* Time sub-box */
   #Period_small>div.Time { top: 0%; left: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
   #Period_small>div.Time.TextContainer { font-size: 13%; }
   #Period_small>div.Time.TextContainer>a { top: -17.5%; }
+  #Period_small.Overtime>div.Time { display: none; }
 /* End Period_small */
 
 /* Jam */

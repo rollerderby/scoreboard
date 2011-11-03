@@ -211,6 +211,10 @@ function setupClocks() {
   $("#Period,#Jam").find("div.Name>a").append($("<span>").addClass("space").text(" "))
   $("#Period,#Period_small").find("div.Name>a").append($("<span>").addClass("Number"));
   $sb("ScoreBoard.Clock(Period).Number").$sbElement("#Period>div.Name>a>span.Number,#Period_small>div.Name>a>span.Number");
+  $("<div><a><span/></a></div>").addClass("Overtime Name TextContainer")
+    .insertAfter("#Period>div.Name.TextContainer,#Period_small>div.Name.TextContainer");
+  $("#Period>div.Overtime>a>span").text("Overtime");
+  $("#Period_small>div.Overtime>a>span").text("OT");
   $("#Jam,#Jam_small").find("div.Name>a").append($("<span>").addClass("Number"));
   $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#Jam>div.Name>a>span.Number,#Jam_small>div.Name>a>span.Number");
   $("#Period_small>div.Name>a>span.Name").replaceWith($("<span>").addClass("Name").text("P"));
@@ -220,6 +224,12 @@ function setupClocks() {
   $("#Jam_small>div.Time").remove();
   $("#Timeout>div.Name.WhiteBox").prepend($("<div>").addClass("RedBox full"));
   $("#Intermission>div.Name>a>span.Name").remove();
+
+  $sb("ScoreBoard.Overtime").$sbBindAndRun("content", function(event, value) {
+    // use 1ms duration so this gets put on the animation queue,
+    // which will allow the "Overtime" to slide out before changing back to "Period 2"
+    $("#Period,#Period_small").toggleClass("Overtime", isTrue(value), 1);
+  });
 
 // FIXME - this intermission stuff is a mess, can it get fixed up or simplified?!?
   var intermissionAutoFitText = _windowFunctions.enableAutoFitText("#Intermission>div.Name.TextContainer");
@@ -261,14 +271,16 @@ function setupClocks() {
     $("#Intermission>div.Time").toggle(!$sbThisPage.$sb("Intermission("+value+").HideClock").$sbIsTrue());
   });
 
-  var clocks = $sb("ScoreBoard.Clock(Jam).Running")
-    .add($sb("ScoreBoard.Clock(Lineup).Running"))
-    .add($sb("ScoreBoard.Clock(Timeout).Running"))
-    .add($sb("ScoreBoard.Clock(Intermission).Running"));
-  _crgUtils.bindAndRun(clocks, "content", function(event, value) {
-    if (isTrue(value) || ($sb($(this).parent()).$sbId == "Intermission"))
+  var clockChange = function(event, value, intermission) {
+    if (isTrue(value) || intermission)
       $("#sbDiv>div.ClockAnimationQueue").queue(clockRunningChange);
-  }, [ true ]);
+  };
+  $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("content", clockChange);
+  $sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("content", clockChange);
+  $sb("ScoreBoard.Clock(Timeout).Running").$sbBindAndRun("content", clockChange);
+  $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("content", function(event, value) {
+    clockChange(event, value, 1);
+  });
 }
 
 function clockRunningChange(next) {
