@@ -178,12 +178,10 @@ function createMetaControlTable() {
   };
   doPulse();
   var updatePeriodEndDoPulse = function() {
-    var time = $sb("ScoreBoard.Clock(Period).Time").$sbGet();
-    var num = $sb("ScoreBoard.Clock(Period).Number").$sbGet();
-// FIXME - this is hardcoded to 2 periods per bout now,
-// but the sb xml could have a specific field
-// for the # periods per bout in the future, for flexibility
-    doPulseFlag = ((time < 10000) && (num == 2));
+    var pc = $sb("ScoreBoard.Clock(Period)");
+    var under30 = (Number(pc.$sb("Time").$sbGet()) < 30000);
+    var last = pc.$sb("Number").$sbIs(pc.$sb("MaximumNumber").$sbGet());
+    doPulseFlag = (under30 && last);
   };
   $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("content", updatePeriodEndDoPulse);
   $sb("ScoreBoard.Clock(Period).Number").$sbBindAndRun("content", updatePeriodEndDoPulse);
