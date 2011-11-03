@@ -226,9 +226,15 @@ function setupClocks() {
   $("#Intermission>div.Name>a>span.Name").remove();
 
   $sb("ScoreBoard.Overtime").$sbBindAndRun("content", function(event, value) {
-    // use 1ms duration so this gets put on the animation queue,
-    // which will allow the "Overtime" to slide out before changing back to "Period 2"
-    $("#Period,#Period_small").toggleClass("Overtime", isTrue(value), 1);
+    if (isTrue(value)) {
+      // we don't want this on the animation queue; it should change immediately,
+      // since the intermission clock should be displayed now
+      $("#Period,#Period_small").addClass("Overtime");
+    } else {
+      // use 1ms duration so this gets put on the animation queue,
+      // which will allow the "Overtime" to slide out before changing back to "Period 2"
+      $("#Period,#Period_small").removeClass("Overtime", 1);
+    }
   });
 
 // FIXME - this intermission stuff is a mess, can it get fixed up or simplified?!?
