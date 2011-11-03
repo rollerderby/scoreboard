@@ -144,14 +144,18 @@
 		<zip destfile="${release.dir}/${zip.prefix}.zip" >
 			<zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
 				<include name="README" />
+				<include name="COPYING" />
+				<include name="COPYING-GPL" />
+				<include name="COPYING-AL" />
+				<include name="LICENSES" />
 				<include name="scoreboard-Windows.exe" />
 				<include name="scoreboard-Mac.app/**" />
 				<include name="scoreboard-Linux.sh" />
 				<include name="start.html" />
 				<include name="html/**" />
 				<include name="lib/crg-scoreboard.jar" />
-				<include name="lib/crg.scoreboard.properties" />
-				<include name="lib/xml/**" />
+				<include name="config/crg.scoreboard.properties" />
+				<include name="config/default/**" />
 			</zipfileset>
 		</zip>
 	</target>
