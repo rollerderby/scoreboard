@@ -57,6 +57,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     Iterator<TeamModel> t = getTeamModels().iterator();
     while (t.hasNext())
       t.next().reset();
+    Iterator<PolicyModel> p = getPolicyModels().iterator();
+    while (p.hasNext())
+      p.next().reset();
 
     periodClockWasRunning = false;
     jamClockWasRunning = false;
