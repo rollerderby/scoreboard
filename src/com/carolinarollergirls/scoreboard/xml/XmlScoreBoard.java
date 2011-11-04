@@ -162,8 +162,8 @@ public class XmlScoreBoard
   protected void loadXmlDocumentManagers() {
 //FIXME - this isn't the right way to do this!  use properties file, or xml maybe?
     // disable these until they are useful/complete.
-    //new XmlRealtimeStats().setXmlScoreBoard(this);
-    //new XmlInterpretedStats().setXmlScoreBoard(this);
+    new XmlRealtimeStats().setXmlScoreBoard(this);
+    new XmlInterpretedStats().setXmlScoreBoard(this);
     //new XmlGoogleDocsStats().setXmlScoreBoard(this);
     new LoadScoreBoard().setXmlScoreBoard(this);
     new TeamsXmlDocumentManager().setXmlScoreBoard(this);
