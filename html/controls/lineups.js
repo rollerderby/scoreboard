@@ -242,7 +242,7 @@ function removeCurrentJamLineupsSkater(table, skater) {
 function createEditJamLineupsTable(team) {
   var table = $("<table>");
   var thead = $("<thead>").appendTo(table);
-  var showFunction = function(class) { $(".team"+team+"SkaterAll").not($("."+class).show()).hide(); }
+  var showFunction = function(c) { $(".team"+team+"SkaterAll").not($("."+c).show()).hide(); }
   
   $("<tr>")
     .append($("<th colspan='100%'>").append($sb("ScoreBoard.Team("+team+").Name").$sbElement("<a>")))
