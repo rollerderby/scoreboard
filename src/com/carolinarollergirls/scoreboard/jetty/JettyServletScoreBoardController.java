@@ -16,10 +16,16 @@ public class JettyServletScoreBoardController implements ScoreBoardController
     scoreBoardModel = model;
 
     init();
+
+    ScoreBoardManager.printMessage("");
+    if (port == DEFAULT_PORT)
+      ScoreBoardManager.printMessage("Double-click/open the 'start.html' file or");
+    ScoreBoardManager.printMessage("Open a web browser (Google Chrome or Mozilla Firefox) to http://localhost:"+port);
+    ScoreBoardManager.printMessage("");
   }
 
   protected void init() {
-    int port = DEFAULT_PORT;
+    port = DEFAULT_PORT;
     try {
       port = Integer.parseInt(ScoreBoardManager.getProperties().getProperty(PROPERTY_PORT_KEY));
     } catch ( Exception e ) {
@@ -90,6 +96,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
   }
 
   protected ScoreBoardModel scoreBoardModel;
+  protected int port;
 
   public static final int DEFAULT_PORT = 8000;
 

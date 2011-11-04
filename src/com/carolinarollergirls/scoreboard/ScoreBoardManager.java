@@ -28,9 +28,6 @@ public class ScoreBoardManager
 
     if (guiFrameText != null)
       guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
-    printMessage("");
-    printMessage("Now double-click/open the 'start.html' file");
-    printMessage("or open a web browser (Google Chrome or Mozilla Firefox) to http://localhost:8000");
   }
 
   public static String getVersion() {
