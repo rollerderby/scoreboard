@@ -95,11 +95,12 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Timeouts */
   /* Main box */
-  #Timeouts { left: 43%; top: 31%; width: 13.75%; height: 17%; }
+  #Timeouts { left: 43.5%; top: 31%; right: 43.5%; height: 17%; }
 
   /* Name sub-box */
   #Timeouts>div.Name { left: 0%; top: 0%; width: 100%; height: 30%; border-radius: 8% / 25%; }
-  #Timeouts>div.Name.TextContainer { font-size: 4%; }
+  #Timeouts>div.Name.TextContainer { font-size: 3.75%; }
+  #Timeouts>div.Name.TextContainer>a { top: 10%; }
 
   /* Number sub-boxes */
   #Timeouts>div.Number { bottom: 0%; width: 45%; height: 50%; border-radius: 25%/ 25%; }
