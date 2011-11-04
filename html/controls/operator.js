@@ -1123,17 +1123,16 @@ function createSaveLoadContent() {
   var sbDownloadTable = $("<table>").addClass("Download")
     .appendTo($("<td>").appendTo($("<tr>").appendTo("#SaveLoad")));
   $("<tr>").addClass("Name").appendTo(sbDownloadTable)
-    .append("<td colspan='5'>Download ScoreBoard XML</td>");
+    .append("<td colspan='4'>Download ScoreBoard XML</td>");
   $("<tr>").addClass("Instruction").appendTo(sbDownloadTable)
-    .append("<td colspan='5'>To download, right-click and Save - to view XML, left-click</td>");
+    .append("<td colspan='4'>To download, right-click and Save - to view XML, left-click</td>");
   var contentRow = $("<tr>").addClass("Content").appendTo(sbDownloadTable);
 
   var links = [
     { name: "All data", url: "" },
     { name: "ScoreBoard", url: "scoreboard.xml?path=ScoreBoard" },
     { name: "Teams", url: "teams.xml?path=Teams" },
-    { name: "Pages", url: "pages.xml?path=Pages" },
-    { name: "Stats", url: "stats.xml?path=Stats" }
+    { name: "Pages", url: "pages.xml?path=Pages" }
   ];
   $.each( links, function() {
     $("<td><a/></td>").appendTo(contentRow)
