@@ -12,9 +12,17 @@ public class ResetScoreBoard extends DefaultXmlDocumentManager implements XmlDoc
 {
   public ResetScoreBoard() { super("Reset"); }
 
+  public void reset() {
+    update(createXPathElement());
+  }
+
   protected void processElement(Element e) throws Exception {
-    if (Boolean.parseBoolean(e.getText()))
+    if (Boolean.parseBoolean(e.getText())) {
+      getXmlScoreBoard().reset();
       getXmlScoreBoard().loadDefaultDocuments();
+      update(createXPathElement().setAttribute("remove", "true").setText("true"));
+      update(createXPathElement());
+    }
   }
 }
 

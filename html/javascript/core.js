@@ -457,6 +457,8 @@ _crgScoreBoard = {
   processScoreBoardElement: function(parent, element, triggerArray) {
     var $element = $(element);
     var name = element.nodeName;
+    if (name == "Reset" && isTrue(_crgScoreBoard.getXmlElementText($element)))
+      window.location.reload(); // <Reset>true</Reset> is the signal to reload
     var id = $element.attr("Id");
     var remove = isTrue($element.attr("remove"));
     var e = this.findScoreBoardElement(parent, name+(id?"("+id+")":""), remove, true);

@@ -1191,7 +1191,10 @@ function createSaveLoadContent() {
 function showResetScoreBoardDialog() {
   var div = $("<div>").addClass("ResetScoreBoardDialog");
 
-  $("<p>").html("This will completely reset the ScoreBoard to the defaults.<br/>You will LOSE all current information!")
+  $("<p>")
+    .append("<span>This will completely reset the ScoreBoard to the defaults.<br/></span>")
+    .append("<span>You will LOSE all current information!<br/></span>")
+    .append("<span>This will also reload all scoreboard pages.</span>")
     .appendTo(div);
   $sb("Reset").$sbControl("<button>").addClass("Yes")
     .click(function() { div.dialog("destroy").remove(); })
