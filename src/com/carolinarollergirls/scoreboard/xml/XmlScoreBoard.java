@@ -114,7 +114,7 @@ public class XmlScoreBoard
     if (!autoSaveDir.exists())
       return false;
 
-    for (int i=0; i < AutoSaveScoreBoard.BACKUP_FILES; i++) {
+    for (int i=0; i <= AutoSaveScoreBoard.AUTOSAVE_FILES; i++) {
       File f = new File(autoSaveDir, AutoSaveScoreBoard.getName(i));
       if (!f.exists())
         continue;

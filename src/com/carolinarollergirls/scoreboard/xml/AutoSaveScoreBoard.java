@@ -31,7 +31,7 @@ public class AutoSaveScoreBoard implements Runnable
 
   public void run() {
     try {
-      int n = BACKUP_FILES;
+      int n = AUTOSAVE_FILES;
       File dir = toXmlFile.getDirectory();
       new File(dir, getName(n)).delete();
       while (n > 0) {
@@ -47,19 +47,18 @@ public class AutoSaveScoreBoard implements Runnable
   }
 
   public static String getName(int n) {
-    return (FILE_NAME + n + ".xml");
+    if (n == 0)
+      return (FILE_NAME + "-0-now.xml");
+    else
+      return (FILE_NAME + "-" + (n * SAVE_DELAY) + "-secs-ago.xml");
   }
 
   protected void backupAutoSavedFiles() {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
     File mainBackupDir = new File(toXmlFile.getDirectory(), "backup");
-    if (!mainBackupDir.exists())
-      mainBackupDir.mkdir();
     File backupDir = new File(mainBackupDir, dateFormat.format(new Date()));
     if (backupDir.exists()) {
       ScoreBoardManager.printMessage("Could not back up auto-save files, backup directory already exists");
-    } else if (!backupDir.mkdir()) {
-      ScoreBoardManager.printMessage("Could not back up auto-save files, failure creating backup directory");
     } else {
       int n = 0;
       File dir = toXmlFile.getDirectory();
@@ -67,10 +66,14 @@ public class AutoSaveScoreBoard implements Runnable
         File to = new File(backupDir, getName(n));
         File from = new File(dir, getName(n));
         if (from.exists()) {
+          if (!backupDir.exists() && !backupDir.mkdirs()) {
+            ScoreBoardManager.printMessage("Could not back up auto-save files, failure creating backup directory");
+            break;
+          }
           from.renameTo(to);
           ScoreBoardManager.printMessage("Moved auto-save file "+from.getName()+" to "+backupDir.getPath());
         }
-      } while (n++ < BACKUP_FILES);
+      } while (n++ < AUTOSAVE_FILES);
     }
   }
 
@@ -81,6 +84,6 @@ public class AutoSaveScoreBoard implements Runnable
 
   public static final String DIRECTORY_NAME = "config/autosave";
   public static final String FILE_NAME = "scoreboard";
-  public static final int BACKUP_FILES = 3;
-  public static final long SAVE_DELAY = 1; /* 1 sec */
+  public static final int AUTOSAVE_FILES = 6;
+  public static final long SAVE_DELAY = 10; /* 10 secs */
 }
