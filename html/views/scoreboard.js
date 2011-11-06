@@ -70,7 +70,7 @@ function setupMainDiv(div) {
 
   _crgUtils.bindAndRun($(window), "resize", function() {
     var aspect4x3 = _windowFunctions.get4x3Dimensions();
-    $("#mainDiv").css(aspect4x3).css("fontSize", aspect4x3.height);
+    div.css(aspect4x3).css("fontSize", aspect4x3.height);
   });
 }
 
