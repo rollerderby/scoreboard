@@ -11,10 +11,10 @@ public class DefaultXmlDocumentManager implements XmlDocumentManager
 {
   public DefaultXmlDocumentManager(String n) {
     managedElementName = n;
-    myXPath = editor.createXPath(getXPathString());
   }
 
   public void setXmlScoreBoard(XmlScoreBoard xsB) {
+    myXPath = editor.createXPath(getXPathString());
     xmlScoreBoard = xsB;
     xmlScoreBoard.addXmlDocumentManager(this);
 
