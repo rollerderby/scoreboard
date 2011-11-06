@@ -7,6 +7,16 @@ $sb(function() {
   createEditJamLineupsTab();
 
   $("div#tabsDiv").tabs();
+
+  $("<div>")
+    .append("<center><a>This page is in development - functions may be incomplete or broken.</a></center>")
+    .dialog({
+      modal: true,
+      width: "600px",
+      title: "This page is in development",
+      close: function() { $(this).dialog("destroy").remove(); },
+      buttons: { Ok: function() { $(this).dialog("close"); } }
+    });
 });
 
 /*******************************
