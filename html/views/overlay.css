@@ -1,0 +1,36 @@
+
+img { position: absolute; }
+div { position: absolute; }
+
+a {
+  position: absolute; width: 100%; height: 100%;
+  font-family: 'LiberationSans',helvetica;
+  font-weight: bold;
+}
+
+#TopBar { left: 27%; right: 28%; top: 6%; bottom: 86%; font-size: 7%; text-align: center; }
+
+#ClockPeriodNumber { top: 0%; height: 100%; left: 0%; right: 74%; }
+#ClockPeriodTime { top: 0%; height: 100%; left: 27%; right: 35%; }
+#ClockPeriodTime>a:not(.ShowPeriod) { display: none; }
+
+#ClockIntermissionTime { top: 0%; height: 100%; left: 27%; right: 35%; }
+#ClockIntermissionTime>a:not(.ShowIntermission) { display: none; }
+
+#ClockJamTime { top: 0%; height: 100%; left: 66%; right: 0%; }
+#ClockJamTime>a:not(.ShowJam) { display: none; }
+
+#ClockLineupTime { top: 0%; height: 100%; left: 66%; right: 0%; }
+#ClockLineupTime>a:not(.ShowLineup) { display: none; }
+
+#ClockTimeoutTime { top: 0%; height: 100%; left: 66%; right: 0%; }
+#ClockTimeoutTime>a:not(.ShowTimeout) { display: none; }
+
+#BottomBar { left: 21.5%; right: 22%; top: 85.5%; bottom: 6.5%; font-size: 7%; text-align: center; }
+
+#Team1Name { top: 0%; height: 100%; left: 0%; right: 72%; }
+#Team1Score { top: 0%; height: 100%; left: 28%; right: 51%; }
+#Team2Name { top: 0%; height: 100%; left: 51%; right: 21%; }
+#Team2Score { top: 0%; height: 100%; left: 79%; right: 0%; }
+
+#Overlay { width: 100%; height: 100%; z-index: -10; }

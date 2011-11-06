@@ -1,0 +1,56 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
+<html><head><title>CRG SB Overlay</title>
+
+<script type="text/javascript" src="/external/jquery/jquery.js" ></script>
+
+<script type="text/javascript" src="/javascript/scoreboard.js" ></script>
+
+<script type="text/javascript" src="overlay.js"></script>
+
+<link rel="stylesheet" href="overlay.css" type="text/css" />
+
+</head>
+
+<body>
+<div id="mainDiv">
+
+  <div id="TopBar">
+    <div id="ClockPeriodNumber" >
+      <a data-sbelement="ScoreBoard.Clock(Period).Number" ></a>
+    </div>
+    <div id="ClockPeriodTime" >
+      <a class="ClockPI ClockMinSec" data-sbelement="ScoreBoard.Clock(Period).Time" ></a>
+    </div>
+
+    <div id="ClockIntermissionTime" >
+      <a class="ClockPI ClockMinSec" data-sbelement="ScoreBoard.Clock(Intermission).Time" ></a>
+    </div>
+
+    <div id="ClockJamTime" >
+      <a class="ClockJLT ClockMinSec" data-sbelement="ScoreBoard.Clock(Jam).Time" ></a>
+    </div>
+    <div id="ClockLineupTime" >
+      <a class="ClockJLT ClockMinSec" data-sbelement="ScoreBoard.Clock(Lineup).Time" ></a>
+    </div>
+    <div id="ClockTimeoutTime" >
+      <a class="ClockJLT ClockMinSec" data-sbelement="ScoreBoard.Clock(Timeout).Time" ></a>
+    </div>
+  </div>
+
+  <div id="BottomBar">
+    <div id="Team1Name" ><a></a></div>
+    <div id="Team1Score" >
+      <a data-sbelement="ScoreBoard.Team(1).Score" ></a>
+    </div>
+    <div id="Team2Name" ><a></a></div>
+    <div id="Team2Score" >
+      <a data-sbelement="ScoreBoard.Team(2).Score" ></a>
+    </div>
+  </div>
+
+  <img id="Overlay" src="/images/fullscreen/overlay.png" />
+</div>
+</body>
+
+</html>
+
