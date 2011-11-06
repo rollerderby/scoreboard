@@ -1,17 +1,4 @@
 
-/* We have to @import additional stylesheets before any other declarations. */
-
-/* Good places to find fonts are:
- * http://fontspace.com/
- * http://fontsquirrel.com/
- * Also very handy is the @font-face generator at fontsquirrel:
- * http://www.fontsquirrel.com/fontface/generator
- */
-@import url('/fonts/liberationsans/stylesheet.css');
-
-
-/* Ok, on to the actual declarations. */
-
 
 #mainDiv div { position: absolute; }
 #mainDiv>div.View { width: 100%; height: 100%; }
