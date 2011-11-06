@@ -220,8 +220,8 @@ function addCurrentJamLineupsSkater(table, skater) {
   row.data("rowNumber", skater.$sb("Number").$sbGet());
 
   _windowFunctions.appendSorted(table, row, function(a, b) {
-    var aStr = a.data("rowNumber").toLowerCase();
-    var bStr = b.data("rowNumber").toLowerCase();
+    var aStr = $(a).data("rowNumber").toLowerCase();
+    var bStr = $(b).data("rowNumber").toLowerCase();
     var aNum = Number(aStr);
     var bNum = Number(bStr);
     if (isNaN(aNum))
@@ -330,7 +330,7 @@ function addEditJamLineupsLine(table, jam, teamN) {
     tr.prepend($("<td>").text(periodN));
 
   _windowFunctions.appendSorted(table, tr, function(a, b) {
-    return (a.attr("data-jam") > b.attr("data-jam"));
+    return ($(a).attr("data-jam") > $(b).attr("data-jam"));
   });
 
   var rows = table.children("tr[data-period="+periodN+"]");
@@ -380,7 +380,7 @@ function createEditJamLineupsPositionDialog(position) {
       optionParent: $sb("ScoreBoard.Team("+t+")"),
       optionChildName: "Skater",
       optionNameElement: "Number",
-      compareOptions: function(a, b) { return _windowFunctions.numericSortByAttr(a, b, "value"); }
+      compareOptions: function(a, b) { return _windowFunctions.numCompareByAttr("value", a, b); }
     }
   }).appendTo($("<td>").appendTo(tr));
 
