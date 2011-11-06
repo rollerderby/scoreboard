@@ -1,20 +1,6 @@
 
 
 $sb(function() {
-  $("body>div.TabTemplate>div.Buttons>button.Remove").click(function() {
-    $(this).parent().next().find("table.Type").each(function() {
-      var removed = 0;
-      $(this).find("tr.Item").each(function() {
-        if ($(this).find("td.Remove>input:checkbox").is(":checked")) {
-          $(this).data("sb").$sbRemove();
-          removed++;
-        }
-      });
-      if ($(this).find("tr.Item").length == removed)
-        $(this).data("sb").$sbRemove();
-    });
-  }).button();
-
   $("body>table.TypeTemplate")
     .find("tr.Type>th.Type>button").click(function() {
       $(this).closest("table").toggleClass("Hide");
@@ -55,6 +41,22 @@ $sb(function() {
     .click(function() { videosDialog.dialog("open"); });
   $("#CustomHtml>div.Buttons>button.Add").button()
     .click(function() { customHtmlDialog.dialog("open"); });
+  $("#Images,#Videos,#CustomHtml").each(function() {
+    var div = $(this);
+    div.find(">div.Buttons>button.Remove").button().click(function() {
+      div.find(">div.Type>table.Type").each(function() {
+        var removed = 0;
+        $(this).find("tr.Item").each(function() {
+          if ($(this).find("td.Remove>input:checkbox").is(":checked")) {
+            $(this).data("sb").$sbRemove();
+            removed++;
+          }
+        });
+        if ($(this).find("tr.Item").length == removed)
+          $(this).data("sb").$sbRemove();
+      });
+    });
+  });
 });
 
 function setupTab(parentName, childName, previewElement) {
