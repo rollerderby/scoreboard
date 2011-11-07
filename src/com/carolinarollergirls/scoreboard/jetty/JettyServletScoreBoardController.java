@@ -18,9 +18,13 @@ public class JettyServletScoreBoardController implements ScoreBoardController
     init();
 
     ScoreBoardManager.printMessage("");
+    ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+    ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
     if (port == DEFAULT_PORT)
       ScoreBoardManager.printMessage("Double-click/open the 'start.html' file or");
     ScoreBoardManager.printMessage("Open a web browser (Google Chrome or Mozilla Firefox) to http://localhost:"+port);
+    ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+    ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     ScoreBoardManager.printMessage("");
   }
 
