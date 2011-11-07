@@ -39,7 +39,10 @@ $sb(function() {
     var showDiv = $("#"+value+"Div");
     if (!showDiv.length)
       showDiv = $("#sbDiv");
-    $("#mainDiv>div.View").not(showDiv).removeClass("Show", 500)
+    showDiv.children("video").each(function() { this.play(); });
+    $("#mainDiv>div.View").not(showDiv).removeClass("Show", 500, function() {
+      $(this).children("video").each(function() { this.pause(); });
+    });
     showDiv.addClass("Show", 500);
   });
 

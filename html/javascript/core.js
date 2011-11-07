@@ -425,9 +425,13 @@ _crgScoreBoard = {
         e.attr("src", v);
 // FIXME - may need to support multiple video files with multiple source subelements?
 // FIXME - need to start video when visible and when changing src; stop when not visible.
-      else if (e.is("video"))
+      else if (e.is("video")) {
+        var currentlyPlaying = !this.paused;
         e.attr("src", v);
-      else if (e.is("iframe"))
+        this.load();
+        if (currentlyPlaying)
+          this.play();
+      } else if (e.is("iframe"))
         e.attr("src", v);
       else if (e.is("input:text,input[type='number'],input:password,textarea"))
         e.val(v);
