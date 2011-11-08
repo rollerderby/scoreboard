@@ -214,8 +214,12 @@ function setupClocks() {
 
     sbClock.$sb("Name").$sbElement(clockDiv.find("div.Name>a>span"), "Name");
 
-    sbClock.$sb("Time").$sbElement(clockDiv.find("div.Time>a>span"),
-      { sbelement: { convert: clockConversions[id] } }, "Time");
+    sbClock.$sb("Time").$sbElement(clockDiv.find("div.Time>a>span"), {
+      sbelement: {
+        convert: clockConversions[id],
+        autoFitText: { overage: 25 },
+        autoFitTextContainer: "div"
+      } }, "Time");
   });
 
   $("#Period,#Jam").find("div.Name>a").append($("<span>").addClass("space").text(" "))

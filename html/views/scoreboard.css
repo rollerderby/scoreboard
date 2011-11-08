@@ -129,8 +129,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   /* Time sub-box */
   #Period>div.Time { top: 44%; right: 10%; width: 80%; height: 39%; border-radius: 7% / 24%; }
-  #Period>div.Time.TextContainer { font-size: 20%; }
-  #Period>div.Time.TextContainer>a { top: -25%; }
   #Period.Overtime>div.Time { display: none; }
 /* End Period */
 
@@ -148,8 +146,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   /* Time sub-box */
   #Period_small>div.Time { top: 0%; left: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-  #Period_small>div.Time.TextContainer { font-size: 13%; }
-  #Period_small>div.Time.TextContainer>a { top: -17.5%; }
   #Period_small.Overtime>div.Time { display: none; }
 /* End Period_small */
 
@@ -165,8 +161,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   /* Time sub-box */
   #Jam>div.Time { top: 44%; right: 10%; width: 80%; height: 39%; border-radius: 7% / 24%; }
-  #Jam>div.Time.TextContainer { font-size: 20%; }
-  #Jam>div.Time.TextContainer>a { top: -25%; }
 /* End Jam */
 
 /* Jam_small */
@@ -191,8 +185,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   /* Time sub-box */
   #Lineup>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-  #Lineup>div.Time.TextContainer { font-size: 13%; }
-  #Lineup>div.Time.TextContainer>a { top: -17.5%; }
 /* End Lineup */
 
 /* Timeout */
@@ -206,8 +198,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   /* Time sub-box */
   #Timeout>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-  #Timeout>div.Time.TextContainer { font-size: 13%; }
-  #Timeout>div.Time.TextContainer>a { top: -17.5%; }
 /* End Timeout */
 
 /* Intermission */
@@ -220,8 +210,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   /* Time sub-box */
   #Intermission>div.Time { top: 36.5%; left: 20%; width: 60%; height: 56%; border-radius: 7% / 24%; }
-  #Intermission>div.Time.TextContainer { font-size: 29%; }
-  #Intermission>div.Time.TextContainer>a { top: -25%; }
 /* End Intermission */
 
 /* Sponsor Banner box */
