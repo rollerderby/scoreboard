@@ -119,6 +119,9 @@ function setupTeams() {
     $("<div><div><a/></div></div>").addClass("Jammer ClockAnimation").appendTo(teamDiv)
       .children("div").addClass("TextContainer")
       .children("a").addClass("Pulse").css("opacity", 0);
+    $("<div><div><a/></div></div>").addClass("Lead ClockAnimation").appendTo(teamDiv)
+      .children("div").addClass("TextContainer")
+      .children("a").addClass("Lead").text("Lead");
 
     sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
     sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
@@ -165,6 +168,10 @@ function setupTeams() {
 
     sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("content", function(event, value) {
       teamDiv.find("div.Jammer>div").toggleClass("ShowJammer", !!value, animateTime.clock, "easeInQuart");
+      teamDiv.find("div.Lead>div").toggle(!value);
+    });
+    sbTeam.$sb("LeadJammer").$sbBindAndRun("content", function(event, value) {
+      teamDiv.find("div.Lead>div").toggleClass("ShowLead", isTrue(value), animateTime.clock, "easeInQuart");
     });
 
     var showTimeoutRedBox = function() {
