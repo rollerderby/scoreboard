@@ -87,23 +87,12 @@ _windowFunctions = {
     if (!options)
       options = { };
 
-    var cssObject = function() {
-      var obj = { fontSize: container.css("fontSize") };
-      if (!options.noVerticalAdjust) {
-        if (options.useMarginBottom)
-          obj.marginBottom = container.css("marginBottom");
-        else
-          obj.marginTop = container.css("marginTop");
-      }
-      return cssObject;
-    };
-
     if (!container.text())
-      return cssObject();
+      return _windowFunctions._autoFitCssObject(container, options);
 
     var contents = container.children();
     if (!contents.length)
-      return cssObject();
+      return _windowFunctions._autoFitCssObject(container, options);
     else if (1 < contents.length)
       contents = container.wrapInner("<span>").children().addClass("autoFitTextWrapper");
 
@@ -117,25 +106,21 @@ _windowFunctions = {
     var maxH = container.innerHeight();
     var targetH = (((100 + overage) / 100) * maxH);
 
+    if (!maxW || !maxH)
+      /* broken browser refusing to calculate/report container size, nothing we can do here */
+      return _windowFunctions._autoFitCssObject(container, options);
+
 //FIXME - using window height is wrong, e.g. for fixed-aspect views like the scoreboard,
 //        it should be the aspect-corrected height; maybe referenceFontSize should be mandatory param?
     var referenceFontSize = options.referenceFontSize || $(window).height();
     var minFontSize = ((min * referenceFontSize) / 100);
     var maxFontSize = ((max * referenceFontSize) / 100);
 
+    var currentFontSize = function() {
+      return Number(container.css("fontSize").replace(/px$/, ""));
+    };
     var overSize = function() {
       return (contents.outerWidth(true) > maxW) || (contents.outerHeight(true) > targetH);
-    };
-    var atPercentHeight = function() {
-      return (contents.outerHeight(true) > (percentHeight * targetH));
-    };
-    var checkSize = function() {
-      if (overSize())
-        return 1;
-      else if (atPercentHeight())
-        return 0;
-      else
-        return -1;
     };
     var lastFontSize = 0;
     var fontSizeChanged = function() {
@@ -162,17 +147,6 @@ _windowFunctions = {
       else
         container.css("margin-top", vShift+"px");
     };
-    var currentFontSize = function() {
-      return Number(container.css("fontSize").replace(/px$/, ""));
-    };
-    var shrinkToFit = function() {
-      var reduceBy = 1;
-      while (overSize()) {
-        updateFontSize(currentFontSize() - reduceBy);
-        if (!fontSizeChanged())
-          reduceBy++;
-      }
-    };
 
     updateTop();
     if (currentFontSize() > maxFontSize)
@@ -181,19 +155,38 @@ _windowFunctions = {
       container.css("fontSize", minFontSize);
 
     while (0 < iterations--) {
-      var check = checkSize();
-      if ((-1 == check) && !updateSizes(currentFontSize(), maxFontSize))
+      if (overSize()) {
+        if (!updateSizes(minFontSize, currentFontSize()))
+          break;
+      } else if (contents.outerHeight(true) > (percentHeight * targetH))
         break;
-      if (0 == check)
-        break;
-      if ((1 == check) && !updateSizes(minFontSize, currentFontSize()))
+      else if (!updateSizes(currentFontSize(), maxFontSize))
         break;
     }
-    shrinkToFit();
+    var reduceBy = 1;
+    while (overSize()) {
+      updateFontSize(currentFontSize() - reduceBy);
+      if (!fontSizeChanged())
+        reduceBy++;
+    }
 
     contents.filter(".autoFitTextWrapper").children().unwrap();
-    return cssObject();
+    return _windowFunctions._autoFitCssObject(container, options);
   },
+  _autoFitCssObject: function(container, options) {
+    if (!options.returnCssObject)
+      return;
+    var obj = { fontSize: container.css("fontSize") };
+    if (!options.noVerticalAdjust) {
+      if (options.useMarginBottom)
+        obj.marginBottom = container.css("marginBottom");
+      else
+        obj.marginTop = container.css("marginTop");
+    }
+    return obj;
+  },
+
+
 
   /* URL parameters */
   getParam: function(param) {
