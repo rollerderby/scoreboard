@@ -252,7 +252,7 @@ function setupClocks() {
   });
 
 // FIXME - this intermission stuff is a mess, can it get fixed up or simplified?!?
-  var intermissionAutoFitText = _windowFunctions.enableAutoFitText("#Intermission>div.Name.TextContainer");
+  var intermissionAutoFitText = _autoFit.enableAutoFitText("#Intermission>div.Name.TextContainer");
   $sbThisPage.$sbBindAddRemoveEach("Intermission", function(event,node) {
     $("#Intermission>div.Name>a")
       .append($("<span>").addClass("Unofficial "+node.$sbId))

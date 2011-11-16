@@ -52,6 +52,7 @@ _include("/fonts", [
 
 /* Core functionality */
 _include("/javascript", [
+  "autofit.js",
   "core.js",
   "controls.js",
   "timeconversions.js",

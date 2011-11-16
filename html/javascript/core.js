@@ -132,7 +132,7 @@
  *       conversion to boolean, if applicable).
  *   autoFitText: boolean || {}
  *     If true, the HTML element text will be auto-fit to its immediate parent,
- *     using _windowFunctions.enableAutoFitText() with no options.
+ *     using _autoFit.enableAutoFitText() with no options.
  *     If set to an object, that object will be used as the options.
  *     Note that if the container/parent is already is enabled for auto-fit,
  *     it may ignore any new options and continue to use its initial options
@@ -263,7 +263,7 @@ _crgScoreBoard = {
           var opts = $.extend({}, options);
           if (!$.isjQuery(container) || !container.length)
             return false;
-          sbElement.bind("content", _windowFunctions.enableAutoFitText(container, opts));
+          sbElement.bind("content", _autoFit.enableAutoFitText(container, opts));
           return true;
         };
         enableAutoFit() || setTimeout(enableAutoFit);
