@@ -263,7 +263,13 @@ _crgScoreBoard = {
           var opts = $.extend({}, options);
           if (!$.isjQuery(container) || !container.length)
             return false;
-          sbElement.bind("content", _autoFit.enableAutoFitText(container, opts));
+          var doAutoFit = _autoFit.enableAutoFitText(container, opts);
+          sbElement.bind("content", function(event) {
+            if (container.closest("body").length)
+              doAutoFit();
+            else
+              sbElement.unbind("content", event);
+          });
           return true;
         };
         enableAutoFit() || setTimeout(enableAutoFit);

@@ -16,11 +16,16 @@ _autoFit = {
       return null;
     if (e.data("AutoFit"))
       return e.data("AutoFit");
-    e.data("AutoFit", function() { return _autoFit.autoFitText(e, options); });
-    $(window).bind("resize", e.data("AutoFit"));
-    e.data("AutoFit").call();      // auto-fit the text now,
-    setTimeout(e.data("AutoFit")); // and also later as page may not be laid out fully yet
-    return e.data("AutoFit");
+    var doAutoFit = function() { return _autoFit.autoFitText(e, options); };
+    e.data("AutoFit", doAutoFit);
+    $(window).bind("resize", function(event) {
+      if (e.closest("body").length)
+        doAutoFit();
+      else
+        $(window).unbind("resize", event);
+    });
+    setTimeout(doAutoFit); // run initial autofit deferred
+    return doAutoFit;
   },
   disableAutoFitText: function(e) {
     if (!e.data("AutoFit"))
@@ -93,7 +98,7 @@ _autoFit = {
     params.maxFontSize = ((params.max * params.referenceFontSize) / 100);
 
     if (!params.maxW || !params.maxH)
-      /* broken browser refusing to calculate/report container size, nothing we can do here */
+      // likely a last call for a removed element; in any case, can't autofit for a 0-size element
       return _autoFit._cssObject(container, options);
 
     if (_autoFit._currentFontSize(container) > params.maxFontSize)
