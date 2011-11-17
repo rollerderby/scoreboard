@@ -118,6 +118,8 @@ _autoFit = {
 
     if (!options.noVerticalAdjust) {
       var vShift = ((params.maxH - contents.outerHeight(true)) / 2);
+      // adjust for browser-specific vertical adjustment of text
+      vShift -= contents.position().top;
       if (options.useMarginBottom)
         container.css("margin-bottom", (-1*vShift)+"px");
       else
