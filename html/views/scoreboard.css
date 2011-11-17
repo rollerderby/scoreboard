@@ -104,13 +104,9 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   /* Name sub-box */
   #Timeouts>div.Name { left: 0%; top: 0%; width: 100%; height: 30%; border-radius: 8% / 25%; }
-  #Timeouts>div.Name.TextContainer { font-size: 3.75%; }
-  #Timeouts>div.Name.TextContainer>a { top: 10%; }
 
   /* Number sub-boxes */
   #Timeouts>div.Number { bottom: 0%; width: 45%; height: 50%; border-radius: 25%/ 25%; }
-  #Timeouts>div.Number.TextContainer { font-size: 9%; }
-  #Timeouts>div.Number.TextContainer>a { top: -15%; }
   #Timeouts>div.Team1,#Timeouts>div.Team2.SwapTeams { left: 0%; right: auto; }
   #Timeouts>div.Team2,#Timeouts>div.Team1.SwapTeams { left: auto; right: 0%; }
 /* End Timeouts */

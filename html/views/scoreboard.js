@@ -94,7 +94,8 @@ function setupTeams() {
   $("<div>").attr("id", "Timeouts").appendTo("#sbDiv");
 
   $("<div>").addClass("Name WhiteBox").appendTo("#Timeouts");
-  $("<div><a>Timeouts</a></div>").addClass("Name TextContainer").appendTo("#Timeouts");
+  var timeoutsName = $("<div><a>Timeouts</a></div>").addClass("Name TextContainer").appendTo("#Timeouts");
+  _autoFit.enableAutoFitText(timeoutsName, { overage: -20 });
 
   $.each( [ "1", "2" ], function() {
     var team = String(this);
@@ -102,8 +103,11 @@ function setupTeams() {
 
     $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#Timeouts")
       .append($("<div>").addClass("RedBox full"));
-    $("<div>").addClass("Team Team"+team+" Number TextContainer").appendTo("#Timeouts")
-      .append(sbTeam.$sb("Timeouts").$sbElement("<a>", "Number"));
+    var teamTimeouts = $("<div><a/></div>").addClass("Team Team"+team+" Number TextContainer")
+      .appendTo("#Timeouts");
+    sbTeam.$sb("Timeouts").$sbElement(teamTimeouts.children("a"), { sbelement: {
+      autoFitText: { overage: 15, useMarginBottom: true }
+    } }, "Number");
 
     var teamDiv = $("<div>").addClass("Team Team"+team).appendTo("#sbDiv");
     $("<div>").addClass("TeamAnimationQueue").appendTo(teamDiv);
@@ -125,7 +129,7 @@ function setupTeams() {
 
     sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
     sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
-    sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 50 } } }, "Score");
+    sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 40 } } }, "Score");
     sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>div>a"), { sbelement: { autoFitText: true } });
 
     sbTeam.$sb("Name").$sbBindAndRun("content", function(event,value) {
