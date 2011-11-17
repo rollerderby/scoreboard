@@ -68,92 +68,81 @@ _autoFit = {
       options = { };
 
     if (!container.text())
-      return _autoFit._autoFitCssObject(container, options);
+      return _autoFit._cssObject(container, options);
 
     var contents = container.children();
     if (!contents.length)
-      return _autoFit._autoFitCssObject(container, options);
+      return _autoFit._cssObject(container, options);
     else if (1 < contents.length)
       contents = container.wrapInner("<span>").children().addClass("autoFitTextWrapper");
 
-    var min = options.min || 0.1;
-    var max = options.max || 100;
-    var iterations = options.iterations || 30;
-    var percentHeight = (options.percentHeight || 98) / 100;
-    var overage = options.overage || 0;
-
-    var maxW = container.innerWidth();
-    var maxH = container.innerHeight();
-    var targetH = (((100 + overage) / 100) * maxH);
-
-    if (!maxW || !maxH)
-      /* broken browser refusing to calculate/report container size, nothing we can do here */
-      return _autoFit._autoFitCssObject(container, options);
+    var params = {
+      min: (options.min || 0.1),
+      max: (options.max || 100),
+      iterations: (options.iterations || 30),
+      percentHeight: ((options.percentHeight || 98) / 100),
+      maxW: container.innerWidth(),
+      maxH: container.innerHeight(),
+      targetH: (((100 + (options.overage || 0)) * container.innerHeight()) / 100)
+    };
 
 //FIXME - using window height is wrong, e.g. for fixed-aspect views like the scoreboard,
 //        it should be the aspect-corrected height; maybe referenceFontSize should be mandatory param?
-    var referenceFontSize = options.referenceFontSize || $(window).height();
-    var minFontSize = ((min * referenceFontSize) / 100);
-    var maxFontSize = ((max * referenceFontSize) / 100);
+    params.referenceFontSize = (options.referenceFontSize || $(window).height());
+    params.minFontSize = ((params.min * params.referenceFontSize) / 100);
+    params.maxFontSize = ((params.max * params.referenceFontSize) / 100);
 
-    var currentFontSize = function() {
-      return Number(container.css("fontSize").replace(/px$/, ""));
-    };
-    var overSize = function() {
-      return (contents.outerWidth(true) > maxW) || (contents.outerHeight(true) > targetH);
-    };
-    var lastFontSize = 0;
-    var fontSizeChanged = function() {
-      var changed = (lastFontSize != currentFontSize());
-      lastFontSize = currentFontSize();
-      return changed;
-    };
-    var updateSizes = function(minNewSize, maxNewSize) {
-      minFontSize = Number(minNewSize);
-      maxFontSize = Number(maxNewSize);
-      updateFontSize((minFontSize + maxFontSize) / 2);
-      return fontSizeChanged();
-    };
-    var updateFontSize = function(size) {
-      container.css("fontSize", size+"px");
-      updateTop();
-    };
-    var updateTop = function() {
-      if (options.noVerticalAdjust)
-        return;
-      var vShift = ((maxH - contents.outerHeight(true)) / 2);
+    if (!params.maxW || !params.maxH)
+      /* broken browser refusing to calculate/report container size, nothing we can do here */
+      return _autoFit._cssObject(container, options);
+
+    if (_autoFit._currentFontSize(container) > params.maxFontSize)
+      container.css("fontSize", params.maxFontSize);
+    if (_autoFit._currentFontSize(container) < params.minFontSize)
+      container.css("fontSize", params.minFontSize);
+
+    while (0 < params.iterations--) {
+      if (_autoFit._overSize(contents, params)) {
+        if (!_autoFit._updateMinMaxFontSizes(container, params, params.minFontSize, _autoFit._currentFontSize(container)))
+          break;
+      } else if (contents.outerHeight(true) > (params.percentHeight * params.targetH))
+        break;
+      else if (!_autoFit._updateMinMaxFontSizes(container, params, _autoFit._currentFontSize(container), params.maxFontSize))
+        break;
+    }
+    var reduceBy = 1;
+    while (_autoFit._overSize(contents, params)) {
+      if (!_autoFit._updateFontSize(container, _autoFit._currentFontSize(container) - reduceBy))
+        reduceBy++;
+    }
+
+    if (!options.noVerticalAdjust) {
+      var vShift = ((params.maxH - contents.outerHeight(true)) / 2);
       if (options.useMarginBottom)
         container.css("margin-bottom", (-1*vShift)+"px");
       else
         container.css("margin-top", vShift+"px");
-    };
-
-    updateTop();
-    if (currentFontSize() > maxFontSize)
-      container.css("fontSize", maxFontSize);
-    if (currentFontSize() < minFontSize)
-      container.css("fontSize", minFontSize);
-
-    while (0 < iterations--) {
-      if (overSize()) {
-        if (!updateSizes(minFontSize, currentFontSize()))
-          break;
-      } else if (contents.outerHeight(true) > (percentHeight * targetH))
-        break;
-      else if (!updateSizes(currentFontSize(), maxFontSize))
-        break;
     }
-    var reduceBy = 1;
-    while (overSize()) {
-      updateFontSize(currentFontSize() - reduceBy);
-      if (!fontSizeChanged())
-        reduceBy++;
-    }
-
     contents.filter(".autoFitTextWrapper").children().unwrap();
-    return _autoFit._autoFitCssObject(container, options);
+    return _autoFit._cssObject(container, options);
   },
-  _autoFitCssObject: function(container, options) {
+  _currentFontSize: function(container) {
+    return Number(container.css("fontSize").replace(/px$/, ""));
+  },
+  _updateFontSize: function(container, size) {
+    var last = _autoFit._currentFontSize(container);
+    container.css("fontSize", size+"px");
+    return (last != _autoFit._currentFontSize(container));
+  },
+  _updateMinMaxFontSizes: function(container, params, newMin, newMax) {
+    params.minFontSize = Number(newMin);
+    params.maxFontSize = Number(newMax);
+    return _autoFit._updateFontSize(container, (params.minFontSize + params.maxFontSize) / 2);
+  },
+  _overSize: function(contents, params) {
+    return ((contents.outerWidth(true) > params.maxW) || (contents.outerHeight(true) > params.targetH));
+  },
+  _cssObject: function(container, options) {
     if (!options.returnCssObject)
       return;
     var obj = { fontSize: container.css("fontSize") };
