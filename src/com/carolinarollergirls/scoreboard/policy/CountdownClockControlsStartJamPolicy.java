@@ -8,9 +8,13 @@ public class CountdownClockControlsStartJamPolicy extends AbstractClockRunningCh
 {
   public CountdownClockControlsStartJamPolicy() {
     super();
-    setDescription("This starts the Jam by calling the ScoreBoardModel.startJam() method when the Countdown clock reaches its minimum value (by default 0).");
 
     addClock(Clock.ID_COUNTDOWN);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("This starts the Jam by calling the ScoreBoardModel.startJam() method when the Countdown clock reaches its minimum value (by default 0).");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {

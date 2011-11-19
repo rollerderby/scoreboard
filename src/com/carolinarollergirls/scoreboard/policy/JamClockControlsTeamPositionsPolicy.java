@@ -10,9 +10,13 @@ public class JamClockControlsTeamPositionsPolicy extends AbstractClockRunningCha
 {
   public JamClockControlsTeamPositionsPolicy() {
     super();
-    setDescription("This clears all Team Positions (who are not in the Penalty Box) when the Jam clock is stopped, sets all Skaters to Not Lead Jammer, and sets the Team to Not Lead Jammer.");
 
     addClock(Clock.ID_JAM);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("This clears all Team Positions (who are not in the Penalty Box) when the Jam clock is stopped, sets all Skaters to Not Lead Jammer, and sets the Team to Not Lead Jammer.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {

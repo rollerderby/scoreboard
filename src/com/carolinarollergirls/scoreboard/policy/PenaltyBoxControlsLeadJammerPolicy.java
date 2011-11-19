@@ -10,6 +10,10 @@ public class PenaltyBoxControlsLeadJammerPolicy extends AbstractSkaterPenaltyBox
 {
   public PenaltyBoxControlsLeadJammerPolicy() {
     super();
+  }
+
+  public void reset() {
+    super.reset();
     setDescription("This removes Lead Jammer from any Skater sent to the Penalty Box.");
   }
 

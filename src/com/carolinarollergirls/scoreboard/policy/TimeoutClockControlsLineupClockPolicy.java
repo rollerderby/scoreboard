@@ -8,9 +8,13 @@ public class TimeoutClockControlsLineupClockPolicy extends AbstractClockRunningC
 {
   public TimeoutClockControlsLineupClockPolicy() {
     super();
-    setDescription("This controls the Lineup clock based on the Timeout clock.  When the Timeout clock starts, the Lineup clock is stopped then reset.");
 
     addClock(Clock.ID_TIMEOUT);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("This controls the Lineup clock based on the Timeout clock.  When the Timeout clock starts, the Lineup clock is stopped then reset.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {

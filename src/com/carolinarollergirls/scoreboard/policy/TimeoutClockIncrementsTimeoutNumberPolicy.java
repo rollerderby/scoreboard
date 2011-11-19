@@ -8,9 +8,13 @@ public class TimeoutClockIncrementsTimeoutNumberPolicy extends AbstractClockRunn
 {
   public TimeoutClockIncrementsTimeoutNumberPolicy() {
     super();
-    setDescription("This controls the Timeout clock number.  When the Timeout clock stops, the Timeout number is incremented..");
 
     addClock(Clock.ID_TIMEOUT);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("This controls the Timeout clock number.  When the Timeout clock stops, the Timeout number is incremented..");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {

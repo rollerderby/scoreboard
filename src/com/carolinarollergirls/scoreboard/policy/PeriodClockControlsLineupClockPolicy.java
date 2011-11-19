@@ -8,9 +8,13 @@ public class PeriodClockControlsLineupClockPolicy extends AbstractClockRunningCh
 {
   public PeriodClockControlsLineupClockPolicy() {
     super();
-    setDescription("This controls the Lineup clock based on the Period clock.  When the Period clock stops and its time is equal to its minimum (if counting down, or its maximum if counting up), and the Jam clock is also stopped, the Lineup clock is stopped and reset.");
 
     addClock(Clock.ID_PERIOD);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("This controls the Lineup clock based on the Period clock.  When the Period clock stops and its time is equal to its minimum (if counting down, or its maximum if counting up), and the Jam clock is also stopped, the Lineup clock is stopped and reset.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {

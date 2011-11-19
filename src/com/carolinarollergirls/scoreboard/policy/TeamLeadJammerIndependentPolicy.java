@@ -16,6 +16,10 @@ public class TeamLeadJammerIndependentPolicy extends DefaultPolicyModel
 {
   public TeamLeadJammerIndependentPolicy() {
     super(ID);
+  }
+
+  public void reset() {
+    super.reset();
     setDescription("When enabled, teams will use their Position(Jammer) to track LeadJammer.  When disabled, teams will track LeadJammer internally.  This should be enabled if tracking lineups, and disabled if not tracking lineups.");
   }
 

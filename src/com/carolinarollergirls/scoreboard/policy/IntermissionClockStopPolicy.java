@@ -9,7 +9,6 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
 {
   public IntermissionClockStopPolicy() {
     super();
-    setDescription("When the Intermission clock is over, this resets the Period and Jam clock times, and (optionally) increments both of their numbers.  This will only modify the clocks if both are stopped and the Period clock's time is at its end (if counting down, its minimum; if counting up, its maximum).");
 
     PolicyModel.ParameterModel periodIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_INCREMENT_NUMBER, "Boolean", String.valueOf(true));
     PolicyModel.ParameterModel periodResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_NUMBER, "Boolean", String.valueOf(false));
@@ -50,6 +49,11 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
     addParameterModel(jamResetTime);
 
     addClock(Clock.ID_INTERMISSION);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("When the Intermission clock is over, this resets the Period and Jam clock times, and (optionally) increments both of their numbers.  This will only modify the clocks if both are stopped and the Period clock's time is at its end (if counting down, its minimum; if counting up, its maximum).");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {

@@ -10,9 +10,13 @@ public class JamClockEndsOvertimePolicy extends AbstractClockRunningChangePolicy
 {
   public JamClockEndsOvertimePolicy() {
     super();
-    setDescription("This ends Overtime (if the bout is in Overtime).  When the Jam clock stops, Overtime is set to false.");
 
     addClock(Clock.ID_JAM);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("This ends Overtime (if the bout is in Overtime).  When the Jam clock stops, Overtime is set to false.");
   }
 
   protected void clockRunningChange(Clock clock, boolean running) {

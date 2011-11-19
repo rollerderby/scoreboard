@@ -8,9 +8,13 @@ public class JamClockControlsLineupClockPolicy extends AbstractClockRunningChang
 {
   public JamClockControlsLineupClockPolicy() {
     super();
-    setDescription("This controls the Lineup clock based on the Jam clock.  When the Jam clock starts, the Lineup clock is stopped.  When the Jam clock stops, and the Period clock is running, and the Lineup clock is not running, the Lineup clock is reset then started.");
 
     addClock(Clock.ID_JAM);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("This controls the Lineup clock based on the Jam clock.  When the Jam clock starts, the Lineup clock is stopped.  When the Jam clock stops, and the Period clock is running, and the Lineup clock is not running, the Lineup clock is reset then started.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {

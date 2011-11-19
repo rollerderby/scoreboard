@@ -8,12 +8,16 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
 {
   public IntermissionClockStartPolicy() {
     super();
-    setDescription("When the Period is over, this sets and starts the Intermission clock time and optionally sets the number to the Period number.");
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_NUMBER, "Boolean", String.valueOf(true)));
 
     addClock(Clock.ID_JAM);
     addClock(Clock.ID_PERIOD);
+  }
+
+  public void reset() {
+    super.reset();
+    setDescription("When the Period is over, this sets and starts the Intermission clock time and optionally sets the number to the Period number.");
   }
 
   // FIXME - these should be common utility methods, and probably implemented using Formatter and Scanner.
