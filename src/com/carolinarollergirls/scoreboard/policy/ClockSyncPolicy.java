@@ -11,10 +11,10 @@ import com.carolinarollergirls.scoreboard.defaults.*;
  */
 public class ClockSyncPolicy extends DefaultPolicyModel
 {
-	public ClockSyncPolicy() {
-		super(ID);
-		setDescription("When enabled, all clocks will sync to the nearest second.  This allows all clocks to change in sync, however when any clock is started it will either be delayed or accelerated by up to 500 ms.  When disabled, clocks will start immediately, but will run out of sync with each other.  If disabled and then re-enabled, any currently running clock will remain unsynced until it stops.");
-	}
+  public ClockSyncPolicy() {
+    super(ID);
+    setDescription("When enabled, all clocks will sync to the nearest second.  This allows all clocks to change in sync, however when any clock is started it will either be delayed or accelerated by up to 500 ms.  When disabled, clocks will start immediately, but will run out of sync with each other.  If disabled and then re-enabled, any currently running clock will remain unsynced until it stops.");
+  }
 
-	public static final String ID = "ClockSyncPolicy";
+  public static final String ID = "ClockSyncPolicy";
 }

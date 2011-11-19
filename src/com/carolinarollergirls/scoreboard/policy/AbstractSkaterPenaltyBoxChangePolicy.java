@@ -8,18 +8,18 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractSkaterPenaltyBoxChangePolicy extends AbstractSkaterChangePolicy
 {
-	public AbstractSkaterPenaltyBoxChangePolicy() {
-		super();
-		addSkaterProperty("PenaltyBox");
-	}
-	public AbstractSkaterPenaltyBoxChangePolicy(String id) {
-		super(id);
-		addSkaterProperty("PenaltyBox");
-	}
+  public AbstractSkaterPenaltyBoxChangePolicy() {
+    super();
+    addSkaterProperty("PenaltyBox");
+  }
+  public AbstractSkaterPenaltyBoxChangePolicy(String id) {
+    super(id);
+    addSkaterProperty("PenaltyBox");
+  }
 
-	protected void skaterChange(Skater s, Object v) {
-		skaterPenaltyBoxChange(s, ((Boolean)v).booleanValue());
-	}
+  protected void skaterChange(Skater s, Object v) {
+    skaterPenaltyBoxChange(s, ((Boolean)v).booleanValue());
+  }
 
-	protected abstract void skaterPenaltyBoxChange(Skater skater, boolean penaltyBox);
+  protected abstract void skaterPenaltyBoxChange(Skater skater, boolean penaltyBox);
 }
