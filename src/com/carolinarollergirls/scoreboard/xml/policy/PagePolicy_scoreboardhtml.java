@@ -12,13 +12,17 @@ public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
 {
 	public PagePolicy_scoreboardhtml() {
 		super();
-		setName("Page(scoreboard.html) Policy");
-		setDescription("This controls elements specific to the scoreboard.html page.");
 
 		addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, RESET_INTERMISSION_CONFIRMED, "Boolean", String.valueOf(true)));
 
 		addClock(Clock.ID_INTERMISSION);
 	}
+
+  public void reset() {
+    super.reset();
+		setName("Page(scoreboard.html) Policy");
+		setDescription("This controls elements specific to the scoreboard.html page.");
+  }
 
 	public void clockRunningChange(Clock clock, boolean running) {
 		boolean isIntermission = clock.getId().equals(Clock.ID_INTERMISSION);
