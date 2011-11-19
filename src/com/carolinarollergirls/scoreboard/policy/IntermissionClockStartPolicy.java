@@ -9,6 +9,7 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
   public IntermissionClockStartPolicy() {
     super();
 
+    addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_TIME_TO, "String", DEFAULT_INTERMISSION_TIME));
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_NUMBER, "Boolean", String.valueOf(true)));
 
     addClock(Clock.ID_JAM);
@@ -41,11 +42,6 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
     return ((min*60)+sec)*1000;
   }
 
-  public void setScoreBoardModel(ScoreBoardModel sbM) {
-    super.setScoreBoardModel(sbM);
-    addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_TIME_TO, "String", msToMinSec(sbM.getClock(Clock.ID_INTERMISSION).getMaximumTime())));
-  }
-
   protected void startIntermissionClock() {
     ClockModel ic = getScoreBoardModel().getClockModel(Clock.ID_INTERMISSION);
     if (!ic.isRunning()) {
@@ -72,4 +68,6 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
 
   public static final String SET_INTERMISSION_TIME_TO = "SetIntermissionTimeTo";
   public static final String SET_INTERMISSION_NUMBER = "SetIntermissionNumber";
+
+  public static final String DEFAULT_INTERMISSION_TIME = "15:00";
 }
