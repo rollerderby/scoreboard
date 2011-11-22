@@ -1,4 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html>
 <html>
 
 <body>
@@ -10,76 +10,38 @@
 </center>
 </a>
 
-<h2><b>This page needs updating</b></h2>
-<p>If you're seeing this text, and this is a stable (not beta) release,
-please <a href="mailto:Mrtemper@carolinarollergirls.com">email me</a> and
-let me know I forgot to update the guide.html page in the release.
-Note that the info below probably is out of date.
+<h2>ScoreBoard Wiki</h2>
+<p>Documentation for the scoreboard has moved to a wiki.  Please 
+<a href="https://sourceforge.net/apps/mediawiki/derbyscoreboard/index.php?title=Main_Page">
+visit the wiki</a> for all docs.
 </p>
 
-<h2><a id="Contacts">Contacts</a></h2>
-<p>To contact the developers and/or get news about development, <a href="http://lists.sourceforge.net/lists/listinfo/derbyscoreboard-devel">join the mailing list</a>.
-You also can read the <a href="http://sourceforge.net/mailarchive/forum.php?forum_name=derbyscoreboard-devel">mailing list archive</a>.
+<h2>Contacts</h2>
+<p>To contact the developers and/or get news about development, 
+<a href="http://lists.sourceforge.net/lists/listinfo/derbyscoreboard-devel">join the mailing list</a>.
+You also can read the 
+<a href="http://sourceforge.net/mailarchive/forum.php?forum_name=derbyscoreboard-devel">mailing list archive</a>.
 </p>
-<p>If you find any bugs, please report them on the mailing list and/or <a href="http://sourceforge.net/tracker/?group_id=174565&atid=869732">open a bug</a>.
-If you would like to see any new features added, please send an email to the mailing list and/or <a href="http://sourceforge.net/tracker/?group_id=174565&atid=869735">open a feature request</a>.
-</p>
-
-<h2><a id="Browsers">Notes on Browsers</a></h2>
-There are pros and cons of using the various browsers that are out there.
-<ul>
-<li><h4><a href="http://getfirefox.com/">Firefox</a></h4>
-<p>Firefox 4 does very well and is available pretty much anywhere.  Firefox 3 is not fully compatible with the HTML5 specifications that the scoreboard uses, so the scoreboard will not look correct; at least version 4 of Firefix should be used.  One notable downside to Firefox is its "fullscreen" mode (toggle via F11) is not really full screen - it leaves a small white border at the top of the screen.  Also, Firefox has a annoying thing called "Offline mode" that will (incorrectly) prevent you from accessing *any* page, including the scoreboard server running on your local machine.  You have to <a href="#OfflineMode">disable offline mode</a> for it to work.
-</p>
-</li>
-<li><h4><a href="http://chrome.google.com/">Google Chrome</a></h4>
-<p>Google Chrome is good and available on most platforms.  It is better than Firefox at fullscreen, as it actually does do fullscreen (no strange white bar at the top).  However, it's got its own problems; it is not quite as stable as Firefox, and <a href="#OfflineMode">it does not handle "offline" correctly in Linux</a>.
-</p>
-</li>
-<li><h4><a href="http://apple.com/safari/">Safari</a></h4>
-<p>Apple Safari is a good browser, however it is slightly lagging in correct support for some of the newer HTML5 features that the scoreboard uses, such as full/correct support for the css3 "border-radius" property.  So currently, there are better alternatives such as Firefox 4 or Chrome.  In the future, I expect Safari to fully/correctly implement the HTML5 specification and be usable with the scoreboard.
-</p>
-</li>
-<li><h4><a href="http://microsoft.com/windows/internet-explorer/">Internet Explorer</a></h4>
-<p>Internet Explorer has a long history of completely disregarding internet standards, but it's getting slightly better.  However, it's the only browser that lacks a key feature that the scoreboard is fundamentally based on, so it simply will not work.  For technically minded people, the specific problem is that IE does not allow "expando" properties on XML document elements; this prevents the jQuery data() function from working on XML document elements, which is an essential part of how the scoreboard currently works.
-</p>
-<p>So, you cannot use IE with the scoreboard.
-</p>
-</li>
-</ul>
-
-<h2><a id="OfflineMode">Using the ScoreBoard with no internet (or local) connection</a></h2>
-<p>You don't need an internet connection to use the scoreboard; since you're running it on your
-own machine, the web browsers should connect to "localhost" (unless you're using multiple computers
-and have set up your own private network).  However, if you are running with no active network interface,
-Firefox goes into "offline mode" and will not let you connect, even to localhost.  You have to click "File"
-then uncheck "Offline mode".  Note that Firefox will automatically re-enter "offline mode" if any of your
-network interfaces change state, for example if you plug in a network cable and then disconnect it.  
-Also, Google Chrome on Linux, when it detects you have no active network interfaces, simply
-won't let you connect to anything, and there's nothing you can do about it.  There is a bug open:<br>
-<a href="http://code.google.com/p/chromium/issues/detail?id=41408">http://code.google.com/p/chromium/issues/detail?id=41408</a>
+<p>If you find any bugs, please report them on the mailing list and/or 
+<a href="http://sourceforge.net/tracker/?group_id=174565&atid=869732">open a bug</a>.
+If you would like to see any new features added, please send an email to the mailing list and/or 
+<a href="http://sourceforge.net/tracker/?group_id=174565&atid=869735">open a feature request</a>.
 </p>
 
-<h2><a id="ImageSizes">Image Sizes</a></h2>
-<p>The scoreboard currently uses 3 different types of images, each of which should be a specific size (or aspect ratio) for best viewability.  Note that team logo and ad images do not have to be specifically these sizes, but otherwise they will not completely fit into the space provided in the scoreboard display, there will be some "blank" space above or beside them, depending on their specific aspect ratio.  The fullscreen images are adjusted/stretched to fit across the entire 4:3 scoreboard.
+<h2>Image Sizes</h2>
+<p>As a quick reference for the optimal sizes/aspects for each of the image types:
 <ul>
   <li>Team Logo images should be 640x240, or aspect ratio 2.667:1</li>
-  <li>Fullscreen images should be 1600x1200, or aspect ratio 4:3 (the main scoreboard is fixed at 4:3 ratio and resizes to fit the browser window)</li>
+  <li>Fullscreen images should be 1600x1200, or aspect ratio 4:3 
+    (the main scoreboard is fixed at 4:3 ratio and resizes to fit the browser window)
+  </li>
   <li>Ad images should be 1600x320, or aspect ratio 5:1</li>
 </ul>
+Note that team logo and ad images do not have to be specifically these sizes, 
+but otherwise they will not completely fit into the space provided in the scoreboard display, 
+there will be some "blank" space above or beside them, depending on their specific aspect ratio.  
+The fullscreen images are adjusted/stretched to fit across the entire 4:3 scoreboard.
 </p>
-
-<h2><a id="ConfigurationFiles">Configuration files</a></h2>
-<p>The main configuration file is the <i>crg.scoreboard.properties</i> Java Properties file.  It is located in the <i>config</i> directory.  This file controls many core settings for the scoreboard, but you should not need to change anything in this file.</p>
-<p>The scoreboard loads its initial data from xml file(s) in the <i>config</i> directory.  First, it will try to load the first valid auto-saved scoreboard from the <i>config/autosave</i> directory; if there are no (valid) auto-saved files there, it will load (in alphabetical order) all the xml files from the <i>config/default</i> directory.
-</p>
-
-<center>
-<font size=-1>
-To contact me, please visit the <a href="http://sourceforge.net/projects/derbyscoreboard/">Sourceforge Site</a> or email:<br>
-<a href="mailto:MrTemper@carolinarollergirls.com">Mr Temper</a><br>
-</font>
-</center>
 
 </body>
 
