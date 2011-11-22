@@ -116,7 +116,7 @@
  *   convert: function(value) || object
  *     If a function, it will be used to convert from the XML element
  *     value into the HTML element value.  In the function, 'this'
- *     points to the XML element whose value is being converted.
+ *     points to the $sb(XML element) whose value is being converted.
  *     If an object, it will be checked for the XML element value
  *     (after converting to a String), and if the value exists
  *     as a member of the object, that member value will be used.
@@ -156,7 +156,7 @@
  *   convert: function(value)
  *     This function should convert from the HTML element value into
  *     the XML element value.  In the function, 'this' points to the
- *     HTML element whose value is being converted.
+ *     $(HTML element) whose value is being converted.
  *   
  * Global variables
  *   XML_ELEMENT_SELECTOR
@@ -247,7 +247,7 @@ _crgScoreBoard = {
     var allElements = elements.find("*").andSelf();
     allElements.data("sbelement", sbelement).addClass(className)
       .attr($.extend({ "data-sbelement": _crgScoreBoard.getPath(sbElement), "data-UUID": _crgScoreBoard.newUUID() }, attributes));
-    _crgScoreBoard.setHtmlValue(allElements, sbElement.$sbGet());
+    _crgScoreBoard.setHtmlValue(sbElement, allElements, sbElement.$sbGet());
     _crgScoreBoard.setupScoreBoardElement(sbElement, allElements, sbelement);
     return elements;
   },
@@ -414,7 +414,7 @@ _crgScoreBoard = {
   },
 
 //FIXME - move this to windowfunctions
-  setHtmlValue: function(htmlelements, value) {
+  setHtmlValue: function(sbElement, htmlelements, value) {
     htmlelements.each(function() {
       var e = $(this);
       var v = value; // Don't modify the main value, since we are in $.each()
@@ -426,7 +426,7 @@ _crgScoreBoard = {
       if (sbE.convert) {
         var tmpV = v;
         if ($.type(sbE.convert) == "function")
-          tmpV = sbE.convert.call(this, tmpV);
+          tmpV = sbE.convert.call(sbElement, tmpV);
         else if ($.type(sbE.convert) == "object")
           tmpV = sbE.convert[String(tmpV)];
         if (tmpV === undefined)
@@ -493,7 +493,7 @@ _crgScoreBoard = {
       var oldContent = _crgScoreBoard.getXmlElementText(e);
       if (oldContent !== newContent) {
         _crgScoreBoard.setXmlElementText(e, newContent);
-        _crgScoreBoard.setHtmlValue($("[data-sbelement='"+e.$sbPath+"']"), newContent);
+        _crgScoreBoard.setHtmlValue(e, $("[data-sbelement='"+e.$sbPath+"']"), newContent);
         triggerObj.fireContent = true;
         triggerObj.oldContent = oldContent;
         triggerObj.newContent = newContent;
