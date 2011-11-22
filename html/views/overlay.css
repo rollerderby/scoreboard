@@ -1,36 +1,39 @@
 
+/* Change this background color to whatever your overlay chromakey is set to */
+#Overlay { background: #0f0; }
+
 img { position: absolute; }
 div { position: absolute; }
 
 a {
-  position: absolute; width: 100%; height: 100%;
+  position: relative;
   font-family: 'LiberationSans',helvetica;
   font-weight: bold;
 }
 
-#TopBar { left: 27%; right: 28%; top: 6%; bottom: 86%; font-size: 7%; text-align: center; }
+#TopBar { left: 27%; right: 28%; top: 6%; bottom: 86%; text-align: center; }
 
-#ClockPeriodNumber { top: 0%; height: 100%; left: 0%; right: 74%; }
-#ClockPeriodTime { top: 0%; height: 100%; left: 27%; right: 35%; }
+#ClockPeriodNumber { top: 0%; height: 100%; left: 3%; right: 77%; }
+#ClockPeriodTime { top: 0%; height: 100%; left: 30%; right: 38%; }
 #ClockPeriodTime>a:not(.ShowPeriod) { display: none; }
 
-#ClockIntermissionTime { top: 0%; height: 100%; left: 27%; right: 35%; }
+#ClockIntermissionTime { top: 0%; height: 100%; left: 30%; right: 38%; }
 #ClockIntermissionTime>a:not(.ShowIntermission) { display: none; }
 
-#ClockJamTime { top: 0%; height: 100%; left: 66%; right: 0%; }
+#ClockJamTime { top: 0%; height: 100%; left: 69%; right: 3%; }
 #ClockJamTime>a:not(.ShowJam) { display: none; }
 
-#ClockLineupTime { top: 0%; height: 100%; left: 66%; right: 0%; }
+#ClockLineupTime { top: 0%; height: 100%; left: 69%; right: 3%; }
 #ClockLineupTime>a:not(.ShowLineup) { display: none; }
 
-#ClockTimeoutTime { top: 0%; height: 100%; left: 66%; right: 0%; }
+#ClockTimeoutTime { top: 0%; height: 100%; left: 69%; right: 3%; }
 #ClockTimeoutTime>a:not(.ShowTimeout) { display: none; }
 
-#BottomBar { left: 21.5%; right: 22%; top: 85.5%; bottom: 6.5%; font-size: 7%; text-align: center; }
+#BottomBar { left: 21.5%; right: 22%; top: 85.5%; bottom: 6.5%; text-align: center; }
 
-#Team1Name { top: 0%; height: 100%; left: 0%; right: 72%; }
-#Team1Score { top: 0%; height: 100%; left: 28%; right: 51%; }
-#Team2Name { top: 0%; height: 100%; left: 51%; right: 21%; }
-#Team2Score { top: 0%; height: 100%; left: 79%; right: 0%; }
+#Team1Name { top: 0%; height: 100%; left: 2%; right: 74%; }
+#Team1Score { top: 0%; height: 100%; left: 30%; right: 53%; }
+#Team2Name { top: 0%; height: 100%; left: 53%; right: 23%; }
+#Team2Score { top: 0%; height: 100%; left: 81%; right: 2%; }
 
-#Overlay { width: 100%; height: 100%; z-index: -10; }
+#Overlay { width: 100%; height: 100%; z-index: -1; }

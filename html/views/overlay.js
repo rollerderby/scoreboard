@@ -1,48 +1,65 @@
 
+XML_ELEMENT_SELECTOR = "ScoreBoard";
+
 function setupMainDiv(div) {
   div.css({ position: "fixed" });
 
   _crgUtils.bindAndRun($(window), "resize", function() {
     var aspect4x3 = _windowFunctions.get4x3Dimensions();
-    $("#mainDiv").css(aspect4x3).css("fontSize", aspect4x3.height);
+    div.css(aspect4x3).css("fontSize", aspect4x3.height);
   });
 }
-
-$(function() {
-  $("a.ClockMinSec").data("sbelement", { convert: _timeConversions.msToMinSec });
-});
 
 $sb(function() {
   setupMainDiv($("#mainDiv"));
 
   var showClockJLT = function() {
     if ($sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue()) {
-      $("a.ClockJLT").switchClass("ShowLineup ShowTimeout", "ShowJam");
+      $("a.ClockJLT").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
     } else if ($sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue()) {
-      $("a.ClockJLT").switchClass("ShowLineup ShowJam", "ShowTimeout");
+      $("a.ClockJLT").removeClass("ShowLineup ShowJam").addClass("ShowTimeout");
     } else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue()) {
-      $("a.ClockJLT").switchClass("ShowJam ShowTimeout", "ShowLineup");
+      $("a.ClockJLT").removeClass("ShowJam ShowTimeout").addClass("ShowLineup");
     } else {
-      $("a.ClockJLT").switchClass("ShowLineup ShowTimeout", "ShowJam");
+      $("a.ClockJLT").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
     }
   };
   var showClockPI = function() {
     if ($sb("ScoreBoard.Clock(Period).Running").$sbIsTrue()) {
-      $("a.ClockPI").switchClass("ShowIntermission", "ShowPeriod");
+      $("a.ClockPI").removeClass("ShowIntermission").addClass("ShowPeriod");
     } else if ($sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue()) {
-      $("a.ClockPI").switchClass("ShowPeriod", "ShowIntermission");
+      $("a.ClockPI").removeClass("ShowPeriod").addClass("ShowIntermission");
     } else {
-      $("a.ClockPI").switchClass("ShowIntermission", "ShowPeriod");
+      $("a.ClockPI").removeClass("ShowIntermission").addClass("ShowPeriod");
     }
   };
 
-  $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("content", showClockJLT);
-  $sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("content", showClockJLT);
-  $sb("ScoreBoard.Clock(Timeout).Running").$sbBindAndRun("content", showClockJLT);
+  $.each( [ "1", "2" ], function(i, team) {
+    $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a", {
+      sbelement: { autoFitText: true }
+    });
+    $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a", {
+      sbelement: { autoFitText: true }
+    });
+  });
 
-  $sb("ScoreBoard.Clock(Period).Running").$sbBindAndRun("content", showClockPI);
-  $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("content", showClockPI);
+  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number", {
+    sbelement: { autoFitText: true, autoFitTextContainer: "div" }
+  });
 
-  $sb("ScoreBoard.Team(1).Name").$sbElement("#Team1Name>a", { sbelement: { autoFitText: true } });
-  $sb("ScoreBoard.Team(2).Name").$sbElement("#Team2Name>a", { sbelement: { autoFitText: true } });
+  var setupClock = function(clock) {
+    $sb("ScoreBoard.Clock("+clock+").Time").$sbElement("#Clock"+clock+"Time>a", {
+      sbelement: {
+        autoFitText: true,
+        convert: _timeConversions.msToMinSec
+      } });
+  };
+  $.each( [ "Jam", "Lineup", "Timeout" ], function(i, clock) {
+    setupClock(clock);
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("content", showClockJLT);
+  });
+  $.each( [ "Period", "Intermission" ], function(i, clock) {
+    setupClock(clock);
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("content", showClockPI);
+  });
 });
