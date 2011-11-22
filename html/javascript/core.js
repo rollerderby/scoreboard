@@ -164,6 +164,9 @@
  *     XML top-level elements will be processed.  Using this can
  *     help avoid unnecessary processing of XML elements that the
  *     page will never use.  This can be useful e.g. in mobile browsers.
+ *     If used, this should be set to a standard selector string;
+ *     for example "ScoreBoard,Teams,Pages".  Only top level elements
+ *     can be selected.  By default all top level elements are processed.
  */
 
 $sb = function(arg) {
