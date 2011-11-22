@@ -169,6 +169,13 @@
  *     can be selected.  By default all top level elements are processed.
  */
 
+function is$sb(arg) {
+  if ($.isjQuery(arg))
+    return (arg.$sbExtended == true);
+  else
+    return false;
+}
+
 $sb = function(arg) {
   if (!arg)
     arg = "";
