@@ -3,39 +3,69 @@
   <ScoreBoard>
     <Team Id="1">
       <Name>Team 1</Name>
+      <Logo empty="true" />
       <Score>0</Score>
       <Timeouts>3</Timeouts>
       <LeadJammer>false</LeadJammer>
-      <TeamLogo>
-        <Id />
-        <Name />
-        <Type />
-        <Directory />
-        <Filename />
-      </TeamLogo>
-      <Position Id="Jammer" />
-      <Position Id="Pivot" />
-      <Position Id="Blocker1" />
-      <Position Id="Blocker2" />
-      <Position Id="Blocker3" />
+      <Pass>0</Pass>
+      <Position Id="Blocker1">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Blocker2">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Blocker3">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Pivot">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Jammer">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
     </Team>
     <Team Id="2">
       <Name>Team 2</Name>
+      <Logo empty="true" />
       <Score>0</Score>
       <Timeouts>3</Timeouts>
       <LeadJammer>false</LeadJammer>
-      <TeamLogo>
-        <Id />
-        <Name />
-        <Type />
-        <Directory />
-        <Filename />
-      </TeamLogo>
-      <Position Id="Jammer" />
-      <Position Id="Pivot" />
-      <Position Id="Blocker1" />
-      <Position Id="Blocker2" />
-      <Position Id="Blocker3" />
+      <Pass>0</Pass>
+      <Position Id="Blocker1">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Blocker2">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Blocker3">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Pivot">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
+      <Position Id="Jammer">
+        <Id empty="true" />
+        <Name empty="true" />
+        <Number empty="true" />
+      </Position>
     </Team>
   </ScoreBoard>
 </document>
