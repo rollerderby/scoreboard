@@ -187,11 +187,12 @@ function createMetaControlTable() {
   $sb("ScoreBoard.Clock(Period).Number").$sbBindAndRun("content", updatePeriodEndDoPulse);
 
 // FIXME - change this to flag not tied to specific intermission
+  var confirmedButton = $("<label/><input type='checkbox'/>");
   $sb("Pages.Page(scoreboard.html).Intermission(2).Confirmed")
-    .$sbControl("<label/><input type='checkbox'/>", { sbelement: {
+    .$sbControl(confirmedButton, { sbelement: {
       convert: function(value) {
-        if ($(this).is("input"))
-          $(this).button("option", "label", isTrue(value)?"Official Score":"Unofficial Score");
+        confirmedButton.filter("input:checkbox")
+          .button("option", "label", isTrue(value)?"Official Score":"Unofficial Score");
         return value;
       }
     }, sbcontrol: {
@@ -771,11 +772,13 @@ function createScoreBoardViewPreviewRows(table, type) {
   var intermissionControlDialog = createIntermissionControlDialog();
   var intermissionControlButton = $("<button>Intermission Control</button>").button()
     .click(function() { intermissionControlDialog.dialog("open"); });
-  var swapTeamsButton = pageSb.$sb("SwapTeams").$sbControl("<label/><input type='checkbox'/>", { sbcontrol: {
+  var swapTeamsButton = $("<label/><input type='checkbox'/>");
+  pageSb.$sb("SwapTeams").$sbControl(swapTeamsButton, { sbcontrol: {
       button: true
     }, sbelement: {
       convert: function(value) {
-        $(this).button("option", "label", (isTrue(value)?"Team sides swapped":"Team sides normal"));
+        swapTeamsButton.filter("input:checkbox")
+          .button("option", "label", (isTrue(value)?"Team sides swapped":"Team sides normal"));
         return value;
       }
     } });
