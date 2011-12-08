@@ -24,7 +24,8 @@ _autoFit = {
       else
         $(window).unbind("resize", event);
     });
-    setTimeout(doAutoFit); // run initial autofit deferred
+    setTimeout(doAutoFit, 100); // run initial autofit deferred
+    setTimeout(doAutoFit, 2000); // again in 2 sec; bug workaround FIXME
     return doAutoFit;
   },
   disableAutoFitText: function(e) {
