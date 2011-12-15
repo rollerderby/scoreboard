@@ -8,8 +8,7 @@
 
 /* Tab divs */
   #tabsDiv>div { padding: 0px; }
-  #tabsDiv>div>div.Buttons { width: 100%; text-align: center; font-size: 75%; }
-  #tabsDiv>div>div.Buttons>button { float: left; }
+  #tabsDiv>div>div.Buttons { width: 100%; text-align: left; font-size: 75%; }
 /* End Tab divs */
 
 /* Type groups */
