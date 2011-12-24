@@ -37,10 +37,10 @@
         <CurrentView>scoreboard</CurrentView>
         <SwapTeams>false</SwapTeams>
         <View Id="Image">
-          <Src>/images/fullscreen/american_flag.jpg</Src>
+          <Src>/images/fullscreen/American Flag.jpg</Src>
         </View>
         <View Id="Video">
-          <Src>/videos/fullscreen/american-flag.mp4</Src>
+          <Src>/videos/fullscreen/American Flag.webm</Src>
         </View>
         <View Id="CustomHtml">
           <Src>/customhtml/fullscreen/example.html</Src>
