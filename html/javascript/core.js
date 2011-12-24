@@ -437,11 +437,12 @@ _crgScoreBoard = {
       if (e.is("a,span")) {
         if (e.html() != v)
           e.html(v);
-      } else if (e.is("img"))
-        e.attr("src", v);
-// FIXME - may need to support multiple video files with multiple source subelements?
-// FIXME - need to start video when visible and when changing src; stop when not visible.
-      else if (e.is("video")) {
+      } else if (e.is("img")) {
+        if (v == "")
+          e.attr("src", "/images/blank.png");
+        else
+          e.attr("src", v);
+      } else if (e.is("video")) {
         var currentlyPlaying = !this.paused;
         e.attr("src", v);
         this.load();
