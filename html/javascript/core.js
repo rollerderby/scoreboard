@@ -196,7 +196,6 @@ $sb = function(arg) {
 };
 
 _crgScoreBoard = {
-  scoreBoardRegistrationKey: null,
   POLL_INTERVAL_MIN: 100,
   POLL_INTERVAL_MAX: 500,
   POLL_INTERVAL_INCREMENT: 10,
@@ -300,7 +299,7 @@ _crgScoreBoard = {
 
   updateServer: function(e) {
     $.ajax({
-        url: "/XmlScoreBoard/set?key="+_crgScoreBoard.scoreBoardRegistrationKey,
+        url: "/XmlScoreBoard/set?key="+_crgScoreBoard.pollAjaxParam.data.key,
         type: "POST",
         processData: false,
         contentType: "text/xml;encoding=UTF-8",
@@ -525,48 +524,46 @@ _crgScoreBoard = {
       .each(function(index) {
         _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
       });
-    $sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
     if (!_crgScoreBoard.documentLoaded) {
+      $sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
       _crgScoreBoard.documentLoaded = true;
       _crgScoreBoard.documentEvents.triggerHandler("load:ScoreBoard");
       _crgScoreBoard.loadCustom();
     }
   },
 
-  pollScoreBoard: function() {
-    var handlers = {
+  pollAjaxParam: {
+    global: false,
+    cache: false,
+    url: "/XmlScoreBoard/get",
+    data: { key: null },
+    complete: function() {
+      if (_crgScoreBoard.pollRate > _crgScoreBoard.POLL_INTERVAL_MAX)
+        _crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MAX;
+      setTimeout(_crgScoreBoard.pollScoreBoard, _crgScoreBoard.pollRate);
+    },
+    statusCode: {
       304: function() { /* No change since last poll, increase poll rate */
         _crgScoreBoard.pollRate += _crgScoreBoard.POLL_INTERVAL_INCREMENT;
       },
       404: function() {
-//FIXME - we could possibly handle this better than reloading the page...
+        //FIXME - we could possibly handle this better than reloading the page...
         window.location.reload();
       },
       200: function(data, textStatus, jqxhr) {
         _crgScoreBoard.processScoreBoardXml(jqxhr.responseXML);
         _crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MIN;
       }
-    };
+    }
+  },
 
-    var schedule = function() {
-      if (_crgScoreBoard.pollRate > _crgScoreBoard.POLL_INTERVAL_MAX)
-        _crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MAX;
-      setTimeout(_crgScoreBoard.pollScoreBoard, _crgScoreBoard.pollRate);
-    };
-
-    $.ajax({
-      global: false,
-      cache: false,
-      url: "/XmlScoreBoard/get",
-      data: { key: _crgScoreBoard.scoreBoardRegistrationKey },
-      complete: schedule,
-      statusCode: handlers
-    });
+  pollScoreBoard: function() {
+    $.ajax(_crgScoreBoard.pollAjaxParam);
   },
 
   parseRegistrationKey: function(xml, status) {
-    this.scoreBoardRegistrationKey = $(xml).find("document>Key").text();
-    this.pollScoreBoard();
+    _crgScoreBoard.pollAjaxParam.data.key = $(xml).find("document>Key").text();
+    _crgScoreBoard.pollScoreBoard();
   },
 
   scoreBoardRegister: function() {
