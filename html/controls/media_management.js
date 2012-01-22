@@ -83,13 +83,21 @@ function setupTab(parentName, childName, previewElement) {
     childname: childName,
     subChildren: true,
     add: function(event,node) {
+      var type = $sb(node.parent()).$sbId;
+      var srcprefix = "/"+parentName.toLowerCase()+"/"+type+"/";
       var table = $("#"+parentName+">div.Type>table.Type").filter(function() {
-        return $(this).data("Type") == $sb(node.parent()).$sbId;
+        return $(this).data("Type") == type;
       });
       var newRow = table.find("tr.ItemTemplate").clone(true)
         .removeClass("ItemTemplate").addClass("Item").data(childName, node.$sbId).data("sb", node);
       node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
-      node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"));
+      node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"), {
+        sbelement: {
+          convert: function(val) { return String(val).replace(new RegExp("^"+srcprefix), ""); }
+        }, sbcontrol: {
+          convert: function(val) { return srcprefix + String(val); }
+        }
+      });
       node.$sb("Src").$sbElement(previewElement).click(function() { 
         $(this).parent().removeClass("Show");
       }).appendTo(newRow.find("td.Preview"));
