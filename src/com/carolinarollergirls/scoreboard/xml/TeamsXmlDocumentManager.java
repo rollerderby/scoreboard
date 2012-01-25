@@ -57,7 +57,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
           teamId = teamId.replaceFirst("Team", "");
         Element direction = element.getParentElement();
         Element type = direction.getParentElement();
-        processTransfer(type.getName(), direction.getName(), teamId, element.getText());
+        processTransfer(type.getName(), direction.getName(), teamId, editor.getText(element));
       }
     }
   }
@@ -82,10 +82,10 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 
     Element name = team.getChild("Name");
     if (null != name)
-      editor.addElement(newTeam, "Name", null, name.getText());
+      editor.addElement(newTeam, "Name", null, editor.getText(name));
     Element logo = team.getChild("Logo");
     if (null != logo)
-      editor.addElement(newTeam, "Logo", null, logo.getText());
+      editor.addElement(newTeam, "Logo", null, editor.getText(logo));
 
     Iterator skaters = team.getChildren("Skater").iterator();
     while (skaters.hasNext())
@@ -109,10 +109,10 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 
     Element sName = skater.getChild("Name");
     if (null != sName)
-      editor.addElement(newSkater, "Name", null, sName.getText());
+      editor.addElement(newSkater, "Name", null, editor.getText(sName));
     Element sNumber = skater.getChild("Number");
     if (null != sNumber)
-      editor.addElement(newSkater, "Number", null, sNumber.getText());
+      editor.addElement(newSkater, "Number", null, editor.getText(sNumber));
   }
 
   protected void processTransfer(String type, String direction, String sbTeamId, String teamId) throws JDOMException {
@@ -138,10 +138,10 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
       team.reset();
     Element name = newTeam.getChild("Name");
     if (null != name)
-      team.setName(name.getText());
+      team.setName(editor.getText(name));
     Element logo = newTeam.getChild("Logo");
     if (null != logo)
-      team.setLogo(logo.getText());
+      team.setLogo(editor.getText(logo));
     Iterator skaters = newTeam.getChildren("Skater").iterator();
     while (skaters.hasNext()) {
       Element skater = (Element)skaters.next();
@@ -150,8 +150,8 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         continue;
       String sName = "";
       String sNumber = "";
-      try { sName = skater.getChild("Name").getText(); } catch ( Exception e ) { }
-      try { sNumber = skater.getChild("Number").getText(); } catch ( Exception e ) { }
+      sName = editor.getText(skater.getChild("Name"));
+      sNumber = editor.getText(skater.getChild("Number"));
       team.addSkaterModel(sId, sName, sNumber);
     }
   }

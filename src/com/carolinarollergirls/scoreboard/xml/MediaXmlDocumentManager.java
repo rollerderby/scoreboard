@@ -64,8 +64,8 @@ public class MediaXmlDocumentManager extends OpenXmlDocumentManager implements X
     String src = "/"+managedName+"/"+typeName+"/"+fileName;
     Element typeE = createMediaTypeElement(typeName);
     Element e = editor.getElement(typeE, getMediaName(), id);
-    e.addContent(new Element("Name").setText(name));
-    e.addContent(new Element("Src").setText(src));
+    e.addContent(editor.setText(new Element("Name"), name));
+    e.addContent(editor.setText(new Element("Src"), src));
     update(e);
   }
 

@@ -19,7 +19,7 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
     Element e = createXPathElement();
     e.addContent(new Element("Filename"));
     e.addContent(new Element("Save"));
-    e.addContent(new Element("Error").setText("false"));
+    e.addContent(editor.setText(new Element("Error"), "false"));
     e.addContent(new Element("Message"));
     update(e);
   }
@@ -33,17 +33,17 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
 
   protected void save() {
     Element msg = new Element("Message");
-    Element error = new Element("Error").setText("false");
+    Element error = editor.setText(new Element("Error"), "false");
     Element updateE = createXPathElement().addContent(msg).addContent(error);
     String filename = "";
     try {
-      filename = getXPathElement().getChild("Filename").getText();
+      filename = editor.getText(getXPathElement().getChild("Filename"));
       ScoreBoardToXmlFile toFile = new ScoreBoardToXmlFile(DIRECTORY_NAME, filename);
       toFile.save(getXmlScoreBoard());
-      msg.setText("Saved ScoreBoard to file '"+toFile.getFile().getName()+"'");
+      editor.setText(msg, "Saved ScoreBoard to file '"+toFile.getFile().getName()+"'");
     } catch ( Exception e ) {
-      msg.setText("Could not save to file '"+filename+"' : "+e.getMessage());
-      error.setText("true");
+      editor.setText(msg, "Could not save to file '"+filename+"' : "+e.getMessage());
+      editor.setText(error, "true");
     } finally {
       update(updateE);
     }

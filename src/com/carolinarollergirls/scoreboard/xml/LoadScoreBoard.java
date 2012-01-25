@@ -31,10 +31,10 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager
   protected void processChildElement(Element e) throws Exception {
     super.processChildElement(e);
     if (e.getName().equals("LoadFile")) {
-      loadFromFile.setFile(e.getText()); 
+      loadFromFile.setFile(editor.getText(e)); 
       loadFromFile.load(xmlScoreBoard);
     } else if (e.getName().equals("MergeFile")) {
-      loadFromFile.setFile(e.getText());
+      loadFromFile.setFile(editor.getText(e));
       loadFromFile.merge(xmlScoreBoard);
     }
   }

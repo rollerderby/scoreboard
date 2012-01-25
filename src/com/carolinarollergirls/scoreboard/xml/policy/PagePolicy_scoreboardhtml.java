@@ -32,7 +32,7 @@ public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
 				Element pageE = getPageElement();
 				String intermissionN = String.valueOf(clock.getNumber());
 				Element intermissionE = editor.getElement(pageE, "Intermission", intermissionN, false);
-				Element confirmedE = intermissionE.getChild("Confirmed").setText("false");
+				Element confirmedE = editor.setText(intermissionE.getChild("Confirmed"), "false");
 				getScoreBoardModel().getXmlScoreBoard().mergeElement(confirmedE);
 			} catch ( Exception e ) {
 				/* Ignore?  probably no existing element for current Intermission... */

@@ -51,7 +51,7 @@ public class DefaultXmlDocumentManager implements XmlDocumentManager
 
   protected void processChildElement(Element e) throws Exception {
     /* By default, ignore unless this is a Reset */
-    if (e.getName().equals("Reset") && Boolean.parseBoolean(e.getText()))
+    if (e.getName().equals("Reset") && Boolean.parseBoolean(editor.getText(e)))
       reset();
   }
 

@@ -22,7 +22,7 @@ public abstract class XmlStats extends SegmentedXmlDocumentManager implements Sc
   public void reset() {
     super.reset();
     statsStartTime = new Date().getTime();
-    update(createXPathElement().addContent(new Element("Start").setText(Long.toString(statsStartTime))));
+    update(createXPathElement().addContent(editor.setText(new Element("Start"), Long.toString(statsStartTime))));
   }
 
   public abstract void scoreBoardChange(ScoreBoardEvent event);

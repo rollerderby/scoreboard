@@ -133,7 +133,7 @@ public class XmlInterpretedStats extends XmlStats
 
   protected void addTeamScore(Team team) {
     // From this method, only updateTeamScore if there isn't already a score there.
-    try { getTeam(team).getChild("Score").getText(); }
+    try { editor.getText(getTeam(team).getChild("Score")); }
     catch ( Exception e ) { updateTeamScore(team, team.getScore()); }
   }
   protected void updateTeamScore(Team team, int score) { updateTeamScore(team, jamNumber, score); }
@@ -146,7 +146,7 @@ public class XmlInterpretedStats extends XmlStats
   }
   protected void updateTeamPoints(Team team, int jam, int score) {
     Element e = getTeamStats(team);
-    try { score -= Integer.parseInt(getTeam(getPreviousJam(jam), team).getChildText("Score")); }
+    try { score -= Integer.parseInt(editor.getText(getTeam(getPreviousJam(jam), team).getChild("Score"))); }
     catch ( JDOMException jE ) { }
     catch ( NoSuchElementException nseE ) { }
     editor.setElement(e, "Points", null, String.valueOf(score));
@@ -156,7 +156,7 @@ public class XmlInterpretedStats extends XmlStats
   protected void addTeamPass(Team team) { addTeamPass(team, getPassNumber(team)); }
   protected void addTeamPass(Team team, int pass) {
     // From this method, only updateTeamPassScore if there isn't already a score there.
-    try { getPass(team, pass).getChild("Score").getText(); }
+    try { editor.getText(getPass(team, pass).getChild("Score")); }
     catch ( Exception e ) { updateTeamPassScore(team, pass, team.getScore()); }
   }
   protected void updateTeamPassScore(Team team, int score) { updateTeamPassScore(team, getPassNumber(team), score); }
@@ -169,7 +169,7 @@ public class XmlInterpretedStats extends XmlStats
   }
   protected void updateTeamPassPoints(Team team, int jam, int pass, int score) {
     Element e = getTeamPassStats(team, pass);
-    try { score -= Integer.parseInt(getPreviousPass(team, jam, pass).getChildText("Score")); }
+    try { score -= Integer.parseInt(editor.getText(getPreviousPass(team, jam, pass).getChild("Score"))); }
     catch ( JDOMException jE ) { }
     catch ( NoSuchElementException nseE ) { }
     editor.setElement(e, "Points", null, String.valueOf(score));
@@ -213,7 +213,7 @@ public class XmlInterpretedStats extends XmlStats
     Team team = scoreBoard.getTeam(position.getParentElement().getAttributeValue("Id"));
     Iterator ids = position.getChildren("Id").iterator();
     while (ids.hasNext()) {
-      String id = ((Element)ids.next()).getText();
+      String id = editor.getText((Element)ids.next());
       if ("".equals(id))
         processPositionSkater(position, null);
       else
@@ -222,7 +222,7 @@ public class XmlInterpretedStats extends XmlStats
     Iterator names = position.getChildren("Name").iterator();
     while (names.hasNext()) {
       Element nameE = (Element)names.next();
-      String name = nameE.getText();
+      String name = editor.getText(nameE);
       boolean manual = Boolean.parseBoolean(nameE.getAttributeValue("manual"));
       boolean clearOnEmpty = Boolean.parseBoolean(nameE.getAttributeValue("clearOnEmpty"));
       if (manual) {
@@ -243,7 +243,7 @@ public class XmlInterpretedStats extends XmlStats
     Iterator numbers = position.getChildren("Number").iterator();
     while (numbers.hasNext()) {
       Element numberE = (Element)numbers.next();
-      String number = numberE.getText();
+      String number = editor.getText(numberE);
       boolean manual = Boolean.parseBoolean(numberE.getAttributeValue("manual"));
       boolean clearOnEmpty = Boolean.parseBoolean(numberE.getAttributeValue("clearOnEmpty"));
       if (manual) {

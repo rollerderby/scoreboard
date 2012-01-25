@@ -175,7 +175,7 @@ public class ScoreBoardXmlConverter
       Element element = (Element)children.next();
       try {
         String name = element.getName();
-        String value = editor.getContent(element);
+        String value = editor.getText(element);
         boolean bVal = Boolean.parseBoolean(value);
 
         if (name.equals("StartJam") && bVal)
@@ -244,7 +244,7 @@ public class ScoreBoardXmlConverter
       Element element = (Element)children.next();
       try {
         String name = element.getName();
-        String value = editor.getContent(element);
+        String value = editor.getText(element);
 
         boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
         boolean isReset = Boolean.parseBoolean(element.getAttributeValue("reset"));
@@ -316,7 +316,7 @@ public class ScoreBoardXmlConverter
       try {
         String name = element.getName();
         String eId = element.getAttributeValue("Id");
-        String value = editor.getContent(element);
+        String value = editor.getText(element);
 
         boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
 
@@ -366,7 +366,7 @@ public class ScoreBoardXmlConverter
       Element element = (Element)children.next();
       try {
         String name = element.getName();
-        String value = editor.getContent(element);
+        String value = editor.getText(element);
 
         if (null == value)
           continue;
@@ -388,7 +388,7 @@ public class ScoreBoardXmlConverter
       Element element= (Element)children.next();
       try {
         String name = element.getName();
-        String value = editor.getContent(element);
+        String value = editor.getText(element);
 
         if (name.equals("Parameter"))
           processPolicyParameter(policyModel, element);
@@ -414,7 +414,7 @@ public class ScoreBoardXmlConverter
       Element element = (Element)children.next();
       try {
         String name = element.getName();
-        String value = editor.getContent(element);
+        String value = editor.getText(element);
 
         if (null == value)
           continue;
@@ -438,9 +438,9 @@ public class ScoreBoardXmlConverter
       skaterModel = teamModel.getSkaterModel(id);
     } catch ( SkaterNotFoundException snfE ) {
       Element nameE = skater.getChild("Name");
-      String name = (nameE == null ? id : nameE.getText());
+      String name = (nameE == null ? id : editor.getText(nameE));
       Element numberE = skater.getChild("Number");
-      String number = (numberE == null ? "" : numberE.getText());
+      String number = (numberE == null ? "" : editor.getText(numberE));
       teamModel.addSkaterModel(id, name, number);
       skaterModel = teamModel.getSkaterModel(id);
     }
@@ -450,7 +450,7 @@ public class ScoreBoardXmlConverter
       Element element = (Element)children.next();
       try {
         String name = element.getName();
-        String value = editor.getContent(element);
+        String value = editor.getText(element);
 
         boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
 

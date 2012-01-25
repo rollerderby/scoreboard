@@ -58,13 +58,13 @@ public class XmlDocumentEditor
     return addElement(parent, name, id, null);
   }
 
-  public Element addElement(Element parent, String name, String id, String content) {
+  public Element addElement(Element parent, String name, String id, String text) {
     Document d = parent.getDocument();
     Element element = new Element(name);
     if (null != id && !"".equals(id))
       element.setAttribute("Id", id);
     synchronized (d) {
-      parent.addContent(setContent(element, content));
+      parent.addContent(setText(element, text));
     }
     return element;
   }
@@ -77,8 +77,8 @@ public class XmlDocumentEditor
     return setElement(parent, name, id, null);
   }
 
-  public Element setElement(Element parent, String name, String id, String content) {
-    return setContent(getElement(parent, name, id), content);
+  public Element setElement(Element parent, String name, String id, String text) {
+    return setText(getElement(parent, name, id), text);
   }
 
   public Element getElement(Element parent, String name) {
@@ -115,42 +115,45 @@ public class XmlDocumentEditor
     }
   }
 
-  public void removeContent(Element e) {
+  public void removeText(Element e) {
     if (null == e)
       return;
 
     synchronized (e) {
-      e.removeAttribute("empty");
-      e.removeContent(new ContentFilter(ContentFilter.TEXT));
+      e.removeContent(cdataTextFilter);
     }
   }
 
-  public Element setContent(Element e, String content) {
-    if (null == e || null == content)
+  public Element setText(Element e, String text) {
+    if (null == text)
+      return e;
+    return setText(e, new CDATA(text));
+  }
+  public Element setText(Element e, CDATA text) {
+    if (null == e || null == text)
       return e;
 
     synchronized (e) {
-      removeContent(e);
+      removeText(e);
 
-      if ("".equals(content))
-        e.setAttribute("empty", "true");
-      else
-        e.addContent(content);
+      e.addContent(text);
     }
 
     return e;
   }
 
-  public String getContent(Element e) {
+  public String getText(Element e) {
     if (null == e)
       return null;
 
     synchronized (e) {
-      String s = e.getText();
-      if ("".equals(s))
-        return ("true".equals(e.getAttributeValue("empty")) ? "" : null);
-      else
-        return s;
+      List cdata = e.getContent(cdataFilter);
+      if (cdata.length == 0)
+        return null;
+      StringBuffer s = new StringBuffer();
+      while (cdata.hasNext())
+        s.append(((CDATA)cdata.next()).getText());
+      return s.toString();
     }
   }
 
@@ -257,7 +260,7 @@ public class XmlDocumentEditor
       while (attrs.hasNext())
         to.setAttribute((Attribute)((Attribute)attrs.next()).clone());
 
-      setContent(to, getContent(from));
+      setText(to, getText(from));
 
       Iterator children = from.getChildren().iterator();
       while (children.hasNext()) {
@@ -309,7 +312,7 @@ public class XmlDocumentEditor
       while (attrs.hasNext())
         newE.setAttribute((Attribute)((Attribute)attrs.next()).clone());
       if (includeTextFirst)
-        newE.setText(e.getText());
+        setText(newE, getText(e));
     }
     if (e.getParent().equals(e.getDocument().getRootElement()))
       d.getRootElement().addContent(newE);
@@ -324,4 +327,6 @@ public class XmlDocumentEditor
   protected XMLOutputter xmlOutputter = new XMLOutputter();
 
   private static XmlDocumentEditor xmlDocumentEditor = new XmlDocumentEditor();
+  private static ContentFilter cdataFilter = new ContentFilter(ContentFilter.CDATA);
+  private static ContentFilter cdataTextFilter = new ContentFilter(ContentFilter.CDATA|ContentFilter.TEXT);
 }
