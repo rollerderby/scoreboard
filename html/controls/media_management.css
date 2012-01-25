@@ -1,7 +1,8 @@
 
 /* Template */
   body>table.TypeTemplate { display: none; }
-  body>div.AddDialogTemplate { display: none; }
+  body>div.AddSpecificDialogTemplate { display: none; }
+  body>div.AddTypeDialogTemplate { display: none; }
   body>div.TabTemplate { display: none; }
   table tr.ItemTemplate { display: none; }
 /* End Template */
@@ -42,3 +43,8 @@
   table.Type tr.Item>td.Preview.Show>button { display: none; }
   table.Type tr.Item>td.Preview>:not(button) { max-width: 400px; max-height: 100px; }
 /* End Type groups */
+
+/* Add Type Dialog */
+  div.AddTypeDialog>table { width: 100%; border: 1px solid black; }
+  div.AddTypeDialog>table>tbody>tr.Exists>td { display: none; }
+/* End Add Type Dialog */

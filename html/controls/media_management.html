@@ -40,6 +40,7 @@
         </a>
         <button class="Show">Show</button>
         <button class="Hide">Hide</button>
+        <button class="Add">Add</button>
       </th>
     </tr>
     <tr class="Controls">
@@ -62,10 +63,22 @@
   </tbody>
 </table>
 
-<div class="AddDialogTemplate">
+<div class="AddSpecificDialogTemplate">
   <a class="Type">Type:</a><input type="text" size="8" class="Type"/>
   <a class="Name">Name:</a><input type="text" size="8" class="Name"/>
   <a class="Src">Source:</a><input type="text" size="12" class="Src"/>
+</div>
+
+<div class="AddTypeDialogTemplate">
+  <button class="Refresh">Refresh List</button>
+  <table class="List">
+    <thead>
+      <tr><th>Add</th><th>Source</th></tr>
+    </thead>
+    <tbody>
+      <tr colspan=2 class="Status"><td></td></tr>
+    </tbody>
+  </table>
 </div>
 
 </body>
