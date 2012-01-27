@@ -1,0 +1,180 @@
+Items that need to be done:
+
+--- ITEMS REMAINING BEFORE 1.1 ---
+
+None!
+
+--- ITEMS TO CONSIDER FOR 1.2 ---
+
+* Integrate the contributed StAXBuilder.
+
+* Rusty's "base uri" support for Element and the rest.
+
+* Investigate a way to do in-memory validation.  First step is probably
+  to get an in-memory representation of a DTD as per
+  http://xmlhack.com/read.php?item=626
+  http://www.wutka.com/dtdparser.html
+  http://lists.denveronline.net/lists/jdom-interest/2000-July/001431.html
+  http://lists.denveronline.net/lists/jdom-interest/2001-February/004661.html
+  Maybe new DTDValidator(dtd).validate(doc);
+  Then later new SchemaValidator(schema).validate(doc);
+  Could instead do doc.validate(dtd/schema) but then we'd have to dynamically
+  switch between recognizing DTDs and the various schemas.
+  The method would probably either throw InvalidDocumentException or might
+  take an ErrorHandler-style interface implementation if there are non-fatal
+  errors possible.
+  It'd also be possible to have a programmatic verifier, that determined for
+  example if an orderid="100" entry was valid against a database entry.
+  http://dcb.sun.com/practices/devnotebook/xml_msv.jsp
+  http://www.sun.com/software/xml/developers/multischema/
+
+* Create an HTMLOutputter to handle the HTML specific aspects (closing tags,
+  escaped characters like &eacute;, etc).
+
+--- FUTURE IDEAS ---
+
+* Utility methods for comparing nodes by content instead of reference.
+  Hopefully base this on whatever standard emerges in this area.
+
+* Note in the docs where necessary our multithreading policy.
+
+* Create a JDOM logo.
+
+* Look at http://www.sosnoski.com/opensrc/xmls/format.html.
+
+* Look at interfaces for the core classes, Element with ConcreteElement being
+  our code.  Base on the factory model.  Allow no access between objects
+  except using the public API, to avoid the import node problem.  Do the big
+  switchover using javax.xml.jdom as interfaces and default impl, use org.jdom
+  for the concretes.  May not need to break existing code (sick and wrong).
+  - read-only?  Experimentation happening in jdom-javax module.
+
+* Ensure JDOM is appropriately tweaked for subclassing, per the threads
+  started by Joe Bowbeer.
+  http://www.servlets.com/archive/servlet/ReadMsg?msgId=7601 begins it
+
+* Ensure JDOM is flawless regarding clone semantics, per more threads by
+  Joe Bowbeer.
+  http://www.servlets.com/archive/servlet/ReadMsg?msgId=7602 begins it
+
+* Joe summarizes his issues at
+  http://www.servlets.com/archive/servlet/ReadMsg?msgId=7697
+
+* Add in attribute type support to DOM to match what's in SAX.
+
+* Look into implementing an id() method now that we have attribute types.
+
+* Look into how the factory builder model could support giving the factory
+  extra knowledge about the context (line number, element stack, etc), and
+  allow it to report errors or to return a code indicating the element should
+  be ignored.
+  (Laurent Bihanic wrote JH a private email about this on Dec 28 2001.)
+
+* Write a "GNU JAXP (i.e. AElfred) DOM adapter" (elharo looking into this).
+
+* Create "build dist" for distribution
+  Use fixcrlf in dist (instead of package as currently done)
+  Probably include source with jdom.jar built
+
+* Populate jdom-test.  Hong Zhang <Hong.Zhang AT Sun.COM> once volunteered to
+  help with the J2EE CTS.
+
+* Add setIgnoringAllWhitespace(boolean) method.
+
+* Consider a listener interface so you could listen to doc changes.
+  (Probably after 1.1 honestly; this can be done through manual subclasses
+  already.)  Some pertinent messages on this topic:
+  http://lists.denveronline.net/lists/jdom-interest/2000-July/001586.html
+  http://lists.denveronline.net/lists/jdom-interest/2000-July/001587.html
+  http://lists.denveronline.net/lists/jdom-interest/2000-July/001600.html
+
+* Consider a "locator" ability for nodes to remember the line number on which
+  they were declared, to help debug semantic errors.
+  http://lists.denveronline.net/lists/jdom-interest/2000-October/003422.html
+
+* Consider an XMLOutputter flag or feature to convert characters with well
+  known named character entities to their named char entity form instead of
+  numeric.
+
+* Determine if DOMBuilder and DOMOutputter should transparently support DOM1.
+
+* Create a builder based on Xerces' XNI, which will be more featureful and
+  probably faster than the one based on SAX.
+  See http://lists.denveronline.net/lists/jdom-interest/2001-July/007362.html
+  Some existing SAX limitations which hurt round-tripping:
+  * Can't tell if attribute values are included from the DTD, because SAX
+    doesn't tell if attributes are standalone/implicit
+    (See http://www.saxproject.org/apidoc/org/xml/sax/ext/Attributes2.html)
+    (Thought: could use a bit in the type value to save memory)
+  * Can't get access to retain the internal dtd subset unless entity
+    expansion is off
+  * Can't get access to whitespace outside the root element.
+
+* Write a guide for contributors.  Short summary:
+    Follow Sun's coding guidelines, use 4-space (no tab) indents, no lines
+    longer than 80 characters
+
+* Consider a builder for a read-only document.  It could "intern" objects to
+  reduce memory consumption.  In fact, interning may be good for String
+  objects regardless.
+
+* Consider having the license be clear org.jdom is a protected namespace.
+
+* Think about the idea of using more inheritance in JDOM to allow
+  lightweight but not XML 1.0 complete implementations.  For example Element
+  could have a superclass "CommonXMLElement" that supported only what Common
+  XML requires.  Builders could build such elements to be faster and lighter
+  than full elements -- perfect for things like reading config files.  Lots
+  of difficulties with this design though.
+
+* Create a Verifier lookup table as an int[256] growable to int[64K] where
+  bits in the returned value indicate that char's ability to be used for a
+  task.  So "lookup[(int)'x'] & LETTER_MASK" tells us if it's a letter
+  or not.
+
+* Consider an HTMLBuilder that reads not-necessarily-well-formed HTML and
+  produces a JDOM Document.  The approach I'd suggest is to build on top of
+  JTidy first.  That gives a working implementation fast, at the cost of a
+  157K Tidy.jar in the distribution.  After that, perhaps someone would lead
+  an effort to change the JTidy code to build a JDOM Document directly,
+  instead of making a DOM Document or XML stream first.  That would be a lot
+  faster, use less memory, and make our dist smaller.  See
+  http://www.sourceforge.net/projects/jtidy for Tidy.
+  See post by Jacob.Robertson@argushealth.com on 2/13/2002.
+
+* Look at a (contrib?) outputter option using SAX filters per
+  http://lists.denveronline.net/lists/jdom-interest/2000-October/003303.html
+  http://lists.denveronline.net/lists/jdom-interest/2000-October/003304.html
+  http://lists.denveronline.net/lists/jdom-interest/2000-October/003318.html
+  http://lists.denveronline.net/lists/jdom-interest/2000-October/003535.html
+
+* Look at event-based parsing as per the following thread:
+  http://lists.denveronline.net/lists/jdom-interest/2000-November/003613.html
+  and replies.
+  Also see posts with the subject "streamdom".
+
+* Considering that local vars are considerably faster that instance vars, test
+  if using local vars can speed building.
+
+* Consider using a List of instance data so elements only use what they really
+  need (saving attrib list, namespace list)
+
+* Investigate doc.getDescription() to let people add doc descriptions.  It's
+  an idea from IBM's parser suggested by andyk.
+
+* Work on creating a deferred builder that parses only what's necessary to
+  satisfy the programmer's requests.  See Ayal Spitz' post at
+  http://lists.denveronline.net/lists/jdom-interest/2001-April/005685.html
+
+* Change the various setAttributeValue() methods in Element and
+  Attribute to check the attribute type and normalize the string
+  according to the attribute type. i.e. normalize the white space if
+  the attribute has any type other than CDATA or UNDECLARED.
+
+* Give attributes the "specified" flag like in DOM.  This probably isn't
+  receivable from SAXBuilder, but it would be from DOMBuilder and other
+  builders.  Then give XMLOutputter the ability to avoid outputting
+  "unspecified" attributes.
+
+* Should there be XPath support within Element, Document, etc?
+
