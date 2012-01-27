@@ -808,13 +808,7 @@ public class XMLOutputter implements Cloneable {
      * @param out <code>Writer</code> to use.
      */
     protected void printCDATA(Writer out, CDATA cdata) throws IOException {
-        String str = (currentFormat.mode == Format.TextMode.NORMALIZE)
-                     ? cdata.getTextNormalize()
-                     : ((currentFormat.mode == Format.TextMode.TRIM) ?
-                             cdata.getText().trim() : cdata.getText());
-        out.write("<![CDATA[");
-        out.write(str);
-        out.write("]]>");
+        out.write("<![CDATA["+cdata.getText()+"]]>");
     }
 
     /**
@@ -1031,9 +1025,8 @@ public class XMLOutputter implements Cloneable {
      */
     private void printTextRange(Writer out, List content, int start, int end
                                   ) throws IOException {
-        String previous; // Previous text printed
-        Object node;     // Next node to print
-        String next;     // Next text to print
+        Object previous;
+        Object node;
 
         previous = null;
 
@@ -1048,22 +1041,10 @@ public class XMLOutputter implements Cloneable {
             for (int i = start; i < end; i++) {
                 node = content.get(i);
 
-                // Get the unmangled version of the text
-                // we are about to print
-                if (node instanceof Text) {
-                    next = ((Text) node).getText();
-                }
-                else if (node instanceof EntityRef) {
-                    next = "&" + ((EntityRef) node).getValue() + ";";
-                }
-                else {
+                // Verify this is an expected node type
+                if (!(node instanceof Text) && !(node instanceof EntityRef)) {
                     throw new IllegalStateException("Should see only " +
                                                    "CDATA, Text, or EntityRef");
-                }
-
-                // This may save a little time
-                if (next == null || "".equals(next)) {
-                    continue;
                 }
 
                 // Determine if we need to pad the output (padding is
@@ -1072,7 +1053,7 @@ public class XMLOutputter implements Cloneable {
                     if (currentFormat.mode == Format.TextMode.NORMALIZE ||
                         currentFormat.mode == Format.TextMode.TRIM) {
                             if ((endsWithWhite(previous)) ||
-                                (startsWithWhite(next))) {
+                                (startsWithWhite(node))) {
                                     out.write(" ");
                             }
                     }
@@ -1085,11 +1066,11 @@ public class XMLOutputter implements Cloneable {
                 else if (node instanceof EntityRef) {
                     printEntityRef(out, (EntityRef) node);
                 }
-                else {
-                    printString(out, next);
+                else if (node instanceof Text) {
+                  printString(out, ((Text) node).getText());
                 }
 
-                previous = next;
+                previous = node;
             }
         }
     }
@@ -1291,6 +1272,9 @@ public class XMLOutputter implements Cloneable {
         if (obj instanceof String) {
             str = (String) obj;
         }
+        else if (obj instanceof CDATA) {
+            return false;
+        }
         else if (obj instanceof Text) {
             str = ((Text) obj).getText();
         }
@@ -1309,7 +1293,11 @@ public class XMLOutputter implements Cloneable {
     }
 
     // Determine if a string starts with a XML whitespace.
-    private boolean startsWithWhite(String str) {
+    private boolean startsWithWhite(Object o) {
+        if (!(o instanceof Text) || (o instanceof CDATA)) {
+            return false;
+        }
+        String str = ((Text) o).getText();
         if ((str != null) &&
             (str.length() > 0) &&
             Verifier.isXMLWhitespace(str.charAt(0))) {
@@ -1319,7 +1307,11 @@ public class XMLOutputter implements Cloneable {
     }
 
     // Determine if a string ends with a XML whitespace.
-    private boolean endsWithWhite(String str) {
+    private boolean endsWithWhite(Object o) {
+        if (!(o instanceof Text) || (o instanceof CDATA)) {
+            return false;
+        }
+        String str = ((Text) o).getText();
         if ((str != null) &&
             (str.length() > 0) &&
             Verifier.isXMLWhitespace(str.charAt(str.length() - 1))) {
