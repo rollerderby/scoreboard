@@ -118,8 +118,8 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
       else if (!response.isCommitted())
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
     } catch ( JDOMException jE ) {
-      response.getWriter().print(jE.getMessage());
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      ScoreBoardManager.printMessage("XmlScoreBoardServlet ERROR: "+jE.getMessage());
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
@@ -138,8 +138,8 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
       else if (!response.isCommitted())
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
     } catch ( JDOMException jE ) {
-      response.getWriter().print(jE.getMessage());
-      response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+      ScoreBoardManager.printMessage("XmlScoreBoardServlet ERROR: "+jE.getMessage());
+      response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
     }
   }
 
