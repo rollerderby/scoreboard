@@ -1,60 +1,61 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document >
-  <ScoreBoard >
+<document Version="0.2.0-20120128144059" SystemTime="1327779979435">
+  <ScoreBoard>
+    <Overtime><![CDATA[false]]></Overtime>
     <Clock Id="Period">
-      <Name>Period</Name>
-      <MinimumNumber>1</MinimumNumber>
-      <MaximumNumber>2</MaximumNumber>
-      <Number>1</Number>
-      <MaximumTime>1800000</MaximumTime>
-      <MinimumTime>0</MinimumTime>
-      <Time>1800000</Time>
-      <Running>false</Running>
-      <Direction>true</Direction>
+      <Name><![CDATA[Period]]></Name>
+      <Number><![CDATA[1]]></Number>
+      <MinimumNumber><![CDATA[1]]></MinimumNumber>
+      <MaximumNumber><![CDATA[2]]></MaximumNumber>
+      <Time><![CDATA[1800000]]></Time>
+      <MinimumTime><![CDATA[0]]></MinimumTime>
+      <MaximumTime><![CDATA[1800000]]></MaximumTime>
+      <Running><![CDATA[false]]></Running>
+      <Direction><![CDATA[true]]></Direction>
     </Clock>
     <Clock Id="Jam">
-      <Name>Jam</Name>
-      <MinimumNumber>1</MinimumNumber>
-      <MaximumNumber>999</MaximumNumber>
-      <Number>1</Number>
-      <MinimumTime>0</MinimumTime>
-      <MaximumTime>120000</MaximumTime>
-      <Time>120000</Time>
-      <Running>false</Running>
-      <Direction>true</Direction>
+      <Name><![CDATA[Jam]]></Name>
+      <Number><![CDATA[1]]></Number>
+      <MinimumNumber><![CDATA[1]]></MinimumNumber>
+      <MaximumNumber><![CDATA[999]]></MaximumNumber>
+      <Time><![CDATA[120000]]></Time>
+      <MinimumTime><![CDATA[0]]></MinimumTime>
+      <MaximumTime><![CDATA[120000]]></MaximumTime>
+      <Running><![CDATA[false]]></Running>
+      <Direction><![CDATA[true]]></Direction>
     </Clock>
     <Clock Id="Timeout">
-      <Name>Timeout</Name>
-      <MinimumNumber>1</MinimumNumber>
-      <MaximumNumber>999</MaximumNumber>
-      <Number>1</Number>
-      <MinimumTime>0</MinimumTime>
-      <MaximumTime>3600000</MaximumTime>
-      <Time>0</Time>
-      <Running>false</Running>
-      <Direction>false</Direction>
+      <Name><![CDATA[Timeout]]></Name>
+      <Number><![CDATA[1]]></Number>
+      <MinimumNumber><![CDATA[1]]></MinimumNumber>
+      <MaximumNumber><![CDATA[999]]></MaximumNumber>
+      <Time><![CDATA[0]]></Time>
+      <MinimumTime><![CDATA[0]]></MinimumTime>
+      <MaximumTime><![CDATA[3600000]]></MaximumTime>
+      <Running><![CDATA[false]]></Running>
+      <Direction><![CDATA[false]]></Direction>
     </Clock>
     <Clock Id="Lineup">
-      <Name>Lineup</Name>
-      <MinimumNumber>1</MinimumNumber>
-      <MaximumNumber>999</MaximumNumber>
-      <Number>1</Number>
-      <MinimumTime>0</MinimumTime>
-      <MaximumTime>3600000</MaximumTime>
-      <Time>0</Time>
-      <Running>false</Running>
-      <Direction>false</Direction>
+      <Name><![CDATA[Lineup]]></Name>
+      <Number><![CDATA[1]]></Number>
+      <MinimumNumber><![CDATA[1]]></MinimumNumber>
+      <MaximumNumber><![CDATA[999]]></MaximumNumber>
+      <Time><![CDATA[0]]></Time>
+      <MinimumTime><![CDATA[0]]></MinimumTime>
+      <MaximumTime><![CDATA[3600000]]></MaximumTime>
+      <Running><![CDATA[false]]></Running>
+      <Direction><![CDATA[false]]></Direction>
     </Clock>
     <Clock Id="Intermission">
-      <Name>Intermission</Name>
-      <MinimumNumber>0</MinimumNumber>
-      <MaximumNumber>999</MaximumNumber>
-      <Number>0</Number>
-      <MinimumTime>0</MinimumTime>
-      <MaximumTime>900000</MaximumTime>
-      <Time>900000</Time>
-      <Running>false</Running>
-      <Direction>true</Direction>
+      <Name><![CDATA[Intermission]]></Name>
+      <Number><![CDATA[1]]></Number>
+      <MinimumNumber><![CDATA[0]]></MinimumNumber>
+      <MaximumNumber><![CDATA[999]]></MaximumNumber>
+      <Time><![CDATA[900000]]></Time>
+      <MinimumTime><![CDATA[0]]></MinimumTime>
+      <MaximumTime><![CDATA[1800000]]></MaximumTime>
+      <Running><![CDATA[false]]></Running>
+      <Direction><![CDATA[false]]></Direction>
     </Clock>
   </ScoreBoard>
 </document>

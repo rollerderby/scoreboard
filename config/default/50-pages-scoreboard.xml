@@ -1,49 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document Version="0.2.0-beta5-20110603182137" SystemTime="1307151214820">
+<document Version="0.2.0-20120128144059" SystemTime="1327779987214">
   <Pages>
     <Page Id="scoreboard.html">
       <Intermission Id="0">
-        <HideClock />
-        <ShowUnofficial />
-        <Text>Time to Derby</Text>
-        <Confirmed />
+        <ShowUnofficial><![CDATA[false]]></ShowUnofficial>
+        <Text><![CDATA[Time to Derby]]></Text>
+        <HideClock><![CDATA[false]]></HideClock>
       </Intermission>
       <Intermission Id="1">
-        <HideClock />
-        <ShowUnofficial />
-        <Text>Halftime</Text>
-        <Confirmed />
+        <ShowUnofficial><![CDATA[false]]></ShowUnofficial>
+        <Text><![CDATA[Halftime]]></Text>
+        <HideClock><![CDATA[false]]></HideClock>
       </Intermission>
       <Intermission Id="2">
-        <ShowUnofficial>true</ShowUnofficial>
-        <Text>Final</Text>
-        <HideClock>true</HideClock>
-        <Confirmed />
+        <Confirmed><![CDATA[false]]></Confirmed>
+        <ShowUnofficial><![CDATA[true]]></ShowUnofficial>
+        <Text><![CDATA[Final]]></Text>
+        <HideClock><![CDATA[true]]></HideClock>
       </Intermission>
       <ViewOptions>
-        <CurrentView>scoreboard</CurrentView>
-        <SwapTeams>false</SwapTeams>
+        <CurrentView><![CDATA[scoreboard]]></CurrentView>
+        <SwapTeams><![CDATA[false]]></SwapTeams>
         <View Id="Image">
-          <Src>/images/fullscreen/American Flag.jpg</Src>
+          <Src><![CDATA[/images/fullscreen/American Flag.jpg]]></Src>
         </View>
         <View Id="Video">
-          <Src>/videos/fullscreen/American Flag.webm</Src>
+          <Src><![CDATA[/videos/fullscreen/American Flag.webm]]></Src>
         </View>
         <View Id="CustomHtml">
-          <Src>/customhtml/fullscreen/example.html</Src>
+          <Src><![CDATA[/customhtml/fullscreen/example.html]]></Src>
         </View>
       </ViewOptions>
       <PreviewOptions>
-        <CurrentView>scoreboard</CurrentView>
-        <SwapTeams>false</SwapTeams>
+        <CurrentView><![CDATA[scoreboard]]></CurrentView>
+        <SwapTeams><![CDATA[false]]></SwapTeams>
         <View Id="Image">
-          <Src>/images/fullscreen/American Flag.jpg</Src>
+          <Src><![CDATA[/images/fullscreen/American Flag.jpg]]></Src>
         </View>
         <View Id="Video">
-          <Src>/videos/fullscreen/American Flag.webm</Src>
+          <Src><![CDATA[/videos/fullscreen/American Flag.webm]]></Src>
         </View>
         <View Id="CustomHtml">
-          <Src>/customhtml/fullscreen/example.html</Src>
+          <Src><![CDATA[/customhtml/fullscreen/example.html]]></Src>
         </View>
       </PreviewOptions>
     </Page>
