@@ -120,6 +120,7 @@ public class XmlDocumentEditor
       return;
 
     synchronized (e) {
+      e.setAttribute("empty", "true");
       e.removeContent(cdataTextFilter);
     }
   }
@@ -130,12 +131,14 @@ public class XmlDocumentEditor
     return setText(e, new CDATA(text));
   }
   public Element setText(Element e, CDATA text) {
-    if (null == e || null == text)
+    if (null == e || null == text || null == text.getText())
       return e;
 
     synchronized (e) {
       removeText(e);
 
+      if (!"".equals(text.getText()))
+        e.removeAttribute("empty");
       e.addContent(text);
     }
 
@@ -147,13 +150,20 @@ public class XmlDocumentEditor
       return null;
 
     synchronized (e) {
-      List cdata = e.getContent(cdataFilter);
-      if (cdata.length == 0)
+      if ("true".equals(e.getAttributeValue("empty")))
+        return "";
+      List l = e.getContent(cdataFilter);
+      if (l.size() == 0)
         return null;
-      StringBuffer s = new StringBuffer();
+      StringBuffer sbuf = new StringBuffer();
+      Iterator cdata = l.iterator();
       while (cdata.hasNext())
-        s.append(((CDATA)cdata.next()).getText());
-      return s.toString();
+        sbuf.append(((CDATA)cdata.next()).getText());
+      String s = sbuf.toString();
+      if ("".equals(s))
+        return null;
+      else
+        return s;
     }
   }
 
