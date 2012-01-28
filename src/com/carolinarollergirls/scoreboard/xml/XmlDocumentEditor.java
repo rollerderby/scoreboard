@@ -219,31 +219,6 @@ public class XmlDocumentEditor
     }
   }
 
-  public String toString(Document d) { return toString(d, xmlOutputter.getFormat()); }
-  public String toString(Document d, Format f) {
-    return (xmlOutputter.getFormat().equals(f) ? xmlOutputter.outputString(d) : new XMLOutputter(f).outputString(d));
-  }
-  public String toString(Element e) { return toString(e, xmlOutputter.getFormat()); }
-  public String toString(Element e, Format f) {
-    return (xmlOutputter.getFormat().equals(f) ? xmlOutputter.outputString(e) : new XMLOutputter(f).outputString(e));
-  }
-
-  public void sendToOutputStream(Document d, OutputStream os) throws IOException { sendToOutputStream(d, os, xmlOutputter.getFormat()); }
-  public void sendToOutputStream(Document d, OutputStream os, Format f) throws IOException {
-    if (xmlOutputter.getFormat().equals(f))
-      xmlOutputter.output(d, os);
-    else
-      new XMLOutputter(f).output(d, os);
-  }
-
-  public void sendToWriter(Document d, Writer w) throws IOException { sendToWriter(d, w, xmlOutputter.getFormat()); }
-  public void sendToWriter(Document d, Writer w, Format f) throws IOException {
-    if (xmlOutputter.getFormat().equals(f))
-      xmlOutputter.output(d, w);
-    else
-      new XMLOutputter(f).output(d, w);
-  }
-
   public Document mergeDocuments(Document to, Document from) { return mergeDocuments(to, from, false); }
 
   public Document mergeDocuments(Document to, Document from, boolean persistent) {
@@ -331,10 +306,12 @@ public class XmlDocumentEditor
     return newE;
   }
 
+  public static XMLOutputter getPrettyXmlOutputter() { return new XMLOutputter(Format.getPrettyFormat()); }
+  public static XMLOutputter getRawXmlOutputter() { return new XMLOutputter(Format.getRawFormat()); }
+
   public static XmlDocumentEditor getInstance() { return xmlDocumentEditor; }
 
   protected SAXBuilder builder = new SAXBuilder();
-  protected XMLOutputter xmlOutputter = new XMLOutputter();
 
   private static XmlDocumentEditor xmlDocumentEditor = new XmlDocumentEditor();
   private static ContentFilter cdataFilter = new ContentFilter(ContentFilter.CDATA);

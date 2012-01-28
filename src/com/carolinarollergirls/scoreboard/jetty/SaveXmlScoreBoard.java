@@ -49,7 +49,7 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "No elements found.");
     } else {
       response.setContentType("text/xml");
-      editor.sendToWriter(doc, response.getWriter(), Format.getPrettyFormat());
+      prettyXmlOutputter.output(doc, response.getOutputStream());
       response.setStatus(HttpServletResponse.SC_OK);
     }
   }
@@ -109,4 +109,5 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
   protected XmlScoreBoard getXmlScoreBoard() { return scoreBoardModel.getXmlScoreBoard(); }
 
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
+  protected XMLOutputter prettyXmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
 }

@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.xml;
 import java.util.*;
 
 import org.jdom.*;
+import org.jdom.output.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
@@ -14,7 +15,7 @@ public class ScoreBoardXmlConverter
   /* ScoreBoard to XML methods */
 
   public String toString(ScoreBoard scoreBoard) {
-    return editor.toString(toDocument(scoreBoard));
+    return rawXmlOutputter.outputString(toDocument(scoreBoard));
   }
 
   public Document toDocument(ScoreBoard scoreBoard) {
@@ -476,6 +477,7 @@ public class ScoreBoardXmlConverter
   public static ScoreBoardXmlConverter getInstance() { return scoreBoardXmlConverter; }
 
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
+  protected XMLOutputter rawXmlOutputter = XmlDocumentEditor.getRawXmlOutputter();
 
   private static ScoreBoardXmlConverter scoreBoardXmlConverter = new ScoreBoardXmlConverter();
 }

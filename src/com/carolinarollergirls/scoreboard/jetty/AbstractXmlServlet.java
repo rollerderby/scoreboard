@@ -12,6 +12,7 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import org.jdom.*;
+import org.jdom.output.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
@@ -26,7 +27,7 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
     XmlListener listener = createXmlListener(scoreBoardModel);
     String key = addRegisteredListener(listener);
     response.setContentType("text/xml");
-    editor.sendToWriter(editor.createDocument("Key", null, key), response.getWriter());
+    rawXmlOutputter.output(editor.createDocument("Key", null, key), response.getOutputStream());
     response.setStatus(HttpServletResponse.SC_OK);
   }
 
@@ -39,6 +40,8 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
   }
 
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
+  protected XMLOutputter prettyXmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
+  protected XMLOutputter rawXmlOutputter = XmlDocumentEditor.getRawXmlOutputter();
 
   protected class XmlListener extends RegisteredListener
   {

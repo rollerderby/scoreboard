@@ -32,7 +32,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 
   protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
     response.setContentType("text/xml");
-    editor.sendToWriter(scoreBoardModel.getXmlScoreBoard().getDocument(), response.getWriter(), Format.getPrettyFormat());
+    prettyXmlOutputter.output(scoreBoardModel.getXmlScoreBoard().getDocument(), response.getOutputStream());
     response.setStatus(HttpServletResponse.SC_OK);
   }
 
@@ -48,9 +48,9 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
       response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
     } else {
       if (debugGet)
-        ScoreBoardManager.printMessage("GET to "+listener.getKey()+"\n"+editor.toString(d));
+        ScoreBoardManager.printMessage("GET to "+listener.getKey()+"\n"+prettyXmlOutputter.outputString(d));
       response.setContentType("text/xml");
-      editor.sendToWriter(d, response.getWriter());
+      rawXmlOutputter.output(d, response.getOutputStream());
       response.setStatus(HttpServletResponse.SC_OK);
     }
   }
@@ -78,7 +78,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
     }
 
     if (debugSet)
-      ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+editor.toString(requestDocument));
+      ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+rawXmlOutputter.outputString(requestDocument));
 
     scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
 
