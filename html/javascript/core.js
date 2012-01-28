@@ -397,14 +397,14 @@ _crgScoreBoard = {
     if (isTrue(e.attr("empty")))
       return "";
     var text = "";
-    e.contents().filter(function() { return this.nodeType == 3; }).each(function() { text += this.nodeValue; });
+    e.contents().filter(function() { return this.nodeType == 4; }).each(function() { text += this.nodeValue; });
     return (text || null);
   },
 
   setXmlElementText: function(e, text) {
-    e.contents().filter(function() { return this.nodeType == 3; }).remove();
+    e.contents().filter(function() { return this.nodeType == 4; }).remove();
     if (text)
-      e.removeAttr("empty").append(e[0].ownerDocument.createTextNode(text));
+      e.removeAttr("empty")[0].appendChild(e[0].ownerDocument.createCDATASection(text));
     else if (text === "")
       e.attr("empty", "true");
     else
