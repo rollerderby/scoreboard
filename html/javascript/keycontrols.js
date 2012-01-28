@@ -117,10 +117,20 @@ _crgKeyControls = {
     });
     return ok;
   },
+  _validKey: function(keycode) {
+    /* For reference see http://en.wikipedia.org/wiki/List_of_Unicode_characters */
+    if (keycode < 0x20) // Low control chars
+      return false;
+    if (0x7e < keycode && keycode < 0xa1) // Higher control chars
+      return false;
+    return true;
+  },
   _existingKeyLast: undefined,
   _existingKeyCount: 0,
   _keyControlPress: function(event) {
     if (!_crgKeyControls._checkConditions())
+      return;
+    if (!_crgKeyControls._validKey(event.which))
       return;
 
     var key = String.fromCharCode(event.which);
