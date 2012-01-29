@@ -741,13 +741,14 @@ function createScoreBoardViewContent(table) {
       .replaceAll(this);
   });
 
+  var sbUrl = "/views/scoreboard.html?videomuted=true&videocontrols=true";
   $("<tr><td/></tr>").appendTo(table)
     .find("td").addClass("ViewFrames Footer")
     .append(createRowTable(2))
     .find("td").append(previewButton)
     .find("button")
-    .first().attr("src", "/views/scoreboard.html").end()
-    .last().attr("src", "/views/scoreboard.html?preview=true");
+    .first().attr("src", sbUrl).end()
+    .last().attr("src", sbUrl+"&preview=true");
 }
 
 function createScoreBoardViewPreviewRows(table, type) {

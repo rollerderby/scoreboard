@@ -34,6 +34,11 @@ $sb(function() {
   if (_windowFunctions.checkParam("preview", "true"))
     sbViewOptions = $sbThisPage.$sb("PreviewOptions");
 
+  if (_windowFunctions.checkParam("videomuted", "true"))
+    $("video").prop({ muted: true, volume: "0.0" }); // Not all browsers support muted
+  if (_windowFunctions.checkParam("videocontrols", "true"))
+    $("video").prop("controls", true);
+
   var view = sbViewOptions.$sb("CurrentView");
   view.$sbBindAndRun("content", function(event, value) {
     var showDiv = $("#"+value+"Div");
