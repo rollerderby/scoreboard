@@ -2,25 +2,30 @@
 /* Template */
   body>table.TypeTemplate { display: none; }
   body>div.AddSpecificDialogTemplate { display: none; }
-  body>div.AddTypeDialogTemplate { display: none; }
+  body>div.RemoveTypeDialogTemplate { display: none; }
   body>div.TabTemplate { display: none; }
   table tr.ItemTemplate { display: none; }
+  table tr.AvailableTemplate { display: none; }
 /* End Template */
 
 /* Tab divs */
   #tabsDiv>div { padding: 0px; }
-  #tabsDiv>div>div.Buttons { width: 100%; text-align: left; font-size: 75%; }
+  #tabBar>button { float: right; font-size: 65%; }
 /* End Tab divs */
 
 /* Type groups */
   /* width, font size, text alignment */
   table.Type { width: 100%; border-spacing: 0px; }
   table.Type tr.Type>th.Type>a.Type { font-size: 150%; }
-  table.Type tr { text-align: center; }
+  table.Type>thead>tr.Type { text-align: left; }
+  table.Type>thead>tr.Type>th { padding-left: 15px; padding-right: 15px; }
+  table.Type>thead>tr.Type>th>button.Available { float: right; }
+  table.Type>thead>tr.Controls { text-align: center; }
+  table.Type>tbody>tr { text-align: center; }
   table.Type button.ui-widget { font-size: 75%; }
-  table.Type col:nth-of-type(1) { width: 5%; }
-  table.Type col:nth-of-type(2) { width: 25%; }
-  table.Type col:nth-of-type(3) { width: 25%; }
+  table.Type col:nth-of-type(1) { width: 15%; }
+  table.Type col:nth-of-type(2) { width: 20%; }
+  table.Type col:nth-of-type(3) { width: 20%; }
   table.Type col:nth-of-type(4) { width: 45%; }
 
   /* Colors, round corners */
@@ -35,8 +40,14 @@
   /* Show/Hide Type groups */
   table.Type:not(.Hide) tr.Type>th.Type>button.Show { display: none; }
   table.Type.Hide tr.Type>th.Type>button.Hide { display: none; }
+  table.Type.Hide tr.Type>th.Type>button.Available { display: none; }
   table.Type.Hide tr:not(.Type)>th { display: none; }
   table.Type.Hide tr:not(.Type)>td { display: none; }
+
+  /* Show/Hide Available media */
+  table.Type:not(.ShowAvailable) tr.Type>th.Type>button.AvailableControl { display: none; }
+  table.Type.ShowAvailable tr.Type>th.Type>button.ShowAvailable { display: none; }
+  table.Type:not(.ShowAvailable) tr.Available>td { display: none; }
 
   /* Show/Hide Preview buttons/elements */
   table.Type tr.Item>td.Preview:not(.Show)>:not(button) { display: none; }
@@ -44,7 +55,3 @@
   table.Type tr.Item>td.Preview>:not(button) { max-width: 400px; max-height: 100px; }
 /* End Type groups */
 
-/* Add Type Dialog */
-  div.AddTypeDialog>table { width: 100%; border: 1px solid black; }
-  div.AddTypeDialog>table>tbody>tr.Exists>td { display: none; }
-/* End Add Type Dialog */

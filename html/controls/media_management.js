@@ -1,23 +1,39 @@
 
 
 $sb(function() {
+  $("#tabBar>button")
+    .filter(".Remove").click(function() {
+      createRemoveTypeDialog();
+    }).end()
+    .filter(".Add").click(function() {
+      createAddSpecificDialog();
+    }).end()
+    .button();
+
   $("body>table.TypeTemplate")
-    .find("tr.Type>th.Type>button").filter(".Show,.Hide").click(function() {
+    .find("tr.Type>th.Type>button")
+    .filter(".Show,.Hide").click(function() {
       $(this).closest("table").toggleClass("Hide");
-    }).end().button().end()
-    .find("tr.Controls>th.Remove>input:checkbox.Remove").click(function() {
-      $(this).closest("table.Type").find("tr.Item>td.Remove>input:checkbox")
-        .prop("checked", this.checked);
+    }).end()
+    .filter(".ShowAvailable,.HideAvailable").click(function() {
+      $(this).closest("table").toggleClass("ShowAvailable");
+    }).end()
+    .end()
+    .find("tr.Controls>th.Remove>button.Remove").click(function() {
+      var table = $(this).closest("table");
+      table.data("sbType").children(table.data("childName")).each(function() {
+        $sb(this).$sbRemove();
+      });
     }).end()
     .find("tr.Controls>th.Preview>button.ShowPreview").click(function() {
       $(this).closest("table.Type").find("tr.Item>td.Preview").addClass("Show");
-    }).button().end()
+    }).end()
     .find("tr.Controls>th.Preview>button.HidePreview").click(function() {
       $(this).closest("table.Type").find("tr.Item>td.Preview").removeClass("Show");
-    }).button().end()
-    .find("tr.ItemTemplate>td.Preview>button.Preview").click(function() {
+    }).end()
+    .find("tr>td.Preview>button.Preview").click(function() {
       $(this).parent().addClass("Show");
-    }).button().end();
+    }).end();
 
   $.each( [ "Images", "Videos", "CustomHtml" ], function() {
     $("body>div.TabTemplate").clone()
@@ -30,69 +46,46 @@ $sb(function() {
   setupTab("Images", "Image", "<img>");
   setupTab("Videos", "Video", "<video>");
   setupTab("CustomHtml", "Html", "<iframe>");
-
-  var imagesDialog = createAddSpecificDialog("Images", "Image");
-  var videosDialog = createAddSpecificDialog("Videos", "Video");
-  var customHtmlDialog = createAddSpecificDialog("CustomHtml", "Html");
-
-  $("#Images>div.Buttons>button.Add").button()
-    .click(function() { imagesDialog.dialog("open"); });
-  $("#Videos>div.Buttons>button.Add").button()
-    .click(function() { videosDialog.dialog("open"); });
-  $("#CustomHtml>div.Buttons>button.Add").button()
-    .click(function() { customHtmlDialog.dialog("open"); });
-  $("#Images,#Videos,#CustomHtml").each(function() {
-    var div = $(this);
-    div.find(">div.Buttons>button.Remove").button().click(function() {
-      div.find(">div.Type>table.Type").each(function() {
-        var removed = 0;
-        $(this).find("tr.Item").each(function() {
-          if ($(this).find("td.Remove>input:checkbox").is(":checked")) {
-            $(this).data("sb").$sbRemove();
-            removed++;
-          }
-        });
-        if ($(this).find("tr.Item").length == removed)
-          $(this).data("sb").$sbRemove();
-      });
-    });
-  });
 });
 
 function setupTab(parentName, childName, previewElement) {
-  var compareType = function(o, n) {
-    return ($(o).data("Type") > $(n).data("Type"));
-  };
-
   $sb(parentName).$sbBindAddRemoveEach("Type", function(event,node) {
     var newTable = $("body>table.TypeTemplate").clone(true)
-      .removeClass("TypeTemplate").addClass("Type").data("Type", node.$sbId).data("sb", node)
-      .find("tr.Type>th.Type>button.Add").click(function() {
-        createAddTypeDialog(parentName, node.$sbId, childName);
+      .removeClass("TypeTemplate").addClass("Type")
+      .data({
+        Type: node.$sbId,
+        sbType: node,
+        parentName: parentName,
+        childName: childName,
+        previewElement: previewElement
+      })
+      .find("button.RefreshAvailable,button.ShowAvailable").click(function() {
+        refreshAvailable($(this).closest("table"));
       }).end()
+      .find("button.AddAllAvailable").click(function() {
+        $(this).closest("table").find("tr.Available>td.Add>button.Add").click();
+      }).end()
+      .find("button").button().end()
       .find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
-    _windowFunctions.appendSorted($("#"+parentName+">div.Type"), newTable, compareType);
+    _windowFunctions.appendAlphaSortedByData($("#"+parentName+">div.Type"), newTable, "Type");
   }, function(event,node) {
     $("#"+parentName+">div.Type>table.Type")
       .filter(function() { return $(this).data("Type") == node.$sbId; })
       .remove();
   });
 
-  var compareChildren = function(o, n) {
-    return $(o).data(childName) > $(n).data(childName);
-  };
-
   $sb(parentName).$sbBindAddRemoveEach({
     childname: childName,
     subChildren: true,
     add: function(event,node) {
-      var type = $sb(node.parent()).$sbId;
+      var sbType = $sb(node.parent());
+      var type = sbType.$sbId;
       var srcprefix = "/"+parentName.toLowerCase()+"/"+type+"/";
-      var table = $("#"+parentName+">div.Type>table.Type").filter(function() {
-        return $(this).data("Type") == type;
-      });
+      var table = $("#"+parentName+">div.Type>table.Type")
+        .filter(function() { return $(this).data("Type") == type; });
       var newRow = table.find("tr.ItemTemplate").clone(true)
-        .removeClass("ItemTemplate").addClass("Item").data(childName, node.$sbId).data("sb", node);
+        .removeClass("ItemTemplate").addClass("Item").data("sbId", node.$sbId);
+      newRow.find("button.Remove").button().click(function() { node.$sbRemove(); });
       node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
       node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"), {
         sbelement: {
@@ -104,93 +97,113 @@ function setupTab(parentName, childName, previewElement) {
       node.$sb("Src").$sbElement(previewElement).click(function() { 
         $(this).parent().removeClass("Show");
       }).appendTo(newRow.find("td.Preview"));
-      _windowFunctions.appendSorted(table.children("tbody"), newRow, compareChildren, 1);
+      _windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbId", 2);
+      table.find("tr.Available").filter(function() { return $(this).data("sbId") == node.$sbId; }).remove();
     },
     remove: function(event,node) {
       $("#"+parentName+">div.Type>table.Type")
         .filter(function() { return $(this).data("Type") == $sb(node.parent()).$sbId; })
-        .find("tr.Item")
-        .filter(function() { return $(this).data(childName) == node.$sbId; })
+        .find("tr.Item:not(.Available)")
+        .filter(function() { return $(this).data("sbId") == node.$sbId; })
         .remove();
     }
   });
 }
 
-function createAddTypeDialog(parentName, type, childName) {
+function refreshAvailable(table) {
+  var parentName = table.data("parentName");
+  var childName = table.data("childName");
+  var previewElement = table.data("previewElement");
   var media = parentName.toLowerCase();
-  var sbType = $sb(parentName+".Type("+type+")");
-  var div = $("body>div.AddTypeDialogTemplate").clone(true)
-    .removeClass("AddTypeDialogTemplate").addClass("AddTypeDialog");
-  var listTable = div.children("table.List");
-  var listTbody = listTable.children("tbody");
-  var statusTd = listTbody.find("tr.Status>td");
-  var addFiles = function() {
-    alert("implement add files");
-    div.dialog("close");
-  };
-  var refreshList = function() {
-    $.get("/listmedia", { media: media, type: type })
-      .fail(function() { statusTd.text("Error loading media list").show(); })
-      .done(function(data, status, jqxhr) {
-        $.each(String(jqxhr.responseText.trim()).split("\n"), function(i,e) {
-          var name = e.replace(/\.[^.]*$/, "");
-          var source = "/"+media+"/"+type+"/"+e;
-          var exists = sbType.children(childName).children("Src:contains("+source+")").length;
-          var row = $("<tr>").addClass("Media")
-            .append($("<td>").addClass("Add"))
-            .append($("<td>").addClass("Source"))
-            .data("source", e)
-            .addClass(exists?"Exists":"New");
-          $("<a>").text("Added").hide().appendTo(row.children("td.Add"));
-          $("<button>").text("Add").button().click(function() {
-            var newElem = $sb(parentName+".Type("+type+")."+childName+"("+name+")");
-            newElem.$sb("Name").$sbSet(name);
-            newElem.$sb("Src").$sbSet(source);
-            $(this).hide().prev("a").show();
-          }).appendTo(row.children("td.Add"));
-          row.children("td.Source").text(e);
-          _windowFunctions.appendAlphaSortedByData(listTbody, row, "source", 1);
+  var type = table.data("Type");
+  var sbType = table.data("sbType");
+
+  // Disable the buttons while refreshing
+  table.find("button.AvailableControl").button("disable");
+
+  $.get("/listmedia", { media: media, type: type })
+    .fail(function(jqxhr, textStatus, errorThrown) {
+      alert("Error getting available media");
+    })
+    .always(function() {
+      table.find("button.AvailableControl").button("enable");
+    })
+    .done(function(data, status, jqxhr) {
+      table.find("tr.Available").remove();
+      $.each(String(jqxhr.responseText.trim()).split("\n"), function(i,e) {
+        var name = e.replace(/\.[^.]*$/, "");
+        var source = "/"+media+"/"+type+"/"+e;
+        if (sbType.children(childName).filter(function() { return $sb(this).$sbId == e; }).length)
+          return;
+        var newRow = table.find("tr.AvailableTemplate").clone(true)
+          .removeClass("AvailableTemplate").addClass("Available Item").data("sbId", e);
+        newRow.find("button.Add").button().click(function() {
+          var newElem = sbType.$sb(childName+"("+e+")");
+          newElem.$sb("Name").$sbSet(name);
+          newElem.$sb("Src").$sbSet(source);
+          $(this).button("option", "label", "Adding...").button("disable");
         });
-        statusTd.hide();
-      })
-      .always(function() { div.children("button.Refresh").button("enable"); });
-  };
-  div.children("button.Refresh").button().click(function() {
-    $(this).button("disable");
-    listTbody.children("tr.Media").remove();
-    statusTd.text("Loading...").show();
-    refreshList();
-  }).click();
-  div.dialog({
-    title: "Add '"+type+"' media",
-    modal: true,
-    width: "700px",
-    close: function() { div.dialog("destroy").remove(); },
-    buttons: { Close: function() { div.dialog("close"); } }
-  });
+        newRow.find("td.Name>a").text(name);
+        newRow.find("td.Src>a").text(e);
+        $(previewElement).attr("src", source).click(function() { 
+          $(this).parent().removeClass("Show");
+        }).appendTo(newRow.find("td.Preview"));
+        _windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbId", 2);
+      });
+    });
 }
 
-function createAddSpecificDialog(parentName, childName) {
-  var close = function() {
-    $(this).find("input:text").val("");
-    $(this).dialog("close");
-  };
+function createAddSpecificDialog() {
   return $("body>div.AddSpecificDialogTemplate").clone(true)
-    .removeClass("AddSpecificDialogTemplate").addClass("AddSpecificDialog "+parentName+"Dialog")
+    .removeClass("AddSpecificDialogTemplate").addClass("AddSpecificDialog")
     .dialog({
+      title: "Add unavailable media",
       modal: true,
-      autoOpen: false,
-      width: "700px",
-      buttons: { Add: function() {
+      width: 700,
+      close: function() { $(this).dialog("destroy").remove(); },
+      buttons: {
+        Add: function() {
+          var option = $(this).find("select.Media>option:selected");
+          var parentName = option.text();
+          var childName = option.val();
           var type = $(this).find("input:text.Type").val();
           var name = $(this).find("input:text.Name").val();
-          var src = $(this).find("input:text.Src").val();
-          var id = _crgUtils.checkSbId(name);
+          var filename = $(this).find("input:text.Filename").val();
+          var id = _crgUtils.checkSbId(filename);
+          var src = "/"+parentName.toLowerCase()+"/"+type+"/"+filename;
           var newChild = $sb(parentName+".Type("+type+")."+childName+"("+id+")");
           newChild.$sb("Name").$sbSet(name);
           newChild.$sb("Src").$sbSet(src);
-          close.call(this);
-        }, Close: close
+          $(this).dialog("close");
+        },
+        Cancel: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+}
+
+function createRemoveTypeDialog() {
+  return $("body>div.RemoveTypeDialogTemplate").clone(true)
+    .removeClass("RemoveTypeDialogTemplate").addClass("RemoveTypeDialog")
+    .dialog({
+      title: "Remove empty Type",
+      modal: true,
+      width: 700,
+      close: function() { $(this).dialog("destroy").remove(); },
+      buttons: {
+        Remove: function() {
+          var option = $(this).find("select.Media>option:selected");
+          var parentName = option.text();
+          var type = $(this).find("input:text.Type").val();
+          var sbType = $sb(parentName).children("Type[Id='"+type+"']");
+          if (sbType.length)
+            $sb(sbType).$sbRemove();
+          $(this).dialog("close");
+        },
+        Cancel: function() {
+          $(this).dialog("close");
+        }
       }
     });
 }
