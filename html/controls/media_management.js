@@ -59,13 +59,13 @@ function setupTab(parentName, childName, previewElement) {
         childName: childName,
         previewElement: previewElement
       })
-      .find("button.RefreshAvailable,button.ShowAvailable").click(function() {
+      .find("th.Type>button.RefreshAvailable,th.Type>button.ShowAvailable").click(function() {
         refreshAvailable($(this).closest("table"));
       }).end()
-      .find("button.AddAllAvailable").click(function() {
+      .find("th.Type>button.AddAllAvailable").click(function() {
         $(this).closest("table").find("tr.Available>td.Add>button.Add").click();
       }).end()
-      .find("button").button().end()
+      .find("thead button").button().end()
       .find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
     _windowFunctions.appendAlphaSortedByData($("#"+parentName+">div.Type"), newTable, "Type");
   }, function(event,node) {
@@ -85,7 +85,8 @@ function setupTab(parentName, childName, previewElement) {
         .filter(function() { return $(this).data("Type") == type; });
       var newRow = table.find("tr.ItemTemplate").clone(true)
         .removeClass("ItemTemplate").addClass("Item").data("sbId", node.$sbId);
-      newRow.find("button.Remove").button().click(function() { node.$sbRemove(); });
+      newRow.find("button").button()
+        .filter(".Remove").click(function() { node.$sbRemove(); });
       node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
       node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"), {
         sbelement: {
@@ -119,14 +120,14 @@ function refreshAvailable(table) {
   var sbType = table.data("sbType");
 
   // Disable the buttons while refreshing
-  table.find("button.AvailableControl").button("disable");
+  table.find("th.Type>button.AvailableControl").button("disable");
 
   $.get("/listmedia", { media: media, type: type })
     .fail(function(jqxhr, textStatus, errorThrown) {
       alert("Error getting available media");
     })
     .always(function() {
-      table.find("button.AvailableControl").button("enable");
+      table.find("th.Type>button.AvailableControl").button("enable");
     })
     .done(function(data, status, jqxhr) {
       table.find("tr.Available").remove();
@@ -137,12 +138,13 @@ function refreshAvailable(table) {
           return;
         var newRow = table.find("tr.AvailableTemplate").clone(true)
           .removeClass("AvailableTemplate").addClass("Available Item").data("sbId", e);
-        newRow.find("button.Add").button().click(function() {
-          var newElem = sbType.$sb(childName+"("+e+")");
-          newElem.$sb("Name").$sbSet(name);
-          newElem.$sb("Src").$sbSet(source);
-          $(this).button("option", "label", "Adding...").button("disable");
-        });
+        newRow.find("button").button()
+          .filter(".Add").click(function() {
+            var newElem = sbType.$sb(childName+"("+e+")");
+            newElem.$sb("Name").$sbSet(name);
+            newElem.$sb("Src").$sbSet(source);
+            $(this).button("option", "label", "Adding...").button("disable");
+          });
         newRow.find("td.Name>a").text(name);
         newRow.find("td.Src>a").text(e);
         $(previewElement).attr("src", source).click(function() { 
