@@ -186,9 +186,12 @@ function createPositionTd(skater, position) {
       if ($.string(pos.$sbGet()).startsWith("Blocker"))
         pos.$sbSet("Bench");
       else {
-        var emptyIdFunc = function () { return $sb(this).$sb("Id").$sbIs(""); };
-        skater.parent().children("Position[Id^=Blocker]").filter(emptyIdFunc).first().each(function () {
-          pos.$sbSet($sb(this).$sbId);
+        $.each( [ "1", "2", "3" ], function(i,n) {
+          var blocker = "Blocker"+n;
+          if ($sb(skater.parent()).$sb("Position("+blocker+").Id").$sbIs("")) {
+            pos.$sbSet(blocker);
+            return false;
+          }
         });
       }
     }
