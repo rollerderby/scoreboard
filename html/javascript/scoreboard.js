@@ -34,12 +34,9 @@ $.jstree._themes = "/external/jstree/themes/";
 
 _include("/external/treeview", [ "jquery.treeview.js", "jquery.treeview.css" ]);
 
-_include("/external/jquery/isjquery/jquery.isjquery.js");
-_include("/external/jquery/attributes", [ "jquery.listAttributes.js", "jquery.mapAttributes.js" ]);
-_include("/external/jquery/periodicalupdater/jquery.periodicalupdater.js");
-_include("/external/jquery/protify/jquery.protify.js");
-_include("/external/jquery/string/jquery.string.js");
-_include("/external/jquery/xml", [ "jquery.xmldom.js", "jquery.xml.js" ]);
+_include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
+_include("/external/jquery-plugins/string/jquery.string.js");
+_include("/external/jquery-plugins/fileupload/jquery.fileupload.js");
 
 /* Good places to find fonts are:
  * http://fontspace.com/
