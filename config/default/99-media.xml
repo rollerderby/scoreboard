@@ -8,10 +8,6 @@
         <Name><![CDATA[American Flag]]></Name>
         <Src><![CDATA[/images/fullscreen/American Flag.jpg]]></Src>
       </Image>
-      <Image Id="Canadian Flag.jpg">
-        <Name><![CDATA[Canadian Flag]]></Name>
-        <Src><![CDATA[/images/fullscreen/Canadian Flag.jpg]]></Src>
-      </Image>
       <Image Id="overlay.png">
         <Name><![CDATA[overlay]]></Name>
         <Src><![CDATA[/images/fullscreen/overlay.png]]></Src>
@@ -28,10 +24,6 @@
       <Video Id="American Flag.webm">
         <Name><![CDATA[American Flag]]></Name>
         <Src><![CDATA[/videos/fullscreen/American Flag.webm]]></Src>
-      </Video>
-      <Video Id="Canadian Flag.webm">
-        <Name><![CDATA[Canadian Flag]]></Name>
-        <Src><![CDATA[/videos/fullscreen/Canadian Flag.webm]]></Src>
       </Video>
     </Type>
   </Videos>
