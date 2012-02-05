@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+
+<project name="Carolina Rollergirls Scoreboard media files" default="all">
+	<property name="ant.build.javac.source" value="1.5"/>
+	<property name="ant.build.javac.target" value="1.5"/>
+
+	<property name="release.dir" value="release" />
+
+	<property name="clean.verbose" value="false"/>
+	<property name="clean.quiet" value="false"/>
+
+	<!-- Show help (the different options for this build.xml) -->
+	<target name="help">
+		<echo message="Buildfile for Carolina Rollergirls Scoreboard media files"/>
+		<echo message=""/>
+		<echo message="Targets:"/>
+		<echo message=""/>
+		<echo message="  all              clean zip"/>
+		<echo message="  clean            Clean everything"/>
+		<echo message="  zip              Create non-release zip file"/>
+		<echo message=""/>
+	</target>
+
+	<!-- Do everything -->
+	<target name="all" depends="clean,zip"/>
+
+	<!-- Create zip file -->
+	<target name="zip" >
+    <antcall target="-zip" >
+      <param name="media.dir" value="images" />
+      <param name="type.dir" value="teamlogo" />
+    </antcall>
+    <antcall target="-zip" >
+      <param name="media.dir" value="images" />
+      <param name="type.dir" value="fullscreen" />
+    </antcall>
+    <antcall target="-zip" >
+      <param name="media.dir" value="videos" />
+      <param name="type.dir" value="fullscreen" />
+    </antcall>
+  </target>
+
+  <!-- Create specific zip file -->
+  <target name="-zip" >
+		<mkdir dir="${release.dir}" />
+    <property file="${media.dir}/${type.dir}/version" />
+    <fail unless="version" message="No version found for media files at ${media.dir}/${type.dir}" />
+		<zip destfile="${release.dir}/crg-scoreboard-${media.dir}-${type.dir}-${version}.zip" >
+			<zipfileset dir="${media.dir}/${type.dir}" filemode="755" excludes="version" />
+		</zip>
+	</target>
+
+	<!-- Clean all zip files -->
+	<target name="clean">
+		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeemptydirs="true" failonerror="false">
+			<fileset dir="${release.dir}" includes="*.zip"/>
+		</delete>
+	</target>
+
+</project>

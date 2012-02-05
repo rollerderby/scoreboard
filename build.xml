@@ -31,6 +31,8 @@
 	<property name="jdom-contrib.dir" value="jdom-contrib"/>
 	<property name="jdom.version" value="1.1.2-snap"/>
 
+	<property name="media.dir" value="media-src" />
+
 	<property name="release.dir" value="release" />
 
 	<property name="clean.verbose" value="false"/>
@@ -48,6 +50,7 @@
 		<echo message="  launcher         Create Windows scoreboard.exe"/>
 		<echo message="  jdom             Create jdom jarfiles"/>
 		<echo message="  manifest         (Re)create the manifest file"/>
+		<echo message="  media            Create media zip files"/>
 		<echo message="  help             Show this help"/>
 		<echo message="  jdoc             Create JavaDOC"/>
 		<echo message="  release          Create release zip file"/>
@@ -141,6 +144,15 @@
 			</config>
 		</launch4j>
 	</target>
+
+  <!-- Create media zip files -->
+  <target name="media" >
+    <ant dir="${media.dir}" inheritAll="false" />
+    <copy overwrite="true" todir="${release.dir}" >
+      <fileset dir="${media.dir}/release" includes="*.zip" />
+    </copy>
+    <ant dir="${media.dir}" inheritAll="false" target="clean" />
+  </target>
 
   <!-- Create JDOM jar files using our updated/fixed source -->
   <target name="jdom" >
