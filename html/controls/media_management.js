@@ -188,8 +188,8 @@ function createUploadMediaDialog(table) {
           if (name)
             uploader.fileupload("option", "formData").push({ name: "name", value: name });
           uploader.fileupload("send", data)
-            .done(function() {
-              div.find("a.Status").text("Uploaded "+statustxt+" successfully");
+            .done(function(data, textStatus, jqxhr) {
+              div.find("a.Status").text(data);
             })
             .fail(function(jqxhr, textStatus, errorThrown) {
               div.find("a.Status").text("Error while uploading "+statustxt+" : "+textStatus);
