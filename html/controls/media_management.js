@@ -53,12 +53,15 @@ function setupTab(parentName, childName, previewElement) {
     var newTable = $("body>table.TypeTemplate").clone(true)
       .removeClass("TypeTemplate").addClass("Type")
       .data({
-        Type: node.$sbId,
+        type: node.$sbId,
         sbType: node,
         parentName: parentName,
         childName: childName,
         previewElement: previewElement
       })
+      .find("th.Type>button.Upload").click(function() {
+        createUploadMediaDialog($(this).closest("table"));
+      }).end()
       .find("th.Type>button.RefreshAvailable,th.Type>button.ShowAvailable").click(function() {
         refreshAvailable($(this).closest("table"));
       }).end()
@@ -67,10 +70,10 @@ function setupTab(parentName, childName, previewElement) {
       }).end()
       .find("thead button").button().end()
       .find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
-    _windowFunctions.appendAlphaSortedByData($("#"+parentName+">div.Type"), newTable, "Type");
+    _windowFunctions.appendAlphaSortedByData($("#"+parentName+">div.Type"), newTable, "type");
   }, function(event,node) {
     $("#"+parentName+">div.Type>table.Type")
-      .filter(function() { return $(this).data("Type") == node.$sbId; })
+      .filter(function() { return $(this).data("type") == node.$sbId; })
       .remove();
   });
 
@@ -82,7 +85,7 @@ function setupTab(parentName, childName, previewElement) {
       var type = sbType.$sbId;
       var srcprefix = "/"+parentName.toLowerCase()+"/"+type+"/";
       var table = $("#"+parentName+">div.Type>table.Type")
-        .filter(function() { return $(this).data("Type") == type; });
+        .filter(function() { return $(this).data("type") == type; });
       var newRow = table.find("tr.ItemTemplate").clone(true)
         .removeClass("ItemTemplate").addClass("Item").data("sbId", node.$sbId);
       newRow.find("button").button()
@@ -103,7 +106,7 @@ function setupTab(parentName, childName, previewElement) {
     },
     remove: function(event,node) {
       $("#"+parentName+">div.Type>table.Type")
-        .filter(function() { return $(this).data("Type") == $sb(node.parent()).$sbId; })
+        .filter(function() { return $(this).data("type") == $sb(node.parent()).$sbId; })
         .find("tr.Item:not(.Available)")
         .filter(function() { return $(this).data("sbId") == node.$sbId; })
         .remove();
@@ -116,13 +119,13 @@ function refreshAvailable(table) {
   var childName = table.data("childName");
   var previewElement = table.data("previewElement");
   var media = parentName.toLowerCase();
-  var type = table.data("Type");
+  var type = table.data("type");
   var sbType = table.data("sbType");
 
   // Disable the buttons while refreshing
   table.find("th.Type>button.AvailableControl").button("disable");
 
-  $.get("/listmedia", { media: media, type: type })
+  $.get("/Media/list", { media: media, type: type })
     .fail(function(jqxhr, textStatus, errorThrown) {
       alert("Error getting available media");
     })
@@ -155,9 +158,79 @@ function refreshAvailable(table) {
     });
 }
 
+function createUploadMediaDialog(table) {
+  var media = table.data("parentName").toLowerCase();
+  var type = table.data("type");
+  var div = $("body>div.UploadMediaDialog.DialogTemplate").clone(true)
+    .removeClass("DialogTemplate");
+  var uploader = div.find("div.Upload").fileupload({
+    url: "/Media/upload",
+    dropZone: null,
+    singleFileUploads: false
+  });
+  var inputFile = div.find("input:file.File");
+  var inputName = div.find("input:text.Name");
+  div.dialog({
+      title: "Upload media",
+      modal: true,
+      width: 700,
+      close: function() { $(this).dialog("destroy").remove(); },
+      buttons: {
+        Upload: function() {
+          var data = { files: $(this).find("input:file.File")[0].files };
+          var length = data.files.length;
+          var name = (inputName.prop("disabled") ? undefined : inputName.val());
+          var statustxt = "file"+(length>1?"s":"")+(name?" '"+name+"'":"");
+          uploader.fileupload("option", "formData", [
+            { name: "media", value: media },
+            { name: "type", value: type }
+          ]);
+          if (name)
+            uploader.fileupload("option", "formData").push({ name: "name", value: name });
+          uploader.fileupload("send", data)
+            .done(function() {
+              div.find("a.Status").text("Uploaded "+statustxt+" successfully");
+            })
+            .fail(function(jqxhr, textStatus, errorThrown) {
+              div.find("a.Status").text("Error while uploading "+statustxt+" : "+textStatus);
+            })
+            .always(function() {
+              var newInputFile = inputFile.clone(true).insertAfter(inputFile);
+              inputFile.remove();
+              inputFile = newInputFile.change();
+            });
+          uploader.fileupload("option", "formData", []);
+        },
+        Close: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+  var uploadButton = div.dialog("widget").find("div.ui-dialog-buttonset>button:contains('Upload')");
+  inputFile.change(function() {
+    var files = this.files;
+    if (!files || !files.length) {
+      inputName.val("").prop("disabled", true);
+      uploadButton.button("option", "disabled", true);
+      return;
+    }
+    uploadButton.button("option", "disabled", false);
+    if (files.length == 1) {
+      var file = files[0];
+      var name = file.name.replace(/\.[^.]*$/, "");
+      if (file.name.match(/\.[zZ][iI][pP]$/))
+        inputName.val("Cannot set name when uploading zip file").prop("disabled", true);
+      else
+        inputName.val(name).prop("disabled", false);
+    } else {
+      inputName.val("Cannot set name when uploading multiple files").prop("disabled", true);
+    }
+  }).change();
+}
+
 function createAddSpecificDialog() {
-  return $("body>div.AddSpecificDialogTemplate").clone(true)
-    .removeClass("AddSpecificDialogTemplate").addClass("AddSpecificDialog")
+  return $("body>div.AddSpecificDialog.DialogTemplate").clone(true)
+    .removeClass("DialogTemplate")
     .dialog({
       title: "Add unavailable media",
       modal: true,
@@ -186,8 +259,8 @@ function createAddSpecificDialog() {
 }
 
 function createRemoveTypeDialog() {
-  return $("body>div.RemoveTypeDialogTemplate").clone(true)
-    .removeClass("RemoveTypeDialogTemplate").addClass("RemoveTypeDialog")
+  return $("body>div.RemoveTypeDialog.DialogTemplate").clone(true)
+    .removeClass("DialogTemplate")
     .dialog({
       title: "Remove empty Type",
       modal: true,

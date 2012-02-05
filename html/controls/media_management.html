@@ -38,10 +38,11 @@
           <span class="Label">Type:</span>
           <span class="Type"></span>
         </a>
-        <button class="ShowAvailable Available">Show Available</button>
-        <button class="HideAvailable AvailableControl Available">Hide Available</button>
-        <button class="RefreshAvailable AvailableControl Available">Refresh Available</button>
-        <button class="AddAllAvailable AvailableControl Available">Add All Available</button>
+        <button class="Upload Right">Upload</button>
+        <button class="ShowAvailable Available Right">Show Available</button>
+        <button class="HideAvailable AvailableControl Available Right">Hide Available</button>
+        <button class="RefreshAvailable AvailableControl Available Right">Refresh Available</button>
+        <button class="AddAllAvailable AvailableControl Available Right">Add All Available</button>
       </th>
     </tr>
     <tr class="Controls">
@@ -70,7 +71,14 @@
   </tbody>
 </table>
 
-<div class="AddSpecificDialogTemplate">
+<div class="UploadMediaDialog DialogTemplate">
+  <p><div class="Upload"></div></p>
+  <p><a class="File">File:</a><input class="File" type="file" multiple/></p>
+  <p><a class="Name">Name:</a><input class="Name" type="text" size="40"/></p>
+  <p><a class="Status"></a></p>
+</div>
+
+<div class="AddSpecificDialog DialogTemplate">
   <p><b>This is probably not what you want to do.</b></p>
   <p>
     This should only be used to add an entry for media when the file does not exist yet;
@@ -94,7 +102,7 @@
   <p><a class="Filename">Filename:</a><input type="text" size="12" class="Filename"/></p>
 </div>
 
-<div class="RemoveTypeDialogTemplate">
+<div class="RemoveTypeDialog DialogTemplate">
   <p><b>This is probably not what you want to do.</b></p>
   <p>
     This will remove the section for the specified Type.  It will also remove all
