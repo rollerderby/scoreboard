@@ -134,7 +134,10 @@ function refreshAvailable(table) {
     })
     .done(function(data, status, jqxhr) {
       table.find("tr.Available").remove();
-      $.each(String(jqxhr.responseText.trim()).split("\n"), function(i,e) {
+      var response = jqxhr.responseText.trim();
+      if (!response)
+        return;
+      $.each(response.split("\n"), function(i,e) {
         var name = e.replace(/\.[^.]*$/, "");
         var source = "/"+media+"/"+type+"/"+e;
         if (sbType.children(childName).filter(function() { return $sb(this).$sbId == e; }).length)
