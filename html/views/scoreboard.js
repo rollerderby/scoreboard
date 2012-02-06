@@ -19,7 +19,8 @@ var clockConversions = {
   Intermission: _timeConversions.msToMinSecNoZero
 };
 var animateTime = {
-  sponsor: 1000, /* time to animate from one sponsor banner to the next */
+  sponsorOut: 990, /* time to animate visible sponsor banner out */
+  sponsorIn: 1010, /* time to animate next sponsor banner into view (should be more than sponsorOut) */
   clock: 500, /* clocks animate out then in, so the full transition time is 2x this */
   team: 500, /* show/hide logo/name */
   leadjammerPulse: 1000
@@ -348,32 +349,47 @@ function showClocks(clock, next) {
 /////////////////////////
 
 function setupSponsorBanners() {
-  $("<div>").attr("id", "SponsorBox").addClass("ClockAnimation").appendTo("#sbDiv")
+  var div = $("<div>").attr("id", "SponsorBox").addClass("ClockAnimation").appendTo("#sbDiv")
     .append($("<div><img/></div>").addClass("CurrentImg"))
     .append($("<div><img/></div>").addClass("NextImg"));
-  var getNextSrc = function(currentSrc) {
-      var banners = $.map($sb("Images.Type(sponsor_banner)").find("Image>Src"), function(e) {
-        return $sb(e).$sbGet();
-      });
-      banners.sort();
-      var index = $.inArray(currentSrc, banners) + 1;
-      if ((0 > index) || (index >= banners.length))
-        index = 0;
-      return banners[index];
+  var setNextSrc = function() {
+    var banners = $.makeArray($sb("Images.Type(sponsor_banner)").find("Image"));
+    banners.sort(function(a, b) {
+      var nameA = $sb(a).$sb("Name").$sbGet();
+      var nameB = $sb(b).$sb("Name").$sbGet();
+      if (nameA < nameB)
+        return -1;
+      else if (nameA > nameB)
+        return 1;
+      else {
+        var srcA = $sb(a).$sb("Src").$sbGet();
+        var srcB = $sb(a).$sb("Src").$sbGet();
+        if (srcA < srcB)
+          return -1;
+        else if (srcA > srcB)
+          return 1;
+      }
+      return 0;
+    });
+    var index = $.inArray(div.children("div.CurrentImg").data("banner"), banners) + 1;
+    if ((0 > index) || (index >= banners.length))
+      index = 0;
+    var next = banners[index]||"";
+    var nextSrc = (next?$sb(next).$sb("Src").$sbGet():"");
+    div.children("div.NextImg").data("banner", next).children("img").prop("src", nextSrc).toggle(!!nextSrc);
   };
-  var firstSrc = getNextSrc();
-  $('#SponsorBox>div:first>img').attr("src", firstSrc);
-  $('#SponsorBox>div:last>img').attr("src", getNextSrc(firstSrc));
+  setNextSrc();
+  div.children("div").toggleClass("CurrentImg NextImg");
+  setNextSrc();
   var nextImgFunction = function() {
-    var box = $("#SponsorBox");
-    if (box.hasClass("ShowTimeout") || box.hasClass("ShowLineup")) {
-      var currentSrc = box.find("div.NextImg>img").attr("src");
-      box.children("div.NextImg").switchClass("NextImg", "CurrentImg", animateTime.sponsor);
-      box.children("div.CurrentImg").switchClass("CurrentImg", "FinishedImg", animateTime.sponsor, function() {
-        $(this).switchClass("FinishedImg", "NextImg", 0).children("img").attr("src", getNextSrc(currentSrc));
+    if (div.is(".ShowTimeout,.ShowLineup")) {
+      div.children("div.CurrentImg").switchClass("CurrentImg", "FinishedImg", animateTime.sponsorOut);
+      div.children("div.NextImg").switchClass("NextImg", "CurrentImg", animateTime.sponsorIn, function() {
+        div.children("div.FinishedImg").toggleClass("FinishedImg NextImg");
+        setNextSrc();
       });
     }
-    box.delay(5000, "SponsorChangeQueue").queue("SponsorChangeQueue", nextImgFunction).dequeue("SponsorChangeQueue");
+    div.delay(5000, "SponsorChangeQueue").queue("SponsorChangeQueue", nextImgFunction).dequeue("SponsorChangeQueue");
   };
   nextImgFunction();
 }
