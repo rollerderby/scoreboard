@@ -22,6 +22,7 @@ public class ScoreBoardXmlConverter
     Element sb = new Element("ScoreBoard");
     Document d = new Document(new Element("document").addContent(sb));
 
+    editor.setElement(sb, "Reset", null, "");
     editor.setElement(sb, "StartJam", null, "");
     editor.setElement(sb, "UnStartJam", null, "");
     editor.setElement(sb, "StopJam", null, "");
@@ -160,7 +161,9 @@ public class ScoreBoardXmlConverter
         String value = editor.getText(element);
         boolean bVal = Boolean.parseBoolean(value);
 
-        if (name.equals("StartJam") && bVal)
+        if (name.equals("Reset") && bVal)
+          scoreBoardModel.reset();
+        else if (name.equals("StartJam") && bVal)
           scoreBoardModel.startJam();
         else if (name.equals("StopJam") && bVal)
           scoreBoardModel.stopJam();
