@@ -1,149 +1,149 @@
 <?xml version="1.0"?>
 
 <project name="Carolina Rollergirls Scoreboard" default="compile">
-	<property name="ant.build.javac.source" value="1.5"/>
-	<property name="ant.build.javac.target" value="1.5"/>
+  <property name="ant.build.javac.source" value="1.5"/>
+  <property name="ant.build.javac.target" value="1.5"/>
 
-	<property name="src.dir" value="src"/>
-	<property name="dest.dir" value="bin"/>
-	<property name="jdoc.dir" value="jdoc"/>
+  <property name="src.dir" value="src"/>
+  <property name="dest.dir" value="bin"/>
+  <property name="jdoc.dir" value="jdoc"/>
 
-	<property name="version.src.dir" value="${src.dir}/com/carolinarollergirls/scoreboard/version"/>
-	<property name="version.dest.dir" value="${dest.dir}/com/carolinarollergirls/scoreboard/version"/>
-	<property name="version.release.file" value="release.properties"/>
-	<property name="version.build.file" value="build.properties"/>
-	<property file="${version.src.dir}/release.properties" prefix="version"/>
+  <property name="version.src.dir" value="${src.dir}/com/carolinarollergirls/scoreboard/version"/>
+  <property name="version.dest.dir" value="${dest.dir}/com/carolinarollergirls/scoreboard/version"/>
+  <property name="version.release.file" value="release.properties"/>
+  <property name="version.build.file" value="build.properties"/>
+  <property file="${version.src.dir}/release.properties" prefix="version"/>
 
-	<property name="compile.deprecation" value="true"/>
-	<property name="compile.debug" value="true"/>
-	<property name="compile.nowarn" value="true"/>
-	<property name="compile.verbose" value="false"/>
+  <property name="compile.deprecation" value="true"/>
+  <property name="compile.debug" value="true"/>
+  <property name="compile.nowarn" value="true"/>
+  <property name="compile.verbose" value="false"/>
 
-	<property name="jar.dir" value="lib"/>
-	<property name="jar.file" value="crg-scoreboard.jar"/>
-	<property name="manifest.file" value="crg-scoreboard.mf"/>
-	<available property="manifest.exists" file="${jar.dir}/${manifest.file}" />
+  <property name="jar.dir" value="lib"/>
+  <property name="jar.file" value="crg-scoreboard.jar"/>
+  <property name="manifest.file" value="crg-scoreboard.mf"/>
+  <available property="manifest.exists" file="${jar.dir}/${manifest.file}" />
 
-	<property name="launch4j.dir" value="launch4j"/>
-	<property name="launch4j.outfile" value="scoreboard.exe"/>
+  <property name="launch4j.dir" value="launch4j"/>
+  <property name="launch4j.outfile" value="scoreboard.exe"/>
 
-	<property name="jdom.dir" value="jdom"/>
-	<property name="jdom-contrib.dir" value="jdom-contrib"/>
-	<property name="jdom.version" value="1.1.2-snap"/>
+  <property name="jdom.dir" value="jdom"/>
+  <property name="jdom-contrib.dir" value="jdom-contrib"/>
+  <property name="jdom.version" value="1.1.2-snap"/>
 
-	<property name="media.dir" value="media-src" />
+  <property name="media.dir" value="media-src" />
 
-	<property name="release.dir" value="release" />
+  <property name="release.dir" value="release" />
 
-	<property name="clean.verbose" value="false"/>
-	<property name="clean.quiet" value="false"/>
+  <property name="clean.verbose" value="false"/>
+  <property name="clean.quiet" value="false"/>
 
-	<!-- Show help (the different options for this build.xml) -->
-	<target name="help">
-		<echo message="Buildfile for Carolina Rollergirls Scoreboard"/>
-		<echo message=""/>
-		<echo message="Targets:"/>
-		<echo message=""/>
-		<echo message="  all              clean compile"/>
-		<echo message="  clean            Clean everything"/>
-		<echo message="  compile          Compile all classes and create jarfile (default)"/>
-		<echo message="  launcher         Create Windows scoreboard.exe"/>
-		<echo message="  jdom             Create jdom jarfiles"/>
-		<echo message="  manifest         (Re)create the manifest file"/>
-		<echo message="  media            Create media zip files"/>
-		<echo message="  help             Show this help"/>
-		<echo message="  jdoc             Create JavaDOC"/>
-		<echo message="  release          Create release zip file"/>
-		<echo message="  zip              Create non-release zip file"/>
-		<echo message=""/>
-	</target>
+  <!-- Show help (the different options for this build.xml) -->
+  <target name="help">
+    <echo message="Buildfile for Carolina Rollergirls Scoreboard"/>
+    <echo message=""/>
+    <echo message="Targets:"/>
+    <echo message=""/>
+    <echo message="  all              clean compile"/>
+    <echo message="  clean            Clean everything"/>
+    <echo message="  compile          Compile all classes and create jarfile (default)"/>
+    <echo message="  launcher         Create Windows scoreboard.exe"/>
+    <echo message="  jdom             Create jdom jarfiles"/>
+    <echo message="  manifest         (Re)create the manifest file"/>
+    <echo message="  media            Create media zip files"/>
+    <echo message="  help             Show this help"/>
+    <echo message="  jdoc             Create JavaDOC"/>
+    <echo message="  release          Create release zip file"/>
+    <echo message="  zip              Create non-release zip file"/>
+    <echo message=""/>
+  </target>
 
-	<!-- Add build timestamp to version -->
-	<target name="-buildversion" unless="isRelease" >
-		<tstamp>
-			<format property="version.build" pattern="yyyyMMddHHmmss" />
-		</tstamp>
-		<mkdir dir="${version.dest.dir}"/>
-		<propertyfile file="${version.dest.dir}/${version.build.file}">
-			<entry key="build" value="${version.build}"/>
-		</propertyfile>
-	</target>
+  <!-- Add build timestamp to version -->
+  <target name="-buildversion" unless="isRelease" >
+    <tstamp>
+      <format property="version.build" pattern="yyyyMMddHHmmss" />
+    </tstamp>
+    <mkdir dir="${version.dest.dir}"/>
+    <propertyfile file="${version.dest.dir}/${version.build.file}">
+      <entry key="build" value="${version.build}"/>
+    </propertyfile>
+  </target>
 
-	<!-- Determine version -->
-	<target name="-version" depends="-buildversion" >
-		<mkdir dir="${version.dest.dir}"/>
-		<copy file="${version.src.dir}/${version.release.file}" todir="${version.dest.dir}"/>
-		<condition property="version" value="${version.release}-${version.build}" else="${version.release}">
-			<isset property="version.build"/>
-		</condition>
-	</target>
+  <!-- Determine version -->
+  <target name="-version" depends="-buildversion" >
+    <mkdir dir="${version.dest.dir}"/>
+    <copy file="${version.src.dir}/${version.release.file}" todir="${version.dest.dir}"/>
+    <condition property="version" value="${version.release}-${version.build}" else="${version.release}">
+      <isset property="version.build"/>
+    </condition>
+  </target>
 
-	<!-- Compile source files -->
-	<target name="compile" depends="-version,-manifest" >
-		<taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.1.jar"/>
+  <!-- Compile source files -->
+  <target name="compile" depends="-version,-manifest" >
+    <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask" classpath="lib/jarjar-1.1.jar"/>
 
-		<mkdir dir="${dest.dir}"/>
-		<javac srcdir="${src.dir}"
-			destdir="${dest.dir}"
-			deprecation="${compile.deprecation}"
-			debug="${compile.debug}"
-			verbose="${compile.verbose}"
-			nowarn="${compile.nowarn}"
-			includeAntRuntime="false"
-			includes="com/carolinarollergirls/scoreboard/**" >
+    <mkdir dir="${dest.dir}"/>
+    <javac srcdir="${src.dir}"
+      destdir="${dest.dir}"
+      deprecation="${compile.deprecation}"
+      debug="${compile.debug}"
+      verbose="${compile.verbose}"
+      nowarn="${compile.nowarn}"
+      includeAntRuntime="false"
+      includes="com/carolinarollergirls/scoreboard/**" >
 
-			<compilerarg value="-Xlint:unchecked"/>
-			<classpath>
-				<fileset dir="${jar.dir}" includes="deps/*.jar" />
-			</classpath>
-		</javac>
+      <compilerarg value="-Xlint:unchecked"/>
+      <classpath>
+        <fileset dir="${jar.dir}" includes="deps/*.jar" />
+      </classpath>
+    </javac>
 
-		<mkdir dir="${jar.dir}"/>
-		<jarjar jarfile="${jar.dir}/${jar.file}" manifest="${jar.dir}/${manifest.file}" >
-			<fileset dir="${dest.dir}" excludes="**/*.java" />
-			<zipgroupfileset dir="${jar.dir}" includes="deps/*.jar" />
-		</jarjar>
-	</target>
+    <mkdir dir="${jar.dir}"/>
+    <jarjar jarfile="${jar.dir}/${jar.file}" manifest="${jar.dir}/${manifest.file}" >
+      <fileset dir="${dest.dir}" excludes="**/*.java" />
+      <zipgroupfileset dir="${jar.dir}" includes="deps/*.jar" />
+    </jarjar>
+  </target>
 
-	<!-- Create Manifest only if file doesn't exist -->
-	<target name="-manifest" unless="manifest.exists" >
-		<echo message="${jar.dir}/${manifest.file} does not exist, creating..." />
-		<antcall target="manifest" />
-	</target>
+  <!-- Create Manifest only if file doesn't exist -->
+  <target name="-manifest" unless="manifest.exists" >
+    <echo message="${jar.dir}/${manifest.file} does not exist, creating..." />
+    <antcall target="manifest" />
+  </target>
 
-	<!-- Create Manifest -->
-	<target name="manifest">
-		<manifest file="${jar.dir}/${manifest.file}" >
-			<attribute name="Main-Class" value="com.carolinarollergirls.scoreboard.ScoreBoardManager" />
-			<attribute name="Class-Path" value="." />
-		</manifest>
-		<echo message="Created ${jar.dir}/${manifest.file}" />
-	</target>
+  <!-- Create Manifest -->
+  <target name="manifest">
+    <manifest file="${jar.dir}/${manifest.file}" >
+      <attribute name="Main-Class" value="com.carolinarollergirls.scoreboard.ScoreBoardManager" />
+      <attribute name="Class-Path" value="." />
+    </manifest>
+    <echo message="Created ${jar.dir}/${manifest.file}" />
+  </target>
 
-	<!-- Create JavaDOC -->
-	<target name="jdoc">
-		<mkdir dir="${jdoc.dir}"/>
-		<javadoc
-			packagenames="com.carolinarollergirls.scoreboard.*"
-			sourcepath="${src.dir}"
-			destdir="${jdoc.dir}"
-		/>
-		<echo message="Java Documentation placed in ${jdoc.dir}"/>
-	</target>
+  <!-- Create JavaDOC -->
+  <target name="jdoc">
+    <mkdir dir="${jdoc.dir}"/>
+    <javadoc
+      packagenames="com.carolinarollergirls.scoreboard.*"
+      sourcepath="${src.dir}"
+      destdir="${jdoc.dir}"
+    />
+    <echo message="Java Documentation placed in ${jdoc.dir}"/>
+  </target>
 
-	<!-- Do everything -->
-	<target name="all" depends="clean,compile"/>
+  <!-- Do everything -->
+  <target name="all" depends="clean,compile"/>
 
-	<!-- Create Windows scoreboard.exe -->
-	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
-	<target name="launcher" >
-		<launch4j>
-			<config outfile="${launch4j.outfile}" dontWrapJar="true" jarPath="${jar.dir}/${jar.file}" stayAlive="true" headerType="gui" chdir="." errTitle="CRG ScoreBoard" cmdLine="--gui" >
-				<jre minVersion="1.5.0" jdkPreference="preferJre" maxHeapSize="512" />
-				<messages jreVersionErr="You do not have Java installed.  Press OK to open the Java download website.  Restart the scoreboard after installing Java.\nError: The scoreboard requires Java JRE minimum version" />
-			</config>
-		</launch4j>
-	</target>
+  <!-- Create Windows scoreboard.exe -->
+  <taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
+  <target name="launcher" >
+    <launch4j>
+      <config outfile="${launch4j.outfile}" dontWrapJar="true" jarPath="${jar.dir}/${jar.file}" stayAlive="true" headerType="gui" chdir="." errTitle="CRG ScoreBoard" cmdLine="--gui" >
+        <jre minVersion="1.5.0" jdkPreference="preferJre" maxHeapSize="512" />
+        <messages jreVersionErr="You do not have Java installed.  Press OK to open the Java download website.  Restart the scoreboard after installing Java.\nError: The scoreboard requires Java JRE minimum version" />
+      </config>
+    </launch4j>
+  </target>
 
   <!-- Create media zip files -->
   <target name="media" >
@@ -172,43 +172,43 @@
     <ant dir="${jdom-contrib.dir}" inheritAll="false" target="clean" />
   </target>
 
-	<!-- Create zip file -->
-	<target name="zip" depends="clean,-version,compile" >
-		<mkdir dir="${release.dir}" />
-		<property name="zip.prefix" value="crg-scoreboard_${version}"/>
-		<zip destfile="${release.dir}/${zip.prefix}.zip" >
-			<zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
-				<include name="README" />
-				<include name="COPYING" />
-				<include name="COPYING-GPL" />
-				<include name="COPYING-AL" />
-				<include name="LICENSES" />
-				<include name="scoreboard-Windows.exe" />
-				<include name="scoreboard-Mac.app/**" />
-				<include name="scoreboard-Linux.sh" />
-				<include name="start.html" />
-				<include name="html/**" />
-				<include name="lib/crg-scoreboard.jar" />
-				<include name="config/crg.scoreboard.properties" />
-				<include name="config/default/**" />
-			</zipfileset>
-		</zip>
-	</target>
+  <!-- Create zip file -->
+  <target name="zip" depends="clean,-version,compile" >
+    <mkdir dir="${release.dir}" />
+    <property name="zip.prefix" value="crg-scoreboard_${version}"/>
+    <zip destfile="${release.dir}/${zip.prefix}.zip" >
+      <zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
+        <include name="README" />
+        <include name="COPYING" />
+        <include name="COPYING-GPL" />
+        <include name="COPYING-AL" />
+        <include name="LICENSES" />
+        <include name="scoreboard-Windows.exe" />
+        <include name="scoreboard-Mac.app/**" />
+        <include name="scoreboard-Linux.sh" />
+        <include name="start.html" />
+        <include name="html/**" />
+        <include name="lib/crg-scoreboard.jar" />
+        <include name="config/crg.scoreboard.properties" />
+        <include name="config/default/**" />
+      </zipfileset>
+    </zip>
+  </target>
 
-	<!-- Create official release zip file -->
-	<target name="release" >
-		<antcall target="zip">
-			<param name="isRelease" value="true"/>
-		</antcall>
-	</target>
+  <!-- Create official release zip file -->
+  <target name="release" >
+    <antcall target="zip">
+      <param name="isRelease" value="true"/>
+    </antcall>
+  </target>
 
-	<!-- Clean all classfiles -->
-	<target name="clean">
-		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeemptydirs="true" failonerror="false">
-			<fileset dir="${dest.dir}"/>
-			<fileset dir="${jar.dir}" includes="${jar.file}"/>
-			<fileset dir="${jdoc.dir}"/>
-		</delete>
-	</target>
+  <!-- Clean all classfiles -->
+  <target name="clean">
+    <delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeemptydirs="true" failonerror="false">
+      <fileset dir="${dest.dir}"/>
+      <fileset dir="${jar.dir}" includes="${jar.file}"/>
+      <fileset dir="${jdoc.dir}"/>
+    </delete>
+  </target>
 
 </project>
