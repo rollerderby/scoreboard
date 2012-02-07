@@ -73,11 +73,6 @@ table.RowTable { border-spacing: 0px; }
   #ScoreBoardView>tbody>tr>td.ViewFrames iframe { width: 100%; height: 300px; }
 /* End ScoreBoard View */
 
-/* Xml Tree Control */
-  #XmlTreeControl div.root li:not(.jstree-leaf)>input { display: none; }
-  #XmlTreeControl div.root li.NameGroup>span { color: #00f; }
-/* End Xml Tree Control */
-
 /* Teams Control */
   #Teams>tbody>tr>td { text-align: center; }
   #Teams>tbody>tr.Selection>td { background: #ccc; border-radius: 12px 12px 0px 0px; }

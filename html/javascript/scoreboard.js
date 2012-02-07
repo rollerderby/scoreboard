@@ -29,11 +29,6 @@ _include("/external/jquery-ui", [ "jquery-ui.js", "css/default/jquery-ui.css" ])
 
 _include("/external/colorpicker", [ "colorpicker.js", "css/colorpicker.css" ]);
 
-_include("/external/jstree/jquery.tree.js");
-$.jstree._themes = "/external/jstree/themes/";
-
-_include("/external/treeview", [ "jquery.treeview.js", "jquery.treeview.css" ]);
-
 _include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
 _include("/external/jquery-plugins/string/jquery.string.js");
 _include("/external/jquery-plugins/fileupload/jquery.fileupload.js");
