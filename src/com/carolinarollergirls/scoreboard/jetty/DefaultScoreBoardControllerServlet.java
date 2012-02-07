@@ -28,5 +28,11 @@ public abstract class DefaultScoreBoardControllerServlet extends HttpServlet imp
     response.setCharacterEncoding("UTF-8");
   }
 
+  protected void setTextResponse(HttpServletResponse response, int code, String text) throws IOException {
+    response.setContentType("text/plain");
+    response.getWriter().print(text);
+    response.setStatus(code);
+  }
+
   protected ScoreBoardModel scoreBoardModel;
 }
