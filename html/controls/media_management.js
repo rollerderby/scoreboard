@@ -127,7 +127,7 @@ function refreshAvailable(table) {
 
   $.get("/Media/list", { media: media, type: type })
     .fail(function(jqxhr, textStatus, errorThrown) {
-      alert("Error getting available media");
+      alert("Error getting available media : "+jqxhr.responseText);
     })
     .always(function() {
       table.find("th.Type>button.AvailableControl").button("enable");
@@ -195,7 +195,7 @@ function createUploadMediaDialog(table) {
               div.find("a.Status").text(data);
             })
             .fail(function(jqxhr, textStatus, errorThrown) {
-              div.find("a.Status").text("Error while uploading "+statustxt+" : "+textStatus);
+              div.find("a.Status").text("Error while uploading : "+jqxhr.responseText);
             })
             .always(function() {
               var newInputFile = inputFile.clone(true).insertAfter(inputFile);
