@@ -152,25 +152,6 @@ public class ScoreBoardXmlConverter
   }
 
   public void processScoreBoard(ScoreBoardModel scoreBoardModel, Element scoreBoard) {
-/* DEPRECATED - all this "call" functionality is deprecated; use actual XML elements instead! */
-    String call = scoreBoard.getAttributeValue("call");
-    if (call == null)
-      call = "";
-
-    if (call.equalsIgnoreCase("startJam"))
-      scoreBoardModel.startJam();
-    else if (call.equalsIgnoreCase("stopJam"))
-      scoreBoardModel.stopJam();
-    else if (call.equalsIgnoreCase("timeout"))
-      scoreBoardModel.timeout();
-    else if (call.equalsIgnoreCase("unStartJam"))
-      scoreBoardModel.unStartJam();
-    else if (call.equalsIgnoreCase("unStopJam"))
-      scoreBoardModel.unStopJam();
-    else if (call.equalsIgnoreCase("unTimeout"))
-      scoreBoardModel.unTimeout();
-/* END DEPRECATED */
-
     Iterator children = scoreBoard.getChildren().iterator();
     while (children.hasNext()) {
       Element element = (Element)children.next();
@@ -208,37 +189,11 @@ public class ScoreBoardXmlConverter
       } catch ( Exception e ) {
       }
     }
-
-    removeScoreBoardChildren(scoreBoard);
-  }
-
-  // FIXME - this removes all children of ScoreBoard except the "Page" children
-  // one the legacy HTML code is replaced (or fixed), we should just remove ScoreBoard entirely.
-  @SuppressWarnings("unchecked")
-  protected void removeScoreBoardChildren(Element sb) {
-    sb.getChildren().retainAll(sb.getChildren("Page"));
   }
 
   public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {
     String id = clock.getAttributeValue("Id");
     ClockModel clockModel = scoreBoardModel.getClockModel(id);
-
-/* DEPRECATED - all this "call" functionality is deprecated; use actual XML elements instead! */
-    String call = clock.getAttributeValue("call");
-    if (call == null)
-      call = "";
-
-    if (call.equalsIgnoreCase("start"))
-      clockModel.start();
-    else if (call.equalsIgnoreCase("stop"))
-      clockModel.stop();
-    else if (call.equalsIgnoreCase("unStart"))
-      clockModel.unstart();
-    else if (call.equalsIgnoreCase("unStop"))
-      clockModel.unstop();
-    else if (call.equalsIgnoreCase("resetTime"))
-      clockModel.resetTime();
-/* END DEPRECATED */
 
     Iterator children = clock.getChildren().iterator();
     while (children.hasNext()) {
@@ -302,15 +257,6 @@ public class ScoreBoardXmlConverter
     String id = team.getAttributeValue("Id");
     TeamModel teamModel = scoreBoardModel.getTeamModel(id);
 
-/* DEPRECATED - all this "call" functionality is deprecated; use actual XML elements instead! */
-    String call = team.getAttributeValue("call");
-    if (call == null)
-      call = "";
-
-    if (call.equalsIgnoreCase("timeout"))
-      teamModel.timeout();
-/* END DEPRECATED */
-
     Iterator children = team.getChildren().iterator();
     while (children.hasNext()) {
       Element element = (Element)children.next();
@@ -355,12 +301,6 @@ public class ScoreBoardXmlConverter
   public void processPosition(TeamModel teamModel, Element position) {
     String id = position.getAttributeValue("Id");
     PositionModel positionModel = teamModel.getPositionModel(id);
-
-/* DEPRECATED - all this "call" functionality is deprecated; use actual XML elements instead! */
-    String call = position.getAttributeValue("call");
-    if ("clear".equalsIgnoreCase(call))
-      positionModel.clear();
-/* END DEPRECATED */
 
     Iterator children = position.getChildren().iterator();
     while (children.hasNext()) {
