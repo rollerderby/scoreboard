@@ -1186,32 +1186,32 @@ function createSaveLoadContent() {
   var resetTd = $("<td>")
     .appendTo($("<tr>").addClass("Content").appendTo(sbResetTable));
 
-  $("<button>").text("Reset the scoreboard").button()
-    .click(showResetScoreBoardDialog)
-    .appendTo(resetTd);
+  $("<button>").text("Reset everything").button()
+    .click(function() {
+      showResetDialog("This will completely reset the ScoreBoard to the defaults.<br/>You will LOSE all current information!<br/>This will also reload all scoreboard pages.", ", reset everything to defaults", ", do not reset", $sb("Reset"));
+    }).appendTo(resetTd);
+  $("<button>").text("Reset scoreboard only").button()
+    .click(function() {
+      showResetDialog("This will reset the ScoreBoard elements, like the team and clock values.", ", reset the scoreboard", ", do not reset", $sb("ScoreBoard.Reset"));
+    }).appendTo(resetTd);
 }
 
-function showResetScoreBoardDialog() {
-  var div = $("<div>").addClass("ResetScoreBoardDialog");
+function showResetDialog(descriptionHtml, yesText, noText, sbReset) {
+  var div = $("<div>").addClass("ResetDialog");
 
-  $("<p>")
-    .append("<span>This will completely reset the ScoreBoard to the defaults.<br/></span>")
-    .append("<span>You will LOSE all current information!<br/></span>")
-    .append("<span>This will also reload all scoreboard pages.</span>")
-    .appendTo(div);
-  $sb("Reset").$sbControl("<button>").addClass("Yes")
-    .click(function() { div.dialog("destroy").remove(); })
-    .val(true)
-    .text("Yes, reset the scoreboard to defaults!")
-    .button()
-    .appendTo(div);
-  $("<button>").addClass("No")
-    .text("No, do not reset the scoreboard.")
-    .click(function() { div.dialog("destroy").remove(); })
-    .button()
-    .appendTo(div);
+  $("<p>").html(descriptionHtml).appendTo(div);
   div.dialog({
     modal: true,
-    width: "800px"
+    width: 800,
+    buttons: [
+      { text: "Yes"+yesText, click: function() { $(this).dialog("close"); } },
+      { text: "No"+noText, click: function() { $(this).dialog("close"); } }
+    ],
+    close: function() { $(this).dialog("destroy").remove(); }
   });
+  var yesButton = div.dialog("widget").find("button").filter(function() {
+    return /^Yes/.test($(this).button("option", "label"));
+  });
+  sbReset.$sbControl(yesButton).val(true);
 }
+
