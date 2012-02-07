@@ -12,6 +12,24 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
   public DefaultClockModel(ScoreBoardModel sbm, String i) {
     scoreBoardModel = sbm;
     id = i;
+
+    // The default value for these cannot be known
+    // as each clock has a different value,
+    // so we only set a default here so something will be set.
+    // These defaults are almost certainly not correct,
+    // so we really are relying on later configuration (like xml loading)
+    // to set the correct values for these.
+    // Additionally, we can't do this in reset() because
+    // then the clocks would all be reset to incorrect min,max,etc values.
+    // Even better, would be to force passing these in the constructor so
+    // we would have good default values, that could be reset to...
+    // FIXME ^^
+    setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
+    setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
+    setCountDirectionDown(DEFAULT_DIRECTION);
+    setMinimumTime(DEFAULT_MINIMUM_TIME);
+    setMaximumTime(DEFAULT_MAXIMUM_TIME);
+
     reset();
   }
 
@@ -33,13 +51,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
     stop();
     setName(getId());
 
-    setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
-    setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
-    setNumber(DEFAULT_MINIMUM_NUMBER);
+    // We hardcode the assumption that numbers count up.
+    setNumber(getMinimumNumber());
 
-    setCountDirectionDown(DEFAULT_DIRECTION);
-    setMinimumTime(DEFAULT_MINIMUM_TIME);
-    setMaximumTime(DEFAULT_MAXIMUM_TIME);
     resetTime();
   }
 
