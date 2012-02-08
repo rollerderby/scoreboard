@@ -188,6 +188,8 @@
         <include name="scoreboard-Linux.sh" />
         <include name="start.html" />
         <include name="html/**" />
+        <exclude name="html/images/teamlogo/*" />
+        <exclude name="html/images/sponsor_banner/*" />
         <include name="lib/crg-scoreboard.jar" />
         <include name="config/crg.scoreboard.properties" />
         <include name="config/default/**" />
