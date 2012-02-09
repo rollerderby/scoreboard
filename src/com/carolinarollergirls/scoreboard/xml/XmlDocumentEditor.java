@@ -167,6 +167,10 @@ public class XmlDocumentEditor
     }
   }
 
+  public boolean isTrue(Element e) {
+    return Boolean.parseBoolean(getText(e));
+  }
+
   public Document addVersion(Document doc) {
     String oldVersion = doc.getRootElement().getAttributeValue("Version");
     if (oldVersion == null || oldVersion.equals(""))
