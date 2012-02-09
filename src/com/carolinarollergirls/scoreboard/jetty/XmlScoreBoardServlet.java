@@ -19,7 +19,6 @@ import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.file.*;
 import com.carolinarollergirls.scoreboard.policy.*;
 import com.carolinarollergirls.scoreboard.defaults.*;
 

@@ -9,7 +9,6 @@ import org.jdom.*;
 import org.jdom.output.*;
 
 import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.file.*;
 
 public class AutoSaveScoreBoard implements Runnable
 {
@@ -32,39 +31,40 @@ public class AutoSaveScoreBoard implements Runnable
   public void run() {
     try {
       int n = AUTOSAVE_FILES;
-      File dir = toXmlFile.getDirectory();
-      new File(dir, getName(n)).delete();
+      getFile(n).delete();
       while (n > 0) {
-        File to = new File(dir, getName(n));
-        File from = new File(dir, getName(--n));
+        File to = getFile(n);
+        File from = getFile(--n);
         from.renameTo(to);
       }
-      toXmlFile.setFile(getName(0));
-      toXmlFile.save(xmlScoreBoard);
+      FileOutputStream fos = new FileOutputStream(getFile(0));
+      xmlOutputter.output(xmlScoreBoard.getDocument(), fos);
+      fos.close();
     } catch ( Exception e ) {
       ScoreBoardManager.printMessage("WARNING: Unable to auto-save scoreboard : "+e.getMessage());
     }
   }
 
-  public static String getName(int n) {
+  public static File getFile(int n) { return getFile(DIRECTORY_NAME, n); }
+  public static File getFile(String dir, int n) { return getFile(new File(dir), n); }
+  public static File getFile(File dir, int n) {
     if (n == 0)
-      return (FILE_NAME + "-0-now.xml");
+      return new File(dir, (FILE_NAME + "-0-now.xml"));
     else
-      return (FILE_NAME + "-" + (n * SAVE_DELAY) + "-secs-ago.xml");
+      return new File(dir, (FILE_NAME + "-" + (n * SAVE_DELAY) + "-secs-ago.xml"));
   }
 
   protected void backupAutoSavedFiles() {
     SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-    File mainBackupDir = new File(toXmlFile.getDirectory(), "backup");
+    File mainBackupDir = new File(DIRECTORY_NAME, "backup");
     File backupDir = new File(mainBackupDir, dateFormat.format(new Date()));
     if (backupDir.exists()) {
       ScoreBoardManager.printMessage("Could not back up auto-save files, backup directory already exists");
     } else {
       int n = 0;
-      File dir = toXmlFile.getDirectory();
       do {
-        File to = new File(backupDir, getName(n));
-        File from = new File(dir, getName(n));
+        File to = getFile(backupDir, n);
+        File from = getFile(n);
         if (from.exists()) {
           if (!backupDir.exists() && !backupDir.mkdirs()) {
             ScoreBoardManager.printMessage("Could not back up auto-save files, failure creating backup directory");
@@ -78,9 +78,9 @@ public class AutoSaveScoreBoard implements Runnable
   }
 
   protected XmlScoreBoard xmlScoreBoard;
-  protected ScoreBoardToXmlFile toXmlFile = new ScoreBoardToXmlFile(AutoSaveScoreBoard.DIRECTORY_NAME);
   protected ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
   protected ScheduledFuture running = null;
+  protected XMLOutputter xmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
 
   public static final String DIRECTORY_NAME = "config/autosave";
   public static final String FILE_NAME = "scoreboard";

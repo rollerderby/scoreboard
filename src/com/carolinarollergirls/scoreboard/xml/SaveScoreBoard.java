@@ -8,7 +8,6 @@ import org.jdom.*;
 import org.jdom.output.*;
 
 import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.file.*;
 
 public class SaveScoreBoard extends SegmentedXmlDocumentManager
 {
@@ -38,9 +37,10 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
     String filename = "";
     try {
       filename = editor.getText(getXPathElement().getChild("Filename"));
-      ScoreBoardToXmlFile toFile = new ScoreBoardToXmlFile(DIRECTORY_NAME, filename);
-      toFile.save(getXmlScoreBoard());
-      editor.setText(msg, "Saved ScoreBoard to file '"+toFile.getFile().getName()+"'");
+      FileOutputStream fos = new FileOutputStream(new File(DIRECTORY_NAME, filename));
+      xmlOutputter.output(getXmlScoreBoard().getDocument(), fos);
+      fos.close();
+      editor.setText(msg, "Saved ScoreBoard to file '"+filename+"'");
     } catch ( Exception e ) {
       editor.setText(msg, "Could not save to file '"+filename+"' : "+e.getMessage());
       editor.setText(error, "true");
@@ -48,6 +48,8 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
       update(updateE);
     }
   }
+
+  protected XMLOutputter xmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
 
   public static final String DIRECTORY_NAME = "html/save";
 

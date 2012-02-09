@@ -110,12 +110,8 @@ public class XmlScoreBoard
   }
 
   protected boolean loadAutoSaveDocument() {
-    File autoSaveDir = new File(AutoSaveScoreBoard.DIRECTORY_NAME);
-    if (!autoSaveDir.exists())
-      return false;
-
     for (int i=0; i <= AutoSaveScoreBoard.AUTOSAVE_FILES; i++) {
-      File f = new File(autoSaveDir, AutoSaveScoreBoard.getName(i));
+      File f = AutoSaveScoreBoard.getFile(i);
       if (!f.exists())
         continue;
       try {

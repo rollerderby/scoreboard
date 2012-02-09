@@ -5,11 +5,10 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import org.jdom.*;
-import org.jdom.output.*;
+import org.jdom.input.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.file.*;
 
 public class LoadScoreBoard extends SegmentedXmlDocumentManager
 {
@@ -30,16 +29,14 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager
 
   protected void processChildElement(Element e) throws Exception {
     super.processChildElement(e);
-    if (e.getName().equals("LoadFile")) {
-      loadFromFile.setFile(editor.getText(e)); 
-      loadFromFile.load(xmlScoreBoard);
-    } else if (e.getName().equals("MergeFile")) {
-      loadFromFile.setFile(editor.getText(e));
-      loadFromFile.merge(xmlScoreBoard);
-    }
+    Document d = saxBuilder.build(new File(DIRECTORY_NAME, editor.getText(e)));
+    if (e.getName().equals("LoadFile"))
+      xmlScoreBoard.loadDocument(d);
+    else if (e.getName().equals("MergeFile"))
+      xmlScoreBoard.mergeDocument(d);
   }
 
-  protected ScoreBoardFromXmlFile loadFromFile = new ScoreBoardFromXmlFile(DIRECTORY_NAME);
+  protected SAXBuilder saxBuilder = new SAXBuilder();
 
   public static final String DIRECTORY_NAME = "html/save";
 }
