@@ -13,6 +13,7 @@ public class ScoreBoardFromXmlFile extends ScoreBoardFromFile
   public ScoreBoardFromXmlFile(String d) { super(d); }
   public ScoreBoardFromXmlFile(String d, String f) { super(d, f); }
 
+  /* Replace the existing scoreboard with the loaded scoreboard */
   public void load(ScoreBoardModel sbM) throws Exception { load(sbM.getXmlScoreBoard()); }
   public void load(XmlScoreBoard xsB) throws Exception {
     synchronized (saxBuilder) {
@@ -20,6 +21,7 @@ public class ScoreBoardFromXmlFile extends ScoreBoardFromFile
     }
   }
 
+  /* Merge the loaded scoreboard into the existing scoreboard */
   public void merge(ScoreBoardModel sbM) throws Exception { merge(sbM.getXmlScoreBoard()); }
   public void merge(XmlScoreBoard xsB) throws Exception {
     synchronized (saxBuilder) {

@@ -6,7 +6,7 @@ import java.text.*;
 
 import com.carolinarollergirls.scoreboard.*;
 
-public abstract class ScoreBoardToFile extends ScoreBoardFileIO
+public class ScoreBoardToFile extends ScoreBoardFileIO
 {
   public ScoreBoardToFile() {
     super();
@@ -20,8 +20,6 @@ public abstract class ScoreBoardToFile extends ScoreBoardFileIO
     super(d, f);
     countFormat.setMinimumIntegerDigits(3);
   }
-
-  public abstract void save(ScoreBoard sB) throws Exception;
 
   public void setFile(String n) { setFile(n,null); }
   public void setFile(String n, String e) { setFile(n, e, true); }

@@ -12,74 +12,66 @@ import com.carolinarollergirls.scoreboard.xml.*;
 import org.jdom.*;
 import org.jdom.output.*;
 
-public class ScoreBoardStreamToXmlFile /*extends ScoreBoardToFile implements ScoreBoardStreamToFile,XmlScoreBoardListener*/
+public class ScoreBoardStreamToXmlFile extends ScoreBoardStreamToFile implements XmlScoreBoardListener
 {
-  public ScoreBoardStreamToXmlFile() { }
-/*
-  public void setScoreBoard(ScoreBoard sb) {
-    scoreBoard = sb;
-//FIXME - use XML structure to choose directory and filename, start and stop recording
-    try {
-      setDirectory("html/save");
-      setFile(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()), "xml");
-      start();
-    } catch ( Exception e ) {
-      System.err.println("Could not start saving XML ScoreBoard to file : "+e.getMessage());
-      e.printStackTrace();
-    }
+  public ScoreBoardStreamToXmlFile(XmlScoreBoard xsb) {
+    super();
+    setXmlScoreBoard(xsb);
+    init();
+  }
+  public ScoreBoardStreamToXmlFile(XmlScoreBoard xsb, String d) {
+    super(d);
+    setXmlScoreBoard(xsb);
+    init();
+  }
+  public ScoreBoardStreamToXmlFile(XmlScoreBoard xsb, String d, String f) {
+    super(d, f);
+    setXmlScoreBoard(xsb);
+    init();
   }
 
-  public boolean start() throws Exception {
-    synchronized (this) {
-      if (!running) {
-        printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), Charset.forName("UTF-8"))));
-        // I would rather use programmatic means to do this,
-        // but I can't find anything that allows manually creating a toplevel element
-        // and then streaming in subelements (and then eventually closing the element/doc)
-        printWriter.println("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"no\"?>");
-        printWriter.println("<ScoreBoardStream version=\"0.1.4\">");
-        running = true;
-        scoreBoard.getXmlScoreBoard().addXmlScoreBoardListener(this);
-      }
-    }
+  protected void setXmlScoreBoard(XmlScoreBoard xsb) { xmlScoreBoard = xsb; }
 
-    return running;
+  protected void init() {
+    outputter.getFormat().setEncoding(OUTPUT_ENCODING);
+    outputter.getFormat().setOmitDeclaration(true);
   }
 
-  public boolean stop() throws Exception {
-    synchronized (this) {
-      if (running) {
-        running = false;
-        scoreBoard.getXmlScoreBoard().removeXmlScoreBoardListener(this);
-        synchronized (outputter) {
-          printWriter.println("</ScoreBoardStream>");
-          printWriter.flush();
-          printWriter.close();
-        }
-      }
-    }
-
-    return !running;
+  public void doStart() throws Exception {
+    printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(getFile()), Charset.forName(OUTPUT_ENCODING))));
+    // I would rather use programmatic means to do this,
+    // but I can't find anything that allows manually creating a toplevel element
+    // and then streaming in subelements (and then eventually closing the element/doc)
+    printWriter.print("<?xml version=\"1.0\" encoding=\""+OUTPUT_ENCODING+"\"?>");
+    printWriter.print("<ScoreBoardStream version=\""+ScoreBoardManager.getVersion()+"\">");
+    xmlScoreBoard.addXmlScoreBoardListener(this);
   }
 
-  public boolean isRunning() { return running; }
+  protected void doStop() {
+    xmlScoreBoard.removeXmlScoreBoardListener(this);
+    synchronized (outputter) {
+      printWriter.print("</ScoreBoardStream>");
+      printWriter.flush();
+      printWriter.close();
+      printWriter = null;
+    }
+  }
 
   public void xmlChange(Document d) {
-    synchronized (outputter) {
-      if (running) {
-        try {
+    try {
+      synchronized (outputter) {
+        if (isRunning())
           outputter.output(d.getRootElement(), printWriter);
-          printWriter.println();
-        } catch ( IOException ioE ) {
-          System.err.println("Could not output ScoreBoard element to XML stream : " + ioE.getMessage());
-          ioE.printStackTrace();
-        }
       }
+    } catch ( IOException ioE ) {
+      ScoreBoardManager.printMessage("Could not output ScoreBoard element to XML stream : " + ioE.getMessage());
+      stop();
     }
   }
 
-  protected ScoreBoard scoreBoard = null;
+  protected XmlScoreBoard xmlScoreBoard = null;
   protected PrintWriter printWriter = null;
-  protected XMLOutputter outputter = new XMLOutputter(Format.getPrettyFormat());
-*/
+  protected XMLOutputter outputter = XmlDocumentEditor.getRawXmlOutputter();
+
+  public static final String OUTPUT_ENCODING = "UTF-8";
 }
