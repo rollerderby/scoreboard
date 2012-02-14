@@ -17,6 +17,11 @@ public class AutoSaveScoreBoard implements Runnable
   }
 
   public synchronized void start() {
+    File dir = new File(DIRECTORY_NAME);
+    if (!dir.exists() && !dir.mkdirs()) {
+      ScoreBoardManager.printMessage("WARNING: Unable to create auto-save scoreboard directory");
+      return;
+    }
     backupAutoSavedFiles();
     running = executor.scheduleWithFixedDelay(this, 0, SAVE_DELAY, TimeUnit.SECONDS);
   }
