@@ -54,14 +54,6 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
     }
   }
 
-  protected void reloadListeners(HttpServletRequest request, HttpServletResponse response) {
-    Document d = editor.createDocument("Reload");
-    d.getRootElement().setAttribute("persistentIgnore", "true");
-    scoreBoardModel.getXmlScoreBoard().mergeDocument(d);
-    response.setContentType("text/plain");
-    response.setStatus(HttpServletResponse.SC_OK);
-  }
-
   protected void set(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
     XmlListener listener = getXmlListenerForRequest(request);
     Document requestDocument = editor.toDocument(request.getInputStream());
@@ -130,8 +122,6 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
         get(request, response);
       else if ("/debug".equals(request.getPathInfo()))
         setDebug(request, response);
-      else if ("/reloadViewers".equals(request.getPathInfo()))
-        reloadListeners(request, response);
       else if (request.getPathInfo().endsWith(".xml"))
         getAll(request, response);
       else if (!response.isCommitted())
