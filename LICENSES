@@ -25,6 +25,9 @@ http://commons.apache.org/codec/
 Commons Fileupload (commons-fileupload-*.jar)
 http://commons.apache.org/fileupload/
 
+Commons IO (commons-io-*.jar)
+http://commons.apache.org/io/
+
 Commons Logging (commons-logging-*.jar)
 http://commons.apache.org/logging/
 
