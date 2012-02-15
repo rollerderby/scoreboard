@@ -14,24 +14,37 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream
 {
   public LoadScoreBoardStream() { super("LoadStream"); }
 
-  protected void doStart(File file) throws IOException {
+  protected void doStart(File file) throws IOException,FileNotFoundException {
     try {
-      inputStream = new ScoreBoardInputStream(file, this);
+      firstDocument = true;
+      inputStream = new ScoreBoardInputStream(file, new RealtimeXmlScoreBoardListenerFilter(this));
       inputStream.start();
+    } catch ( FileNotFoundException fnfE ) {
+      doStop();
+      throw new FileNotFoundException("File '"+file.getName()+"' not found : "+fnfE.getMessage());
     } catch ( IOException ioE ) {
-      inputStream.stop();
-      inputStream = null;
+      doStop();
       throw new IOException("Could not start streaming from file '"+file.getName()+"' : "+ioE.getMessage());
     }
   }
 
   protected void doStop() {
-    inputStream.stop();
+    if (null != inputStream)
+      inputStream.stop();
+    inputStream = null;
   }
 
   protected void doXmlChange(Document d) {
-    System.err.println("got doc");
+    if (null == d) {
+      stop();
+    } else if (firstDocument) {
+      getXmlScoreBoard().loadDocument(d);
+      firstDocument = false;
+    } else {
+      getXmlScoreBoard().xmlChange(d);
+    }
   }
 
   protected ScoreBoardInputStream inputStream = null;
+  protected boolean firstDocument;
 }

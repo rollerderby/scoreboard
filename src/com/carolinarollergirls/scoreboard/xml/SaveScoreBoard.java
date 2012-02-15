@@ -13,14 +13,19 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
 {
   public SaveScoreBoard() { super("SaveLoad", "Save"); }
 
-  public void reset() {
-    super.reset();
+  public void setXmlScoreBoard(XmlScoreBoard xsB) {
+    super.setXmlScoreBoard(xsB);
+
     Element e = createXPathElement();
     e.addContent(new Element("Filename"));
     e.addContent(new Element("Save"));
     e.addContent(editor.setText(new Element("Error"), "false"));
     e.addContent(new Element("Message"));
     update(e);
+  }
+
+  public void reset() {
+    /* Don't reset anything, as these controls should not be saved. */
   }
 
   protected void processChildElement(Element e) {
@@ -38,7 +43,7 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
     try {
       filename = editor.getText(getXPathElement().getChild("Filename"));
       FileOutputStream fos = new FileOutputStream(new File(DIRECTORY_NAME, filename));
-      xmlOutputter.output(getXmlScoreBoard().getDocument(), fos);
+      xmlOutputter.output(editor.filterNoSavePI(getXmlScoreBoard().getDocument()), fos);
       fos.close();
       editor.setText(msg, "Saved ScoreBoard to file '"+filename+"'");
     } catch ( Exception e ) {
@@ -47,6 +52,10 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
     } finally {
       update(updateE);
     }
+  }
+
+  protected Element createXPathElement() {
+    return editor.setNoSavePI(super.createXPathElement());
   }
 
   protected XMLOutputter xmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();

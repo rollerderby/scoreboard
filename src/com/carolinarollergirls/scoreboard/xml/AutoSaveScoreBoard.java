@@ -43,7 +43,7 @@ public class AutoSaveScoreBoard implements Runnable
         from.renameTo(to);
       }
       FileOutputStream fos = new FileOutputStream(getFile(0));
-      xmlOutputter.output(xmlScoreBoard.getDocument(), fos);
+      xmlOutputter.output(editor.filterNoSavePI(xmlScoreBoard.getDocument()), fos);
       fos.close();
     } catch ( Exception e ) {
       ScoreBoardManager.printMessage("WARNING: Unable to auto-save scoreboard : "+e.getMessage());
@@ -85,6 +85,7 @@ public class AutoSaveScoreBoard implements Runnable
   protected XmlScoreBoard xmlScoreBoard;
   protected ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
   protected ScheduledFuture running = null;
+  protected XmlDocumentEditor editor = new XmlDocumentEditor();
   protected XMLOutputter xmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
 
   public static final String DIRECTORY_NAME = "config/autosave";

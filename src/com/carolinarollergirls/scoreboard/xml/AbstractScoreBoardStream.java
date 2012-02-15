@@ -16,17 +16,19 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
     super("SaveLoad", name);
   }
 
-  public void reset() {
-    synchronized (lock) {
-      stop();
-    }
-    super.reset();
+  public void setXmlScoreBoard(XmlScoreBoard xsB) {
+    super.setXmlScoreBoard(xsB);
+
     Element e = createXPathElement();
     e.addContent(new Element("Filename"));
     e.addContent(editor.setText(new Element("Running"), "false"));
     e.addContent(editor.setText(new Element("Error"), "false"));
     e.addContent(new Element("Message"));
     update(e);
+  }
+
+  public void reset() {
+    /* Don't reset anything, as this controls loading. */
   }
 
   protected void processChildElement(Element e) throws JDOMException {
@@ -50,9 +52,9 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
     if (running) {
       editor.setText(msg, "Cannot change Filename while Running");
       editor.setText(error, "true");
-      return;
+    } else {
+      updateE.addContent(editor.setText(new Element("Filename"), filename));
     }
-    updateE.addContent(editor.setText(new Element("Filename"), filename));
     update(updateE);
   }
 
@@ -79,9 +81,13 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
       running = true;
       doStart(new File(directory, filename));
       updateE.addContent(editor.setText(new Element("Running"), "true"));
+    } catch ( FileNotFoundException fnfE ) {
+      running = false;
+      editor.setText(msg, fnfE.getMessage());
+      editor.setText(error, "true");
     } catch ( IOException ioE ) {
-//FIXME - need generic text
-      editor.setText(msg, "Could not start streaming to file '"+filename+"' : "+ioE.getMessage());
+      running = false;
+      editor.setText(msg, ioE.getMessage());
       editor.setText(error, "true");
     } finally {
       update(updateE);
@@ -115,7 +121,11 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
     }
   }
 
-  protected abstract void doStart(File f) throws IOException;
+  protected Element createXPathElement() {
+    return editor.setNoSavePI(super.createXPathElement());
+  }
+
+  protected abstract void doStart(File f) throws IOException,FileNotFoundException;
   protected abstract void doStop();
   protected abstract void doXmlChange(Document d) throws IOException;
 

@@ -13,22 +13,20 @@ import org.jdom.output.*;
 
 public class ScoreBoardOutputStream
 {
-  public ScoreBoardOutputStream(File f) {
-    file = f;
+  public ScoreBoardOutputStream(File f) throws FileNotFoundException {
+    fileOutputStream = new FileOutputStream(f);
     xmlOutputter.getFormat().setEncoding(OUTPUT_ENCODING);
     xmlOutputter.getFormat().setOmitDeclaration(true);
   }
 
-  public synchronized void start() throws IllegalStateException,FileNotFoundException {
+  public synchronized void start() throws IllegalStateException {
     if (null != printWriter)
       throw new IllegalStateException("Already started");
     if (finished)
       throw new IllegalStateException("Finished; cannot restart");
 
-    printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(new FileOutputStream(file), Charset.forName(OUTPUT_ENCODING))));
-    // I would rather use programmatic means to do this,
-    // but I can't find anything that allows manually creating a toplevel element
-    // and then streaming in subelements (and then eventually closing the element/doc)
+    printWriter = new PrintWriter(new BufferedWriter(new OutputStreamWriter(fileOutputStream, Charset.forName(OUTPUT_ENCODING))));
+    // Might be able to do this with a custom SAX writer/filter
     printWriter.print("<?xml version=\"1.0\" encoding=\""+OUTPUT_ENCODING+"\"?>");
     printWriter.print("<ScoreBoardStream version=\""+ScoreBoardManager.getVersion()+"\">");
   }
@@ -48,7 +46,7 @@ public class ScoreBoardOutputStream
     xmlOutputter.output(d.getRootElement(), printWriter);
   }
 
-  protected File file = null;
+  protected FileOutputStream fileOutputStream = null;
   protected PrintWriter printWriter = null;
   protected boolean finished = false;
   protected XMLOutputter xmlOutputter = XmlDocumentEditor.getRawXmlOutputter();

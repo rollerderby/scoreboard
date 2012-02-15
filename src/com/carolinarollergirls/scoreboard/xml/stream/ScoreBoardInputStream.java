@@ -18,11 +18,11 @@ import org.xml.sax.helpers.*;
 
 public class ScoreBoardInputStream
 {
-  public ScoreBoardInputStream(File f, XmlScoreBoardListener l) {
-    filterRunnable = new StreamFilterRunnable(f, l);
+  public ScoreBoardInputStream(File f, XmlScoreBoardListener l) throws FileNotFoundException {
+    filterRunnable = new StreamFilterRunnable(new FileInputStream(f), l);
   }
 
-  public void start() throws IllegalStateException,FileNotFoundException {
+  public void start() throws IllegalStateException {
     synchronized (lock) {
       if (finished)
         throw new IllegalStateException("Finished; cannot restart");
@@ -52,22 +52,19 @@ public class ScoreBoardInputStream
 
   protected static class StreamFilterRunnable extends XMLFilterImpl implements XMLFilter,Runnable
   {
-    public StreamFilterRunnable(File f, XmlScoreBoardListener l) {
-      file = f;
+    public StreamFilterRunnable(FileInputStream fos, XmlScoreBoardListener l) {
+      fileInputStream = fos;
       listener = l;
     }
     public void run() {
-      FileInputStream fos = null;
       try {
-        fos = new FileInputStream(file);
         setParent(SAXParserFactory.newInstance().newSAXParser().getXMLReader());
-        parse(new InputSource(fos));
+        parse(new InputSource(fileInputStream));
       } catch ( Exception e ) {
         exception = e;
       } finally {
         try {
-          if (null != fos)
-            fos.close();
+          fileInputStream.close();
         } catch ( IOException ioE ) { /* ignore err on close */ }
       }
     }
@@ -87,6 +84,10 @@ public class ScoreBoardInputStream
           stopHandling();
       }
     }
+    public void endDocument() throws SAXException {
+      if (!stopped)
+        listener.xmlChange(null);
+    }
     protected void startHandling() throws SAXException {
       if (stopped)
         return;
@@ -95,6 +96,11 @@ public class ScoreBoardInputStream
       setDTDHandler(handler);
       setEntityResolver(handler);
       setErrorHandler(handler);
+      try { setProperty("http://xml.org/sax/properties/lexical-handler", handler); }
+      catch ( Exception e ) {
+        try { setProperty("http://xml.org/sax/handlers/LexicalHandler", handler); }
+        catch ( Exception ee ) { }
+      }
       getContentHandler().startDocument();
     }
     protected void stopHandling() throws SAXException {
@@ -103,11 +109,16 @@ public class ScoreBoardInputStream
       setDTDHandler(defaultHandler);
       setEntityResolver(defaultHandler);
       setErrorHandler(defaultHandler);
+      try { setProperty("http://xml.org/sax/properties/lexical-handler", defaultHandler); }
+      catch ( Exception e ) {
+        try { setProperty("http://xml.org/sax/handlers/LexicalHandler", defaultHandler); }
+        catch ( Exception ee ) { }
+      }
       if (!stopped)
         listener.xmlChange(handler.getDocument());
       handler = null;
     }
-    protected File file;
+    protected FileInputStream fileInputStream;
     protected XmlScoreBoardListener listener;
     protected DefaultHandler defaultHandler = new DefaultHandler();
     protected SAXHandler handler = null;

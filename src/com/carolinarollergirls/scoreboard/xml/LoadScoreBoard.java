@@ -36,6 +36,10 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager
       xmlScoreBoard.mergeDocument(d);
   }
 
+  protected Element createXPathElement() {
+    return editor.setNoSavePI(super.createXPathElement());
+  }
+
   protected SAXBuilder saxBuilder = new SAXBuilder();
 
   public static final String DIRECTORY_NAME = "html/save";
