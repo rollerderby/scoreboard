@@ -373,7 +373,7 @@ public class ScoreBoardXmlConverter
     String id = skater.getAttributeValue("Id");
     SkaterModel skaterModel;
 
-    if (Boolean.parseBoolean(skater.getAttributeValue("remove"))) {
+    if (editor.hasRemovePI(skater)) {
       teamModel.removeSkaterModel(id);
       return;
     }

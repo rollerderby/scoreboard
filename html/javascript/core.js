@@ -214,7 +214,7 @@ _crgScoreBoard = {
     $sbIsTrue: function() { return isTrue(this.$sbGet()); },
     $sbSet: function(value, attrs) { _crgScoreBoard.updateServer(_crgScoreBoard.toNewElement(this, value).attr(attrs||{})); },
     $sbChange: function(value) { this.$sbSet(value, { change: "true" }); },
-    $sbRemove: function() { this.$sbSet(undefined, { remove: "true" }); },
+    $sbRemove: function() { _crgScoreBoard.removeFromServer(this); },
     $sbBindAndRun: function(eventType, eventData, handler, initParams) { return _crgUtils.bindAndRun(this, eventType, eventData, handler, initParams); },
     $sbBindAddRemoveEach: function(childName, add, remove) { return _crgUtils.bindAddRemoveEach(this, childName, add, remove); },
     $sbElement: function(type, attributes, className) { return _crgScoreBoard.create(this, type, attributes, className); },
@@ -305,6 +305,12 @@ _crgScoreBoard = {
         contentType: "text/xml;encoding=UTF-8",
         data: e[0].ownerDocument
       });
+  },
+
+  removeFromServer: function(e) {
+    var newE = _crgScoreBoard.toNewElement(e);
+    newE.append(newE[0].ownerDocument.createProcessingInstruction("Remove", ""));
+    _crgScoreBoard.updateServer(newE);
   },
 
   extendScoreBoard: function(e) {
@@ -412,6 +418,12 @@ _crgScoreBoard = {
     return e;
   },
 
+  getXmlElementPI: function(e, target) {
+    var pi = e.contents().filter(function() { return ((this.nodeType == 7) && (this.nodeName == target)); });
+    return (pi.length ? pi[0] : null);
+  },
+  hasXmlElementPI: function(e, target) { return (null != _crgScoreBoard.getXmlElementPI(e, target)); },
+
 //FIXME - move this to windowfunctions
   setHtmlValue: function(sbElement, htmlelements, value) {
     htmlelements.each(function() {
@@ -480,12 +492,12 @@ _crgScoreBoard = {
     if (name == "Reset" && isTrue(_crgScoreBoard.getXmlElementText($element)))
       window.location.reload(); // <Reset>true</Reset> is the signal to reload
     var id = $element.attr("Id");
-    var remove = isTrue($element.attr("remove"));
+    var remove = _crgScoreBoard.hasXmlElementPI($element, "Remove");
     var e = this.findScoreBoardElement(parent, name+(id?"("+id+")":""), remove, true);
     var triggerObj = { node: e };
     if (remove) {
 //FIXME - move the "remove" triggers into group below...
-      this.removeScoreBoardElement(parent, e);
+      _crgScoreBoard.removeScoreBoardElement(parent, e);
       return;
     }
     var newContent = _crgScoreBoard.getXmlElementText($element);

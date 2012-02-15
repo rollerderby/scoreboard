@@ -2,23 +2,17 @@ package com.carolinarollergirls.scoreboard.xml;
 
 import org.jdom.*;
 
-public class DefaultXmlScoreBoardListener implements XmlScoreBoardListener
+public class MergeXmlScoreBoardListener implements XmlScoreBoardListener
 {
-  public DefaultXmlScoreBoardListener() { }
-  public DefaultXmlScoreBoardListener(XmlScoreBoard sb) {
-    sb.addXmlScoreBoardListener(this);
-  }
-  public DefaultXmlScoreBoardListener(boolean p) {
-    setPersistent(p);
-  }
-  public DefaultXmlScoreBoardListener(XmlScoreBoard sb, boolean p) {
-    setPersistent(p);
+  public MergeXmlScoreBoardListener() { super(); }
+  public MergeXmlScoreBoardListener(XmlScoreBoard sb) {
+    super();
     sb.addXmlScoreBoardListener(this);
   }
 
   public void xmlChange(Document d) {
     synchronized (documentLock) {
-      editor.mergeDocuments(document, d, isPersistent());
+      editor.mergeDocuments(document, d);
       empty = false;
     }
   }
@@ -40,14 +34,9 @@ public class DefaultXmlScoreBoardListener implements XmlScoreBoardListener
 
   public boolean isEmpty() { return empty; }
 
-  public boolean isPersistent() { return persistent; }
-  public void setPersistent(boolean p) { persistent = p; }
-
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
   protected Document document = editor.createDocument();
   protected Object documentLock = new Object();
   protected boolean empty = true;
-  protected boolean persistent = false;
-
 }

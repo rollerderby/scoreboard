@@ -48,21 +48,21 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
         if (isPersistent())
           editor.removeElement(getScoreBoardElement(), "Clock", ((Clock)event.getValue()).getId());
         else
-          converter.toElement(getScoreBoardElement(), (Clock)event.getValue()).setAttribute("remove", "true");
+          editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Clock)event.getValue()));
       } else if (prop.equals("AddTeam")) {
         converter.toElement(getScoreBoardElement(), (Team)event.getValue());
       } else if (prop.equals("RemoveTeam")) {
         if (isPersistent())
           editor.removeElement(getScoreBoardElement(), "Team", ((Team)event.getValue()).getId());
         else
-          converter.toElement(getScoreBoardElement(), (Team)event.getValue()).setAttribute("remove", "true");
+          editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Team)event.getValue()));
       } else if (prop.equals("AddPolicy")) {
         converter.toElement(getScoreBoardElement(), (Policy)event.getValue());
       } else if (prop.equals("RemovePolicy")) {
         if (isPersistent())
           editor.removeElement(getScoreBoardElement(), "Policy", ((Policy)event.getValue()).getId());
         else
-          converter.toElement(getScoreBoardElement(), (Policy)event.getValue()).setAttribute("remove", "true");
+          editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Policy)event.getValue()));
       } else {
         editor.setElement(getScoreBoardElement(), prop, null, v);
       }
@@ -70,12 +70,10 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
       if (prop.equals("AddSkater")) {
         Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
       } else if (prop.equals("RemoveSkater")) {
-        if (isPersistent()) {
+        if (isPersistent())
           editor.removeElement(getTeamElement((Team)p), "Skater", ((Skater)event.getValue()).getId());
-        } else {
-          Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
-          e.setAttribute("remove", "true");
-        }
+        else
+          editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Skater)event.getValue()));
       } else {
         editor.setElement(getTeamElement((Team)p), prop, null, v);
       }

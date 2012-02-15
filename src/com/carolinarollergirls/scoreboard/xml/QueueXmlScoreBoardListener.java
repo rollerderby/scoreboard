@@ -19,7 +19,7 @@ public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
       else
         editor.mergeDocuments(documents.getLast(), d);
 
-      queueNextDocument = (isQueueOnlyRemovals() && editor.hasElementRemoval(d));
+      queueNextDocument = editor.hasAnyPI(d);
     }
   }
 
@@ -31,12 +31,8 @@ public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
 
   public boolean isEmpty() { return (null == documents.peek()); }
 
-  public boolean isQueueOnlyRemovals() { return queueOnlyRemovals; }
-  public void setQueueOnlyRemovals(boolean q) { queueOnlyRemovals = q; }
-
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
-  protected boolean queueOnlyRemovals = true;
   protected boolean queueNextDocument = false;
   protected LinkedList<Document> documents = new LinkedList<Document>();
   protected Object documentsLock = new Object();

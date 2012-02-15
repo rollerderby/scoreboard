@@ -24,7 +24,7 @@ public class DefaultXmlDocumentManager implements XmlDocumentManager
   public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
   public void reset() {
-    update(createXPathElement().setAttribute("remove", "true"));
+    update(editor.setRemovePI(createXPathElement()));
     Element reset = new Element("Reset");
     update(createXPathElement().addContent(reset));
   }

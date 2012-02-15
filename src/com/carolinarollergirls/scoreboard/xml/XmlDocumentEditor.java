@@ -171,6 +171,76 @@ public class XmlDocumentEditor
     return Boolean.parseBoolean(getText(e));
   }
 
+  public Element removePI(Element e, final String target) {
+    if (null == e || null == target || "".equals(target))
+      return e;
+
+    synchronized (e) {
+      e.removeContent(new NamedProcessingInstructionFilter(target));
+      return e;
+    }
+  }
+
+  public Element setRemovePI(Element e) { return setPI(e, "Remove"); }
+  public boolean hasRemovePI(Element e) { return hasPI(e, "Remove"); }
+  public Element setNoSavePI(Element e) { return setPI(e, "NoSave"); }
+
+  public Element addPI(Element e, String target) { return setPI(e, target); }
+  public Element addPI(Element e, ProcessingInstruction pi) { return setPI(e, pi); }
+  public Element setPI(Element e, String target) { return setPI(e, new ProcessingInstruction(target, "")); }
+  public Element setPI(Element e, ProcessingInstruction pi) {
+    if (null == e || null == pi || "".equals(pi.getTarget()))
+      return e;
+
+    synchronized (e) {
+      return removePI(e, pi.getTarget()).addContent((ProcessingInstruction)pi.clone());
+    }
+  }
+
+  public ProcessingInstruction getPI(Element e, String target) {
+    if (null == e || null == target || "".equals(target))
+      return null;
+
+    synchronized (e) {
+      List matches = e.getContent(new NamedProcessingInstructionFilter(target));
+      if (matches.size() > 0)
+        return (ProcessingInstruction)matches.get(0);
+      else
+        return null;
+    }
+  }
+
+  public boolean hasPI(Element e, String target) {
+    return (null != getPI(e, target));
+  }
+
+  public boolean hasAnyPI(Document d) { return d.getDescendants(piFilter).hasNext(); }
+
+  public Document filterRemovePI(Document d) { return filterPI(d, "Remove"); }
+  public Document filterNoSavePI(Document d) { return filterPI(d, "NoSave"); }
+  public Document filterPI(Document d, String target) {
+    synchronized (d) {
+      filterPI(d.getRootElement(), target);
+    }
+    return d;
+  }
+  protected boolean filterPI(Element e, String target) {
+    if (null == e)
+      return false;
+
+    synchronized (e) {
+      if (hasPI(e, target)) {
+        return true;
+      } else {
+        ListIterator children = e.getChildren().listIterator();
+        while (children.hasNext())
+          if (filterPI((Element)children.next(), target))
+            children.remove();
+      }
+    }
+    return false;
+  }
+
   public Document addVersion(Document doc) {
     String oldVersion = doc.getRootElement().getAttributeValue("Version");
     if (oldVersion == null || oldVersion.equals(""))
@@ -223,27 +293,16 @@ public class XmlDocumentEditor
     }
   }
 
-  public Document mergeDocuments(Document to, Document from) { return mergeDocuments(to, from, false); }
-
-  public Document mergeDocuments(Document to, Document from, boolean persistent) {
-    mergeElements(to.getRootElement(), from.getRootElement(), persistent);
+  public Document mergeDocuments(Document to, Document from) {
+    mergeElements(to.getRootElement(), from.getRootElement());
     return to;
   }
 
-  public void mergeElements(Element to, Element from) { mergeElements(to, from, false); }
-
-  public void mergeElements(Element to, Element from, boolean persistent) {
+  public void mergeElements(Element to, Element from) {
     synchronized (to.getDocument()) {
-      /* Remove any nodes with "remove" attribute if document is persistent */
-      if (persistent && Boolean.parseBoolean(from.getAttributeValue("remove"))) {
-        to.detach();
-        return;
-      }
-
-      /* If doing a merge to a persistent document and the from element is marked as persistentIgnore, ignore it */
-//FIXME - remove this?
-      if (persistent && Boolean.parseBoolean(from.getAttributeValue("persistentIgnore")))
-        return;
+      Iterator pis = from.getContent(piFilter).iterator();
+      while (pis.hasNext())
+        setPI(to, (ProcessingInstruction)pis.next());
 
       Iterator attrs = from.getAttributes().iterator();
       while (attrs.hasNext())
@@ -254,24 +313,9 @@ public class XmlDocumentEditor
       Iterator children = from.getChildren().iterator();
       while (children.hasNext()) {
         Element child = (Element)children.next();
-        mergeElements(getElement(to, child.getName(), child.getAttributeValue("Id")), child, persistent);
+        mergeElements(getElement(to, child.getName(), child.getAttributeValue("Id")), child);
       }
     }
-  }
-
-  public boolean hasElementRemoval(Document d) {
-    return hasElementRemoval(d.getRootElement());
-  }
-  public boolean hasElementRemoval(Element e) {
-    if ("true".equals(e.getAttributeValue("remove")))
-      return true;
-
-    Iterator i = e.getChildren().iterator();
-    while (i.hasNext())
-      if (hasElementRemoval((Element)i.next()))
-        return true;
-
-    return false;
   }
 
   public Element cloneDocumentToClonedElement(Element e) {
@@ -300,6 +344,9 @@ public class XmlDocumentEditor
       Iterator attrs = e.getAttributes().iterator();
       while (attrs.hasNext())
         newE.setAttribute((Attribute)((Attribute)attrs.next()).clone());
+      Iterator pis = e.getContent(piFilter).iterator();
+      while (pis.hasNext())
+        setPI(newE, (ProcessingInstruction)pis.next());
       if (includeTextFirst)
         setText(newE, getText(e));
     }
@@ -320,4 +367,22 @@ public class XmlDocumentEditor
   private static XmlDocumentEditor xmlDocumentEditor = new XmlDocumentEditor();
   private static ContentFilter cdataFilter = new ContentFilter(ContentFilter.CDATA);
   private static ContentFilter cdataTextFilter = new ContentFilter(ContentFilter.CDATA|ContentFilter.TEXT);
+  private static ContentFilter piFilter = new ContentFilter(ContentFilter.PI);
+
+  protected static class NamedProcessingInstructionFilter extends ContentFilter
+  {
+    public NamedProcessingInstructionFilter(String t) {
+      super(ContentFilter.PI);
+      target = t;
+    }
+    public boolean matches(Object o) {
+      try {
+        return (super.matches(o) && ((ProcessingInstruction)o).getTarget().equals(target));
+      } catch ( Exception e ) {
+        return false;
+      }
+    }
+    private String target;
+  }
+
 }

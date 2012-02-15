@@ -99,7 +99,8 @@ public class XmlScoreBoard
    */
   public void xmlChange(Document d) {
     synchronized (documentLock) {
-      editor.mergeDocuments(document, d, true);
+      editor.mergeDocuments(document, d);
+      editor.filterRemovePI(document);
     }
     listeners.xmlChange(d);
   }

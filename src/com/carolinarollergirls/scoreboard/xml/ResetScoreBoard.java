@@ -20,7 +20,7 @@ public class ResetScoreBoard extends DefaultXmlDocumentManager implements XmlDoc
     if (Boolean.parseBoolean(editor.getText(e))) {
       getXmlScoreBoard().reset();
       getXmlScoreBoard().loadDefaultDocuments();
-      update(editor.setText(createXPathElement().setAttribute("remove", "true"), "true"));
+      update(editor.setText(editor.setRemovePI(createXPathElement()), "true"));
       update(createXPathElement());
     }
   }

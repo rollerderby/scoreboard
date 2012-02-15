@@ -74,9 +74,8 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
       return; /* Teams MUST have non-empty Id */
     Element newTeam = editor.addElement(createXPathElement(), "Team", id);
 
-    String remove = team.getAttributeValue("remove");
-    if (null != remove && Boolean.parseBoolean(remove)) {
-      update(newTeam.setAttribute("remove", "true"));
+    if (editor.hasRemovePI(team)) {
+      update(editor.setRemovePI(newTeam));
       return;
     }
 
@@ -100,10 +99,9 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
       return;
     Element newSkater = editor.addElement(newTeam, "Skater", skaterId);
 
-    String remove = skater.getAttributeValue("remove");
-    if (null != remove && Boolean.parseBoolean(remove)) {
+    if (editor.hasRemovePI(skater)) {
       Element removeSkaterTeam = editor.addElement(createXPathElement(), "Team", newTeam.getAttributeValue("Id"));
-      update(removeSkaterTeam.addContent(((Element)newSkater.detach()).setAttribute("remove", "true")));
+      update(removeSkaterTeam.addContent(editor.setRemovePI((Element)newSkater.detach())));
       return;
     }
 
@@ -163,7 +161,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
       Element clearTeam = (Element)newTeam.clone();
       Iterator clearSkaters = clearTeam.getChildren("Skater").iterator();
       while (clearSkaters.hasNext())
-        ((Element)clearSkaters.next()).setAttribute("remove", "true");
+        editor.setRemovePI((Element)clearSkaters.next());
       update(createXPathElement().addContent(clearTeam));
     }
     createXPathElement().addContent(newTeam);
