@@ -30,6 +30,8 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
     Document doc = null;
     Element node = getXmlScoreBoard().getDocument().getRootElement();
 
+    boolean viewOnly = (null != request.getParameter("viewOnly"));
+
     String[] pathArray = request.getParameterValues("path");
     if (pathArray == null) {
       doc = node.getDocument();
@@ -49,6 +51,8 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
       response.sendError(HttpServletResponse.SC_NOT_FOUND, "No elements found.");
     } else {
       response.setContentType("text/xml");
+      if (!viewOnly)
+        editor.filterNoSavePI(doc);
       prettyXmlOutputter.output(doc, response.getOutputStream());
       response.setStatus(HttpServletResponse.SC_OK);
     }
