@@ -76,7 +76,6 @@ public class XmlScoreBoard
 //FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
     converter.processDocument(scoreBoardModel, d);
     managers.processDocument(d);
-//_mergeDocument(d);
   }
 
   /**
