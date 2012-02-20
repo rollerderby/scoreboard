@@ -52,14 +52,6 @@ public class XmlScoreBoard
     }
   }
 
-  /* If possible, get rid of this...not many classes really need this currently.
-   * It's possible to subclass Document so any changes to any elements come back as events,
-   * which would let us give out the actual document to anyone to modify as they like...
-   */
-  public Document getRealDocument() {
-    return document;
-  }
-
   public void addXmlDocumentManager(XmlDocumentManager xdM) { managers.addXmlDocumentManager(xdM); }
   public void removeXmlDocumentManager(XmlDocumentManager xdM) { managers.removeXmlDocumentManager(xdM); }
 
