@@ -189,10 +189,6 @@ public class XmlDocumentEditor
     }
   }
 
-  public Element setRemovePI(Element e) { return setPI(e, "Remove"); }
-  public boolean hasRemovePI(Element e) { return hasPI(e, "Remove"); }
-  public Element setNoSavePI(Element e) { return setPI(e, "NoSave"); }
-
   public Element addPI(Element e, String target) { return setPI(e, target); }
   public Element addPI(Element e, ProcessingInstruction pi) { return setPI(e, pi); }
   public Element setPI(Element e, String target) { return setPI(e, new ProcessingInstruction(target, "")); }
@@ -223,9 +219,28 @@ public class XmlDocumentEditor
   }
 
   public boolean hasAnyPI(Document d) { return d.getDescendants(piFilter).hasNext(); }
+  public Document removeAllPI(Document d, List targets, boolean inclusive) {
+    LinkedList<ProcessingInstruction> list = new LinkedList<ProcessingInstruction>();
+    Iterator pis = d.getDescendants(piFilter);
+    while (pis.hasNext()) {
+      ProcessingInstruction pi = (ProcessingInstruction)pis.next();
+      if (inclusive == targets.contains(pi.getTarget()))
+        list.add(pi);
+    }
+    ListIterator<ProcessingInstruction> li = list.listIterator();
+    while (li.hasNext())
+      li.next().detach();
+    return d;
+  }
+  /* Remove all PIs */
+  public Document removeAllPI(Document d) { return removeAllPI(d, Collections.emptyList(), false); }
+  /* Remove all PIs with targets specified in the List */
+  public Document removeAllPI(Document d, List targets) { return removeAllPI(d, targets, true); }
+  public Document removeAllPI(Document d, String target) { return removeAllPI(d, Collections.singletonList(target)); }
+  /* Remove all PIs with targets not specified in the List */
+  public Document removeExceptPI(Document d, List targets) { return removeAllPI(d, targets, false); }
+  public Document removeExceptPI(Document d, String target) { return removeExceptPI(d, Collections.singletonList(target)); }
 
-  public Document filterRemovePI(Document d) { return filterPI(d, "Remove"); }
-  public Document filterNoSavePI(Document d) { return filterPI(d, "NoSave"); }
   public Document filterPI(Document d, String target) {
     synchronized (d) {
       filterPI(d.getRootElement(), target);
@@ -248,6 +263,39 @@ public class XmlDocumentEditor
     }
     return false;
   }
+
+  /**
+   * ProcessingInstructions indicate the owning element should be processed in some way.
+   *
+   * XmlScoreBoard merge into the main Document
+   *   Remove will be processed
+   *   NoSave will be preserved
+   *   All other PIs will be removed
+   * XmlScoreBoardListeners that receive Document changes from the XmlScoreBoard
+   *   Remove must be processed
+   *   NoSave must be processed by any that save to disc
+   *   All other PIs must be removed by any that save to disc
+   *   All other PIs should be processed or ignored/removed
+   * XmlDocumentManagers that receive Document changes from the XmlScoreBoard
+   *   Remove must be processed
+   *   All other PIs should be processed or ignored/removed
+   *
+   * Currently used ProcessingInstructions:
+   *   Remove
+   *     This indicates the owning element should be removed.
+   *   NoSave
+   *     This indicates the owning element should not be saved to disc.
+   *
+   * Special ProcessingInstructions:
+   *   Reload
+   *     This indicates the listener/viewer should reload
+   */
+  public Element setRemovePI(Element e) { return setPI(e, "Remove"); }
+  public boolean hasRemovePI(Element e) { return hasPI(e, "Remove"); }
+  public Element setNoSavePI(Element e) { return setPI(e, "NoSave"); }
+
+  public Document filterRemovePI(Document d) { return filterPI(d, "Remove"); }
+  public Document filterNoSavePI(Document d) { return filterPI(d, "NoSave"); }
 
   public Document addVersion(Document doc) {
     String oldVersion = doc.getRootElement().getAttributeValue("Version");
