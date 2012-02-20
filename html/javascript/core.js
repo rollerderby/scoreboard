@@ -498,8 +498,6 @@ _crgScoreBoard = {
   processScoreBoardElement: function(parent, element, triggerArray) {
     var $element = $(element);
     var name = element.nodeName;
-    if (name == "Reset" && isTrue(_crgScoreBoard.getXmlElementText($element)))
-      window.location.reload(); // <Reset>true</Reset> is the signal to reload
     var id = $element.attr("Id");
     var remove = _crgScoreBoard.hasXmlElementPI($element, "Remove");
     var e = this.findScoreBoardElement(parent, name+(id?"("+id+")":""), remove, true);
@@ -541,9 +539,13 @@ _crgScoreBoard = {
   },
 
   processScoreBoardXml: function(xml) {
-    $(xml).children("document").children(window.XML_ELEMENT_SELECTOR)
-      .each(function(index) {
-        _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, this);
+    $(xml).children("document")
+      .children("ReloadViewers").each(function(i,e) {
+        if (_crgScoreBoard.hasXmlElementPI($(e), "Reload"))
+          window.location.reload();
+      }).end()
+      .children(window.XML_ELEMENT_SELECTOR).each(function(i,e) {
+        _crgScoreBoard.processScoreBoardElement(_crgScoreBoard.doc, e);
       });
     if (!_crgScoreBoard.documentLoaded) {
       $sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");

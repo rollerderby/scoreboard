@@ -68,9 +68,20 @@ public class XmlScoreBoard
     managers.reset();
   }
 
+  /* FIXME:
+   * This is unfortunately needed until
+   * feature req 3483303 allows pages to
+   * not need a reload when key elements
+   * are removed/replaced
+   */
+  public void reloadViewers() {
+    reloadScoreBoardViewers.reloadViewers();
+  }
+
   public void loadDocument(Document d) {
     reset();
     mergeDocument(d);
+    reloadViewers();
   }
 
   /**
@@ -174,6 +185,8 @@ public class XmlScoreBoard
     new LoadScoreBoardStream().setXmlScoreBoard(this);
     new TeamsXmlDocumentManager().setXmlScoreBoard(this);
     new ResetScoreBoard().setXmlScoreBoard(this);
+    reloadScoreBoardViewers = new ReloadScoreBoardViewers();
+    reloadScoreBoardViewers.setXmlScoreBoard(this);
     new OpenXmlDocumentManager("Pages").setXmlScoreBoard(this);
     new MediaXmlDocumentManager("Images", "Image").setXmlScoreBoard(this);
     new MediaXmlDocumentManager("Videos", "Video").setXmlScoreBoard(this);
@@ -197,6 +210,8 @@ public class XmlScoreBoard
 
   protected ExecutorXmlScoreBoardListener listeners = new ExecutorXmlScoreBoardListener();
   protected ExecutorXmlDocumentManager managers = new ExecutorXmlDocumentManager();
+
+  protected ReloadScoreBoardViewers reloadScoreBoardViewers = null;
 
   public static final String DOCUMENT_DIR_KEY = XmlScoreBoard.class.getName() + ".InitialDocumentDirectory";
   public static final String DEFAULT_DIRECTORY_NAME = "config/default";

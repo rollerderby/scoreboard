@@ -16,15 +16,17 @@ import org.jdom.xpath.*;
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 
-public class ResetScoreBoard extends DefaultXmlDocumentManager implements XmlDocumentManager
+public class ReloadScoreBoardViewers extends DefaultXmlDocumentManager implements XmlDocumentManager
 {
-  public ResetScoreBoard() { super("Reset"); }
+  public ReloadScoreBoardViewers() { super("ReloadViewers"); }
+
+  public void reloadViewers() {
+    update(editor.setPI(createXPathElement(), "Reload"));    
+  }
 
   protected void processElement(Element e) throws Exception {
     if (Boolean.parseBoolean(editor.getText(e))) {
-      getXmlScoreBoard().reset();
-      getXmlScoreBoard().loadDefaultDocuments();
-      getXmlScoreBoard().reloadViewers();
+      reloadViewers();
     }
   }
 }
