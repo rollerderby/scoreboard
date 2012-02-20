@@ -119,6 +119,7 @@ public class XmlScoreBoard
     synchronized (documentLock) {
       editor.mergeDocuments(document, d);
       editor.filterRemovePI(document);
+      editor.removeExceptPI(document, "NoSave");
     }
     listeners.xmlChange(d);
   }
