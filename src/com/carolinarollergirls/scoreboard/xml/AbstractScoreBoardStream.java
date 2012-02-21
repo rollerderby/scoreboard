@@ -73,10 +73,16 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
     Element error = editor.setText(new Element("Error"), "false");
     Element updateE = createXPathElement().addContent(msg).addContent(error);
     String filename = "";
-    String directory = ScoreBoardManager.getProperties().getProperty(DIRECTORY_KEY);
+    String dirname = ScoreBoardManager.getProperties().getProperty(DIRECTORY_KEY);
     try {
-      if (null == directory || "".equals(directory)) {
+      if (null == dirname || "".equals(dirname)) {
         editor.setText(msg, "No directory set for stream files");
+        editor.setText(error, "true");
+        return;
+      }
+      File directory = new File(dirname);
+      if (!directory.exists() && !directory.mkdirs()) {
+        editor.setText(msg, "Could not create directory '"+dirname+"' for stream files");
         editor.setText(error, "true");
         return;
       }
