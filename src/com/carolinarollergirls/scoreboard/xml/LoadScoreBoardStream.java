@@ -22,9 +22,16 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream
 {
   public LoadScoreBoardStream() { super("LoadStream"); }
 
+  public void update(Document d) {
+    if (running)
+      d.setProperty("DocumentManager", this);
+    super.update(d);
+  }
+
   protected void doStart(File file) throws IOException,FileNotFoundException {
     try {
-      firstDocument = true;
+      if (!getXmlScoreBoard().startExclusive(this))
+        throw new IOException("Could not get exclusive XmlScoreBoard access");
       inputStream = new ScoreBoardInputStream(file, new RealtimeXmlScoreBoardListenerFilter(this));
       inputStream.start();
     } catch ( FileNotFoundException fnfE ) {
@@ -37,30 +44,18 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream
   }
 
   protected void doStop() {
-    //FIXME - need to actually do a real load of the last SB state into real SB and xmldoc managers
-    // this might need to be a feature of the XmlScoreBoard
     if (null != inputStream)
       inputStream.stop();
     inputStream = null;
+    getXmlScoreBoard().endExclusive(this);
   }
 
   protected void doXmlChange(Document d) {
-    //FIXME - need to have some kind of locking/exclusion in XmlScoreBoard to prevent incoming commands from working
-    // so only this exact stream is seen
-    // but also to allow commands to this xmldoc manager to come in, to stop the load, or other future cmds
-    if (null == d) {
+    if (null == d)
       stop();
-    } else if (firstDocument) {
-      //FIXME - probably don't want to actually load, but just reset everything to defaults,
-      //since the load will just "fake" events, sending only to listeners
-      //then on stop (above) the real sb and xmldoc managers need to be updated with the last sb state
-      getXmlScoreBoard().loadDocument(d);
-      firstDocument = false;
-    } else {
-      getXmlScoreBoard().xmlChange(d);
-    }
+    else
+      update(d);
   }
 
   protected ScoreBoardInputStream inputStream = null;
-  protected boolean firstDocument;
 }

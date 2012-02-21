@@ -56,8 +56,14 @@ public class XmlScoreBoard
   public void removeXmlDocumentManager(XmlDocumentManager xdM) { managers.removeXmlDocumentManager(xdM); }
 
   public void reset() {
-    scoreBoardModel.reset();
-    managers.reset();
+    synchronized (managerLock) {
+      if (null == exclusiveDocumentManager) {
+        scoreBoardModel.reset();
+        managers.reset();
+      } else {
+        exclusiveDocumentManager.reset();
+      }
+    }
   }
 
   /* FIXME:
@@ -84,9 +90,15 @@ public class XmlScoreBoard
    * nor any XmlDocumentManager.
    */
   public void mergeDocument(Document d) {
+    synchronized (managerLock) {
+      if (null == exclusiveDocumentManager) {
 //FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
-    converter.processDocument(scoreBoardModel, d);
-    managers.processDocument(d);
+        converter.processDocument(scoreBoardModel, d);
+        managers.processDocument(d);
+      } else {
+        exclusiveDocumentManager.processDocument(d);
+      }
+    }
   }
 
   /**
@@ -108,12 +120,57 @@ public class XmlScoreBoard
    * from a XmlDocumentManager.
    */
   public void xmlChange(Document d) {
+    synchronized (managerLock) {
+      if (null != exclusiveDocumentManager) {
+        /* Ignore updates not from the "exclusive" document manager */
+        if (d.getProperty("DocumentManager") != exclusiveDocumentManager)
+          return;
+      }
+    }
     synchronized (documentLock) {
       editor.mergeDocuments(document, d);
       editor.filterRemovePI(document);
       editor.removeExceptPI(document, "NoSave");
     }
     listeners.xmlChange(d);
+  }
+
+  /**
+   * Start this XmlScoreBoard in "exclusive" mode.
+   * This first resets, then causes any incoming documents
+   * to be sent only to the "exclusive" manager, and any
+   * updates from managers to be ignored (except updates
+   * from the "exclusive" manager).
+   * For now this is used only to "replay" a saved "stream"
+   * of XML events.
+   * This returns true if the document manager was given
+   * exclusive access, false otherwise.
+   */
+  public boolean startExclusive(XmlDocumentManager manager) {
+    synchronized (managerLock) {
+      if (null != exclusiveDocumentManager || null == manager)
+        return false;
+      reset();
+      reloadViewers();
+      exclusiveDocumentManager = manager;
+      return true;
+    }
+  }
+
+  /**
+   * End the "exclusive" mode.
+   * If the provided document manager currently does have "exclusive" mode,
+   * then it is ended, the current document is reloaded,
+   * and normal operation resumes.
+   * Otherwise, nothing changes.
+   */
+  public void endExclusive(XmlDocumentManager manager) {
+    synchronized (managerLock) {
+      if (null != manager && exclusiveDocumentManager == manager) {
+        exclusiveDocumentManager = null;
+        loadDocument(getDocument());
+      }
+    }
   }
 
   protected void loadDocuments() {
@@ -197,7 +254,9 @@ public class XmlScoreBoard
   protected ScoreBoardXmlListener scoreBoardXmlListener;
   protected AutoSaveScoreBoard autoSave;
   protected Document document = editor.createDocument();
+
   protected Object documentLock = new Object();
+  protected Object managerLock = new Object();
 
   protected SAXBuilder saxBuilder = new SAXBuilder();
 
@@ -205,6 +264,7 @@ public class XmlScoreBoard
   protected ExecutorXmlDocumentManager managers = new ExecutorXmlDocumentManager();
 
   protected ReloadScoreBoardViewers reloadScoreBoardViewers = null;
+  protected XmlDocumentManager exclusiveDocumentManager = null;
 
   public static final String DOCUMENT_DIR_KEY = XmlScoreBoard.class.getName() + ".InitialDocumentDirectory";
   public static final String DEFAULT_DIRECTORY_NAME = "config/default";
