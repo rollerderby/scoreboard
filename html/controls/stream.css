@@ -24,4 +24,5 @@
   #Load p.Indicator { text-align: center; }
   #Load p.Indicator>a { font-size: 200%; font-weight: bold; }
   #Load p.Indicator>a.Running { color: #0f0; }
+  #Load div.Speed { width: 25%; }
 /* End Load Tab */

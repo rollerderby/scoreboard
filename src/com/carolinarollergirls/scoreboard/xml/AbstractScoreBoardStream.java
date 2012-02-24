@@ -40,7 +40,7 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
   }
 
   protected void processChildElement(Element e) throws JDOMException {
-    synchronized (lock) {
+    synchronized (processLock) {
       if (e.getName() == "Filename")
         setFilename(e);
       else if (e.getName() == "Start" && editor.isTrue(e))
@@ -141,7 +141,7 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
   protected abstract void doStop();
   protected abstract void doXmlChange(Document d) throws IOException;
 
-  protected Object lock = new Object();
+  protected Object processLock = new Object();
   protected boolean running = false;
 
   public static final String DIRECTORY_KEY = AbstractScoreBoardStream.class.getName() + ".dir";

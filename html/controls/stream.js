@@ -31,6 +31,16 @@ $sb(function() {
   loadStream.$sb("Filename").$sbElement("#Load a.Filename");
   $("#Load button.Start").click(function() { loadStream.$sb("Start").$sbSet("true"); }).button();
   $("#Load button.Stop").click(function() { loadStream.$sb("Stop").$sbSet("true"); }).button();
+  loadStream.$sb("Pause").$sbControl("#Load .Pause", { sbcontrol: { button: true }});
+  loadStream.$sb("Speed").$sbElement("#Load a.Speed");
+  $("#Load div.Speed").slider({
+    min: -4,
+    max: 4,
+    value: 0
+  }).bind("slide", function(event, ui) {
+//FIXME - set up so scoreboard controls slider value
+    loadStream.$sb("Speed").$sbSet(Math.pow(2,ui.value));
+  });
   loadStream.$sb("Running").$sbBindAndRun("content", function(event, value) {
     $("#Load").toggleClass("Running", isTrue(value));
     $("#Load button.Start").button("option", "disabled", isTrue(value));

@@ -34,6 +34,42 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
     updateStartTime(0);
     updateCurrentTime(0);
     updateEndTime(0);
+
+    Element updateE = createXPathElement();
+    updateE.addContent(editor.setText(new Element("Pause"), "false"));
+    updateE.addContent(editor.setText(new Element("Speed"), "1.0"));
+    update(updateE);
+  }
+
+  protected void processChildElement(Element e) throws JDOMException {
+    super.processChildElement(e);
+    synchronized (processLock) {
+      if (e.getName() == "Pause")
+        pause(editor.isTrue(e));
+      else if (e.getName() == "Speed")
+        speed(editor.getText(e));
+    }
+  }
+
+  protected void pause(boolean pause) {
+    if (!running)
+      return;
+    realtimeFilter.setPaused(pause);
+    Element updateE = createXPathElement();
+    updateE.addContent(editor.setText(new Element("Pause"), Boolean.toString(pause)));
+    update(updateE);
+  }
+
+  protected void speed(String s) {
+    if (!running)
+      return;
+    double speed;
+    try { speed = Double.parseDouble(s); }
+    catch ( NumberFormatException nfE ) { return; }
+    realtimeFilter.setSpeed(speed);
+    Element updateE = createXPathElement();
+    updateE.addContent(editor.setText(new Element("Speed"), Double.toString(speed)));
+    update(updateE);
   }
 
   protected void doStart(File file) throws IOException,FileNotFoundException {
