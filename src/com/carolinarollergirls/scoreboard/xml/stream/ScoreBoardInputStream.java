@@ -26,7 +26,7 @@ import org.xml.sax.helpers.*;
 
 public class ScoreBoardInputStream
 {
-  public ScoreBoardInputStream(File f, XmlScoreBoardListener l) throws FileNotFoundException {
+  public ScoreBoardInputStream(File f, StreamListener l) throws FileNotFoundException {
     filterRunnable = new StreamFilterRunnable(new FileInputStream(f), l);
   }
 
@@ -37,7 +37,7 @@ public class ScoreBoardInputStream
       if (running)
         throw new IllegalStateException("Already started");
       running = true;
-      new Thread(filterRunnable).start();
+      filterRunnable.start();
     }
   }
 
@@ -60,7 +60,7 @@ public class ScoreBoardInputStream
 
   protected static class StreamFilterRunnable extends XMLFilterImpl implements XMLFilter,Runnable
   {
-    public StreamFilterRunnable(FileInputStream fos, XmlScoreBoardListener l) {
+    public StreamFilterRunnable(FileInputStream fos, StreamListener l) {
       fileInputStream = fos;
       listener = l;
     }
@@ -69,16 +69,26 @@ public class ScoreBoardInputStream
         setParent(SAXParserFactory.newInstance().newSAXParser().getXMLReader());
         parse(new InputSource(fileInputStream));
       } catch ( Exception e ) {
-        exception = e;
+        if (!stopped)
+          exception = e;
       } finally {
-        try {
-          fileInputStream.close();
-        } catch ( IOException ioE ) { /* ignore err on close */ }
+        try { fileInputStream.close(); } catch ( IOException ioE ) { }
+        listener.end();
       }
     }
     public Exception getException() { return exception; }
-    public void stop() { stopped = true; }
+    public void start() {
+      myThread = new Thread(this);
+      myThread.start();
+    }
+    public void stop() {
+      stopped = true;
+      try { myThread.join(); }
+      catch ( InterruptedException iE ) { /* Can only hope myThread is stopped */ }
+    }
     public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
+      if (stopped)
+        throw new SAXException("Parsing stopped");
       if (qName.equals("document")) {
         if (0 == docLevel++)
           startHandling();
@@ -91,10 +101,6 @@ public class ScoreBoardInputStream
         if (0 == --docLevel)
           stopHandling();
       }
-    }
-    public void endDocument() throws SAXException {
-      if (!stopped)
-        listener.xmlChange(null);
     }
     protected void startHandling() throws SAXException {
       if (stopped)
@@ -126,8 +132,9 @@ public class ScoreBoardInputStream
         listener.xmlChange(handler.getDocument());
       handler = null;
     }
+    protected Thread myThread;
     protected FileInputStream fileInputStream;
-    protected XmlScoreBoardListener listener;
+    protected StreamListener listener;
     protected DefaultHandler defaultHandler = new DefaultHandler();
     protected SAXHandler handler = null;
     protected int docLevel = 0;

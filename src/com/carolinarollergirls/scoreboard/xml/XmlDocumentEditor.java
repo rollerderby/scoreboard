@@ -219,6 +219,7 @@ public class XmlDocumentEditor
   }
 
   public boolean hasAnyPI(Document d) { return d.getDescendants(piFilter).hasNext(); }
+  public boolean hasRemovePI(Document d) { return d.getDescendants(removePIFilter).hasNext(); }
   public Document removeAllPI(Document d, List targets, boolean inclusive) {
     LinkedList<ProcessingInstruction> list = new LinkedList<ProcessingInstruction>();
     Iterator pis = d.getDescendants(piFilter);
@@ -321,15 +322,16 @@ public class XmlDocumentEditor
   }
 
   public Document setSystemTime(Document doc) {
-    doc.getRootElement().setAttribute("SystemTime", Long.toString(new Date().getTime()));
+    return setSystemTime(doc, new Date().getTime());
+  }
+  public Document setSystemTime(Document doc, long time) {
+    doc.getRootElement().setAttribute("SystemTime", Long.toString(time));
     return doc;
   }
 
   public long getSystemTime(Document doc) throws NumberFormatException {
     return Long.parseLong(doc.getRootElement().getAttributeValue("SystemTime"));
   }
-
-
 
   public Document toDocument(InputStream stream) throws JDOMException,IOException {
     synchronized (builder) {
@@ -424,6 +426,7 @@ public class XmlDocumentEditor
   private static ContentFilter cdataFilter = new ContentFilter(ContentFilter.CDATA);
   private static ContentFilter cdataTextFilter = new ContentFilter(ContentFilter.CDATA|ContentFilter.TEXT);
   private static ContentFilter piFilter = new ContentFilter(ContentFilter.PI);
+  private static ContentFilter removePIFilter = new NamedProcessingInstructionFilter("Remove");
 
   protected static class NamedProcessingInstructionFilter extends ContentFilter
   {

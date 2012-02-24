@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.xml;
+package com.carolinarollergirls.scoreboard.xml.stream;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -13,21 +13,23 @@ import java.util.*;
 import org.jdom.*;
 
 import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.xml.*;
 
-public class RealtimeXmlScoreBoardListenerFilter implements XmlScoreBoardListener
+public class RealtimeStreamListenerFilter extends StreamListenerFilter implements StreamListener
 {
-  public RealtimeXmlScoreBoardListenerFilter(XmlScoreBoardListener l) { listener = l; }
+  public RealtimeStreamListenerFilter(StreamListener l) { super(l); }
 
   public void xmlChange(Document d) {
-    if (null == d)
-      listener.xmlChange(d);
-
     if (!startTimeSet)
       setStartTime(d);
 
-    waitUntilTime(d);
-    listener.xmlChange(d);
+    try {
+      waitUntilTime(d);
+    } catch ( InterruptedException iE ) {
+      /* Indicate stop processing */
+      return;
+    }
+    super.xmlChange(d);
   }
 
   protected void setStartTime(Document d) {
@@ -36,7 +38,7 @@ public class RealtimeXmlScoreBoardListenerFilter implements XmlScoreBoardListene
     startTimeSet = true;
   }
 
-  protected void waitUntilTime(Document d) {
+  protected void waitUntilTime(Document d) throws InterruptedException {
     long docTime = editor.getSystemTime(d);
     long realTime = new Date().getTime();
 
@@ -44,16 +46,11 @@ public class RealtimeXmlScoreBoardListenerFilter implements XmlScoreBoardListene
     long elapsedRealTime = realTime - realStartTime;
     long sleepTime = elapsedDocTime - elapsedRealTime;
 
-    try {
-      if (sleepTime > 0)
-        Thread.sleep(sleepTime);
-    } catch ( InterruptedException iE ) {
-      ScoreBoardManager.printMessage("Interrupted while waiting for document time to occur : "+iE.getMessage());
-    }
+    if (sleepTime > 0)
+      Thread.sleep(sleepTime);
   }
 
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
-  protected XmlScoreBoardListener listener;
   protected long docStartTime;
   protected long realStartTime;
   protected boolean startTimeSet = false;

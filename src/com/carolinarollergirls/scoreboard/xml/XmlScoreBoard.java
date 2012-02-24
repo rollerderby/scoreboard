@@ -61,7 +61,9 @@ public class XmlScoreBoard
         scoreBoardModel.reset();
         managers.reset();
       } else {
-        exclusiveDocumentManager.reset();
+//FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
+        final XmlDocumentManager xdM = exclusiveDocumentManager;
+        exclusiveExecutor.submit(new Runnable() { public void run() { xdM.reset(); } });
       }
     }
   }
@@ -89,14 +91,17 @@ public class XmlScoreBoard
    * external source, i.e. not the main ScoreBoard
    * nor any XmlDocumentManager.
    */
-  public void mergeDocument(Document d) {
+  public void mergeDocument(Document doc) {
     synchronized (managerLock) {
       if (null == exclusiveDocumentManager) {
 //FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
-        converter.processDocument(scoreBoardModel, d);
-        managers.processDocument(d);
+        converter.processDocument(scoreBoardModel, doc);
+        managers.processDocument(doc);
       } else {
-        exclusiveDocumentManager.processDocument(d);
+//FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
+        final XmlDocumentManager xdM = exclusiveDocumentManager;
+        final Document d = doc;
+        exclusiveExecutor.submit(new Runnable() { public void run() { xdM.processDocument(d); } });
       }
     }
   }
@@ -265,6 +270,7 @@ public class XmlScoreBoard
 
   protected ReloadScoreBoardViewers reloadScoreBoardViewers = null;
   protected XmlDocumentManager exclusiveDocumentManager = null;
+  protected ExecutorService exclusiveExecutor = Executors.newSingleThreadExecutor();
 
   public static final String DOCUMENT_DIR_KEY = XmlScoreBoard.class.getName() + ".InitialDocumentDirectory";
   public static final String DEFAULT_DIRECTORY_NAME = "config/default";

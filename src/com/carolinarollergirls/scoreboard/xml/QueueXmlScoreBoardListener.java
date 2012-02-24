@@ -27,7 +27,7 @@ public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
       else
         editor.mergeDocuments(documents.getLast(), d);
 
-      queueNextDocument = editor.hasAnyPI(d);
+      queueNextDocument = editor.hasRemovePI(d);
     }
   }
 

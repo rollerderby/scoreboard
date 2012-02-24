@@ -122,16 +122,14 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
   }
 
   public void xmlChange(Document d) {
-    synchronized (lock) {
-      try {
-        if (running)
-          doXmlChange(d);
-      } catch ( IOException ioE ) {
-        Element updateE = createXPathElement();
-        updateE.addContent(editor.setText(new Element("Message"), ioE.getMessage()));
-        updateE.addContent(editor.setText(new Element("Error"), "true"));
-        update(updateE);
-      }
+    try {
+      if (running)
+        doXmlChange(d);
+    } catch ( IOException ioE ) {
+      Element updateE = createXPathElement();
+      updateE.addContent(editor.setText(new Element("Message"), ioE.getMessage()));
+      updateE.addContent(editor.setText(new Element("Error"), "true"));
+      update(updateE);
     }
   }
 

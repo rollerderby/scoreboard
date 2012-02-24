@@ -18,7 +18,7 @@ import org.jdom.output.*;
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.stream.*;
 
-public class LoadScoreBoardStream extends AbstractScoreBoardStream
+public class LoadScoreBoardStream extends AbstractScoreBoardStream implements StreamListener
 {
   public LoadScoreBoardStream() { super("LoadStream"); }
 
@@ -28,12 +28,23 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream
     super.update(d);
   }
 
+  public void setXmlScoreBoard(XmlScoreBoard xsB) {
+    super.setXmlScoreBoard(xsB);
+
+    updateStartTime(0);
+    updateCurrentTime(0);
+    updateEndTime(0);
+  }
+
   protected void doStart(File file) throws IOException,FileNotFoundException {
     try {
       if (!getXmlScoreBoard().startExclusive(this))
         throw new IOException("Could not get exclusive XmlScoreBoard access");
-      inputStream = new ScoreBoardInputStream(file, new RealtimeXmlScoreBoardListenerFilter(this));
+      realtimeFilter = new MyRealtimeFilter(this);
+      bufferedFilter = new MyBufferedFilter(realtimeFilter);
+      inputStream = new ScoreBoardInputStream(file, bufferedFilter);
       inputStream.start();
+      bufferedFilter.start();
     } catch ( FileNotFoundException fnfE ) {
       doStop();
       throw new FileNotFoundException("File '"+file.getName()+"' not found : "+fnfE.getMessage());
@@ -46,16 +57,71 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream
   protected void doStop() {
     if (null != inputStream)
       inputStream.stop();
+    if (null != bufferedFilter)
+      bufferedFilter.stop();
     inputStream = null;
+    bufferedFilter = null;
+    realtimeFilter = null;
     getXmlScoreBoard().endExclusive(this);
+    updateStartTime(0);
+    updateCurrentTime(0);
+    updateEndTime(0);
   }
 
-  protected void doXmlChange(Document d) {
-    if (null == d)
-      stop();
-    else
-      update(d);
+  protected void updateStartTime(long time) {
+    startTime = time;
   }
+  protected void updateEndTime(long time) {
+    if (!running)
+      return;
+    synchronized (timeLock) {
+      if ((currentTime < endTime) && (time >= endTime) && ((time - endTime) < 1000))
+        return;
+      endTime = time;
+    }
+    Element updateE = createXPathElement();
+    updateE.addContent(editor.setText(new Element("EndTime"), Long.toString(time-startTime)));
+    update(updateE);
+  }
+  protected void updateCurrentTime(long time) {
+    if (!running)
+      return;
+    synchronized (timeLock) {
+      currentTime = time;
+      if (currentTime >= endTime)
+        updateEndTime(currentTime);
+    }
+    Element updateE = createXPathElement();
+    updateE.addContent(editor.setText(new Element("CurrentTime"), Long.toString(time-startTime)));
+    update(updateE);
+  }
+
+  protected void doXmlChange(Document d) { update(d); }
+
+  public void end() { stop(); }
 
   protected ScoreBoardInputStream inputStream = null;
+  protected RealtimeStreamListenerFilter realtimeFilter;
+  protected BufferedStreamListenerFilter bufferedFilter;
+  protected long startTime = 0, currentTime = 0, endTime = 0;
+  protected Object timeLock = new Object();
+
+  protected class MyBufferedFilter extends BufferedStreamListenerFilter
+  {
+    public MyBufferedFilter(StreamListener l) { super(l); }
+    protected void addDocument(Document d) {
+      super.addDocument(d);
+      LoadScoreBoardStream.this.updateStartTime(getStartTime());
+      LoadScoreBoardStream.this.updateEndTime(getEndTime());
+    }
+  }
+
+  protected class MyRealtimeFilter extends RealtimeStreamListenerFilter
+  {
+    public MyRealtimeFilter(StreamListener l) { super(l); }
+    public void xmlChange(Document d) {
+      super.xmlChange(d);
+      LoadScoreBoardStream.this.updateCurrentTime(LoadScoreBoardStream.this.editor.getSystemTime(d));
+    }
+  }
 }
