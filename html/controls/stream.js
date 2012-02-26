@@ -34,7 +34,7 @@ $sb(function() {
   loadStream.$sb("Pause").$sbControl("#Load .Pause", { sbcontrol: { button: true }});
   loadStream.$sb("Speed").$sbElement("#Load a.Speed");
   $("#Load div.Speed").slider({
-    min: -4,
+    min: -2,
     max: 4,
     value: 0
   }).bind("slide", function(event, ui) {
@@ -59,6 +59,7 @@ $sb(function() {
   loadStream.$sb("CurrentTime").bind("content", updateProgress);
   loadStream.$sb("EndTime").$sbElement("#Load a.EndTime", { sbelement: { convert: _timeConversions.msToMinSec }});
   loadStream.$sb("EndTime").bind("content", updateProgress);
+  updateProgress();
 
   $("#Load button.Filename").click(function() {
     var updateButton = $(this).button("option", "label", "Updating...").button("disable");
