@@ -49,7 +49,7 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
     };
     addParameterModel(jamResetNumber);
     new FilterScoreBoardListener(jamResetNumber, "Value", Boolean.TRUE.toString()) {
-      public void scoreBoardChange(ScoreBoardEvent event) {
+      public void filteredScoreBoardChange(ScoreBoardEvent event) {
         if (Boolean.parseBoolean(getParameter(JAM_INCREMENT_NUMBER).getValue()))
           getParameterModel(JAM_INCREMENT_NUMBER).setValue(String.valueOf(false));
       }
