@@ -55,5 +55,5 @@ public class MediaXmlDocumentManager extends OpenXmlDocumentManager implements X
 
   private String mediaName;
 
-  private String htmlDirName = ScoreBoardManager.getProperties().getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
+  private String htmlDirName = ScoreBoardManager.getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
 }

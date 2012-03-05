@@ -44,7 +44,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
       if (!key.startsWith(POLICY_KEY+"."))
         continue;
 
-      String name = ScoreBoardManager.getProperties().getProperty(key);
+      String name = ScoreBoardManager.getProperty(key);
 
       try {
         PolicyModel policyModel = (PolicyModel)Class.forName(name).newInstance();

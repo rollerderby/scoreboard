@@ -61,5 +61,5 @@ public class StreamServlet extends DefaultScoreBoardControllerServlet
     }
   }
 
-  private String streamDirName = ScoreBoardManager.getProperties().getProperty(AbstractScoreBoardStream.DIRECTORY_KEY);
+  private String streamDirName = ScoreBoardManager.getProperty(AbstractScoreBoardStream.DIRECTORY_KEY);
 }

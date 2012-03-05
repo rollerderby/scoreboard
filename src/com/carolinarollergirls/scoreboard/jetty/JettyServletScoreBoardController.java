@@ -39,14 +39,14 @@ public class JettyServletScoreBoardController implements ScoreBoardController
   protected void init() {
     port = DEFAULT_PORT;
     try {
-      port = Integer.parseInt(ScoreBoardManager.getProperties().getProperty(PROPERTY_PORT_KEY));
+      port = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_PORT_KEY));
     } catch ( Exception e ) {
       ScoreBoardManager.printMessage("No server port defined, using default " + DEFAULT_PORT);
     }
 
     Server server;
 
-    String localhost = ScoreBoardManager.getProperties().getProperty(PROPERTY_LOCALHOST_KEY);
+    String localhost = ScoreBoardManager.getProperty(PROPERTY_LOCALHOST_KEY);
     if (null != localhost && Boolean.parseBoolean(localhost)) {
       ScoreBoardManager.printMessage("ScoreBoard configured to listen ONLY on localhost interface.");
       SocketConnector sC = new SocketConnector();
@@ -62,7 +62,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
     ContextHandlerCollection contexts = new ContextHandlerCollection();
     server.setHandler(contexts);
 
-    String staticPath = ScoreBoardManager.getProperties().getProperty(PROPERTY_HTML_DIR_KEY);
+    String staticPath = ScoreBoardManager.getProperty(PROPERTY_HTML_DIR_KEY);
     if (null != staticPath) {
       Context c = new Context(contexts, "/", Context.SESSIONS);
       Map<String,String> initParams = new Hashtable<String,String>();
@@ -90,7 +90,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
       if (!key.startsWith(PROPERTY_SERVLET_KEY))
         continue;
 
-      String servlet = ScoreBoardManager.getProperties().getProperty(key);
+      String servlet = ScoreBoardManager.getProperty(key);
 
       try {
         ScoreBoardControllerServlet sbcS = (ScoreBoardControllerServlet)Class.forName(servlet).newInstance();

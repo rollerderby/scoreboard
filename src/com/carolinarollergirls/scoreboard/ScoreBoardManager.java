@@ -54,6 +54,8 @@ public class ScoreBoardManager
 
   public static Properties getProperties() { return new Properties(properties); }
 
+  public static String getProperty(String key) { return properties.getProperty(key); }
+
   public static void registerScoreBoardController(ScoreBoardController sbC) {
     sbC.setScoreBoardModel(scoreBoardModel);
   }
