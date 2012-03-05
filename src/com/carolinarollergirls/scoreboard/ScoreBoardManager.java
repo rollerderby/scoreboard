@@ -8,8 +8,9 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import java.util.*;
 import java.io.*;
+import java.util.*;
+import java.util.concurrent.*;
 
 import java.awt.*;
 import javax.swing.*;
@@ -56,12 +57,18 @@ public class ScoreBoardManager
 
   public static String getProperty(String key) { return properties.getProperty(key); }
 
+  public static ScoreBoardController getScoreBoardController(String key) { return controllers.get(key); }
+
+  public static ScoreBoardViewer getScoreBoardViewer(String key) { return viewers.get(key); }
+
   public static void registerScoreBoardController(ScoreBoardController sbC) {
     sbC.setScoreBoardModel(scoreBoardModel);
+    controllers.put(sbC.getClass().getName(), sbC);
   }
 
   public static void registerScoreBoardViewer(ScoreBoardViewer sbV) {
     sbV.setScoreBoard(scoreBoardModel.getScoreBoard());
+    viewers.put(sbV.getClass().getName(), sbV);
   }
 
   private static void createGui() {
@@ -200,6 +207,8 @@ public class ScoreBoardManager
   }
 
   private static Properties properties = new Properties();
+  private static Map<String,ScoreBoardController> controllers = new ConcurrentHashMap<String,ScoreBoardController>();
+  private static Map<String,ScoreBoardViewer> viewers = new ConcurrentHashMap<String,ScoreBoardViewer>();
 
   private static ScoreBoardModel scoreBoardModel;
 
