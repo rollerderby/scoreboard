@@ -12,6 +12,6 @@ import java.util.*;
 
 public interface ScoreBoardListener extends EventListener
 {
-	public void scoreBoardChange(ScoreBoardEvent event);
+  public void scoreBoardChange(ScoreBoardEvent event);
 }
 
