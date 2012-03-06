@@ -53,7 +53,7 @@
       <MaximumNumber><![CDATA[999]]></MaximumNumber>
       <Time><![CDATA[900000]]></Time>
       <MinimumTime><![CDATA[0]]></MinimumTime>
-      <MaximumTime><![CDATA[1800000]]></MaximumTime>
+      <MaximumTime><![CDATA[3600000]]></MaximumTime>
       <Running><![CDATA[false]]></Running>
       <Direction><![CDATA[false]]></Direction>
     </Clock>
