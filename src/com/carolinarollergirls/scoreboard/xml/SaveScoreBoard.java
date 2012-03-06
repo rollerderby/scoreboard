@@ -37,9 +37,9 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager
   }
 
   protected void processChildElement(Element e) {
-    if (e.getName() == "Filename")
+    if (e.getName().equals("Filename"))
       update(editor.cloneDocumentToElement(e, true));
-    else if (e.getName() == "Save")
+    else if (e.getName().equals("Save"))
       save();
   }
 

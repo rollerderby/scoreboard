@@ -44,9 +44,9 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
   protected void processChildElement(Element e) throws JDOMException {
     super.processChildElement(e);
     synchronized (processLock) {
-      if (e.getName() == "Pause")
+      if (e.getName().equals("Pause"))
         pause(editor.isTrue(e));
-      else if (e.getName() == "Speed")
+      else if (e.getName().equals("Speed"))
         speed(editor.getText(e));
     }
   }
