@@ -27,6 +27,15 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
 
   public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue()); }
 
+  public boolean equals(Object o) {
+    try {
+      ScoreBoardEvent e = (ScoreBoardEvent)o;
+      return (getProvider().equals(e.getProvider()) && getProperty().equals(e.getProperty()) && getValue().equals(e.getValue()));
+    } catch ( ClassCastException ccE ) {
+      return false;
+    }
+  }
+
   public boolean reflect(Object o) {
     try {
       reflectWithException(o);
