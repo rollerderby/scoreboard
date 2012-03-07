@@ -12,39 +12,17 @@ import java.util.*;
 
 public class ConditionalScoreBoardListener implements ScoreBoardListener
 {
-  public ConditionalScoreBoardListener() { }
   public ConditionalScoreBoardListener(ScoreBoardEvent e, ScoreBoardListener l) {
-    addConditionalListener(e, l);
+    event = e;
+    listener = l;
   }
 
-  public void scoreBoardChange(ScoreBoardEvent event) {
-    synchronized (lock) {
-      if (map.containsKey(event)) {
-        Iterator<ScoreBoardListener> listeners = map.get(event).iterator();
-        while (listeners.hasNext())
-          listeners.next().scoreBoardChange(event);
-      }
-    }
+  public void scoreBoardChange(ScoreBoardEvent e) {
+    if (event.equals(e))
+      listener.scoreBoardChange(e);
   }
 
-  public void addConditionalListener(ScoreBoardEvent e, ScoreBoardListener l) {
-    synchronized (lock) {
-      if (!map.containsKey(e))
-        map.put(e, new LinkedList<ScoreBoardListener>());
-      if (!map.get(e).contains(l))
-        map.get(e).add(l);
-    }
-  }
-
-  public void removeConditionalListener(ScoreBoardEvent e, ScoreBoardListener l) {
-    synchronized (lock) {
-      if (!map.containsKey(e))
-        return;
-      map.get(e).remove(l);
-    }
-  }
-
-  protected Map<ScoreBoardEvent,List<ScoreBoardListener>> map = new LinkedHashMap<ScoreBoardEvent,List<ScoreBoardListener>>();
-  protected Object lock = new Object();
+  protected ScoreBoardEvent event;
+  protected ScoreBoardListener listener;
 }
 
