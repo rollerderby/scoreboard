@@ -53,7 +53,7 @@ public class UrlsServlet extends HttpServlet
     if (null == host)
       addInterfaces(urls, port);
     else
-      urls.add(getURL(host, port));
+      addHost(urls, host, port);
   }
 
   protected void addInterfaces(List<URL> urls, int port) throws MalformedURLException,SocketException {
@@ -63,13 +63,22 @@ public class UrlsServlet extends HttpServlet
       while (addrs.hasNext()) {
         InetAddress addr = addrs.next();
         if (addr instanceof Inet4Address)
-          urls.add(getURL(addr.getHostAddress(), port));
+          addHost(urls, addr.getHostAddress(), port);
       }
     }
   }
 
-  protected URL getURL(String host, int port) throws MalformedURLException {
-    return new URL("http", host, port, "/");
+  protected void addHost(List<URL> urls, String host, int port) throws MalformedURLException {
+    try {
+      InetAddress addr = InetAddress.getByName(host);
+      String hostname = addr.getHostName();
+      String hostaddr = addr.getHostAddress();
+      if (!hostaddr.equals(hostname))
+        urls.add(new URL("http", hostname, port, "/"));
+      urls.add(new URL("http", hostaddr, port, "/"));
+    } catch ( UnknownHostException uhE ) {
+      urls.add(new URL("http", host, port, "/"));
+    }
   }
 
   protected Server server;
