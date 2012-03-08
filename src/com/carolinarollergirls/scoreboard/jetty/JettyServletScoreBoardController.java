@@ -83,6 +83,8 @@ public class JettyServletScoreBoardController implements ScoreBoardController
       c.setResourceBase(staticPath+"/videos");
     }
 
+    new Context(contexts, "/urls", Context.SESSIONS).addServlet(new ServletHolder(new UrlsServlet(server)), "/*");
+
     Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
 
     while (keys.hasMoreElements()) {

@@ -7,6 +7,11 @@
 
 $(function() {
   $.get("/version", function(data) { $("#version").html(data); });
+  $.get("/urls", function(data) {
+    $.each(data.trim().split("\n"), function(i,e) {
+      $("<a>").attr("href", e).text(e).appendTo("#URLs").wrap("<li>");
+    });
+  });
 });
 
 </script>
@@ -21,19 +26,42 @@ $(function() {
 </center>
 </a>
 
-<p>
-For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
-see <a href="guide.html">the guide</a>.
+<table>
+  <col width="50%">
+  <col width="50%">
+  <tr>
+    <td>
+      <h3>Scoreboard view/control pages</h3>
+      <a href="controls/operator.html">Main Operator Control Panel</a><br/>
+      <a href="views/scoreboard.html">Main Scoreboard</a><br/>
+      <a href="controls/mobile.html">Mobile Device Operator Controls</a><br/>
+      <a href="controls/media_management.html">Media Management</a><br/>
+      <a href="views/overlay.html">Video Feed Overlay Scoreboard</a><br/>
+      <a href="controls/stream.html">Load/Save Scoreboard "Stream" (beta quality!)</a><br/>
+      <a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
+      <a href="controls/lineups.html">Team Lineup Control Panel (beta quality!)</a><br/>
+    </td>
 
-<h3>Scoreboard view/control pages</h3>
-<a href="controls/operator.html">Main Operator Control Panel</a><br/>
-<a href="views/scoreboard.html">Main Scoreboard</a><br/>
-<a href="controls/mobile.html">Mobile Device Operator Controls</a><br/>
-<a href="controls/media_management.html">Media Management</a><br/>
-<a href="views/overlay.html">Video Feed Overlay Scoreboard</a><br/>
-<a href="controls/stream.html">Load/Save Scoreboard "Stream" (beta quality!)</a><br/>
-<a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
-<a href="controls/lineups.html">Team Lineup Control Panel (beta quality!)</a><br/>
+    <td>
+      <p>
+        <b>Important notice:</b><br/>
+        The scoreboard no longer includes any team logos or sponsor (ad) images.<br/>
+        The team logo images are now packaged separately.
+        <b>FIXME: implement some kind of easy one-click updating of the media packages</b>
+      </p>
+
+      <p>
+        For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
+        see <a href="guide.html">the guide</a>.
+      </p>
+
+      <p>
+        To access this scoreboard from other computers on this network, try one of these URLs:
+        <ul id="URLs"></ul>
+      </p>
+    </td>
+  </tr>
+</table>
 
 </body>
 
