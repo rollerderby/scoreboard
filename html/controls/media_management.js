@@ -17,6 +17,9 @@ $sb(function() {
     .filter(".Add").click(function() {
       createAddSpecificDialog();
     }).end()
+    .filter(".Update").click(function() {
+      createUpdateMediaDialog();
+    }).end()
     .button();
 
   $("body>table.TypeTemplate")
@@ -240,6 +243,31 @@ function createUploadMediaDialog(table) {
   }).change();
 }
 
+function createRemoveTypeDialog() {
+  return $("body>div.RemoveTypeDialog.DialogTemplate").clone(true)
+    .removeClass("DialogTemplate")
+    .dialog({
+      title: "Remove empty Type",
+      modal: true,
+      width: 700,
+      close: function() { $(this).dialog("destroy").remove(); },
+      buttons: {
+        Remove: function() {
+          var option = $(this).find("select.Media>option:selected");
+          var parentName = option.text();
+          var type = $(this).find("input:text.Type").val();
+          var sbType = $sb(parentName).children("Type[Id='"+type+"']");
+          if (sbType.length)
+            $sb(sbType).$sbRemove();
+          $(this).dialog("close");
+        },
+        Cancel: function() {
+          $(this).dialog("close");
+        }
+      }
+    });
+}
+
 function createAddSpecificDialog() {
   return $("body>div.AddSpecificDialog.DialogTemplate").clone(true)
     .removeClass("DialogTemplate")
@@ -270,28 +298,55 @@ function createAddSpecificDialog() {
     });
 }
 
-function createRemoveTypeDialog() {
-  return $("body>div.RemoveTypeDialog.DialogTemplate").clone(true)
-    .removeClass("DialogTemplate")
-    .dialog({
-      title: "Remove empty Type",
-      modal: true,
-      width: 700,
-      close: function() { $(this).dialog("destroy").remove(); },
-      buttons: {
-        Remove: function() {
-          var option = $(this).find("select.Media>option:selected");
-          var parentName = option.text();
-          var type = $(this).find("input:text.Type").val();
-          var sbType = $sb(parentName).children("Type[Id='"+type+"']");
-          if (sbType.length)
-            $sb(sbType).$sbRemove();
-          $(this).dialog("close");
-        },
-        Cancel: function() {
-          $(this).dialog("close");
-        }
-      }
-    });
+function createUpdateMediaDialog() {
+  var div = $("body>div.UpdateMediaDialog.DialogTemplate").clone(true)
+    .removeClass("DialogTemplate");
+  var packages = [
+    { media: "videos", type: "fullscreen" },
+    { media: "images", type: "fullscreen" },
+    { media: "images", type: "teamlogo" }
+  ];
+  $.each(packages, function(i,pkg) {
+    var p = div.find("p.Template").clone(true)
+      .removeClass("Template").prependTo(div);
+    p.find("a.Name").text("crg-scoreboard-"+pkg.media+"-"+pkg.type);
+    var updateVersions = function() {
+      var localD = $.Deferred(), latestD = $.Deferred();
+      $.get("/Media/localversion", pkg)
+        .done(function(level) { p.children("a.LocalVersion").text(level); })
+        .fail(function() { p.children("a.LocalVersion").text("Unknown"); })
+        .always(function() { localD.resolve(); });
+      $.get("/Media/latestversion", pkg)
+        .done(function(level) { p.children("a.LatestVersion").text(level); })
+        .fail(function() { p.children("a.LatestVersion").text("Unknown"); })
+        .always(function() { latestD.resolve(); });
+      $.when(localD, latestD).always(function() {
+        var localVersion = p.children("a.LocalVersion").text();
+        var latestVersion = p.children("a.LatestVersion").text();
+        //FIXME - use isNumeric here after moving to jquery 1.7
+        if (isNaN(latestVersion))
+          p.children("button.Update").button("option", "label", "Unknown Latest Version").button("disable");
+        else if (isNaN(localVersion) || (localVersion < latestVersion))
+          p.children("button.Update").button("option", "label", "Update To Latest Version").button("enable");
+        else
+          p.children("button.Update").button("option", "label", "Install Latest Version Again").button("enable");
+      });
+    };
+    p.children("button.Update").click(function() {
+      $(this).button("option", "label", "Updating...").button("disable");
+      $.get("/Media/update", pkg)
+        .done(function(results) { div.find(">p.Results>a.Results").text(results); })
+        .fail(function(jqxhr, textStatus, errorThrown) { div.find(">p.Results>a.Results").text("Failed: "+textStatus); })
+        .always(function() { updateVersions(); });
+    }).button({ label: "Checking Version...", disabled: true });
+    updateVersions();
+  });
+  div.dialog({
+    title: "Update media",
+    modal: true,
+    width: 500,
+    close: function() { $(this).dialog("destroy").remove(); },
+    buttons: { Close: function() { $(this).dialog("close"); } }
+  });
 }
 

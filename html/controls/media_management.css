@@ -63,3 +63,9 @@
   table.Type tr.Item>td.Preview>:not(button) { max-width: 400px; max-height: 100px; }
 /* End Type groups */
 
+/* UpdateMediaDialog */
+  div.UpdateMediaDialog p.Template { display: none; }
+  div.UpdateMediaDialog p.Package { border: 1px solid black; border-radius: 10px; text-align: center; }
+  div.UpdateMediaDialog a.Name { font-weight: bold; }
+/* End UpdateMediaDialog */
+

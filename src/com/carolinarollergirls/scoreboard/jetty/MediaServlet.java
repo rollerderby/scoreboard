@@ -9,6 +9,7 @@ package com.carolinarollergirls.scoreboard.jetty;
  */
 
 import java.io.*;
+import java.net.*;
 import java.util.*;
 import java.util.zip.*;
 import java.util.concurrent.*;
@@ -54,8 +55,97 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 
     if (request.getPathInfo().equals("/list"))
       list(request, response);
+    else if (request.getPathInfo().equals("/localversion"))
+      localVersion(request, response);
+    else if (request.getPathInfo().equals("/latestversion"))
+      latestVersion(request, response);
+    else if (request.getPathInfo().equals("/update"))
+      update(request, response);
     else
       response.sendError(HttpServletResponse.SC_NOT_FOUND);
+  }
+
+  protected void localVersion(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    FileInputStream fos = null;
+    try {
+      File typeDir = getTypeDir(request.getParameter("media"), request.getParameter("type"), response, false);
+
+      fos = new FileInputStream(new File(typeDir, versionFilename));
+      String version = getVersion(fos);
+
+      setTextResponse(response, HttpServletResponse.SC_OK, version);
+    } catch ( FileNotFoundException fnfE ) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } catch ( IllegalArgumentException iaE ) {
+      setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
+    } finally {
+      if (null != fos)
+        fos.close();
+    }
+  }
+
+  protected void latestVersion(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    String media = request.getParameter("media");
+    String type = request.getParameter("type");
+
+    try {
+      setTextResponse(response, HttpServletResponse.SC_OK, getLatestVersion(media, type));
+    } catch ( IllegalArgumentException iaE ) {
+      setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
+    }
+  }
+
+  protected String getLatestVersion(String media, String type) throws IllegalArgumentException,IOException {
+    InputStream is = null;
+    try {
+      is = new URL(BASE_URL+"/"+media+"/"+type+"/"+versionFilename).openStream();
+      return getVersion(is);
+    } finally {
+      if (null != is)
+        is.close();
+    }    
+  }
+
+  protected String getVersion(InputStream is) throws IllegalArgumentException,IOException {
+    Properties p = new Properties();
+    p.load(is);
+    return p.getProperty("version");
+  }
+
+  protected void update(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    String media = request.getParameter("media");
+    String type = request.getParameter("type");
+    FileItemFactory fiF = new DiskFileItemFactory();
+    InputStream is = null;
+    OutputStream os = null;
+
+    try {
+      String name = BASE_NAME+"-"+media+"-"+type+"-"+getLatestVersion(media, type)+".zip";
+
+      is = new URL(BASE_URL+"/"+media+"/"+type+"/"+name).openStream();
+
+      FileItem item = fiF.createItem(null, null, false, name);
+      os = item.getOutputStream();
+      IOUtils.copyLarge(is, os);
+
+      List<FileItem> fileItems = new ArrayList<FileItem>();
+
+      processZipFileItem(fiF, item, fileItems);
+
+      processFileItemList(fileItems, media, type, null, response);
+
+      int len = fileItems.size();
+      setTextResponse(response, HttpServletResponse.SC_OK, "Successfully updated "+len+" file"+(len>1?"s":"")+" from "+name);
+    } catch ( FileNotFoundException fnfE ) {
+      response.sendError(HttpServletResponse.SC_NOT_FOUND);
+    } catch ( IllegalArgumentException iaE ) {
+      setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
+    } finally {
+      if (null != is)
+        is.close();
+      if (null != os)
+        os.close();
+    }
   }
 
   protected void list(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
@@ -63,7 +153,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
       File typeDir = getTypeDir(request.getParameter("media"), request.getParameter("type"), response, false);
 
       StringBuffer fileList = new StringBuffer("");
-      Iterator<File> files = Arrays.asList(typeDir.listFiles()).iterator();
+      Iterator<File> files = Arrays.asList(typeDir.listFiles(listFilenameFilter)).iterator();
       while (files.hasNext()) {
         File f = files.next();
         if (f.isFile())
@@ -100,9 +190,9 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
             media = item.getString();
           else if (item.getFieldName().equals("type"))
             type = item.getString();
-        } else if (item.getName().matches("^.*[.][zZ][iI][pP]$")) {
+        } else if (item.getName().matches(zipExtRegex)) {
           processZipFileItem(fiF, item, fileItems);
-        } else {
+        } else if (uploadFilenameFilter.accept(null, item.getName())) {
           fileItems.add(item);
         }
       }
@@ -116,14 +206,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
       if (fileItems.size() > 1)
         name = null;
 
-      File typeDir = getTypeDir(media, type, response, true);
-
-      Iterator<FileItem> fI = fileItems.iterator();
-      while (fI.hasNext()) {
-        FileItem item = fI.next();
-        if (!item.isFormField())
-          registerFile(createFile(typeDir, item, response), media, type, name, response);
-      }
+      processFileItemList(fileItems, media, type, name, response);
 
       int len = fileItems.size();
       setTextResponse(response, HttpServletResponse.SC_OK, "Successfully uploaded "+len+" file"+(len>1?"s":""));
@@ -133,6 +216,24 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
       setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
     } catch ( FileUploadException fuE ) {
       setTextResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, fuE.getMessage());
+    }
+  }
+
+  protected void processFileItemList(List<FileItem> fileItems, String media, String type, String name, HttpServletResponse response) throws FileNotFoundException,IOException {
+    File typeDir = getTypeDir(media, type, response, true);
+
+    ListIterator<FileItem> fileItemIterator = fileItems.listIterator();
+    while (fileItemIterator.hasNext()) {
+      FileItem item = fileItemIterator.next();
+      if (item.isFormField()) {
+        fileItemIterator.remove();
+      } else {
+        File f = createFile(typeDir, item, response);
+        if (!item.getName().equals(versionFilename))
+          registerFile(f, media, type, name, response);
+        else
+          fileItemIterator.remove();
+      }
     }
   }
 
@@ -198,7 +299,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
     ZipEntry zE;
     try {
       while (null != (zE = ziS.getNextEntry())) {
-        if (zE.isDirectory())
+        if (zE.isDirectory() || !uploadFilenameFilter.accept(null, zE.getName()))
           continue;
         FileItem item = factory.createItem(null, null, false, zE.getName());
         OutputStream oS = item.getOutputStream();
@@ -211,11 +312,32 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
     }
   }
 
-  private XmlDocumentEditor editor = new XmlDocumentEditor();
+  protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
-  private String htmlDirName = ScoreBoardManager.getProperties().getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
+  protected String htmlDirName = ScoreBoardManager.getProperties().getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
 
-  public static final Map<String,String> mediaElementNameMap = new ConcurrentHashMap<String,String>();
-  public static final Map<String,String> mediaChildNameMap = new ConcurrentHashMap<String,String>();
+  public static final String BASE_URL = "http://derbyscoreboard.sourceforge.net/media/";
+  public static final String BASE_NAME = "crg-scoreboard";
+
+  protected static final Map<String,String> mediaElementNameMap = new ConcurrentHashMap<String,String>();
+  protected static final Map<String,String> mediaChildNameMap = new ConcurrentHashMap<String,String>();
+
   public static final String invalidTypePathRegex = "/|\\|[.][.]";
+
+  public static final String versionFilename = ".version";
+
+  public static final String zipExtRegex = "^.*[.][zZ][iI][pP]$";
+  public static final String dbFileRegex = "^.*[.][dD][bB]$";
+  public static final String dotFileRegex = "^[.].*$";
+
+  public static final FilenameFilter listFilenameFilter = new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return (!name.matches(dbFileRegex+"|"+dotFileRegex));
+      }
+    };
+  public static final FilenameFilter uploadFilenameFilter = new FilenameFilter() {
+      public boolean accept(File dir, String name) {
+        return (!name.matches(dbFileRegex) && (!name.matches(dotFileRegex) || name.equals(versionFilename)));
+      }
+    };
 }
