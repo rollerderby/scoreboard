@@ -156,17 +156,29 @@ function createMetaControlTable() {
       $("#TeamTime table.JamControl tr.UndoControls").toggleClass("ShowUndo", this.checked);
     });
 
+  var selectJammerSpan = $("<span>").appendTo(buttonsTd);
   var selectByLabel = $("<label>").attr("for", "SelectJammerBy")
-    .appendTo(buttonsTd);
+    .appendTo(selectJammerSpan);
   var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
-    .appendTo(buttonsTd)
-    .button();
+    .appendTo(selectJammerSpan).button();
   _crgUtils.bindAndRun(selectByButton, "click", function() {
-    $("#TeamTime table.Team select.Jammer")
-      .filter(".ByName").toggle(this.checked).end()
-      .filter(".ByNumber").toggle(!this.checked);
-    selectByLabel.children("span").text(this.checked ? "Select Jammer by Name" : "Select Jammer by Number");
+    $("#TeamTime table.Team td.Jammer")
+      .toggleClass("ByNumber", this.checked)
+      .toggleClass("ByName", !this.checked);
+    $(this).button("option", "label", (this.checked?"Select Jammer by Number":"Select Jammer by Name"));
   });
+  var selectSortLabel = $("<label>").attr("for", "SelectJammerSort")
+    .appendTo(selectJammerSpan);
+  var selectSortButton = $("<input type='checkbox'>").attr("id", "SelectJammerSort")
+    .appendTo(selectJammerSpan).button();
+  _crgUtils.bindAndRun(selectSortButton, "click", function() {
+    $("#TeamTime table.Team td.Jammer")
+      .toggleClass("NumSort", this.checked)
+      .toggleClass("AlphaSort", !this.checked);
+    $(this).button("option", "label", (this.checked?"Numerically":"Alphabetically"));
+  });
+  // FIXME - jquery-ui seems buggy by defaulting to rtl if "direction" not specified
+  selectJammerSpan.css("direction", "ltr").buttonset();
 
   var periodEndControlsLabel = $("<label>").attr("for", "PeriodEndControlsCheckbox")
     .text("End of Period Controls")
@@ -420,21 +432,39 @@ function createTeamTable() {
      * so need to explicitly specify to style the buttonset as ltr
      */
     leadJammerTd.css("direction", "ltr").buttonset();
+    var jammerSelectTd = jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByName AlphaSort");
     sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
         optionParent: sbTeam,
         optionChildName: "Skater",
         optionNameElement: "Name",
+        compareOptions: function(a, b) { return _windowFunctions.alphaCompareByProp("text", a, b); },
         firstOption: { text: "No Jammer", value: "" }
-      } }).addClass("Jammer ByName").hide()
-        .appendTo(jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer"));
+      } }).addClass("Jammer ByName AlphaSort")
+        .appendTo(jammerSelectTd);
+    sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
+        optionParent: sbTeam,
+        optionChildName: "Skater",
+        optionNameElement: "Number",
+        compareOptions: function(a, b) { return _windowFunctions.alphaCompareByProp("text", a, b); },
+        firstOption: { text: "No Jammer", value: "" }
+      } }).addClass("Jammer ByNumber AlphaSort")
+        .appendTo(jammerSelectTd);
+    sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
+        optionParent: sbTeam,
+        optionChildName: "Skater",
+        optionNameElement: "Name",
+        compareOptions: function(a, b) { return _windowFunctions.numCompareByProp("text", a, b); },
+        firstOption: { text: "No Jammer", value: "" }
+      } }).addClass("Jammer ByName NumSort")
+        .appendTo(jammerSelectTd);
     sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
         optionParent: sbTeam,
         optionChildName: "Skater",
         optionNameElement: "Number",
         compareOptions: function(a, b) { return _windowFunctions.numCompareByProp("text", a, b); },
         firstOption: { text: "No Jammer", value: "" }
-      } }).addClass("Jammer ByNumber")
-        .appendTo(jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer"));
+      } }).addClass("Jammer ByNumber NumSort")
+        .appendTo(jammerSelectTd);
   });
 
   return table;
