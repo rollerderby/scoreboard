@@ -43,10 +43,10 @@
   <!-- Create specific zip file -->
   <target name="-zip" >
 		<mkdir dir="${release.dir}" />
-    <property file="${media.dir}/${type.dir}/version" />
+    <property file="${media.dir}/${type.dir}/.version" />
     <fail unless="version" message="No version found for media files at ${media.dir}/${type.dir}" />
 		<zip destfile="${release.dir}/crg-scoreboard-${media.dir}-${type.dir}-${version}.zip" >
-			<zipfileset dir="${media.dir}/${type.dir}" filemode="755" excludes="version" />
+			<zipfileset dir="${media.dir}/${type.dir}" filemode="755" />
 		</zip>
 	</target>
 
