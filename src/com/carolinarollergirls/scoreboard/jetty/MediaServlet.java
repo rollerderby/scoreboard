@@ -98,7 +98,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
   protected String getLatestVersion(String media, String type) throws IllegalArgumentException,IOException {
     InputStream is = null;
     try {
-      is = new URL(BASE_URL+"/"+media+"/"+type+"/"+versionFilename).openStream();
+      is = getMediaURL(BASE_NAME+"-"+media+"-"+type+"-latest-version").openStream();
       return getVersion(is);
     } finally {
       if (null != is)
@@ -122,7 +122,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
     try {
       String name = BASE_NAME+"-"+media+"-"+type+"-"+getLatestVersion(media, type)+".zip";
 
-      is = new URL(BASE_URL+"/"+media+"/"+type+"/"+name).openStream();
+      is = getMediaURL(name).openStream();
 
       FileItem item = fiF.createItem(null, null, false, name);
       os = item.getOutputStream();
@@ -312,11 +312,15 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
     }
   }
 
+  protected URL getMediaURL(String filename) throws MalformedURLException {
+    return new URL(BASE_URL+filename+"/download");
+  }
+
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
   protected String htmlDirName = ScoreBoardManager.getProperties().getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
 
-  public static final String BASE_URL = "http://derbyscoreboard.sourceforge.net/media/";
+  public static final String BASE_URL = "http://sourceforge.net/projects/derbyscoreboard/files/crg-scoreboard/media/";
   public static final String BASE_NAME = "crg-scoreboard";
 
   protected static final Map<String,String> mediaElementNameMap = new ConcurrentHashMap<String,String>();
