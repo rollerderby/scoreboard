@@ -186,7 +186,7 @@ function createUploadMediaDialog(table) {
   var inputFile = div.find("input:file.File");
   var inputName = div.find("input:text.Name");
   div.dialog({
-      title: "Upload media",
+      title: "Upload media "+media+" : "+type,
       modal: true,
       width: 700,
       close: function() { $(this).dialog("destroy").remove(); },
