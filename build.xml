@@ -147,9 +147,10 @@
 
   <!-- Create media zip files -->
   <target name="media" >
-    <ant dir="${media.dir}" inheritAll="false" />
+    <ant dir="${media.dir}" inheritAll="false" target="all" />
     <copy overwrite="true" todir="${release.dir}" >
       <fileset dir="${media.dir}/release" includes="*.zip" />
+      <fileset dir="${media.dir}/release" includes="*-latest-version" />
     </copy>
     <ant dir="${media.dir}" inheritAll="false" target="clean" />
   </target>

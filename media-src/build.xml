@@ -15,16 +15,17 @@
 		<echo message=""/>
 		<echo message="Targets:"/>
 		<echo message=""/>
-		<echo message="  all              clean zip"/>
+		<echo message="  all              clean,zip,version"/>
 		<echo message="  clean            Clean everything"/>
-		<echo message="  zip              Create non-release zip file"/>
+		<echo message="  zip              Create zip files"/>
+		<echo message="  version          Create latest version files"/>
 		<echo message=""/>
 	</target>
 
 	<!-- Do everything -->
-	<target name="all" depends="clean,zip"/>
+	<target name="all" depends="clean,zip,version"/>
 
-	<!-- Create zip file -->
+	<!-- Create zip files -->
 	<target name="zip" >
     <antcall target="-zip" >
       <param name="media.dir" value="images" />
@@ -40,6 +41,22 @@
     </antcall>
   </target>
 
+	<!-- Create version files -->
+	<target name="version" >
+    <antcall target="-version" >
+      <param name="media.dir" value="images" />
+      <param name="type.dir" value="teamlogo" />
+    </antcall>
+    <antcall target="-version" >
+      <param name="media.dir" value="images" />
+      <param name="type.dir" value="fullscreen" />
+    </antcall>
+    <antcall target="-version" >
+      <param name="media.dir" value="videos" />
+      <param name="type.dir" value="fullscreen" />
+    </antcall>
+  </target>
+
   <!-- Create specific zip file -->
   <target name="-zip" >
 		<mkdir dir="${release.dir}" />
@@ -50,10 +67,21 @@
 		</zip>
 	</target>
 
+  <!-- Create specific version file -->
+  <target name="-version" >
+		<mkdir dir="${release.dir}" />
+    <property file="${media.dir}/${type.dir}/.version" />
+    <fail unless="version" message="No version found for media files at ${media.dir}/${type.dir}" />
+		<copy tofile="${release.dir}/crg-scoreboard-${media.dir}-${type.dir}-latest-version" >
+			<fileset dir="${media.dir}/${type.dir}" includes=".version" />
+		</copy>
+	</target>
+
 	<!-- Clean all zip files -->
 	<target name="clean">
 		<delete verbose="${clean.verbose}" quiet="${clean.quiet}" includeemptydirs="true" failonerror="false">
 			<fileset dir="${release.dir}" includes="*.zip"/>
+			<fileset dir="${release.dir}" includes="*-latest-version"/>
 		</delete>
 	</target>
 
