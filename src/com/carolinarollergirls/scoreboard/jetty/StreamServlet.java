@@ -46,11 +46,14 @@ public class StreamServlet extends DefaultScoreBoardControllerServlet
       File streamDir = new File(streamDirName);
 
       StringBuffer fileList = new StringBuffer("");
-      Iterator<File> files = Arrays.asList(streamDir.listFiles()).iterator();
-      while (files.hasNext()) {
-        File f = files.next();
-        if (f.isFile())
-          fileList.append(f.getName()+"\n");
+      File[] fileArray = streamDir.listFiles();
+      if (null != fileArray) {        
+        Iterator<File> files = Arrays.asList(fileArray).iterator();
+        while (files.hasNext()) {
+          File f = files.next();
+          if (f.isFile())
+            fileList.append(f.getName()+"\n");
+        }
       }
 
       setTextResponse(response, HttpServletResponse.SC_OK, fileList.toString());
