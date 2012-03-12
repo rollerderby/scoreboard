@@ -61,6 +61,17 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
       editor.setText(msg, "Cannot change Filename while Running");
       editor.setText(error, "true");
     } else {
+      try {
+        if (!"".equals(filename))
+          getFile(filename);
+      } catch ( IllegalArgumentException iaE ) {
+        editor.setText(msg, iaE.getMessage());
+        editor.setText(error, "true");
+      } catch ( FileNotFoundException fnfE ) {
+        editor.setText(msg, fnfE.getMessage());
+        editor.setText(error, "true");
+      }
+
       updateE.addContent(editor.setText(new Element("Filename"), filename));
     }
     update(updateE);
@@ -72,28 +83,9 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
     Element msg = editor.setText(new Element("Message"), "");
     Element error = editor.setText(new Element("Error"), "false");
     Element updateE = createXPathElement().addContent(msg).addContent(error);
-    String filename = "";
-    String dirname = ScoreBoardManager.getProperty(DIRECTORY_KEY);
     try {
-      if (null == dirname || "".equals(dirname)) {
-        editor.setText(msg, "No directory set for stream files");
-        editor.setText(error, "true");
-        return;
-      }
-      File directory = new File(dirname);
-      if (!directory.exists() && !directory.mkdirs()) {
-        editor.setText(msg, "Could not create directory '"+dirname+"' for stream files");
-        editor.setText(error, "true");
-        return;
-      }
-      filename = editor.getText(getXPathElement().getChild("Filename"));
-      if ("".equals(filename)) {
-        editor.setText(msg, "Filename must be set before starting");
-        editor.setText(error, "true");
-        return;
-      }
       running = true;
-      doStart(new File(directory, filename));
+      doStart(getFile(editor.getText(getXPathElement().getChild("Filename"))));
       updateE.addContent(editor.setText(new Element("Running"), "true"));
     } catch ( FileNotFoundException fnfE ) {
       running = false;
@@ -102,6 +94,10 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
     } catch ( IOException ioE ) {
       running = false;
       editor.setText(msg, ioE.getMessage());
+      editor.setText(error, "true");
+    } catch ( IllegalArgumentException iaE ) {
+      running = false;
+      editor.setText(msg, iaE.getMessage());
       editor.setText(error, "true");
     } finally {
       update(updateE);
@@ -119,6 +115,21 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
     updateE.addContent(editor.setText(new Element("Error"), "false"));
     updateE.addContent(editor.setText(new Element("Filename"), ""));
     update(updateE);
+  }
+
+  protected File getFile(String filename) throws IllegalArgumentException,FileNotFoundException {
+    String dirname = ScoreBoardManager.getProperty(DIRECTORY_KEY);
+    if (null == dirname || "".equals(dirname))
+      throw new IllegalArgumentException("No directory set for stream files");
+    File directory = new File(dirname);
+    if (!directory.exists() && !directory.mkdirs())
+      throw new FileNotFoundException("Could not create directory '"+dirname+"' for stream files");
+    if ("".equals(filename))
+      throw new IllegalArgumentException("No filename provided");
+    File file = new File(directory, filename);
+    if (!directory.equals(file.getParentFile()))
+      throw new IllegalArgumentException("Please specify only the filename, without any leading path");
+    return file;
   }
 
   public void xmlChange(Document d) {

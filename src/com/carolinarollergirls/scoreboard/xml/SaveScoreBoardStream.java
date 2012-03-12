@@ -23,6 +23,13 @@ public class SaveScoreBoardStream extends AbstractScoreBoardStream
   public SaveScoreBoardStream() { super("SaveStream"); }
 
   protected void doStart(File file) throws IOException,FileNotFoundException {
+    if (!file.getName().matches("^.*[.][xX][mM][lL]$")) {
+      String xmlFilename = file.getName()+".xml";
+      Element e = createXPathElement();
+      e.addContent(editor.setText(new Element("Filename"), xmlFilename));
+      update(e);
+      file = new File(file.getParentFile(), xmlFilename);
+    }
     try {
       outputStream = new ScoreBoardOutputStream(file);
       outputStream.start();
