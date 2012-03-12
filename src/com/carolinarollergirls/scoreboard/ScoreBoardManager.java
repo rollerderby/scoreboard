@@ -15,15 +15,14 @@ import java.util.concurrent.*;
 import java.awt.*;
 import javax.swing.*;
 
+import gnu.getopt.*;
+
 import com.carolinarollergirls.scoreboard.model.*;
 
 public class ScoreBoardManager
 {
   public static void main(String argv[]) {
-    for (int i=0; i<argv.length; i++) {
-      if ("--gui".equals(argv[i]) || "-g".equals(argv[i]))
-        createGui();
-    }
+    parseArgv(argv);
 
     loadVersion();
 
@@ -69,6 +68,24 @@ public class ScoreBoardManager
   public static void registerScoreBoardViewer(ScoreBoardViewer sbV) {
     sbV.setScoreBoard(scoreBoardModel.getScoreBoard());
     viewers.put(sbV.getClass().getName(), sbV);
+  }
+
+  private static void parseArgv(String[] argv) {
+    boolean gui = false;
+
+    int c;
+    LongOpt[] longopts = new LongOpt[2];
+    longopts[0] = new LongOpt("gui", LongOpt.NO_ARGUMENT, null, 'g');
+    longopts[1] = new LongOpt("nogui", LongOpt.NO_ARGUMENT, null, 'G');
+    Getopt g = new Getopt("Carolina ScoreBoard", argv, "gG", longopts);
+    while ((c = g.getopt()) != -1)
+      switch (c) {
+      case 'g': gui = true; break;
+      case 'G': gui = false; break;          
+      }
+
+    if (gui)
+      createGui();
   }
 
   private static void createGui() {

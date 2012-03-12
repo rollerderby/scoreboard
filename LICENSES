@@ -37,6 +37,10 @@ http://hc.apache.org/
 Jetty (jetty-*.jar, servlet-api-*.jar)
 http://jetty.codehaus.org/jetty/
 
+Twitter4j (twitter4j-*.jar)
+http://twitter4j.org/
+
+
 
 These packages use an "Apache-like" license:
 
@@ -50,3 +54,9 @@ http://jdom.org/index.html
 "Apache-style open source license":
 http://jdom.org/docs/faq.html#a0030
 
+
+
+These packages use the GNU Library General Public License v2:
+
+GNU Getopt:
+http://www.urbanophile.com/arenn/hacking/getopt/
