@@ -8,6 +8,7 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
+import java.net.*;
 import java.util.*;
 
 import org.mortbay.jetty.*;
@@ -26,13 +27,25 @@ public class JettyServletScoreBoardController implements ScoreBoardController
     init();
 
     ScoreBoardManager.printMessage("");
-    ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-    ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+    ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+    ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
     if (port == DEFAULT_PORT)
-      ScoreBoardManager.printMessage("Double-click/open the 'start.html' file or");
-    ScoreBoardManager.printMessage("Open a web browser (Google Chrome or Mozilla Firefox) to http://localhost:"+port);
-    ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-    ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+      ScoreBoardManager.printMessage("Double-click/open the 'start.html' file, or");
+    ScoreBoardManager.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
+    ScoreBoardManager.printMessage("  http://localhost:"+port);
+    try {
+      Iterator<URL> urls = urlsServlet.getUrls().iterator();
+      if (urls.hasNext())
+        ScoreBoardManager.printMessage("or try one of these URLs:");
+      while (urls.hasNext())
+        ScoreBoardManager.printMessage("  "+urls.next().toString());
+    } catch ( MalformedURLException muE ) {
+      ScoreBoardManager.printMessage("Internal error: malformed URL from Server Connector: "+muE.getMessage());
+    } catch ( SocketException sE ) {
+      ScoreBoardManager.printMessage("Internal error: socket exception from Server Connector: "+sE.getMessage());
+    }
+    ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+    ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
     ScoreBoardManager.printMessage("");
   }
 
@@ -83,7 +96,8 @@ public class JettyServletScoreBoardController implements ScoreBoardController
       c.setResourceBase(staticPath+"/videos");
     }
 
-    new Context(contexts, "/urls", Context.SESSIONS).addServlet(new ServletHolder(new UrlsServlet(server)), "/*");
+    urlsServlet = new UrlsServlet(server);
+    new Context(contexts, "/urls", Context.SESSIONS).addServlet(new ServletHolder(urlsServlet), "/*");
 
     Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
 
@@ -114,6 +128,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 
   protected ScoreBoardModel scoreBoardModel;
   protected int port;
+  protected UrlsServlet urlsServlet;
 
   public static final int DEFAULT_PORT = 8000;
 

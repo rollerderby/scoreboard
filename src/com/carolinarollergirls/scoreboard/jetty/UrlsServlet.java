@@ -24,23 +24,26 @@ public class UrlsServlet extends HttpServlet
 {
   public UrlsServlet(Server s) { server = s; }
 
+  public List<URL> getUrls() throws MalformedURLException,SocketException {
+    List<URL> urls = new ArrayList<URL>();
+    Iterator<Connector> connectors = Arrays.asList(server.getConnectors()).iterator();
+    while (connectors.hasNext()) {
+      Connector c = connectors.next();
+      addURLs(urls, c.getHost(), c.getLocalPort());
+    }
+    return urls;
+  }
+
   protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
     response.setHeader("Cache-Control", "no-cache");
     response.setHeader("Expires", "-1");
     response.setCharacterEncoding("UTF-8");
 
     try {
-      List<URL> urls = new ArrayList<URL>();
-
       response.setContentType("text/plain");
-      Iterator<Connector> connectors = Arrays.asList(server.getConnectors()).iterator();
-      while (connectors.hasNext()) {
-        Connector c = connectors.next();
-        addURLs(urls, c.getHost(), c.getLocalPort());
-      }
-      Iterator<URL> urlsIterator = urls.iterator();
-      while (urlsIterator.hasNext())
-        response.getWriter().println(urlsIterator.next().toString());
+      Iterator<URL> urls = getUrls().iterator();
+      while (urls.hasNext())
+        response.getWriter().println(urls.next().toString());
       response.setStatus(HttpServletResponse.SC_OK);
     } catch ( MalformedURLException muE ) {
       response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse internal URL : "+muE.getMessage());
