@@ -123,6 +123,12 @@ public class XmlDocumentEditor
     }
   }
 
+  public String getId(Element e) {
+    if (null == e)
+      return null;
+    return e.getAttributeValue("Id");
+  }
+
   public void removeText(Element e) {
     if (null == e)
       return;
