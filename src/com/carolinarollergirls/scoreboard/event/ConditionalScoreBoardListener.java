@@ -18,9 +18,14 @@ public class ConditionalScoreBoardListener implements ScoreBoardListener
   }
 
   public void scoreBoardChange(ScoreBoardEvent e) {
-    if (event.equals(e))
-      listener.scoreBoardChange(e);
+    if (checkScoreBoardEvent(e))
+      getScoreBoardListener().scoreBoardChange(e);
   }
+
+  public ScoreBoardEvent getScoreBoardEvent() { return event; }
+  public ScoreBoardListener getScoreBoardListener() { return listener; }
+
+  protected boolean checkScoreBoardEvent(ScoreBoardEvent e) { return (getScoreBoardEvent().equals(e)); }
 
   protected ScoreBoardEvent event;
   protected ScoreBoardListener listener;

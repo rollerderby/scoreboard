@@ -3,28 +3,52 @@ $sb(function() {
   var sbTwitter = $sb("Viewers.Twitter");
   $("button.Login").click(function() { sbTwitter.$sb("Start").$sbSet(window.location.href); }).button();
   $("button.Logout").click(function() { sbTwitter.$sb("Stop").$sbSet("true"); }).button();
-  $("button.Tweet").click(function() {
-    sbTwitter.$sb("Tweet").$sbSet($("input:text.Tweet").val());
-    $("input:text.Tweet").val("").focus();
+  $("p.DirectTweet button.Tweet").click(function() {
+    sbTwitter.$sb("Tweet").$sbSet($("p.DirectTweet input:text.Tweet").val());
+    $("p.DirectTweet input:text.Tweet").val("").focus();
   }).button();
-  $("input:text.Tweet").keydown(function(event) {
+  $("p.DirectTweet input:text.Tweet").keydown(function(event) {
     if (event.which == 13) // Pressed Enter
-      $("button.Tweet").click();
+      $("p.DirectTweet button.Tweet").click();
   });
-  sbTwitter.$sb("ScreenName").$sbElement("span.ScreenName");
+  sbTwitter.$sb("ScreenName").$sbElement("p.LogInStatus span.ScreenName");
   sbTwitter.$sb("Authorized").$sbBindAndRun("content", function(event, value) {
     $("button.Login").button("option", "disabled", isTrue(value));
-    $("button.Logout,button.Tweet").button("option", "disabled", !isTrue(value));
-    $("input:text.Tweet").prop("disabled", !isTrue(value));
+    $("button.Logout").button("option", "disabled", !isTrue(value));
+    $("p.DirectTweet button.Tweet").button("option", "disabled", !isTrue(value));
+    $("p.DirectTweet input:text.Tweet").prop("disabled", !isTrue(value));
     $("p.LogInStatus").toggleClass("LoggedIn", isTrue(value));
   });
-  sbTwitter.$sb("Error").$sbElement("a.Error");
+  sbTwitter.$sb("Error").$sbElement("p.Error a.Error");
   sbTwitter.$sb("Error").$sbBindAndRun("content", function(event, value) {
     $("p.Error").toggleClass("Show", !!value);
   });
   sbTwitter.$sb("Status").$sbBindAndRun("content", function(event, value) {
     if (value)
       $("<a>").html(value).append("<br>").prependTo("p.StatusUpdates");
+  });
+  $("p.AddConditionalTweet button.Add").click(function() {
+    var condition = $("p.AddConditionalTweet input:text.Condition").val();
+    var tweet = $("p.AddConditionalTweet input:text.Tweet").val();
+    var updateE = _crgScoreBoard.toNewElement(sbTwitter.$sb("AddConditionalTweet"));
+    _crgScoreBoard.createScoreBoardElement(updateE, "Condition", null, condition);
+    _crgScoreBoard.createScoreBoardElement(updateE, "Tweet", null, tweet);
+    _crgScoreBoard.updateServer(updateE);
+    $("p.AddConditionalTweet input:text").val("").filter(".Condition").focus();
+  });
+  $("p.AddConditionalTweet input:text.Tweet").keydown(function(event) {
+    if (event.which == 13) // Pressed Enter
+      $("p.AddConditionalTweet button.Add").click();
+  });
+  sbTwitter.$sbBindAddRemoveEach("ConditionalTweet", function(event, node) {
+    var span = $("<span>").data("UUID", node.$sbId).appendTo("p.ConditionalTweets");
+    $("<span>").text("Condition: ").appendTo(span);
+    node.$sb("Condition").$sbElement("<span>").appendTo(span);
+    $("<span>").text(" Tweet: ").appendTo(span);
+    node.$sb("Tweet").$sbElement("<span>").appendTo(span);
+    $("<br>").appendTo(span);
+  }, function(event, node) {
+    $("p.ConditionalTweets span[data-UUID='"+node.$sbId+"']").remove();
   });
 
   if (_windowFunctions.hasParam("denied")) {

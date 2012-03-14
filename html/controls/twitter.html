@@ -22,25 +22,46 @@
 
 <body>
 
-  <p>
-    <button class="Login">Login</button>
-    <button class="Logout">Logout</button>
-  </p>
+<table class="Layout">
+  <tbody>
+    <tr>
+      <td>
+        <p>
+          <button class="Login">Login</button>
+          <button class="Logout">Logout</button>
+        </p>
 
-  <p>
-    <input type="text" class="Tweet" />
-    <button class="Tweet">Tweet</button>
-  </p>
+        <p class="LogInStatus">
+          <a class="NotLoggedIn">Not Logged In</a>
+          <a class="LoggedIn">Logged In As <span class="ScreenName"></span></a>
+        </p>
+        <p class="Error">Error: <a class="Error"></a></p>
 
-  <p class="LogInStatus">
-    <a class="NotLoggedIn">Not Logged In</a>
-    <a class="LoggedIn">Logged In As <span class="ScreenName"></span></a>
-  </p>
-  <p class="Error">Error: <a class="Error"></a></p>
+      </td>
+      <td>
+        <p class="DirectTweet" >
+          <input type="text" class="Tweet" />
+          <button class="Tweet">Tweet</button>
+        </p>
 
-  <hr class="Divider"/>
-
-  <p class="StatusUpdates"></p>
+        <p class="AddConditionalTweet" >
+          <input type="text" class="Condition" />
+          <input type="text" class="Tweet" />
+          <button class="Add" >Add</button>
+        </p>
+      </td>
+    </tr>
+    <tr>
+      <td>
+        <p class="StatusUpdates"></p>
+      </td>
+      <td>
+        <p class="ConditionalTweets">
+        </p>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 </body>
 

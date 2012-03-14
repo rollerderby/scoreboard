@@ -9,6 +9,9 @@
  */
 
 /* Main controls */
+  table.Layout { border: 1px solid black; width: 100%; }
+  table.Layout tr>td { width: 50%; }
+
   p.Error:not(.Show) { display: none; }
 
   p.LogInStatus:not(.LoggedIn) a.LoggedIn { display: none; }

@@ -8,6 +8,8 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
+import java.util.*;
+
 import org.jdom.*;
 
 import twitter4j.*;
@@ -24,18 +26,22 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
   }
 
   protected void processChildElement(Element e) {
-    if (null == editor.getText(e))
-      return;
+    String text = editor.getText(e);
+    boolean nullText = (null == text);
     try {
-      if (e.getName().equals("Start") && !"".equals(editor.getText(e)))
+      if (e.getName().equals("Start") && !nullText && !"".equals(text))
         startOAuth(e);
       else if (e.getName().equals("Stop") && editor.isTrue(e))
         logout();
-      else if (e.getName().equals("SetOAuthVerifier"))
+      else if (e.getName().equals("SetOAuthVerifier") && !nullText)
         setOAuthVerifier(e);
-      else if (e.getName().equals("Tweet"))
+      else if (e.getName().equals("Tweet") && !nullText)
         tweet(e);
-      else if (e.getName().equals("AuthorizationURL") && "".equals(editor.getText(e)))
+      else if (e.getName().equals("AddConditionalTweet"))
+        addConditionalTweet(e);
+      else if (e.getName().equals("ConditionalTweet") && editor.hasPI(e, "Remove"))
+        removeConditionalTweet(e);
+      else if (e.getName().equals("AuthorizationURL") && !nullText && "".equals(text))
         clearAuthorizationURL();
       else if (e.getName().equals("Denied") && editor.isTrue(e))
         denied();
@@ -46,6 +52,10 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     } catch ( TwitterException tE ) {
       Element updateE = createXPathElement();
       updateE.addContent(editor.setText(new Element("Error"), "Twitter Exception : "+tE.getMessage()));
+      update(updateE);
+    } catch ( IllegalArgumentException iaE ) {
+      Element updateE = createXPathElement();
+      updateE.addContent(editor.setText(new Element("Error"), iaE.getMessage()));
       update(updateE);
     }
   }
@@ -115,6 +125,46 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     Element updateE = createXPathElement();
     updateE.addContent(editor.setText(new Element("Error"), ""));
     update(updateE);
+  }
+
+  protected void addConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
+    String condition = getElementCondition(e);
+    String tweet = getElementTweet(e);
+    try {
+      getTwitterViewer().addConditionalTweet(condition, tweet);
+    } catch ( TooManyListenersException tmlE ) {
+      throw new IllegalArgumentException(tmlE.getMessage());
+    }
+    Element updateE = createXPathElement();
+    Element conditionalTweet = editor.addElement(updateE, "ConditionalTweet", UUID.randomUUID().toString());
+    conditionalTweet.addContent(editor.setText(new Element("Condition"), condition));
+    conditionalTweet.addContent(editor.setText(new Element("Tweet"), tweet));
+    updateE.addContent(editor.setText(new Element("Error"), ""));
+    update(updateE);
+  }
+  protected void removeConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
+    Element thisElement;
+    try { thisElement = getXPathElement(); }
+    catch ( JDOMException jE ) { return; /* FIXME: What to do? */ }
+    Element conditionalTweet = editor.getElement(thisElement, "ConditionalTweet", editor.getId(e), false);
+    if (null == conditionalTweet)
+      return;
+    getTwitterViewer().removeConditionalTweet(getElementCondition(conditionalTweet), getElementTweet(conditionalTweet));
+    Element updateE = createXPathElement();
+    editor.setPI(editor.addElement(updateE, "ConditionalTweet", editor.getId(e)), "Remove");
+    update(updateE);
+  }
+  protected String getElementCondition(Element e) throws IllegalArgumentException {
+    String condition = editor.getText(editor.getElement(e, "Condition"));
+    if (null == condition || "".equals(condition))
+      throw new IllegalArgumentException("No condition specified");
+    return condition;
+  }
+  protected String getElementTweet(Element e) throws IllegalArgumentException {
+    String tweet = editor.getText(editor.getElement(e, "Tweet"));
+    if (null == tweet || "".equals(tweet))
+      throw new IllegalArgumentException("No tweet specified");
+    return tweet;
   }
 
   protected TwitterViewer getTwitterViewer() throws NoTwitterViewerException {
