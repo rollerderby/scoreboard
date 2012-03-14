@@ -16,6 +16,8 @@ import java.util.concurrent.*;
 import org.jdom.*;
 import org.jdom.output.*;
 
+import org.apache.commons.io.*;
+
 import com.carolinarollergirls.scoreboard.*;
 
 public class AutoSaveScoreBoard implements Runnable
@@ -25,13 +27,20 @@ public class AutoSaveScoreBoard implements Runnable
   }
 
   public synchronized void start() {
-    File dir = new File(DIRECTORY_NAME);
-    if (!dir.exists() && !dir.mkdirs()) {
-      ScoreBoardManager.printMessage("WARNING: Unable to create auto-save scoreboard directory");
+    try {
+      FileUtils.forceMkdir(new File(DIRECTORY_NAME));
+    } catch ( IOException ioE ) {
+      ScoreBoardManager.printMessage("WARNING: Unable to create auto-save directory '"+DIRECTORY_NAME+"' : "+ioE.getMessage());
       return;
     }
-    backupAutoSavedFiles();
-    running = executor.scheduleWithFixedDelay(this, 0, SAVE_DELAY, TimeUnit.SECONDS);
+    Runnable r = new Runnable() {
+        public void run() {
+          backupAutoSavedFiles();
+          ScoreBoardManager.printMessage("Starting auto-save");
+          running = executor.scheduleWithFixedDelay(AutoSaveScoreBoard.this, 0, SAVE_DELAY, TimeUnit.SECONDS);
+        }
+      };
+    running = executor.schedule(r, SAVE_DELAY, TimeUnit.SECONDS);
   }
 
   public synchronized void stop() {
@@ -42,19 +51,23 @@ public class AutoSaveScoreBoard implements Runnable
   }
 
   public void run() {
+    FileOutputStream fos = null;
     try {
       int n = AUTOSAVE_FILES;
       getFile(n).delete();
       while (n > 0) {
         File to = getFile(n);
         File from = getFile(--n);
-        from.renameTo(to);
+        if (from.exists())
+          FileUtils.moveFile(from, to);
       }
-      FileOutputStream fos = new FileOutputStream(getFile(0));
+      fos = FileUtils.openOutputStream(getFile(0));
       xmlOutputter.output(editor.filterNoSavePI(xmlScoreBoard.getDocument()), fos);
-      fos.close();
     } catch ( Exception e ) {
       ScoreBoardManager.printMessage("WARNING: Unable to auto-save scoreboard : "+e.getMessage());
+    } finally {
+      if (null != fos)
+        try { fos.close(); } catch ( IOException ioE ) { }
     }
   }
 
@@ -76,15 +89,14 @@ public class AutoSaveScoreBoard implements Runnable
     } else {
       int n = 0;
       do {
-        File to = getFile(backupDir, n);
         File from = getFile(n);
         if (from.exists()) {
-          if (!backupDir.exists() && !backupDir.mkdirs()) {
-            ScoreBoardManager.printMessage("Could not back up auto-save files, failure creating backup directory");
-            break;
+          try {
+            FileUtils.copyFileToDirectory(from, backupDir, true);
+            ScoreBoardManager.printMessage("Copied auto-save file "+from.getName()+" to "+backupDir.getPath());
+          } catch ( Exception e ) {
+            ScoreBoardManager.printMessage("Could not back up auto-save file '"+from.getName()+"' : "+e.getMessage());
           }
-          from.renameTo(to);
-          ScoreBoardManager.printMessage("Moved auto-save file "+from.getName()+" to "+backupDir.getPath());
         }
       } while (n++ < AUTOSAVE_FILES);
     }
