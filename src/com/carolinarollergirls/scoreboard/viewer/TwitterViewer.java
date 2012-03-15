@@ -43,7 +43,9 @@ public class TwitterViewer implements ScoreBoardViewer
   }
   public void removeConditionalTweet(String conditionFormat, String tweet) {
     synchronized (conditionalListeners) {
-      conditionalListeners.remove(getConditionalListenerKey(conditionFormat, tweet));
+      ScoreBoardListener listener = conditionalListeners.remove(getConditionalListenerKey(conditionFormat, tweet));
+      if (null != listener)
+        scoreBoard.removeScoreBoardListener(listener);
     }
   }
   protected String getConditionalListenerKey(String format, String tweet) {
