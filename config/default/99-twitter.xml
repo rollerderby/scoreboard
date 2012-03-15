@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document Version="0.3.0-beta1-20120314212033" SystemTime="1331774542894">
+  <Viewers>
+    <Twitter>
+      <ConditionalTweet Id="d774a333-7acd-4f12-90ee-6c6798aabf43">
+        <Condition><![CDATA[%cjr=true]]></Condition>
+        <Tweet><![CDATA[Start Jam %cpN: %t1n %t1s, %t2n %t2s]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="7504e1a2-2b0e-4885-87b8-90a60a389c20">
+        <Condition><![CDATA[%cir=true %cpN=1]]></Condition>
+        <Tweet><![CDATA[Halftime: %t1n %t1s, %t2n %t2s]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="8c66faf2-f91f-446d-bbec-3ccb4e58f5e7">
+        <Condition><![CDATA[%cir=true %cpN=1]]></Condition>
+        <Tweet><![CDATA[(Unofficial) Final: %t1n %t1s, %t2n %t2s]]></Tweet>
+      </ConditionalTweet>
+    </Twitter>
+  </Viewers>
+</document>
+

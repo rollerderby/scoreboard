@@ -22,7 +22,15 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
   public TwitterXmlDocumentManager() { super("Viewers", "Twitter"); }
 
   public void reset() {
+    Element updateE = createXPathElement();
+    editor.setPI(editor.addElement(updateE, "AuthorizationURL"), "NoSave");
+    editor.setPI(editor.addElement(updateE, "Authorized"), "NoSave");
+    editor.setPI(editor.addElement(updateE, "Error"), "NoSave");
+    editor.setPI(editor.addElement(updateE, "ScreenName"), "NoSave");
+    editor.setPI(editor.addElement(updateE, "Status"), "NoSave");
+    update(updateE);
     try { logout(); } catch ( Exception e ) { }
+    removeAllConditionalTweets();
   }
 
   protected void processChildElement(Element e) {
@@ -37,26 +45,20 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
         setOAuthVerifier(e);
       else if (e.getName().equals("Tweet") && !nullText)
         tweet(e);
-      else if (e.getName().equals("AddConditionalTweet"))
-        addConditionalTweet(e);
       else if (e.getName().equals("ConditionalTweet") && editor.hasPI(e, "Remove"))
         removeConditionalTweet(e);
+      else if (e.getName().equals("ConditionalTweet"))
+        addConditionalTweet(e);
       else if (e.getName().equals("AuthorizationURL") && !nullText && "".equals(text))
         clearAuthorizationURL();
       else if (e.getName().equals("Denied") && editor.isTrue(e))
         denied();
     } catch ( NoTwitterViewerException ntvE ) {
-      Element updateE = createXPathElement();
-      updateE.addContent(editor.setText(new Element("Error"), "Twitter Viewer not loaded"));
-      update(updateE);
+      setError("Twitter Viewer not loaded");
     } catch ( TwitterException tE ) {
-      Element updateE = createXPathElement();
-      updateE.addContent(editor.setText(new Element("Error"), "Twitter Exception : "+tE.getMessage()));
-      update(updateE);
+      setError("Twitter Exception : "+tE.getMessage());
     } catch ( IllegalArgumentException iaE ) {
-      Element updateE = createXPathElement();
-      updateE.addContent(editor.setText(new Element("Error"), iaE.getMessage()));
-      update(updateE);
+      setError(iaE.getMessage());
     }
   }
 
@@ -64,10 +66,10 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     Element updateE = createXPathElement();
     try {
       String authURL = getTwitterViewer().getAuthorizationURL(editor.getText(e));
-      updateE.addContent(editor.setText(new Element("AuthorizationURL"), authURL));
-      updateE.addContent(editor.setText(new Element("Error"), ""));
+      editor.addElement(updateE, "AuthorizationURL", null, authURL);
+      editor.addElement(updateE, "Error", null, "");
     } catch ( IllegalStateException isE ) {
-      updateE.addContent(editor.setText(new Element("Error"), "Already logged in"));
+      editor.addElement(updateE, "Error", null, "Already logged in");
     }
     update(updateE);
   }
@@ -75,24 +77,22 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
   protected void logout() throws NoTwitterViewerException,TwitterException {
     getTwitterViewer().logout();
     Element updateE = createXPathElement();
-    updateE.addContent(editor.setText(new Element("Authorized"), "false"));
-    updateE.addContent(editor.setText(new Element("ScreenName"), ""));
-    updateE.addContent(editor.setText(new Element("Error"), ""));
-    updateE.addContent(editor.setText(new Element("Status"), ""));
+    editor.addElement(updateE, "Authorized", null, "false");
+    editor.addElement(updateE, "ScreenName", null, "");
+    editor.addElement(updateE, "Error", null, "");
+    editor.addElement(updateE, "Status", null, "");
     update(updateE);
   }
 
   protected void denied() throws NoTwitterViewerException,TwitterException {
     logout();
-    Element updateE = createXPathElement();
-    updateE.addContent(editor.setText(new Element("Error"), "You denied access..."));
-    update(updateE);
+    setError("You denied access...");
   }
 
   protected void clearAuthorizationURL() {
     Element updateE = createXPathElement();
-    updateE.addContent(editor.setText(new Element("AuthorizationURL"), ""));
-    updateE.addContent(editor.setText(new Element("Error"), ""));
+    editor.addElement(updateE, "AuthorizationURL", null, "");
+    editor.addElement(updateE, "Error", null, "");
     update(updateE);
   }
 
@@ -102,18 +102,18 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
       return;
     getTwitterViewer().setOAuthVerifier(verifier);
     Element updateE = createXPathElement();
-    updateE.addContent(editor.setText(new Element("AuthorizationURL"), ""));
-    updateE.addContent(editor.setText(new Element("Authorized"), "true"));
-    updateE.addContent(editor.setText(new Element("ScreenName"), getTwitterViewer().getScreenName()));
-    updateE.addContent(editor.setText(new Element("Status"), ""));
-    updateE.addContent(editor.setText(new Element("Error"), ""));
+    editor.addElement(updateE, "AuthorizationURL", null, "");
+    editor.addElement(updateE, "Authorized", null, "true");
+    editor.addElement(updateE, "ScreenName", null, getTwitterViewer().getScreenName());
+    editor.addElement(updateE, "Status", null, "");
+    editor.addElement(updateE, "Error", null, "");
     update(updateE);
     getTwitterViewer().addUserStreamListener(userStreamListener);
   }
 
   protected void updateStatus(Status status) {
     Element updateE = createXPathElement();
-    updateE.addContent(editor.setText(new Element("Status"), status.getText()));
+    editor.addElement(updateE, "Status", null, status.getText());
     update(updateE);
   }
 
@@ -122,12 +122,12 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     if (null == tweet || "".equals(tweet))
       return;
     getTwitterViewer().tweet(tweet);
-    Element updateE = createXPathElement();
-    updateE.addContent(editor.setText(new Element("Error"), ""));
-    update(updateE);
+    setError("");
   }
 
   protected void addConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
+    if (null == editor.getElement(e, "Condition", null, false) && null == editor.getElement(e, "Tweet", null, false))
+      return; /* Ignore if no subelements specified */
     String condition = getElementCondition(e);
     String tweet = getElementTweet(e);
     try {
@@ -137,15 +137,15 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     }
     Element updateE = createXPathElement();
     Element conditionalTweet = editor.addElement(updateE, "ConditionalTweet", UUID.randomUUID().toString());
-    conditionalTweet.addContent(editor.setText(new Element("Condition"), condition));
-    conditionalTweet.addContent(editor.setText(new Element("Tweet"), tweet));
-    updateE.addContent(editor.setText(new Element("Error"), ""));
+    editor.addElement(conditionalTweet, "Condition", null, condition);
+    editor.addElement(conditionalTweet, "Tweet", null, tweet);
     update(updateE);
+    setError("");
   }
   protected void removeConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
     Element thisElement;
     try { thisElement = getXPathElement(); }
-    catch ( JDOMException jE ) { return; /* FIXME: What to do? */ }
+    catch ( JDOMException jE ) { return; /* FIXME: really need to fix getXPathElement to not need to throw jE */ }
     Element conditionalTweet = editor.getElement(thisElement, "ConditionalTweet", editor.getId(e), false);
     if (null == conditionalTweet)
       return;
@@ -166,6 +166,16 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
       throw new IllegalArgumentException("No tweet specified");
     return tweet;
   }
+  protected void removeAllConditionalTweets() {
+    Element thisElement;
+    try { thisElement = getXPathElement(); }
+    catch ( JDOMException jE ) { return; }
+    Iterator conditionalTweets = thisElement.getChildren("ConditionalTweet").iterator();
+    while (conditionalTweets.hasNext()) {
+      try { removeConditionalTweet((Element)conditionalTweets.next()); }
+      catch ( Exception e ) { /* Since we're removing existing ones, this shouldn't happen */ }
+    }
+  }
 
   protected TwitterViewer getTwitterViewer() throws NoTwitterViewerException {
     synchronized (twitterViewerLock) {
@@ -178,8 +188,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     }
   }
 
-  protected Element createXPathElement() {
-    return editor.setNoSavePI(super.createXPathElement());
+  protected void setError(String error) {
+    update(createXPathElement().addContent(editor.setText(new Element("Error"), error)));
   }
 
   protected TwitterViewer twitterViewer = null;

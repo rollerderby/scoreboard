@@ -30,7 +30,7 @@ $sb(function() {
   $("p.AddConditionalTweet button.Add").click(function() {
     var condition = $("p.AddConditionalTweet input:text.Condition").val();
     var tweet = $("p.AddConditionalTweet input:text.Tweet").val();
-    var updateE = _crgScoreBoard.toNewElement(sbTwitter.$sb("AddConditionalTweet"));
+    var updateE = _crgScoreBoard.toNewElement(sbTwitter.$sb("ConditionalTweet"));
     _crgScoreBoard.createScoreBoardElement(updateE, "Condition", null, condition);
     _crgScoreBoard.createScoreBoardElement(updateE, "Tweet", null, tweet);
     _crgScoreBoard.updateServer(updateE);
@@ -41,14 +41,14 @@ $sb(function() {
       $("p.AddConditionalTweet button.Add").click();
   });
   sbTwitter.$sbBindAddRemoveEach("ConditionalTweet", function(event, node) {
-    var span = $("<span>").data("UUID", node.$sbId).appendTo("p.ConditionalTweets");
-    $("<span>").text("Condition: ").appendTo(span);
-    node.$sb("Condition").$sbElement("<span>").appendTo(span);
-    $("<span>").text(" Tweet: ").appendTo(span);
-    node.$sb("Tweet").$sbElement("<span>").appendTo(span);
-    $("<br>").appendTo(span);
+    var tr = $("table#ConditionalTweets>tbody>tr.ConditionalTweet.Template").clone(true)
+      .removeClass("Template").attr("data-UUID", node.$sbId)
+      .appendTo("table#ConditionalTweets>tbody");
+    node.$sb("Condition").$sbElement(tr.find("span.Condition"));
+    node.$sb("Tweet").$sbElement(tr.find("span.Tweet"));
+    tr.find("button.Remove").click(function() { node.$sbRemove(); });
   }, function(event, node) {
-    $("p.ConditionalTweets span[data-UUID='"+node.$sbId+"']").remove();
+    $("table#ConditionalTweets tr.ConditionalTweet[data-UUID='"+node.$sbId+"']").remove();
   });
 
   if (_windowFunctions.hasParam("denied")) {

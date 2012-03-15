@@ -31,6 +31,12 @@ public class XmlScoreBoard
       };
     xmlChange(converter.toDocument(scoreBoardModel));
     loadXmlDocumentManagers();
+  }
+
+  //FIXME - this isn't a good way to do this,
+  // but we need to load the autosaved docs after the viewers/controllers
+  // are loaded...
+  public void load() {
     loadDocuments();
     startAutoSave();
   }

@@ -34,6 +34,9 @@ public class ScoreBoardManager
 
     loadViewers();
 
+    //FIXME - not the best way to load autosave doc.
+    scoreBoardModel.getXmlScoreBoard().load();
+
     if (guiFrameText != null)
       guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
   }
