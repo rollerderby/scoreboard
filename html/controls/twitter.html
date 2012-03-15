@@ -80,11 +80,15 @@
 </table>
 
 <div class="ShowFormatSpecifiersDialog">
-  <p>The conditional tweet functionality works by specifying a condition to generate
+  <p>
+    The conditional tweet functionality works by specifying a condition to generate
     a tweet, and the tweet text.  Both the condition and tweet can contain "format
-    specifiers" (similar to printf's format specifiers).  
-    <br/>
-    The condition must be in a specific format:
+    specifiers" (similar to
+    <a href="http://en.wikipedia.org/wiki/Printf_format_string" target="_blank" tabindex="-1">printf</a>'s
+    format specifiers).  
+  </p>
+  <p>
+    The <b>condition format</b> must be:
     <pre>&lt;format specifier&gt;[comparator][value] [...repeat...]</pre>
     The initial format specifier is required, and it indicates which event to trigger
     on.  You can optionally also specify a comparator from this list:
@@ -95,11 +99,13 @@
     is only sent when the condition evaluates as true.  If a format specifier is
     provided without any comparator (and value), it is considered true for the
     purposes of verifying the condition.
-    <br/>
-    The tweet has no restrictions on format.  You can provide format specifiers
+  </p>
+  <p>
+    The <b>tweet format</b> has no restrictions.  You can provide format specifiers
     in the tweet, which will be replaced by the actual current scoreboard values
     before sending the tweet.
-    <br/>
+  </p>
+  <p>
     Here is the current list of format specifiers that you can use:
     <table>
       <tr>

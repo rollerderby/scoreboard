@@ -51,7 +51,10 @@ $sb(function() {
     $("table#ConditionalTweets tr.ConditionalTweet[data-UUID='"+node.$sbId+"']").remove();
   });
   $("div.ShowFormatSpecifiersDialog").dialog({
-    width: "700px",
+    title: "Conditional Tweet rules help",
+    modal: true,
+    width: 750,
+    height: 550,
     autoOpen: false,
     buttons: { Close: function() { $(this).dialog("close"); } }
   });

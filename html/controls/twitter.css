@@ -29,7 +29,6 @@
 /* End ConditionalTweets table */
 
 /* ShowFormatSpecifiersDialog */
-  div.ShowFormatSpecifiersDialog { font-size: 75%; }
   div.ShowFormatSpecifiersDialog table { width: 100%; }
   div.ShowFormatSpecifiersDialog table td { width: 50%; }
 /* End ShowFormatSpecifiersDialog */
