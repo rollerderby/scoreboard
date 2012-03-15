@@ -48,14 +48,14 @@
     </Clock>
     <Clock Id="Intermission">
       <Name><![CDATA[Intermission]]></Name>
-      <Number><![CDATA[1]]></Number>
+      <Number><![CDATA[0]]></Number>
       <MinimumNumber><![CDATA[0]]></MinimumNumber>
       <MaximumNumber><![CDATA[999]]></MaximumNumber>
       <Time><![CDATA[900000]]></Time>
       <MinimumTime><![CDATA[0]]></MinimumTime>
       <MaximumTime><![CDATA[3600000]]></MaximumTime>
       <Running><![CDATA[false]]></Running>
-      <Direction><![CDATA[false]]></Direction>
+      <Direction><![CDATA[true]]></Direction>
     </Clock>
   </ScoreBoard>
 </document>
