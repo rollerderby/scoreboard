@@ -83,17 +83,6 @@ public class JettyServletScoreBoardController implements ScoreBoardController
       c.setInitParams(initParams);
       c.addServlet(new ServletHolder(new DefaultServlet()), "/*");
       c.setResourceBase(staticPath);
-
-      /* These are separate Servlets for /images and /videos
-       * because we want these to be cached, while the default
-       * above has cacheControl set to no-cache
-       */
-      c = new Context(contexts, "/images", Context.SESSIONS);
-      c.addServlet(new ServletHolder(new DefaultServlet()), "/*");
-      c.setResourceBase(staticPath+"/images");
-      c = new Context(contexts, "/videos", Context.SESSIONS);
-      c.addServlet(new ServletHolder(new DefaultServlet()), "/*");
-      c.setResourceBase(staticPath+"/videos");
     }
 
     urlsServlet = new UrlsServlet(server);
