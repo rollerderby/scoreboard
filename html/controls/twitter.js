@@ -50,6 +50,14 @@ $sb(function() {
   }, function(event, node) {
     $("table#ConditionalTweets tr.ConditionalTweet[data-UUID='"+node.$sbId+"']").remove();
   });
+  $("div.ShowFormatSpecifiersDialog").dialog({
+    width: "700px",
+    autoOpen: false,
+    buttons: { Close: function() { $(this).dialog("close"); } }
+  });
+  $("button.Help").click(function() {
+    $("div.ShowFormatSpecifiersDialog").dialog("open");
+  });
 
   if (_windowFunctions.hasParam("denied")) {
     sbTwitter.$sb("Denied").$sbSet("true");

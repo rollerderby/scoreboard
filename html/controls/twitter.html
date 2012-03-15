@@ -41,6 +41,7 @@
           <input type="text" class="Condition" />
           <input type="text" class="Tweet" />
           <button class="Add" >Add</button>
+          <button class="Help">Help</button>
         </p>
       </td>
       <td>
@@ -77,6 +78,67 @@
     </tr>
   </tbody>
 </table>
+
+<div class="ShowFormatSpecifiersDialog">
+  <p>The conditional tweet functionality works by specifying a condition to generate
+    a tweet, and the tweet text.  Both the condition and tweet can contain "format
+    specifiers" (similar to printf's format specifiers).  
+    <br/>
+    The condition must be in a specific format:
+    <pre>&lt;format specifier&gt;[comparator][value] [...repeat...]</pre>
+    The initial format specifier is required, and it indicates which event to trigger
+    on.  You can optionally also specify a comparator from this list:
+    <pre>=, !=, &lt;, &lt;=, &gt;, &gt;=</pre>
+    and a value to compare to.  You can also specify more format specifiers and values
+    to further restrict when a conditional tweet is triggered.  The condition is only
+    checked when the event occurs for the initial format specifier, and the tweet
+    is only sent when the condition evaluates as true.  If a format specifier is
+    provided without any comparator (and value), it is considered true for the
+    purposes of verifying the condition.
+    <br/>
+    The tweet has no restrictions on format.  You can provide format specifiers
+    in the tweet, which will be replaced by the actual current scoreboard values
+    before sending the tweet.
+    <br/>
+    Here is the current list of format specifiers that you can use:
+    <table>
+      <tr>
+        <td>
+          <ul>
+            <li>%t1n : Team 1 Name</li>
+            <li>%t1s : Team 1 Score</li>
+            <li>%t1t : Team 1 Timeouts</li>
+            <li>%t1l : Team 1 LeadJammer</li>
+            <li>%t1jn : Team 1 Jammer Name</li>
+            <li>%t1jN : Team 1 Jammer Number</li>
+            <li>%t1pn : Team 1 Pivot Name</li>
+            <li>%t1pN : Team 1 Pivot Number</li>
+            <li>%t1b1n : Team 1 Blocker1 Name</li>
+            <li>%t1b1N : Team 1 Blocker1 Number</li>
+            <li>%t1b2n : Team 1 Blocker2 Name</li>
+            <li>%t1b2N : Team 1 Blocker2 Number</li>
+            <li>%t1b3n : Team 1 Blocker3 Name</li>
+            <li>%t1b3N : Team 1 Blocker3 Number</li>
+            <li> For Team 2 use %t2*</li>
+          </ul>
+        </td>
+        <td>
+          <ul>
+            <li>%cpn : Clock Period Name</li>
+            <li>%cpN : Clock Period Number</li>
+            <li>%cpr : Clock Period Running</li>
+            <li>%cpts : Clock Period Time, in sec</li>
+            <li>%cptms : Clock Period Time, in min:sec</li>
+            <li> For Jam use %cj*</li>
+            <li> For Timeout use %ct*</li>
+            <li> For Lineup use %cl*</li>
+            <li> For Intermission use %ci*</li>
+          </ul>
+        </td>
+      </tr>
+    </table>
+  </p>
+</div>
 
 </body>
 
