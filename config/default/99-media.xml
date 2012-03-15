@@ -12,10 +12,6 @@
         <Name><![CDATA[overlay]]></Name>
         <Src><![CDATA[/images/fullscreen/overlay.png]]></Src>
       </Image>
-      <Image Id="scoreboard.jpg">
-        <Name><![CDATA[scoreboard]]></Name>
-        <Src><![CDATA[/images/fullscreen/scoreboard.jpg]]></Src>
-      </Image>
     </Type>
   </Images>
   <Videos>
