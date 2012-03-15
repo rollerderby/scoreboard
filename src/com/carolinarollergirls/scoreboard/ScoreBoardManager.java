@@ -24,6 +24,8 @@ public class ScoreBoardManager
   public static void main(String argv[]) {
     parseArgv(argv);
 
+    setSystemProperties();
+
     loadVersion();
 
     loadProperties();
@@ -121,6 +123,10 @@ public class ScoreBoardManager
     printMessage("Fatal error.  Exiting in 15 seconds.");
     try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
     System.exit(1);
+  }
+
+  private static void setSystemProperties() {
+    System.getProperties().setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
   }
 
   private static void loadVersion() {
