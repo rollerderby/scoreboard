@@ -79,18 +79,18 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
     throw new IllegalArgumentException("Invalid comparator : "+comparator);
   }
 
-  public ScoreBoardEvent getScoreBoardEvent(String format) throws IllegalArgumentException {
+  public ScoreBoardCondition getScoreBoardCondition(String format) throws IllegalArgumentException {
     Matcher m = eventPattern.matcher(format);
     if (!m.find())
       throw new IllegalArgumentException("No valid event specified");
-    return getFormatSpecifierScoreBoardEvent(m.group(1));    
+    return getFormatSpecifierScoreBoardCondition(m.group(1));    
   }
 
-  protected ScoreBoardEvent getFormatSpecifierScoreBoardEvent(String formatSpecifier) throws IllegalArgumentException {
+  protected ScoreBoardCondition getFormatSpecifierScoreBoardCondition(String formatSpecifier) throws IllegalArgumentException {
     ScoreBoardValue value = scoreBoardValues.get(formatSpecifier);
     if (null == value)
       throw new IllegalArgumentException("Not a valid format specifier : "+formatSpecifier);
-    return value.getScoreBoardEvent();
+    return value.getScoreBoardCondition();
   }
 
   protected String getFormatSpecifierValue(String formatSpecifier) {
@@ -218,8 +218,8 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
       scoreBoardValues.put(format, this);
     }
     public abstract String getValue();
-    public ScoreBoardEvent getScoreBoardEvent() {
-      return new ScoreBoardEvent(provider, property, ScoreBoardEvent.ANY_VALUE);
+    public ScoreBoardCondition getScoreBoardCondition() {
+      return new ScoreBoardCondition(provider, property, ScoreBoardCondition.ANY_VALUE);
     }
     protected String format;
     protected ScoreBoardEventProvider provider;

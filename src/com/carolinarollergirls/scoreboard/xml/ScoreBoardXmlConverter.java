@@ -41,7 +41,8 @@ public class ScoreBoardXmlConverter
     editor.setElement(sb, "UpdateImages", null, "");
 
     editor.setElement(sb, "TimeoutOwner", null, scoreBoard.getTimeoutOwner());
-    editor.setElement(sb, "Overtime", null, String.valueOf(scoreBoard.getOvertime()));
+    editor.setElement(sb, "InOvertime", null, String.valueOf(scoreBoard.isInOvertime()));
+    editor.setElement(sb, "InPeriod", null, String.valueOf(scoreBoard.isInPeriod()));
 
     Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
     while (clocks.hasNext())
@@ -187,8 +188,10 @@ public class ScoreBoardXmlConverter
           scoreBoardModel.startOvertime();
         else if (name.equals("TimeoutOwner"))
           scoreBoardModel.setTimeoutOwner(value);
-        else if (name.equals("Overtime"))
-          scoreBoardModel.setOvertime(bVal);
+        else if (name.equals("InOvertime"))
+          scoreBoardModel.setInOvertime(bVal);
+        else if (name.equals("InPeriod"))
+          scoreBoardModel.setInPeriod(bVal);
         else if (name.equals("Clock"))
           processClock(scoreBoardModel, element);
         else if (name.equals("Team"))

@@ -12,6 +12,7 @@ public interface ScoreBoardEventProvider
 {
   public String getProviderName();
   public Class getProviderClass();
+  public String getProviderId();
 
   public void addScoreBoardListener(ScoreBoardListener listener);
   public void removeScoreBoardListener(ScoreBoardListener listener);

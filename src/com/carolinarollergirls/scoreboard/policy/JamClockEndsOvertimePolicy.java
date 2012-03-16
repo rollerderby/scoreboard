@@ -28,7 +28,7 @@ public class JamClockEndsOvertimePolicy extends AbstractClockRunningChangePolicy
   }
 
   protected void clockRunningChange(Clock clock, boolean running) {
-    if (!running && getScoreBoardModel().getOvertime())
-      getScoreBoardModel().setOvertime(false);
+    if (!running && getScoreBoardModel().isInOvertime())
+      getScoreBoardModel().setInOvertime(false);
   }
 }

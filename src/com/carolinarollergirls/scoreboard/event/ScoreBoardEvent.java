@@ -28,16 +28,23 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
   public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue()); }
 
   public boolean equals(Object o) {
-    ScoreBoardEvent e;
-    try { e = (ScoreBoardEvent)o; }
-    catch ( ClassCastException ccE ) { return false; }
+    if (null == o)
+      return false;
+    try { return equals((ScoreBoardEvent)o); }
+    catch ( ClassCastException ccE ) { }
+    try { return equals((ScoreBoardCondition)o); }
+    catch ( ClassCastException ccE ) { }
+    return false;
+  }
+  public boolean equals(ScoreBoardEvent e) {
     if (!getProvider().equals(e.getProvider()))
       return false;
     if (!getProperty().equals(e.getProperty()))
       return false;
-    if (ANY_VALUE == getValue() || ANY_VALUE == e.getValue())
-      return true;
     return (getValue().equals(e.getValue()));
+  }
+  public boolean equals(ScoreBoardCondition c) {
+    return c.equals(this);
   }
 
   public boolean reflect(Object o) {
@@ -56,6 +63,4 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
   protected ScoreBoardEventProvider provider;
   protected String property;
   protected Object value;
-
-  public static final Object ANY_VALUE = new Object();
 }

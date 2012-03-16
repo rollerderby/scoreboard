@@ -12,22 +12,31 @@ import java.util.*;
 
 public class ConditionalScoreBoardListener implements ScoreBoardListener
 {
+  public ConditionalScoreBoardListener(Class c, String id, String prop, Object v, ScoreBoardListener l) {
+    this(new ScoreBoardCondition(c, id, prop, v), l);
+  }
+  public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop, Object v, ScoreBoardListener l) {
+    this(new ScoreBoardCondition(p, prop, v), l);
+  }
   public ConditionalScoreBoardListener(ScoreBoardEvent e, ScoreBoardListener l) {
-    event = e;
+    this(new ScoreBoardCondition(e), l);
+  }
+  public ConditionalScoreBoardListener(ScoreBoardCondition c, ScoreBoardListener l) {
+    condition = c;
     listener = l;
   }
 
   public void scoreBoardChange(ScoreBoardEvent e) {
     if (checkScoreBoardEvent(e))
-      getScoreBoardListener().scoreBoardChange(e);
+      matchedScoreBoardChange(e);
   }
 
-  public ScoreBoardEvent getScoreBoardEvent() { return event; }
   public ScoreBoardListener getScoreBoardListener() { return listener; }
 
-  protected boolean checkScoreBoardEvent(ScoreBoardEvent e) { return (getScoreBoardEvent().equals(e)); }
+  protected boolean checkScoreBoardEvent(ScoreBoardEvent e) { return condition.equals(e); }
+  protected void matchedScoreBoardChange(ScoreBoardEvent e) { getScoreBoardListener().scoreBoardChange(e); }
 
-  protected ScoreBoardEvent event;
+  protected ScoreBoardCondition condition;
   protected ScoreBoardListener listener;
 }
 

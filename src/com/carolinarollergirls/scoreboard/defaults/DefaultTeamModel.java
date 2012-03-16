@@ -36,6 +36,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
   public String getProviderName() { return "Team"; }
   public Class getProviderClass() { return Team.class; }
+  public String getProviderId() { return getId(); }
 
   public ScoreBoard getScoreBoard() { return scoreBoardModel.getScoreBoard(); }
   public ScoreBoardModel getScoreBoardModel() { return scoreBoardModel; }

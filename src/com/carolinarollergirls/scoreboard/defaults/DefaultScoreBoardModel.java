@@ -28,6 +28,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
     loadPolicies();
 
+    addInPeriodListeners();
+
     xmlScoreBoard = new XmlScoreBoard(this);
   }
 
@@ -74,14 +76,28 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     lineupClockWasRunning = false;
     timeoutClockWasRunning = false;
     setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
-    setOvertime(false);
+    setInPeriod(false);
+    setInOvertime(false);
   }
 
-  public boolean getOvertime() { return overtime; }
-  public void setOvertime(boolean ot) {
-    synchronized (overtimeLock) {
-      overtime = ot;
-      scoreBoardChange(new ScoreBoardEvent(this, "Overtime", ot));
+  public boolean isInPeriod() { return inPeriod; }
+  public void setInPeriod(boolean p) {
+    synchronized (inPeriodLock) {
+      inPeriod = p;
+      scoreBoardChange(new ScoreBoardEvent(this, "InPeriod", p));
+    }
+  }
+  protected void addInPeriodListeners() {
+    addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.TRUE, periodStartListener));
+    addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE, periodEndListener));
+    addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, periodEndListener));
+  }
+
+  public boolean isInOvertime() { return inOvertime; }
+  public void setInOvertime(boolean o) {
+    synchronized (inOvertimeLock) {
+      inOvertime = o;
+      scoreBoardChange(new ScoreBoardEvent(this, "InOvertime", o));
     }
   }
   public void startOvertime() {
@@ -95,7 +111,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
       if (pc.getTime() > pc.getMinimumTime())
         return;
       pc.setTime(1000);
-      setOvertime(true);
+      setInOvertime(true);
       getClockModel(Clock.ID_INTERMISSION).stop();
       getClockModel(Clock.ID_LINEUP).resetTime();
       getClockModel(Clock.ID_LINEUP).start();
@@ -290,8 +306,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
   protected String timeoutOwner;
   protected Object timeoutOwnerLock = new Object();
 
-  protected boolean overtime = false;
-  protected Object overtimeLock = new Object();
+  protected boolean inPeriod = false;
+  protected Object inPeriodLock = new Object();
+
+  protected boolean inOvertime = false;
+  protected Object inOvertimeLock = new Object();
 
   protected boolean periodClockWasRunning = false;
   protected boolean jamClockWasRunning = false;
@@ -299,6 +318,21 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
   protected boolean timeoutClockWasRunning = false;
 
   protected XmlScoreBoard xmlScoreBoard;
+
+  protected ScoreBoardListener periodStartListener = new ScoreBoardListener() {
+      public void scoreBoardChange(ScoreBoardEvent event) {
+        if (!isInPeriod())
+          setInPeriod(true);
+      }
+    };
+  protected ScoreBoardListener periodEndListener = new ScoreBoardListener() {
+      public void scoreBoardChange(ScoreBoardEvent event) {
+        Clock p = getClock(Clock.ID_PERIOD);
+        Clock j = getClock(Clock.ID_JAM);
+        if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning())
+          setInPeriod(false);
+      }
+    };
 
   public static final String DEFAULT_TIMEOUT_OWNER = "";
 

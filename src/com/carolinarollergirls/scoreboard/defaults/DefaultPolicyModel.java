@@ -28,6 +28,7 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
 
   public String getProviderName() { return "Policy"; }
   public Class getProviderClass() { return Policy.class; }
+  public String getProviderId() { return getId(); }
 
   public ScoreBoard getScoreBoard() { return getScoreBoardModel(); }
   public ScoreBoardModel getScoreBoardModel() { return scoreBoardModel; }

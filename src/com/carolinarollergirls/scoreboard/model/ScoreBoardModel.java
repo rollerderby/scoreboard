@@ -23,8 +23,10 @@ public interface ScoreBoardModel extends ScoreBoard
 
   public void setTimeoutOwner(String owner);
 
-  public void setOvertime(boolean overtime);
+  public void setInOvertime(boolean inOvertime);
   public void startOvertime();
+
+  public void setInPeriod(boolean inPeriod);
 
   public void startJam();
   public void stopJam();

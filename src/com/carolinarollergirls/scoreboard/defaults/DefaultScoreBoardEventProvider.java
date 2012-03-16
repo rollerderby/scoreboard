@@ -16,6 +16,7 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 {
   public abstract String getProviderName();
   public abstract Class getProviderClass();
+  public String getProviderId() { return ""; }
 
   public void scoreBoardChange(ScoreBoardEvent event) {
     synchronized (listenersLock) {

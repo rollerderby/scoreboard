@@ -258,7 +258,7 @@ function setupClocks() {
   $("#Timeout>div.Name.WhiteBox").prepend($("<div>").addClass("RedBox full"));
   $("#Intermission>div.Name>a>span.Name").remove();
 
-  $sb("ScoreBoard.Overtime").$sbBindAndRun("content", function(event, value) {
+  $sb("ScoreBoard.InOvertime").$sbBindAndRun("content", function(event, value) {
     if (isTrue(value)) {
       // we don't want this on the animation queue; it should change immediately,
       // since the intermission clock should be displayed now

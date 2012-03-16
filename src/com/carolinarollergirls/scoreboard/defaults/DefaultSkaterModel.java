@@ -25,6 +25,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
   public String getProviderName() { return "Skater"; }
   public Class getProviderClass() { return Skater.class; }
+  public String getProviderId() { return getId(); }
 
   public Team getTeam() { return teamModel.getTeam(); }
   public TeamModel getTeamModel() { return teamModel; }

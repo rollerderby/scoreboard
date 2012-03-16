@@ -15,7 +15,7 @@ import com.carolinarollergirls.scoreboard.viewer.*;
 public class FormatSpecifierScoreBoardListener extends ConditionalScoreBoardListener implements ScoreBoardListener
 {
   public FormatSpecifierScoreBoardListener(FormatSpecifierViewer v, String f, ScoreBoardListener l) throws IllegalArgumentException {
-    super(v.getScoreBoardEvent(f), l);
+    super(v.getScoreBoardCondition(f), l);
     formatSpecifierViewer = v;
     format = f;
   }

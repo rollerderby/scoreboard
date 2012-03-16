@@ -23,9 +23,22 @@ public interface ScoreBoard extends ScoreBoardEventProvider
   public String getTimeoutOwner();
 
   /**
+   * If in a Period.
+   *
+   * This returns true if any Period has started,
+   * until the Period is over.  A Period is considered
+   * "started" once the first Jam starts.  A Period has
+   * not "ended" until its time has expired and the
+   * Jam clock has stopped.
+   * Note that the Period may end and then re-start
+   * (the same Period) if Overtime is started.
+   */
+  public boolean isInPeriod();
+
+  /**
    * If this bout is in Overtime.
    */
-  public boolean getOvertime();
+  public boolean isInOvertime();
 
 // FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
   public List<Clock> getClocks();
