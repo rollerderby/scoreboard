@@ -76,6 +76,7 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
 
   protected void logout() throws NoTwitterViewerException,TwitterException {
     getTwitterViewer().logout();
+    getTwitterViewer().removeTweetListener(tweetListener);
     Element updateE = createXPathElement();
     editor.addElement(updateE, "Authorized", null, "false");
     editor.addElement(updateE, "ScreenName", null, "");
@@ -108,12 +109,12 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     editor.addElement(updateE, "Status", null, "");
     editor.addElement(updateE, "Error", null, "");
     update(updateE);
-    getTwitterViewer().addUserStreamListener(userStreamListener);
+    getTwitterViewer().addTweetListener(tweetListener);
   }
 
-  protected void updateStatus(Status status) {
+  protected void updateStatus(String status) {
     Element updateE = createXPathElement();
-    editor.addElement(updateE, "Status", null, status.getText());
+    editor.addElement(updateE, "Status", null, status);
     update(updateE);
   }
 
@@ -194,8 +195,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
 
   protected TwitterViewer twitterViewer = null;
   protected Object twitterViewerLock = new Object();
-  protected UserStreamListener userStreamListener = new UserStreamAdapter() {
-      public void onStatus(Status status) { updateStatus(status); }
+  protected TwitterViewer.TweetListener tweetListener = new TwitterViewer.TweetListener() {
+      public void tweet(String tweet) { updateStatus(tweet); }
     };
 
   protected static final String twitterKey = TwitterViewer.class.getName();

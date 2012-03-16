@@ -9,6 +9,7 @@ package com.carolinarollergirls.scoreboard.viewer;
  */
 
 import java.util.*;
+import java.util.concurrent.*;
 import java.io.*;
 
 import twitter4j.*;
@@ -65,19 +66,34 @@ public class TwitterViewer implements ScoreBoardViewer
     synchronized (twitterLock) {
       /* should throw exception if no requestToken or already logged in */
       AccessToken accessToken = twitter.getOAuthAccessToken(requestToken, verifier);
+      userId = twitter.getId();
       twitterStream = twitterStreamFactory.getInstance(accessToken);
+      twitterStream.addListener(userStreamListener);
+      twitterStream.user();
       requestToken = null;
       loggedIn = true;
     }
   }
 
-  public void addUserStreamListener(UserStreamListener listener) throws TwitterException {
+  public void addTweetListener(TweetListener listener) {
     synchronized (twitterLock) {
-      try {
-        twitterStream.addListener(listener);
-        twitterStream.user();
-      } catch ( NullPointerException npE ) {
-        throw new TwitterException("Not Logged In");
+      if (!tweetListeners.containsKey(listener))
+        tweetListeners.put(listener, Executors.newSingleThreadExecutor());
+    }
+  }
+  public void removeTweetListener(TweetListener listener) {
+    synchronized (twitterLock) {
+      if (tweetListeners.containsKey(listener))
+        tweetListeners.remove(listener).shutdown();
+    }
+  }
+  protected void notifyTweetListeners(final Status status) {
+    synchronized (twitterLock) {
+      Iterator<TweetListener> listeners = tweetListeners.keySet().iterator();
+      while (listeners.hasNext()) {
+        final TweetListener listener = listeners.next();
+        Runnable r = new Runnable() { public void run() { listener.tweet(status.getText()); } };
+        tweetListeners.get(listener).submit(r);
       }
     }
   }
@@ -98,6 +114,7 @@ public class TwitterViewer implements ScoreBoardViewer
     if (null != twitter)
       twitter.shutdown();
     twitter = twitterFactory.getInstance();
+    userId = 0;
     requestToken = null;
     if (null != twitterStream)
       twitterStream.cleanUp();
@@ -117,6 +134,7 @@ public class TwitterViewer implements ScoreBoardViewer
   private ConfigurationBuilder getConfigurationBuilder() {
     return new ConfigurationBuilder()
       .setDebugEnabled(false)
+      .setUserStreamRepliesAllEnabled(false)
       .setOAuthConsumerKey("LcSklLv7gic519YE5ylK1g")
       .setOAuthConsumerSecret("BXjvuTrbl6rTIgybxqCTIfZS7obv2OdUYiM1n8V3Q");
   }
@@ -131,11 +149,21 @@ public class TwitterViewer implements ScoreBoardViewer
 
   protected Twitter twitter;
   protected Object twitterLock = new Object();
+  protected long userId;
 
   protected boolean loggedIn = false;
 
   protected RequestToken requestToken = null;
   protected TwitterStream twitterStream = null;
+
+  protected Map<TweetListener,ExecutorService> tweetListeners = new HashMap<TweetListener,ExecutorService>();
+
+  protected UserStreamListener userStreamListener = new UserStreamAdapter() {
+      public void onStatus(Status status) {
+        if (status.getUser().getId() == userId)
+          notifyTweetListeners(status);
+      }
+    };
 
   protected class TweetScoreBoardListener implements ScoreBoardListener
   {
@@ -149,5 +177,10 @@ public class TwitterViewer implements ScoreBoardViewer
       }
     }
     protected String tweet;
+  }
+
+  public static interface TweetListener
+  {
+    public void tweet(String tweet);
   }
 }
