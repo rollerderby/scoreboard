@@ -196,7 +196,11 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
   protected String getClockSecs(String id) { return String.valueOf(getClock(id).getTime()/1000); }
   protected String getClockMinSecs(String id) {
     long time = (getClock(id).getTime()/1000);
-    return (time/60)+":"+(time%60);
+    String min = String.valueOf(time/60);
+    String sec = String.valueOf(time%60);
+    if (sec.length() == 1)
+      sec = "0"+sec;
+    return min+":"+sec;
   }
 
   protected ScoreBoard scoreBoard = null;
