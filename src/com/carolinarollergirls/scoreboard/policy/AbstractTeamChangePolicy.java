@@ -25,18 +25,13 @@ public abstract class AbstractTeamChangePolicy extends DefaultPolicyModel
   }
 
   protected void addTeamProperty(String id, String p) {
-    filterScoreBoardListener.addProperty(Team.class, id, p);
-  }
-
-  public void setScoreBoardModel(ScoreBoardModel sbM) {
-    super.setScoreBoardModel(sbM);
-    sbM.addScoreBoardListener(filterScoreBoardListener);
+    getScoreBoard().addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, id, p, scoreBoardListener));
   }
 
   protected abstract void teamChange(Team team, Object value);
 
-  protected FilterScoreBoardListener filterScoreBoardListener = new FilterScoreBoardListener() {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
+  protected ScoreBoardListener scoreBoardListener = new ScoreBoardListener() {
+      public void scoreBoardChange(ScoreBoardEvent event) {
         if (isEnabled()) {
           synchronized (changeLock) {
             teamChange((Team)event.getProvider(), event.getValue());

@@ -15,8 +15,17 @@ public class ConditionalScoreBoardListener implements ScoreBoardListener
   public ConditionalScoreBoardListener(Class c, String id, String prop, Object v, ScoreBoardListener l) {
     this(new ScoreBoardCondition(c, id, prop, v), l);
   }
+  public ConditionalScoreBoardListener(Class c, String id, String prop, ScoreBoardListener l) {
+    this(c, id, prop, ScoreBoardCondition.ANY_VALUE, l);
+  }
+  public ConditionalScoreBoardListener(Class c, String prop, ScoreBoardListener l) {
+    this(c, ScoreBoardCondition.ANY_ID, prop, ScoreBoardCondition.ANY_VALUE, l);
+  }
   public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop, Object v, ScoreBoardListener l) {
     this(new ScoreBoardCondition(p, prop, v), l);
+  }
+  public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop, ScoreBoardListener l) {
+    this(p, prop, ScoreBoardCondition.ANY_VALUE, l);
   }
   public ConditionalScoreBoardListener(ScoreBoardEvent e, ScoreBoardListener l) {
     this(new ScoreBoardCondition(e), l);

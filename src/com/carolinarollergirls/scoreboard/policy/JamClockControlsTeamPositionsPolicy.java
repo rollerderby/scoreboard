@@ -18,7 +18,10 @@ public class JamClockControlsTeamPositionsPolicy extends AbstractClockRunningCha
 {
   public JamClockControlsTeamPositionsPolicy() {
     super();
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
   }
 

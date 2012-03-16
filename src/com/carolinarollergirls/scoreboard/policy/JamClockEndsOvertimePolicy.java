@@ -18,7 +18,10 @@ public class JamClockEndsOvertimePolicy extends AbstractClockRunningChangePolicy
 {
   public JamClockEndsOvertimePolicy() {
     super();
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
   }
 

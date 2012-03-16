@@ -18,7 +18,10 @@ public class TeamLeadJammerUniquePolicy extends AbstractTeamLeadJammerChangePoli
 {
   public TeamLeadJammerUniquePolicy() {
     super();
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addTeam(Team.ID_1);
     addTeam(Team.ID_2);
   }

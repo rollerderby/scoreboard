@@ -45,7 +45,7 @@ public class ScoreBoardCondition implements Cloneable
   public boolean equals(ScoreBoardEvent e) {
     if (!getProviderClass().equals(e.getProvider().getProviderClass()))
       return false;
-    if (!getProviderId().equals(e.getProvider().getProviderId()))
+    if (!getProviderId().equals(e.getProvider().getProviderId()) && !(getProviderId() == ANY_ID))
       return false;
     if (!getProperty().equals(e.getProperty()))
       return false;
@@ -68,5 +68,6 @@ public class ScoreBoardCondition implements Cloneable
   protected String property;
   protected Object value;
 
+  public static final String ANY_ID = new String(ScoreBoardCondition.class.getName()+".ANY_ID");
   public static final Object ANY_VALUE = new Object();
 }

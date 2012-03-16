@@ -20,7 +20,10 @@ public class LineupClockControlsTimeoutClockPolicy extends AbstractClockTimeChan
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, TIMEOUT_TRIGGER_TIME, "Double", String.valueOf(DEFAULT_TIMEOUT_TRIGGER_TIME)));
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_ROLLBACK_TIME, "Double", String.valueOf(DEFAULT_PERIOD_ROLLBACK_TIME)));
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_LINEUP);
   }
 

@@ -16,7 +16,10 @@ public class JamClockControlsLineupClockPolicy extends AbstractClockRunningChang
 {
   public JamClockControlsLineupClockPolicy() {
     super();
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
   }
 

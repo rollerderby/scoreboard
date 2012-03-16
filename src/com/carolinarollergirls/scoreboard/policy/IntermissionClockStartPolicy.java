@@ -19,7 +19,10 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_TIME_TO, "String", DEFAULT_INTERMISSION_TIME));
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_NUMBER, "Boolean", String.valueOf(true)));
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
     addClock(Clock.ID_PERIOD);
   }

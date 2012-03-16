@@ -19,7 +19,10 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
     super();
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, JAM_TRIGGER_TIME, "Double", String.valueOf(DEFAULT_JAM_TRIGGER_TIME)));
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_LINEUP);
   }
 

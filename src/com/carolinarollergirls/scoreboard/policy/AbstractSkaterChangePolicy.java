@@ -25,18 +25,13 @@ public abstract class AbstractSkaterChangePolicy extends DefaultPolicyModel
   }
 
   protected void addSkaterProperty(String p) {
-    filterScoreBoardListener.addProperty(Skater.class, FilterScoreBoardListener.ANY_ID, p);
-  }
-
-  public void setScoreBoardModel(ScoreBoardModel sbM) {
-    super.setScoreBoardModel(sbM);
-    sbM.addScoreBoardListener(filterScoreBoardListener);
+    getScoreBoard().addScoreBoardListener(new ConditionalScoreBoardListener(Skater.class, p, scoreBoardListener));
   }
 
   protected abstract void skaterChange(Skater skater, Object value);
 
-  protected FilterScoreBoardListener filterScoreBoardListener = new FilterScoreBoardListener() {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
+  protected ScoreBoardListener scoreBoardListener = new ScoreBoardListener() {
+      public void scoreBoardChange(ScoreBoardEvent event) {
         if (isEnabled()) {
           synchronized (changeLock) {
             skaterChange((Skater)event.getProvider(), event.getValue());

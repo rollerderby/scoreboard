@@ -25,37 +25,48 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
     PolicyModel.ParameterModel jamResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_NUMBER, "Boolean", String.valueOf(false));
     PolicyModel.ParameterModel jamResetTime = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_TIME, "Boolean", String.valueOf(true));
 
+    ScoreBoardListener listener;
     addParameterModel(periodIncrementNumber);
-    new FilterScoreBoardListener(periodIncrementNumber, "Value", Boolean.TRUE.toString()) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
-        if (Boolean.parseBoolean(getParameter(PERIOD_RESET_NUMBER).getValue()))
-          getParameterModel(PERIOD_RESET_NUMBER).setValue(String.valueOf(false));
-      }
-    };
-    addParameterModel(periodResetNumber);
-    new FilterScoreBoardListener(periodResetNumber, "Value", Boolean.TRUE.toString()) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
-        if (Boolean.parseBoolean(getParameter(PERIOD_INCREMENT_NUMBER).getValue()))
-          getParameterModel(PERIOD_INCREMENT_NUMBER).setValue(String.valueOf(false));
-      }
-    };
-    addParameterModel(periodResetTime);
-    addParameterModel(jamIncrementNumber);
-    new FilterScoreBoardListener(jamIncrementNumber, "Value", Boolean.TRUE.toString()) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
-        if (Boolean.parseBoolean(getParameter(JAM_RESET_NUMBER).getValue()))
-          getParameterModel(JAM_RESET_NUMBER).setValue(String.valueOf(false));
-      }
-    };
-    addParameterModel(jamResetNumber);
-    new FilterScoreBoardListener(jamResetNumber, "Value", Boolean.TRUE.toString()) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
-        if (Boolean.parseBoolean(getParameter(JAM_INCREMENT_NUMBER).getValue()))
-          getParameterModel(JAM_INCREMENT_NUMBER).setValue(String.valueOf(false));
-      }
-    };
-    addParameterModel(jamResetTime);
+    listener = new ScoreBoardListener() {
+        public void scoreBoardChange(ScoreBoardEvent event) {
+          if (Boolean.parseBoolean(getParameter(PERIOD_RESET_NUMBER).getValue()))
+            getParameterModel(PERIOD_RESET_NUMBER).setValue(String.valueOf(false));
+        }
+      };
+    addScoreBoardListener(new ConditionalScoreBoardListener(periodIncrementNumber, "Value", Boolean.TRUE, listener));
 
+    addParameterModel(periodResetNumber);
+    listener = new ScoreBoardListener() {
+        public void scoreBoardChange(ScoreBoardEvent event) {
+          if (Boolean.parseBoolean(getParameter(PERIOD_INCREMENT_NUMBER).getValue()))
+            getParameterModel(PERIOD_INCREMENT_NUMBER).setValue(String.valueOf(false));
+        }
+      };
+    addScoreBoardListener(new ConditionalScoreBoardListener(periodResetNumber, "Value", Boolean.TRUE, listener));
+
+    addParameterModel(jamIncrementNumber);
+    listener = new ScoreBoardListener() {
+        public void scoreBoardChange(ScoreBoardEvent event) {
+          if (Boolean.parseBoolean(getParameter(JAM_RESET_NUMBER).getValue()))
+            getParameterModel(JAM_RESET_NUMBER).setValue(String.valueOf(false));
+        }
+      };
+    addScoreBoardListener(new ConditionalScoreBoardListener(jamIncrementNumber, "Value", Boolean.TRUE, listener));
+
+    addParameterModel(jamResetNumber);
+    listener = new ScoreBoardListener() {
+        public void scoreBoardChange(ScoreBoardEvent event) {
+          if (Boolean.parseBoolean(getParameter(JAM_INCREMENT_NUMBER).getValue()))
+            getParameterModel(JAM_INCREMENT_NUMBER).setValue(String.valueOf(false));
+        }
+      };
+    addScoreBoardListener(new ConditionalScoreBoardListener(jamResetNumber, "Value", Boolean.TRUE, listener));
+
+    addParameterModel(jamResetTime);
+  }
+
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_INTERMISSION);
   }
 

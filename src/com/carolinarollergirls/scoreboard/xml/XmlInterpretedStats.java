@@ -20,8 +20,6 @@ public class XmlInterpretedStats extends XmlStats
 {
   public XmlInterpretedStats() {
     super("Interpreted");
-    /* Period can end on either Period or Jam clock ending. */
-    periodRunningState.addProperty(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE);
   }
 
   public void reset() {
@@ -307,26 +305,21 @@ public class XmlInterpretedStats extends XmlStats
   protected static final String PERIOD_LISTENER = "periodListener";
   protected int periodNumber;
   protected boolean periodRunning;
-  protected FilterScoreBoardListener periodNotRunningState =
-    new FilterScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.TRUE) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
-        Clock c = (Clock)event.getProvider();
-        periodNumber = c.getNumber();
+  protected ScoreBoardListener periodNotRunningState =
+    new ConditionalScoreBoardListener(ScoreBoard.class, "", "InPeriod", Boolean.TRUE, null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) {
+        periodNumber = scoreBoard.getClock(Clock.ID_PERIOD).getNumber();
         periodRunning = true;
         update(editor.setElement(getPeriodStats(), "Start", null, getStatsTime()));
         states.put(PERIOD_LISTENER, periodRunningState);
       }
     };
-  protected FilterScoreBoardListener periodRunningState =
-    new FilterScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
-        Clock pC = scoreBoard.getClock(Clock.ID_PERIOD);
-        Clock jC = scoreBoard.getClock(Clock.ID_JAM);
-        if (!pC.isRunning() && !jC.isRunning() && (pC.getTime() == (pC.isCountDirectionDown() ? pC.getMinimumTime() : pC.getMaximumTime()))) {
-          periodRunning = false;
-          update(editor.setElement(getPeriodStats(), "Stop", null, getStatsTime()));
-          states.put(PERIOD_LISTENER, periodNotRunningState);
-        }
+  protected ScoreBoardListener periodRunningState =
+    new ConditionalScoreBoardListener(ScoreBoard.class, "", "InPeriod", Boolean.FALSE, null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) {
+        periodRunning = false;
+        update(editor.setElement(getPeriodStats(), "Stop", null, getStatsTime()));
+        states.put(PERIOD_LISTENER, periodNotRunningState);
       }
     };
 
@@ -334,9 +327,9 @@ public class XmlInterpretedStats extends XmlStats
   protected static final String JAM_LISTENER = "jamListener";
   protected int jamNumber;
   protected boolean jamRunning;
-  protected FilterScoreBoardListener jamNotRunningState =
-    new FilterScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.TRUE) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) { 
+  protected ScoreBoardListener jamNotRunningState =
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.TRUE, null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         jamNumber = c.getNumber();
         jamRunning = true;
@@ -351,9 +344,9 @@ public class XmlInterpretedStats extends XmlStats
         states.put(JAM_LISTENER, jamRunningState);
       }
     };
-  protected FilterScoreBoardListener jamRunningState =
-    new FilterScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) { 
+  protected ScoreBoardListener jamRunningState =
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         jamRunning = false;
         update(editor.setElement(getJamStats(), "Stop", null, getStatsTime()));
@@ -365,9 +358,9 @@ public class XmlInterpretedStats extends XmlStats
   protected static final String TIMEOUT_LISTENER = "timeoutListener";
   protected int timeoutNumber;
   protected boolean timeoutRunning;
-  protected FilterScoreBoardListener timeoutNotRunningState =
-    new FilterScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.TRUE) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) { 
+  protected ScoreBoardListener timeoutNotRunningState =
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.TRUE, null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         timeoutNumber = c.getNumber();
         timeoutRunning = true;
@@ -375,9 +368,9 @@ public class XmlInterpretedStats extends XmlStats
         states.put(TIMEOUT_LISTENER, timeoutRunningState);
       }
     };
-  protected FilterScoreBoardListener timeoutRunningState =
-    new FilterScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE) {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) { 
+  protected ScoreBoardListener timeoutRunningState =
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         timeoutRunning = false;
         update(editor.setElement(getTimeoutStats(), "Stop", null, getStatsTime()));
@@ -386,9 +379,9 @@ public class XmlInterpretedStats extends XmlStats
     };
 
   protected static final String POSITION_LISTENER = "positionListener";
-  protected FilterScoreBoardListener positionListener = 
-    new FilterScoreBoardListener(Position.class, FilterScoreBoardListener.ANY_ID, "Skater") {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
+  protected ScoreBoardListener positionListener = 
+    new ConditionalScoreBoardListener(Position.class, ScoreBoardCondition.ANY_ID, "Skater", null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) {
         Position position = (Position)event.getProvider();
         addTeamSkaterPosition(position.getTeam(), position);
       }
@@ -396,9 +389,9 @@ public class XmlInterpretedStats extends XmlStats
 
   protected static final String PASS_LISTENER = "passListener";
   protected Map<String,Integer> passNumber = new HashMap<String,Integer>();
-  protected FilterScoreBoardListener passListener = 
-    new FilterScoreBoardListener(Team.class, FilterScoreBoardListener.ANY_ID, "Pass") {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
+  protected ScoreBoardListener passListener = 
+    new ConditionalScoreBoardListener(Team.class, ScoreBoardCondition.ANY_ID, "Pass", null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) {
         if (jamRunning) {
           Team team = (Team)event.getProvider();
           Integer pass = (Integer)event.getValue();
@@ -409,9 +402,9 @@ public class XmlInterpretedStats extends XmlStats
     };
 
   protected static final String SCORE_LISTENER = "scoreListener";
-  protected FilterScoreBoardListener scoreListener = 
-    new FilterScoreBoardListener(Team.class, FilterScoreBoardListener.ANY_ID, "Score") {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
+  protected ScoreBoardListener scoreListener = 
+    new ConditionalScoreBoardListener(Team.class, ScoreBoardCondition.ANY_ID, "Score", null) {
+      public void matchedScoreBoardChange(ScoreBoardEvent event) {
         Team team = (Team)event.getProvider();
         int score = ((Integer)event.getValue()).intValue();
         updateTeamScore(team, score);

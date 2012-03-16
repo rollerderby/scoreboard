@@ -18,10 +18,13 @@ public abstract class AbstractSkaterPositionChangePolicy extends AbstractSkaterC
 {
   public AbstractSkaterPositionChangePolicy() {
     super();
-    addSkaterProperty("Position");
   }
   public AbstractSkaterPositionChangePolicy(String id) {
     super(id);
+  }
+
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addSkaterProperty("Position");
   }
 

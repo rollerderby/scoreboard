@@ -16,7 +16,10 @@ public class PeriodClockControlsLineupClockPolicy extends AbstractClockRunningCh
 {
   public PeriodClockControlsLineupClockPolicy() {
     super();
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_PERIOD);
   }
 

@@ -18,10 +18,13 @@ public abstract class AbstractSkaterPenaltyBoxChangePolicy extends AbstractSkate
 {
   public AbstractSkaterPenaltyBoxChangePolicy() {
     super();
-    addSkaterProperty("PenaltyBox");
   }
   public AbstractSkaterPenaltyBoxChangePolicy(String id) {
     super(id);
+  }
+
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addSkaterProperty("PenaltyBox");
   }
 

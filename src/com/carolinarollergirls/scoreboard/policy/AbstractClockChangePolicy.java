@@ -25,18 +25,13 @@ public abstract class AbstractClockChangePolicy extends DefaultPolicyModel
   }
 
   protected void addClockProperty(String id, String p) {
-    filterScoreBoardListener.addProperty(Clock.class, id, p);
-  }
-
-  public void setScoreBoardModel(ScoreBoardModel sbM) {
-    super.setScoreBoardModel(sbM);
-    sbM.addScoreBoardListener(filterScoreBoardListener);
+    getScoreBoard().addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, id, p, scoreBoardListener));
   }
 
   protected abstract void clockChange(Clock clock, Object value);
 
-  protected FilterScoreBoardListener filterScoreBoardListener = new FilterScoreBoardListener() {
-      public void filteredScoreBoardChange(ScoreBoardEvent event) {
+  protected ScoreBoardListener scoreBoardListener = new ScoreBoardListener() {
+      public void scoreBoardChange(ScoreBoardEvent event) {
         if (isEnabled()) {
           synchronized (changeLock) {
             clockChange((Clock)event.getProvider(), event.getValue());

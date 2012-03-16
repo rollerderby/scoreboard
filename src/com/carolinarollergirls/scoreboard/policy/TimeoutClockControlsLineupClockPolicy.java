@@ -16,7 +16,10 @@ public class TimeoutClockControlsLineupClockPolicy extends AbstractClockRunningC
 {
   public TimeoutClockControlsLineupClockPolicy() {
     super();
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_TIMEOUT);
   }
 

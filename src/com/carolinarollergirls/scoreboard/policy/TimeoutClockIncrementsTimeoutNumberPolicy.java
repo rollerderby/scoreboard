@@ -16,7 +16,10 @@ public class TimeoutClockIncrementsTimeoutNumberPolicy extends AbstractClockRunn
 {
   public TimeoutClockIncrementsTimeoutNumberPolicy() {
     super();
+  }
 
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
     addClock(Clock.ID_TIMEOUT);
   }
 
