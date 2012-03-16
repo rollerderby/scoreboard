@@ -18,45 +18,45 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
 {
-	public PagePolicy_scoreboardhtml() {
-		super();
+  public PagePolicy_scoreboardhtml() {
+    super();
 
-		addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, RESET_INTERMISSION_CONFIRMED, "Boolean", String.valueOf(true)));
-	}
+    addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, RESET_INTERMISSION_CONFIRMED, "Boolean", String.valueOf(true)));
+  }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
-		addClock(Clock.ID_INTERMISSION);
+    addClock(Clock.ID_INTERMISSION);
   }
 
   public void reset() {
     super.reset();
-		setName("Page(scoreboard.html) Policy");
-		setDescription("This controls elements specific to the scoreboard.html page.");
+    setName("Page(scoreboard.html) Policy");
+    setDescription("This controls elements specific to the scoreboard.html page.");
   }
 
-	public void clockRunningChange(Clock clock, boolean running) {
-		boolean isIntermission = clock.getId().equals(Clock.ID_INTERMISSION);
-		boolean reset = Boolean.parseBoolean(getParameter(RESET_INTERMISSION_CONFIRMED).getValue());
-		if (reset && isIntermission && running) {
-			try {
-				Element pageE = getPageElement();
-				String intermissionN = String.valueOf(clock.getNumber());
-				Element intermissionE = editor.getElement(pageE, "Intermission", intermissionN, false);
-				Element confirmedE = editor.setText(intermissionE.getChild("Confirmed"), "false");
-				getScoreBoardModel().getXmlScoreBoard().mergeElement(confirmedE);
-			} catch ( Exception e ) {
-				/* Ignore?  probably no existing element for current Intermission... */
-			}
-		}
-	}
+  public void clockRunningChange(Clock clock, boolean running) {
+    boolean isIntermission = clock.getId().equals(Clock.ID_INTERMISSION);
+    boolean reset = Boolean.parseBoolean(getParameter(RESET_INTERMISSION_CONFIRMED).getValue());
+    if (reset && isIntermission && running) {
+      try {
+        Element pageE = getPageElement();
+        String intermissionN = String.valueOf(clock.getNumber());
+        Element intermissionE = editor.getElement(pageE, "Intermission", intermissionN, false);
+        Element confirmedE = editor.setText(intermissionE.getChild("Confirmed"), "false");
+        getScoreBoardModel().getXmlScoreBoard().mergeElement(confirmedE);
+      } catch ( Exception e ) {
+        /* Ignore?  probably no existing element for current Intermission... */
+      }
+    }
+  }
 
-	protected Element getPageElement() throws Exception {
-		Element pages = getScoreBoardModel().getXmlScoreBoard().getDocument().getRootElement().getChild("Pages");
-		return editor.getElement(pages, "Page", "scoreboard.html", false);
-	}
+  protected Element getPageElement() throws Exception {
+    Element pages = getScoreBoardModel().getXmlScoreBoard().getDocument().getRootElement().getChild("Pages");
+    return editor.getElement(pages, "Page", "scoreboard.html", false);
+  }
 
-	protected XmlDocumentEditor editor = new XmlDocumentEditor();
+  protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
-	public static final String RESET_INTERMISSION_CONFIRMED = "Reset Intermission Confirmed";
+  public static final String RESET_INTERMISSION_CONFIRMED = "Reset Intermission Confirmed";
 }
