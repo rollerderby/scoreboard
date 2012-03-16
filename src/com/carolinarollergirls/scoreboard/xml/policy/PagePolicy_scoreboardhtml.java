@@ -22,9 +22,12 @@ public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
 		super();
 
 		addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, RESET_INTERMISSION_CONFIRMED, "Boolean", String.valueOf(true)));
-
-		addClock(Clock.ID_INTERMISSION);
 	}
+
+  public void setScoreBoardModel(ScoreBoardModel sbm) {
+    super.setScoreBoardModel(sbm);
+		addClock(Clock.ID_INTERMISSION);
+  }
 
   public void reset() {
     super.reset();

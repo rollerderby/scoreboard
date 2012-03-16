@@ -53,7 +53,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         addPolicyModel(policyModel);
         ScoreBoardManager.printMessage("Loaded Policy : "+name);
       } catch ( Exception e ) {
-        ScoreBoardManager.printMessage("Could not load ScoreBoard policy : " + e.getMessage());
+        ScoreBoardManager.printMessage("Could not load ScoreBoard policy "+name+" : " + e.getMessage());
       }
     }
   }
