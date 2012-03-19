@@ -55,19 +55,19 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
   public String getName() { return name; }
   public void setName(String n) {
     name = n;
-    scoreBoardChange(new ScoreBoardEvent(this, "Name", name));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name));
   }
 
   public String getDescription() { return description; }
   public void setDescription(String d) {
     description = d;
-    scoreBoardChange(new ScoreBoardEvent(this, "Description", description));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_DESCRIPTION, description));
   }
 
   public boolean isEnabled() { return enabled; }
   public void setEnabled(boolean e) {
     enabled = e;
-    scoreBoardChange(new ScoreBoardEvent(this, "Enabled", new Boolean(enabled)));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ENABLED, new Boolean(enabled)));
   }
 
   public List<PolicyModel.ParameterModel> getParameterModels() { return Collections.unmodifiableList(new ArrayList<PolicyModel.ParameterModel>(parameters.values())); }
@@ -84,7 +84,7 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
   protected void addParameterModel(PolicyModel.ParameterModel parameterModel) {
     parameters.put(parameterModel.getName(), parameterModel);
     parameterModel.addScoreBoardListener(this);
-    scoreBoardChange(new ScoreBoardEvent(this, "AddParameter", parameterModel));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_PARAMETER, parameterModel));
   }
 
   protected ScoreBoardModel scoreBoardModel = null;
@@ -141,7 +141,7 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
           if (null != constructor)
             constructor.newInstance(new Object[]{ v });
           value = v;
-          scoreBoardChange(new ScoreBoardEvent(this, "Value", value));
+          scoreBoardChange(new ScoreBoardEvent(this, EVENT_VALUE, value));
         } catch ( Exception e ) {
           throw new IllegalArgumentException("Invalid value ("+v+") : "+e.getMessage());
         }

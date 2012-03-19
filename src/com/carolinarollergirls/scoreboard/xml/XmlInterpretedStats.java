@@ -306,7 +306,7 @@ public class XmlInterpretedStats extends XmlStats
   protected int periodNumber;
   protected boolean periodRunning;
   protected ScoreBoardListener periodNotRunningState =
-    new ConditionalScoreBoardListener(ScoreBoard.class, "", "InPeriod", Boolean.TRUE, null) {
+    new ConditionalScoreBoardListener(ScoreBoard.class, "", ScoreBoard.EVENT_IN_PERIOD, Boolean.TRUE, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) {
         periodNumber = scoreBoard.getClock(Clock.ID_PERIOD).getNumber();
         periodRunning = true;
@@ -315,7 +315,7 @@ public class XmlInterpretedStats extends XmlStats
       }
     };
   protected ScoreBoardListener periodRunningState =
-    new ConditionalScoreBoardListener(ScoreBoard.class, "", "InPeriod", Boolean.FALSE, null) {
+    new ConditionalScoreBoardListener(ScoreBoard.class, "", ScoreBoard.EVENT_IN_PERIOD, Boolean.FALSE, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) {
         periodRunning = false;
         update(editor.setElement(getPeriodStats(), "Stop", null, getStatsTime()));
@@ -328,7 +328,7 @@ public class XmlInterpretedStats extends XmlStats
   protected int jamNumber;
   protected boolean jamRunning;
   protected ScoreBoardListener jamNotRunningState =
-    new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.TRUE, null) {
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.EVENT_RUNNING, Boolean.TRUE, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         jamNumber = c.getNumber();
@@ -345,7 +345,7 @@ public class XmlInterpretedStats extends XmlStats
       }
     };
   protected ScoreBoardListener jamRunningState =
-    new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, null) {
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.EVENT_RUNNING, Boolean.FALSE, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         jamRunning = false;
@@ -359,7 +359,7 @@ public class XmlInterpretedStats extends XmlStats
   protected int timeoutNumber;
   protected boolean timeoutRunning;
   protected ScoreBoardListener timeoutNotRunningState =
-    new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.TRUE, null) {
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, Clock.EVENT_RUNNING, Boolean.TRUE, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         timeoutNumber = c.getNumber();
@@ -369,7 +369,7 @@ public class XmlInterpretedStats extends XmlStats
       }
     };
   protected ScoreBoardListener timeoutRunningState =
-    new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, null) {
+    new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, Clock.EVENT_RUNNING, Boolean.FALSE, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) { 
         Clock c = (Clock)event.getProvider();
         timeoutRunning = false;
@@ -380,7 +380,7 @@ public class XmlInterpretedStats extends XmlStats
 
   protected static final String POSITION_LISTENER = "positionListener";
   protected ScoreBoardListener positionListener = 
-    new ConditionalScoreBoardListener(Position.class, ScoreBoardCondition.ANY_ID, "Skater", null) {
+    new ConditionalScoreBoardListener(Position.class, ScoreBoardCondition.ANY_ID, Position.EVENT_SKATER, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) {
         Position position = (Position)event.getProvider();
         addTeamSkaterPosition(position.getTeam(), position);
@@ -390,7 +390,7 @@ public class XmlInterpretedStats extends XmlStats
   protected static final String PASS_LISTENER = "passListener";
   protected Map<String,Integer> passNumber = new HashMap<String,Integer>();
   protected ScoreBoardListener passListener = 
-    new ConditionalScoreBoardListener(Team.class, ScoreBoardCondition.ANY_ID, "Pass", null) {
+    new ConditionalScoreBoardListener(Team.class, ScoreBoardCondition.ANY_ID, Team.EVENT_PASS, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) {
         if (jamRunning) {
           Team team = (Team)event.getProvider();
@@ -403,7 +403,7 @@ public class XmlInterpretedStats extends XmlStats
 
   protected static final String SCORE_LISTENER = "scoreListener";
   protected ScoreBoardListener scoreListener = 
-    new ConditionalScoreBoardListener(Team.class, ScoreBoardCondition.ANY_ID, "Score", null) {
+    new ConditionalScoreBoardListener(Team.class, ScoreBoardCondition.ANY_ID, Team.EVENT_SCORE, null) {
       public void matchedScoreBoardChange(ScoreBoardEvent event) {
         Team team = (Team)event.getProvider();
         int score = ((Integer)event.getValue()).intValue();

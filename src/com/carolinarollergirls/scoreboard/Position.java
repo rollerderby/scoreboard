@@ -28,4 +28,6 @@ public interface Position extends ScoreBoardEventProvider
   public static final String ID_BLOCKER3 = "Blocker3";
   public static final List<String> POSITIONS = Arrays.asList(new String[]{ ID_BENCH, ID_JAMMER, ID_PIVOT, ID_BLOCKER1, ID_BLOCKER2, ID_BLOCKER3 });
   public static final List<String> FLOOR_POSITIONS = Arrays.asList(new String[]{ ID_JAMMER, ID_PIVOT, ID_BLOCKER1, ID_BLOCKER2, ID_BLOCKER3 });
+
+  public static final String EVENT_SKATER = "Skater";
 }

@@ -34,21 +34,21 @@ public class XmlRealtimeStats extends XmlStats
   public void scoreBoardChange(Clock c, ScoreBoardEvent event) {
     String p = event.getProperty();
     String v = event.getValue().toString();
-    if (p.equals("Running") || p.equals("Number"))
+    if (p.equals(Clock.EVENT_RUNNING) || p.equals(Clock.EVENT_NUMBER))
       update(editor.addElement(editor.getElement(createXPathElement(), "Clock", c.getId()), p, getStatsTime(), v));
   }
 
   public void scoreBoardChange(Team t, ScoreBoardEvent event) {
     String p = event.getProperty();
     String v = event.getValue().toString();
-    if (p.equals("Score"))
+    if (p.equals(Team.EVENT_SCORE))
       update(editor.addElement(editor.getElement(createXPathElement(), "Team", t.getId()), p, getStatsTime(), v));
   }
 
   public void scoreBoardChange(Skater s, ScoreBoardEvent event) {
     String p = event.getProperty();
     String v = event.getValue().toString();
-    if (p.equals("Position") || p.equals("LeadJammer") || p.equals("PenaltyBox"))
+    if (p.equals(Skater.EVENT_POSITION) || p.equals(Skater.EVENT_LEAD_JAMMER) || p.equals(Skater.EVENT_PENALTY_BOX))
       update(editor.addElement(editor.getElement(createXPathElement(), "Skater", s.getId()), p, getStatsTime(), v));
   }
 

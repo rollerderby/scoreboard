@@ -54,7 +54,7 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
       SkaterModel newSkaterModel = getTeamModel().getSkaterModel(skaterId);
       clear();
       skaterModel = newSkaterModel;
-      scoreBoardChange(new ScoreBoardEvent(getPosition(), "Skater", skaterModel));
+      scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel));
     }
   }
   public void clear() {
@@ -65,7 +65,7 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
     synchronized (skaterLock) {
       if (null != skaterModel) {
         skaterModel = null;
-        scoreBoardChange(new ScoreBoardEvent(getPosition(), "Skater", null));
+        scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, null));
       }
     }
   }

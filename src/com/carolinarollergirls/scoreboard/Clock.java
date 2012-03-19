@@ -35,4 +35,14 @@ public interface Clock extends ScoreBoardEventProvider
   public static final String ID_LINEUP = "Lineup";
   public static final String ID_TIMEOUT = "Timeout";
   public static final String ID_INTERMISSION = "Intermission";
+
+  public static final String EVENT_NAME = "Name";
+  public static final String EVENT_NUMBER = "Number";
+  public static final String EVENT_MINIMUM_NUMBER = "MinimumNumber";
+  public static final String EVENT_MAXIMUM_NUMBER = "MaximumNumber";
+  public static final String EVENT_TIME = "Time";
+  public static final String EVENT_MINIMUM_TIME = "MinimumTime";
+  public static final String EVENT_MAXIMUM_TIME = "MaximumTime";
+  public static final String EVENT_DIRECTION = "Direction";
+  public static final String EVENT_RUNNING = "Running";
 }

@@ -50,23 +50,23 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
     String prop = event.getProperty();
     String v = (event.getValue()==null?null:event.getValue().toString());
     if (p.getProviderName().equals("ScoreBoard")) {
-      if (prop.equals("AddClock")) {
+      if (prop.equals(ScoreBoard.EVENT_ADD_CLOCK)) {
         converter.toElement(getScoreBoardElement(), (Clock)event.getValue());
-      } else if (prop.equals("RemoveClock")) {
+      } else if (prop.equals(ScoreBoard.EVENT_REMOVE_CLOCK)) {
         if (isPersistent())
           editor.removeElement(getScoreBoardElement(), "Clock", ((Clock)event.getValue()).getId());
         else
           editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Clock)event.getValue()));
-      } else if (prop.equals("AddTeam")) {
+      } else if (prop.equals(ScoreBoard.EVENT_ADD_TEAM)) {
         converter.toElement(getScoreBoardElement(), (Team)event.getValue());
-      } else if (prop.equals("RemoveTeam")) {
+      } else if (prop.equals(ScoreBoard.EVENT_REMOVE_TEAM)) {
         if (isPersistent())
           editor.removeElement(getScoreBoardElement(), "Team", ((Team)event.getValue()).getId());
         else
           editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Team)event.getValue()));
-      } else if (prop.equals("AddPolicy")) {
+      } else if (prop.equals(ScoreBoard.EVENT_ADD_POLICY)) {
         converter.toElement(getScoreBoardElement(), (Policy)event.getValue());
-      } else if (prop.equals("RemovePolicy")) {
+      } else if (prop.equals(ScoreBoard.EVENT_REMOVE_POLICY)) {
         if (isPersistent())
           editor.removeElement(getScoreBoardElement(), "Policy", ((Policy)event.getValue()).getId());
         else
@@ -75,9 +75,9 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
         editor.setElement(getScoreBoardElement(), prop, null, v);
       }
     } else if (p.getProviderName().equals("Team")) {
-      if (prop.equals("AddSkater")) {
+      if (prop.equals(Team.EVENT_ADD_SKATER)) {
         Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
-      } else if (prop.equals("RemoveSkater")) {
+      } else if (prop.equals(Team.EVENT_REMOVE_SKATER)) {
         if (isPersistent())
           editor.removeElement(getTeamElement((Team)p), "Skater", ((Skater)event.getValue()).getId());
         else
@@ -87,7 +87,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
       }
     } else if (p.getProviderName().equals("Position")) {
       Element e = getPositionElement((Position)p);
-      if (prop.equals("Skater")) {
+      if (prop.equals(Position.EVENT_SKATER)) {
         Skater s = (Skater)event.getValue();
         editor.setElement(e, "Id", null, (s==null?"":s.getId()));
         editor.setElement(e, "Name", null, (s==null?"":s.getName()));

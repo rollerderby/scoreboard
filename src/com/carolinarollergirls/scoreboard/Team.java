@@ -38,4 +38,13 @@ public interface Team extends ScoreBoardEventProvider
 
   public static final String ID_1 = "1";
   public static final String ID_2 = "2";
+
+  public static final String EVENT_NAME = "Name";
+  public static final String EVENT_LOGO = "Logo";
+  public static final String EVENT_SCORE = "Score";
+  public static final String EVENT_TIMEOUTS = "Timeouts";
+  public static final String EVENT_ADD_SKATER = "AddSkater";
+  public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
+  public static final String EVENT_LEAD_JAMMER = "LeadJammer";
+  public static final String EVENT_PASS = "Pass";
 }

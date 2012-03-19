@@ -84,7 +84,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
   public void setInPeriod(boolean p) {
     synchronized (inPeriodLock) {
       inPeriod = p;
-      scoreBoardChange(new ScoreBoardEvent(this, "InPeriod", p));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_PERIOD, p));
     }
   }
   protected void addInPeriodListeners() {
@@ -97,7 +97,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
   public void setInOvertime(boolean o) {
     synchronized (inOvertimeLock) {
       inOvertime = o;
-      scoreBoardChange(new ScoreBoardEvent(this, "InOvertime", o));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_OVERTIME, o));
     }
   }
   public void startOvertime() {
@@ -258,14 +258,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     synchronized (policies) {
       policies.put(model.getId(), model);
       model.addScoreBoardListener(this);
-      scoreBoardChange(new ScoreBoardEvent(this, "AddPolicy", model));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_POLICY, model));
     }
   }
   public void removePolicyModel(PolicyModel model) {
     synchronized (policies) {
       policies.remove(model.getId());
       model.removeScoreBoardListener(this);
-      scoreBoardChange(new ScoreBoardEvent(this, "RemovePolicy", model));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_POLICY, model));
     }
   }
 
@@ -273,7 +273,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
   public void setTimeoutOwner(String owner) {
     synchronized (timeoutOwnerLock) {
       timeoutOwner = owner;
-      scoreBoardChange(new ScoreBoardEvent(this, "TimeoutOwner", owner));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUT_OWNER, owner));
     }
   }
 
@@ -284,7 +284,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     ClockModel model = new DefaultClockModel(this, id);
     model.addScoreBoardListener(this);
     clocks.put(id, model);
-    scoreBoardChange(new ScoreBoardEvent(this, "AddClock", model));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_CLOCK, model));
   }
 
   protected void createTeamModel(String id) {
@@ -294,7 +294,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     TeamModel model = new DefaultTeamModel(this, id);
     model.addScoreBoardListener(this);
     teams.put(id, model);
-    scoreBoardChange(new ScoreBoardEvent(this, "AddTeam", model));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_TEAM, model));
   }
 
   protected HashMap<String,ClockModel> clocks = new HashMap<String,ClockModel>();

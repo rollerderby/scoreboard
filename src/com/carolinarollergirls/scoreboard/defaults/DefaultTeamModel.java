@@ -65,13 +65,13 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   public String getName() { return name; }
   public void setName(String n) {
     name = n;
-    scoreBoardChange(new ScoreBoardEvent(this, "Name", name));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name));
   }
 
   public String getLogo() { return logo; }
   public void setLogo(String l) {
     logo = l;
-    scoreBoardChange(new ScoreBoardEvent(this, "Logo", logo));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_LOGO, logo));
   }
 
   public void timeout() {
@@ -86,7 +86,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     if (0 > s)
       s = 0;
     score = s;
-    scoreBoardChange(new ScoreBoardEvent(this, "Score", new Integer(score)));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_SCORE, new Integer(score)));
   }
   public void changeScore(int c) {
     setScore(getScore() + c);
@@ -100,7 +100,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     if (3 < t)
       t = 3;
     timeouts = t;
-    scoreBoardChange(new ScoreBoardEvent(this, "Timeouts", new Integer(timeouts)));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUTS, new Integer(timeouts)));
   }
   public void changeTimeouts(int c) {
     setTimeouts(getTimeouts() + c);
@@ -137,7 +137,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
       skaters.put(skater.getId(), skater);
       skater.addScoreBoardListener(this);
-      scoreBoardChange(new ScoreBoardEvent(this, "AddSkater", skater));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_SKATER, skater));
     }
   }
   public void removeSkaterModel(String id) throws SkaterNotFoundException {
@@ -148,7 +148,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
       catch ( PositionNotFoundException pnfE ) { /* was on BENCH */ }
       sm.removeScoreBoardListener(this);
       skaters.remove(id);
-      scoreBoardChange(new ScoreBoardEvent(this, "RemoveSkater", sm));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_SKATER, sm));
     }
   }
 
@@ -178,7 +178,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   }
   public void _setLeadJammer(boolean lead) {
     leadJammer = lead;
-    scoreBoardChange(new ScoreBoardEvent(this, "LeadJammer", new Boolean(leadJammer)));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, new Boolean(leadJammer)));
   }
 
 
@@ -197,7 +197,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   }
   public void _setPass(int p) {
     pass = p;
-    scoreBoardChange(new ScoreBoardEvent(this, "Pass", new Integer(pass)));   
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_PASS, new Integer(pass)));   
   }
 
 

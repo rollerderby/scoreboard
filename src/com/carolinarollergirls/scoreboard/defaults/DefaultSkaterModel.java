@@ -38,7 +38,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
   public void setName(String n) {
     synchronized (nameLock) {
       name = n;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), "Name", name));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NAME, name));
     }
   }
 
@@ -46,7 +46,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
   public void setNumber(String n) {
     synchronized (numberLock) {
       number = n;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), "Number", number));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NUMBER, number));
     }
   }
 
@@ -67,7 +67,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
         setPass(0);
       }
       position = p;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), "Position", position));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position));
     }
   }
 
@@ -77,7 +77,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
       if ((!Position.ID_JAMMER.equals(position)) && lead)
         return;
       leadJammer = lead;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), "LeadJammer", new Boolean(leadJammer)));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, new Boolean(leadJammer)));
 
       getTeamModel()._setLeadJammer(leadJammer);
     }
@@ -87,7 +87,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
   public void setPenaltyBox(boolean box) {
     synchronized (penaltyBoxLock) {
       penaltyBox = box;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), "PenaltyBox", new Boolean(penaltyBox)));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox)));
     }
   }
 
@@ -98,7 +98,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
       if (p < 0)
         p = 0;
       pass = p;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), "Pass", new Integer(pass)));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PASS, new Integer(pass)));
 
       getTeamModel()._setPass(pass);
     }

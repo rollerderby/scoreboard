@@ -44,5 +44,13 @@ public interface Policy extends ScoreBoardEventProvider
      * setting the value.
      */
     public String getType();
+
+    public static final String EVENT_VALUE = "Value";
   }
+
+  public static final String EVENT_NAME = "Name";
+  public static final String EVENT_DESCRIPTION = "Description";
+  public static final String EVENT_ENABLED = "Enabled";
+  public static final String EVENT_ADD_PARAMETER = "AddParameter";
+  public static final String EVENT_REMOVE_PARAMETER = "RemoveParameter";
 }
