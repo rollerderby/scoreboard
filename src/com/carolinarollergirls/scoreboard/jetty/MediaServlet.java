@@ -318,7 +318,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
-  protected String htmlDirName = ScoreBoardManager.getProperties().getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
+  protected String htmlDirName = ScoreBoardManager.getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
 
   public static final String BASE_URL = "http://sourceforge.net/projects/derbyscoreboard/files/crg-scoreboard/media/";
   public static final String BASE_NAME = "crg-scoreboard";
