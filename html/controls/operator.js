@@ -1078,14 +1078,16 @@ function createTeamsAssignDialog(teamId) {
     var type = dialog.find(">label[for='TeamsAssignDialogCheckbox"+dir+"']>span").text();
     var target = "Team"+$(this).data("team");
     $sb("Teams").$sb(type).$sb(dir).$sb(target).$sbSet(teamId);
-    dialog.dialog("destroy").remove();
+    dialog.dialog("close");
   });
 //FIXME - add way to register on specific element removal (not child removal) and destroy this dialog if removed,
 //FIXME - do same in TeamsRemoveDialog below
   dialog.dialog({
+    title: "Assign Team",
     modal: true,
-    width: "700px",
-    buttons: { Close: function() { $(this).dialog("destroy").remove(); } }
+    width: 700,
+    close: function() { $(this).dialog("destroy").remove(); },
+    buttons: { Close: function() { $(this).dialog("close"); } }
   });
 }
 
@@ -1101,17 +1103,18 @@ function createTeamsRemoveDialog(teamId) {
   $("<br>").appendTo(dialog);
 
   $("<button>").addClass("No").text("No, keep this team.").appendTo(dialog).click(function() {
-    dialog.dialog("destroy").remove();
+    dialog.dialog("close");
   }).button();
   $("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
     $sb("Teams.Team("+teamId+")").$sbRemove();
-    dialog.dialog("destroy").remove();
+    dialog.dialog("close");
   }).button();
 
   dialog.dialog({
     title: "Remove Team",
     modal: true,
-    width: "700px"
+    width: 700,
+    close: function() { $(this).dialog("destroy").remove(); }
   });
 }
 
@@ -1136,17 +1139,18 @@ function createTeamsSkaterRemoveDialog(team, teamId, skater) {
   $("<br>").appendTo(dialog);
 
   $("<button>").addClass("No").text("No, keep this skater.").appendTo(dialog).click(function() {
-    dialog.dialog("destroy").remove();
+    dialog.dialog("close");
   }).button();
   $("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
     skater.$sbRemove();
-    dialog.dialog("destroy").remove();
+    dialog.dialog("close");
   }).button();
 
   dialog.dialog({
     title: "Remove Skater",
     modal: true,
-    width: "700px"
+    width: 700,
+    close: function() { $(this).dialog("destroy").remove(); }
   });
 }
 
