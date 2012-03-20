@@ -8,9 +8,13 @@
 $(function() {
   $.get("/version", function(data) { $("#version").html(data); });
   $.get("/urls", function(data) {
-    $.each(data.trim().split("\n"), function(i,e) {
-      $("<a>").attr("href", e).text(e).appendTo("#URLs").wrap("<li>");
-    });
+    var urls = data.trim();
+    if (!urls)
+      $("#URLtext").html("<b>The scoreboard is not networked</b>.  You can access it only from this computer.");
+    else
+      $.each(urls.split("\n"), function(i,e) {
+        $("<a>").attr("href", e).text(e).appendTo("#URLs").wrap("<li>");
+      });
   });
 });
 
@@ -57,7 +61,7 @@ $(function() {
         see <a href="guide.html">the guide</a>.
       </p>
 
-      <p>
+      <p id="URLtext">
         To access this scoreboard from other computers on this network, try one of these URLs:
         <ul id="URLs"></ul>
       </p>

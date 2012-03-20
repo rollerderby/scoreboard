@@ -74,10 +74,16 @@ public class UrlsServlet extends HttpServlet
   protected void addHost(List<URL> urls, String host, int port) throws MalformedURLException {
     try {
       InetAddress addr = InetAddress.getByName(host);
+      if (addr.isLoopbackAddress())
+        return;
       String hostname = addr.getHostName();
       String hostaddr = addr.getHostAddress();
-      if (!hostaddr.equals(hostname))
+      if (!hostaddr.equals(hostname)) {
+        String shortname = hostname.replaceAll("[.].*$", "");
+        if (!hostname.equals(shortname))
+          urls.add(new URL("http", shortname, port, "/"));
         urls.add(new URL("http", hostname, port, "/"));
+      }
       urls.add(new URL("http", hostaddr, port, "/"));
     } catch ( UnknownHostException uhE ) {
       urls.add(new URL("http", host, port, "/"));
