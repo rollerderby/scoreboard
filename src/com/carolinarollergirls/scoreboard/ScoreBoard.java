@@ -58,5 +58,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider
   public static final String EVENT_REMOVE_POLICY = "RemovePolicy";
   public static final String EVENT_TIMEOUT_OWNER = "TimeoutOwner";
   public static final String EVENT_ADD_CLOCK = "AddClock";
+  public static final String EVENT_REMOVE_CLOCK = "RemoveClock";
   public static final String EVENT_ADD_TEAM = "AddTeam";
+  public static final String EVENT_REMOVE_TEAM = "RemoveTeam";
 }
