@@ -170,36 +170,38 @@ public class ScoreBoardXmlConverter
         String value = editor.getText(element);
         boolean bVal = Boolean.parseBoolean(value);
 
-        if (name.equals("Reset") && bVal)
-          scoreBoardModel.reset();
-        else if (name.equals("StartJam") && bVal)
-          scoreBoardModel.startJam();
-        else if (name.equals("StopJam") && bVal)
-          scoreBoardModel.stopJam();
-        else if (name.equals("Timeout") && bVal)
-          scoreBoardModel.timeout();
-        else if (name.equals("UnStartJam") && bVal)
-          scoreBoardModel.unStartJam();
-        else if (name.equals("UnStopJam") && bVal)
-          scoreBoardModel.unStopJam();
-        else if (name.equals("UnTimeout") && bVal)
-          scoreBoardModel.unTimeout();
-        else if (name.equals("StartOvertime") && bVal)
-          scoreBoardModel.startOvertime();
+        if (name.equals("Clock"))
+          processClock(scoreBoardModel, element);
+        else if (name.equals("Team"))
+          processTeam(scoreBoardModel, element);
+        else if (name.equals("Policy"))
+          processPolicy(scoreBoardModel, element);
+        else if (null == value)
+          continue;
         else if (name.equals("TimeoutOwner"))
           scoreBoardModel.setTimeoutOwner(value);
         else if (name.equals("InOvertime"))
           scoreBoardModel.setInOvertime(bVal);
         else if (name.equals("InPeriod"))
           scoreBoardModel.setInPeriod(bVal);
-        else if (name.equals("Clock"))
-          processClock(scoreBoardModel, element);
-        else if (name.equals("Team"))
-          processTeam(scoreBoardModel, element);
-        else if (name.equals("Policy"))
-          processPolicy(scoreBoardModel, element);
-        else
-          continue;
+        else if (bVal) {
+          if (name.equals("Reset"))
+            scoreBoardModel.reset();
+          else if (name.equals("StartJam"))
+            scoreBoardModel.startJam();
+          else if (name.equals("StopJam"))
+            scoreBoardModel.stopJam();
+          else if (name.equals("Timeout"))
+            scoreBoardModel.timeout();
+          else if (name.equals("UnStartJam"))
+            scoreBoardModel.unStartJam();
+          else if (name.equals("UnStopJam"))
+            scoreBoardModel.unStopJam();
+          else if (name.equals("UnTimeout"))
+            scoreBoardModel.unTimeout();
+          else if (name.equals("StartOvertime"))
+            scoreBoardModel.startOvertime();
+        }
       } catch ( Exception e ) {
       }
     }
@@ -409,7 +411,9 @@ public class ScoreBoardXmlConverter
 
         boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
 
-        if (name.equals("Name"))
+        if (null == value)
+          continue;
+        else if (name.equals("Name"))
           skaterModel.setName(value);
         else if (name.equals("Number"))
           skaterModel.setNumber(value);
