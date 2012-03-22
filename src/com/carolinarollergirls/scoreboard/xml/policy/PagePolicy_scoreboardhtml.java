@@ -19,7 +19,7 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
 {
   public PagePolicy_scoreboardhtml() {
-    super();
+    super(ID, NAME, DESCRIPTION);
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, RESET_INTERMISSION_CONFIRMED, "Boolean", String.valueOf(true)));
   }
@@ -27,12 +27,6 @@ public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_INTERMISSION);
-  }
-
-  public void reset() {
-    super.reset();
-    setName("Page(scoreboard.html) Policy");
-    setDescription("This controls elements specific to the scoreboard.html page.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {
@@ -59,4 +53,8 @@ public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
   protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
   public static final String RESET_INTERMISSION_CONFIRMED = "Reset Intermission Confirmed";
+
+  public static final String ID = "PagePolicy_scoreboard.html";
+  public static final String NAME = "Page: scoreboard.html";
+  public static final String DESCRIPTION = "This controls elements specific to the scoreboard.html page.";
 }

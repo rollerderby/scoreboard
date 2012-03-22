@@ -14,18 +14,11 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class TimeoutClockControlsLineupClockPolicy extends AbstractClockRunningChangePolicy
 {
-  public TimeoutClockControlsLineupClockPolicy() {
-    super();
-  }
+  public TimeoutClockControlsLineupClockPolicy() { super(ID, DESCRIPTION); }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_TIMEOUT);
-  }
-
-  public void reset() {
-    super.reset();
-    setDescription("This controls the Lineup clock based on the Timeout clock.  When the Timeout clock starts, the Lineup clock is stopped then reset.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {
@@ -35,4 +28,8 @@ public class TimeoutClockControlsLineupClockPolicy extends AbstractClockRunningC
       lc.resetTime();
     }
   }
+
+  public static final String ID = "Timeout Clock Controls Lineup Clock";
+  public static final String DESCRIPTION = "This controls the Lineup clock based on the Timeout clock.  When the Timeout clock starts, the Lineup clock is stopped then reset.";
+
 }

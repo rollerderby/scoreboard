@@ -17,12 +17,11 @@ import com.carolinarollergirls.scoreboard.model.*;
 
 public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implements PolicyModel
 {
-  public DefaultPolicyModel() {
-    id = getClass().getName().replaceFirst(getClass().getPackage().getName()+".", "");
-    reset();
-  }
-  public DefaultPolicyModel(String i) {
+  public DefaultPolicyModel(String i, String d) { this(i, i, d); }
+  public DefaultPolicyModel(String i, String n, String d) {
     id = i;
+    name = n;
+    description = d;
     reset();
   }
 
@@ -42,8 +41,6 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
   public Policy getPolicy() { return this; }
 
   public void reset() {
-    setName(getClass().getName().replaceFirst(getClass().getPackage().getName()+".", ""));
-    setDescription(DEFAULT_DESCRIPTION);
     setEnabled(DEFAULT_ENABLED);
     Iterator<ParameterModel> p = getParameterModels().iterator();
     while (p.hasNext())
@@ -53,16 +50,8 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
   public String getId() { return id; }
 
   public String getName() { return name; }
-  public void setName(String n) {
-    name = n;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name));
-  }
 
   public String getDescription() { return description; }
-  public void setDescription(String d) {
-    description = d;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_DESCRIPTION, description));
-  }
 
   public boolean isEnabled() { return enabled; }
   public void setEnabled(boolean e) {
@@ -94,7 +83,6 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
   protected String description;
   protected boolean enabled;
 
-  public static final String DEFAULT_DESCRIPTION = "No description";
   public static final boolean DEFAULT_ENABLED = true;
 
   public class DefaultParameterModel extends DefaultScoreBoardEventProvider implements PolicyModel.ParameterModel

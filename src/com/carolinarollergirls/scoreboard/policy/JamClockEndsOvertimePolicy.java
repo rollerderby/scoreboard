@@ -16,22 +16,18 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class JamClockEndsOvertimePolicy extends AbstractClockRunningChangePolicy
 {
-  public JamClockEndsOvertimePolicy() {
-    super();
-  }
+  public JamClockEndsOvertimePolicy() { super(ID, DESCRIPTION); }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
   }
 
-  public void reset() {
-    super.reset();
-    setDescription("This ends Overtime (if the bout is in Overtime).  When the Jam clock stops, Overtime is set to false.");
-  }
-
   protected void clockRunningChange(Clock clock, boolean running) {
     if (!running && getScoreBoardModel().isInOvertime())
       getScoreBoardModel().setInOvertime(false);
   }
+
+  public static final String ID = "Jam Clock Ends Overtime";
+  public static final String DESCRIPTION = "This ends Overtime (if the bout is in Overtime).  When the Jam clock stops, Overtime is set to false.";
 }

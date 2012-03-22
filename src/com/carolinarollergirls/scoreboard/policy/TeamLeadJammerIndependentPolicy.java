@@ -22,14 +22,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
  */
 public class TeamLeadJammerIndependentPolicy extends DefaultPolicyModel
 {
-  public TeamLeadJammerIndependentPolicy() {
-    super(ID);
-  }
+  public TeamLeadJammerIndependentPolicy() { super(ID, DESCRIPTION); }
 
-  public void reset() {
-    super.reset();
-    setDescription("When enabled, teams will use their Position(Jammer) to track LeadJammer.  When disabled, teams will track LeadJammer internally.  This should be enabled if tracking lineups, and disabled if not tracking lineups.");
-  }
-
-  public static final String ID = "TeamLeadJammerIndependentPolicy";
+  public static final String ID = "Team Lead Jammer Independent";
+  public static final String DESCRIPTION = "When enabled, teams will use their Position(Jammer) to track LeadJammer.  When disabled, teams will track LeadJammer internally.  This should be enabled if tracking lineups, and disabled if not tracking lineups.";
 }

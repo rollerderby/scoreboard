@@ -16,14 +16,7 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class PenaltyBoxControlsLeadJammerPolicy extends AbstractSkaterPenaltyBoxChangePolicy
 {
-  public PenaltyBoxControlsLeadJammerPolicy() {
-    super();
-  }
-
-  public void reset() {
-    super.reset();
-    setDescription("This removes Lead Jammer from any Skater sent to the Penalty Box.");
-  }
+  public PenaltyBoxControlsLeadJammerPolicy() { super(ID, DESCRIPTION); }
 
   protected void skaterPenaltyBoxChange(Skater skater, boolean penaltyBox) {
     try {
@@ -33,4 +26,7 @@ public class PenaltyBoxControlsLeadJammerPolicy extends AbstractSkaterPenaltyBox
       /* Should not happen - no SkaterModel for specified Skater */
     }
   }
+
+  public static final String ID = "Penalty Box Controls Lead Jammer";
+  public static final String DESCRIPTION = "This removes Lead Jammer from any Skater sent to the Penalty Box.";
 }

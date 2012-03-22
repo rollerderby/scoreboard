@@ -16,7 +16,7 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
 {
   public LineupClockStartsJamPolicy() {
-    super();
+    super(ID, DESCRIPTION);
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, JAM_TRIGGER_TIME, "Double", String.valueOf(DEFAULT_JAM_TRIGGER_TIME)));
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, OVERTIME_JAM_TRIGGER_TIME, "Double", String.valueOf(DEFAULT_OVERTIME_JAM_TRIGGER_TIME)));
@@ -29,7 +29,6 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
 
   public void reset() {
     super.reset();
-    setDescription("This starts the jam based on the Lineup clock.  When the Lineup clock reaches or exceeds the trigger value (by default 30 seconds), the jam is started (via StartJam), and the Lineup clock is stopped and reset (to avoid possible accidental triggers of this policy).  By default, this policy is disabled.");
 
     setEnabled(false);
   }
@@ -61,4 +60,7 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
 
   public static final Double DEFAULT_JAM_TRIGGER_TIME = new Double(30);
   public static final Double DEFAULT_OVERTIME_JAM_TRIGGER_TIME = new Double(60);
+
+  public static final String ID = "Lineup Clock Starts Jam";
+  public static final String DESCRIPTION = "This starts the jam based on the Lineup clock.  When the Lineup clock reaches or exceeds the trigger value (by default 30 seconds), the jam is started (via StartJam), and the Lineup clock is stopped and reset (to avoid possible accidental triggers of this policy).  By default, this policy is disabled.";
 }

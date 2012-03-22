@@ -17,12 +17,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractSkaterChangePolicy extends DefaultPolicyModel
 {
-  public AbstractSkaterChangePolicy() {
-    super();
-  }
-  public AbstractSkaterChangePolicy(String id) {
-    super(id);
-  }
+  public AbstractSkaterChangePolicy(String id, String desc) { super(id, desc); }
+  public AbstractSkaterChangePolicy(String id, String name, String desc) { super(id, name, desc); }
 
   protected void addSkaterProperty(String p) {
     getScoreBoard().addScoreBoardListener(new ConditionalScoreBoardListener(Skater.class, p, scoreBoardListener));

@@ -14,18 +14,11 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class JamClockControlsLineupClockPolicy extends AbstractClockRunningChangePolicy
 {
-  public JamClockControlsLineupClockPolicy() {
-    super();
-  }
+  public JamClockControlsLineupClockPolicy() { super(ID, DESCRIPTION); }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
-  }
-
-  public void reset() {
-    super.reset();
-    setDescription("This controls the Lineup clock based on the Jam clock.  When the Jam clock starts, the Lineup clock is stopped.  When the Jam clock stops, and the Period clock is running, and the Lineup clock is not running, the Lineup clock is reset then started.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {
@@ -38,4 +31,7 @@ public class JamClockControlsLineupClockPolicy extends AbstractClockRunningChang
       lc.start();
     }
   }
+
+  public static final String ID = "Jam Clock Controls Lineup Clock";
+  public static final String DESCRIPTION = "This controls the Lineup clock based on the Jam clock.  When the Jam clock starts, the Lineup clock is stopped.  When the Jam clock stops, and the Period clock is running, and the Lineup clock is not running, the Lineup clock is reset then started.";
 }

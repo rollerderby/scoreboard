@@ -351,10 +351,6 @@ public class ScoreBoardXmlConverter
           processPolicyParameter(policyModel, element);
         else if (null == value)
           continue;
-        else if (name.equals("Name"))
-          policyModel.setName(value);
-        else if (name.equals("Description"))
-          policyModel.setDescription(value);
         else if (name.equals("Enabled"))
           policyModel.setEnabled(Boolean.parseBoolean(value));
       } catch ( Exception e ) {

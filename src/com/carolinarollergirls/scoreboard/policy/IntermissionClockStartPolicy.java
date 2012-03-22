@@ -15,7 +15,7 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 public class IntermissionClockStartPolicy extends AbstractClockRunningChangePolicy
 {
   public IntermissionClockStartPolicy() {
-    super();
+    super(ID, DESCRIPTION);
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_TIME_TO, "String", DEFAULT_INTERMISSION_TIME));
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_NUMBER, "Boolean", String.valueOf(true)));
@@ -25,11 +25,6 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
     addClock(Clock.ID_PERIOD);
-  }
-
-  public void reset() {
-    super.reset();
-    setDescription("When the Period is over, this sets and starts the Intermission clock time and optionally sets the number to the Period number.");
   }
 
   // FIXME - these should be common utility methods, and probably implemented using Formatter and Scanner.
@@ -81,4 +76,7 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
   public static final String SET_INTERMISSION_NUMBER = "SetIntermissionNumber";
 
   public static final String DEFAULT_INTERMISSION_TIME = "15:00";
+
+  public static final String ID = "Intermission Clock Start";
+  public static final String DESCRIPTION = "When the Period is over, this sets and starts the Intermission clock time and optionally sets the number to the Period number.";
 }

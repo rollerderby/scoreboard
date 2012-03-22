@@ -17,12 +17,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractClockChangePolicy extends DefaultPolicyModel
 {
-  public AbstractClockChangePolicy() {
-    super();
-  }
-  public AbstractClockChangePolicy(String id) {
-    super(id);
-  }
+  public AbstractClockChangePolicy(String id, String desc) { super(id, desc); }
+  public AbstractClockChangePolicy(String id, String name, String desc) { super(id, name, desc); }
 
   protected void addClockProperty(String id, String p) {
     getScoreBoard().addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, id, p, scoreBoardListener));

@@ -16,19 +16,12 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class TeamLeadJammerUniquePolicy extends AbstractTeamLeadJammerChangePolicy
 {
-  public TeamLeadJammerUniquePolicy() {
-    super();
-  }
+  public TeamLeadJammerUniquePolicy() { super(ID, DESCRIPTION); }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
     addTeam(Team.ID_1);
     addTeam(Team.ID_2);
-  }
-
-  public void reset() {
-    super.reset();
-    setDescription("This allows only one team to have lead jammer status; when either team gains lead jammer, the other team will be forced to lose lead jammer if it has it.");
   }
 
   protected void teamLeadJammerChange(Team team, boolean lead) {
@@ -39,4 +32,7 @@ public class TeamLeadJammerUniquePolicy extends AbstractTeamLeadJammerChangePoli
         otherTeam.setLeadJammer(false);
     }
   }
+
+  public static final String ID = "Team Lead Jammer Unique";
+  public static final String DESCRIPTION = "This allows only one team to have lead jammer status; when either team gains lead jammer, the other team will be forced to lose lead jammer if it has it.";
 }

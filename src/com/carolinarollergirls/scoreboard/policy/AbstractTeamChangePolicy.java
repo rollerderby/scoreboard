@@ -17,12 +17,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractTeamChangePolicy extends DefaultPolicyModel
 {
-  public AbstractTeamChangePolicy() {
-    super();
-  }
-  public AbstractTeamChangePolicy(String id) {
-    super(id);
-  }
+  public AbstractTeamChangePolicy(String id, String desc) { super(id, desc); }
+  public AbstractTeamChangePolicy(String id, String name, String desc) { super(id, name, desc); }
 
   protected void addTeamProperty(String id, String p) {
     getScoreBoard().addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, id, p, scoreBoardListener));

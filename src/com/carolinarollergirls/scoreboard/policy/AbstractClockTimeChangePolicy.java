@@ -16,12 +16,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractClockTimeChangePolicy extends AbstractClockChangePolicy
 {
-  public AbstractClockTimeChangePolicy() {
-    super();
-  }
-  public AbstractClockTimeChangePolicy(String id) {
-    super(id);
-  }
+  public AbstractClockTimeChangePolicy(String id, String desc) { super(id, desc); }
+  public AbstractClockTimeChangePolicy(String id, String name, String desc) { super(id, name, desc); }
 
   protected void addClock(String id) {
     addClockProperty(id, "Time");

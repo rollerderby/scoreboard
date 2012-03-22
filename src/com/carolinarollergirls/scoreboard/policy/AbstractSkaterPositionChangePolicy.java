@@ -16,12 +16,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractSkaterPositionChangePolicy extends AbstractSkaterChangePolicy
 {
-  public AbstractSkaterPositionChangePolicy() {
-    super();
-  }
-  public AbstractSkaterPositionChangePolicy(String id) {
-    super(id);
-  }
+  public AbstractSkaterPositionChangePolicy(String id, String desc) { super(id, desc); }
+  public AbstractSkaterPositionChangePolicy(String id, String name, String desc) { super(id, name, desc); }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);

@@ -16,12 +16,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractClockRunningChangePolicy extends AbstractClockChangePolicy
 {
-  public AbstractClockRunningChangePolicy() {
-    super();
-  }
-  public AbstractClockRunningChangePolicy(String id) {
-    super(id);
-  }
+  public AbstractClockRunningChangePolicy(String id, String desc) { super(id, desc); }
+  public AbstractClockRunningChangePolicy(String id, String name, String desc) { super(id, name, desc); }
 
   protected void addClock(String id) {
     addClockProperty(id, "Running");

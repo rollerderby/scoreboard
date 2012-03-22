@@ -14,18 +14,11 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class PeriodClockControlsLineupClockPolicy extends AbstractClockRunningChangePolicy
 {
-  public PeriodClockControlsLineupClockPolicy() {
-    super();
-  }
+  public PeriodClockControlsLineupClockPolicy() { super(ID, DESCRIPTION); }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_PERIOD);
-  }
-
-  public void reset() {
-    super.reset();
-    setDescription("This controls the Lineup clock based on the Period clock.  When the Period clock stops and its time is equal to its minimum (if counting down, or its maximum if counting up), and the Jam clock is also stopped, the Lineup clock is stopped and reset.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {
@@ -37,4 +30,7 @@ public class PeriodClockControlsLineupClockPolicy extends AbstractClockRunningCh
       lc.resetTime();
     }
   }
+
+  public static final String ID = "Period Clock Controls Lineup Clock";
+  public static final String DESCRIPTION = "This controls the Lineup clock based on the Period clock.  When the Period clock stops and its time is equal to its minimum (if counting down, or its maximum if counting up), and the Jam clock is also stopped, the Lineup clock is stopped and reset.";
 }

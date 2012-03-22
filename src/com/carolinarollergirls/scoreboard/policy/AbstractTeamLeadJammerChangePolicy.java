@@ -16,12 +16,8 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public abstract class AbstractTeamLeadJammerChangePolicy extends AbstractTeamChangePolicy
 {
-  public AbstractTeamLeadJammerChangePolicy() {
-    super();
-  }
-  public AbstractTeamLeadJammerChangePolicy(String id) {
-    super(id);
-  }
+  public AbstractTeamLeadJammerChangePolicy(String id, String desc) { super(id, desc); }
+  public AbstractTeamLeadJammerChangePolicy(String id, String name, String desc) { super(id, name, desc); }
 
   protected void addTeam(String id) {
     addTeamProperty(id, "LeadJammer");

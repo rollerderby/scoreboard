@@ -16,18 +16,11 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class JamClockControlsTeamPositionsPolicy extends AbstractClockRunningChangePolicy
 {
-  public JamClockControlsTeamPositionsPolicy() {
-    super();
-  }
+  public JamClockControlsTeamPositionsPolicy() { super(ID, DESCRIPTION); }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
-  }
-
-  public void reset() {
-    super.reset();
-    setDescription("This clears all Team Positions (who are not in the Penalty Box) when the Jam clock is stopped, sets all Skaters to Not Lead Jammer, and sets the Team to Not Lead Jammer.");
   }
 
   public void clockRunningChange(Clock clock, boolean running) {
@@ -48,4 +41,7 @@ public class JamClockControlsTeamPositionsPolicy extends AbstractClockRunningCha
       }
     }
   }
+
+  public static final String ID = "Jam Clock Controls Team Positions";
+  public static final String DESCRIPTION = "This clears all Team Positions (who are not in the Penalty Box) when the Jam clock is stopped, sets all Skaters to Not Lead Jammer, and sets the Team to Not Lead Jammer.";
 }

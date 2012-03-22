@@ -16,7 +16,7 @@ import com.carolinarollergirls.scoreboard.defaults.*;
 public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolicy
 {
   public IntermissionClockStopPolicy() {
-    super();
+    super(ID, DESCRIPTION);
 
     PolicyModel.ParameterModel periodIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_INCREMENT_NUMBER, "Boolean", String.valueOf(true));
     PolicyModel.ParameterModel periodResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_NUMBER, "Boolean", String.valueOf(false));
@@ -70,11 +70,6 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
     addClock(Clock.ID_INTERMISSION);
   }
 
-  public void reset() {
-    super.reset();
-    setDescription("When the Intermission clock is over, this resets the Period and Jam clock times, and (optionally) increments both of their numbers.  This will only modify the clocks if both are stopped and the Period clock's time is at its end (if counting down, its minimum; if counting up, its maximum).");
-  }
-
   public void clockRunningChange(Clock clock, boolean running) {
     ClockModel pc = getScoreBoardModel().getClockModel(Clock.ID_PERIOD);
     ClockModel jc = getScoreBoardModel().getClockModel(Clock.ID_JAM);
@@ -104,4 +99,7 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
   public static final String JAM_INCREMENT_NUMBER = "Jam Increment Number";
   public static final String JAM_RESET_NUMBER = "Jam Reset Number";
   public static final String JAM_RESET_TIME = "Jam Reset Time";
+
+  public static final String ID = "Intermission Clock Stop";
+  public static final String DESCRIPTION = "When the Intermission clock is over, this resets the Period and Jam clock times, and (optionally) increments both of their numbers.  This will only modify the clocks if both are stopped and the Period clock's time is at its end (if counting down, its minimum; if counting up, its maximum).";
 }

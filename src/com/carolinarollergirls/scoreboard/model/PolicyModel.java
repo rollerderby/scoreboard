@@ -20,10 +20,6 @@ public interface PolicyModel extends Policy,ScoreBoardController
 
   public void reset();
 
-  public void setName(String name);
-
-  public void setDescription(String description);
-
   public void setEnabled(boolean enabled);
 
   public List<PolicyModel.ParameterModel> getParameterModels();
