@@ -65,5 +65,5 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
   public static final Double DEFAULT_OVERTIME_JAM_TRIGGER_TIME = new Double(60);
 
   public static final String ID = "Lineup Clock Starts Jam";
-  public static final String DESCRIPTION = "This starts the jam based on the Lineup clock.  When the Lineup clock reaches or exceeds the trigger value (by default 30 seconds), the jam is started (via StartJam), and the Lineup clock is stopped and reset (to avoid possible accidental triggers of this policy).  By default, this policy is disabled.";
+  public static final String DESCRIPTION = "This starts the jam based on the Lineup clock.  When the Lineup clock reaches or exceeds the trigger value (by default 30 seconds), the jam is started (via StartJam), and the Lineup clock is stopped and reset (to avoid possible accidental triggers of this policy).  By default, this policy is disabled.  Also note that if the Lineup clock's minimum time is greater than or equal to the trigger time (if the Lineup clock is counting up; if counting down, the maximum time is less than or equal to the trigger time), this policy will not operate, to avoid an infinite loop.";
 }
