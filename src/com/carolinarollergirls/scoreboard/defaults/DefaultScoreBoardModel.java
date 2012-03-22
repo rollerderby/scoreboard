@@ -20,6 +20,7 @@ import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.policy.OvertimeLineupTimePolicy;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
@@ -99,6 +100,15 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
       inOvertime = o;
       scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_OVERTIME, o));
     }
+    if (!o) {
+      try {
+        OvertimeLineupTimePolicy p = (OvertimeLineupTimePolicy)getPolicy(OvertimeLineupTimePolicy.ID);
+        if (null != p)
+          p.stopOvertime();
+      } catch ( ClassCastException ccE ) {
+        ScoreBoardManager.printMessage("Internal Error: invalid OvertimeLineupTimePolicy : "+ccE.getMessage());
+      }
+    }
   }
   public void startOvertime() {
     synchronized (runLock) {
@@ -111,8 +121,16 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
       if (pc.getTime() > pc.getMinimumTime())
         return;
       pc.setTime(1000);
+      setInPeriod(true);
       setInOvertime(true);
       getClockModel(Clock.ID_INTERMISSION).stop();
+      try {
+        OvertimeLineupTimePolicy p = (OvertimeLineupTimePolicy)getPolicy(OvertimeLineupTimePolicy.ID);
+        if (null != p)
+          p.startOvertime();
+      } catch ( ClassCastException ccE ) {
+        ScoreBoardManager.printMessage("Internal Error: invalid OvertimeLineupTimePolicy : "+ccE.getMessage());
+      }
       getClockModel(Clock.ID_LINEUP).resetTime();
       getClockModel(Clock.ID_LINEUP).start();
     }
