@@ -19,6 +19,7 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
     super();
 
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, JAM_TRIGGER_TIME, "Double", String.valueOf(DEFAULT_JAM_TRIGGER_TIME)));
+    addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, OVERTIME_JAM_TRIGGER_TIME, "Double", String.valueOf(DEFAULT_OVERTIME_JAM_TRIGGER_TIME)));
   }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
@@ -28,7 +29,7 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
 
   public void reset() {
     super.reset();
-    setDescription("This starts the jam based on the Lineup clock.  When the Lineup clock reaches or exceeds the trigger value (by default 30 seconds), the jam is started (via StartJam).  By default, this policy is disabled.");
+    setDescription("This starts the jam based on the Lineup clock.  When the Lineup clock reaches or exceeds the trigger value (by default 30 seconds), the jam is started (via StartJam), and the Lineup clock is stopped and reset (to avoid possible accidental triggers of this policy).  By default, this policy is disabled.");
 
     setEnabled(false);
   }
@@ -36,11 +37,16 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
   public void clockTimeChange(Clock clock, long time) {
     boolean trigger = false;
     long triggerTime = getLongTime(JAM_TRIGGER_TIME);
+    if (getScoreBoard().isInOvertime())
+      triggerTime = getLongTime(OVERTIME_JAM_TRIGGER_TIME);
     if (clock.isCountDirectionDown())
       trigger = (time <= triggerTime);
     else
       trigger = (time >= triggerTime);
     if (trigger) {
+      ClockModel lc = getScoreBoardModel().getClockModel(Clock.ID_LINEUP);
+      lc.stop();
+      lc.reset();
       getScoreBoardModel().startJam();
     }
   }
@@ -51,6 +57,8 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
   }
 
   public static final String JAM_TRIGGER_TIME = "Jam trigger time";
+  public static final String OVERTIME_JAM_TRIGGER_TIME = "Overtime Jam trigger time";
 
   public static final Double DEFAULT_JAM_TRIGGER_TIME = new Double(30);
+  public static final Double DEFAULT_OVERTIME_JAM_TRIGGER_TIME = new Double(60);
 }
