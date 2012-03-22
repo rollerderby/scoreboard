@@ -34,16 +34,19 @@ public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
   }
 
   public void clockTimeChange(Clock clock, long time) {
-    boolean trigger = false;
+    boolean trigger = false, avoidInfiniteLoop = false;
     long triggerTime = getLongTime(JAM_TRIGGER_TIME);
     if (getScoreBoard().isInOvertime())
       triggerTime = getLongTime(OVERTIME_JAM_TRIGGER_TIME);
-    if (clock.isCountDirectionDown())
+    if (clock.isCountDirectionDown()) {
+      avoidInfiniteLoop = (clock.getMaximumTime() <= triggerTime);
       trigger = (time <= triggerTime);
-    else
+    } else {
+      avoidInfiniteLoop = (clock.getMinimumTime() >= triggerTime);
       trigger = (time >= triggerTime);
-    if (trigger) {
-      ClockModel lc = getScoreBoardModel().getClockModel(Clock.ID_LINEUP);
+    }
+    if (trigger && !avoidInfiniteLoop) {
+      ClockModel lc = getScoreBoardModel().getClockModel(clock.getId());
       lc.stop();
       lc.reset();
       getScoreBoardModel().startJam();

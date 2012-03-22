@@ -34,19 +34,25 @@ public class LineupClockStartsTimeoutPolicy extends AbstractClockTimeChangePolic
   }
 
   public void clockTimeChange(Clock clock, long time) {
-    boolean trigger = false;
+    boolean trigger = false, avoidInfiniteLoop = false;
     long triggerTime = getLongTime(TIMEOUT_TRIGGER_TIME);
-    if (clock.isCountDirectionDown())
+    if (clock.isCountDirectionDown()) {
+      avoidInfiniteLoop = (clock.getMaximumTime() <= triggerTime);
       trigger = (time <= triggerTime);
-    else
+    } else {
+      avoidInfiniteLoop = (clock.getMinimumTime() >= triggerTime);
       trigger = (time >= triggerTime);
-    if (trigger) {
+    }
+    if (trigger && !avoidInfiniteLoop) {
       long rollbackTime = getLongTime(PERIOD_ROLLBACK_TIME);
       ClockModel pC = getScoreBoardModel().getClockModel(Clock.ID_PERIOD);
       if (!pC.isCountDirectionDown())
         rollbackTime *= -1;
       if (0 != rollbackTime)
         pC.changeTime(rollbackTime);
+      ClockModel lc = getScoreBoardModel().getClockModel(clock.getId());
+      lc.stop();
+      lc.reset();
       getScoreBoardModel().timeout();
     }
   }
