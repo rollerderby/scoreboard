@@ -672,11 +672,14 @@ function createPoliciesContent(table) {
 }
 
 function addPolicy(policy) {
-  var nameTr = $("<tr>").addClass("Name").appendTo("#Policies")
+  var nameTr = $("<tr>").addClass("Name")
+    .attr("data-policy", policy.$sbId)
     .append($("<td>").attr("colspan", "2"));
+  _windowFunctions.appendAlphaSortedByAttr($("#Policies>tbody"), nameTr, "data-policy", 1);
   policy.$sb("Name").$sbElement("<a>").appendTo(nameTr.children("td"));
 
   var contentTr = $("<tr>").addClass("Content").insertAfter(nameTr)
+    .attr("data-policy", policy.$sbId)
     .append($("<td>").addClass("Description"))
     .append($("<td>").addClass("Controls"));
   $("<div>").append(policy.$sb("Description").$sbElement("<a>"))
@@ -715,7 +718,7 @@ function addPolicy(policy) {
 }
 
 function removePolicy(policy) {
-alert("Implement removePolicy!");
+  $("#Policies tr[data-policy='"+policy.$sbId+"']").remove();
 }
 
 
