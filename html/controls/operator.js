@@ -931,8 +931,10 @@ function createTeamsContent() {
   var createNewTeam = $("<button>").text("New Team").button()
     .appendTo("#Teams table.Selection td:eq(1)");
 
-  _crgUtils.bindAndRun(newTeamName, "keyup", function() {
+  _crgUtils.bindAndRun(newTeamName, "keyup", function(event) {
     createNewTeam.button("option", "disabled", (!$(this).val()));
+    if (!createNewTeam.button("option", "disabled") && (13 == event.which)) // Enter
+      createNewTeam.click();
   });
   createNewTeam.click(function(event) {
     var teamname = newTeamName.val();
@@ -1007,7 +1009,7 @@ function createNewTeamTable(team, teamid) {
     .appendTo(skatersTable.find("tr.AddSkater>th:eq(1)"));
   var newSkaterNumber = $("<input type='text' size='20'>").addClass("Number")
     .appendTo(skatersTable.find("tr.AddSkater>th:eq(2)"));
-  $("<button>").text("Add Skater").button().addClass("AddSkater")
+  var newSkaterButton = $("<button>").text("Add Skater").button({ disabled: true }).addClass("AddSkater")
     .appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
     .click(function() {
       var id = _crgUtils.checkSbId(newSkaterName.val());
@@ -1016,7 +1018,13 @@ function createNewTeamTable(team, teamid) {
       newSkaterNumber.val("");
       newSkaterName.val("").focus();
       $(this).blur();
+      newSkaterButton.button("option", "disabled", true);
     });
+  newSkaterName.add(newSkaterNumber).keyup(function(event) {
+    newSkaterButton.button("option", "disabled", (!newSkaterName.val() && !newSkaterNumber.val()));
+    if (!newSkaterButton.button("option", "disabled") && (13 == event.which)) // Enter
+      newSkaterButton.click();
+  });
 
   team.$sbBindAddRemoveEach("Skater", function(event,node) {
     var skaterid = node.$sbId;
