@@ -114,15 +114,22 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
 
   protected void updateStatus(String status) {
     Element updateE = createXPathElement();
-    editor.addElement(updateE, "Status", null, status);
+    editor.setOncePI(editor.addElement(updateE, "Status", null, status));
     update(updateE);
+  }
+  protected void updateStatusException(String status, TwitterException tE) {
+    updateStatus("Could not tweet '"+status+"' : "+tE.getErrorMessage());
   }
 
   protected void tweet(Element e) throws NoTwitterViewerException,TwitterException {
     String tweet = editor.getText(e);
     if (null == tweet || "".equals(tweet))
       return;
-    getTwitterViewer().tweet(tweet);
+    try {
+      getTwitterViewer().tweet(tweet);
+    } catch ( TwitterException tE ) {
+      updateStatusException(tweet, tE);
+    }
     setError("");
   }
 
@@ -132,7 +139,7 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     String condition = getElementCondition(e);
     String tweet = getElementTweet(e);
     try {
-      getTwitterViewer().addConditionalTweet(condition, tweet);
+      getTwitterViewer().addConditionalTweet(condition, tweet, exceptionListener);
     } catch ( TooManyListenersException tmlE ) {
       throw new IllegalArgumentException(tmlE.getMessage());
     }
@@ -197,6 +204,11 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
   protected Object twitterViewerLock = new Object();
   protected TwitterViewer.TweetListener tweetListener = new TwitterViewer.TweetListener() {
       public void tweet(String tweet) { updateStatus(tweet); }
+    };
+  protected TwitterViewer.TwitterExceptionListener exceptionListener = new TwitterViewer.TwitterExceptionListener() {
+      public void twitterException(String tweet, TwitterException tE) {
+        updateStatusException(tweet, tE);
+      }
     };
 
   protected static final String twitterKey = TwitterViewer.class.getName();

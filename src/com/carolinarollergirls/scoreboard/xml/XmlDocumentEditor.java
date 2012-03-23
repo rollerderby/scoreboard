@@ -248,6 +248,7 @@ public class XmlDocumentEditor
   public Document removeExceptPI(Document d, List targets) { return removeAllPI(d, targets, false); }
   public Document removeExceptPI(Document d, String target) { return removeExceptPI(d, Collections.singletonList(target)); }
 
+  /* These methods remove any element that contains a matched PI */
   public Document filterPI(Document d, String target) {
     synchronized (d) {
       filterPI(d.getRootElement(), target);
@@ -276,20 +277,25 @@ public class XmlDocumentEditor
    *
    * XmlScoreBoard merge into the main Document
    *   Remove will be processed
+   *   Once will be processed
    *   NoSave will be preserved
    *   All other PIs will be removed
    * XmlScoreBoardListeners that receive Document changes from the XmlScoreBoard
    *   Remove must be processed
+   *   Once must be processed
    *   NoSave must be processed by any that save to disc
    *   All other PIs must be removed by any that save to disc
    *   All other PIs should be processed or ignored/removed
    * XmlDocumentManagers that receive Document changes from the XmlScoreBoard
    *   Remove must be processed
+   *   Once must be processed
    *   All other PIs should be processed or ignored/removed
    *
    * Currently used ProcessingInstructions:
    *   Remove
-   *     This indicates the owning element should be removed.
+   *     This indicates the owning element should be removed immediately.
+   *   Once
+   *     This indicates the owning element should be removed after processing it.
    *   NoSave
    *     This indicates the owning element should not be saved to disc.
    *
@@ -299,9 +305,13 @@ public class XmlDocumentEditor
    */
   public Element setRemovePI(Element e) { return setPI(e, "Remove"); }
   public boolean hasRemovePI(Element e) { return hasPI(e, "Remove"); }
+  public Element setOncePI(Element e) { return setPI(e, "Once"); }
+  public boolean hasOncePI(Element e) { return hasPI(e, "Once"); }
   public Element setNoSavePI(Element e) { return setPI(e, "NoSave"); }
+  public boolean hasNoSavePI(Element e) { return hasPI(e, "NoSave"); }
 
   public Document filterRemovePI(Document d) { return filterPI(d, "Remove"); }
+  public Document filterOncePI(Document d) { return filterPI(d, "Once"); }
   public Document filterNoSavePI(Document d) { return filterPI(d, "NoSave"); }
 
   public Document addVersion(Document doc) {

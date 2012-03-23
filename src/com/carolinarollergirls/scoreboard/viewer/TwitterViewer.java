@@ -30,12 +30,12 @@ public class TwitterViewer implements ScoreBoardViewer
     formatSpecifier = new FormatSpecifierViewer(scoreBoard);
   }
 
-  public void addConditionalTweet(String conditionFormat, String tweet) throws TooManyListenersException {
+  public void addConditionalTweet(String conditionFormat, String tweet, TwitterExceptionListener exceptionListener) throws TooManyListenersException {
     synchronized (conditionalListeners) {
       String key = getConditionalListenerKey(conditionFormat, tweet);
       if (conditionalListeners.containsKey(key))
         throw new TooManyListenersException("Conditional tweet with given parameters already exists");
-      ScoreBoardListener tweetListener = new TweetScoreBoardListener(tweet);
+      ScoreBoardListener tweetListener = new TweetScoreBoardListener(tweet, exceptionListener);
       ScoreBoardListener conditionalListener =
         new FormatSpecifierScoreBoardListener(formatSpecifier, conditionFormat, tweetListener);
       conditionalListeners.put(key, conditionalListener);
@@ -167,20 +167,28 @@ public class TwitterViewer implements ScoreBoardViewer
 
   protected class TweetScoreBoardListener implements ScoreBoardListener
   {
-    public TweetScoreBoardListener(String t) { tweet = t; }
+    public TweetScoreBoardListener(String t, TwitterExceptionListener l) {
+      tweet = t;
+      exceptionListener = l;
+    }
     public void scoreBoardChange(ScoreBoardEvent e) {
       try {
         if (loggedIn)
           tweet(tweet);
       } catch ( TwitterException tE ) {
-        ScoreBoardManager.printMessage("Error trying to tweet : "+tE.getMessage());
+        exceptionListener.twitterException(tweet, tE);
       }
     }
     protected String tweet;
+    protected TwitterExceptionListener exceptionListener;
   }
 
   public static interface TweetListener
   {
     public void tweet(String tweet);
+  }
+  public static interface TwitterExceptionListener
+  {
+    public void twitterException(String tweet, TwitterException exception);
   }
 }
