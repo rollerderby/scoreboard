@@ -86,6 +86,8 @@
  *     This is similar to the jQuery bind() function, but also runs the
  *     handler function immediately once.  See _crgUtils.bindAndRun
  *     for details on the function.
+ *   $sbOnAndRun(eventType, eventData, handler, initParams)
+ *     This is the same as $sbBindAndRun, but it uses on().
  *   $sbBindAddRemoveEach(childName, add, remove)
  *     This binds functions to the add and remove events for the specified
  *     children of this element, and runs the add function once for each
@@ -225,6 +227,7 @@ _crgScoreBoard = {
     $sbChange: function(value) { this.$sbSet(value, { change: "true" }); },
     $sbRemove: function() { _crgScoreBoard.removeFromServer(this); },
     $sbBindAndRun: function(eventType, eventData, handler, initParams) { return _crgUtils.bindAndRun(this, eventType, eventData, handler, initParams); },
+    $sbOnAndRun: function(eventType, eventData, handler, initParams) { return _crgUtils.onAndRun(this, eventType, eventData, handler, initParams); },
     $sbBindAddRemoveEach: function(childName, add, remove) { return _crgUtils.bindAddRemoveEach(this, childName, add, remove); },
     $sbElement: function(type, attributes, className) { return _crgScoreBoard.create(this, type, attributes, className); },
     $sbControl: function(type, attributes, className) { return _crgScoreBoardControl.create(this, type, attributes, className); },
@@ -500,22 +503,20 @@ _crgScoreBoard = {
     var name = element.nodeName;
     var id = $element.attr("Id");
     var remove = _crgScoreBoard.hasXmlElementPI($element, "Remove");
+    var once = _crgScoreBoard.hasXmlElementPI($element, "Once");
     var e = this.findScoreBoardElement(parent, name+(id?"("+id+")":""), remove, true);
-    var triggerObj = { node: e };
-    if (remove) {
-//FIXME - move the "remove" triggers into group below...
-      _crgScoreBoard.removeScoreBoardElement(parent, e);
-      return;
-    }
-    var newContent = _crgScoreBoard.getXmlElementText($element);
-    if (newContent !== null) {
-      var oldContent = _crgScoreBoard.getXmlElementText(e);
-      if (oldContent !== newContent) {
-        _crgScoreBoard.setXmlElementText(e, newContent);
-        _crgScoreBoard.setHtmlValue(e, $("[data-sbelement='"+e.$sbPath+"']"), newContent);
-        triggerObj.fireContent = true;
-        triggerObj.oldContent = oldContent;
-        triggerObj.newContent = newContent;
+    var triggerObj = { parent: parent, node: e, remove: (remove || once) };
+    if (!remove) {
+      var newContent = _crgScoreBoard.getXmlElementText($element);
+      if (newContent !== null) {
+        var oldContent = _crgScoreBoard.getXmlElementText(e);
+        if (oldContent !== newContent) {
+          _crgScoreBoard.setXmlElementText(e, newContent);
+          _crgScoreBoard.setHtmlValue(e, $("[data-sbelement='"+e.$sbPath+"']"), newContent);
+          triggerObj.fireContent = true;
+          triggerObj.oldContent = oldContent;
+          triggerObj.newContent = newContent;
+        }
       }
     }
     var fireEvents = false;
@@ -526,14 +527,16 @@ _crgScoreBoard = {
     triggerArray.push(triggerObj);
     $element.children().each(function() { _crgScoreBoard.processScoreBoardElement(e, this, triggerArray); });
     if (fireEvents) {
-      $.each(triggerArray, function() {
-        if (!_crgScoreBoard.addEventTriggered[this.node.$sbPath]) {
-          _crgScoreBoard.addEventTriggered[this.node.$sbPath] = true;
-          this.node.parent().trigger("add", [ this.node ]);
-          this.node.parent().trigger("add:"+this.node.$sbName, [ this.node ]);
+      $.each(triggerArray, function(i,obj) {
+        if (!_crgScoreBoard.addEventTriggered[obj.node.$sbPath]) {
+          _crgScoreBoard.addEventTriggered[obj.node.$sbPath] = true;
+          obj.parent.trigger("add", [ obj.node ]);
+          obj.parent.trigger("add:"+obj.node.$sbName, [ obj.node ]);
         }
-        if (this.fireContent)
-          this.node.trigger("content", [ this.newContent, this.oldContent ]);
+        if (obj.fireContent)
+          obj.node.trigger("content", [ obj.newContent, obj.oldContent ]);
+        if (obj.remove)
+          _crgScoreBoard.removeScoreBoardElement(obj.parent, obj.node);
       });
     }
   },

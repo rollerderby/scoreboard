@@ -24,10 +24,10 @@ _crgUtils = {
     return s.replace(/['"()]/g, "");
   },
 
-  /* Bind and run a function.
-   * This is more restrictive than the actual bind() function,
+  /* Bind, using on(), and run a function.
+   * This is more restrictive than the actual on() function,
    * as only one eventType can be specified, and this does
-   * not support a map as the jQuery bind() function does.
+   * not support a map as the jQuery on() function does.
    * The eventData and initialParams parameters are optional.
    * The initialParams, if provided, is an array of the parameters
    * to supply to the initial call of the handler.
@@ -37,17 +37,25 @@ _crgUtils = {
    * the initialParams are not defined, and the target
    * is a $sb() node, the target.$sbGet() value is passed as the
    * first and second initial parameters to the handler.
+   * The useBind parameter, if true, will cause bind() to be used
+   * instead of on().
    */
-  bindAndRun: function(target, eventType, eventData, handler, initialParams) {
+  onAndRun: function(target, eventType, eventData, handler, initialParams, useBind) {
     if (!$.isjQuery(target))
       target = $(target);
     if ($.isFunction(eventData)) {
       initialParams = handler;
       handler = eventData;
       eventData = undefined;
-      target.bind(eventType, handler);
+      if (useBind)
+        target.bind(eventType, handler);
+      else
+        target.live(eventType, handler);
     } else {
-      target.bind(eventType, eventData, handler);
+      if (useBind)
+        target.bind(eventType, eventData, handler);
+      else
+        target.live(eventType, eventData, handler);
     }
     target.each(function() {
       var params = [ ];
@@ -63,6 +71,9 @@ _crgUtils = {
       handler.apply(this, $.merge([ event ], params));
     });
     return target;
+  },
+  bindAndRun: function(target, eventType, eventData, handler, initialParams) {
+    return _crgUtils.onAndRun(target, eventType, eventData, handler, initialParams, true);
   },
 
   /* Bind functions to the addition/removal of specific children.
