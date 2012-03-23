@@ -41,26 +41,29 @@ public class ScoreBoardCondition implements Cloneable
     catch ( ClassCastException ccE ) { }
     return false;
   }
-
   public boolean equals(ScoreBoardEvent e) {
-    if (!getProviderClass().equals(e.getProvider().getProviderClass()))
+    Class pc = (null == e.getProvider() ? null : e.getProvider().getProviderClass());
+    if (!ScoreBoardEvent.ObjectsEquals(getProviderClass(), pc))
       return false;
-    if (!getProviderId().equals(e.getProvider().getProviderId()) && !(getProviderId() == ANY_ID))
+    String pi = (null == e.getProvider() ? null : e.getProvider().getProviderId());
+    if (!ScoreBoardEvent.ObjectsEquals(getProviderId(), pi) && (getProviderId() != ANY_ID))
       return false;
-    if (!getProperty().equals(e.getProperty()))
+    if (!ScoreBoardEvent.ObjectsEquals(getProperty(), e.getProperty()))
       return false;
-    if (ANY_VALUE == getValue())
-      return true;
-    return (getValue().equals(e.getValue()));
+    if (!ScoreBoardEvent.ObjectsEquals(getValue(), e.getValue()) && (getValue() != ANY_VALUE))
+      return false;
+    return true;
   }
   public boolean equals(ScoreBoardCondition c) {
-    if (!getProviderClass().equals(c.getProviderClass()))
+    if (!ScoreBoardEvent.ObjectsEquals(getProviderClass(), c.getProviderClass()))
       return false;
-    if (!getProviderId().equals(c.getProviderId()))
+    if (!ScoreBoardEvent.ObjectsEquals(getProviderId(), c.getProviderId()))
       return false;
-    if (!getProperty().equals(c.getProperty()))
+    if (!ScoreBoardEvent.ObjectsEquals(getProperty(), c.getProperty()))
       return false;
-    return (getValue().equals(c.getValue()));
+    if (!ScoreBoardEvent.ObjectsEquals(getValue(), c.getValue()))
+      return false;
+    return true;
   }
 
   protected Class providerClass;

@@ -64,14 +64,20 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
   public String getName() { return name; }
   public void setName(String n) {
-    name = n;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name));
+    synchronized (nameLock) {
+      String last = name;
+      name = n;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
+    }
   }
 
   public String getLogo() { return logo; }
   public void setLogo(String l) {
-    logo = l;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_LOGO, logo));
+    synchronized (logoLock) {
+      String last = logo;
+      logo = l;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_LOGO, logo, last));
+    }
   }
 
   public void timeout() {
@@ -83,27 +89,37 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
   public int getScore() { return score; }
   public void setScore(int s) {
-    if (0 > s)
-      s = 0;
-    score = s;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_SCORE, new Integer(score)));
+    synchronized (scoreLock) {
+      if (0 > s)
+        s = 0;
+      Integer last = new Integer(score);
+      score = s;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_SCORE, new Integer(score), last));
+    }
   }
   public void changeScore(int c) {
-    setScore(getScore() + c);
+    synchronized (scoreLock) {
+      setScore(getScore() + c);
+    }
   }
 
   public int getTimeouts() { return timeouts; }
 //FIXME - ad MinimumTimeout and MaximumTimeout instead of hardcoding 0 and 3
   public void setTimeouts(int t) {
-    if (0 > t)
-      t = 0;
-    if (3 < t)
-      t = 3;
-    timeouts = t;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUTS, new Integer(timeouts)));
+    synchronized (timeoutsLock) {
+      if (0 > t)
+        t = 0;
+      if (3 < t)
+        t = 3;
+      Integer last = new Integer(timeouts);
+      timeouts = t;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUTS, new Integer(timeouts), last));
+    }
   }
   public void changeTimeouts(int c) {
-    setTimeouts(getTimeouts() + c);
+    synchronized (timeoutsLock) {
+      setTimeouts(getTimeouts() + c);
+    }
   }
 
   public List<SkaterModel> getSkaterModels() { return Collections.unmodifiableList(new ArrayList<SkaterModel>(skaters.values())); }
@@ -137,7 +153,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
       skaters.put(skater.getId(), skater);
       skater.addScoreBoardListener(this);
-      scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_SKATER, skater));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_SKATER, skater, null));
     }
   }
   public void removeSkaterModel(String id) throws SkaterNotFoundException {
@@ -148,7 +164,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
       catch ( PositionNotFoundException pnfE ) { /* was on BENCH */ }
       sm.removeScoreBoardListener(this);
       skaters.remove(id);
-      scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_SKATER, sm));
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_SKATER, sm, null));
     }
   }
 
@@ -177,8 +193,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     }
   }
   public void _setLeadJammer(boolean lead) {
+    Boolean last = new Boolean(leadJammer);
     leadJammer = lead;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, new Boolean(leadJammer)));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, new Boolean(leadJammer), last));
   }
 
 
@@ -196,8 +213,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     }
   }
   public void _setPass(int p) {
+    Integer last = new Integer(pass);
     pass = p;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_PASS, new Integer(pass)));   
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_PASS, new Integer(pass), last));
   }
 
 
@@ -205,9 +223,13 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
   protected String id;
   protected String name;
+  protected Object nameLock = new Object();
   protected String logo;
+  protected Object logoLock = new Object();
   protected int score;
+  protected Object scoreLock = new Object();
   protected int timeouts;
+  protected Object timeoutsLock = new Object();
   protected boolean leadJammer = false;
   protected int pass = 0;
 

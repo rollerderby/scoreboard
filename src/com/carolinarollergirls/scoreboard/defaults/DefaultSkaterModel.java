@@ -37,16 +37,18 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
   public String getName() { return name; }
   public void setName(String n) {
     synchronized (nameLock) {
+      String last = name;
       name = n;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NAME, name));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NAME, name, last));
     }
   }
 
   public String getNumber() { return number; }
   public void setNumber(String n) {
     synchronized (numberLock) {
+      String last = number;
       number = n;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NUMBER, number));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NUMBER, number, last));
     }
   }
 
@@ -66,8 +68,9 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
         setLeadJammer(false);
         setPass(0);
       }
+      String last = position;
       position = p;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position, last));
     }
   }
 
@@ -76,8 +79,9 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
     synchronized (positionLock) {
       if ((!Position.ID_JAMMER.equals(position)) && lead)
         return;
+      Boolean last = new Boolean(leadJammer);
       leadJammer = lead;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, new Boolean(leadJammer)));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, new Boolean(leadJammer), last));
 
       getTeamModel()._setLeadJammer(leadJammer);
     }
@@ -86,8 +90,9 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
   public boolean isPenaltyBox() { return penaltyBox; }
   public void setPenaltyBox(boolean box) {
     synchronized (penaltyBoxLock) {
+      Boolean last = new Boolean(penaltyBox);
       penaltyBox = box;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox)));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
     }
   }
 
@@ -97,8 +102,9 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 //FIXME - need to remove hardcoded min/max like this.
       if (p < 0)
         p = 0;
+      Integer last = new Integer(pass);
       pass = p;
-      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PASS, new Integer(pass)));
+      scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PASS, new Integer(pass), last));
 
       getTeamModel()._setPass(pass);
     }

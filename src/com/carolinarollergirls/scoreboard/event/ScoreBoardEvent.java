@@ -14,18 +14,20 @@ import java.lang.reflect.*;
 
 public class ScoreBoardEvent extends EventObject implements Cloneable
 {
-  public ScoreBoardEvent(ScoreBoardEventProvider sbeP, String p, Object v) {
+  public ScoreBoardEvent(ScoreBoardEventProvider sbeP, String p, Object v, Object prev) {
     super(sbeP);
     provider = sbeP;
     property = p;
     value = v;
+    previousValue = prev;
   }
 
   public ScoreBoardEventProvider getProvider() { return provider; }
   public String getProperty() { return property; }
   public Object getValue() { return value; }
+  public Object getPreviousValue() { return previousValue; }
 
-  public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue()); }
+  public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue(), getPreviousValue()); }
 
   public boolean equals(Object o) {
     if (null == o)
@@ -37,30 +39,30 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
     return false;
   }
   public boolean equals(ScoreBoardEvent e) {
-    if (!getProvider().equals(e.getProvider()))
+    if (!ObjectsEquals(getProvider(), e.getProvider()))
       return false;
-    if (!getProperty().equals(e.getProperty()))
+    if (!ObjectsEquals(getProperty(), e.getProperty()))
       return false;
-    return (getValue().equals(e.getValue()));
+    if (!ObjectsEquals(getValue(), e.getValue()))
+      return false;
+    if (!ObjectsEquals(getPreviousValue(), e.getPreviousValue()))
+      return false;
+    return true;
   }
   public boolean equals(ScoreBoardCondition c) {
     return c.equals(this);
   }
-
-  public boolean reflect(Object o) {
-    try {
-      reflectWithException(o);
-      return true;
-    } catch ( Exception e ) {
+  /* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
+  static boolean ObjectsEquals(Object a, Object b) {
+    if ((null == a) != (null == b))
       return false;
-    }
-  }
-  public void reflectWithException(Object o) throws Exception {
-    Method m = o.getClass().getMethod("scoreBoardChange", new Class[]{getProvider().getProviderClass(), ScoreBoardEvent.class});
-    m.invoke(o, new Object[]{getProvider(), this});
+    if ((null != a) && !a.equals(b))
+      return false;
+    return true;
   }
 
   protected ScoreBoardEventProvider provider;
   protected String property;
   protected Object value;
+  protected Object previousValue;
 }

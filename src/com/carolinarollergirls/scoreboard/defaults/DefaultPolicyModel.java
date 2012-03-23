@@ -55,8 +55,11 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
 
   public boolean isEnabled() { return enabled; }
   public void setEnabled(boolean e) {
-    enabled = e;
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ENABLED, new Boolean(enabled)));
+    synchronized (enabledLock) {
+      Boolean last = new Boolean(enabled);
+      enabled = e;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_ENABLED, new Boolean(enabled), last));
+    }
   }
 
   public List<PolicyModel.ParameterModel> getParameterModels() { return Collections.unmodifiableList(new ArrayList<PolicyModel.ParameterModel>(parameters.values())); }
@@ -73,7 +76,7 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
   protected void addParameterModel(PolicyModel.ParameterModel parameterModel) {
     parameters.put(parameterModel.getName(), parameterModel);
     parameterModel.addScoreBoardListener(this);
-    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_PARAMETER, parameterModel));
+    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_PARAMETER, parameterModel, null));
   }
 
   protected ScoreBoardModel scoreBoardModel = null;
@@ -82,6 +85,7 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
   protected String name;
   protected String description;
   protected boolean enabled;
+  protected Object enabledLock = new Object();
 
   public static final boolean DEFAULT_ENABLED = true;
 
@@ -128,8 +132,9 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
         try {
           if (null != constructor)
             constructor.newInstance(new Object[]{ v });
+          String last = value;
           value = v;
-          scoreBoardChange(new ScoreBoardEvent(this, EVENT_VALUE, value));
+          scoreBoardChange(new ScoreBoardEvent(this, EVENT_VALUE, value, last));
         } catch ( Exception e ) {
           throw new IllegalArgumentException("Invalid value ("+v+") : "+e.getMessage());
         }

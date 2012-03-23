@@ -21,7 +21,12 @@ public class XmlRealtimeStats extends XmlStats
 
   public void scoreBoardChange(ScoreBoardEvent event) {
     synchronized (lock) {
-      event.reflect(this);
+      try { scoreBoardChange((Clock)event.getProvider(), event); }
+      catch ( ClassCastException ccE ) { }
+      try { scoreBoardChange((Team)event.getProvider(), event); }
+      catch ( ClassCastException ccE ) { }
+      try { scoreBoardChange((Skater)event.getProvider(), event); }
+      catch ( ClassCastException ccE ) { }
     }
   }
 
