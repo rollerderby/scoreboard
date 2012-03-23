@@ -23,7 +23,7 @@ $sb(function() {
   sbTwitter.$sb("Error").$sbBindAndRun("content", function(event, value) {
     $("p.Error").toggleClass("Show", !!value);
   });
-  sbTwitter.$sb("Status").$sbBindAndRun("content", function(event, value) {
+  sbTwitter.$sb("Status").$sbOnAndRun("content", function(event, value) {
     if (value)
       $("<a>").html(value).append("<br>").prependTo("p.StatusUpdates");
   });
