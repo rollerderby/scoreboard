@@ -22,7 +22,7 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     synchronized (listenersLock) {
       Iterator<ManagerRunnable> i = listeners.values().iterator();
       while (i.hasNext())
-        i.next().addScoreBoardEvent(new ScoreBoardEvent(event.getProvider(), event.getProperty(), event.getValue()));
+        i.next().addScoreBoardEvent((ScoreBoardEvent)event.clone());
     }
   }
 
