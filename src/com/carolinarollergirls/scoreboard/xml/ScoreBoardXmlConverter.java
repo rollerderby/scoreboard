@@ -38,11 +38,11 @@ public class ScoreBoardXmlConverter
     editor.setElement(sb, "Timeout", null, "");
     editor.setElement(sb, "UnTimeout", null, "");
     editor.setElement(sb, "StartOvertime", null, "");
-    editor.setElement(sb, "UpdateImages", null, "");
 
-    editor.setElement(sb, "TimeoutOwner", null, scoreBoard.getTimeoutOwner());
-    editor.setElement(sb, "InOvertime", null, String.valueOf(scoreBoard.isInOvertime()));
-    editor.setElement(sb, "InPeriod", null, String.valueOf(scoreBoard.isInPeriod()));
+    editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner());
+    editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
+    editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
+    editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
 
     Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
     while (clocks.hasNext())
@@ -68,15 +68,15 @@ public class ScoreBoardXmlConverter
     editor.setElement(e, "UnStop", null, "");
     editor.setElement(e, "ResetTime", null, "");
 
-    editor.setElement(e, "Name", null, c.getName());
-    editor.setElement(e, "Number", null, String.valueOf(c.getNumber()));
-    editor.setElement(e, "MinimumNumber", null, String.valueOf(c.getMinimumNumber()));
-    editor.setElement(e, "MaximumNumber", null, String.valueOf(c.getMaximumNumber()));
-    editor.setElement(e, "Time", null, String.valueOf(c.getTime()));
-    editor.setElement(e, "MinimumTime", null, String.valueOf(c.getMinimumTime()));
-    editor.setElement(e, "MaximumTime", null, String.valueOf(c.getMaximumTime()));
-    editor.setElement(e, "Running", null, String.valueOf(c.isRunning()));
-    editor.setElement(e, "Direction", null, String.valueOf(c.isCountDirectionDown()));
+    editor.setElement(e, Clock.EVENT_NAME, null, c.getName());
+    editor.setElement(e, Clock.EVENT_NUMBER, null, String.valueOf(c.getNumber()));
+    editor.setElement(e, Clock.EVENT_MINIMUM_NUMBER, null, String.valueOf(c.getMinimumNumber()));
+    editor.setElement(e, Clock.EVENT_MAXIMUM_NUMBER, null, String.valueOf(c.getMaximumNumber()));
+    editor.setElement(e, Clock.EVENT_TIME, null, String.valueOf(c.getTime()));
+    editor.setElement(e, Clock.EVENT_MINIMUM_TIME, null, String.valueOf(c.getMinimumTime()));
+    editor.setElement(e, Clock.EVENT_MAXIMUM_TIME, null, String.valueOf(c.getMaximumTime()));
+    editor.setElement(e, Clock.EVENT_RUNNING, null, String.valueOf(c.isRunning()));
+    editor.setElement(e, Clock.EVENT_DIRECTION, null, String.valueOf(c.isCountDirectionDown()));
     return e;
   }
 
@@ -85,12 +85,12 @@ public class ScoreBoardXmlConverter
 
     editor.setElement(e, "Timeout", null, "");
 
-    editor.setElement(e, "Name", null, t.getName());
-    editor.setElement(e, "Logo", null, t.getLogo());
-    editor.setElement(e, "Score", null, String.valueOf(t.getScore()));
-    editor.setElement(e, "Timeouts", null, String.valueOf(t.getTimeouts()));
-    editor.setElement(e, "LeadJammer", null, String.valueOf(t.isLeadJammer()));
-    editor.setElement(e, "Pass", null, String.valueOf(t.getPass()));
+    editor.setElement(e, Team.EVENT_NAME, null, t.getName());
+    editor.setElement(e, Team.EVENT_LOGO, null, t.getLogo());
+    editor.setElement(e, Team.EVENT_SCORE, null, String.valueOf(t.getScore()));
+    editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
+    editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
+    editor.setElement(e, Team.EVENT_PASS, null, String.valueOf(t.getPass()));
 
     Iterator<Position> positions = t.getPositions().iterator();
     while (positions.hasNext())
@@ -110,17 +110,17 @@ public class ScoreBoardXmlConverter
 
     Skater s = p.getSkater();
     editor.setElement(e, "Id", null, (s==null?"":s.getId()));
-    editor.setElement(e, "Name", null, (s==null?"":s.getName()));
-    editor.setElement(e, "Number", null, (s==null?"":s.getNumber()));
+    editor.setElement(e, Skater.EVENT_NAME, null, (s==null?"":s.getName()));
+    editor.setElement(e, Skater.EVENT_NUMBER, null, (s==null?"":s.getNumber()));
 
     return e;
   }
 
   public Element toElement(Element sb, Policy p) {
     Element e = editor.setElement(sb, "Policy", p.getId());
-    editor.setElement(e, "Name", null, p.getName());
-    editor.setElement(e, "Description", null, p.getDescription());
-    editor.setElement(e, "Enabled", null, String.valueOf(p.isEnabled()));
+    editor.setElement(e, Policy.EVENT_NAME, null, p.getName());
+    editor.setElement(e, Policy.EVENT_DESCRIPTION, null, p.getDescription());
+    editor.setElement(e, Policy.EVENT_ENABLED, null, String.valueOf(p.isEnabled()));
 
     Iterator<Policy.Parameter> parameters = p.getParameters().iterator();
     while (parameters.hasNext())
@@ -133,18 +133,18 @@ public class ScoreBoardXmlConverter
     Element e = editor.setElement(p, "Parameter", pp.getName());
     editor.setElement(e, "Name", null, pp.getName());
     editor.setElement(e, "Type", null, pp.getType());
-    editor.setElement(e, "Value", null, pp.getValue());
+    editor.setElement(e, Policy.Parameter.EVENT_VALUE, null, pp.getValue());
     return e;
   }
 
   public Element toElement(Element t, Skater s) {
     Element e = editor.setElement(t, "Skater", s.getId());
-    editor.setElement(e, "Name", null, s.getName());
-    editor.setElement(e, "Number", null, s.getNumber());
-    editor.setElement(e, "Position", null, s.getPosition());
-    editor.setElement(e, "LeadJammer", null, String.valueOf(s.isLeadJammer()));
-    editor.setElement(e, "PenaltyBox", null, String.valueOf(s.isPenaltyBox()));
-    editor.setElement(e, "Pass", null, String.valueOf(s.getPass()));
+    editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
+    editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
+    editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
+    editor.setElement(e, Skater.EVENT_LEAD_JAMMER, null, String.valueOf(s.isLeadJammer()));
+    editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
+    editor.setElement(e, Skater.EVENT_PASS, null, String.valueOf(s.getPass()));
 
     return e;
   }
@@ -178,12 +178,14 @@ public class ScoreBoardXmlConverter
           processPolicy(scoreBoardModel, element);
         else if (null == value)
           continue;
-        else if (name.equals("TimeoutOwner"))
+        else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER))
           scoreBoardModel.setTimeoutOwner(value);
-        else if (name.equals("InOvertime"))
+        else if (name.equals(ScoreBoard.EVENT_IN_OVERTIME))
           scoreBoardModel.setInOvertime(bVal);
-        else if (name.equals("InPeriod"))
+        else if (name.equals(ScoreBoard.EVENT_IN_PERIOD))
           scoreBoardModel.setInPeriod(bVal);
+        else if (name.equals(ScoreBoard.EVENT_OFFICIAL_SCORE))
+          scoreBoardModel.setOfficialScore(bVal);
         else if (bVal) {
           if (name.equals("Reset"))
             scoreBoardModel.reset();
@@ -234,35 +236,35 @@ public class ScoreBoardXmlConverter
           clockModel.unstop();
         else if (name.equals("ResetTime") && Boolean.parseBoolean(value))
           clockModel.resetTime();
-        else if (name.equals("Name"))
+        else if (name.equals(Clock.EVENT_NAME))
           clockModel.setName(value);
-        else if (name.equals("Number") && isChange)
+        else if (name.equals(Clock.EVENT_NUMBER) && isChange)
           clockModel.changeNumber(Integer.parseInt(value));
-        else if (name.equals("Number") && !isChange)
+        else if (name.equals(Clock.EVENT_NUMBER) && !isChange)
           clockModel.setNumber(Integer.parseInt(value));
-        else if (name.equals("MinimumNumber"))
+        else if (name.equals(Clock.EVENT_MINIMUM_NUMBER))
           clockModel.setMinimumNumber(Integer.parseInt(value));
-        else if (name.equals("MaximumNumber"))
+        else if (name.equals(Clock.EVENT_MAXIMUM_NUMBER))
           clockModel.setMaximumNumber(Integer.parseInt(value));
-        else if (name.equals("Time") && isChange)
+        else if (name.equals(Clock.EVENT_TIME) && isChange)
           clockModel.changeTime(Long.parseLong(value));
-        else if (name.equals("Time") && isReset)
+        else if (name.equals(Clock.EVENT_TIME) && isReset)
           clockModel.resetTime();
-        else if (name.equals("Time") && !isChange && !isReset)
+        else if (name.equals(Clock.EVENT_TIME) && !isChange && !isReset)
           clockModel.setTime(Long.parseLong(value));
-        else if (name.equals("MinimumTime") && isChange)
+        else if (name.equals(Clock.EVENT_MINIMUM_TIME) && isChange)
           clockModel.changeMinimumTime(Long.parseLong(value));
-        else if (name.equals("MinimumTime"))
+        else if (name.equals(Clock.EVENT_MINIMUM_TIME))
           clockModel.setMinimumTime(Long.parseLong(value));
-        else if (name.equals("MaximumTime") && isChange)
+        else if (name.equals(Clock.EVENT_MAXIMUM_TIME) && isChange)
           clockModel.changeMaximumTime(Long.parseLong(value));
-        else if (name.equals("MaximumTime"))
+        else if (name.equals(Clock.EVENT_MAXIMUM_TIME))
           clockModel.setMaximumTime(Long.parseLong(value));
-        else if (name.equals("Running") && Boolean.parseBoolean(value))
+        else if (name.equals(Clock.EVENT_RUNNING) && Boolean.parseBoolean(value))
           clockModel.start();
-        else if (name.equals("Running") && !Boolean.parseBoolean(value))
+        else if (name.equals(Clock.EVENT_RUNNING) && !Boolean.parseBoolean(value))
           clockModel.stop();
-        else if (name.equals("Direction"))
+        else if (name.equals(Clock.EVENT_DIRECTION))
           clockModel.setCountDirectionDown(Boolean.parseBoolean(value));
       } catch ( Exception e ) {
       }
@@ -289,25 +291,25 @@ public class ScoreBoardXmlConverter
           processPosition(teamModel, element);
         else if (null == value)
           continue;
-        else if (name.equals("Timeout") && Boolean.parseBoolean(value))
+        else if (name.equals(Team.EVENT_TIMEOUT) && Boolean.parseBoolean(value))
           teamModel.timeout();
-        else if (name.equals("Name"))
+        else if (name.equals(Team.EVENT_NAME))
           teamModel.setName(value);
-        else if (name.equals("Logo"))
+        else if (name.equals(Team.EVENT_LOGO))
           teamModel.setLogo(value);
-        else if (name.equals("Score") && isChange)
+        else if (name.equals(Team.EVENT_SCORE) && isChange)
           teamModel.changeScore(Integer.parseInt(value));
-        else if (name.equals("Score") && !isChange)
+        else if (name.equals(Team.EVENT_SCORE) && !isChange)
           teamModel.setScore(Integer.parseInt(value));
-        else if (name.equals("Timeouts") && isChange)
+        else if (name.equals(Team.EVENT_TIMEOUTS) && isChange)
           teamModel.changeTimeouts(Integer.parseInt(value));
-        else if (name.equals("Timeouts") && !isChange)
+        else if (name.equals(Team.EVENT_TIMEOUTS) && !isChange)
           teamModel.setTimeouts(Integer.parseInt(value));
-        else if (name.equals("LeadJammer"))
+        else if (name.equals(Team.EVENT_LEAD_JAMMER))
           teamModel.setLeadJammer(Boolean.parseBoolean(value));
-        else if (name.equals("Pass") && isChange)
+        else if (name.equals(Team.EVENT_PASS) && isChange)
           teamModel.changePass(Integer.parseInt(value));
-        else if (name.equals("Pass") && !isChange)
+        else if (name.equals(Team.EVENT_PASS) && !isChange)
           teamModel.setPass(Integer.parseInt(value));
       } catch ( Exception e ) {
       }
@@ -351,7 +353,7 @@ public class ScoreBoardXmlConverter
           processPolicyParameter(policyModel, element);
         else if (null == value)
           continue;
-        else if (name.equals("Enabled"))
+        else if (name.equals(Policy.EVENT_ENABLED))
           policyModel.setEnabled(Boolean.parseBoolean(value));
       } catch ( Exception e ) {
       }
@@ -371,7 +373,7 @@ public class ScoreBoardXmlConverter
 
         if (null == value)
           continue;
-        else if (name.equals("Value"))
+        else if (name.equals(Policy.Parameter.EVENT_VALUE))
           parameterModel.setValue(value);
       } catch ( Exception e ) {
       }
@@ -390,9 +392,9 @@ public class ScoreBoardXmlConverter
     try {
       skaterModel = teamModel.getSkaterModel(id);
     } catch ( SkaterNotFoundException snfE ) {
-      Element nameE = skater.getChild("Name");
+      Element nameE = skater.getChild(Skater.EVENT_NAME);
       String name = (nameE == null ? id : editor.getText(nameE));
-      Element numberE = skater.getChild("Number");
+      Element numberE = skater.getChild(Skater.EVENT_NUMBER);
       String number = (numberE == null ? "" : editor.getText(numberE));
       teamModel.addSkaterModel(id, name, number);
       skaterModel = teamModel.getSkaterModel(id);
@@ -409,19 +411,19 @@ public class ScoreBoardXmlConverter
 
         if (null == value)
           continue;
-        else if (name.equals("Name"))
+        else if (name.equals(Skater.EVENT_NAME))
           skaterModel.setName(value);
-        else if (name.equals("Number"))
+        else if (name.equals(Skater.EVENT_NUMBER))
           skaterModel.setNumber(value);
-        else if (name.equals("Position"))
+        else if (name.equals(Skater.EVENT_POSITION))
           skaterModel.setPosition(value);
-        else if (name.equals("LeadJammer"))
+        else if (name.equals(Skater.EVENT_LEAD_JAMMER))
           skaterModel.setLeadJammer(Boolean.parseBoolean(value));
-        else if (name.equals("PenaltyBox"))
+        else if (name.equals(Skater.EVENT_PENALTY_BOX))
           skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
-        else if (name.equals("Pass") && isChange)
+        else if (name.equals(Skater.EVENT_PASS) && isChange)
           skaterModel.changePass(Integer.parseInt(value));
-        else if (name.equals("Pass") && !isChange)
+        else if (name.equals(Skater.EVENT_PASS) && !isChange)
           skaterModel.setPass(Integer.parseInt(value));
       } catch ( Exception e ) {
       }
