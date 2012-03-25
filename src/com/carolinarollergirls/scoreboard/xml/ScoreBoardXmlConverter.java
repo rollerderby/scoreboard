@@ -291,7 +291,7 @@ public class ScoreBoardXmlConverter
           processPosition(teamModel, element);
         else if (null == value)
           continue;
-        else if (name.equals(Team.EVENT_TIMEOUT) && Boolean.parseBoolean(value))
+        else if (name.equals("Timeout") && Boolean.parseBoolean(value))
           teamModel.timeout();
         else if (name.equals(Team.EVENT_NAME))
           teamModel.setName(value);
