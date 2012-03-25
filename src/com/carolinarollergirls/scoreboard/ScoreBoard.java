@@ -40,6 +40,11 @@ public interface ScoreBoard extends ScoreBoardEventProvider
    */
   public boolean isInOvertime();
 
+  /**
+   * If the score has been verified as Official.
+   */
+  public boolean isOfficialScore();
+
 // FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
   public List<Clock> getClocks();
   public Clock getClock(String id);
@@ -54,6 +59,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 
   public static final String EVENT_IN_PERIOD = "InPeriod";
   public static final String EVENT_IN_OVERTIME = "InOvertime";
+  public static final String EVENT_OFFICIAL_SCORE = "OfficialScore";
   public static final String EVENT_ADD_POLICY = "AddPolicy";
   public static final String EVENT_REMOVE_POLICY = "RemovePolicy";
   public static final String EVENT_TIMEOUT_OWNER = "TimeoutOwner";

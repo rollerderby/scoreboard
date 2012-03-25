@@ -28,6 +28,8 @@ public interface ScoreBoardModel extends ScoreBoard
 
   public void setInPeriod(boolean inPeriod);
 
+  public void setOfficialScore(boolean official);
+
   public void startJam();
   public void stopJam();
 

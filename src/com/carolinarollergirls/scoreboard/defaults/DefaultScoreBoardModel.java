@@ -138,6 +138,15 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     }
   }
 
+  public boolean isOfficialScore() { return officialScore; }
+  public void setOfficialScore(boolean o) {
+    synchronized (officialScoreLock) {
+      Boolean last = new Boolean(officialScore);
+      officialScore = o;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_SCORE, new Boolean(officialScore), last));
+    }
+  }
+
   public void startJam() {
     synchronized (runLock) {
       if (!getClock(Clock.ID_JAM).isRunning()) {
@@ -332,6 +341,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
   protected boolean inOvertime = false;
   protected Object inOvertimeLock = new Object();
+
+  protected boolean officialScore = false;
+  protected Object officialScoreLock = new Object();
 
   protected boolean periodClockWasRunning = false;
   protected boolean jamClockWasRunning = false;
