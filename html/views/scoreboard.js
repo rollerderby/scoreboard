@@ -289,7 +289,7 @@ function setupClocks() {
       autoFitTextContainer: "div"
     } });
 
-    node.$sb("Confirmed").$sbBindAndRun("content", function(event,value) {
+    $sb("ScoreBoard.OfficialScore").$sbBindAndRun("content", function(event,value) {
       $("#Intermission>div.Name>a>span.Unofficial."+node.$sbId)
         .toggle(!isTrue(value) && $sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
       intermissionAutoFitText();

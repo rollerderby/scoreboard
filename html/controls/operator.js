@@ -207,9 +207,8 @@ function createMetaControlTable() {
   $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("content", updatePeriodEndDoPulse);
   $sb("ScoreBoard.Clock(Period).Number").$sbBindAndRun("content", updatePeriodEndDoPulse);
 
-// FIXME - change this to flag not tied to specific intermission
   var confirmedButton = $("<label/><input type='checkbox'/>");
-  $sb("Pages.Page(scoreboard.html).Intermission(2).Confirmed")
+  $sb("ScoreBoard.OfficialScore")
     .$sbControl(confirmedButton, { sbelement: {
       convert: function(value) {
         confirmedButton.filter("input:checkbox")
