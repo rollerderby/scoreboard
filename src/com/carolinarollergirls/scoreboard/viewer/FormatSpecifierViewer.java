@@ -110,6 +110,19 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
   }
 
   protected void setupScoreBoardValues() {
+    new ScoreBoardValue("%sbto", getScoreBoard(), ScoreBoard.EVENT_TIMEOUT_OWNER) {
+      public String getValue() { return getScoreBoard().getTimeoutOwner(); }
+    };
+    new ScoreBoardValue("%sbip", getScoreBoard(), ScoreBoard.EVENT_IN_PERIOD) {
+      public String getValue() { return String.valueOf(getScoreBoard().isInPeriod()); }
+    };
+    new ScoreBoardValue("%sbio", getScoreBoard(), ScoreBoard.EVENT_IN_OVERTIME) {
+      public String getValue() { return String.valueOf(getScoreBoard().isInOvertime()); }
+    };
+    new ScoreBoardValue("%sbos", getScoreBoard(), ScoreBoard.EVENT_OFFICIAL_SCORE) {
+      public String getValue() { return String.valueOf(getScoreBoard().isOfficialScore()); }
+    };
+
     setupTeamValues("1", Team.ID_1);
     setupTeamValues("2", Team.ID_2);
     setupClockValues("p", Clock.ID_PERIOD);
@@ -183,7 +196,7 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
     };
   }
 
-  protected Team getTeam(String id) { return scoreBoard.getTeam(id); }
+  protected Team getTeam(String id) { return getScoreBoard().getTeam(id); }
 
   protected Skater getPositionSkater(String id, String position) {
     return getTeam(id).getPosition(position).getSkater();
@@ -212,7 +225,7 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
     };
   }
 
-  protected Clock getClock(String id) { return scoreBoard.getClock(id); }
+  protected Clock getClock(String id) { return getScoreBoard().getClock(id); }
 
   protected String getClockSecs(String id) { return getClockSecs(getClock(id).getTime()); }
   protected String getClockSecs(long time) { return String.valueOf(time/1000); }
@@ -225,6 +238,8 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
       sec = "0"+sec;
     return min+":"+sec;
   }
+
+  protected ScoreBoard getScoreBoard() { return scoreBoard; }
 
   protected ScoreBoard scoreBoard = null;
 
