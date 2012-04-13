@@ -1,18 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document Version="0.3.0-beta1-20120314212033" SystemTime="1331774542894">
+<document Version="0.3.0-beta3-20120413153601" SystemTime="1334346078790">
   <Viewers>
     <Twitter>
-      <ConditionalTweet Id="d774a333-7acd-4f12-90ee-6c6798aabf43">
-        <Condition><![CDATA[%cjr=true]]></Condition>
-        <Tweet><![CDATA[Start Jam %cjN: %t1n %t1s, %t2n %t2s]]></Tweet>
-      </ConditionalTweet>
-      <ConditionalTweet Id="7504e1a2-2b0e-4885-87b8-90a60a389c20">
-        <Condition><![CDATA[%cir=true %cpN=1]]></Condition>
+      <ConditionalTweet Id="9e887f2a-bdad-4bd3-9ff7-dfbd683568bb">
+        <Condition><![CDATA[%sbip=false %cpN=1]]></Condition>
         <Tweet><![CDATA[Halftime: %t1n %t1s, %t2n %t2s]]></Tweet>
       </ConditionalTweet>
-      <ConditionalTweet Id="8c66faf2-f91f-446d-bbec-3ccb4e58f5e7">
-        <Condition><![CDATA[%cir=true %cpN=2]]></Condition>
-        <Tweet><![CDATA[(Unofficial) Final: %t1n %t1s, %t2n %t2s]]></Tweet>
+      <ConditionalTweet Id="5ae837aa-e5ac-4f62-bcdc-e0c3420a881b">
+        <Condition><![CDATA[%sbos=true %sbip=false %cpN=2]]></Condition>
+        <Tweet><![CDATA[Final: %t1n %t1s, %t2n %t2s	]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="b0a903be-3347-4b46-be64-d20fb84f4cc7">
+        <Condition><![CDATA[%sbip=true %sbio=false]]></Condition>
+        <Tweet><![CDATA[Start Period %cpN, %t1n vs %t2n]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="af03ee34-149d-47c8-89d5-95f285deb77f">
+        <Condition><![CDATA[%sbio=true]]></Condition>
+        <Tweet><![CDATA[Overtime: %t1n %t1s, %t2n %t2s]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="8c1a30c8-aa09-4c90-8253-c732dd17b888">
+        <Condition><![CDATA[%cptms=20:00]]></Condition>
+        <Tweet><![CDATA[Period %cpN time %cptms, %t1n %t1s, %t2n %t2s]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="57e79e49-95f0-4ef7-809d-9fa9934b0f61">
+        <Condition><![CDATA[%cptms=10:00]]></Condition>
+        <Tweet><![CDATA[Period %cpN time %cptms, %t1n %t1s, %t2n %t2s]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="668fb8af-0943-4ebf-8e92-9761906ab696">
+        <Condition><![CDATA[%cptms=5:00]]></Condition>
+        <Tweet><![CDATA[Period %cpN time %cptms, %t1n %t1s, %t2n %t2s]]></Tweet>
+      </ConditionalTweet>
+      <ConditionalTweet Id="689161a3-ea1e-40da-b8ba-7c5aa63f5369">
+        <Condition><![CDATA[%citms=5:00 %ciN=0 %cir=true]]></Condition>
+        <Tweet><![CDATA[5:00 to Derby!  %t1n vs %t2n]]></Tweet>
       </ConditionalTweet>
     </Twitter>
   </Viewers>

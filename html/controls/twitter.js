@@ -24,43 +24,75 @@ $sb(function() {
     $("p.Error").toggleClass("Show", !!value);
   });
   sbTwitter.$sb("Status").$sbOnAndRun("content", function(event, value) {
-    if (value)
-      $("<a>").html(value).append("<br>").prependTo("p.StatusUpdates");
+    if (value) {
+      $("#UserTweets>tbody>tr.Template").clone(true).removeClass("Template")
+        .prependTo("#UserTweets>tbody")
+        .find("a.Tweet").html(value);
+    }
   });
+
   $("p.AddConditionalTweet button.Add").click(function() {
-    var condition = $("p.AddConditionalTweet input:text.Condition").val();
-    var tweet = $("p.AddConditionalTweet input:text.Tweet").val();
-    var updateE = _crgScoreBoard.toNewElement(sbTwitter.$sb("ConditionalTweet"));
+    var p = $(this).closest("p");
+    var conditionInput = p.find("input:text.Condition");
+    var tweetInput = p.find("input:text.Tweet");
+    var idInput = p.find("input:text.UpdateId");
+    var condition = conditionInput.val();
+    var tweet = tweetInput.val();
+    var id = idInput.val();
+    var sbE = $sb("Viewers.Twitter.ConditionalTweet"+(id?"("+id+")":""));
+    var updateE = _crgScoreBoard.toNewElement(sbE);
     _crgScoreBoard.createScoreBoardElement(updateE, "Condition", null, condition);
     _crgScoreBoard.createScoreBoardElement(updateE, "Tweet", null, tweet);
     _crgScoreBoard.updateServer(updateE);
-    $("p.AddConditionalTweet input:text").val("").filter(".Condition").focus();
-  });
+    idInput.val("");
+    tweetInput.val("");
+    conditionInput.val("").focus();
+    p.removeClass("Update");
+  }).button();
+  $("p.AddConditionalTweet button.Cancel").click(function() {
+    var p = $(this).closest("p");
+    p.find("input:text.UpdateId").val("");
+    p.find("input:text.Tweet").val("");
+    p.find("input:text.Condition").val("").focus();
+    p.removeClass("Update");    
+  }).button();
   $("p.AddConditionalTweet input:text.Tweet").keydown(function(event) {
     if (event.which == 13) // Pressed Enter
       $("p.AddConditionalTweet button.Add").click();
   });
   sbTwitter.$sbBindAddRemoveEach("ConditionalTweet", function(event, node) {
-    var tr = $("table#ConditionalTweets>tbody>tr.ConditionalTweet.Template").clone(true)
+    var tr = $("#ConditionalTweets>tbody>tr.ConditionalTweet.Template").clone(true)
       .removeClass("Template").attr("data-UUID", node.$sbId)
-      .appendTo("table#ConditionalTweets>tbody");
-    node.$sb("Condition").$sbElement(tr.find("span.Condition"));
-    node.$sb("Tweet").$sbElement(tr.find("span.Tweet"));
+      .appendTo("#ConditionalTweets>tbody");
+    node.$sb("Condition").$sbElement(tr.find("a.Condition"));
+    node.$sb("Tweet").$sbElement(tr.find("a.Tweet"));
     tr.find("button.Remove").click(function() { node.$sbRemove(); });
+    tr.find("button.Edit").click(function() {
+      $("p.AddConditionalTweet").addClass("Update");
+      $("p.AddConditionalTweet input:text.UpdateId").val(node.$sbId);
+      $("p.AddConditionalTweet input:text.Condition").val(node.$sb("Condition").$sbGet());
+      $("p.AddConditionalTweet input:text.Tweet").val(node.$sb("Tweet").$sbGet());
+    });
   }, function(event, node) {
-    $("table#ConditionalTweets tr.ConditionalTweet[data-UUID='"+node.$sbId+"']").remove();
+    $("#ConditionalTweets tr.ConditionalTweet[data-UUID='"+node.$sbId+"']").remove();
   });
-  $("div.ShowFormatSpecifiersDialog").dialog({
-    title: "Conditional Tweet rules help",
+  $("#ConditionalTweetConfigurationDialog").dialog({
+    title: "Conditional Tweet Configuration",
     modal: true,
     width: 750,
     height: 550,
     autoOpen: false,
     buttons: { Close: function() { $(this).dialog("close"); } }
   });
-  $("button.Help").click(function() {
-    $("div.ShowFormatSpecifiersDialog").dialog("open");
-  });
+  $("button.EditConditionalTweets").click(function() {
+    $("#ConditionalTweetConfigurationDialog").dialog("open");
+  }).button();
+  $("#HelpText").insertBefore("#ConditionalTweets");
+  $("#ShowHelp").change(function() {
+    $("#HelpText").toggle(this.checked);
+    $(this).button("option", "label", (this.checked?"Hide Help":"Show Help"));
+  }).after("<label for=ShowHelp />").button().change();
+
 
   if (_windowFunctions.hasParam("denied")) {
     sbTwitter.$sb("Denied").$sbSet("true");
@@ -79,3 +111,4 @@ $sb(function() {
     });
   }
 });
+

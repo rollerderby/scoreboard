@@ -48,7 +48,7 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
       else if (e.getName().equals("ConditionalTweet") && editor.hasPI(e, "Remove"))
         removeConditionalTweet(e);
       else if (e.getName().equals("ConditionalTweet"))
-        addConditionalTweet(e);
+        updateConditionalTweet(e);
       else if (e.getName().equals("AuthorizationURL") && !nullText && "".equals(text))
         clearAuthorizationURL();
       else if (e.getName().equals("Denied") && editor.isTrue(e))
@@ -133,24 +133,40 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     setError("");
   }
 
-  protected void addConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
+  protected void updateConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
     if (null == editor.getElement(e, "Condition", null, false) && null == editor.getElement(e, "Tweet", null, false))
       return; /* Ignore if no subelements specified */
     String condition = getElementCondition(e);
     String tweet = getElementTweet(e);
+    String eId = editor.getId(e);
+    boolean isUpdate = (null != eId);
+    String newId = (isUpdate ? eId : UUID.randomUUID().toString());
+    Element updateE = createXPathElement();
+    Element conditionalTweet = editor.addElement(updateE, "ConditionalTweet", newId);
+    if (isUpdate)
+      _removeConditionalTweet(e);
+    boolean failed = true;
     try {
       getTwitterViewer().addConditionalTweet(condition, tweet, exceptionListener);
+      failed = false;
     } catch ( TooManyListenersException tmlE ) {
       throw new IllegalArgumentException(tmlE.getMessage());
+    } finally {
+      if (failed && isUpdate)
+        update(editor.setPI(conditionalTweet, "Remove"));
     }
-    Element updateE = createXPathElement();
-    Element conditionalTweet = editor.addElement(updateE, "ConditionalTweet", UUID.randomUUID().toString());
     editor.addElement(conditionalTweet, "Condition", null, condition);
     editor.addElement(conditionalTweet, "Tweet", null, tweet);
     update(updateE);
     setError("");
   }
   protected void removeConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
+    _removeConditionalTweet(e);
+    Element updateE = createXPathElement();
+    editor.setPI(editor.addElement(updateE, "ConditionalTweet", editor.getId(e)), "Remove");
+    update(updateE);
+  }
+  protected void _removeConditionalTweet(Element e) throws NoTwitterViewerException,TwitterException,IllegalArgumentException {
     Element thisElement;
     try { thisElement = getXPathElement(); }
     catch ( JDOMException jE ) { return; /* FIXME: really need to fix getXPathElement to not need to throw jE */ }
@@ -158,9 +174,6 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     if (null == conditionalTweet)
       return;
     getTwitterViewer().removeConditionalTweet(getElementCondition(conditionalTweet), getElementTweet(conditionalTweet));
-    Element updateE = createXPathElement();
-    editor.setPI(editor.addElement(updateE, "ConditionalTweet", editor.getId(e)), "Remove");
-    update(updateE);
   }
   protected String getElementCondition(Element e) throws IllegalArgumentException {
     String condition = editor.getText(editor.getElement(e, "Condition"));

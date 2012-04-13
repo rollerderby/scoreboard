@@ -22,64 +22,75 @@
 
 <body>
 
-<table id="Layout">
-  <tbody>
+<p class="LogInStatus Center">
+  <button class="Login">Login</button>
+  <button class="Logout">Logout</button>
+  <button class="EditConditionalTweets">Edit Conditional Tweets</button>
+  <a class="NotLoggedIn">Not Logged In</a>
+  <a class="LoggedIn">Logged In As <span class="ScreenName"></span></a>
+</p>
+<p class="Error Center">Error: <a class="Error"></a></p>
+
+<table id="UserTweets">
+  <thead>
     <tr>
-      <td>
-        <p>
-          <button class="Login">Login</button>
-          <button class="Logout">Logout</button>
-        </p>
-
-        <p class="LogInStatus">
-          <a class="NotLoggedIn">Not Logged In</a>
-          <a class="LoggedIn">Logged In As <span class="ScreenName"></span></a>
-        </p>
-        <p class="Error">Error: <a class="Error"></a></p>
-
-        <p class="AddConditionalTweet" >
-          <input type="text" class="Condition" />
-          <input type="text" class="Tweet" />
-          <button class="Add" >Add</button>
-          <button class="Help">Help</button>
-        </p>
-      </td>
-      <td>
+      <th>
         <p class="DirectTweet" >
           <input type="text" class="Tweet" />
           <button class="Tweet">Tweet</button>
         </p>
-      </td>
+      </th>
     </tr>
-    <tr>
+  </thead>
+  <tbody>
+    <tr class="Template">
       <td>
-        <h3 class="Header">Conditional Tweet Configuration</h3>
-        <table id="ConditionalTweets">
-          <thead>
-            <tr>
-              <th class="Remove">Remove</th>
-              <th class="Condition">Condition</th>
-              <th class="Tweet">Tweet</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr class="ConditionalTweet Template">
-              <td class="Remove"><button class="Remove">Remove</button></td>
-              <td class="Condition"><span class="Condition"></span></td>
-              <td class="Tweet"><span class="Tweet"></span></td>
-            </tr>
-          </tbody>
-        </table>
-      </td>
-      <td>
-        <h3 class="Header">Tweets</h3>
-        <p class="StatusUpdates"></p>
+        <a class="Tweet"></a>
       </td>
     </tr>
   </tbody>
 </table>
 
-<div class="ShowFormatSpecifiersDialog">
+<div id="ConditionalTweetConfigurationDialog">
+  <p class="AddConditionalTweet" >
+    <input type="text" class="UpdateId" />
+    <span class="Condition">
+      <a class="Condition">Condition:</a><input type="text" size="40" class="Condition" />
+    </span>
+    <span class="Tweet">
+      <a class="Tweet">Tweet:</a><input type="text" size="40" class="Tweet" />
+    </span>
+    <br/>
+    <button class="Add" >
+      <span class="Add">Add</span>
+      <span class="Update">Update</span>
+    </button>
+    <button class="Cancel">Cancel</button>
+    <input type="checkbox" id="ShowHelp"/>
+  </p>
+  <p class="Error">Error: <a class="Error"></a></p>
+  <h3 class="Header">Conditional Tweet Configuration</h3>
+  <table id="ConditionalTweets">
+    <thead>
+      <tr>
+        <th class="Remove">Remove</th>
+        <th class="Condition">Condition</th>
+        <th class="Tweet">Tweet</th>
+        <th class="Edit">Edit</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="ConditionalTweet Template">
+        <td class="Remove"><button class="Remove">Remove</button></td>
+        <td class="Condition"><a class="Condition"></a></td>
+        <td class="Tweet"><a class="Tweet"></a></td>
+        <td class="Edit"><button class="Edit">Edit</button></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<div id="HelpText" style="display: none;" >
   <p>
     The conditional tweet functionality works by specifying a condition to generate
     a tweet, and the tweet text.  Both the condition and tweet can contain "format
