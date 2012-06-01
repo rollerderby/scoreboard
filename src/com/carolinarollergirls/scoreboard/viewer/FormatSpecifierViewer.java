@@ -152,7 +152,7 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
       public String getValue() { return String.valueOf(getTeam(id).getTimeouts()); }
     };
     new ScoreBoardValue("%t"+t+"l", getTeam(id), Team.EVENT_LEAD_JAMMER) {
-      public String getValue() { return String.valueOf(getTeam(id).getTimeouts()); }
+      public String getValue() { return String.valueOf(getTeam(id).isLeadJammer()); }
     };
     new ScoreBoardValue("%t"+t+"jn", getTeam(id).getPosition(Position.ID_JAMMER), Position.EVENT_SKATER) {
       public String getValue() { return getSkaterName(getPositionSkater(id, Position.ID_JAMMER)); }
