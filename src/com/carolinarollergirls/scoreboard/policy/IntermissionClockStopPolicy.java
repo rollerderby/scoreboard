@@ -44,6 +44,8 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
       };
     addScoreBoardListener(new ConditionalScoreBoardListener(periodResetNumber, "Value", Boolean.TRUE, listener));
 
+    addParameterModel(periodResetTime);
+
     addParameterModel(jamIncrementNumber);
     listener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
