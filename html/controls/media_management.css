@@ -45,6 +45,9 @@
   table.Type tr.Item:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }
   table.Type tr.Item:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
 
+  /* Make preview background black */
+  #Images table.Type tr.Item td.Preview.Show { background: #000; }
+
   /* Show/Hide Type groups */
   table.Type:not(.Hide) tr.Type>th.Type>button.Show { display: none; }
   table.Type.Hide tr.Type>th.Type>button.Hide { display: none; }
