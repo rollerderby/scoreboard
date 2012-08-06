@@ -396,18 +396,22 @@ function createTeamTable() {
       .text("Score +1").val("1")
       .attr("id", "Team"+team+"ScoreUp").addClass("KeyControl").button()
       .appendTo(scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
-    var scoreChange = $("<a>").addClass("Change").appendTo(scoreTr.children("td:eq(1)"))
-      .css({ position: "absolute", fontSize: "200%", lineHeight: "175%", opacity: "0" });
+    // Note there is a left and right scoreChange, so the main score remains centered,
+    // but only the right one is made visible.
+    $("<a>").addClass("Change").css({ opacity: "0" })
+      .appendTo(scoreTr.children("td:eq(1)"))
+      .clone().prependTo(scoreTr.children("td:eq(1)"));
+    var scoreChange = scoreTr.find("td:eq(1)>a.Change");
     var lastScore = sbTeam.$sb("Score").$sbGet();
     var scoreChangeTimeout;
     sbTeam.$sb("Score").bind("content", function(event,value) {
       var s = (value - lastScore);
       var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
-      scoreChange.stop(true).css({ opacity: "1", color: c }).text(s<0?s:"+"+s);
+      scoreChange.stop(true).text(s<0?s:"+"+s).last().css({ opacity: "1", color: c });
       if (scoreChangeTimeout)
         clearTimeout(scoreChangeTimeout);
       scoreChangeTimeout = setTimeout(function() {
-        scoreChange
+        scoreChange.last()
           .animate({ color: "#000" }, 2000)
           .animate({ opacity: "0" }, 6000, "easeInExpo", function() { lastScore = value; });
         scoreChangeTimeout = null;
