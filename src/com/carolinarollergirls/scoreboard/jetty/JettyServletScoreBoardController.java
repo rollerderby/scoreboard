@@ -58,6 +58,22 @@ public class JettyServletScoreBoardController implements ScoreBoardController
     }
 
     Server server;
+    SessionIdManager sessionIdManager;
+
+    // See http://docs.codehaus.org/display/JETTY/Connectors+slow+to+startup
+    if (Boolean.parseBoolean(ScoreBoardManager.getProperty(PROPERTY_SECURE_SESSION_ID_KEY, DEFAULT_SECURE_SESSION_ID))) {
+      ScoreBoardManager.printMessage("Using secure session IDs (this may cause a delay starting up)");
+      // By default HashSessionIdManager uses SecureRandom, which can block
+      // on systems with low entropy, which can delay the jetty server
+      // startup, sometimes for a long time.
+      sessionIdManager = new HashSessionIdManager();
+    } else {
+      ScoreBoardManager.printMessage("Using less-secure session IDs (this is ok for now, and speeds up startup)");
+      // This uses Random, which doesn't block, but is not as "secure"
+      // (i.e. session id's may be predictable).  Since we don't really
+      // use security at all (currently), that shouldn't matter.
+      sessionIdManager = new HashSessionIdManager(new Random());
+    }
 
     String localhost = ScoreBoardManager.getProperty(PROPERTY_LOCALHOST_KEY);
     if (null != localhost && Boolean.parseBoolean(localhost)) {
@@ -71,6 +87,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
       server = new Server(port);
     }
 
+    server.setSessionIdManager(sessionIdManager);
     server.setSendDateHeader(true);
     ContextHandlerCollection contexts = new ContextHandlerCollection();
     server.setHandler(contexts);
@@ -120,9 +137,11 @@ public class JettyServletScoreBoardController implements ScoreBoardController
   protected UrlsServlet urlsServlet;
 
   public static final int DEFAULT_PORT = 8000;
+  public static final String DEFAULT_SECURE_SESSION_ID = "false";
 
   public static final String PROPERTY_LOCALHOST_KEY = JettyServletScoreBoardController.class.getName() + ".localhost";
   public static final String PROPERTY_PORT_KEY = JettyServletScoreBoardController.class.getName() + ".port";
   public static final String PROPERTY_SERVLET_KEY = JettyServletScoreBoardController.class.getName() + ".servlet";
   public static final String PROPERTY_HTML_DIR_KEY = JettyServletScoreBoardController.class.getName() + ".html.dir";
+  public static final String PROPERTY_SECURE_SESSION_ID_KEY = JettyServletScoreBoardController.class.getName() + ".secure.session.ids";
 }
