@@ -60,6 +60,7 @@ public class ScoreBoardManager
   public static Properties getProperties() { return new Properties(properties); }
 
   public static String getProperty(String key) { return properties.getProperty(key); }
+  public static String getProperty(String key, String dflt) { return properties.getProperty(key, dflt); }
 
   public static ScoreBoardController getScoreBoardController(String key) { return controllers.get(key); }
 
