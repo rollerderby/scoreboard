@@ -233,6 +233,16 @@ _crgScoreBoard = {
     $sbControl: function(type, attributes, className) { return _crgScoreBoardControl.create(this, type, attributes, className); },
   },
 
+  loadPageCssJs: function() {
+    /*
+     * If needed, load the page's corresponding js/css
+     */
+    if (/\.html$/.test(window.location.pathname)) {
+      _include(window.location.pathname.replace(/\.html$/, ".css"));
+      _include(window.location.pathname.replace(/\.html$/, ".js"));
+    }
+  },
+
   loadCustom: function() {
     /*
      * After the main page's $sb() functions have been run,
@@ -554,6 +564,7 @@ _crgScoreBoard = {
       $sbThisPage = $sb("Pages.Page("+/[^\/]*$/.exec(window.location.pathname)+")");
       _crgScoreBoard.documentLoaded = true;
       _crgScoreBoard.documentEvents.triggerHandler("load:ScoreBoard");
+      _crgScoreBoard.loadPageCssJs();
       _crgScoreBoard.loadCustom();
     }
   },
