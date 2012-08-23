@@ -36,6 +36,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
   public String getProviderName() { return "ScoreBoard"; }
   public Class getProviderClass() { return ScoreBoard.class; }
+  public String getProviderId() { return ""; }
 
   public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
