@@ -340,6 +340,7 @@ function createTeamTable() {
   var scoreRow = row.clone().addClass("Score").appendTo(table);
   var timeoutRow = row.clone().addClass("Timeout").appendTo(table);
   var jammerRow = row.clone().addClass("Jammer").appendTo(table);
+  var passRow = row.clone().addClass("Pass").appendTo(table);
 
   $.each( [ "1", "2" ], function() {
     var team = String(this);
@@ -350,6 +351,7 @@ function createTeamTable() {
     var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
     var timeoutTr = createRowTable(2).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
     var jammerTr = createRowTable(2).appendTo($("<td>").appendTo(jammerRow)).find("tr");
+    var passTr = createRowTable(3).appendTo($("<td>").appendTo(passRow)).find("tr");
 
     var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
     sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='15'/>", { sbcontrol: {
@@ -468,6 +470,20 @@ function createTeamTable() {
         firstOption: { text: "No Jammer", value: "" }
       } }).addClass("Jammer ByNumber NumSort")
         .appendTo(jammerSelectTd);
+
+    sbTeam.$sb("Pass").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+      .text("Pass -1").val("-1")
+      .attr("id", "Team"+team+"PassDown").addClass("KeyControl").button()
+      .appendTo(passTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
+    sbTeam.$sb("Pass").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
+        editOnClick: true,
+        bindClickTo: passTr.children("td:eq(1)")
+      } }).appendTo(passTr.children("td:eq(1)").addClass("Pass"));
+    sbTeam.$sb("Pass").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+      .text("Pass +1").val("1")
+      .attr("id", "Team"+team+"PassUp").addClass("KeyControl").button()
+      .appendTo(passTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
+
   });
 
   return table;
