@@ -8,33 +8,41 @@
  * See the file COPYING for details.
  */
 
-div.tabHeader {
-  padding-bottom: 4px;
-}
+table { border: 3px solid; width: 100%; }
 
-div.tabHeader>span {
-  padding: 1px;
-  border: 1px solid black;
-  margin-right: 1px;
-}
+th { background-color: #eeeeee; }
 
-table {
-  border: 3px solid;
-  width: 100%;
-}
+td { text-align: center; }
 
-.buttonTrue { background-color: #00ff00; }
+div#tableDiv table td.Position,div#tableDiv table td.Box { border: 1px solid; border-radius: 5px; }
 
-th {
-  border: 1px;
-  background-color: #eeeeee;
-}
+div#tableDiv table th.Name { width: 15%; }
+div#tableDiv table th.Number { width: 10%; }
+div#tableDiv table th.Bench { width: 15%; }
+div#tableDiv table th.Pivot { width: 15%; }
+div#tableDiv table th.Blocker { width: 15%; }
+div#tableDiv table th.Jammer { width: 15%; }
+div#tableDiv table th.Box { width: 15%; }
 
-td {
-  border: 1px solid;
-  text-align: center;
-}
+div#tableDiv table.Template { display: none; }
+div#tableDiv table tr.Template { display: none; }
 
-.ui-tabs-panel { padding: 0.2em !important; }
-.ui-tabs-nav { font-size: 75% !important; }
+div#tableDiv table tr>td>a.Name { font-weight: bold; }
+
+div#tableDiv table tr.Bench>td.Bench { background: #0f0; }
+div#tableDiv table tr.Bench>td.Bench>a.Bench { display: none; }
+div#tableDiv table tr:not(.Bench)>td.Bench>a.Name { display: none; }
+div#tableDiv table tr.Pivot>td.Pivot { background: #0f0; }
+div#tableDiv table tr.Pivot>td.Pivot>a.Pivot { display: none; }
+div#tableDiv table tr:not(.Pivot)>td.Pivot>a.Name { display: none; }
+div#tableDiv table tr.Blocker>td.Blocker { background: #0f0; }
+div#tableDiv table tr.Blocker>td.Blocker>a.Blocker { display: none; }
+div#tableDiv table tr:not(.Blocker)>td.Blocker>a.Name { display: none; }
+div#tableDiv table tr.Jammer>td.Jammer { background: #0f0; }
+div#tableDiv table tr.Jammer>td.Jammer>a.Jammer { display: none; }
+div#tableDiv table tr:not(.Jammer)>td.Jammer>a.Name { display: none; }
+
+div#tableDiv table tr>td.Box.InBox { background: #f00; }
+div#tableDiv table tr>td.Box:not(.InBox)>a.Name { display: none; }
+div#tableDiv table tr>td.Box.InBox>a.Box { display: none; }
 
