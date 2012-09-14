@@ -29,11 +29,11 @@ function createTeamTable(t) {
   var team = $sb("ScoreBoard.Team("+t+")");
   var table = $("#tableDiv table.Template").clone().removeClass("Template").addClass("Team"+t)
     .appendTo("#tableDiv");
+  table.sortedtable({ header: table.find("thead tr:eq(1)") });
   team.$sb("Name").$sbElement(table.find("th.Team a.Team"));
 
   team.$sbBindAddRemoveEach("Skater", function(event, skater) {
-    var row = table.find("tr.Template").clone().removeClass("Template").attr("data-id", skater.$sbId)
-      .appendTo(table.children("tbody"));
+    var row = table.find("tr.Template").clone().removeClass("Template").attr("data-id", skater.$sbId);
     skater.$sb("Name").$sbElement(row.find("td>a.Name"));
     skater.$sb("Number").$sbElement(row.find("td>a.Number"));
     skater.$sb("Position").$sbBindAndRun("content", function(event, value) {
@@ -69,6 +69,8 @@ function createTeamTable(t) {
       var inBox = $(this).hasClass("InBox");
       skater.$sb("PenaltyBox").$sbSet(String(!inBox));
     });
+
+    table.sortedtable("insert", row);
   }, function(event, skater) {
     table.find("tr[data-id='"+skater.$sbId+"']").remove();
   });
