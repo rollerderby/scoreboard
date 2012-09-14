@@ -21,7 +21,7 @@ function _includeUrl(url) {
     return;
   if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$("head link[href='"+url+"'],head link[href='"+filename+"']").length)
     $("<link>").attr({ href: url, type: "text/css", rel: "stylesheet"}).appendTo("head");
-  else if (/\.[jJ][sS](\?.*)?$/.test(url) && !$("head script[src='"+url+"'],head script[src='"+filename+"']").length)
+	else if (/\.[jJ][sS](\?.*)?$/.test(url) && !$("head script[src='"+url+"'],head script[src='"+filename+"']").length)
     $("<script>").attr({ src: url, type: "text/javascript" }).appendTo("head");
 }
 
@@ -60,7 +60,8 @@ _include("/javascript", [
   "timeconversions.js",
   "keycontrols.js",
   "utils.js",
-  "windowfunctions.js" ]);
+  "windowfunctions.js",
+  "sortedtable.js" ]);
 
 /* Start ScoreBoard server polling */
 $(function() {
