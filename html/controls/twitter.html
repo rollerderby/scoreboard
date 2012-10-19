@@ -19,6 +19,8 @@
 <body>
 
 <p class="LogInStatus Center">
+  <label for="TestModeCheckBox"></label>
+  <input type="checkbox" class="TestMode" id="TestModeCheckBox"></input>
   <button class="Login">Login</button>
   <button class="Logout">Logout</button>
   <button class="EditConditionalTweets">Edit Conditional Tweets</button>
@@ -26,6 +28,7 @@
   <a class="LoggedIn">Logged In As <span class="ScreenName"></span></a>
 </p>
 <p class="Error Center">Error: <a class="Error"></a></p>
+<p class="TestMode Center">In Test Mode!  Twitter will <b>not</b> be updated!</p>
 
 <table id="UserTweets">
   <thead>
@@ -98,14 +101,26 @@
     The <b>condition format</b> must be:
     <pre>&lt;format specifier&gt;[comparator][value] [...repeat...]</pre>
     The initial format specifier is required, and it indicates which event to trigger
-    on.  You can optionally also specify a comparator from this list:
-    <pre>=, !=, &lt;, &lt;=, &gt;, &gt;=</pre>
+    on.  You can optionally also specify a comparator from the comparator list below,
     and a value to compare to.  You can also specify more format specifiers and values
     to further restrict when a conditional tweet is triggered.  The condition is only
     checked when the event occurs for the initial format specifier, and the tweet
     is only sent when the condition evaluates as true.  If a format specifier is
     provided without any comparator (and value), it is considered true for the
-    purposes of verifying the condition.
+    purposes of verifying the condition.<br>
+    The <b>comparator</b> can be one of:
+    <ul>
+      <li><b>=</b> : True if the event value equals the provided value</li>
+      <li><b>!=</b> : True if the event value is not equal to the provided value</li>
+      <li><b>&lt;</b> : True if the event value is less than the provided value</li>
+      <li><b>&lt;=</b> : True if the event value is less than or equal to the provided value</li>
+      <li><b>%gt;</b> : True if the event value is greater than the provided value</li>
+      <li><b>%gt;=</b> : True if the event value is greater than or equal to the provided value</li>
+      <li><b>%</b> : True if the event value mod the provided value is zero</li>
+    </ul>
+    Note that the % comparator is essentially an "every Nth" operator;
+    for example if you use %5 then the condition will be true only when the
+    event value is 5, 10, 15, 20, 25, etc.
   </p>
   <p>
     The <b>tweet format</b> has no restrictions.  You can provide format specifiers

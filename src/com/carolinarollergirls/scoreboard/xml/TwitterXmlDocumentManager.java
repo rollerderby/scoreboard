@@ -28,7 +28,9 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     editor.setPI(editor.addElement(updateE, "Error"), "NoSave");
     editor.setPI(editor.addElement(updateE, "ScreenName"), "NoSave");
     editor.setPI(editor.addElement(updateE, "Status"), "NoSave");
+    editor.setPI(editor.addElement(updateE, "TestMode"), "NoSave");
     update(updateE);
+    try { setTestMode(false); } catch ( Exception e ) { }
     try { logout(); } catch ( Exception e ) { }
     removeAllConditionalTweets();
   }
@@ -53,6 +55,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
         clearAuthorizationURL();
       else if (e.getName().equals("Denied") && editor.isTrue(e))
         denied();
+      else if (e.getName().equals("TestMode"))
+        setTestMode(editor.isTrue(e));
     } catch ( NoTwitterViewerException ntvE ) {
       setError("Twitter Viewer not loaded");
     } catch ( TwitterException tE ) {
@@ -60,6 +64,16 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     } catch ( IllegalArgumentException iaE ) {
       setError(iaE.getMessage());
     }
+  }
+
+  protected void setTestMode(boolean b) throws NoTwitterViewerException {
+    Element updateE = createXPathElement();
+    getTwitterViewer().setTestMode(b);
+    if (b)
+      getTwitterViewer().addTweetListener(testModeTweetListener);
+    else
+      getTwitterViewer().removeTweetListener(testModeTweetListener);
+    update(editor.addElement(updateE, "TestMode", null, Boolean.toString(b)));
   }
 
   protected void startOAuth(Element e) throws NoTwitterViewerException,TwitterException {
@@ -216,6 +230,9 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
   protected TwitterViewer twitterViewer = null;
   protected Object twitterViewerLock = new Object();
   protected TwitterViewer.TweetListener tweetListener = new TwitterViewer.TweetListener() {
+      public void tweet(String tweet) { updateStatus(tweet); }
+    };
+  protected TwitterViewer.TweetListener testModeTweetListener = new TwitterViewer.TweetListener() {
       public void tweet(String tweet) { updateStatus(tweet); }
     };
   protected TwitterViewer.TwitterExceptionListener exceptionListener = new TwitterViewer.TwitterExceptionListener() {

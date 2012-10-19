@@ -87,12 +87,12 @@ public class TwitterViewer implements ScoreBoardViewer
         tweetListeners.remove(listener).shutdown();
     }
   }
-  protected void notifyTweetListeners(final Status status) {
+  protected void notifyTweetListeners(final String tweetText) {
     synchronized (twitterLock) {
       Iterator<TweetListener> listeners = tweetListeners.keySet().iterator();
       while (listeners.hasNext()) {
         final TweetListener listener = listeners.next();
-        Runnable r = new Runnable() { public void run() { listener.tweet(status.getText()); } };
+        Runnable r = new Runnable() { public void run() { listener.tweet(tweetText); } };
         tweetListeners.get(listener).submit(r);
       }
     }
@@ -123,13 +123,21 @@ public class TwitterViewer implements ScoreBoardViewer
   }
 
   public void tweet(String tweet) throws TwitterException {
+    String parsedTweet = formatSpecifier.parse(tweet);
     synchronized (twitterLock) {
-      /* will throw exception if not logged in */
-      twitter.updateStatus(formatSpecifier.parse(tweet));
+      if (isTestMode()) {
+        notifyTweetListeners(parsedTweet);
+      } else {
+        /* will throw exception if not logged in */
+        twitter.updateStatus(parsedTweet);
+      }
     }
   }
 
   public boolean isLoggedIn() { return loggedIn; }
+
+  public void setTestMode(boolean t) { testMode = t; }
+  public boolean isTestMode() { return testMode; }
 
   private ConfigurationBuilder getConfigurationBuilder() {
     return new ConfigurationBuilder()
@@ -152,6 +160,7 @@ public class TwitterViewer implements ScoreBoardViewer
   protected long userId;
 
   protected boolean loggedIn = false;
+  protected boolean testMode = false;
 
   protected RequestToken requestToken = null;
   protected TwitterStream twitterStream = null;
@@ -161,7 +170,7 @@ public class TwitterViewer implements ScoreBoardViewer
   protected UserStreamListener userStreamListener = new UserStreamAdapter() {
       public void onStatus(Status status) {
         if (status.getUser().getId() == userId)
-          notifyTweetListeners(status);
+          notifyTweetListeners(status.getText());
       }
     };
 
@@ -173,7 +182,7 @@ public class TwitterViewer implements ScoreBoardViewer
     }
     public void scoreBoardChange(ScoreBoardEvent e) {
       try {
-        if (loggedIn)
+        if (isLoggedIn() || isTestMode())
           tweet(tweet);
       } catch ( TwitterException tE ) {
         exceptionListener.twitterException(tweet, tE);

@@ -1,6 +1,7 @@
 
 $sb(function() {
   var sbTwitter = $sb("Viewers.Twitter");
+  sbTwitter.$sb("TestMode").$sbControl($("input:checkbox.TestMode")).button();
   $("button.Login").click(function() { sbTwitter.$sb("Start").$sbSet(window.location.href); }).button();
   $("button.Logout").click(function() { sbTwitter.$sb("Stop").$sbSet("true"); }).button();
   $("p.DirectTweet button.Tweet").click(function() {
@@ -13,11 +14,19 @@ $sb(function() {
   });
   sbTwitter.$sb("ScreenName").$sbElement("p.LogInStatus span.ScreenName");
   sbTwitter.$sb("Authorized").$sbBindAndRun("content", function(event, value) {
+    var directTweetEnabled = sbTwitter.$sb("TestMode").$sbIsTrue() || isTrue(value);
     $("button.Login").button("option", "disabled", isTrue(value));
     $("button.Logout").button("option", "disabled", !isTrue(value));
-    $("p.DirectTweet button.Tweet").button("option", "disabled", !isTrue(value));
-    $("p.DirectTweet input:text.Tweet").prop("disabled", !isTrue(value));
+    $("p.DirectTweet button.Tweet").button("option", "disabled", !directTweetEnabled);
+    $("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
     $("p.LogInStatus").toggleClass("LoggedIn", isTrue(value));
+  });
+  sbTwitter.$sb("TestMode").$sbBindAndRun("content", function(event, value) {
+    var directTweetEnabled = sbTwitter.$sb("Authorized").$sbIsTrue() || isTrue(value);
+    $("p.DirectTweet button.Tweet").button("option", "disabled", !directTweetEnabled);
+    $("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
+    $("input:checkbox.TestMode").button("option", "label", (isTrue(value)?"Stop Test Mode":"Start Test Mode"));
+    $("p.TestMode").toggleClass("Show", isTrue(value));
   });
   sbTwitter.$sb("Error").$sbElement("p.Error a.Error");
   sbTwitter.$sb("Error").$sbBindAndRun("content", function(event, value) {

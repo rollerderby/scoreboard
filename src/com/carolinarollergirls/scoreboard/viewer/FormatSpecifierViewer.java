@@ -84,6 +84,14 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
       try { return (Long.parseLong(value) >= Long.parseLong(target)); } catch ( NumberFormatException nfE ) { }
       try { return (Double.parseDouble(value) >= Double.parseDouble(target)); } catch ( NumberFormatException nfE ) { }
       return (value.compareTo(target) >= 0);
+    } else if ("%".equals(comparator)) {
+      try {
+        return (0 == (Long.parseLong(value) % Long.parseLong(target)));
+      } catch ( NumberFormatException nfE ) {
+        return false;
+      } catch ( ArithmeticException aE ) { // most likely target == 0, % by 0 is invalid
+        return false;
+      }
     }
     throw new IllegalArgumentException("Invalid comparator : "+comparator);
   }
@@ -247,7 +255,7 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
   protected Pattern eventPattern;
   protected Pattern conditionPattern;
 
-  protected String comparatorRegex = "=|!=|<|<=|>|>=";
+  protected String comparatorRegex = "=|!=|<|<=|>|>=|%";
 
   protected Map<String,ScoreBoardValue> scoreBoardValues = new ConcurrentHashMap<String,ScoreBoardValue>();
 

@@ -15,6 +15,7 @@
   p.LogInStatus.LoggedIn a.NotLoggedIn { display: none; }
 
   p.Error:not(.Show) { display: none; }
+  p.TestMode:not(.Show) { display: none; }
 /* End Main controls */
 
 /* User Tweets */
