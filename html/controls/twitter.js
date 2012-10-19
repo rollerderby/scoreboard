@@ -119,5 +119,11 @@ $sb(function() {
       }
     });
   }
+
+  $.get("/FormatSpecifiers", function(data) {
+    $.each( data.trim().split("\n"), function(i,e) {
+      $("<li>").text(e).appendTo("ul.FormatSpecifierDescriptions");
+    });
+  });
 });
 
