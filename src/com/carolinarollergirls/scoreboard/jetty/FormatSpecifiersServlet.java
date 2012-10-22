@@ -37,14 +37,35 @@ public class FormatSpecifiersServlet extends DefaultScoreBoardControllerServlet
     response.setHeader("Expires", "-1");
     response.setCharacterEncoding("UTF-8");
 
-    Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
-    Iterator<String> keys = m.keySet().iterator();
-    response.setContentType("text/plain");
-    while (keys.hasNext()) {
-      String key = keys.next();
-      response.getWriter().println(key+" : "+m.get(key));
+    if ("/descriptions".equals(request.getPathInfo())) {
+      Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
+      Iterator<String> keys = m.keySet().iterator();
+      response.setContentType("text/plain");
+      while (keys.hasNext()) {
+        String key = keys.next();
+        response.getWriter().println(key+" : "+m.get(key));
+      }
+      response.setStatus(HttpServletResponse.SC_OK);
+    } else if ("/keys".equals(request.getPathInfo())) {
+      Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
+      Iterator<String> keys = m.keySet().iterator();
+      response.setContentType("text/plain");
+      while (keys.hasNext())
+        response.getWriter().println(keys.next());
+      response.setStatus(HttpServletResponse.SC_OK);
     }
-    response.setStatus(HttpServletResponse.SC_OK);
+  }
+
+  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    response.setHeader("Cache-Control", "no-cache");
+    response.setHeader("Expires", "-1");
+    response.setCharacterEncoding("UTF-8");
+
+    if ("/parse".equals(request.getPathInfo())) {
+      response.setContentType("text/plain");
+      response.getWriter().print(formatSpecifierViewer.parse(request.getParameter("format")));
+      response.setStatus(HttpServletResponse.SC_OK);
+    }
   }
 
   protected FormatSpecifierViewer formatSpecifierViewer;

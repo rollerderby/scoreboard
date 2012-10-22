@@ -120,10 +120,31 @@ $sb(function() {
     });
   }
 
-  $.get("/FormatSpecifiers", function(data) {
+  $.get("/FormatSpecifiers/descriptions", function(data) {
     $.each( data.trim().split("\n"), function(i,e) {
       $("<li>").text(e).appendTo("ul.FormatSpecifierDescriptions");
     });
   });
+
+  parseInputFieldFormatSpecifiers();
 });
+
+function parseInputFieldFormatSpecifiers() {
+  var dialog = $("#ConditionalTweetConfigurationDialog");
+  if (dialog.dialog("isOpen")) {
+    $.each( [ "Condition", "Tweet" ], function(i,e) {
+      var input = dialog.find("input:text."+e);
+      if (input.val()) {
+        $.post("/FormatSpecifiers/parse", {
+          format: input.val()
+        }, function(data) {
+          dialog.find("a.Preview."+e).text(data);
+        });
+      } else {
+        dialog.find("a.Preview."+e).text("");
+      }
+    });
+  }
+  setTimeout(parseInputFieldFormatSpecifiers, 1000);
+}
 
