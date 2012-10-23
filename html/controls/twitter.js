@@ -1,8 +1,9 @@
 
 $sb(function() {
   var sbTwitter = $sb("Viewers.Twitter");
+  var auth_callback_url = window.location.protocol+"//"+window.location.host+"/controls/twitter_auth.html";
   sbTwitter.$sb("TestMode").$sbControl($("input:checkbox.TestMode")).button();
-  $("button.Login").click(function() { sbTwitter.$sb("Start").$sbSet(window.location.href); }).button();
+  $("button.Login").click(function() { sbTwitter.$sb("Start").$sbSet(auth_callback_url); }).button();
   $("button.Logout").click(function() { sbTwitter.$sb("Stop").$sbSet("true"); }).button();
   $("p.DirectTweet button.Tweet").click(function() {
     sbTwitter.$sb("Tweet").$sbSet($("p.DirectTweet input:text.Tweet").val());
@@ -102,23 +103,12 @@ $sb(function() {
     $(this).button("option", "label", (this.checked?"Hide Help":"Show Help"));
   }).after("<label for=ShowHelp />").button().change();
 
-
-  if (_windowFunctions.hasParam("denied")) {
-    sbTwitter.$sb("Denied").$sbSet("true");
-    window.location.replace("http://"+window.location.host+window.location.pathname);
-  }
-  var oauth_verifier = _windowFunctions.getParam("oauth_verifier");
-  if (oauth_verifier) {
-    sbTwitter.$sb("SetOAuthVerifier").$sbSet(oauth_verifier);
-    window.location.replace("http://"+window.location.host+window.location.pathname);
-  } else {
-    sbTwitter.$sb("AuthorizationURL").$sbBindAndRun("content", function(event, value) {
-      if (value) {
-        $sb(this).$sbSet("");
-        window.location.assign(value);
-      }
-    });
-  }
+  sbTwitter.$sb("AuthorizationURL").$sbBindAndRun("content", function(event, value) {
+    if (value) {
+      $sb(this).$sbSet("");
+      window.location.assign(value);
+    }
+  });
 
   $.get("/FormatSpecifiers/descriptions", function(data) {
     $.each( data.trim().split("\n"), function(i,e) {
