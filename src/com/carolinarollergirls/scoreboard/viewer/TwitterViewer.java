@@ -116,8 +116,15 @@ public class TwitterViewer implements ScoreBoardViewer
     twitter = twitterFactory.getInstance();
     userId = 0;
     requestToken = null;
-    if (null != twitterStream)
-      twitterStream.cleanUp();
+    if (null != twitterStream) {
+      // cleanUp has a bug where it blocks until its internal thread
+      // blocks until a new status comes in or it times out.
+      // We don't need or want to wait so let's do the cleanup
+      // in a separate thread.
+      final TwitterStream tS = twitterStream;
+      Runnable r = new Runnable() { public void run() { tS.cleanUp(); } };
+      new Thread(r).start();
+    }
     twitterStream = null;
     loggedIn = false;
   }
