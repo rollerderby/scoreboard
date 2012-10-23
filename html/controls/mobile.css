@@ -27,5 +27,7 @@
 /* END PeriodTimePage */
 
 /* TeamScorePage */
-  #TeamScorePage div { text-align: center; }
+  #TeamBothScorePage div { text-align: center; }
+  #Team1ScorePage div { text-align: center; }
+  #Team2ScorePage div { text-align: center; }
 /* END TeamScorePage */

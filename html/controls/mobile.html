@@ -39,7 +39,7 @@
 
 <div data-role="page" id="JamControlPage">
   <div data-role="header">
-    <a href="mobile.html" data-direction="reverse" data-icon="arrow-l">Main</a>
+    <a href="#Main" data-direction="reverse" data-icon="arrow-l">Main</a>
     <h1>Jam Control</h1>
   </div>
 
@@ -60,7 +60,7 @@
 
 <div data-role="page" id="PeriodTimePage">
   <div data-role="header">
-    <a href="mobile.html" data-direction="reverse" data-icon="arrow-l">Main</a>
+    <a href="#Main" data-direction="reverse" data-icon="arrow-l">Main</a>
     <h1>Period Time</h1>
   </div>
 
@@ -79,8 +79,23 @@
 
 <div data-role="page" id="TeamScorePage">
   <div data-role="header">
-    <a href="mobile.html" data-direction="reverse" data-icon="arrow-l">Main</a>
+    <a href="#Main" data-direction="reverse" data-icon="arrow-l">Main</a>
     <h1>Team Score</h1>
+  </div>
+
+  <div data-role="content">
+    <ul data-role="listview">
+      <li><a href="#TeamBothScorePage">Both Teams Score</a></li>
+      <li><a href="#Team1ScorePage">Team 1 Score</a></li>
+      <li><a href="#Team2ScorePage">Team 2 Score</a></li>
+    </ul>
+  </div>
+</div>
+
+<div data-role="page" id="TeamBothScorePage">
+  <div data-role="header">
+    <a href="#TeamScorePage" data-direction="reverse" data-icon="arrow-l">Score</a>
+    <h1>Both Team Score</h1>
   </div>
 
   <div data-role="content">
@@ -104,6 +119,94 @@
     <div>
       <input type="number" class="Team2 SetScore"/>
       <button class="Team2 SetScore" data-inline="true">Set Score</button>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="Team1ScorePage">
+  <div data-role="header">
+    <a href="#TeamScorePage" data-direction="reverse" data-icon="arrow-l">Score</a>
+    <h1>Team 1 Score</h1>
+  </div>
+
+  <div data-role="content">
+    <div><a class="Team1 Name"></a></div>
+    <div><a class="Team1 Score"></a></div>
+    <div class="ui-grid-a">
+      <div class="ui-block-a">
+        <button class="Team1 ScoreDown" data-inline="true" value="-1">-1</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team1 ScoreUp" data-inline="true" value="1">+1</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team1 ScoreDown" data-inline="true" value="-2">-2</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team1 ScoreUp" data-inline="true" value="2">+2</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team1 ScoreDown" data-inline="true" value="-3">-3</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team1 ScoreUp" data-inline="true" value="3">+3</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team1 ScoreDown" data-inline="true" value="-4">-4</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team1 ScoreUp" data-inline="true" value="4">+4</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team1 ScoreDown" data-inline="true" value="-5">-5</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team1 ScoreUp" data-inline="true" value="5">+5</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div data-role="page" id="Team2ScorePage">
+  <div data-role="header">
+    <a href="#TeamScorePage" data-direction="reverse" data-icon="arrow-l">Score</a>
+    <h1>Team 2 Score</h1>
+  </div>
+
+  <div data-role="content">
+    <div><a class="Team2 Name"></a></div>
+    <div><a class="Team2 Score"></a></div>
+    <div class="ui-grid-a">
+      <div class="ui-block-a">
+        <button class="Team2 ScoreDown" data-inline="true" value="-1">-1</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team2 ScoreUp" data-inline="true" value="1">+1</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team2 ScoreDown" data-inline="true" value="-2">-2</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team2 ScoreUp" data-inline="true" value="2">+2</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team2 ScoreDown" data-inline="true" value="-3">-3</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team2 ScoreUp" data-inline="true" value="3">+3</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team2 ScoreDown" data-inline="true" value="-4">-4</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team2 ScoreUp" data-inline="true" value="4">+4</button>
+      </div>
+      <div class="ui-block-a">
+        <button class="Team2 ScoreDown" data-inline="true" value="-5">-5</button>
+      </div>
+      <div class="ui-block-b">
+        <button class="Team2 ScoreUp" data-inline="true" value="5">+5</button>
+      </div>
     </div>
   </div>
 </div>

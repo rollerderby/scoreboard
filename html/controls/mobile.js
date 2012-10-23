@@ -56,16 +56,19 @@ function setupTeamScorePage() {
     var team = $sb("ScoreBoard.Team("+n+")");
     var score = team.$sb("Score");
 
-    team.$sb("Name").$sbElement("#TeamScorePage a.Team"+n+".Name");
-    score.$sbElement("#TeamScorePage a.Team"+n+".Score");
-    score.$sbControl("#TeamScorePage button.Team"+n+".ScoreDown", { sbcontrol: {
-      sbSetAttrs: { change: true }
-    }});
-    score.$sbControl("#TeamScorePage button.Team"+n+".ScoreUp", { sbcontrol: {
-      sbSetAttrs: { change: true }
-    }});
+    $.each([ "#Team"+n+"ScorePage", "#TeamBothScorePage" ], function(ii, e) {
+      team.$sb("Name").$sbElement(e+" a.Team"+n+".Name");
+      score.$sbElement(e+" a.Team"+n+".Score");
+      score.$sbControl(e+" button.Team"+n+".ScoreDown", { sbcontrol: {
+        sbSetAttrs: { change: true }
+      }});
+      score.$sbControl(e+" button.Team"+n+".ScoreUp", { sbcontrol: {
+        sbSetAttrs: { change: true }
+      }});
 
-    score.$sbControl("#TeamScorePage input[type='number'].Team"+n+".SetScore,#TeamScorePage button.Team"+n+".SetScore", {
+    });
+
+    score.$sbControl("#TeamBothScorePage input[type='number'].Team"+n+".SetScore,#TeamBothScorePage button.Team"+n+".SetScore", {
       sbcontrol: {
         delayupdate: true,
         noSetControlValue: true
