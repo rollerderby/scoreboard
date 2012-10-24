@@ -46,7 +46,9 @@
   #ConditionalTweets>tbody>tr:nth-child(even)>td { background: #ccc; }
 /* End ConditionalTweets table */
 
-/* ShowFormatSpecifiersDialog */
+/* ConditionalTweetConfiguration */
+  #ConditionalTweetConfiguration:not(.show) { display: none; }
+
   #HelpText table { width: 100%; }
   #HelpText table td { width: 50%; }
-/* End ShowFormatSpecifiersDialog */
+/* End ConditionalTweetConfiguration */

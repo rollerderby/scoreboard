@@ -23,34 +23,15 @@
   <input type="checkbox" class="TestMode" id="TestModeCheckBox"></input>
   <button class="Login">Login</button>
   <button class="Logout">Logout</button>
-  <button class="EditConditionalTweets">Edit Conditional Tweets</button>
+  <label for="EditConditionalTweetsCheckBox"></label>
+  <input type="checkbox" class="EditConditionalTweets" id="EditConditionalTweetsCheckBox"></input>
   <a class="NotLoggedIn">Not Logged In</a>
   <a class="LoggedIn">Logged In As <span class="ScreenName"></span></a>
 </p>
 <p class="Error Center">Error: <a class="Error"></a></p>
 <p class="TestMode Center">In Test Mode!  Twitter will <b>not</b> be updated!</p>
 
-<table id="UserTweets">
-  <thead>
-    <tr>
-      <th>
-        <p class="DirectTweet" >
-          <input type="text" class="Tweet" />
-          <button class="Tweet">Tweet</button>
-        </p>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="Template">
-      <td>
-        <a class="Tweet"></a>
-      </td>
-    </tr>
-  </tbody>
-</table>
-
-<div id="ConditionalTweetConfigurationDialog">
+<div id="ConditionalTweetConfiguration">
   <p class="AddConditionalTweet" >
     <input type="text" class="UpdateId" />
     <span class="Condition">
@@ -97,6 +78,26 @@
     </tbody>
   </table>
 </div>
+
+<table id="UserTweets">
+  <thead>
+    <tr>
+      <th>
+        <p class="DirectTweet" >
+          <input type="text" class="Tweet" />
+          <button class="Tweet">Tweet</button>
+        </p>
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr class="Template">
+      <td>
+        <a class="Tweet"></a>
+      </td>
+    </tr>
+  </tbody>
+</table>
 
 <div id="HelpText" style="display: none;" >
   <p>
