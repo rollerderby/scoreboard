@@ -117,6 +117,20 @@ $sb(function() {
   });
 
   parseInputFieldFormatSpecifiers();
+
+  var keys = [ ];
+  $.get("/FormatSpecifiers/keys").done(function(data) {
+    $.each( data.split(/\s/), function(i,e) {
+      $.ajax("/FormatSpecifiers/description", {
+        async: false,
+        data: { format: e },
+        success: function(desc) {
+          keys.push({ label: e+" ("+desc+")", value: e });
+        }
+      });
+    });
+    setupInputFieldAutoComplete(keys);
+  });
 });
 
 function parseInputFieldFormatSpecifiers() {
@@ -138,3 +152,20 @@ function parseInputFieldFormatSpecifiers() {
   setTimeout(parseInputFieldFormatSpecifiers, 1000);
 }
 
+function setupInputFieldAutoComplete(keys) {
+  $("#ConditionalTweetConfigurationDialog")
+    .find("input:text.Condition,input:text.Tweet").autocomplete({
+      source: function(request, response) {
+        var key = request.term.split(" ").pop();
+        response(key ? $.ui.autocomplete.filter(keys, key) : "");
+      },
+      focus: function() { return false; },
+      select: function(event, ui) {
+        var words = this.value.split(" ");
+        words.pop();
+        words.push(ui.item.value);
+        this.value = words.join(" ");
+        return false;
+      }
+    });
+}

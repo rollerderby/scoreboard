@@ -29,6 +29,14 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
     return m;
   }
 
+  public String getFormatSpecifierDescription(String format) {
+    try {
+      return scoreBoardValues.get(format).getDescription();
+    } catch ( NullPointerException npE ) {
+      return "";
+    }
+  }
+
   public void setScoreBoard(ScoreBoard sb) {
     scoreBoard = sb;
     setupScoreBoardValues();

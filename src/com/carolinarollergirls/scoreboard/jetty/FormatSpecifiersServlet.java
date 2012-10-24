@@ -46,6 +46,12 @@ public class FormatSpecifiersServlet extends DefaultScoreBoardControllerServlet
         response.getWriter().println(key+" : "+m.get(key));
       }
       response.setStatus(HttpServletResponse.SC_OK);
+    } else if ("/description".equals(request.getPathInfo())) {
+      String format = request.getParameter("format");
+      String description = formatSpecifierViewer.getFormatSpecifierDescription(format);
+      response.setContentType("text/plain");
+      response.getWriter().print(description);
+      response.setStatus(HttpServletResponse.SC_OK);
     } else if ("/keys".equals(request.getPathInfo())) {
       Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
       Iterator<String> keys = m.keySet().iterator();
