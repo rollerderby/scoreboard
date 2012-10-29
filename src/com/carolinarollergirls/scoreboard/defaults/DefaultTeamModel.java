@@ -122,15 +122,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     }
   }
 
-  public List<SkaterModel> getSkaterModels() { return Collections.unmodifiableList(new ArrayList<SkaterModel>(skaters.values())); }
-  public List<Skater> getSkaters() {
-    List<Skater> list = new ArrayList<Skater>(skaters.size());
-    Iterator<SkaterModel> i = getSkaterModels().iterator();
-    while (i.hasNext())
-      list.add(i.next().getSkater());
-    return Collections.unmodifiableList(list);
+  public List<SkaterModel> getSkaterModels() {
+    return Collections.unmodifiableList(new ArrayList<SkaterModel>(skaters.values()));
   }
-
+  public List<Skater> getSkaters() {
+    return Collections.unmodifiableList(new ArrayList<Skater>(skaters.values()));
+  }
   public Skater getSkater(String id) throws SkaterNotFoundException { return getSkaterModel(id); }
   public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException {
     synchronized (skaterLock) {
@@ -157,9 +154,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     }
   }
   public void removeSkaterModel(String id) throws SkaterNotFoundException {
-    SkaterModel sm;
     synchronized (skaterLock) {
-      sm = getSkaterModel(id);
+      SkaterModel sm = getSkaterModel(id);
       try { getPositionModel(sm.getPosition()).clear(); }
       catch ( PositionNotFoundException pnfE ) { /* was on BENCH */ }
       sm.removeScoreBoardListener(this);
