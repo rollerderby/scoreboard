@@ -22,6 +22,11 @@ public interface TeamModel extends Team
 
   public void setName(String name);
 
+  public List<AlternateNameModel> getAlternateNameModels();
+  public AlternateNameModel getAlternateNameModel(String id);
+  public void setAlternateNameModel(String id, String name);
+  public void removeAlternateNameModel(String id);
+
   public void setLogo(String logo);
 
   public void timeout();
@@ -51,4 +56,10 @@ public interface TeamModel extends Team
   public void changePass(int change);
   /* For internal use only */
   public void _setPass(int pass);
+
+  public static interface AlternateNameModel extends AlternateName {
+    public void setName(String n);
+
+    public TeamModel getTeamModel();
+  }
 }

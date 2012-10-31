@@ -995,7 +995,7 @@ function createNewTeamTable(team, teamid) {
   var teamTable = $("<table>").addClass("Team Hide").data("id", teamid)
     .append($("<tr><td/></tr>").addClass("Control"))
     .append($("<tr><td/></tr>").addClass("Skaters"));
-  var controlTable = createRowTable(4).appendTo(teamTable.find("tr.Control>td")).addClass("Control");
+  var controlTable = createRowTable(5).appendTo(teamTable.find("tr.Control>td")).addClass("Control");
 
   team.$sb("Name").$sbControl("<input type='text'>")
     .appendTo(controlTable.find("td:eq(0)"));
@@ -1006,12 +1006,15 @@ function createNewTeamTable(team, teamid) {
     optionValueElement: "Src",
     firstOption: { text: "No Logo", value: "" }
   } }).appendTo(controlTable.find("td:eq(1)"));
+  $("<button>").text("Alternate Names").button()
+    .click(function() { createAlternateNamesDialog(team); })
+    .appendTo(controlTable.find("td:eq(2)"));
   $("<button>").text("Assign Team").button({ disabled: isCurrentTeam })
     .click(function() { createTeamsAssignDialog(teamid); })
-    .appendTo(controlTable.find("td:eq(2)"));
+    .appendTo(controlTable.find("td:eq(3)"));
   $("<button>").text("Remove Team").button({ disabled: isCurrentTeam })
     .click(function() { createTeamsRemoveDialog(teamid); })
-    .appendTo(controlTable.find("td:eq(3)"));
+    .appendTo(controlTable.find("td:eq(4)"));
 
   var skatersTable = $("<table>").addClass("Skaters Empty")
     .appendTo(teamTable.find("tr.Skaters>td"))
@@ -1076,6 +1079,79 @@ function createNewTeamTable(team, teamid) {
   });
 
   return teamTable;
+}
+
+function createAlternateNamesDialog(team) {
+  var dialog = $("<div>").addClass("AlternateNamesDialog");
+
+  $("<a>").text("Type:").appendTo(dialog);
+  var newIdInput = $("<input type='text'>").appendTo(dialog);
+  $("<a>").text("Name:").appendTo(dialog);
+  var newNameInput = $("<input type='text'>").appendTo(dialog);
+
+  var newFunc = function() {
+    var newId = newIdInput.val();
+    var newName = newNameInput.val();
+    team.$sb("AlternateName("+newId+").Name").$sbSet(newName);
+    newNameInput.val("");
+    newIdInput.val("").focus();
+  };
+
+  newNameInput.keypress(function(event) {
+    if (event.which == 13) // Enter
+      newFunc();
+  });
+  $("<button>").button({ label: "Add" }).click(newFunc)
+    .appendTo(dialog);
+
+  var table = $("<table>").appendTo(dialog);
+  $("<tr>")
+    .append("<th class='X'>X</th>")
+    .append("<th class='Id'>Id</th>")
+    .append("<th class='Name'>Name</th>")
+    .appendTo(table);
+
+  var doExit = 0;
+  var addFunc = function(event, node) {
+    if (doExit) {
+      $(this).unbind(event);
+      return;
+    }
+    var tr = $("<tr>").attr("data-id", node.$sbId)
+      .append("<td class='X'>")
+      .append("<td class='Id'>")
+      .append("<td class='Name'>");
+    $("<button>").button({ label: "X" })
+      .click(function() { node.$sbRemove(); })
+      .appendTo(tr.children("td.X"));
+    tr.children("td.Id").text(node.$sbId);
+    node.$sb("Name").$sbControl("<input type='text' size='20'>").appendTo(tr.children("td.Name"));
+    tr.appendTo(table);
+  };
+  var removeFunc = function(event, node) {
+    if (doExit)
+      $(this).unbind(event);
+    else
+      table.find("tr[data-id='"+node.$sbId+"']").remove();
+  };
+
+  team.$sbBindAddRemoveEach("AlternateName", addFunc, removeFunc);
+
+  newIdInput.autocomplete({
+    minLength: 0,
+    source: [
+      { label: "overlay (Video Overlay)", value: "overlay" },
+      { label: "twitter (Twitter)", value: "twitter" }
+    ]
+  }).focus(function() { $(this).autocomplete("search", ""); });
+
+  dialog.dialog({
+    title: "Alternate Names",
+    modal: true,
+    width: 700,
+    close: function() { doExit = 1; $(this).dialog("destroy").remove(); },
+    buttons: { Close: function() { $(this).dialog("close"); } }
+  });
 }
 
 function createTeamsAssignDialog(teamId) {

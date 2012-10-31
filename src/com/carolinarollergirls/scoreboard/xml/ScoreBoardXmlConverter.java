@@ -92,6 +92,10 @@ public class ScoreBoardXmlConverter
     editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
     editor.setElement(e, Team.EVENT_PASS, null, String.valueOf(t.getPass()));
 
+    Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
+    while (alternateNames.hasNext())
+      toElement(e, alternateNames.next());
+
     Iterator<Position> positions = t.getPositions().iterator();
     while (positions.hasNext())
       toElement(e, positions.next());
@@ -99,6 +103,14 @@ public class ScoreBoardXmlConverter
     Iterator<Skater> skaters = t.getSkaters().iterator();
     while (skaters.hasNext())
       toElement(e, skaters.next());
+
+    return e;
+  }
+
+  public Element toElement(Element team, Team.AlternateName n) {
+    Element e = editor.setElement(team, "AlternateName", n.getId());
+
+    editor.setElement(e, Team.AlternateName.EVENT_NAME, null, n.getName());
 
     return e;
   }
@@ -285,7 +297,9 @@ public class ScoreBoardXmlConverter
 
         boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
 
-        if (name.equals("Skater"))
+        if (name.equals("AlternateName"))
+          processAlternateName(teamModel, element);
+        else if (name.equals("Skater"))
           processSkater(teamModel, element);
         else if (name.equals("Position"))
           processPosition(teamModel, element);
@@ -311,6 +325,36 @@ public class ScoreBoardXmlConverter
           teamModel.changePass(Integer.parseInt(value));
         else if (name.equals(Team.EVENT_PASS) && !isChange)
           teamModel.setPass(Integer.parseInt(value));
+      } catch ( Exception e ) {
+      }
+    }
+  }
+
+  public void processAlternateName(TeamModel teamModel, Element alternateName) {
+    String id = alternateName.getAttributeValue("Id");
+    TeamModel.AlternateNameModel alternateNameModel = teamModel.getAlternateNameModel(id);
+
+    if (editor.hasRemovePI(alternateName)) {
+      teamModel.removeAlternateNameModel(id);
+      return;
+    }
+
+    if (null == alternateNameModel) {
+      teamModel.setAlternateNameModel(id, "");
+      alternateNameModel = teamModel.getAlternateNameModel(id);
+    }
+
+    Iterator children = alternateName.getChildren().iterator();
+    while (children.hasNext()) {
+      Element element = (Element)children.next();
+      try {
+        String name = element.getName();
+        String value = editor.getText(element);
+
+        if (null == value)
+          continue;
+        else if (name.equals(Team.AlternateName.EVENT_NAME))
+          alternateNameModel.setName(value);
       } catch ( Exception e ) {
       }
     }

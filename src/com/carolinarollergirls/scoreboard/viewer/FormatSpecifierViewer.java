@@ -171,6 +171,15 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
     new ScoreBoardValue("%t"+t+"n", "Team "+t+" Name", getTeam(id), Team.EVENT_NAME) {
       public String getValue() { return getTeam(id).getName(); }
     };
+    new ScoreBoardValue("%t"+t+"Nt", "Team "+t+" Twitter Name", Team.AlternateName.class, Team.AlternateName.ID_TWITTER, Team.AlternateName.EVENT_NAME) {
+      public String getValue() {
+        try {
+          return getTeam(id).getAlternateName(Team.AlternateName.ID_TWITTER).getName();
+        } catch ( NullPointerException npE ) {
+          return "";
+        }
+      }
+    };
     new ScoreBoardValue("%t"+t+"s", "Team "+t+" Score", getTeam(id), Team.EVENT_SCORE) {
       public String getValue() { return String.valueOf(getTeam(id).getScore()); }
     };
@@ -292,20 +301,22 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
     public ScoreBoardValue(String f, String d, ScoreBoardEventProvider p, String prop) {
       format = f;
       description = d;
-      provider = p;
-      property = prop;
+      scoreBoardCondition = new ScoreBoardCondition(p, prop, ScoreBoardCondition.ANY_VALUE);
+      scoreBoardValues.put(format, this);
+    }
+    public ScoreBoardValue(String f, String d, Class c, String i, String prop) {
+      format = f;
+      description = d;
+      scoreBoardCondition = new ScoreBoardCondition(c, i, prop, ScoreBoardCondition.ANY_VALUE);
       scoreBoardValues.put(format, this);
     }
     public abstract String getValue();
     public String getPreviousValue(Object value) { return String.valueOf(value); }
     public String getDescription() { return description; }
-    public ScoreBoardCondition getScoreBoardCondition() {
-      return new ScoreBoardCondition(provider, property, ScoreBoardCondition.ANY_VALUE);
-    }
+    public ScoreBoardCondition getScoreBoardCondition() { return scoreBoardCondition; }
     protected String format;
     protected String description;
-    protected ScoreBoardEventProvider provider;
-    protected String property;
+    protected ScoreBoardCondition scoreBoardCondition;
   }
 
   public static final String NO_SKATER_NAME_VALUE = "";

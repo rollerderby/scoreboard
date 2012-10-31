@@ -71,6 +71,34 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     }
   }
 
+  public List<AlternateName> getAlternateNames() {
+    return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
+  }
+  public List<AlternateNameModel> getAlternateNameModels() {
+    return Collections.unmodifiableList(new ArrayList<AlternateNameModel>(alternateNames.values()));
+  }
+  public AlternateName getAlternateName(String i) { return getAlternateNameModel(i); }
+  public AlternateNameModel getAlternateNameModel(String i) { return alternateNames.get(i); }
+  public void setAlternateNameModel(String i, String n) {
+    synchronized (alternateNameLock) {
+      if (alternateNames.containsKey(i)) {
+        alternateNames.get(i).setName(n);
+      } else {
+        AlternateNameModel anm = new DefaultAlternateNameModel(this, i, n);
+        alternateNames.put(i, anm);
+        anm.addScoreBoardListener(this);
+        scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_ALTERNATE_NAME, anm, null));
+      }
+    }
+  }
+  public void removeAlternateNameModel(String i) {
+    synchronized (alternateNameLock) {
+      AlternateNameModel anm = alternateNames.remove(i);
+      anm.removeScoreBoardListener(this);
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_ALTERNATE_NAME, anm, null));
+    }
+  }
+
   public String getLogo() { return logo; }
   public void setLogo(String l) {
     synchronized (logoLock) {
@@ -229,6 +257,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   protected boolean leadJammer = false;
   protected int pass = 0;
 
+  protected Map<String,AlternateNameModel> alternateNames = new ConcurrentHashMap<String,AlternateNameModel>();
+  protected Object alternateNameLock = new Object();
+
   protected Map<String,SkaterModel> skaters = new ConcurrentHashMap<String,SkaterModel>();
   protected Map<String,PositionModel> positions = new ConcurrentHashMap<String,PositionModel>();
   protected Object skaterLock = new Object();
@@ -239,4 +270,34 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   public static final int DEFAULT_TIMEOUTS = 3;
   public static final boolean DEFAULT_LEADJAMMER = false;
   public static final int DEFAULT_PASS = 0;
+
+  public class DefaultAlternateNameModel extends DefaultScoreBoardEventProvider implements AlternateNameModel
+  {
+    public DefaultAlternateNameModel(TeamModel t, String i, String n) {
+      teamModel = t;
+      id = i;
+      name = n;
+    }
+    public String getId() { return id; }
+    public String getName() { return name; }
+    public void setName(String n) {
+      synchronized (nameLock) {
+        String last = name;
+        name = n;
+        scoreBoardChange(new ScoreBoardEvent(this, AlternateName.EVENT_NAME, name, last));
+      }
+    }
+
+    public Team getTeam() { return getTeamModel(); }
+    public TeamModel getTeamModel() { return teamModel; }
+
+    public String getProviderName() { return "AlternateName"; }
+    public Class getProviderClass() { return AlternateName.class; }
+    public String getProviderId() { return getId(); }
+
+    protected TeamModel teamModel;
+    protected String id;
+    protected String name;
+    protected Object nameLock = new Object();
+  }
 }

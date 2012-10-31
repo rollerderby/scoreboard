@@ -75,7 +75,14 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
         editor.setElement(getScoreBoardElement(), prop, null, v);
       }
     } else if (p.getProviderName().equals("Team")) {
-      if (prop.equals(Team.EVENT_ADD_SKATER)) {
+      if (prop.equals(Team.EVENT_ADD_ALTERNATE_NAME)) {
+        Element e = converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue());
+      } else if (prop.equals(Team.EVENT_REMOVE_ALTERNATE_NAME)) {
+        if (isPersistent())
+          editor.removeElement(getTeamElement((Team)p), "AlternateName", ((Team.AlternateName)event.getValue()).getId());
+        else
+          editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue()));
+      } else if (prop.equals(Team.EVENT_ADD_SKATER)) {
         Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
       } else if (prop.equals(Team.EVENT_REMOVE_SKATER)) {
         if (isPersistent())
@@ -93,6 +100,8 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
         editor.setElement(e, "Name", null, (s==null?"":s.getName()));
         editor.setElement(e, "Number", null, (s==null?"":s.getNumber()));
       }
+    } else if (p.getProviderName().equals("AlternateName")) {
+      editor.setElement(getAlternateNameElement((Team.AlternateName)p), prop, null, v);
     } else if (p.getProviderName().equals("Skater")) {
       editor.setElement(getSkaterElement((Skater)p), prop, null, v);
     } else if (p.getProviderName().equals("Clock")) {
@@ -136,6 +145,10 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 
   protected Element getSkaterElement(Skater skater) {
     return editor.getElement(getTeamElement(skater.getTeam()), "Skater", skater.getId());
+  }
+
+  protected Element getAlternateNameElement(Team.AlternateName alternateName) {
+    return editor.getElement(getTeamElement(alternateName.getTeam()), "AlternateName", alternateName.getId());
   }
 
   protected XmlDocumentEditor editor = new XmlDocumentEditor();

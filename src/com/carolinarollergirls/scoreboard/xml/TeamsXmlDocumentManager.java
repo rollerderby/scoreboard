@@ -94,11 +94,32 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
     if (null != logo)
       editor.addElement(newTeam, "Logo", null, editor.getText(logo));
 
+    Iterator alternateNames = team.getChildren("AlternateName").iterator();
+    while (alternateNames.hasNext())
+      processAlternateName(newTeam, (Element)alternateNames.next());
+
     Iterator skaters = team.getChildren("Skater").iterator();
     while (skaters.hasNext())
       processSkater(newTeam, (Element)skaters.next());
 
     update(newTeam);
+  }
+
+  protected void processAlternateName(Element newTeam, Element alternateName) {
+    String alternateNameId = alternateName.getAttributeValue("Id");
+    if (null == alternateNameId || "".equals(alternateNameId.trim()))
+      return;
+    Element newAlternateName = editor.addElement(newTeam, "AlternateName", alternateNameId);
+
+    if (editor.hasRemovePI(alternateName)) {
+      Element removeAlternateNameTeam = editor.addElement(createXPathElement(), "Team", newTeam.getAttributeValue("Id"));
+      update(removeAlternateNameTeam.addContent(editor.setRemovePI((Element)newAlternateName.detach())));
+      return;
+    }
+
+    Element aName = alternateName.getChild("Name");
+    if (null != aName)
+      editor.addElement(newAlternateName, "Name", null, editor.getText(aName));
   }
 
   protected void processSkater(Element newTeam, Element skater) {
@@ -148,6 +169,16 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
     Element logo = newTeam.getChild("Logo");
     if (null != logo)
       team.setLogo(editor.getText(logo));
+    Iterator alternateNames = newTeam.getChildren("AlternateName").iterator();
+    while (alternateNames.hasNext()) {
+      Element alternateName = (Element)alternateNames.next();
+      String aId = alternateName.getAttributeValue("Id");
+      if (null == aId || "".equals(aId.trim()))
+        continue;
+      String aName = "";
+      aName = editor.getText(alternateName.getChild("Name"));
+      team.setAlternateNameModel(aId, aName);
+    }
     Iterator skaters = newTeam.getChildren("Skater").iterator();
     while (skaters.hasNext()) {
       Element skater = (Element)skaters.next();
@@ -175,6 +206,12 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
     createXPathElement().addContent(newTeam);
     editor.addElement(newTeam, "Name", null, team.getName());
     editor.addElement(newTeam, "Logo", null, team.getLogo());
+    Iterator<Team.AlternateName> alternateNames = team.getAlternateNames().iterator();
+    while (alternateNames.hasNext()) {
+      Team.AlternateName alternateName = alternateNames.next();
+      Element newAlternateName = editor.addElement(newTeam, "AlternateName", alternateName.getId());
+      editor.addElement(newAlternateName, "Name", null, alternateName.getName());
+    }
     Iterator<Skater> skaters = team.getSkaters().iterator();
     while (skaters.hasNext()) {
       Skater skater = skaters.next();

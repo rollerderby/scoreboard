@@ -138,6 +138,21 @@ table.RowTable { border-spacing: 0px; }
   table.TimeDialog button.Set>span { padding: 0.1em 1em; }
 /* End Time Control Dialog */
 
+/* Alternate Names Dialog */
+  div.AlternateNamesDialog table { width: 100%; border-spacing: 0px; }
+  div.AlternateNamesDialog table tr>th.X { width: 10%; }
+  div.AlternateNamesDialog table tr>th.Id { width: 45%; }
+  div.AlternateNamesDialog table tr>th.Name { width: 45%; }
+  div.AlternateNamesDialog table tr>th { background: #ccc; }
+  div.AlternateNamesDialog table tr>th:first-of-type { border-radius: 5px 0px 0px 0px; }
+  div.AlternateNamesDialog table tr>th:last-of-type { border-radius: 0px 5px 0px 0px; }
+  div.AlternateNamesDialog table tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 5px; }
+  div.AlternateNamesDialog table tr:last-of-type>td:last-of-type { border-radius: 0px 0px 5px 0px; }
+  div.AlternateNamesDialog table tr>td { text-align: center; }
+  div.AlternateNamesDialog table tr:nth-of-type(odd)>td { background: #eee; }
+  div.AlternateNamesDialog table tr:nth-of-type(even)>td { background: #ddd; }
+/* End Alternate Names Dialog */
+
 /* Teams Assign Dialog */
   div.TeamsAssignDialog h4 { text-align: center; }
 /* End Teams Assign Dialog */
