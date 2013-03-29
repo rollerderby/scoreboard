@@ -632,7 +632,7 @@ var timeSetWarningRefocusing = false;
 function createTimeSetWarningDialog(source) {
   if (timeSetWarningAck || timeSetWarningRefocusing )
     return;
-  var dialog = $("<dialog>");
+  var dialog = $("<div>");
   $("<p>").text("Warning: key control is still enabled while entering the time!")
     .appendTo(dialog);
   $("<p>").html("Any keys you press while entering the time <b>will affect</b> any buttons they are assigned to!")
