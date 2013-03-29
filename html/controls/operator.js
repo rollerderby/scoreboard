@@ -163,9 +163,9 @@ function createMetaControlTable() {
     .appendTo(selectJammerSpan).button();
   _crgUtils.bindAndRun(selectByButton, "click", function() {
     $("#TeamTime table.Team td.Jammer")
-      .toggleClass("ByNumber", this.checked)
-      .toggleClass("ByName", !this.checked);
-    $(this).button("option", "label", (this.checked?"Select Jammer by Number":"Select Jammer by Name"));
+      .toggleClass("ByNumber", !this.checked)
+      .toggleClass("ByName", this.checked);
+    $(this).button("option", "label", (this.checked?"Select Jammer by Name":"Select Jammer by Number"));
   });
   var selectSortLabel = $("<label>").attr("for", "SelectJammerSort")
     .appendTo(selectJammerSpan);
@@ -437,7 +437,7 @@ function createTeamTable() {
      * so need to explicitly specify to style the buttonset as ltr
      */
     leadJammerTd.css("direction", "ltr").buttonset();
-    var jammerSelectTd = jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByName AlphaSort");
+    var jammerSelectTd = jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByNumber AlphaSort");
     sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
         optionParent: sbTeam,
         optionChildName: "Skater",
