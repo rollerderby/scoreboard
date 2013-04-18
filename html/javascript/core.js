@@ -75,8 +75,6 @@
  *     existing score.  The attribute parameter must be a javascript
  *     object, i.e. { }, with zero or more key-value pairs, or it can be
  *     null or undefined.
- *   $sbChange(value)
- *     This function is equivalent to $sbSet(value, { change: "true" })
  *   $sbRemove()
  *     This function removes the element from the core scoreboard program.
  *     Note that elements may not always be able to be removed, and the
@@ -224,7 +222,6 @@ _crgScoreBoard = {
     $sbIs: function(value) { return (this.$sbGet() == value); },
     $sbIsTrue: function() { return isTrue(this.$sbGet()); },
     $sbSet: function(value, attrs) { _crgScoreBoard.updateServer(_crgScoreBoard.toNewElement(this, value).attr(attrs||{})); },
-    $sbChange: function(value) { this.$sbSet(value, { change: "true" }); },
     $sbRemove: function() { _crgScoreBoard.removeFromServer(this); },
     $sbBindAndRun: function(eventType, eventData, handler, initParams) { return _crgUtils.bindAndRun(this, eventType, eventData, handler, initParams); },
     $sbOnAndRun: function(eventType, eventData, handler, initParams) { return _crgUtils.onAndRun(this, eventType, eventData, handler, initParams); },
@@ -295,11 +292,11 @@ _crgScoreBoard = {
           if (!$.isjQuery(container) || !container.length)
             return false;
           var doAutoFit = _autoFit.enableAutoFitText(container, opts);
-          sbElement.bind("content", function(event) {
+          sbElement.bind("sbchange", function(event) {
             if (container.closest("body").length)
               doAutoFit();
             else
-              sbElement.unbind("content", event);
+              sbElement.unbind("sbchange", event);
           });
           return true;
         };
@@ -407,8 +404,8 @@ _crgScoreBoard = {
     if (!e) return;
     e.children(function() { removeScoreBoardElement(e, $sb(this)); });
     delete _crgScoreBoard.addEventTriggered[e.$sbPath];
-    parent.trigger("remove", [ e ]);
-    parent.trigger("remove:"+e.$sbName, [ e ]);
+    parent.trigger("sbremove", [ e ]);
+    parent.trigger("sbremove:"+e.$sbName, [ e ]);
     e.remove();
   },
 
@@ -523,7 +520,7 @@ _crgScoreBoard = {
         if (oldContent !== newContent) {
           _crgScoreBoard.setXmlElementText(e, newContent);
           _crgScoreBoard.setHtmlValue(e, $("[data-sbelement='"+e.$sbPath+"']"), newContent);
-          triggerObj.fireContent = true;
+          triggerObj.fireChange = true;
           triggerObj.oldContent = oldContent;
           triggerObj.newContent = newContent;
         }
@@ -540,11 +537,11 @@ _crgScoreBoard = {
       $.each(triggerArray, function(i,obj) {
         if (!_crgScoreBoard.addEventTriggered[obj.node.$sbPath]) {
           _crgScoreBoard.addEventTriggered[obj.node.$sbPath] = true;
-          obj.parent.trigger("add", [ obj.node ]);
-          obj.parent.trigger("add:"+obj.node.$sbName, [ obj.node ]);
+          obj.parent.trigger("sbadd", [ obj.node ]);
+          obj.parent.trigger("sbadd:"+obj.node.$sbName, [ obj.node ]);
         }
-        if (obj.fireContent)
-          obj.node.trigger("content", [ obj.newContent, obj.oldContent ]);
+        if (obj.fireChange)
+          obj.node.trigger("sbchange", [ obj.newContent, obj.oldContent ]);
         if (obj.remove)
           _crgScoreBoard.removeScoreBoardElement(obj.parent, obj.node);
       });

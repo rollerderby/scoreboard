@@ -14,7 +14,7 @@ $sb(function() {
       $("p.DirectTweet button.Tweet").click();
   });
   sbTwitter.$sb("ScreenName").$sbElement("p.LogInStatus span.ScreenName");
-  sbTwitter.$sb("Authorized").$sbBindAndRun("content", function(event, value) {
+  sbTwitter.$sb("Authorized").$sbBindAndRun("sbchange", function(event, value) {
     var directTweetEnabled = sbTwitter.$sb("TestMode").$sbIsTrue() || isTrue(value);
     $("button.Login").button("option", "disabled", isTrue(value));
     $("button.Logout").button("option", "disabled", !isTrue(value));
@@ -22,7 +22,7 @@ $sb(function() {
     $("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
     $("p.LogInStatus").toggleClass("LoggedIn", isTrue(value));
   });
-  sbTwitter.$sb("TestMode").$sbBindAndRun("content", function(event, value) {
+  sbTwitter.$sb("TestMode").$sbBindAndRun("sbchange", function(event, value) {
     var directTweetEnabled = sbTwitter.$sb("Authorized").$sbIsTrue() || isTrue(value);
     $("p.DirectTweet button.Tweet").button("option", "disabled", !directTweetEnabled);
     $("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
@@ -30,10 +30,10 @@ $sb(function() {
     $("p.TestMode").toggleClass("Show", isTrue(value));
   });
   sbTwitter.$sb("Error").$sbElement("p.Error a.Error");
-  sbTwitter.$sb("Error").$sbBindAndRun("content", function(event, value) {
+  sbTwitter.$sb("Error").$sbBindAndRun("sbchange", function(event, value) {
     $("p.Error").toggleClass("Show", !!value);
   });
-  sbTwitter.$sb("Status").$sbOnAndRun("content", function(event, value) {
+  sbTwitter.$sb("Status").$sbOnAndRun("sbchange", function(event, value) {
     if (value) {
       $("#UserTweets>tbody>tr.Template").clone(true).removeClass("Template")
         .prependTo("#UserTweets>tbody")
@@ -96,7 +96,7 @@ $sb(function() {
     $(this).button("option", "label", (this.checked?"Hide Help":"Show Help"));
   }).after("<label for=ShowHelp />").button().change();
 
-  sbTwitter.$sb("AuthorizationURL").$sbBindAndRun("content", function(event, value) {
+  sbTwitter.$sb("AuthorizationURL").$sbBindAndRun("sbchange", function(event, value) {
     if (value) {
       $sb(this).$sbSet("");
       window.location.assign(value);

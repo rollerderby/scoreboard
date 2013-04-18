@@ -16,12 +16,12 @@ $sb(function() {
   saveStream.$sb("Filename").$sbElement("#Save a.Filename");
   $("#Save button.Start").click(function() { saveStream.$sb("Start").$sbSet("true"); }).button();
   $("#Save button.Stop").click(function() { saveStream.$sb("Stop").$sbSet("true"); }).button();
-  saveStream.$sb("Running").$sbBindAndRun("content", function(event, value) {
+  saveStream.$sb("Running").$sbBindAndRun("sbchange", function(event, value) {
     $("#Save").toggleClass("Running", isTrue(value));
     $("#Save button.Start").button("option", "disabled", isTrue(value));
     $("#Save button.Stop").button("option", "disabled", !isTrue(value));
   });
-  saveStream.$sb("Error").$sbBindAndRun("content", function(event, value) {
+  saveStream.$sb("Error").$sbBindAndRun("sbchange", function(event, value) {
     $("#Save").toggleClass("Error", isTrue(value));
   });
   saveStream.$sb("Message").$sbElement("#Save a.Status");
@@ -41,12 +41,12 @@ $sb(function() {
 //FIXME - set up so scoreboard controls slider value
     loadStream.$sb("Speed").$sbSet(Math.pow(2,ui.value));
   });
-  loadStream.$sb("Running").$sbBindAndRun("content", function(event, value) {
+  loadStream.$sb("Running").$sbBindAndRun("sbchange", function(event, value) {
     $("#Load").toggleClass("Running", isTrue(value));
     $("#Load button.Start").button("option", "disabled", isTrue(value));
     $("#Load button.Stop").button("option", "disabled", !isTrue(value));
   });
-  loadStream.$sb("Error").$sbBindAndRun("content", function(event, value) {
+  loadStream.$sb("Error").$sbBindAndRun("sbchange", function(event, value) {
     $("#Load").toggleClass("Error", isTrue(value));
   });
   loadStream.$sb("Message").$sbElement("#Load a.Status");
@@ -56,9 +56,9 @@ $sb(function() {
     $("#Load div.Progress").progressbar("value", pct);
   };
   loadStream.$sb("CurrentTime").$sbElement("#Load a.CurrentTime", { sbelement: { convert: _timeConversions.msToMinSec }});
-  loadStream.$sb("CurrentTime").bind("content", updateProgress);
+  loadStream.$sb("CurrentTime").bind("sbchange", updateProgress);
   loadStream.$sb("EndTime").$sbElement("#Load a.EndTime", { sbelement: { convert: _timeConversions.msToMinSec }});
-  loadStream.$sb("EndTime").bind("content", updateProgress);
+  loadStream.$sb("EndTime").bind("sbchange", updateProgress);
   updateProgress();
 
   $("#Load button.Filename").click(function() {

@@ -22,7 +22,7 @@ function setupJamControlPage() {
   $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
 
   $.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("content", function(event, value) {
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
       $("#JamControlPage span.ClockBubble."+clock).toggleClass("Running", isTrue(value));
     });
   });

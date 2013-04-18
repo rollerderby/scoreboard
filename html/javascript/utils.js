@@ -33,7 +33,7 @@ _crgUtils = {
    * to supply to the initial call of the handler.
    * The handler is initially run once for each element
    * in the jQuery target object.
-   * As a special case, if the eventType is "content", and
+   * As a special case, if the eventType is "sbchange", and
    * the initialParams are not defined, and the target
    * is a $sb() node, the target.$sbGet() value is passed as the
    * first and second initial parameters to the handler.
@@ -61,7 +61,7 @@ _crgUtils = {
       var params = [ ];
       if (initialParams)
         params = initialParams;
-      else if ($.trim(eventType) == "content" && $sb(this))
+      else if ($.trim(eventType) == "sbchange" && $sb(this))
         params = [ $sb(this).$sbGet(), $sb(this).$sbGet() ];
 //FIXME - call once for each eventType after splitting by spaces?
       var event = jQuery.Event(eventType);
@@ -110,8 +110,8 @@ _crgUtils = {
     remove = options.remove || $.noop;
     var subChildren = options.subChildren || false;
     var callback = options.callback || $.noop;
-    var addEventType = "add"+(childname?":"+childname:"");
-    var removeEventType = "remove"+(childname?":"+childname:"");
+    var addEventType = "sbadd"+(childname?":"+childname:"");
+    var removeEventType = "sbremove"+(childname?":"+childname:"");
     target.bind(addEventType, function(event,node) {
       if (subChildren || (event.target == this)) add(event,node);
     });
@@ -256,7 +256,7 @@ _crgUtils = {
 //FIXME - need to add code to unbind if/when the option/select is removed from the DOM!
     var setOptionName = function(option, node) {
       if (optionNameElement) {
-        node.$sb(optionNameElement).$sbBindAndRun("content", function(event, value) {
+        node.$sb(optionNameElement).$sbBindAndRun("sbchange", function(event, value) {
           option.html(value);
           addOption(option); // Reorder, if needed
         });
@@ -265,7 +265,7 @@ _crgUtils = {
     };
     var setOptionValue = function(option, node) {
       if (optionValueElement) {
-        node.$sb(optionValueElement).$sbBindAndRun("content", function(event, value) {
+        node.$sb(optionValueElement).$sbBindAndRun("sbchange", function(event, value) {
           option.val(value);
           if (option.prop("selected"))
             s.change(); // Update select with new value

@@ -36,12 +36,12 @@ function createTeamTable(t) {
     var row = table.find("tr.Template").clone().removeClass("Template").attr("data-id", skater.$sbId);
     skater.$sb("Name").$sbElement(row.find("td>a.Name"));
     skater.$sb("Number").$sbElement(row.find("td>a.Number"));
-    skater.$sb("Position").$sbBindAndRun("content", function(event, value) {
+    skater.$sb("Position").$sbBindAndRun("sbchange", function(event, value) {
       value = value.replace(BLOCKER_REGEX, BLOCKER_REPLACE);
       if (POSITIONS_REGEX.test(value))
         row.removeClass(POSITIONS).addClass(value);
     });
-    skater.$sb("PenaltyBox").$sbBindAndRun("content", function(event, value) {
+    skater.$sb("PenaltyBox").$sbBindAndRun("sbchange", function(event, value) {
       row.find("td.Box").toggleClass("InBox", isTrue(value));
     });
 

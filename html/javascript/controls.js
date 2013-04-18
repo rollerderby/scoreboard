@@ -114,7 +114,7 @@ _crgScoreBoardControl = {
 //         really this all needs to be cleaned up
 //         and specifically it needs a documented API
     if (c.is("input:text,input[type='number'],input:password,textarea")) {
-      sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
+      sbElement.bind("sbchange", function(event, value) { updateControlIfUnfocused(value); });
       setControlValue(sbElement.$sbGet());
       c.bind("mouseup keyup change", function() { setElementValue(c.val()); });
       c.bind("blur", function() {
@@ -125,10 +125,10 @@ _crgScoreBoardControl = {
         setTimeout(function () { updateControlIfUnfocused(sbElement.$sbGet()); });
       });
     } else if (c.is("a")) {
-      sbElement.bind("content", function(event, value) { setControlValue(value); });
+      sbElement.bind("sbchange", function(event, value) { setControlValue(value); });
       setControlValue(sbElement.$sbGet());
     } else if (c.is("input:button,button")) {
-      sbElement.bind("content", function(event, value) { setControlValue(value); });
+      sbElement.bind("sbchange", function(event, value) { setControlValue(value); });
       setControlValue(sbElement.$sbGet());
       var buttonClick = function() {
 //FIXME - need a generic indicator to prevent action instead of using .KeyControl.Editing
@@ -148,13 +148,13 @@ _crgScoreBoardControl = {
       };
       c.bind("click", buttonClick);
     } else if (c.is("input:checkbox")) {
-      sbElement.bind("content", function(event, value) { setControlValue(value); });
+      sbElement.bind("sbchange", function(event, value) { setControlValue(value); });
       setControlValue(sbElement.$sbGet());
       c.bind("change", function() { setElementValue(String(this.checked)); this.checked = !this.checked; });
     } else if (c.is("input:radio")) {
       if (!c.attr("name"))
         c.attr("name", c.attr("data-UUID")+"-name");
-      sbElement.bind("content", function(event, value) { setControlValue(value); });
+      sbElement.bind("sbchange", function(event, value) { setControlValue(value); });
       setControlValue(sbElement.$sbGet());
       c.bind("change", function() { setElementValue($(this).val()); });
     } else if (c.is("label")) {
@@ -168,7 +168,7 @@ _crgScoreBoardControl = {
         c.attr("for", target.attr("id"));
     } else if (c.is("select")) {
       _crgUtils.setupSelect(c);
-      sbElement.bind("content", function(event, value) { updateControlIfUnfocused(value); });
+      sbElement.bind("sbchange", function(event, value) { updateControlIfUnfocused(value); });
       setControlValue(sbElement.$sbGet());
       c.bind("change", function() { setElementValue(c.find("option:selected").val()); c.blur(); });
       c.bind("blur", function() { updateControlIfUnfocused(sbElement.$sbGet()); });
@@ -184,7 +184,7 @@ _crgScoreBoardControl = {
       var eValues = $.map(elements, function(e) { return elementValueToControlValue(e.$sbGet()); });
       c.slider({ values: eValues, range: (eValues.length > 1) })
         .bind("slide slidestop", function(event, ui) { $.each(elements, function(i) { elements[i].$sbSet(controlValueToElementValue(ui.values[i])); }); });
-      $.each(elements, function(i) { this.bind("content", function(event, value) { c.slider("values", i, elementValueToControlValue(value)); }); });
+      $.each(elements, function(i) { this.bind("sbchange", function(event, value) { c.slider("values", i, elementValueToControlValue(value)); }); });
     }
     if (c.data("sbcontrol").colorPicker) {
       c.ColorPicker({ color: c.val(), onChange: function(hsb, hex, rgb) { c.val(hex).change(); } });

@@ -65,10 +65,10 @@ $sb(function() {
   };
   $.each( [ "Jam", "Lineup", "Timeout" ], function(i, clock) {
     setupClock(clock);
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("content", showClockJLT);
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockJLT);
   });
   $.each( [ "Period", "Intermission" ], function(i, clock) {
     setupClock(clock);
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("content", showClockPI);
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockPI);
   });
 });

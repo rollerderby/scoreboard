@@ -64,8 +64,8 @@ _crgKeyControls = {
             .find("span.Key")
             .attr("data-keycontrol", String(value?value.charCodeAt(0):""));
         };
-        key.$sbBindAndRun("content", contentChange);
-        button.data("_crgKeyControls:unbind", function() { key.unbind("content", contentChange); });
+        key.$sbBindAndRun("sbchange", contentChange);
+        button.data("_crgKeyControls:unbind", function() { key.unbind("sbchange", contentChange); });
         button.data("_crgKeyControls:Key", key);
         _crgKeyControls._start();
       });

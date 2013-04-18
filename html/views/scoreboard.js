@@ -50,7 +50,7 @@ $sb(function() {
     $("video").prop("controls", true);
 
   var view = sbViewOptions.$sb("CurrentView");
-  view.$sbBindAndRun("content", function(event, value) {
+  view.$sbBindAndRun("sbchange", function(event, value) {
     var showDiv = $("#"+value+"Div");
     if (!showDiv.length)
       showDiv = $("#sbDiv");
@@ -71,7 +71,7 @@ $sb(function() {
 
   setupBackgrounds();
 
-  sbViewOptions.$sb("SwapTeams").$sbBindAndRun("content", function(event,value) {
+  sbViewOptions.$sb("SwapTeams").$sbBindAndRun("sbchange", function(event,value) {
     $("#sbDiv>div.Team,#Timeouts>div.Team").toggleClass("SwapTeams", isTrue(value));
   });
 });
@@ -147,13 +147,13 @@ function setupTeams() {
     sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 40 } } }, "Score");
     sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>div>a"), { sbelement: { autoFitText: true } });
 
-    sbTeam.$sb("Name").$sbBindAndRun("content", function(event,value) {
+    sbTeam.$sb("Name").$sbBindAndRun("sbchange", function(event,value) {
       teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, animateTime.team);
     });
 
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
     var resizeName = teamDiv.find("div.Name").data("AutoFit");
-    sbTeam.$sb("Logo").$sbBindAndRun("content", function(event, newVal, oldVal) {
+    sbTeam.$sb("Logo").$sbBindAndRun("sbchange", function(event, newVal, oldVal) {
       var sbLogo = $sb(this);
       teamDiv.children(".TeamAnimationQueue").queue(function(next) {
         if (!!sbLogo.$sbGet() == teamDiv.find("div.TeamAnimationFlag").hasClass("ShowLogo"))
@@ -185,11 +185,11 @@ function setupTeams() {
       });
     });
 
-    sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("content", function(event, value) {
+    sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("sbchange", function(event, value) {
       teamDiv.find("div.Jammer>div").toggleClass("ShowJammer", !!value, animateTime.clock, "easeInQuart");
       teamDiv.find("div.Lead>div").toggle(!value);
     });
-    sbTeam.$sb("LeadJammer").$sbBindAndRun("content", function(event, value) {
+    sbTeam.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, value) {
       teamDiv.find("div.Lead>div").toggleClass("ShowLead", isTrue(value), animateTime.clock, "easeInQuart");
     });
 
@@ -200,7 +200,7 @@ function setupTeams() {
     };
 
     var redBoxTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running"));
-    _crgUtils.bindAndRun(redBoxTriggers, "content", showTimeoutRedBox);
+    _crgUtils.bindAndRun(redBoxTriggers, "sbchange", showTimeoutRedBox);
 
     setupPulsate(
       function() { return sbTeam.$sb("LeadJammer").$sbIsTrue(); },
@@ -258,7 +258,7 @@ function setupClocks() {
   $("#Timeout>div.Name.WhiteBox").prepend($("<div>").addClass("RedBox full"));
   $("#Intermission>div.Name>a>span.Name").remove();
 
-  $sb("ScoreBoard.InOvertime").$sbBindAndRun("content", function(event, value) {
+  $sb("ScoreBoard.InOvertime").$sbBindAndRun("sbchange", function(event, value) {
     if (isTrue(value)) {
       // we don't want this on the animation queue; it should change immediately,
       // since the intermission clock should be displayed now
@@ -289,19 +289,19 @@ function setupClocks() {
       autoFitTextContainer: "div"
     } });
 
-    $sb("ScoreBoard.OfficialScore").$sbBindAndRun("content", function(event,value) {
+    $sb("ScoreBoard.OfficialScore").$sbBindAndRun("sbchange", function(event,value) {
       $("#Intermission>div.Name>a>span.Unofficial."+node.$sbId)
         .toggle(!isTrue(value) && $sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
       intermissionAutoFitText();
     });
-    node.$sb("HideClock").$sbBindAndRun("content", function(event,value) {
+    node.$sb("HideClock").$sbBindAndRun("sbchange", function(event,value) {
       if ($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
         $("#Intermission>div.Time").toggle(!isTrue(value));    
     });
   }, function(event,node) {
     $("#Intermission>div.Name>a>span."+node.$sbId).remove();
   });
-  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("content", function(event,value) {
+  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", function(event,value) {
     $("#Intermission>div.Name>a>span")
       .filter(":not(."+value+")").hide().end()
       .filter("."+value).show()
@@ -314,10 +314,10 @@ function setupClocks() {
     if (isTrue(value) || intermission)
       $("#sbDiv>div.ClockAnimationQueue").queue(clockRunningChange);
   };
-  $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("content", clockChange);
-  $sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("content", clockChange);
-  $sb("ScoreBoard.Clock(Timeout).Running").$sbBindAndRun("content", clockChange);
-  $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("content", function(event, value) {
+  $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("sbchange", clockChange);
+  $sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("sbchange", clockChange);
+  $sb("ScoreBoard.Clock(Timeout).Running").$sbBindAndRun("sbchange", clockChange);
+  $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("sbchange", function(event, value) {
     clockChange(event, value, 1);
   });
 }

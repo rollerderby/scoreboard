@@ -204,8 +204,8 @@ function createMetaControlTable() {
     var last = pc.$sb("Number").$sbIs(pc.$sb("MaximumNumber").$sbGet());
     doPulseFlag = (under30 && last);
   };
-  $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("content", updatePeriodEndDoPulse);
-  $sb("ScoreBoard.Clock(Period).Number").$sbBindAndRun("content", updatePeriodEndDoPulse);
+  $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("sbchange", updatePeriodEndDoPulse);
+  $sb("ScoreBoard.Clock(Period).Number").$sbBindAndRun("sbchange", updatePeriodEndDoPulse);
 
   var confirmedButton = $("<label/><input type='checkbox'/>");
   $sb("ScoreBoard.OfficialScore")
@@ -269,10 +269,10 @@ function createPeriodEndTimeoutDialog(td) {
     td.find("button.PeriodEndTimeout").button("option", "label", "Timeout at "+secs+" Period seconds");
     applyDiv.hide();
     waitDiv.show();
-    $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("content", checkTimeFunction);
+    $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("sbchange", checkTimeFunction);
   });
   waitDiv.find("button.Cancel").click(function() {
-    $sb("ScoreBoard.Clock(Period).Time").unbind("content", checkTimeFunction);
+    $sb("ScoreBoard.Clock(Period).Time").unbind("sbchange", checkTimeFunction);
     td.find("button.PeriodEndTimeout").button("option", "label", "Timeout before Period End");
     applyDiv.show();
     waitDiv.hide();
@@ -379,7 +379,7 @@ function createTeamTable() {
       if (show)
         logoSelect.focus();
     };
-    sbTeam.$sb("Logo").$sbBindAndRun("content", function(event,value) { logoShowSelect(false); });
+    sbTeam.$sb("Logo").$sbBindAndRun("sbchange", function(event,value) { logoShowSelect(false); });
     logoSelect
       .blur(function() { logoShowSelect(false); })
       .keyup(function(event) { if (event.which == 27 /* ESC */) $(this).blur(); });
@@ -406,7 +406,7 @@ function createTeamTable() {
     var scoreChange = scoreTr.find("td:eq(1)>a.Change");
     var lastScore = sbTeam.$sb("Score").$sbGet();
     var scoreChangeTimeout;
-    sbTeam.$sb("Score").bind("content", function(event,value) {
+    sbTeam.$sb("Score").bind("sbchange", function(event,value) {
       var s = (value - lastScore);
       var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
       scoreChange.stop(true).text(s<0?s:"+"+s).last().css({ opacity: "1", color: c });
@@ -511,7 +511,7 @@ function createTimeTable() {
     var timeResetTd = $("<td>").appendTo(timeResetRow);
 
     sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
-    sbClock.$sb("Running").$sbBindAndRun("content", function(event,value) {
+    sbClock.$sb("Running").$sbBindAndRun("sbchange", function(event,value) {
       nameTd.toggleClass("Running", isTrue(value));
     });
 
@@ -766,7 +766,7 @@ function createScoreBoardViewContent(table) {
       });
     });
   var viewOptions = $sb("Pages.Page(scoreboard.html)").children("PreviewOptions,ViewOptions");
-  _crgUtils.bindAndRun(viewOptions, "content", function() {
+  _crgUtils.bindAndRun(viewOptions, "sbchange", function() {
     var disableApplyButton = true;
     $sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
       var viewPath = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
@@ -900,13 +900,13 @@ function createIntermissionControlDialog() {
       .append($("<td><a>Text:</a><input type='text'/></td>").addClass("Text"))
       .append($("<td><label><span/></label><input type='checkbox'/></td>").addClass("HideClock"))
       .appendTo(table);
-    intermissionControl.$sb("ShowUnofficial").$sbBindAndRun("content", function(event,value) {
+    intermissionControl.$sb("ShowUnofficial").$sbBindAndRun("sbchange", function(event,value) {
         controlRow.find(">td.ShowUnofficial>label>span").text(isTrue(value)?"'Unofficial' Showing":"'Unofficial' Hidden");
       }).$sbControl(controlRow.find(">td.ShowUnofficial>label,>td.ShowUnofficial>input:checkbox"), { sbcontrol: {
         button: true
       } });
     intermissionControl.$sb("Text").$sbControl(controlRow.find(">td.Text>input:text"), { size: "12" });
-    intermissionControl.$sb("HideClock").$sbBindAndRun("content", function(event,value) {
+    intermissionControl.$sb("HideClock").$sbBindAndRun("sbchange", function(event,value) {
         controlRow.find(">td.HideClock>label>span").text(isTrue(value)?"Clock Hidden":"Clock Showing");
       }).$sbControl(controlRow.find(">td.HideClock>label,>td.HideClock>input:checkbox"), { sbcontrol: {
         button: true
