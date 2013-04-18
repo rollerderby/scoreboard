@@ -1314,7 +1314,7 @@ function createSaveLoadContent() {
 
   var iframeId = "SaveLoadUploadHiddenIframe";
   var uploadForm = $("<form method='post' enctype='multipart/form-data' target='"+iframeId+"'/>")
-    .append("<iframe id='"+iframeId+"' style='display: none'/>")
+    .append("<iframe id='"+iframeId+"' name='"+iframeId+"' style='display: none'/>")
     .append("<input type='file' name='xmlFile'/>")
     .appendTo(contentTd);
   $("<button>").html("Add/Merge").attr("data-method", "merge").appendTo(uploadForm).button();
