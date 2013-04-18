@@ -163,8 +163,8 @@ function createCurrentJamLineupsTable(team) {
   var tbody = $("<tbody>").appendTo(table);
 
   $sb("ScoreBoard.Team("+team+")")
-    .live("add:Skater", function (e, skater) { addCurrentJamLineupsSkater(tbody, skater); })
-    .live("remove:Skater", function (e, skater) { removeCurrentJamLineupsSkater(tbody, skater); })
+    .live("sbadd:Skater", function (e, skater) { addCurrentJamLineupsSkater(tbody, skater); })
+    .live("sbremove:Skater", function (e, skater) { removeCurrentJamLineupsSkater(tbody, skater); })
     .children("Skater").each(function() { addCurrentJamLineupsSkater(tbody, $sb(this)); });
 
   return table;
@@ -295,8 +295,8 @@ function createEditJamLineupsTable(team) {
   $.each([ "1", "2" ], function() {
     var p = String(this);
     $sb("Stats.Interpreted.Period("+p+")")
-      .live("add:Jam", function(e, jam) { addEditJamLineupsLine(tbody, jam, team); })
-      .live("remove:Jam", function(e, jam) { removeEditJamLineupsLine(tbody, jam); })
+      .live("sbadd:Jam", function(e, jam) { addEditJamLineupsLine(tbody, jam, team); })
+      .live("sbremove:Jam", function(e, jam) { removeEditJamLineupsLine(tbody, jam); })
       .children("Jam").each(function() { addEditJamLineupsLine(tbody, $sb(this), team); });
   });
 

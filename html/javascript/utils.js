@@ -90,8 +90,8 @@ _crgUtils = {
     remove = options.remove || $.noop;
     var subChildren = options.subChildren || false;
     var callback = options.callback || $.noop;
-    var addEventType = "add"+(childname?":"+childname:"");
-    var removeEventType = "remove"+(childname?":"+childname:"");
+    var addEventType = "sbadd"+(childname?":"+childname:"");
+    var removeEventType = "sbremove"+(childname?":"+childname:"");
     target.bind(addEventType, function(event,node) {
       if (subChildren || (event.target == this)) add(event,node);
     });

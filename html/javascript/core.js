@@ -380,8 +380,8 @@ _crgScoreBoard = {
     if (!e) return;
     e.children(function() { removeScoreBoardElement(e, $sb(this)); });
     delete _crgScoreBoard.addEventTriggered[e.$sbPath];
-    parent.trigger("remove", [ e ]);
-    parent.trigger("remove:"+e.$sbName, [ e ]);
+    parent.trigger("sbremove", [ e ]);
+    parent.trigger("sbremove:"+e.$sbName, [ e ]);
     e.remove();
   },
 
@@ -511,8 +511,8 @@ _crgScoreBoard = {
       $.each(triggerArray, function() {
         if (!_crgScoreBoard.addEventTriggered[this.node.$sbPath]) {
           _crgScoreBoard.addEventTriggered[this.node.$sbPath] = true;
-          this.node.parent().trigger("add", [ this.node ]);
-          this.node.parent().trigger("add:"+this.node.$sbName, [ this.node ]);
+          this.node.parent().trigger("sbadd", [ this.node ]);
+          this.node.parent().trigger("sbadd:"+this.node.$sbName, [ this.node ]);
         }
         if (this.fireContent)
           this.node.trigger("content", [ this.newContent, this.oldContent ]);
