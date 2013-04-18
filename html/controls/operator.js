@@ -1320,8 +1320,7 @@ function createSaveLoadContent() {
   $("<button>").html("Add/Merge").attr("data-method", "merge").appendTo(uploadForm).button();
   $("<button>").html("Replace running scoreboard").attr("data-method", "load").appendTo(uploadForm).button();
   uploadForm.children("button").click(function() {
-    uploadForm.attr("action", "/LoadXml/"+$(this).attr("data-method")).submit()
-      .children("input:file").val("").change();
+    uploadForm.attr("action", "/LoadXml/"+$(this).attr("data-method")).submit();
   });
   _crgUtils.bindAndRun(uploadForm.children("input:file").button(), "change", function() {
     uploadForm.children("button").button(this.value ? "enable" : "disable");
