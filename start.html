@@ -8,37 +8,27 @@ CRG ScoreBoard Start Page
 
 <script type="text/javascript" >
 
-function updateRedirect() {
-  var time = Number($("a#RedirectDelay").text());
-  if (time == 0) {
-    window.location.href = "http://localhost:8000/";
-  } else {
-    $("a#RedirectDelay").text(String(time-1));
-    setTimeout(updateRedirect, 1000);
-  }
-}
-
 function runningCheck() {
   $("<script type='text/javascript' src='http://localhost:8000/running-test.js'>").appendTo("head");
 }
 
+var nChecks = 0;
 $(function() {
-  var doCheck = function() {
-    var recheck = setInterval(function() {
-      $("p#Checking").hide();
-      if (window._crgScoreBoardIsRunning) {
-        $("p#NotStarted").hide();
-        $("p#Started").show();
-        clearInterval(recheck);
-        setTimeout(updateRedirect, 1000);
-      } else {
-        runningCheck();
+  var recheck = setInterval(function() {
+    if (window._crgScoreBoardIsRunning) {
+      $("p#Checking,p#NotStarted").hide();
+      $("p#Started").show();
+      clearInterval(recheck);
+      window.location.href = "http://localhost:8000/";
+    } else {
+      runningCheck();
+      if (nChecks++ > 4) {
+        $("p#Checking").hide();
         $("p#NotStarted").show();
       }
-    }, 1000);
-  };
+    }
+  }, 500);
   runningCheck();
-  setTimeout(doCheck, 2000);
 });
 
 </script>
@@ -89,10 +79,7 @@ to keep up to date with new releases, bugfixes, and features.
 </p>
 
 <p id="Started" >
-CRG ScoreBoard is running - redirecting you to the scoreboard in
-<a id="RedirectDelay">10</a>
-seconds, or just
-<a href="http://localhost:8000/">click here</a>.
+<a href="http://localhost:8000/">CRG ScoreBoard</a> is running - redirecting you there.
 </p>
 
 </body>
