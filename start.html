@@ -9,7 +9,7 @@ CRG ScoreBoard Start Page
 <script type="text/javascript" >
 
 function runningCheck() {
-  $("<script type='text/javascript' src='http://localhost:8000/running-test.js'>").appendTo("head");
+  $.ajax({ url: "http://localhost:8000/running-test.js", dataType: "script" });
 }
 
 var nChecks = 0;
