@@ -10,6 +10,8 @@ package com.carolinarollergirls.scoreboard.event;
 
 import java.util.*;
 
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+
 public class ScoreBoardCondition implements Cloneable
 {
   public ScoreBoardCondition(ScoreBoardEvent e) {
@@ -43,25 +45,25 @@ public class ScoreBoardCondition implements Cloneable
   }
   public boolean equals(ScoreBoardEvent e) {
     Class pc = (null == e.getProvider() ? null : e.getProvider().getProviderClass());
-    if (!ScoreBoardEvent.ObjectsEquals(getProviderClass(), pc))
+    if (!ScoreBoardManager.ObjectsEquals(getProviderClass(), pc))
       return false;
     String pi = (null == e.getProvider() ? null : e.getProvider().getProviderId());
-    if (!ScoreBoardEvent.ObjectsEquals(getProviderId(), pi) && (getProviderId() != ANY_ID))
+    if (!ScoreBoardManager.ObjectsEquals(getProviderId(), pi) && (getProviderId() != ANY_ID))
       return false;
-    if (!ScoreBoardEvent.ObjectsEquals(getProperty(), e.getProperty()))
+    if (!ScoreBoardManager.ObjectsEquals(getProperty(), e.getProperty()))
       return false;
-    if (!ScoreBoardEvent.ObjectsEquals(getValue(), e.getValue()) && (getValue() != ANY_VALUE))
+    if (!ScoreBoardManager.ObjectsEquals(getValue(), e.getValue()) && (getValue() != ANY_VALUE))
       return false;
     return true;
   }
   public boolean equals(ScoreBoardCondition c) {
-    if (!ScoreBoardEvent.ObjectsEquals(getProviderClass(), c.getProviderClass()))
+    if (!ScoreBoardManager.ObjectsEquals(getProviderClass(), c.getProviderClass()))
       return false;
-    if (!ScoreBoardEvent.ObjectsEquals(getProviderId(), c.getProviderId()))
+    if (!ScoreBoardManager.ObjectsEquals(getProviderId(), c.getProviderId()))
       return false;
-    if (!ScoreBoardEvent.ObjectsEquals(getProperty(), c.getProperty()))
+    if (!ScoreBoardManager.ObjectsEquals(getProperty(), c.getProperty()))
       return false;
-    if (!ScoreBoardEvent.ObjectsEquals(getValue(), c.getValue()))
+    if (!ScoreBoardManager.ObjectsEquals(getValue(), c.getValue()))
       return false;
     return true;
   }

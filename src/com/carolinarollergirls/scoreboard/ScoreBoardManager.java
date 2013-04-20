@@ -233,6 +233,15 @@ public class ScoreBoardManager
     }
   }
 
+  /* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
+  public static boolean ObjectsEquals(Object a, Object b) {
+    if ((null == a) != (null == b))
+      return false;
+    if ((null != a) && !a.equals(b))
+      return false;
+    return true;
+  }
+
   private static Properties properties = new Properties();
   private static Map<String,ScoreBoardController> controllers = new ConcurrentHashMap<String,ScoreBoardController>();
   private static Map<String,ScoreBoardViewer> viewers = new ConcurrentHashMap<String,ScoreBoardViewer>();

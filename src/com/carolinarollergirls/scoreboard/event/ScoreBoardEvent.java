@@ -12,6 +12,8 @@ import java.util.*;
 
 import java.lang.reflect.*;
 
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+
 public class ScoreBoardEvent extends EventObject implements Cloneable
 {
   public ScoreBoardEvent(ScoreBoardEventProvider sbeP, String p, Object v, Object prev) {
@@ -39,26 +41,18 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
     return false;
   }
   public boolean equals(ScoreBoardEvent e) {
-    if (!ObjectsEquals(getProvider(), e.getProvider()))
+    if (!ScoreBoardManager.ObjectsEquals(getProvider(), e.getProvider()))
       return false;
-    if (!ObjectsEquals(getProperty(), e.getProperty()))
+    if (!ScoreBoardManager.ObjectsEquals(getProperty(), e.getProperty()))
       return false;
-    if (!ObjectsEquals(getValue(), e.getValue()))
+    if (!ScoreBoardManager.ObjectsEquals(getValue(), e.getValue()))
       return false;
-    if (!ObjectsEquals(getPreviousValue(), e.getPreviousValue()))
+    if (!ScoreBoardManager.ObjectsEquals(getPreviousValue(), e.getPreviousValue()))
       return false;
     return true;
   }
   public boolean equals(ScoreBoardCondition c) {
     return c.equals(this);
-  }
-  /* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
-  static boolean ObjectsEquals(Object a, Object b) {
-    if ((null == a) != (null == b))
-      return false;
-    if ((null != a) && !a.equals(b))
-      return false;
-    return true;
   }
 
   protected ScoreBoardEventProvider provider;
