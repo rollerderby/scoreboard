@@ -92,6 +92,7 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     getTwitterViewer().logout();
     getTwitterViewer().removeTweetListener(tweetListener);
     Element updateE = createXPathElement();
+    editor.addElement(updateE, "AuthorizationURL", null, "");
     editor.addElement(updateE, "Authorized", null, "false");
     editor.addElement(updateE, "ScreenName", null, "");
     editor.addElement(updateE, "Error", null, "");
