@@ -1,0 +1,129 @@
+
+[
+
+{
+  "name": "Carolina Rollergirls",
+  "latitude": 35.794303,
+  "longitude": -78.710373,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Carolina.png" },
+      { "src": "http://localhost:8000/maptest/Carolina-Bootleggers.png" },
+      { "src": "http://localhost:8000/maptest/Carolina-Debutante Brawlers.png" },
+      { "src": "http://localhost:8000/maptest/Carolina-Tai Chi-Tahs.png" },
+      { "src": "http://localhost:8000/maptest/Carolina-Trauma Queens.png" }
+    ]
+  }
+},
+
+{
+  "name": "Atlanta Rollergirls",
+  "latitude": 33.773434,
+  "longitude": -84.374367,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Atlanta.png" }
+    ]
+  }
+},
+
+{
+  "name": "Bay Area Derby Girls",
+  "latitude": 37.910782,
+  "longitude": -122.358347,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/BayArea.png" }
+    ]
+  }
+},
+
+{
+  "name": "Boston Rollergirls",
+  "latitude": 42.568032,
+  "longitude": -71.136748,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Boston.png" }
+    ]
+  }
+},
+
+{
+  "name": "Cape Fear Rollergirls",
+  "latitude": 34.242661,
+  "longitude": -77.948848,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Cape Fear.png" }
+    ]
+  }
+},
+
+{
+  "name": "Charlotte Rollergirls",
+  "latitude": 35.219307,
+  "longitude": -80.829404,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Charlotte.png" }
+    ]
+  }
+},
+
+{
+  "name": "Charm City Rollergirls",
+  "latitude": 39.277792,
+  "longitude": -76.57229,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/CharmCity.png" }
+    ]
+  }
+},
+
+{
+  "name": "DC Rollergirls",
+  "latitude": 38.889045,
+  "longitude": -76.975528,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/DC.png" }
+    ]
+  }
+},
+
+{
+  "name": "Texas Rollergirls",
+  "latitude": 30.263578,
+  "longitude": -97.739568,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Texas.png" }
+    ]
+  }
+},
+
+{
+  "name": "Kansas City Roller Warriors",
+  "latitude": 39.098287,
+  "longitude": -94.586451,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Kansas.png" }
+    ]
+  }
+},
+
+{
+  "name": "Gotham Girls Roller Derby",
+  "latitude": 40.572929,
+  "longitude": -73.985839,
+  "image": {
+    "teamlogo": [
+      { "src": "http://localhost:8000/maptest/Gotham.png" }
+    ]
+  }
+}
+
+]
