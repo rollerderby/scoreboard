@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html><head><title>CRG ScoreBoard: Media Map</title>
+
+<!--
+ Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
+
+ This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ The CRG ScoreBoard is licensed under either the GNU General Public
+ License version 3 (or later), or the Apache License 2.0, at your option.
+ See the file COPYING for details.
+-->
+
+<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+
+<script type="text/javascript" src="/javascript/scoreboard.js"></script>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4KW7YR4gL4kilBEyJfaj9vqhyQ90YWow&sensor=true"></script>
+<script type="text/javascript" src="/external/google-maps-utilities/infobox.js"></script>
+<script type="text/javascript" src="/external/google-maps-utilities/markerwithlabel.js"></script>
+<script type="text/javascript" src="/external/google-maps-utilities/markerclusterer.js"></script>
+
+</head>
+
+<body>
+
+<div id="mainDiv">
+
+  <div id="controls">
+    <div class="LeagueName ControlBox">
+      <a class="Label">League Name</a>
+      <br/>
+      <a class="LeagueName"></a>
+    </div>
+    <div class="TeamLogo ControlBox Image Template">
+      <a class="Label">Team Logos</a>
+      <br/>
+      <div class="ImageBox">
+        <div class="TeamLogoImage">
+          <img class="TeamLogo" src=""/>
+        </div>
+        <div class="ImageControl">
+          <a class="ImageName"></a>
+          <button class="ImageButton">Get</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="mapCanvas"></div>
+
+</div>
+
+</body>
+
+</html>

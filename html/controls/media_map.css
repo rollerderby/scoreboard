@@ -1,0 +1,65 @@
+
+#mainDiv {
+    position: absolute;
+    display: -webkit-flex;
+    -webkit-flex-direction: row;
+    -webkit-justify-content: space-around;
+    -webkit-align-items: stretch;
+    top: 0%; left: 0%;
+    width: 100%; height: 100%;
+}
+
+#controls {
+    -webkit-order: 1;
+    -webkit-flex: 1;
+    margin: 2% 1% 2% 2%;
+    text-align: center;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+    -webkit-align-items: stretch;    
+}
+
+#controls div.ControlBox {
+    border: 1px solid black;
+    border-radius: 15px;
+}
+#controls div.ControlBox:not(.Show) { display: none; }
+
+#controls a.LeagueName { font-weight: bold; font-size: 125%; }
+#controls div.Template { display: none; }
+#controls div.Image div.ImageBox {
+    display: -webkit-flex;
+    -webkit-justify-content: center;
+    -webkit-align-items: center;
+}
+#controls div.Image div.ImageBox div.TeamLogoImage { -webkit-order: 1; -webkit-flex: 1; }
+#controls div.Image div.ImageBox div.TeamLogoImage img.TeamLogo { width: 100%; }
+#controls div.Image div.ImageBox div.ImageControl {
+    -webkit-order: 2;
+    -webkit-flex: 1;
+    text-align: center;
+    display: -webkit-flex;
+    -webkit-flex-direction: column;
+    -webkit-justify-content: space-around;
+    -webkit-align-items: center;
+}
+
+#mapCanvas {
+    -webkit-order: 2;
+    -webkit-flex: 2;
+    margin: 2% 2% 2% 1%;
+    border: 1px solid grey;
+    overflow: hidden;
+}
+
+#mapCanvas .InfoWindowContent { text-align: center }
+#mapCanvas .InfoWindowContent img.TeamLogo { width: 100px; }
+
+#mapCanvas .MarkerLabel {
+    color: #000; background-color: #fff;
+    font-size: 11px;
+    text-align: center;
+    border: 2px solid black;
+    border-radius: 5px;
+    width: 100px;
+}
