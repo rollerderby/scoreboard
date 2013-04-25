@@ -14,7 +14,7 @@ $sb(function() {
       $("p.DirectTweet button.Tweet").click();
   });
   sbTwitter.$sb("ScreenName").$sbElement("p.LogInStatus span.ScreenName");
-  sbTwitter.$sb("Authorized").$sbBindAndRun("sbchange", function(event, value) {
+  sbTwitter.$sb("LoggedIn").$sbBindAndRun("sbchange", function(event, value) {
     var directTweetEnabled = sbTwitter.$sb("TestMode").$sbIsTrue() || isTrue(value);
     $("button.Login").button("option", "disabled", isTrue(value));
     $("button.Logout").button("option", "disabled", !isTrue(value));
@@ -23,7 +23,7 @@ $sb(function() {
     $("p.LogInStatus").toggleClass("LoggedIn", isTrue(value));
   });
   sbTwitter.$sb("TestMode").$sbBindAndRun("sbchange", function(event, value) {
-    var directTweetEnabled = sbTwitter.$sb("Authorized").$sbIsTrue() || isTrue(value);
+    var directTweetEnabled = sbTwitter.$sb("LoggedIn").$sbIsTrue() || isTrue(value);
     $("p.DirectTweet button.Tweet").button("option", "disabled", !directTweetEnabled);
     $("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
     $("input:checkbox.TestMode").button("option", "label", (isTrue(value)?"Stop Test Mode":"Start Test Mode"));
@@ -96,7 +96,7 @@ $sb(function() {
     $(this).button("option", "label", (this.checked?"Hide Help":"Show Help"));
   }).after("<label for=ShowHelp />").button().change();
 
-  sbTwitter.$sb("AuthorizationURL").$sbBindAndRun("sbchange", function(event, value) {
+  sbTwitter.$sb("AuthURL").$sbBindAndRun("sbchange", function(event, value) {
     if (value) {
       $sb(this).$sbSet("");
       window.location.assign(value);
