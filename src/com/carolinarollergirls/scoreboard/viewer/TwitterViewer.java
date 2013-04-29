@@ -58,7 +58,7 @@ public class TwitterViewer implements ScoreBoardViewer
       if (null != requestToken)
         reset();
       requestToken = twitter.getOAuthRequestToken(callbackURL);
-      return requestToken.getAuthenticationURL();
+      return requestToken.getAuthorizationURL();
     }
   }
 
