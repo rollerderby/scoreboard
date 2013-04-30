@@ -19,15 +19,15 @@ $sb(function() {
   createSaveLoadTab();
 
   $("#tabsDiv").tabs();
-  _crgUtils.bindAndRun($("#tabsDiv"), "tabsselect", function(event,ui) {
-      var table = $(ui.panel).children("table");
+  _crgUtils.bindAndRun($("#tabsDiv"), "tabsactivate", function(event,ui) {
+      var table = $(ui.newPanel).children("table");
       var loadFunc = table.data("loadContentFunction") || $.noop;
       table.removeData("loadContentFunction");
       setTimeout(function() {
-        $(ui.panel).children("div.Loading").remove();
+        $(ui.newPanel).children("div.Loading").remove();
         loadFunc(table);
       }, 100);
-    }, [ { panel: $("#TeamTimeTab") } ]);
+    }, [ { newPanel: $("#TeamTimeTab") } ]);
 
 // FIXME - is there better way to avoid key controls when a dialog is visible?
   _crgKeyControls.addCondition(function() { return !$("body>div.ui-dialog").is(":visible"); });
