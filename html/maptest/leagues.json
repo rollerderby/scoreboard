@@ -3,9 +3,10 @@
 
 {
   "name": "Carolina Rollergirls",
-  "latitude": 35.794303,
-  "longitude": -78.710373,
+  "lat": 35.794303,
+  "lng": -78.710373,
   "country": "United States",
+  "state": "North Carolina",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Carolina.png" },
@@ -19,9 +20,10 @@
 
 {
   "name": "Atlanta Rollergirls",
-  "latitude": 33.773434,
-  "longitude": -84.374367,
+  "lat": 33.773434,
+  "lng": -84.374367,
   "country": "United States",
+  "state": "Georgia",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Atlanta.png" }
@@ -31,9 +33,10 @@
 
 {
   "name": "Bay Area Derby Girls",
-  "latitude": 37.910782,
-  "longitude": -122.358347,
+  "lat": 37.910782,
+  "lng": -122.358347,
   "country": "United States",
+  "state": "California",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/BayArea.png" }
@@ -43,9 +46,10 @@
 
 {
   "name": "Boston Rollergirls",
-  "latitude": 42.568032,
-  "longitude": -71.136748,
+  "lat": 42.568032,
+  "lng": -71.136748,
   "country": "United States",
+  "state": "Massachusetts",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Boston.png" }
@@ -55,9 +59,10 @@
 
 {
   "name": "Cape Fear Rollergirls",
-  "latitude": 34.242661,
-  "longitude": -77.948848,
+  "lat": 34.242661,
+  "lng": -77.948848,
   "country": "United States",
+  "state": "North Carolina",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Cape Fear.png" }
@@ -67,9 +72,10 @@
 
 {
   "name": "Charlotte Rollergirls",
-  "latitude": 35.219307,
-  "longitude": -80.829404,
+  "lat": 35.219307,
+  "lng": -80.829404,
   "country": "United States",
+  "state": "North Carolina",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Charlotte.png" }
@@ -79,9 +85,10 @@
 
 {
   "name": "Charm City Rollergirls",
-  "latitude": 39.277792,
-  "longitude": -76.57229,
+  "lat": 39.277792,
+  "lng": -76.57229,
   "country": "United States",
+  "state": "Maryland",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/CharmCity.png" }
@@ -91,9 +98,10 @@
 
 {
   "name": "DC Rollergirls",
-  "latitude": 38.889045,
-  "longitude": -76.975528,
+  "lat": 38.889045,
+  "lng": -76.975528,
   "country": "United States",
+  "state": "District of Columbia",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/DC.png" }
@@ -103,9 +111,10 @@
 
 {
   "name": "Texas Rollergirls",
-  "latitude": 30.263578,
-  "longitude": -97.739568,
+  "lat": 30.263578,
+  "lng": -97.739568,
   "country": "United States",
+  "state": "Texas",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Texas.png" }
@@ -115,9 +124,10 @@
 
 {
   "name": "Kansas City Roller Warriors",
-  "latitude": 39.098287,
-  "longitude": -94.586451,
+  "lat": 39.098287,
+  "lng": -94.586451,
   "country": "United States",
+  "state": "Missouri",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Kansas.png" }
@@ -127,9 +137,10 @@
 
 {
   "name": "Gotham Girls Roller Derby",
-  "latitude": 40.572929,
-  "longitude": -73.985839,
+  "lat": 40.572929,
+  "lng": -73.985839,
   "country": "United States",
+  "state": "New York",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Gotham.png" }
@@ -139,9 +150,10 @@
 
 {
   "name": "Montreal Roller Derby",
-  "latitude": 45.527325,
-  "longitude": -73.599483,
+  "lat": 45.527325,
+  "lng": -73.599483,
   "country": "Canada",
+  "state": "Montreal",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Montreal.png" }
@@ -151,9 +163,10 @@
 
 {
   "name": "Gladstone Roller Derby",
-  "latitude": -23.844119,
-  "longitude": 151.250684,
+  "lat": -23.844119,
+  "lng": 151.250684,
   "country": "Australia",
+  "state": "Queensland",
   "image": {
     "teamlogo": [
       { "src": "http://localhost:8000/maptest/Gladstone Roller Derby.png" }

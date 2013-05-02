@@ -1,36 +1,41 @@
 
-{
+[
 
-  "United States": {
-    "country": "United States",
-    "latitude": 39.8282,
-    "longitude": -98.5795,
+  {
+    "name": "United States",
+    "lat": 39.8282,
+    "lng": -98.5795,
     "zoom": 3,
-    "reference": "http://en.wikipedia.org/wiki/Geographic_center_of_the_contiguous_United_States"
+    "reference": "http://en.wikipedia.org/wiki/Geographic_center_of_the_contiguous_United_States",
+    "states": [
+      {
+        "name": "North Carolina"
+      }
+    ]
   },
 
-  "Canada": {
-    "country": "Canada",
-    "latitude": 49.700795,
-    "longitude": -96.645441,
+  {
+    "name": "Canada",
+    "lat": 49.700795,
+    "lng": -96.645441,
     "zoom": 3,
     "reference": "http://www.waymarking.com/waymarks/WM26XV"
   },
 
-  "Australia": {
-    "country": "Australia",
-    "latitude": -24.25,
-    "longitude": 133.416667,
+  {
+    "name": "Australia",
+    "lat": -24.25,
+    "lng": 133.416667,
     "zoom": 3,
     "reference": "http://www.ga.gov.au/education/geoscience-basics/dimensions/centre-of-australia-states-territories.html"
   },
 
-  "United Kingdom": {
-    "Country": "United Kingdom",
-    "latitude": 54.044722,
-    "longitude": -2.779444,
+  {
+    "name": "United Kingdom",
+    "lat": 54.044722,
+    "lng": -2.779444,
     "zoom": 4,
     "reference": "http://en.wikipedia.org/wiki/Centre_points_of_the_United_Kingdom"
   }
 
-}
+]

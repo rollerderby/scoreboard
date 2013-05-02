@@ -2,36 +2,51 @@
 var map;
 var markers = [];
 
-var leagues;
-var countries;
+var geocoder;
+
+var leagues = [];
+var countries = [];
+var states = [];
 var autoCompleteKeys = [];
 
 $(function () {
   map = createMap();
   var mc;
 
-  if (!_windowFunctions.hasParam("noClustering"))
+  geocoder = new google.maps.Geocoder();
+
+  if (!$.string(window.location.search).toQueryParams().hasOwnProperty("noClustering"))
     mc = new MarkerClusterer(map);
 
   $.getJSON("/maptest/countries.json")
-    .done(function(c) { countries = c; })
+    .done(function(list) {
+      $.each(list, function(i, c) {
+        countries[c.name] = c;
+        if (c.states)
+          $.each(c.states, function(ii, s) {
+            c.states[s.name] = s;
+            states[getStateName(c.name, s.name)] = s;
+            s.country = c;
+          });
+      });
+    })
     .fail(function(jqxhr, textStatus, error) {
       alert("Could not get list of countries (status "+textStatus+") : "+error);
     });
 
   $.getJSON("/maptest/leagues.json")
-    .done(function(l) {
-      leagues = l;
-      $.each(leagues, function(i, league) {
-        addAutoCompleteLeague(league);
-        var marker = createMarker(map, league);
-        markers[league.name] = marker;
+    .done(function(list) {
+      $.each(list, function(i, l) {
+        leagues[l.name] = l;
+        addAutoCompleteLeague(l);
+        var marker = createMarker(map, l);
+        markers[l.name] = marker;
         if (mc)
           mc.addMarker(marker);
         else
           marker.setMap(map);
       });
-      setupAutocomplete(leagues);
+      setupAutocomplete();
     })
     .fail(function(jqxhr, textStatus, error) {
       alert("Could not get list of leagues (status "+textStatus+") : "+error);
@@ -56,7 +71,7 @@ function createMap() {
 function createMarker(map, league) {
   var content = $("<a>").text(league.name);
   var marker = new MarkerWithLabel({
-    position: new google.maps.LatLng(league.latitude, league.longitude),
+    position: new google.maps.LatLng(league.lat, league.lng),
     labelContent: content[0],
     labelAnchor: new google.maps.Point(50, 0),
     labelClass: "MarkerLabel",
@@ -74,11 +89,11 @@ function closeOpenInfoWindow() {
   if (!openInfoWindow)
     return;
   openInfoWindow.close();
-  openInfoWindow.get("PrivateCloseFunction").call();
+  openInfoWindow.get("CloseFunction").call();
 }
 
 function showInfoWindow(map, marker) {
-  if (openInfoWindow && (openInfoWindow.get("PrivateMarker") == marker))
+  if (openInfoWindow && (openInfoWindow.get("Marker") == marker))
     return;
   closeOpenInfoWindow();
   var league = marker.get("League");
@@ -89,12 +104,12 @@ function showInfoWindow(map, marker) {
     $("<img>").addClass("TeamLogo").attr("src", league.image.teamlogo[0].src).appendTo(content);
   var infoWindow = new google.maps.InfoWindow({ content: content[0] });
   openInfoWindow = infoWindow;
-  infoWindow.set("PrivateCloseFunction", function() {
+  infoWindow.set("CloseFunction", function() {
     unselectLeague(league);
     openInfoWindow = undefined;
   });
-  infoWindow.set("PrivateMarker", marker);
-  google.maps.event.addListener(infoWindow, "closeclick", infoWindow.get("PrivateCloseFunction"));
+  infoWindow.set("Marker", marker);
+  google.maps.event.addListener(infoWindow, "closeclick", infoWindow.get("CloseFunction"));
   infoWindow.open(map, marker);
   selectLeague(league);
 }
@@ -130,36 +145,50 @@ function unselectLeague(league) {
 
 function getMedia(league, media, type, src) {
   $.post("/Media/download", { media: media, type: type, url: src })
-    .done(function() { alert("success"); })
+    .done(function() { alert("FIXME - success getting img; improve handling"); })
     .fail(function(xhr, textStatus, error) { alert("failure "+error); });
 }
 
 function addAutoCompleteLeague(league) {
+  if (!league.zoom)
+    league.zoom = 8; // default zoom into league with autocomplete
   if (league.name)
     if ($.inArray(league.name, autoCompleteKeys) < 0)
       autoCompleteKeys.push(league.name);
   if (league.country) {
     if (!countries[league.country])
-      alert("Country "+league.country+" not in list");
+      countries[league.country] = { name: league.country };
     if ($.inArray(league.country, autoCompleteKeys) < 0)
       autoCompleteKeys.push(league.country);
+    if (league.state) {
+      var statename = getStateName(league.country, league.state);
+      if (!states[statename]) {
+        if (!countries[league.country].states)
+          countries[league.country].states = [];
+        if (!countries[league.country].states[league.state])
+          countries[league.country].states[league.state] = { name: league.state, country: countries[league.country] };
+        states[statename] = countries[league.country].states[league.state];
+      }
+      if ($.inArray(statename, autoCompleteKeys) < 0)
+        autoCompleteKeys.push(statename);
+    }
   }
 }
 
 function autoCompleteSelect(value) {
   if (markers[value]) {
-    var league = markers[value].get("League");
-    map.setZoom(8);
-    map.panTo(new google.maps.LatLng(league.latitude, league.longitude));
+    mapToLoc(markers[value].get("League"));
     google.maps.event.trigger(markers[value], "click");
   } else if (countries[value]) {
-    var country = countries[value];
-    map.setZoom(country.zoom);
-    map.panTo(new google.maps.LatLng(country.latitude, country.longitude));
+    mapToLoc(countries[value]);
+    closeOpenInfoWindow();
+  } else if (states[value]) {
+    mapToLoc(states[value]);
+    closeOpenInfoWindow();
   }
 }
 
-function setupAutocomplete(keys) {
+function setupAutocomplete() {
   $("#controls div.SearchBox input.Search").autocomplete({
     source: autoCompleteKeys,
     minLength: 3,
@@ -172,6 +201,50 @@ function setupAutocomplete(keys) {
     delay: 50,
     select: function(event, ui) {
       this.value = ui.item.value;
+      autoCompleteSelect(this.value);
     }
   });
 }
+
+function getStateName(countryName, stateName) { return stateName + ", " + countryName; }
+
+$(function() {
+  // until update to jquery 1.7
+  if ($.isNumeric)
+    alert("jquery updated to 1.7 - remove $.isNumeric workaround");
+  else
+    $.isNumeric = function(o) { return !isNaN(o); };
+});
+
+function mapToLoc(l) {
+  if ($.isNumeric(l.lat) && $.isNumeric(l.lng) && $.isNumeric(l.zoom)) {
+    map.setZoom(l.zoom);
+    map.panTo(new google.maps.LatLng(l.lat, l.lng));
+  } else {
+    var hasSw = ($.isNumeric(l.swLat) && $.isNumeric(l.swLng));
+    var hasNe = ($.isNumeric(l.neLat) && $.isNumeric(l.neLng));
+    if (hasSw && hasNe) {
+      var sw = new google.maps.LatLng(l.swLat, l.swLng);
+      var ne = new google.maps.LatLng(l.neLat, l.neLng);
+      map.fitBounds(new google.maps.LatLngBounds(sw, ne));
+    } else {
+      geocoder.geocode({ address: l.name }, function(r,s) { geocodeResult(r, s, l); });
+    }
+  }
+}
+
+function geocodeResult(results, status, l) {
+  if (status != google.maps.GeocoderStatus.OK) {
+    alert("Could not geocode "+l.name+" : "+status);
+    return;
+  }
+  var r = results[0];
+  l.swLat = r.geometry.viewport.getSouthWest().lat();
+  l.swLng = r.geometry.viewport.getSouthWest().lng();
+  l.neLat = r.geometry.viewport.getNorthEast().lat();
+  l.neLng = r.geometry.viewport.getNorthEast().lng();
+  var sw = new google.maps.LatLng(l.swLat, l.swLng);
+  var ne = new google.maps.LatLng(l.neLat, l.neLng);
+  map.fitBounds(new google.maps.LatLngBounds(sw, ne));
+}
+
