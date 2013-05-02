@@ -26,14 +26,17 @@
 }
 #controls div.ControlBox:not(.Show) { display: none; }
 
-#controls a.LeagueName { font-weight: bold; font-size: 125%; }
+#controls div.SearchBox input.Search { width: 100%; }
+#controls div.LeagueName a.LeagueName { font-weight: bold; font-size: 125%; }
 #controls div.Template { display: none; }
 #controls div.Image div.ImageBox {
-    background: #ccc;
-    display: -webkit-flex;
-    -webkit-justify-content: center;
-    -webkit-align-items: center;
+  display: -webkit-flex;
+  -webkit-justify-content: center;
+  -webkit-align-items: center;
 }
+#controls div.Image div.ImageBox:nth-of-type(2n) { background: #ccc; }
+#controls div.Image div.ImageBox:nth-of-type(2n+1) { background: #ddd; }
+#controls div.Image div.ImageBox.Template { display: none; }
 #controls div.Image div.ImageBox div.TeamLogoImage { -webkit-order: 1; -webkit-flex: 1; }
 #controls div.Image div.ImageBox div.TeamLogoImage img.TeamLogo { width: 100%; }
 #controls div.Image div.ImageBox div.ImageControl {
