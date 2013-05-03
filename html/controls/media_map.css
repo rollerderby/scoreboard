@@ -1,28 +1,32 @@
 
+#FlexboxWarning { text-align: center; }
+#FlexboxWarning:not(.NoFlexbox) { display: none; }
+
 #mainDiv {
-    position: absolute;
-    display: -webkit-flex;
-    -webkit-flex-direction: row;
-    -webkit-justify-content: space-around;
-    -webkit-align-items: stretch;
-    top: 0%; left: 0%;
-    width: 100%; height: 100%;
+  position: absolute;
+  display: -webkit-flex; display: flex;
+  -webkit-flex-direction: row; flex-direction: row;
+  -webkit-justify-content: space-around; justify-content: space-around;
+  -webkit-align-items: stretch; align-items: stretch;
+  top: 0%; left: 0%;
+  width: 100%; height: 100%;
 }
 
 #controls {
-    -webkit-order: 1;
-    -webkit-flex: 1;
-    margin: 2% 1% 2% 2%;
-    text-align: center;
-    display: -webkit-flex;
-    -webkit-flex-direction: column;
-    -webkit-align-items: stretch;    
+  -webkit-order: 1; order: 1;
+  -webkit-flex: 1; flex: 1;
+  margin: 2% 1% 2% 2%;
+  text-align: center;
+  display: -webkit-flex; display: flex;
+  -webkit-flex-direction: column; flex-direction: column;
+  -webkit-align-items: stretch; align-items: stretch;
 }
+#controls.NoFlexbox { width: 30%; height: 100%; float: left; }
 
 #controls div.ControlBox {
-    border: 1px solid black;
-    border-radius: 15px;
-    overflow: hidden;
+  border: 1px solid black;
+  border-radius: 15px;
+  overflow: hidden;
 }
 #controls div.ControlBox:not(.Show) { display: none; }
 
@@ -30,41 +34,48 @@
 #controls div.LeagueName a.LeagueName { font-weight: bold; font-size: 125%; }
 #controls div.Template { display: none; }
 #controls div.Image div.ImageBox {
-  display: -webkit-flex;
-  -webkit-justify-content: center;
-  -webkit-align-items: center;
+  display: -webkit-flex; display: flex;
+  -webkit-justify-content: center; justify-content: center;
+  -webkit-align-items: center; align-items: center;
 }
 #controls div.Image div.ImageBox:nth-of-type(2n) { background: #ccc; }
 #controls div.Image div.ImageBox:nth-of-type(2n+1) { background: #ddd; }
 #controls div.Image div.ImageBox.Template { display: none; }
-#controls div.Image div.ImageBox div.TeamLogoImage { -webkit-order: 1; -webkit-flex: 1; }
+#controls div.Image div.ImageBox div.TeamLogoImage {
+  -webkit-order: 1; order: 1;
+  -webkit-flex: 1; flex: 1;
+}
+#controls.NoFlexbox div.Image div.ImageBox div.TeamLogoImage { width: 50%; float: left; }
 #controls div.Image div.ImageBox div.TeamLogoImage img.TeamLogo { width: 100%; }
 #controls div.Image div.ImageBox div.ImageControl {
-    -webkit-order: 2;
-    -webkit-flex: 1;
-    text-align: center;
-    display: -webkit-flex;
-    -webkit-flex-direction: column;
-    -webkit-justify-content: space-around;
-    -webkit-align-items: center;
+  -webkit-order: 2; order: 2;
+  -webkit-flex: 1; flex: 1;
+  text-align: center;
+  display: -webkit-flex; display: flex;
+  -webkit-flex-direction: column; flex-direction: column;
+  -webkit-justify-content: space-around; justify-content: space-around;
+  -webkit-align-items: center; align-items: center;
 }
+#controls.NoFlexbox div.Image div.ImageBox div.ImageControl { width: 50%; }
 
 #mapCanvas {
-    -webkit-order: 2;
-    -webkit-flex: 2;
-    margin: 2% 2% 2% 1%;
-    border: 1px solid grey;
-    overflow: hidden;
+  -webkit-order: 2; order: 2;
+  -webkit-flex: 2; flex: 2;
+  margin: 2% 2% 2% 1%;
+  border: 1px solid grey;
+  overflow: hidden;
 }
+#mapCanvas.NoFlexbox { width: 60%; height: 100%; float: right; }
 
 #mapCanvas .InfoWindowContent { text-align: center }
 #mapCanvas .InfoWindowContent img.TeamLogo { width: 100px; }
 
 #mapCanvas .MarkerLabel {
-    color: #000; background-color: #fff;
-    font-size: 11px;
-    text-align: center;
-    border: 2px solid black;
-    border-radius: 5px;
-    width: 100px;
+  color: #000; background-color: #fff;
+  font-size: 11px;
+  text-align: center;
+  border: 2px solid black;
+  border-radius: 5px;
+  width: 100px;
 }
+
