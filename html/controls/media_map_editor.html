@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html><head><title>CRG ScoreBoard: Media Map Editor</title>
+
+<!--
+ Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
+
+ This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ The CRG ScoreBoard is licensed under either the GNU General Public
+ License version 3 (or later), or the Apache License 2.0, at your option.
+ See the file COPYING for details.
+-->
+
+<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+
+<script type="text/javascript" src="/external/jquery-ui/jquery-ui.js"></script>
+<link href="/external/jquery-ui/css/default/jquery-ui.css" type="text/css" rel="stylesheet"/>
+
+<script type="text/javascript" src="/external/jquery-plugins/string/jquery.string.js"></script>
+
+<script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB4KW7YR4gL4kilBEyJfaj9vqhyQ90YWow&sensor=true"></script>
+<script type="text/javascript" src="/external/google-maps-utilities/infobox.js"></script>
+<script type="text/javascript" src="/external/google-maps-utilities/markerwithlabel.js"></script>
+<script type="text/javascript" src="/external/google-maps-utilities/markerclusterer.js"></script>
+
+<script type="text/javascript" src="media_map_editor.js"></script>
+<link href="media_map_editor.css" type="text/css" rel="stylesheet"/>
+
+</head>
+
+<body>
+
+<div id="mainDiv" class="FlexboxCol FlexboxStretch">
+
+<div id="checklist" class="Checklist">
+  <span class="Location">
+    Select your league location in the map below.  Pan and zoom to find your league's bout venue (or other appropriate specific physical location), and right-click to place a marker on the location.
+  </span>
+  <span class="LeagueName">Set your league name</span>
+  <span class="Email">Please provide your email, in case we need to contact you.  We don't store your email and it will not be public or shared with anyone else.</span>
+  <span class="TeamLogo">Attach your team logo image(s).  Their filenames should all be correctly descriptive.</span>
+  <span class="Submit">Upload when ready!</span>
+</div>
+
+<div class="Main FlexboxRow FlexboxStretch">
+  <div id="controls" class="FlexboxCol FlexboxStretch">
+    <div class="LeagueName ControlBox">
+      <a class="Label">League Name</a>
+      <br/>
+      <input type="text" class="LeagueName"/>
+    </div>
+    <div class="Email ControlBox">
+      <a class="Label">Email: </a>
+      <input type="text" class="Email"/>
+    </div>
+    <div class="Location Center ControlBox">
+      <a class="Label">Center: </a><a class="Lat"></a>, <a class="Lng"></a>
+      <br/>
+      <a class="Label">Zoom: </a><a class="Zoom"></a>
+    </div>
+    <div class="Location Bounds ControlBox">
+      <a class="Label">SW Bound: </a><a class="swLat"></a>, <a class="swLng"></a>
+      <br/>
+      <a class="Label">NE Bound: </a><a class="neLat"></a>, <a class="neLng"></a>
+    </div>
+    <div class="Location Marker ControlBox">
+      <a class="Label">Position: </a>
+      <span class="Position">
+        <a class="Lat"></a>, <a class="Lng"></a>
+      </span>
+      <a class="NoMarker">Unset</a>
+    </div>
+    <div class="TeamLogo ControlBox">
+      <div class="Add FlexboxRow FlexboxSpaceBetween">
+        <a class="Label">Team Logos</a><button class="Add">Add</button>
+      </div>
+      <div class="FileBox Template FlexboxRow FlexboxCenter">
+        <input type="file" class="TeamLogo"/>
+        <button class="Remove">Remove</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="mapCanvas"></div>
+</div>
+
+</div>
+
+</body>
+
+</html>

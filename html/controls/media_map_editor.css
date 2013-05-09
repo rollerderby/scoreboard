@@ -1,0 +1,61 @@
+
+div.FlexboxRow,div.FlexboxCol { display: -webkit-flex; display: flex; }
+div.FlexboxRow { -webkit-flex-direction: row; flex-direction: row; }
+div.FlexboxCol { -webkit-flex-direction: column; flex-direction: column; }
+div.FlexboxStretch { -webkit-align-items: stretch; align-items: stretch; }
+div.FlexboxCenter {
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: space-around; justify-content: space-around;
+}
+div.FlexboxSpaceBetween {
+  -webkit-align-items: center; align-items: center;
+  -webkit-justify-content: space-between; justify-content: space-between;
+}
+
+#mainDiv {
+  position: absolute;
+  top: 0%; left: 0%;
+  width: 100%; height: 100%;
+}
+
+#mainDiv>div.Checklist { -webkit-flex: initial; flex: initial; }
+#mainDiv>div.Main { -webkit-flex: 1; flex: 1; }
+
+#checklist.MarkerSet>span.Location { display: none; }
+#checklist:not(.MarkerSet)>span:not(.Location) { display: none; }
+#checklist.LeagueSet>span.LeagueName { display: none; }
+#checklist:not(.LeagueSet)>span:not(.Location) { display: none; }
+
+#controls {
+  -webkit-order: 1; order: 1;
+  -webkit-flex: 1; flex: 1;
+  margin: 2% 1% 2% 2%;
+}
+
+#controls div.ControlBox {
+  border: 1px solid black;
+  border-radius: 15px;
+  padding: 2.5%;
+  overflow: hidden;
+}
+
+#controls div.Template { display: none; }
+
+#controls div.LeagueName input.LeagueName { width: 100%; }
+#controls div.Location.Marker:not(.Set) span.Position { display: none; }
+#controls div.Location.Marker.Set a.NoMarker { display: none; }
+#controls div.Location.Center:not(.Show) { display: none; }
+#controls div.Location.Bounds:not(.Show) { display: none; }
+
+#controls div.TeamLogo div.FileBox:nth-of-type(2n) { background: #ccc; }
+#controls div.TeamLogo div.FileBox:nth-of-type(2n+1) { background: #ddd; }
+
+
+
+#mapCanvas {
+  -webkit-order: 2; order: 2;
+  -webkit-flex: 2; flex: 2;
+  margin: 2% 2% 2% 1%;
+  border: 1px solid grey;
+}
+
