@@ -31,14 +31,9 @@
 
 <body>
 
-<div id="mainDiv">
+<div id="mainDiv" class="FlexboxRow FlexboxStretch">
 
-  <p id="FlexboxWarning">
-    Your browser does not support flexbox, or it is not enabled.<br/>
-    This display is in compatibility mode and some elements may not display correctly.
-  </p>
-
-  <div id="controls">
+  <div id="controls" class="FlexboxCol FlexboxStretch">
     <div class="SearchBox">
       <input class="Search" type="text"/>
     </div>
@@ -50,11 +45,11 @@
     <div class="TeamLogo ControlBox Image Template">
       <a class="Label">Team Logos</a>
       <br/>
-      <div class="ImageBox Template">
+      <div class="ImageBox Template FlexboxRow FlexboxCenter">
         <div class="TeamLogoImage">
           <img class="TeamLogo" src=""/>
         </div>
-        <div class="ImageControl">
+        <div class="ImageControl FlexboxCol FlexboxCenter">
           <a class="ImageName"></a>
           <button class="ImageButton">Get</button>
         </div>

@@ -10,9 +10,8 @@ var states = [];
 var autoCompleteKeys = [];
 
 $(function () {
-  if (!Modernizr.flexbox) {
-    $("#FlexboxWarning,#controls,#mapCanvas").addClass("NoFlexbox");
-  }
+  if (!Modernizr.flexbox)
+    $("#controls,#mapCanvas").addClass("NoFlexbox");
 
   map = createMap();
   var mc;
