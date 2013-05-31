@@ -35,7 +35,7 @@
         <Tweet><![CDATA[Last 5 Minutes! %t1n %t1s, %t2n %t2s]]></Tweet>
       </ConditionalTweet>
       <ConditionalTweet Id="00000000-0000-0000-0000-000000000009">
-        <Condition><![CDATA[%cjr=false %cpN=2 %cptms<5]]></Condition>
+        <Condition><![CDATA[%cjr=false %cpN=2 %cptms<5:00]]></Condition>
         <Tweet><![CDATA[End of jam %cjN, Clock %cptms, %t1n %t1s, %t2n %t2s]]></Tweet>
       </ConditionalTweet>
       <ConditionalTweet Id="00000000-0000-0000-0000-00000000000a">
