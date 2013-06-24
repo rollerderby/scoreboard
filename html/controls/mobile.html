@@ -33,10 +33,67 @@
       <li><a href="#JamControlPage">Jam Control</a></li>
       <li><a href="#PeriodTimePage">Period Time</a></li>
       <li><a href="#TeamScorePage">Team Score</a></li>
+      <li><a href="#PenaltyPage">Penalty Timing</a></li>
     </ul>
   </div>
 </div>
 
+<div data-role="page" id="PenaltyPage">
+  <div data-role="header">
+    <a href="#Main" data-direction="reverse" data-icon="arrow-l">Main</a>
+    <h1>Penalty Timing</h1>
+  </div>
+  <div data-role="content">
+     <div class='ui-grid-c'>
+       <div class="ui-block-a"><div class="TimeHeader">Jam Time</div></div>
+       <div class="ui-block-b"><div class="TimeHeader">Lineup Time</div></div>
+       <div class="ui-block-c"><div class="TimeHeader">Timeout Time</div></div>
+       <div class="ui-block-d"><div class="TimeHeader">Period Time</div></div>
+
+       <div class="ui-block-a"><div id="JamTime"><a class="JamTime"></a></div></div>
+       <div class="ui-block-b"><div id="LineupTime"><a class="LineupTime"></a></div></div>
+       <div class="ui-block-c"><div id="TimeoutTime"><a class="TimeoutTime"></a></div></div>
+       <div class="ui-block-d"><div id="PeriodTime"><a class="PeriodTime"></a></div></div>
+       
+       <div class="ui-block-a"><button type="button" id='Jammer1' data-theme="b">Jammer</button></div>
+       <div class="ui-block-b" id='Jammer1Box'><span class="PenaltyTime" id='Jammer1Time'></span></div>
+       <div class="ui-block-c" id='Jammer2Box'><span class="PenaltyTime" id='Jammer2Time'></span></div>
+       <div class="ui-block-d"><button type="button" id='Jammer2' data-theme="b">Jammer</button></div>
+       
+       <div class="ui-block-a"><button type="button" id='Blocker1Team1' data-theme="b">Blocker 1</button></div>
+       <div class="ui-block-b" id='Blocker1Team1Box'><span class="PenaltyTime" id='Blocker1Team1Time'></span></div>
+       <div class="ui-block-c" id='Blocker1Team2Box'><span class="PenaltyTime" id='Blocker1Team2Time'></span></div>
+       <div class="ui-block-d"><button type="button" id='Blocker1Team2' data-theme="b">Blocker 1</button></div>
+       
+       <div class="ui-block-a"><button type="button" id='Blocker2Team1' data-theme="b">Blocker 2</button></div>
+       <div class="ui-block-b" id='Blocker2Team1Box'><span class="PenaltyTime" id='Blocker2Team1Time'></span></div>
+       <div class="ui-block-c" id='Blocker2Team2Box'><span class="PenaltyTime" id='Blocker2Team2Time'></span></div>
+       <div class="ui-block-d"><button type="button" id='Blocker2Team2'data-theme="b">Blocker 2</button></div>
+       
+       <div class="ui-block-a"><button type="button" id='Blocker3Team1' data-theme="a">Blocker 3</button></div>
+       <div class="ui-block-b" id='Blocker3Team1Box'><span class="PenaltyTime" id='Blocker3Team1Time'></span></div>
+       <div class="ui-block-c" id='Blocker3Team2Box'><span class="PenaltyTime" id='Blocker3Team2Time'></span></div>
+       <div class="ui-block-d"><button type="button" id='Blocker3Team2'data-theme="a">Blocker 3</button></div>
+     </div>
+  </div>
+  <div data-role="popup" id="PenaltyPopup">
+  <ul data-role="listview" data-inset="true"><li data-role="divider" data-theme="a" style='text-align: center''>Time Controls</li></ul>
+    <div id="PopupTitle">Title <span id="PopupTeamName"></span></div>
+    <div>Button pushed with <span id='timeremaining'>error</span> seconds left</div>
+    <p><button id="BtnCancel">Cancel Penalty</button></p>
+    <p><button id="BtnClock">Stop/Start Clock</button></p>
+    <p><button id="BtnAdd1">Add 1 minute</button></p>
+    <p><button id="BtnDel1">Subtract 1 minute</button></p>
+  </div>
+  <div data-role="popup" id="JammerPopup">
+  <ul data-role="listview" data-inset="true"><li data-role="divider" data-theme="a" style='text-align: center''>Jammer Timings</li></ul>
+    <div id="PopupTitle">Jammer Penalty Time</div>
+    <p>Timing will start from when button is pushed.</p>
+    <p><button id="BtnJammer1m">1 Minute</button></p>
+    <p><button id="BtnJammer2m">2 Minutes</button></p>
+    <p><button id="BtnJammerCancel">Cancel this</button></p>
+  </div>
+</div>
 <div data-role="page" id="JamControlPage">
   <div data-role="header">
     <a href="#Main" data-direction="reverse" data-icon="arrow-l">Main</a>
@@ -44,12 +101,30 @@
   </div>
 
   <div data-role="content">
-    <p><button class="StartJam">Start Jam</button></p>
-    <p><hr/></p>
-    <p><button class="StopJam">Stop Jam</button></p>
-    <p><hr/></p>
-    <p><button class="Timeout">Timeout</button></p>
-    <p><hr/></p>
+        <table>
+        	<tr><td><div class="ui-block-a" id="period">Period<br/><span id="periodno"></span></div></td>
+        	<td><div class="ui-block-b" id="periodtime"><a>0:00</a></div></td>
+        </table>
+        <div id="jamdiv" style="display: none"><h2>Jam Time</h2><h1>1:59</h1></div>
+        <div id="lineupdiv" style="display: none"><h2>Lineup Time</h2><h1>1:59</h1></div>
+        <div id="timeoutdiv"style="display: none"><h2>TIMEOUT Time</h2><h1>1:59</h1></div>
+        <!--  As we're using position: absolute, the easiest way to fix this is just to put
+        some blank space in the same place the data will go. -->
+        <div id="spacer"><h2>&nbsp;</h2><h1>&nbsp</h1></div>
+        <div class="ui-grid-a">
+        	<div class="ui-block-a">
+				<button class="StartJam" data-role="button" data-icon="check" data-iconpos="right">Start Jam</button>
+            </div>
+            <div class="ui-block-b">
+                <button class="StopJam" data-role="button" data-icon="plus" data-iconpos="left">Stop Jam</a>
+            </div>
+        </div>
+        <button class="Timeout" data-role="button">Timeout</button>
+        <div class="ui-grid-b">
+        	<div class="ui-block-a"><button id="team1timeout">Team 1</button></div>
+        	<div class="ui-block-b"><button id="officialtimeout">Official</button></div>
+        	<div class="ui-block-c"><button id="team2timeout">Team 2</button></div>
+        </div>
     <p class="Clocks">
       <span class="ClockBubble Period">Period</span>
       <span class="ClockBubble Jam">Jam</span>

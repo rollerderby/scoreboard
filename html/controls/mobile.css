@@ -17,8 +17,14 @@
 
 /* JamControlPage */
   #JamControlPage p.Clocks { text-align: center; }
-
   #JamControlPage p.Clocks>span { padding: 0.5em 0.5em; margin: auto 0.5em; }
+  #JamControlPage table { width: 100% }
+  #JamControlPage td {width: 50%; }
+  #period { font-size: 150%; width: 95%; text-align: center}
+  #periodno {font-size: 200% }
+  #periodtime { font-size: 500%; text-align: center }
+  /* The three divs to display the times */
+  #jamdiv,#lineupdiv,#timeoutdiv { width: 100%; text-align: center; position: absolute}
 /* END JamControlPage */
 
 /* PeriodTimePage */
@@ -31,3 +37,11 @@
   #Team1ScorePage div { text-align: center; }
   #Team2ScorePage div { text-align: center; }
 /* END TeamScorePage */
+
+/* PenaltyPage */
+  .TimeHeader { text-align: center; font-size: 150%; }
+  #JamTime,#PeriodTime { text-align: center; font-size: 300%; }
+  .PenaltyTime { font-size: 300%; }
+  #Jammer1Time,#Blocker1Team1Time,#Blocker2Team1Time,#Blocker3Team1Time { margin-left: .5em; }
+  #Jammer2Time,#Blocker1Team2Time,#Blocker2Team2Time,#Blocker3Team2Time { float: right; margin-right: .5em; }
+  
