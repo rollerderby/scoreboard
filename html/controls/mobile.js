@@ -133,7 +133,7 @@ function setupPenaltyTimePage() {
 	  $(v).data('paused', false);
 	  $(v).data('enabled', true);
 	  $(v).data('set', 0);
-	  $(v).data('locked', false);
+	  $(v).data('timelocked', false);
 	  $(v+"Time").hide();
   });
   $("#Blocker1Team1").data('enabled', true);
@@ -268,10 +268,10 @@ function updatePenaltyClocks(periodClock) {
 		
 	});
 	
-	// 7.3 stuff. Has one jammer been released early?
-	 if ($("#Jammer1").data('isrunning') && $("#Jammer2").data('isrunning')) {
-		$("#Jammer1").data('locked', false);
-		$("#Jammer2").data('locked', false);
+	// Unlock times if both of them are out of the box
+	if (!$("#Jammer1").data('isrunning') && !$("#Jammer2").data('isrunning')) {
+		$("#Jammer1").data('timelocked', false);
+		$("#Jammer2").data('timelocked', false);
 	} 
 }
 
@@ -279,7 +279,6 @@ function penaltyButtonClicked(bObj) {
 
 	// navigator.vibrate(500);  // This doesn't work on ANYTHING yet. Sigh.
 	var isrunning = bObj.data('isrunning');
-	console.log('isrunning is '+isrunning);
 	if (isrunning == false) {
 		console.log(bObj.attr('id'))
 		if (bObj.attr('id') == 'Jammer1' || bObj.attr('id') == 'Jammer2') {
@@ -298,7 +297,7 @@ function penaltyButtonClicked(bObj) {
 			enablePenaltyButton(bObj, 60000);
 		}
 	} else {
-		// The clock is running. Remove any left over event handlers..
+		// This clock is currently running. Remove any left over event handlers..
 		 $.each(["#BtnCancel", "#BtnClock", "#BtnAdd1", "#BtnDel1"], function (v, e) {
 			$(e).unbind("click");
 		});
@@ -310,6 +309,7 @@ function penaltyButtonClicked(bObj) {
 			// about sets here, the rules just say 'more than a minute of penalty time'.  See 7.3.10.
 			var j = bObj.attr('id'); // Which jammer is this
 			var other = (j == 'Jammer1')?'#Jammer2':"#Jammer1"; // This is the other jammer.
+			
 			if ($(other).data('timeleft') >= 60001 && $(other).data('isrunning')) {
 				bObj.data('timeleft', bObj.data('timeleft') - 60000); 
 				bObj.data('endtime', bObj.data('endtime') + 60000);
@@ -379,10 +379,8 @@ function jammerin(o, t) {
 		enablePenaltyButton(o, t*60000);
 		$("#JammerPopup").popup('close');
 		return;
-	}
-	
-	// Jammer comes in, there's another jammer already there 
-	if ($(other).data('isrunning') == true) {
+	} else {
+		// Jammer comes in, there's another jammer already there 
 				
 		// 7.3.10 explicity says that if the other jammer has more than 1 min, release the arriving jammer (eg, this one)
 		// immediately. HOWEVER, this would have been picked up when the button was clicked originally.   The rules say
@@ -394,9 +392,32 @@ function jammerin(o, t) {
 		// by the penalty box official immediately after taking their seat in the penalty box. The remaining 
 		// penalty time of the first Jammer is reduced by one minute
 	
-		// If the zeebs were too slow in getting that second minute to the Box, then that first jammer is gone, baby. 
-		// I'm not sure how to handle this, but, for the moment, we'll just stick to the letter of the rules,
-		// and let the game play out.
+		if ( t == 2 ) { // I've been sent for 2
+			if ( $(other).data('timeleft') > 120000 ) { // And they have MORE than 2
+				// Wow. Lots of naughty. But, we can take off two minutes, and release this one.
+				$(other).data('timeleft', $(other).data('timeleft') - 120000); 
+				$(other).data('endtime', $(other).data('endtime') + 120000);
+				enablePenaltyButton(o, 1000)
+				$("#JammerPopup").popup('close');
+				return;  // Don't lock, all penalties are equal (0 seconds and 0 seconds)
+			} else if ( $(other).data('timeleft') > 60000 ) { // They have more than 1
+				// I can take off one minute off yours, and a minute off mine.
+				$(other).data('timeleft', $(other).data('timeleft') - 60000); 
+				$(other).data('endtime', $(other).data('endtime') + 60000);
+				t = 1;
+				// And proceed as normal.  Note the one below will never match this.
+				// We will always have less than 60000msec.
+		    }
+		}
+		if ( t == 1 && $(other).data('timeleft') > 60000) {
+			// OK, I was given one minute, and the other jammer has more than 1. I can just drop a minute, and release this jammer.
+			console.log("Caught it here");
+			$(other).data('timeleft', $(other).data('timeleft') - 60000); 
+			$(other).data('endtime', $(other).data('endtime') + 60000);
+			enablePenaltyButton(o, 1000)
+			$("#JammerPopup").popup('close');
+			return;
+		}
 		
 		// I probably need to care about 'undo' and 'I pushed the wrong button' mistakes here, too.
 
@@ -411,21 +432,27 @@ function jammerin(o, t) {
 		}
 
 		// Jammer Swapping!
-		if (!o.data('locked')) {
-			o.data('locked', true); // I cannot be released early again. 
-			if (t == 1) { // Has been sent for 1 minute.
+		if (o.data('timelocked')) { console.log('o.data is locked'); } else { console.log('o.data is not locked') }
+		if ($(other).data('timelocked')) { console.log('$other.data is locked'); } else { console.log('$other.data is not locked') }
+		if (!o.data('timelocked') && !$(other).data('timelocked') ) {
+			o.data('timelocked', true); // I cannot be released early again. 
+			if (t == 1) {
 				enablePenaltyButton(o, 60000 - $(other).data('timeleft'));
 				$(other).data('timeleft', 0);
 				$(other).data('endtime', $(other).data('endtime') + 60000);
-			} else { // Two minutes.
+			} else {
+				// I've been given 2. The other jammer CAN be released, and I need to have 1 minute, plus the change.
 				enablePenaltyButton(o, 120000 - $(other).data('timeleft'));
 				$(other).data('timeleft', 0);
-				$(other).data('endtime', $(other).data('endtime') + 120000);
+				$(other).data('endtime', $(other).data('endtime') + 60000);
 			}
 		} else {
 			// This is an ABA. The other jammer should NOT be released. Jammerless Jam.
 			// Need an alert.
 			console.log("I am here. This is an ABA");
+			enablePenaltyButton(o, 60000*t);
+			o.data('timelocked', false);
+			$(other).data('timelocked', false); // We're back in sync again. 
 		} 
 		$("#JammerPopup").popup('close');
 		return;
