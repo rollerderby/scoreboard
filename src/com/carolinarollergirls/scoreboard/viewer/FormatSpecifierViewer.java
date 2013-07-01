@@ -8,9 +8,11 @@ package com.carolinarollergirls.scoreboard.viewer;
  * See the file COPYING for details.
  */
 
+import java.text.*;
 import java.util.*;
 import java.util.regex.*;
 import java.util.concurrent.*;
+
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.event.*;
@@ -82,6 +84,18 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
   }
 
   protected boolean checkConditionValue(String value, String comparator, String target) throws IllegalArgumentException {
+	
+	// Check to see if we're talking about times, and if so, de-time them.
+	if (comparator.contains("<") || comparator.contains(">")) {
+		// We're doing maths. Are they times? Times have colons. 
+	      if (value.contains(":") || target.contains(":")) {
+	    	  SimpleDateFormat format = new SimpleDateFormat("mm:ss"); 
+	    	   try { 
+	    		   value = String.valueOf(format.parse(value).getTime());
+	    		   target = String.valueOf(format.parse(target).getTime());
+	    	   } catch ( ParseException pE ) { } 
+	      }
+	}
     if ("=".equals(comparator)) {
       return value.equals(target);
     } else if ("!=".equals(comparator)) {
