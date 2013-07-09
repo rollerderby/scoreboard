@@ -195,7 +195,7 @@ function updatePenaltyClocks(periodClock) {
 			$("#Blocker3"+v).data('enabled', true);
 			$("#Blocker1"+v).data('enabled', true);
 			$("#Blocker2"+v).data('enabled', true);
-		} else {8
+		} else {
 			// If b3 is running, disable whichever one isn't.
 			if ($("#Blocker3"+v).data('isrunning')) {
 				if (!$("#Blocker1"+v).data('isrunning') && $("#Blocker2"+v).data('isrunning') ) { $("#Blocker1"+v).data('enabled', false); } 
