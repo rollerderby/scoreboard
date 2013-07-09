@@ -84,18 +84,20 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
   }
 
   protected boolean checkConditionValue(String value, String comparator, String target) throws IllegalArgumentException {
-	
-	// Check to see if we're talking about times, and if so, de-time them.
-	if (comparator.contains("<") || comparator.contains(">")) {
-		// We're doing maths. Are they times? Times have colons. 
-	      if (value.contains(":") || target.contains(":")) {
-	    	  SimpleDateFormat format = new SimpleDateFormat("mm:ss"); 
-	    	   try { 
-	    		   value = String.valueOf(format.parse(value).getTime());
-	    		   target = String.valueOf(format.parse(target).getTime());
-	    	   } catch ( ParseException pE ) { } 
-	      }
-	}
+    // Check to see if we're talking about times, and if so, de-time them.
+    if (comparator.contains("<") || comparator.contains(">") || comparator.contains("%")) {
+      // We're doing maths. Are they times? Times have colons.
+      if (value.contains(":")) {
+        String[] s = value.split(":");
+        if (s.length == 2)
+          try { value = String.valueOf(Long.parseLong(s[0])*60 + Long.parseLong(s[1])); } catch ( NumberFormatException nfE ) { }
+      }
+      if (target.contains(":")) {
+        String[] s = target.split(":");
+        if (s.length == 2)
+          try { target = String.valueOf(Long.parseLong(s[0])*60 + Long.parseLong(s[1])); } catch ( NumberFormatException nfE ) { }
+      }
+    }
     if ("=".equals(comparator)) {
       return value.equals(target);
     } else if ("!=".equals(comparator)) {
