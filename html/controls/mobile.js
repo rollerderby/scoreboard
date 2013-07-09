@@ -26,7 +26,7 @@ function setupJamControlPage() {
   $sb("ScoreBoard.Team(2).Timeout").$sbControl("#team2timeout").val(true);
 
   $.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("content", function(event, value) {
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
       $("#JamControlPage span.ClockBubble."+clock).toggleClass("Running", isTrue(value));
     });
   });
@@ -57,7 +57,7 @@ function setupJamControlPage() {
   
   // Display text and info for what's happening. 
   // Lineup Clock
-  $sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("content", function(e, v) {
+  $sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("sbchange", function(e, v) {
 	  if (v == "true") {
 		  $.each([ '#jamdiv', '#timeoutdiv'], function(i, divname) {
 			  $(divname).fadeOut('fast');
@@ -67,7 +67,7 @@ function setupJamControlPage() {
   });
   
   // Jam Clock
-  $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("content", function(e, v) {
+  $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("sbchange", function(e, v) {
 	  if (v == "true") {
 		  $.each([ '#lineupdiv', '#timeoutdiv'], function(i, divname) {
 			  $(divname).fadeOut('fast');
@@ -77,7 +77,7 @@ function setupJamControlPage() {
   });
   
   // Timeout Clock
-  $sb("ScoreBoard.Clock(Timeout).Running").$sbBindAndRun("content", function(e, v) {
+  $sb("ScoreBoard.Clock(Timeout).Running").$sbBindAndRun("sbchange", function(e, v) {
 	  if (v == "true") {
 		  $.each([ '#jamdiv', '#lineupdiv'], function(i, divname) {
 			  $(divname).fadeOut('fast');
