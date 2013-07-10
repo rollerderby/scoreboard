@@ -349,7 +349,7 @@ function createTeamTable() {
 
     var nameTr = createRowTable(2).appendTo($("<td>").appendTo(nameRow)).find("tr");
     var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
-    var timeoutTr = createRowTable(2).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
+    var timeoutTr = createRowTable(4).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
     var jammerTr = createRowTable(2).appendTo($("<td>").appendTo(jammerRow)).find("tr");
     var passTr = createRowTable(3).appendTo($("<td>").appendTo(passRow)).find("tr");
 
@@ -422,11 +422,18 @@ function createTeamTable() {
 
     sbTeam.$sb("Timeout").$sbControl("<button>").text("Timeout").val("true")
       .attr("id", "Team"+team+"Timeout").addClass("KeyControl").button()
-      .appendTo(timeoutTr.children("td:eq("+(first?"0":"1")+")").addClass("Timeout"));
+      .appendTo(timeoutTr.children("td:eq("+(first?"0":"3")+")").addClass("Timeout"));
     sbTeam.$sb("Timeouts").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
         editOnClick: true,
-        bindClickTo: timeoutTr.children("td:eq("+(first?"1":"0")+")")
-      } }).appendTo(timeoutTr.children("td:eq("+(first?"1":"0")+")").addClass("Timeouts"));
+        bindClickTo: timeoutTr.children("td:eq("+(first?"1":"2")+")")
+      } }).appendTo(timeoutTr.children("td:eq("+(first?"1":"2")+")").addClass("Timeouts"));
+    sbTeam.$sb("OfficialReview").$sbControl("<button>").text("Official Review").val("true")
+      .attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button()
+      .appendTo(timeoutTr.children("td:eq("+(first?"2":"1")+")").addClass("OfficialReview"));
+    sbTeam.$sb("OfficialReviews").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
+        editOnClick: true,
+        bindClickTo: timeoutTr.children("td:eq("+(first?"3":"0")+")")
+      } }).appendTo(timeoutTr.children("td:eq("+(first?"3":"0")+")").addClass("OfficialReviews"));
 
     var leadJammerTd = jammerTr.children("td:eq("+(first?"0":"1")+")")
       .append("<label id='Team"+team+"Lead'>Lead</label><input type='radio' value='true'/>")

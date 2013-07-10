@@ -30,12 +30,15 @@ public interface TeamModel extends Team
   public void setLogo(String logo);
 
   public void timeout();
+  public void officialReview();
 
   public void setScore(int score);
   public void changeScore(int change);
 
   public void setTimeouts(int timeouts);
   public void changeTimeouts(int change);
+  public void setOfficialReviews(int reviews);
+  public void changeOfficialReviews(int reviews);
 
   public void addSkaterModel(SkaterModel skater);
   public SkaterModel addSkaterModel(String id);

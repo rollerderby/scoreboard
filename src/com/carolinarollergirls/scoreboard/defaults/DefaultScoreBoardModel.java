@@ -78,6 +78,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     lineupClockWasRunning = false;
     timeoutClockWasRunning = false;
     setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
+    setOfficialReview(false);
     setInPeriod(false);
     setInOvertime(false);
   }
@@ -185,9 +186,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
   }
 
   public void timeout() { timeout(null); }
-  public void timeout(TeamModel team) {
+  public void timeout(TeamModel team) { timeout(team, false); }
+  public void timeout(TeamModel team, boolean review) {
     synchronized (runLock) {
       setTimeoutOwner(null==team?"":team.getId());
+      setOfficialReview(review);
       if (!getClockModel(Clock.ID_TIMEOUT).isRunning()) {
 //FIXME - change to policy?
         getClockModel(Clock.ID_PERIOD).stop();
@@ -307,6 +310,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
       scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUT_OWNER, timeoutOwner, last));
     }
   }
+  public boolean isOfficialReview() { return officialReview; }
+  public void setOfficialReview(boolean official) {
+    synchronized (officialReviewLock) {
+      boolean last = officialReview;
+      officialReview = official;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEW, new Boolean(officialReview), last));
+    }
+  }
 
   protected void createClockModel(String id) {
     if ((id == null) || (id.equals("")))
@@ -336,6 +347,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
   protected String timeoutOwner;
   protected Object timeoutOwnerLock = new Object();
+  protected boolean officialReview;
+  protected Object officialReviewLock = new Object();
 
   protected boolean inPeriod = false;
   protected Object inPeriodLock = new Object();

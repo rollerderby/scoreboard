@@ -22,6 +22,7 @@ public interface ScoreBoardModel extends ScoreBoard
   public void reset();
 
   public void setTimeoutOwner(String owner);
+  public void setOfficialReview(boolean official);
 
   public void setInOvertime(boolean inOvertime);
   public void startOvertime();
@@ -35,6 +36,7 @@ public interface ScoreBoardModel extends ScoreBoard
 
   public void timeout();
   public void timeout(TeamModel team);
+  public void timeout(TeamModel team, boolean review);
 
   public void unStartJam();
   public void unStopJam();

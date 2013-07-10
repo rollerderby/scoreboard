@@ -23,6 +23,14 @@ public interface ScoreBoard extends ScoreBoardEventProvider
   public String getTimeoutOwner();
 
   /**
+   * If this Timeout is an Official Review.
+   *
+   * This is true if the current timeout is actually a team-requested Official Review.
+   * This is false if the current timeout is a normal team or official timeout.
+   */
+  public boolean isOfficialReview();
+
+  /**
    * If in a Period.
    *
    * This returns true if any Period has started,
@@ -63,6 +71,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider
   public static final String EVENT_ADD_POLICY = "AddPolicy";
   public static final String EVENT_REMOVE_POLICY = "RemovePolicy";
   public static final String EVENT_TIMEOUT_OWNER = "TimeoutOwner";
+  public static final String EVENT_OFFICIAL_REVIEW = "OfficialReview";
   public static final String EVENT_ADD_CLOCK = "AddClock";
   public static final String EVENT_REMOVE_CLOCK = "RemoveClock";
   public static final String EVENT_ADD_TEAM = "AddTeam";

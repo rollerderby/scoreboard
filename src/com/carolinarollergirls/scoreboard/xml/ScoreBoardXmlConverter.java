@@ -40,6 +40,7 @@ public class ScoreBoardXmlConverter
     editor.setElement(sb, "StartOvertime", null, "");
 
     editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner());
+    editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_REVIEW, null, String.valueOf(scoreBoard.isOfficialReview()));
     editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
     editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
     editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
@@ -84,11 +85,13 @@ public class ScoreBoardXmlConverter
     Element e = editor.setElement(sb, "Team", t.getId());
 
     editor.setElement(e, "Timeout", null, "");
+    editor.setElement(e, "OfficialReview", null, "");
 
     editor.setElement(e, Team.EVENT_NAME, null, t.getName());
     editor.setElement(e, Team.EVENT_LOGO, null, t.getLogo());
     editor.setElement(e, Team.EVENT_SCORE, null, String.valueOf(t.getScore()));
     editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
+    editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
     editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
     editor.setElement(e, Team.EVENT_PASS, null, String.valueOf(t.getPass()));
 
@@ -192,6 +195,8 @@ public class ScoreBoardXmlConverter
           continue;
         else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER))
           scoreBoardModel.setTimeoutOwner(value);
+        else if (name.equals(ScoreBoard.EVENT_OFFICIAL_REVIEW))
+          scoreBoardModel.setOfficialReview(bVal);
         else if (name.equals(ScoreBoard.EVENT_IN_OVERTIME))
           scoreBoardModel.setInOvertime(bVal);
         else if (name.equals(ScoreBoard.EVENT_IN_PERIOD))
@@ -307,6 +312,8 @@ public class ScoreBoardXmlConverter
           continue;
         else if (name.equals("Timeout") && Boolean.parseBoolean(value))
           teamModel.timeout();
+        else if (name.equals("OfficialReview") && Boolean.parseBoolean(value))
+          teamModel.officialReview();
         else if (name.equals(Team.EVENT_NAME))
           teamModel.setName(value);
         else if (name.equals(Team.EVENT_LOGO))
@@ -319,6 +326,10 @@ public class ScoreBoardXmlConverter
           teamModel.changeTimeouts(Integer.parseInt(value));
         else if (name.equals(Team.EVENT_TIMEOUTS) && !isChange)
           teamModel.setTimeouts(Integer.parseInt(value));
+        else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && isChange)
+          teamModel.changeOfficialReviews(Integer.parseInt(value));
+        else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && !isChange)
+          teamModel.setOfficialReviews(Integer.parseInt(value));
         else if (name.equals(Team.EVENT_LEAD_JAMMER))
           teamModel.setLeadJammer(Boolean.parseBoolean(value));
         else if (name.equals(Team.EVENT_PASS) && isChange)
