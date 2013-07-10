@@ -22,8 +22,9 @@ function setupJamControlPage() {
   $sb("ScoreBoard.StartJam").$sbControl("#JamControlPage button.StartJam").val(true);
   $sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
   $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
-  $sb("ScoreBoard.Team(1).Timeout").$sbControl("#team1timeout").val(true);
-  $sb("ScoreBoard.Team(2).Timeout").$sbControl("#team2timeout").val(true);
+  $sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
+  $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
+  $sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
 
   $.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
     $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
@@ -31,64 +32,31 @@ function setupJamControlPage() {
     });
   });
   
+  // Period number
+  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#JamControlPage div.PeriodNumber a.Number");
+
   // Period Clock
-  $sb("ScoreBoard.Clock(Period).Time").$sbElement("#periodtime a", { sbelement: {
+  $sb("ScoreBoard.Clock(Period).Time").$sbElement("#JamControlPage div.PeriodTime a.Time", { sbelement: {
 	    convert: _timeConversions.msToMinSec
   }});
   
-  // Lineup Clock
-  $sb("Scoreboard.Clock(Lineup).Time").$sbElement("#lineupdiv span", { sbelement: {
-	    convert: _timeConversions.msToMinSec
-  }});
+  var showJamControlClock = function(clock) {
+    $("#JamControlPage div.Time").not("."+clock+"Time").hide().end()
+      .filter("."+clock+"Time").show();
+  };
+  // In case no clocks are running now, default to showing only Jam
+  showJamControlClock("Jam");
 
-  // Jam Clock
-  $sb("Scoreboard.Clock(Jam).Time").$sbElement("#jamdiv span", { sbelement: {
-	    convert: _timeConversions.msToMinSec
-  }});
-
-  // Timeout Clock
-  $sb("Scoreboard.Clock(Timeout).Time").$sbElement("#timeoutdiv span", { sbelement: {
-	    convert: _timeConversions.msToMinSec
-  }});
-
-  
-  // Update Period number
-  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#periodno");
-  
-  // Display text and info for what's happening. 
-  // Lineup Clock
-  $sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("sbchange", function(e, v) {
-	  if (v == "true") {
-		  $.each([ '#jamdiv', '#timeoutdiv'], function(i, divname) {
-			  $(divname).fadeOut('fast');
-		  });
-		  $("#lineupdiv").fadeIn('fast');
-	  }
+  // Setup clocks
+  $.each([ "Jam", "Lineup", "Timeout" ], function(i, clock) {
+    $sb("Scoreboard.Clock("+clock+").Time").$sbElement("#JamControlPage div."+clock+"Time a.Time", { sbelement: {
+      convert: _timeConversions.msToMinSec
+    }});
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(e, v) {
+	    if (isTrue(v))
+        showJamControlClock(clock);
+    });
   });
-  
-  // Jam Clock
-  $sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("sbchange", function(e, v) {
-	  if (v == "true") {
-		  $.each([ '#lineupdiv', '#timeoutdiv'], function(i, divname) {
-			  $(divname).fadeOut('fast');
-		  });
-		  $("#jamdiv").fadeIn('fast');
-	  }
-  });
-  
-  // Timeout Clock
-  $sb("ScoreBoard.Clock(Timeout).Running").$sbBindAndRun("sbchange", function(e, v) {
-	  if (v == "true") {
-		  $.each([ '#jamdiv', '#lineupdiv'], function(i, divname) {
-			  $(divname).fadeOut('fast');
-		  });
-		  $("#timeoutdiv").fadeIn('fast');
-	  }
-  });
-
-  
-  // 
-  
 }
 
 function setupPeriodTimePage() {

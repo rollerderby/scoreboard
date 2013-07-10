@@ -102,16 +102,16 @@
   </div>
 
   <div data-role="content">
-    <table>
-      <tr><td><div class="ui-block-a" id="period">Period<br/><span id="periodno"></span></div></td>
-        <td><div class="ui-block-b" id="periodtime"><a>0:00</a></div></td>
-    </table>
-    <div id="jamdiv" style="display: none"><h2>Jam Time</h2><h1>1:59</h1></div>
-    <div id="lineupdiv" style="display: none"><h2>Lineup Time</h2><h1>1:59</h1></div>
-    <div id="timeoutdiv" style="display: none"><h2>TIMEOUT Time</h2><h1>1:59</h1></div>
-    <!--  As we're using position: absolute, the easiest way to fix this is just to put
-          some blank space in the same place the data will go. -->
-    <div id="spacer"><h2>&nbsp;</h2><h1>&nbsp</h1></div>
+    <div class="ui-grid-a Period">
+      <div class="ui-block-a PeriodNumber">
+        <div class="Title">Period</div>
+        <div class="Number"><a class="Number"></a></div>
+      </div>
+      <div class="ui-block-b PeriodTime"><a class="Time"></a></div>
+    </div>
+    <div class="JamTime Time"><h2>Jam Time</h2><a class="Time"></a></div>
+    <div class="LineupTime Time"><h2>Lineup Time</h2><a class="Time"></a></div>
+    <div class="TimeoutTime Time"><h2>TIMEOUT Time</h2><a class="Time"></a></div>
     <div class="ui-grid-a">
       <div class="ui-block-a">
 				<button class="StartJam" data-role="button" data-icon="check" data-iconpos="right">Start Jam</button>
@@ -121,10 +121,10 @@
       </div>
     </div>
     <button class="Timeout" data-role="button">Timeout</button>
-    <div class="ui-grid-b">
-      <div class="ui-block-a"><button id="team1timeout">Team 1</button></div>
-      <div class="ui-block-b"><button id="officialtimeout">Official</button></div>
-      <div class="ui-block-c"><button id="team2timeout">Team 2</button></div>
+    <div class="ui-grid-b Timeout">
+      <div class="ui-block-a"><button class="Team1">Team 1</button></div>
+      <div class="ui-block-b"><button class="Official">Official</button></div>
+      <div class="ui-block-c"><button class="Team2">Team 2</button></div>
     </div>
     <p class="Clocks">
       <span class="ClockBubble Period">Period</span>
