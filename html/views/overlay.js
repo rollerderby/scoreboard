@@ -44,9 +44,15 @@ $sb(function() {
   };
 
   $.each( [ "1", "2" ], function(i, team) {
-    $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a", {
-      sbelement: { autoFitText: true }
-    });
+    if($sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbGet()) {
+      $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a", {
+    	sbelement: { autoFitText: true }
+      }); 
+	} else {
+      $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a", {
+        sbelement: { autoFitText: true }
+      });
+	}
     $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a", {
       sbelement: { autoFitText: true }
     });
