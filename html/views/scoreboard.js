@@ -192,14 +192,24 @@ function setupTeams() {
     sbTeam.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, value) {
       teamDiv.find("div.Lead>div").toggleClass("ShowLead", isTrue(value), animateTime.clock, "easeInQuart");
     });
-
+ 
     var showTimeoutRedBox = function() {
+      // Called when anything changes to do with Timeouts.
       var ownTimeout = $sb("ScoreBoard.TimeoutOwner").$sbIs(team);
+      var isOfficialReview = $sb("ScoreBoard.OfficialReview").$sbIsTrue();
+      var isTeamTimeout = $sb("ScoreBoard.TimeoutOwner").$sbGet();
       var timeoutRunning = $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue();
+      if (isOfficialReview) {
+    	  $("#Timeout>div.Name>a>span.Name").html("Off. Rev.");  
+      } else if (isTeamTimeout) {
+    	  $("#Timeout>div.Name>a>span.Name").html("Team T/O");
+      } else {
+    	  $("#Timeout>div.Name>a>span.Name").html("Time Out");
+      }
       $("#Timeouts>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && timeoutRunning);
     };
 
-    var redBoxTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running"));
+    var redBoxTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running").add($sb("ScoreBoard.OfficialReview")));
     _crgUtils.bindAndRun(redBoxTriggers, "sbchange", showTimeoutRedBox);
 
     setupPulsate(
