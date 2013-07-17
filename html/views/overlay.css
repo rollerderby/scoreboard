@@ -10,6 +10,7 @@
 
 /* Change this background color to whatever your overlay chromakey is set to */
 #Overlay { background: #0f0; }
+body { background-color: #0f0 }
 
 img { position: absolute; }
 div { position: absolute; }
@@ -18,31 +19,54 @@ a {
   position: relative;
   font-family: 'LiberationSans',helvetica;
   font-weight: bold;
+  display: block;
 }
 
-#TopBar { left: 27%; right: 28%; top: 6%; bottom: 86%; text-align: center; }
+#TopBar { left: 17%; right: 28%; top: 6%; bottom: 86%; text-align: center; }
 
-#ClockPeriodNumber { top: 0%; height: 100%; left: 3%; right: 77%; }
-#ClockPeriodTime { top: 0%; height: 100%; left: 30%; right: 38%; }
+#ClockPeriodNumber { top: 0%; height: 100%; left: 18%; right: 61%; }
+#ClockPeriodTime { top: 0%; height: 100%; left: 40%; right: 29%; }
 #ClockPeriodTime>a:not(.ShowPeriod) { display: none; }
 
-#ClockIntermissionTime { top: 0%; height: 100%; left: 30%; right: 38%; }
+#ClockIntermissionTime { top: 0%; height: 100%; left: 72%; right: 1%; }
 #ClockIntermissionTime>a:not(.ShowIntermission) { display: none; }
 
-#ClockJamTime { top: 0%; height: 100%; left: 69%; right: 3%; }
+#ClockJamTime { top: 0%; height: 100%; left: 72%; right: 1%; }
 #ClockJamTime>a:not(.ShowJam) { display: none; }
 
-#ClockLineupTime { top: 0%; height: 100%; left: 69%; right: 3%; }
+#ClockLineupTime { top: 0%; height: 100%; left: 72%; right: 1%; }
 #ClockLineupTime>a:not(.ShowLineup) { display: none; }
 
-#ClockTimeoutTime { top: 0%; height: 100%; left: 69%; right: 3%; }
+#ClockTimeoutTime { top: 0%; height: 100%; left: 72%; right: 1%; }
 #ClockTimeoutTime>a:not(.ShowTimeout) { display: none; }
 
-#BottomBar { left: 21.5%; right: 22%; top: 85.5%; bottom: 6.5%; text-align: center; }
 
-#Team1Name { top: 0%; height: 100%; left: 2%; right: 74%; }
-#Team1Score { top: 0%; height: 100%; left: 30%; right: 53%; }
-#Team2Name { top: 0%; height: 100%; left: 53%; right: 23%; }
-#Team2Score { top: 0%; height: 100%; left: 81%; right: 2%; }
+
+#BottomBar { left: 11.5%; right: 12%; top: 85.5%; bottom: 6.5%; text-align: center; }
+
+#Team1TimeOuts { top: 0%; height: 100%; left: 0%; right: 99%; }
+#Team1Name { top: 0%; height: 100%; left: 13%; right: 67%; }
+#Team1Score { top: 0%; height: 100%; left: 34%; right: 51%; }
+#Team2Name { top: 0%; height: 100%; left: 51%; right: 29%; }
+#Team2Score { top: 0%; height: 100%; left: 72%; right: 13%; }
+#Team2TimeOuts { top: 0%; height: 100%; left: 88%; right: 2%; }
 
 #Overlay { width: 100%; height: 100%; z-index: -1; }
+
+/* Use CSS instead of the background image */
+.circle {
+    -webkit-border-radius: 999px;
+    -moz-border-radius: 999px;
+    border-radius: 999px;
+}
+
+.redBorder {
+	width: 1.2em;
+	height: 1em;
+	background: pink;
+	border: .25em solid red;
+}
+
+.noBorder {
+	background: pink;
+}

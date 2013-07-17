@@ -77,4 +77,17 @@ $sb(function() {
     setupClock(clock);
     $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockPI);
   });
+  
+  // Timeouts.
+  // var timeoutTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running").add($sb("ScoreBoard.OfficialReview")));
+  // _crgUtils.bindAndRun(timeoutTriggers, "sbchange", showTimeouts);
+  $.each( [ 1, 2 ], function(i, team) {
+    $sb("ScoreBoard.Team("+team+").Timeouts").$sbElement("#Team"+team+"TimeOuts>a", { sbelement: { autoFitText: true } });
+  });
+  $sb("ScoreBoard.Team(1).Timeouts").$sbElement("#Unused1>a", { sbelement: { autoFitText: true } });
 });
+
+function showTimeouts() {
+  // Called when timeout stuff happens.
+  console.log("showTimeouts called");
+}
