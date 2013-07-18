@@ -15,7 +15,7 @@ if (typeof $ == "undefined") {
 }
 
 function _includeUrl(url) {
-  var filename = url.replace(/^.*[/]/g, "");
+  var filename = url.replace(/^.*[\/]/g, "");
   /* Use HTTP HEAD to verify url exists before adding it to the document */
   if ($.ajax(url, { async: false, type: "HEAD", global: false }).status != 200)
     return;
