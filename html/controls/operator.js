@@ -238,7 +238,7 @@ function createPeriodEndTimeoutDialog(td) {
 	$("<span>").text("Timeout with ").appendTo(applyDiv);
 	var periodSeconds = $("<input type='text' size='3'>").val("1").appendTo(applyDiv);
 	$("<span>").text(" seconds left on Period clock:").appendTo(applyDiv);
-	$("<button>").addClass("Apply").text("Apply").appendTo(applyDiv).button()
+	$("<button>").addClass("Apply").text("Apply").appendTo(applyDiv).button();
 	var waitDiv = $("<div>").addClass("Wait").appendTo(dialog).hide();
 	$("<span>").text("Starting Timeout when Period clock to reaches ").appendTo(waitDiv);
 	$("<span>").addClass("TargetSeconds").appendTo(waitDiv);
@@ -384,7 +384,7 @@ function createTeamTable() {
 			.blur(function() { logoShowSelect(false); })
 			.keyup(function(event) { if (event.which == 27 /* ESC */) $(this).blur(); });
 
-		logoTd.click(function() { if (!logoSelect.is(":visible")) logoShowSelect(true); })
+		logoTd.click(function() { if (!logoSelect.is(":visible")) logoShowSelect(true); });
 
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score -1").val("-1")

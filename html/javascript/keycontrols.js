@@ -145,7 +145,7 @@ _crgKeyControls = {
     var key = String.fromCharCode(event.which);
 
     var controls = $(_crgKeyControls.keySelector);
-    var active = controls.filter(":not(.Editing):visible")
+    var active = controls.filter(":not(.Editing):visible");
     var editing = controls.filter(".Editing");
 
     // Perform the corresponding button's action

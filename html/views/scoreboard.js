@@ -264,7 +264,7 @@ function setupClocks() {
       } }, "Time");
   });
 
-  $("#Period,#Jam").find("div.Name>a").append($("<span>").addClass("space").text(" "))
+  $("#Period,#Jam").find("div.Name>a").append($("<span>").addClass("space").text(" "));
   $("#Period,#Period_small").find("div.Name>a").append($("<span>").addClass("Number"));
   $sb("ScoreBoard.Clock(Period).Number").$sbElement("#Period>div.Name>a>span.Number,#Period_small>div.Name>a>span.Number");
   $("<div><a><span/></a></div>").addClass("Overtime Name TextContainer")
@@ -438,7 +438,7 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
         .animate({ opacity: 1 }, (pulsePeriod/2), "linear")
         .animate({ opacity: 0 }, (pulsePeriod/2), "linear");
     else
-      pulseTarget.delay(500)
+      pulseTarget.delay(500);
     pulseTarget.queue(doPulse);
     next();
   };

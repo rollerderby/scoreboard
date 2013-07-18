@@ -383,7 +383,7 @@ _crgScoreBoard = {
         var name = this.replace(/\(.*$/, "");
         var id = this.match(/\([^\)]*\)/);
         if (id)
-          id = id.toString().replace(/[\(|\)]/g, "")
+          id = id.toString().replace(/[\(|\)]/g, "");
         var child;
         if (!(child = me.children(_crgScoreBoard.toSelector(name,id))).length) {
           if (doNotCreate)
