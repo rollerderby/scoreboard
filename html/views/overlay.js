@@ -61,6 +61,10 @@ $sb(function() {
   $sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number", {
     sbelement: { autoFitText: true, autoFitTextContainer: "div" }
   });
+  
+  $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number", {
+	    sbelement: { autoFitText: true, autoFitTextContainer: "div" }
+	  });
 
   var setupClock = function(clock) {
     $sb("ScoreBoard.Clock("+clock+").Time").$sbElement("#Clock"+clock+"Time>a", {
