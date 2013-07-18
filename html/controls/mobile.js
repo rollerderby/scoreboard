@@ -108,7 +108,7 @@ function setupPenaltyTimePage() {
   $("#Blocker2Team1").data('enabled', true);
   $("#Blocker1Team2").data('enabled', true);
   $("#Blocker2Team2").data('enabled', true);
-  $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("sbchange", function(e, v) { updatePenaltyClocks(parseInt(v)) });
+  $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("sbchange", function(e, v) { updatePenaltyClocks(parseInt(v)); });
   updatePenaltyClocks(1800000);
  
 }
@@ -218,7 +218,7 @@ function updatePenaltyClocks(periodClock) {
 			if ($(v+"Time").is(':hidden')) {
 				// Enable it.
 				$(v).unbind('click');
-				$(v).click(function(){ penaltyButtonClicked($(this)) });
+				$(v).click(function(){ penaltyButtonClicked($(this)); });
 				$(v).parent().removeClass('ui-btn-up-a').removeClass('ui-btn-hover-a');
 				$(v).parent().attr('data-theme', 'b').trigger("mouseout");
 				$(v+"Time").html("1:00");
@@ -248,15 +248,15 @@ function penaltyButtonClicked(bObj) {
 	// navigator.vibrate(500);  // This doesn't work on ANYTHING yet. Sigh.
 	var isrunning = bObj.data('isrunning');
 	if (isrunning == false) {
-		console.log(bObj.attr('id'))
+		console.log(bObj.attr('id'));
 		if (bObj.attr('id') == 'Jammer1' || bObj.attr('id') == 'Jammer2') {
 			// It's not running, and a Jammer button has been selected. Open up the jammer popup,
 			// and ask how long it's for.
 			$.each(["#BtnJammer1m", "#BtnJammer2m", "#BtnJammerCancel"], function (v, e) {
 				$(e).unbind("click");
 			});
-			$("#BtnJammer1m").click(function() { jammerin(bObj, 1)});
-			$("#BtnJammer2m").click(function() { jammerin(bObj, 2)});
+			$("#BtnJammer1m").click(function() { jammerin(bObj, 1); });
+			$("#BtnJammer2m").click(function() { jammerin(bObj, 2); });
 			$("#BtnJammerCancel").click(function() { $("#JammerPopup").popup("close"); });
 			$("#JammerPopup").popup("open");
 			
@@ -270,8 +270,8 @@ function penaltyButtonClicked(bObj) {
 			$(e).unbind("click");
 		});
 		// Add some new ones
-		$("#BtnCancel").click(function() { cancelPenalty(bObj) });
-		$("#BtnClock").click(function() { togglePausePenalty(bObj) });
+		$("#BtnCancel").click(function() { cancelPenalty(bObj); });
+		$("#BtnClock").click(function() { togglePausePenalty(bObj); });
 		$("#BtnAdd1").click(function() { 
 			// Now, before we just wildly give them an extra minute, does the OTHER jammer have more than 60 secs? We don't care
 			// about sets here, the rules just say 'more than a minute of penalty time'.  See 7.3.10.
@@ -365,7 +365,7 @@ function jammerin(o, t) {
 				// Wow. Lots of naughty. But, we can take off two minutes, and release this one.
 				$(other).data('timeleft', $(other).data('timeleft') - 120000); 
 				$(other).data('endtime', $(other).data('endtime') + 120000);
-				enablePenaltyButton(o, 1000)
+				enablePenaltyButton(o, 1000);
 				$("#JammerPopup").popup('close');
 				return;  // Don't lock, all penalties are equal (0 seconds and 0 seconds)
 			} else if ( $(other).data('timeleft') > 60000 ) { // They have more than 1
@@ -382,7 +382,7 @@ function jammerin(o, t) {
 			console.log("Caught it here");
 			$(other).data('timeleft', $(other).data('timeleft') - 60000); 
 			$(other).data('endtime', $(other).data('endtime') + 60000);
-			enablePenaltyButton(o, 1000)
+			enablePenaltyButton(o, 1000);
 			$("#JammerPopup").popup('close');
 			return;
 		}
@@ -400,8 +400,8 @@ function jammerin(o, t) {
 		}
 
 		// Jammer Swapping!
-		if (o.data('timelocked')) { console.log('o.data is locked'); } else { console.log('o.data is not locked') }
-		if ($(other).data('timelocked')) { console.log('$other.data is locked'); } else { console.log('$other.data is not locked') }
+		if (o.data('timelocked')) { console.log('o.data is locked'); } else { console.log('o.data is not locked'); }
+		if ($(other).data('timelocked')) { console.log('$other.data is locked'); } else { console.log('$other.data is not locked'); }
 		if (!o.data('timelocked') && !$(other).data('timelocked') ) {
 			o.data('timelocked', true); // I cannot be released early again. 
 			if (t == 1) {
