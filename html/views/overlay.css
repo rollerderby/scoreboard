@@ -43,14 +43,20 @@ a {
 #ClockJamNumber { top: 0%; height: 100%; left: 77%; right: 10%; }
 
 
-#BottomBar { left: 11.5%; right: 12%; top: 85.5%; bottom: 6.5%; text-align: center; }
 
+#BottomBar { left: 11.5%; right: 12%; top: 85.5%; bottom: 6.5%; text-align: center; }
 #Team1TimeOuts { top: 0%; height: 100%; left: 0%; right: 99%; }
 #Team1Name { top: 20%; height: 100%; left: 13%; right: 67%; }
 #Team1Score { top: 20%; height: 100%; left: 34%; right: 51%; }
 #Team2Name { top: 20%; height: 100%; left: 51%; right: 29%; }
 #Team2Score { top: 20%; height: 100%; left: 72%; right: 13%; }
 #Team2TimeOuts { top: 0%; height: 100%; left: 88%; right: 2%; }
+
+#BottomBarFullWidth { top: 85.5%; bottom: 0; width: 100%; }
+#Team1Logo,#Team2Logo { bottom: 0; height: 100%; }
+#Team1Logo { left: 0%; right: 90%; }
+#Team2Logo { left: 90%; right: 0% }
+
 
 #Overlay { width: 100%; height: 100%; z-index: -1; }
 
