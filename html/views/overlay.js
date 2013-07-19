@@ -133,6 +133,11 @@ function manageStatusBar() {
 	// Make sure that the timeouts are back to pink
 	$(".TimeOuts").animate({"background-color":'pink'}, 500);
     $("#StatusBar").hide();
+  } else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbGet() == "true") {
+	// You should NEVER go from a Penalty to Lineup. But, just in case someone does...
+	$(".TimeOuts").animate({"background-color":'pink'}, 500);
+	$("#StatusBar>a").html("Lineup");
+	$("#StatusBar").show();
   } else {
 	var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
 	var statusString = "Error";
