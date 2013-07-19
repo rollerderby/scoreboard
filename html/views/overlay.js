@@ -64,15 +64,16 @@ $sb(function() {
   
   $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number", {
 	    sbelement: { autoFitText: true, autoFitTextContainer: "div" }
-	  });
+  });
 
   var setupClock = function(clock) {
     $sb("ScoreBoard.Clock("+clock+").Time").$sbElement("#Clock"+clock+"Time>a", {
       sbelement: {
         autoFitText: true,
         convert: _timeConversions.msToMinSec
-      } });
+     } });
   };
+  
   $.each( [ "Jam", "Lineup", "Timeout" ], function(i, clock) {
     setupClock(clock);
     $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockJLT);
@@ -106,7 +107,7 @@ $sb(function() {
 	  }
   });
   
-  // Toggle black background
+  // Toggle black background on logos
   $sb("Scoreboard.Policy(PagePolicy_overlay.html).Parameter(Black Background).Value").$sbBindAndRun("sbchange", function(x, state) {
 	  if (state == "true") {
 		  $(".logos").css("background-color", "black");
@@ -114,9 +115,42 @@ $sb(function() {
 		  $(".logos").css("background-color", "#0f0");
 	  }
   });
+  
+  // Statusbar text.
+  var statusTriggers = $sb("ScoreBoard.TimeoutOwner").
+    add($sb("ScoreBoard.Clock(Timeout).Running").
+    add($sb("ScoreBoard.Clock(Lineup).Running").
+    add($sb("ScoreBoard.OfficialReview"))));
+  
+  _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
+  
 });
 
-function showTimeouts() {
-  // Called when timeout stuff happens.
-  console.log("showTimeouts called");
+
+function manageStatusBar() {
+  // Display status bar in Lineup, Timeout, TTO and OR.
+  if ($sb("ScoreBoard.Clock(Jam).Running").$sbGet() == "true") {
+	// Make sure that the timeouts are back to pink
+	$(".TimeOuts").animate({"background-color":'pink'}, 500);
+    $("#StatusBar").hide();
+  } else {
+	var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
+	var statusString = "Error";
+	if (!timeoutOwner) {
+	  // It's an OTO
+	  statusString = "Timeout";
+	  $(".TimeOuts").animate({"background-color":'pink'}, 500);
+	} else {
+	  // It's owned. It'll either be an OR or a TTO.
+	  // Set the background of the owning team to red.
+	  $("#Team"+timeoutOwner+"TimeOuts").animate({"background-color":'red'}, 500);
+	  if ($sb("ScoreBoard.OfficialReview").$sbGet() == "true") {
+		  statusString = "Official Review";
+	  } else {
+		  statusString = "Team Timeout";
+	  }
+	}
+	$("#StatusBar>a").html(statusString);
+	$("#StatusBar").show();
+  }
 }
