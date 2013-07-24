@@ -20,24 +20,24 @@ a {
   font-weight: bold;
 }
 
-#StatusBar { left: 25%; right: 25%; top: 11%; text-align: center; font-size: 7%; }
+#StatusBar { left: 25%; right: 25%; top: 11%; bottom: 81%; text-align: center; font-size: 7%; }
 #TopBar { left: 10%; right: 10%; top: 1%; bottom: 91%; text-align: center; }
 
 #ClockPeriodNumber { top: 0%; height: 100%; left: 12%; right: 75%; }
 #ClockPeriodTime { top: 0%; height: 100%; left: 26%; right: 50%; }
-#ClockPeriodTime>a:not(.ShowPeriod) { display: none; }
+#ClockPeriodTime:not(.ShowPeriod) { display: none; }
 
 #ClockIntermissionTime { top: 0%; height: 100%; left: 52%; right: 24%; }
-#ClockIntermissionTime>a:not(.ShowIntermission) { display: none; }
+#ClockIntermissionTime:not(.ShowIntermission) { display: none; }
 
 #ClockJamTime { top: 0%; height: 100%; left: 52%; right: 24%; }
-#ClockJamTime>a:not(.ShowJam) { display: none; }
+#ClockJamTime:not(.ShowJam) { display: none; }
 
 #ClockLineupTime { top: 0%; height: 100%; left: 52%; right: 24%; }
-#ClockLineupTime>a:not(.ShowLineup) { display: none; }
+#ClockLineupTime:not(.ShowLineup) { display: none; }
 
 #ClockTimeoutTime { top: 0%; height: 100%; left: 52%; right: 24%; }
-#ClockTimeoutTime>a:not(.ShowTimeout) { display: none; }
+#ClockTimeoutTime:not(.ShowTimeout) { display: none; }
 
 #ClockJamNumber { top: 0%; height: 100%; left: 77%; right: 10%; }
 
