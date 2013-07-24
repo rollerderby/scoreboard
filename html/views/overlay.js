@@ -22,24 +22,28 @@ function setupMainDiv(div) {
 $sb(function() {
   setupMainDiv($("#mainDiv"));
 
-  var showClockJLT = function() {
+  var showClockJLTI = function() {
     if ($sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue()) {
-      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
+      $("a.ClockJLTI").closest("div").removeClass("ShowLineup ShowTimeout ShowIntermission").addClass("ShowJam");
     } else if ($sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue()) {
-      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowJam").addClass("ShowTimeout");
+      $("a.ClockJLTI").closest("div").removeClass("ShowLineup ShowJam ShowIntermission").addClass("ShowTimeout");
     } else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue()) {
-      $("a.ClockJLT").closest("div").removeClass("ShowJam ShowTimeout").addClass("ShowLineup");
+      $("a.ClockJLTI").closest("div").removeClass("ShowJam ShowTimeout ShowIntermission").addClass("ShowLineup");
+    } else if ($sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue()) {
+      $("a.ClockJLTI").closest("div").removeClass("ShowJam ShowTimeout ShowLineup").addClass("ShowIntermission");
     } else {
-      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
+      $("a.ClockJLTI").closest("div").removeClass("ShowLineup ShowTimeout ShowIntermission").addClass("ShowJam");
+      $("#ClockJamTime").data("AutoFit").call();
     }
   };
-  var showClockPI = function() {
+  var showClockP = function() {
     if ($sb("ScoreBoard.Clock(Period).Running").$sbIsTrue()) {
-      $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
+      $("a.ClockP").closest("div").addClass("ShowPeriod");
     } else if ($sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue()) {
-      $("a.ClockPI").closest("div").removeClass("ShowPeriod").addClass("ShowIntermission");
+      $("a.ClockP").closest("div").removeClass("ShowPeriod");
     } else {
-      $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
+      $("a.ClockP").closest("div").addClass("ShowPeriod");
+      $("#ClockPeriodTime").data("AutoFit").call();
     }
   };
 
@@ -80,14 +84,13 @@ $sb(function() {
      } });
   };
   
-  $.each( [ "Jam", "Lineup", "Timeout" ], function(i, clock) {
+  $.each( [ "Jam", "Lineup", "Timeout", "Intermission" ], function(i, clock) {
     setupClock(clock);
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockJLT);
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockJLTI);
   });
-  $.each( [ "Period", "Intermission" ], function(i, clock) {
-    setupClock(clock);
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockPI);
-  });
+  setupClock("Period");
+  $sb("ScoreBoard.Clock(Period).Running").$sbBindAndRun("sbchange", showClockP);
+  $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("sbchange", showClockP);
   
   // Team Timeouts.
   $.each( [ 1, 2 ], function(i, team) {
