@@ -126,45 +126,44 @@ $sb(function() {
   });
   
   // Statusbar text.
-  var statusTriggers = $sb("ScoreBoard.TimeoutOwner").
-    add($sb("ScoreBoard.Clock(Timeout).Running").
-    add($sb("ScoreBoard.Clock(Lineup).Running").
-    add($sb("ScoreBoard.OfficialReview"))));
+  var statusTriggers = $sb("ScoreBoard.TimeoutOwner")
+    .add($sb("ScoreBoard.Clock(Timeout).Running"))
+    .add($sb("ScoreBoard.Clock(Lineup).Running"))
+    .add($sb("ScoreBoard.OfficialReview"));
   
   _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
-  
 });
 
 
 function manageStatusBar() {
   // Display status bar in Lineup, Timeout, TTO and OR.
   if ($sb("ScoreBoard.Clock(Jam).Running").$sbGet() == "true") {
-	// Make sure that the timeouts are back to pink
-	$(".TimeOuts").animate({"background-color":'pink'}, 500);
+    // Make sure that the timeouts are back to pink
+    $(".TimeOuts").animate({"background-color":'pink'}, 500);
     $("#StatusBar").hide();
   } else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbGet() == "true") {
-	// You should NEVER go from a Penalty to Lineup. But, just in case someone does...
-	$(".TimeOuts").animate({"background-color":'pink'}, 500);
-	$("#StatusBar>a").html("Lineup");
-	$("#StatusBar").show();
+    // You should NEVER go from a Penalty to Lineup. But, just in case someone does...
+    $(".TimeOuts").animate({"background-color":'pink'}, 500);
+    $("#StatusBar>a").html("Lineup");
+    $("#StatusBar").show();
   } else {
-	var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
-	var statusString = "Error";
-	if (!timeoutOwner) {
-	  // It's an OTO
-	  statusString = "Timeout";
-	  $(".TimeOuts").animate({"background-color":'pink'}, 500);
-	} else {
-	  // It's owned. It'll either be an OR or a TTO.
-	  // Set the background of the owning team to red.
-	  $("#Team"+timeoutOwner+"TimeOuts").animate({"background-color":'red'}, 500);
-	  if ($sb("ScoreBoard.OfficialReview").$sbGet() == "true") {
-		  statusString = "Official Review";
-	  } else {
-		  statusString = "Team Timeout";
-	  }
-	}
-	$("#StatusBar>a").html(statusString);
-	$("#StatusBar").show();
+    var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
+    var statusString = "Error";
+    if (!timeoutOwner) {
+      // It's an OTO
+      statusString = "Timeout";
+      $(".TimeOuts").animate({"background-color":'pink'}, 500);
+    } else {
+      // It's owned. It'll either be an OR or a TTO.
+      // Set the background of the owning team to red.
+      $("#Team"+timeoutOwner+"TimeOuts").animate({"background-color":'red'}, 500);
+      if ($sb("ScoreBoard.OfficialReview").$sbGet() == "true") {
+        statusString = "Official Review";
+      } else {
+        statusString = "Team Timeout";
+      }
+    }
+    $("#StatusBar>a").html(statusString);
+    $("#StatusBar").show();
   }
 }
