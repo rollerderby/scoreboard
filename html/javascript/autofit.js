@@ -91,6 +91,8 @@ _autoFit = {
     else if (1 < contents.length)
       contents = container.wrapInner("<span>").children().addClass("autoFitTextWrapper");
 
+    container.css({ marginTop: "0px", marginBottom: "0px" });
+
     var params = {
       min: (options.min || 0.1),
       max: (options.max || 100),
