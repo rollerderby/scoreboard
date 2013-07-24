@@ -9,7 +9,6 @@
  */
 
 /* Change this background color to whatever your overlay chromakey is set to */
-#Overlay { background: #0f0; }
 body { background-color: #0f0 }
 
 img { position: absolute; }
@@ -21,8 +20,7 @@ a {
   font-weight: bold;
 }
 
-#StatusBar { left: 25%; right: 25%; top: 11%; text-align: center; }
-#StatusBar>a { height: 15%; width: 100%; font-size: 7%}
+#StatusBar { left: 25%; right: 25%; top: 11%; text-align: center; font-size: 7%; }
 #TopBar { left: 10%; right: 10%; top: 1%; bottom: 91%; text-align: center; }
 
 #ClockPeriodNumber { top: 0%; height: 100%; left: 12%; right: 75%; }
@@ -62,8 +60,6 @@ a {
 #Team1Logo { left: 0%; right: 90%; }
 #Team2Logo { left: 90%; right: 0% }
 
-
-#Overlay { width: 100%; height: 100%; z-index: -1; }
 
 /* Use CSS instead of the background image */
 .circle {
