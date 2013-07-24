@@ -19,7 +19,6 @@ a {
   position: relative;
   font-family: 'LiberationSans',helvetica;
   font-weight: bold;
-  display: block;
 }
 
 #StatusBar { left: 25%; right: 25%; top: 11%; text-align: center; }
