@@ -44,17 +44,23 @@ $sb(function() {
   };
 
   $.each( [ "1", "2" ], function(i, team) {
-    if($sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbGet()) {
-      $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a", {
-    	sbelement: { autoFitText: true }
-      }); 
-	} else {
-      $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a", {
-        sbelement: { autoFitText: true }
-      });
-	}
+    $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a.AlternateName", {
+      sbelement: { autoFitText: true }
+    });
+    $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name", {
+      sbelement: { autoFitText: true }
+    });
     $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a", {
       sbelement: { autoFitText: true }
+    });
+    $sb("ScoreBoard.Team("+team+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
+      if ($sb(node).$sbId == "overlay")
+        $sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event, val) {
+          $("#Team"+team+"Name").toggleClass("AlternateName", ($.trim(val) != "")).data("AutoFit").call();
+        });
+    }, function(event, node) {
+      if ($sb(node).$sbId == "overlay")
+        $("#Team"+team+"Name").removeClass("AlternateName").data("AutoFit").call();
     });
   });
 
