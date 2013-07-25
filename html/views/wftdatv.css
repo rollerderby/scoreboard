@@ -10,3 +10,23 @@
 
 /* Change this background color to whatever your overlay chromakey is set to */
 body { background-color: #0f0 }
+
+img,div { position: absolute; }
+
+a {
+  position: relative;
+  font-family: 'LiberationSans',helvetica;
+  font-weight: bold;
+  font-size: 2em;
+}
+
+/* FIXME - Remove this. */
+#mainDiv { width: 99%; height: 99% }
+
+#BottomBar { left: 5%; right: 5%; top: 85.5%; bottom: 6.5%; text-align: center; }
+#Team1 { top: 0%; height: 100%; left: 0%; right: 80%; }
+#Team2 { top: 0%; height: 100%; left: 80%; right: 0%; }
+
+
+
+#status { top 0%; height 100%; left: 33%; right: 33%; }
