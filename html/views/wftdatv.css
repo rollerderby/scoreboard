@@ -27,6 +27,23 @@ a {
 #Team1 { top: 0%; height: 100%; left: 0%; right: 80%; }
 #Team2 { top: 0%; height: 100%; left: 80%; right: 0%; }
 
-
-
 #status { top 0%; height 100%; left: 33%; right: 33%; }
+
+
+.parallelogramLeft{
+     border:2px solid #000;
+     background:pink;
+     transform: skew(20deg);
+     -o-transform: skew(20deg);
+     -moz-transform: skew(20deg);
+     -webkit-transform: skew(20deg);
+}
+
+.parallelogramRight{
+     border:2px solid #000;
+     background:pink;
+     transform: skew(-20deg);
+     -o-transform: skew(-20deg);
+     -moz-transform: skew(-20deg);
+     -webkit-transform: skew(-20deg);
+}
