@@ -50,7 +50,7 @@ _include("/external/jquery-plugins/fileupload/jquery.fileupload.js");
  * http://www.fontsquirrel.com/fontface/generator
  */
 _include("/fonts", [
-  "liberationsans/stylesheet.css" ]);
+  "liberationsans/stylesheet.css", "roboto/stylesheet.css" ]);
 
 /* Core functionality */
 _include("/javascript", [
