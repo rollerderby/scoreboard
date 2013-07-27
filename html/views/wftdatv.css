@@ -1,6 +1,6 @@
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- * Copyright (C) 2013 Rob Thomas <xrobau@gmail.com>
+ * Copyright (C) 2013 Damian Georgiou <bachomp@gmail.com>
  *
  * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
  * The CRG ScoreBoard is licensed under either the GNU General Public
@@ -9,41 +9,295 @@
  */
 
 /* Change this background color to whatever your overlay chromakey is set to */
-body { background-color: #0f0 }
+body { background-color: #00ff00; }
 
 img,div { position: absolute; }
 
+#main-container {
+	top: 83.5%;
+	width: 100%; 
+}
+
 a {
   position: relative;
-  font-family: 'LiberationSans',helvetica;
-  font-weight: bold;
-  font-size: 2em;
+  font-family: 'Eurostile','Roboto', helvetica;
+  font-weight: bold; 
+  text-shadow: 2px 2px 2px #ffffff; 
 }
 
-/* FIXME - Remove this. */
-#mainDiv { width: 99%; height: 99% }
+#team1-score-container .team-name { margin-right: 20px; }
+#team2-score-container .team-name { margin-left: 20px; }
 
-#BottomBar { left: 5%; right: 5%; top: 85.5%; bottom: 6.5%; text-align: center; }
-#Team1 { top: 0%; height: 100%; left: 0%; right: 80%; }
-#Team2 { top: 0%; height: 100%; left: 80%; right: 0%; }
+#team1 { margin-right: -20px; }
+#team2 { margin-left: 3px; }
 
-#status { top 0%; height 100%; left: 33%; right: 33%; }
-
-
-.parallelogramLeft{
-     border:2px solid #000;
-     background:pink;
-     transform: skew(20deg);
-     -o-transform: skew(20deg);
-     -moz-transform: skew(20deg);
-     -webkit-transform: skew(20deg);
+#team1,
+#team2 {	
+    width: 300px;
 }
 
-.parallelogramRight{
-     border:2px solid #000;
-     background:pink;
-     transform: skew(-20deg);
-     -o-transform: skew(-20deg);
-     -moz-transform: skew(-20deg);
-     -webkit-transform: skew(-20deg);
+#logo { 
+	margin-top: -20px;
+	margin-left: -145px;
+	width: 95px;
+	height: 95px;
+	z-index: 1000 !important;	
+}
+
+#status { 
+	width: 150px; 
+	height: 53px; 
+	margin-left: -13px; 
+	margin-right: -10px; 
+	white-space: nowrap; 
+	margin-top: -5px; 
+	float: left; 
+}
+
+#status-left {
+	text-align: left;
+	margin-top: 8px;
+}
+
+#status-right {
+	text-align: right;
+	margin-top: 8px;
+}
+
+#jam-number,
+#period {
+	font-size: 1.3em;
+}
+
+#time,
+#clock {
+	font-size: 2.0em;
+}
+
+.parallelogram-left,
+.parallelogram-right {
+    border:solid #BE969F;
+    border-width: 5px 8px 5px 8px;
+    background: pink url('bg.png');
+    padding: 0px 20px 0px 20px;
+    white-space: nowrap;
+    position:relative;
+    margin: 0px;
+    
+    
+}
+
+.parallelogram-left {
+     transform: skew(30deg);
+     -o-transform: skew(30deg);
+     -moz-transform: skew(30deg);
+     -webkit-transform: skew(30deg);
+}
+
+.parallelogram-right {
+     transform: skew(-30deg);
+     -o-transform: skew(-30deg);
+     -moz-transform: skew(-30deg);
+     -webkit-transform: skew(-30deg);
+}
+
+
+#team1-score-container,
+#team2-score-container {
+	padding: 0px;
+	margin: 0px;
+	white-space: nowrap;
+	font-size: 2em;
+	text-align: center;
+	text-shadow: 2px 2px 2px #ffffff;
+}
+
+#status-left,
+#team1-score-container {
+     transform: skew(30deg) !important;
+     -o-transform: skew(30deg) !important;
+     -moz-transform: skew(30deg) !important;
+     -webkit-transform: skew(30deg) !important;	
+}
+
+#status-right,
+#team2-score-container {
+     transform: skew(-30deg) !important;
+     -o-transform: skew(-30deg) !important;
+     -moz-transform: skew(-30deg) !important;
+     -webkit-transform: skew(-30deg) !important;	
+}
+
+
+
+
+
+#timeouts-left {
+	height: 30px;
+	margin-right: 50px;
+	position: relative;
+	float: right;
+}
+
+
+#timeouts-right {
+	height: 30px;
+	margin-left: 50px;
+}
+
+
+#trapezoid-1 {
+	border-top:10px solid #4B2A31;
+	border-left:6px solid transparent;
+	border-right:6px solid transparent;
+	padding:0 2px 0 0;
+	height:0;
+	width:20px;
+	position: relative;
+	zmargin: 2em auto;
+	left: 6px;
+	white-space: nowrap;
+    float: left;
+    position:relative;
+}
+
+#trapezoid-1:before {
+	border-top:17px solid #BE969F;
+	border-left:10px solid transparent;
+	border-right:10px solid transparent;
+	padding:0 8px 0 0;
+	height:0;
+	width:25px; 
+	position: absolute;
+	top: -13px;
+	left: -15px;
+	content: "";
+	z-index: -1;
+}
+
+
+#trapezoid-2 {
+	border-bottom:10px solid #4B2A31;
+	border-left:6px solid transparent;
+	border-right:6px solid transparent;
+	padding:0 2px 0 0;
+	height:0;
+	width:20px;
+	position: relative;
+	zmargin: 2em auto;
+	left: 6px;
+	white-space: nowrap;
+    float: left;
+    position:relative;
+}
+
+#trapezoid-2:before {
+	border-bottom:17px solid #BE969F;
+	border-left:10px solid transparent;
+	border-right:10px solid transparent;
+	padding:0 8px 0 0;
+	height:0;
+	width:25px; 
+	position: absolute;
+	top: -3px;
+	left: -15px;
+	content: "";
+	z-index: -1;
+}
+
+#parallelogram-or-left {
+	border:solid #BE969F;
+    border-width: 5px 7px 5px 7px;
+    background:  pink;
+    height: 9px;
+    width: 25px;
+	transform: skew(-40deg) !important;
+     -o-transform: skew(-40deg) !important;
+     -moz-transform: skew(-40deg) !important;
+     -webkit-transform: skew(-40deg) !important;
+	white-space: nowrap;
+    float: left;
+    position:relative;
+    margin-top: -5px;
+}
+
+#parallelogram-or-right {
+	border:solid #BE969F;
+    border-width: 5px 7px 5px 7px;
+    background:  pink;
+    height: 9px;
+    width: 25px;
+	transform: skew(40deg) !important;
+     -o-transform: skew(40deg) !important;
+     -moz-transform: skew(40deg) !important;
+     -webkit-transform: skew(40deg) !important;
+	white-space: nowrap;
+    float: left;
+    position:relative;
+    margin-top: -5px;
+    margin-right: -7px;
+}
+
+#parallelogram-lead-left {
+	border-width: 5px 7px 5px 7px;
+    background:  white;
+    height: 11px;
+    width: 35px;
+	transform: skew(-40deg) !important;
+     -o-transform: skew(-40deg) !important;
+     -moz-transform: skew(-40deg) !important;
+     -webkit-transform: skew(-40deg) !important;
+	white-space: nowrap;
+    float: left;
+    position:relative;
+    margin-top: -6px;
+    font-size: 10px;
+    top: 4px;
+    zleft: -2px;
+    padding: 2px;
+    text-align:center;
+    color: white;
+    background: -webkit-linear-gradient(left, transparent, #000000);
+    background: -moz-linear-gradient(left, transparent, #000000);
+    background: -o-linear-gradient(left, transparent, #000000);
+}
+
+#parallelogram-lead-left p {
+	margin-top: -1px;
+	transform: skew(40deg) !important;
+     -o-transform: skew(40deg) !important;
+     -moz-transform: skew(40deg) !important;
+     -webkit-transform: skew(40deg) !important;
+}
+
+#parallelogram-lead-right {
+	border-width: 5px 7px 5px 7px;
+    background:  white;
+    height: 11px;
+    width: 35px;
+	transform: skew(40deg) !important;
+     -o-transform: skew(40deg) !important;
+     -moz-transform: skew(40deg) !important;
+     -webkit-transform: skew(40deg) !important;
+	white-space: nowrap;
+    float: left;
+    position:relative;
+    margin-top: -6px;
+    font-size: 10px;
+    top: 4px;
+    zleft: -2px;
+    padding: 2px;
+    text-align:center;
+    color: white;
+    background: -webkit-linear-gradient(left, #000000, transparent);
+    background: -moz-linear-gradient(left, #000000, transparent);
+    background: -o-linear-gradient(left, #000000, transparent);
+}
+
+#parallelogram-lead-right p {
+	margin-top: -1px;
+	transform: skew(-40deg) !important;
+     -o-transform: skew(-40deg) !important;
+     -moz-transform: skew(-40deg) !important;
+     -webkit-transform: skew(-40deg) !important;
 }
