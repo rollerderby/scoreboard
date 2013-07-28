@@ -16,9 +16,9 @@ function setupMainDiv(div) {
 
 	_crgUtils.bindAndRun($(window), "resize", function() {
 	  var aspect16x9 = _windowFunctions.get16x9Dimensions();
-	  div.css(aspect16x9).css("fontSize", aspect16x9.height/30); // Font scaling. 
+	  div.css(aspect16x9).css("fontSize", aspect16x9.height/30); // Font scaling.
 	  });
-} 
+}
 
 $sb(function() {
 	  setupMainDiv($("#mainDiv"));
@@ -31,5 +31,3 @@ $sb(function() {
 		    });
 	  });
 });
-
-	

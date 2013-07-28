@@ -27,35 +27,35 @@ a {
 #Team2 { top: 0%; height: 100%; left: 70%; right: 0%; z-index: 10}
 
 
-  
-#Team1 .TeamName { 
-  left: 5%;  
+
+#Team1 .TeamName {
+  left: 5%;
   transform: skew(20deg);
   -o-transform: skew(20deg);
   -moz-transform: skew(20deg);
   -webkit-transform: skew(20deg);
  }
-#Team1 .TeamScore { 
+#Team1 .TeamScore {
   left: 70%;
   transform: skew(20deg);
   -o-transform: skew(20deg);
   -moz-transform: skew(20deg);
-  -webkit-transform: skew(20deg); 
+  -webkit-transform: skew(20deg);
 }
 
-#Team2 .TeamName { 
-  left: 35%;  
+#Team2 .TeamName {
+  left: 35%;
   transform: skew(-20deg);
   -o-transform: skew(-20deg);
   -moz-transform: skew(-20deg);
   -webkit-transform: skew(-20deg);
  }
-#Team2 .TeamScore { 
+#Team2 .TeamScore {
   left: 5%;
   transform: skew(-20deg);
   -o-transform: skew(-20deg);
   -moz-transform: skew(-20deg);
-  -webkit-transform: skew(-20deg); 
+  -webkit-transform: skew(-20deg);
 }
 
 #middle { top 0%; height: 100%; left: 18%; right: 18%; border-width: 0.4em 0 0.4em 0; border-style: solid; border-color: #d07fae; background: #e7b9d3; z-index: 5; }

@@ -13,8 +13,8 @@ package com.carolinarollergirls.scoreboard.xml.policy;
 import com.carolinarollergirls.scoreboard.defaults.DefaultPolicyModel;
 
 public class PagePolicy_overlayhtml extends DefaultPolicyModel {
-  public PagePolicy_overlayhtml() {  
-	super(ID, NAME, DESCRIPTION);    
+  public PagePolicy_overlayhtml() {
+	super(ID, NAME, DESCRIPTION);
 	addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, BLACK_BACKGROUND, "Boolean", String.valueOf(true)));
   }
 
