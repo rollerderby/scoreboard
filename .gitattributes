@@ -1,0 +1,2 @@
+# This should force git to do CRLF->LF conversion on checkin
+* text=auto
