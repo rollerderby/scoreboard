@@ -71,7 +71,7 @@ $sb(function() {
   $sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number", {
     sbelement: { autoFitText: true, autoFitTextContainer: "div" }
   });
-  
+
   $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number", {
 	    sbelement: { autoFitText: true, autoFitTextContainer: "div" }
   });
@@ -83,7 +83,7 @@ $sb(function() {
         convert: _timeConversions.msToMinSec
      } });
   };
-  
+
   $.each( [ "Jam", "Lineup", "Timeout", "Intermission" ], function(i, clock) {
     setupClock(clock);
     $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockJLTI);
@@ -91,7 +91,7 @@ $sb(function() {
   setupClock("Period");
   $sb("ScoreBoard.Clock(Period).Running").$sbBindAndRun("sbchange", showClockP);
   $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("sbchange", showClockP);
-  
+
   // Team Timeouts.
   $.each( [ 1, 2 ], function(i, team) {
     $sb("ScoreBoard.Team("+team+").Timeouts").$sbElement("#Team"+team+"TimeOuts>a", { sbelement: { autoFitText: true } });
@@ -101,7 +101,7 @@ $sb(function() {
   $.each( [ 1, 2 ], function(i, team) {
 	  $sb("ScoreBoard.Team("+team+").Logo").$sbElement("#Team"+team+"Logo>img", { sbelement: { autoFitText: true, autoFitTextContainer: "img" } });
   });
-  
+
   // Disable or Enable Logos
   $sb("ScoreBoard.Policy(PagePolicy_overlay.html).Enabled").$sbBindAndRun("sbchange", function(x, state) {
 	  // Note that 'state' is a string, not a Bool.
@@ -115,7 +115,7 @@ $sb(function() {
 		  $(".logos").hide(100);
 	  }
   });
-  
+
   // Toggle black background on logos
   $sb("Scoreboard.Policy(PagePolicy_overlay.html).Parameter(Black Background).Value").$sbBindAndRun("sbchange", function(x, state) {
 	  if (state == "true") {
@@ -124,25 +124,24 @@ $sb(function() {
 		  $(".logos").css("background-color", "#0f0");
 	  }
   });
-  
+
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.TimeoutOwner")
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
     .add($sb("ScoreBoard.Clock(Lineup).Running"))
     .add($sb("ScoreBoard.Clock(Intermission).Running"))
     .add($sb("ScoreBoard.OfficialReview"));
-  
+
   _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
 });
 
 
 function manageStatusBar() {
-	
 	// This is called when pretty much anything changes.
-	// Update the status string 
+	// Update the status string
 	var statusString = "";
 	// ... if a timeout is running
-	if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
+	if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) {
 		// Who's timeout is it?
 		var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
 		if (!timeoutOwner) {  // It's an OTO
@@ -151,17 +150,17 @@ function manageStatusBar() {
 			statusSTrimg = "Offical Rev";
 		} else {
 			statusString = "Team T/O";
-		}			
+		}
 	}
-	
+
 	// ... Is it lineup?
 	if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
 		statusString = "Lineup";
 	}
-	
+
 	// Update the status bar.
 	$("#StatusBar>a").html(statusString);
-	
+
 	// Update the Timeout/OR images
 	$.each( [ 1, 2 ], function(x, i) {
 		var thisTeam = $sb("ScoreBoard.Team("+i+")");
@@ -174,7 +173,7 @@ function manageStatusBar() {
 			// Show their OR Box
 			$(pageHTMLID+"OR").show();
 		}
-		
+
 		// How's their timeouts looking?
 		var numTOs = thisTeam.$sb("Timeouts").$sbGet();
 		for ( var timeout = 1; timeout <= 3; timeout++ ) {
@@ -202,4 +201,4 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
     next();
   };
   doPulse($.noop);
-}  
+}
