@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
  *
@@ -200,3 +199,4 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
   };
   doPulse($.noop);
 }  
+

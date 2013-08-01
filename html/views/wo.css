@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2008-2013 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
  *
@@ -9,10 +8,6 @@
  */
 
 /* Change this background color to whatever your overlay chromakey is set to */
-
-
-
-
 body { background-color: #0f0; } 
 
 img { position: absolute; }
