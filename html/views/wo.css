@@ -56,6 +56,7 @@ a {
 #StatusBar { left: 25%; right: 25%; top: 92%; bottom: 2%; text-align: center; font-size: 2.75%; z-index: 300; }
 #TopBar { left: 0%; width: 100%; top: 0%; height: 100%; text-align: center; z-index: 300; }
 
+#StatusBar a { color: white; }
 #ClockPeriodNumber { top: 86%; height: 5%; left: 53.25%; width: 4%; text-align: left; }
 #ClockPeriodTime { top: 84.5%; height: 7%; left: 56.5%; width: 25%; text-align: left; }
 #ClockPeriodTime:not(.ShowPeriod) { display: none; }
@@ -95,25 +96,6 @@ a {
 #Team1Logo,#Team2Logo { bottom: 0; height: 100%; }
 #Team1Logo { left: 0%; right: 90%; }
 #Team2Logo { left: 90%; right: 0% }
-
-
-/* Use CSS instead of the background image */
-.circle {
-    -webkit-border-radius: 999px;
-    -moz-border-radius: 999px;
-    border-radius: 999px;
-}
-
-.redBorder {
-	width: 1.2em;
-	height: 1em;
-	background: pink;
-	border: .25em solid red;
-}
-
-.noBorder {
-	background: pink;
-}
 
 .noBack {
 	background-color:rgba(0,255,0,0.0);
