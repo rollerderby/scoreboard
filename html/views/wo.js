@@ -137,39 +137,50 @@ $sb(function() {
 
 
 function manageStatusBar() {
-  // Display status bar in Lineup, Timeout, TTO and OR.
-  if ($sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue()) {
-    // Make sure that the timeouts are back to pink
-    $(".TimeOuts").animate({"background-color":'pink'}, 500);
-    $("#StatusBar").hide();
-  } else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue()) {
-    // You should NEVER go from a Penalty to Lineup. But, just in case someone does...
-    $(".TimeOuts").animate({"background-color":'pink'}, 500);
-    $("#StatusBar>a").html("Lineup");
-    $("#StatusBar").show();
-  } else if ($sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue()) {
-    var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
-    var statusString = "Error";
-    if (!timeoutOwner) {
-      // It's an OTO
-      statusString = "Timeout";
-      $(".TimeOuts").animate({"background-color":'pink'}, 500);
-    } else {
-      // It's owned. It'll either be an OR or a TTO.
-      // Set the background of the owning team to red.
-      $("#Team"+timeoutOwner+"TimeOuts").animate({"background-color":'red'}, 500);
-      if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
-        statusString = "Off Review";
-      } else {
-        statusString = "Team T/O";
-      }
-    }
-    $("#StatusBar>a").html(statusString);
-    $("#StatusBar").show();
-  } else {
-    $(".TimeOuts").animate({"background-color":'pink'}, 500);
-    $("#StatusBar").hide();
-  }
+	
+	// This is called when pretty much anything changes.
+	// Update the status string 
+	var statusString = "";
+	// ... if a timeout is running
+	if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
+		// Who's timeout is it?
+		var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
+		if (!timeoutOwner) {  // It's an OTO
+			statusString = "Timeout";
+		} else if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
+			statusSTrimg = "Offical Rev";
+		} else {
+			statusString = "Team T/O";
+		}			
+	}
+	// Update the status bar.
+	$("#StatusBar>a").html(statusString);
+	
+	// Update the Timeout/OR images
+	$.each( [ 1, 2 ], function(x, i) {
+		var thisTeam = $sb("ScoreBoard.Team("+i+")");
+		var pageHTMLID = "#WftdaT"+i;
+		// Have they one OR?
+		console.log("HERE!");
+		if (thisTeam.$sb("OfficialReviews").$sbGet() == 0) {
+			console.log("Here withOUT an OR for team "+i+" using "+pageHTMLID);
+			// Hide it
+			$(pageHTMLID+"OR").hide();
+		} else {
+			// Show their OR Box
+			console.log("Here withOUT an OR for team "+i);
+			$(pageHTMLID+"OR").show();
+		}
+		
+		// How's their timeouts looking?
+		var numTOs = thisTeam.$sb("Timeouts").$sbGet();
+		for ( var timeout = 1; timeout <= 3; timeout++ ) {
+			if (numTOs >= timeout )
+				$(pageHTMLID+"T"+timeout).show();
+			else
+				$(pageHTMLID+"T"+timeout).hide();
+		}
+	});
 }
 
 ////////////
