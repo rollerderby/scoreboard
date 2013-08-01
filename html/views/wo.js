@@ -159,9 +159,9 @@ function manageStatusBar() {
       // Set the background of the owning team to red.
       $("#Team"+timeoutOwner+"TimeOuts").animate({"background-color":'red'}, 500);
       if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
-        statusString = "Official Review";
+        statusString = "Off Review";
       } else {
-        statusString = "Team Timeout";
+        statusString = "Team T/O";
       }
     }
     $("#StatusBar>a").html(statusString);
