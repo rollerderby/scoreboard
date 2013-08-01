@@ -1,0 +1,120 @@
+
+/**
+ * Copyright (C) 2008-2013 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
+ *
+ * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ * The CRG ScoreBoard is licensed under either the GNU General Public
+ * License version 3 (or later), or the Apache License 2.0, at your option.
+ * See the file COPYING for details.
+ */
+
+/* Change this background color to whatever your overlay chromakey is set to */
+
+
+
+
+body { background-color: #0f0; } 
+
+img { position: absolute; }
+div { position: absolute; }
+
+#WftdaMain { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:155; } 
+#WftdaT1LD { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:150; } 
+#WftdaT1OR { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:145; } 
+#WftdaT1T1 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:140; } 
+#WftdaT1T2 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:135; } 
+#WftdaT1T3 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:130; } 
+#WftdaT2LD { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:125; } 
+#WftdaT2OR { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:120; } 
+#WftdaT2T1 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:115; } 
+#WftdaT2T2 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:110; } 
+#WftdaT2T3 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:105; } 
+#WftdaInfo { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:100; } 
+
+
+#mainDiv { width: 100% !important; height: 100% !important; left: 0% !important; } */
+/* #mainDiv { width: 960px !important; height: 540px !important; left: 0% !important; } */
+#mainDiv div { position: absolute; }
+#mainDiv>div.View { width: 100%; height: 100%; }
+#mainDiv>div.View:not(.Show) { opacity: 0; }
+
+
+/*
+a {
+  position: relative;
+  font-family: 'LiberationSans',helvetica;
+  font-weight: bold;
+}
+*/
+
+a {
+  position: relative;
+  font-family: 'robotobold';
+  font-weight: bold;
+}
+
+#StatusBar { left: 25%; right: 25%; top: 92%; bottom: 2%; text-align: center; font-size: 2.75%; z-index: 300; }
+#TopBar { left: 0%; width: 100%; top: 0%; height: 100%; text-align: center; z-index: 300; }
+
+#ClockPeriodNumber { top: 86%; height: 5%; left: 53.25%; width: 4%; text-align: left; }
+#ClockPeriodTime { top: 84.5%; height: 7%; left: 56.5%; width: 25%; text-align: left; }
+#ClockPeriodTime:not(.ShowPeriod) { display: none; }
+
+#ClockIntermissionTime { top: 84.5%; height: 7%; left: 56.25%; width: 25%; text-align: left; }
+#ClockIntermissionTime:not(.ShowIntermission) { display: none; }
+
+#ClockJamTime { top: 84.5%; height: 7%; left: 40.75%; width: 25%; text-align: left; }
+#ClockJamTime:not(.ShowJam) { display: none; }
+
+#ClockLineupTime { top: 84.5%; height: 7%; left: 40.75%; width: 25%; text-align: left; }
+#ClockLineupTime:not(.ShowLineup) { display: none; }
+
+#ClockTimeoutTime { top: 84.5%; height: 7%; left: 40.75%; width: 6%; text-align: left}
+#ClockTimeoutTime:not(.ShowTimeout) { display: none; }
+
+#ClockJamNumber { top: 86%; height: 5%; left: 36%; width: 25%; text-align: left; }
+
+
+
+#BottomBar { left: 0%; width: 100%; top 0%; height: 100%; text-align: center; z-index: 300; }
+
+#Team1TimeOuts { top: 0%; height: 100%; left: 0%; right: 99%; display: none; }
+#Team1Name { top: 85.5%; height: 6%; left: 15%; width: 25%; text-align: left; }
+#Team1Score { top: 84.25%; height: 7.5%; right: 66%; width: 25%; text-align: right; }
+
+#Team2TimeOuts { top: 36%; height: %; left: 63%; width: 1%; display: none; }
+#Team2Name { top: 85.5%; height: 6%; right: 15%; width: 25%; text-align: right; }
+#Team2Score { top: 84.25%; height: 7.5%; left: 66%; width: 25%; text-align: left; }
+
+#Team1Name.AlternateName a.Name { display: none; }
+#Team1Name:not(.AlternateName) a.AlternateName { display: none; }
+#Team2Name.AlternateName a.Name { display: none; }
+#Team2Name:not(.AlternateName) a.AlternateName { display: none; }
+
+#BottomBarFullWidth { top: 85.5%; bottom: 0; width: 100%; z-index: 300; }
+#Team1Logo,#Team2Logo { bottom: 0; height: 100%; }
+#Team1Logo { left: 0%; right: 90%; }
+#Team2Logo { left: 90%; right: 0% }
+
+
+/* Use CSS instead of the background image */
+.circle {
+    -webkit-border-radius: 999px;
+    -moz-border-radius: 999px;
+    border-radius: 999px;
+}
+
+.redBorder {
+	width: 1.2em;
+	height: 1em;
+	background: pink;
+	border: .25em solid red;
+}
+
+.noBorder {
+	background: pink;
+}
+
+.noBack {
+	background-color:rgba(0,255,0,0.0);
+}
