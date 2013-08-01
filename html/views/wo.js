@@ -167,14 +167,11 @@ function manageStatusBar() {
 		var thisTeam = $sb("ScoreBoard.Team("+i+")");
 		var pageHTMLID = "#WftdaT"+i;
 		// Have they one OR?
-		console.log("HERE!");
 		if (thisTeam.$sb("OfficialReviews").$sbGet() == 0) {
-			console.log("Here withOUT an OR for team "+i+" using "+pageHTMLID);
 			// Hide it
 			$(pageHTMLID+"OR").hide();
 		} else {
 			// Show their OR Box
-			console.log("Here withOUT an OR for team "+i);
 			$(pageHTMLID+"OR").show();
 		}
 		
