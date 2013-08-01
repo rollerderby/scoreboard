@@ -153,6 +153,12 @@ function manageStatusBar() {
 			statusString = "Team T/O";
 		}			
 	}
+	
+	// ... Is it lineup?
+	if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
+		statusString = "Lineup";
+	}
+	
 	// Update the status bar.
 	$("#StatusBar>a").html(statusString);
 	
