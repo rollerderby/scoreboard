@@ -98,35 +98,48 @@ $sb(function() {
   });
 
   // Statusbar text.
-  var statusTriggers = $sb("ScoreBoard.TimeoutOwner")
+  var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
     .add($sb("ScoreBoard.Clock(Lineup).Running"))
     .add($sb("ScoreBoard.Clock(Intermission).Running"))
     .add($sb("ScoreBoard.OfficialReview"));
-  
   _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
+  
+  // Timeout images
+  var timeoutTriggers = $sb("ScoreBoard.Team(1).OfficialReviews")
+  	.add($sb("ScoreBoard.Team(1).Timeouts"))
+  	.add($sb("ScoreBoard.Team(2).OfficialReviews"))
+  	.add($sb("ScoreBoard.Team(2).Timeouts"))
+  	.add($sb("ScoreBoard.TimeoutOwner"));
+  _crgUtils.bindAndRun(timeoutTriggers, "sbchange", function() { manageTimeoutImages(); });
+  
+  // Lead Changes
+  var leadTriggers = $sb("ScoreBoard.Team(1).LeadJammer")
+  	.add($sb("ScoreBoard.Team(2).LeadJammer"));
+  _crgUtils.bindAndRun(leadTriggers, "sbchange", function() { manageLeadImages(); });
+  
 });
 
 
+
+
 function manageStatusBar() {
-	
-	// This is called when pretty much anything changes.
-	// Update the status string 
+	// This is called when pretty much anything changes,  and updates the status string 
 	var statusString = "";
-	// ... if a timeout is running
+	// Is a timeout is running?
 	if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
 		// Who's timeout is it?
 		var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
 		if (!timeoutOwner) {  // It's an OTO
 			statusString = "Timeout";
 		} else if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
-			statusSTrimg = "Offical Rev";
+			statusString = "Off. Review";
 		} else {
 			statusString = "Team T/O";
 		}			
 	}
 	
-	// ... Is it lineup?
+	// Is it lineup?
 	if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
 		statusString = "Lineup";
 	}
@@ -134,7 +147,10 @@ function manageStatusBar() {
 	// Update the status bar.
 	$("#StatusBar>a").html(statusString);
 	
-	// Update the Timeout/OR images
+}
+
+function manageTimeoutImages() {
+	// Called when something changes in relation to timeouts.
 	$.each( [ 1, 2 ], function(x, i) {
 		var thisTeam = $sb("ScoreBoard.Team("+i+")");
 		var pageHTMLID = "#WftdaT"+i;
@@ -158,6 +174,15 @@ function manageStatusBar() {
 	});
 }
 
+function manageLeadImages() {
+	// Lead jammer has been updated.
+	$.each( [ 1, 2 ], function(x, i) {
+		if ($sb("ScoreBoard.Team("+i+").LeadJammer").$sbIsTrue())
+			$("#WftdaT"+i+"LD").animate({ height: "100%", duration: 10000 });
+		else
+			$("#WftdaT"+i+"LD").animate({ height: "95%", duration: 10000 });
+	});	
+}
 ////////////
 // Animation
 ////////////
