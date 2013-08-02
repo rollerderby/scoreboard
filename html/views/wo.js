@@ -129,6 +129,8 @@ $sb(function() {
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
     .add($sb("ScoreBoard.Clock(Lineup).Running"))
     .add($sb("ScoreBoard.Clock(Intermission).Running"))
+    .add($sb("ScoreBoard.Clock(Intermission).Number"))
+    .add($sb("ScoreBoard.TimeoutOwner"))
     .add($sb("ScoreBoard.OfficialReview"));
   _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
   
@@ -154,32 +156,28 @@ $sb(function() {
 function manageStatusBar() {
 	// This is called when pretty much anything changes,  and updates the status string 
 	var statusString = "Stand By";
-	// Is it jam?
+
 	if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
 		statusString = "Jam";
-	}
-
-	// Is a timeout is running?
-	if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
+	} else if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
 		// Who's timeout is it?
-		var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
-		if (!timeoutOwner) {  // It's an OTO
+		if (!$sb("ScoreBoard.TimeoutOwner").$sbGet()) {
 			statusString = "Timeout";
 		} else if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
 			statusString = "Review";
 		} else {
 			statusString = "Team T/O";
 		}			
-	}
-	
-	// Is it lineup?
-	if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
+	} else if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
 		statusString = "Lineup";
-	}
-
-	// This needs work, but perhaps it's the last piece?
-	if ($sb("Scoreboard.Clock(Intermission).Running").$sbIsTrue()) {
-		statusString = "I/M";
+	} else if ($sb("Scoreboard.Clock(Intermission).Running").$sbIsTrue()) {
+		var iNum = $sb("ScoreBoard.Clock(Intermission).Number").$sbGet();
+		if (iNum == 0)
+			statusString = "Prebout";
+		else if (iNum == 1)
+			statusString = "Halftime";
+		else if (iNum == 2)
+			statusString = "Final";
 	}
 
 	// WFTDA says always show the bar - show/hide stuff is now gone
