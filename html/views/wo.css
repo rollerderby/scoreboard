@@ -81,11 +81,9 @@ a {
 
 #BottomBar { left: 0%; width: 100%; top 0%; height: 100%; text-align: center; z-index: 300; }
 
-#Team1TimeOuts { top: 0%; height: 100%; left: 0%; right: 99%; display: none; }
 #Team1Name { top: 85.5%; height: 6%; left: 15%; width: 25%; text-align: left; }
 #Team1Score { top: 84.25%; height: 7.5%; right: 66%; width: 25%; text-align: right; }
 
-#Team2TimeOuts { top: 36%; height: %; left: 63%; width: 1%; display: none; }
 #Team2Name { top: 85.5%; height: 6%; right: 15%; width: 25%; text-align: right; }
 #Team2Score { top: 84.25%; height: 7.5%; left: 66%; width: 25%; text-align: left; }
 
