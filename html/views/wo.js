@@ -65,6 +65,26 @@ $sb(function() {
       if ($sb(node).$sbId == "overlay")
         $("#Team"+team+"Name").removeClass("AlternateName").data("AutoFit").call();
     });
+    
+    // Pulsate Timeouts if they're currently active. They'll be hidden in manageTimeoutImages
+    $.each( [ 1, 2, 3 ], function(x, i) {
+    	setupPulsate( 
+    			function() { return (
+    					$sb("ScoreBoard.Team(1).Timeouts").$sbGet() == i && 
+    					$sb("ScoreBoard.Timeout") &&
+    					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 1); },
+        			$("#WftdaT1T"+(i+1)),
+        			500
+        		);
+    	setupPulsate( 
+        		function() { return (
+        				$sb("ScoreBoard.Team(2).Timeouts").$sbGet() == i && 
+    					$sb("ScoreBoard.Timeout") &&
+    					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 2); },
+            		$("#WftdaT2T"+(i+1)),
+            		500
+            	);
+    });
   });
 
   $sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number", {
@@ -172,7 +192,7 @@ function manageTimeoutImages() {
 				$(pageHTMLID+"T"+timeout).show();
 			else
 				$(pageHTMLID+"T"+timeout).hide();
-		}
+		}		
 	});
 }
 
@@ -193,6 +213,7 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
   var doPulse = function(next) {
     if (pulseCondition())
       pulseTarget
+        .show()
         .animate({ opacity: 1 }, (pulsePeriod/2), "linear")
         .animate({ opacity: 0 }, (pulsePeriod/2), "linear");
     else
