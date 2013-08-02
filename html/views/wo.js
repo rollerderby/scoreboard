@@ -141,10 +141,11 @@ $sb(function() {
   _crgUtils.bindAndRun(timeoutTriggers, "sbchange", function() { manageTimeoutImages(); });
   
   // Lead Changes
-  var leadTriggers = $sb("ScoreBoard.Team(1).LeadJammer")
-  	.add($sb("ScoreBoard.Team(2).LeadJammer"));
-  _crgUtils.bindAndRun(leadTriggers, "sbchange", function() { manageLeadImages(); });
-  
+  $.each([ 1, 2 ], function(i, t) {
+    $sb("ScoreBoard.Team("+t+").LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
+      $("#WftdaT"+t+"LD").toggleClass("Show", isTrue(val), 1000);
+    });
+  });
 });
 
 
@@ -209,15 +210,6 @@ function manageTimeoutImages() {
 	});
 }
 
-function manageLeadImages() {
-	// Lead jammer has been updated.
-	$.each( [ 1, 2 ], function(x, i) {
-		if ($sb("ScoreBoard.Team("+i+").LeadJammer").$sbIsTrue())
-			$("#WftdaT"+i+"LD").animate({ height: "100%", duration: 10000 });
-		else
-			$("#WftdaT"+i+"LD").animate({ height: "95%", duration: 10000 });
-	});	
-}
 ////////////
 // Animation
 ////////////

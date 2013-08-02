@@ -13,25 +13,29 @@ body { background-color: #0f0; }
 img { position: absolute; }
 div { position: absolute; }
 
-#WftdaInfo { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:100; }
-#WftdaMain { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:110; }
+.Full { width: 100%; height: 100%; }
+
+#WftdaInfo { z-index:100; }
+#WftdaMain { z-index:110; }
 
 /* These slide behind the main bar */
-#WftdaT1LD { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:90; } 
-#WftdaT2LD { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:90; }
+#WftdaT1LD { z-index:90; right: 5%; }
+#WftdaT1LD.Show { right: 0%; }
+#WftdaT2LD { z-index:90; left: 5%; }
+#WftdaT2LD.Show { left: 0%; }
 
-/* These probably DON'T need to be on seperate z-indexes.. But if they want to change the logos, they may. */ 
+/* These probably DON'T need to be on seperate z-indexes.. But if they want to change the logos, they may. */
 
-#WftdaT1OR { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:200; } 
-#WftdaT1T1 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:190; } 
-#WftdaT1T2 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:180; } 
-#WftdaT1T3 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:170; } 
- 
-#WftdaT2OR { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:150; } 
-#WftdaT2T1 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:140; } 
-#WftdaT2T2 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:130; } 
-#WftdaT2T3 { position: absolute; visibility: visible; width: 100% ; height: 100% ; left: 0px; top: 0px; z-index:120; } 
- 
+#WftdaT1OR { z-index:200; }
+#WftdaT1T1 { z-index:190; }
+#WftdaT1T2 { z-index:180; }
+#WftdaT1T3 { z-index:170; }
+
+#WftdaT2OR { z-index:150; }
+#WftdaT2T1 { z-index:140; }
+#WftdaT2T2 { z-index:130; }
+#WftdaT2T3 { z-index:120; }
+
 
 
 /*
