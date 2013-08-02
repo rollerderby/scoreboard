@@ -127,6 +127,7 @@ $sb(function() {
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
+    .add($sb("ScoreBoard.TimeoutOwner"))
     .add($sb("ScoreBoard.Clock(Lineup).Running"))
     .add($sb("ScoreBoard.Clock(Intermission).Running"))
     .add($sb("ScoreBoard.OfficialReview"));
