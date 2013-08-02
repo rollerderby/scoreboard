@@ -13,8 +13,8 @@ function setupMainDiv(div) {
   div.css({ position: "fixed" });
 
   _crgUtils.bindAndRun($(window), "resize", function() {
-    var aspect4x3 = _windowFunctions.get4x3Dimensions();
-    div.css(aspect4x3).css("fontSize", aspect4x3.height);
+    var aspect16x9 = _windowFunctions.get16x9Dimensions();
+    div.css(aspect16x9).css("fontSize", aspect16x9.height);
   });
 }
 
@@ -90,12 +90,7 @@ $sb(function() {
   setupClock("Period");
   $sb("ScoreBoard.Clock(Period).Running").$sbBindAndRun("sbchange", showClockP);
   $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("sbchange", showClockP);
-  
-  // Team Timeouts.
-  $.each( [ 1, 2 ], function(i, team) {
-    $sb("ScoreBoard.Team("+team+").Timeouts").$sbElement("#Team"+team+"TimeOuts>a", { sbelement: { autoFitText: true } });
-  });
-
+ 
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
@@ -142,10 +137,18 @@ function manageStatusBar() {
 	if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
 		statusString = "Lineup";
 	}
+
+	// Show or Hide the status bar
+	if (statusString == "") {
+		// Remove text THEN hide the bar.
+		$("#StatusBar>a").html("");
+		$("#WftdaInfo").animate({  height: "95%" }, 500); 
+	} else {
+		// Show the bar THEN display the text
+		$("#WftdaInfo").animate( { height: "100%" }, 500, function () { $("#StatusBar>a").html(statusString); });
 	
-	// Update the status bar.
-	$("#StatusBar>a").html(statusString);
-	
+		
+	}
 }
 
 function manageTimeoutImages() {
