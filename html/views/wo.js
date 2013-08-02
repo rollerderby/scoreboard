@@ -67,14 +67,14 @@ $sb(function() {
     });
     
     // Pulsate Timeouts if they're currently active. They'll be hidden in manageTimeoutImages
-    $.each( [ 1, 2, 3 ], function(x, i) {
+    $.each( [ 0, 1, 2 ], function(x, i) {
     	setupPulsate( 
     			function() { return (
     					$sb("ScoreBoard.Team(1).Timeouts").$sbGet() == i && 
     					$sb("ScoreBoard.Timeout") &&
     					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 1); },
         			$("#WftdaT1T"+(i+1)),
-        			500
+        			1000
         		);
     	setupPulsate( 
         		function() { return (
@@ -82,7 +82,7 @@ $sb(function() {
     					$sb("ScoreBoard.Timeout") &&
     					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 2); },
             		$("#WftdaT2T"+(i+1)),
-            		500
+            		1000
             	);
     });
   });
@@ -214,8 +214,8 @@ function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
     if (pulseCondition())
       pulseTarget
         .show()
-        .animate({ opacity: 1 }, (pulsePeriod/2), "linear")
-        .animate({ opacity: 0 }, (pulsePeriod/2), "linear");
+        .animate({ opacity: 0 }, (pulsePeriod/2), "linear")
+        .animate({ opacity: 1 }, (pulsePeriod/2), "linear");
     else
       pulseTarget.delay(500);
     pulseTarget.queue(doPulse);
