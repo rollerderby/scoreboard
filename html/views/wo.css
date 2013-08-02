@@ -13,10 +13,9 @@ body { background-color: #0f0; }
 img { position: absolute; }
 div { position: absolute; }
 
-.Full { width: 100%; height: 100%; }
+.Full { width: 100%; top: 82.4%; }
 
-#WftdaInfo { z-index:100; }
-#WftdaMain { z-index:110; }
+#WftdaMain { z-index:100; }
 
 /* These slide behind the main bar */
 #WftdaT1LD { z-index:90; right: 5%; }
@@ -56,33 +55,33 @@ a {
 #TopBar { left: 0%; width: 100%; top: 0%; height: 100%; text-align: center; z-index: 300; }
 
 #StatusBar a { color: white; }
-#ClockPeriodNumber { top: 86%; height: 5%; left: 53.25%; width: 4%; text-align: left; }
+#ClockPeriodNumber { top: 86%; height: 5%; left: 53.5%; width: 4%; text-align: left; }
 #ClockPeriodTime { top: 84.5%; height: 7%; left: 56.5%; width: 25%; text-align: left; }
 #ClockPeriodTime:not(.ShowPeriod) { display: none; }
 
 #ClockIntermissionTime { top: 84.5%; height: 7%; left: 56.25%; width: 25%; text-align: left; }
 #ClockIntermissionTime:not(.ShowIntermission) { display: none; }
 
-#ClockJamTime { top: 84.5%; height: 7%; left: 40.75%; width: 25%; text-align: left; }
+#ClockJamTime { top: 84.5%; height: 7%; left: 40.45%; width: 6%; text-align: left; }
 #ClockJamTime:not(.ShowJam) { display: none; }
 
-#ClockLineupTime { top: 84.5%; height: 7%; left: 40.75%; width: 25%; text-align: left; }
+#ClockLineupTime { top: 84.5%; height: 7%; left: 40.45%; width: 6%; text-align: left; }
 #ClockLineupTime:not(.ShowLineup) { display: none; }
 
-#ClockTimeoutTime { top: 84.5%; height: 7%; left: 40.75%; width: 6%; text-align: left}
+#ClockTimeoutTime { top: 84.5%; height: 7%; left: 40.45%; width: 6%; text-align: left}
 #ClockTimeoutTime:not(.ShowTimeout) { display: none; }
 
-#ClockJamNumber { top: 86%; height: 5%; left: 36%; width: 25%; text-align: left; }
+#ClockJamNumber { top: 86%; height: 5%; left: 35.5%; width: 25%; text-align: left; }
 
 
 
 #BottomBar { left: 0%; width: 100%; top 0%; height: 100%; text-align: center; z-index: 300; }
 
 #Team1Name { top: 85.5%; height: 6%; left: 15%; width: 25%; text-align: left; }
-#Team1Score { top: 84.25%; height: 7.5%; right: 66%; width: 25%; text-align: right; }
+#Team1Score { top: 84.35%; height: 7.5%; right: 67%; width: 25%; text-align: right; }
 
 #Team2Name { top: 85.5%; height: 6%; right: 15%; width: 25%; text-align: right; }
-#Team2Score { top: 84.25%; height: 7.5%; left: 66%; width: 25%; text-align: left; }
+#Team2Score { top: 84.35%; height: 7.5%; left: 67%; width: 25%; text-align: left; }
 
 #Team1Name.AlternateName a.Name { display: none; }
 #Team1Name:not(.AlternateName) a.AlternateName { display: none; }

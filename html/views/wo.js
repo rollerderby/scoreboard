@@ -1,5 +1,5 @@
 /**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
+ * Copyright (C) 2008-2013 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
  *
  * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
  * The CRG ScoreBoard is licensed under either the GNU General Public
@@ -127,7 +127,6 @@ $sb(function() {
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
-    .add($sb("ScoreBoard.TimeoutOwner"))
     .add($sb("ScoreBoard.Clock(Lineup).Running"))
     .add($sb("ScoreBoard.Clock(Intermission).Running"))
     .add($sb("ScoreBoard.OfficialReview"));
@@ -154,7 +153,12 @@ $sb(function() {
 
 function manageStatusBar() {
 	// This is called when pretty much anything changes,  and updates the status string 
-	var statusString = "";
+	var statusString = "Stand By";
+	// Is it jam?
+	if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
+		statusString = "Jam";
+	}
+
 	// Is a timeout is running?
 	if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
 		// Who's timeout is it?
@@ -162,7 +166,7 @@ function manageStatusBar() {
 		if (!timeoutOwner) {  // It's an OTO
 			statusString = "Timeout";
 		} else if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
-			statusString = "Off. Review";
+			statusString = "Review";
 		} else {
 			statusString = "Team T/O";
 		}			
@@ -173,17 +177,15 @@ function manageStatusBar() {
 		statusString = "Lineup";
 	}
 
-	// Show or Hide the status bar
-	if (statusString == "") {
-		// Remove text THEN hide the bar.
-		$("#StatusBar>a").html("");
-		$("#WftdaInfo").animate({  height: "95%" }, 500); 
-	} else {
-		// Show the bar THEN display the text
-		$("#WftdaInfo").animate( { height: "100%" }, 500, function () { $("#StatusBar>a").html(statusString); });
-	
-		
+	// This needs work, but perhaps it's the last piece?
+	if ($sb("Scoreboard.Clock(Intermission).Running").$sbIsTrue()) {
+		statusString = "I/M";
 	}
+
+	// WFTDA says always show the bar - show/hide stuff is now gone
+	// That's good, since we can consolidate those images and speed things up a bit
+	$("#StatusBar>a").html(statusString); 
+		
 }
 
 function manageTimeoutImages() {
