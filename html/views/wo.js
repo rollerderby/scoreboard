@@ -71,7 +71,7 @@ $sb(function() {
     	setupPulsate( 
     			function() { return (
     					$sb("ScoreBoard.Team(1).Timeouts").$sbGet() == i && 
-    					$sb("ScoreBoard.Timeout") &&
+    					$sb("ScoreBoard.Timeout").$sbIsTrue() &&
     					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 1); },
         			$("#WftdaT1T"+(i+1)),
         			1000
@@ -79,11 +79,22 @@ $sb(function() {
     	setupPulsate( 
         		function() { return (
         				$sb("ScoreBoard.Team(2).Timeouts").$sbGet() == i && 
-    					$sb("ScoreBoard.Timeout") &&
+    					$sb("ScoreBoard.Timeout").$sbIsTrue() &&
     					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 2); },
             		$("#WftdaT2T"+(i+1)),
             		1000
             	);
+    });
+    
+    // Pulsate OR buttons.
+    $.each( [ 1, 2 ], function(x, i) {
+    	setupPulsate(
+    		function() { return (
+    				$sb("ScoreBoard.OfficialReview").$sbIsTrue() &&
+    				$sb("ScoreBoard.TimeoutOwner").$sbGet() == i) },
+    			$("#WftdaT"+i+"OR"),
+    			1000
+    	);
     });
   });
 
