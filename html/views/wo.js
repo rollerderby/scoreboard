@@ -131,7 +131,9 @@ $sb(function() {
     .add($sb("ScoreBoard.Clock(Intermission).Running"))
     .add($sb("ScoreBoard.Clock(Intermission).Number"))
     .add($sb("ScoreBoard.TimeoutOwner"))
-    .add($sb("ScoreBoard.OfficialReview"));
+    .add($sb("ScoreBoard.OfficialReview"))
+    .add($sb("ScoreBoard.OfficialScore"))
+    .add($sb("ScoreBoard.InOvertime"));
   _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
   
   // Timeout images
@@ -157,7 +159,9 @@ function manageStatusBar() {
 	// This is called when pretty much anything changes,  and updates the status string 
 	var statusString = "Stand By";
 
-	if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
+	if ($sb("Scoreboard.InOvertime").$sbIsTrue()) {
+		statusString = "Overtime";
+	} else if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
 		statusString = "Jam";
 	} else if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
 		// Who's timeout is it?
@@ -172,12 +176,13 @@ function manageStatusBar() {
 		statusString = "Lineup";
 	} else if ($sb("Scoreboard.Clock(Intermission).Running").$sbIsTrue()) {
 		var iNum = $sb("ScoreBoard.Clock(Intermission).Number").$sbGet();
+		var official = $sb("ScoreBoard.OfficialScore").$sbIsTrue();
 		if (iNum == 0)
 			statusString = "Prebout";
 		else if (iNum == 1)
 			statusString = "Halftime";
 		else if (iNum == 2)
-			statusString = "Final";
+			statusString = (official ? "Final" : "Unofficial");
 	}
 
 	// WFTDA says always show the bar - show/hide stuff is now gone
