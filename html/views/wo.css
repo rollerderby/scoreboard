@@ -56,23 +56,23 @@ a {
 #TopBar { left: 0%; width: 100%; top: 0%; height: 100%; text-align: center; z-index: 300; }
 
 #StatusBar a { color: white; }
-#ClockPeriodNumber { top: 86%; height: 5%; left: 53.5%; width: 4%; text-align: left; }
-#ClockPeriodTime { top: 85%; height: 7%; left: 56.5%; width: 25%; text-align: left; }
+#ClockPeriodNumber { top: 86.375%; height: 5%; left: 53.375%; width: 4%; text-align: left; }
+#ClockPeriodTime { top: 84.75%; height: 7%; left: 56.375%; width: 25%; text-align: left; }
 #ClockPeriodTime:not(.ShowPeriod) { display: none; }
 
-#ClockIntermissionTime { top: 85%; height: 7%; left: 56.25%; width: 25%; text-align: left; }
+#ClockIntermissionTime { top: 84.75%; height: 7%; left: 56.375%; width: 25%; text-align: left; }
 #ClockIntermissionTime:not(.ShowIntermission) { display: none; }
 
-#ClockJamTime { top: 85%; height: 7%; left: 40.45%; width: 6%; text-align: left; }
+#ClockJamTime { top: 84.75%; height: 7%; left: 40.45%; width: 6%; text-align: left; }
 #ClockJamTime:not(.ShowJam) { display: none; }
 
-#ClockLineupTime { top: 85%; height: 7%; left: 40.45%; width: 6%; text-align: left; }
+#ClockLineupTime { top: 84.75%; height: 7%; left: 40.45%; width: 6%; text-align: left; }
 #ClockLineupTime:not(.ShowLineup) { display: none; }
 
-#ClockTimeoutTime { top: 85%; height: 7%; left: 40.45%; width: 6%; text-align: left}
+#ClockTimeoutTime { top: 84.75%; height: 7%; left: 40.45%; width: 6%; text-align: left}
 #ClockTimeoutTime:not(.ShowTimeout) { display: none; }
 
-#ClockJamNumber { top: 86%; height: 5%; left: 35.5%; width: 25%; text-align: left; }
+#ClockJamNumber { top: 86.375%; height: 5%; left: 35.375%; width: 25%; text-align: left; }
 
 
 
