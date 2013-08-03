@@ -185,9 +185,14 @@ function manageStatusBar() {
 			statusString = (official ? "Final" : "Unofficial");
 	}
 
-	// WFTDA says always show the bar - show/hide stuff is now gone
-	// That's good, since we can consolidate those images and speed things up a bit
-	$("#StatusBar>a").html(statusString); 
+	// If the statusString has changed, fade out the old, and in the new
+	if ($("#StatusBar>a").data('current') != statusString) {
+		$("#StatusBar>a").data('current', statusString);
+		$("#StatusBar>a").animate({opacity: 0}, 500, function() {
+			$(this).text(statusString);})
+			.animate({opacity: 1}, 500);
+	}
+	// $("#StatusBar>a").html(statusString); 
 		
 }
 
