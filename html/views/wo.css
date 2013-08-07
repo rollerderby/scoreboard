@@ -78,10 +78,10 @@ a {
 
 #BottomBar { left: 0%; width: 100%; top 0%; height: 100%; text-align: center; z-index: 300; }
 
-#Team1Name { top: 84.75%; height: 7%; left: 15%; width: 12.5%; text-align: left; overflow: hidden; font-size: 5.2%; }
+#Team1Name { top: 84.75%; height: 7%; left: 15%; width: 13%; text-align: left; overflow: hidden; font-size: 5.2%; }
 #Team1Score { top: 84.75%; height: 7%; right: 67%; width: 25%; text-align: right; font-size: 5.2%; }
 
-#Team2Name { top: 84.75%; height: 7%; right: 15%; width: 12.5%; text-align: right; overflow: hidden; font-size: 5.2%; }
+#Team2Name { top: 84.75%; height: 7%; right: 15%; width: 13%; text-align: right; overflow: hidden; font-size: 5.2%; }
 #Team2Score { top: 84.75%; height: 7%; left: 67%; width: 25%; text-align: left; font-size: 5.2%; }
 
 #Team1Name.AlternateName a.Name { display: none; }
