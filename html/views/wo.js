@@ -32,7 +32,6 @@ $sb(function() {
       $("a.ClockJLTI").closest("div").removeClass("ShowJam ShowTimeout ShowLineup").addClass("ShowIntermission");
     } else {
       $("a.ClockJLTI").closest("div").removeClass("ShowLineup ShowTimeout ShowIntermission").addClass("ShowJam");
-      $("#ClockJamTime").data("AutoFit").call();
     }
   };
   var showClockP = function() {
@@ -42,28 +41,21 @@ $sb(function() {
       $("a.ClockP").closest("div").removeClass("ShowPeriod");
     } else {
       $("a.ClockP").closest("div").addClass("ShowPeriod");
-      $("#ClockPeriodTime").data("AutoFit").call();
     }
   };
 
   $.each( [ "1", "2" ], function(i, team) {
-    $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a.AlternateName", {
-      sbelement: { autoFitText: true }
-    });
-    $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name", {
-      sbelement: { autoFitText: true }
-    });
-    $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a", {
-      sbelement: { autoFitText: true }
-    });
+    $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a.AlternateName");
+    $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name");
+    $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a");
     $sb("ScoreBoard.Team("+team+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
       if ($sb(node).$sbId == "overlay")
         $sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event, val) {
-          $("#Team"+team+"Name").toggleClass("AlternateName", ($.trim(val) != "")).data("AutoFit").call();
+          $("#Team"+team+"Name").toggleClass("AlternateName", ($.trim(val) != ""));
         });
     }, function(event, node) {
       if ($sb(node).$sbId == "overlay")
-        $("#Team"+team+"Name").removeClass("AlternateName").data("AutoFit").call();
+        $("#Team"+team+"Name").removeClass("AlternateName");
     });
     
     // Pulsate Timeouts if they're currently active. They'll be hidden in manageTimeoutImages
@@ -100,20 +92,13 @@ $sb(function() {
     });
   });
 
-  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number", {
-    sbelement: { autoFitText: true, autoFitTextContainer: "div" }
-  });
+  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number");
   
-  $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number", {
-	    sbelement: { autoFitText: true, autoFitTextContainer: "div" }
-  });
+  $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number");
 
   var setupClock = function(clock) {
     $sb("ScoreBoard.Clock("+clock+").Time").$sbElement("#Clock"+clock+"Time>a", {
-      sbelement: {
-        autoFitText: true,
-        convert: _timeConversions.msToMinSec
-     } });
+      sbelement: { convert: _timeConversions.msToMinSec } });
   };
   
   $.each( [ "Jam", "Lineup", "Timeout", "Intermission" ], function(i, clock) {
