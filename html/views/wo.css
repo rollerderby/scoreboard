@@ -69,7 +69,7 @@ a {
 #ClockLineupTime { top: 84.75%; height: 7%; left: 40.45%; width: 6%; text-align: left; font-size: 5.2%; }
 #ClockLineupTime:not(.ShowLineup) { display: none; }
 
-#ClockTimeoutTime { top: 84.75%; height: 7%; left: 40.45%; width: 6%; text-align: left; font-size: 5.2%; }
+#ClockTimeoutTime { top: 84.75%; height: 7%; left: 38.5%; width: 8%; text-align: right; font-size: 5.2%; }
 #ClockTimeoutTime:not(.ShowTimeout) { display: none; }
 
 #ClockJamNumber { top: 86.375%; height: 5%; left: 35.375%; width: 25%; text-align: left; font-size: 3.6%; }
