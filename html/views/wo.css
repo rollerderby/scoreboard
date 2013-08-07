@@ -63,10 +63,10 @@ a {
 #ClockIntermissionTime { top: 84.75%; height: 7%; left: 56.375%; width: 25%; text-align: left; font-size: 5.2%; }
 #ClockIntermissionTime:not(.ShowIntermission) { display: none; }
 
-#ClockJamTime { top: 84.75%; height: 7%; left: 40.45%; width: 6%; text-align: left; font-size: 5.2%; }
+#ClockJamTime { top: 84.75%; height: 7%; left: 38.5%; width: 8%; text-align: right; font-size: 5.2%; }
 #ClockJamTime:not(.ShowJam) { display: none; }
 
-#ClockLineupTime { top: 84.75%; height: 7%; left: 40.45%; width: 6%; text-align: left; font-size: 5.2%; }
+#ClockLineupTime { top: 84.75%; height: 7%; left: 38.5%; width: 8%; text-align: right; font-size: 5.2%; }
 #ClockLineupTime:not(.ShowLineup) { display: none; }
 
 #ClockTimeoutTime { top: 84.75%; height: 7%; left: 38.5%; width: 8%; text-align: right; font-size: 5.2%; }
