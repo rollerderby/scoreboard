@@ -27,6 +27,7 @@ $sb(function() {
     var lR = $sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue();
     var tR = $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue();
     var iR = $sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue();
+    var iN = $sb("ScoreBoard.Clock(Intermission).Number").$sbGet();
 
     if (jR) {
       $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
@@ -43,7 +44,11 @@ $sb(function() {
     if (pR) {
       $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
     } else if (iR && !jR && !lR && !tR) {
-      $("a.ClockPI").closest("div").removeClass("ShowPeriod").addClass("ShowIntermission");
+      if (iN == 2) { // Hide intermission clock too for Final
+        $("a.ClockPI").closest("div").removeClass("ShowPeriod ShowIntermission");
+      } else {
+        $("a.ClockPI").closest("div").removeClass("ShowPeriod").addClass("ShowIntermission");
+      }
     } else {
       $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
     }
@@ -106,6 +111,8 @@ $sb(function() {
       sbelement: { convert: _timeConversions.msToMinSec } });
     $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClocks);
   });
+  // This allows hiding the intermission clock during Final.
+  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", showClocks);
 
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
