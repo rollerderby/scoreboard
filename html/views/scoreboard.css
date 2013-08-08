@@ -120,6 +120,20 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   #Timeouts>div.Team2,#Timeouts>div.Team1.SwapTeams { left: auto; right: 0%; }
 /* End Timeouts */
 
+/* Official Reviews */
+  /* Main box */
+  #OfficialReviews { left: 0%; top: 31%; right: 0%; height: 17%; }
+
+  /* Name sub-boxes */
+  #OfficialReviews>div.Team1.Name { left: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
+  #OfficialReviews>div.Team2.Name { right: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
+
+  /* Number sub-boxes */
+  #OfficialReviews>div.Number { bottom: 0%; width: 6%; height: 50%; border-radius: 25%/ 25%; }
+  #OfficialReviews>div.Team1,#OfficialReviews>div.Team2.SwapTeams { left: 0.8%; right: auto; }
+  #OfficialReviews>div.Team2,#OfficialReviews>div.Team1.SwapTeams { left: auto; right: 0.8%; }
+/* End Official Reviews */
+
 /* Period */
   /* Main box */
   #Period { right: 100%; top: 59%; width: 50%; bottom: 0%; }
