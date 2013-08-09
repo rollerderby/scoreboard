@@ -21,26 +21,36 @@ function setupMainDiv(div) {
 $sb(function() {
   setupMainDiv($("#mainDiv"));
 
-  var showClockJLTI = function() {
-    if ($sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue()) {
-      $("a.ClockJLTI").closest("div").removeClass("ShowLineup ShowTimeout ShowIntermission").addClass("ShowJam");
-    } else if ($sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue()) {
-      $("a.ClockJLTI").closest("div").removeClass("ShowLineup ShowJam ShowIntermission").addClass("ShowTimeout");
-    } else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue()) {
-      $("a.ClockJLTI").closest("div").removeClass("ShowJam ShowTimeout ShowIntermission").addClass("ShowLineup");
-    } else if ($sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue()) {
-      $("a.ClockJLTI").closest("div").removeClass("ShowJam ShowTimeout ShowLineup").addClass("ShowIntermission");
+  var showClocks = function() {
+    var pR = $sb("ScoreBoard.Clock(Period).Running").$sbIsTrue();
+    var jR = $sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue();
+    var lR = $sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue();
+    var tR = $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue();
+    var iR = $sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue();
+    var iN = $sb("ScoreBoard.Clock(Intermission).Number").$sbGet();
+
+    if (jR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
+    } else if (tR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowJam").addClass("ShowTimeout");
+    } else if (lR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowJam ShowTimeout").addClass("ShowLineup");
+    } else if (iR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowJam ShowTimeout ShowLineup");
     } else {
-      $("a.ClockJLTI").closest("div").removeClass("ShowLineup ShowTimeout ShowIntermission").addClass("ShowJam");
+      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
     }
-  };
-  var showClockP = function() {
-    if ($sb("ScoreBoard.Clock(Period).Running").$sbIsTrue()) {
-      $("a.ClockP").closest("div").addClass("ShowPeriod");
-    } else if ($sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue()) {
-      $("a.ClockP").closest("div").removeClass("ShowPeriod");
+
+    if (pR) {
+      $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
+    } else if (iR && !jR && !lR && !tR) {
+      if (iN == 2) { // Hide intermission clock too for Final
+        $("a.ClockPI").closest("div").removeClass("ShowPeriod ShowIntermission");
+      } else {
+        $("a.ClockPI").closest("div").removeClass("ShowPeriod").addClass("ShowIntermission");
+      }
     } else {
-      $("a.ClockP").closest("div").addClass("ShowPeriod");
+      $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
     }
   };
 
@@ -96,19 +106,14 @@ $sb(function() {
   
   $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number");
 
-  var setupClock = function(clock) {
+  $.each( [ "Period", "Intermission", "Jam", "Lineup", "Timeout" ], function(i, clock) {
     $sb("ScoreBoard.Clock("+clock+").Time").$sbElement("#Clock"+clock+"Time>a", {
       sbelement: { convert: _timeConversions.msToMinSec } });
-  };
-  
-  $.each( [ "Jam", "Lineup", "Timeout", "Intermission" ], function(i, clock) {
-    setupClock(clock);
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClockJLTI);
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClocks);
   });
-  setupClock("Period");
-  $sb("ScoreBoard.Clock(Period).Running").$sbBindAndRun("sbchange", showClockP);
-  $sb("ScoreBoard.Clock(Intermission).Running").$sbBindAndRun("sbchange", showClockP);
- 
+  // This allows hiding the intermission clock during Final.
+  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", showClocks);
+
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
     .add($sb("ScoreBoard.Clock(Timeout).Running"))
