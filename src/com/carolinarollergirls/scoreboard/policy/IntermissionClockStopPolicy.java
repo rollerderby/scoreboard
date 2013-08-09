@@ -21,8 +21,8 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
     PolicyModel.ParameterModel periodIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_INCREMENT_NUMBER, "Boolean", String.valueOf(true));
     PolicyModel.ParameterModel periodResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_NUMBER, "Boolean", String.valueOf(false));
     PolicyModel.ParameterModel periodResetTime = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_TIME, "Boolean", String.valueOf(true));
-    PolicyModel.ParameterModel jamIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_INCREMENT_NUMBER, "Boolean", String.valueOf(true));
-    PolicyModel.ParameterModel jamResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_NUMBER, "Boolean", String.valueOf(false));
+    PolicyModel.ParameterModel jamIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_INCREMENT_NUMBER, "Boolean", String.valueOf(false));
+    PolicyModel.ParameterModel jamResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_NUMBER, "Boolean", String.valueOf(true));
     PolicyModel.ParameterModel jamResetTime = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_TIME, "Boolean", String.valueOf(true));
     PolicyModel.ParameterModel periodResetOR = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_OR, "Boolean", String.valueOf(true));
 
