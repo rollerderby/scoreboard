@@ -53,7 +53,7 @@ public class TwitterViewer implements ScoreBoardViewer
     return "CONDITIONFORMAT:"+format+"TWEET:"+tweet;
   }
 
-  public String getAuthorizationURL(String callbackURL) throws TwitterException,IllegalStateException {
+  public String getAuthURL(String callbackURL) throws TwitterException,IllegalStateException {
     synchronized (twitterLock) {
       if (null != requestToken)
         reset();

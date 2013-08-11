@@ -23,8 +23,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
 
   public void reset() {
     Element updateE = createXPathElement();
-    editor.setPI(editor.addElement(updateE, "AuthorizationURL"), "NoSave");
-    editor.setPI(editor.addElement(updateE, "Authorized"), "NoSave");
+    editor.setPI(editor.addElement(updateE, "AuthURL"), "NoSave");
+    editor.setPI(editor.addElement(updateE, "LoggedIn"), "NoSave");
     editor.setPI(editor.addElement(updateE, "Error"), "NoSave");
     editor.setPI(editor.addElement(updateE, "ScreenName"), "NoSave");
     editor.setPI(editor.addElement(updateE, "Status"), "NoSave");
@@ -51,8 +51,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
         removeConditionalTweet(e);
       else if (e.getName().equals("ConditionalTweet"))
         updateConditionalTweet(e);
-      else if (e.getName().equals("AuthorizationURL") && !nullText && "".equals(text))
-        clearAuthorizationURL();
+      else if (e.getName().equals("AuthURL") && !nullText && "".equals(text))
+        clearAuthURL();
       else if (e.getName().equals("Denied") && editor.isTrue(e))
         denied();
       else if (e.getName().equals("TestMode"))
@@ -79,8 +79,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
   protected void startOAuth(Element e) throws NoTwitterViewerException,TwitterException {
     Element updateE = createXPathElement();
     try {
-      String authURL = getTwitterViewer().getAuthorizationURL(editor.getText(e));
-      editor.addElement(updateE, "AuthorizationURL", null, authURL);
+      String authURL = getTwitterViewer().getAuthURL(editor.getText(e));
+      editor.addElement(updateE, "AuthURL", null, authURL);
       editor.addElement(updateE, "Error", null, "");
     } catch ( IllegalStateException isE ) {
       editor.addElement(updateE, "Error", null, "Already logged in");
@@ -92,7 +92,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     getTwitterViewer().logout();
     getTwitterViewer().removeTweetListener(tweetListener);
     Element updateE = createXPathElement();
-    editor.addElement(updateE, "Authorized", null, "false");
+    editor.addElement(updateE, "AuthURL", null, "");
+    editor.addElement(updateE, "LoggedIn", null, "false");
     editor.addElement(updateE, "ScreenName", null, "");
     editor.addElement(updateE, "Error", null, "");
     editor.addElement(updateE, "Status", null, "");
@@ -104,9 +105,9 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
     setError("You denied access...");
   }
 
-  protected void clearAuthorizationURL() {
+  protected void clearAuthURL() {
     Element updateE = createXPathElement();
-    editor.addElement(updateE, "AuthorizationURL", null, "");
+    editor.addElement(updateE, "AuthURL", null, "");
     editor.addElement(updateE, "Error", null, "");
     update(updateE);
   }
@@ -117,8 +118,8 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
       return;
     getTwitterViewer().setOAuthVerifier(verifier);
     Element updateE = createXPathElement();
-    editor.addElement(updateE, "AuthorizationURL", null, "");
-    editor.addElement(updateE, "Authorized", null, "true");
+    editor.addElement(updateE, "AuthURL", null, "");
+    editor.addElement(updateE, "LoggedIn", null, "true");
     editor.addElement(updateE, "ScreenName", null, getTwitterViewer().getScreenName());
     editor.addElement(updateE, "Status", null, "");
     editor.addElement(updateE, "Error", null, "");

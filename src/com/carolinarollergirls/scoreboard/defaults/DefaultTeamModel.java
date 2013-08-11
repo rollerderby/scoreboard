@@ -46,6 +46,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
     setLogo(DEFAULT_LOGO);
     setScore(DEFAULT_SCORE);
     setTimeouts(DEFAULT_TIMEOUTS);
+    setOfficialReviews(DEFAULT_OFFICIAL_REVIEWS);
     setLeadJammer(DEFAULT_LEADJAMMER);
     setPass(DEFAULT_PASS);
     Iterator<PositionModel> p = getPositionModels().iterator();
@@ -114,6 +115,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
       getScoreBoardModel().timeout(this);
     }
   }
+  public void officialReview() {
+    if (getOfficialReviews() > 0) {
+      changeOfficialReviews(-1);
+      getScoreBoardModel().timeout(this, true);
+    }
+  }
 
   public int getScore() { return score; }
   public void setScore(int s) {
@@ -132,7 +139,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   }
 
   public int getTimeouts() { return timeouts; }
-//FIXME - ad MinimumTimeout and MaximumTimeout instead of hardcoding 0 and 3
+//FIXME - add MinimumTimeouts and MaximumTimeouts instead of hardcoding 0 and 3
   public void setTimeouts(int t) {
     synchronized (timeoutsLock) {
       if (0 > t)
@@ -147,6 +154,24 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   public void changeTimeouts(int c) {
     synchronized (timeoutsLock) {
       setTimeouts(getTimeouts() + c);
+    }
+  }
+  public int getOfficialReviews() { return officialReviews; }
+//FIXME - add MinimumOfficialReviews and MaximumOfficialReviews instead of hardcoding 0 and 1
+  public void setOfficialReviews(int r) {
+    synchronized (officialReviewsLock) {
+      if (0 > r)
+        r = 0;
+      if (1 < r)
+        r = 1;
+      Integer last = new Integer(officialReviews);
+      officialReviews = r;
+      scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEWS, new Integer(officialReviews), last));
+    }
+  }
+  public void changeOfficialReviews(int c) {
+    synchronized (officialReviewsLock) {
+      setOfficialReviews(getOfficialReviews() + c);
     }
   }
 
@@ -254,6 +279,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   protected Object scoreLock = new Object();
   protected int timeouts;
   protected Object timeoutsLock = new Object();
+  protected int officialReviews;
+  protected Object officialReviewsLock = new Object();
   protected boolean leadJammer = false;
   protected int pass = 0;
 
@@ -268,6 +295,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
   public static final String DEFAULT_LOGO = "";
   public static final int DEFAULT_SCORE = 0;
   public static final int DEFAULT_TIMEOUTS = 3;
+  public static final int DEFAULT_OFFICIAL_REVIEWS = 1;
   public static final boolean DEFAULT_LEADJAMMER = false;
   public static final int DEFAULT_PASS = 0;
 

@@ -8,9 +8,11 @@ package com.carolinarollergirls.scoreboard.viewer;
  * See the file COPYING for details.
  */
 
+import java.text.*;
 import java.util.*;
 import java.util.regex.*;
 import java.util.concurrent.*;
+
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.event.*;
@@ -82,6 +84,20 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
   }
 
   protected boolean checkConditionValue(String value, String comparator, String target) throws IllegalArgumentException {
+    // Check to see if we're talking about times, and if so, de-time them.
+    if (comparator.contains("<") || comparator.contains(">") || comparator.contains("%")) {
+      // We're doing maths. Are they times? Times have colons.
+      if (value.contains(":")) {
+        String[] s = value.split(":");
+        if (s.length == 2)
+          try { value = String.valueOf(Long.parseLong(s[0])*60 + Long.parseLong(s[1])); } catch ( NumberFormatException nfE ) { }
+      }
+      if (target.contains(":")) {
+        String[] s = target.split(":");
+        if (s.length == 2)
+          try { target = String.valueOf(Long.parseLong(s[0])*60 + Long.parseLong(s[1])); } catch ( NumberFormatException nfE ) { }
+      }
+    }
     if ("=".equals(comparator)) {
       return value.equals(target);
     } else if ("!=".equals(comparator)) {
@@ -185,6 +201,9 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
     };
     new ScoreBoardValue("%t"+t+"t", "Team "+t+" Timeouts", getTeam(id), Team.EVENT_TIMEOUTS) {
       public String getValue() { return String.valueOf(getTeam(id).getTimeouts()); }
+    };
+    new ScoreBoardValue("%t"+t+"or", "Team "+t+" Official Reviews", getTeam(id), Team.EVENT_OFFICIAL_REVIEWS) {
+      public String getValue() { return String.valueOf(getTeam(id).getOfficialReviews()); }
     };
     new ScoreBoardValue("%t"+t+"l", "Team "+t+" is Lead Jammer", getTeam(id), Team.EVENT_LEAD_JAMMER) {
       public String getValue() { return String.valueOf(getTeam(id).isLeadJammer()); }

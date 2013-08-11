@@ -28,6 +28,7 @@ public interface Team extends ScoreBoardEventProvider
   public int getScore();
 
   public int getTimeouts();
+  public int getOfficialReviews();
 
   public List<Skater> getSkaters();
   public Skater getSkater(String id) throws SkaterNotFoundException;
@@ -46,6 +47,7 @@ public interface Team extends ScoreBoardEventProvider
   public static final String EVENT_LOGO = "Logo";
   public static final String EVENT_SCORE = "Score";
   public static final String EVENT_TIMEOUTS = "Timeouts";
+  public static final String EVENT_OFFICIAL_REVIEWS = "OfficialReviews";
   public static final String EVENT_ADD_SKATER = "AddSkater";
   public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
   public static final String EVENT_LEAD_JAMMER = "LeadJammer";
