@@ -72,7 +72,7 @@ $sb(function() {
   setupBackgrounds();
 
   sbViewOptions.$sb("SwapTeams").$sbBindAndRun("sbchange", function(event,value) {
-    $("#sbDiv>div.Team,#Timeouts>div.Team").toggleClass("SwapTeams", isTrue(value));
+    $("#sbDiv>div.Team,#Timeouts>div.Team,#OfficialReviews>div.Team").toggleClass("SwapTeams", isTrue(value));
   });
 });
 
@@ -107,6 +107,7 @@ function setupBackgrounds() {
 
 function setupTeams() {
   $("<div>").attr("id", "Timeouts").appendTo("#sbDiv");
+  $("<div>").attr("id", "OfficialReviews").appendTo("#sbDiv");
 
   $("<div>").addClass("Name WhiteBox").appendTo("#Timeouts");
   var timeoutsName = $("<div><a>Timeouts</a></div>").addClass("Name TextContainer").appendTo("#Timeouts");
@@ -121,6 +122,17 @@ function setupTeams() {
     var teamTimeouts = $("<div><a/></div>").addClass("Team Team"+team+" Number TextContainer")
       .appendTo("#Timeouts");
     sbTeam.$sb("Timeouts").$sbElement(teamTimeouts.children("a"), { sbelement: {
+      autoFitText: { overage: 15, useMarginBottom: true }
+    } }, "Number");
+
+    $("<div>").addClass("Team"+team+" Name WhiteBox").appendTo("#OfficialReviews");
+    var officialReviewsName = $("<div><a>OR</a></div>").addClass("Team"+team+" Name TextContainer").appendTo("#OfficialReviews");
+    _autoFit.enableAutoFitText(officialReviewsName, { overage: -20 });
+    $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#OfficialReviews")
+      .append($("<div>").addClass("RedBox full"));
+    var teamOfficialReviews = $("<div><a/></div>").addClass("Team Team"+team+" Number TextContainer")
+      .appendTo("#OfficialReviews");
+    sbTeam.$sb("OfficialReviews").$sbElement(teamOfficialReviews.children("a"), { sbelement: {
       autoFitText: { overage: 15, useMarginBottom: true }
     } }, "Number");
 
@@ -206,7 +218,8 @@ function setupTeams() {
       } else {
     	  $("#Timeout>div.Name>a>span.Name").html("Time Out");
       }
-      $("#Timeouts>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && timeoutRunning);
+      $("#Timeouts>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && !isOfficialReview && timeoutRunning);
+      $("#OfficialReviews>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && isOfficialReview && timeoutRunning);
     };
 
     var redBoxTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running").add($sb("ScoreBoard.OfficialReview")));

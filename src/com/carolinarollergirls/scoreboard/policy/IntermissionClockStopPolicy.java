@@ -21,9 +21,10 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
     PolicyModel.ParameterModel periodIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_INCREMENT_NUMBER, "Boolean", String.valueOf(true));
     PolicyModel.ParameterModel periodResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_NUMBER, "Boolean", String.valueOf(false));
     PolicyModel.ParameterModel periodResetTime = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_TIME, "Boolean", String.valueOf(true));
-    PolicyModel.ParameterModel jamIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_INCREMENT_NUMBER, "Boolean", String.valueOf(true));
-    PolicyModel.ParameterModel jamResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_NUMBER, "Boolean", String.valueOf(false));
+    PolicyModel.ParameterModel jamIncrementNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_INCREMENT_NUMBER, "Boolean", String.valueOf(false));
+    PolicyModel.ParameterModel jamResetNumber = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_NUMBER, "Boolean", String.valueOf(true));
     PolicyModel.ParameterModel jamResetTime = new DefaultPolicyModel.DefaultParameterModel(this, JAM_RESET_TIME, "Boolean", String.valueOf(true));
+    PolicyModel.ParameterModel periodResetOR = new DefaultPolicyModel.DefaultParameterModel(this, PERIOD_RESET_OR, "Boolean", String.valueOf(true));
 
     addParameterModel(periodIncrementNumber);
     periodIncrementNumber.addScoreBoardListener(new ConditionalScoreBoardListener(periodIncrementNumber, "Value", String.valueOf(true), new ScoreBoardListener() {
@@ -60,6 +61,8 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
       }));
 
     addParameterModel(jamResetTime);
+    addParameterModel(periodResetOR);
+    
   }
 
   public void setScoreBoardModel(ScoreBoardModel sbm) {
@@ -86,6 +89,12 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
           jc.setNumber(pc.getMinimumNumber());
         if (Boolean.parseBoolean(getParameter(JAM_RESET_TIME).getValue()))
           jc.resetTime();
+        if (Boolean.parseBoolean(getParameter(PERIOD_RESET_OR).getValue())) {
+        	TeamModel team1 = getScoreBoardModel().getTeamModel("1");
+        	TeamModel team2 = getScoreBoardModel().getTeamModel("2");
+        	team1.setOfficialReviews(1);
+        	team2.setOfficialReviews(1);
+        }	
       }
     }
   }
@@ -96,6 +105,8 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
   public static final String JAM_INCREMENT_NUMBER = "Jam Increment Number";
   public static final String JAM_RESET_NUMBER = "Jam Reset Number";
   public static final String JAM_RESET_TIME = "Jam Reset Time";
+  
+  public static final String PERIOD_RESET_OR = "Reset Official Reviews";
 
   public static final String ID = "Intermission Clock Stop";
   public static final String DESCRIPTION = "When the Intermission clock is over, this resets the Period and Jam clock times, and (optionally) increments both of their numbers.  This will only modify the clocks if both are stopped and the Period clock's time is at its end (if counting down, its minimum; if counting up, its maximum).";
