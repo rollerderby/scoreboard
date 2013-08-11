@@ -55,10 +55,11 @@
   table.Type.Hide tr:not(.Type)>th { display: none; }
   table.Type.Hide tr:not(.Type)>td { display: none; }
 
-  /* Show/Hide Available media */
+  /* Show/Hide Available media
   table.Type:not(.ShowAvailable) tr.Type>th.Type>button.AvailableControl { display: none; }
   table.Type.ShowAvailable tr.Type>th.Type>button.ShowAvailable { display: none; }
   table.Type:not(.ShowAvailable) tr.Available>td { display: none; }
+  */
 
   /* Show/Hide Preview buttons/elements */
   table.Type tr.Item>td.Preview:not(.Show)>:not(button) { display: none; }
