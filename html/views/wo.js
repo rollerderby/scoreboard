@@ -176,11 +176,17 @@ function manageStatusBar() {
 	}
 
 	// If the statusString has changed, fade out the old, and in the new
-	if ($("#StatusBar>a").data('current') != statusString) {
-		$("#StatusBar>a").data('current', statusString);
-		$("#StatusBar>a").animate({opacity: 0}, 500, function() {
-			$(this).text(statusString);})
-			.animate({opacity: 1}, 500);
+	var statusBar = $("#StatusBar>a");
+	if (statusBar.data('current') != statusString) {
+		statusBar.data('current', statusString);
+		if (statusBar.data('fadingOut') != true) {
+			statusBar.queue(function(next) { $(this).data('fadingOut', true); next(); });
+			statusBar.animate({opacity: 0}, 500, function() {
+				$(this).data('fadingOut', false);
+				$(this).text($(this).data('current'));
+			});
+			statusBar.animate({opacity: 1}, 500);
+		}
 	}
 	// $("#StatusBar>a").html(statusString); 
 		
