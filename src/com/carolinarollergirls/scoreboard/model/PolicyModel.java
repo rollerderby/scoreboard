@@ -14,30 +14,30 @@ import com.carolinarollergirls.scoreboard.*;
 
 public interface PolicyModel extends Policy,ScoreBoardController
 {
-  public ScoreBoardModel getScoreBoardModel();
+	public ScoreBoardModel getScoreBoardModel();
 
-  public Policy getPolicy();
+	public Policy getPolicy();
 
-  public void reset();
+	public void reset();
 
-  public void setEnabled(boolean enabled);
+	public void setEnabled(boolean enabled);
 
-  public List<PolicyModel.ParameterModel> getParameterModels();
-  public PolicyModel.ParameterModel getParameterModel(String name);
+	public List<PolicyModel.ParameterModel> getParameterModels();
+	public PolicyModel.ParameterModel getParameterModel(String name);
 
-  public interface ParameterModel extends Policy.Parameter
-  {
-    public PolicyModel getPolicyModel();
+	public interface ParameterModel extends Policy.Parameter
+	{
+		public PolicyModel getPolicyModel();
 
-    public Policy.Parameter getParameter();
+		public Policy.Parameter getParameter();
 
-    public void reset();
+		public void reset();
 
-    /**
-     * Set the value.
-     * @exception IllegalArgumentException If the Parameter type is a known java.lang Class and
-     * the provided value is invalid for that Class.
-     */
-    public void setValue(String value) throws IllegalArgumentException;
-  }
+		/**
+		 * Set the value.
+		 * @exception IllegalArgumentException If the Parameter type is a known java.lang Class and
+		 * the provided value is invalid for that Class.
+		 */
+		public void setValue(String value) throws IllegalArgumentException;
+	}
 }

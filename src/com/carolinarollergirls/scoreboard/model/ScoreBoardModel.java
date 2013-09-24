@@ -16,42 +16,42 @@ import com.carolinarollergirls.scoreboard.*;
 
 public interface ScoreBoardModel extends ScoreBoard
 {
-  public ScoreBoard getScoreBoard();
+	public ScoreBoard getScoreBoard();
 
-  /** Reset the entire ScoreBoard. */
-  public void reset();
+	/** Reset the entire ScoreBoard. */
+	public void reset();
 
-  public void setTimeoutOwner(String owner);
-  public void setOfficialReview(boolean official);
+	public void setTimeoutOwner(String owner);
+	public void setOfficialReview(boolean official);
 
-  public void setInOvertime(boolean inOvertime);
-  public void startOvertime();
+	public void setInOvertime(boolean inOvertime);
+	public void startOvertime();
 
-  public void setInPeriod(boolean inPeriod);
+	public void setInPeriod(boolean inPeriod);
 
-  public void setOfficialScore(boolean official);
+	public void setOfficialScore(boolean official);
 
-  public void startJam();
-  public void stopJam();
+	public void startJam();
+	public void stopJam();
 
-  public void timeout();
-  public void timeout(TeamModel team);
-  public void timeout(TeamModel team, boolean review);
+	public void timeout();
+	public void timeout(TeamModel team);
+	public void timeout(TeamModel team, boolean review);
 
-  public void unStartJam();
-  public void unStopJam();
-  public void unTimeout();
+	public void unStartJam();
+	public void unStopJam();
+	public void unTimeout();
 
 // FIXME - need methods to add/remove clocks and teams! */
-  public List<ClockModel> getClockModels();
-  public ClockModel getClockModel(String id);
+	public List<ClockModel> getClockModels();
+	public ClockModel getClockModel(String id);
 
-  public List<TeamModel> getTeamModels();
-  public TeamModel getTeamModel(String id);
+	public List<TeamModel> getTeamModels();
+	public TeamModel getTeamModel(String id);
 
-  public List<PolicyModel> getPolicyModels();
-  public PolicyModel getPolicyModel(String id);
-  public void addPolicyModel(PolicyModel model) throws IllegalArgumentException; /* If the model's Id is null/empty */
-  public void removePolicyModel(PolicyModel model);
+	public List<PolicyModel> getPolicyModels();
+	public PolicyModel getPolicyModel(String id);
+	public void addPolicyModel(PolicyModel model) throws IllegalArgumentException; /* If the model's Id is null/empty */
+	public void removePolicyModel(PolicyModel model);
 }
 

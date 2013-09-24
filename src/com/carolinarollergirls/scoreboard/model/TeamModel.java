@@ -14,55 +14,55 @@ import com.carolinarollergirls.scoreboard.*;
 
 public interface TeamModel extends Team
 {
-  public ScoreBoardModel getScoreBoardModel();
+	public ScoreBoardModel getScoreBoardModel();
 
-  public Team getTeam();
+	public Team getTeam();
 
-  public void reset();
+	public void reset();
 
-  public void setName(String name);
+	public void setName(String name);
 
-  public List<AlternateNameModel> getAlternateNameModels();
-  public AlternateNameModel getAlternateNameModel(String id);
-  public void setAlternateNameModel(String id, String name);
-  public void removeAlternateNameModel(String id);
+	public List<AlternateNameModel> getAlternateNameModels();
+	public AlternateNameModel getAlternateNameModel(String id);
+	public void setAlternateNameModel(String id, String name);
+	public void removeAlternateNameModel(String id);
 
-  public void setLogo(String logo);
+	public void setLogo(String logo);
 
-  public void timeout();
-  public void officialReview();
+	public void timeout();
+	public void officialReview();
 
-  public void setScore(int score);
-  public void changeScore(int change);
+	public void setScore(int score);
+	public void changeScore(int change);
 
-  public void setTimeouts(int timeouts);
-  public void changeTimeouts(int change);
-  public void setOfficialReviews(int reviews);
-  public void changeOfficialReviews(int reviews);
+	public void setTimeouts(int timeouts);
+	public void changeTimeouts(int change);
+	public void setOfficialReviews(int reviews);
+	public void changeOfficialReviews(int reviews);
 
-  public void addSkaterModel(SkaterModel skater);
-  public SkaterModel addSkaterModel(String id);
-  public SkaterModel addSkaterModel(String id, String name, String number);
-  public void removeSkaterModel(String id) throws SkaterNotFoundException;
+	public void addSkaterModel(SkaterModel skater);
+	public SkaterModel addSkaterModel(String id);
+	public SkaterModel addSkaterModel(String id, String name, String number);
+	public void removeSkaterModel(String id) throws SkaterNotFoundException;
 
-  public List<SkaterModel> getSkaterModels();
-  public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException;
+	public List<SkaterModel> getSkaterModels();
+	public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException;
 
-  public List<PositionModel> getPositionModels();
-  public PositionModel getPositionModel(String id) throws PositionNotFoundException;
+	public List<PositionModel> getPositionModels();
+	public PositionModel getPositionModel(String id) throws PositionNotFoundException;
 
-  public void setLeadJammer(boolean lead);
-  /* For internal use only */
-  public void _setLeadJammer(boolean lead);
+	public void setLeadJammer(boolean lead);
+	/* For internal use only */
+	public void _setLeadJammer(boolean lead);
 
-  public void setPass(int pass);
-  public void changePass(int change);
-  /* For internal use only */
-  public void _setPass(int pass);
+	public void setPass(int pass);
+	public void changePass(int change);
+	/* For internal use only */
+	public void _setPass(int pass);
 
-  public static interface AlternateNameModel extends AlternateName {
-    public void setName(String n);
+	public static interface AlternateNameModel extends AlternateName {
+		public void setName(String n);
 
-    public TeamModel getTeamModel();
-  }
+		public TeamModel getTeamModel();
+	}
 }
