@@ -14,43 +14,43 @@ import com.carolinarollergirls.scoreboard.event.*;
 
 public interface Policy extends ScoreBoardEventProvider
 {
-  public ScoreBoard getScoreBoard();
+	public ScoreBoard getScoreBoard();
 
-  public String getId();
+	public String getId();
 
-  public String getName();
+	public String getName();
 
-  public String getDescription();
+	public String getDescription();
 
-  public boolean isEnabled();
+	public boolean isEnabled();
 
-  public List<Policy.Parameter> getParameters();
-  public Policy.Parameter getParameter(String name);
+	public List<Policy.Parameter> getParameters();
+	public Policy.Parameter getParameter(String name);
 
-  public interface Parameter extends ScoreBoardEventProvider
-  {
-    public Policy getPolicy();
+	public interface Parameter extends ScoreBoardEventProvider
+	{
+		public Policy getPolicy();
 
-    public String getName();
+		public String getName();
 
-    public String getValue();
+		public String getValue();
 
-    /**
-     * Indication of the type of parameter.
-     *
-     * Valid types are String, Boolean, Integer, Long, Short, Byte, etc.
-     * If the type is a known Class in the java.lang package, values are checked for validity
-     * to the specified type.  If the type is not a known Class the validity is not checked when
-     * setting the value.
-     */
-    public String getType();
+		/**
+		 * Indication of the type of parameter.
+		 *
+		 * Valid types are String, Boolean, Integer, Long, Short, Byte, etc.
+		 * If the type is a known Class in the java.lang package, values are checked for validity
+		 * to the specified type.	 If the type is not a known Class the validity is not checked when
+		 * setting the value.
+		 */
+		public String getType();
 
-    public static final String EVENT_VALUE = "Value";
-  }
+		public static final String EVENT_VALUE = "Value";
+	}
 
-  public static final String EVENT_NAME = "Name";
-  public static final String EVENT_DESCRIPTION = "Description";
-  public static final String EVENT_ENABLED = "Enabled";
-  public static final String EVENT_ADD_PARAMETER = "AddParameter";
-  public static final String EVENT_REMOVE_PARAMETER = "RemoveParameter";
+	public static final String EVENT_NAME = "Name";
+	public static final String EVENT_DESCRIPTION = "Description";
+	public static final String EVENT_ENABLED = "Enabled";
+	public static final String EVENT_ADD_PARAMETER = "AddParameter";
+	public static final String EVENT_REMOVE_PARAMETER = "RemoveParameter";
 }
