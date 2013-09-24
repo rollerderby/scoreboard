@@ -49,6 +49,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		setOfficialReviews(DEFAULT_OFFICIAL_REVIEWS);
 		setLeadJammer(DEFAULT_LEADJAMMER);
 		setPass(DEFAULT_PASS);
+		removeAlternateNameModels();
 		Iterator<PositionModel> p = getPositionModels().iterator();
 		Iterator<SkaterModel> s = getSkaterModels().iterator();
 		while (s.hasNext()) {
@@ -97,6 +98,13 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			AlternateNameModel anm = alternateNames.remove(i);
 			anm.removeScoreBoardListener(this);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_ALTERNATE_NAME, anm, null));
+		}
+	}
+	public void removeAlternateNameModels() {
+		synchronized (alternateNameLock) {
+			Iterator<AlternateNameModel> i = getAlternateNameModels().iterator();
+			while (i.hasNext())
+				removeAlternateNameModel(i.next().getId());
 		}
 	}
 
