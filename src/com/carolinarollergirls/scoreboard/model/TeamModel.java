@@ -26,6 +26,7 @@ public interface TeamModel extends Team
 	public AlternateNameModel getAlternateNameModel(String id);
 	public void setAlternateNameModel(String id, String name);
 	public void removeAlternateNameModel(String id);
+	public void removeAlternateNameModels();
 
 	public void setLogo(String logo);
 
