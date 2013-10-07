@@ -34,11 +34,13 @@ public class LineupClockResetsJamTimePolicy extends AbstractClockRunningChangePo
 		boolean atEnd = clock.getTime() == (clock.isCountDirectionDown() ? clock.getMinimumTime() : clock.getMaximumTime());
 		if (!running && atEnd) {
 			ClockModel jC = getScoreBoardModel().getClockModel(Clock.ID_JAM);
-			if (!jC.isRunning())
-				jC.reset();
+			if (!jC.isRunning()) {
+				jC.resetTime();
+				jC.changeNumber(1);
+			}
 		}
 	}
 
 	public static final String ID = "Lineup Clock Resets Jam Time";
-	public static final String DESCRIPTION = "This resets the Jam clock based on the Lineup clock.	When the Lineup clock ends (i.e. it stops and its time is at minimum or maximum depending on count direction), the Jam clock time is reset.	 Note that this will not reset the Jam clock time if the Jam clock is running.";
+	public static final String DESCRIPTION = "This resets the Jam clock and increments the Jam number based on the Lineup clock.	When the Lineup clock ends (i.e. it stops and its time is at minimum or maximum depending on count direction), the Jam clock time is reset, and the Jam number is incremented.	 Note that this will do nothing if the Jam clock is running when the Lineup clock ends.";
 }
