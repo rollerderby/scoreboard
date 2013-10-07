@@ -22,8 +22,10 @@ function setupJamControlPage() {
   $sb("ScoreBoard.StartJam").$sbControl("#JamControlPage button.StartJam").val(true);
   $sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
   $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
+  $sb("ScoreBoard.Team(1).Name").$sbControl("#JamControlPage div.Timeout button.Team1>a.Name")
   $sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
   $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
+  $sb("ScoreBoard.Team(2).Name").$sbControl("#JamControlPage div.Timeout button.Team2>a.Name")
   $sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
 
   $.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
@@ -119,8 +121,10 @@ function setupTeamScorePage() {
     var team = $sb("ScoreBoard.Team("+n+")");
     var score = team.$sb("Score");
 
+    team.$sb("Name").$sbElement("#TeamScorePage span.Team"+n+".Name");
+
     $.each([ "#Team"+n+"ScorePage", "#TeamBothScorePage" ], function(ii, e) {
-      team.$sb("Name").$sbElement(e+" a.Team"+n+".Name");
+      team.$sb("Name").$sbElement(e+" .Team"+n+".Name");
       score.$sbElement(e+" a.Team"+n+".Score");
       score.$sbControl(e+" button.Team"+n+".ScoreDown", { sbcontrol: {
         sbSetAttrs: { change: true }

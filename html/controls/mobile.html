@@ -122,9 +122,9 @@
     </div>
     <button class="Timeout" data-role="button">Timeout</button>
     <div class="ui-grid-b Timeout">
-      <div class="ui-block-a"><button class="Team1">Team 1</button></div>
+      <div class="ui-block-a"><button class="Team1"><a class="Name"></a></button></div>
       <div class="ui-block-b"><button class="Official">Official</button></div>
-      <div class="ui-block-c"><button class="Team2">Team 2</button></div>
+      <div class="ui-block-c"><button class="Team2"><a class="Name"></a></button></div>
     </div>
     <p class="Clocks">
       <span class="ClockBubble Period">Period</span>
@@ -162,8 +162,8 @@
   <div data-role="content">
     <ul data-role="listview">
       <li><a href="#TeamBothScorePage">Both Teams Score</a></li>
-      <li><a href="#Team1ScorePage">Team 1 Score</a></li>
-      <li><a href="#Team2ScorePage">Team 2 Score</a></li>
+      <li><a href="#Team1ScorePage"><span class="Team1 Name"></span> Score</a></li>
+      <li><a href="#Team2ScorePage"><span class="Team2 Name"></span> Score</a></li>
     </ul>
   </div>
 </div>
@@ -202,7 +202,7 @@
 <div data-role="page" id="Team1ScorePage">
   <div data-role="header">
     <a href="#TeamScorePage" data-direction="reverse" data-icon="arrow-l">Score</a>
-    <h1>Team 1 Score</h1>
+    <h1><span class="Team1 Name"></span> Score</h1>
   </div>
 
   <div data-role="content">
@@ -246,7 +246,7 @@
 <div data-role="page" id="Team2ScorePage">
   <div data-role="header">
     <a href="#TeamScorePage" data-direction="reverse" data-icon="arrow-l">Score</a>
-    <h1>Team 2 Score</h1>
+    <h1><span class="Team2 Name"></span> Score</h1>
   </div>
 
   <div data-role="content">
