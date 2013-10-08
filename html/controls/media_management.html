@@ -19,115 +19,115 @@
 <body>
 
 <div id="tabsDiv">
-  <ul id="tabBar">
-    <li><a href="#Images">Image</a></li>
-    <li><a href="#Videos">Video</a></li>
-    <li><a href="#CustomHtml">Custom Page</a></li>
-  </ul>
+	<ul id="tabBar">
+		<li><a href="#Images">Image</a></li>
+		<li><a href="#Videos">Video</a></li>
+		<li><a href="#CustomHtml">Custom Page</a></li>
+	</ul>
 </div>
 
 <div class="TabTemplate">
-  <div class="Type"></div>
+	<div class="Type"></div>
 </div>
 
 <table class="TypeTemplate Show">
-  <col/><col/><col/><col/>
-  <thead>
-    <tr class="Type">
-      <th colspan="4" class="Type">
-        <button class="Show">Show</button>
-        <button class="Hide">Hide</button>
-        <a class="Type">
-          <span class="Label">Type:</span>
-          <span class="Type"></span>
-        </a>
-        <button class="Upload Right">Upload</button>
-      </th>
-    </tr>
-    <tr class="Controls">
-      <th class="Remove"><button class="Remove">Remove All</button></th>
-      <th class="Name">Name</th>
-      <th class="Src">Source</th>
-      <th class="Preview">
-        <button class="ShowPreview">Show all previews</button>
-        <button class="HidePreview">Hide all previews</button>
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr class="ItemTemplate">
-      <td class="Remove"><button class="Remove">Remove</button></td>
-      <td class="Name"><input class="Name" type="text"/></td>
-      <td class="Src"><input class="Src" type="text"/></td>
-      <td class="Preview"><button class="Preview">Show Preview</button></td>
-    </tr>
-    <tr class="AvailableTemplate">
-      <td class="Add"><button class="Add">Add</button></td>
-      <td class="Name"><a class="Name"></a></td>
-      <td class="Src"><a class="Src"></a></td>
-      <td class="Preview"><button class="Preview">Show Preview</button></td>
-    </tr>
-  </tbody>
+	<col/><col/><col/><col/>
+	<thead>
+		<tr class="Type">
+			<th colspan="4" class="Type">
+				<button class="Show">Show</button>
+				<button class="Hide">Hide</button>
+				<a class="Type">
+					<span class="Label">Type:</span>
+					<span class="Type"></span>
+				</a>
+				<button class="Upload Right">Upload</button>
+			</th>
+		</tr>
+		<tr class="Controls">
+			<th class="Remove"><button class="Remove">Remove All</button></th>
+			<th class="Name">Name</th>
+			<th class="Src">Source</th>
+			<th class="Preview">
+				<button class="ShowPreview">Show all previews</button>
+				<button class="HidePreview">Hide all previews</button>
+			</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr class="ItemTemplate">
+			<td class="Remove"><button class="Remove">Remove</button></td>
+			<td class="Name"><input class="Name" type="text"/></td>
+			<td class="Src"><input class="Src" type="text"/></td>
+			<td class="Preview"><button class="Preview">Show Preview</button></td>
+		</tr>
+		<tr class="AvailableTemplate">
+			<td class="Add"><button class="Add">Add</button></td>
+			<td class="Name"><a class="Name"></a></td>
+			<td class="Src"><a class="Src"></a></td>
+			<td class="Preview"><button class="Preview">Show Preview</button></td>
+		</tr>
+	</tbody>
 </table>
 
 <div class="UploadMediaDialog DialogTemplate">
-  <p><div class="Upload"></div></p>
-  <p><a class="File">File:</a><input class="File" type="file" multiple/></p>
-  <p><a class="Name">Name:</a><input class="Name" type="text" size="40"/></p>
-  <p><a class="Status"></a></p>
+	<p><div class="Upload"></div></p>
+	<p><a class="File">File:</a><input class="File" type="file" multiple/></p>
+	<p><a class="Name">Name:</a><input class="Name" type="text" size="40"/></p>
+	<p><a class="Status"></a></p>
 </div>
 
 <div class="UpdateMediaDialog DialogTemplate">
-  <p class="Template Package">
-    <a class="Name"></a>
-    <br/>
-    <a>Current Version: </a><a class="LocalVersion"></a>
-    <br/>
-    <a>Latest Version: </a><a class="LatestVersion"></a>
-    <br/>
-    <button class="Update"></button>
-  </p>
-  <p class="Results"><a class="Results"></a></p>
+	<p class="Template Package">
+		<a class="Name"></a>
+		<br/>
+		<a>Current Version: </a><a class="LocalVersion"></a>
+		<br/>
+		<a>Latest Version: </a><a class="LatestVersion"></a>
+		<br/>
+		<button class="Update"></button>
+	</p>
+	<p class="Results"><a class="Results"></a></p>
 </div>
 
 <div class="AddSpecificDialog DialogTemplate">
-  <p><b>This is probably not what you want to do.</b></p>
-  <p>
-    This should only be used to add an entry for media when the file does not exist yet;
-    this will only add the entry, it will not actually add a file.
-  </p>
-  <br/>
-  <p>
-    <a class="Media">Media:</a>
-    <select class="Media">
-      <option class="Images" value="Image">Images</option>
-      <option class="Videos" value="Video">Videos</option>
-      <option class="CustomHtml" value="Html">CustomHtml</option>
-    </select>
-  </p>
-  <p><a class="Type">Type:</a><input type="text" size="8" class="Type"/></p>
-  <p><a class="Name">Name:</a><input type="text" size="8" class="Name"/></p>
-  <p><a class="Filename">Filename:</a><input type="text" size="12" class="Filename"/></p>
+	<p><b>This is probably not what you want to do.</b></p>
+	<p>
+		This should only be used to add an entry for media when the file does not exist yet;
+		this will only add the entry, it will not actually add a file.
+	</p>
+	<br/>
+	<p>
+		<a class="Media">Media:</a>
+		<select class="Media">
+			<option class="Images" value="Image">Images</option>
+			<option class="Videos" value="Video">Videos</option>
+			<option class="CustomHtml" value="Html">CustomHtml</option>
+		</select>
+	</p>
+	<p><a class="Type">Type:</a><input type="text" size="8" class="Type"/></p>
+	<p><a class="Name">Name:</a><input type="text" size="8" class="Name"/></p>
+	<p><a class="Filename">Filename:</a><input type="text" size="12" class="Filename"/></p>
 </div>
 
 <div class="RemoveTypeDialog DialogTemplate">
-  <p><b>This is probably not what you want to do.</b></p>
-  <p>
-    This will remove the section for the specified Type.  It will also remove all
-    entries in that Type.  This does not actually remove any files nor the Type directory.
-    You should not normally need to remove any Type sections.  You also need to remove
-    the Type directory manually or the Type section will be recreated when the scoreboard
-    is restarted or reset.
-  </p>
-  <p>
-    <a class="Media">Media:</a>
-    <select class="Media">
-      <option class="Images" value="Image">Images</option>
-      <option class="Videos" value="Video">Videos</option>
-      <option class="CustomHtml" value="Html">CustomHtml</option>
-    </select>
-  </p>
-  <p><a class="Type">Type:</a><input type="text" size="8" class="Type"/></p>
+	<p><b>This is probably not what you want to do.</b></p>
+	<p>
+		This will remove the section for the specified Type.	It will also remove all
+		entries in that Type.	 This does not actually remove any files nor the Type directory.
+		You should not normally need to remove any Type sections.	 You also need to remove
+		the Type directory manually or the Type section will be recreated when the scoreboard
+		is restarted or reset.
+	</p>
+	<p>
+		<a class="Media">Media:</a>
+		<select class="Media">
+			<option class="Images" value="Image">Images</option>
+			<option class="Videos" value="Video">Videos</option>
+			<option class="CustomHtml" value="Html">CustomHtml</option>
+		</select>
+	</p>
+	<p><a class="Type">Type:</a><input type="text" size="8" class="Type"/></p>
 </div>
 
 </body>
