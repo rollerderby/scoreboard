@@ -13,12 +13,10 @@
 	body>div.DialogTemplate { display: none; }
 	body>div.TabTemplate { display: none; }
 	table tr.ItemTemplate { display: none; }
-	table tr.AvailableTemplate { display: none; }
 /* End Template */
 
 /* Tab divs */
 	#tabsDiv>div { padding: 0px; }
-	#tabBar>button { float: right; font-size: 65%; }
 /* End Tab divs */
 
 /* Type groups */
@@ -46,7 +44,7 @@
 	table.Type tr.Item:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
 
 	/* Make preview background black */
-	#Images table.Type tr.Item td.Preview.Show { background: #000; }
+	#Images table.Type tr.Item td.Preview { background: #000; }
 
 	/* Show/Hide Type groups */
 	table.Type:not(.Hide) tr.Type>th.Type>button.Show { display: none; }
@@ -55,15 +53,7 @@
 	table.Type.Hide tr:not(.Type)>th { display: none; }
 	table.Type.Hide tr:not(.Type)>td { display: none; }
 
-	/* Show/Hide Preview buttons/elements */
-	table.Type tr.Item>td.Preview:not(.Show)>:not(button) { display: none; }
-	table.Type tr.Item>td.Preview.Show>button { display: none; }
-	table.Type tr.Item>td.Preview>:not(button) { max-width: 400px; max-height: 100px; }
+	/* Preview elements */
+	table.Type tr.Item>td.Preview>* { max-width: 400px; max-height: 100px; }
 /* End Type groups */
-
-/* UpdateMediaDialog */
-	div.UpdateMediaDialog p.Template { display: none; }
-	div.UpdateMediaDialog p.Package { border: 1px solid black; border-radius: 10px; text-align: center; }
-	div.UpdateMediaDialog a.Name { font-weight: bold; }
-/* End UpdateMediaDialog */
 
