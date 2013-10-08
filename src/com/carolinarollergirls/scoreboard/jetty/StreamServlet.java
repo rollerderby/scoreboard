@@ -24,45 +24,45 @@ import org.apache.commons.io.*;
 
 public class StreamServlet extends DefaultScoreBoardControllerServlet
 {
-  public String getPath() { return "/Stream"; }
+	public String getPath() { return "/Stream"; }
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-    super.doPost(request, response);
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		super.doPost(request, response);
 
-    response.sendError(HttpServletResponse.SC_NOT_FOUND);
-  }
+		response.sendError(HttpServletResponse.SC_NOT_FOUND);
+	}
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-    super.doGet(request, response);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		super.doGet(request, response);
 
-    if (request.getPathInfo().equals("/list"))
-      list(request, response);
-    else
-      response.sendError(HttpServletResponse.SC_NOT_FOUND);
-  }
+		if (request.getPathInfo().equals("/list"))
+			list(request, response);
+		else
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
+	}
 
-  protected void list(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-    try {
-      File streamDir = new File(streamDirName);
+	protected void list(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		try {
+			File streamDir = new File(streamDirName);
 
-      StringBuffer fileList = new StringBuffer("");
-      File[] fileArray = streamDir.listFiles();
-      if (null != fileArray) {        
-        Iterator<File> files = Arrays.asList(fileArray).iterator();
-        while (files.hasNext()) {
-          File f = files.next();
-          if (f.isFile())
-            fileList.append(f.getName()+"\n");
-        }
-      }
+			StringBuffer fileList = new StringBuffer("");
+			File[] fileArray = streamDir.listFiles();
+			if (null != fileArray) {				
+				Iterator<File> files = Arrays.asList(fileArray).iterator();
+				while (files.hasNext()) {
+					File f = files.next();
+					if (f.isFile())
+						fileList.append(f.getName()+"\n");
+				}
+			}
 
-      setTextResponse(response, HttpServletResponse.SC_OK, fileList.toString());
-    } catch ( FileNotFoundException fnfE ) {
-      setTextResponse(response, HttpServletResponse.SC_OK, "");
-    } catch ( IllegalArgumentException iaE ) {
-      setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
-    }
-  }
+			setTextResponse(response, HttpServletResponse.SC_OK, fileList.toString());
+		} catch ( FileNotFoundException fnfE ) {
+			setTextResponse(response, HttpServletResponse.SC_OK, "");
+		} catch ( IllegalArgumentException iaE ) {
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
+		}
+	}
 
-  private String streamDirName = ScoreBoardManager.getProperty(AbstractScoreBoardStream.DIRECTORY_KEY);
+	private String streamDirName = ScoreBoardManager.getProperty(AbstractScoreBoardStream.DIRECTORY_KEY);
 }
