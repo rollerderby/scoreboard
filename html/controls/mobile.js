@@ -22,11 +22,11 @@ function setupJamControlPage() {
   $sb("ScoreBoard.StartJam").$sbControl("#JamControlPage button.StartJam").val(true);
   $sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
   $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
-  $sb("ScoreBoard.Team(1).Name").$sbControl("#JamControlPage div.Timeout button.Team1>a.Name")
   $sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
+  $sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>a.Name")
   $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
-  $sb("ScoreBoard.Team(2).Name").$sbControl("#JamControlPage div.Timeout button.Team2>a.Name")
   $sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
+  $sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>a.Name")
 
   $.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
     $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
