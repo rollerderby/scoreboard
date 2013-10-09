@@ -132,51 +132,50 @@ function createUploadMediaDialog(table) {
 	});
 	var inputFile = div.find("input:file.File");
 	var inputName = div.find("input:text.Name");
+	var uploadFunction = function() {
+		var data = { files: $(this).find("input:file.File")[0].files };
+		var length = data.files.length;
+		var name = (inputName.prop("disabled") ? undefined : inputName.val());
+		var statustxt = "file"+(length>1?"s":"")+(name?" '"+name+"'":"");
+		uploader.fileupload("option", "formData", [
+			{ name: "media", value: media },
+			{ name: "type", value: type }
+		]);
+		if (name)
+			uploader.fileupload("option", "formData").push({ name: "name", value: name });
+		uploader.fileupload("send", data)
+			.done(function(data, textStatus, jqxhr) {
+				div.find("a.Status").text(data);
+			})
+			.fail(function(jqxhr, textStatus, errorThrown) {
+				div.find("a.Status").text("Error while uploading : "+jqxhr.responseText);
+			})
+			.always(function() {
+				var newInputFile = inputFile.clone(true).insertAfter(inputFile);
+				inputFile.remove();
+				inputFile = newInputFile.change();
+			});
+		uploader.fileupload("option", "formData", []);
+	};
+	var closeFunction = function() { $(this).dialog("close"); };
+	var buttonsCloseOnly = { Close: closeFunction };
+	var buttonsUploadClose = { Upload: uploadFunction, Close: closeFunction };
+
 	div.dialog({
 			title: "Upload media "+media+" : "+type,
 			modal: true,
 			width: 700,
 			close: function() { $(this).dialog("destroy").remove(); },
-			buttons: {
-				Upload: function() {
-					var data = { files: $(this).find("input:file.File")[0].files };
-					var length = data.files.length;
-					var name = (inputName.prop("disabled") ? undefined : inputName.val());
-					var statustxt = "file"+(length>1?"s":"")+(name?" '"+name+"'":"");
-					uploader.fileupload("option", "formData", [
-						{ name: "media", value: media },
-						{ name: "type", value: type }
-					]);
-					if (name)
-						uploader.fileupload("option", "formData").push({ name: "name", value: name });
-					uploader.fileupload("send", data)
-						.done(function(data, textStatus, jqxhr) {
-							div.find("a.Status").text(data);
-						})
-						.fail(function(jqxhr, textStatus, errorThrown) {
-							div.find("a.Status").text("Error while uploading : "+jqxhr.responseText);
-						})
-						.always(function() {
-							var newInputFile = inputFile.clone(true).insertAfter(inputFile);
-							inputFile.remove();
-							inputFile = newInputFile.change();
-						});
-					uploader.fileupload("option", "formData", []);
-				},
-				Close: function() {
-					$(this).dialog("close");
-				}
-			}
+			buttons: buttonsCloseOnly
 		});
-	var uploadButton = div.dialog("widget").find("div.ui-dialog-buttonset>button:contains('Upload')");
 	inputFile.change(function() {
 		var files = this.files;
 		if (!files || !files.length) {
 			inputName.val("").prop("disabled", true);
-			uploadButton.button("option", "disabled", true);
+			div.dialog("option", "buttons", buttonsCloseOnly);
 			return;
 		}
-		uploadButton.button("option", "disabled", false);
+		div.dialog("option", "buttons", buttonsUploadClose);
 		if (files.length == 1) {
 			var file = files[0];
 			var name = file.name.replace(/\.[^.]*$/, "");
