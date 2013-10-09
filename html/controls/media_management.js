@@ -76,7 +76,7 @@ function setupTab(parentName, childName, previewElement) {
 				}
 			});
 			node.$sb("Src").$sbElement(previewElement).appendTo(newRow.find("td.Preview"));
-			_windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbId", 2);
+			_windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbId", 1);
 		},
 		remove: function(event,node) {
 			$("#"+parentName+">div.Type>table.Type")
