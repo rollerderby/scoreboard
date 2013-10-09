@@ -49,6 +49,8 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			upload(request, response);
 		else if (request.getPathInfo().equals("/download"))
 			download(request, response);
+		else if (request.getPathInfo().equals("/remove"))
+			remove(request, response);
 		else
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	}
@@ -121,6 +123,31 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			setTextResponse(response, HttpServletResponse.SC_OK, "Successfully downloaded 1 remote file");
 		} catch ( MalformedURLException muE ) {
 			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, muE.getMessage());
+		} catch ( IllegalArgumentException iaE ) {
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
+		} catch ( FileNotFoundException fnfE ) {
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, fnfE.getMessage());
+		}
+	}
+
+	protected void remove(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		String media = request.getParameter("media");
+		String type = request.getParameter("type");
+		String filename = request.getParameter("filename");
+
+		try {
+			File typeDir = getTypeDir(media, type, false);
+			File f = new File(typeDir, filename);
+			String path = f.getAbsolutePath();
+
+			if (!f.exists())
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "File does not exist : "+path);
+			else if (f.isDirectory())
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Path is a directory : "+path);
+			else if (!f.delete())
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Could not delete file "+path);
+			else
+				setTextResponse(response, HttpServletResponse.SC_OK, "Successfully removed "+path);
 		} catch ( IllegalArgumentException iaE ) {
 			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
 		} catch ( FileNotFoundException fnfE ) {
