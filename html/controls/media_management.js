@@ -107,7 +107,7 @@ function createRemoveMediaDialog(media, type, node) {
 					type: type,
 					filename: filename
 				}).fail(function(jqxhr, textStatus, errorThrown) {
-					div.find("p.Status").text("Error '"+errorThrown+"' removing media file: "+textStatus);
+					div.find("p.Status").text("Error removing media file: "+jqxhr.responseText);
 					div.dialog("option", "buttons", { Close: function() { div.dialog("close"); } });
 				}).done(function(data, textStatus, jqXHR) {
 					div.dialog("close");
