@@ -83,7 +83,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 						type = item.getString();
 				} else if (item.getName().matches(zipExtRegex)) {
 					processZipFileItem(fiF, item, fileItems);
-				} else if (uploadFileFilter.accept(null, item.getName())) {
+				} else if (uploadFileNameFilter.accept(null, item.getName())) {
 					fileItems.add(item);
 				}
 			}
@@ -219,7 +219,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 		ZipEntry zE;
 		try {
 			while (null != (zE = ziS.getNextEntry())) {
-				if (zE.isDirectory() || !uploadFileFilter.accept(null, zE.getName()))
+				if (zE.isDirectory() || !uploadFileNameFilter.accept(null, zE.getName()))
 					continue;
 				FileItem item = factory.createItem(null, null, false, zE.getName());
 				OutputStream oS = item.getOutputStream();
@@ -243,5 +243,5 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 
 	public static final String zipExtRegex = "^.*[.][zZ][iI][pP]$";
 
-	public static final IOFileFilter uploadFileFilter = MediaXmlDocumentManager.mediaFileFilter;
+	public static final IOFileFilter uploadFileNameFilter = MediaXmlDocumentManager.mediaFileNameFilter;
 }

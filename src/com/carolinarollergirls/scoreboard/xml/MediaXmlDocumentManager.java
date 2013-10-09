@@ -108,7 +108,8 @@ public class MediaXmlDocumentManager extends OpenXmlDocumentManager implements X
   public static final String dbFileRegex = "^.*[.][dD][bB]$";
   public static final String dotFileRegex = "^[.].*$";
   public static final String invalidFileRegex = dbFileRegex+"|"+dotFileRegex;
-  public static final IOFileFilter mediaFileFilter = new AndFileFilter(FileFileFilter.FILE, new NotFileFilter(new RegexFileFilter(invalidFileRegex)));
+  public static final IOFileFilter mediaFileNameFilter = new NotFileFilter(new RegexFileFilter(invalidFileRegex));
+  public static final IOFileFilter mediaFileFilter = new AndFileFilter(FileFileFilter.FILE, mediaFileNameFilter);
 
   public static final long INTERVAL = 1000; // in ms
 }
