@@ -58,14 +58,15 @@ function setupTab(parentName, childName, previewElement) {
 		subChildren: true,
 		add: function(event,node) {
 			var sbType = $sb(node.parent());
+			var media = parentName.toLowerCase();
 			var type = sbType.$sbId;
-			var srcprefix = "/"+parentName.toLowerCase()+"/"+type+"/";
+			var srcprefix = "/"+media+"/"+type+"/";
 			var table = $("#"+parentName+">div.Type>table.Type")
 				.filter(function() { return $(this).data("type") == type; });
 			var newRow = table.find("tr.ItemTemplate").clone(true)
 				.removeClass("ItemTemplate").addClass("Item").data("sbId", node.$sbId);
 			newRow.find("button").button()
-				.filter(".Remove").click(function() { node.$sbRemove(); });
+				.filter(".Remove").click(function() { createRemoveMediaDialog(media, type, node); });
 			node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
 			node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"), {
 				sbelement: {
@@ -83,6 +84,38 @@ function setupTab(parentName, childName, previewElement) {
 				.find("tr.Item")
 				.filter(function() { return $(this).data("sbId") == node.$sbId; })
 				.remove();
+		}
+	});
+}
+
+function createRemoveMediaDialog(media, type, node) {
+	var filename = node.$sbId;
+	var div = $("body>div.RemoveMediaDialog.DialogTemplate").clone(true)
+		.removeClass("DialogTemplate");
+	div.find("a.File").text(media+"/"+type+"/"+filename);
+	div.dialog({
+		title: "Remove media",
+		modal: true,
+		width: 700,
+		close: function() { $(this).dialog("destroy").remove(); },
+		buttons: {
+			"Yes, Remove": function() {
+				div.find("p.Warning,p.Confirm").text("");
+				div.find("p.Status").text("Removing file...");
+				$.post("/Media/remove", {
+					media: media,
+					type: type,
+					filename: filename
+				}).fail(function(jqxhr, textStatus, errorThrown) {
+					div.find("p.Status").text("Error '"+errorThrown+"' removing media file: "+textStatus);
+					div.dialog("option", "buttons", { Close: function() { div.dialog("close"); } });
+				}).done(function(data, textStatus, jqXHR) {
+					div.dialog("close");
+				});
+			},
+			"No": function() {
+				div.dialog("close");
+			}
 		}
 	});
 }
