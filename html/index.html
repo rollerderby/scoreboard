@@ -6,16 +6,16 @@
 <script type="text/javascript">
 
 $(function() {
-  $.get("/version", function(data) { $("#version").html(data); });
-  $.get("/urls", function(data) {
-    var urls = data.trim();
-    if (!urls)
-      $("#URLtext").html("<b>The scoreboard is not networked</b>.  You can access it only from this computer.");
-    else
-      $.each(urls.split("\n"), function(i,e) {
-        $("<a>").attr("href", e).text(e).appendTo("#URLs").wrap("<li>");
-      });
-  });
+	$.get("/version", function(data) { $("#version").html(data); });
+	$.get("/urls", function(data) {
+		var urls = data.trim();
+		if (!urls)
+			$("#URLtext").html("<b>The scoreboard is not networked</b>.	 You can access it only from this computer.");
+		else
+			$.each(urls.split("\n"), function(i,e) {
+				$("<a>").attr("href", e).text(e).appendTo("#URLs").wrap("<li>");
+			});
+	});
 });
 
 </script>
@@ -31,48 +31,48 @@ $(function() {
 </a>
 
 <table>
-  <col width="50%">
-  <col width="50%">
-  <tr>
-    <td>
-      <h3>Scoreboard view/control pages</h3>
-      <a href="controls/operator.html">Main Operator Control Panel</a><br/>
-      <a href="views/scoreboard.html">Main Scoreboard</a><br/>
-      <a href="controls/mobile.html">Mobile Device Operator Controls</a><br/>
-      <a href="controls/media_management.html">Media Management</a><br/>
-      <a href="views/overlay.html">Video Feed Overlay Scoreboard</a><br/>
-      <a href="controls/stream.html">Load/Save Scoreboard "Stream" (beta quality!)</a><br/>
-      <a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
-      <a href="controls/lineups.html">Team Lineup Control Panel (beta quality!)</a><br/>
-    </td>
+	<col width="50%">
+	<col width="50%">
+	<tr>
+		<td>
+			<h3>Scoreboard view/control pages</h3>
+			<a href="controls/operator.html">Main Operator Control Panel</a><br/>
+			<a href="views/scoreboard.html">Main Scoreboard</a><br/>
+			<a href="controls/mobile.html">Mobile Device Operator Controls</a><br/>
+			<a href="controls/media_management.html">Media Management</a><br/>
+			<a href="views/overlay.html">Video Feed Overlay Scoreboard</a><br/>
+			<a href="controls/stream.html">Load/Save Scoreboard "Stream" (beta quality!)</a><br/>
+			<a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
+			<a href="controls/lineups.html">Team Lineup Control Panel (beta quality!)</a><br/>
+		</td>
 
-    <td>
-      <p>
-        <b>Important notice:</b><br/>
-        The scoreboard no longer includes any team logos or sponsor (ad) images.
-        The team logo images are now packaged separately.
-        To get the latest team logo images, go to the
+		<td>
+			<p>
+				<b>Important notice:</b><br/>
+				The scoreboard no longer includes any team logos or sponsor (ad) images.
+				The team logo images are now packaged separately.
+				To get the latest team logo images, go to the
 				<a href="http://sourceforge.net/projects/derbyscoreboard/files/crg-scoreboard/media/">sourceforge download area for media zip files</a>
-				and download the latest crg-scoreboard-images-teamlogo zip file.  Then go to the
-        <a href="controls/media_management.html">Media Management page</a>
-        and on the <i>Image</i> tab click the <i>Upload</i> button on the right side of the
+				and download the latest crg-scoreboard-images-teamlogo zip file.	Then go to the
+				<a href="controls/media_management.html">Media Management page</a>
+				and on the <i>Image</i> tab click the <i>Upload</i> button on the right side of the
 				<i>Type: teamlogo</i> section, and upload the entire zip file of teamlogos.
 				Alternately, you can just upload whatever individual team logo images you have.
 				You can also add or remove team logo (or sponsor/ad) images by simply adding or
 				removing files from the html/images/teamlogo (or sponsor_banner) directory.
-      </p>
+			</p>
 
-      <p>
-        For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
-        see <a href="guide.html">the guide</a>.
-      </p>
+			<p>
+				For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
+				see <a href="guide.html">the guide</a>.
+			</p>
 
-      <p id="URLtext">
-        To access this scoreboard from other computers on this network, try one of these URLs:
-        <ul id="URLs"></ul>
-      </p>
-    </td>
-  </tr>
+			<p id="URLtext">
+				To access this scoreboard from other computers on this network, try one of these URLs:
+				<ul id="URLs"></ul>
+			</p>
+		</td>
+	</tr>
 </table>
 
 </body>
