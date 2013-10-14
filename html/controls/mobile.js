@@ -12,136 +12,136 @@
 XML_ELEMENT_SELECTOR = "ScoreBoard";
 
 $sb(function() {
-  setupJamControlPage();
-  setupPeriodTimePage();
-  setupTeamScorePage();
-  setupPenaltyTimePage();
+	setupJamControlPage();
+	setupPeriodTimePage();
+	setupTeamScorePage();
+	setupPenaltyTimePage();
 });
 
 function setupJamControlPage() {
-  $sb("ScoreBoard.StartJam").$sbControl("#JamControlPage button.StartJam").val(true);
-  $sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
-  $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
-  $sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
-  $sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>a.Name")
-  $sb("ScoreBoard.Timeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
-  $sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
-  $sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>a.Name")
+	$sb("ScoreBoard.StartJam").$sbControl("#JamControlPage button.StartJam").val(true);
+	$sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
+	$sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
+	$sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
+	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>a.Name")
+	$sb("ScoreBoard.Timeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
+	$sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
+	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>a.Name")
 
-  $.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
-      $("#JamControlPage span.ClockBubble."+clock).toggleClass("Running", isTrue(value));
-    });
-  });
-  
-  // Period number
-  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#JamControlPage div.PeriodNumber a.Number");
+	$.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
+		$sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
+			$("#JamControlPage span.ClockBubble."+clock).toggleClass("Running", isTrue(value));
+		});
+	});
+	
+	// Period number
+	$sb("ScoreBoard.Clock(Period).Number").$sbElement("#JamControlPage div.PeriodNumber a.Number");
 
-  // Period Clock
-  $sb("ScoreBoard.Clock(Period).Time").$sbElement("#JamControlPage div.PeriodTime a.Time", { sbelement: {
-	    convert: _timeConversions.msToMinSec
-  }});
-  
-  var showJamControlClock = function(clock) {
-    $("#JamControlPage div.Time").not("."+clock+"Time").hide().end()
-      .filter("."+clock+"Time").show();
-  };
-  // In case no clocks are running now, default to showing only Jam
-  showJamControlClock("Jam");
+	// Period Clock
+	$sb("ScoreBoard.Clock(Period).Time").$sbElement("#JamControlPage div.PeriodTime a.Time", { sbelement: {
+			convert: _timeConversions.msToMinSec
+	}});
+	
+	var showJamControlClock = function(clock) {
+		$("#JamControlPage div.Time").not("."+clock+"Time").hide().end()
+			.filter("."+clock+"Time").show();
+	};
+	// In case no clocks are running now, default to showing only Jam
+	showJamControlClock("Jam");
 
-  // Setup clocks
-  $.each([ "Jam", "Lineup", "Timeout" ], function(i, clock) {
-    $sb("Scoreboard.Clock("+clock+").Time").$sbElement("#JamControlPage div."+clock+"Time a.Time", { sbelement: {
-      convert: _timeConversions.msToMinSec
-    }});
-    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(e, v) {
-	    if (isTrue(v))
-        showJamControlClock(clock);
-    });
-  });
+	// Setup clocks
+	$.each([ "Jam", "Lineup", "Timeout" ], function(i, clock) {
+		$sb("Scoreboard.Clock("+clock+").Time").$sbElement("#JamControlPage div."+clock+"Time a.Time", { sbelement: {
+			convert: _timeConversions.msToMinSec
+		}});
+		$sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(e, v) {
+			if (isTrue(v))
+				showJamControlClock(clock);
+		});
+	});
 }
 
 function setupPeriodTimePage() {
-  var time = $sb("ScoreBoard.Clock(Period).Time");
+	var time = $sb("ScoreBoard.Clock(Period).Time");
 
-  time.$sbElement("#PeriodTimePage a.Time", { sbelement: {
-    convert: _timeConversions.msToMinSec
-  }});
+	time.$sbElement("#PeriodTimePage a.Time", { sbelement: {
+		convert: _timeConversions.msToMinSec
+	}});
 
-  time.$sbControl("#PeriodTimePage button.TimeDown", { sbcontrol: {
-    sbSetAttrs: { change: true }
-  }});
-  time.$sbControl("#PeriodTimePage button.TimeUp", { sbcontrol: {
-    sbSetAttrs: { change: true }
-  }});
+	time.$sbControl("#PeriodTimePage button.TimeDown", { sbcontrol: {
+		sbSetAttrs: { change: true }
+	}});
+	time.$sbControl("#PeriodTimePage button.TimeUp", { sbcontrol: {
+		sbSetAttrs: { change: true }
+	}});
 
-  time.$sbControl("#PeriodTimePage input:text.SetTime,#PeriodTimePage button.SetTime", {
-    sbcontrol: {
-      convert: _timeConversions.minSecToMs,
-      delayupdate: true,
-      noSetControlValue: true
-    }
-  });
+	time.$sbControl("#PeriodTimePage input:text.SetTime,#PeriodTimePage button.SetTime", {
+		sbcontrol: {
+			convert: _timeConversions.minSecToMs,
+			delayupdate: true,
+			noSetControlValue: true
+		}
+	});
 }
 
 function setupPenaltyTimePage() {
 
-  var ptime = $sb("ScoreBoard.Clock(Period).Time");
-  var jtime = $sb("ScoreBoard.Clock(Jam).Time");
-    
-  jtime.$sbElement("#PenaltyPage a.JamTime", { sbelement: {
-    convert: _timeConversions.msToMinSec
-  }});
-  ptime.$sbElement("#PenaltyPage a.PeriodTime", { sbelement: {
-	    convert: _timeConversions.msToMinSec
-	  }});
-  // Set the times to 1:00
-  $.each(["#Jammer1", "#Blocker1Team1","#Blocker2Team1", "#Blocker3Team1", "#Jammer2", "#Blocker1Team2","#Blocker2Team2", "#Blocker3Team2"], function(i, v) {
-	  $(v).data('timeleft', 60000);
-	  $(v).data('isrunning', false);
-	  $(v).data('endtime', 0);
-	  $(v).data('paused', false);
-	  $(v).data('enabled', true);
-	  $(v).data('set', 0);
-	  $(v).data('timelocked', false);
-	  $(v+"Time").hide();
-  });
-  $("#Blocker1Team1").data('enabled', true);
-  $("#Blocker2Team1").data('enabled', true);
-  $("#Blocker1Team2").data('enabled', true);
-  $("#Blocker2Team2").data('enabled', true);
-  $sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("sbchange", function(e, v) { updatePenaltyClocks(parseInt(v)) });
-  updatePenaltyClocks(1800000);
+	var ptime = $sb("ScoreBoard.Clock(Period).Time");
+	var jtime = $sb("ScoreBoard.Clock(Jam).Time");
+		
+	jtime.$sbElement("#PenaltyPage a.JamTime", { sbelement: {
+		convert: _timeConversions.msToMinSec
+	}});
+	ptime.$sbElement("#PenaltyPage a.PeriodTime", { sbelement: {
+			convert: _timeConversions.msToMinSec
+		}});
+	// Set the times to 1:00
+	$.each(["#Jammer1", "#Blocker1Team1","#Blocker2Team1", "#Blocker3Team1", "#Jammer2", "#Blocker1Team2","#Blocker2Team2", "#Blocker3Team2"], function(i, v) {
+		$(v).data('timeleft', 60000);
+		$(v).data('isrunning', false);
+		$(v).data('endtime', 0);
+		$(v).data('paused', false);
+		$(v).data('enabled', true);
+		$(v).data('set', 0);
+		$(v).data('timelocked', false);
+		$(v+"Time").hide();
+	});
+	$("#Blocker1Team1").data('enabled', true);
+	$("#Blocker2Team1").data('enabled', true);
+	$("#Blocker1Team2").data('enabled', true);
+	$("#Blocker2Team2").data('enabled', true);
+	$sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("sbchange", function(e, v) { updatePenaltyClocks(parseInt(v)) });
+	updatePenaltyClocks(1800000);
  
 }
 
 
 function setupTeamScorePage() {
-  $.each([ "1", "2" ], function(i, n) {
-    var team = $sb("ScoreBoard.Team("+n+")");
-    var score = team.$sb("Score");
+	$.each([ "1", "2" ], function(i, n) {
+		var team = $sb("ScoreBoard.Team("+n+")");
+		var score = team.$sb("Score");
 
-    team.$sb("Name").$sbElement("#TeamScorePage span.Team"+n+".Name");
+		team.$sb("Name").$sbElement("#TeamScorePage span.Team"+n+".Name");
 
-    $.each([ "#Team"+n+"ScorePage", "#TeamBothScorePage" ], function(ii, e) {
-      team.$sb("Name").$sbElement(e+" .Team"+n+".Name");
-      score.$sbElement(e+" a.Team"+n+".Score");
-      score.$sbControl(e+" button.Team"+n+".ScoreDown", { sbcontrol: {
-        sbSetAttrs: { change: true }
-      }});
-      score.$sbControl(e+" button.Team"+n+".ScoreUp", { sbcontrol: {
-        sbSetAttrs: { change: true }
-      }});
+		$.each([ "#Team"+n+"ScorePage", "#TeamBothScorePage" ], function(ii, e) {
+			team.$sb("Name").$sbElement(e+" .Team"+n+".Name");
+			score.$sbElement(e+" a.Team"+n+".Score");
+			score.$sbControl(e+" button.Team"+n+".ScoreDown", { sbcontrol: {
+				sbSetAttrs: { change: true }
+			}});
+			score.$sbControl(e+" button.Team"+n+".ScoreUp", { sbcontrol: {
+				sbSetAttrs: { change: true }
+			}});
 
-    });
+		});
 
-    score.$sbControl("#TeamBothScorePage input[type='number'].Team"+n+".SetScore,#TeamBothScorePage button.Team"+n+".SetScore", {
-      sbcontrol: {
-        delayupdate: true,
-        noSetControlValue: true
-      }
-    });
-  });
+		score.$sbControl("#TeamBothScorePage input[type='number'].Team"+n+".SetScore,#TeamBothScorePage button.Team"+n+".SetScore", {
+			sbcontrol: {
+				delayupdate: true,
+				noSetControlValue: true
+			}
+		});
+	});
 }
  
 function updatePenaltyClocks(periodClock) {
@@ -153,16 +153,16 @@ function updatePenaltyClocks(periodClock) {
 		// Logic is:
 		// Are there two blockers in the box? Does one of them have less than 10 seconds left? If so, enable all buttons.
 		// else
-		//   if button 3 is running, disable which ever one isn't running.
-		//   else
-		//   disable button 3, enable button 1 and 2. 
+		//	 if button 3 is running, disable which ever one isn't running.
+		//	 else
+		//	 disable button 3, enable button 1 and 2. 
 		var blockers = 0;
 		var standing = 0;
 		$.each(['Blocker1', 'Blocker2', 'Blocker3'], function (x, blocker) {
 			if ($('#'+blocker+v).data('isrunning')) { blockers++; }
 			if ($('#'+blocker+v).data('timeleft') < 12000 ) { standing++; }
 		}); 
-		if (blockers >= 2 && standing !=  0) {
+		if (blockers >= 2 && standing !=	0) {
 			// Enable all the blockers.
 			$("#Blocker3"+v).data('enabled', true);
 			$("#Blocker1"+v).data('enabled', true);
@@ -249,7 +249,7 @@ function updatePenaltyClocks(periodClock) {
 
 function penaltyButtonClicked(bObj) {
 
-	// navigator.vibrate(500);  // This doesn't work on ANYTHING yet. Sigh.
+	// navigator.vibrate(500);	// This doesn't work on ANYTHING yet. Sigh.
 	var isrunning = bObj.data('isrunning');
 	if (isrunning == false) {
 		console.log(bObj.attr('id'))
@@ -278,7 +278,7 @@ function penaltyButtonClicked(bObj) {
 		$("#BtnClock").click(function() { togglePausePenalty(bObj) });
 		$("#BtnAdd1").click(function() { 
 			// Now, before we just wildly give them an extra minute, does the OTHER jammer have more than 60 secs? We don't care
-			// about sets here, the rules just say 'more than a minute of penalty time'.  See 7.3.10.
+			// about sets here, the rules just say 'more than a minute of penalty time'.	See 7.3.10.
 			var j = bObj.attr('id'); // Which jammer is this
 			var other = (j == 'Jammer1')?'#Jammer2':"#Jammer1"; // This is the other jammer.
 			
@@ -355,7 +355,7 @@ function jammerin(o, t) {
 		// Jammer comes in, there's another jammer already there 
 				
 		// 7.3.10 explicity says that if the other jammer has more than 1 min, release the arriving jammer (eg, this one)
-		// immediately. HOWEVER, this would have been picked up when the button was clicked originally.   The rules say
+		// immediately. HOWEVER, this would have been picked up when the button was clicked originally.		The rules say
 		// this: 
 
 		// When a penalized Jammer is serving more than one consecutive minute in the penalty box and 
@@ -371,15 +371,15 @@ function jammerin(o, t) {
 				$(other).data('endtime', $(other).data('endtime') + 120000);
 				enablePenaltyButton(o, 1000)
 				$("#JammerPopup").popup('close');
-				return;  // Don't lock, all penalties are equal (0 seconds and 0 seconds)
+				return;	 // Don't lock, all penalties are equal (0 seconds and 0 seconds)
 			} else if ( $(other).data('timeleft') > 60000 ) { // They have more than 1
 				// I can take off one minute off yours, and a minute off mine.
 				$(other).data('timeleft', $(other).data('timeleft') - 60000); 
 				$(other).data('endtime', $(other).data('endtime') + 60000);
 				t = 1;
-				// And proceed as normal.  Note the one below will never match this.
+				// And proceed as normal.	 Note the one below will never match this.
 				// We will always have less than 60000msec.
-		    }
+				}
 		}
 		if ( t == 1 && $(other).data('timeleft') > 60000) {
 			// OK, I was given one minute, and the other jammer has more than 1. I can just drop a minute, and release this jammer.

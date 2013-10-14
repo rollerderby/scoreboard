@@ -10,38 +10,38 @@
 
 
 /* ClockBubbles */
-  span.ClockBubble { border-radius: 5px; font-weight: bold; background: rgba(255, 0, 0, 0.5); }
-  span.ClockBubble.Running { background: rgba(0, 255, 0, 0.5); }
+	span.ClockBubble { border-radius: 5px; font-weight: bold; background: rgba(255, 0, 0, 0.5); }
+	span.ClockBubble.Running { background: rgba(0, 255, 0, 0.5); }
 /* END ClockBubbles */
 
 
 /* JamControlPage */
-  #JamControlPage div { text-align: center; }
-  #JamControlPage p.Clocks { text-align: center; }
-  #JamControlPage p.Clocks>span { padding: 0.5em 0.5em; margin: auto 0.5em; }
-  #JamControlPage div.Period div.PeriodNumber { width: 35%; }
-  #JamControlPage div.Period div.PeriodTime { width: 65%; }
-  #JamControlPage div.Period div.Title { font-size: 150%; }
-  #JamControlPage div.Period div.Number { font-size: 200% }
-  #JamControlPage div.Period div.PeriodTime { font-size: 500%; }
-  #JamControlPage div.Time a.Time { font-size: 150%; }
+	#JamControlPage div { text-align: center; }
+	#JamControlPage p.Clocks { text-align: center; }
+	#JamControlPage p.Clocks>span { padding: 0.5em 0.5em; margin: auto 0.5em; }
+	#JamControlPage div.Period div.PeriodNumber { width: 35%; }
+	#JamControlPage div.Period div.PeriodTime { width: 65%; }
+	#JamControlPage div.Period div.Title { font-size: 150%; }
+	#JamControlPage div.Period div.Number { font-size: 200% }
+	#JamControlPage div.Period div.PeriodTime { font-size: 500%; }
+	#JamControlPage div.Time a.Time { font-size: 150%; }
 /* END JamControlPage */
 
 /* PeriodTimePage */
-  #PeriodTimePage p { text-align: center; }
-  #PeriodTimePage a.Time { font-size: 150%; }
+	#PeriodTimePage p { text-align: center; }
+	#PeriodTimePage a.Time { font-size: 150%; }
 /* END PeriodTimePage */
 
 /* TeamScorePage */
-  #TeamBothScorePage div { text-align: center; }
-  #Team1ScorePage div { text-align: center; }
-  #Team2ScorePage div { text-align: center; }
+	#TeamBothScorePage div { text-align: center; }
+	#Team1ScorePage div { text-align: center; }
+	#Team2ScorePage div { text-align: center; }
 /* END TeamScorePage */
 
 /* PenaltyPage */
-  .TimeHeader { text-align: center; font-size: 150%; }
-  #JamTime,#PeriodTime { text-align: center; font-size: 300%; }
-  .PenaltyTime { font-size: 300%; }
-  #Jammer1Time,#Blocker1Team1Time,#Blocker2Team1Time,#Blocker3Team1Time { margin-left: .5em; }
-  #Jammer2Time,#Blocker1Team2Time,#Blocker2Team2Time,#Blocker3Team2Time { float: right; margin-right: .5em; }
+	.TimeHeader { text-align: center; font-size: 150%; }
+	#JamTime,#PeriodTime { text-align: center; font-size: 300%; }
+	.PenaltyTime { font-size: 300%; }
+	#Jammer1Time,#Blocker1Team1Time,#Blocker2Team1Time,#Blocker3Team1Time { margin-left: .5em; }
+	#Jammer2Time,#Blocker1Team2Time,#Blocker2Team2Time,#Blocker3Team2Time { float: right; margin-right: .5em; }
 

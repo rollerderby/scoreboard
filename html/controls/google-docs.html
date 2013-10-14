@@ -17,13 +17,13 @@
 <script type="text/javascript">
 
 $sb(function() {
-  $("#LoginButton").click(function() {
-    var username = $("#Username").val();
-    if (username != "")
-      $sb("Stats.GoogleDocs.Username").$sbSet(username);
-    $sb("Stats.GoogleDocs.Password").$sbSet($("#Password").val());
-    $("#Password").val("");
-  });
+	$("#LoginButton").click(function() {
+		var username = $("#Username").val();
+		if (username != "")
+			$sb("Stats.GoogleDocs.Username").$sbSet(username);
+		$sb("Stats.GoogleDocs.Password").$sbSet($("#Password").val());
+		$("#Password").val("");
+	});
 });
 
 </script>
@@ -39,10 +39,10 @@ $sb(function() {
 <div>Last Communication Error : <a data-sbelement="Stats.GoogleDocs.CommunicationError" ></a></div>
 <hr />
 <div>
-  Spreadsheet<br />
-  Title : <a data-sbelement="Stats.GoogleDocs.Spreadsheet.Title" ></a><br />
-  Id : <a data-sbelement="Stats.GoogleDocs.Spreadsheet.Id" ></a><br />
-  Link : <a data-sbelement="Stats.GoogleDocs.Spreadsheet.Link" ></a><br />
+	Spreadsheet<br />
+	Title : <a data-sbelement="Stats.GoogleDocs.Spreadsheet.Title" ></a><br />
+	Id : <a data-sbelement="Stats.GoogleDocs.Spreadsheet.Id" ></a><br />
+	Link : <a data-sbelement="Stats.GoogleDocs.Spreadsheet.Link" ></a><br />
 </div>
 <hr />
 <div>Username : <a data-sbelement="Stats.GoogleDocs.Username" ></a></div>
@@ -50,9 +50,9 @@ $sb(function() {
 <div>Last Authentication Error : <a data-sbelement="Stats.GoogleDocs.AuthenticationError" ></a></div>
 <hr />
 <div>
-  Username : <input type="text" size="20" id="Username" />
-  Password : <input type="password" size="20" id="Password" />
-  <input type="button" id="LoginButton" value="Login" />
+	Username : <input type="text" size="20" id="Username" />
+	Password : <input type="password" size="20" id="Password" />
+	<input type="button" id="LoginButton" value="Login" />
 </div>
 
 </center>
