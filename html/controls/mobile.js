@@ -123,7 +123,7 @@ function setupTeamScorePage() {
 
 		team.$sb("Name").$sbElement("#TeamScorePage span.Team"+n+".Name");
 
-		$.each([ "#Team"+n+"ScorePage", "#TeamBothScorePage" ], function(ii, e) {
+		$.each([ "#Team"+n+"ScorePage", "#TeamSetScorePage", "#TeamBothScorePage" ], function(ii, e) {
 			team.$sb("Name").$sbElement(e+" .Team"+n+".Name");
 			score.$sbElement(e+" a.Team"+n+".Score");
 			score.$sbControl(e+" button.Team"+n+".ScoreDown", { sbcontrol: {
@@ -135,13 +135,23 @@ function setupTeamScorePage() {
 
 		});
 
-		score.$sbControl("#TeamBothScorePage input[type='number'].Team"+n+".SetScore,#TeamBothScorePage button.Team"+n+".SetScore", {
+		score.$sbControl("#TeamSetScorePage input[type='number'].Team"+n+".SetScore,#TeamSetScorePage button.Team"+n+".SetScore", {
 			sbcontrol: {
 				delayupdate: true,
 				noSetControlValue: true
 			}
 		});
 	});
+
+	var vert = false;
+	$("#TeamBothScorePage a.HVButton").click(function() {
+		vert = !vert;
+		var text = (vert ? "Vertical" : "Horizontal");
+		$(this).find(".ui-btn-text").text(text);
+		$("#TeamBothScorePage div.HV")
+			.toggleClass("IsHorizontal", !vert)
+			.toggleClass("IsVertical", vert);
+	}).click();
 }
  
 function updatePenaltyClocks(periodClock) {

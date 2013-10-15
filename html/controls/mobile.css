@@ -33,9 +33,20 @@
 /* END PeriodTimePage */
 
 /* TeamScorePage */
+	#TeamSetScorePage div { text-align: center; }
 	#TeamBothScorePage div { text-align: center; }
 	#Team1ScorePage div { text-align: center; }
 	#Team2ScorePage div { text-align: center; }
+
+	#TeamBothScorePage div.HV.Horizontal:not(.IsHorizontal) { display: none; }
+	#TeamBothScorePage div.HV.Vertical:not(.IsVertical) { display: none; }
+
+@media (orientation:portrait) {
+	#TeamBothScorePage div.Orientation:not(.Portrait) { display: none; }
+}
+@media (orientation:landscape) {
+	#TeamBothScorePage div.Orientation:not(.Landscape) { display: none; }
+}
 /* END TeamScorePage */
 
 /* PenaltyPage */
@@ -44,4 +55,3 @@
 	.PenaltyTime { font-size: 300%; }
 	#Jammer1Time,#Blocker1Team1Time,#Blocker2Team1Time,#Blocker3Team1Time { margin-left: .5em; }
 	#Jammer2Time,#Blocker1Team2Time,#Blocker2Team2Time,#Blocker3Team2Time { float: right; margin-right: .5em; }
-
