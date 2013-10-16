@@ -23,56 +23,56 @@ import com.carolinarollergirls.scoreboard.model.*;
 
 public class FormatSpecifiersServlet extends DefaultScoreBoardControllerServlet
 {
-  public FormatSpecifiersServlet() { }
+	public FormatSpecifiersServlet() { }
 
-  public String getPath() { return "/FormatSpecifiers"; }
+	public String getPath() { return "/FormatSpecifiers"; }
 
-  public void setScoreBoardModel(ScoreBoardModel model) {
-    super.setScoreBoardModel(model);
-    formatSpecifierViewer = new FormatSpecifierViewer(model);
-  }
+	public void setScoreBoardModel(ScoreBoardModel model) {
+		super.setScoreBoardModel(model);
+		formatSpecifierViewer = new FormatSpecifierViewer(model);
+	}
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-    response.setHeader("Cache-Control", "no-cache");
-    response.setHeader("Expires", "-1");
-    response.setCharacterEncoding("UTF-8");
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Expires", "-1");
+		response.setCharacterEncoding("UTF-8");
 
-    if ("/descriptions".equals(request.getPathInfo())) {
-      Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
-      Iterator<String> keys = m.keySet().iterator();
-      response.setContentType("text/plain");
-      while (keys.hasNext()) {
-        String key = keys.next();
-        response.getWriter().println(key+" : "+m.get(key));
-      }
-      response.setStatus(HttpServletResponse.SC_OK);
-    } else if ("/description".equals(request.getPathInfo())) {
-      String format = request.getParameter("format");
-      String description = formatSpecifierViewer.getFormatSpecifierDescription(format);
-      response.setContentType("text/plain");
-      response.getWriter().print(description);
-      response.setStatus(HttpServletResponse.SC_OK);
-    } else if ("/keys".equals(request.getPathInfo())) {
-      Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
-      Iterator<String> keys = m.keySet().iterator();
-      response.setContentType("text/plain");
-      while (keys.hasNext())
-        response.getWriter().println(keys.next());
-      response.setStatus(HttpServletResponse.SC_OK);
-    }
-  }
+		if ("/descriptions".equals(request.getPathInfo())) {
+			Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
+			Iterator<String> keys = m.keySet().iterator();
+			response.setContentType("text/plain");
+			while (keys.hasNext()) {
+				String key = keys.next();
+				response.getWriter().println(key+" : "+m.get(key));
+			}
+			response.setStatus(HttpServletResponse.SC_OK);
+		} else if ("/description".equals(request.getPathInfo())) {
+			String format = request.getParameter("format");
+			String description = formatSpecifierViewer.getFormatSpecifierDescription(format);
+			response.setContentType("text/plain");
+			response.getWriter().print(description);
+			response.setStatus(HttpServletResponse.SC_OK);
+		} else if ("/keys".equals(request.getPathInfo())) {
+			Map<String,String> m = formatSpecifierViewer.getFormatSpecifierDescriptions();
+			Iterator<String> keys = m.keySet().iterator();
+			response.setContentType("text/plain");
+			while (keys.hasNext())
+				response.getWriter().println(keys.next());
+			response.setStatus(HttpServletResponse.SC_OK);
+		}
+	}
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-    response.setHeader("Cache-Control", "no-cache");
-    response.setHeader("Expires", "-1");
-    response.setCharacterEncoding("UTF-8");
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		response.setHeader("Cache-Control", "no-cache");
+		response.setHeader("Expires", "-1");
+		response.setCharacterEncoding("UTF-8");
 
-    if ("/parse".equals(request.getPathInfo())) {
-      response.setContentType("text/plain");
-      response.getWriter().print(formatSpecifierViewer.parse(request.getParameter("format")));
-      response.setStatus(HttpServletResponse.SC_OK);
-    }
-  }
+		if ("/parse".equals(request.getPathInfo())) {
+			response.setContentType("text/plain");
+			response.getWriter().print(formatSpecifierViewer.parse(request.getParameter("format")));
+			response.setStatus(HttpServletResponse.SC_OK);
+		}
+	}
 
-  protected FormatSpecifierViewer formatSpecifierViewer;
+	protected FormatSpecifierViewer formatSpecifierViewer;
 }

@@ -18,11 +18,11 @@ body { margin: 0px; }
 table.RowTable { border-spacing: 0px; }
 
 /* Key Control */
-  .KeyControl span.Indicator { font-size: 75%; }
-  .KeyControl:not(.HasControlKey) span.Indicator { display: none; }
-  .KeyControl>span { padding: .3em .6em !important; }
-  .KeyControl.Editing { border: 1px solid #f00; }
-  .KeyControl.Editing.hover { background: #faa; }
+	.KeyControl span.Indicator { font-size: 75%; }
+	.KeyControl:not(.HasControlKey) span.Indicator { display: none; }
+	.KeyControl>span { padding: .3em .6em !important; }
+	.KeyControl.Editing { border: 1px solid #f00; }
+	.KeyControl.Editing.hover { background: #faa; }
 /* End Key Control */
 
 
@@ -30,97 +30,97 @@ table.RowTable { border-spacing: 0px; }
 /*** Tabs ***/
 
 /* Team/Time Tab */
-  #TeamTime a { font-weight: bold; }
+	#TeamTime a { font-weight: bold; }
 
-  #TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
-  #TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
-  #TeamTime table.TabTable>tbody>tr>td { border-top: 1px dashed black; }
-  #TeamTime table.TabTable>tbody>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; border-top: none; }
-  #TeamTime table.TabTable>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; }
-  #TeamTime table.TabTable>tbody>tr:only-of-type>td { border-radius: 12px; }
-  #TeamTime table.TabTable>tbody>tr.Hidden>td { display: none; }
+	#TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
+	#TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
+	#TeamTime table.TabTable>tbody>tr>td { border-top: 1px dashed black; }
+	#TeamTime table.TabTable>tbody>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; border-top: none; }
+	#TeamTime table.TabTable>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; }
+	#TeamTime table.TabTable>tbody>tr:only-of-type>td { border-radius: 12px; }
+	#TeamTime table.TabTable>tbody>tr.Hidden>td { display: none; }
 
-  #TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
-  #TeamTime table.MetaControl { font-size: 65%; }
-  #TeamTime table.MetaControl>tbody>tr>td { background: #eee; }
+	#TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
+	#TeamTime table.MetaControl { font-size: 65%; }
+	#TeamTime table.MetaControl>tbody>tr>td { background: #eee; }
 
-  #TeamTime table.JamControl>tbody>tr>td { width: 100%; }
-  #TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
-  #TeamTime table.JamControl tr.UndoControls:not(.ShowUndo) { display: none; }
+	#TeamTime table.JamControl>tbody>tr>td { width: 100%; }
+	#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
+	#TeamTime table.JamControl tr.UndoControls:not(.ShowUndo) { display: none; }
 
-  #TeamTime table.Team>tbody>tr>td { width: 50%; }
-  #TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; }
-  #TeamTime table.Team tr.Name td.Logo img { height: 50px; vertical-align: middle; }
-  #TeamTime table.Team tr.Score td.Score a { font-size: 300%; }
-  #TeamTime table.Team tr.Score td.Score a.Change { font-size: 200%; line-height: 175%; }
-  #TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; }
-  #TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; }
-  #TeamTime table.Team tr.Jammer td.Jammer:not(.ByName) select.Jammer.ByName { display: none; }
-  #TeamTime table.Team tr.Jammer td.Jammer:not(.ByNumber) select.Jammer.ByNumber { display: none; }
-  #TeamTime table.Team tr.Jammer td.Jammer:not(.AlphaSort) select.Jammer.AlphaSort { display: none; }
-  #TeamTime table.Team tr.Jammer td.Jammer:not(.NumSort) select.Jammer.NumSort { display: none; }
-  #TeamTime table.Team tr.Pass td.Pass a { font-size: 150%; }
+	#TeamTime table.Team>tbody>tr>td { width: 50%; }
+	#TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; }
+	#TeamTime table.Team tr.Name td.Logo img { height: 50px; vertical-align: middle; }
+	#TeamTime table.Team tr.Score td.Score a { font-size: 300%; }
+	#TeamTime table.Team tr.Score td.Score a.Change { font-size: 200%; line-height: 175%; }
+	#TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; }
+	#TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; }
+	#TeamTime table.Team tr.Jammer td.Jammer:not(.ByName) select.Jammer.ByName { display: none; }
+	#TeamTime table.Team tr.Jammer td.Jammer:not(.ByNumber) select.Jammer.ByNumber { display: none; }
+	#TeamTime table.Team tr.Jammer td.Jammer:not(.AlphaSort) select.Jammer.AlphaSort { display: none; }
+	#TeamTime table.Team tr.Jammer td.Jammer:not(.NumSort) select.Jammer.NumSort { display: none; }
+	#TeamTime table.Team tr.Pass td.Pass a { font-size: 150%; }
 
-  #TeamTime table.Time>tbody>tr>td { width: 20%; }
-  #TeamTime table.Time tr.Name td.Name.Running { background: #3f3; }
-  #TeamTime table.Time tr.Name td.Name a { font-size: 150%; }
-  #TeamTime table.Time tr.Number td.Number a { font-size: 150%; }
-  #TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
-  #TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
+	#TeamTime table.Time>tbody>tr>td { width: 20%; }
+	#TeamTime table.Time tr.Name td.Name.Running { background: #3f3; }
+	#TeamTime table.Time tr.Name td.Name a { font-size: 150%; }
+	#TeamTime table.Time tr.Number td.Number a { font-size: 150%; }
+	#TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
+	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 /* End Team/Time Tab */
 
 /* Policies */
-  #Policies tr.ExpandCollapseAll>td { background: #eee; border-radius: 12px; text-align: center; }
-  #Policies tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; text-align: center; }
-  #Policies tr.Name>td.Hide { border-radius: 12px; }
-  #Policies tr.Content>td { background: #eee; }
-  #Policies tr.Content>td.Description { border-radius: 0px 0px 0px 12px; width: 60%; text-align: left; }
-  #Policies tr.Content>td.Controls { border-radius: 0px 0px 12px 0px; width: 40%; text-align: center; }
+	#Policies tr.ExpandCollapseAll>td { background: #eee; border-radius: 12px; text-align: center; }
+	#Policies tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; text-align: center; }
+	#Policies tr.Name>td.Hide { border-radius: 12px; }
+	#Policies tr.Content>td { background: #eee; }
+	#Policies tr.Content>td.Description { border-radius: 0px 0px 0px 12px; width: 60%; text-align: left; }
+	#Policies tr.Content>td.Controls { border-radius: 0px 0px 12px 0px; width: 40%; text-align: center; }
 /* End Policies */
 
 /* ScoreBoard View */
-  #ScoreBoardView.UsePreview>tbody>tr.View { display: none; }
-  #ScoreBoardView:not(.UsePreview)>tbody>tr.Preview { display: none; }
-  #ScoreBoardView>tbody>tr>td { text-align: center; width: 100%; background: #eee; }
-  #ScoreBoardView>tbody>tr>td.Header { background: #ccc; border-radius: 12px 12px 0px 0px; }
-  #ScoreBoardView>tbody>tr>td.Header.NoChildren { border-radius: 12px; }
-  #ScoreBoardView>tbody>tr>td.Footer { border-radius: 0px 0px 12px 12px; }
-  #ScoreBoardView>tbody>tr>td.PreviewControl a { font-size: 150%; font-weight: bold; }
-  #ScoreBoardView>tbody>tr>td.ViewFrames iframe { width: 100%; height: 300px; }
+	#ScoreBoardView.UsePreview>tbody>tr.View { display: none; }
+	#ScoreBoardView:not(.UsePreview)>tbody>tr.Preview { display: none; }
+	#ScoreBoardView>tbody>tr>td { text-align: center; width: 100%; background: #eee; }
+	#ScoreBoardView>tbody>tr>td.Header { background: #ccc; border-radius: 12px 12px 0px 0px; }
+	#ScoreBoardView>tbody>tr>td.Header.NoChildren { border-radius: 12px; }
+	#ScoreBoardView>tbody>tr>td.Footer { border-radius: 0px 0px 12px 12px; }
+	#ScoreBoardView>tbody>tr>td.PreviewControl a { font-size: 150%; font-weight: bold; }
+	#ScoreBoardView>tbody>tr>td.ViewFrames iframe { width: 100%; height: 300px; }
 /* End ScoreBoard View */
 
 /* Teams Control */
-  #Teams>tbody>tr>td { text-align: center; }
-  #Teams>tbody>tr.Selection>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
-  #Teams>tbody>tr.Selection.NoneSelected>td { border-radius: 12px; }
-  #Teams>tbody>tr.Team>td { background: #eee; border-radius: 0px 0px 12px 12px; }
+	#Teams>tbody>tr>td { text-align: center; }
+	#Teams>tbody>tr.Selection>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
+	#Teams>tbody>tr.Selection.NoneSelected>td { border-radius: 12px; }
+	#Teams>tbody>tr.Team>td { background: #eee; border-radius: 0px 0px 12px 12px; }
 
-  #Teams table.Team { width: 100%; border-spacing: 0px; }
-  #Teams table.Team.Hide { display: none; }
+	#Teams table.Team { width: 100%; border-spacing: 0px; }
+	#Teams table.Team.Hide { display: none; }
 
-  #Teams table.Skaters { width: 100%; border-spacing: 0px; }
-  #Teams table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; }
-  #Teams table.Skaters.Empty tr:last-of-type>th:last-of-type { border-radius: 0px 0px 12px 0px; }
-  #Teams table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; }
-  #Teams table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; }
-  #Teams table.Skaters col.Id { width: 15%; }
-  #Teams table.Skaters col.Name { width: 40%; }
-  #Teams table.Skaters col.Number { width: 30%; }
-  #Teams table.Skaters col.Button { width: 15%; }
+	#Teams table.Skaters { width: 100%; border-spacing: 0px; }
+	#Teams table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; }
+	#Teams table.Skaters.Empty tr:last-of-type>th:last-of-type { border-radius: 0px 0px 12px 0px; }
+	#Teams table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; }
+	#Teams table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; }
+	#Teams table.Skaters col.Id { width: 15%; }
+	#Teams table.Skaters col.Name { width: 40%; }
+	#Teams table.Skaters col.Number { width: 30%; }
+	#Teams table.Skaters col.Button { width: 15%; }
 
-  #Teams table.Skaters th.Title { font-size: 200%; }
-  #Teams table.Skaters td.Id { font-size: 75%; }
-  #Teams table.Skaters button.AddSkater>span { padding-top: 0em; padding-bottom: 0em; }
-  #Teams table.Skaters button.RemoveSkater>span { padding-top: 0em; padding-bottom: 0em; }
+	#Teams table.Skaters th.Title { font-size: 200%; }
+	#Teams table.Skaters td.Id { font-size: 75%; }
+	#Teams table.Skaters button.AddSkater>span { padding-top: 0em; padding-bottom: 0em; }
+	#Teams table.Skaters button.RemoveSkater>span { padding-top: 0em; padding-bottom: 0em; }
 /* End Teams Control */
 
 /* Save/Load Control */
-  #SaveLoad table { width: 100%; border-spacing: 1px 0px; }
-  #SaveLoad table tr>td { text-align: center; background: #eee; }
-  #SaveLoad table tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
-  #SaveLoad table tr.Content>td:first-of-type { border-radius: 0px 0px 0px 12px; }
-  #SaveLoad table tr.Content>td:last-of-type { border-radius: 0px 0px 12px 0px; }
-  #SaveLoad table tr.Content>td:only-of-type { border-radius: 0px 0px 12px 12px; }
+	#SaveLoad table { width: 100%; border-spacing: 1px 0px; }
+	#SaveLoad table tr>td { text-align: center; background: #eee; }
+	#SaveLoad table tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
+	#SaveLoad table tr.Content>td:first-of-type { border-radius: 0px 0px 0px 12px; }
+	#SaveLoad table tr.Content>td:last-of-type { border-radius: 0px 0px 12px 0px; }
+	#SaveLoad table tr.Content>td:only-of-type { border-radius: 0px 0px 12px 12px; }
 /* End Save/Load Control */
 
 
@@ -128,58 +128,58 @@ table.RowTable { border-spacing: 0px; }
 /*** Dialogs ***/
 
 /* Time Control Dialog */
-  table.TimeDialog { width: 100%; border-spacing: 0px; }
-  table.TimeDialog table { width: 100%; border-spacing: 0px; }
-  table.TimeDialog>tbody>tr>td { width: 100%; text-align: center; }
-  table.TimeDialog table td.Title { background: #ccc; border-radius: 12px 12px 0px 0px; }
-  table.TimeDialog table td:not(.Title) { background: #eee; }
-  table.TimeDialog table tr:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }
-  table.TimeDialog table tr:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
-  table.TimeDialog a.Time { font-weight: bold; }
-  table.TimeDialog button.Set>span { padding: 0.1em 1em; }
+	table.TimeDialog { width: 100%; border-spacing: 0px; }
+	table.TimeDialog table { width: 100%; border-spacing: 0px; }
+	table.TimeDialog>tbody>tr>td { width: 100%; text-align: center; }
+	table.TimeDialog table td.Title { background: #ccc; border-radius: 12px 12px 0px 0px; }
+	table.TimeDialog table td:not(.Title) { background: #eee; }
+	table.TimeDialog table tr:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }
+	table.TimeDialog table tr:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
+	table.TimeDialog a.Time { font-weight: bold; }
+	table.TimeDialog button.Set>span { padding: 0.1em 1em; }
 /* End Time Control Dialog */
 
 /* Alternate Names Dialog */
-  div.AlternateNamesDialog table { width: 100%; border-spacing: 0px; }
-  div.AlternateNamesDialog table tr>th.X { width: 10%; }
-  div.AlternateNamesDialog table tr>th.Id { width: 45%; }
-  div.AlternateNamesDialog table tr>th.Name { width: 45%; }
-  div.AlternateNamesDialog table tr>th { background: #ccc; }
-  div.AlternateNamesDialog table tr>th:first-of-type { border-radius: 5px 0px 0px 0px; }
-  div.AlternateNamesDialog table tr>th:last-of-type { border-radius: 0px 5px 0px 0px; }
-  div.AlternateNamesDialog table tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 5px; }
-  div.AlternateNamesDialog table tr:last-of-type>td:last-of-type { border-radius: 0px 0px 5px 0px; }
-  div.AlternateNamesDialog table tr>td { text-align: center; }
-  div.AlternateNamesDialog table tr:nth-of-type(odd)>td { background: #eee; }
-  div.AlternateNamesDialog table tr:nth-of-type(even)>td { background: #ddd; }
+	div.AlternateNamesDialog table { width: 100%; border-spacing: 0px; }
+	div.AlternateNamesDialog table tr>th.X { width: 10%; }
+	div.AlternateNamesDialog table tr>th.Id { width: 45%; }
+	div.AlternateNamesDialog table tr>th.Name { width: 45%; }
+	div.AlternateNamesDialog table tr>th { background: #ccc; }
+	div.AlternateNamesDialog table tr>th:first-of-type { border-radius: 5px 0px 0px 0px; }
+	div.AlternateNamesDialog table tr>th:last-of-type { border-radius: 0px 5px 0px 0px; }
+	div.AlternateNamesDialog table tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 5px; }
+	div.AlternateNamesDialog table tr:last-of-type>td:last-of-type { border-radius: 0px 0px 5px 0px; }
+	div.AlternateNamesDialog table tr>td { text-align: center; }
+	div.AlternateNamesDialog table tr:nth-of-type(odd)>td { background: #eee; }
+	div.AlternateNamesDialog table tr:nth-of-type(even)>td { background: #ddd; }
 /* End Alternate Names Dialog */
 
 /* Teams Assign Dialog */
-  div.TeamsAssignDialog h4 { text-align: center; }
+	div.TeamsAssignDialog h4 { text-align: center; }
 /* End Teams Assign Dialog */
 
 /* Teams Remove Dialog */
-  div.TeamsRemoveDialog { text-align: center; }
-  div.TeamsRemoveDialog a.Title { font-size: 125%; }
-  div.TeamsRemoveDialog a.Remove { font-size: 150%; }
-  div.TeamsRemoveDialog a.Target { font-weight: bold; font-size: 250%; }
-  div.TeamsRemoveDialog a.Name { }
-  div.TeamsRemoveDialog a.AreYouSure { font-weight: bold; font-size: 300%; }
-  div.TeamsRemoveDialog button.No { float: left; }
-  div.TeamsRemoveDialog button.Yes { float: right; }
+	div.TeamsRemoveDialog { text-align: center; }
+	div.TeamsRemoveDialog a.Title { font-size: 125%; }
+	div.TeamsRemoveDialog a.Remove { font-size: 150%; }
+	div.TeamsRemoveDialog a.Target { font-weight: bold; font-size: 250%; }
+	div.TeamsRemoveDialog a.Name { }
+	div.TeamsRemoveDialog a.AreYouSure { font-weight: bold; font-size: 300%; }
+	div.TeamsRemoveDialog button.No { float: left; }
+	div.TeamsRemoveDialog button.Yes { float: right; }
 /* End Teams Remove Dialog */
 
 /* Intermission Control Dialog */
-  table.IntermissionControlDialog { width: 100%; border-spacing: 0px; }
-  table.IntermissionControlDialog>tbody>tr>td { text-align: center; }
-  table.IntermissionControlDialog>tbody>tr.Name>td { width: 100%; background: #ccc; border-radius: 12px 12px 0px 0px; }
-  table.IntermissionControlDialog>tbody>tr.Control>td { background: #eee; width: 33%; }
-  table.IntermissionControlDialog>tbody>tr.Control>td:nth-of-type(1) { width: 34%; }
-  table.IntermissionControlDialog>tbody>tr.Control>td.ShowUnofficial { border-bottom-left-radius: 12px; }
-  table.IntermissionControlDialog>tbody>tr.Control>td.HideClock { border-bottom-right-radius: 12px; }
+	table.IntermissionControlDialog { width: 100%; border-spacing: 0px; }
+	table.IntermissionControlDialog>tbody>tr>td { text-align: center; }
+	table.IntermissionControlDialog>tbody>tr.Name>td { width: 100%; background: #ccc; border-radius: 12px 12px 0px 0px; }
+	table.IntermissionControlDialog>tbody>tr.Control>td { background: #eee; width: 33%; }
+	table.IntermissionControlDialog>tbody>tr.Control>td:nth-of-type(1) { width: 34%; }
+	table.IntermissionControlDialog>tbody>tr.Control>td.ShowUnofficial { border-bottom-left-radius: 12px; }
+	table.IntermissionControlDialog>tbody>tr.Control>td.HideClock { border-bottom-right-radius: 12px; }
 /* End Intermission Control Dialog */
 
 /* Reset Dialog */
-  div.ResetDialog p { text-align: center; }
+	div.ResetDialog p { text-align: center; }
 /* End Reset ScoreBoard Dialog */
 

@@ -19,10 +19,10 @@ div#tableDiv table tbody tr:nth-child(odd) td { background: #fff; }
 div#tableDiv table tbody tr:nth-child(even) td { background: #ccc; }
 
 div#tableDiv table td.Position,div#tableDiv table td.Box {
-  border: 1px solid;
-  border-radius: 5px;
-  padding-top: 3px;
-  padding-bottom: 3px;
+	border: 1px solid;
+	border-radius: 5px;
+	padding-top: 3px;
+	padding-bottom: 3px;
 }
 
 div#tableDiv table th.Name { width: 15%; }

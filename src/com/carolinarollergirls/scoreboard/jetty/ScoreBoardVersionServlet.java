@@ -17,18 +17,18 @@ import com.carolinarollergirls.scoreboard.*;
 
 public class ScoreBoardVersionServlet extends DefaultScoreBoardControllerServlet
 {
-  public String getPath() { return "/version"; }
+	public String getPath() { return "/version"; }
 
-  protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-    super.doPost(request, response);
-    response.sendError(HttpServletResponse.SC_NOT_FOUND);
-  }
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		super.doPost(request, response);
+		response.sendError(HttpServletResponse.SC_NOT_FOUND);
+	}
 
-  protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-    super.doGet(request, response);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		super.doGet(request, response);
 
-    response.setContentType("text/plain");
-    response.getWriter().println(ScoreBoardManager.getVersion());
-    response.setStatus(HttpServletResponse.SC_OK);
-  }
+		response.setContentType("text/plain");
+		response.getWriter().println(ScoreBoardManager.getVersion());
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
 }
