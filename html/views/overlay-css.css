@@ -20,7 +20,6 @@ div { position: absolute; white-space: nowrap; }
 a {
 	font-family: 'LiberationSans', helvetica;
 	font-weight: bold; 
-	text-shadow: 0.05em 0.05em 0.05em #ffffff;
 }
 
 .SkewLeft {
@@ -37,7 +36,24 @@ a {
 	-webkit-transform: skew(-45deg);
 }
 
-#MainBar>div { top: 0%; border: solid #BE969F; }
+.NoOverflow { overflow: hidden; }
+
+.BlackWhiteGradient {
+	/* Fallback if gradient not supported */
+	background: black;
+	/* For Chrome and Safari */
+	background: -webkit-linear-gradient(bottom, #000000, #aaaaaa);
+	/* For old Fx (3.6 to 15) */
+	background:    -moz-linear-gradient(bottom, #000000, #aaaaaa);
+	/* For old Opera (11.1 to 12.0) */
+	background:      -o-linear-gradient(bottom, #000000, #aaaaaa);
+	/* Standard syntax; must be last */
+	background:       linear-gradient(to top, #000000, #aaaaaa);
+}
+
+
+#MainBar a { text-shadow: 0.05em 0.05em 0.05em #ffffff; }
+#MainBar>div { top: 0%; border-style: solid; border-color: #BE969F; }
 #MainBar>div {
 	/* Fallback if gradient not supported */
 	background: pink;
@@ -51,18 +67,17 @@ a {
 	background:   linear-gradient(to bottom, #ffd3e3, #efbbcb 50%, #e3a9b9 50%, #dfabbb);
 }
 
-#MainBar>div.SkewRight { border-width: 0.01em 0em 0.01em 0.015em; }
-#MainBar>div.Bridge { border-width: 0.01em 0em 0.01em 0em; }
-#MainBar>div.SkewLeft { border-width: 0.01em 0.015em 0.01em 0em; }
+#MainBar>div.Left { border-width: 0.01em 0em 0.01em 0.015em; }
+#MainBar>div.Center { border-width: 0.01em 0em 0.01em 0em; }
+#MainBar>div.Right { border-width: 0.01em 0.015em 0.01em 0em; }
 #MainBar>div.Team { height: 90%; }
 #MainBar>div.Clock { height: 100%; }
 #MainBar>div.Team1 { left: 5%; right: 66%; }
-#MainBar>div.Clock.JLT { left: 33%; right: 50%; }
-#MainBar>div.Clock.Bridge { left: 46%; right: 46%; }
-#MainBar>div.Clock.PI { left: 50%; right: 33%; }
+#MainBar>div.Clock.Left { left: 33%; right: 50%; }
+#MainBar>div.Clock.Center { left: 46%; right: 46%; }
+#MainBar>div.Clock.Right { left: 50%; right: 33%; }
 #MainBar>div.Team2 { left: 66%; right: 5%; }
 
-#MainBar>div>div { bottom: 0%; overflow: hidden; }
 #MainBar>div.Team>div { font-size: 6%; }
 #MainBar>div.Clock>div { bottom: 10%; }
 #MainBar>div.Clock>div.Number { font-size: 3.6%; margin-bottom: 1%; }
@@ -90,23 +105,36 @@ a {
 #MainBar>div.Clock.PI:not(.ShowIntermission)>div.Intermission.Time { display: none; }
 
 
-#IndicatorBar { margin-top: 0.01em; } /* This should be same as MainBar bottom border width */
+#IndicatorBar {
+	margin-top: 0.01em; /* This should be same as MainBar bottom border width */
+	z-index: -1;
+}
 
 #IndicatorBar>div { top: 0%; height: 50%; }
-#IndicatorBar>div.Border {
-	border: solid #BE969F;
-	border-width: 0em 0.015em 0.01em 0.015em;
-	background: pink;
-}
-#IndicatorBar>div.Team1.SkewLeft { left: 4%; right: 83%; border-right: 0; }
-#IndicatorBar>div.Team1.SkewRight { left: 13%; right: 73%; border-left: 0; }
-#IndicatorBar>div.Team1 { left: 4%; right: 73%; }
-#IndicatorBar>div.Team2.SkewRight { left: 83%; right: 4%; border-left: 0; }
-#IndicatorBar>div.Team2.SkewLeft { left: 73%; right: 13%; border-right: 0; }
-#IndicatorBar>div.Team2 { left: 73%; right: 4%; }
+#IndicatorBar>div.Background { border-style: solid; }
+#IndicatorBar>div.Timeouts.Background { border-width: 0em 0.015em 0.01em 0.015em; }
+#IndicatorBar>div.Lead { border-bottom: 0.01em solid black; }
+#IndicatorBar>div.Timeouts.Background { border-color: #BE969F; background: pink; }
+#IndicatorBar>div.Timeouts>div.Timeout>div>div { background: #4B2A31; }
+#IndicatorBar>div.Timeouts>div.OfficialReview>div { background: #8F0040; }
+#IndicatorBar>div.Status.Background { border-width: 0em 0em 0.01em 0em; }
+
+#IndicatorBar>div.Team1.Background.SkewLeft { left: 4%; right: 83%; border-right: 0; }
+#IndicatorBar>div.Team1.Background.SkewRight { left: 13%; right: 73%; border-left: 0; }
+#IndicatorBar>div.Team1.Timeouts { left: 4%; right: 73%; }
+#IndicatorBar>div.Team1.Lead { left: 19%; right: 73%; }
+#IndicatorBar>div.Team1.Lead.IsLead { left: 27%; right: 65%; }
+#IndicatorBar>div.Team2.Background.SkewRight { left: 83%; right: 4%; border-left: 0; }
+#IndicatorBar>div.Team2.Background.SkewLeft { left: 73%; right: 13%; border-right: 0; }
+#IndicatorBar>div.Team2.Timeouts { left: 73%; right: 4%; }
+#IndicatorBar>div.Team2.Lead { left: 73%; right: 19%; }
+#IndicatorBar>div.Team2.Lead.IsLead { left: 65%; right: 27%; }
+#IndicatorBar>div.Status.Background.SkewLeft { left: 40%; right: 45%; border-right: 0; }
+#IndicatorBar>div.Status.Background.SkewRight { left: 45%; right: 40%; border-left: 0; }
+#IndicatorBar>div.Status { left: 40%; right: 40%; }
 
 #IndicatorBar>div>div { top: 0%; height: 100%; }
-#IndicatorBar>div.Team>div.OfficialReview { margin-left: 0.01em; margin-right: 0.01em; }
+#IndicatorBar>div.Timeouts>div.OfficialReview { margin-left: 0.01em; margin-right: 0.01em; }
 #IndicatorBar>div.Team1>div.Timeout { margin-left: 0.01em; }
 #IndicatorBar>div.Team1>div.Timeout1 { left: 0%; right: 78%; }
 #IndicatorBar>div.Team1>div.Timeout2 { left: 22%; right: 56%; }
@@ -119,15 +147,27 @@ a {
 #IndicatorBar>div.Team2>div.OfficialReview { left: 0%; right: 66%; }
 
 #IndicatorBar>div>div>div { top: 0%; height: 100%; }
-#IndicatorBar>div.Team>div.Timeout>div.Left { left: 0%; right: 50%; }
-#IndicatorBar>div.Team>div.Timeout>div.Center { left: 25%; right: 25%; }
-#IndicatorBar>div.Team>div.Timeout>div.Right { left: 50%; right: 0%; }
-#IndicatorBar>div.Team>div.OfficialReview>div { left: 0%; right: 0%; }
+#IndicatorBar>div.Timeouts>div.Timeout>div.Left { left: -50%; right: 50%; }
+#IndicatorBar>div.Timeouts>div.Timeout>div.Right { left: 50%; right: -50%; }
+#IndicatorBar>div.Timeouts>div.OfficialReview>div { left: 0%; right: 0%; }
+#IndicatorBar>div.Status>div.Background.Left>div { left: 10%; right: 0%; }
+#IndicatorBar>div.Status>div.Background.Right>div { left: 0%; right: 10%; }
 
-#IndicatorBar>div.Team>div.Timeout>div { background: #4B2A31; }
-#IndicatorBar>div.Team>div.OfficialReview>div { background: #4B2A31; }
+#IndicatorBar>div>div>div>div { top: 0%; height: 100%; }
+#IndicatorBar>div.Timeouts>div.Timeout>div.Left>div { left: 50%; right: -25%; }
+#IndicatorBar>div.Timeouts>div.Timeout>div.Right>div { left: -25%; right: 50%; }
 
-#IndicatorBar>div.Team:not(.HasTimeout1)>div.Timeout1>div:not(.Pulse) { opacity: 0; }
-#IndicatorBar>div.Team:not(.HasTimeout2)>div.Timeout2>div:not(.Pulse) { opacity: 0; }
-#IndicatorBar>div.Team:not(.HasTimeout3)>div.Timeout3>div:not(.Pulse) { opacity: 0; }
-#IndicatorBar>div.Team:not(.HasOfficialReview)>div.OfficialReview>div:not(.Pulse) { opacity: 0; }
+#IndicatorBar>div.Timeouts:not(.HasTimeout1)>div.Timeout1>div:not(.Pulse) { opacity: 0; }
+#IndicatorBar>div.Timeouts:not(.HasTimeout2)>div.Timeout2>div:not(.Pulse) { opacity: 0; }
+#IndicatorBar>div.Timeouts:not(.HasTimeout3)>div.Timeout3>div:not(.Pulse) { opacity: 0; }
+#IndicatorBar>div.Timeouts:not(.HasOfficialReview)>div.OfficialReview>div:not(.Pulse) { opacity: 0; }
+
+#IndicatorBar>div.Text>div.Text {
+	left: 0%; right: 0%;
+	text-align: center;
+	color: white;
+	font-size: 3%;
+	/* Since this is relative to font-size, this is equiv to 0.01em used elsewhere */
+	margin-top: 0.3333333333em;
+}
+

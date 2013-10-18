@@ -21,80 +21,86 @@
 	<div id="mainDiv">
 
 		<div id="MainBar">
-			<div class="Team Team1 SkewRight">
-				<div class="Name SkewLeft">
+			<div class="Team Team1 Left SkewRight">
+				<div class="Name SkewLeft NoOverflow">
 					<a class="Name"></a>
 					<a class="AlternateName"></a>
 				</div>
-				<div class="Score SkewLeft"><a></a></div>
+				<div class="Score SkewLeft NoOverflow"><a></a></div>
 			</div>
-			<div class="Team Team2 SkewLeft">
-				<div class="Name SkewRight">
+			<div class="Team Team2 Right SkewLeft">
+				<div class="Name SkewRight NoOverflow">
 					<a class="Name"></a>
 					<a class="AlternateName"></a>
 				</div>
-				<div class="Score SkewRight"><a></a></div>
+				<div class="Score SkewRight NoOverflow"><a></a></div>
 			</div>
 
-			<div class="Clock Bridge"></div>
-			<div class="Clock JLT SkewRight">
-				<div class="Jam Number SkewLeft"><a>J</a><a class="Number"></a></div>
-				<div class="Jam Time SkewLeft"><a class="Time"></a></div>
-				<div class="Lineup Time SkewLeft"><a class="Time"></a></div>
-				<div class="Timeout Time SkewLeft"><a class="Time"></a></div>
+			<div class="Clock Center"></div>
+			<div class="Clock JLT Left SkewRight">
+				<div class="Jam Number SkewLeft NoOverflow"><a>J</a><a class="Number"></a></div>
+				<div class="Jam Time SkewLeft NoOverflow"><a class="Time"></a></div>
+				<div class="Lineup Time SkewLeft NoOverflow"><a class="Time"></a></div>
+				<div class="Timeout Time SkewLeft NoOverflow"><a class="Time"></a></div>
 			</div>
-			<div class="Clock PI SkewLeft">
-				<div class="Period Number SkewRight"><a>P</a><a class="Number"></a></div>
-				<div class="Period Time SkewRight"><a class="Time"></a></div>
-				<div class="Intermission Time SkewRight"><a class="Time"></a></div>
+			<div class="Clock PI Right SkewLeft">
+				<div class="Period Number SkewRight NoOverflow"><a>P</a><a class="Number"></a></div>
+				<div class="Period Time SkewRight NoOverflow"><a class="Time"></a></div>
+				<div class="Intermission Time SkewRight NoOverflow"><a class="Time"></a></div>
 			</div>
 		</div>
 
 		<div id="IndicatorBar">
-			<div class="Team1 Border SkewRight"></div>
-			<div class="Team1 Border SkewLeft"></div>
-			<div class="Team1 Team">
+			<div class="Team1 Lead SkewRight BlackWhiteGradient Text">
+				<div class="Lead SkewLeft Text"><a>LEAD</a></div>
+			</div>
+			<div class="Team1 Timeouts Background SkewRight"></div>
+			<div class="Team1 Timeouts Background SkewLeft"></div>
+			<div class="Team1 Timeouts">
 				<div class="Timeout1 Timeout">
-					<div class="Left SkewLeft"></div>
-					<div class="Center"></div>
-					<div class="Right SkewRight"></div>
+					<div class="Left NoOverflow"><div class="SkewLeft"></div></div>
+					<div class="Right NoOverflow"><div class="SkewRight"></div></div>
 				</div>
 				<div class="Timeout2 Timeout">
-					<div class="Left SkewRight"></div>
-					<div class="Center"></div>
-					<div class="Right SkewLeft"></div>
+					<div class="Left NoOverflow"><div class="SkewRight"></div></div>
+					<div class="Right NoOverflow"><div class="SkewLeft"></div></div>
 				</div>
 				<div class="Timeout3 Timeout">
-					<div class="Left SkewLeft"></div>
-					<div class="Center"></div>
-					<div class="Right SkewRight"></div>
+					<div class="Left NoOverflow"><div class="SkewLeft"></div></div>
+					<div class="Right NoOverflow"><div class="SkewRight"></div></div>
 				</div>
 				<div class="OfficialReview">
 					<div class="SkewRight"></div>
 				</div>
 			</div>
 
-			<div class="Team2 Border SkewLeft"></div>
-			<div class="Team2 Border SkewRight"></div>
-			<div class="Team2 Team">
+			<div class="Team2 Lead SkewLeft BlackWhiteGradient Text">
+				<div class="Lead SkewRight Text"><a>LEAD</a></div>
+			</div>
+			<div class="Team2 Timeouts Background SkewLeft"></div>
+			<div class="Team2 Timeouts Background SkewRight"></div>
+			<div class="Team2 Timeouts">
 				<div class="Timeout1 Timeout">
-					<div class="Left SkewLeft"></div>
-					<div class="Center"></div>
-					<div class="Right SkewRight"></div>
+					<div class="Left NoOverflow"><div class="SkewLeft"></div></div>
+					<div class="Right NoOverflow"><div class="SkewRight"></div></div>
 				</div>
 				<div class="Timeout2 Timeout">
-					<div class="Left SkewRight"></div>
-					<div class="Center"></div>
-					<div class="Right SkewLeft"></div>
+					<div class="Left NoOverflow"><div class="SkewRight"></div></div>
+					<div class="Right NoOverflow"><div class="SkewLeft"></div></div>
 				</div>
 				<div class="Timeout3 Timeout">
-					<div class="Left SkewLeft"></div>
-					<div class="Center"></div>
-					<div class="Right SkewRight"></div>
+					<div class="Left NoOverflow"><div class="SkewLeft"></div></div>
+					<div class="Right NoOverflow"><div class="SkewRight"></div></div>
 				</div>
 				<div class="OfficialReview">
 					<div class="SkewLeft"></div>
 				</div>
+			</div>
+
+			<div class="Status Background SkewLeft BlackWhiteGradient"></div>
+			<div class="Status Background SkewRight BlackWhiteGradient"></div>
+			<div class="Status Text">
+				<div class="Status Text"><a>Timeout</a></div>
 			</div>
 		</div>
 	</div>

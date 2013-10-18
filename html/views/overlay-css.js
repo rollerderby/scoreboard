@@ -100,6 +100,11 @@ $sb(function() {
 		// Timeout images
 		team.$sb("Timeouts").$sbBindAndRun("sbchange", function() { manageTimeoutImages(t); });
 		team.$sb("OfficialReviews").$sbBindAndRun("sbchange", function() { manageTimeoutImages(t); });
+
+		// Lead Changes
+		team.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
+			$("#IndicatorBar>div.Team"+t+".Lead").toggleClass("IsLead", isTrue(val), 1000);
+		});
 	});
 
 	$.each( [ "Period", "Jam" ], function(i, c) {
@@ -116,7 +121,64 @@ $sb(function() {
 	});
 	// This allows hiding the intermission clock during Final.
 	$sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", showClocks);
+
+  // Statusbar text.
+  var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
+    .add($sb("ScoreBoard.Clock(Timeout).Running"))
+    .add($sb("ScoreBoard.Clock(Lineup).Running"))
+    .add($sb("ScoreBoard.Clock(Intermission).Running"))
+    .add($sb("ScoreBoard.Clock(Intermission).Number"))
+    .add($sb("ScoreBoard.TimeoutOwner"))
+    .add($sb("ScoreBoard.OfficialReview"))
+    .add($sb("ScoreBoard.OfficialScore"))
+    .add($sb("ScoreBoard.InOvertime"));
+  _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
 });
+
+function manageStatusBar() {
+	// This is called when pretty much anything changes, and updates the status string 
+	var statusString = "Stand By";
+
+	if ($sb("Scoreboard.InOvertime").$sbIsTrue()) {
+		statusString = "Overtime";
+	} else if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
+		statusString = "Jam";
+	} else if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
+		// Who's timeout is it?
+		if (!$sb("ScoreBoard.TimeoutOwner").$sbGet()) {
+			statusString = "Timeout";
+		} else if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
+			statusString = "Review";
+		} else {
+			statusString = "Team T/O";
+		}			
+	} else if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
+		statusString = "Lineup";
+	} else if ($sb("Scoreboard.Clock(Intermission).Running").$sbIsTrue()) {
+		var iNum = $sb("ScoreBoard.Clock(Intermission).Number").$sbGet();
+		var official = $sb("ScoreBoard.OfficialScore").$sbIsTrue();
+		if (iNum == 0)
+			statusString = "Prebout";
+		else if (iNum == 1)
+			statusString = "Halftime";
+		else if (iNum == 2)
+			statusString = (official ? "Final" : "Unofficial");
+	}
+
+	// If the statusString has changed, fade out the old, and in the new
+	var statusBar = $("#IndicatorBar>div.Status>div.Status>a");
+	if (statusBar.data('current') != statusString) {
+		statusBar.data('current', statusString);
+		if (statusBar.data('fadingOut') != true) {
+			statusBar.queue(function(next) { $(this).data('fadingOut', true); next(); });
+			statusBar.animate({opacity: 0}, 500, function() {
+				$(this).data('fadingOut', false);
+				$(this).text($(this).data('current'));
+			});
+			statusBar.animate({opacity: 1}, 500);
+		}
+	}
+}
 
 function manageTimeoutImages(t) {
 	// Called when something changes in relation to timeouts.
