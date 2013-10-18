@@ -1,0 +1,133 @@
+/**
+ * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
+ * Copyright (C) 2013 Rob Thomas <xrobau@gmail.com>
+ * Copyright (C) 2013 Damian Georgiou <bachomp@gmail.com>
+ *
+ * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ * The CRG ScoreBoard is licensed under either the GNU General Public
+ * License version 3 (or later), or the Apache License 2.0, at your option.
+ * See the file COPYING for details.
+ */
+
+/* Change this background color to whatever your overlay chromakey is set to */
+body { background-color: #00ff00; }
+
+div { position: absolute; white-space: nowrap; }
+
+#MainBar { top: 83%; height: 8%; width: 100%; }
+#IndicatorBar { top: 91%; height: 8%; width: 100%; }
+
+a {
+	font-family: 'LiberationSans', helvetica;
+	font-weight: bold; 
+	text-shadow: 0.05em 0.05em 0.05em #ffffff;
+}
+
+.SkewLeft {
+	transform: skew(45deg);
+	-o-transform: skew(45deg);
+	-moz-transform: skew(45deg);
+	-webkit-transform: skew(45deg);
+}
+
+.SkewRight {
+	transform: skew(-45deg);
+	-o-transform: skew(-45deg);
+	-moz-transform: skew(-45deg);
+	-webkit-transform: skew(-45deg);
+}
+
+#MainBar>div { top: 0%; border: solid #BE969F; }
+#MainBar>div {
+	/* Fallback if gradient not supported */
+	background: pink;
+	/* For Chrome and Safari */
+	background: -webkit-linear-gradient(top, #ffd3e3, #efbbcb 50%, #e3a9b9 50%, #dfabbb);
+	/* For old Fx (3.6 to 15) */
+	background:    -moz-linear-gradient(top, #ffd3e3, #efbbcb 50%, #e3a9b9 50%, #dfabbb);
+	/* For old Opera (11.1 to 12.0) */
+	background:      -o-linear-gradient(top, #ffd3e3, #efbbcb 50%, #e3a9b9 50%, #dfabbb);
+	/* Standard syntax; must be last */
+	background:   linear-gradient(to bottom, #ffd3e3, #efbbcb 50%, #e3a9b9 50%, #dfabbb);
+}
+
+#MainBar>div.SkewRight { border-width: 0.01em 0em 0.01em 0.015em; }
+#MainBar>div.Bridge { border-width: 0.01em 0em 0.01em 0em; }
+#MainBar>div.SkewLeft { border-width: 0.01em 0.015em 0.01em 0em; }
+#MainBar>div.Team { height: 90%; }
+#MainBar>div.Clock { height: 100%; }
+#MainBar>div.Team1 { left: 5%; right: 66%; }
+#MainBar>div.Clock.JLT { left: 33%; right: 50%; }
+#MainBar>div.Clock.Bridge { left: 46%; right: 46%; }
+#MainBar>div.Clock.PI { left: 50%; right: 33%; }
+#MainBar>div.Team2 { left: 66%; right: 5%; }
+
+#MainBar>div>div { bottom: 0%; overflow: hidden; }
+#MainBar>div.Team>div { font-size: 6%; }
+#MainBar>div.Clock>div { bottom: 10%; }
+#MainBar>div.Clock>div.Number { font-size: 3.6%; margin-bottom: 1%; }
+#MainBar>div.Clock>div.Time { font-size: 5%; }
+
+#MainBar>div.Team1>div.Name { left: 10%; right: 30%; text-align: left; }
+#MainBar>div.Team1>div.Score { left: 70%; right: 10%; text-align: right; }
+#MainBar>div.Team2>div.Name { left: 30%; right: 10%; text-align: right; }
+#MainBar>div.Team2>div.Score { left: 10%; right: 70%; text-align: left; }
+#MainBar>div.Team>div.Name.AlternateName>a.Name { display: none; }
+#MainBar>div.Team>div.Name:not(.AlternateName)>a.AlternateName { display: none; }
+
+#MainBar>div.Clock.JLT>div { text-align: left; }
+#MainBar>div.Clock.JLT>div.Number { left: 7%; right: 70%; }
+#MainBar>div.Clock.JLT>div.Time { left: 30%; right: 25%; }
+#MainBar>div.Clock.JLT:not(.ShowJam)>div.Jam.Time { display: none; }
+#MainBar>div.Clock.JLT:not(.ShowLineup)>div.Lineup.Time { display: none; }
+#MainBar>div.Clock.JLT:not(.ShowTimeout)>div.Timeout.Time { display: none; }
+
+#MainBar>div.Clock.PI>div { text-align: right; }
+#MainBar>div.Clock.PI>div.Number { left: 25%; right: 60%; }
+#MainBar>div.Clock.PI>div.Time { left: 44%; right: 10%; }
+#MainBar>div.Clock.PI>div.Intermission { display: none; }
+#MainBar>div.Clock.PI:not(.ShowPeriod)>div.Period.Time { display: none; }
+#MainBar>div.Clock.PI:not(.ShowIntermission)>div.Intermission.Time { display: none; }
+
+
+#IndicatorBar { margin-top: 0.01em; } /* This should be same as MainBar bottom border width */
+
+#IndicatorBar>div { top: 0%; height: 50%; }
+#IndicatorBar>div.Border {
+	border: solid #BE969F;
+	border-width: 0em 0.015em 0.01em 0.015em;
+	background: pink;
+}
+#IndicatorBar>div.Team1.SkewLeft { left: 4%; right: 83%; border-right: 0; }
+#IndicatorBar>div.Team1.SkewRight { left: 13%; right: 73%; border-left: 0; }
+#IndicatorBar>div.Team1 { left: 4%; right: 73%; }
+#IndicatorBar>div.Team2.SkewRight { left: 83%; right: 4%; border-left: 0; }
+#IndicatorBar>div.Team2.SkewLeft { left: 73%; right: 13%; border-right: 0; }
+#IndicatorBar>div.Team2 { left: 73%; right: 4%; }
+
+#IndicatorBar>div>div { top: 0%; height: 100%; }
+#IndicatorBar>div.Team>div.OfficialReview { margin-left: 0.01em; margin-right: 0.01em; }
+#IndicatorBar>div.Team1>div.Timeout { margin-left: 0.01em; }
+#IndicatorBar>div.Team1>div.Timeout1 { left: 0%; right: 78%; }
+#IndicatorBar>div.Team1>div.Timeout2 { left: 22%; right: 56%; }
+#IndicatorBar>div.Team1>div.Timeout3 { left: 44%; right: 34%; }
+#IndicatorBar>div.Team1>div.OfficialReview { left: 66%; right: 0%; }
+#IndicatorBar>div.Team2>div.Timeout { margin-right: 0.01em; }
+#IndicatorBar>div.Team2>div.Timeout1 { left: 78%; right: 0%; }
+#IndicatorBar>div.Team2>div.Timeout2 { left: 56%; right: 22%; }
+#IndicatorBar>div.Team2>div.Timeout3 { left: 34%; right: 44%; }
+#IndicatorBar>div.Team2>div.OfficialReview { left: 0%; right: 66%; }
+
+#IndicatorBar>div>div>div { top: 0%; height: 100%; }
+#IndicatorBar>div.Team>div.Timeout>div.Left { left: 0%; right: 50%; }
+#IndicatorBar>div.Team>div.Timeout>div.Center { left: 25%; right: 25%; }
+#IndicatorBar>div.Team>div.Timeout>div.Right { left: 50%; right: 0%; }
+#IndicatorBar>div.Team>div.OfficialReview>div { left: 0%; right: 0%; }
+
+#IndicatorBar>div.Team>div.Timeout>div { background: #4B2A31; }
+#IndicatorBar>div.Team>div.OfficialReview>div { background: #4B2A31; }
+
+#IndicatorBar>div.Team:not(.HasTimeout1)>div.Timeout1>div:not(.Pulse) { opacity: 0; }
+#IndicatorBar>div.Team:not(.HasTimeout2)>div.Timeout2>div:not(.Pulse) { opacity: 0; }
+#IndicatorBar>div.Team:not(.HasTimeout3)>div.Timeout3>div:not(.Pulse) { opacity: 0; }
+#IndicatorBar>div.Team:not(.HasOfficialReview)>div.OfficialReview>div:not(.Pulse) { opacity: 0; }
