@@ -464,7 +464,11 @@ _crgScoreBoard = {
 				if (!(tmpV === undefined && isTrue(convertOptions.onlyMatch)))
 					v = tmpV;
 			}
-			if (e.is("a,span")) {
+			if (sbE.setColor) {
+				e.css("color", v);
+			} else if (sbE.setBackground) {
+				e.css("background", v);
+			} else if (e.is("a,span")) {
 				if (e.html() != v)
 					e.html(v);
 			} else if (e.is("img")) {
