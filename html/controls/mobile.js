@@ -16,6 +16,12 @@ $sb(function() {
 	setupPeriodTimePage();
 	setupTeamScorePage();
 	setupPenaltyTimePage();
+
+	$.each( [ "1", "2" ], function(i, t) {
+		$sb("ScoreBoard.Team("+t+").AlternateName(mobile).Name").$sbBindAndRun("sbchange", function(event, val) {
+			$(".Team"+t+".AlternateName").parent().toggleClass("HasAlternateName", val != "");
+		});
+	});
 });
 
 function setupJamControlPage() {
@@ -23,10 +29,12 @@ function setupJamControlPage() {
 	$sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
 	$sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
 	$sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
-	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>a.Name")
+	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>span.Name");
+	$sb("ScoreBoard.Team(1).AlternateName(mobile).Name").$sbElement("#JamControlPage div.Timeout button.Team1>span.AlternateName");
 	$sb("ScoreBoard.Timeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
 	$sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
-	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>a.Name")
+	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>span.Name");
+	$sb("ScoreBoard.Team(2).AlternateName(mobile).Name").$sbElement("#JamControlPage div.Timeout button.Team2>span.AlternateName");
 
 	$.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
 		$sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
@@ -122,9 +130,11 @@ function setupTeamScorePage() {
 		var score = team.$sb("Score");
 
 		team.$sb("Name").$sbElement("#TeamScorePage span.Team"+n+".Name");
+		team.$sb("AlternateName(mobile).Name").$sbElement("#TeamScorePage span.Team"+n+".AlternateName");
 
 		$.each([ "#Team"+n+"ScorePage", "#TeamSetScorePage", "#TeamBothScorePage" ], function(ii, e) {
 			team.$sb("Name").$sbElement(e+" .Team"+n+".Name");
+			team.$sb("AlternateName(mobile).Name").$sbElement(e+" .Team"+n+".AlternateName");
 			score.$sbElement(e+" a.Team"+n+".Score");
 			score.$sbControl(e+" button.Team"+n+".ScoreDown", { sbcontrol: {
 				sbSetAttrs: { change: true }

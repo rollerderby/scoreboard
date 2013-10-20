@@ -1147,6 +1147,7 @@ function createAlternateNamesDialog(team) {
 	newIdInput.autocomplete({
 		minLength: 0,
 		source: [
+			{ label: "mobile (Mobile Control)", value: "mobile" },
 			{ label: "overlay (Video Overlay)", value: "overlay" },
 			{ label: "twitter (Twitter)", value: "twitter" }
 		]
