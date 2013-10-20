@@ -511,6 +511,8 @@ _crgScoreBoard = {
 
 			if (e.is(":checkbox,:radio,:button"))
 				try { e.button("refresh"); } catch (err) { /* wasn't a button() */ }
+			else if (e.parent().is(":checkbox,:radio,:button"))
+				try { e.parent().button("refresh"); } catch (err) { /* wasn't a button() */ }
 		});
 		return htmlelements;
 	},
