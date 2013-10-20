@@ -118,6 +118,12 @@
  * sbelement
  * The special "sbelement" object can contain any of these fields which
  * control various aspects of the created HTML element(s) operation.
+ *	 setColor: boolean
+ *		 If true, the HTML element css 'color' will be set to the
+ *		 XML element value.  The HTML element text will not be set.
+ *	 setBackground: boolean
+ *		 If true, the HTML element css 'background' will be set to the
+ *		 XML element value.  The HTML element text will not be set.
  *	 boolean: boolean
  *		 If this is true, the XML element value will be passed through
  *		 the isTrue() function, before the convert function/object
