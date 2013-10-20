@@ -271,7 +271,7 @@ _crgScoreBoard = {
 		var allElements = elements.find("*").andSelf();
 		allElements.data("sbelement", sbelement).addClass(className)
 			.attr($.extend({ "data-sbelement": _crgScoreBoard.getPath(sbElement), "data-UUID": _crgScoreBoard.newUUID() }, attributes));
-		_crgScoreBoard.setHtmlValue(sbElement, allElements, sbElement.$sbGet());
+		_crgScoreBoard.setHtmlValue(sbElement, sbElement.$sbGet(), allElements);
 		_crgScoreBoard.setupScoreBoardElement(sbElement, allElements, sbelement);
 		return elements;
 	},
@@ -409,6 +409,7 @@ _crgScoreBoard = {
 	removeScoreBoardElement: function(parent, e) {
 		if (!e) return;
 		e.children(function() { removeScoreBoardElement(e, $sb(this)); });
+		_crgScoreBoard.setHtmlValue(e, "");
 		delete _crgScoreBoard.addEventTriggered[e.$sbPath];
 		parent.trigger("sbremove", [ e ]);
 		parent.trigger("sbremove:"+e.$sbName, [ e ]);
@@ -450,7 +451,9 @@ _crgScoreBoard = {
 	hasXmlElementPI: function(e, target) { return (null != _crgScoreBoard.getXmlElementPI(e, target)); },
 
 //FIXME - move this to windowfunctions
-	setHtmlValue: function(sbElement, htmlelements, value) {
+	setHtmlValue: function(sbElement, value, htmlelements) {
+		if (!htmlelements)
+			htmlelements = $("[data-sbelement='"+sbElement.$sbPath+"']");
 		htmlelements.each(function() {
 			var e = $(this);
 			var v = value; // Don't modify the main value, since we are in $.each()
@@ -531,7 +534,7 @@ _crgScoreBoard = {
 				var oldContent = _crgScoreBoard.getXmlElementText(e);
 				if (oldContent !== newContent) {
 					_crgScoreBoard.setXmlElementText(e, newContent);
-					_crgScoreBoard.setHtmlValue(e, $("[data-sbelement='"+e.$sbPath+"']"), newContent);
+					_crgScoreBoard.setHtmlValue(e, newContent);
 					triggerObj.fireChange = true;
 					triggerObj.oldContent = oldContent;
 					triggerObj.newContent = newContent;

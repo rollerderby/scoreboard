@@ -94,7 +94,7 @@ _crgScoreBoardControl = {
 		};
 		var setControlValue = function(value) {
 			if (!sbC.noSetControlValue)
-				_crgScoreBoard.setHtmlValue(sbElement, c, elementValueToControlValue(value));
+				_crgScoreBoard.setHtmlValue(sbElement, elementValueToControlValue(value), c);
 		};
 
 		var updateControlIfUnfocused = function(value) {
