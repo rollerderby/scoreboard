@@ -18,8 +18,12 @@ $sb(function() {
 	setupPenaltyTimePage();
 
 	$.each( [ "1", "2" ], function(i, t) {
-		$sb("ScoreBoard.Team("+t+").AlternateName(mobile).Name").$sbBindAndRun("sbchange", function(event, val) {
-			$(".Team"+t+".AlternateName").parent().toggleClass("HasAlternateName", val != "");
+		$sb("ScoreBoard.Team("+t+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
+			if ($sb(node).$sbId == "mobile")
+				$sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event2, val) {
+					$(".Team"+t+".Name,.Team"+t+".AlternateName")
+						.toggleClass("HasAlternateName", $.trim(val) != "");
+				});
 		});
 	});
 });

@@ -15,8 +15,8 @@
 /* END ClockBubbles */
 
 /* Alternate Names */
-	.HasAlternateName>.Name { display: none; }
-	:not(.HasAlternateName)>.AlternateName { display: none; }
+	.Name.HasAlternateName { display: none; }
+	.AlternateName:not(.HasAlternateName) { display: none; }
 /* END Alternate Names */
 
 
