@@ -408,8 +408,13 @@ _crgScoreBoard = {
 
 	removeScoreBoardElement: function(parent, e) {
 		if (!e) return;
-		e.children(function() { removeScoreBoardElement(e, $sb(this)); });
+		e.children().each(function() {
+			_crgScoreBoard.removeScoreBoardElement(e, $sb(this));
+		});
+		var oldContent = e.$sbGet();
+		_crgScoreBoard.setXmlElementText(e, "");
 		_crgScoreBoard.setHtmlValue(e, "");
+		e.trigger("sbchange", [ "", oldContent ]);
 		delete _crgScoreBoard.addEventTriggered[e.$sbPath];
 		parent.trigger("sbremove", [ e ]);
 		parent.trigger("sbremove:"+e.$sbName, [ e ]);
