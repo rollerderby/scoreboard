@@ -17,60 +17,60 @@ import com.carolinarollergirls.scoreboard.xml.*;
 
 public class RealtimeStreamListenerFilter extends StreamListenerFilter implements StreamListener
 {
-  public RealtimeStreamListenerFilter(StreamListener l) { super(l); }
+	public RealtimeStreamListenerFilter(StreamListener l) { super(l); }
 
-  public void xmlChange(Document d) {
-    if (!lastTimeSet)
-      setLastTime(d);
+	public void xmlChange(Document d) {
+		if (!lastTimeSet)
+			setLastTime(d);
 
-    try {
-      waitUntilTime(d);
-    } catch ( InterruptedException iE ) {
-      /* Indicate stop processing */
-      return;
-    }
-    super.xmlChange(d);
-  }
+		try {
+			waitUntilTime(d);
+		} catch ( InterruptedException iE ) {
+			/* Indicate stop processing */
+			return;
+		}
+		super.xmlChange(d);
+	}
 
-  public void setPaused(boolean p) { paused = p; }
-  public boolean isPaused() { return paused; }
+	public void setPaused(boolean p) { paused = p; }
+	public boolean isPaused() { return paused; }
 
-  public void setSpeed(double s) { speed = s; }
-  public double getSpeed() { return speed; }
+	public void setSpeed(double s) { speed = s; }
+	public double getSpeed() { return speed; }
 
-  protected void setLastTime(Document d) {
-    lastDocTime = editor.getSystemTime(d);
-    lastRealTime = new Date().getTime();
-    lastTimeSet = true;
-  }
+	protected void setLastTime(Document d) {
+		lastDocTime = editor.getSystemTime(d);
+		lastRealTime = new Date().getTime();
+		lastTimeSet = true;
+	}
 
-  protected void waitUntilTime(Document d) throws InterruptedException {
-    long docTime = editor.getSystemTime(d);
-    long elapsedDocTime = docTime - lastDocTime;
-    lastDocTime = docTime;
+	protected void waitUntilTime(Document d) throws InterruptedException {
+		long docTime = editor.getSystemTime(d);
+		long elapsedDocTime = docTime - lastDocTime;
+		lastDocTime = docTime;
 
-    do {
-      long sleepTime = Math.min(POLL_TIME, (elapsedDocTime - getElapsedRealTime()));
-      if (sleepTime > 0)
-        Thread.sleep(sleepTime);
-    } while (getElapsedRealTime() < elapsedDocTime);
+		do {
+			long sleepTime = Math.min(POLL_TIME, (elapsedDocTime - getElapsedRealTime()));
+			if (sleepTime > 0)
+				Thread.sleep(sleepTime);
+		} while (getElapsedRealTime() < elapsedDocTime);
 
-    while (isPaused())
-      Thread.sleep(POLL_TIME);
+		while (isPaused())
+			Thread.sleep(POLL_TIME);
 
-    lastRealTime = new Date().getTime();
-  }
+		lastRealTime = new Date().getTime();
+	}
 
-  protected long getElapsedRealTime() {
-    return (long)(((new Date().getTime()) - lastRealTime) * getSpeed());
-  }
+	protected long getElapsedRealTime() {
+		return (long)(((new Date().getTime()) - lastRealTime) * getSpeed());
+	}
 
-  protected XmlDocumentEditor editor = new XmlDocumentEditor();
-  protected long lastDocTime;
-  protected long lastRealTime;
-  protected boolean lastTimeSet = false;
-  protected boolean paused = false;
-  protected double speed = 1.0;
+	protected XmlDocumentEditor editor = new XmlDocumentEditor();
+	protected long lastDocTime;
+	protected long lastRealTime;
+	protected boolean lastTimeSet = false;
+	protected boolean paused = false;
+	protected double speed = 1.0;
 
-  public static final long POLL_TIME = 250; /* 250 ms */
+	public static final long POLL_TIME = 250; /* 250 ms */
 }

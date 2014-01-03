@@ -15,33 +15,33 @@ import org.jdom.*;
 
 public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
 {
-  public QueueXmlScoreBoardListener() { }
-  public QueueXmlScoreBoardListener(XmlScoreBoard sb) {
-    sb.addXmlScoreBoardListener(this);
-  }
+	public QueueXmlScoreBoardListener() { }
+	public QueueXmlScoreBoardListener(XmlScoreBoard sb) {
+		sb.addXmlScoreBoardListener(this);
+	}
 
-  public void xmlChange(Document d) {
-    synchronized (documentsLock) {
-      if (queueNextDocument || documents.isEmpty())
-        documents.addLast(d);
-      else
-        editor.mergeDocuments(documents.getLast(), d);
+	public void xmlChange(Document d) {
+		synchronized (documentsLock) {
+			if (queueNextDocument || documents.isEmpty())
+				documents.addLast(d);
+			else
+				editor.mergeDocuments(documents.getLast(), d);
 
-      queueNextDocument = editor.hasRemovePI(d);
-    }
-  }
+			queueNextDocument = editor.hasRemovePI(d);
+		}
+	}
 
-  public Document getNextDocument() {
-    synchronized (documentsLock) {
-      return documents.poll();
-    }
-  }
+	public Document getNextDocument() {
+		synchronized (documentsLock) {
+			return documents.poll();
+		}
+	}
 
-  public boolean isEmpty() { return (null == documents.peek()); }
+	public boolean isEmpty() { return (null == documents.peek()); }
 
-  protected XmlDocumentEditor editor = new XmlDocumentEditor();
+	protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
-  protected boolean queueNextDocument = false;
-  protected LinkedList<Document> documents = new LinkedList<Document>();
-  protected Object documentsLock = new Object();
+	protected boolean queueNextDocument = false;
+	protected LinkedList<Document> documents = new LinkedList<Document>();
+	protected Object documentsLock = new Object();
 }

@@ -17,11 +17,11 @@ import com.carolinarollergirls.scoreboard.model.*;
 
 public class XmlScoreBoardListenerFilter implements XmlScoreBoardListener
 {
-  public XmlScoreBoardListenerFilter(XmlScoreBoardListener l) { listener = l; }
+	public XmlScoreBoardListenerFilter(XmlScoreBoardListener l) { listener = l; }
 
-  public void xmlChange(Document d) { listener.xmlChange(d); }
+	public void xmlChange(Document d) { listener.xmlChange(d); }
 
-  protected XmlScoreBoardListener getListener() { return listener; }
+	protected XmlScoreBoardListener getListener() { return listener; }
 
-  protected XmlScoreBoardListener listener;
+	protected XmlScoreBoardListener listener;
 }

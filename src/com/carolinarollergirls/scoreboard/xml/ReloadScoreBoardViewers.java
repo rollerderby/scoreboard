@@ -18,16 +18,16 @@ import com.carolinarollergirls.scoreboard.xml.*;
 
 public class ReloadScoreBoardViewers extends DefaultXmlDocumentManager implements XmlDocumentManager
 {
-  public ReloadScoreBoardViewers() { super("ReloadViewers"); }
+	public ReloadScoreBoardViewers() { super("ReloadViewers"); }
 
-  public void reloadViewers() {
-    update(editor.setPI(createXPathElement(), "Reload"));    
-  }
+	public void reloadViewers() {
+		update(editor.setPI(createXPathElement(), "Reload"));		 
+	}
 
-  protected void processElement(Element e) throws Exception {
-    if (Boolean.parseBoolean(editor.getText(e))) {
-      reloadViewers();
-    }
-  }
+	protected void processElement(Element e) throws Exception {
+		if (Boolean.parseBoolean(editor.getText(e))) {
+			reloadViewers();
+		}
+	}
 }
 

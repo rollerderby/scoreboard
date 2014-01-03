@@ -14,5 +14,5 @@ import com.carolinarollergirls.scoreboard.xml.*;
 
 public interface StreamListener extends XmlScoreBoardListener
 {
-  public void end();
+	public void end();
 }

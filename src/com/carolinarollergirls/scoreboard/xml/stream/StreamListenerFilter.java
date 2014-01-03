@@ -17,13 +17,13 @@ import com.carolinarollergirls.scoreboard.xml.*;
 
 public class StreamListenerFilter implements StreamListener
 {
-  public StreamListenerFilter(StreamListener l) { listener = l; }
+	public StreamListenerFilter(StreamListener l) { listener = l; }
 
-  public void xmlChange(Document d) { listener.xmlChange(d); }
+	public void xmlChange(Document d) { listener.xmlChange(d); }
 
-  public void end() { listener.end(); }
+	public void end() { listener.end(); }
 
-  protected StreamListener getListener() { return listener; }
+	protected StreamListener getListener() { return listener; }
 
-  protected StreamListener listener;
+	protected StreamListener listener;
 }
