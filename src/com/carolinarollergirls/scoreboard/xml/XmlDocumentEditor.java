@@ -33,7 +33,10 @@ public class XmlDocumentEditor
 	}
 
 	public String checkId(String id) {
-		return id.replaceAll("['\"()]", "");
+		if (id == null)
+			return null;
+		else
+			return id.replaceAll("['\"()]", "");
 	}
 
 	public Document createDocument() {
@@ -69,6 +72,7 @@ public class XmlDocumentEditor
 	public Element addElement(Element parent, String name, String id, String text) {
 		Document d = parent.getDocument();
 		Element element = new Element(name);
+		id = checkId(id);
 		if (null != id && !"".equals(id))
 			element.setAttribute("Id", id);
 		synchronized (d) {
@@ -98,6 +102,7 @@ public class XmlDocumentEditor
 	}
 
 	public Element getElement(Element parent, String name, String id, boolean create) {
+		id = checkId(id);
 		synchronized (parent.getDocument()) {
 			Iterator children = parent.getChildren(name).iterator();
 			while (children.hasNext()) {
