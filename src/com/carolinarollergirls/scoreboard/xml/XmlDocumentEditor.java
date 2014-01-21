@@ -397,8 +397,28 @@ public class XmlDocumentEditor
 		}
 	}
 
+	public void filterElementXPath(Element e, XPath filter) throws JDOMException {
+		if (e == null || filter == null)
+			return;
+		filterElementList(e, filter.selectNodes(e));
+	}
+	public void filterElementList(Element e, List keep) {
+		if (e == null || keep == null)
+			return;
+		// Need to copy list first to avoid ConcurrentModificationException
+		// Suppress unchecked warnings because JDOM 1.x doesn't support Java generics
+		@SuppressWarnings("unchecked") Iterator<Element> children = new ArrayList(e.getChildren()).iterator();
+		while (children.hasNext())
+			filterElementList(children.next(), keep);
+		if (e.getChildren().size() == 0 && !keep.contains(e))
+			e.detach();
+	}
+
 	public Element cloneDocumentToClonedElement(Element e) {
-		return cloneDocumentToElement(e, createDocument(), true, false, false);
+		return cloneDocumentToElement(e, createDocument(), true, false, false, null);
+	}
+	public Element cloneDocumentToClonedElement(Element e, XPath filter) {
+		return cloneDocumentToElement(e, createDocument(), true, false, false, filter);
 	}
 	public Element cloneDocumentToElement(Element e) {
 		return cloneDocumentToElement(e, true);
@@ -410,9 +430,26 @@ public class XmlDocumentEditor
 		return cloneDocumentToElement(e, d, includeTextFirst, false);
 	}
 	public Element cloneDocumentToElement(Element e, Document d, boolean includeTextFirst, boolean includeTextAll) {
-		return cloneDocumentToElement(e, d, false, includeTextFirst, includeTextAll);
+		return cloneDocumentToElement(e, d, false, includeTextFirst, includeTextAll, null);
 	}
-	public Element cloneDocumentToElement(Element e, Document d, boolean cloneThisElement, boolean includeTextFirst, boolean includeTextAll) {
+	/*
+	 * Clone a specific portion of a document with optional filtering.
+	 *
+	 * This clones a document from the root down to the specified element,
+	 * optionally copying the contained text (if any) in the parent elements
+	 * to the target cloned element.  If a XPath filter is used, only
+	 * elements that match the filter (and their parent elements up to the
+	 * document root) are included in the new document.
+	 *
+	 * The XPath filter should be an absolute XPath (starting with /)
+	 * because JDOM 1.x doesn't appear to work correctly with relative XPaths.
+	 *
+	 * The returned element is the element in the new cloned document that
+	 * corresponds to the initially provided element.
+	 *
+	 * If no elements match the XPath filter, then null is returned.
+	 */
+	public Element cloneDocumentToElement(Element e, Document d, boolean cloneThisElement, boolean includeTextFirst, boolean includeTextAll, XPath filter) {
 		if (e == null)
 			return null;
 		Element newE;
@@ -432,8 +469,9 @@ public class XmlDocumentEditor
 		if (e.getParent().equals(e.getDocument().getRootElement()))
 			d.getRootElement().addContent(newE);
 		else
-			cloneDocumentToElement(e.getParentElement(), d, false, includeTextAll, includeTextAll).addContent(newE);
-		return newE;
+			cloneDocumentToElement(e.getParentElement(), d, false, includeTextAll, includeTextAll, null).addContent(newE);
+		try { filterElementXPath(newE, filter); } catch ( JDOMException jE ) { /* Nothing we can do, ignore */ }
+		return ( newE.getDocument() == null ? null : newE );
 	}
 
 	public static XMLOutputter getPrettyXmlOutputter() { return new XMLOutputter(Format.getPrettyFormat()); }

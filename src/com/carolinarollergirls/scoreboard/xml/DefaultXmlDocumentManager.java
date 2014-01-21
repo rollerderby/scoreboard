@@ -67,8 +67,14 @@ public class DefaultXmlDocumentManager implements XmlDocumentManager
 		return editor.createDocument();
 	}
 
-	protected void update(Element e) { update(e.getDocument()); }
-	protected void update(Document d) { xmlScoreBoard.xmlChange(d); }
+	protected void update(Element e) {
+		if (e != null)
+			update(e.getDocument());
+	}
+	protected void update(Document d) {
+		if (d != null)
+			xmlScoreBoard.xmlChange(d);
+	}
 
 	protected Element getXPathElement() throws JDOMException {
 		return (Element)myXPath.selectSingleNode(xmlScoreBoard.getDocument());

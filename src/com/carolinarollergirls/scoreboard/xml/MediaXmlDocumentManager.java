@@ -21,7 +21,7 @@ import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.jetty.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 
-public class MediaXmlDocumentManager extends OpenXmlDocumentManager implements XmlDocumentManager
+public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager implements XmlDocumentManager
 {
 	public MediaXmlDocumentManager(String n, String m) {
 		super(n);
@@ -46,10 +46,8 @@ public class MediaXmlDocumentManager extends OpenXmlDocumentManager implements X
 		monitorTypes();
 	}
 
-	protected void processChildElement(Element e) throws Exception {
-		/* ONLY process reset - our tree strictly reflects the actual media files on disc */
-		if (e.getName().equals("Reset"))
-			super.processChildElement(e);
+	protected String getPartialXPathString() {
+		return getXPathString()+"/Type/"+getMediaName()+"/Name";
 	}
 
 	protected void monitorTypes() {
