@@ -25,25 +25,18 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 {
 	public MediaXmlDocumentManager(String n, String m) {
 		super(n);
+		managedDir = new File(htmlDirName, getManagedDirName());
 		mediaName = m;
 	}
 
 	public void reset() {
-		synchronized (typeMonitors) {
-			Iterator<String> types = typeMonitors.keySet().iterator();
-			while (types.hasNext()) {
-				String type = types.next();
-				try {
-					typeMonitors.get(type).stop();
-				} catch (Exception e) {
-					ScoreBoardManager.printMessage("MediaXmlDocumentManager for "+getMediaName()+" ERROR: Could not stop type "+type+" monitor : "+e.getMessage());
-				}
-			}
-			typeMonitors.clear();
-		}
-
 		super.reset();
-		monitorTypes();
+		synchronized (managedDirectoryMonitorLock) {
+			if (managedDirectoryMonitor == null)
+				startManagedDirectoryMonitor(); /* first reset, start main monitor */
+			else
+				initializeTypes();
+		}
 	}
 
 	protected boolean checkMediaNameElement(Element type, Element e) throws Exception {
@@ -81,28 +74,64 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 		return getXPathString()+"/Type/"+getMediaName()+"/Name";
 	}
 
-	protected void monitorTypes() {
-		File managedDir = new File(htmlDirName, getManagedDirName());
-		Iterator<String> types = Arrays.asList(managedDir.list(DirectoryFileFilter.INSTANCE)).iterator();
+	protected void startManagedDirectoryMonitor() {
+		FileAlterationObserver faO = new FileAlterationObserver(managedDir, DirectoryFileFilter.INSTANCE);
+		faO.addListener(new MediaDirAlterationListener());
+		managedDirectoryMonitor = new FileAlterationMonitor(INTERVAL, faO);
+		try {
+			managedDirectoryMonitor.start();
+		} catch (Exception e) {
+			ScoreBoardManager.printMessage("MediaXmlDocumentManager for "+getMediaName()+" ERROR: Could not start managed directory monitor : "+e.getMessage());
+		}
+		Iterator<File> types = Arrays.asList(managedDir.listFiles((FileFilter)DirectoryFileFilter.INSTANCE)).iterator();
 		while (types.hasNext())
-			monitorType(managedDir, types.next());
+			monitorType(types.next());
 	}
 
-	protected void monitorType(File managedDir, String type) {
-		File typeDir = new File(managedDir, type);
-		update(editor.getElement(createXPathElement(), "Type", type));
-		FileAlterationObserver faO = new FileAlterationObserver(typeDir, mediaFileFilter);
-		faO.addListener(new MediaTypeDirAlterationListener(type));
-		FileAlterationMonitor monitor = new FileAlterationMonitor(INTERVAL, faO);
-		try {
-			monitor.start();
-		} catch (Exception e) {
-			ScoreBoardManager.printMessage("MediaXmlDocumentManager for "+getMediaName()+" ERROR: Could not start type "+type+" monitor : "+e.getMessage());
-		}
-		typeMonitors.put(type, monitor);
+	protected void initializeTypes() {
+			Iterator<File> types = Arrays.asList(managedDir.listFiles((FileFilter)DirectoryFileFilter.INSTANCE)).iterator();
+		while (types.hasNext())
+			initializeType(types.next());
+	}
+
+	protected void initializeType(File typeDir) {
 		Iterator<File> files = Arrays.asList(typeDir.listFiles((FileFilter)mediaFileFilter)).iterator();
 		while (files.hasNext())
-			addMediaElement(type, files.next());
+			addMediaElement(typeDir.getName(), files.next());
+	}
+
+	protected void monitorType(File typeDir) {
+		String type = typeDir.getName();
+		synchronized (typeMonitors) {
+			if (typeMonitors.containsKey(type))
+				return;
+			update(editor.getElement(createXPathElement(), "Type", type));
+			FileAlterationObserver faO = new FileAlterationObserver(typeDir, mediaFileFilter);
+			faO.addListener(new MediaTypeDirAlterationListener(type));
+			FileAlterationMonitor monitor = new FileAlterationMonitor(INTERVAL, faO);
+			try {
+				monitor.start();
+			} catch (Exception e) {
+				ScoreBoardManager.printMessage("MediaXmlDocumentManager for "+getMediaName()+" ERROR: Could not start type "+type+" monitor : "+e.getMessage());
+			}
+			typeMonitors.put(type, monitor);
+		}
+		initializeType(typeDir);
+	}
+
+	protected void stopMonitorType(File typeDir) {
+		String type = typeDir.getName();
+		synchronized (typeMonitors) {
+			try {
+				if (typeMonitors.containsKey(type))
+					typeMonitors.remove(type).stop();
+			} catch ( Exception e ) {
+					ScoreBoardManager.printMessage("MediaXmlDocumentManager for "+getMediaName()+" ERROR: Could not stop type "+type+" monitor : "+e.getMessage());
+			}
+		}
+		synchronized (updateLock) {
+			update(editor.setRemovePI(editor.getElement(createXPathElement(), "Type", type)));
+		}
 	}
 
 	protected String getManagedDirName() { return getManagedElementName().toLowerCase(); }
@@ -125,12 +154,21 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 		}
 	}
 
+	protected File managedDir;
+	protected FileAlterationMonitor managedDirectoryMonitor = null;
+	protected Object managedDirectoryMonitorLock = new Object();
+
 	private Object updateLock = new Object();
 	private Map<String, FileAlterationMonitor> typeMonitors = new Hashtable<String, FileAlterationMonitor>();
 	private String mediaName;
 
 	private String htmlDirName = ScoreBoardManager.getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
 
+	protected class MediaDirAlterationListener extends FileAlterationListenerAdaptor implements FileAlterationListener
+	{
+		public void onDirectoryCreate(File f) { monitorType(f); }
+		public void onDirectoryDelete(File f) { stopMonitorType(f); }
+	}
 	protected class MediaTypeDirAlterationListener extends FileAlterationListenerAdaptor implements FileAlterationListener
 	{
 		public MediaTypeDirAlterationListener(String t) { type = t; }
