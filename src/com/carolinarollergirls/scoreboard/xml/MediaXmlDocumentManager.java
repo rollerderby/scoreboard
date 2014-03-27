@@ -63,16 +63,18 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 
 	/* Only allow setting Name for currently existing media */
 	protected void processChildElement(Element e) throws Exception {
-		if (e.getName().equals("Type")) {
-			Element type = editor.getElement(getXPathElement(), "Type", editor.getId(e), false);
-			if (type == null)
-				return;
-			Iterator i = e.getChildren(getMediaName()).iterator();
-			while (i.hasNext())
-				if (!checkMediaNameElement(type, (Element)i.next()))
-					i.remove();
+		synchronized (updateLock) { /* prevent element removal while/before updating */
+			if (e.getName().equals("Type")) {
+				Element type = editor.getElement(getXPathElement(), "Type", editor.getId(e), false);
+				if (type == null)
+					return;
+				Iterator i = e.getChildren(getMediaName()).iterator();
+				while (i.hasNext())
+					if (!checkMediaNameElement(type, (Element)i.next()))
+						i.remove();
+			}
+			super.processChildElement(e);
 		}
-		super.processChildElement(e);
 	}
 
 	protected String getPartialXPathString() {
@@ -110,15 +112,20 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 		return editor.getElement(createXPathElement(), "Type", type);
 	}
 	protected void addMediaElement(String type, File file) {
-		Element e = editor.getElement(createTypeElement(type), getMediaName(), file.getName());
-		editor.addElement(e, "Name", null, file.getName().replaceAll("\\.[^.]*$", ""));
-		editor.addElement(e, "Src", null, "/"+getManagedDirName()+"/"+type+"/"+file.getName());
-		update(e);
+		synchronized (updateLock) {
+			Element e = editor.getElement(createTypeElement(type), getMediaName(), file.getName());
+			editor.addElement(e, "Name", null, file.getName().replaceAll("\\.[^.]*$", ""));
+			editor.addElement(e, "Src", null, "/"+getManagedDirName()+"/"+type+"/"+file.getName());
+			update(e);
+		}
 	}
 	protected void removeMediaElement(String type, File file) {
-		update(editor.setRemovePI(editor.getElement(createTypeElement(type), getMediaName(), file.getName())));
+		synchronized (updateLock) {
+			update(editor.setRemovePI(editor.getElement(createTypeElement(type), getMediaName(), file.getName())));
+		}
 	}
 
+	private Object updateLock = new Object();
 	private Map<String, FileAlterationMonitor> typeMonitors = new Hashtable<String, FileAlterationMonitor>();
 	private String mediaName;
 
