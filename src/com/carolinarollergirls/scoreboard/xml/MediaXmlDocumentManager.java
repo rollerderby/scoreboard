@@ -46,6 +46,35 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 		monitorTypes();
 	}
 
+	protected boolean checkMediaNameElement(Element type, Element e) throws Exception {
+		String id = editor.getId(e);
+		Element mediaE = editor.getElement(type, getMediaName(), id, false);
+		if (mediaE == null) /* no matching media element in our XML */
+			return false;
+		Element name = editor.getElement(e, "Name", null, false);
+		if (name == null) /* no update to Name */
+			return false;
+		/* Only allow plain text content, drop any child nodes */
+		String text = editor.getText(name);
+		name.removeContent();
+		editor.setText(name, text);
+		return true;
+	}
+
+	/* Only allow setting Name for currently existing media */
+	protected void processChildElement(Element e) throws Exception {
+		if (e.getName().equals("Type")) {
+			Element type = editor.getElement(getXPathElement(), "Type", editor.getId(e), false);
+			if (type == null)
+				return;
+			Iterator i = e.getChildren(getMediaName()).iterator();
+			while (i.hasNext())
+				if (!checkMediaNameElement(type, (Element)i.next()))
+					i.remove();
+		}
+		super.processChildElement(e);
+	}
+
 	protected String getPartialXPathString() {
 		return getXPathString()+"/Type/"+getMediaName()+"/Name";
 	}
