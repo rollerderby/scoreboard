@@ -59,6 +59,8 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Team tr.Jammer td.Jammer:not(.ByNumber) select.Jammer.ByNumber { display: none; }
 	#TeamTime table.Team tr.Jammer td.Jammer:not(.AlphaSort) select.Jammer.AlphaSort { display: none; }
 	#TeamTime table.Team tr.Jammer td.Jammer:not(.NumSort) select.Jammer.NumSort { display: none; }
+	#TeamTime table.Team tr.Jammer td.ui-buttonset label.Lead.ui-state-active { background: #3f3; }
+
 	#TeamTime table.Team tr.Pass td.Pass a { font-size: 150%; }
 
 	#TeamTime table.Time>tbody>tr>td { width: 20%; }
