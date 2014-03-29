@@ -80,14 +80,20 @@ public class ScoreBoardManager
 		boolean gui = false;
 
 		int c;
-		LongOpt[] longopts = new LongOpt[2];
-		longopts[0] = new LongOpt("gui", LongOpt.NO_ARGUMENT, null, 'g');
-		longopts[1] = new LongOpt("nogui", LongOpt.NO_ARGUMENT, null, 'G');
-		Getopt g = new Getopt("Carolina ScoreBoard", argv, "gG", longopts);
+		String sopts = "gGp:";
+		LongOpt[] longopts = {
+			new LongOpt("gui", LongOpt.NO_ARGUMENT, null, 'g'),
+			new LongOpt("nogui", LongOpt.NO_ARGUMENT, null, 'G'),
+			new LongOpt("port", LongOpt.REQUIRED_ARGUMENT, null, 'p')
+		};
+		Getopt g = new Getopt("Carolina ScoreBoard", argv, sopts, longopts);
 		while ((c = g.getopt()) != -1)
 			switch (c) {
 			case 'g': gui = true; break;
 			case 'G': gui = false; break;
+			case 'p':
+				properties_overrides.put("com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController.port", g.getOptarg());
+				break;
 			}
 
 		if (gui)
@@ -172,6 +178,10 @@ public class ScoreBoardManager
 			doExit("Could not load " + PROPERTIES_FILE_NAME + " file : " + e.getMessage(), e);
 		}
 
+		for (String key : properties_overrides.keySet()) {
+			properties.put(key, properties_overrides.get(key));
+		}
+
 		try { is.close(); }
 		catch ( IOException ioE ) { }
 	}
@@ -243,6 +253,7 @@ public class ScoreBoardManager
 	}
 
 	private static Properties properties = new Properties();
+	private static Map<String,String> properties_overrides = new HashMap<String,String>();
 	private static Map<String,ScoreBoardController> controllers = new ConcurrentHashMap<String,ScoreBoardController>();
 	private static Map<String,ScoreBoardViewer> viewers = new ConcurrentHashMap<String,ScoreBoardViewer>();
 
