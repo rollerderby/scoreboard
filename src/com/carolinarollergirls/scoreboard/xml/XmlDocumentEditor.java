@@ -61,6 +61,10 @@ public class XmlDocumentEditor
 		return document;
 	}
 
+	public boolean isEmptyDocument(Document d) {
+		return !(d.hasRootElement() && (d.getRootElement().getChildren().size() > 0));
+	}
+
 	public Element addElement(Element parent, String name) {
 		return addElement(parent, name, null, null);
 	}
@@ -200,9 +204,8 @@ public class XmlDocumentEditor
 		}
 	}
 
-	public Element addPI(Element e, String target) { return setPI(e, target); }
-	public Element addPI(Element e, ProcessingInstruction pi) { return setPI(e, pi); }
-	public Element setPI(Element e, String target) { return setPI(e, new ProcessingInstruction(target, "")); }
+	public Element setPI(Element e, String target) { return setPI(e, target, ""); }
+	public Element setPI(Element e, String target, String data) { return setPI(e, new ProcessingInstruction(target, data)); }
 	public Element setPI(Element e, ProcessingInstruction pi) {
 		if (null == e || null == pi || "".equals(pi.getTarget()))
 			return e;
@@ -397,6 +400,25 @@ public class XmlDocumentEditor
 		}
 	}
 
+	public void filterOutDocumentXPath(Document d, XPath filter) throws JDOMException {
+		filterOutElementXPath(d.getRootElement(), filter);
+	}
+	public void filterOutElementXPath(Element e, XPath filter) throws JDOMException {
+		if (e == null || filter == null)
+			return;
+		List nodes = filter.selectNodes(e);
+		Iterator i = nodes.iterator();
+		while (i.hasNext()) {
+			Element n = (Element)i.next();
+			Element p = n.getParentElement();
+			n.detach();
+			while (p != e && p != null && p.getChildren().size() == 0 && getText(p) == null && !nodes.contains(p)) {
+				Element nextP = p.getParentElement();
+				p.detach();
+				p = nextP;
+			}
+		}
+	}
 	public void filterElementXPath(Element e, XPath filter) throws JDOMException {
 		if (e == null || filter == null)
 			return;
