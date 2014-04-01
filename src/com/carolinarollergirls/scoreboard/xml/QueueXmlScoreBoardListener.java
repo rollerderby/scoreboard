@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 import org.jdom.*;
 
-public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
+public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener implements XmlScoreBoardListener
 {
 	public QueueXmlScoreBoardListener() { }
 	public QueueXmlScoreBoardListener(XmlScoreBoard sb) {
@@ -21,6 +21,9 @@ public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
 	}
 
 	public void xmlChange(Document d) {
+		super.xmlChange(d);
+		if (editor.isEmptyDocument(d))
+			return;
 		synchronized (documentsLock) {
 			if (queueNextDocument || documents.isEmpty())
 				documents.addLast(d);
@@ -38,8 +41,6 @@ public class QueueXmlScoreBoardListener implements XmlScoreBoardListener
 	}
 
 	public boolean isEmpty() { return (null == documents.peek()); }
-
-	protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
 	protected boolean queueNextDocument = false;
 	protected LinkedList<Document> documents = new LinkedList<Document>();
