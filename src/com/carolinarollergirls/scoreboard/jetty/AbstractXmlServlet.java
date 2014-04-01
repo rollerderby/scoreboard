@@ -21,6 +21,7 @@ import javax.servlet.http.*;
 
 import org.jdom.*;
 import org.jdom.output.*;
+import org.jdom.xpath.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
@@ -59,6 +60,10 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
 		public Document getDocument() { return queueListener.getNextDocument(); }
 
 		public boolean isEmpty() { return queueListener.isEmpty(); }
+
+		public void clearFilter() { queueListener.clearFilter(); }
+		public void setFilter(XPath f) { queueListener.setFilter(f); }
+		public XPath getFilter() { return queueListener.getFilter(); }
 
 		protected QueueXmlScoreBoardListener queueListener;
 	}

@@ -22,6 +22,7 @@ import javax.servlet.http.*;
 
 import org.jdom.*;
 import org.jdom.output.*;
+import org.jdom.xpath.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
@@ -107,6 +108,28 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
+	protected void listenerConfig(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+		XmlListener listener = getXmlListenerForRequest(request);
+		if (null == listener) {
+			registrationKeyNotFound(request, response);
+			return;
+		}
+
+		String timeUpdate = request.getParameter("timeUpdate");
+		if ("sec".equalsIgnoreCase(timeUpdate) || "seconds".equalsIgnoreCase(timeUpdate))
+			listener.setFilter(timeUpdateSecondFilter);
+		else if ("ms".equalsIgnoreCase(timeUpdate) || "milliseconds".equalsIgnoreCase(timeUpdate))
+			listener.clearFilter();
+
+		String currentTimeUpdateStr = "milliseconds";
+		if (timeUpdateSecondFilter == listener.getFilter())
+			currentTimeUpdateStr = "seconds";
+
+		response.setContentType("text/plain");
+		response.getWriter().println("Time Update : "+currentTimeUpdateStr);
+		response.setStatus(HttpServletResponse.SC_OK);
+	}
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		super.doPost(request, response);
 
@@ -129,6 +152,8 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 				get(request, response);
 			else if ("/debug".equals(request.getPathInfo()))
 				setDebug(request, response);
+			else if ("/config".equals(request.getPathInfo()))
+				listenerConfig(request, response);
 			else if (request.getPathInfo().endsWith(".xml"))
 				getAll(request, response);
 			else if (!response.isCommitted())
@@ -138,6 +163,15 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		}
 	}
+
+	protected XmlListener createXmlListener(ScoreBoard scoreBoard) {
+		XmlListener listener = super.createXmlListener(scoreBoard);
+		listener.setFilter(timeUpdateSecondFilter);
+		return listener;
+	}
+
+	protected XPath timeUpdateSecondFilter =
+		editor.createXPath("/*/ScoreBoard/Clock/Time[string(processing-instruction('TimeUpdate'))='ms']");
 
 	protected boolean debugGet = false;
 	protected boolean debugSet = false;
