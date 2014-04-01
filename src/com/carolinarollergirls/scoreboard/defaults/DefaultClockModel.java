@@ -215,6 +215,20 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			setMaximumTime(maximumTime + change);
 		}
 	}
+	public boolean isTimeAtStart(long t) {
+		if (isCountDirectionDown())
+			return t == getMaximumTime();
+		else
+			return t == getMinimumTime();
+	}
+	public boolean isTimeAtStart() { return isTimeAtStart(getTime()); }
+	public boolean isTimeAtEnd(long t) {
+		if (isCountDirectionDown())
+			return t == getMinimumTime();
+		else
+			return t == getMaximumTime();
+	}
+	public boolean isTimeAtEnd() { return isTimeAtEnd(getTime()); }
 
 	public boolean isCountDirectionDown() { return countDown; }
 	public void setCountDirectionDown(boolean down) {

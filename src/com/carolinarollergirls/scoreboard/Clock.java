@@ -25,6 +25,10 @@ public interface Clock extends ScoreBoardEventProvider
 	public long getTime();
 	public long getMinimumTime();
 	public long getMaximumTime();
+	public boolean isTimeAtStart(long time);
+	public boolean isTimeAtStart();
+	public boolean isTimeAtEnd(long time);
+	public boolean isTimeAtEnd();
 
 	public boolean isRunning();
 
