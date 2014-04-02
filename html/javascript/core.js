@@ -211,9 +211,9 @@ $sb = function(arg) {
 };
 
 _crgScoreBoard = {
-	POLL_INTERVAL_MIN: 100,
+	POLL_INTERVAL_MIN: 0,
 	POLL_INTERVAL_MAX: 500,
-	POLL_INTERVAL_INCREMENT: 10,
+	POLL_INTERVAL_INCREMENT: 100,
 	pollRate: this.POLL_INTERVAL_MIN,
 	doc: $("document", $.parseXML("<?xml version='1.0' encoding='UTF-8'?><document/>")),
 	documentLoaded: false,
@@ -591,23 +591,22 @@ _crgScoreBoard = {
 		cache: false,
 		url: "/XmlScoreBoard/get",
 		data: { key: null },
-		complete: function() {
+		complete: function(data, textStatus, jqxhr) {
+			if (data.status == 200) {
+				_crgScoreBoard.processScoreBoardXml(data.responseXML);
+				_crgScoreBoard.pollRate = 0;
+			} else if (data.status == 304) {
+				_crgScoreBoard.pollRate = 0;
+			} else if (data.status == 404) {
+				//FIXME - we could possibly handle this better than reloading the page...
+				window.location.reload();
+			} else {
+				// Some other error occured.  Poll longer
+				_crgScoreBoard.pollRate += _crgScoreBoard.POLL_INTERVAL_INCREMENT;
+			}
 			if (_crgScoreBoard.pollRate > _crgScoreBoard.POLL_INTERVAL_MAX)
 				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MAX;
 			setTimeout(_crgScoreBoard.pollScoreBoard, _crgScoreBoard.pollRate);
-		},
-		statusCode: {
-			304: function() { /* No change since last poll, increase poll rate */
-				_crgScoreBoard.pollRate += _crgScoreBoard.POLL_INTERVAL_INCREMENT;
-			},
-			404: function() {
-				//FIXME - we could possibly handle this better than reloading the page...
-				window.location.reload();
-			},
-			200: function(data, textStatus, jqxhr) {
-				_crgScoreBoard.processScoreBoardXml(jqxhr.responseXML);
-				_crgScoreBoard.pollRate = _crgScoreBoard.POLL_INTERVAL_MIN;
-			}
 		}
 	},
 

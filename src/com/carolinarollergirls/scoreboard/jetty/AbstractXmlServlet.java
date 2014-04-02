@@ -54,10 +54,10 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
 	protected class XmlListener extends RegisteredListener
 	{
 		public XmlListener(ScoreBoard sB) {
-			queueListener = new QueueXmlScoreBoardListener(sB.getXmlScoreBoard());
+			queueListener = new SleepingQueueXmlScoreBoardListener(sB.getXmlScoreBoard());
 		}
 
-		public Document getDocument() { return queueListener.getNextDocument(); }
+		public Document getDocument(int timeout) { return queueListener.getNextDocument(timeout); }
 
 		public boolean isEmpty() { return queueListener.isEmpty(); }
 
@@ -65,6 +65,6 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet
 		public void setFilter(XPath f) { queueListener.setFilter(f); }
 		public XPath getFilter() { return queueListener.getFilter(); }
 
-		protected QueueXmlScoreBoardListener queueListener;
+		protected SleepingQueueXmlScoreBoardListener queueListener;
 	}
 }

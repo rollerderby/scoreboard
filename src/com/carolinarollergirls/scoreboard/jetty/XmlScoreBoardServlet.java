@@ -51,7 +51,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 			return;
 		}
 
-		Document d = listener.getDocument();
+		Document d = listener.getDocument(LONGPOLL_TIMEOUT);
 		if (null == d) {
 			if (debugGet)
 				ScoreBoardManager.printMessage("GET to "+listener.getKey()+" no change");
@@ -86,7 +86,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 		response.setContentType("text/plain");
 		response.setStatus(HttpServletResponse.SC_OK);
 	}
- 
+
 	protected void setDebug(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		String get = request.getParameter("get");
 		String set = request.getParameter("set");
@@ -177,4 +177,5 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 
 	protected boolean debugGet = false;
 	protected boolean debugSet = false;
+	private int LONGPOLL_TIMEOUT = 10000;
 }
