@@ -53,6 +53,8 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 
 		Document d = listener.getDocument(LONGPOLL_TIMEOUT);
 		if (null == d) {
+			if (debugGet)
+				ScoreBoardManager.printMessage("GET to "+listener.getKey()+" no change");
 			response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
 		} else {
 			if (debugGet)
