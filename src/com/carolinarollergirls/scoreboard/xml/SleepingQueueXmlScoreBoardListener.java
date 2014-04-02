@@ -13,60 +13,27 @@ import java.util.concurrent.*;
 
 import org.jdom.*;
 
-public class SleepingQueueXmlScoreBoardListener extends FilterXmlScoreBoardListener implements XmlScoreBoardListener
+public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListener implements XmlScoreBoardListener
 {
 	public SleepingQueueXmlScoreBoardListener() { super(); }
-	public SleepingQueueXmlScoreBoardListener(XmlScoreBoard sb) {
-		sb.addXmlScoreBoardListener(this);
-	}
+	public SleepingQueueXmlScoreBoardListener(XmlScoreBoard sb) { super(sb); }
 
 	public void xmlChange(Document d) {
-		super.xmlChange(d);
-		if (editor.isEmptyDocument(d))
-			return;
 		synchronized (documentsLock) {
-			if (queueNextDocument || documents.isEmpty()) {
-				documents.addLast(d);
-				// Wake any sleeping threads
-				ListIterator itr = sleepingThreads.listIterator();
-				while(itr.hasNext()) {
-					((Thread)itr.next()).interrupt();
-				}
-			} else
-				editor.mergeDocuments(documents.getLast(), d);
-
-			queueNextDocument = editor.hasRemovePI(d);
+			super.xmlChange(d);
+			if (!isEmpty())
+				documentsLock.notifyAll();
 		}
 	}
 
 	public Document getNextDocument() { return getNextDocument(0); }
 	public Document getNextDocument(int timeout) {
 		synchronized (documentsLock) {
-			Document ret = documents.poll();
-			if (null == ret) {
-				// No results.  Add to sleeping thread list and sleep for timeout / 1000 seconds
-				sleepingThreads.addLast(Thread.currentThread());
-			} else
-				return ret;
-		}
-		try {
-			Thread.sleep(timeout);
-		} catch (InterruptedException e) {}
-		try {
-			Thread.sleep(20);
-		} catch (InterruptedException e) {}
-
-		synchronized (documentsLock) {
-			// Remove from sleeping list and return the next document (if any)
-			sleepingThreads.remove(Thread.currentThread());
-			return documents.poll();
+			try {
+				if (isEmpty())
+					documentsLock.wait(timeout);
+			} catch ( InterruptedException iE ) { }
+			return super.getNextDocument();
 		}
 	}
-
-	public boolean isEmpty() { return (null == documents.peek()); }
-
-	protected boolean queueNextDocument = false;
-	protected LinkedList<Thread> sleepingThreads = new LinkedList<Thread>();
-	protected LinkedList<Document> documents = new LinkedList<Document>();
-	protected Object documentsLock = new Object();
 }
