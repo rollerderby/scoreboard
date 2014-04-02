@@ -177,5 +177,6 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet
 
 	protected boolean debugGet = false;
 	protected boolean debugSet = false;
-	private int LONGPOLL_TIMEOUT = 10000;
+
+	private static final int LONGPOLL_TIMEOUT = 10000;
 }
