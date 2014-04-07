@@ -12,6 +12,7 @@ import java.util.*;
 
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.xml.*;
+import com.carolinarollergirls.scoreboard.trigger.*;
 
 public interface ScoreBoard extends ScoreBoardEventProvider
 {
@@ -64,6 +65,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public Policy getPolicy(String id);
 
 	public XmlScoreBoard getXmlScoreBoard();
+	public TriggerManager getTriggerManager();
 
 	public static final String EVENT_IN_PERIOD = "InPeriod";
 	public static final String EVENT_IN_OVERTIME = "InOvertime";

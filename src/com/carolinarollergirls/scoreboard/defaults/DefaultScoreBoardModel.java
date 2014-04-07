@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.xml.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.policy.OvertimeLineupTimePolicy;
+import com.carolinarollergirls.scoreboard.trigger.*;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
@@ -32,6 +33,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		addInPeriodListeners();
 
 		xmlScoreBoard = new XmlScoreBoard(this);
+		triggerManager = new TriggerManager(this);
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }
@@ -39,6 +41,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public String getProviderId() { return ""; }
 
 	public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
+	public TriggerManager getTriggerManager() { return triggerManager; }
 
 	protected void loadPolicies() {
 		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
@@ -365,6 +368,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected boolean timeoutClockWasRunning = false;
 
 	protected XmlScoreBoard xmlScoreBoard;
+	protected TriggerManager triggerManager;
 
 	protected ScoreBoardListener periodStartListener = new ScoreBoardListener() {
 			public void scoreBoardChange(ScoreBoardEvent event) {
