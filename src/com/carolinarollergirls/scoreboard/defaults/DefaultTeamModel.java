@@ -50,6 +50,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		setLeadJammer(DEFAULT_LEADJAMMER);
 		setPass(DEFAULT_PASS);
 		removeAlternateNameModels();
+		removeColorModels();
 		Iterator<PositionModel> p = getPositionModels().iterator();
 		Iterator<SkaterModel> s = getSkaterModels().iterator();
 		while (s.hasNext()) {
@@ -105,6 +106,42 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			Iterator<AlternateNameModel> i = getAlternateNameModels().iterator();
 			while (i.hasNext())
 				removeAlternateNameModel(i.next().getId());
+		}
+	}
+
+	public List<Color> getColors() {
+		return Collections.unmodifiableList(new ArrayList<Color>(colors.values()));
+	}
+	public List<ColorModel> getColorModels() {
+		return Collections.unmodifiableList(new ArrayList<ColorModel>(colors.values()));
+	}
+	public Color getColor(String i) { return getColorModel(i); }
+	public ColorModel getColorModel(String i) { return colors.get(i); }
+	public void setColorModel(String i, String c) {
+		synchronized (colorLock) {
+			if (colors.containsKey(i)) {
+				ColorModel cm = colors.get(i);
+				cm.setColor(c);
+			} else {
+				ColorModel cm = new DefaultColorModel(this, i, c);
+				colors.put(i, cm);
+				cm.addScoreBoardListener(this);
+				scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_COLOR, cm, null));
+			}
+		}
+	}
+	public void removeColorModel(String i) {
+		synchronized (colorLock) {
+			ColorModel cm = colors.remove(i);
+			cm.removeScoreBoardListener(this);
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_COLOR, cm, null));
+		}
+	}
+	public void removeColorModels() {
+		synchronized (colorLock) {
+			Iterator<ColorModel> i = getColorModels().iterator();
+			while (i.hasNext())
+				removeColorModel(i.next().getId());
 		}
 	}
 
@@ -295,6 +332,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected Map<String,AlternateNameModel> alternateNames = new ConcurrentHashMap<String,AlternateNameModel>();
 	protected Object alternateNameLock = new Object();
 
+	protected Map<String,ColorModel> colors = new ConcurrentHashMap<String,ColorModel>();
+	protected Object colorLock = new Object();
+
 	protected Map<String,SkaterModel> skaters = new ConcurrentHashMap<String,SkaterModel>();
 	protected Map<String,PositionModel> positions = new ConcurrentHashMap<String,PositionModel>();
 	protected Object skaterLock = new Object();
@@ -335,5 +375,35 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		protected String id;
 		protected String name;
 		protected Object nameLock = new Object();
+	}
+
+	public class DefaultColorModel extends DefaultScoreBoardEventProvider implements ColorModel
+	{
+		public DefaultColorModel(TeamModel t, String i, String c) {
+			teamModel = t;
+			id = i;
+			color = c;
+		}
+		public String getId() { return id; }
+		public String getColor() { return color; }
+		public void setColor(String c) {
+			synchronized (colorLock) {
+				String last = color;
+				color = c;
+				scoreBoardChange(new ScoreBoardEvent(this, Color.EVENT_COLOR, color, last));
+			}
+		}
+
+		public Team getTeam() { return getTeamModel(); }
+		public TeamModel getTeamModel() { return teamModel; }
+
+		public String getProviderName() { return "Color"; }
+		public Class getProviderClass() { return Color.class; }
+		public String getProviderId() { return getId(); }
+
+		protected TeamModel teamModel;
+		protected String id;
+		protected String color;
+		protected Object colorLock = new Object();
 	}
 }

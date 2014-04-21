@@ -82,6 +82,13 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 					editor.removeElement(getTeamElement((Team)p), "AlternateName", ((Team.AlternateName)event.getValue()).getId());
 				else
 					editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue()));
+			} else if (prop.equals(Team.EVENT_ADD_COLOR)) {
+				Element e = converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue());
+			} else if (prop.equals(Team.EVENT_REMOVE_COLOR)) {
+				if (isPersistent())
+					editor.removeElement(getTeamElement((Team)p), "Color", ((Team.Color)event.getValue()).getId());
+				else
+					editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue()));
 			} else if (prop.equals(Team.EVENT_ADD_SKATER)) {
 				Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
 			} else if (prop.equals(Team.EVENT_REMOVE_SKATER)) {
@@ -102,6 +109,8 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 			}
 		} else if (p.getProviderName().equals("AlternateName")) {
 			editor.setElement(getAlternateNameElement((Team.AlternateName)p), prop, null, v);
+		} else if (p.getProviderName().equals("Color")) {
+			editor.setElement(getColorElement((Team.Color)p), prop, null, v);
 		} else if (p.getProviderName().equals("Skater")) {
 			editor.setElement(getSkaterElement((Skater)p), prop, null, v);
 		} else if (p.getProviderName().equals("Clock")) {
@@ -162,11 +171,14 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 		return editor.getElement(getTeamElement(alternateName.getTeam()), "AlternateName", alternateName.getId());
 	}
 
+	protected Element getColorElement(Team.Color color) {
+		return editor.getElement(getTeamElement(color.getTeam()), "Color", color.getId());
+	}
+
 	protected XmlDocumentEditor editor = new XmlDocumentEditor();
 	protected ScoreBoardXmlConverter converter = new ScoreBoardXmlConverter();
 
 	protected Document document = editor.createDocument("ScoreBoard");
 	protected boolean empty = true;
 	protected boolean persistent = false;
-
 }

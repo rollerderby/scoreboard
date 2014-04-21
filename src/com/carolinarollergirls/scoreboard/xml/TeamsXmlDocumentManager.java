@@ -98,6 +98,10 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		while (alternateNames.hasNext())
 			processAlternateName(newTeam, (Element)alternateNames.next());
 
+		Iterator colors = team.getChildren("Color").iterator();
+		while (colors.hasNext())
+			processColor(newTeam, (Element)colors.next());
+
 		Iterator skaters = team.getChildren("Skater").iterator();
 		while (skaters.hasNext())
 			processSkater(newTeam, (Element)skaters.next());
@@ -120,6 +124,23 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		Element aName = alternateName.getChild("Name");
 		if (null != aName)
 			editor.addElement(newAlternateName, "Name", null, editor.getText(aName));
+	}
+
+	protected void processColor(Element newTeam, Element color) {
+		String colorId = color.getAttributeValue("Id");
+		if (null == colorId || "".equals(colorId.trim()))
+			return;
+		Element newColor = editor.addElement(newTeam, "Color", colorId);
+
+		if (editor.hasRemovePI(color)) {
+			Element removeColorTeam = editor.addElement(createXPathElement(), "Team", newTeam.getAttributeValue("Id"));
+			update(removeColorTeam.addContent(editor.setRemovePI((Element)newColor.detach())));
+			return;
+		}
+
+		Element cColor = color.getChild("Color");
+		if (null != cColor)
+			editor.addElement(newColor, "Color", null, editor.getText(cColor));
 	}
 
 	protected void processSkater(Element newTeam, Element skater) {
@@ -179,6 +200,16 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 			aName = editor.getText(alternateName.getChild("Name"));
 			team.setAlternateNameModel(aId, aName);
 		}
+		Iterator colors = newTeam.getChildren("Color").iterator();
+		while (colors.hasNext()) {
+			Element color = (Element)colors.next();
+			String cId = color.getAttributeValue("Id");
+			if (null == cId || "".equals(cId.trim()))
+				continue;
+			String cColor = "";
+			cColor = editor.getText(color.getChild("Color"));
+			team.setColorModel(cId, cColor);
+		}
 		Iterator skaters = newTeam.getChildren("Skater").iterator();
 		while (skaters.hasNext()) {
 			Element skater = (Element)skaters.next();
@@ -211,6 +242,12 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 			Team.AlternateName alternateName = alternateNames.next();
 			Element newAlternateName = editor.addElement(newTeam, "AlternateName", alternateName.getId());
 			editor.addElement(newAlternateName, "Name", null, alternateName.getName());
+		}
+		Iterator<Team.Color> colors = team.getColors().iterator();
+		while (colors.hasNext()) {
+			Team.Color color = colors.next();
+			Element newColor = editor.addElement(newTeam, "Color", color.getId());
+			editor.addElement(newColor, "Color", null, color.getColor());
 		}
 		Iterator<Skater> skaters = team.getSkaters().iterator();
 		while (skaters.hasNext()) {

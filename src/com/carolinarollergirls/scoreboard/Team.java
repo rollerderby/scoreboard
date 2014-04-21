@@ -23,6 +23,9 @@ public interface Team extends ScoreBoardEventProvider
 	public List<AlternateName> getAlternateNames();
 	public AlternateName getAlternateName(String id);
 
+	public List<Color> getColors();
+	public Color getColor(String id);
+
 	public String getLogo();
 
 	public int getScore();
@@ -54,6 +57,8 @@ public interface Team extends ScoreBoardEventProvider
 	public static final String EVENT_PASS = "Pass";
 	public static final String EVENT_ADD_ALTERNATE_NAME = "AddAlternateName";
 	public static final String EVENT_REMOVE_ALTERNATE_NAME = "RemoveAlternateName";
+	public static final String EVENT_ADD_COLOR = "AddColor";
+	public static final String EVENT_REMOVE_COLOR = "RemoveColor";
 
 	public static interface AlternateName extends ScoreBoardEventProvider {
 		public String getId();
@@ -63,7 +68,18 @@ public interface Team extends ScoreBoardEventProvider
 
 		public static final String EVENT_NAME = "Name";
 
+		public static final String ID_OPERATOR = "operator";
+		public static final String ID_MOBILE = "mobile";
 		public static final String ID_OVERLAY = "overlay";
 		public static final String ID_TWITTER = "twitter";
 	};
+
+	public static interface Color extends ScoreBoardEventProvider {
+		public String getId();
+		public String getColor();
+
+		public Team getTeam();
+
+		public static final String EVENT_COLOR = "Color";
+	}
 }

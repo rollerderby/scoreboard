@@ -99,6 +99,10 @@ public class ScoreBoardXmlConverter
 		while (alternateNames.hasNext())
 			toElement(e, alternateNames.next());
 
+		Iterator<Team.Color> colors = t.getColors().iterator();
+		while (colors.hasNext())
+			toElement(e, colors.next());
+
 		Iterator<Position> positions = t.getPositions().iterator();
 		while (positions.hasNext())
 			toElement(e, positions.next());
@@ -114,6 +118,14 @@ public class ScoreBoardXmlConverter
 		Element e = editor.setElement(team, "AlternateName", n.getId());
 
 		editor.setElement(e, Team.AlternateName.EVENT_NAME, null, n.getName());
+
+		return e;
+	}
+
+	public Element toElement(Element team, Team.Color c) {
+		Element e = editor.setElement(team, "Color", c.getId());
+
+		editor.setElement(e, Team.Color.EVENT_COLOR, null, c.getColor());
 
 		return e;
 	}
@@ -304,6 +316,8 @@ public class ScoreBoardXmlConverter
 
 				if (name.equals("AlternateName"))
 					processAlternateName(teamModel, element);
+				else if (name.equals("Color"))
+					processColor(teamModel, element);
 				else if (name.equals("Skater"))
 					processSkater(teamModel, element);
 				else if (name.equals("Position"))
@@ -366,6 +380,36 @@ public class ScoreBoardXmlConverter
 					continue;
 				else if (name.equals(Team.AlternateName.EVENT_NAME))
 					alternateNameModel.setName(value);
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processColor(TeamModel teamModel, Element color) {
+		String id = color.getAttributeValue("Id");
+		TeamModel.ColorModel colorModel = teamModel.getColorModel(id);
+
+		if (editor.hasRemovePI(color)) {
+			teamModel.removeColorModel(id);
+			return;
+		}
+
+		if (null == colorModel) {
+			teamModel.setColorModel(id, "");
+			colorModel = teamModel.getColorModel(id);
+		}
+
+		Iterator children = color.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String name = element.getName();
+				String value = editor.getText(element);
+
+				if (null == value)
+					continue;
+				else if (name.equals(Team.Color.EVENT_COLOR))
+					colorModel.setColor(value);
 			} catch ( Exception e ) {
 			}
 		}

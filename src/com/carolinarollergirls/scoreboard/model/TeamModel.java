@@ -28,6 +28,12 @@ public interface TeamModel extends Team
 	public void removeAlternateNameModel(String id);
 	public void removeAlternateNameModels();
 
+	public List<ColorModel> getColorModels();
+	public ColorModel getColorModel(String id);
+	public void setColorModel(String id, String color);
+	public void removeColorModel(String id);
+	public void removeColorModels();
+
 	public void setLogo(String logo);
 
 	public void timeout();
@@ -63,6 +69,12 @@ public interface TeamModel extends Team
 
 	public static interface AlternateNameModel extends AlternateName {
 		public void setName(String n);
+
+		public TeamModel getTeamModel();
+	}
+
+	public static interface ColorModel extends Color {
+		public void setColor(String c);
 
 		public TeamModel getTeamModel();
 	}
