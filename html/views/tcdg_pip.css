@@ -1,0 +1,108 @@
+/**
+ * Copyright (C) 2008-2013 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
+ *
+ * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ * The CRG ScoreBoard is licensed under either the GNU General Public
+ * License version 3 (or later), or the Apache License 2.0, at your option.
+ * See the file COPYING for details.
+ */
+
+/* Change this background color to whatever your overlay chromakey is set to */
+
+/* No chroma, so background can be whatever */
+/* body { background-color: #0f0; }  */
+
+img { position: absolute; }
+div { position: absolute; }
+
+div.Full { width: 100%; height: 100%; }
+img.Bar { width: 100%; top: 0%; }
+
+#TCDGMain { z-index:100; }
+
+/* These slide behind the main bar */
+#TCDGT1LDC { z-index:80; }
+#TCDGT1LD { z-index:90; top: 12%; }
+#TCDGT1LD.Show { top: 0%; }
+#TCDGT2LDC { z-index:80; }
+#TCDGT2LD { z-index:90; top: 12%; }
+#TCDGT2LD.Show { top: 0%; }
+
+/* #TCDGT1LD { z-index:90; } */
+/* #TCDGT1LD.Show { z-index: 110; } */
+/* #TCDGT2LD { z-index:90; } */
+/* #TCDGT2LD.Show { z-index: 110; } */
+
+/* These probably DON'T need to be on seperate z-indexes.. But if they want to change the logos, they may. */
+
+#TCDGT1OR { z-index:200; }
+#TCDGT1T1 { z-index:190; }
+#TCDGT1T2 { z-index:180; }
+#TCDGT1T3 { z-index:170; }
+
+#TCDGT2OR { z-index:150; }
+#TCDGT2T1 { z-index:140; }
+#TCDGT2T2 { z-index:130; }
+#TCDGT2T3 { z-index:120; }
+
+
+
+/*
+a {
+  position: relative;
+  font-family: 'LiberationSans',helvetica;
+  font-weight: bold;
+}
+*/
+
+a {
+  position: relative;
+  font-family: 'roboto';
+  font-weight: bold;
+}
+
+#StatusBar { left: 12.25%; top: 75%; width: 75.1%; text-align: center; font-size: 13.8%; z-index: 300; }
+#TopBar { left: 0%; width: 100%; top: 0%; height: 100%; text-align: center; z-index: 300; }
+
+#StatusBar a { color: black; }
+#ClockPeriodNumber { top: 1%; height: 17%; left: 39.9%; width: 20%; text-align: center; font-size: 15.6%; }
+#ClockPeriodTime { top: 49.75%; height: 25%; left: 29.9%; width: 40.3%; text-align: center; font-size: 20.2%; }
+#ClockPeriodTime:not(.ShowPeriod) { display: none; }
+
+#ClockIntermissionTime { top: 49.75%; height: 25%; left: 29.9%; width: 40.3%; text-align: center; font-size: 20.2%; }
+#ClockIntermissionTime:not(.ShowIntermission) { display: none; }
+
+#ClockJamTime { top: 34.3%; height: 20%; left: 36.25%; width: 27%; text-align: center; font-size: 15.2%; }
+#ClockJamTime:not(.ShowJam) { display: none; }
+
+#ClockLineupTime { top: 34.3%; height: 20%; left: 36.25%; width: 27%; text-align: center; font-size: 15.2%; }
+#ClockLineupTime:not(.ShowLineup) { display: none; }
+
+#ClockTimeoutTime { top: 34.3%; height: 20%; left: 36.25%; width: 27%; text-align: center; font-size: 15.2%; }
+#ClockTimeoutTime:not(.ShowTimeout) { display: none; }
+
+#ClockJamNumber { top: 17.125%; height: 19%; left: 39.9%; width: 20%; text-align: center; font-size: 15.6%; }
+
+
+
+#BottomBar { left: 0%; width: 100%; top 0%; height: 100%; text-align: center; }
+
+#Team1Name { top: 0.5%; height: 20%; left: 0.9%; width: 37%; text-align: left; overflow: hidden; font-size: 15.2%; padding-left: 2.3%; padding-bottom: 1%; z-index: 95; color: #000000; background-color: #ffffff; }
+#Team1Score { top: 16.9%; height: 16%; left: 2.9%; width: 33%; text-align: left; font-size: 14.2%; z-index: 300; }
+
+#Team2Name { top: 0.5%; height: 20%; right: 0.9%; width: 37%; text-align: right; overflow: hidden; font-size: 15.2%; padding-right: 1.5%; padding-bottom: 1%; z-index: 95; color: #ffffff; background-color: #000000; }
+#Team2Score { top: 16.9%; height: 16%; right: 2.9%; width: 33%; text-align: right; font-size: 14.2%; z-index: 300; }
+
+#Team1Name.AlternateName a.Name { display: none; }
+#Team1Name:not(.AlternateName) a.AlternateName { display: none; }
+#Team2Name.AlternateName a.Name { display: none; }
+#Team2Name:not(.AlternateName) a.AlternateName { display: none; }
+
+#BottomBarFullWidth { top: 85.5%; bottom: 0; width: 100%; z-index: 300; }
+#Team1Logo,#Team2Logo { bottom: 0; height: 100%; }
+#Team1Logo { left: 0%; right: 90%; }
+#Team2Logo { left: 90%; right: 0% }
+
+.noBack {
+	background-color:rgba(0,255,0,0.0);
+}
