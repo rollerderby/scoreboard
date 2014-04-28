@@ -312,6 +312,45 @@ _crgUtils = {
 		return s;
 	},
 
+	bindColors: function(team, colorName, fg_elem, bg_elem) {
+		var fg = colorName + "_fg";
+		var bg = colorName + "_bg";
+		var gl = colorName + "_glow";
+		if (bg_elem == null)
+			bg_elem = fg_elem;
+
+		$sb(team).$sbBindAddRemoveEach("Color",
+			function(event, node) {
+				var id = $sb(node).$sbId;
+				if (id == fg) {
+					node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						$(fg_elem).css('color', $.trim(val));
+					});
+				} else if (id == bg) {
+					node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						$(bg_elem).css('background-color', $.trim(val));
+					});
+				} else if (id == gl) {
+					node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						var shadow = '';
+						if ($.trim(val) != "") {
+							shadow = '0 0 0.2em ' + val;
+							shadow = shadow + ', ' + shadow + ', ' + shadow;
+						}
+						$(fg_elem).css('text-shadow', shadow);
+					});
+				}
+			}, function(event, node) {
+				var id = $sb(node).$sbId;
+				if (id == fg)
+					$(fg_elem).css('color', '');
+				else if (id == bg)
+					$(bg_elem).css('background-color', '');
+				else if (id == gl)
+					$(fg_elem).css('text-shadow', '');
+			} );
+	},
+
 	showBrowserWarning: function(next, options) {
 		var callNext = true;
 		$.each(options, function(key,value) {
