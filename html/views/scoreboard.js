@@ -163,6 +163,8 @@ function setupTeams() {
       teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, animateTime.team);
     });
 
+    _crgUtils.bindColors(sbTeam, "scoreboard", teamDiv.find("div.Name>a"));
+
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
     var resizeName = teamDiv.find("div.Name").data("AutoFit");
     sbTeam.$sb("Logo").$sbBindAndRun("sbchange", function(event, newVal, oldVal) {
