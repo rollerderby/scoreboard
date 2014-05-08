@@ -157,6 +157,25 @@ table.RowTable { border-spacing: 0px; }
 	div.AlternateNamesDialog table tr:nth-of-type(even)>td { background: #ddd; }
 /* End Alternate Names Dialog */
 
+/* Colors Dialog */
+	div.ColorsDialog { text-align: center; }
+	div.ColorsDialog table { width: 100%; border-spacing: 0px; }
+	div.ColorsDialog table thead tr>th.X { width: 10%; }
+	div.ColorsDialog table thead tr>th.Id { width: 30%; }
+	div.ColorsDialog table thead tr>th.Foreground { width: 20%; }
+	div.ColorsDialog table thead tr>th.Background { width: 20%; }
+	div.ColorsDialog table thead tr>th.Glow { width: 20%; }
+	div.ColorsDialog table thead tr>th { background: #ccc; }
+	div.ColorsDialog table thead tr>th:first-of-type { border-radius: 5px 0px 0px 0px; }
+	div.ColorsDialog table thead tr>th:last-of-type { border-radius: 0px 5px 0px 0px; }
+	div.ColorsDialog table thead tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 5px; }
+	div.ColorsDialog table thead tr:last-of-type>td:last-of-type { border-radius: 0px 0px 5px 0px; }
+	div.ColorsDialog table tr>td { text-align: center; }
+	div.ColorsDialog table tr>td.Id { text-align: left; }
+	div.ColorsDialog table tbody tr:nth-of-type(odd)>td { background: #eee; }
+	div.ColorsDialog table tbody tr:nth-of-type(even)>td { background: #ddd; }
+/* End Colors Dialog */
+
 /* Teams Assign Dialog */
 	div.TeamsAssignDialog h4 { text-align: center; }
 /* End Teams Assign Dialog */

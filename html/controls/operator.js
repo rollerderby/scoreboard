@@ -1002,7 +1002,7 @@ function createNewTeamTable(team, teamid) {
 	var teamTable = $("<table>").addClass("Team Hide").data("id", teamid)
 		.append($("<tr><td/></tr>").addClass("Control"))
 		.append($("<tr><td/></tr>").addClass("Skaters"));
-	var controlTable = createRowTable(5).appendTo(teamTable.find("tr.Control>td")).addClass("Control");
+	var controlTable = createRowTable(6).appendTo(teamTable.find("tr.Control>td")).addClass("Control");
 
 	team.$sb("Name").$sbControl("<input type='text'>")
 		.appendTo(controlTable.find("td:eq(0)"));
@@ -1016,12 +1016,15 @@ function createNewTeamTable(team, teamid) {
 	$("<button>").text("Alternate Names").button()
 		.click(function() { createAlternateNamesDialog(team); })
 		.appendTo(controlTable.find("td:eq(2)"));
+	$("<button>").text("Colors").button()
+		.click(function() { createColorsDialog(team); })
+		.appendTo(controlTable.find("td:eq(3)"));
 	$("<button>").text("Assign Team").button({ disabled: isCurrentTeam })
 		.click(function() { createTeamsAssignDialog(teamid); })
-		.appendTo(controlTable.find("td:eq(3)"));
+		.appendTo(controlTable.find("td:eq(4)"));
 	$("<button>").text("Remove Team").button({ disabled: isCurrentTeam })
 		.click(function() { createTeamsRemoveDialog(teamid); })
-		.appendTo(controlTable.find("td:eq(4)"));
+		.appendTo(controlTable.find("td:eq(5)"));
 
 	var skatersTable = $("<table>").addClass("Skaters Empty")
 		.appendTo(teamTable.find("tr.Skaters>td"))
@@ -1158,6 +1161,131 @@ function createAlternateNamesDialog(team) {
 		modal: true,
 		width: 700,
 		close: function() { doExit = 1; $(this).dialog("destroy").remove(); },
+		buttons: { Close: function() { $(this).dialog("close"); } }
+	});
+}
+
+function createColorsDialog(team) {
+	var dialog = $("<div>").addClass("ColorsDialog");
+
+	$("<a>").text("Type:").appendTo(dialog);
+	var newIdInput = $("<input type='text' size='10'>").appendTo(dialog);
+
+	var newFunc = function() {
+		var newId = newIdInput.val();
+
+		team.$sb("Color(" + newId + "_fg).Color").$sbSet("");
+		team.$sb("Color(" + newId + "_bg).Color").$sbSet("");
+		team.$sb("Color(" + newId + "_glow).Color").$sbSet("");
+
+		newIdInput.val("").focus();
+	};
+
+	$("<button>").button({ label: "Add" }).click(newFunc)
+		.appendTo(dialog);
+
+	var table = $("<table>").appendTo(dialog);
+	var thead = $("<thead>").appendTo(table);
+	$("<tr>")
+		.append("<th class='X'></th>")
+		.append("<th class='Id'>Id</th>")
+		.append("<th class='Foreground'>Foreground</th>")
+		.append("<th class='Background'>Background</th>")
+		.append("<th class='Glow'>Glow/Halo</th>")
+		.appendTo(thead);
+	var tbody = $("<tbody>").appendTo(table);
+	var tfoot = $("<tfoot>").appendTo(table);
+
+	var doExit = 0;
+	var addFunc = function(event, node) {
+		if (doExit) {
+			$(this).unbind(event);
+			return;
+		}
+
+		if (!node.$sbId.match(/_fg$|_bg$|_glow$/))
+			return;
+		var colorId = node.$sbId.substring(0, node.$sbId.lastIndexOf("_"));
+		var tr = tbody.find("[data-id=" + colorId + "]");
+		if (tr.length == 0) {
+			 tr = $("<tr>").attr("data-id", colorId)
+				.append("<td class='X'>")
+				.append("<td class='Id'>")
+				.append("<td class='Foreground'>")
+				.append("<td class='Background'>")
+				.append("<td class='Glow'>");
+			tr.children("td.Id").text(colorId);
+			var fg = team.$sb("Color(" + colorId + "_fg)");
+			var bg = team.$sb("Color(" + colorId + "_bg)");
+			var gl = team.$sb("Color(" + colorId + "_glow)");
+			var fgInput = fg.$sb("Color")
+				.$sbControl("<input type='text' size='5'>", { sbcontrol: {
+					colorpicker: true
+				} })
+				.appendTo(tr.children("td.Foreground"))
+				.addClass("ColorPicker");
+			var bgInput = bg.$sb("Color")
+				.$sbControl("<input type='text' size='5'>", { sbcontrol: {
+					colorpicker: true
+				} })
+				.appendTo(tr.children("td.Background"))
+				.addClass("ColorPicker");
+			var glInput = gl.$sb("Color")
+				.$sbControl("<input type='text' size='5'>", { sbcontrol: {
+					colorpicker: true
+				} })
+				.appendTo(tr.children("td.Glow"))
+				.addClass("ColorPicker");
+
+			$("<button>").button({ label: "X" })
+				.click(function() {
+					fg.$sbRemove();
+					bg.$sbRemove();
+					gl.$sbRemove();
+				})
+				.appendTo(tr.children("td.X"));
+
+			_windowFunctions.appendAlphaNumSortedByAttr(tbody, tr, "data-id");
+		}
+	};
+	var removeFunc = function(event, node) {
+		if (doExit)
+			$(this).unbind(event);
+		else {
+			var colorId = node.$sbId.substring(0, node.$sbId.lastIndexOf("_"));
+			var tr = tbody.find("[data-id=" + colorId + "]");
+			if (tr.length == 0)
+				return;
+			var fg = tr.find("td.Foreground>input").val();
+			var bg = tr.find("td.Background>input").val();
+			var gl = tr.find("td.Glow>input").val();
+
+			if (fg == '' && bg == '' && gl == '') {
+				tr.remove();
+			}
+		}
+	};
+
+	team.$sbBindAddRemoveEach("Color", addFunc, removeFunc);
+
+	newIdInput.autocomplete({
+		minLength: 0,
+		source: [
+			{ label: "mobile (Mobile Colors)", value: "mobile" },
+			{ label: "overlay (Video Overlay Colors)", value: "overlay" },
+			{ label: "scoreboard (Scoreboard Colors)", value: "scoreboard" },
+		]
+	}).focus(function() { $(this).autocomplete("search", ""); });
+
+	dialog.dialog({
+		title: "Team Colors",
+		modal: true,
+		width: 800,
+		close: function() {
+			doExit = 1;
+			$(this).find("input.ColorPicker").spectrum("destroy");
+			$(this).dialog("destroy").remove();
+		},
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 }
