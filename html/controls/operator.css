@@ -142,6 +142,7 @@ table.RowTable { border-spacing: 0px; }
 /* End Time Control Dialog */
 
 /* Alternate Names Dialog */
+	div.AlternateNamesDialog { text-align: center; }
 	div.AlternateNamesDialog table { width: 100%; border-spacing: 0px; }
 	div.AlternateNamesDialog table tr>th.X { width: 10%; }
 	div.AlternateNamesDialog table tr>th.Id { width: 45%; }
