@@ -351,6 +351,19 @@ _crgUtils = {
 			} );
 	},
 
+	makeColorPicker: function(input) {
+		i = $(input);
+		i.spectrum({
+			showInput: true,
+			showAlpha: false,
+			clickoutFiresChange: true,
+			showInitial: true,
+			allowEmpty: true,
+			preferredFormat: "hex"
+		});
+		return i;
+	},
+
 	showBrowserWarning: function(next, options) {
 		var callNext = true;
 		$.each(options, function(key,value) {

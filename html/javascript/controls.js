@@ -186,9 +186,13 @@ _crgScoreBoardControl = {
 				.bind("slide slidestop", function(event, ui) { $.each(elements, function(i) { elements[i].$sbSet(controlValueToElementValue(ui.values[i])); }); });
 			$.each(elements, function(i) { this.bind("sbchange", function(event, value) { c.slider("values", i, elementValueToControlValue(value)); }); });
 		}
-		if (c.data("sbcontrol").colorPicker) {
-			c.ColorPicker({ color: c.val(), onChange: function(hsb, hex, rgb) { c.val(hex).change(); } });
-			c.bind("keyup mouseup change", function() { c.ColorPickerSetColor(c.val()); });
+		if (c.data("sbcontrol").colorpicker) {
+			/* spectrum is dumb, and won't work if the element isn't already in the dom */
+			/* whoever's creating this control better put it into the dom before exiting */
+			setTimeout(function() {
+				_crgUtils.makeColorPicker(c);
+				sbElement.bind("sbchange", function(event, value) { c.spectrum("set", value); });
+			}, 0);
 		}
 
 //FIXME - this is really kludgey, redesign this in a more clean way.
