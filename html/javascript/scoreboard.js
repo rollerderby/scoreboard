@@ -38,6 +38,7 @@ function _include(dir, files) {
 _include("/external/jquery-ui", [ "jquery-ui.js", "css/default/jquery-ui.css" ]);
 
 _include("/external/colorpicker", [ "colorpicker.js", "css/colorpicker.css" ]);
+_include("/external/spectrum", [ "spectrum.js", "spectrum.css" ]);
 
 _include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
 _include("/external/jquery-plugins/string/jquery.string.js");
