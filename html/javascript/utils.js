@@ -144,6 +144,38 @@ _crgUtils = {
 		});
 	},
 
+	addColorPicker: function(input) {
+		var preview = $("<span class='ColorPreview'>").insertAfter($(input));
+		var name = $(input).attr("data-sbcontrol");
+		if (name != null) {
+			$sb(name).$sbBindAndRun("sbchange", function(event, value) {
+				$(preview).css("background-color", value);
+			});
+		} else {
+			$(input).bind("change", function() {
+				$(preview).css("background-color", $(input).val());
+			});
+			$(preview).css("background-color", $(input).val());
+		}
+		$(preview).bind("sbColorChange", function () { $(preview).css("background-color", $(input).val()); });
+
+		$(preview).ColorPicker({
+			onSubmit: function(hsb, hex, rgb, el) {
+				$(input).val('#' + hex);
+				$(input).trigger("sbColorChange");
+				$(input).trigger("change");
+				$(preview).ColorPickerHide();
+			},
+			onShow: function (colpkr) {
+				$(colpkr).zIndex(2000);
+			}
+		})
+		.bind('click', function(){
+			$(this).ColorPickerSetColor($(input).val());
+		});
+		return preview;
+	},
+
 	/* This sets up the select option list with values from all children
 	 * of a specific parent in the $sb() tree.	Parameters can be passed
 	 * in an object either as the "params" parameter or as part of the
