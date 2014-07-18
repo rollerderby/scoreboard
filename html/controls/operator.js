@@ -354,10 +354,11 @@ function createTeamTable() {
 		var passTr = createRowTable(3).appendTo($("<td>").appendTo(passRow)).find("tr");
 
 		var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
-		sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='15'/>", { sbcontrol: {
+		var nameA = sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='15'/>", { sbcontrol: {
 				editOnClick: true,
 				bindClickTo: nameTd
 			} }).appendTo(nameTd).filter("a").wrap("<div>");
+		_crgUtils.bindColors(sbTeam, "scoreboard", nameA);
 
 		var logoTd = nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo");
 		var logoNone = $("<a>").html("No Logo").addClass("NoLogo").appendTo(logoTd);
@@ -1272,6 +1273,7 @@ function createColorsDialog(team) {
 		minLength: 0,
 		source: [
 			{ label: "mobile (Mobile Colors)", value: "mobile" },
+			{ label: "operator (Operator Colors)", value: "operator" },
 			{ label: "overlay (Video Overlay Colors)", value: "overlay" },
 			{ label: "scoreboard (Scoreboard Colors)", value: "scoreboard" },
 		]
