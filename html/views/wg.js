@@ -56,6 +56,7 @@ $sb(function() {
 
 	$.each( [ "1", "2" ], function(i, team) {
 		$sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name");
+		_crgUtils.bindColors("ScoreBoard.Team("+team+")", "overlay", $("#Team" + team + "Name"));
 		$sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a");
 		$sb("ScoreBoard.Team("+team+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
 			if ($sb(node).$sbId == "overlay")
