@@ -8,4 +8,6 @@
  * See the file COPYING for details.
  */
 
-span.ColorPreview { width: 20px; height: 20px; border: 1px black solid; display: inline-block; vertical-align: middle; }
+body {
+	font-family: Arial,sans-serif;
+}

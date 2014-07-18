@@ -45,13 +45,11 @@ $.each( [ "1", "2" ], function(i, team) {
 		blur: function() { $(this).removeClass("isFocused"); },
 	});
 
-	var colorPickers = new Array();
 	var addColor = function(event, node) {
 		if (node.$sbId.substring(0, 7) == "overlay") {
 			var elem = $(".Team" + team + "." + node.$sbId);
 			node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
-				elem.val(val);
-				colorPickers[elem.selector].trigger("sbColorChange");
+				elem.spectrum("set", val);
 			});
 		}
 	}
@@ -59,33 +57,24 @@ $.each( [ "1", "2" ], function(i, team) {
 	var removeColor = function(event, node) {
 		if (node.$sbId.substring(0, 7) == "overlay") {
 			var elem = $(".Team" + team + "." + node.$sbId);
-			elem.val("");
-			colorPickers[elem.selector].trigger("sbColorChange");
+			elem.spectrum("set", "");
 		}
 	}
 
 	$.each([ "fg", "bg", "glow" ], function(i, type) {
 		var color = $(".Team" + team + ".overlay_" + type);
-		colorPickers[color.selector] = _crgUtils.addColorPicker(color);
+		_crgUtils.makeColorPicker(color).addClass("ColorPicker");
 		var cUpdate = function() {
-			console.log(color.selector);
-			var val = $.trim(color.val());
+			var val = $.trim(color.spectrum("get"));
 			var path = "ScoreBoard.Team(" + team + ").Color(overlay_" + type + ")";
 			if (val == null || $.trim(val) == "")
 				$sb(path).$sbRemove();
 			else
 				$sb(path + ".Color").$sbSet(val);
 		};
-		var cUpdateIfFocused = function() {
-			if (color.hasClass("isFocused"))
-				cUpdate();
-		};
 		color.bind({
-			change: cUpdateIfFocused,
-			keyup: cUpdateIfFocused,
-			sbColorChange: cUpdate,
-			focus: function() { $(this).addClass("isFocused"); },
-			blur: function() { $(this).removeClass("isFocused"); },
+			change: cUpdate,
+			keyup: cUpdate
 		});
 	});
 	$sb("ScoreBoard.Team(" + team + ")").$sbBindAddRemoveEach("Color", addColor, removeColor);
