@@ -68,7 +68,7 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   #sbDiv>div.Team2>div.Logo.ShowLogo,#sbDiv>div.Team1.SwapTeams>div.Logo.ShowLogo { left: 0%; right: auto; }
 
   /* Team Score sub-box */
-  #sbDiv>div.Team>div.Score { top: 49%; left: 15%; right: 15%; height: 31.5%; border-radius: 12% / 25%; }
+  #sbDiv>div.Team>div.Score { top: 49%; left: 23%; right: 23%; height: 26.5%; border-radius: 12% / 25%; }
 
   /* Team Jammer sub-box */
   #sbDiv>div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; }
@@ -109,29 +109,29 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Timeouts */
   /* Main box */
-  #Timeouts { left: 43.5%; top: 31%; right: 43.5%; height: 17%; }
+  #Timeouts { left: 39%; top: 32%; right: 39%; height: 6%; }
 
   /* Name sub-box */
-  #Timeouts>div.Name { left: 0%; top: 0%; width: 100%; height: 30%; border-radius: 8% / 25%; }
+  #Timeouts>div.Name { left: 22%; top: 10.5%; width: 55.75%; height: 70%; border-radius: 8% / 25%; }
 
   /* Number sub-boxes */
-  #Timeouts>div.Number { bottom: 0%; width: 45%; height: 50%; border-radius: 25%/ 25%; }
+  #Timeouts>div.Number { bottom: 0%; width: 20%; height: 100%; border-radius: 25%/ 25%; }
   #Timeouts>div.Team1,#Timeouts>div.Team2.SwapTeams { left: 0%; right: auto; }
   #Timeouts>div.Team2,#Timeouts>div.Team1.SwapTeams { left: auto; right: 0%; }
 /* End Timeouts */
 
 /* Official Reviews */
   /* Main box */
-  #OfficialReviews { left: 0%; top: 31%; right: 0%; height: 17%; }
+  #OfficialReview { left: 39%; top: 40%; right: 39%; height: 6%; }
 
   /* Name sub-boxes */
-  #OfficialReviews>div.Team1.Name { left: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
-  #OfficialReviews>div.Team2.Name { right: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
+  #OfficialReview>div.Name { left: 35%; top: 9%; width: 30%; height: 81%; border-radius: 20% / 25%; }
+  #OfficialReview>div.Team2.Name { right: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
 
   /* Number sub-boxes */
-  #OfficialReviews>div.Number { bottom: 0%; width: 6%; height: 50%; border-radius: 25%/ 25%; }
-  #OfficialReviews>div.Team1,#OfficialReviews>div.Team2.SwapTeams { left: 0.8%; right: auto; }
-  #OfficialReviews>div.Team2,#OfficialReviews>div.Team1.SwapTeams { left: auto; right: 0.8%; }
+  #OfficialReview>div.Number { bottom: 0%; width: 20%; height: 100%; border-radius: 25%/ 25%; }
+  #OfficialReview>div.Team1,#OfficialReview>div.Team2.SwapTeams { left: 0%; right: auto; }
+  #OfficialReview>div.Team2,#OfficialReview>div.Team1.SwapTeams { left: auto; right: 0%; }
 /* End Official Reviews */
 
 /* Period */
@@ -243,3 +243,14 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   #SponsorBox>div>img { width: 100%; height: 100%; }
 /* End Sponsor Banner box */
+
+/* Jam Points */
+  #JamPoints { left: 0%; top: 30.75%; right: 0%; height: 17%; }
+  #JamPoints>div.Team1 { left: 0.5%; top: 0%; right: 89%; height: 99%; }
+  #JamPoints>div.Team1>div.Name  { top: 0%; left: 0%; right: 0%; height: 31.5%; border-radius: 12% / 25%; }
+  #JamPoints>div.Team1>div.Change { top: 40%; left: 10%; right: 10%; height: 56%; border-radius: 20% / 25%; }
+  #JamPoints>div.Team2 { left: 89%; top: 0%; right: 0.5%; height: 99%; }
+  #JamPoints>div.Team2>div.Name { top: 0%; left: 0%; right: 0%; height: 31.5%; border-radius: 12% / 25%; }
+  #JamPoints>div.Team2>div.Change { top: 40%; left: 10%; right: 10%; height: 56%; border-radius: 20% / 25%; } 
+/* End Jam Points */
+

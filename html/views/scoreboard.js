@@ -72,7 +72,7 @@ $sb(function() {
   setupBackgrounds();
 
   sbViewOptions.$sb("SwapTeams").$sbBindAndRun("sbchange", function(event,value) {
-    $("#sbDiv>div.Team,#Timeouts>div.Team,#OfficialReviews>div.Team").toggleClass("SwapTeams", isTrue(value));
+    $("#sbDiv>div.Team,#Timeouts>div.Team,#OfficialReview>div.Team").toggleClass("SwapTeams", isTrue(value));
   });
 });
 
@@ -107,11 +107,16 @@ function setupBackgrounds() {
 
 function setupTeams() {
   $("<div>").attr("id", "Timeouts").appendTo("#sbDiv");
-  $("<div>").attr("id", "OfficialReviews").appendTo("#sbDiv");
+  $("<div>").attr("id", "OfficialReview").appendTo("#sbDiv");
+  $("<div>").attr("id", "JamPoints").appendTo("#sbDiv");
 
   $("<div>").addClass("Name WhiteBox").appendTo("#Timeouts");
   var timeoutsName = $("<div><a>Timeouts</a></div>").addClass("Name TextContainer").appendTo("#Timeouts");
   _autoFit.enableAutoFitText(timeoutsName, { overage: -20 });
+
+  $("<div>").addClass("Name WhiteBox").appendTo("#OfficialReview");
+  var officialReviewsName = $("<div><a>OR</a></div>").addClass("Name TextContainer").appendTo("#OfficialReview");
+  _autoFit.enableAutoFitText(officialReviewsName, { overage: -20 });
 
   $.each( [ "1", "2" ], function() {
     var team = String(this);
@@ -125,13 +130,12 @@ function setupTeams() {
       autoFitText: { overage: 15, useMarginBottom: true }
     } }, "Number");
 
-    $("<div>").addClass("Team"+team+" Name WhiteBox").appendTo("#OfficialReviews");
-    var officialReviewsName = $("<div><a>OR</a></div>").addClass("Team"+team+" Name TextContainer").appendTo("#OfficialReviews");
-    _autoFit.enableAutoFitText(officialReviewsName, { overage: -20 });
-    $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#OfficialReviews")
+    var jamDiv = $("<div>").addClass("Team"+team+" Number").appendTo("#JamPoints");
+
+    $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#OfficialReview")
       .append($("<div>").addClass("RedBox full"));
     var teamOfficialReviews = $("<div><a/></div>").addClass("Team Team"+team+" Number TextContainer")
-      .appendTo("#OfficialReviews");
+      .appendTo("#OfficialReview");
     sbTeam.$sb("OfficialReviews").$sbElement(teamOfficialReviews.children("a"), { sbelement: {
       autoFitText: { overage: 15, useMarginBottom: true }
     } }, "Number");
@@ -144,6 +148,15 @@ function setupTeams() {
       .children("div").addClass("Inner");
     $("<div>").addClass("Score WhiteBox").appendTo(teamDiv);
     $("<div><a/></div>").addClass("Score TextContainer").appendTo(teamDiv);
+
+    $("<div>").addClass("Name WhiteBox").appendTo(jamDiv);
+    var jamPointsName = $("<div><a>Points</a></div>").addClass("Name TextContainer").appendTo(jamDiv);
+    _autoFit.enableAutoFitText(jamPointsName, { overage: -20 });
+    
+    $("<div>").addClass("Change WhiteBox").appendTo(jamDiv);
+    var changePointsName = $("<div><a/></div>").addClass("Change TextContainer").appendTo(jamDiv);
+    _autoFit.enableAutoFitText(changePointsName, { overage: -20 });
+  
     $("<div><div><a/></div></div>").addClass("Jammer ClockAnimation").appendTo(teamDiv)
       .children("div").addClass("TextContainer")
       .children("a").addClass("Jammer");
@@ -164,7 +177,31 @@ function setupTeams() {
     });
 
     _crgUtils.bindColors(sbTeam, "scoreboard", teamDiv.find("div.Name>a"));
-
+  
+    var scoreChange = jamDiv.find("div.Change>a");
+    scoreChange.stop(true).text("0").last().css({ opacity: "1", color: "#008" });
+    var lastScore = sbTeam.$sb("Score").$sbGet();
+    var scoreChangeTimeout;
+    sbTeam.$sb("Score").bind("sbchange", function(event,value) {
+      var s = (value - lastScore);
+      if (value == 0)
+        lastScore = s = 0;
+      var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
+      scoreChange.stop(true).text(+s).last().css({ opacity: "1", color: c });
+      if (scoreChangeTimeout)
+        clearTimeout(scoreChangeTimeout);
+      scoreChangeTimeout = setTimeout(function() {
+        scoreChange.last()
+          .animate({ color: "#008" }, 2000)
+      }, 2000);
+      $sb("ScoreBoard.Clock(Jam).Running").bind("sbchange", function() {
+        if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
+          lastScore = sbTeam.$sb("Score").$sbGet();
+          scoreChange.stop(true).text("0").last().css({ opacity: "1", color: "#008" });
+	}
+      });
+    });
+  
 // FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
     var resizeName = teamDiv.find("div.Name").data("AutoFit");
     sbTeam.$sb("Logo").$sbBindAndRun("sbchange", function(event, newVal, oldVal) {
@@ -221,7 +258,7 @@ function setupTeams() {
     	  $("#Timeout>div.Name>a>span.Name").html("Time Out");
       }
       $("#Timeouts>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && !isOfficialReview && timeoutRunning);
-      $("#OfficialReviews>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && isOfficialReview && timeoutRunning);
+      $("#OfficialReview>div.WhiteBox.Team"+team+">div.RedBox").toggle(ownTimeout && isOfficialReview && timeoutRunning);
     };
 
     var redBoxTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running").add($sb("ScoreBoard.OfficialReview")));
