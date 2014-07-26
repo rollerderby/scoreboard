@@ -354,11 +354,77 @@ function createTeamTable() {
 		var passTr = createRowTable(3).appendTo($("<td>").appendTo(passRow)).find("tr");
 
 		var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
-		var nameA = sbTeam.$sb("Name").$sbControl("<a/><input type='text' size='15'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: nameTd
-			} }).appendTo(nameTd).filter("a").wrap("<div>");
-		_crgUtils.bindColors(sbTeam, "scoreboard", nameA);
+		var nameDisplayDiv = $("<div>").appendTo(nameTd);
+		var nameA = $("<a>").appendTo(nameDisplayDiv);
+		var altNameA = $("<a>").appendTo(nameDisplayDiv);
+		
+		var nameEditTable = $("<table><tr><td>Team Name</td><td>Alternate Name</td></tr>" +
+			"<tr><td><input class='Name' type='text' size='15' /></td>" +
+			"<td><input class='AlternateName' type='text' size='15' /></td></tr></table>").appendTo(nameTd);
+		var nameInput = $(nameEditTable).find(".Name");
+		var altNameInput = $(nameEditTable).find(".AlternateName");
+		
+		nameEditTable.hide();
+		sbTeam.$sb("Name").$sbElement(nameA);
+		sbTeam.$sb("Name").$sbControl(nameInput);
+		var nameInputFocus = function() {
+			if (nameDisplayDiv.css("display") != "none") {
+				nameDisplayDiv.hide();
+				nameEditTable.show();
+				nameInput.addClass("Editing").trigger("editstart");;
+				altNameInput.addClass("Editing").trigger("editstart");;
+			}
+		};
+		var nameInputBlur = function(event) {
+			if (event.relatedTarget != nameInput && event.relatedTarget != altNameInput) {
+				nameEditTable.hide();
+				nameDisplayDiv.show();
+				nameInput.removeClass("Editing").trigger("editstop");;
+				altNameInput.removeClass("Editing").trigger("editstop");;
+			}
+		};
+		var nameInputKeyup = function(event) {
+			var c = $(event.target);
+			switch (event.which) {
+				case 13: /* RET */ if (c.is("textarea") && !event.ctrlKey) break; c.blur(); break;
+				case 27: /* ESC */ c.blur(); break;
+			}
+		};
+		
+		nameDisplayDiv.bind("click", function() { nameInput.focus(); });
+		nameInput.bind("focus", nameInputFocus);
+		altNameInput.bind("focus", nameInputFocus);
+		nameInput.bind("blur", nameInputBlur);
+		altNameInput.bind("blur", nameInputBlur);
+		nameInput.bind("keyup", nameInputKeyup);
+		altNameInput.bind("keyup", nameInputKeyup);
+		
+		altNameInput.bind("change", function() {
+			var val = $.trim(altNameInput.val());
+			if (val != altNameInput.data("last")) {
+				altNameInput.data("last", val);
+				if (val == "") {
+					sbTeam.$sb("AlternateName(operator)").$sbRemove();
+				} else {
+					sbTeam.$sb("AlternateName(operator).Name").$sbSet(val);
+				}
+			}
+		});
+		
+		sbTeam.$sbBindAddRemoveEach("AlternateName", function(event, node) {
+			if ($sb(node).$sbId == "operator")
+				$sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event, val) {
+					altNameA.html($.trim(val));
+					altNameInput.val($.trim(val));
+					nameA.toggleClass("AlternateName", ($.trim(val) != ""));
+				});
+		}, function(event, node) {
+			if ($sb(node).$sbId == "overlay")
+			nameA.removeClass("AlternateName");
+		});
+	
+		_crgUtils.bindColors(sbTeam, "operator", nameA);
+		_crgUtils.bindColors(sbTeam, "operator", altNameA);
 
 		var logoTd = nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo");
 		var logoNone = $("<a>").html("No Logo").addClass("NoLogo").appendTo(logoTd);
@@ -1152,6 +1218,7 @@ function createAlternateNamesDialog(team) {
 		minLength: 0,
 		source: [
 			{ label: "mobile (Mobile Control)", value: "mobile" },
+			{ label: "operator (Operator Controls)", value: "operator" },
 			{ label: "overlay (Video Overlay)", value: "overlay" },
 			{ label: "twitter (Twitter)", value: "twitter" }
 		]
