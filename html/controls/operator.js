@@ -919,12 +919,20 @@ function createScoreBoardViewPreviewRows(table, type) {
 			}
 		} });
 
+	var backgroundStyle = pageSb.$sb("BackgroundStyle").$sbControl("<label>Background Style: </label><select>", { sbelement: {
+		prependOptions: [
+			{ text: "Black to White", value: "" },
+			{ text: "White to Black", value: "Invert" },
+			{ text: "Flat Black", value: "Flat Black" }
+		]}});
+
 	$("<tr><td/></tr>").addClass(type).appendTo(table)
 		.find("td").addClass("ScoreBoardOptions Footer")
-		.append(createRowTable(2))
+		.append(createRowTable(3))
 		.find("td")
 		.first().append(intermissionControlButton)
-		.next().append(swapTeamsButton);
+		.next().append(swapTeamsButton)
+		.next().append(backgroundStyle);
 
 	$("<tr><td><a>Alternate View Options</a></td></tr>").addClass(type).appendTo(table)
 		.find("td").addClass("AlternateViewOptions Header");

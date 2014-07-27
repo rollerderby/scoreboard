@@ -74,6 +74,16 @@ $sb(function() {
   sbViewOptions.$sb("SwapTeams").$sbBindAndRun("sbchange", function(event,value) {
     $("#sbDiv>div.Team,#Timeouts>div.Team,#OfficialReview>div.Team").toggleClass("SwapTeams", isTrue(value));
   });
+
+  sbViewOptions.$sb("BackgroundStyle").$sbBindAndRun("sbchange", function(event,value) {
+    console.log("BackgroundStyle = '" + value + "'");
+    $("#sbDiv").removeClass("invert");
+    $("#sbDiv").removeClass("flatblack");
+    if (value == "Invert")
+      $("#sbDiv").addClass("invert");
+    else if (value == "Flat Black")
+      $("#sbDiv").addClass("flatblack");
+  });
 });
 
 // FIXME - needs to be a single call from scoreboard.js
