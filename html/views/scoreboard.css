@@ -255,10 +255,10 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Jam Points */
   #JamPoints { left: 0%; top: 30.75%; right: 0%; height: 17%; }
-  #JamPoints>div.Team1 { left: 0.5%; top: 0%; right: 89%; height: 99%; }
+  #JamPoints>div.Team1,#JamPoints>div.Team2.SwapTeams { left: 0.5%; top: 0%; right: 89%; height: 99%; }
   #JamPoints>div.Team1>div.Name  { top: 0%; left: 0%; right: 0%; height: 31.5%; border-radius: 12% / 25%; }
   #JamPoints>div.Team1>div.Change { top: 40%; left: 10%; right: 10%; height: 56%; border-radius: 20% / 25%; }
-  #JamPoints>div.Team2 { left: 89%; top: 0%; right: 0.5%; height: 99%; }
+  #JamPoints>div.Team2,#JamPoints>div.Team1.SwapTeams { left: 89%; top: 0%; right: 0.5%; height: 99%; }
   #JamPoints>div.Team2>div.Name { top: 0%; left: 0%; right: 0%; height: 31.5%; border-radius: 12% / 25%; }
   #JamPoints>div.Team2>div.Change { top: 40%; left: 10%; right: 10%; height: 56%; border-radius: 20% / 25%; } 
 /* End Jam Points */

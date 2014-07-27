@@ -72,7 +72,7 @@ $sb(function() {
   setupBackgrounds();
 
   sbViewOptions.$sb("SwapTeams").$sbBindAndRun("sbchange", function(event,value) {
-    $("#sbDiv>div.Team,#Timeouts>div.Team,#OfficialReview>div.Team").toggleClass("SwapTeams", isTrue(value));
+    $("#sbDiv>div.Team,#Timeouts>div.Team,#OfficialReview>div.Team,#JamPoints>div").toggleClass("SwapTeams", isTrue(value));
   });
 
   sbViewOptions.$sb("BackgroundStyle").$sbBindAndRun("sbchange", function(event,value) {
@@ -140,7 +140,7 @@ function setupTeams() {
       autoFitText: { overage: 15, useMarginBottom: true }
     } }, "Number");
 
-    var jamDiv = $("<div>").addClass("Team"+team+" Number").appendTo("#JamPoints");
+    var jamDiv = $("<div>").addClass("Team Team"+team+" Number").appendTo("#JamPoints");
 
     $("<div>").addClass("Team Team"+team+" Number WhiteBox").appendTo("#OfficialReview")
       .append($("<div>").addClass("RedBox full"));
