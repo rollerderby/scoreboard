@@ -516,7 +516,7 @@ function createTeamTable() {
 				editOnClick: true,
 				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"2")+")")
 			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"2")+")").addClass("Timeouts"));
-		sbTeam.$sb("OfficialReview").$sbControl("<button>").text("Official Review").val("true")
+		sbTeam.$sb("OfficialReview").$sbControl("<button>").text("Off Review").val("true")
 			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button()
 			.appendTo(timeoutTr.children("td:eq("+(first?"2":"1")+")").addClass("OfficialReview"));
 		sbTeam.$sb("OfficialReviews").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
