@@ -178,6 +178,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 				s = 0;
 			Integer last = new Integer(score);
 			score = s;
+			if (s < getLastScore())
+				setLastScore(s);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_SCORE, new Integer(score), last));
 		}
 	}
@@ -192,6 +194,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (lastscoreLock) {
 			if (0 > s)
 				s = 0;
+			if (getScore() < s)
+				s = getScore();
 			Integer last = new Integer(lastscore);
 			lastscore = s;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_LAST_SCORE, new Integer(lastscore), last));
