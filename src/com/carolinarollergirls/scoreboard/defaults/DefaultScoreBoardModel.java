@@ -174,6 +174,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 				timeoutClockWasRunning = tc.isRunning();
 				tc.stop();
+
+				getTeamModel("1").startJam();
+				getTeamModel("2").startJam();
 			}
 		}
 	}
@@ -215,6 +218,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (!periodClockWasRunning)
 				getClockModel(Clock.ID_PERIOD).unstart();
 			getClockModel(Clock.ID_JAM).unstart();
+			getTeamModel("1").unStartJam();
+			getTeamModel("2").unStartJam();
 		}
 	}
 	public void unStopJam() {

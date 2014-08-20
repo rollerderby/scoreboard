@@ -457,6 +457,10 @@ function createTeamTable() {
 			.text("Score -1").val("-1")
 			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl").button()
 			.appendTo(scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
+		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+			.text("Jam Score -1").val("1")
+			.attr("id", "Team"+team+"JamScoreDown").addClass("KeyControl").button()
+			.appendTo(scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
 		var scoreSubTr = createRowTable(3).appendTo(scoreTr.children("td:eq(1)")).find("tr");
 		sbTeam.$sb("Score").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
 				editOnClick: true,
@@ -465,6 +469,10 @@ function createTeamTable() {
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score +1").val("1")
 			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl").button()
+			.appendTo(scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
+		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+			.text("Jam Score +1").val("-1")
+			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl").button()
 			.appendTo(scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
 		// Note instantaneous score change is always towards the center.  Jam score total is on the outside.
 		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
@@ -489,10 +497,11 @@ function createTeamTable() {
 		jamScore.stop(true).text("0").last().css({ opacity: "1", color: "#008" });
 		var lastJamScore = sbTeam.$sb("Score").$sbGet();
 		var jamScoreTimeout;
-		sbTeam.$sb("Score").bind("sbchange", function(event,value) {
-			var s = (value - lastJamScore);
-			if (value == 0)
-				lastJamScore = s = 0;
+		var jamScoreUpdate = function(event, value) {
+			var score = sbTeam.$sb("Score").$sbGet();
+			var lastscore = sbTeam.$sb("LastScore").$sbGet();
+			var s = score - lastscore;
+
 			var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
 			jamScore.stop(true).text(+s).last().css({ opacity: "1", color: c });
 			if (jamScoreTimeout)
@@ -501,13 +510,9 @@ function createTeamTable() {
 				jamScore.last()
 					.animate({ color: "#008" }, 2000)
 			}, 2000);
-			$sb("ScoreBoard.Clock(Jam).Running").bind("sbchange", function() {
-				if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
-					lastJamScore = sbTeam.$sb("Score").$sbGet();
-					jamScore.stop(true).text("0").last().css({ opacity: "1", color: "#008" });
-				}
-			});
-		});
+		};
+		sbTeam.$sb("Score").$sbBindAndRun("sbchange", jamScoreUpdate);
+		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
 
 		sbTeam.$sb("Timeout").$sbControl("<button>").text("Timeout").val("true")
 			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button()

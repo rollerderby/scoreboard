@@ -90,6 +90,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Team.EVENT_NAME, null, t.getName());
 		editor.setElement(e, Team.EVENT_LOGO, null, t.getLogo());
 		editor.setElement(e, Team.EVENT_SCORE, null, String.valueOf(t.getScore()));
+		editor.setElement(e, Team.EVENT_LAST_SCORE, null, String.valueOf(t.getLastScore()));
 		editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
 		editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
 		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
@@ -334,8 +335,12 @@ public class ScoreBoardXmlConverter
 					teamModel.setLogo(value);
 				else if (name.equals(Team.EVENT_SCORE) && isChange)
 					teamModel.changeScore(Integer.parseInt(value));
+				else if (name.equals(Team.EVENT_LAST_SCORE) && isChange)
+					teamModel.changeLastScore(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_SCORE) && !isChange)
 					teamModel.setScore(Integer.parseInt(value));
+				else if (name.equals(Team.EVENT_LAST_SCORE) && !isChange)
+					teamModel.setLastScore(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_TIMEOUTS) && isChange)
 					teamModel.changeTimeouts(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_TIMEOUTS) && !isChange)

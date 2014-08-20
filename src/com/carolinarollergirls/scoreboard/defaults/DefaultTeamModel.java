@@ -45,6 +45,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		setName(DEFAULT_NAME_PREFIX+getId());
 		setLogo(DEFAULT_LOGO);
 		setScore(DEFAULT_SCORE);
+		setLastScore(DEFAULT_SCORE);
 		setTimeouts(DEFAULT_TIMEOUTS);
 		setOfficialReviews(DEFAULT_OFFICIAL_REVIEWS);
 		setLeadJammer(DEFAULT_LEADJAMMER);
@@ -73,6 +74,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
 		}
 	}
+
+	public void startJam() { saved_lastscore = getLastScore(); setLastScore(getScore()); }
+	public void unStartJam() { setLastScore(saved_lastscore); }
 
 	public List<AlternateName> getAlternateNames() {
 		return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
@@ -180,6 +184,22 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public void changeScore(int c) {
 		synchronized (scoreLock) {
 			setScore(getScore() + c);
+		}
+	}
+
+	public int getLastScore() { return lastscore; }
+	public void setLastScore(int s) {
+		synchronized (lastscoreLock) {
+			if (0 > s)
+				s = 0;
+			Integer last = new Integer(lastscore);
+			lastscore = s;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_LAST_SCORE, new Integer(lastscore), last));
+		}
+	}
+	public void changeLastScore(int c) {
+		synchronized (lastscoreLock) {
+			setLastScore(getLastScore() + c);
 		}
 	}
 
@@ -322,6 +342,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected Object logoLock = new Object();
 	protected int score;
 	protected Object scoreLock = new Object();
+	protected int saved_lastscore;
+	protected int lastscore;
+	protected Object lastscoreLock = new Object();
 	protected int timeouts;
 	protected Object timeoutsLock = new Object();
 	protected int officialReviews;

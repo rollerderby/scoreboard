@@ -22,6 +22,9 @@ public interface TeamModel extends Team
 
 	public void setName(String name);
 
+	public void startJam();
+	public void unStartJam();
+
 	public List<AlternateNameModel> getAlternateNameModels();
 	public AlternateNameModel getAlternateNameModel(String id);
 	public void setAlternateNameModel(String id, String name);
@@ -41,6 +44,9 @@ public interface TeamModel extends Team
 
 	public void setScore(int score);
 	public void changeScore(int change);
+
+	public void setLastScore(int score);
+	public void changeLastScore(int change);
 
 	public void setTimeouts(int timeouts);
 	public void changeTimeouts(int change);

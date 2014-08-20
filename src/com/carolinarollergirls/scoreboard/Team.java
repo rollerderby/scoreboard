@@ -29,6 +29,7 @@ public interface Team extends ScoreBoardEventProvider
 	public String getLogo();
 
 	public int getScore();
+	public int getLastScore();
 
 	public int getTimeouts();
 	public int getOfficialReviews();
@@ -49,6 +50,7 @@ public interface Team extends ScoreBoardEventProvider
 	public static final String EVENT_NAME = "Name";
 	public static final String EVENT_LOGO = "Logo";
 	public static final String EVENT_SCORE = "Score";
+	public static final String EVENT_LAST_SCORE = "LastScore";
 	public static final String EVENT_TIMEOUTS = "Timeouts";
 	public static final String EVENT_OFFICIAL_REVIEWS = "OfficialReviews";
 	public static final String EVENT_ADD_SKATER = "AddSkater";
