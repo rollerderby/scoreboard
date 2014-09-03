@@ -344,7 +344,7 @@ _crgUtils = {
 		return s;
 	},
 
-	bindColors: function(team, colorName, fg_elem, bg_elem) {
+	bindColors: function(team, colorName, fg_elem, bg_elem, map) {
 		var fg = colorName + "_fg";
 		var bg = colorName + "_bg";
 		var gl = colorName + "_glow";
@@ -354,32 +354,57 @@ _crgUtils = {
 		$sb(team).$sbBindAddRemoveEach("Color",
 			function(event, node) {
 				var id = $sb(node).$sbId;
-				if (id == fg) {
-					node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
-						$(fg_elem).css('color', $.trim(val));
-					});
-				} else if (id == bg) {
-					node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
-						$(bg_elem).css('background-color', $.trim(val));
-					});
-				} else if (id == gl) {
-					node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
-						var shadow = '';
-						if ($.trim(val) != "") {
-							shadow = '0 0 0.2em ' + val;
-							shadow = shadow + ', ' + shadow + ', ' + shadow;
-						}
-						$(fg_elem).css('text-shadow', shadow);
-					});
+				if (map == null) {
+					if (id == fg) {
+						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+							$(fg_elem).css('color', $.trim(val));
+						});
+					} else if (id == bg) {
+						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+							$(bg_elem).css('background-color', $.trim(val));
+						});
+					} else if (id == gl) {
+						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+							var shadow = '';
+							if ($.trim(val) != "") {
+								shadow = '0 0 0.2em ' + val;
+								shadow = shadow + ', ' + shadow + ', ' + shadow;
+							}
+							$(fg_elem).css('text-shadow', shadow);
+						});
+					}
+				} else {
+					if (map.fg != null && id == fg) {
+						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+							$(fg_elem).css(map.fg, $.trim(val));
+						});
+					} else if (map.bg != null && id == bg) {
+						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+							$(fg_elem).css(map.bg, $.trim(val));
+						});
+					} else if (map.glow != null && id == gl) {
+						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+							$(fg_elem).css(map.glow, $.trim(val));
+						});
+					}
 				}
 			}, function(event, node) {
 				var id = $sb(node).$sbId;
-				if (id == fg)
-					$(fg_elem).css('color', '');
-				else if (id == bg)
-					$(bg_elem).css('background-color', '');
-				else if (id == gl)
-					$(fg_elem).css('text-shadow', '');
+				if (map == null ) {
+					if (id == fg)
+						$(fg_elem).css('color', '');
+					else if (id == bg)
+						$(bg_elem).css('background-color', '');
+					else if (id == gl)
+						$(fg_elem).css('text-shadow', '');
+				} else {
+					if (map.fg != null && id == fg)
+						$(fg_elem).css(map.fg, '');
+					else if (map.bg != null && id == bg)
+						$(fg_elem).css(map.bg, '');
+					else if (map.glow != null && id == gl)
+						$(fg_elem).css(map.glow, '');
+				}
 			} );
 	},
 

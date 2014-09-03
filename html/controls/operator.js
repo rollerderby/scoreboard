@@ -952,7 +952,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		}, sbelement: {
 			convert: function(value) {
 				showJamTotalsButton.filter("input:checkbox")
-					.button("option", "label", (isTrue(value)?"Hide Jam Totals":"Show Jam Totals"));
+					.button("option", "label", (isTrue(value)?"Jam Totals Disabled":"Jam Totals Enabled"));
 				return value;
 			}
 		} }).addClass("ui-button-small");
@@ -1394,6 +1394,7 @@ function createColorsDialog(team) {
 			{ label: "operator (Operator Colors)", value: "operator" },
 			{ label: "overlay (Video Overlay Colors)", value: "overlay" },
 			{ label: "scoreboard (Scoreboard Colors)", value: "scoreboard" },
+			{ label: "scoreboard_dots (Scoreboard Dot Colors)", value: "scoreboard_dots" },
 		]
 	}).focus(function() { $(this).autocomplete("search", ""); });
 

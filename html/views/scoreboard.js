@@ -145,6 +145,11 @@ function setupTeams() {
 			autoFitText: { overage: 15, useMarginBottom: true }
 		} }, "Number");
 
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
+
 		var teamDiv = $("#sbDiv>div.Team"+team);
 		sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
 		sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
