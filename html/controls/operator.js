@@ -933,7 +933,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 //FIXME - this intermission control should not be on the View tab,
 //FIXME - it should be on the policy or scoreboard operation/behavior tab
 	var intermissionControlDialog = createIntermissionControlDialog();
-	var intermissionControlButton = $("<button>Intermission Control</button>").button()
+	var intermissionControlButton = $("<button>Intermission Control</button>").button().addClass("ui-button-small")
 		.click(function() { intermissionControlDialog.dialog("open"); });
 	var swapTeamsButton = $("<label/><input type='checkbox'/>");
 	pageSb.$sb("SwapTeams").$sbControl(swapTeamsButton, { sbcontrol: {
@@ -944,41 +944,45 @@ function createScoreBoardViewPreviewRows(table, type) {
 					.button("option", "label", (isTrue(value)?"Team sides swapped":"Team sides normal"));
 				return value;
 			}
-		} });
+		} }).addClass("ui-button-small");
 
+	var showJamTotalsButton = $("<label/><input type='checkbox'/>");
+	pageSb.$sb("HideJamTotals").$sbControl(showJamTotalsButton, { sbcontrol: {
+			button: true
+		}, sbelement: {
+			convert: function(value) {
+				showJamTotalsButton.filter("input:checkbox")
+					.button("option", "label", (isTrue(value)?"Hide Jam Totals":"Show Jam Totals"));
+				return value;
+			}
+		} }).addClass("ui-button-small");
+	var boxStyle = pageSb.$sb("BoxStyle").$sbControl("<label>Box Style: </label><select>", { sbelement: {
+		prependOptions: [
+			{ text: "Rounded", value: "" },
+			{ text: "Flat", value: "box_flat" }
+		]}});
 	var backgroundStyle = pageSb.$sb("BackgroundStyle").$sbControl("<label>Background Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Black to White", value: "" },
-			{ text: "White to Black", value: "Invert" },
-			{ text: "Flat Black", value: "Flat Black" }
+			{ text: "White to Black", value: "bg_whitetoblack" },
+			{ text: "Black", value: "bg_black" }
 		]}});
 
-	$("<tr><td/></tr>").addClass(type).appendTo(table)
-		.find("td").addClass("ScoreBoardOptions Footer")
-		.append(createRowTable(3))
-		.find("td")
-		.first().append(intermissionControlButton)
-		.next().append(swapTeamsButton)
-		.next().append(backgroundStyle);
-
-	$("<tr><td><a>Alternate View Options</a></td></tr>").addClass(type).appendTo(table)
-		.find("td").addClass("AlternateViewOptions Header");
-
-	var imageViewSelect = pageSb.$sb("View(Image).Src").$sbControl("<select>", { sbelement: {
+	var imageViewSelect = pageSb.$sb("View(Image).Src").$sbControl("<label>Image View: </label><select>", { sbelement: {
 			optionParent: "Images.Type(fullscreen)",
 			optionChildName: "Image",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Image", value: "" }
 		} });
-	var videoViewSelect = pageSb.$sb("View(Video).Src").$sbControl("<select>", { sbelement: {
+	var videoViewSelect = pageSb.$sb("View(Video).Src").$sbControl("<label>Video View: </label><select>", { sbelement: {
 			optionParent: "Videos.Type(fullscreen)",
 			optionChildName: "Video",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Video", value: "" }
 		} });
-	var customPageViewSelect = pageSb.$sb("View(CustomHtml).Src").$sbControl("<select>", { sbelement: {
+	var customPageViewSelect = pageSb.$sb("View(CustomHtml).Src").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
 			optionParent: "CustomHtml.Type(fullscreen)",
 			optionChildName: "Html",
 			optionNameElement: "Name",
@@ -986,15 +990,27 @@ function createScoreBoardViewPreviewRows(table, type) {
 			firstOption: { text: "No Page", value: "" }
 		} });
 
-	$("<tr><td><a>Image View : </a></td></tr>").addClass(type).appendTo(table)
-		.find("td").addClass("AlternateViewOptions")
-		.append(imageViewSelect);
-	$("<tr><td><a>Video View : </a></td></tr>").addClass(type).appendTo(table)
-		.find("td").addClass("AlternateViewOptions")
-		.append(videoViewSelect);
-	$("<tr><td><a>Custom Page View : </a></td></tr>").addClass(type).appendTo(table)
-		.find("td").addClass("AlternateViewOptions Footer")
-		.append(customPageViewSelect);
+	var optionsTable = $("<table/>")
+		.addClass(type)
+		.addClass("RowTable")
+		.css("width", "100%");
+	$("<tr><td></td></tr>").addClass(type).appendTo(table).find("td").append(optionsTable);
+	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
+		.find("td").addClass("ScoreBoardOptions Footer")
+		.first().append(intermissionControlButton)
+		.next().append(backgroundStyle)
+		.next().append(imageViewSelect);
+	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
+		.find("td").addClass("ScoreBoardOptions Footer")
+		.first().append(swapTeamsButton)
+		.next().append(boxStyle)
+		.next().append(videoViewSelect);
+	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
+		.find("td").addClass("ScoreBoardOptions Footer")
+		.first().append(showJamTotalsButton)
+		.next()
+		.next().append(customPageViewSelect);
+	
 }
 
 function createIntermissionControlDialog() {
