@@ -125,7 +125,7 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   .Dot, .Dot.Active { border-radius: 100%; }
   .Dot { background: #000000; }
-  .Dot.Active { background: #FF0000; opacity: 0; }
+  .Dot.Active { background: #000000; opacity: 0; }
   .Dot.Used { opacity: 0; }
 
 /* Timeouts - Jam Totals */
