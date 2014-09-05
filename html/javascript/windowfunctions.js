@@ -62,7 +62,7 @@ _windowFunctions = {
 		var child = null;
 		startIndex = (startIndex || 0);
 		parent.children().each(function(i) {
-			if ((startIndex <= i) && comparator(this, newChild[0])) {
+			if (newChild[0] != child && (startIndex <= i) && comparator(this, newChild[0])) {
 				child = this;
 				return false;
 			}

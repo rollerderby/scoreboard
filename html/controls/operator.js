@@ -1166,8 +1166,8 @@ function createNewTeamTable(team, teamid) {
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
 		.click(function() {
 			var id = _crgUtils.checkSbId(newSkaterName.val());
-			team.$sb("Skater("+id+").Name").$sbSet(newSkaterName.val());
 			team.$sb("Skater("+id+").Number").$sbSet(newSkaterNumber.val());
+			team.$sb("Skater("+id+").Name").$sbSet(newSkaterName.val());
 			newSkaterNumber.val("");
 			newSkaterName.val("").focus();
 			$(this).blur();
@@ -1193,13 +1193,22 @@ function createNewTeamTable(team, teamid) {
 		$("<a>").text(skaterid).appendTo(skaterRow.children("td.Id"));
 		node.$sb("Name").$sbControl("<input type='text' size='20'>")
 			.appendTo(skaterRow.children("td.Name"));
-		node.$sb("Number").$sbControl("<input type='text' size='20'>")
+		var numberInput = node.$sb("Number").$sbControl("<input type='text' size='20'>")
 			.appendTo(skaterRow.children("td.Number"));
 		$("<button>").text("Remove").addClass("RemoveSkater").button()
 			.click(function() { createTeamsSkaterRemoveDialog(team, teamid, node); })
 			.appendTo(skaterRow.children("td.Remove"));
+		numberInput.blur(function() {
+			skaterRow.attr("data-skaternum", node.$sb("Number").$sbGet());
+			_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "data-skaternum");
+		});
 
-		_windowFunctions.appendAlphaNumSortedByAttr(skatersTable.children("tbody"), skaterRow, "data-skaterid");
+		node.$sb("Number").$sbBindAndRun("sbchange", function(event, value) {
+			if (!numberInput.is(':focus')) {
+				skaterRow.attr("data-skaternum", value);
+				_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "data-skaternum");
+			}
+		});
 	}, function(event,node) {
 		skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").remove();
 		if (!skatersTable.find("tr[data-skaterid]").length)
