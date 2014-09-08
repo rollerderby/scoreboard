@@ -453,27 +453,33 @@ function createTeamTable() {
 
 		logoTd.click(function() { if (!logoSelect.is(":visible")) logoShowSelect(true); });
 
+		var scoreTd = scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down");
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score -1").val("-1")
 			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl").button()
-			.appendTo(scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
+			.appendTo(scoreTd);
+		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Jam Score -1").val("1")
 			.attr("id", "Team"+team+"JamScoreDown").addClass("KeyControl").button()
-			.appendTo(scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
+			.appendTo(scoreTd);
+
 		var scoreSubTr = createRowTable(3).appendTo(scoreTr.children("td:eq(1)")).find("tr");
 		sbTeam.$sb("Score").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
 				editOnClick: true,
 				bindClickTo: scoreTr.children("td:eq(1)")
 			} }).appendTo(scoreSubTr.children("td:eq(1)").addClass("Score"));
+
+		var scoreTd = scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up");
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score +1").val("1")
 			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl").button()
-			.appendTo(scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
+			.appendTo(scoreTd);
+		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Jam Score +1").val("-1")
 			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl").button()
-			.appendTo(scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
+			.appendTo(scoreTd);
 		// Note instantaneous score change is always towards the center.  Jam score total is on the outside.
 		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
 		var jamScore = $("<a>").appendTo(scoreSubTr.children("td:eq("+(first?"0":"2")+")")).addClass("JamScore");
