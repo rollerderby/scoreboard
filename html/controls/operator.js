@@ -1204,15 +1204,18 @@ function createNewTeamTable(team, teamid) {
 		$("<button>").text("Remove").addClass("RemoveSkater").button()
 			.click(function() { createTeamsSkaterRemoveDialog(team, teamid, node); })
 			.appendTo(skaterRow.children("td.Remove"));
-		numberInput.blur(function() {
-			skaterRow.attr("data-skaternum", node.$sb("Number").$sbGet());
+
+		var addRowFunction = function(value) {
+			skaterRow.attr("data-skaternum", value);
 			_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "data-skaternum");
+		};
+		numberInput.blur(function() {
+			addRowFunction(node.$sb("Number").$sbGet());
 		});
 
 		node.$sb("Number").$sbBindAndRun("sbchange", function(event, value) {
 			if (!numberInput.is(':focus')) {
-				skaterRow.attr("data-skaternum", value);
-				_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "data-skaternum");
+				addRowFunction(value);
 			}
 		});
 	}, function(event,node) {
