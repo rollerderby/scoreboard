@@ -25,6 +25,7 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
     super.setScoreBoardModel(sbm);
     addClock(Clock.ID_JAM);
     addClock(Clock.ID_PERIOD);
+    addClock(Clock.ID_TIMEOUT);
   }
 
   // FIXME - these should be common utility methods, and probably implemented using Formatter and Scanner.
@@ -67,8 +68,9 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
   public void clockRunningChange(Clock clock, boolean running) {
     ClockModel jc = getScoreBoardModel().getClockModel(Clock.ID_JAM);
     ClockModel pc = getScoreBoardModel().getClockModel(Clock.ID_PERIOD);
+    ClockModel tc = getScoreBoardModel().getClockModel(Clock.ID_TIMEOUT);
     boolean atPeriodEnd = (pc.getTime() == (pc.isCountDirectionDown() ? pc.getMinimumTime() : pc.getMaximumTime()));
-    if (!jc.isRunning() && !pc.isRunning() && atPeriodEnd)
+    if (!jc.isRunning() && !pc.isRunning() && !tc.isRunning() && atPeriodEnd)
       startIntermissionClock();
   }
 

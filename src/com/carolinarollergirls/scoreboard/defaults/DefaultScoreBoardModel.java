@@ -95,6 +95,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.TRUE, periodStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, periodEndListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, periodEndListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.TRUE, timeoutStartListener));
 	}
 
 	public boolean isInOvertime() { return inOvertime; }
@@ -381,8 +383,20 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			public void scoreBoardChange(ScoreBoardEvent event) {
 				Clock p = getClock(Clock.ID_PERIOD);
 				Clock j = getClock(Clock.ID_JAM);
-				if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning())
+				Clock t = getClock(Clock.ID_TIMEOUT);
+				if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning() && !t.isRunning())
 					setInPeriod(false);
+			}
+		};
+	protected ScoreBoardListener timeoutStartListener = new ScoreBoardListener() {
+			public void scoreBoardChange(ScoreBoardEvent event) {
+				Clock i = getClock(Clock.ID_INTERMISSION);
+				Clock t = getClock(Clock.ID_TIMEOUT);
+
+				if (!isInPeriod() && i.isRunning() && t.isRunning()) {
+					getClockModel(Clock.ID_INTERMISSION).stop();
+					setInPeriod(true);
+				}
 			}
 		};
 
