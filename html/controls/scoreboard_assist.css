@@ -1,0 +1,57 @@
+
+/**
+ * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
+ *
+ * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ * The CRG ScoreBoard is licensed under either the GNU General Public
+ * License version 3 (or later), or the Apache License 2.0, at your option.
+ * See the file COPYING for details.
+ */
+
+table { border: 3px solid; border-radius: 5px; border-spacing: 0px; width: 50%; float: left;}
+
+td { text-align: center; }
+
+div#tableDiv table thead tr.Team th { background: #aaa; }
+div#tableDiv table thead tr.Header th { background: #bbb; }
+
+div#tableDiv table tbody tr:nth-child(odd) td { background: #fff; }
+div#tableDiv table tbody tr:nth-child(even) td { background: #ccc; }
+
+div#tableDiv table td.Position,div#tableDiv table td.Box {
+  border: 1px solid;
+  border-radius: 5px;
+  padding-top: 3px;
+  padding-bottom: 3px;
+}
+
+div#tableDiv table th.Name { width: 15%; }
+div#tableDiv table th.Number { width: 10%; }
+div#tableDiv table th.Bench { width: 15%; }
+div#tableDiv table th.Pivot { width: 15%; }
+div#tableDiv table th.Blocker { width: 15%; }
+div#tableDiv table th.Jammer { width: 15%; }
+div#tableDiv table th.Box { width: 15%; }
+
+div#tableDiv table.Template { display: none; }
+div#tableDiv table tr.Template { display: none; }
+
+div#tableDiv table tr>td>a.Name { font-weight: bold; }
+
+div#tableDiv table tr.Bench>td.Bench { background: #0f0; }
+div#tableDiv table tr.Bench>td.Bench>a.Bench { display: none; }
+div#tableDiv table tr:not(.Bench)>td.Bench>a.Name { display: none; }
+div#tableDiv table tr.Pivot>td.Pivot { background: #0f0; }
+div#tableDiv table tr.Pivot>td.Pivot>a.Pivot { display: none; }
+div#tableDiv table tr:not(.Pivot)>td.Pivot>a.Name { display: none; }
+div#tableDiv table tr.Blocker>td.Blocker { background: #0f0; }
+div#tableDiv table tr.Blocker>td.Blocker>a.Blocker { display: none; }
+div#tableDiv table tr:not(.Blocker)>td.Blocker>a.Name { display: none; }
+div#tableDiv table tr.Jammer>td.Jammer { background: #0f0; }
+div#tableDiv table tr.Jammer>td.Jammer>a.Jammer { display: none; }
+div#tableDiv table tr:not(.Jammer)>td.Jammer>a.Name { display: none; }
+
+div#tableDiv table tr>td.Box.InBox { background: #f00; }
+div#tableDiv table tr>td.Box:not(.InBox)>a.Name { display: none; }
+div#tableDiv table tr>td.Box.InBox>a.Box { display: none; }
+
