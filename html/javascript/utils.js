@@ -140,7 +140,10 @@ _crgUtils = {
 			modal: true,
 			closeOnEscape: false,
 			title: titleText,
-			buttons: [ { text: buttonText, click: login } ]
+			buttons: [ { text: buttonText, click: login } ],
+			close: function() { if (callback('default'))
+				dialog.dialog("destroy");
+			}
 		});
 	},
 
