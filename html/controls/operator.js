@@ -461,7 +461,7 @@ function createTeamTable() {
 		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Jam Score -1").val("1")
-			.attr("id", "Team"+team+"JamScoreDown").addClass("KeyControl").button()
+			.attr("id", "Team"+team+"JamScoreDown").addClass("KeyControl JamScoreButton").button()
 			.appendTo(scoreTd);
 
 		var scoreSubTr = createRowTable(3).appendTo(scoreTr.children("td:eq(1)")).find("tr");
@@ -478,7 +478,7 @@ function createTeamTable() {
 		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Jam Score +1").val("-1")
-			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl").button()
+			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl JamScoreButton").button()
 			.appendTo(scoreTd);
 		// Note instantaneous score change is always towards the center.  Jam score total is on the outside.
 		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
