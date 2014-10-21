@@ -192,7 +192,7 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
         try {
           return getTeam(id).getAlternateName(Team.AlternateName.ID_TWITTER).getName();
         } catch ( NullPointerException npE ) {
-          return "";
+          return getTeam(id).getName();
         }
       }
     };
