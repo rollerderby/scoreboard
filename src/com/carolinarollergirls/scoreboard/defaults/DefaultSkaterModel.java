@@ -82,8 +82,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			Boolean last = new Boolean(leadJammer);
 			leadJammer = lead;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, new Boolean(leadJammer), last));
-
-			getTeamModel()._setLeadJammer(leadJammer);
 		}
 	}
 
