@@ -65,6 +65,7 @@ $sb(function() {
 		var boxStyle = sbViewOptions.$sb("BoxStyle").$sbGet();
 		var backgroundStyle = sbViewOptions.$sb("BackgroundStyle").$sbGet();
 		var hideJamTotals = isTrue(sbViewOptions.$sb("HideJamTotals").$sbGet());
+		var sidePadding = sbViewOptions.$sb("SidePadding").$sbGet();
 		$("#mainDiv").removeClass();
 		if (boxStyle != "" && boxStyle != null)
 			$("#mainDiv").addClass(boxStyle);
@@ -72,10 +73,19 @@ $sb(function() {
 			$("#mainDiv").addClass(backgroundStyle);
 		if (hideJamTotals)
 			$("#mainDiv").addClass("HideJamTotals");
+		if (sidePadding != "" && sidePadding != null) {
+			var left = sidePadding + "%";
+			var width = (100 - (2 * sidePadding)) + "%";
+			$("#sbDiv").css({ left: left, width: width });
+		} else {
+			$("#sbDiv").css({ left: "", width: "" });
+		}
+		$(window).trigger("resize");
 	}
 	sbViewOptions.$sb("BoxStyle").$sbBindAndRun("sbchange", styleSet);
 	sbViewOptions.$sb("BackgroundStyle").$sbBindAndRun("sbchange", styleSet);
 	sbViewOptions.$sb("HideJamTotals").$sbBindAndRun("sbchange", styleSet);
+	sbViewOptions.$sb("SidePadding").$sbBindAndRun("sbchange", styleSet);
 
 	var view = sbViewOptions.$sb("CurrentView");
 	view.$sbBindAndRun("sbchange", function(event, value) {

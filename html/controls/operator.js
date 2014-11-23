@@ -967,6 +967,15 @@ function createScoreBoardViewPreviewRows(table, type) {
 			{ text: "Rounded", value: "" },
 			{ text: "Flat", value: "box_flat" }
 		]}});
+	var sidePadding = pageSb.$sb("SidePadding").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
+		prependOptions: [
+			{ text: "None", value: "" },
+			{ text: "2%", value: "2" },
+			{ text: "4%", value: "4" },
+			{ text: "6%", value: "6" },
+			{ text: "8%", value: "8" },
+			{ text: "10%", value: "10" }
+		]}});
 	var backgroundStyle = pageSb.$sb("BackgroundStyle").$sbControl("<label>Background Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Black to White", value: "" },
@@ -1014,7 +1023,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
 		.find("td").addClass("ScoreBoardOptions Footer")
 		.first().append(showJamTotalsButton)
-		.next()
+		.next().append(sidePadding)
 		.next().append(customPageViewSelect);
 	
 }
