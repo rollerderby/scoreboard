@@ -66,9 +66,9 @@ $sb(function() {
 		var backgroundStyle = sbViewOptions.$sb("BackgroundStyle").$sbGet();
 		var hideJamTotals = isTrue(sbViewOptions.$sb("HideJamTotals").$sbGet());
 		$("#mainDiv").removeClass();
-		if (boxStyle != "")
+		if (boxStyle != "" && boxStyle != null)
 			$("#mainDiv").addClass(boxStyle);
-		if (backgroundStyle != "")
+		if (backgroundStyle != "" && backgroundStyle != null)
 			$("#mainDiv").addClass(backgroundStyle);
 		if (hideJamTotals)
 			$("#mainDiv").addClass("HideJamTotals");
@@ -83,21 +83,19 @@ $sb(function() {
 		if (!showDiv.length)
 			showDiv = $("#sbDiv");
 		showDiv.children("video").each(function() { this.play(); });
-		$("#mainDiv>div.View").not(showDiv).removeClass("Show", 500, function() {
-			$(this).children("video").each(function() { this.pause(); });
-		});
-		showDiv.addClass("Show", 500);
+		$("#mainDiv>div.View").not(showDiv).removeClass("Show");
+		showDiv.addClass("Show");
 	});
 });
 
 // FIXME - needs to be a single call from scoreboard.js
 function setupMainDiv(div) {
-	div.css({ position: "fixed" });
-
-	_crgUtils.bindAndRun($(window), "resize", function() {
-		var aspect4x3 = _windowFunctions.get4x3Dimensions();
-		div.css(aspect4x3).css("fontSize", aspect4x3.height);
-	});
+ 	div.css({ position: "fixed" });
+ 
+ 	_crgUtils.bindAndRun($(window), "resize", function() {
+		var aspect = _windowFunctions.get4x3Dimensions();
+		div.css(aspect).css("fontSize", aspect.height);
+ 	});
 }
 
 function setupBackgrounds() {
@@ -145,63 +143,33 @@ function setupTeams() {
 			autoFitText: { overage: 15, useMarginBottom: true }
 		} }, "Number");
 
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
-
 		var teamDiv = $("#sbDiv>div.Team"+team);
 		sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
 		sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
 		sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 40 } } }, "Score");
-		sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>div>a"), { sbelement: { autoFitText: true } });
+		sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), { sbelement: { autoFitText: true } });
 
-		sbTeam.$sb("Name").$sbBindAndRun("sbchange", function(event,value) {
-			teamDiv.find("div.Name,div.Logo").toggleClass("NoName", !value, animateTime.team);
-		});
-
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
+		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
 		_crgUtils.bindColors(sbTeam, "scoreboard", teamDiv.find("div.Name>a"));
 
-// FIXME - This is the Team Name/Logo animation code - should be cleaned up/reduced
 		var resizeName = teamDiv.find("div.Name").data("AutoFit");
-		sbTeam.$sb("Logo").$sbBindAndRun("sbchange", function(event, newVal, oldVal) {
-			var sbLogo = $sb(this);
-			teamDiv.children(".TeamAnimationQueue").queue(function(next) {
-				if (!!sbLogo.$sbGet() == teamDiv.find("div.TeamAnimationFlag").hasClass("ShowLogo"))
-					next();
-				else if (sbLogo.$sbGet()) {
-					teamDiv.find("div.Name,div.TeamAnimationFlag").addClass("ShowLogo");
-					var resizedCss = resizeName();
-					teamDiv.find("div.Name").removeClass("ShowLogo"); resizeName();
-					teamDiv.find("div.Name>a").animate(resizedCss, animateTime.team, function() {
-						teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();
-						teamDiv.find("div.Logo").addClass("ShowLogo", animateTime.team, next);
-					});
-				} else {
-					var curVal = teamDiv.find("div.Logo img").attr("src");
-					if (!curVal)
-						teamDiv.find("div.Logo img").attr("src", oldVal);
-					teamDiv.find("div.Logo").removeClass("ShowLogo", animateTime.team, function() {
-						if (!curVal)
-							teamDiv.find("div.Logo img").attr("src", curVal);
-						teamDiv.find("div.Name,div.TeamAnimationFlag").removeClass("ShowLogo");
-						var resizedCss = resizeName();
-						teamDiv.find("div.Name").addClass("ShowLogo"); resizeName();
-						teamDiv.find("div.Name").animate(resizedCss, animateTime.team, function() {
-							teamDiv.find("div.Name").removeClass("ShowLogo"); resizeName();
-							next();
-						});
-					});
-				}
-			});
+		sbTeam.$sb("Name").$sbBindAndRun("sbchange", function(event,value) {
+			teamDiv.find("div.NameLogo").toggleClass("NoName", !value);
+			resizeName();
+		});
+		sbTeam.$sb("Logo").$sbBindAndRun("sbchange", function(event,value) {
+			teamDiv.find("div.NameLogo").toggleClass("NoLogo", !value);
+			resizeName();
 		});
 
 		sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("sbchange", function(event, value) {
-			teamDiv.find("div.Jammer>div").toggleClass("ShowJammer", !!value, animateTime.clock, "easeInQuart");
-			teamDiv.find("div.Lead>div").toggle(!value);
+			teamDiv.find("div.Jammer,div.Lead").toggleClass("HaveJammer", !!value);
 		});
 		sbTeam.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, value) {
-			teamDiv.find("div.Lead>div").toggleClass("ShowLead", isTrue(value), animateTime.clock, "easeInQuart");
+			teamDiv.find("div.Jammer,div.Lead").toggleClass("LeadJammer", isTrue(value));
 		});
  
 		var showTimeoutRedBox = function() {
@@ -224,51 +192,52 @@ function setupTeams() {
 		var redBoxTriggers = $sb("ScoreBoard.TimeoutOwner").add($sb("ScoreBoard.Clock(Timeout).Running").add($sb("ScoreBoard.OfficialReview")));
 		_crgUtils.bindAndRun(redBoxTriggers, "sbchange", showTimeoutRedBox);
 
-		setupPulsate(
-			function() { return sbTeam.$sb("LeadJammer").$sbIsTrue(); },
-			teamDiv.find("div.Jammer>div>a.Pulse"),
-			animateTime.leadjammerPulse
-		);
+		var timeouts = $sb("ScoreBoard.Team(" + team + ").Timeouts");
+		var officialReviews = $sb("ScoreBoard.Team(" + team + ").OfficialReviews");
+		var timeoutRunning = $sb("ScoreBoard.Clock(Timeout).Running");
+		var isOfficialReview = $sb("ScoreBoard.OfficialReview");
+		var timeoutOwner = $sb("ScoreBoard.TimeoutOwner");
+		var pulseTimeout = function() {
+			var t = timeouts.$sbGet();
+			var or = officialReviews.$sbGet();
+			var tr = timeoutRunning.$sbIsTrue();
+			var isOR = isOfficialReview.$sbIsTrue();
+			var owner = timeoutOwner.$sbGet();
 
-		// Pulsate Timeouts if they're currently active. They'll be hidden in manageTimeoutImages
-		$.each( [ 0, 1, 2 ], function(x, i) {
-			setupPulsate(
-				function() { return (
-					$sb("ScoreBoard.Team(1).Timeouts").$sbGet() == i &&
-					$sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue() &&
-					!$sb("ScoreBoard.OfficialReview").$sbIsTrue() && // Note, Negated. NOT Official Review
-					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 1); },
-				$(".Timeouts>.Team1>.Timeout" + (i+1) + ".Active"),
-				750);
-			setupPulsate(
-				function() { return (
-					$sb("ScoreBoard.Team(2).Timeouts").$sbGet() == i &&
-					$sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue() &&
-					!$sb("ScoreBoard.OfficialReview").$sbIsTrue() && // Note, Negated. NOT Official Review
-					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 2); },
-				$(".Timeouts>.Team2>.Timeout" + (i+1) + ".Active"),
-				750);
-		});
+			var pulse = (isOR && owner == team);
+			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Active", pulse);
+			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Used", or != 1);
+			for (var to = 1; to <= 3; to++) {
+				pulse = (t == to - 1 && tr && !isOR && owner == team);
+				$("div.Team" + team + ">div.Dot.Timeout" + to).toggleClass("Active", pulse);
+				$("div.Team" + team + ">div.Dot.Timeout" + to).toggleClass("Used", to > t);
+			}
+		}
+		timeouts.$sbBindAndRun("sbchange", pulseTimeout);
+		officialReviews.$sbBindAndRun("sbchange", pulseTimeout);
+		timeoutRunning.$sbBindAndRun("sbchange", pulseTimeout);
+		isOfficialReview.$sbBindAndRun("sbchange", pulseTimeout);
+		timeoutOwner.$sbBindAndRun("sbchange", pulseTimeout);
 
-		// Pulsate OR buttons.
-		$.each( [ 1, 2 ], function(x, i) {
-			setupPulsate(
-				function() { return (
-					$sb("ScoreBoard.OfficialReview").$sbIsTrue() &&
-					$sb("ScoreBoard.TimeoutOwner").$sbGet() == i) },
-				$(".OfficialReviews>.Team"+i+">.OfficialReview.Active"),
-				750
-			);
-		});
+		// // Pulsate OR buttons.
+		// $.each( [ 1, 2 ], function(x, i) {
+		// 	setupPulsate(
+		// 		function() { return (
+		// 			$sb("ScoreBoard.OfficialReview").$sbIsTrue() &&
+		// 			$sb("ScoreBoard.TimeoutOwner").$sbGet() == i) },
+		// 		$(".OfficialReviews>.Team"+i+">.OfficialReview.Active"),
+		// 		750
+		// 	);
+		// });
 	});
 
 	// Timeout triggers
-	var timeoutTriggers = $sb("ScoreBoard.Team(1).OfficialReviews")
-		.add($sb("ScoreBoard.Team(1).Timeouts"))
-		.add($sb("ScoreBoard.Team(2).OfficialReviews"))
-		.add($sb("ScoreBoard.Team(2).Timeouts"))
-		.add($sb("ScoreBoard.TimeoutOwner"));
-	_crgUtils.bindAndRun(timeoutTriggers, "sbchange", manageTimeoutImages);
+	// var timeoutTriggers = $sb("ScoreBoard.Team(1).OfficialReviews")
+	// 	.add($sb("ScoreBoard.Team(1).Timeouts"))
+	// 	.add($sb("ScoreBoard.Team(2).OfficialReviews"))
+	// 	.add($sb("ScoreBoard.Team(2).Timeouts"))
+	// 	.add($sb("ScoreBoard.TimeoutOwner"));
+	// _crgUtils.bindAndRun(timeoutTriggers, "sbchange", manageTimeoutImages);
 }
 
 ////////////////
@@ -281,7 +250,7 @@ function setupClocks() {
 		var clock = id.replace(/_.*/,"");
 		var sbClock = $sb("ScoreBoard.Clock("+clock+")");
 
-		var clockDiv = $("#sbDiv>div."+id+".Clock");
+		var clockDiv = $("div."+id+".Clock");
 		sbClock.$sb("Time").$sbElement(clockDiv.find("div.Time>a>span"), {
 			sbelement: {
 				convert: clockConversions[id],
@@ -347,7 +316,7 @@ function setupClocks() {
 
 	var clockChange = function(event, value, intermission) {
 		if (isTrue(value) || intermission)
-			$("#sbDiv>div.ClockAnimationQueue").queue(clockRunningChange);
+			clockRunningChange();
 	};
 	$sb("ScoreBoard.Clock(Jam).Running").$sbBindAndRun("sbchange", clockChange);
 	$sb("ScoreBoard.Clock(Lineup).Running").$sbBindAndRun("sbchange", clockChange);
@@ -357,33 +326,26 @@ function setupClocks() {
 	});
 }
 
-function clockRunningChange(next) {
+function clockRunningChange() {
 	if ($sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue())
-		showClocks("Jam", next);
+		showClocks("Jam");
 	else if ($sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue())
-		showClocks("Timeout", next);
+		showClocks("Timeout");
 	else if ($sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue())
-		showClocks("Lineup", next);
+		showClocks("Lineup");
 	else if ($sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue())
-		showClocks("Intermission", next);
+		showClocks("Intermission");
 	else
-		showClocks("Jam", next);
+		showClocks("Jam");
 }
 
 var currentClock = "";
-function showClocks(clock, next) {
+function showClocks(clock) {
 	if (currentClock == clock) {
-		next();
 		return;
 	}
-	var toClass = "Show"+clock;
-	var transClass = "Trans"+currentClock+clock;
-	var fromClasses = "ShowPeriod ShowJam ShowLineup ShowTimeout ShowIntermission".replace(toClass, "");
-	if (currentClock)
-		$("#sbDiv div.ClockAnimation").switchClass(fromClasses, transClass, animateTime.clock, "easeInQuart");
-	$("#sbDiv div.ClockAnimation").switchClass(transClass, toClass, animateTime.clock, "easeInQuart",
-		function() { $(this).hasClass("ClockAnimationFlag") && next(); }
-	);
+	$(".Clock.Show"+clock).addClass("Show");
+	$(".Clock:not(.Show"+clock+")").removeClass("Show");
 	currentClock = clock;
 }
 
@@ -393,9 +355,7 @@ function showClocks(clock, next) {
 /////////////////////////
 
 function setupSponsorBanners() {
-	var div = $("<div>").attr("id", "SponsorBox").addClass("ClockAnimation").appendTo("#sbDiv")
-		.append($("<div><img/></div>").addClass("CurrentImg"))
-		.append($("<div><img/></div>").addClass("NextImg"));
+	var div = $("#SponsorBox");
 	var setNextSrc = function() {
 		var banners = $.makeArray($sb("Images.Type(sponsor_banner)").find("Image"));
 		banners.sort(function(a, b) {
@@ -422,60 +382,16 @@ function setupSponsorBanners() {
 		var nextSrc = (next?$sb(next).$sb("Src").$sbGet():"");
 		div.children("div.NextImg").data("banner", next).children("img").prop("src", nextSrc).toggle(!!nextSrc);
 	};
-	setNextSrc();
-	div.children("div").toggleClass("CurrentImg NextImg");
-	setNextSrc();
 	var nextImgFunction = function() {
-		if (div.is(".ShowTimeout,.ShowLineup")) {
-			div.children("div.CurrentImg").switchClass("CurrentImg", "FinishedImg", animateTime.sponsorOut);
-			div.children("div.NextImg").switchClass("NextImg", "CurrentImg", animateTime.sponsorIn, function() {
-				div.children("div.FinishedImg").toggleClass("FinishedImg NextImg");
-				setNextSrc();
-			});
-		}
-		div.delay(5000, "SponsorChangeQueue").queue("SponsorChangeQueue", nextImgFunction).dequeue("SponsorChangeQueue");
+		var cur = $(div.find(".CurrentImg")[0]);
+		var nex = $(div.find(".NextImg")[0]);
+		var fin = $(div.find(".FinishedImg")[0]);
+		cur.removeClass("CurrentImg").addClass("FinishedImg");
+		nex.removeClass("NextImg").addClass("CurrentImg");
+		fin.removeClass("FinishedImg").addClass("NextImg");
+		setNextSrc();
 	};
+	setInterval(nextImgFunction, 5000);
+	setNextSrc();
 	nextImgFunction();
 }
-
-
-////////////
-// Animation
-////////////
-
-function manageTimeoutImages() {
-	// Called when something changes in relation to timeouts.
-	$.each( [ 1, 2 ], function(x, i) {
-		var thisTeam = $sb("ScoreBoard.Team("+i+")");
-
-		// Have they one OR?
-		var elem = $(".OfficialReviews>.Team"+i+">.OfficialReview");
-		elem.toggleClass("Used", thisTeam.$sb("OfficialReviews").$sbGet() == 0);
-	
-		// How's their timeouts looking?
-		var numTOs = thisTeam.$sb("Timeouts").$sbGet();
-		for ( var timeout = 1; timeout <= 3; timeout++ ) {
-			var elem = $(".Timeouts>.Team"+i+">.Timeout"+timeout);
-			elem.toggleClass("Used", numTOs < timeout);
-		}
-	});
-}
-
-function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
-	var doPulse = function(next) {
-		if (pulseCondition())
-			pulseTarget
-				.animate({ opacity: 1 }, (pulsePeriod/2), "linear")
-				.animate({ opacity: 0 }, (pulsePeriod/2), "linear");
-		else {
-			if (pulseTarget.hasClass("Used"))
-				pulseTarget.delay(500).css("opacity", '');
-			else
-				pulseTarget.delay(500);
-		}
-		pulseTarget.queue(doPulse);
-		next();
-	};
-	doPulse($.noop);
-}
-

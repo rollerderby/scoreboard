@@ -8,10 +8,20 @@
  * See the file COPYING for details.
  */
 
-
+#mainDiv {
+	-webkit-transform: translateZ(0);
+	-webkit-font-smoothing: antialiased;
+	-webkit-backface-visibility: hidden;
+}
 #mainDiv div { position: absolute; }
-#mainDiv>div.View { width: 100%; height: 100%; }
-#mainDiv>div.View:not(.Show) { opacity: 0; z-index: -1; }
+#mainDiv>div.View { z-index: 0; width: 100%; height: 100%; animation: showView 0.5s; -moz-animation: showView 0.5s; -webkit-animation: showView 0.5s; }
+#mainDiv>div.View:not(.Show) { z-index: -1; opacity: 0; animation: hideView 0.5s; -moz-animation: hideView 0.5s; -webkit-animation: hideView 0.5s; }
+  @-moz-keyframes showView { from { opacity: 0; } to { opacity: 1; } }
+  @-moz-keyframes hideView { from { opacity: 1; } to { opacity: 0; } }
+  @-webkit-keyframes showView { from { opacity: 0; } to { opacity: 1; } }
+  @-webkit-keyframes hideView { from { opacity: 1; } to { opacity: 0; } }
+  @keyframes showView { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes hideView { from { opacity: 1; } to { opacity: 0; } }
 
 div.full { height: 100%; width: 100%; border-radius: inherit; }
 div.RedBox { background: #ff0000; opacity: 0.6; }
@@ -36,64 +46,61 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   #sbDiv>div.Team1,#sbDiv>div.Team2.SwapTeams { left: 0%; right: auto; }
   #sbDiv>div.Team2,#sbDiv>div.Team1.SwapTeams { left: auto; right: 0%; }
 
-  /* Team Name sub-box */
-  #sbDiv>div.Team>div.Name { top: 0%; left: 5%; right: 5%; height: 48%; }
-  #sbDiv>div.Team>div.Name.NoName { top: -48%; }
-  #sbDiv>div.Team>div.Name.ShowLogo { height: 16%; }
-  #sbDiv>div.Team>div.Name.NoName.ShowLogo { top: -16%; }
-  #sbDiv>div.Team>div.Name>a { color: #ffffff; padding-left: 10px; padding-right: 10px; display: inline-block; border-radius: 12% / 50%; }
+  /* Team Name/Logo sub-box */
+  #sbDiv>div.Team>div.NameLogo { top: 0%; left: 5%; right: 5%; height: 48%; }
+  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1>div.NameLogo,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2.SwapTeams>div.NameLogo { left: 1%; right: 13%; }
+  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2>div.NameLogo,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1.SwapTeams>div.NameLogo { left: 13%; right: 1%; }
 
-  /* Team Logo sub-box */
-  #sbDiv>div.Team>div.Logo { top: 16%; height: 32%; width: 100%; }
-  #sbDiv>div.Team>div.Logo.NoName { top: 0%; height: 48%; }
-  #sbDiv>div.Team>div.Logo>div.Inner { top: 0%; height: 100%; width: 300%; left: -100%; overflow: hidden; }
-  #sbDiv>div.Team>div.Logo img { top: 0%; height: 100%; display: block; margin-left: auto; margin-right: auto; } /* center img */
-  #sbDiv>div.Team1>div.Logo,#sbDiv>div.Team2.SwapTeams>div.Logo { left: auto; right: 100%; }
-  #sbDiv>div.Team2>div.Logo,#sbDiv>div.Team1.SwapTeams>div.Logo { left: 100%; right: auto; }
-  #sbDiv>div.Team1>div.Logo.ShowLogo,#sbDiv>div.Team2.SwapTeams>div.Logo.ShowLogo { left: auto; right: 0%; }
-  #sbDiv>div.Team2>div.Logo.ShowLogo,#sbDiv>div.Team1.SwapTeams>div.Logo.ShowLogo { left: 0%; right: auto; }
+    /* Team sub-box */
+    #sbDiv>div.Team>div.NameLogo>div.Name { width: 100%; height: 34%; }
+    #sbDiv>div.Team>div.NameLogo.NoName>div.Name { display: none; }
+    #sbDiv>div.Team>div.NameLogo.NoLogo>div.Name { height: 100%; }
+    #sbDiv>div.Team>div.NameLogo>div.Name>a { color: #ffffff; padding-left: 10px; padding-right: 10px; display: inline-block; border-radius: 12% / 50%; }
+
+    /* Team Logo sub-box */
+    #sbDiv>div.Team>div.NameLogo>div.Logo { top: 34%; height: 66%; width: 100%; }
+    #sbDiv>div.Team>div.NameLogo.NoName>div.Logo { top: 0%; height: 100%; }
+    #sbDiv>div.Team>div.NameLogo.NoLogo>div.Logo { display: none; }
+    #sbDiv>div.Team>div.NameLogo>div.Logo img { top: 0%; height: 100%; display: block; margin-left: auto; margin-right: auto; } /* center img */
 
   /* Team Score sub-box */
   #mainDiv.HideJamTotals>#sbDiv>div.Team>div.Score { top: 49%; left: 15%; right: 15%; height: 31.5%; border-radius: 12% / 25%; }
-  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team.Team1>div.Score,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team.Team2.SwapTeams>div.Score { top: 49%; left: 11%; right: 23%; height: 31.5%; border-radius: 12% / 25%; }
-  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team.Team2>div.Score,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team.Team1.SwapTeams>div.Score { top: 49%; left: 23%; right: 11%; height: 31.5%; border-radius: 12% / 25%; }
-
+  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1>div.Score,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2.SwapTeams>div.Score { top: 49%; left: 11%; right: 23%; height: 31.5%; border-radius: 12% / 25%; }
+  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2>div.Score,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1.SwapTeams>div.Score { top: 49%; left: 23%; right: 11%; height: 31.5%; border-radius: 12% / 25%; }
 
   /* Team Jammer sub-box */
-  #sbDiv>div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; }
-  #sbDiv>div.Team>div.Jammer>div { width: 100%; height: 100%; }
-  #sbDiv>div.Team1>div.Jammer,#sbDiv>div.Team2.SwapTeams>div.Jammer { left: auto; right: 100%; }
-  #sbDiv>div.Team2>div.Jammer,#sbDiv>div.Team1.SwapTeams>div.Jammer { left: 100%; right: auto; }
-  #sbDiv>div.Team1>div.Jammer.ShowJam,#sbDiv>div.Team2.SwapTeams>div.Jammer.ShowJam
-    { left: auto; right: 5%; }
-  #sbDiv>div.Team2>div.Jammer.ShowJam,#sbDiv>div.Team1.SwapTeams>div.Jammer.ShowJam
-    { left: 5%; right: auto; }
-  #sbDiv>div.Team1>div.Jammer>div,#sbDiv>div.Team2.SwapTeams>div.Jammer>div { left: auto; right: 100%; }
-  #sbDiv>div.Team2>div.Jammer>div,#sbDiv>div.Team1.SwapTeams>div.Jammer>div { left: 100%; right: auto; }
-  #sbDiv>div.Team1>div.Jammer>div.ShowJammer,#sbDiv>div.Team2.SwapTeams>div.Jammer>div.ShowJammer
-    { left: auto; right: 0%; }
-  #sbDiv>div.Team2>div.Jammer>div.ShowJammer,#sbDiv>div.Team1.SwapTeams>div.Jammer>div.ShowJammer
-    { left: 0%; right: auto; }
-  #sbDiv>div.Team>div.Jammer>div>a.Pulse { color: #ff0000; }
-  #sbDiv>div.Team>div.Jammer>div>a.Jammer { color: #ffffff; }
+  #sbDiv>div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; color: #FFFFFF; }
+  #sbDiv>div.Team1>div.Jammer,#sbDiv>div.Team2.SwapTeams>div.Jammer           { left: auto; right: 100%; animation: JammerHideLeft 0.5s; -moz-animation: JammerHideLeft 0.5s; -webkit-animation: JammerHideLeft 0.5s; }
+  #sbDiv>div.Team1>div.Jammer.Show,#sbDiv>div.Team2.SwapTeams>div.Jammer.Show { left: auto; right: 5%;   animation: JammerShowLeft 0.5s; -moz-animation: JammerShowLeft 0.5s; -webkit-animation: JammerShowLeft 0.5s; }
+  #sbDiv>div.Team2>div.Jammer,#sbDiv>div.Team1.SwapTeams>div.Jammer           { left: 100%; right: auto; animation: JammerHideRight 0.5s; -moz-animation: JammerHideRight 0.5s; -webkit-animation: JammerHideRight 0.5s; }
+  #sbDiv>div.Team2>div.Jammer.Show,#sbDiv>div.Team1.SwapTeams>div.Jammer.Show { left: 5%;   right: auto; animation: JammerShowRight 0.5s; -moz-animation: JammerShowRight 0.5s; -webkit-animation: JammerShowRight 0.5s; }
+
+  #sbDiv>div.Team>div.Jammer.LeadJammer>a { color: #FF0000; animation: LeadJammer 1s infinite; -moz-animation: LeadJammer 1s infinite; -webkit-animation: LeadJammer 1s infinite; }
+    @-moz-keyframes LeadJammer         {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
+    @-webkit-keyframes LeadJammer      {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
+    @keyframes LeadJammer              {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
+
+    @-moz-keyframes JammerHideLeft     {  0% { right:   5%; } 100% { right: 100%; } }
+    @-moz-keyframes JammerShowLeft     {  0% { right: 100%; } 100% { right:   5%; } }
+    @-webkit-keyframes JammerHideLeft  {  0% { right:   5%; } 100% { right: 100%; } }
+    @-webkit-keyframes JammerShowLeft  {  0% { right: 100%; } 100% { right:   5%; } }
+    @keyframes JammerHideLeft          {  0% { right:   5%; } 100% { right: 100%; } }
+    @keyframes JammerShowLeft          {  0% { right: 100%; } 100% { right:   5%; } }
+
+    @-moz-keyframes JammerHideRight    {  0% {  left:   5%; } 100% {  left: 100%; } }
+    @-moz-keyframes JammerShowRight    {  0% {  left: 100%; } 100% {  left:   5%; } }
+    @-webkit-keyframes JammerHideRight {  0% {  left:   5%; } 100% {  left: 100%; } }
+    @-webkit-keyframes JammerShowRight {  0% {  left: 100%; } 100% {  left:   5%; } }
+    @keyframes JammerHideRight         {  0% {  left:   5%; } 100% {  left: 100%; } }
+    @keyframes JammerShowRight         {  0% {  left: 100%; } 100% {  left:   5%; } }
 
   /* Team Lead Jammer sub-box */
-  #sbDiv>div.Team>div.Lead { bottom: 0%; width: 90%; height: 18%; }
-  #sbDiv>div.Team>div.Lead>div { width: 100%; height: 100%; }
-  #sbDiv>div.Team>div.Lead>div.TextContainer { font-size: 10%; }
-  #sbDiv>div.Team1>div.Lead,#sbDiv>div.Team2.SwapTeams>div.Lead { left: auto; right: 100%; }
-  #sbDiv>div.Team2>div.Lead,#sbDiv>div.Team1.SwapTeams>div.Lead { left: 100%; right: auto; }
-  #sbDiv>div.Team1>div.Lead.ShowJam,#sbDiv>div.Team2.SwapTeams>div.Lead.ShowJam
-    { left: auto; right: 5%; }
-  #sbDiv>div.Team2>div.Lead.ShowJam,#sbDiv>div.Team1.SwapTeams>div.Lead.ShowJam
-    { left: 5%; right: auto; }
-  #sbDiv>div.Team1>div.Lead>div,#sbDiv>div.Team2.SwapTeams>div.Lead>div { left: auto; right: 100%; }
-  #sbDiv>div.Team2>div.Lead>div,#sbDiv>div.Team1.SwapTeams>div.Lead>div { left: 100%; right: auto; }
-  #sbDiv>div.Team1>div.Lead>div.ShowLead,#sbDiv>div.Team2.SwapTeams>div.Lead>div.ShowLead
-    { left: auto; right: 0%; }
-  #sbDiv>div.Team2>div.Lead>div.ShowLead,#sbDiv>div.Team1.SwapTeams>div.Lead>div.ShowLead
-    { left: 0%; right: auto; }
-  #sbDiv>div.Team>div.Lead>div>a.Lead { color: #ffffff; }
+  #sbDiv>div.Team>div.Lead { bottom: 0%; width: 90%; height: 18%; color: #FFFFFF; font-size: 10%; opacity: 1; }
+  #sbDiv>div.Team>div.Lead.HaveJammer { opacity: 0; }
+  #sbDiv>div.Team1>div.Lead,#sbDiv>div.Team2.SwapTeams>div.Lead                                 { left: auto; right: 100%; animation: JammerHideLeft 0.5s; -moz-animation: JammerHideLeft 0.5s; -webkit-animation: JammerHideLeft 0.5s; }
+  #sbDiv>div.Team1>div.Lead.Show.LeadJammer,#sbDiv>div.Team2.SwapTeams>div.Lead.Show.LeadJammer { left: auto; right: 5%;   animation: JammerShowLeft 0.5s; -moz-animation: JammerShowLeft 0.5s; -webkit-animation: JammerShowLeft 0.5s; }
+  #sbDiv>div.Team2>div.Lead,#sbDiv>div.Team1.SwapTeams>div.Lead                                 { left: 100%; right: auto; animation: JammerHideRight 0.5s; -moz-animation: JammerHideRight 0.5s; -webkit-animation: JammerHideRight 0.5s; }
+  #sbDiv>div.Team2>div.Lead.Show.LeadJammer,#sbDiv>div.Team1.SwapTeams>div.Lead.Show.LeadJammer { left:   5%; right: auto; animation: JammerShowRight 0.5s; -moz-animation: JammerShowRight 0.5s; -webkit-animation: JammerShowRight 0.5s; }
 /* End Teams */
 
 /* Jam Points */
@@ -125,8 +132,11 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
   .Dot, .Dot.Active { border-radius: 100%; }
   .Dot { background: #000000; }
-  .Dot.Active { background: #000000; opacity: 0; }
+  .Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite; -moz-animation: DotActive 0.75s infinite; -webkit-animation: DotActive 0.75s infinite; }
   .Dot.Used { opacity: 0; }
+    @-moz-keyframes DotActive    {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+    @-webkit-keyframes DotActive {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+    @keyframes DotActive         {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
 /* Timeouts - Jam Totals */
   /* Main box */
@@ -178,8 +188,14 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Period */
   /* Main box */
-  .Period { right: 100%; top: 59%; width: 50%; bottom: 0%; }
-  .Period.ShowJam { right: 50%; }
+  .Period { right: 100%; top: 59%; width: 50%; bottom: 0%; animation: PeriodHide 0.5s; -moz-animation: PeriodHide 0.5s; -webkit-animation: PeriodHide 0.5s; }
+  .Period.Show { right: 50%; animation: PeriodShow 0.5s; -moz-animation: PeriodShow 0.5s; -webkit-animation: PeriodShow 0.5s; }
+    @-moz-keyframes PeriodHide    {  0% { right:  50%; } 50% { right: 100%; } 100% { right: 100%; } }
+    @-moz-keyframes PeriodShow    {  0% { right: 100%; } 50% { right: 100%; } 100% { right:  50%; } }
+    @-webkit-keyframes PeriodHide {  0% { right:  50%; } 50% { right: 100%; } 100% { right: 100%; } }
+    @-webkit-keyframes PeriodShow {  0% { right: 100%; } 50% { right: 100%; } 100% { right:  50%; } }
+    @keyframes PeriodHide         {  0% { right:  50%; } 50% { right: 100%; } 100% { right: 100%; } }
+    @keyframes PeriodShow         {  0% { right: 100%; } 50% { right: 100%; } 100% { right:  50%; } }
 
   /* Name sub-box */
   .Period>div.Name { top: 15%; left: 18%; width: 64%; height: 24%; border-radius: 8.5% / 30%; }
@@ -198,9 +214,14 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Period_small */
   /* Main box */
-  .Period_small { right: 100%; top: 59%; width: 50%; bottom: 0%; }
-  .Period_small.ShowTimeout,.Period_small.ShowLineup,.Period_small.TransTimeoutLineup,.Period_small.TransLineupTimeout
-    { right: 50%; }
+  .Period_small { right: 100%; top: 59%; width: 50%; bottom: 0%; animation: PeriodSmallHide 0.5s; -moz-animation: PeriodSmallHide 0.5s; -webkit-animation: PeriodSmallHide 0.5s; }
+  .Period_small.Show { right: 50%; animation: PeriodSmallShow 0.5s; -moz-animation: PeriodSmallShow 0.5s; -webkit-animation: PeriodSmallShow 0.5s; }
+    @-moz-keyframes PeriodSmallHide    {  0% { right:  50%; } 50% { right: 100%; } 100% { right: 100%; } }
+    @-moz-keyframes PeriodSmallShow    {  0% { right: 100%; } 50% { right: 100%; } 100% { right:  50%; } }
+    @-webkit-keyframes PeriodSmallHide {  0% { right:  50%; } 50% { right: 100%; } 100% { right: 100%; } }
+    @-webkit-keyframes PeriodSmallShow {  0% { right: 100%; } 50% { right: 100%; } 100% { right:  50%; } }
+    @keyframes PeriodSmallHide         {  0% { right:  50%; } 50% { right: 100%; } 100% { right: 100%; } }
+    @keyframes PeriodSmallShow         {  0% { right: 100%; } 50% { right: 100%; } 100% { right:  50%; } }
 
   /* Name sub-box */
   .Period_small>div.Name { top: 0%; left: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
@@ -215,8 +236,14 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Jam */
   /* Main box */
-  .Jam { left: 100%; top: 59%; width: 50%; bottom: 0%; }
-  .Jam.ShowJam { left: 50%; }
+  .Jam { left: 100%; top: 59%; width: 50%; bottom: 0%; animation: JamHide 0.5s; -moz-animation: JamHide 0.5s; -webkit-animation: JamHide 0.5s; }
+  .Jam.Show { left: 50%; animation: JamShow 0.5s; -moz-animation: JamShow 0.5s; -webkit-animation: JamShow 0.5s; }
+    @-moz-keyframes JamHide    {  0% { left:  50%; } 50% { left: 100%; } 100% { left: 100%; } }
+    @-moz-keyframes JamShow    {  0% { left: 100%; } 50% { left: 100%; } 100% { left:  50%; } }
+    @-webkit-keyframes JamHide {  0% { left:  50%; } 50% { left: 100%; } 100% { left: 100%; } }
+    @-webkit-keyframes JamShow {  0% { left: 100%; } 50% { left: 100%; } 100% { left:  50%; } }
+    @keyframes JamHide         {  0% { left:  50%; } 50% { left: 100%; } 100% { left: 100%; } }
+    @keyframes JamShow         {  0% { left: 100%; } 50% { left: 100%; } 100% { left:  50%; } }
 
   /* Name sub-box */
   .Jam>div.Name { top: 15%; left: 18%; width: 64%; height: 24%; border-radius: 8.5% / 30%; }
@@ -232,45 +259,82 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Jam_small */
   /* Main box */
-  .Jam_small { left: 50%; top: 65%; width: 0%; height: 0%; font-size: 0%; }
-  .Jam_small.ShowTimeout,.Jam_small.ShowLineup,.Jam_small.TransTimeoutLineup,.Jam_small.TransLineupTimeout
-    { top: 59%; left: 0%; width: 100%; height: 41%; font-size: inherit; }
+  .Jam_small      { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%;      animation: JamSmallHide 0.5s; -moz-animation: JamSmallHide 0.5s; -webkit-animation: JamSmallHide 0.5s; }
+  .Jam_small.Show { left:  0%; top: 59%; width: 100%; height: 41%; font-size: inherit; animation: JamSmallShow 0.5s; -moz-animation: JamSmallShow 0.5s; -webkit-animation: JamSmallShow 0.5s; }
+    @-moz-keyframes JamSmallHide {  
+        0% { left:  0%; top: 59%; width: 100%; height: 41%; font-size: inherit; } 
+       50% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } 
+      100% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } }
+    @-moz-keyframes JamSmallShow {  
+        0% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } 
+       50% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; }
+      100% { left:  0%; top: 59%; width: 100%; height: 41%; font-size: inherit; } }
+    @-webkit-keyframes JamSmallHide {  
+        0% { left:  0%; top: 59%; width: 100%; height: 41%; font-size: inherit; } 
+       50% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } 
+      100% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } }
+    @-webkit-keyframes JamSmallShow {  
+        0% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } 
+       50% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; }
+      100% { left:  0%; top: 59%; width: 100%; height: 41%; font-size: inherit; } }
+    @keyframes JamSmallHide {  
+        0% { left:  0%; top: 59%; width: 100%; height: 41%; font-size: inherit; } 
+       50% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } 
+      100% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } }
+    @keyframes JamSmallShow {  
+        0% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; } 
+       50% { left: 50%; top: 65%; width:   0%; height:  0%; font-size: 0%; }
+      100% { left:  0%; top: 59%; width: 100%; height: 41%; font-size: inherit; } }
 
   /* Name sub-box */
   .Jam_small>div.Name { top: 0%; left: 42%; width: 16.25%; height: 29%; border-radius: 15% / 25%; }
   .Jam_small>div.Name.TextContainer { font-size: 10%; }
 /* End Jam_small */
 
-/* Lineup */
+/* LineupTimeout */
   /* Main box */
-  .Lineup { left: 100%; top: 59%; width: 50%; bottom: 0%; }
-  .Lineup.ShowLineup { left: 50%; }
+  .LineupTimeout { left: 100%; top: 59%; width: 50%; bottom: 0%; animation: LineupTimeoutHide 0.5s; -moz-animation: LineupTimeoutHide 0.5s; -webkit-animation: LineupTimeoutHide 0.5s; }
+  .LineupTimeout.Show { left: 50%; animation: LineupTimeoutShow 0.5s; -moz-animation: LineupTimeoutShow 0.5s; -webkit-animation: LineupTimeoutShow 0.5s; }
+    @-moz-keyframes LineupTimeoutHide {  0% { left:  50%; } 50% { left: 100%; } 100% { left: 100%; } }
+    @-moz-keyframes LineupTimeoutShow {  0% { left: 100%; } 50% { left: 100%; } 100% { left:  50%; } }
+    @-webkit-keyframes LineupTimeoutHide {  0% { left:  50%; } 50% { left: 100%; } 100% { left: 100%; } }
+    @-webkit-keyframes LineupTimeoutShow {  0% { left: 100%; } 50% { left: 100%; } 100% { left:  50%; } }
+    @keyframes LineupTimeoutHide         {  0% { left:  50%; } 50% { left: 100%; } 100% { left: 100%; } }
+    @keyframes LineupTimeoutShow         {  0% { left: 100%; } 50% { left: 100%; } 100% { left:  50%; } }
 
-  /* Name sub-box */
-  .Lineup>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
-  .Lineup>div.Name.TextContainer { font-size: 5%; }
+  /* Lineup */
+  .Lineup { width: 100%; height: 100%; opacity: 0; }
+  .Lineup.Show { opacity: 1; }
+    /* Name sub-box */
+    .Lineup>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
+    .Lineup>div.Name.TextContainer { font-size: 5%; }
 
-  /* Time sub-box */
-  .Lineup>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-/* End Lineup */
+    /* Time sub-box */
+    .Lineup>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
+  /* End Lineup */
 
-/* Timeout */
-  /* Main box */
-  .Timeout { left: 100%; top: 59%; width: 50%; bottom: 0%; }
-  .Timeout.ShowTimeout { left: 50%; }
+  /* Timeout */
+  .Timeout { width: 100%; height: 100%; opacity: 0; }
+  .Timeout.Show { opacity: 1; }
+    /* Name sub-box */
+    .Timeout>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
+    .Timeout>div.Name.TextContainer { font-size: 5%; }
 
-  /* Name sub-box */
-  .Timeout>div.Name { top: 0%; right: 58%; width: 24%; height: 29%; border-radius: 20% / 25%; }
-  .Timeout>div.Name.TextContainer { font-size: 5%; }
-
-  /* Time sub-box */
-  .Timeout>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
-/* End Timeout */
+    /* Time sub-box */
+    .Timeout>div.Time { top: 0%; right: 2%; width: 54%; height: 29%; border-radius: 7% / 24%; }
+  /* End Timeout */
+/* End LineupTimeout */
 
 /* Intermission */
   /* Main box */
-  .Intermission { left: 0%; top: 100%; width: 100%; height: 41%; }
-  .Intermission.ShowIntermission { top: 59%; }
+  .Intermission { left: 0%; top: 100%; width: 100%; height: 41%; animation: IntermissionHide 0.5s; -moz-animation: IntermissionHide 0.5s; -webkit-animation: IntermissionHide 0.5s; }
+  .Intermission.Show { top: 59%; animation: IntermissionShow 0.5s; -moz-animation: IntermissionShow 0.5s; -webkit-animation: IntermissionShow 0.5s; }
+    @-moz-keyframes IntermissionHide { 0% { top:  59%; } 50% { top: 100%; } 100% { top: 100%; } }
+    @-moz-keyframes IntermissionShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  59%; } }
+    @-webkit-keyframes IntermissionHide { 0% { top:  59%; } 50% { top: 100%; } 100% { top: 100%; } }
+    @-webkit-keyframes IntermissionShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  59%; } }
+    @keyframes IntermissionHide { 0% { top:  59%; } 50% { top: 100%; } 100% { top: 100%; } }
+    @keyframes IntermissionShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  59%; } }
 
   /* Name sub-box */
   .Intermission>div.Name { top: 0%; left: 20%; width: 60%; height: 29%; border-radius: 5% / 20%; }
@@ -281,13 +345,25 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
 
 /* Sponsor Banner box */
   /* Main box */
-  #SponsorBox { left: 0%; top: 100%; width: 100%; height: 26%; }
-  #SponsorBox.ShowTimeout,#SponsorBox.ShowLineup,#SponsorBox.TransTimeoutLineup,#SponsorBox.TransLineupTimeout
-    { top: 74%; }
+  #SponsorBox { left: 0%; top: 100%; width: 100%; height: 26%; animation: SponsorHide 0.5s; -moz-animation: SponsorHide 0.5s; -webkit-animation: SponsorHide 0.5s; }
+  #SponsorBox.Show { top: 74%; animation: SponsorShow 0.5s; -moz-animation: SponsorShow 0.5s; -webkit-animation: SponsorShow 0.5s; }
+    @-moz-keyframes SponsorHide { 0% { top:  74%; } 50% { top: 100%; } 100% { top: 100%; } }
+    @-moz-keyframes SponsorShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  74%; } }
+    @-webkit-keyframes SponsorHide { 0% { top:  74%; } 50% { top: 100%; } 100% { top: 100%; } }
+    @-webkit-keyframes SponsorShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  74%; } }
+    @keyframes SponsorHide { 0% { top:  74%; } 50% { top: 100%; } 100% { top: 100%; } }
+    @keyframes SponsorShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  74%; } }
 
   #SponsorBox>div { top: 0%; right: 0%; width: 100%; height: 100%; font-size: 0px; }
-  #SponsorBox>div.FinishedImg { right: -100%; }
   #SponsorBox>div.NextImg { right: 100%; }
+  #SponsorBox>div.CurrentImg { right: 0%; animation: CurrentImg 1.01s; -moz-animation: CurrentImg 1.01s; -webkit-animation: CurrentImg 1.01s; }
+    @-moz-keyframes CurrentImg { from { right: 100%; } to { right: 0%; } }
+    @-webkit-keyframes CurrentImg { from { right: 100%; } to { right: 0%; } }
+    @keyframes CurrentImg { from { right: 100%; } to { right: 0%; } }
+  #SponsorBox>div.FinishedImg { right: -100%; animation: FinishedImg 0.99s; -moz-animation: FinishedImg 0.99s; -webkit-animation: FinishedImg 0.99s; }
+    @-moz-keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
+    @-webkit-keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
+    @keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
 
   #SponsorBox>div>img { width: 100%; height: 100%; }
 /* End Sponsor Banner box */
@@ -325,18 +401,19 @@ div.WhiteBox {
 }
 
 /* http://net.tutsplus.com/tutorials/html-css-techniques/quick-tip-understanding-css3-gradients/ */
-#mainDiv>#sbDiv {
+#mainDiv {
   background: #222222;
   background: -moz-linear-gradient(top, #000000, #222222 50%, #777777 100%);
   background: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), color-stop(50%, #222222), color-stop(100%, #777777));
 }
 
-#mainDiv.bg_whitetoblack>#sbDiv {
+#mainDiv.bg_whitetoblack {
   background: -moz-linear-gradient(top, #C0C0C0, #222222 50%, #000000 100%);
   background: -webkit-gradient(linear, 0 0, 0 100%, from(#C0C0C0), color-stop(50%, #222222), color-stop(100%, #000000));
 }
 
-#mainDiv.bg_black>#sbDiv {
+#mainDiv.bg_black {
   background: #000000;
 }
 
+#mainDiv>#sbDiv { overflow: hidden; }
