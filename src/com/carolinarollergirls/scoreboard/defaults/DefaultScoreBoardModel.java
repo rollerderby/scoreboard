@@ -194,8 +194,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void timeout(TeamModel team) { timeout(team, false); }
 	public void timeout(TeamModel team, boolean review) {
 		synchronized (runLock) {
+			ScoreBoardManager.requestStartBatchChanges();
 			setTimeoutOwner(null==team?"":team.getId());
 			setOfficialReview(review);
+			ScoreBoardManager.requestEndBatchChanges();
 			if (!getClockModel(Clock.ID_TIMEOUT).isRunning()) {
 //FIXME - change to policy?
 				getClockModel(Clock.ID_PERIOD).stop();

@@ -52,6 +52,15 @@ public class XmlScoreBoard
 		listeners.removeXmlScoreBoardListener(xsbL);
 	}
 
+	// Not a guarantee listeners will batch the changes before processing
+	public void requestStartBatchChanges() {
+		listeners.requestStartBatchChanges();
+	}
+
+	public void requestEndBatchChanges() {
+		listeners.requestEndBatchChanges();
+	}
+
 	public Document getDocument() {
 		synchronized (documentLock) {
 			return (Document)document.clone();

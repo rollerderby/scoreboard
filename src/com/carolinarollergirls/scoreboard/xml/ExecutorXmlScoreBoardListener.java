@@ -13,6 +13,8 @@ import org.jdom.*;
 import java.util.*;
 import java.util.concurrent.*;
 
+import com.carolinarollergirls.scoreboard.*;
+
 public class ExecutorXmlScoreBoardListener implements XmlScoreBoardListener
 {
 	public void addXmlScoreBoardListener(XmlScoreBoardListener l) {
@@ -34,6 +36,51 @@ public class ExecutorXmlScoreBoardListener implements XmlScoreBoardListener
 		}
 	}
 
+	// Not a guarantee listeners will batch the changes before processing
+	public void requestStartBatchChanges() {
+		synchronized (listenerLock) {
+			Iterator<XmlScoreBoardListener> i = listeners.keySet().iterator();
+			while (i.hasNext()) {
+				XmlScoreBoardListener l = i.next();
+				if (l instanceof XmlScoreBoardBatchListener) {
+					try { ((XmlScoreBoardBatchListener)l).startBatch(); }
+					catch ( RuntimeException rE ) { /* Keep processing regardless of Exceptions */ }
+				}
+			}
+
+			if (batchReleaseTimerTask != null) {
+				batchReleaseTimerTask = new BatchReleaseTimerTask();
+				timer.schedule(batchReleaseTimerTask, 200);
+			}
+		}
+	}
+
+	public void requestEndBatchChanges() {
+		_requestEndBatchChanges(false);
+	}
+
+	private void _requestEndBatchChanges(boolean force) {
+		synchronized (listenerLock) {
+			Iterator<XmlScoreBoardListener> i = listeners.keySet().iterator();
+			boolean stillActive = false;
+			while (i.hasNext()) {
+				XmlScoreBoardListener l = i.next();
+				if (l instanceof XmlScoreBoardBatchListener) {
+					try {
+						if (!((XmlScoreBoardBatchListener)l).endBatch(force))
+							stillActive = true;
+					}
+					catch ( RuntimeException rE ) { /* Keep processing regardless of Exceptions */ }
+				}
+			}
+			if ((!stillActive || force) && batchReleaseTimerTask != null) {
+				timer.cancel();
+				batchReleaseTimerTask = null;
+			}
+		}
+	}
+
+
 	public void xmlChange(Document d) {
 		synchronized (listenerLock) {
 			Iterator<XmlScoreBoardListener> l = listeners.keySet().iterator();
@@ -48,8 +95,16 @@ public class ExecutorXmlScoreBoardListener implements XmlScoreBoardListener
 			eS.submit(new XmlChangeRunnable(l, (Document)d.clone()));
 	}
 
+	protected Timer timer = new Timer();
+	protected TimerTask batchReleaseTimerTask = null;
 	protected HashMap<XmlScoreBoardListener,ExecutorService> listeners = new LinkedHashMap<XmlScoreBoardListener,ExecutorService>();
 	protected Object listenerLock = new Object();
+
+	public class BatchReleaseTimerTask extends TimerTask {
+		public void run() {
+			ExecutorXmlScoreBoardListener.this._requestEndBatchChanges(true);
+		}
+	}
 
 	public class XmlChangeRunnable implements Runnable
 	{

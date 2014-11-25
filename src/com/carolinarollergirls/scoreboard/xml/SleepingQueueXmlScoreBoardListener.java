@@ -13,7 +13,7 @@ import java.util.concurrent.*;
 
 import org.jdom.*;
 
-public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListener implements XmlScoreBoardListener
+public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListener implements XmlScoreBoardListener, XmlScoreBoardBatchListener
 {
 	public SleepingQueueXmlScoreBoardListener() { super(); }
 	public SleepingQueueXmlScoreBoardListener(XmlScoreBoard sb) { super(sb); }
@@ -21,7 +21,7 @@ public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListen
 	public void xmlChange(Document d) {
 		synchronized (documentsLock) {
 			super.xmlChange(d);
-			if (!isEmpty())
+			if (!isEmpty() && batchDepth < 1)
 				documentsLock.notifyAll();
 		}
 	}
@@ -36,4 +36,30 @@ public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListen
 			return super.getNextDocument();
 		}
 	}
+
+	public void startBatch() {
+		synchronized (documentsLock) {
+			batchDepth++;
+		}
+	}
+
+	public boolean endBatch(boolean force) {
+		synchronized (documentsLock) {
+			batchDepth--;
+			if (batchDepth < 1 || force) {
+				releaseBatch();
+			}
+			return batchDepth == 0;
+		}
+	}
+
+	private void releaseBatch() {
+		synchronized (documentsLock) {
+			batchDepth = 0;
+			if (!isEmpty())
+				documentsLock.notifyAll();
+		}
+	}
+
+	protected int batchDepth = 0;
 }
