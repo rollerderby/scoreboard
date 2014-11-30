@@ -118,6 +118,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public void startOvertime() {
 		synchronized (runLock) {
+			requestBatchStart();
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);
 			if (pc.isRunning() || jc.isRunning())
@@ -139,6 +140,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			}
 			getClockModel(Clock.ID_LINEUP).resetTime();
 			getClockModel(Clock.ID_LINEUP).start();
+			requestBatchEnd();
 		}
 	}
 
@@ -154,6 +156,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void startJam() {
 		synchronized (runLock) {
 			if (!getClock(Clock.ID_JAM).isRunning()) {
+				requestBatchStart();
 				ClockModel pc = getClockModel(Clock.ID_PERIOD);
 				ClockModel jc = getClockModel(Clock.ID_JAM);
 				ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
@@ -179,6 +182,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 				getTeamModel("1").startJam();
 				getTeamModel("2").startJam();
+				requestBatchEnd();
 			}
 		}
 	}
@@ -194,10 +198,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void timeout(TeamModel team) { timeout(team, false); }
 	public void timeout(TeamModel team, boolean review) {
 		synchronized (runLock) {
-			ScoreBoardManager.requestStartBatchChanges();
+			requestBatchStart();
 			setTimeoutOwner(null==team?"":team.getId());
 			setOfficialReview(review);
-			ScoreBoardManager.requestEndBatchChanges();
 			if (!getClockModel(Clock.ID_TIMEOUT).isRunning()) {
 //FIXME - change to policy?
 				getClockModel(Clock.ID_PERIOD).stop();
@@ -207,11 +210,13 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				getClockModel(Clock.ID_TIMEOUT).resetTime();
 				getClockModel(Clock.ID_TIMEOUT).start();
 			}
+			requestBatchEnd();
 		}
 	}
 
 	public void unStartJam() {
 		synchronized (runLock) {
+			requestBatchStart();
 			if (!getClock(Clock.ID_JAM).isRunning())
 				return;
 
@@ -224,19 +229,23 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			getClockModel(Clock.ID_JAM).unstart();
 			getTeamModel("1").unStartJam();
 			getTeamModel("2").unStartJam();
+			requestBatchEnd();
 		}
 	}
 	public void unStopJam() {
 		synchronized (runLock) {
+			requestBatchStart();
 			if (getClock(Clock.ID_JAM).isRunning())
 				return;
 
 			getClockModel(Clock.ID_LINEUP).stop();
 			getClockModel(Clock.ID_JAM).unstop();
+			requestBatchEnd();
 		}
 	}
 	public void unTimeout() {
 		synchronized (runLock) {
+			requestBatchStart();
 			if (!getClock(Clock.ID_TIMEOUT).isRunning())
 				return;
 
@@ -246,6 +255,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				getClockModel(Clock.ID_JAM).unstop();
 			getClockModel(Clock.ID_PERIOD).unstop();
 			getClockModel(Clock.ID_TIMEOUT).unstart();
+			requestBatchEnd();
 		}
 	}
 

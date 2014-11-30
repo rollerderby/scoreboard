@@ -62,7 +62,15 @@ public class XmlDocumentEditor
 	}
 
 	public boolean isEmptyDocument(Document d) {
-		return !(d.hasRootElement() && (d.getRootElement().getChildren().size() > 0));
+		Element root = d.getRootElement();
+		if (root == null)
+			return true;
+		if (root.getChildren().size() == 0)
+			return true;
+		Element scoreboard = getElement(root, "ScoreBoard");
+		if (scoreboard != null)
+			return scoreboard.getChildren().size() == 0;
+		return false;
 	}
 
 	public Element addElement(Element parent, String name) {

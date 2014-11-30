@@ -13,7 +13,9 @@ import java.util.concurrent.*;
 
 import org.jdom.*;
 
-public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListener implements XmlScoreBoardListener, XmlScoreBoardBatchListener
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+
+public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListener implements XmlScoreBoardListener
 {
 	public SleepingQueueXmlScoreBoardListener() { super(); }
 	public SleepingQueueXmlScoreBoardListener(XmlScoreBoard sb) { super(sb); }
@@ -21,8 +23,9 @@ public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListen
 	public void xmlChange(Document d) {
 		synchronized (documentsLock) {
 			super.xmlChange(d);
-			if (!isEmpty() && batchDepth < 1)
+			if (!isEmpty() && !isBatchActive()) {
 				documentsLock.notifyAll();
+			}
 		}
 	}
 
@@ -33,33 +36,9 @@ public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListen
 				if (isEmpty())
 					documentsLock.wait(timeout);
 			} catch ( InterruptedException iE ) { }
+			if (isBatchActive())
+				return null;
 			return super.getNextDocument();
 		}
 	}
-
-	public void startBatch() {
-		synchronized (documentsLock) {
-			batchDepth++;
-		}
-	}
-
-	public boolean endBatch(boolean force) {
-		synchronized (documentsLock) {
-			batchDepth--;
-			if (batchDepth < 1 || force) {
-				releaseBatch();
-			}
-			return batchDepth == 0;
-		}
-	}
-
-	private void releaseBatch() {
-		synchronized (documentsLock) {
-			batchDepth = 0;
-			if (!isEmpty())
-				documentsLock.notifyAll();
-		}
-	}
-
-	protected int batchDepth = 0;
 }

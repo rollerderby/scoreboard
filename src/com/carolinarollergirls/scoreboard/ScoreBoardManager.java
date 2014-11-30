@@ -76,14 +76,6 @@ public class ScoreBoardManager
 		viewers.put(sbV.getClass().getName(), sbV);
 	}
 
-	public static void requestStartBatchChanges() {
-		scoreBoardModel.getXmlScoreBoard().requestStartBatchChanges();
-	}
-
-	public static void requestEndBatchChanges() {
-		scoreBoardModel.getXmlScoreBoard().requestEndBatchChanges();
-	}
-
 	private static void parseArgv(String[] argv) {
 		boolean gui = false;
 

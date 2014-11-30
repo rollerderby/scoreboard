@@ -59,4 +59,7 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
   protected String property;
   protected Object value;
   protected Object previousValue;
+
+  public static final String BATCH_START = "Batch Start";
+  public static final String BATCH_END = "Batch End";
 }

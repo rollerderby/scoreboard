@@ -45,11 +45,33 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 		return oldDoc;
 	}
 
+	private void batchStart() {
+		Element root = document.getRootElement();
+		String b = root.getAttributeValue("BATCH_START");
+		if (b == null)
+			b = "";
+		b = b + "X";
+		root.setAttribute("BATCH_START", b);
+	}
+
+	private void batchEnd() {
+		Element root = document.getRootElement();
+		String b = root.getAttributeValue("BATCH_END");
+		if (b == null)
+			b = "";
+		b = b + "X";
+		root.setAttribute("BATCH_END", b);
+	}
+
 	public void scoreBoardChange(ScoreBoardEvent event) {
 		ScoreBoardEventProvider p = event.getProvider();
 		String prop = event.getProperty();
 		String v = (event.getValue()==null?null:event.getValue().toString());
-		if (p.getProviderName().equals("ScoreBoard")) {
+		if (prop.equals(ScoreBoardEvent.BATCH_START)) {
+			batchStart();
+		} else if (prop.equals(ScoreBoardEvent.BATCH_END)) {
+			batchEnd();
+		} else if (p.getProviderName().equals("ScoreBoard")) {
 			if (prop.equals(ScoreBoard.EVENT_ADD_CLOCK)) {
 				converter.toElement(getScoreBoardElement(), (Clock)event.getValue());
 			} else if (prop.equals(ScoreBoard.EVENT_REMOVE_CLOCK)) {
@@ -120,7 +142,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 					Clock c = (Clock)p;
 					long time = ((Long)event.getValue()).longValue();
 					long prevTime = ((Long)event.getPreviousValue()).longValue();
-					if (time/1000 != prevTime/1000 || c.isTimeAtStart(time) || c.isTimeAtEnd(time))
+					if (time % 1000 == 0)
 						editor.setPI(e, "TimeUpdate", "sec");
 					else
 						editor.setPI(e, "TimeUpdate", "ms");

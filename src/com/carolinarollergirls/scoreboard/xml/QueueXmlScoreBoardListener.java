@@ -13,6 +13,8 @@ import java.util.concurrent.*;
 
 import org.jdom.*;
 
+import com.carolinarollergirls.scoreboard.*;
+
 public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener implements XmlScoreBoardListener
 {
 	public QueueXmlScoreBoardListener() { }
