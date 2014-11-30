@@ -170,9 +170,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			setTime(getMinimumTime());
 	}
 	protected long checkNewTime(long ms) {
-		if (ms < minimumTime)
+		if (ms < minimumTime && minimumTime - ms > 500)
 			return minimumTime;
-		else if (ms > maximumTime)
+		else if (ms > maximumTime && ms - maximumTime > 500)
 			return maximumTime;
 		else
 			return ms;
@@ -247,39 +247,19 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				return;
 
 			isRunning = true;
-			waitingForStart = true;
 			unstartTime = getTime();
 
-			long now = System.currentTimeMillis();
-			long delayStartTime = 0;
-			if (isSyncTime()) {
-				// This syncs all the clocks to change second at the same time
-				long timeMs = unstartTime % 1000;
-				long nowMs = now % 1000;
-				if (countDown)
-					timeMs = (1000 - timeMs) % 1000;
-				long delay = timeMs - nowMs;
-				if (Math.abs(delay) >= 500)
-					delay = (long)(Math.signum((float)-delay) * (1000 - Math.abs(delay)));
-				lastTime = now + delay;
-				delayStartTime = Math.max(0, delay);
-			} else {
-				lastTime = now;
-			}
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.TRUE, Boolean.FALSE));
-			timer.schedule(new StartTimerTask(), delayStartTime);
+			updateClockTimerTask.addClock(this);
 		}
 	}
 	public void stop() {
 		synchronized (timeLock) {
-			if (waitingForStart)
-				try { timeLock.wait(2000); } catch ( InterruptedException iE ) { }
-
 			if (!isRunning())
 				return;
 
 			isRunning = false;
-			timerTask.cancel();
+			updateClockTimerTask.removeClock(this);
 			unstopLastTime = lastTime;
 			unstopTime = getTime();
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.FALSE, Boolean.TRUE));
@@ -306,22 +286,12 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 	}
 
-	protected void startTimer() {
-		synchronized (timeLock) {
-			timerTask = new UpdateClockTimerTask();
-			timer.scheduleAtFixedRate(timerTask, CLOCK_UPDATE_INTERVAL, CLOCK_UPDATE_INTERVAL);
-			waitingForStart = false;
-			timeLock.notifyAll();
-		}
-	}
-	protected void timerTick() {
+	protected void timerTick(long delta) {
 		if (!isRunning())
 			return;
 
-		long change = System.currentTimeMillis() - lastTime;
-		lastTime += change;
-
-		_changeTime(countDown?-change:change, false);
+		lastTime += delta;
+		_changeTime(countDown?-delta:delta, false);
 	}
 
 	protected boolean isSyncTime() {
@@ -341,10 +311,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	protected long maximumTime;
 	protected boolean countDown;
 
-	protected Timer timer = new Timer();
-	protected TimerTask timerTask;
 	protected long lastTime;
-	protected boolean waitingForStart = false;
 	protected boolean isRunning = false;
 
 	protected long unstartTime = 0;
@@ -355,7 +322,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	protected Object numberLock = new Object();
 	protected Object timeLock = new Object();
 
-	protected static final long CLOCK_UPDATE_INTERVAL = 50; /* in ms */
+	protected static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
+
+	protected static final long CLOCK_UPDATE_INTERVAL = 100; /* in ms */
 
 	public static final int DEFAULT_MINIMUM_NUMBER = 1;
 	public static final int DEFAULT_MAXIMUM_NUMBER = 999;
@@ -363,24 +332,72 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public static final long DEFAULT_MAXIMUM_TIME = 3600000;
 	public static final boolean DEFAULT_DIRECTION = false;
 
-	protected class StartTimerTask extends TimerTask {
-		public void run() {
-			DefaultClockModel.this.startTimer();
+	protected static class UpdateClockTimerTask extends TimerTask {
+		public UpdateClockTimerTask() {
+			timer.scheduleAtFixedRate(this, DefaultClockModel.CLOCK_UPDATE_INTERVAL, DefaultClockModel.CLOCK_UPDATE_INTERVAL);
 		}
-	}
-	protected class UpdateClockTimerTask extends TimerTask {
-		public void run() {
-			synchronized (DefaultClockModel.this.timeLock) {
-				if (running)
-					DefaultClockModel.this.timerTick();
+
+		public void schedule(TimerTask task, long delay) {
+			timer.schedule(task, delay);
+		}
+
+		public void addClock(DefaultClockModel c) {
+			synchronized (clockLock) {
+				long delayStartTime = 0;
+				if (c.isSyncTime()) {
+					// This syncs all the clocks to change second at the same time
+					long timeMs = c.unstartTime % 1000;
+					long nowMs = currentTime % 1000;
+					if (c.countDown)
+						timeMs = (1000 - timeMs) % 1000;
+					long delay = timeMs - nowMs;
+					if (Math.abs(delay) >= 500)
+						delay = (long)(Math.signum((float)-delay) * (1000 - Math.abs(delay)));
+					c.lastTime = currentTime;
+					if (c.countDown)
+						delay = -delay;
+					c.time = c.unstartTime - delay;
+				} else {
+					c.lastTime = currentTime;
+				}
+				clocks.add(c);
 			}
 		}
-		public boolean cancel() {
-			synchronized (DefaultClockModel.this.timeLock) {
-				running = false;
+
+		public void removeClock(DefaultClockModel c) {
+			synchronized (clockLock) {
+				clocks.remove(c);
 			}
-			return super.cancel();
 		}
-		protected boolean running = true;
+
+		public void run() {
+			Iterator<DefaultClockModel> i;
+			ArrayList<DefaultClockModel> clocks;
+			synchronized (clockLock) {
+				currentTime += DefaultClockModel.CLOCK_UPDATE_INTERVAL;
+				clocks = new ArrayList<DefaultClockModel>(this.clocks);
+			}
+			DefaultClockModel clock;
+			i = clocks.iterator();
+			while (i.hasNext()) {
+				clock = i.next();
+				clock.requestBatchStart();
+			}
+			i = clocks.iterator();
+			while (i.hasNext()) {
+				clock = i.next();
+				clock.timerTick(DefaultClockModel.CLOCK_UPDATE_INTERVAL);
+			}
+			i = clocks.iterator();
+			while (i.hasNext()) {
+				clock = i.next();
+				clock.requestBatchEnd();
+			}
+		}
+
+		private long currentTime = 0;
+		protected static Timer timer = new Timer();
+		protected Object clockLock = new Object();
+		ArrayList<DefaultClockModel> clocks = new ArrayList<DefaultClockModel>();
 	}
 }
