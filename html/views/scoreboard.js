@@ -38,10 +38,9 @@ var animateTime = {
 // Main setup function
 $sb(function() {
 	var minAnimations = _windowFunctions.getParam("minAnimations");
-	console.log(minAnimations);
-	if (isTrue(minAnimations)) {
+	if (isTrue(minAnimations))
 		$("body").addClass("MinAnimations");
-	}
+
 	setupMainDiv($("#mainDiv")); // This needs to be part of scoreboard framework
 	var sbViewOptions = $sbThisPage.$sb("ViewOptions");
 	if (_windowFunctions.checkParam("preview", "true"))
