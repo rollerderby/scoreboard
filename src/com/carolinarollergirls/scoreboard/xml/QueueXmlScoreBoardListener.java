@@ -38,6 +38,8 @@ public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener impl
 
 	public Document getNextDocument() {
 		synchronized (documentsLock) {
+			if (isBatchActive())
+				return null;
 			return documents.poll();
 		}
 	}

@@ -33,11 +33,9 @@ public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListen
 	public Document getNextDocument(int timeout) {
 		synchronized (documentsLock) {
 			try {
-				if (isEmpty())
+				if (isEmpty() || isBatchActive())
 					documentsLock.wait(timeout);
 			} catch ( InterruptedException iE ) { }
-			if (isBatchActive())
-				return null;
 			return super.getNextDocument();
 		}
 	}

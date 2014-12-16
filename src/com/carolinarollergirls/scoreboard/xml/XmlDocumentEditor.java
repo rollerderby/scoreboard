@@ -67,7 +67,7 @@ public class XmlDocumentEditor
 			return true;
 		if (root.getChildren().size() == 0)
 			return true;
-		Element scoreboard = getElement(root, "ScoreBoard");
+		Element scoreboard = getElement(root, "ScoreBoard", null, false);
 		if (scoreboard != null)
 			return scoreboard.getChildren().size() == 0;
 		return false;
