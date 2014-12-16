@@ -37,8 +37,8 @@ var animateTime = {
 
 // Main setup function
 $sb(function() {
-	var minAnimations = _windowFunctions.getParam("minAnimations");
-	if (isTrue(minAnimations))
+	var ani = _windowFunctions.getParam("ani");
+	if (ani == "min")
 		$("body").addClass("MinAnimations");
 
 	setupMainDiv($("#mainDiv")); // This needs to be part of scoreboard framework
