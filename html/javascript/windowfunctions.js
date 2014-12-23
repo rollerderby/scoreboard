@@ -143,5 +143,35 @@ _windowFunctions = {
 	},
 	numCompareByData: function(n, a, b) {
 		return _windowFunctions.numCompare($(a).data(n), $(b).data(n));
-	}
+	},
+	fullscreenRequest: function(a) {
+		var isFullscreen = false;
+		if (document.fullscreen) isFullscreen = true;
+		if (document.mozFullScreen) isFullscreen = true;
+		if (document.webkitIsFullScreen) isFullscreen = true;
+		if (document.msFullscreenElement) isFullscreen = true;
+
+		var docElem = document.documentElement;
+		if (!isFullscreen && (a == true || a == null)) {
+			if (docElem.requestFullscreen) {
+				docElem.requestFullscreen();
+			} else if (docElem.mozRequestFullScreen) {
+				docElem.mozRequestFullScreen();
+			} else if (docElem.webkitRequestFullScreen) {
+				docElem.webkitRequestFullScreen();
+			} else if (docElem.msRequestFullscreen) {
+				docElem.msRequestFullscreen();
+			}
+		} else if (isFullscreen && (a == false || a == null)) {
+			if (document.exitFullscreen) {
+				document.exitFullscreen();
+			} else if (document.mozCancelFullScreen) {
+				document.mozCancelFullScreen();
+			} else if (document.webkitCancelFullScreen) {
+				document.webkitCancelFullScreen();
+			} else if (document.msExitFullscreen) {
+				document.msExitFullscreen();
+			}
+		}
+	},
 };

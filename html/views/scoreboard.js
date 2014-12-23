@@ -105,38 +105,8 @@ $sb(function() {
 // FIXME - needs to be a single call from scoreboard.js
 function setupMainDiv(div) {
  	div.css({ position: "fixed" });
-
-	var fullScreenFunc = function() {
-		var isFullscreen = false;
-		if (document.fullscreen) isFullscreen = true;
-		if (document.mozFullScreen) isFullscreen = true;
-		if (document.webkitIsFullScreen) isFullscreen = true;
-		if (document.msFullscreenElement) isFullscreen = true;
-
-		var docElem = document.documentElement;
-		if (!isFullscreen) {
-			if (docElem.requestFullscreen) {
-				docElem.requestFullscreen();
-			} else if (docElem.mozRequestFullScreen) {
-				docElem.mozRequestFullScreen();
-			} else if (docElem.webkitRequestFullScreen) {
-				docElem.webkitRequestFullScreen();
-			} else if (docElem.msRequestFullscreen) {
-				docElem.msRequestFullscreen();
-			}
-		} else {
-			if (document.exitFullscreen) {
-				document.exitFullscreen();
-			} else if (document.mozCancelFullScreen) {
-				document.mozCancelFullScreen();
-			} else if (document.webkitCancelFullScreen) {
-				document.webkitCancelFullScreen();
-			} else if (document.msExitFullscreen) {
-				document.msExitFullscreen();
-			}
-		}
-	};
-	div.bind("click", fullScreenFunc);
+	div.bind("click", function() { _windowFunctions.fullscreenRequest(true); });
+	div.bind("dblclick", function() { _windowFunctions.fullscreenRequest(false); });
  
  	_crgUtils.bindAndRun($(window), "resize", function() {
 		var aspect = _windowFunctions.get4x3Dimensions();
