@@ -2,4 +2,4 @@
 
 cd "$1/.."
 
-java -jar lib/crg-scoreboard.jar --gui &
+/usr/libexec/java_home --exec java -jar lib/crg-scoreboard.jar --gui &
