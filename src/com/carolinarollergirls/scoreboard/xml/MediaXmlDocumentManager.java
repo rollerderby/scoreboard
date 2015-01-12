@@ -25,7 +25,7 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 {
 	public MediaXmlDocumentManager(String n, String m) {
 		super(n);
-		managedDir = new File(htmlDirName, getManagedDirName());
+		managedDir = new File(new File(ScoreBoardManager.getDefaultPath(), htmlDirName), getManagedDirName());
 		mediaName = m;
 	}
 

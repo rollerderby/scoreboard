@@ -208,7 +208,7 @@ public class XmlScoreBoard
 	}
 
 	protected void loadDefaultDocuments() {
-		File initialDocumentDir = new File(ScoreBoardManager.getProperties().getProperty(DOCUMENT_DIR_KEY, DEFAULT_DIRECTORY_NAME));
+		File initialDocumentDir = new File(ScoreBoardManager.getDefaultPath(), ScoreBoardManager.getProperties().getProperty(DOCUMENT_DIR_KEY, DEFAULT_DIRECTORY_NAME));
 		if (!initialDocumentDir.isDirectory()) {
 			ScoreBoardManager.printMessage("Initial XML document directory '"+initialDocumentDir.getPath()+"' does not exist.");
 			return;
