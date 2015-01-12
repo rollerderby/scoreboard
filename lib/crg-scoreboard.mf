@@ -1,6 +1,6 @@
 Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.7.1
-Created-By: 14.0-b16 (Sun Microsystems Inc.)
-Main-Class: com.carolinarollergirls.scoreboard.ScoreBoardManager
+Ant-Version: Apache Ant 1.9.4
+Created-By: 1.8.0_25-b17 (Oracle Corporation)
+Main-Class: com.carolinarollergirls.scoreboard.Main
 Class-Path: .
 
