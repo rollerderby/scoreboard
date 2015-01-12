@@ -142,7 +142,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 					Clock c = (Clock)p;
 					long time = ((Long)event.getValue()).longValue();
 					long prevTime = ((Long)event.getPreviousValue()).longValue();
-					if (time % 1000 == 0)
+					if (time % 1000 == 0 || Math.abs(prevTime - time) >= 1000)
 						editor.setPI(e, "TimeUpdate", "sec");
 					else
 						editor.setPI(e, "TimeUpdate", "ms");
