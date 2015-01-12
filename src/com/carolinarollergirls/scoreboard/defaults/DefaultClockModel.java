@@ -336,8 +336,14 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public static final boolean DEFAULT_DIRECTION = false;
 
 	protected static class UpdateClockTimerTask extends TimerTask {
+		public static final String PROPERTY_INTERVAL_KEY = DefaultClockModel.class.getName() + ".interval";
+
 		public UpdateClockTimerTask() {
-			timer.scheduleAtFixedRate(this, DefaultClockModel.CLOCK_UPDATE_INTERVAL, DefaultClockModel.CLOCK_UPDATE_INTERVAL);
+			long update_interval = DefaultClockModel.CLOCK_UPDATE_INTERVAL;
+			try {
+			        update_interval = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_INTERVAL_KEY));
+			} catch ( Exception e ) { }
+			timer.scheduleAtFixedRate(this, update_interval, update_interval);
 		}
 
 		public void schedule(TimerTask task, long delay) {
