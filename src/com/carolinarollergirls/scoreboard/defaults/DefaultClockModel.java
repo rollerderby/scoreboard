@@ -242,6 +242,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public boolean isRunning() { return isRunning; }
 
 	public void start() {
+		start(false);
+	}
+	public void start(boolean quickAdd) {
 		synchronized (timeLock) {
 			if (isRunning())
 				return;
@@ -250,7 +253,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			unstartTime = getTime();
 
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.TRUE, Boolean.FALSE));
-			updateClockTimerTask.addClock(this);
+			updateClockTimerTask.addClock(this, quickAdd);
 		}
 	}
 	public void stop() {
@@ -280,9 +283,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				return;
 
 			setTime(unstopTime);
-			long change = System.currentTimeMillis() - unstopLastTime;
+			long change = updateClockTimerTask.getCurrentTime() - unstopLastTime;
 			changeTime(countDown?-change:change);
-			start();
+			start(true);
 		}
 	}
 
@@ -341,10 +344,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			timer.schedule(task, delay);
 		}
 
-		public void addClock(DefaultClockModel c) {
+		public void addClock(DefaultClockModel c, boolean quickAdd) {
 			synchronized (clockLock) {
 				long delayStartTime = 0;
-				if (c.isSyncTime()) {
+				if (c.isSyncTime() && !quickAdd) {
 					// This syncs all the clocks to change second at the same time
 					long timeMs = c.unstartTime % 1000;
 					long nowMs = currentTime % 1000;
@@ -393,6 +396,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				clock = i.next();
 				clock.requestBatchEnd();
 			}
+		}
+
+		public long getCurrentTime() {
+			return currentTime;
 		}
 
 		private long currentTime = 0;
