@@ -10,8 +10,6 @@ package com.carolinarollergirls.scoreboard.model;
 
 import java.util.*;
 
-import java.awt.image.*;
-
 import com.carolinarollergirls.scoreboard.*;
 
 public interface ScoreBoardModel extends ScoreBoard

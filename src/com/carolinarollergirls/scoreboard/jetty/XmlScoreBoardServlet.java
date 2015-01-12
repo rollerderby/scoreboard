@@ -12,10 +12,6 @@ import java.io.*;
 import java.lang.reflect.*;
 import java.util.*;
 import java.util.concurrent.*;
-import java.awt.*;
-import java.awt.image.*;
-
-import javax.imageio.*;
 
 import javax.servlet.*;
 import javax.servlet.http.*;

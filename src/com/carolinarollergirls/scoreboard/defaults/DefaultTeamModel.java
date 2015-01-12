@@ -11,8 +11,6 @@ package com.carolinarollergirls.scoreboard.defaults;
 import java.util.*;
 import java.util.concurrent.*;
 
-import java.awt.image.*;
-
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.model.*;

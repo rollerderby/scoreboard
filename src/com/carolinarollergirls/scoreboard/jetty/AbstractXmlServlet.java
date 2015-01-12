@@ -14,8 +14,6 @@ import java.util.*;
 import java.util.concurrent.*;
 import java.text.*;
 
-import javax.imageio.*;
-
 import javax.servlet.*;
 import javax.servlet.http.*;
 

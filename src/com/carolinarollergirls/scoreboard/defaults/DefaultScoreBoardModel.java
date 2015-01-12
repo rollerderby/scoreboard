@@ -12,10 +12,6 @@ import java.util.*;
 
 import java.io.*;
 
-import java.awt.image.*;
-
-import javax.imageio.*;
-
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 import com.carolinarollergirls.scoreboard.event.*;
