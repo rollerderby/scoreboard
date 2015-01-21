@@ -25,7 +25,4 @@ public interface SkaterModel extends Skater
 	public void setLeadJammer(boolean lead);
 
 	public void setPenaltyBox(boolean box);
-
-	public void setPass(int pass);
-	public void changePass(int change);
 }

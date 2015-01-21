@@ -94,7 +94,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
 		editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
 		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
-		editor.setElement(e, Team.EVENT_PASS, null, String.valueOf(t.getPass()));
+		editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
 
 		Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
 		while (alternateNames.hasNext())
@@ -172,7 +172,6 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
 		editor.setElement(e, Skater.EVENT_LEAD_JAMMER, null, String.valueOf(s.isLeadJammer()));
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
-		editor.setElement(e, Skater.EVENT_PASS, null, String.valueOf(s.getPass()));
 
 		return e;
 	}
@@ -351,10 +350,8 @@ public class ScoreBoardXmlConverter
 					teamModel.setOfficialReviews(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_LEAD_JAMMER))
 					teamModel.setLeadJammer(Boolean.parseBoolean(value));
-				else if (name.equals(Team.EVENT_PASS) && isChange)
-					teamModel.changePass(Integer.parseInt(value));
-				else if (name.equals(Team.EVENT_PASS) && !isChange)
-					teamModel.setPass(Integer.parseInt(value));
+				else if (name.equals(Team.EVENT_STAR_PASS))
+					teamModel.setStarPass(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}
@@ -525,10 +522,6 @@ public class ScoreBoardXmlConverter
 					skaterModel.setLeadJammer(Boolean.parseBoolean(value));
 				else if (name.equals(Skater.EVENT_PENALTY_BOX))
 					skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
-				else if (name.equals(Skater.EVENT_PASS) && isChange)
-					skaterModel.changePass(Integer.parseInt(value));
-				else if (name.equals(Skater.EVENT_PASS) && !isChange)
-					skaterModel.setPass(Integer.parseInt(value));
 			} catch ( Exception e ) {
 			}
 		}

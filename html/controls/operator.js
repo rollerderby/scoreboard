@@ -162,7 +162,7 @@ function createMetaControlTable() {
 	var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
 		.appendTo(selectJammerSpan).button();
 	_crgUtils.bindAndRun(selectByButton, "click", function() {
-		$("#TeamTime table.Team td.Jammer")
+		$("#TeamTime table.Team td.Jammer, #TeamTime table.Team td.Pivot")
 			.toggleClass("ByNumber", !this.checked)
 			.toggleClass("ByName", this.checked);
 		$(this).button("option", "label", (this.checked?"Select Jammer by Name":"Select Jammer by Number"));
@@ -172,7 +172,7 @@ function createMetaControlTable() {
 	var selectSortButton = $("<input type='checkbox'>").attr("id", "SelectJammerSort")
 		.appendTo(selectJammerSpan).button();
 	_crgUtils.bindAndRun(selectSortButton, "click", function() {
-		$("#TeamTime table.Team td.Jammer")
+		$("#TeamTime table.Team td.Jammer, #TeamTime table.Team td.Pivot")
 			.toggleClass("NumSort", this.checked)
 			.toggleClass("AlphaSort", !this.checked);
 		$(this).button("option", "label", (this.checked?"Numerically":"Alphabetically"));
@@ -339,8 +339,8 @@ function createTeamTable() {
 	var nameRow = row.clone().addClass("Name").appendTo(table);
 	var scoreRow = row.clone().addClass("Score").appendTo(table);
 	var timeoutRow = row.clone().addClass("Timeout").appendTo(table);
-	var jammerRow = row.clone().addClass("Jammer").appendTo(table);
-	var passRow = row.clone().addClass("Pass").appendTo(table);
+	var jammer1Row = row.clone().addClass("Jammer").appendTo(table);
+	var jammer2Row = row.clone().addClass("Jammer").appendTo(table);
 
 	$.each( [ "1", "2" ], function() {
 		var team = String(this);
@@ -350,8 +350,8 @@ function createTeamTable() {
 		var nameTr = createRowTable(2).appendTo($("<td>").appendTo(nameRow)).find("tr");
 		var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
 		var timeoutTr = createRowTable(4).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
-		var jammerTr = createRowTable(2).appendTo($("<td>").appendTo(jammerRow)).find("tr");
-		var passTr = createRowTable(3).appendTo($("<td>").appendTo(passRow)).find("tr");
+		var jammer1Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer1Row)).find("tr");
+		var jammer2Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer2Row)).find("tr");
 
 		var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
 		var nameDisplayDiv = $("<div>").appendTo(nameTd);
@@ -535,7 +535,7 @@ function createTeamTable() {
 				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"0")+")")
 			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"0")+")").addClass("OfficialReviews"));
 
-		var leadJammerTd = jammerTr.children("td:eq("+(first?"0":"1")+")")
+		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")")
 			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='true'/>")
 			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No Lead</label><input type='radio' value='false'/>");
 		sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
@@ -544,53 +544,40 @@ function createTeamTable() {
 		 * so need to explicitly specify to style the buttonset as ltr
 		 */
 		leadJammerTd.css("direction", "ltr").buttonset();
-		var jammerSelectTd = jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByNumber AlphaSort");
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Name",
-				compareOptions: function(a, b) { return _windowFunctions.alphaCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByName AlphaSort")
-				.appendTo(jammerSelectTd);
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Number",
-				compareOptions: function(a, b) { return _windowFunctions.alphaCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByNumber AlphaSort")
-				.appendTo(jammerSelectTd);
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Name",
-				compareOptions: function(a, b) { return _windowFunctions.numCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByName NumSort")
-				.appendTo(jammerSelectTd);
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Number",
-				compareOptions: function(a, b) { return _windowFunctions.numCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByNumber NumSort")
-				.appendTo(jammerSelectTd);
 
-		sbTeam.$sb("Pass").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Pass -1").val("-1")
-			.attr("id", "Team"+team+"PassDown").addClass("KeyControl").button()
-			.appendTo(passTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
-		sbTeam.$sb("Pass").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: passTr.children("td:eq(1)")
-			} }).appendTo(passTr.children("td:eq(1)").addClass("Pass"));
-		sbTeam.$sb("Pass").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Pass +1").val("1")
-			.attr("id", "Team"+team+"PassUp").addClass("KeyControl").button()
-			.appendTo(passTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
+		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")")
+			.append("<label id='Team"+team+"StarPass' class='StarPass'>Star Pass</label><input type='radio' value='true'/>")
+			[first?"append":"prepend"]("<label id='Team"+team+"NoStarPass' class='NoStarPass'>No Star Pass</label><input type='radio' value='false'/>");
+		sbTeam.$sb("StarPass").$sbControl(leadJammerTd.children())
+			.addClass("KeyControl");
+		/* some strange bug, css direction is unset for leadJammerTd
+		 * so need to explicitly specify to style the buttonset as ltr
+		 */
+		leadJammerTd.css("direction", "ltr").buttonset();
 
+		var makeSkaterDropdown = function(pos, elem, sort) {
+			var sortFunc = _windowFunctions.alphaCompareByProp;
+			if (sort == "Num") sortFunc = _windowFunctions.numCompareByProp;
+			return sbTeam.$sb("Position("+pos+").Id").$sbControl("<select>", { sbelement: {
+					optionParent: sbTeam,
+					optionChildName: "Skater",
+					optionNameElement: elem,
+					compareOptions: function(a, b) { return sortFunc("text", a, b); },
+					firstOption: { text: "No "+pos, value: "" }
+				} }).addClass(pos+" By"+elem+" "+sort+"Sort");
+		};
+
+		var jammerSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByNumber AlphaSort");
+		makeSkaterDropdown("Jammer", "Name", "Alpha").appendTo(jammerSelectTd);
+		makeSkaterDropdown("Jammer", "Number", "Alpha").appendTo(jammerSelectTd);
+		makeSkaterDropdown("Jammer", "Name", "Num").appendTo(jammerSelectTd);
+		makeSkaterDropdown("Jammer", "Number", "Num").appendTo(jammerSelectTd);
+
+		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")").addClass("Pivot ByNumber AlphaSort");
+		makeSkaterDropdown("Pivot", "Name", "Alpha").appendTo(pivotSelectTd);
+		makeSkaterDropdown("Pivot", "Number", "Alpha").appendTo(pivotSelectTd);
+		makeSkaterDropdown("Pivot", "Name", "Num").appendTo(pivotSelectTd);
+		makeSkaterDropdown("Pivot", "Number", "Num").appendTo(pivotSelectTd);
 	});
 
 	return table;

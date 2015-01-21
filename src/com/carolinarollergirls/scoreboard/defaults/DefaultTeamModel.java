@@ -49,7 +49,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		setTimeouts(DEFAULT_TIMEOUTS);
 		setOfficialReviews(DEFAULT_OFFICIAL_REVIEWS);
 		setLeadJammer(DEFAULT_LEADJAMMER);
-		setPass(DEFAULT_PASS);
+		setStarPass(DEFAULT_STARPASS);
 		removeAlternateNameModels();
 		removeColorModels();
 		Iterator<PositionModel> p = getPositionModels().iterator();
@@ -317,23 +317,13 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 
-	public int getPass() { return pass; }
-	public void setPass(int pass) {
+	public boolean isStarPass() { return starPass; }
+	public void setStarPass(boolean starPass) {
 		synchronized (skaterLock) {
-			try { getPositionModel(Position.ID_JAMMER).getSkaterModel().setPass(pass); }
-			catch ( NullPointerException npE ) { }
+			Boolean last = new Boolean(starPass);
+			this.starPass = starPass;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(starPass), last));
 		}
-	}
-	public void changePass(int change) {
-		synchronized (skaterLock) {
-			try { getPositionModel(Position.ID_JAMMER).getSkaterModel().changePass(change); }
-			catch ( NullPointerException npE ) { }
-		}
-	}
-	public void _setPass(int p) {
-		Integer last = new Integer(pass);
-		pass = p;
-		scoreBoardChange(new ScoreBoardEvent(this, EVENT_PASS, new Integer(pass), last));
 	}
 
 
@@ -354,7 +344,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected int officialReviews;
 	protected Object officialReviewsLock = new Object();
 	protected boolean leadJammer = false;
-	protected int pass = 0;
+	protected boolean starPass = false;
 
 	protected Map<String,AlternateNameModel> alternateNames = new ConcurrentHashMap<String,AlternateNameModel>();
 	protected Object alternateNameLock = new Object();
@@ -372,7 +362,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public static final int DEFAULT_TIMEOUTS = 3;
 	public static final int DEFAULT_OFFICIAL_REVIEWS = 1;
 	public static final boolean DEFAULT_LEADJAMMER = false;
-	public static final int DEFAULT_PASS = 0;
+	public static final boolean DEFAULT_STARPASS = false;
 
 	public class DefaultAlternateNameModel extends DefaultScoreBoardEventProvider implements AlternateNameModel
 	{
