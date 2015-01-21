@@ -241,6 +241,10 @@ public class ScoreBoardXmlConverter
 	public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {
 		String id = clock.getAttributeValue("Id");
 		ClockModel clockModel = scoreBoardModel.getClockModel(id);
+		boolean requestStart = false;
+		boolean requestStop = false;
+		boolean requestUnStart = false;
+		boolean requestUnStop = false;
 
 		Iterator children = clock.getChildren().iterator();
 		while (children.hasNext()) {
@@ -256,13 +260,13 @@ public class ScoreBoardXmlConverter
 				if ((null == value) && !isReset)
 					continue;
 				else if (name.equals("Start") && Boolean.parseBoolean(value))
-					clockModel.start();
+					requestStart = true;
 				else if (name.equals("Stop") && Boolean.parseBoolean(value))
-					clockModel.stop();
+					requestStop = true;
 				else if (name.equals("UnStart") && Boolean.parseBoolean(value))
-					clockModel.unstart();
+					requestUnStart = true;
 				else if (name.equals("UnStop") && Boolean.parseBoolean(value))
-					clockModel.unstop();
+					requestUnStop = true;
 				else if (name.equals("ResetTime") && Boolean.parseBoolean(value))
 					clockModel.resetTime();
 				else if (name.equals(Clock.EVENT_NAME))
@@ -290,14 +294,19 @@ public class ScoreBoardXmlConverter
 				else if (name.equals(Clock.EVENT_MAXIMUM_TIME))
 					clockModel.setMaximumTime(Long.parseLong(value));
 				else if (name.equals(Clock.EVENT_RUNNING) && Boolean.parseBoolean(value))
-					clockModel.start();
+					requestStart = true;
 				else if (name.equals(Clock.EVENT_RUNNING) && !Boolean.parseBoolean(value))
-					clockModel.stop();
+					requestStop = true;
 				else if (name.equals(Clock.EVENT_DIRECTION))
 					clockModel.setCountDirectionDown(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}
+		// Process start/stops at the end to allow setting of options (direction/min/max/etc) on load
+		if (requestStart) clockModel.start();
+		if (requestStop) clockModel.stop();
+		if (requestUnStart) clockModel.unstart();
+		if (requestUnStop) clockModel.unstop();
 	}
 
 	public void processTeam(ScoreBoardModel scoreBoardModel, Element team) {
