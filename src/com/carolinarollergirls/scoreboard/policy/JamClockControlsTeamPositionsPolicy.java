@@ -38,6 +38,7 @@ public class JamClockControlsTeamPositionsPolicy extends AbstractClockRunningCha
         while (skaters.hasNext())
           skaters.next().setLeadJammer(false);
         teamModel.setLeadJammer(false);
+	teamModel.setStarPass(false);
       }
     }
   }

@@ -68,10 +68,7 @@ public interface TeamModel extends Team
 	/* For internal use only */
 	public void _setLeadJammer(boolean lead);
 
-	public void setPass(int pass);
-	public void changePass(int change);
-	/* For internal use only */
-	public void _setPass(int pass);
+	public void setStarPass(boolean starPass);
 
 	public static interface AlternateNameModel extends AlternateName {
 		public void setName(String n);

@@ -94,7 +94,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
 		editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
 		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
-		editor.setElement(e, Team.EVENT_PASS, null, String.valueOf(t.getPass()));
+		editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
 
 		Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
 		while (alternateNames.hasNext())
@@ -172,7 +172,6 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
 		editor.setElement(e, Skater.EVENT_LEAD_JAMMER, null, String.valueOf(s.isLeadJammer()));
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
-		editor.setElement(e, Skater.EVENT_PASS, null, String.valueOf(s.getPass()));
 
 		return e;
 	}
@@ -242,6 +241,10 @@ public class ScoreBoardXmlConverter
 	public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {
 		String id = clock.getAttributeValue("Id");
 		ClockModel clockModel = scoreBoardModel.getClockModel(id);
+		boolean requestStart = false;
+		boolean requestStop = false;
+		boolean requestUnStart = false;
+		boolean requestUnStop = false;
 
 		Iterator children = clock.getChildren().iterator();
 		while (children.hasNext()) {
@@ -257,13 +260,13 @@ public class ScoreBoardXmlConverter
 				if ((null == value) && !isReset)
 					continue;
 				else if (name.equals("Start") && Boolean.parseBoolean(value))
-					clockModel.start();
+					requestStart = true;
 				else if (name.equals("Stop") && Boolean.parseBoolean(value))
-					clockModel.stop();
+					requestStop = true;
 				else if (name.equals("UnStart") && Boolean.parseBoolean(value))
-					clockModel.unstart();
+					requestUnStart = true;
 				else if (name.equals("UnStop") && Boolean.parseBoolean(value))
-					clockModel.unstop();
+					requestUnStop = true;
 				else if (name.equals("ResetTime") && Boolean.parseBoolean(value))
 					clockModel.resetTime();
 				else if (name.equals(Clock.EVENT_NAME))
@@ -291,14 +294,19 @@ public class ScoreBoardXmlConverter
 				else if (name.equals(Clock.EVENT_MAXIMUM_TIME))
 					clockModel.setMaximumTime(Long.parseLong(value));
 				else if (name.equals(Clock.EVENT_RUNNING) && Boolean.parseBoolean(value))
-					clockModel.start();
+					requestStart = true;
 				else if (name.equals(Clock.EVENT_RUNNING) && !Boolean.parseBoolean(value))
-					clockModel.stop();
+					requestStop = true;
 				else if (name.equals(Clock.EVENT_DIRECTION))
 					clockModel.setCountDirectionDown(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}
+		// Process start/stops at the end to allow setting of options (direction/min/max/etc) on load
+		if (requestStart) clockModel.start();
+		if (requestStop) clockModel.stop();
+		if (requestUnStart) clockModel.unstart();
+		if (requestUnStop) clockModel.unstop();
 	}
 
 	public void processTeam(ScoreBoardModel scoreBoardModel, Element team) {
@@ -351,10 +359,8 @@ public class ScoreBoardXmlConverter
 					teamModel.setOfficialReviews(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_LEAD_JAMMER))
 					teamModel.setLeadJammer(Boolean.parseBoolean(value));
-				else if (name.equals(Team.EVENT_PASS) && isChange)
-					teamModel.changePass(Integer.parseInt(value));
-				else if (name.equals(Team.EVENT_PASS) && !isChange)
-					teamModel.setPass(Integer.parseInt(value));
+				else if (name.equals(Team.EVENT_STAR_PASS))
+					teamModel.setStarPass(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}
@@ -525,10 +531,6 @@ public class ScoreBoardXmlConverter
 					skaterModel.setLeadJammer(Boolean.parseBoolean(value));
 				else if (name.equals(Skater.EVENT_PENALTY_BOX))
 					skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
-				else if (name.equals(Skater.EVENT_PASS) && isChange)
-					skaterModel.changePass(Integer.parseInt(value));
-				else if (name.equals(Skater.EVENT_PASS) && !isChange)
-					skaterModel.setPass(Integer.parseInt(value));
 			} catch ( Exception e ) {
 			}
 		}

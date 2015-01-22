@@ -302,6 +302,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		return (syncPolicy == null ? true : syncPolicy.isEnabled());
 	}
 
+	protected boolean isMasterClock() {
+		return id == ID_PERIOD || id == ID_TIMEOUT || id == ID_INTERMISSION;
+	}
+
 	protected ScoreBoardModel scoreBoardModel;
 
 	protected String id;
@@ -346,11 +350,21 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 		public void addClock(DefaultClockModel c, boolean quickAdd) {
 			synchronized (clockLock) {
+				if (c.isMasterClock()) {
+					masterClock = c;
+				}
 				long delayStartTime = 0;
 				if (c.isSyncTime() && !quickAdd) {
 					// This syncs all the clocks to change second at the same time
-					long timeMs = c.unstartTime % 1000;
+					// with respect to the master clock
 					long nowMs = currentTime % 1000;
+					if (masterClock != null) {
+						nowMs = masterClock.time % 1000;
+						if (masterClock.countDown)
+							nowMs = (1000 - nowMs) % 1000;
+					}
+
+					long timeMs = c.unstartTime % 1000;
 					if (c.countDown)
 						timeMs = (1000 - timeMs) % 1000;
 					long delay = timeMs - nowMs;
@@ -360,6 +374,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 					if (c.countDown)
 						delay = -delay;
 					c.time = c.unstartTime - delay;
+
+					// ScoreBoardManager.printMessage("Starting clock " + c.id + " @ " + c.time + " (" + c.unstartTime + ") with " + delay + " delay due to masterclock " + masterClock.id + " @ " + masterClock.time + " nowMs:" + nowMs + " timeMs:" + timeMs);
 				} else {
 					c.lastTime = currentTime;
 				}
@@ -405,6 +421,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		private long currentTime = 0;
 		protected static Timer timer = new Timer();
 		protected Object clockLock = new Object();
+		protected DefaultClockModel masterClock = null;
 		ArrayList<DefaultClockModel> clocks = new ArrayList<DefaultClockModel>();
 	}
 }
