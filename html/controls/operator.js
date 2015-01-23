@@ -545,15 +545,15 @@ function createTeamTable() {
 		 */
 		leadJammerTd.css("direction", "ltr").buttonset();
 
-		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")")
+		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")")
 			.append("<label id='Team"+team+"StarPass' class='StarPass'>Star Pass</label><input type='radio' value='true'/>")
 			[first?"append":"prepend"]("<label id='Team"+team+"NoStarPass' class='NoStarPass'>No Star Pass</label><input type='radio' value='false'/>");
-		sbTeam.$sb("StarPass").$sbControl(leadJammerTd.children())
+		sbTeam.$sb("StarPass").$sbControl(starPassTd.children())
 			.addClass("KeyControl");
-		/* some strange bug, css direction is unset for leadJammerTd
+		/* some strange bug, css direction is unset for starPassTd
 		 * so need to explicitly specify to style the buttonset as ltr
 		 */
-		leadJammerTd.css("direction", "ltr").buttonset();
+		starPassTd.css("direction", "ltr").buttonset();
 
 		var makeSkaterDropdown = function(pos, elem, sort) {
 			var sortFunc = _windowFunctions.alphaCompareByProp;
@@ -567,13 +567,13 @@ function createTeamTable() {
 				} }).addClass(pos+" By"+elem+" "+sort+"Sort");
 		};
 
-		var jammerSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByNumber AlphaSort");
+		var jammerSelectTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByNumber AlphaSort");
 		makeSkaterDropdown("Jammer", "Name", "Alpha").appendTo(jammerSelectTd);
 		makeSkaterDropdown("Jammer", "Number", "Alpha").appendTo(jammerSelectTd);
 		makeSkaterDropdown("Jammer", "Name", "Num").appendTo(jammerSelectTd);
 		makeSkaterDropdown("Jammer", "Number", "Num").appendTo(jammerSelectTd);
 
-		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")").addClass("Pivot ByNumber AlphaSort");
+		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot ByNumber AlphaSort");
 		makeSkaterDropdown("Pivot", "Name", "Alpha").appendTo(pivotSelectTd);
 		makeSkaterDropdown("Pivot", "Number", "Alpha").appendTo(pivotSelectTd);
 		makeSkaterDropdown("Pivot", "Name", "Num").appendTo(pivotSelectTd);
