@@ -84,6 +84,8 @@
 	<!-- Compile source files -->
 	<target name="compile" depends="-version,-manifest" >
 		<mkdir dir="${dest.dir}"/>
+		<mkdir dir="html/images/teamlogo" />
+		<mkdir dir="html/images/sponsor_banner" />
 		<javac srcdir="${src.dir}"
 			destdir="${dest.dir}"
 			deprecation="${compile.deprecation}"
@@ -182,8 +184,6 @@
 	<!-- Create zip file -->
 	<target name="zip" depends="clean,-version,compile" >
 		<mkdir dir="${release.dir}" />
-		<mkdir dir="html/images/teamlogo" />
-		<mkdir dir="html/images/sponsor_banner" />
 		<property name="zip.prefix" value="crg-scoreboard_${version}"/>
 		<zip destfile="${release.dir}/${zip.prefix}.zip" >
 			<zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
