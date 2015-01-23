@@ -69,13 +69,13 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
   #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2>div.Score,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1.SwapTeams>div.Score { top: 49%; left: 23%; right: 11%; height: 31.5%; border-radius: 12% / 25%; }
 
   /* Team Jammer sub-box */
-  #sbDiv>div.Team>div.Jammer { bottom: 0%; width: 90%; height: 18%; color: #FFFFFF; }
-  #sbDiv>div.Team1>div.Jammer,#sbDiv>div.Team2.SwapTeams>div.Jammer           { left: auto; right: 100%; animation: JammerHideLeft 0.5s; -moz-animation: JammerHideLeft 0.5s; -webkit-animation: JammerHideLeft 0.5s; }
-  #sbDiv>div.Team1>div.Jammer.Show,#sbDiv>div.Team2.SwapTeams>div.Jammer.Show { left: auto; right: 5%;   animation: JammerShowLeft 0.5s; -moz-animation: JammerShowLeft 0.5s; -webkit-animation: JammerShowLeft 0.5s; }
-  #sbDiv>div.Team2>div.Jammer,#sbDiv>div.Team1.SwapTeams>div.Jammer           { left: 100%; right: auto; animation: JammerHideRight 0.5s; -moz-animation: JammerHideRight 0.5s; -webkit-animation: JammerHideRight 0.5s; }
-  #sbDiv>div.Team2>div.Jammer.Show,#sbDiv>div.Team1.SwapTeams>div.Jammer.Show { left: 5%;   right: auto; animation: JammerShowRight 0.5s; -moz-animation: JammerShowRight 0.5s; -webkit-animation: JammerShowRight 0.5s; }
+  #sbDiv>div.Team>div.JammerBox { bottom: 0%; width: 90%; height: 18%; color: #FFFFFF; }
+  #sbDiv>div.Team1>div.JammerBox,#sbDiv>div.Team2.SwapTeams>div.JammerBox           { left: auto; right: 100%; animation: JammerHideLeft 0.5s; -moz-animation: JammerHideLeft 0.5s; -webkit-animation: JammerHideLeft 0.5s; }
+  #sbDiv>div.Team1>div.JammerBox.Show,#sbDiv>div.Team2.SwapTeams>div.JammerBox.Show { left: auto; right: 5%;   animation: JammerShowLeft 0.5s; -moz-animation: JammerShowLeft 0.5s; -webkit-animation: JammerShowLeft 0.5s; }
+  #sbDiv>div.Team2>div.JammerBox,#sbDiv>div.Team1.SwapTeams>div.JammerBox           { left: 100%; right: auto; animation: JammerHideRight 0.5s; -moz-animation: JammerHideRight 0.5s; -webkit-animation: JammerHideRight 0.5s; }
+  #sbDiv>div.Team2>div.JammerBox.Show,#sbDiv>div.Team1.SwapTeams>div.JammerBox.Show { left: 5%;   right: auto; animation: JammerShowRight 0.5s; -moz-animation: JammerShowRight 0.5s; -webkit-animation: JammerShowRight 0.5s; }
 
-  #sbDiv>div.Team>div.Jammer.LeadJammer>a { color: #FF0000; animation: LeadJammer 1s infinite; -moz-animation: LeadJammer 1s infinite; -webkit-animation: LeadJammer 1s infinite; }
+  #sbDiv>div.Team>div.JammerBox.LeadJammer>div.Jammer>a { color: #FF0000; animation: LeadJammer 1s infinite; -moz-animation: LeadJammer 1s infinite; -webkit-animation: LeadJammer 1s infinite; }
     @-moz-keyframes LeadJammer         {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
     @-webkit-keyframes LeadJammer      {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
     @keyframes LeadJammer              {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
@@ -94,13 +94,21 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
     @keyframes JammerHideRight         {  0% {  left:   5%; } 100% {  left: 100%; } }
     @keyframes JammerShowRight         {  0% {  left: 100%; } 100% {  left:   5%; } }
 
+  #sbDiv>div.Team>div.JammerBox>div { opacity: 0; width: 100%; height: 100%; }
+  #sbDiv>div.Team>div.JammerBox>div.Lead { font-size: 10%; }
+  #sbDiv>div.Team>div.JammerBox.LeadJammer:not(.HaveJammer):not(.StarPass)>div.Lead { opacity: 1; }
+  #sbDiv>div.Team>div.JammerBox.HaveJammer:not(.StarPass)>div.Jammer { opacity: 1; }
+  #sbDiv>div.Team>div.JammerBox.HavePivot.StarPass>div.Pivot { opacity: 1; }
+    
   /* Team Lead Jammer sub-box */
+    /*
   #sbDiv>div.Team>div.Lead { bottom: 0%; width: 90%; height: 18%; color: #FFFFFF; font-size: 10%; opacity: 1; }
   #sbDiv>div.Team>div.Lead.HaveJammer { opacity: 0; }
   #sbDiv>div.Team1>div.Lead,#sbDiv>div.Team2.SwapTeams>div.Lead                                 { left: auto; right: 100%; animation: JammerHideLeft 0.5s; -moz-animation: JammerHideLeft 0.5s; -webkit-animation: JammerHideLeft 0.5s; }
   #sbDiv>div.Team1>div.Lead.Show.LeadJammer,#sbDiv>div.Team2.SwapTeams>div.Lead.Show.LeadJammer { left: auto; right: 5%;   animation: JammerShowLeft 0.5s; -moz-animation: JammerShowLeft 0.5s; -webkit-animation: JammerShowLeft 0.5s; }
   #sbDiv>div.Team2>div.Lead,#sbDiv>div.Team1.SwapTeams>div.Lead                                 { left: 100%; right: auto; animation: JammerHideRight 0.5s; -moz-animation: JammerHideRight 0.5s; -webkit-animation: JammerHideRight 0.5s; }
   #sbDiv>div.Team2>div.Lead.Show.LeadJammer,#sbDiv>div.Team1.SwapTeams>div.Lead.Show.LeadJammer { left:   5%; right: auto; animation: JammerShowRight 0.5s; -moz-animation: JammerShowRight 0.5s; -webkit-animation: JammerShowRight 0.5s; }
+    */
 /* End Teams */
 
 /* Jam Points */

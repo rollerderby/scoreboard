@@ -41,8 +41,7 @@ public interface Team extends ScoreBoardEventProvider
 	public Position getPosition(String id) throws PositionNotFoundException;
 
 	public boolean isLeadJammer();
-
-	public int getPass();
+	public boolean isStarPass();
 
 	public static final String ID_1 = "1";
 	public static final String ID_2 = "2";
@@ -56,7 +55,7 @@ public interface Team extends ScoreBoardEventProvider
 	public static final String EVENT_ADD_SKATER = "AddSkater";
 	public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
 	public static final String EVENT_LEAD_JAMMER = "LeadJammer";
-	public static final String EVENT_PASS = "Pass";
+	public static final String EVENT_STAR_PASS = "StarPass";
 	public static final String EVENT_ADD_ALTERNATE_NAME = "AddAlternateName";
 	public static final String EVENT_REMOVE_ALTERNATE_NAME = "RemoveAlternateName";
 	public static final String EVENT_ADD_COLOR = "AddColor";

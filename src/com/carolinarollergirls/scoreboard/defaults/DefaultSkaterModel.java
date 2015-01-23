@@ -66,7 +66,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 			if (!Position.ID_JAMMER.equals(p)) {
 				setLeadJammer(false);
-				setPass(0);
 			}
 			String last = position;
 			position = p;
@@ -94,25 +93,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		}
 	}
 
-	public int getPass() { return pass; }
-	public void setPass(int p) {
-		synchronized (passLock) {
-//FIXME - need to remove hardcoded min/max like this.
-			if (p < 0)
-				p = 0;
-			Integer last = new Integer(pass);
-			pass = p;
-			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PASS, new Integer(pass), last));
-
-			getTeamModel()._setPass(pass);
-		}
-	}
-	public void changePass(int c) {
-		synchronized (passLock) {
-			setPass(getPass() + c);
-		}
-	}
-
 	protected TeamModel teamModel;
 
 	protected String id;
@@ -121,13 +101,11 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected String position = Position.ID_BENCH;
 	protected boolean leadJammer = false;
 	protected boolean penaltyBox = false;
-	protected int pass = 0;
 
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();
 	protected Object positionLock = new Object();
 	protected Object penaltyBoxLock = new Object();
-	protected Object passLock = new Object();
 
 	protected boolean settingPositionSkater = false;
 }

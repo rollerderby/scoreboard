@@ -163,7 +163,6 @@ function setupTeams() {
 		sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
 		sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
 		sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 40 } } }, "Score");
-		sbTeam.$sb("Position(Jammer).Name").$sbElement(teamDiv.find("div.Jammer>a"), { sbelement: { autoFitText: true } });
 
 		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
 		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
@@ -181,11 +180,25 @@ function setupTeams() {
 			resizeName();
 		});
 
+		var jammerDiv = teamDiv.find("div.JammerBox");
+		var jammerA = jammerDiv.find("div.Jammer>a");
+		var pivotA = jammerDiv.find("div.Pivot>a");
+		var leadA = jammerDiv.find("div.Lead>a");
+
+		sbTeam.$sb("Position(Jammer).Name").$sbElement(jammerA, { sbelement: { autoFitText: true } });
+		sbTeam.$sb("Position(Pivot).Name").$sbElement(pivotA, { sbelement: { autoFitText: true } });
+
 		sbTeam.$sb("Position(Jammer).Name").$sbBindAndRun("sbchange", function(event, value) {
-			teamDiv.find("div.Jammer,div.Lead").toggleClass("HaveJammer", !!value);
+			jammerDiv.toggleClass("HaveJammer", !!value);
+		});
+		sbTeam.$sb("Position(Pivot).Name").$sbBindAndRun("sbchange", function(event, value) {
+			jammerDiv.toggleClass("HavePivot", !!value);
 		});
 		sbTeam.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, value) {
-			teamDiv.find("div.Jammer,div.Lead").toggleClass("LeadJammer", isTrue(value));
+			jammerDiv.toggleClass("LeadJammer", isTrue(value));
+		});
+		sbTeam.$sb("StarPass").$sbBindAndRun("sbchange", function(event, value) {
+			jammerDiv.toggleClass("StarPass", isTrue(value));
 		});
  
 		var showTimeoutRedBox = function() {
