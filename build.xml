@@ -34,6 +34,7 @@
 	<property name="media.dir" value="media-src" />
 
 	<property name="release.dir" value="release" />
+	<property name="android.dir" value="android" />
 
 	<property name="clean.verbose" value="false"/>
 	<property name="clean.quiet" value="false"/>
@@ -179,6 +180,27 @@
 		/>
 		<ant dir="${jdom.dir}" inheritAll="false" target="clean" />
 		<ant dir="${jdom-contrib.dir}" inheritAll="false" target="clean" />
+	</target>
+
+	<!-- Create android apk -->
+	<target name="android">
+		<mkdir dir="${android.dir}/assets" />
+		<zip destfile="${android.dir}/assets/BaseFiles.zip" >
+			<zipfileset dir="." filemode="755" >
+				<include name="html/**" />
+				<exclude name="html/stream/*" />
+				<exclude name="html/images/teamlogo/*" />
+				<exclude name="html/images/sponsor_banner/*" />
+				<include name="html/images/teamlogo" />
+				<include name="html/images/sponsor_banner" />
+				<include name="config/crg.scoreboard.properties" />
+				<include name="config/default/**" />
+			</zipfileset>
+		</zip>
+
+		<exec executable="gradle" dir="${android.dir}">
+			<arg value="assembleDebug"/>
+		</exec>
 	</target>
 
 	<!-- Create zip file -->
