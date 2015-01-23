@@ -10,7 +10,7 @@ buildscript {
 
 apply plugin: 'com.android.application'
 
-project.archivesBaseName = "crg_scoreboard";
+project.archivesBaseName = "crg-scoreboard";
 
 android {
 	compileSdkVersion 21

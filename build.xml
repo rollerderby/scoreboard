@@ -103,7 +103,7 @@
 		</javac>
 
 		<mkdir dir="${jar.dir}"/>
-		<one-jar destfile="${jar.dir}/${jar.file}" mainmanifest="${jar.dir}/${manifest.file}">
+		<one-jar destfile="${jar.dir}/${jar.file}" manifest="${jar.dir}/one-jar.mf" mainmanifest="${jar.dir}/${manifest.file}">
 			<main>
 				<!-- Construct main.jar from classes and source code -->
 				<fileset dir="${dest.dir}" excludes="**/*.java" />
@@ -183,7 +183,8 @@
 	</target>
 
 	<!-- Create android apk -->
-	<target name="android">
+	<target name="android" depends="-version">
+		<mkdir dir="${release.dir}" />
 		<mkdir dir="${android.dir}/assets" />
 		<zip destfile="${android.dir}/assets/BaseFiles.zip" >
 			<zipfileset dir="." filemode="755" >
@@ -201,6 +202,11 @@
 		<exec executable="gradle" dir="${android.dir}">
 			<arg value="assembleDebug"/>
 		</exec>
+
+		<property name="apk.prefix" value="crg-scoreboard_${version}"/>
+		<copy overwrite="true"
+			file="${android.dir}/build/outputs/apk/crg-scoreboard-debug.apk"
+			tofile="${release.dir}/${apk.prefix}.apk"/>
 	</target>
 
 	<!-- Create zip file -->
