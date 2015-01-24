@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+One-Jar-Main-Args: one-jar.verbose=false
+One-Jar-Show-Expand: false
+One-Jar-Confirm-Expand: false
