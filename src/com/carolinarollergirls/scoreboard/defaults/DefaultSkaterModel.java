@@ -82,15 +82,25 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		synchronized (positionLock) {
 			if ((!Position.ID_JAMMER.equals(position)) && !lead.equals(Team.LEAD_NO_LEAD))
 				return;
-			String last = leadJammer;
-			leadJammer = lead;
-			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, leadJammer, last));
+
+			if (!lead.equals(leadJammer)) {
+				String last = leadJammer;
+				leadJammer = lead;
+				scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, leadJammer, last));
+			}
+
+			// Update Team if needed
+			if (!teamModel.getLeadJammer().equals(leadJammer))
+				teamModel.setLeadJammer(leadJammer);
 		}
 	}
 
 	public boolean isPenaltyBox() { return penaltyBox; }
 	public void setPenaltyBox(boolean box) {
 		synchronized (positionLock) {
+			if (box == penaltyBox)
+				return;
+
 			requestBatchStart();
 
 			Boolean last = new Boolean(penaltyBox);
