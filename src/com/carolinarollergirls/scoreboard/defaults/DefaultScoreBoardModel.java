@@ -405,6 +405,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				Clock p = getClock(Clock.ID_PERIOD);
 				Clock j = getClock(Clock.ID_JAM);
 				Clock t = getClock(Clock.ID_TIMEOUT);
+				if (event.getProvider() == j && !j.isRunning()) {
+					getTeamModel("1").benchSkaters();
+					getTeamModel("2").benchSkaters();
+				}
 				if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning() && !t.isRunning())
 					setInPeriod(false);
 			}

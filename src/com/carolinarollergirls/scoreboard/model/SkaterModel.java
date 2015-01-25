@@ -15,8 +15,8 @@ public interface SkaterModel extends Skater
 	public TeamModel getTeamModel();
 	public Skater getSkater();
 
-	public void stopJam();
-	public void unStopJam();
+	public void bench();
+	public void unBench();
 
 	public void setName(String id);
 	public void setNumber(String number);

@@ -84,20 +84,31 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public void stopJam() {
-		for (SkaterModel sM : skaters.values())
-			sM.stopJam();
+		requestBatchStart();
 
+		benchSkaters();
 		saved_leadJammer = leadJammer;
 		saved_starPass = starPass;
 		setLeadJammer(Team.LEAD_NO_LEAD);
 		setStarPass(false);
+
+		requestBatchEnd();
 	}
 	public void unStopJam() {
-		for (SkaterModel sM : skaters.values())
-			sM.unStopJam();
-
+		requestBatchStart();
+		unBenchSkaters();
 		setLeadJammer(saved_leadJammer);
 		setStarPass(saved_starPass);
+		requestBatchEnd();
+	}
+
+	public void benchSkaters() {
+		for (SkaterModel sM : skaters.values())
+			sM.bench();
+	}
+	public void unBenchSkaters() {
+		for (SkaterModel sM : skaters.values())
+			sM.unBench();
 	}
 
 	public List<AlternateName> getAlternateNames() {

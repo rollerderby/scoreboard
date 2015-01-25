@@ -26,6 +26,7 @@ public interface TeamModel extends Team
 	public void unStartJam();
 	public void stopJam();
 	public void unStopJam();
+	public void benchSkaters();
 
 	public List<AlternateNameModel> getAlternateNameModels();
 	public AlternateNameModel getAlternateNameModel(String id);

@@ -104,7 +104,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		}
 	}
 
-	public void stopJam() {
+	public void bench() {
 		synchronized (positionLock) {
 			saved_leadJammer = leadJammer;
 			saved_position = position;
@@ -114,7 +114,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 				setPosition(Position.ID_BENCH);
 		}
 	}
-	public void unStopJam() {
+	public void unBench() {
 		synchronized (positionLock) {
 			setLeadJammer(saved_leadJammer);
 			setPosition(saved_position);
