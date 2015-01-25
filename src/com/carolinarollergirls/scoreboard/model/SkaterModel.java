@@ -21,6 +21,6 @@ public interface SkaterModel extends Skater
 	public void setName(String id);
 	public void setNumber(String number);
 	public void setPosition(String position) throws PositionNotFoundException;
-	public void setLeadJammer(boolean lead);
+	public void setLeadJammer(String lead);
 	public void setPenaltyBox(boolean box);
 }

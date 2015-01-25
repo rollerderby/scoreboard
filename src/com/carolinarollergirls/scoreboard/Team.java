@@ -40,11 +40,15 @@ public interface Team extends ScoreBoardEventProvider
 	public List<Position> getPositions();
 	public Position getPosition(String id) throws PositionNotFoundException;
 
-	public boolean isLeadJammer();
+	public String getLeadJammer();
 	public boolean isStarPass();
 
 	public static final String ID_1 = "1";
 	public static final String ID_2 = "2";
+
+	public static final String LEAD_LEAD = "Lead";
+	public static final String LEAD_NO_LEAD = "NoLead";
+	public static final String LEAD_LOST_LEAD = "LostLead";
 
 	public static final String EVENT_NAME = "Name";
 	public static final String EVENT_LOGO = "Logo";

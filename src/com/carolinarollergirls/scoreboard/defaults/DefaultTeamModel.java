@@ -89,7 +89,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 		saved_leadJammer = leadJammer;
 		saved_starPass = starPass;
-		setLeadJammer(false);
+		setLeadJammer(Team.LEAD_NO_LEAD);
 		setStarPass(false);
 	}
 	public void unStopJam() {
@@ -318,33 +318,47 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public List<Position> getPositions() { return Collections.unmodifiableList(new ArrayList<Position>(positions.values())); }
 	public List<PositionModel> getPositionModels() { return Collections.unmodifiableList(new ArrayList<PositionModel>(positions.values())); }
 
-	public boolean isLeadJammer() { return leadJammer; }
-	public void setLeadJammer(boolean lead) {
+	public String getLeadJammer() { return leadJammer; }
+	public void setLeadJammer(String lead) {
+		if ("false".equals(lead.toLowerCase()))
+			lead = Team.LEAD_NO_LEAD;
+		else if ("true".equals(lead.toLowerCase()))
+			lead = Team.LEAD_LEAD;
 		synchronized (skaterLock) {
-			boolean leadIndependent = false;
-			try { leadIndependent = getScoreBoard().getPolicy(TeamLeadJammerIndependentPolicy.ID).isEnabled(); }
-			catch ( Exception e ) { }
-			if (leadIndependent) {
-				_setLeadJammer(lead);
-			} else {
-				try { getPositionModel(Position.ID_JAMMER).getSkaterModel().setLeadJammer(lead); }
-				catch ( NullPointerException npE ) { /* No Jammer set */ }
+			requestBatchStart();
+
+			String last = leadJammer;
+			leadJammer = lead;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, leadJammer, last));
+
+			try { getPositionModel(Position.ID_JAMMER).getSkaterModel().setLeadJammer(lead); }
+			catch ( NullPointerException npE ) { /* No Jammer set */ }
+
+			if (Team.LEAD_LEAD.equals(lead)) {
+				String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
+				TeamModel otherTeam = getScoreBoardModel().getTeamModel(otherId);
+				if (Team.LEAD_LEAD.equals(otherTeam.getLeadJammer())) {
+					otherTeam.setLeadJammer(Team.LEAD_NO_LEAD);
+				}
 			}
+
+			requestBatchEnd();
 		}
 	}
-	public void _setLeadJammer(boolean lead) {
-		Boolean last = new Boolean(leadJammer);
-		leadJammer = lead;
-		scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, new Boolean(leadJammer), last));
-	}
-
 
 	public boolean isStarPass() { return starPass; }
 	public void setStarPass(boolean starPass) {
 		synchronized (skaterLock) {
+			requestBatchStart();
+
 			Boolean last = new Boolean(starPass);
 			this.starPass = starPass;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(starPass), last));
+
+			if (starPass && Team.LEAD_LEAD.equals(leadJammer))
+				setLeadJammer(Team.LEAD_LOST_LEAD);
+
+			requestBatchEnd();
 		}
 	}
 
@@ -358,11 +372,11 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected int lastscore;
 	protected int timeouts;
 	protected int officialReviews;
-	protected boolean leadJammer = false;
+	protected String leadJammer = Team.LEAD_NO_LEAD;
 	protected boolean starPass = false;
 
 	private int saved_lastscore = 0;
-	private boolean saved_leadJammer = false;
+	private String saved_leadJammer = Team.LEAD_NO_LEAD;
 	private boolean saved_starPass = false;
 
 	protected Object nameLock = new Object();
@@ -387,7 +401,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public static final int DEFAULT_SCORE = 0;
 	public static final int DEFAULT_TIMEOUTS = 3;
 	public static final int DEFAULT_OFFICIAL_REVIEWS = 1;
-	public static final boolean DEFAULT_LEADJAMMER = false;
+	public static final String DEFAULT_LEADJAMMER = Team.LEAD_NO_LEAD;
 	public static final boolean DEFAULT_STARPASS = false;
 
 	public class DefaultAlternateNameModel extends DefaultScoreBoardEventProvider implements AlternateNameModel

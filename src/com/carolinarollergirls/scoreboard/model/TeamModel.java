@@ -66,9 +66,7 @@ public interface TeamModel extends Team
 	public List<PositionModel> getPositionModels();
 	public PositionModel getPositionModel(String id) throws PositionNotFoundException;
 
-	public void setLeadJammer(boolean lead);
-	/* For internal use only */
-	public void _setLeadJammer(boolean lead);
+	public void setLeadJammer(String lead);
 
 	public void setStarPass(boolean starPass);
 

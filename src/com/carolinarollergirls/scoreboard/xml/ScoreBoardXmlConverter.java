@@ -93,7 +93,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Team.EVENT_LAST_SCORE, null, String.valueOf(t.getLastScore()));
 		editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
 		editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
-		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
+		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, t.getLeadJammer());
 		editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
 
 		Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
@@ -170,7 +170,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
 		editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
 		editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
-		editor.setElement(e, Skater.EVENT_LEAD_JAMMER, null, String.valueOf(s.isLeadJammer()));
+		editor.setElement(e, Skater.EVENT_LEAD_JAMMER, null, s.getLeadJammer());
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
 
 		return e;
@@ -358,7 +358,7 @@ public class ScoreBoardXmlConverter
 				else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && !isChange)
 					teamModel.setOfficialReviews(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_LEAD_JAMMER))
-					teamModel.setLeadJammer(Boolean.parseBoolean(value));
+					teamModel.setLeadJammer(value);
 				else if (name.equals(Team.EVENT_STAR_PASS))
 					teamModel.setStarPass(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
@@ -528,7 +528,7 @@ public class ScoreBoardXmlConverter
 				else if (name.equals(Skater.EVENT_POSITION))
 					skaterModel.setPosition(value);
 				else if (name.equals(Skater.EVENT_LEAD_JAMMER))
-					skaterModel.setLeadJammer(Boolean.parseBoolean(value));
+					skaterModel.setLeadJammer(value);
 				else if (name.equals(Skater.EVENT_PENALTY_BOX))
 					skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {

@@ -103,7 +103,7 @@ $sb(function() {
 
 		// Lead Changes
 		team.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
-			$("#IndicatorBar>div.Team"+t+".Lead").toggleClass("IsLead", isTrue(val), 1000);
+			$("#IndicatorBar>div.Team"+t+".Lead").toggleClass("IsLead", val == "Lead", 1000);
 		});
 	});
 

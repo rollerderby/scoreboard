@@ -144,7 +144,7 @@ $sb(function() {
 	// Lead Changes
 	$.each([ 1, 2 ], function(i, t) {
 		$sb("ScoreBoard.Team("+t+").LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
-			$("#TCDGT"+t+"LD").toggleClass("Show", isTrue(val), 1000);
+			$("#TCDGT"+t+"LD").toggleClass("Show", val == "Lead", 1000);
 		});
 	});
 });

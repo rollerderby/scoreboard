@@ -14,19 +14,23 @@ import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.defaults.*;
 
-public class PenaltyBoxControlsLeadJammerPolicy extends AbstractSkaterPenaltyBoxChangePolicy
-{
-  public PenaltyBoxControlsLeadJammerPolicy() { super(ID, DESCRIPTION); }
+// TODO: REMOVE ME
 
-  protected void skaterPenaltyBoxChange(Skater skater, boolean penaltyBox) {
-    try {
-      if (penaltyBox)
-        getScoreBoardModel().getTeamModel(skater.getTeam().getId()).getSkaterModel(skater.getId()).setLeadJammer(false);
-    } catch ( SkaterNotFoundException snfE ) {
-      /* Should not happen - no SkaterModel for specified Skater */
-    }
-  }
-
-  public static final String ID = "Penalty Box Controls Lead Jammer";
-  public static final String DESCRIPTION = "This removes Lead Jammer from any Skater sent to the Penalty Box.";
+public class PenaltyBoxControlsLeadJammerPolicy { // extends AbstractSkaterPenaltyBoxChangePolicy {
+//	public PenaltyBoxControlsLeadJammerPolicy() { super(ID, DESCRIPTION); }
+//
+//	protected void skaterPenaltyBoxChange(Skater skater, boolean penaltyBox) {
+//		try {
+//			if (penaltyBox) {
+//				SkaterModel sM = getScoreBoardModel().getTeamModel(skater.getTeam().getId()).getSkaterModel(skater.getId());
+//				if (sM.getLeadJammer() == Team.LEAD_LEAD)
+//					sM.setLeadJammer(Team.LEAD_LOST_LEAD);
+//			}
+//		} catch ( SkaterNotFoundException snfE ) {
+//			/* Should not happen - no SkaterModel for specified Skater */
+//		}
+//	}
+//
+//	public static final String ID = "Penalty Box Controls Lead Jammer";
+//	public static final String DESCRIPTION = "This removes Lead Jammer from any Skater sent to the Penalty Box.";
 }

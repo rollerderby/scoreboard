@@ -65,7 +65,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			catch ( PositionNotFoundException pnfE ) { /* I'm being put on the Bench. */ }
 
 			if (!Position.ID_JAMMER.equals(p)) {
-				setLeadJammer(false);
+				setLeadJammer(Team.LEAD_NO_LEAD);
 			}
 			String last = position;
 			position = p;
@@ -73,23 +73,34 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		}
 	}
 
-	public boolean isLeadJammer() { return leadJammer; }
-	public void setLeadJammer(boolean lead) {
+	public String getLeadJammer() { return leadJammer; }
+	public void setLeadJammer(String lead) {
+		if ("false".equals(lead.toLowerCase()))
+			lead = Team.LEAD_NO_LEAD;
+		else if ("true".equals(lead.toLowerCase()))
+			lead = Team.LEAD_LEAD;
 		synchronized (positionLock) {
-			if ((!Position.ID_JAMMER.equals(position)) && lead)
+			if ((!Position.ID_JAMMER.equals(position)) && !lead.equals(Team.LEAD_NO_LEAD))
 				return;
-			Boolean last = new Boolean(leadJammer);
+			String last = leadJammer;
 			leadJammer = lead;
-			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, new Boolean(leadJammer), last));
+			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, leadJammer, last));
 		}
 	}
 
 	public boolean isPenaltyBox() { return penaltyBox; }
 	public void setPenaltyBox(boolean box) {
 		synchronized (positionLock) {
+			requestBatchStart();
+
 			Boolean last = new Boolean(penaltyBox);
 			penaltyBox = box;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+
+			if (box && position.equals(Position.ID_JAMMER) && leadJammer.equals(Team.LEAD_LEAD))
+				teamModel.setLeadJammer(Team.LEAD_LOST_LEAD);
+
+			requestBatchEnd();
 		}
 	}
 
@@ -98,7 +109,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			saved_leadJammer = leadJammer;
 			saved_position = position;
 
-			setLeadJammer(false);
+			setLeadJammer(Team.LEAD_NO_LEAD);
 			if (!penaltyBox)
 				setPosition(Position.ID_BENCH);
 		}
@@ -116,11 +127,11 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected String name;
 	protected String number;
 	protected String position = Position.ID_BENCH;
-	protected boolean leadJammer = false;
+	protected String leadJammer = Team.LEAD_NO_LEAD;
 	protected boolean penaltyBox = false;
 
 	private String saved_position = Position.ID_BENCH;
-	private boolean saved_leadJammer = false;
+	private String saved_leadJammer = Team.LEAD_NO_LEAD;
 
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();

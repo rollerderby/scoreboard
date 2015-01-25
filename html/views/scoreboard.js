@@ -195,7 +195,7 @@ function setupTeams() {
 			jammerDiv.toggleClass("HavePivot", !!value);
 		});
 		sbTeam.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, value) {
-			jammerDiv.toggleClass("LeadJammer", isTrue(value));
+			jammerDiv.toggleClass("LeadJammer", value == "Lead");
 		});
 		sbTeam.$sb("StarPass").$sbBindAndRun("sbchange", function(event, value) {
 			jammerDiv.toggleClass("StarPass", isTrue(value));

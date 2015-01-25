@@ -536,8 +536,9 @@ function createTeamTable() {
 			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"0")+")").addClass("OfficialReviews"));
 
 		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")")
-			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='true'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No Lead</label><input type='radio' value='false'/>");
+			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='Lead'/>")
+			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No</label><input type='radio' value='NoLead'/>")
+			[first?"append":"prepend"]("<label id='Team"+team+"LostLead' class='LostLead'>Lost</label><input type='radio' value='LostLead'/>");
 		sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
 			.addClass("KeyControl");
 		/* some strange bug, css direction is unset for leadJammerTd
@@ -547,7 +548,7 @@ function createTeamTable() {
 
 		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")")
 			.append("<label id='Team"+team+"StarPass' class='StarPass'>Star Pass</label><input type='radio' value='true'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"NoStarPass' class='NoStarPass'>No Star Pass</label><input type='radio' value='false'/>");
+			[first?"append":"prepend"]("<label id='Team"+team+"NoStarPass' class='NoStarPass'>No</label><input type='radio' value='false'/>");
 		sbTeam.$sb("StarPass").$sbControl(starPassTd.children())
 			.addClass("KeyControl");
 		/* some strange bug, css direction is unset for starPassTd
