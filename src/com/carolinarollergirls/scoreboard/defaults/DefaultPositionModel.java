@@ -69,6 +69,23 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
 				skaterModel = null;
 				scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
 			}
+			_setPenaltyBox(false);
+		}
+	}
+	public boolean getPenaltyBox() {
+		return penaltyBox;
+	}
+	public void setPenaltyBox(boolean box) {
+		try { skaterModel.setPenaltyBox(box); }
+		catch ( NullPointerException npE ) { /* Was no skater in this position */ }
+	}
+	public void _setPenaltyBox(boolean box) {
+		synchronized (skaterLock) {
+			if (box != penaltyBox) {
+				Boolean last = new Boolean(penaltyBox);
+				penaltyBox = box;
+				scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+			}
 		}
 	}
 
@@ -77,6 +94,7 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
 	protected String id;
 
 	protected SkaterModel skaterModel = null;
+	protected boolean penaltyBox = false;
 	protected Object skaterLock = new Object();
 	protected boolean settingSkaterPosition = false;
 }

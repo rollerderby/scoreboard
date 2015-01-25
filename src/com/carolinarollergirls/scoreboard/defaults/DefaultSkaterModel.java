@@ -110,6 +110,12 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			if (box && position.equals(Position.ID_JAMMER) && leadJammer.equals(Team.LEAD_LEAD))
 				teamModel.setLeadJammer(Team.LEAD_LOST_LEAD);
 
+			if (position.equals(Position.ID_JAMMER) || position.equals(Position.ID_PIVOT)) {
+				// Update Position Model if Jammer or Pivot
+				try { getTeamModel().getPositionModel(position)._setPenaltyBox(box); }
+				catch ( PositionNotFoundException pnfE ) { }
+			}
+
 			requestBatchEnd();
 		}
 	}

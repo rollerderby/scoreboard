@@ -23,9 +23,11 @@ public interface PositionModel extends Position
 	public SkaterModel getSkaterModel();
 
 	public void setSkaterModel(String skaterId) throws SkaterNotFoundException;
+	public void setPenaltyBox(boolean box);
 	public void clear();
 
 	/* These methods are for internal use by SkaterModel to coordinate Position */
 	public void _setSkaterModel(String skaterId) throws SkaterNotFoundException;
+	public void _setPenaltyBox(boolean box);
 	public void _clear();
 }

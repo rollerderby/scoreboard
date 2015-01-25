@@ -140,6 +140,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, "Id", null, (s==null?"":s.getId()));
 		editor.setElement(e, Skater.EVENT_NAME, null, (s==null?"":s.getName()));
 		editor.setElement(e, Skater.EVENT_NUMBER, null, (s==null?"":s.getNumber()));
+		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
 
 		return e;
 	}
@@ -443,6 +444,8 @@ public class ScoreBoardXmlConverter
 					positionModel.clear();
 				else if (name.equals("Id"))
 					positionModel.setSkaterModel(value);
+				else if (name.equals(Position.EVENT_PENALTY_BOX))
+					positionModel.setPenaltyBox(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}

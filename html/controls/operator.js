@@ -574,11 +574,29 @@ function createTeamTable() {
 		makeSkaterDropdown("Jammer", "Name", "Num").appendTo(jammerSelectTd);
 		makeSkaterDropdown("Jammer", "Number", "Num").appendTo(jammerSelectTd);
 
+		var jammerBox = sbTeam.$sb("Position(Jammer).PenaltyBox");
+		var jammerBoxButton = jammerBox.$sbControl("<button>").text("Box").val("true")
+			.attr("id", "Team"+team+"JammerBox").addClass("KeyControl Box").button();
+		jammerBox.$sbBindAndRun("sbchange", function(event, value) {
+			jammerBoxButton.val(!isTrue(value));
+			jammerBoxButton.toggleClass("Active", isTrue(value));
+		});
+		jammerBoxButton.appendTo(jammerSelectTd);
+
 		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot ByNumber AlphaSort");
 		makeSkaterDropdown("Pivot", "Name", "Alpha").appendTo(pivotSelectTd);
 		makeSkaterDropdown("Pivot", "Number", "Alpha").appendTo(pivotSelectTd);
 		makeSkaterDropdown("Pivot", "Name", "Num").appendTo(pivotSelectTd);
 		makeSkaterDropdown("Pivot", "Number", "Num").appendTo(pivotSelectTd);
+
+		var pivotBox = sbTeam.$sb("Position(Pivot).PenaltyBox");
+		var pivotBoxButton = pivotBox.$sbControl("<button>").text("Box").val("true")
+			.attr("id", "Team"+team+"PivotBox").addClass("KeyControl Box").button();
+		pivotBox.$sbBindAndRun("sbchange", function(event, value) {
+			pivotBoxButton.val(!isTrue(value));
+			pivotBoxButton.toggleClass("Active", isTrue(value));
+		});
+		pivotBoxButton.appendTo(pivotSelectTd);
 	});
 
 	return table;
