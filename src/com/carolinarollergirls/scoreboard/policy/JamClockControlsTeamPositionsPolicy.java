@@ -8,41 +8,43 @@ package com.carolinarollergirls.scoreboard.policy;
  * See the file COPYING for details.
  */
 
+// TODO: REMOVE ME!
+
 import java.util.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.defaults.*;
 
-public class JamClockControlsTeamPositionsPolicy extends AbstractClockRunningChangePolicy
+public class JamClockControlsTeamPositionsPolicy // extends AbstractClockRunningChangePolicy
 {
-  public JamClockControlsTeamPositionsPolicy() { super(ID, DESCRIPTION); }
-
-  public void setScoreBoardModel(ScoreBoardModel sbm) {
-    super.setScoreBoardModel(sbm);
-    addClock(Clock.ID_JAM);
-  }
-
-  public void clockRunningChange(Clock clock, boolean running) {
-    if (!running) {
-      Iterator<TeamModel> teams = getScoreBoardModel().getTeamModels().iterator();
-      while (teams.hasNext()) {
-        TeamModel teamModel = teams.next();
-        Iterator<PositionModel> positions = teamModel.getPositionModels().iterator();
-        while (positions.hasNext()) {
-          SkaterModel sM = positions.next().getSkaterModel();
-          if (sM != null && !sM.isPenaltyBox())
-            sM.setPosition(Position.ID_BENCH);
-        }
-        Iterator<SkaterModel> skaters = teamModel.getSkaterModels().iterator();
-        while (skaters.hasNext())
-          skaters.next().setLeadJammer(false);
-        teamModel.setLeadJammer(false);
-	teamModel.setStarPass(false);
-      }
-    }
-  }
-
-  public static final String ID = "Jam Clock Controls Team Positions";
-  public static final String DESCRIPTION = "This clears all Team Positions (who are not in the Penalty Box) when the Jam clock is stopped, sets all Skaters to Not Lead Jammer, and sets the Team to Not Lead Jammer.";
+//  public JamClockControlsTeamPositionsPolicy() { super(ID, DESCRIPTION); }
+//
+//  public void setScoreBoardModel(ScoreBoardModel sbm) {
+//    super.setScoreBoardModel(sbm);
+//    addClock(Clock.ID_JAM);
+//  }
+//
+//  public void clockRunningChange(Clock clock, boolean running) {
+//    if (!running) {
+//      Iterator<TeamModel> teams = getScoreBoardModel().getTeamModels().iterator();
+//      while (teams.hasNext()) {
+//        TeamModel teamModel = teams.next();
+//        Iterator<PositionModel> positions = teamModel.getPositionModels().iterator();
+//        while (positions.hasNext()) {
+//          SkaterModel sM = positions.next().getSkaterModel();
+//          if (sM != null && !sM.isPenaltyBox())
+//            sM.setPosition(Position.ID_BENCH);
+//        }
+//        Iterator<SkaterModel> skaters = teamModel.getSkaterModels().iterator();
+//        while (skaters.hasNext())
+//          skaters.next().setLeadJammer(false);
+//        teamModel.setLeadJammer(false);
+//	teamModel.setStarPass(false);
+//      }
+//    }
+//  }
+//
+//  public static final String ID = "Jam Clock Controls Team Positions";
+//  public static final String DESCRIPTION = "This clears all Team Positions (who are not in the Penalty Box) when the Jam clock is stopped, sets all Skaters to Not Lead Jammer, and sets the Team to Not Lead Jammer.";
 }

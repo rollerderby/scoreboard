@@ -86,10 +86,27 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 	public boolean isPenaltyBox() { return penaltyBox; }
 	public void setPenaltyBox(boolean box) {
-		synchronized (penaltyBoxLock) {
+		synchronized (positionLock) {
 			Boolean last = new Boolean(penaltyBox);
 			penaltyBox = box;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+		}
+	}
+
+	public void stopJam() {
+		synchronized (positionLock) {
+			saved_leadJammer = leadJammer;
+			saved_position = position;
+
+			setLeadJammer(false);
+			if (!penaltyBox)
+				setPosition(Position.ID_BENCH);
+		}
+	}
+	public void unStopJam() {
+		synchronized (positionLock) {
+			setLeadJammer(saved_leadJammer);
+			setPosition(saved_position);
 		}
 	}
 
@@ -102,10 +119,12 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected boolean leadJammer = false;
 	protected boolean penaltyBox = false;
 
+	private String saved_position = Position.ID_BENCH;
+	private boolean saved_leadJammer = false;
+
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();
 	protected Object positionLock = new Object();
-	protected Object penaltyBoxLock = new Object();
 
 	protected boolean settingPositionSkater = false;
 }

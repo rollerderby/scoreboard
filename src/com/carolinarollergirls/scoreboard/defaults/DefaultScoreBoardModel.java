@@ -185,7 +185,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void stopJam() {
 		synchronized (runLock) {
 			if (getClockModel(Clock.ID_JAM).isRunning()) {
+				requestBatchStart();
 				getClockModel(Clock.ID_JAM).stop();
+				getTeamModel("1").stopJam();
+				getTeamModel("2").stopJam();
+				requestBatchEnd();
 			}
 		}
 	}
@@ -205,6 +209,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				getClockModel(Clock.ID_JAM).stop();
 				getClockModel(Clock.ID_TIMEOUT).resetTime();
 				getClockModel(Clock.ID_TIMEOUT).start();
+				if (jamClockWasRunning) {
+					getTeamModel("1").stopJam();
+					getTeamModel("2").stopJam();
+				}
 			}
 			requestBatchEnd();
 		}
@@ -236,6 +244,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 			getClockModel(Clock.ID_LINEUP).stop();
 			getClockModel(Clock.ID_JAM).unstop();
+			getTeamModel("1").unStopJam();
+			getTeamModel("2").unStopJam();
 			requestBatchEnd();
 		}
 	}
@@ -247,8 +257,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 			if (lineupClockWasRunning)
 				getClockModel(Clock.ID_LINEUP).unstop();
-			if (jamClockWasRunning)
+			if (jamClockWasRunning) {
 				getClockModel(Clock.ID_JAM).unstop();
+				getTeamModel("1").unStopJam();
+				getTeamModel("2").unStopJam();
+			}
 			getClockModel(Clock.ID_PERIOD).unstop();
 			getClockModel(Clock.ID_TIMEOUT).unstart();
 			requestBatchEnd();

@@ -73,8 +73,32 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
-	public void startJam() { saved_lastscore = getLastScore(); setLastScore(getScore()); }
-	public void unStartJam() { setLastScore(saved_lastscore); }
+	public void startJam() {
+		synchronized (scoreLock) {
+			saved_lastscore = getLastScore();
+			setLastScore(getScore());
+		}
+	}
+	public void unStartJam() {
+		setLastScore(saved_lastscore);
+	}
+
+	public void stopJam() {
+		for (SkaterModel sM : skaters.values())
+			sM.stopJam();
+
+		saved_leadJammer = leadJammer;
+		saved_starPass = starPass;
+		setLeadJammer(false);
+		setStarPass(false);
+	}
+	public void unStopJam() {
+		for (SkaterModel sM : skaters.values())
+			sM.unStopJam();
+
+		setLeadJammer(saved_leadJammer);
+		setStarPass(saved_starPass);
+	}
 
 	public List<AlternateName> getAlternateNames() {
 		return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
@@ -329,20 +353,24 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	protected String id;
 	protected String name;
-	protected Object nameLock = new Object();
 	protected String logo;
-	protected Object logoLock = new Object();
 	protected int score;
-	protected Object scoreLock = new Object();
-	protected int saved_lastscore;
 	protected int lastscore;
-	protected Object lastscoreLock = new Object();
 	protected int timeouts;
-	protected Object timeoutsLock = new Object();
 	protected int officialReviews;
-	protected Object officialReviewsLock = new Object();
 	protected boolean leadJammer = false;
 	protected boolean starPass = false;
+
+	private int saved_lastscore = 0;
+	private boolean saved_leadJammer = false;
+	private boolean saved_starPass = false;
+
+	protected Object nameLock = new Object();
+	protected Object logoLock = new Object();
+	protected Object scoreLock = new Object();
+	protected Object lastscoreLock = new Object();
+	protected Object timeoutsLock = new Object();
+	protected Object officialReviewsLock = new Object();
 
 	protected Map<String,AlternateNameModel> alternateNames = new ConcurrentHashMap<String,AlternateNameModel>();
 	protected Object alternateNameLock = new Object();
