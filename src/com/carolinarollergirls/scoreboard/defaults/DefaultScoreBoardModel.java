@@ -179,12 +179,16 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				getTeamModel("1").startJam();
 				getTeamModel("2").startJam();
 				requestBatchEnd();
+
+				ScoreBoardManager.gameLogSnapshot();
 			}
 		}
 	}
 	public void stopJam() {
 		synchronized (runLock) {
 			if (getClockModel(Clock.ID_JAM).isRunning()) {
+				ScoreBoardManager.gameLogSnapshot();
+
 				requestBatchStart();
 				getClockModel(Clock.ID_JAM).stop();
 				getTeamModel("1").stopJam();
@@ -234,6 +238,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			getTeamModel("1").unStartJam();
 			getTeamModel("2").unStartJam();
 			requestBatchEnd();
+
+			ScoreBoardManager.gameLogSnapshot();
 		}
 	}
 	public void unStopJam() {
