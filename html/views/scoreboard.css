@@ -31,7 +31,7 @@ div.TextContainer { text-align: center; }
 div.TextContainer>a { position: relative; }
 
 /* All text elements use the same font and weight, for now */
-a { font-weight: bold; font-family: 'LiberationSans',helvetica; }
+a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-block; }
 
 
 /* Views */

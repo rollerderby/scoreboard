@@ -149,7 +149,7 @@ function createMetaControlTable() {
 
 	$("<label>").text("Show UNDO Controls").attr("for", "ShowUndoControlsButton")
 		.appendTo(buttonsTd);
-	$("<input type='checkbox'>").attr("id", "ShowUndoControlsButton")
+	$("<input type='checkbox' checked='true'>").attr("id", "ShowUndoControlsButton")
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
@@ -308,7 +308,7 @@ function createOvertimeDialog() {
 function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
 	var controlsTr = createRowTable(3,2).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
-	var undoTr = controlsTr.next().addClass("UndoControls");
+	var undoTr = controlsTr.next().addClass("UndoControls ShowUndo");
 
 	$sb("ScoreBoard.StartJam").$sbControl("<button>").text("Start Jam").val("true")
 		.attr("id", "StartJam").addClass("KeyControl").button()
