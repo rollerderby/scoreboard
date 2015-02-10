@@ -277,11 +277,21 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
+	public static Comparator<Skater> SkaterComparator = new Comparator<Skater>() {
+		public int compare(Skater s1, Skater s2) {
+			return s1.getNumber().compareTo(s2.getNumber());
+		}
+	};
+
 	public List<SkaterModel> getSkaterModels() {
-		return Collections.unmodifiableList(new ArrayList<SkaterModel>(skaters.values()));
+		ArrayList<SkaterModel> s = new ArrayList<SkaterModel>(skaters.values());
+		Collections.sort(s, SkaterComparator);
+		return Collections.unmodifiableList(s);
 	}
 	public List<Skater> getSkaters() {
-		return Collections.unmodifiableList(new ArrayList<Skater>(skaters.values()));
+		ArrayList<Skater> s = new ArrayList<Skater>(skaters.values());
+		Collections.sort(s, SkaterComparator);
+		return Collections.unmodifiableList(s);
 	}
 	public Skater getSkater(String id) throws SkaterNotFoundException { return getSkaterModel(id); }
 	public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException {
