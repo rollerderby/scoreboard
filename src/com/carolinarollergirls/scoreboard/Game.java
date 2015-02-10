@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.log;
+package com.carolinarollergirls.scoreboard;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -6,10 +6,9 @@ import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
 
-public class GameLog {
+public class Game {
 	protected class PeriodStats {
 		public PeriodStats(long period) {
 			this.period = period;
@@ -156,7 +155,7 @@ public class GameLog {
 		protected boolean isPenaltyBox;
 	}
 
-	public GameLog() {
+	public Game() {
 		this.logging = false;
 		this.sb = null;
 	}
@@ -232,7 +231,7 @@ public class GameLog {
 	}
 
 	private void saveFile() {
-		File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameLogs"), identifier + ".json");
+		File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
 		file.getParentFile().mkdirs();
 		FileWriter out = null;
 		try {

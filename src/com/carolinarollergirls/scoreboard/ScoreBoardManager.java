@@ -13,7 +13,6 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.log.GameLog;
 
 public class ScoreBoardManager {
 	public interface Logger {
@@ -28,7 +27,7 @@ public class ScoreBoardManager {
 		loadControllers();
 		loadViewers();
 
-		gameLog.start("test");
+		game.start("test");
 
 		//FIXME - not the best way to load autosave doc.
 		scoreBoardModel.getXmlScoreBoard().load();
@@ -141,9 +140,9 @@ public class ScoreBoardManager {
 			doExit("No model defined.");
 
 		try {
-			gameLog = new GameLog();
+			game = new Game();
 			scoreBoardModel = (ScoreBoardModel)Class.forName(s).newInstance();
-			gameLog.setScoreBoard(scoreBoardModel);
+			game.setScoreBoard(scoreBoardModel);
 			printMessage("Loaded ScoreBoardModel : "+s);
 		} catch ( Exception e ) {
 			doExit("Could not create model : " + e.getMessage(), e);
@@ -193,8 +192,8 @@ public class ScoreBoardManager {
 		}
 	}
 
-	public static void gameLogSnapshot() {
-		gameLog.snapshot();
+	public static void gameSnapshot() {
+		game.snapshot();
 	}
 
 	/* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
@@ -223,7 +222,7 @@ public class ScoreBoardManager {
 	private static String versionBuild;
 
 	private static File defaultPath = new File(".");
-	private static GameLog gameLog = null;
+	private static Game game = null;
 
 	public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
 	public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
