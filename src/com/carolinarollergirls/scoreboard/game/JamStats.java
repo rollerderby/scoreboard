@@ -1,8 +1,11 @@
 package com.carolinarollergirls.scoreboard.game;
 
+import java.util.Date;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Game;
 import com.carolinarollergirls.scoreboard.Team;
@@ -16,21 +19,38 @@ public class JamStats {
 		this.teams[1] = new TeamStats(game, Team.ID_2);
 	}
 
-	public void snapshot() {
+	public void snapshot(boolean jamEnd) {
 		Clock periodClock = game.getClock(Clock.ID_PERIOD);
 		Clock jamClock = game.getClock(Clock.ID_JAM);
-		boolean getSkaters = jamClock.isRunning();
+		boolean jamClockRunning = jamClock.isRunning();
 
-		this.periodClock = periodClock.getTime();
+		if (jamClockRunning) {
+			if (periodWallClockStart == null) {
+				periodClockStart = periodClock.getTime();
+				periodWallClockStart = new Date();
+			}
+			periodWallClockEnd = null;
+		}
+		if (jamEnd) {
+			periodClockEnd = periodClock.getTime();
+			periodWallClockEnd = new Date();
+		}
 		this.jamClock = jamClock.getTime();
 		for (TeamStats ts : teams)
-			ts.snapshot(getSkaters);
+			ts.snapshot(jamClockRunning || jamEnd);
 	}
 
 	public JSONObject toJSON() {
 		JSONObject json = new JSONObject();
 		json.put("jam", jam);
-		json.put("periodClock", periodClock);
+		if (periodWallClockStart != null) {
+			json.put("periodClockStart", periodClockStart);
+			json.put("periodWallClockStart", periodWallClockStart);
+		}
+		if (periodWallClockEnd != null) {
+			json.put("periodClockEnd", periodClockEnd);
+			json.put("periodWallClockEnd", periodWallClockEnd);
+		}
 		json.put("jamClock", jamClock);
 		JSONArray t = new JSONArray();
 		for (TeamStats ts : teams)
@@ -45,6 +65,9 @@ public class JamStats {
 	private Game game;
 	private long jam;
 	private TeamStats[] teams;
-	private long periodClock;
+	private long periodClockStart;
+	private long periodClockEnd;
+	private Date periodWallClockStart = null;
+	private Date periodWallClockEnd = null;
 	private long jamClock;
 }

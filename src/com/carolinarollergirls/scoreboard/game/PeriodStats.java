@@ -7,17 +7,10 @@ import org.json.JSONObject;
 import com.carolinarollergirls.scoreboard.Game;
 
 public class PeriodStats {
-	public PeriodStats(Game g, long p) {
+	public PeriodStats(Game g, int p) {
 		game = g;
 		period = p;
 		jams = new ArrayList<JamStats>();
-	}
-
-	public JamStats AddJam(long jam) {
-		JamStats js = new JamStats(game, jam);
-		jams.add(js);
-
-		return js;
 	}
 
 	public JSONObject toJSON() {
@@ -32,19 +25,21 @@ public class PeriodStats {
 		return json;
 	}
 
-	public long getPeriod() { return period; }
+	public int getPeriod() { return period; }
 
-	public JamStats getJamStats(long jam) {
-		for (JamStats js1 : jams) {
-			if (js1.getJam() == jam) {
-				return js1;
-			}
+	public JamStats getJamStats(int jam, boolean truncateAfter) {
+		while (jams.size() < jam) {
+			jams.add(new JamStats(game, jams.size() + 1));
 		}
-		return AddJam(jam);
+
+		while (truncateAfter && jams.size() > jam) {
+			jams.remove(jams.get(jams.size() - 1));
+		}
+		return jams.get(jam - 1);
 	}
 
 
 	private Game game;
-	private long period;
+	private int period;
 	private ArrayList<JamStats> jams;
 }

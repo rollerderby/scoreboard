@@ -91,6 +91,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.TRUE, periodStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, periodEndListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.TRUE, jamStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.TRUE, timeoutStartListener));
 	}
@@ -187,14 +188,28 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void stopJam() {
 		synchronized (runLock) {
 			if (getClockModel(Clock.ID_JAM).isRunning()) {
-				ScoreBoardManager.gameSnapshot();
-
-				requestBatchStart();
-				getClockModel(Clock.ID_JAM).stop();
-				getTeamModel("1").stopJam();
-				getTeamModel("2").stopJam();
-				requestBatchEnd();
+				_stopJam();
 			}
+		}
+	}
+	private void _stopJam() {
+		synchronized (runLock) {
+			ScoreBoardManager.gameSnapshot(true);
+
+			ClockModel pc = getClockModel(Clock.ID_PERIOD);
+			ClockModel jc = getClockModel(Clock.ID_JAM);
+			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+
+			requestBatchStart();
+			jc.stop();
+			getTeamModel("1").stopJam();
+			getTeamModel("2").stopJam();
+
+			if (pc.isRunning()) {
+				lc.resetTime();
+				lc.start();
+			}
+			requestBatchEnd();
 		}
 	}
 
@@ -219,6 +234,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				}
 			}
 			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -253,6 +270,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			getTeamModel("1").unStopJam();
 			getTeamModel("2").unStopJam();
 			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 	public void unTimeout() {
@@ -271,6 +290,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			getClockModel(Clock.ID_PERIOD).unstop();
 			getClockModel(Clock.ID_TIMEOUT).unstart();
 			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -412,11 +433,17 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				Clock j = getClock(Clock.ID_JAM);
 				Clock t = getClock(Clock.ID_TIMEOUT);
 				if (event.getProvider() == j && !j.isRunning() && j.getTime() == j.getMinimumTime()) {
-					getTeamModel("1").benchSkaters();
-					getTeamModel("2").benchSkaters();
+					_stopJam();
 				}
 				if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning() && !t.isRunning())
 					setInPeriod(false);
+			}
+		};
+	protected ScoreBoardListener jamStartListener = new ScoreBoardListener() {
+			public void scoreBoardChange(ScoreBoardEvent event) {
+				ClockModel lc = getClockModel(Clock.ID_LINEUP);
+				if (lc.isRunning())
+					lc.stop();
 			}
 		};
 	protected ScoreBoardListener timeoutStartListener = new ScoreBoardListener() {

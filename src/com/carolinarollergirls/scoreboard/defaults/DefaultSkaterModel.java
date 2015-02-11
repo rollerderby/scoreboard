@@ -18,7 +18,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 {
 	public DefaultSkaterModel(TeamModel tm, String i, String n, String num) {
 		teamModel = tm;
-		id = i;
+		setId(i);
 		setName(n);
 		setNumber(num);
 	}
@@ -31,6 +31,15 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	public TeamModel getTeamModel() { return teamModel; }
 
 	public String getId() { return id; }
+	public void setId(String i) {
+		UUID uuid;
+		try {
+			uuid = UUID.fromString(i);
+		} catch (IllegalArgumentException iae) {
+			uuid = UUID.randomUUID();
+		}
+		id = uuid.toString();
+	}
 
 	public Skater getSkater() { return this; }
 
@@ -64,34 +73,9 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			try { getTeamModel().getPositionModel(p)._setSkaterModel(this.getId()); }
 			catch ( PositionNotFoundException pnfE ) { /* I'm being put on the Bench. */ }
 
-			if (!Position.ID_JAMMER.equals(p)) {
-				setLeadJammer(Team.LEAD_NO_LEAD);
-			}
 			String last = position;
 			position = p;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position, last));
-		}
-	}
-
-	public String getLeadJammer() { return leadJammer; }
-	public void setLeadJammer(String lead) {
-		if ("false".equals(lead.toLowerCase()))
-			lead = Team.LEAD_NO_LEAD;
-		else if ("true".equals(lead.toLowerCase()))
-			lead = Team.LEAD_LEAD;
-		synchronized (positionLock) {
-			if ((!Position.ID_JAMMER.equals(position)) && !lead.equals(Team.LEAD_NO_LEAD))
-				return;
-
-			if (!lead.equals(leadJammer)) {
-				String last = leadJammer;
-				leadJammer = lead;
-				scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_LEAD_JAMMER, leadJammer, last));
-			}
-
-			// Update Team if needed
-			if (!teamModel.getLeadJammer().equals(leadJammer))
-				teamModel.setLeadJammer(leadJammer);
 		}
 	}
 
@@ -107,9 +91,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			penaltyBox = box;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
 
-			if (box && position.equals(Position.ID_JAMMER) && leadJammer.equals(Team.LEAD_LEAD))
-				teamModel.setLeadJammer(Team.LEAD_LOST_LEAD);
-
 			if (position.equals(Position.ID_JAMMER) || position.equals(Position.ID_PIVOT)) {
 				// Update Position Model if Jammer or Pivot
 				try { getTeamModel().getPositionModel(position)._setPenaltyBox(box); }
@@ -122,17 +103,16 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 	public void bench() {
 		synchronized (positionLock) {
-			saved_leadJammer = leadJammer;
 			saved_position = position;
 
-			setLeadJammer(Team.LEAD_NO_LEAD);
 			if (!penaltyBox)
 				setPosition(Position.ID_BENCH);
+			else if (position.equals(Position.ID_PIVOT) && teamModel.isStarPass())
+				setPosition(Position.ID_JAMMER);
 		}
 	}
 	public void unBench() {
 		synchronized (positionLock) {
-			setLeadJammer(saved_leadJammer);
 			setPosition(saved_position);
 		}
 	}
@@ -143,11 +123,9 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected String name;
 	protected String number;
 	protected String position = Position.ID_BENCH;
-	protected String leadJammer = Team.LEAD_NO_LEAD;
 	protected boolean penaltyBox = false;
 
 	private String saved_position = Position.ID_BENCH;
-	private String saved_leadJammer = Team.LEAD_NO_LEAD;
 
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();

@@ -193,7 +193,10 @@ public class ScoreBoardManager {
 	}
 
 	public static void gameSnapshot() {
-		game.snapshot();
+		game.snapshot(false);
+	}
+	public static void gameSnapshot(boolean jamEnd) {
+		game.snapshot(jamEnd);
 	}
 
 	/* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */

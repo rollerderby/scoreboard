@@ -34,23 +34,20 @@ public class Game {
 		this.logging = false;
 	}
 
-	private JamStats findJamStats(long period, long jam) {
-		PeriodStats ps = null;
-		for (PeriodStats ps1 : periods) {
-			if (ps1.getPeriod() == period) {
-				ps = ps1;
-				break;
-			}
+	private JamStats findJamStats(int period, int jam, boolean truncateAfter) {
+		while (periods.size() < period) {
+			periods.add(new PeriodStats(this, periods.size() + 1));
 		}
-		if (ps == null) {
-			ps = new PeriodStats(this, period);
-			periods.add(ps);
+		PeriodStats ps = periods.get(period - 1);
+
+		while (truncateAfter && periods.size() > period) {
+			periods.remove(periods.get(periods.size() - 1));
 		}
 
-		return ps.getJamStats(jam);
+		return ps.getJamStats(jam, truncateAfter);
 	}
 
-	public void snapshot() {
+	public void snapshot(boolean jamEnd) {
 		if (!logging || sb == null)
 			return;
 
@@ -58,14 +55,11 @@ public class Game {
 			teams[0].snapshot();
 			teams[1].snapshot();
 
-			long period = sb.getClock(Clock.ID_PERIOD).getNumber();
-			long jam = sb.getClock(Clock.ID_JAM).getNumber();
+			int period = sb.getClock(Clock.ID_PERIOD).getNumber();
+			int jam = sb.getClock(Clock.ID_JAM).getNumber();
 
-			ScoreBoardManager.printMessage("Looking for period: " + period + "  jam: " + jam);
-			JamStats js = findJamStats(period, jam);
-			ScoreBoardManager.printMessage("  found js: " + js);
-
-			js.snapshot();
+			JamStats js = findJamStats(period, jam, true);
+			js.snapshot(jamEnd);
 
 			saveFile();
 		} catch (Exception e) {
@@ -112,6 +106,8 @@ public class Game {
 			out = new FileWriter(file);
 			out.write(this.toJSON().toString(2));
 		} catch (Exception e) {
+			ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
+			e.printStackTrace();
 		} finally {
 			if (out != null) {
 				try { out.close(); } catch (Exception e) { }

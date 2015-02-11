@@ -46,8 +46,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		setLastScore(DEFAULT_SCORE);
 		setTimeouts(DEFAULT_TIMEOUTS);
 		setOfficialReviews(DEFAULT_OFFICIAL_REVIEWS);
-		setLeadJammer(DEFAULT_LEADJAMMER);
-		setStarPass(DEFAULT_STARPASS);
+		_setLeadJammer(DEFAULT_LEADJAMMER);
+		_setStarPass(DEFAULT_STARPASS);
 		removeAlternateNameModels();
 		removeColorModels();
 		Iterator<PositionModel> p = getPositionModels().iterator();
@@ -89,16 +89,16 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		benchSkaters();
 		saved_leadJammer = leadJammer;
 		saved_starPass = starPass;
-		setLeadJammer(Team.LEAD_NO_LEAD);
-		setStarPass(false);
+		_setLeadJammer(Team.LEAD_NO_LEAD);
+		_setStarPass(false);
 
 		requestBatchEnd();
 	}
 	public void unStopJam() {
 		requestBatchStart();
 		unBenchSkaters();
-		setLeadJammer(saved_leadJammer);
-		setStarPass(saved_starPass);
+		_setLeadJammer(saved_leadJammer);
+		_setStarPass(saved_starPass);
 		requestBatchEnd();
 	}
 
@@ -341,6 +341,10 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public String getLeadJammer() { return leadJammer; }
 	public void setLeadJammer(String lead) {
+		_setLeadJammer(lead);
+		ScoreBoardManager.gameSnapshot();
+	}
+	private void _setLeadJammer(String lead) {
 		if ("false".equals(lead.toLowerCase()))
 			lead = Team.LEAD_NO_LEAD;
 		else if ("true".equals(lead.toLowerCase()))
@@ -351,9 +355,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			String last = leadJammer;
 			leadJammer = lead;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, leadJammer, last));
-
-			try { getPositionModel(Position.ID_JAMMER).getSkaterModel().setLeadJammer(lead); }
-			catch ( NullPointerException npE ) { /* No Jammer set */ }
 
 			if (Team.LEAD_LEAD.equals(lead)) {
 				String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
@@ -369,6 +370,10 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public boolean isStarPass() { return starPass; }
 	public void setStarPass(boolean starPass) {
+		_setStarPass(starPass);
+		ScoreBoardManager.gameSnapshot();
+	}
+	private void _setStarPass(boolean starPass) {
 		synchronized (skaterLock) {
 			requestBatchStart();
 
@@ -377,7 +382,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(starPass), last));
 
 			if (starPass && Team.LEAD_LEAD.equals(leadJammer))
-				setLeadJammer(Team.LEAD_LOST_LEAD);
+				_setLeadJammer(Team.LEAD_LOST_LEAD);
 
 			requestBatchEnd();
 		}

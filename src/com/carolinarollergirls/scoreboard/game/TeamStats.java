@@ -48,8 +48,9 @@ public class TeamStats {
 		json.put("leadJammer", leadJammer);
 		json.put("isStarPass", isStarPass);
 		JSONArray s = new JSONArray();
-		for (SkaterStats ss : skaters)
-			s.put(ss.toJSON());
+		if (skaters != null)
+			for (SkaterStats ss : skaters)
+				s.put(ss.toJSON());
 		json.put("skaters", s);
 
 		return json;

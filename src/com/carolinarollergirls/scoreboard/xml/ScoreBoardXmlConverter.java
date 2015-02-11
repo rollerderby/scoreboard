@@ -171,7 +171,6 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
 		editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
 		editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
-		editor.setElement(e, Skater.EVENT_LEAD_JAMMER, null, s.getLeadJammer());
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
 
 		return e;
@@ -530,8 +529,6 @@ public class ScoreBoardXmlConverter
 					skaterModel.setNumber(value);
 				else if (name.equals(Skater.EVENT_POSITION))
 					skaterModel.setPosition(value);
-				else if (name.equals(Skater.EVENT_LEAD_JAMMER))
-					skaterModel.setLeadJammer(value);
 				else if (name.equals(Skater.EVENT_PENALTY_BOX))
 					skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {

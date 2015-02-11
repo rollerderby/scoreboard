@@ -19,12 +19,10 @@ public interface Skater extends ScoreBoardEventProvider
 	public String getName();
 	public String getNumber();
 	public String getPosition();
-	public String getLeadJammer();
 	public boolean isPenaltyBox();
 
 	public static final String EVENT_NAME = "Name";
 	public static final String EVENT_NUMBER = "Number";
 	public static final String EVENT_POSITION = "Position";
-	public static final String EVENT_LEAD_JAMMER = "LeadJammer";
 	public static final String EVENT_PENALTY_BOX = "PenaltyBox";
 }
