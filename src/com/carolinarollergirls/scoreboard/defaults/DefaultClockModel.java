@@ -341,9 +341,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	protected static class UpdateClockTimerTask extends TimerTask {
 		public static final String PROPERTY_INTERVAL_KEY = DefaultClockModel.class.getName() + ".interval";
+		private static long update_interval = DefaultClockModel.CLOCK_UPDATE_INTERVAL;
 
 		public UpdateClockTimerTask() {
-			long update_interval = DefaultClockModel.CLOCK_UPDATE_INTERVAL;
 			try {
 			        update_interval = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_INTERVAL_KEY));
 			} catch ( Exception e ) { }
@@ -399,7 +399,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			Iterator<DefaultClockModel> i;
 			ArrayList<DefaultClockModel> clocks;
 			synchronized (clockLock) {
-				currentTime += DefaultClockModel.CLOCK_UPDATE_INTERVAL;
+				currentTime += update_interval;
 				clocks = new ArrayList<DefaultClockModel>(this.clocks);
 			}
 			DefaultClockModel clock;
@@ -411,7 +411,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			i = clocks.iterator();
 			while (i.hasNext()) {
 				clock = i.next();
-				clock.timerTick(DefaultClockModel.CLOCK_UPDATE_INTERVAL);
+				clock.timerTick(update_interval);
 			}
 			i = clocks.iterator();
 			while (i.hasNext()) {
