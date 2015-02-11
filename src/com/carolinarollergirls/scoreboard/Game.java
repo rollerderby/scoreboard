@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.game.*;
@@ -68,7 +69,7 @@ public class Game {
 		}
 	}
 
-	public JSONObject toJSON() {
+	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("identifier", identifier);
 

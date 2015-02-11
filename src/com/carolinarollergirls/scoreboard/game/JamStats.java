@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.game;
 import java.util.Date;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
@@ -40,7 +41,7 @@ public class JamStats {
 			ts.snapshot(jamClockRunning || jamEnd);
 	}
 
-	public JSONObject toJSON() {
+	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("jam", jam);
 		if (periodWallClockStart != null) {

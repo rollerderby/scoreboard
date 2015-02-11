@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.game;
 
 import java.util.ArrayList;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.Game;
@@ -13,7 +14,7 @@ public class PeriodStats {
 		jams = new ArrayList<JamStats>();
 	}
 
-	public JSONObject toJSON() {
+	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("period", period);
 		JSONArray j = new JSONArray();

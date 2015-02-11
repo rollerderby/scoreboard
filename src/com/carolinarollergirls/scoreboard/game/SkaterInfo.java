@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard.game;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.Game;
@@ -13,7 +14,7 @@ public class SkaterInfo {
 		number = s.getNumber();
 	}
 
-	public JSONObject toJSON() {
+	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("id", id);
 		json.put("name", name);
