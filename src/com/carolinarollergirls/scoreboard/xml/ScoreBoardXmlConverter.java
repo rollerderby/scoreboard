@@ -505,7 +505,7 @@ public class ScoreBoardXmlConverter
 			skaterModel = teamModel.getSkaterModel(id);
 		} catch ( SkaterNotFoundException snfE ) {
 			Element nameE = skater.getChild(Skater.EVENT_NAME);
-			String name = (nameE == null ? id : editor.getText(nameE));
+			String name = (nameE == null ? "" : editor.getText(nameE));
 			Element numberE = skater.getChild(Skater.EVENT_NUMBER);
 			String number = (numberE == null ? "" : editor.getText(numberE));
 			teamModel.addSkaterModel(id, name, number);

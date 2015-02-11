@@ -1186,7 +1186,7 @@ function createNewTeamTable(team, teamid) {
 	var newSkaterButton = $("<button>").text("Add Skater").button({ disabled: true }).addClass("AddSkater")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
 		.click(function() {
-			var id = _crgUtils.checkSbId(newSkaterName.val());
+			var id = _crgScoreBoard.newUUID(true);
 			team.$sb("Skater("+id+").Number").$sbSet(newSkaterNumber.val());
 			team.$sb("Skater("+id+").Name").$sbSet(newSkaterName.val());
 			newSkaterNumber.val("");
