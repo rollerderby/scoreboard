@@ -67,10 +67,10 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			if (position.equals(p))
 				return;
 
-			try { getTeamModel().getPositionModel(position)._clear(); }
+			try { teamModel.getPositionModel(position)._clear(); }
 			catch ( PositionNotFoundException pnfE ) { /* I was on the Bench. */ }
 
-			try { getTeamModel().getPositionModel(p)._setSkaterModel(this.getId()); }
+			try { teamModel.getPositionModel(p)._setSkaterModel(this.getId()); }
 			catch ( PositionNotFoundException pnfE ) { /* I'm being put on the Bench. */ }
 
 			String last = position;
@@ -91,9 +91,12 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			penaltyBox = box;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
 
+			if (box && position.equals(Position.ID_JAMMER) && teamModel.getLeadJammer().equals(Team.LEAD_LEAD))
+				teamModel.setLeadJammer(Team.LEAD_LOST_LEAD);
+
 			if (position.equals(Position.ID_JAMMER) || position.equals(Position.ID_PIVOT)) {
 				// Update Position Model if Jammer or Pivot
-				try { getTeamModel().getPositionModel(position)._setPenaltyBox(box); }
+				try { teamModel.getPositionModel(position)._setPenaltyBox(box); }
 				catch ( PositionNotFoundException pnfE ) { }
 			}
 
