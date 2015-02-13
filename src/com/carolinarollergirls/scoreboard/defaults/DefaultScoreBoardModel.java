@@ -77,6 +77,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setOfficialReview(false);
 		setInPeriod(false);
 		setInOvertime(false);
+
+		RuleSet.apply();
 	}
 
 	public boolean isInPeriod() { return inPeriod; }

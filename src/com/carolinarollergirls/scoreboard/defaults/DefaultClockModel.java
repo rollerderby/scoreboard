@@ -15,30 +15,48 @@ import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
 
-public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel
+public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, RuleSet.RuleSetReceiver
 {
 	public DefaultClockModel(ScoreBoardModel sbm, String i) {
 		scoreBoardModel = sbm;
 		id = i;
 
-		// The default value for these cannot be known
-		// as each clock has a different value,
-		// so we only set a default here so something will be set.
-		// These defaults are almost certainly not correct,
-		// so we really are relying on later configuration (like xml loading)
-		// to set the correct values for these.
-		// Additionally, we can't do this in reset() because
-		// then the clocks would all be reset to incorrect min,max,etc values.
-		// Even better, would be to force passing these in the constructor so
-		// we would have good default values, that could be reset to...
-		// FIXME ^^
-		setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
-		setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
-		setCountDirectionDown(DEFAULT_DIRECTION);
-		setMinimumTime(DEFAULT_MINIMUM_TIME);
-		setMaximumTime(DEFAULT_MAXIMUM_TIME);
+		// Set large initial defaults and then let the current ruleset override them
+		// setName(id);
+		// setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
+		// setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
+		// setCountDirectionDown(DEFAULT_DIRECTION);
+		// setMinimumTime(DEFAULT_MINIMUM_TIME);
+		// setMaximumTime(DEFAULT_MAXIMUM_TIME);
+
+		RuleSet.registerRule(this, "Clock." + id + ".Name");
+		RuleSet.registerRule(this, "Clock." + id + ".MinimumNumber");
+		RuleSet.registerRule(this, "Clock." + id + ".MaximumNumber");
+		RuleSet.registerRule(this, "Clock." + id + ".Direction");
+		RuleSet.registerRule(this, "Clock." + id + ".MinimumTime");
+		RuleSet.registerRule(this, "Clock." + id + ".MaximumTime");
+
+		// Get default values from active ruleset
+		RuleSet.apply("Clock." + id + ".");
 
 		reset();
+	}
+
+	public void applyRule(String rule, Object value) {
+		if (rule.equals("Clock." + id + ".Name"))
+			setName((String)value);
+		else if (rule.equals("Clock." + id + ".Direction"))
+			setCountDirectionDown((Boolean)value);
+		else {
+			if (rule.equals("Clock." + id + ".MinimumNumber"))
+				setMinimumNumber((Integer)value);
+			else if (rule.equals("Clock." + id + ".MaximumNumber"))
+				setMaximumNumber((Integer)value);
+			else if (rule.equals("Clock." + id + ".MinimumTime"))
+				setMinimumTime((Long)value);
+			else if (rule.equals("Clock." + id + ".MaximumTime"))
+				setMaximumTime((Long)value);
+		}
 	}
 
 	public String getProviderName() { return "Clock"; }
@@ -58,7 +76,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		unstopLastTime = 0;
 
 		stop();
-		setName(getId());
 
 		// We hardcode the assumption that numbers count up.
 		setNumber(getMinimumNumber());
@@ -157,7 +174,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			if (sync && isRunning() && isSyncTime())
 				change = ((change / 1000) * 1000);
 			time = checkNewTime(time + change);
-			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
+			if (time % 1000 == 0 || Math.abs(last - time) >= 1000)
+				scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
 			doStop = checkStop();
 		}
 		if (doStop)
