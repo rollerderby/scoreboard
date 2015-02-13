@@ -93,10 +93,11 @@ $sb(function() {
 
 	var view = sbViewOptions.$sb("CurrentView");
 	view.$sbBindAndRun("sbchange", function(event, value) {
+		$("video").each(function() { this.pause(); });
 		var showDiv = $("#"+value+"Div");
 		if (!showDiv.length)
 			showDiv = $("#sbDiv");
-		showDiv.children("video").each(function() { this.play(); });
+		showDiv.children("video").each(function() { this.currentTime = 0; this.play(); });
 		$("#mainDiv>div.View").not(showDiv).removeClass("Show");
 		showDiv.addClass("Show");
 	});
