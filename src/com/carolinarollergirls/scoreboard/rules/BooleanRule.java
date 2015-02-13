@@ -38,7 +38,7 @@ public class BooleanRule extends Rule {
 
 		Object v2 = convertValue(v.toString());
 		if (v2 != null) {
-			Boolean b = (Boolean)defaultValue;
+			Boolean b = (Boolean)v2;
 			return b ? trueValue : falseValue;
 		}
 		return v.toString();

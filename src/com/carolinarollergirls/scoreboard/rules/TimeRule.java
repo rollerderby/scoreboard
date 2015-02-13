@@ -38,7 +38,7 @@ public class TimeRule extends Rule {
 
 		Object v2 = convertValue(v.toString());
 		if (v2 != null) {
-			Long dv = (Long)defaultValue / 1000;
+			Long dv = (Long)v2 / 1000;
 			return String.format("%d:%02d", dv / 60, dv % 60);
 		}
 		return v.toString();
