@@ -13,6 +13,9 @@ public class Game {
 	public Game() {
 		this.logging = false;
 		this.sb = null;
+
+		Thread t = new Thread(new SaveThread());
+		t.start();
 	}
 
 	public void setScoreBoard(ScoreBoard sb) {
@@ -52,20 +55,22 @@ public class Game {
 		if (!logging || sb == null)
 			return;
 
-		try {
-			teams[0].snapshot();
-			teams[1].snapshot();
+		synchronized (saveLock) {
+			try {
+				teams[0].snapshot();
+				teams[1].snapshot();
 
-			int period = sb.getClock(Clock.ID_PERIOD).getNumber();
-			int jam = sb.getClock(Clock.ID_JAM).getNumber();
+				int period = sb.getClock(Clock.ID_PERIOD).getNumber();
+				int jam = sb.getClock(Clock.ID_JAM).getNumber();
 
-			JamStats js = findJamStats(period, jam, true);
-			js.snapshot(jamEnd);
+				JamStats js = findJamStats(period, jam, true);
+				js.snapshot(jamEnd);
 
-			saveFile();
-		} catch (Exception e) {
-			ScoreBoardManager.printMessage("Error catching snapshot: " + e.getMessage());
-			e.printStackTrace();
+				saveLock.notifyAll();
+			} catch (Exception e) {
+				ScoreBoardManager.printMessage("Error catching snapshot: " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -100,18 +105,33 @@ public class Game {
 	}
 
 	private void saveFile() {
-		File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
-		file.getParentFile().mkdirs();
-		FileWriter out = null;
-		try {
-			out = new FileWriter(file);
-			out.write(this.toJSON().toString(2));
-		} catch (Exception e) {
-			ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			if (out != null) {
-				try { out.close(); } catch (Exception e) { }
+		synchronized (saveLock) {
+			saveLock.notifyAll();
+		}
+	}
+
+	private class SaveThread implements Runnable {
+		public void run() {
+			while (true) {
+				synchronized (saveLock) {
+					try { saveLock.wait(); }
+					catch ( Exception e ) { }
+
+					File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
+					file.getParentFile().mkdirs();
+					FileWriter out = null;
+					try {
+						out = new FileWriter(file);
+						out.write(toJSON().toString(2));
+					} catch (Exception e) {
+						ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
+						e.printStackTrace();
+					} finally {
+						if (out != null) {
+							try { out.close(); } catch (Exception e) { }
+						}
+					}
+				}
 			}
 		}
 	}
@@ -121,4 +141,5 @@ public class Game {
 	private ArrayList<PeriodStats> periods = null;
 	private boolean logging = false;
 	private String identifier = "";
+	private Object saveLock = new Object();
 }
