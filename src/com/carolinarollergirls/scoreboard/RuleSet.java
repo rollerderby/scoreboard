@@ -7,11 +7,12 @@ import java.util.List;
 import java.util.Map;
 
 import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
-import java.util.ArrayList;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONTokener;
 
 import com.carolinarollergirls.scoreboard.rules.*;
 
@@ -28,9 +29,7 @@ public class RuleSet {
 		rule_sets.add(rs);
 	}
 
-	private RuleSet() {
-		name = "WFTDA Santioned";
-
+	private static RuleSet initialize() {
 		newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "PreGame",       "", "Time To Derby"));
 		newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "Intermission",  "", "Intermission"));
 		newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
@@ -72,24 +71,39 @@ public class RuleSet {
 		newRule(   new TimeRule("Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
 		newRule(   new TimeRule("Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
 
+		base_ruleset = new RuleSet();
+		base_ruleset.name = "WFTDA Santioned";
+		base_ruleset.parent = null;
 		for (Rule r : rule_definitions.values()) {
-			setRule(r.getFullName(), r.getDefaultValue());
+			base_ruleset.setRule(r.getFullName(), r.getDefaultValue());
 		}
 
-		immutable = true;
-		addRuleSet(this);
-
+		base_ruleset.immutable = true;
+		addRuleSet(base_ruleset);
 		saveAll();
+
+		File file = new File(ScoreBoardManager.getDefaultPath(), "rules");
+		for (File child : file.listFiles()) {
+			if (child.getName().endsWith(".json")) {
+				String childName = child.getName().replace(".json", "");
+				load(childName);
+			}
+		}
+
+		return base_ruleset;
 	}
+
+	public static void activateRuleSet(String name) {
+		RuleSet rs = findRuleSet(name);
+		if (rs != null) {
+			ScoreBoardManager.printMessage("*** ACTIVATING RULESET " + name);
+			active = rs;
+			apply();
+		}
+	}
+
 	public static void newRule(Rule rule) {
 		rule_definitions.put(rule.getFullName(), rule);
-	}
-
-	public RuleSet(String name) {
-		this.name = name;
-		load();
-
-		addRuleSet(this);
 	}
 
 	public static void apply() {
@@ -122,8 +136,9 @@ public class RuleSet {
 	}
 
 	public boolean setRule(String rule, Object value) {
-		if (immutable)
+		if (immutable) {
 			return false;
+		}
 
 		for (Rule r : rule_definitions.values()) {
 			if (r.getFullName().equals(rule)) {
@@ -142,21 +157,6 @@ public class RuleSet {
 	}
 
 	public static void saveAll() {
-		File file = new File(new File(ScoreBoardManager.getDefaultPath(), "rules"), "rule_definitions" + ".json");
-		file.getParentFile().mkdirs();
-		FileWriter out = null;
-		try {
-			out = new FileWriter(file);
-			out.write(toJSONDefinitions().toString(2));
-		} catch (Exception e) {
-			ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
-			e.printStackTrace();
-		} finally {
-			if (out != null) {
-				try { out.close(); } catch (Exception e) { }
-			}
-		}
-
 		for (RuleSet rs : rule_sets) {
 			rs.save();
 		}
@@ -188,7 +188,60 @@ public class RuleSet {
 		return json;
 	}
 
-	private void load() {
+	private static RuleSet findRuleSet(String name) {
+		for (RuleSet rs : rule_sets)
+			if (rs.name.equals(name)) {
+				return rs;
+			}
+		return null;
+	}
+
+	private static RuleSet load(String name) {
+		RuleSet rs = findRuleSet(name);
+		if (rs != null)
+			return rs;
+
+		FileReader in = null;
+		try {
+			File file = new File(new File(ScoreBoardManager.getDefaultPath(), "rules"), name + ".json");
+			if (!file.exists())
+				return base_ruleset;
+
+			in = new FileReader(file);
+			JSONTokener tok = new JSONTokener(in);
+			JSONObject json = new JSONObject(tok);
+
+			rs = new RuleSet();
+			rs.name = name;
+			rs.immutable = false;
+
+			String parent = json.optString("parent", null);
+			if (parent != null && !parent.trim().equals(""))
+				rs.parent = load(parent);
+			else
+				rs.parent = base_ruleset;
+
+			JSONObject values = json.getJSONObject("values");
+			for (Rule r : rule_definitions.values()) {
+				String rule = r.getFullName();
+				Object v = values.opt(rule);
+				if (v != null) {
+					boolean didSet = rs.setRule(rule, v);
+				}
+			}
+			rs.immutable = json.optBoolean("immutable", false);
+
+			addRuleSet(rs);
+			return rs;
+		} catch (Exception e) {
+			ScoreBoardManager.printMessage("Error loading ruleset " + name + ": " + e.getMessage());
+			e.printStackTrace();
+		} finally {
+			if (in != null) {
+				try { in.close(); } catch (Exception e) { }
+			}
+		}
+		return null;
 	}
 
 	private void save() {
@@ -200,7 +253,7 @@ public class RuleSet {
 			out = new FileWriter(file);
 			out.write(toJSON().toString(2));
 		} catch (Exception e) {
-			ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
+			ScoreBoardManager.printMessage("Error saving ruleset " + name + ": " + e.getMessage());
 			e.printStackTrace();
 		} finally {
 			if (out != null) {
@@ -212,7 +265,8 @@ public class RuleSet {
 	private static Map<String, RuleSetReceiver> rule_receivers = new LinkedHashMap<String, RuleSetReceiver>();
 	private static Map<String, Rule> rule_definitions = new LinkedHashMap<String, Rule>();
 	private static List<RuleSet> rule_sets = new LinkedList<RuleSet>();
-	private static RuleSet active = new RuleSet();
+	private static RuleSet active = initialize();
+	private static RuleSet base_ruleset = null;
 
 	private RuleSet parent = null;
 	private boolean immutable = false;
