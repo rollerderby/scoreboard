@@ -243,10 +243,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	public void unStartJam() {
 		synchronized (runLock) {
-			requestBatchStart();
 			if (!getClock(Clock.ID_JAM).isRunning())
 				return;
 
+			requestBatchStart();
 			if (lineupClockWasRunning)
 				getClockModel(Clock.ID_LINEUP).unstop();
 			if (timeoutClockWasRunning)
@@ -263,10 +263,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public void unStopJam() {
 		synchronized (runLock) {
-			requestBatchStart();
-			if (getClock(Clock.ID_JAM).isRunning())
+			if (getClock(Clock.ID_JAM).isRunning() || !getClockModel(Clock.ID_LINEUP).isRunning())
 				return;
 
+			requestBatchStart();
 			getClockModel(Clock.ID_LINEUP).stop();
 			getClockModel(Clock.ID_JAM).unstop();
 			getTeamModel("1").unStopJam();
@@ -278,10 +278,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public void unTimeout() {
 		synchronized (runLock) {
-			requestBatchStart();
 			if (!getClock(Clock.ID_TIMEOUT).isRunning())
 				return;
 
+			requestBatchStart();
 			if (lineupClockWasRunning)
 				getClockModel(Clock.ID_LINEUP).unstop();
 			if (jamClockWasRunning) {
