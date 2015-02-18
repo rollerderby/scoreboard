@@ -162,14 +162,6 @@ public class RuleSet {
 		}
 	}
 
-	public static JSONArray toJSONDefinitions() throws JSONException {
-		JSONArray json = new JSONArray();
-		for (Rule r : rule_definitions.values())
-			json.put(r.toJSON());
-
-		return json;
-	}
-
 	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("parent", parent == null ? "" : parent.name);
@@ -177,14 +169,18 @@ public class RuleSet {
 		json.put("name", name);
 
 		JSONObject values = new JSONObject();
+		JSONObject inherit_values = new JSONObject();
 		for (Rule r : rule_definitions.values()) {
 			String rule = r.getFullName();
 
 			Object value = rules.get(rule);
 			if (value != null)
 				values.put(rule, r.toHumanReadable(value));
+			if (parent != null)
+				inherit_values.put(rule, r.toHumanReadable(parent.getRule(rule, true)));
 		}
 		json.put("values", values);
+		json.put("inherit_values", inherit_values);
 		return json;
 	}
 
@@ -272,4 +268,28 @@ public class RuleSet {
 	private boolean immutable = false;
 	private String name = "";
 	private Map<String, Object> rules = new HashMap<String, Object>();
+
+	public enum RequestType {
+		LIST_DEFINITIONS {
+			@Override
+			public String toJSON() {
+				JSONArray json = new JSONArray();
+				for (Rule r : rule_definitions.values())
+					json.put(r.toJSON());
+				return json.toString(2);
+			}
+		},
+		LIST_ALL_RULESETS {
+			@Override
+			public String toJSON() {
+				JSONArray json = new JSONArray();
+				for (RuleSet rs : rule_sets)
+					json.put(rs.toJSON());
+				return json.toString(2);
+			}
+		};
+
+		public String toJSON() { return ""; }
+	}
+
 }

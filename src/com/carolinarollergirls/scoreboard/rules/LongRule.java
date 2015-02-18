@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 public class LongRule extends Rule {
 	public LongRule(String group, String subgroup, String name, String description, int defaultValue) {
-		super(group, subgroup, name, description, new Long(defaultValue));
+		super("Long", group, subgroup, name, description, new Long(defaultValue));
 	}
 
 	public Object convertValue(String v) {

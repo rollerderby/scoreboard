@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 public class BooleanRule extends Rule {
 	public BooleanRule(String group, String subgroup, String name, String description, boolean defaultValue, String trueValue, String falseValue) {
-		super(group, subgroup, name, description, new Boolean(defaultValue));
+		super("Boolean", group, subgroup, name, description, new Boolean(defaultValue));
 
 		this.trueValue = trueValue;
 		this.falseValue = falseValue;

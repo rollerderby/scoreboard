@@ -5,7 +5,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Rule {
-	public Rule(String group, String subgroup, String name, String description, Object defaultValue) {
+	public Rule(String type, String group, String subgroup, String name, String description, Object defaultValue) {
+		this.type = type;
 		this.group = group;
 		this.subgroup = subgroup;
 		this.name = name;
@@ -25,6 +26,7 @@ public class Rule {
 		fullname = sb.toString();
 	}
 
+	public String getType() { return type; }
 	public String getName() { return name; }
 	public String getGroup() { return group; }
 	public String getSubgroup() { return subgroup; }
@@ -38,6 +40,7 @@ public class Rule {
 
 	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
+		json.put("type", type);
 		json.put("name", name);
 		json.put("group", group);
 		json.put("subgroup", subgroup);
@@ -52,6 +55,7 @@ public class Rule {
 		return v.toString();
 	}
 
+	protected String type;
 	protected String group;
 	protected String subgroup;
 	protected String name;

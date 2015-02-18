@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 public class TimeRule extends Rule {
 	public TimeRule(String group, String subgroup, String name, String description, String defaultValue) {
-		super(group, subgroup, name, description, null);
+		super("Time", group, subgroup, name, description, null);
 		this.defaultValue = convertValue(defaultValue);
 	}
 

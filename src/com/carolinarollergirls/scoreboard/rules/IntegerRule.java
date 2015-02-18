@@ -6,7 +6,7 @@ import org.json.JSONObject;
 
 public class IntegerRule extends Rule {
 	public IntegerRule(String group, String subgroup, String name, String description, int defaultValue) {
-		super(group, subgroup, name, description, new Integer(defaultValue));
+		super("Integer", group, subgroup, name, description, new Integer(defaultValue));
 	}
 
 	public Object convertValue(String v) {
