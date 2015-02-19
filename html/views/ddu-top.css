@@ -1,0 +1,111 @@
+/**
+ * CRG Overlay by Flat Track Protocol  ftp@rollerder.by  (C) Copyright 2015.   Free to all to use under GPL.
+ */
+
+body { background-color: #00ff00; }
+div { white-space: nowrap; }
+
+#barBackground { position: absolute; right: 0; left: 0; top: 0; height: 8%; 
+	background: silver;
+	background: -webkit-linear-gradient(to bottom, #eee, #ccc 50%, #bbb 50%, #aaa);
+	background:    -moz-linear-gradient(to bottom, #eee, #ccc 50%, #bbb 50%, #aaa);
+	background:      -o-linear-gradient(to bottom, #eee, #ccc 50%, #bbb 50%, #aaa);
+	background: linear-gradient(to bottom, #eee, #ccc 50%, #bbb 50%, #aaa);
+}
+
+#MainBar { margin-top: 0.25%; }
+
+#MainBar>div.Team>div.Lead>a.ToggleLead { color: #bbb; }
+#MainBar>div.Team>div.Lead.IsLead>a.ToggleLead { color: red; }
+
+#MainBar>div.Team>div.Timeouts>div.Timeout { background: #3488ff;  }
+#MainBar>div.Team>div.Timeouts>div.OfficialReview { background: white;  }
+
+#MainBar>div.Team>div.Timeouts>div.Timeout.Pulse,
+#MainBar>div.Team>div.Timeouts>div.OfficialReview.Pulse { background: red;  }
+
+
+
+#MainBar 	{ height: 8%; }
+
+a {
+	font-family: 'LiberationSans', helvetica;
+	font-weight: bold; 
+}
+
+.NoOverflow { overflow: hidden; }
+#MainBar>div { top: 0%; }
+
+#MainBar>div.Team>div { font-size: 6%; }
+
+#MainBar>div.Numbers>div.Number { font-size: 3%; }
+#MainBar>div.Clock>div.Number { font-size: 6%; }
+#MainBar>div.Clock>div.Time { font-size: 6%; text-align: center; }
+
+#MainBar>div.Team { display: block; height: 100%; width: 35%; }
+#MainBar>div.Numbers { width: 6%; height: 100%; float: left; margin: 0 2%; }
+#MainBar>div.Clocks { width: 10%; height: 100%; float: left; margin: 0 auto; }
+
+#MainBar>div.Team>div.Score { display: block; width: 18%; }
+#MainBar>div.Team>div.Name { display: block; width: 60%; }
+#MainBar>div.Team>div.Lead { display: block; width: 6%; font-size: 4%; padding-top: 2%; }
+
+
+#MainBar>div.Clocks>div { float: left; margin-top: 1%; }
+
+#MainBar>div.Clocks>div.Jam,
+#MainBar>div.Clocks>div.Timeout,
+#MainBar>div.Clocks>div.Lineup { display: block; width: 100%; text-align: right; }
+
+#MainBar>div.Numbers>div.Period,
+#MainBar>div.Numbers>div.Jam { display: block; width: 40%; }
+
+#MainBar>div.Numbers>div.Period { float: right; text-align: right; }
+#MainBar>div.Numbers>div.Jam { float: left; text-align: left; }
+
+
+
+#MainBar>div.Team>div.Timeouts { display: block; width: 8%; height: 100%; padding-top: 2%; }
+
+#MainBar>div.Team>div.Timeouts>div.OfficialReview,
+#MainBar>div.Team>div.Timeouts>div.Timeout { display: block; width: 30%; height: 20%; border-radius: 50%; margin: 5%;  float: left; }
+
+
+#MainBar>div.Team1>div.Name { text-align: right; margin-right: 0.5em; } 
+#MainBar>div.Team2>div.Name { text-align: left; margin-left: 0.5em; } 
+#MainBar>div.Team1>div.Score { text-align: left; }
+#MainBar>div.Team2>div.Score { text-align: right; }
+
+#MainBar>div.Clocks>Jam { text-align: left; }
+#MainBar>div.Clocks>div.Jam.Number { text-align: left; }
+#MainBar>div.Clocks>div.Period.Number { text-align: right; }
+
+
+#MainBar>div.Team1,
+#MainBar>div.Team1>div { float: left; }
+#MainBar>div.Team2,
+#MainBar>div.Team2>div { float: right; }
+
+#MainBar>div.Team>div.Name.AlternateName>a.Name { display: none; }
+#MainBar>div.Team>div.Name:not(.AlternateName)>a.AlternateName { display: none; }
+
+
+
+#MainBar>div.Clock.JLT:not(.ShowJam)>div.Jam.Time { display: none; }
+#MainBar>div.Clock.JLT:not(.ShowLineup)>div.Lineup.Time { display: none; }
+#MainBar>div.Clock.JLT:not(.ShowTimeout)>div.Timeout.Time { display: none; }
+
+#MainBar>div.Clock.PI>div.Intermission { display: none; }
+#MainBar>div.Clock.PI:not(.ShowPeriod)>div.Period.Time { display: none; }
+#MainBar>div.Clock.PI:not(.ShowIntermission)>div.Intermission.Time { display: none; }
+
+#MainBar>div.Team:not(.HasTimeout1) div.Timeout1:not(.Pulse) { opacity: 0; }
+#MainBar>div.Team:not(.HasTimeout2) div.Timeout2:not(.Pulse) { opacity: 0; }
+#MainBar>div.Team:not(.HasTimeout3) div.Timeout3:not(.Pulse) { opacity: 0; }
+#MainBar>div.Team:not(.HasOfficialReview) div.OfficialReview:not(.Pulse) { opacity: 0; }
+
+
+#MainBar>div.Numbers>div.Status { font-size: 4%; text-align: center; }
+#MainBar>div.Numbers>div.Status { width: 100%; font-size: 2%; clear: both; margin-top: 40%; }
+
+
