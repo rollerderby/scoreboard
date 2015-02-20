@@ -31,7 +31,7 @@ public class JSONServlet extends HttpServlet
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		try {
-			if ("/RuleSet/ListAll".equals(request.getPathInfo())) {
+			if ("/RuleSet/List".equals(request.getPathInfo())) {
 				response.getWriter().print(RuleSet.RequestType.LIST_ALL_RULESETS.toJSON());
 			} else if ("/RuleSet/ListDefinitions".equals(request.getPathInfo())) {
 				response.getWriter().print(RuleSet.RequestType.LIST_DEFINITIONS.toJSON());

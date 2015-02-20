@@ -5,6 +5,7 @@ import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import java.io.File;
 import java.io.FileReader;
@@ -39,35 +40,35 @@ public class RuleSet {
 		newRule( new StringRule("Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
 		newRule(new IntegerRule("Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
 		newRule(new IntegerRule("Clock", Clock.ID_PERIOD,       "MaximumNumber", "", 2));
-		newRule(new BooleanRule("Clock", Clock.ID_PERIOD,       "Direction",     "", true, "down", "up"));
+		newRule(new BooleanRule("Clock", Clock.ID_PERIOD,       "Direction",     "", true, "Count Down", "Count Up"));
 		newRule(   new TimeRule("Clock", Clock.ID_PERIOD,       "MinimumTime",   "", "0:00"));
 		newRule(   new TimeRule("Clock", Clock.ID_PERIOD,       "MaximumTime",   "", "30:00"));
 
 		newRule( new StringRule("Clock", Clock.ID_JAM,          "Name",          "", Clock.ID_JAM));
 		newRule(new IntegerRule("Clock", Clock.ID_JAM,          "MinimumNumber", "", 1));
 		newRule(new IntegerRule("Clock", Clock.ID_JAM,          "MaximumNumber", "", 2));
-		newRule(new BooleanRule("Clock", Clock.ID_JAM,          "Direction",     "", true, "down", "up"));
+		newRule(new BooleanRule("Clock", Clock.ID_JAM,          "Direction",     "", true, "Count Down", "Count Up"));
 		newRule(   new TimeRule("Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));
 		newRule(   new TimeRule("Clock", Clock.ID_JAM,          "MaximumTime",   "", "2:00"));
 
 		newRule( new StringRule("Clock", Clock.ID_LINEUP,       "Name",          "", Clock.ID_LINEUP));
 		newRule(new IntegerRule("Clock", Clock.ID_LINEUP,       "MinimumNumber", "", 1));
 		newRule(new IntegerRule("Clock", Clock.ID_LINEUP,       "MaximumNumber", "", 2));
-		newRule(new BooleanRule("Clock", Clock.ID_LINEUP,       "Direction",     "", false, "down", "up"));
+		newRule(new BooleanRule("Clock", Clock.ID_LINEUP,       "Direction",     "", false, "Count Down", "Count Up"));
 		newRule(   new TimeRule("Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
 		newRule(   new TimeRule("Clock", Clock.ID_LINEUP,       "MaximumTime",   "", "60:00"));
 
 		newRule( new StringRule("Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
 		newRule(new IntegerRule("Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));
 		newRule(new IntegerRule("Clock", Clock.ID_TIMEOUT,      "MaximumNumber", "", 2));
-		newRule(new BooleanRule("Clock", Clock.ID_TIMEOUT,      "Direction",     "", false, "down", "up"));
+		newRule(new BooleanRule("Clock", Clock.ID_TIMEOUT,      "Direction",     "", false, "Count Down", "Count Up"));
 		newRule(   new TimeRule("Clock", Clock.ID_TIMEOUT,      "MinimumTime",   "", "0:00"));
 		newRule(   new TimeRule("Clock", Clock.ID_TIMEOUT,      "MaximumTime",   "", "60:00"));
 
 		newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "Name",          "", Clock.ID_INTERMISSION));
 		newRule(new IntegerRule("Clock", Clock.ID_INTERMISSION, "MinimumNumber", "", 0));
 		newRule(new IntegerRule("Clock", Clock.ID_INTERMISSION, "MaximumNumber", "", 2));
-		newRule(new BooleanRule("Clock", Clock.ID_INTERMISSION, "Direction",     "", true, "down", "up"));
+		newRule(new BooleanRule("Clock", Clock.ID_INTERMISSION, "Direction",     "", true, "Count Down", "Count Up"));
 		newRule(   new TimeRule("Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
 		newRule(   new TimeRule("Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
 
@@ -167,6 +168,7 @@ public class RuleSet {
 		json.put("parent", parent == null ? "" : parent.name);
 		json.put("immutable", immutable);
 		json.put("name", name);
+		json.put("id", id);
 
 		JSONObject values = new JSONObject();
 		JSONObject inherit_values = new JSONObject();
@@ -207,7 +209,13 @@ public class RuleSet {
 			JSONTokener tok = new JSONTokener(in);
 			JSONObject json = new JSONObject(tok);
 
+			String id = json.optString("id", "");
+
 			rs = new RuleSet();
+			if (id.equals(""))
+				rs.id = UUID.randomUUID();
+			else
+				rs.id = UUID.fromString(id);
 			rs.name = name;
 			rs.immutable = false;
 
@@ -266,6 +274,7 @@ public class RuleSet {
 
 	private RuleSet parent = null;
 	private boolean immutable = false;
+	private UUID id = UUID.fromString("00000000-0000-0000-0000-000000000000");
 	private String name = "";
 	private Map<String, Object> rules = new HashMap<String, Object>();
 

@@ -1,0 +1,32 @@
+.rulesets {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	width: 20%;
+	height: 100%;
+	border-right: 1px solid black;
+	overflow: auto;
+}
+
+.definitions {
+	position: absolute;
+	left: 22%;
+	top: 0px;
+	width: 78%;
+	height: 100%;
+	overflow: auto;
+	display: none;
+}
+
+.rules { padding-top: 10px; }
+.definitions .section { width: 100%; clear: both; }
+.definitions .section .header { background-color: lightgray; font-weight: bold; }
+.definitions .section .definition { width: 100%; height: 1em; clear: both; padding: 0px; margin: 0px; }
+.definitions .section .definition div { float: left; }
+.definitions .section .definition .name { width: 40%; }
+.definitions .section .definition .value { width: 60%; }
+
+h1 {
+	font-size: 12pt;
+	padding-left: 10px;
+}
