@@ -10,186 +10,154 @@
 XML_ELEMENT_SELECTOR = "Pages(Overlay),ScoreBoard";
 
 function setupMainDiv(div) {
-	div.css({ position: "fixed" });
+  div.css({ position: "fixed" });
 
-	_crgUtils.bindAndRun($(window), "resize", function() {
-		var aspect16x9 = _windowFunctions.get16x9Dimensions();
-		div.css(aspect16x9).css("fontSize", aspect16x9.height);
-	});
+  _crgUtils.bindAndRun($(window), "resize", function() {
+    var aspect16x9 = _windowFunctions.get16x9Dimensions();
+    div.css(aspect16x9).css("fontSize", aspect16x9.height);
+  });
 }
 
 $sb(function() {
-	setupMainDiv($("#mainDiv"));
+  setupMainDiv($("#mainDiv"));
 
-	var showClocks = function() {
-		var pR = $sb("ScoreBoard.Clock(Period).Running").$sbIsTrue();
-		var jR = $sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue();
-		var lR = $sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue();
-		var tR = $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue();
-		var iR = $sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue();
-		var iN = $sb("ScoreBoard.Clock(Intermission).Number").$sbGet();
+  var showClocks = function() {
+    var pR = $sb("ScoreBoard.Clock(Period).Running").$sbIsTrue();
+    var jR = $sb("ScoreBoard.Clock(Jam).Running").$sbIsTrue();
+    var lR = $sb("ScoreBoard.Clock(Lineup).Running").$sbIsTrue();
+    var tR = $sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue();
+    var iR = $sb("ScoreBoard.Clock(Intermission).Running").$sbIsTrue();
+    var iN = $sb("ScoreBoard.Clock(Intermission).Number").$sbGet();
 
-		if (jR) {
-			$("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
-		} else if (tR) {
-			$("a.ClockJLT").closest("div").removeClass("ShowLineup ShowJam").addClass("ShowTimeout");
-		} else if (lR) {
-			$("a.ClockJLT").closest("div").removeClass("ShowJam ShowTimeout").addClass("ShowLineup");
-		} else if (iR) {
-			$("a.ClockJLT").closest("div").removeClass("ShowJam ShowTimeout ShowLineup");
-		} else {
-			$("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
-		}
+    if (jR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
+    } else if (tR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowJam").addClass("ShowTimeout");
+    } else if (lR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowJam ShowTimeout").addClass("ShowLineup");
+    } else if (iR) {
+      $("a.ClockJLT").closest("div").removeClass("ShowJam ShowTimeout ShowLineup");
+    } else {
+      $("a.ClockJLT").closest("div").removeClass("ShowLineup ShowTimeout").addClass("ShowJam");
+    }
 
-		if (pR) {
-			$("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
-		} else if (iR && !jR && !lR && !tR) {
-			if (iN == 2) { // Hide intermission clock too for Final
-				$("a.ClockPI").closest("div").removeClass("ShowPeriod ShowIntermission");
-			} else {
-				$("a.ClockPI").closest("div").removeClass("ShowPeriod").addClass("ShowIntermission");
-			}
-		} else {
-			$("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
-		}
-	};
+    if (pR) {
+      $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
+    } else if (iR && !jR && !lR && !tR) {
+      if (iN == 2) { // Hide intermission clock too for Final
+        $("a.ClockPI").closest("div").removeClass("ShowPeriod ShowIntermission");
+      } else {
+        $("a.ClockPI").closest("div").removeClass("ShowPeriod").addClass("ShowIntermission");
+      }
+    } else {
+      $("a.ClockPI").closest("div").removeClass("ShowIntermission").addClass("ShowPeriod");
+    }
+  };
 
-	$.each( [ "1", "2" ], function(i, team) {
-		$sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name");
-		_crgUtils.bindColors("ScoreBoard.Team("+team+")", "overlay", $("#Team" + team + "Name"));
-		$sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a");
-		$sb("ScoreBoard.Team("+team+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
-			if ($sb(node).$sbId == "overlay")
-				$sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event, val) {
-					val = $.trim(val);
-					$("#Team"+team+"Name>a.AlternateName").html(val);
-					$("#Team"+team+"Name").toggleClass("AlternateName", (val != ""));
-				});
-		}, function(event, node) {
-			if ($sb(node).$sbId == "overlay")
-				$("#Team"+team+"Name").removeClass("AlternateName");
-		});
+  $.each( [ "1", "2" ], function(i, team) {
+    $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a.AlternateName");
+    $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name");
+/*    $sb("ScoreBoard.Team("+team+").Color(overlay)").$sbBindColors($("#Team"+team+"Name")); */
+    _crgUtils.bindColors("ScoreBoard.Team("+team+")", "overlay", $("#Team" + team + "Name"));
+    $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a");
+    $sb("ScoreBoard.Team("+team+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
+      if ($sb(node).$sbId == "overlay")
+        $sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event, val) {
+          $("#Team"+team+"Name").toggleClass("AlternateName", ($.trim(val) != ""));
+        });
+    }, function(event, node) {
+      if ($sb(node).$sbId == "overlay")
+        $("#Team"+team+"Name").removeClass("AlternateName");
+    });
+    
+    // Pulsate Timeouts if they're currently active. They'll be hidden in manageTimeoutImages
+    $.each( [ 0, 1, 2 ], function(x, i) {
+    	setupPulsate( 
+    			function() { return (
+    					$sb("ScoreBoard.Team(1).Timeouts").$sbGet() == i && 
+    					$sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue() &&
+    					!$sb("ScoreBoard.OfficialReview").$sbIsTrue() && // Note, Negated. NOT Official Review
+    					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 1); },
+        			$("#WftdaT1T"+(i+1)),
+        			1000
+        		);
+    	setupPulsate( 
+        		function() { return (
+        				$sb("ScoreBoard.Team(2).Timeouts").$sbGet() == i && 
+    					$sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue() &&
+    					!$sb("ScoreBoard.OfficialReview").$sbIsTrue() && // Note, Negated. NOT Official Review
+    					$sb("ScoreBoard.TimeoutOwner").$sbGet() == 2); },
+            		$("#WftdaT2T"+(i+1)),
+            		1000
+            	);
+    });
+    
+    // Pulsate OR buttons.
+    $.each( [ 1, 2 ], function(x, i) {
+    	setupPulsate(
+    		function() { return (
+    				$sb("ScoreBoard.OfficialReview").$sbIsTrue() &&
+    				$sb("ScoreBoard.TimeoutOwner").$sbGet() == i) },
+    			$("#WftdaT"+i+"OR"),
+    			1000
+    	);
+    });
+  });
 
-		// Pulsate Timeouts if they're currently active. They'll be hidden in manageTimeoutImages
-		$.each( [ 0, 1, 2 ], function(x, i) {
-			setupPulsate(
-					function() { return (
-							$sb("ScoreBoard.Team(1).Timeouts").$sbGet() == i &&
-							$sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue() &&
-							!$sb("ScoreBoard.OfficialReview").$sbIsTrue() && // Note, Negated. NOT Official Review
-							$sb("ScoreBoard.TimeoutOwner").$sbGet() == 1); },
-							$("#WftdaT1T"+(i+1)),
-							1000
-						);
-			setupPulsate(
-						function() { return (
-								$sb("ScoreBoard.Team(2).Timeouts").$sbGet() == i &&
-							$sb("ScoreBoard.Clock(Timeout).Running").$sbIsTrue() &&
-							!$sb("ScoreBoard.OfficialReview").$sbIsTrue() && // Note, Negated. NOT Official Review
-							$sb("ScoreBoard.TimeoutOwner").$sbGet() == 2); },
-								$("#WftdaT2T"+(i+1)),
-								1000
-							);
-		});
+  $sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number");
+  
+  $sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number");
 
-		// Pulsate OR buttons.
-		$.each( [ 1, 2 ], function(x, i) {
-			setupPulsate(
-				function() { return (
-						$sb("ScoreBoard.OfficialReview").$sbIsTrue() &&
-						$sb("ScoreBoard.TimeoutOwner").$sbGet() == i) },
-					$("#WftdaT"+i+"OR"),
-					1000
-			);
-		});
-	});
+  $.each( [ "Period", "Intermission", "Jam", "Lineup", "Timeout" ], function(i, clock) {
+    $sb("ScoreBoard.Clock("+clock+").Time").$sbElement("#Clock"+clock+"Time>a", {
+      sbelement: { convert: _timeConversions.msToMinSec } });
+    $sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClocks);
+  });
+  // This allows hiding the intermission clock during Final.
+  $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", showClocks);
 
-	$sb("ScoreBoard.Clock(Period).Number").$sbElement("#ClockPeriodNumber>a>span.Number");
+  $sb("Pages.Page(Overlay).Logo").$sbElement("#OverlayLogo>img", { sbelement: { autoFitText: true, autoFitTextContainer: "img" } });
 
-	$sb("ScoreBoard.Clock(Jam).Number").$sbElement("#ClockJamNumber>a>span.Number");
-
-	$.each( [ "Period", "Intermission", "Jam", "Lineup", "Timeout" ], function(i, clock) {
-		$sb("ScoreBoard.Clock("+clock+").Time").$sbElement("#Clock"+clock+"Time>a", {
-			sbelement: { convert: _timeConversions.msToMinSec } });
-		$sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", showClocks);
-	});
-	// This allows hiding the intermission clock during Final.
-	$sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", showClocks);
-
-
-
-	// The following was brutally ripped from overlay.js . Team2 stuff is left in to make switching the logo a matter of a simple html edit for now
-
-	// It puts the logo in the box, or else it gets the hose again.
-	$.each( [ 1, 2 ], function(i, team) {
-					$sb("Pages.Page(Overlay).Logo").$sbElement("#OverlayLogo>img", { sbelement: { autoFitText: true, autoFitTextContainer: "img" } });
-	});
-
-	// Disable or Enable Logos
-	$sb("ScoreBoard.Policy(PagePolicy_overlay.html).Enabled").$sbBindAndRun("sbchange", function(x, state) {
-					// Note that 'state' is a string, not a Bool.
-					if (state == "true") {
-									$(".logos>img").height("100%");
-									$(".logos>img").width("100%");
-									$(".logos").show(100);
-					} else {
-									$(".logos>img").height("0");
-									$(".logos>img").width("0");
-									$(".logos").hide(100);
-					}
-	});
-
-	// Toggle black background on logos
-	$sb("Scoreboard.Policy(PagePolicy_overlay.html).Parameter(Black Background).Value").$sbBindAndRun("sbchange", function(x, state) {
-					if (state == "true") {
-									$(".logos").css("background-color", "black");
-					} else {
-									$(".logos").css("background-color", "#0f0");
-					}
-	});
-
-
-
-	// Statusbar text.
-	var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
-		.add($sb("ScoreBoard.Clock(Timeout).Running"))
-		.add($sb("ScoreBoard.Clock(Lineup).Running"))
-		.add($sb("ScoreBoard.Clock(Intermission).Running"))
-		.add($sb("ScoreBoard.Clock(Intermission).Number"))
-		.add($sb("ScoreBoard.TimeoutOwner"))
-		.add($sb("ScoreBoard.OfficialReview"))
-		.add($sb("ScoreBoard.OfficialScore"))
-		.add($sb("ScoreBoard.InOvertime"));
-	_crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
-
-	// Timeout images
-	var timeoutTriggers = $sb("ScoreBoard.Team(1).OfficialReviews")
-		.add($sb("ScoreBoard.Team(1).Timeouts"))
-		.add($sb("ScoreBoard.Team(2).OfficialReviews"))
-		.add($sb("ScoreBoard.Team(2).Timeouts"))
-		.add($sb("ScoreBoard.TimeoutOwner"));
-	_crgUtils.bindAndRun(timeoutTriggers, "sbchange", function() { manageTimeoutImages(); });
-
-	// Lead Changes
-	$.each([ 1, 2 ], function(i, t) {
-		$sb("ScoreBoard.Team("+t+").LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
-			$("#WftdaT"+t+"LD").toggleClass("Show", isTrue(val), 1000);
-		});
-	});
+  // Statusbar text.
+  var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
+    .add($sb("ScoreBoard.Clock(Timeout).Running"))
+    .add($sb("ScoreBoard.Clock(Lineup).Running"))
+    .add($sb("ScoreBoard.Clock(Intermission).Running"))
+    .add($sb("ScoreBoard.Clock(Intermission).Number"))
+    .add($sb("ScoreBoard.TimeoutOwner"))
+    .add($sb("ScoreBoard.OfficialReview"))
+    .add($sb("ScoreBoard.OfficialScore"))
+    .add($sb("ScoreBoard.InOvertime"));
+  _crgUtils.bindAndRun(statusTriggers, "sbchange", function() { manageStatusBar(); });
+  
+  // Timeout images
+  var timeoutTriggers = $sb("ScoreBoard.Team(1).OfficialReviews")
+  	.add($sb("ScoreBoard.Team(1).Timeouts"))
+  	.add($sb("ScoreBoard.Team(2).OfficialReviews"))
+  	.add($sb("ScoreBoard.Team(2).Timeouts"))
+  	.add($sb("ScoreBoard.TimeoutOwner"));
+  _crgUtils.bindAndRun(timeoutTriggers, "sbchange", function() { manageTimeoutImages(); });
+  
+  // Lead Changes
+  $.each([ 1, 2 ], function(i, t) {
+    $sb("ScoreBoard.Team("+t+").LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
+      $("#WftdaT"+t+"LD").toggleClass("Show", isTrue(val), 1000);
+    });
+  });
 });
 
 
 
 
 function manageStatusBar() {
-	// This is called when pretty much anything changes,	and updates the status string
+	// This is called when pretty much anything changes,  and updates the status string 
 	var statusString = "Stand By";
 
 	if ($sb("Scoreboard.InOvertime").$sbIsTrue()) {
 		statusString = "Overtime";
 	} else if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
 		statusString = "Jam";
-	} else if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) {
+	} else if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
 		// Who's timeout is it?
 		if (!$sb("ScoreBoard.TimeoutOwner").$sbGet()) {
 			statusString = "Timeout";
@@ -197,7 +165,7 @@ function manageStatusBar() {
 			statusString = "Review";
 		} else {
 			statusString = "Team T/O";
-		}
+		}			
 	} else if ($sb("Scoreboard.Clock(Lineup).Running").$sbIsTrue()) {
 		statusString = "Lineup";
 	} else if ($sb("Scoreboard.Clock(Intermission).Running").$sbIsTrue()) {
@@ -211,21 +179,24 @@ function manageStatusBar() {
 			statusString = (official ? "Final" : "Unofficial");
 	}
 
-	// If the statusString has changed, fade out the old, and in the new
-	var statusBar = $("#StatusBar>a");
-	if (statusBar.data('current') != statusString) {
-		statusBar.data('current', statusString);
-		if (statusBar.data('fadingOut') != true) {
-			statusBar.queue(function(next) { $(this).data('fadingOut', true); next(); });
-			statusBar.animate({opacity: 0}, 500, function() {
-				$(this).data('fadingOut', false);
-				$(this).text($(this).data('current'));
-			});
-			statusBar.animate({opacity: 1}, 500);
-		}
-	}
-	// $("#StatusBar>a").html(statusString);
 
+
+        // If the statusString has changed, fade out the old, and in the new
+        var statusBar = $("#StatusBar>a");
+        if (statusBar.data('current') != statusString) {
+                statusBar.data('current', statusString);
+                if (statusBar.data('fadingOut') != true) {
+                        statusBar.queue(function(next) { $(this).data('fadingOut', true); next(); });
+                        statusBar.animate({opacity: 0}, 500, function() {
+                                $(this).data('fadingOut', false);
+                                $(this).text($(this).data('current'));
+                        });
+                        statusBar.animate({opacity: 1}, 500);
+                }
+        }
+        // $("#StatusBar>a").html(statusString);
+
+		
 }
 
 function manageTimeoutImages() {
@@ -241,7 +212,7 @@ function manageTimeoutImages() {
 			// Show their OR Box
 			$(pageHTMLID+"OR").show();
 		}
-
+		
 		// How's their timeouts looking?
 		var numTOs = thisTeam.$sb("Timeouts").$sbGet();
 		for ( var timeout = 1; timeout <= 3; timeout++ ) {
@@ -249,7 +220,7 @@ function manageTimeoutImages() {
 				$(pageHTMLID+"T"+timeout).show();
 			else
 				$(pageHTMLID+"T"+timeout).hide();
-		}
+		}		
 	});
 }
 
@@ -258,16 +229,17 @@ function manageTimeoutImages() {
 ////////////
 
 function setupPulsate(pulseCondition, pulseTarget, pulsePeriod) {
-	var doPulse = function(next) {
-		if (pulseCondition())
-			pulseTarget
-				.show()
-				.animate({ opacity: 0 }, (pulsePeriod/2), "linear")
-				.animate({ opacity: 1 }, (pulsePeriod/2), "linear");
-		else
-			pulseTarget.delay(500);
-		pulseTarget.queue(doPulse);
-		next();
-	};
-	doPulse($.noop);
-}
+  var doPulse = function(next) {
+    if (pulseCondition())
+      pulseTarget
+        .show()
+        .animate({ opacity: 0 }, (pulsePeriod/2), "linear")
+        .animate({ opacity: 1 }, (pulsePeriod/2), "linear");
+    else
+      pulseTarget.delay(500);
+    pulseTarget.queue(doPulse);
+    next();
+  };
+  doPulse($.noop);
+}  
+

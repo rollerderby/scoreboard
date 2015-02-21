@@ -7,7 +7,7 @@
  * See the file COPYING for details.
  */
 
-XML_ELEMENT_SELECTOR = "ScoreBoard";
+XML_ELEMENT_SELECTOR = "Pages(Overlay),ScoreBoard";
 
 function setupMainDiv(div) {
   div.css({ position: "fixed" });
@@ -56,8 +56,9 @@ $sb(function() {
 
   $.each( [ "1", "2" ], function(i, team) {
     $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a.AlternateName");
-    _crgUtils.bindColors("ScoreBoard.Team("+team+")", "overlay", $("#Team" + team + "Name"));
     $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name");
+/*    $sb("ScoreBoard.Team("+team+").Color(overlay)").$sbBindColors($("#Team"+team+"Name")); */
+    _crgUtils.bindColors("ScoreBoard.Team("+team+")", "overlay", $("#Team" + team + "Name"));
     $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a");
     $sb("ScoreBoard.Team("+team+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
       if ($sb(node).$sbId == "overlay")
@@ -114,6 +115,40 @@ $sb(function() {
   });
   // This allows hiding the intermission clock during Final.
   $sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", showClocks);
+
+
+
+  // The following was brutally ripped from overlay.js . Team2 stuff is left in to make switching the logo a matter of a simple html edit for now
+
+  // It puts the logo in the box, or else it gets the hose again.
+//  $.each( [ 1, 2 ], function(i, team) {
+//          $sb("Pages.Page(Overlay).Logo").$sbElement("#OverlayLogo>img", { sbelement: { autoFitText: true, autoFitTextContainer: "img" } });
+//  });
+
+  // Disable or Enable Logos
+//  $sb("ScoreBoard.Policy(PagePolicy_overlay.html).Enabled").$sbBindAndRun("sbchange", function(x, state) {
+          // Note that 'state' is a string, not a Bool.
+//          if (state == "true") {
+//                  $(".logos>img").height("100%");
+//                  $(".logos>img").width("100%");
+//                  $(".logos").show(100);
+//          } else {
+//                  $(".logos>img").height("0");
+//                  $(".logos>img").width("0");
+//                  $(".logos").hide(100);
+//          }
+//  });
+
+  // Toggle black background on logos
+//  $sb("Scoreboard.Policy(PagePolicy_overlay.html).Parameter(Black Background).Value").$sbBindAndRun("sbchange", function(x, state) {
+//          if (state == "true") {
+//                  $(".logos").css("background-color", "black");
+//          } else {
+//                  $(".logos").css("background-color", "#0f0");
+//          }
+//  });
+
+
 
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")
@@ -176,20 +211,23 @@ function manageStatusBar() {
 			statusString = (official ? "Final" : "Unofficial");
 	}
 
-	// If the statusString has changed, fade out the old, and in the new
-	var statusBar = $("#StatusBar>a");
-	if (statusBar.data('current') != statusString) {
-		statusBar.data('current', statusString);
-		if (statusBar.data('fadingOut') != true) {
-			statusBar.queue(function(next) { $(this).data('fadingOut', true); next(); });
-			statusBar.animate({opacity: 0}, 500, function() {
-				$(this).data('fadingOut', false);
-				$(this).text($(this).data('current'));
-			});
-			statusBar.animate({opacity: 1}, 500);
-		}
-	}
-	// $("#StatusBar>a").html(statusString); 
+
+
+        // If the statusString has changed, fade out the old, and in the new
+        var statusBar = $("#StatusBar>a");
+        if (statusBar.data('current') != statusString) {
+                statusBar.data('current', statusString);
+                if (statusBar.data('fadingOut') != true) {
+                        statusBar.queue(function(next) { $(this).data('fadingOut', true); next(); });
+                        statusBar.animate({opacity: 0}, 500, function() {
+                                $(this).data('fadingOut', false);
+                                $(this).text($(this).data('current'));
+                        });
+                        statusBar.animate({opacity: 1}, 500);
+                }
+        }
+        // $("#StatusBar>a").html(statusString);
+
 		
 }
 
