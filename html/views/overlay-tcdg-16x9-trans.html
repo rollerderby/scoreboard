@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
+<html><head><title>CRG SB Overlay</title>
+
+<!--
+ Copyright (C) 2008-2013 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
+
+ This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ The CRG ScoreBoard is licensed under either the GNU General Public
+ License version 3 (or later), or the Apache License 2.0, at your option.
+ See the file COPYING for details.
+-->
+
+<script type="text/javascript" src="/external/jquery/jquery.js" ></script>
+
+<script type="text/javascript" src="/javascript/scoreboard.js" ></script>
+
+</head>
+
+<body>
+<div id="mainDiv">
+	<div id="TCDGMain"      class="Full"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/main.png"/></div>
+	<div id="TCDGMainTrans" class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/main_trans.png"/></div>
+	<div id="TCDGT1LD"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1lead.png"/></div>
+	<div id="TCDGT1LDC"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1leadcover.png"/></div>
+	<div id="TCDGT1ORG"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1or_trans.png"/></div>
+	<div id="TCDGT1T1G"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1t1_trans.png"/></div>
+	<div id="TCDGT1T2G"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1t2_trans.png"/></div>
+	<div id="TCDGT1T3G"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1t3_trans.png"/></div>
+	<div id="TCDGT1OR"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1or.png"/></div>
+	<div id="TCDGT1T1"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1t1.png"/></div>
+	<div id="TCDGT1T2"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1t2.png"/></div>
+	<div id="TCDGT1T3"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t1t3.png"/></div>
+	<div id="TCDGT2LD"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2lead.png"/></div>
+	<div id="TCDGT2LDC"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2leadcover.png"/></div>
+	<div id="TCDGT2ORG"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2or_trans.png"/></div>
+	<div id="TCDGT2T1G"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2t1_trans.png"/></div>
+	<div id="TCDGT2T2G"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2t2_trans.png"/></div>
+	<div id="TCDGT2T3G"     class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2t3_trans.png"/></div>
+	<div id="TCDGT2OR"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2or.png"/></div>
+	<div id="TCDGT2T1"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2t1.png"/></div>
+	<div id="TCDGT2T2"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2t2.png"/></div>
+	<div id="TCDGT2T3"      class="Full Ghostly"><img class="Bar" src="/views/images/overlay-tcdg-16x9-trans/t2t3.png"/></div>
+
+	<div id="StatusBar" class="noBack Ghostly"><a></a></div>
+	<div id="TopBar" class="Ghostly">
+		<div id="ClockPeriodNumber" class="noBack">
+			<a><span class="Name">P</span><span class="Number"></span></a>
+		</div>
+		<div id="ClockPeriodTime" class="noBack">
+			<a class="ClockPI"></a>
+		</div>
+		<div id="ClockIntermissionTime" class="noBack">
+			<a class="ClockPI"></a>
+		</div>
+		<div id="ClockJamTime" class="noBack">
+			<a class="ClockJLT"></a>
+		</div>
+		<div id="ClockLineupTime" class="noBack">
+			<a class="ClockJLT"></a>
+		</div>
+		<div id="ClockTimeoutTime" class="noBack">
+			<a class="ClockJLT"></a>
+		</div>
+		<div id="ClockJamNumber" class="noBack">
+			<a><span class="Name">J</span><span class="Number"></span></a>
+		</div>
+	</div>
+
+	<div id="BottomBarFullWidth">
+		<div id="Team1Logo" class="logos"><img></img></div>
+		<div id="Team2Logo" class="logos"><img></img></div>
+	</div>
+
+	<div id="BottomBar">
+		<div id="Team1TimeOuts" class="TimeOuts"><a></a></div>
+		<div id="Team1Name" class="noBack" ><a class="Name"></a><a class="AlternateName"></a></div>
+		<div id="Team1Score" class="noBack Ghostly" ><a></a></div>
+		<div id="Team2Name" class="noBack" ><a class="Name"></a><a class="AlternateName"></a></div>
+		<div id="Team2Score" class="noBack Ghostly" ><a></a></div>
+		<div id="Team2TimeOuts" class="TimeOuts"><a></a></div>
+	</div>
+
+</div>
+</body>
+
+</html>
