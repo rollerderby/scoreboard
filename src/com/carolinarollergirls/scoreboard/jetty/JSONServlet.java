@@ -15,6 +15,8 @@ import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.*;
 
+import org.json.JSONException;
+
 import org.eclipse.jetty.server.*;
 
 import com.carolinarollergirls.scoreboard.*;
@@ -66,6 +68,8 @@ public class JSONServlet extends HttpServlet
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		} catch ( SocketException sE ) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Socket Exception : "+sE.getMessage());
+		} catch ( JSONException je ) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "JSON Exception : "+je.getMessage());
 		}
 	}
 

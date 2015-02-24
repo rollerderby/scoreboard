@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -224,13 +225,23 @@ public class Ruleset {
 			return rs;
 
 		FileReader in = null;
+		BufferedReader bufferedReader = null;
 		try {
 			File file = new File(new File(ScoreBoardManager.getDefaultPath(), "rules"), id + ".json");
 			if (!file.exists())
 				return DefaultRuleset();
 
 			in = new FileReader(file);
-			JSONTokener tok = new JSONTokener(in);
+			bufferedReader = new BufferedReader(in);
+
+			StringBuffer sb = new StringBuffer();
+			String line = null;
+
+			while (null != (line = bufferedReader.readLine())) {
+				sb.append(line).append("\n");
+			}
+
+			JSONTokener tok = new JSONTokener(sb.toString());
 			JSONObject json = new JSONObject(tok);
 
 			String _id = json.optString("id", id);
@@ -265,6 +276,9 @@ public class Ruleset {
 			ScoreBoardManager.printMessage("Error loading ruleset " + id + ": " + e.getMessage());
 			e.printStackTrace();
 		} finally {
+			if (bufferedReader != null) {
+				try { bufferedReader.close(); } catch (Exception e) { }
+			}
 			if (in != null) {
 				try { in.close(); } catch (Exception e) { }
 			}
@@ -291,49 +305,61 @@ public class Ruleset {
 	}
 
 	public static Ruleset New(String data) {
-		JSONObject json = new JSONObject(data);
-		String parentID = json.optString("parent", null);
+		try {
+			JSONObject json = new JSONObject(data);
+			String parentID = json.optString("parent", null);
 
-		Ruleset rs = new Ruleset();
-		rs.id = UUID.randomUUID();
-		rs.parent = findRuleset(parentID);
-		if (rs.parent == null)
-			rs.parent = DefaultRuleset();
-		rs.name = json.optString("name", rs.id.toString());
+			Ruleset rs = new Ruleset();
+			rs.id = UUID.randomUUID();
+			rs.parent = findRuleset(parentID);
+			if (rs.parent == null)
+				rs.parent = DefaultRuleset();
+			rs.name = json.optString("name", rs.id.toString());
 
-		rulesets.add(rs);
+			rulesets.add(rs);
 
-		rs.save();
-		return rs;
+			rs.save();
+			return rs;
+		} catch (JSONException je) {
+			ScoreBoardManager.printMessage("Error creating new ruleset: " + je.toString());
+			je.printStackTrace();
+			return null;
+		}
 	}
 
 	public static Ruleset Update(String data) {
-		JSONObject json = new JSONObject(data);
-		String id = json.optString("id", null);
+		try {
+			JSONObject json = new JSONObject(data);
+			String id = json.optString("id", null);
 
-		if (id == null)
-			return null;
-		Ruleset rs = findRuleset(id);
-		if (rs == null)
-			return null;
+			if (id == null)
+				return null;
+			Ruleset rs = findRuleset(id);
+			if (rs == null)
+				return null;
 
-		String n = json.optString("name", null);
-		if (n != null)
-			rs.name = n;
-		JSONObject values = json.optJSONObject("values");
-		if (values != null) {
-			for (Rule r : rule_definitions.values()) {
-				String rule = r.getFullName();
-				Object v = values.opt(rule);
-				if (v != null)
-					rs.setRule(rule, v);
-				else
-					rs.clearRule(rule);
+			String n = json.optString("name", null);
+			if (n != null)
+				rs.name = n;
+			JSONObject values = json.optJSONObject("values");
+			if (values != null) {
+				for (Rule r : rule_definitions.values()) {
+					String rule = r.getFullName();
+					Object v = values.opt(rule);
+					if (v != null)
+						rs.setRule(rule, v);
+					else
+						rs.clearRule(rule);
+				}
 			}
-		}
 
-		rs.save();
-		return rs;
+			rs.save();
+			return rs;
+		} catch (JSONException je) {
+			ScoreBoardManager.printMessage("Error creating new ruleset: " + je.toString());
+			je.printStackTrace();
+			return null;
+		}
 	}
 
 	public UUID getId() { return id; }
@@ -356,19 +382,31 @@ public class Ruleset {
 		LIST_DEFINITIONS {
 			@Override
 			public String toJSON() {
-				JSONArray json = new JSONArray();
-				for (Rule r : rule_definitions.values())
-					json.put(r.toJSON());
-				return json.toString(2);
+				try {
+					JSONArray json = new JSONArray();
+					for (Rule r : rule_definitions.values())
+						json.put(r.toJSON());
+					return json.toString(2);
+				} catch (JSONException je) {
+					ScoreBoardManager.printMessage("Error creating JSON: " + je.toString());
+					je.printStackTrace();
+					return "";
+				}
 			}
 		},
 		LIST_ALL_RULESETS {
 			@Override
 			public String toJSON() {
-				JSONArray json = new JSONArray();
-				for (Ruleset rs : rulesets)
-					json.put(rs.toJSON());
-				return json.toString(2);
+				try {
+					JSONArray json = new JSONArray();
+					for (Ruleset rs : rulesets)
+						json.put(rs.toJSON());
+					return json.toString(2);
+				} catch (JSONException je) {
+					ScoreBoardManager.printMessage("Error creating JSON: " + je.toString());
+					je.printStackTrace();
+					return "";
+				}
 			}
 		};
 
