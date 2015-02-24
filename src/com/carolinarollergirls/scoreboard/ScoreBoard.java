@@ -63,11 +63,14 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public List<Policy> getPolicies();
 	public Policy getPolicy(String id);
 
+	public String getRuleset();
+
 	public XmlScoreBoard getXmlScoreBoard();
 
 	public static final String EVENT_IN_PERIOD = "InPeriod";
 	public static final String EVENT_IN_OVERTIME = "InOvertime";
 	public static final String EVENT_OFFICIAL_SCORE = "OfficialScore";
+	public static final String EVENT_RULESET = "Ruleset";
 	public static final String EVENT_ADD_POLICY = "AddPolicy";
 	public static final String EVENT_REMOVE_POLICY = "RemovePolicy";
 	public static final String EVENT_TIMEOUT_OWNER = "TimeoutOwner";

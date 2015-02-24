@@ -218,3 +218,9 @@ table.RowTable { border-spacing: 0px; }
 	div.ResetDialog p { text-align: center; }
 /* End Reset ScoreBoard Dialog */
 
+/* Game Control Dialog */
+	div.GameControl { background-color: pink; }
+	div.GameControl div.section:not(:first-of-type) { padding-top: 10px; }
+	div.GameControl div.section:not(:last-of-type) { padding-bottom: 10px; border-bottom: solid 1px black; }
+	div.GameControl .header { font-weight: bold; }
+/* End Game Control Dialog */

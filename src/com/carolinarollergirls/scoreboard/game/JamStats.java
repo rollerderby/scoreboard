@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.ClockConversion;
 import com.carolinarollergirls.scoreboard.Game;
 import com.carolinarollergirls.scoreboard.Team;
 
@@ -45,14 +46,14 @@ public class JamStats {
 		JSONObject json = new JSONObject();
 		json.put("jam", jam);
 		if (periodWallClockStart != null) {
-			json.put("periodClockStart", periodClockStart);
+			json.put("periodClockStart", ClockConversion.toHumanReadable(periodClockStart));
 			json.put("periodWallClockStart", periodWallClockStart);
 		}
 		if (periodWallClockEnd != null) {
-			json.put("periodClockEnd", periodClockEnd);
+			json.put("periodClockEnd", ClockConversion.toHumanReadable(periodClockEnd));
 			json.put("periodWallClockEnd", periodWallClockEnd);
 		}
-		json.put("jamClock", jamClock);
+		json.put("jamClock", ClockConversion.toHumanReadable(jamClock));
 		JSONArray t = new JSONArray();
 		for (TeamStats ts : teams)
 			t.put(ts.toJSON());

@@ -15,7 +15,7 @@ import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
 
-public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, RuleSet.RuleSetReceiver
+public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
 	public DefaultClockModel(ScoreBoardModel sbm, String i) {
 		scoreBoardModel = sbm;
@@ -29,15 +29,15 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		// setMinimumTime(DEFAULT_MINIMUM_TIME);
 		// setMaximumTime(DEFAULT_MAXIMUM_TIME);
 
-		RuleSet.registerRule(this, "Clock." + id + ".Name");
-		RuleSet.registerRule(this, "Clock." + id + ".MinimumNumber");
-		RuleSet.registerRule(this, "Clock." + id + ".MaximumNumber");
-		RuleSet.registerRule(this, "Clock." + id + ".Direction");
-		RuleSet.registerRule(this, "Clock." + id + ".MinimumTime");
-		RuleSet.registerRule(this, "Clock." + id + ".MaximumTime");
+		Ruleset.registerRule(this, "Clock." + id + ".Name");
+		Ruleset.registerRule(this, "Clock." + id + ".MinimumNumber");
+		Ruleset.registerRule(this, "Clock." + id + ".MaximumNumber");
+		Ruleset.registerRule(this, "Clock." + id + ".Direction");
+		Ruleset.registerRule(this, "Clock." + id + ".MinimumTime");
+		Ruleset.registerRule(this, "Clock." + id + ".MaximumTime");
 
 		// Get default values from active ruleset
-		RuleSet.apply("Clock." + id + ".");
+		Ruleset.findRuleset(null, true).apply("Clock." + id + ".");
 
 		reset();
 	}

@@ -18,6 +18,10 @@
 	display: none;
 }
 
+table { width: 100%; }
+th { text-align: left; }
+#new_parent, #new_name { width: 99%; }
+
 .rules { padding-top: 10px; }
 .definitions .section { width: 100%; clear: both; }
 .definitions .section .header { background-color: lightgray; font-weight: bold; }
@@ -29,4 +33,12 @@
 h1 {
 	font-size: 12pt;
 	padding-left: 10px;
+}
+
+ul {
+	padding-left: 5px;
+}
+
+li {
+	list-style-type: none;
 }

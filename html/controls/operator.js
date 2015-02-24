@@ -10,6 +10,7 @@
 
 
 $.fx.interval = 33;
+_include("/javascript/core_json.js");
 
 $sb(function() {
 	createScoreTimeTab();
@@ -156,6 +157,12 @@ function createMetaControlTable() {
 			$("#TeamTime table.JamControl tr.UndoControls").toggleClass("ShowUndo", this.checked);
 		});
 
+	$("<button>").attr("id", "GameControl")
+		.text("Start New Game")
+		.appendTo(buttonsTd)
+		.button()
+		.click(createGameControlDialog);
+
 	var selectJammerSpan = $("<span>").appendTo(buttonsTd);
 	var selectByLabel = $("<label>").attr("for", "SelectJammerBy")
 		.appendTo(selectJammerSpan);
@@ -230,6 +237,84 @@ function createMetaControlTable() {
 		.click(createOvertimeDialog);
 
 	return table;
+}
+
+function createGameControlDialog() {
+	var dialog = $("<div>").addClass("GameControl");
+	var title = "Start New Game";
+
+	var preparedGame = $("<div>").addClass("section").appendTo(dialog);
+	$("<span>").addClass("header").append("Start a prepared game").appendTo(preparedGame);
+
+	var adhocGame = $("<div>").addClass("section").appendTo(dialog);
+	$("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Team 1: "))
+		.append($("<select>").addClass("Team1"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Team 2: "))
+		.append($("<select>").addClass("Team2"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Ruleset: "))
+		.append($("<select>").addClass("Ruleset"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Game Name: "))
+		.append($("<span>").addClass("Name"))
+		.appendTo(adhocGame);
+
+	updateAdhocName = function() {
+		var t1 = adhocGame.find("select.Team1 option:selected");
+		var t2 = adhocGame.find("select.Team2 option:selected");
+		if (t1.val() != "" && t2.val() != "") {
+			var now = new Date().toLocaleString();
+			var name = now + " - " + t1.text() + " vs " + t2.text();
+			adhocGame.find("span.Name").text(name);
+		}
+	};
+
+	_crgUtils.setupSelect(adhocGame.find("select.Team1"), {
+		optionParent: "Teams",
+		optionChildName: "Team",
+		prependOptions: [
+			{ text: "No Team Selected", value: "" },
+		]
+	}).change(function(e) { updateAdhocName(); });
+	_crgUtils.setupSelect(adhocGame.find("select.Team2"), {
+		optionParent: "Teams",
+		optionChildName: "Team",
+		prependOptions: [
+			{ text: "No Team Selected", value: "" },
+		]
+	}).change(function(e) { updateAdhocName(); });
+
+
+	// $("<button>").append("Start").button().appendTo(adhocGame);
+	$rulesets.List(function(rulesets) {
+		var select = adhocGame.find("select.Ruleset");
+		var active = $sb("ScoreBoard.Ruleset").$sbGet();
+		$.each(rulesets, function(idx, rs) {
+			var opt = $("<option>")
+				.attr("value", rs.id)
+				.prop("rulesetName", rs.name)
+				.append(rs.name);
+			console.log(rs.id, active);
+			if (rs.id == active)
+				opt.prop("selected", true);
+			_windowFunctions.appendAlphaSortedByProp(select, opt, "rulesetName");
+		});
+	});
+
+	dialog.dialog({
+		title: title,
+		width: "600px",
+		modal: true,
+		buttons: { Cancel: function() { $(this).dialog("close"); } },
+		close: function() { $(this).dialog("destroy").remove(); }
+	});
+	return dialog;
 }
 
 function createPeriodEndTimeoutDialog(td) {

@@ -8,12 +8,33 @@
 	<body>
 		<div class="rulesets">
 			<h1>Rule Sets</h1>
-			<ul></ul>
+			<div></div>
+			<br /><br />
+			<table>
+				<tr>
+					<th colspan="2">New Ruleset</th>
+				</tr>
+				<tr>
+					<td>Name:</td>
+					<td><input type="text" id="new_name" /></td>
+				</tr>
+				<tr>
+					<td>Parent:</td>
+					<td><select id="new_parent"></select></td>
+				</tr>
+				<tr>
+					<td colspan="2">
+						<button class="New">Create</button>
+					</td>
+				</tr>
+			</table>
 		</div>
 		<div class="definitions">
-			<h1>Rule Set: <span></span></h1>
-			<button class="Cancel">Cancel</button>
-			<button class="Save">Save</button>
+			<p>
+				<button class="Cancel">Cancel</button>
+				<button class="Update">Update</button>
+			</p>
+			<input type="text" id="name" size="40" />
 			<div class="rules"></div>
 		</div>
 	</body>

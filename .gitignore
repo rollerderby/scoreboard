@@ -16,4 +16,4 @@ GameData
 android/.gradle/
 android/assets/
 android/build/
-rules/
+/rules/

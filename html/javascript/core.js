@@ -482,7 +482,7 @@ _crgScoreBoard = {
 				e.css("color", v);
 			} else if (sbE.setBackground) {
 				e.css("background", v);
-			} else if (e.is("a,span")) {
+			} else if (e.is("a,span,div")) {
 				if (e.html() != v)
 					e.html(v);
 			} else if (e.is("img")) {

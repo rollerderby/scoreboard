@@ -2,35 +2,61 @@ initialize();
 var rulesets = array();
 var definitions = array();
 
-function initialize() {
-	var rs = $(".rulesets ul");
+function loadRulesets(displayID) {
+	var rs = $(".rulesets div");
 	$rulesets.List(function (data) {
+		$("#new_parent").empty();
+		rs.empty();
 		rulesets = data;
-	 	$.each(rulesets, function(idx, val) {
-			$("<li>")
-				.append(
-					$("<a>")
-						.click(function() {
-							displayRuleset(val.id);
-						}
-						).append($("<span>").append(val.name)
-					)
-				).appendTo(rs);
-	 	});
+		rs.append(displayRulesetTree(""));
+		if (displayID != null)
+			displayRuleset(displayID);
 	});
+}
 
+function displayRulesetTree(parentID) {
+	var list = null;
+	 	$.each(rulesets, function(idx, val) {
+			if (val.parent == parentID) {
+				if (list == null)
+					list = $("<ul>");
+
+				$("<option>")
+					.prop("value", val.id)
+					.append(val.name)
+					.appendTo($("#new_parent"));
+				$("<li>")
+					.append(
+						$("<a>")
+							.attr("href", "#")
+							.click(function() {
+								displayRuleset(val.id);
+							}
+							).append($("<span>").append(val.name)
+						)
+					)
+					.append(displayRulesetTree(val.id))
+					.appendTo(list);
+			}
+	 	});
+	return list;
+}
+
+function loadDefinitions() {
 	var d = $(".definitions .rules");
 	$rulesets.ListDefinitions(function (data) {
 		definitions = data;
 		var findSection = function(def) {
 			var newSection = function(def) {
 				var name = def.group;
-				if (def.subgroup != "")
-					name = name + " - " + def.subgroup;
 				var section = $("<div>")
 					.addClass("section")
 					.attr("group", def.group)
-					.attr("subgroup", def.subgroup);
+				if (def.subgroup != null) {
+					name = name + " - " + def.subgroup;
+					section.attr("subgroup", def.subgroup);
+				}
+
 				section.append($("<div>").addClass("header").append(name));
 
 				return section;
@@ -47,7 +73,7 @@ function initialize() {
 				}
 				if (s.attr("group") > def.group || (s.attr("group") == def.group && s.attr("subgroup") > def.subgroup)) {
 					section = newSection(def);
-					section.before(s);
+					section.insertBefore(s);
 				}
 			});
 			if (section == null) {
@@ -86,9 +112,15 @@ function initialize() {
 			}
 	 	});
 	});
+}
 
-	$(".Save").click(save);
-	$(".Cancel").click(cancel);
+function initialize() {
+	loadRulesets();
+	loadDefinitions();
+
+	$(".New").click(New);
+	$(".Update").click(Update);
+	$(".Cancel").click(Cancel);
 }
 
 function definitionOverride(e) {
@@ -106,14 +138,11 @@ function definitionOverride(e) {
 function displayRuleset(id) {
 	$.each(rulesets, function(idx, rs) {
 		if (rs.id == id) {
-			console.log("Displaying RuleSet id: " + id + "  name: " + rs.name);
-
-			activeRuleSet = rs;
+			activeRuleset = rs;
 			var definitions = $(".definitions");
-			var name = rs.name;
-			if (rs.parent != "")
-				name = name + " (" + rs.parent + ")";
-			definitions.find("h1").empty().append(name);
+			// definitions.find("h1").empty().append(rs.name);
+
+			$("#name").val(rs.name);
 
 			if (!rs.immutable)
 				$(".definition *").prop("disabled", rs.immutable);
@@ -127,20 +156,56 @@ function displayRuleset(id) {
 
 			if (rs.immutable) {
 				$(".definition *").prop("disabled", rs.immutable);
-				$(".Save").hide();
+				$(".Update").hide();
 			} else {
-				$(".Save").show();
+				$(".Update").show();
 			}
 			definitions.show();
 		}
 	});
 }
 
-function save() {
-	$(".definitions").hide();
+function New() {
+	var o = {
+		parent: $("#new_parent").val(),
+		name: $("#new_name").val()
+	};
+	$rulesets.New(o, function(rs) {
+		loadRulesets(rs.id);
+	});
 }
 
-function cancel() {
+function Update() {
+	if (!activeRuleset.immutable) {
+		var o = {
+			name: $("#name").val(),
+			id: activeRuleset.id,
+			values: {},
+		};
+		var values = new Array();
+		$.each(definitions, function(idx, val) {
+			var def = $(".definition[fullname='" + val.fullname + "']");
+			if (def.find(".name input").prop("checked")) {
+				var input = def.find(".value>input").prop("value");
+				var select = def.find(".value>select").val();
+				if (input != null)
+					o.values[val.fullname] = input;
+				if (select != null)
+					o.values[val.fullname] = select;
+			}
+		});
+		$rulesets.Update(o, function() {
+			loadRulesets();
+			$(".definitions").hide();
+		}, function(err) {
+			alert(err.responseText);
+		});
+	} else {
+		$(".definitions").hide();
+	}
+}
+
+function Cancel() {
 	$(".definitions").hide();
 }
 

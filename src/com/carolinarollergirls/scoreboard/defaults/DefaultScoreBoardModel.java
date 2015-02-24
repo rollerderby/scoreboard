@@ -78,7 +78,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setInPeriod(false);
 		setInOvertime(false);
 
-		RuleSet.apply();
+		_getRuleset().apply();
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
@@ -297,6 +297,23 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 
+	private Ruleset _getRuleset() {
+		synchronized (rulesetLock) {
+			if (ruleset == null) {
+				ruleset = Ruleset.findRuleset(null, true);
+			}
+			return ruleset;
+		}
+	}
+	public String getRuleset() { return _getRuleset().getId().toString(); }
+	public void setRuleset(String id) { 
+		synchronized (rulesetLock) {
+			String last = getRuleset();
+			ruleset = Ruleset.findRuleset(id, true);
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, ruleset.getId().toString(), last));
+		}
+	}
+
 	public List<ClockModel> getClockModels() { return new ArrayList<ClockModel>(clocks.values()); }
 	public List<TeamModel> getTeamModels() { return new ArrayList<TeamModel>(teams.values()); }
 	public List<PolicyModel> getPolicyModels() { return new ArrayList<PolicyModel>(policies.values()); }
@@ -415,6 +432,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	protected boolean officialScore = false;
 	protected Object officialScoreLock = new Object();
+
+	protected Ruleset ruleset = null;
+	protected Object rulesetLock = new Object();
 
 	protected boolean periodClockWasRunning = false;
 	protected boolean jamClockWasRunning = false;
