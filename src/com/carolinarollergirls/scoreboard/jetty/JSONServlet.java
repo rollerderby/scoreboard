@@ -16,14 +16,21 @@ import javax.servlet.*;
 import javax.servlet.http.*;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import org.eclipse.jetty.server.*;
 
 import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.xml.TeamsXmlDocumentManager;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentManager;
 
 public class JSONServlet extends HttpServlet
 {
-	public JSONServlet(Server s) { server = s; }
+	public JSONServlet(Server s, ScoreBoardModel m) { 
+		server = s; 
+		scoreBoardModel = m;
+	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		response.setHeader("Cache-Control", "no-cache");
@@ -56,20 +63,47 @@ public class JSONServlet extends HttpServlet
 				Ruleset rs = Ruleset.Update(getPostDataAsString(request));
 				if (rs == null)
 					error(response, "Error saving ruleset");
-				else
-					response.getWriter().print(rs.toJSON());
+				response.getWriter().print(rs.toJSON());
+
 			} else if ("/Ruleset/New".equals(request.getPathInfo())) {
 				Ruleset rs = Ruleset.New(getPostDataAsString(request));
 				if (rs == null)
 					error(response, "Error creating ruleset");
-				else
-					response.getWriter().print(rs.toJSON());
+				response.getWriter().print(rs.toJSON());
+
+			} else if ("/Game/Adhoc".equals(request.getPathInfo())) {
+				JSONObject json = new JSONObject(getPostDataAsString(request));
+
+				String t1 = json.optString("Team1", null);
+				String t2 = json.optString("Team2", null);
+				String rs = json.optString("Ruleset", null);
+				String name = json.optString("Name", null);
+				if (t1 == null || t2 == null || rs == null || name == null) {
+					error(response, "Error creating game");
+				}
+				scoreBoardModel.setRuleset(rs);
+				scoreBoardModel.reset();
+				List<XmlDocumentManager> l = scoreBoardModel.getXmlScoreBoard().findXmlDocumentManagers(TeamsXmlDocumentManager.class);
+				for (XmlDocumentManager xdM : l) {
+					TeamsXmlDocumentManager txdM = (TeamsXmlDocumentManager)xdM;
+					txdM.toScoreBoard(Team.ID_1, t1, false);
+					txdM.toScoreBoard(Team.ID_2, t2, false);
+				}
+
+				Game g = ScoreBoardManager.gameStart(name);
+				response.getWriter().print(g.toJSON());
+
 			} else
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		} catch ( SocketException sE ) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Socket Exception : "+sE.getMessage());
+			sE.printStackTrace();
 		} catch ( JSONException je ) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "JSON Exception : "+je.getMessage());
+			je.printStackTrace();
+		} catch ( Exception e ) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Exception : "+e.getMessage());
+			e.printStackTrace();
 		}
 	}
 
@@ -92,4 +126,5 @@ public class JSONServlet extends HttpServlet
 	}
 
 	protected Server server;
+	protected ScoreBoardModel scoreBoardModel;
 }

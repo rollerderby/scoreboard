@@ -60,6 +60,7 @@ public class XmlScoreBoard
 
 	public void addXmlDocumentManager(XmlDocumentManager xdM) { managers.addXmlDocumentManager(xdM); }
 	public void removeXmlDocumentManager(XmlDocumentManager xdM) { managers.removeXmlDocumentManager(xdM); }
+	public List<XmlDocumentManager> findXmlDocumentManagers(Class c) { return managers.findXmlDocumentManagers(c); }
 
 	public void reset() {
 		synchronized (managerLock) {

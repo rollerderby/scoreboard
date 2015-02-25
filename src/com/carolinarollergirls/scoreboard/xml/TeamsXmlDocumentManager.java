@@ -177,7 +177,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		}
 	}
 
-	protected void toScoreBoard(String sbTeamId, String id, boolean reset) throws JDOMException {
+	public void toScoreBoard(String sbTeamId, String id, boolean reset) throws JDOMException {
 		Element newTeam = editor.getElement(getXPathElement(), "Team", id, false);
 		if (null == newTeam)
 			return; /* Ignore if no team info exists for given Id */

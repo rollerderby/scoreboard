@@ -107,7 +107,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 		urlsServlet = new UrlsServlet(server);
 		new ServletContextHandler(contexts, "/urls", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(urlsServlet), "/*");
 
-		jsonServlet = new JSONServlet(server);
+		jsonServlet = new JSONServlet(server, scoreBoardModel);
 		new ServletContextHandler(contexts, "/json", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(jsonServlet), "/*");
 
 		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();

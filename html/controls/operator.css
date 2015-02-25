@@ -223,4 +223,5 @@ table.RowTable { border-spacing: 0px; }
 	div.GameControl div.section:not(:first-of-type) { padding-top: 10px; }
 	div.GameControl div.section:not(:last-of-type) { padding-bottom: 10px; border-bottom: solid 1px black; }
 	div.GameControl .header { font-weight: bold; }
+	div.GameControl button span { font-size: 50%; }
 /* End Game Control Dialog */

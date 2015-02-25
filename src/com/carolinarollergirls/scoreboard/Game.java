@@ -10,15 +10,8 @@ import org.json.JSONObject;
 import com.carolinarollergirls.scoreboard.game.*;
 
 public class Game {
-	public Game() {
+	public Game(ScoreBoard sb) {
 		this.logging = false;
-		this.sb = null;
-
-		Thread t = new Thread(new SaveThread());
-		t.start();
-	}
-
-	public void setScoreBoard(ScoreBoard sb) {
 		this.sb = sb;
 	}
 	
@@ -29,13 +22,19 @@ public class Game {
 		teams[1] = new TeamInfo(this, Team.ID_2);
 		periods = new ArrayList<PeriodStats>();
 		logging = true;
+
+		Thread t = new Thread(new SaveThread());
+		t.start();
 	}
 
 	public void stop() {
-		this.identifier = "";
-		this.teams = null;
-		this.periods = null;
-		this.logging = false;
+		synchronized (saveLock) {
+			identifier = "";
+			teams = null;
+			periods = null;
+			logging = false;
+			saveLock.notifyAll();
+		}
 	}
 
 	private JamStats findJamStats(int period, int jam, boolean truncateAfter) {
@@ -112,24 +111,34 @@ public class Game {
 
 	private class SaveThread implements Runnable {
 		public void run() {
+			save();
 			while (true) {
 				synchronized (saveLock) {
 					try { saveLock.wait(); }
 					catch ( Exception e ) { }
 
-					File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
-					file.getParentFile().mkdirs();
-					FileWriter out = null;
-					try {
-						out = new FileWriter(file);
-						out.write(toJSON().toString(2));
-					} catch (Exception e) {
-						ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
-						e.printStackTrace();
-					} finally {
-						if (out != null) {
-							try { out.close(); } catch (Exception e) { }
-						}
+					if (!logging)
+						return;
+
+					save();
+				}
+			}
+		}
+
+		public void save() {
+			synchronized (saveLock) {
+				File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
+				file.getParentFile().mkdirs();
+				FileWriter out = null;
+				try {
+					out = new FileWriter(file);
+					out.write(toJSON().toString(2));
+				} catch (Exception e) {
+					ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
+					e.printStackTrace();
+				} finally {
+					if (out != null) {
+						try { out.close(); } catch (Exception e) { }
 					}
 				}
 			}

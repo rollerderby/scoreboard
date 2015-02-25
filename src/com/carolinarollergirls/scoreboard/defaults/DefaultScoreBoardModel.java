@@ -59,6 +59,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public ScoreBoard getScoreBoard() { return this; }
 
 	public void reset() {
+		_getRuleset().apply();
+
 		Iterator<ClockModel> c = getClockModels().iterator();
 		while (c.hasNext())
 			c.next().reset();
@@ -77,8 +79,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setOfficialReview(false);
 		setInPeriod(false);
 		setInOvertime(false);
-
-		_getRuleset().apply();
 	}
 
 	public boolean isInPeriod() { return inPeriod; }

@@ -247,6 +247,20 @@ function createGameControlDialog() {
 	$("<span>").addClass("header").append("Start a prepared game").appendTo(preparedGame);
 
 	var adhocGame = $("<div>").addClass("section").appendTo(dialog);
+
+	var adhocStartGame = function() {
+		var game = {
+			Team1: adhocGame.find("select.Team1").val(),
+			Team2: adhocGame.find("select.Team2").val(),
+			Ruleset: adhocGame.find("select.Ruleset").val(),
+			Name: adhocGame.find("span.Name").text(),
+		};
+		console.log(game);
+		$game.Adhoc(game, function() {
+			dialog.dialog("close");
+		});
+	};
+
 	$("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
 	$("<div>")
 		.append($("<span>").append("Team 1: "))
@@ -264,14 +278,28 @@ function createGameControlDialog() {
 		.append($("<span>").append("Game Name: "))
 		.append($("<span>").addClass("Name"))
 		.appendTo(adhocGame);
+	$("<button>")
+		.addClass("StartGame")
+		.append("Start Game")
+		.button({ disabled: true })
+		.appendTo(adhocGame)
+		.click(adhocStartGame);
 
 	updateAdhocName = function() {
 		var t1 = adhocGame.find("select.Team1 option:selected");
 		var t2 = adhocGame.find("select.Team2 option:selected");
 		if (t1.val() != "" && t2.val() != "") {
-			var now = new Date().toLocaleString();
-			var name = now + " - " + t1.text() + " vs " + t2.text();
+			var now = new Date();
+			var d = now.getFullYear() + '-' +
+				_timeConversions.twoDigit(now.getMonth()) + '-' +
+				_timeConversions.twoDigit(now.getDate()) + ' ' +
+				_timeConversions.twoDigit(now.getHours()) + ':' +
+				_timeConversions.twoDigit(now.getMinutes());
+			var name = d + " - " + t1.text() + " vs " + t2.text();
 			adhocGame.find("span.Name").text(name);
+			adhocGame.find("button.StartGame").button("option", "disabled", false);
+		} else {
+			adhocGame.find("button.StartGame").button("option", "disabled", true);
 		}
 	};
 

@@ -29,3 +29,16 @@ var $rulesets = {
 		});
 	},
 };
+
+var $game = {
+	Adhoc: function(obj, callback, error) {
+		$.ajax({
+			type: "POST",
+			url: '/json/Game/Adhoc',
+			data: JSON.stringify(obj),
+			success: callback,
+			error: error,
+			dataType: "json"
+		});
+	}
+}
