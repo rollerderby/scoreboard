@@ -59,7 +59,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public ScoreBoard getScoreBoard() { return this; }
 
 	public void reset() {
-		_getRuleset().apply();
+		_getRuleset().apply(true);
 
 		Iterator<ClockModel> c = getClockModels().iterator();
 		while (c.hasNext())
@@ -297,7 +297,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 
-	private Ruleset _getRuleset() {
+	public Ruleset _getRuleset() {
 		synchronized (rulesetLock) {
 			if (ruleset == null) {
 				ruleset = Ruleset.findRuleset(null, true);
@@ -310,6 +310,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (rulesetLock) {
 			String last = getRuleset();
 			ruleset = Ruleset.findRuleset(id, true);
+			ruleset.apply(false);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, ruleset.getId().toString(), last));
 		}
 	}

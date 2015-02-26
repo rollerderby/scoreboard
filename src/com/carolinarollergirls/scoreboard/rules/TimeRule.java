@@ -7,8 +7,8 @@ import org.json.JSONObject;
 import com.carolinarollergirls.scoreboard.ClockConversion;
 
 public class TimeRule extends Rule {
-	public TimeRule(String group, String subgroup, String name, String description, String defaultValue) {
-		super("Time", group, subgroup, name, description, null);
+	public TimeRule(boolean onResetOnly, String group, String subgroup, String name, String description, String defaultValue) {
+		super(onResetOnly, "Time", group, subgroup, name, description, null);
 		this.defaultValue = convertValue(defaultValue);
 	}
 

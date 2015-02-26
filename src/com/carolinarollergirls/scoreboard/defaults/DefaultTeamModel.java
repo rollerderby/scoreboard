@@ -16,7 +16,7 @@ import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.policy.*;
 
-public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel
+public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
 {
 	public DefaultTeamModel(ScoreBoardModel sbm, String i) {
 		Iterator<String> posIds = Position.FLOOR_POSITIONS.iterator();
@@ -29,7 +29,22 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 		scoreBoardModel = sbm;
 		id = i;
+
+		// Register for default values from the rulesets
+		Ruleset.registerRule(this, "Team." + id + ".Name");
+		Ruleset.registerRule(this, "Team.Timeouts");
+		Ruleset.registerRule(this, "Team.OfficialReviews");
+
 		reset();
+	}
+
+	public void applyRule(String rule, Object value) {
+		if (rule.equals("Team.Timeouts"))
+			setTimeouts((Integer)value);
+		else if (rule.equals("Team.Timeouts"))
+			setOfficialReviews((Integer)value);
+		else if (rule.equals("Team." + id + ".Name"))
+			setName((String)value);
 	}
 
 	public String getProviderName() { return "Team"; }
@@ -40,12 +55,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public ScoreBoardModel getScoreBoardModel() { return scoreBoardModel; }
 
 	public void reset() {
-		setName(DEFAULT_NAME_PREFIX+getId());
+		// Get default values from active ruleset
+		getScoreBoard()._getRuleset().apply(true, this);
+
 		setLogo(DEFAULT_LOGO);
 		setScore(DEFAULT_SCORE);
 		setLastScore(DEFAULT_SCORE);
-		setTimeouts(DEFAULT_TIMEOUTS);
-		setOfficialReviews(DEFAULT_OFFICIAL_REVIEWS);
 		_setLeadJammer(DEFAULT_LEADJAMMER);
 		_setStarPass(DEFAULT_STARPASS);
 		removeAlternateNameModels();
@@ -58,6 +73,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 		while (p.hasNext())
 			p.next().reset();
+
 	}
 
 	public String getId() { return id; }

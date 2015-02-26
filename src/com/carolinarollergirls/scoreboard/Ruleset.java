@@ -1,7 +1,6 @@
 package com.carolinarollergirls.scoreboard;
 
 import java.util.LinkedList;
-import java.util.LinkedHashMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,8 +22,18 @@ public class Ruleset {
 		public void applyRule(String rule, Object value);
 	}
 
-	public static void registerRule(RulesetReceiver rsr, String rule) {
-		rule_receivers.put(rule, rsr);
+	public static boolean registerRule(RulesetReceiver rsr, String rule) {
+		Rule r = rule_definitions.get(rule);
+		if (r == null)
+			return false;
+		List<RulesetReceiver> receivers = rule_receivers.get(r);
+		if (receivers == null) {
+			receivers = new LinkedList<RulesetReceiver>();
+			rule_receivers.put(r, receivers);
+		}
+		if (!receivers.contains(rsr))
+			receivers.add(rsr);
+		return true;
 	}
 
 	private static void addRuleset(Ruleset rs) {
@@ -37,51 +46,51 @@ public class Ruleset {
 				return base;
 			}
 
-			newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "PreGame",       "", "Time To Derby"));
-			newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "Intermission",  "", "Intermission"));
-			newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
-			newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "Official",      "", "Final Score"));
-			newRule(   new TimeRule("Clock", Clock.ID_INTERMISSION, "Time",          "", "15:00"));
+			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "PreGame",       "", "Time To Derby"));
+			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Intermission",  "", "Intermission"));
+			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
+			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Official",      "", "Final Score"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "Time",          "", "15:00"));
 	
-			newRule( new StringRule("Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
-			newRule(new IntegerRule("Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
-			newRule(new IntegerRule("Clock", Clock.ID_PERIOD,       "MaximumNumber", "", 2));
-			newRule(new BooleanRule("Clock", Clock.ID_PERIOD,       "Direction",     "", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule("Clock", Clock.ID_PERIOD,       "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule("Clock", Clock.ID_PERIOD,       "MaximumTime",   "", "30:00"));
+			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MaximumNumber", "", 2));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_PERIOD,       "Direction",     "", true, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MinimumTime",   "", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MaximumTime",   "", "30:00"));
 	
-			newRule( new StringRule("Clock", Clock.ID_JAM,          "Name",          "", Clock.ID_JAM));
-			newRule(new IntegerRule("Clock", Clock.ID_JAM,          "MinimumNumber", "", 1));
-			newRule(new IntegerRule("Clock", Clock.ID_JAM,          "MaximumNumber", "", 999));
-			newRule(new BooleanRule("Clock", Clock.ID_JAM,          "Direction",     "", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule("Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule("Clock", Clock.ID_JAM,          "MaximumTime",   "", "2:00"));
+			newRule( new StringRule(false, "Clock", Clock.ID_JAM,          "Name",          "", Clock.ID_JAM));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MinimumNumber", "", 1));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MaximumNumber", "", 999));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Direction",     "", true, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MaximumTime",   "", "2:00"));
 	
-			newRule( new StringRule("Clock", Clock.ID_LINEUP,       "Name",          "", Clock.ID_LINEUP));
-			newRule(new IntegerRule("Clock", Clock.ID_LINEUP,       "MinimumNumber", "", 1));
-			newRule(new IntegerRule("Clock", Clock.ID_LINEUP,       "MaximumNumber", "", 999));
-			newRule(new BooleanRule("Clock", Clock.ID_LINEUP,       "Direction",     "", false, "Count Down", "Count Up"));
-			newRule(   new TimeRule("Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule("Clock", Clock.ID_LINEUP,       "MaximumTime",   "", "60:00"));
+			newRule( new StringRule(false, "Clock", Clock.ID_LINEUP,       "Name",          "", Clock.ID_LINEUP));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MinimumNumber", "", 1));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MaximumNumber", "", 999));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "Direction",     "", false, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MaximumTime",   "", "60:00"));
 	
-			newRule( new StringRule("Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
-			newRule(new IntegerRule("Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));
-			newRule(new IntegerRule("Clock", Clock.ID_TIMEOUT,      "MaximumNumber", "", 999));
-			newRule(new BooleanRule("Clock", Clock.ID_TIMEOUT,      "Direction",     "", false, "Count Down", "Count Up"));
-			newRule(   new TimeRule("Clock", Clock.ID_TIMEOUT,      "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule("Clock", Clock.ID_TIMEOUT,      "MaximumTime",   "", "60:00"));
+			newRule( new StringRule(false, "Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumNumber", "", 999));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_TIMEOUT,      "Direction",     "", false, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumTime",   "", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumTime",   "", "60:00"));
 	
-			newRule( new StringRule("Clock", Clock.ID_INTERMISSION, "Name",          "", Clock.ID_INTERMISSION));
-			newRule(new IntegerRule("Clock", Clock.ID_INTERMISSION, "MinimumNumber", "", 0));
-			newRule(new IntegerRule("Clock", Clock.ID_INTERMISSION, "MaximumNumber", "", 2));
-			newRule(new BooleanRule("Clock", Clock.ID_INTERMISSION, "Direction",     "", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule("Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule("Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
+			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Name",          "", Clock.ID_INTERMISSION));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumNumber", "", 0));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumNumber", "", 2));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_INTERMISSION, "Direction",     "", true, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
 	
-			newRule(new IntegerRule("Team", null, "Timeouts", "", 3));
-			newRule(new IntegerRule("Team", null, "OfficialReviews", "", 1));
-			newRule(new StringRule("Team", "Team 1", "Name", "", "Team 1"));
-			newRule(new StringRule("Team", "Team 2", "Name", "", "Team 2"));
+			newRule(new IntegerRule( true, "Team", null, "Timeouts", "", 3));
+			newRule(new IntegerRule( true, "Team", null, "OfficialReviews", "", 1));
+			newRule( new StringRule( true, "Team", "1", "Name", "", "Team 1"));
+			newRule( new StringRule( true, "Team", "2", "Name", "", "Team 2"));
 	
 			base = new Ruleset();
 			base.name = "WFTDA Santioned";
@@ -92,7 +101,6 @@ public class Ruleset {
 	
 			base.immutable = true;
 			addRuleset(base);
-			saveAll();
 	
 			File file = new File(ScoreBoardManager.getDefaultPath(), "rules");
 			for (File child : file.listFiles()) {
@@ -118,18 +126,27 @@ public class Ruleset {
 		rule_definitions.put(rule.getFullName(), rule);
 	}
 
-	public void apply() {
-		apply(null);
+	public void apply(boolean isReset) {
+		apply(isReset, null);
 	}
-	public void apply(String base) {
-		for (String rule : rule_receivers.keySet()) {
-			if (base == null || rule.startsWith(base)) {
+	public void apply(boolean isReset, RulesetReceiver target) {
+		for (Rule rule : rule_definitions.values()) {
+			if (!isReset || rule.isResetOnly()) {
 				Object value = getRule(rule, true);
-				rule_receivers.get(rule).applyRule(rule, value);
+				List<RulesetReceiver> receivers = rule_receivers.get(rule);
+				if (receivers != null) {
+					for (RulesetReceiver rsr : receivers) {
+						if (target == null || rsr == target)
+							rsr.applyRule(rule.getFullName(), value);
+					}
+				}
 			}
 		}
 	}
 
+	public Object getRule(Rule rule, boolean allowInherit) {
+		return getRule(rule.getFullName(), allowInherit);
+	}
 	public Object getRule(String rule, boolean allowInherit) {
 		if (rules.containsKey(rule))
 			return rules.get(rule);
@@ -207,7 +224,6 @@ public class Ruleset {
 
 	public static Ruleset findRuleset(String idStr) { return findRuleset(idStr, false); }
 	public static Ruleset findRuleset(String idStr, boolean defaultToBase) {
-		ScoreBoardManager.printMessage("findRuleset(" + idStr + ", " + defaultToBase + ")  base: " + base);
 		try {
 			UUID id = UUID.fromString(idStr);
 			for (Ruleset rs : rulesets)
@@ -366,8 +382,8 @@ public class Ruleset {
 	public String getName() { return name; }
 	public Ruleset getParent() { return parent; }
 
-	private static Map<String, RulesetReceiver> rule_receivers = new LinkedHashMap<String, RulesetReceiver>();
-	private static Map<String, Rule> rule_definitions = new LinkedHashMap<String, Rule>();
+	private static Map<Rule, List<RulesetReceiver>> rule_receivers = new HashMap<Rule, List<RulesetReceiver>>();
+	private static Map<String, Rule> rule_definitions = new HashMap<String, Rule>();
 	private static List<Ruleset> rulesets = new LinkedList<Ruleset>();
 	private static Ruleset base = null;
 	private static Object baseLock = new Object();

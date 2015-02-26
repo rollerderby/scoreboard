@@ -63,6 +63,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public List<Policy> getPolicies();
 	public Policy getPolicy(String id);
 
+	public Ruleset _getRuleset();
 	public String getRuleset();
 
 	public XmlScoreBoard getXmlScoreBoard();

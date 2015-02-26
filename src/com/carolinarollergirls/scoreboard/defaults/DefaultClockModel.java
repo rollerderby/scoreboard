@@ -21,23 +21,13 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		scoreBoardModel = sbm;
 		id = i;
 
-		// Set large initial defaults and then let the current ruleset override them
-		// setName(id);
-		// setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
-		// setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
-		// setCountDirectionDown(DEFAULT_DIRECTION);
-		// setMinimumTime(DEFAULT_MINIMUM_TIME);
-		// setMaximumTime(DEFAULT_MAXIMUM_TIME);
-
+		// Register for default values from the rulesets
 		Ruleset.registerRule(this, "Clock." + id + ".Name");
 		Ruleset.registerRule(this, "Clock." + id + ".MinimumNumber");
 		Ruleset.registerRule(this, "Clock." + id + ".MaximumNumber");
 		Ruleset.registerRule(this, "Clock." + id + ".Direction");
 		Ruleset.registerRule(this, "Clock." + id + ".MinimumTime");
 		Ruleset.registerRule(this, "Clock." + id + ".MaximumTime");
-
-		// Get default values from active ruleset
-		Ruleset.findRuleset(null, true).apply("Clock." + id + ".");
 
 		reset();
 	}
@@ -47,16 +37,14 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			setName((String)value);
 		else if (rule.equals("Clock." + id + ".Direction"))
 			setCountDirectionDown((Boolean)value);
-		else {
-			if (rule.equals("Clock." + id + ".MinimumNumber"))
-				setMinimumNumber((Integer)value);
-			else if (rule.equals("Clock." + id + ".MaximumNumber"))
-				setMaximumNumber((Integer)value);
-			else if (rule.equals("Clock." + id + ".MinimumTime"))
-				setMinimumTime((Long)value);
-			else if (rule.equals("Clock." + id + ".MaximumTime"))
-				setMaximumTime((Long)value);
-		}
+		else if (rule.equals("Clock." + id + ".MinimumNumber"))
+			setMinimumNumber((Integer)value);
+		else if (rule.equals("Clock." + id + ".MaximumNumber"))
+			setMaximumNumber((Integer)value);
+		else if (rule.equals("Clock." + id + ".MinimumTime"))
+			setMinimumTime((Long)value);
+		else if (rule.equals("Clock." + id + ".MaximumTime"))
+			setMaximumTime((Long)value);
 	}
 
 	public String getProviderName() { return "Clock"; }
@@ -76,6 +64,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		unstopLastTime = 0;
 
 		stop();
+
+		// Get default values from active ruleset
+		getScoreBoard()._getRuleset().apply(true, this);
 
 		// We hardcode the assumption that numbers count up.
 		setNumber(getMinimumNumber());
