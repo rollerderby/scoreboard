@@ -66,6 +66,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public Ruleset _getRuleset();
 	public String getRuleset();
 
+	public Settings getSettings();
+
 	public XmlScoreBoard getXmlScoreBoard();
 
 	public static final String EVENT_IN_PERIOD = "InPeriod";
@@ -80,4 +82,5 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public static final String EVENT_REMOVE_CLOCK = "RemoveClock";
 	public static final String EVENT_ADD_TEAM = "AddTeam";
 	public static final String EVENT_REMOVE_TEAM = "RemoveTeam";
+	public static final String EVENT_SETTING = "Setting";
 }

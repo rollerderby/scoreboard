@@ -46,11 +46,11 @@ public class Ruleset {
 				return base;
 			}
 
-			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "PreGame",       "", "Time To Derby"));
-			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Intermission",  "", "Intermission"));
-			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
-			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Official",      "", "Final Score"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "Time",          "", "15:00"));
+			newRule( new StringRule(false, Clock.ID_INTERMISSION, null,    "PreGame",       "", "Time To Derby"));
+			newRule( new StringRule(false, Clock.ID_INTERMISSION, null,    "Intermission",  "", "Intermission"));
+			newRule( new StringRule(false, Clock.ID_INTERMISSION, null,    "Unofficial",    "", "Unofficial Score"));
+			newRule( new StringRule(false, Clock.ID_INTERMISSION, null,    "Official",      "", "Final Score"));
+			newRule(   new TimeRule(false, Clock.ID_INTERMISSION, null,    "Time",          "", "15:00"));
 	
 			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
@@ -131,7 +131,7 @@ public class Ruleset {
 	}
 	public void apply(boolean isReset, RulesetReceiver target) {
 		for (Rule rule : rule_definitions.values()) {
-			if (!isReset || rule.isResetOnly()) {
+			if (isReset || !rule.isResetOnly()) {
 				Object value = getRule(rule, true);
 				List<RulesetReceiver> receivers = rule_receivers.get(rule);
 				if (receivers != null) {

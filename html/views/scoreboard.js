@@ -304,45 +304,53 @@ function setupClocks() {
 		}
 	});
 
-// FIXME - this intermission stuff is a mess, can it get fixed up or simplified?!?
+	// Setup intermission
 	var intermissionAutoFitText = _autoFit.enableAutoFitText(".Intermission>div.Name.TextContainer");
-	$sbThisPage.$sbBindAddRemoveEach("Intermission", function(event,node) {
-		//$(".Intermission>div.Name>a")
-		//	.append($("<span>").addClass("Unofficial "+node.$sbId))
-		//	.append($("<span>").addClass("Name "+node.$sbId))
-		//	.children("span."+node.$sbId).toggle($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
+	var interNumber = $sb("ScoreBoard.Clock(Intermission).Number");
+	var interMax = $sb("ScoreBoard.Clock(Intermission).MaximumNumber");
+	var isOfficialScore = $sb("ScoreBoard.OfficialScore");
+	var ruleset = $sb("ScoreBoard.Ruleset");
+	var settings = $sb("ScoreBoard.Settings");
+	var intermissionText = { };
 
-		node.$sb("ShowUnofficial").$sbElement(".Intermission>div.Name>a>span.Unofficial."+node.$sbId, { sbelement: {
-			boolean: true,
-			convert: { "true": "Unofficial ", "false": "" },
-			autoFitText: true,
-			autoFitTextContainer: "div"
-		} });
-		node.$sb("Text").$sbElement(".Intermission>div.Name>a>span.Name."+node.$sbId, { sbelement: {
-			autoFitText: true,
-			autoFitTextContainer: "div"
-		} });
+	var intermissionUpdate = function() {
+		console.log(intermissionText);
+		var num = interNumber.$sbGet();
+		var max = interMax.$sbGet();
+		var isOfficial = isTrue(isOfficialScore.$sbGet());
 
-		$sb("ScoreBoard.OfficialScore").$sbBindAndRun("sbchange", function(event,value) {
-			$(".Intermission>div.Name>a>span.Unofficial."+node.$sbId)
-				.toggle(!isTrue(value) && $sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
-			intermissionAutoFitText();
-		});
-		node.$sb("HideClock").$sbBindAndRun("sbchange", function(event,value) {
-			if ($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
-				$(".Intermission>div.Time").toggle(!isTrue(value));		
-		});
-	}, function(event,node) {
-		$(".Intermission>div.Name>a>span."+node.$sbId).remove();
-	});
-	$sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", function(event,value) {
-		$(".Intermission>div.Name>a>span")
-			.filter(":not(."+value+")").hide().end()
-			.filter("."+value).show()
-			.filter(".Unofficial").toggle(!$sbThisPage.$sb("Intermission("+value+").Confirmed").$sbIsTrue());
+		var a = $(".Intermission>div.Name>a");
+		var time = $(".Intermission>div.Time");
+
+		time.show();
+		if (num == '0')
+			a.text(intermissionText["Intermission.PreGame"]);
+		else if (num == max) {
+			time.hide();
+			if (!isOfficial)
+				a.text(intermissionText["Intermission.Unofficial"]);
+			else
+				a.text(intermissionText["Intermission.Official"]);
+		} else
+			a.text(intermissionText["Intermission.Intermission"]);
 		intermissionAutoFitText();
-		$(".Intermission>div.Time").toggle(!$sbThisPage.$sb("Intermission("+value+").HideClock").$sbIsTrue());
-	});
+	};
+
+	settings.$sbBindAddRemoveEach("Setting",
+		function (event, node) {
+			var id = $sb(node).$sbId;
+			if (id == "Intermission.PreGame" || id == "Intermission.Intermission" || id == "Intermission.Unofficial" || id == "Intermission.Official") {
+				node.$sbBindAndRun("sbchange", function(event,val) {
+					intermissionText[id] = $.trim(val);
+					intermissionUpdate();
+				});
+			}
+		},
+		function (event, node) {
+		});
+	interNumber.$sbBindAndRun("sbchange", intermissionUpdate);
+	interMax.$sbBindAndRun("sbchange", intermissionUpdate);
+	isOfficialScore.$sbBindAndRun("sbchange", intermissionUpdate);
 
 	var clockChange = function(event, value, intermission) {
 		if (isTrue(value) || intermission)

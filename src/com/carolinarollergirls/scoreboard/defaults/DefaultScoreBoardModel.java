@@ -21,6 +21,13 @@ import com.carolinarollergirls.scoreboard.policy.OvertimeLineupTimePolicy;
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
+		settings = new DefaultSettingsModel(this, this);
+		Ruleset.registerRule(settings, Clock.ID_INTERMISSION + ".PreGame");
+		Ruleset.registerRule(settings, Clock.ID_INTERMISSION + ".Intermission");
+		Ruleset.registerRule(settings, Clock.ID_INTERMISSION + ".Unofficial");
+		Ruleset.registerRule(settings, Clock.ID_INTERMISSION + ".Official");
+		Ruleset.registerRule(settings, Clock.ID_INTERMISSION + ".Time");
+
 		reset();
 
 		loadPolicies();
@@ -79,6 +86,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setOfficialReview(false);
 		setInPeriod(false);
 		setInOvertime(false);
+
+		settings.reset();
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
@@ -315,6 +324,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 
+	public Settings getSettings() { return (Settings)settings; }
+	public SettingsModel getSettingsModel() { return settings; }
+
 	public List<ClockModel> getClockModels() { return new ArrayList<ClockModel>(clocks.values()); }
 	public List<TeamModel> getTeamModels() { return new ArrayList<TeamModel>(teams.values()); }
 	public List<PolicyModel> getPolicyModels() { return new ArrayList<PolicyModel>(policies.values()); }
@@ -436,6 +448,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	protected Ruleset ruleset = null;
 	protected Object rulesetLock = new Object();
+	protected DefaultSettingsModel settings = null;
 
 	protected boolean periodClockWasRunning = false;
 	protected boolean jamClockWasRunning = false;

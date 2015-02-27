@@ -46,6 +46,8 @@ public class ScoreBoardXmlConverter
 		editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
 		editor.setElement(sb, ScoreBoard.EVENT_RULESET, null, String.valueOf(scoreBoard.getRuleset()));
 
+		toElement(sb, scoreBoard.getSettings());
+
 		Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
 		while (clocks.hasNext())
 			toElement(sb, clocks.next());
@@ -59,6 +61,18 @@ public class ScoreBoardXmlConverter
 			toElement(sb, policies.next());
 
 		return d;
+	}
+
+	public Element toElement(Element p, Settings s) {
+		Element e = editor.setElement(p, "Settings");
+		Iterator<String> keys = s.getAll().keySet().iterator();
+		while (keys.hasNext()) {
+			String k = keys.next();
+			String v = s.get(k);
+			if (v != null)
+				editor.setElement(e, Settings.EVENT_SETTING, k, v);
+		}
+		return e;
 	}
 
 	public Element toElement(Element sb, Clock c) {
@@ -204,6 +218,8 @@ public class ScoreBoardXmlConverter
 					processTeam(scoreBoardModel, element);
 				else if (name.equals("Policy"))
 					processPolicy(scoreBoardModel, element);
+				else if (name.equals("Settings"))
+					processSettings(scoreBoardModel, element);
 				else if (null == value)
 					continue;
 				else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER))
@@ -239,6 +255,22 @@ public class ScoreBoardXmlConverter
 			} catch ( Exception e ) {
 			}
 		}
+	}
+
+	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
+		Map<String, String> newSettings = new Hashtable<String, String>();
+		Iterator children = settings.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String k = element.getAttributeValue("Id");
+				String v = editor.getText(element);
+				if (!v.equals(""))
+					newSettings.put(k, v);
+			} catch ( Exception e ) {
+			}
+		}
+		scoreBoardModel.getSettingsModel().set(newSettings);
 	}
 
 	public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {

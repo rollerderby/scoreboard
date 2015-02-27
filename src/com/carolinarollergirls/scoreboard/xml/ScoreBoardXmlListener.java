@@ -13,6 +13,7 @@ import java.util.*;
 import org.jdom.*;
 
 import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.event.*;
 
 /**
@@ -71,6 +72,19 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 			batchStart();
 		} else if (prop.equals(ScoreBoardEvent.BATCH_END)) {
 			batchEnd();
+		} else if (p.getProviderName().equals("Settings")) {
+			SettingsModel settings = (SettingsModel)p;
+			Element e = editor.setElement(getSettingsElement(settings), "Settings");
+			if (e != null) {
+				if (v == null) {
+					if (isPersistent())
+						editor.removeElement(e, "Setting", prop);
+					else
+						editor.setRemovePI(editor.setElement(e, "Setting", prop));
+				} else
+					editor.setElement(e, "Setting", prop, v);
+			} else
+				ScoreBoardManager.printMessage("************ ADD SUPPORT FOR SETTINGS TO ScoreBoardXmlListener FOR " + settings.getParent().getProviderName());
 		} else if (p.getProviderName().equals("ScoreBoard")) {
 			if (prop.equals(ScoreBoard.EVENT_ADD_CLOCK)) {
 				converter.toElement(getScoreBoardElement(), (Clock)event.getValue());
@@ -166,6 +180,12 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 
 	protected Element getScoreBoardElement() {
 		return editor.getElement(document.getRootElement(), "ScoreBoard");
+	}
+
+	private Element getSettingsElement(SettingsModel settings) {
+		if (settings.getParent().getProviderName().equals("ScoreBoard"))
+			return getScoreBoardElement();
+		return null;
 	}
 
 	protected Element getPolicyElement(Policy policy) {
