@@ -59,17 +59,23 @@ public class JSONServlet extends HttpServlet
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		try {
-			if ("/Ruleset/Update".equals(request.getPathInfo())) {
+			if ("/Ruleset/New".equals(request.getPathInfo())) {
+				Ruleset rs = Ruleset.New(getPostDataAsString(request));
+				if (rs == null)
+					error(response, "Error creating ruleset");
+				response.getWriter().print(rs.toJSON());
+
+			} else if ("/Ruleset/Update".equals(request.getPathInfo())) {
 				Ruleset rs = Ruleset.Update(getPostDataAsString(request));
 				if (rs == null)
 					error(response, "Error saving ruleset");
 				response.getWriter().print(rs.toJSON());
 
-			} else if ("/Ruleset/New".equals(request.getPathInfo())) {
-				Ruleset rs = Ruleset.New(getPostDataAsString(request));
-				if (rs == null)
-					error(response, "Error creating ruleset");
-				response.getWriter().print(rs.toJSON());
+			} else if ("/Ruleset/Delete".equals(request.getPathInfo())) {
+				boolean success = Ruleset.Delete(getPostDataAsString(request));
+				if (!success)
+					error(response, "Error deleting ruleset");
+				response.getWriter().print("{ \"success\": \"" + success + "\" }");
 
 			} else if ("/Game/Adhoc".equals(request.getPathInfo())) {
 				JSONObject json = new JSONObject(getPostDataAsString(request));

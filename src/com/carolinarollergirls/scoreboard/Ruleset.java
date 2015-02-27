@@ -378,6 +378,35 @@ public class Ruleset {
 		}
 	}
 
+	public static boolean Delete(String data) {
+		try {
+			JSONObject json = new JSONObject(data);
+			String id = json.optString("id", null);
+
+			if (id == null)
+				return false;
+			Ruleset rs = findRuleset(id);
+			if (rs == null)
+				return false;
+
+			for (Ruleset rs2 : rulesets) {
+				if (rs2.parent == rs) {
+					rs2.parent = rs.parent;
+					rs2.save();
+				}
+			}
+
+			rulesets.remove(rs);
+			File file = new File(new File(ScoreBoardManager.getDefaultPath(), "rules"), rs.id + ".json");
+			file.delete();
+			return true;
+		} catch (JSONException je) {
+			ScoreBoardManager.printMessage("Error creating new ruleset: " + je.toString());
+			je.printStackTrace();
+			return false;
+		}
+	}
+
 	public UUID getId() { return id; }
 	public String getName() { return name; }
 	public Ruleset getParent() { return parent; }

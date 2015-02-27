@@ -255,8 +255,7 @@ function createGameControlDialog() {
 			Ruleset: adhocGame.find("select.Ruleset").val(),
 			Name: adhocGame.find("span.Name").text(),
 		};
-		console.log(game);
-		$game.Adhoc(game, function() {
+		Game.Adhoc(game, function() {
 			dialog.dialog("close");
 		});
 	};
@@ -320,7 +319,7 @@ function createGameControlDialog() {
 
 
 	// $("<button>").append("Start").button().appendTo(adhocGame);
-	$rulesets.List(function(rulesets) {
+	Rulesets.List(function(rulesets) {
 		var select = adhocGame.find("select.Ruleset");
 		var active = $sb("ScoreBoard.Ruleset").$sbGet();
 		$.each(rulesets, function(idx, rs) {

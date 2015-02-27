@@ -1,4 +1,4 @@
-var $rulesets = {
+var Rulesets = {
 	List: function(callback) {
 		$.getJSON('/json/Ruleset/List', callback);
 	},
@@ -28,9 +28,20 @@ var $rulesets = {
 			dataType: "json"
 		});
 	},
+
+	Delete: function(obj, callback, error) {
+		$.ajax({
+			type: "POST",
+			url: '/json/Ruleset/Delete',
+			data: JSON.stringify(obj),
+			success: callback,
+			error: error,
+			dataType: "json"
+		});
+	}
 };
 
-var $game = {
+var Game = {
 	Adhoc: function(obj, callback, error) {
 		$.ajax({
 			type: "POST",

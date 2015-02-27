@@ -4,7 +4,7 @@ var definitions = array();
 
 function loadRulesets(displayID) {
 	var rs = $(".rulesets div");
-	$rulesets.List(function (data) {
+	Rulesets.List(function (data) {
 		$("#new_parent").empty();
 		rs.empty();
 		rulesets = data;
@@ -44,7 +44,7 @@ function displayRulesetTree(parentID) {
 
 function loadDefinitions() {
 	var d = $(".definitions .rules");
-	$rulesets.ListDefinitions(function (data) {
+	Rulesets.ListDefinitions(function (data) {
 		definitions = data;
 		var findSection = function(def) {
 			var newSection = function(def) {
@@ -119,6 +119,7 @@ function initialize() {
 	loadDefinitions();
 
 	$(".New").click(New);
+	$(".Delete").click(Delete);
 	$(".Update").click(Update);
 	$(".Cancel").click(Cancel);
 }
@@ -156,9 +157,9 @@ function displayRuleset(id) {
 
 			if (rs.immutable) {
 				$(".definition *").prop("disabled", rs.immutable);
-				$(".Update").hide();
+				$(".Update, .Delete").hide();
 			} else {
-				$(".Update").show();
+				$(".Update, .Delete").show();
 			}
 			definitions.show();
 		}
@@ -170,7 +171,7 @@ function New() {
 		parent: $("#new_parent").val(),
 		name: $("#new_name").val()
 	};
-	$rulesets.New(o, function(rs) {
+	Rulesets.New(o, function(rs) {
 		loadRulesets(rs.id);
 	});
 }
@@ -194,7 +195,23 @@ function Update() {
 					o.values[val.fullname] = select;
 			}
 		});
-		$rulesets.Update(o, function() {
+		Rulesets.Update(o, function() {
+			loadRulesets();
+			$(".definitions").hide();
+		}, function(err) {
+			alert(err.responseText);
+		});
+	} else {
+		$(".definitions").hide();
+	}
+}
+
+function Delete() {
+	if (!activeRuleset.immutable) {
+		var o = {
+			id: activeRuleset.id,
+		};
+		Rulesets.Delete(o, function() {
 			loadRulesets();
 			$(".definitions").hide();
 		}, function(err) {
