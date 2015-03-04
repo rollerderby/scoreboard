@@ -138,9 +138,14 @@ public class WS extends WebSocketServlet {
 			id = UUID.randomUUID();
 			register(this);
 
-			JSONObject json = new JSONObject();
-			json.put("id", id);
-			send(json);
+			try {
+				JSONObject json = new JSONObject();
+				json.put("id", id);
+				send(json);
+			} catch (JSONException je) {
+				ScoreBoardManager.printMessage("Error sending ID to client: " + je);
+				je.printStackTrace();
+			}
 		}
 	
 		@Override
@@ -149,9 +154,14 @@ public class WS extends WebSocketServlet {
 		}
 
 		public void sendError(String message) {
-			JSONObject json = new JSONObject();
-			json.put("error", message);
-			send(json);
+			try {
+				JSONObject json = new JSONObject();
+				json.put("error", message);
+				send(json);
+			} catch (JSONException je) {
+				ScoreBoardManager.printMessage("Error sending error to client: " + je);
+				je.printStackTrace();
+			}
 		}
 
 		private void processUpdates(String path, boolean force) {
