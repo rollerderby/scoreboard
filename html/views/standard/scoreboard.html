@@ -2,76 +2,88 @@
 	<head>
 		<script type="text/javascript" src="/external/jquery/jquery.js"></script>
 		<script type="text/javascript" src="/json/core.js"></script>
+		<script type="text/javascript" src="/json/WS.js"></script>
+		<script type="text/javascript" src="scoreboard.js"></script>
 	</head>
 	<body>
 		<div class="ConnectionError">Not connected</div>
-		<div id="sb">
-			<div class="Team Team1 Name AutoFit"><div><a></a></div></div>
-			<div class="Team Team1 Logo">&nbsp;</div>
-			<div class="Team Team1 Score Box AutoFit"><div><a></a></div></div>
-			<div class="Team Team1 JamScore Box AutoFit"><div><a></a></div></div>
-			<div class="Team Team1 Timeouts Box">
-				<div class="Number AutoFit"><div><a></a></div></div>
-				<div class="Dot 1"></div>
-				<div class="Dot 2"></div>
-				<div class="Dot 3"></div>
-			</div>
-			<div class="Team Team1 OfficialReviews Box">
-				<div class="Number AutoFit"><div><a></a></div></div>
-				<div class="Dot 1"></div>
+		<div id="sb" sbContext="ScoreBoard">
+			<div class="Team Team1" sbContext="Team(1)">
+				<div class="Name AutoFit" sbTrigger="nameUpdate" sbTriggerOn="Name,AlternateName(scoreboard)"><a></a></div>
+				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
+				<div class="Score Box AutoFit" sbDisplay="Score"></div>
+				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
+				<div class="Timeouts Box">
+					<div class="Number AutoFit" sbDisplay="Timeouts"><div><a></a></div></div>
+					<div class="Dot 1"></div>
+					<div class="Dot 2"></div>
+					<div class="Dot 3"></div>
+				</div>
+				<div class="OfficialReviews Box Header">OR</div>
+				<div class="OfficialReviews Box">
+					<div class="Number AutoFit" sbDisplay="OfficialReviews"><div><a></a></div></div>
+					<div class="Dot 1"></div>
+				</div>
 			</div>
 
-			<div class="Team Team2 Name AutoFit"><div><a></a></div></div>
-			<div class="Team Team2 Logo">&nbsp;</div>
-			<div class="Team Team2 Score Box AutoFit"><div><a></a></div></div>
-			<div class="Team Team2 JamScore Box AutoFit"><div><a></a></div></div>
-			<div class="Team Team2 Timeouts Box">
-				<div class="Number AutoFit"><div><a></a></div></div>
-				<div class="Dot 1"></div>
-				<div class="Dot 2"></div>
-				<div class="Dot 3"></div>
-			</div>
-			<div class="Team Team2 OfficialReviews Box">
-				<div class="Number AutoFit"><div><a></a></div></div>
-				<div class="Dot 1"></div>
+			<div class="Team Team2" sbContext="Team(2)">
+				<div class="Name AutoFit" sbTrigger="nameUpdate" sbTriggerOn="Name,AlternateName(scoreboard)"><a></a></div>
+				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
+				<div class="Score Box AutoFit" sbDisplay="Score"></div>
+				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
+				<div class="Timeouts Box">
+					<div class="Number AutoFit" sbDisplay="Timeouts"><div><a></a></div></div>
+					<div class="Dot 1"></div>
+					<div class="Dot 2"></div>
+					<div class="Dot 3"></div>
+				</div>
+				<div class="OfficialReviews Box Header">OR</div>
+				<div class="OfficialReviews Box">
+					<div class="Number AutoFit" sbDisplay="OfficialReviews"><div><a></a></div></div>
+					<div class="Dot 1"></div>
+				</div>
 			</div>
 
 			<div class="Timeouts Header Box AutoFit"><a>Timeouts</a></div>
-			<div class="Team Team1 OfficialReviews Header Box AutoFit"><a>OR</a></div>
-			<div class="Team Team2 OfficialReviews Header Box AutoFit"><a>OR</a></div>
 
 			<!-- Jam In Progress -->
-			<div class="Clock Period Large">
-				<div class="Box Name FlatDark FlatBottom AutoFit"><span class="Name"></span> <span class="Number"></span></div>
-				<div class="Box Time FlatTop AutoFit"><div><a></a></div></div>
+			<div class="Clock Period Large" sbContext="Clock(Period)">
+				<div class="Box Name FlatDark FlatBottom AutoFit">
+					<span class="Name" sbDisplay="Name"></span> 
+					<span class="Number" sbDisplay="Number"></span>
+				</div>
+				<div class="Box Time FlatTop AutoFit" sbDisplay="Time" sbModify="toTime"></div>
 			</div>
-			<div class="Clock Jam Large">
-				<div class="Box Name FlatDark FlatBottom AutoFit"><span class="Name"></span> <span class="Number"></span></div>
-				<div class="Box Time FlatTop AutoFit"><div><a></a></div></div>
+			<div class="Clock Jam Large" sbContext="Clock(Jam)">
+				<div class="Box Name FlatDark FlatBottom AutoFit">
+					<span class="Name" sbDisplay="Name"></span> 
+					<span class="Number" sbDisplay="Number"></span>
+				</div>
+				<div class="Box Time FlatTop AutoFit" sbDisplay="Time" sbModify="toTime"></div>
 			</div>
 
 			<!-- Lineup / Timeout Clocks Running -->
-			<div class="Clock Period Small">
-				<div class="Box Time AutoFit"><div><a></a></div></div>
-				<div class="Box Name AutoFit"><span class="NameInitial"></span><span class="Number"></span></div>
+			<div class="Clock Period Small" sbContext="Clock(Period)">
+				<div class="Box Time AutoFit" sbDisplay="Time" sbModify="toTime"></div>
+				<div class="Box Name AutoFit"><span class="NameInitial" sbDisplay="Name" sbModify="toInitial"></span><span class="Number" sbDisplay="Number"></span></div>
 			</div>
-			<div class="Clock Jam Small">
-				<div class="Box Name AutoFit"><span class="NameInitial"></span><span class="Number"></span></div>
+			<div class="Clock Jam Small" sbContext="Clock(Jam)">
+				<div class="Box Name AutoFit"><span class="NameInitial" sbDisplay="Name" sbModify="toInitial"></span><span class="Number" sbDisplay="Number"></span></div>
 			</div>
 			<div class="Clock Description Small">
-				<div class="Box AutoFit"><div><a></a></div></div>
+				<div class="Box AutoFit"></div>
 			</div>
-			<div class="Clock Lineup Small">
-				<div class="Box Time AutoFit"><div><a></a></div></div>
+			<div class="Clock Lineup Small" sbContext="Clock(Lineup)">
+				<div class="Box Time AutoFit" sbDisplay="Time" sbModify="toTime"></div>
 			</div>
-			<div class="Clock Timeout Small">
-				<div class="Box Time AutoFit"><div><a></a></div></div>
+			<div class="Clock Timeout Small" sbContext="Clock(Timeout)">
+				<div class="Box Time AutoFit" sbDisplay="Time" sbModify="toTime"></div>
 			</div>
 
 			<!-- Intermission -->
 			<div class="Clock Intermission">
-				<div class="Box Description AutoFit"><div><a></a></div></div>
-				<div class="Box Time AutoFit"><div><a></a></div></div>
+				<div class="Box Description AutoFit"></div>
+				<div class="Box Time AutoFit" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 			</div>
 		</div>
 	</body>

@@ -80,31 +80,31 @@ a { display: inline-block; }
   border-radius: 0px 0px 5px 5px !important;
 }
 
-.Team.Name {
+.Team>.Name {
 	position: absolute;
 	top: 0%;
 	width: 50%;
 	display: none;
 	overflow: none;
 }
-.Team1.Name,.Team2.Name.Swapped {
+.Team1>.Name,.Team2.Swapped>.Name {
 	left: 0%; right: auto;
 }
-.Team2.Name,.Team1.Name.Swapped {
+.Team2>.Name,.Team1.Swapped>.Name {
 	right: 0%; left: auto;
 }
-.Team.Name.HasName {
+.Team.HasName>.Name {
 	height: 30%;
 	display: block;
 	font-size: 33vh;
 }
-.Team.Name.HasName.HasLogo {
+.Team.HasName.HasLogo>.Name {
 	height: 10%;
 	display: block;
 	font-size: 10vh;
 }
 
-.Team.Logo {
+.Team>.Logo {
 	position: absolute;
 	top: 0%;
 	width: 50%;
@@ -113,34 +113,34 @@ a { display: inline-block; }
 	background-position: center;
 	background-size: contain;
 }
-.Team.Team1.Logo,.Team.Team2.Logo.Swapped {
+.Team.Team1>.Logo,.Team.Team2.Swapped>.Logo {
 	left: 0%; right: auto;
 }
-.Team.Team2.Logo,.Team.Team1.Logo.Swapped {
+.Team.Team2>.Logo,.Team.Team1.Swapped>.Logo {
 	right: 0%; left: auto;
 }
-.Team.Logo.HasName.HasLogo {
+.Team.HasName.HasLogo>.Logo {
 	top: 10%;
 	height: 20%;
 	display: block;
 }
-.Team.Logo.HasLogo {
+.Team.HasLogo>.Logo {
 	top: 0%;
 	height: 30%;
 	display: block;
 }
 
-.Team.Score {
+.Team>.Score {
 	position: absolute;
 	top: 31%;
 	width: 36%;
 	font-size: 20vh;
 	height: 20%;
 }
-.Team.Team1.Score,.Team.Team2.Score.Swapped {
+.Team.Team1>.Score,.Team.Team2.Swapped>.Score {
 	left: 7%; right: auto;
 }
-.Team.Team2.Score,.Team.Team1.Score.Swapped {
+.Team.Team2>.Score,.Team.Team1.Swapped>.Score {
 	right: 7%; left: auto;
 }
 
@@ -148,25 +148,26 @@ a { display: inline-block; }
 	display: none;
 }
 
-.Team.Timeouts,.Team.OfficialReviews {
+.Team>.Timeouts,.Team>.OfficialReviews,.OfficialReviews.Header {
 	position: absolute;
 	top: 39%;
 	width: 6%;
 	height: 9%;
 	font-size: 8vh;
 }
-.Team.Team1.Timeouts,.Team.Team2.Timeouts.Swapped {
+.Team.Team1>.Timeouts,.Team.Team2.Swapped>.Timeouts {
 	left: 43.5%; right: auto;
 }
-.Team.Team2.Timeouts,.Team.Team1.Timeouts.Swapped {
+.Team.Team2>.Timeouts,.Team.Team1.Swapped>.Timeouts {
 	right: 43.5%; left: auto;
 }
-.Team.Team1.OfficialReviews,.Team.Team2.OfficialReviews.Swapped {
+.Team.Team1>.OfficialReviews,.Team.Team2.Swapped>.OfficialReviews {
 	left: 0.5%; right: auto;
 }
-.Team.Team2.OfficialReviews,.Team.Team1.OfficialReviews.Swapped {
+.Team.Team2>.OfficialReviews,.Team.Team1.Swapped>.OfficialReviews {
 	right: 0.5%; left: auto;
 }
+
 .Timeouts.Header {
 	position: absolute;
 	top: 32%;

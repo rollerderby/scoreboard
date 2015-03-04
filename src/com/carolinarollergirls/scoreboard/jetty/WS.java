@@ -175,7 +175,7 @@ public class WS extends WebSocketServlet {
 		private void processUpdates(String path, boolean force) {
 			for (String k : state.keySet()) {
 				State s = state.get(k);
-				if (k.equals(path) && (stateID < s.stateID || force))
+				if (k.startsWith(path) && (stateID < s.stateID || force))
 					updates.put(k, s.value);
 			}
 		}
