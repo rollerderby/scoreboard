@@ -10,7 +10,7 @@
 
 
 $.fx.interval = 33;
-_include("/javascript/core_json.js");
+_include("/json", [ "Game.js", "Rulesets.js" ]);
 
 $sb(function() {
 	createScoreTimeTab();
@@ -985,13 +985,17 @@ function createScoreBoardViewContent(table) {
 	});
 	var applyPreviewButton = $("<button>Apply Preview</button>").button()
 		.click(function() {
-			$sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
-				var path = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
-				$sb(path).$sbSet($sb(this).$sbGet());
+			$sb("ScoreBoard.Settings").find("Setting").each(function() {
+				oldPath = String($sb(this).$sbPath);
+				var path = oldPath.replace("(Preview_", "(View_");
+				if (path != oldPath) {
+					var val = $sb(this).$sbGet();
+					$sb(path).$sbSet($sb(this).$sbGet());
+				}
 			});
 		});
-	var viewOptions = $sb("Pages.Page(scoreboard.html)").children("PreviewOptions,ViewOptions");
-	_crgUtils.bindAndRun(viewOptions, "sbchange", function() {
+	// var viewOptions = $sb("Pages.Page(scoreboard.html)").children("PreviewOptions,ViewOptions");
+	_crgUtils.bindAndRun("ScoreBoard.Settings.Setting", "sbchange", function() {
 		var disableApplyButton = true;
 		$sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
 			var viewPath = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
@@ -1027,7 +1031,7 @@ function createScoreBoardViewContent(table) {
 			.replaceAll(this);
 	});
 
-	var sbUrl = "/views/scoreboard.html?videomuted=true&videocontrols=true";
+	var sbUrl = "/views/standard/scoreboard.html?videomuted=true&videocontrols=true";
 	$("<tr><td/></tr>").appendTo(table)
 		.find("td").addClass("ViewFrames Footer")
 		.append(createRowTable(2))
@@ -1038,8 +1042,6 @@ function createScoreBoardViewContent(table) {
 }
 
 function createScoreBoardViewPreviewRows(table, type) {
-	var pageSb = $sb("Pages.Page(scoreboard.html)."+type+"Options");
-
 	var currentViewTd = $("<tr><td/></tr>").addClass(type).appendTo(table)
 		.find("td").addClass("Header NoChildren CurrentView")
 		.append("<label>ScoreBoard</label><input type='radio' value='scoreboard'/>")
@@ -1047,7 +1049,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.append("<label>Video</label><input type='radio' value='video'/>")
 		.append("<label>Custom Page</label><input type='radio' value='html'/>");
 
-	pageSb.$sb("CurrentView").$sbControl(currentViewTd.children());
+	$sb("ScoreBoard.Settings.Setting(" + type + "_CurrentView)").$sbControl(currentViewTd.children());
 	currentViewTd.buttonset()
 		.prepend("<a>Current View : </a>");
 
@@ -1060,7 +1062,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 	var intermissionControlButton = $("<button>Intermission Control</button>").button().addClass("ui-button-small")
 		.click(function() { intermissionControlDialog.dialog("open"); });
 	var swapTeamsButton = $("<label/><input type='checkbox'/>");
-	pageSb.$sb("SwapTeams").$sbControl(swapTeamsButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(" + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -1071,7 +1073,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		} }).addClass("ui-button-small");
 
 	var showJamTotalsButton = $("<label/><input type='checkbox'/>");
-	pageSb.$sb("HideJamTotals").$sbControl(showJamTotalsButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(" + type + "_HideJamTotals)").$sbControl(showJamTotalsButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -1080,12 +1082,12 @@ function createScoreBoardViewPreviewRows(table, type) {
 				return value;
 			}
 		} }).addClass("ui-button-small");
-	var boxStyle = pageSb.$sb("BoxStyle").$sbControl("<label>Box Style: </label><select>", { sbelement: {
+	var boxStyle = $sb("ScoreBoard.Settings.Setting(" + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Rounded", value: "" },
 			{ text: "Flat", value: "box_flat" }
 		]}});
-	var sidePadding = pageSb.$sb("SidePadding").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
+	var sidePadding = $sb("ScoreBoard.Settings.Setting(" + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "None", value: "" },
 			{ text: "2%", value: "2" },
@@ -1094,28 +1096,28 @@ function createScoreBoardViewPreviewRows(table, type) {
 			{ text: "8%", value: "8" },
 			{ text: "10%", value: "10" }
 		]}});
-	var backgroundStyle = pageSb.$sb("BackgroundStyle").$sbControl("<label>Background Style: </label><select>", { sbelement: {
+	var backgroundStyle = $sb("ScoreBoard.Settings.Setting(" + type + "_BackgroundStyle)").$sbControl("<label>Background Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Black to White", value: "" },
 			{ text: "White to Black", value: "bg_whitetoblack" },
 			{ text: "Black", value: "bg_black" }
 		]}});
 
-	var imageViewSelect = pageSb.$sb("View(Image).Src").$sbControl("<label>Image View: </label><select>", { sbelement: {
+	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(" + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
 			optionParent: "Images.Type(fullscreen)",
 			optionChildName: "Image",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Image", value: "" }
 		} });
-	var videoViewSelect = pageSb.$sb("View(Video).Src").$sbControl("<label>Video View: </label><select>", { sbelement: {
+	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(" + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
 			optionParent: "Videos.Type(fullscreen)",
 			optionChildName: "Video",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Video", value: "" }
 		} });
-	var customPageViewSelect = pageSb.$sb("View(CustomHtml).Src").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
+	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(" + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
 			optionParent: "CustomHtml.Type(fullscreen)",
 			optionChildName: "Html",
 			optionNameElement: "Name",
