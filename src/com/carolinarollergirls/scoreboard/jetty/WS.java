@@ -21,6 +21,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.eclipse.jetty.websocket.WebSocketServlet;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -110,8 +111,15 @@ public class WS extends WebSocketServlet {
 				JSONObject json = new JSONObject(data);
 				String action = json.getString("action");
 				if (action.equals("Register")) {
-					String path = json.getString("path");
-					requestUpdates(path);
+					String path = json.optString("path", null);
+					JSONArray paths = json.optJSONArray("paths");
+					if (path != null)
+						requestUpdates(path);
+					else if (paths != null) {
+						for (int i = 0; i < paths.length(); i++)
+							requestUpdates(paths.getString(i));
+					}
+					sendUpdates();
 				} else {
 					sendError("Unknown Action '" + action + "'");
 				}
@@ -197,7 +205,6 @@ public class WS extends WebSocketServlet {
 				if (!paths.contains(path))
 					paths.add(path);
 				processUpdates(path, true);
-				sendUpdates();
 			}
 		}
 

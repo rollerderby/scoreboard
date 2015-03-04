@@ -18,6 +18,16 @@ var WS = {
 		ws.onopen = function(e) {
 			console.log("OPEN", e);
 			$("body").addClass("Connected");
+			req = {
+				action: "Register",
+				paths: new Array()
+			};
+			$.each(Object.keys(WS.registeredPaths), function (idx, path) {
+				req.paths.push(path);
+			});
+			if (req.paths.length > 0) {
+				ws.send(JSON.stringify(req));
+			}
 			WS.connectCallback();
 		};
 		ws.onmessage = function(e) {
