@@ -10,7 +10,7 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Hashtable;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -66,20 +66,36 @@ public class WS extends WebSocketServlet {
 		}
 	}
 
-	public static void update(Map<String, Object> updates) {
+	public static void updateState(Map<String, Object> updates) {
 		synchronized (sourcesLock) {
 			stateID++;
-			List<String> keys = new ArrayList<String>(updates.keySet());
+			List<String> keys = new LinkedList<String>(updates.keySet());
+			List<String> deletedKeys = new LinkedList<String>(updates.keySet());
 			for (String k : keys) {
-				State s = state.get(k);
 				Object v = updates.get(k);
-				if (s == null)
-					state.put(k, new State(stateID, v));
-				else {
-					s.stateID = stateID;
-					s.value = v;
+				if (v == null) {
+					// Remove this and all children from state
+					List<String> stateKeys = new ArrayList<String>(state.keySet());
+					for (String key : stateKeys) {
+						if (key.equals(k) || key.startsWith(k + ".")) {
+							deletedKeys.add(key);
+							State s = state.get(key);
+							s.stateID = stateID;
+							s.value = v;
+						}
+					}
+				} else {
+					State s = state.get(k);
+					if (s == null) {
+						if (v != null)
+							state.put(k, new State(stateID, v));
+					} else if (!v.equals(s.value)) {
+						s.stateID = stateID;
+						s.value = v;
+					}
 				}
 			}
+			keys.addAll(deletedKeys);
 
 			for (Conn source : sources) {
 				source.sendUpdates(keys);
@@ -91,7 +107,7 @@ public class WS extends WebSocketServlet {
 	protected static Object sourcesLock = new Object();
 
 	protected static long stateID = 0;
-	protected static Map<String, State> state = new Hashtable<String, State>();
+	protected static Map<String, State> state = new LinkedHashMap<String, State>();
 
 	protected static class State {
 		public State(long sid, Object v) {
@@ -132,7 +148,6 @@ public class WS extends WebSocketServlet {
 		public void send(JSONObject json) {
 			try {
 				json.put("stateID", stateID);
-				ScoreBoardManager.printMessage("send: " + json.toString());
 				connection.sendMessage(json.toString());
 			} catch (Exception e) {
 				ScoreBoardManager.printMessage("Error sending JSON update: " + e);
@@ -175,8 +190,12 @@ public class WS extends WebSocketServlet {
 		private void processUpdates(String path, boolean force) {
 			for (String k : state.keySet()) {
 				State s = state.get(k);
-				if (k.startsWith(path) && (stateID < s.stateID || force))
-					updates.put(k, s.value);
+				if (k.startsWith(path) && (stateID < s.stateID || force)) {
+					if (s.value == null)
+						updates.put(k, JSONObject.NULL);
+					else
+						updates.put(k, s.value);
+				}
 			}
 		}
 
@@ -211,6 +230,6 @@ public class WS extends WebSocketServlet {
 		protected UUID id;
 		protected List<String> paths = new LinkedList<String>();
 		protected long stateID = 0;
-		private Map<String, Object> updates = new Hashtable<String, Object>();
+		private Map<String, Object> updates = new LinkedHashMap<String, Object>();
 	}
 }

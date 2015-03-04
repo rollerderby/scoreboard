@@ -41,7 +41,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public void applyRule(String rule, Object value) {
 		if (rule.equals("Team.Timeouts"))
 			setTimeouts((Integer)value);
-		else if (rule.equals("Team.Timeouts"))
+		else if (rule.equals("Team.OfficialReviews"))
 			setOfficialReviews((Integer)value);
 		else if (rule.equals("Team." + id + ".Name"))
 			setName((String)value);
