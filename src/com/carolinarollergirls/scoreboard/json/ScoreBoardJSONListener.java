@@ -47,7 +47,10 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 				update("ScoreBoard", prop, v);
 			else if (p instanceof Team)
 				update("ScoreBoard.Team(" + ((Team)p).getId() + ")", prop, v);
-			else if (p instanceof Clock)
+			else if (p instanceof Skater) {
+				Skater s = (Skater)p;
+				update("ScoreBoard.Team(" + s.getTeam().getId() + ").Skater(" + s.getId() + ")", prop, v);
+			} else if (p instanceof Clock)
 				update("ScoreBoard.Clock(" + ((Clock)p).getId() + ")", prop, v);
 			else if (p instanceof Policy)
 				update("ScoreBoard.Policy(" + ((Policy)p).getId() + ")", prop, v);
@@ -96,8 +99,28 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 			updateMap.put(prefix + "." + prop, v);
 		else if (v instanceof Boolean)
 			updateMap.put(prefix + "." + prop, v);
+		else if (v instanceof Skater)
+			update(prefix, prop, (Skater)v);
 		else {
 			ScoreBoardManager.printMessage(prefix + " update of unknown type.  prop: " + prop + ", v: " + v + " v.getClass(): " + v.getClass());
+		}
+	}
+
+	private void update(String prefix, String action, Skater s) {
+		prefix = prefix + ".Skater(" + s.getId() + ").";
+
+		if (action.equals(Team.EVENT_ADD_SKATER)) {
+			updateMap.put(prefix + Skater.EVENT_NAME, s.getName());
+			updateMap.put(prefix + Skater.EVENT_NUMBER, s.getNumber());
+			updateMap.put(prefix + Skater.EVENT_POSITION, s.getPosition());
+			updateMap.put(prefix + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox());
+		}
+
+		if (action.equals(Team.EVENT_REMOVE_SKATER)) {
+			updateMap.put(prefix + Skater.EVENT_NAME, null);
+			updateMap.put(prefix + Skater.EVENT_NUMBER, null);
+			updateMap.put(prefix + Skater.EVENT_POSITION, null);
+			updateMap.put(prefix + Skater.EVENT_PENALTY_BOX, null);
 		}
 	}
 
