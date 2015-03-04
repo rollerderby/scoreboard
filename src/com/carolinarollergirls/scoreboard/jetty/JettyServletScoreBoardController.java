@@ -108,7 +108,10 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 		new ServletContextHandler(contexts, "/urls", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(urlsServlet), "/*");
 
 		jsonServlet = new JSONServlet(server, scoreBoardModel);
-		new ServletContextHandler(contexts, "/json", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(jsonServlet), "/*");
+		new ServletContextHandler(contexts, "/JSON", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(jsonServlet), "/*");
+
+		ws = new WS(scoreBoardModel);
+		new ServletContextHandler(contexts, "/WS", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(ws), "/*");
 
 		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
 
@@ -141,6 +144,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 	protected int port;
 	protected UrlsServlet urlsServlet;
 	protected JSONServlet jsonServlet;
+	protected WS ws;
 
 	public static final int DEFAULT_PORT = 8000;
 	public static final String DEFAULT_SECURE_SESSION_ID = "false";
