@@ -258,19 +258,19 @@ public class ScoreBoardXmlConverter
 	}
 
 	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
-		Map<String, String> newSettings = new Hashtable<String, String>();
+		SettingsModel sm = scoreBoardModel.getSettingsModel();
 		Iterator children = settings.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
 				String k = element.getAttributeValue("Id");
 				String v = editor.getText(element);
-				if (!v.equals(""))
-					newSettings.put(k, v);
+				if (v == null)
+					v = "";
+				sm.set(k, v);
 			} catch ( Exception e ) {
 			}
 		}
-		scoreBoardModel.getSettingsModel().set(newSettings);
 	}
 
 	public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {

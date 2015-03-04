@@ -61,11 +61,9 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	public void set(String k, String v) {
 		synchronized (settingsLock) {
 			String last = settings.get(k);
-			if (v == null || v.equals("")) {
-				v = null;
-				settings.remove(k);
-			} else
-				settings.put(k, v);
+			if (v == null || v.equals(""))
+				v = "";
+			settings.put(k, v);
 			scoreBoardChange(new ScoreBoardEvent(this, k, v, last));
 		}
 	}
