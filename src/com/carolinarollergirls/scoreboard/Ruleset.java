@@ -103,6 +103,7 @@ public class Ruleset {
 			addRuleset(base);
 	
 			File file = new File(ScoreBoardManager.getDefaultPath(), "rules");
+			file.mkdirs();
 			for (File child : file.listFiles()) {
 				if (child.getName().endsWith(".json")) {
 					String childName = child.getName().replace(".json", "");
