@@ -51,6 +51,7 @@ _include("/fonts", [
 /* Core functionality */
 _include("/javascript", [
 	"timeconversions.js",
+	"windowfunctions.js",
 	"autofit.js",
 ]);
 _include("/json", [

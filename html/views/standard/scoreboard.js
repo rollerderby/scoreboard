@@ -1,85 +1,87 @@
-WS.Connect(connected);
+$(initialize);
 
-var registered = false;
-function connected() {
-	if (!registered) {
-		registered = true;
-		WS.AutoRegister();
+function initialize() {
+	WS.Connect();
 
-		// Show Clocks
-		WS.Register( [
-			"ScoreBoard.Clock(Period).Running",
-			"ScoreBoard.Clock(Jam).Running",
-			"ScoreBoard.Clock(Lineup).Running",
-			"ScoreBoard.Clock(Timeout).Running",
-			"ScoreBoard.Clock(Intermission).Running" ], function(k, v) {
-				$.each(["Period", "Jam", "Lineup", "Timeout", "Intermission"], function (i, c) {
-					$(".Clock").toggleClass(c + "Running", WS.state["ScoreBoard.Clock(" + c + ").Running"]);
-				});
-		});
+	WS.AutoRegister();
+	WS.Register( ["ScoreBoard.Team(1).Skater", "ScoreBoard.Team(1).Position"], function (k, v) { updateLead("1"); } );
+	WS.Register( ["ScoreBoard.Team(2).Skater", "ScoreBoard.Team(2).Position"], function (k, v) { updateLead("2"); } );
 
-		// Show Proper Intermission Text
-		WS.Register( [
-			"ScoreBoard.Setting(Intermission.PreGame)",
-			"ScoreBoard.Setting(Intermission.Intermission)",
-			"ScoreBoard.Setting(Intermission.Unofficial)",
-			"ScoreBoard.Setting(Intermission.Official)",
-			"ScoreBoard.OfficialScore",
-			"ScoreBoard.Clock(Intermission).Number",
-			"ScoreBoard.Clock(Intermission).MaximumNumber" ], function(k, v) {
-				var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
-				var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
-				var isOfficial = WS.state["ScoreBoard.OfficialScore"];
-				var text = '';
-				if (num == 0)
-					text = WS.state["ScoreBoard.Setting(Intermission.PreGame)"];
-				else if (num != max)
-					text = WS.state["ScoreBoard.Setting(Intermission.Intermission)"];
-				else if (!isOfficial)
-					text = WS.state["ScoreBoard.Setting(Intermission.Unofficial)"];
-				else
-					text = WS.state["ScoreBoard.Setting(Intermission.Official)"];
+	// Show Clocks
+	WS.Register( [
+		"ScoreBoard.Clock(Period).Running",
+		"ScoreBoard.Clock(Jam).Running",
+		"ScoreBoard.Clock(Lineup).Running",
+		"ScoreBoard.Clock(Timeout).Running",
+		"ScoreBoard.Clock(Intermission).Running" ], function(k, v) {
+			$.each(["Period", "Jam", "Lineup", "Timeout", "Intermission"], function (i, c) {
+				$(".Clock").toggleClass(c + "Running", WS.state["ScoreBoard.Clock(" + c + ").Running"] === true);
+			});
+	});
 
-				$(".Clock.Intermission .Description").text(text);
-				$(".Clock.Intermission .Time").toggleClass("Hide", num == max);
-		});
+	// Show Proper Intermission Text
+	WS.Register( [
+		"ScoreBoard.Setting(Intermission.PreGame)",
+		"ScoreBoard.Setting(Intermission.Intermission)",
+		"ScoreBoard.Setting(Intermission.Unofficial)",
+		"ScoreBoard.Setting(Intermission.Official)",
+		"ScoreBoard.OfficialScore",
+		"ScoreBoard.Clock(Intermission).Number",
+		"ScoreBoard.Clock(Intermission).MaximumNumber" ], function(k, v) {
+			var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
+			var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
+			var isOfficial = WS.state["ScoreBoard.OfficialScore"];
+			var text = '';
+			if (num == 0)
+				text = WS.state["ScoreBoard.Setting(Intermission.PreGame)"];
+			else if (num != max)
+				text = WS.state["ScoreBoard.Setting(Intermission.Intermission)"];
+			else if (!isOfficial)
+				text = WS.state["ScoreBoard.Setting(Intermission.Unofficial)"];
+			else
+				text = WS.state["ScoreBoard.Setting(Intermission.Official)"];
 
-		// Show Small Clock Description (and red box)
-		WS.Register( [
-			"ScoreBoard.Clock(Lineup).Name",
-			"ScoreBoard.Clock(Lineup).Running",
-			"ScoreBoard.Clock(Timeout).Name",
-			"ScoreBoard.Clock(Timeout).Running",
-			"ScoreBoard.TimeoutOwner",
-			"ScoreBoard.OfficialReview" ], function(k, v) {
-				var lc = WS.state["ScoreBoard.Clock(Lineup).Running"];
-				var tc = WS.state["ScoreBoard.Clock(Timeout).Running"];
-				var to = WS.state["ScoreBoard.TimeoutOwner"];
-				var or = WS.state["ScoreBoard.OfficialReview"];
-				var lcn = WS.state["ScoreBoard.Clock(Lineup).Name"];
-				var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
-				var text = '';
-				console.log(lc, tc, to, or, lcn, tcn);
+			$(".Clock.Intermission .Description").text(text);
+			$(".Clock.Intermission .Time").toggleClass("Hide", num == max);
+	});
 
-				$(".Clock.Description>div,.Team>.Timeouts,.Team>.OfficialReviews").removeClass("Red");
-				if (lc)
-					text = lcn;
-				else if (tcn) {
-					$(".Clock.Description>div").addClass("Red");
+	// Show Small Clock Description (and red box)
+	WS.Register( [
+		"ScoreBoard.Clock(Lineup).Name",
+		"ScoreBoard.Clock(Lineup).Running",
+		"ScoreBoard.Clock(Timeout).Name",
+		"ScoreBoard.Clock(Timeout).Running",
+		"ScoreBoard.TimeoutOwner",
+		"ScoreBoard.OfficialReview" ], function(k, v) {
+			var lc = WS.state["ScoreBoard.Clock(Lineup).Running"];
+			var tc = WS.state["ScoreBoard.Clock(Timeout).Running"];
+			var to = WS.state["ScoreBoard.TimeoutOwner"];
+			var or = WS.state["ScoreBoard.OfficialReview"];
+			var lcn = WS.state["ScoreBoard.Clock(Lineup).Name"];
+			var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
+			var text = '';
 
-					text = tcn;
-					if (to != "" && !or) {
-						text = "Team Timeout";
-						$(".Team" + to + ">.Timeouts").addClass("Red");
-					}
-					if (to != "" && or) {
-						text = "Official Review";
-						$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
-					}
+			$(".Clock.Description>div,.Team>.Timeouts,.Team>.OfficialReviews").removeClass("Red");
+			if (lc)
+				text = lcn;
+			else if (tcn) {
+				$(".Clock.Description>div").addClass("Red");
+
+				text = tcn;
+				if (to != "" && !or) {
+					text = "Team Timeout";
+					$(".Team" + to + ">.Timeouts").addClass("Red");
 				}
-				$(".Clock.Description>div").text(text);
-		});
-	}
+				if (to != "" && or) {
+					text = "Official Review";
+					$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
+				}
+			}
+			$(".Clock.Description>div").text(text);
+	});
+}
+
+function updateLead(team) {
 }
 
 function getTeamId(k) {
@@ -120,5 +122,5 @@ function toTime(k, v) {
 }
 
 function toInitial(k, v) {
-	return v.substring(0, 1);
+	return v == null ? '' : v.substring(0, 1);
 }

@@ -14,50 +14,63 @@ var WS = {
 		var url = (document.location.protocol == "http:" ? "ws" : "wss") + "://";
 		url += document.location.host + "/WS/";
 		console.log("Connecting the websocket at " + url);
-		ws = new WebSocket(url);
-		ws.onopen = function(e) {
-			console.log("OPEN", e);
+		WS.socket = new WebSocket(url);
+		WS.socket.onopen = function(e) {
+			console.log("Websocket: Open");
 			$("body").addClass("Connected");
 			req = {
 				action: "Register",
 				paths: new Array()
 			};
+			$.each(Object.keys(WS.state), function(idx, k) {
+				WS.triggerCallback(k, null);
+			});
+			WS.state = new Array();
 			$.each(WS.callbacks, function (idx, c) {
 				req.paths.push(c.path);
 			});
 			if (req.paths.length > 0) {
-				ws.send(JSON.stringify(req));
+				WS.send(JSON.stringify(req));
 			}
-			WS.connectCallback();
+			if (WS.connectCallback != null)
+				WS.connectCallback();
 		};
-		ws.onmessage = function(e) {
+		WS.socket.onmessage = function(e) {
 			json = JSON.parse(e.data);
 			WS.processUpdate(json);
 		};
-		ws.onclose = function(e) {
-			console.log("CLOSE", e);
+		WS.socket.onclose = function(e) {
+			console.log("Websocket: Close", e);
 			$("body").removeClass("Connected");
 			if (WS.connectTimeout == null)
 				WS.connectTimeout = setTimeout(WS._connect, 1000);
 		};
-		ws.onerror = function(e) {
-			console.log("ERROR", e);
+		WS.socket.onerror = function(e) {
+			console.log("Websocket: Error", e);
 			$("body").removeClass("Connected");
 			if (WS.connectTimeout == null)
 				WS.connectTimeout = setTimeout(WS._connect, 1000);
 		}
 	},
 
-	processUpdate: function (json) {
-		$.each(json, function(k, v) {
-			WS.state[k] = v;
-			for (idx = 0; idx < WS.callbacks.length; idx++) {
-				c = WS.callbacks[idx];
-				if (k.indexOf(c.path) == 0) {
-					c.callback(k, v);
-				}
+	send: function(data) {
+		if (WS.socket != null && WS.socket.readyState === 1) {
+			WS.socket.send(data);
+		}
+	},
+
+	triggerCallback: function (k, v) {
+		WS.state[k] = v;
+		for (idx = 0; idx < WS.callbacks.length; idx++) {
+			c = WS.callbacks[idx];
+			if (k.indexOf(c.path) == 0) {
+				c.callback(k, v);
 			}
-		});
+		}
+	},
+
+	processUpdate: function (json) {
+		$.each(json, WS.triggerCallback);
 	},
 
 	Register: function(paths, options) {
@@ -95,7 +108,7 @@ var WS = {
 			action: "Register",
 			paths: paths
 		};
-		ws.send(JSON.stringify(req));
+		WS.send(JSON.stringify(req));
 	},
 
 	AutoRegister: function() {
