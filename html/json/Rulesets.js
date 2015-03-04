@@ -1,16 +1,16 @@
 var Rulesets = {
 	List: function(callback) {
-		$.getJSON('/json/Ruleset/List', callback);
+		$.getJSON('/JSON/Ruleset/List', callback);
 	},
 
 	ListDefinitions: function(callback) {
-		$.getJSON('/json/Ruleset/ListDefinitions', callback);
+		$.getJSON('/JSON/Ruleset/ListDefinitions', callback);
 	},
 
 	New: function(obj, callback, error) {
 		$.ajax({
 			type: "POST",
-			url: '/json/Ruleset/New',
+			url: '/JSON/Ruleset/New',
 			data: JSON.stringify(obj),
 			success: callback,
 			error: error,
@@ -21,7 +21,7 @@ var Rulesets = {
 	Update: function(obj, callback, error) {
 		$.ajax({
 			type: "POST",
-			url: '/json/Ruleset/Update',
+			url: '/JSON/Ruleset/Update',
 			data: JSON.stringify(obj),
 			success: callback,
 			error: error,
@@ -32,7 +32,7 @@ var Rulesets = {
 	Delete: function(obj, callback, error) {
 		$.ajax({
 			type: "POST",
-			url: '/json/Ruleset/Delete',
+			url: '/JSON/Ruleset/Delete',
 			data: JSON.stringify(obj),
 			success: callback,
 			error: error,
@@ -40,16 +40,3 @@ var Rulesets = {
 		});
 	}
 };
-
-var Game = {
-	Adhoc: function(obj, callback, error) {
-		$.ajax({
-			type: "POST",
-			url: '/json/Game/Adhoc',
-			data: JSON.stringify(obj),
-			success: callback,
-			error: error,
-			dataType: "json"
-		});
-	}
-}

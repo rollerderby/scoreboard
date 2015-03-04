@@ -37,12 +37,7 @@ function _include(dir, files) {
 
 _include("/external/jquery-ui", [ "jquery-ui.js", "css/default/jquery-ui.css" ]);
 
-_include("/external/colorpicker", [ "colorpicker.js", "css/colorpicker.css" ]);
-_include("/external/spectrum", [ "spectrum.js", "spectrum.css" ]);
-
 _include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
-_include("/external/jquery-plugins/string/jquery.string.js");
-_include("/external/jquery-plugins/fileupload/jquery.fileupload.js");
 
 /* Good places to find fonts are:
  * http://fontspace.com/
@@ -55,14 +50,14 @@ _include("/fonts", [
 
 /* Core functionality */
 _include("/javascript", [
+	"timeconversions.js",
 	"autofit.js",
-	"core_json.js" ]);
-//	"controls.js",
-//	"timeconversions.js",
-//	"keycontrols.js",
-//	"utils.js",
-//	"windowfunctions.js",
-//	"sortedtable.js" ]);
+]);
+_include("/json", [
+	"Rulesets.js",
+	"Game.js",
+	"WS.js",
+]);
 
 $(function() {
 	if (/\.html$/.test(window.location.pathname)) {
@@ -70,15 +65,3 @@ $(function() {
 		_include(window.location.pathname.replace(/\.html$/, ".js"));
 	}
 });
-
-
-// /* Start ScoreBoard server polling */
-// $(function() {
-// 	_crgUtils.showBrowserWarning(_crgScoreBoard.scoreBoardRegister, {
-// 		msie:
-// 			"Internet Explorer is not supported as it is not w3c standards compliant."+
-// 			"The scoreboard will not work."+
-// 			"You should use either Google Chrome or Mozilla Firefox instead."
-// 	});
-// });
-
