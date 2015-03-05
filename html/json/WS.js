@@ -17,7 +17,7 @@ var WS = {
 		WS.socket = new WebSocket(url);
 		WS.socket.onopen = function(e) {
 			console.log("Websocket: Open");
-			$("body").addClass("Connected");
+			$(".ConnectionError").addClass("Connected");
 			req = {
 				action: "Register",
 				paths: new Array()
@@ -41,13 +41,13 @@ var WS = {
 		};
 		WS.socket.onclose = function(e) {
 			console.log("Websocket: Close", e);
-			$("body").removeClass("Connected");
+			$(".ConnectionError").removeClass("Connected");
 			if (WS.connectTimeout == null)
 				WS.connectTimeout = setTimeout(WS._connect, 1000);
 		};
 		WS.socket.onerror = function(e) {
 			console.log("Websocket: Error", e);
-			$("body").removeClass("Connected");
+			$(".ConnectionError").removeClass("Connected");
 			if (WS.connectTimeout == null)
 				WS.connectTimeout = setTimeout(WS._connect, 1000);
 		}
@@ -87,7 +87,25 @@ var WS = {
 			} else if (options.attr != null) {
 				callback = function(k, v) { elem.attr(options.attr, v); };
 			} else {
-				callback = function(k, v) { elem.text(v); };
+				if (elem.hasClass("AutoFit")) {
+					if (elem.children().length == 0) {
+						var div = $("<div>").css("width", "100%").css("height", "100%").appendTo(elem);
+						elem = $("<a>").appendTo(div);
+					}
+					var autofit = _autoFit.enableAutoFitText(elem.parent());
+					callback = function(k, v) {
+						elem.text(v);
+						autofit();
+					};
+				} else if (elem.parent().hasClass("AutoFit")) {
+					var autofit = _autoFit.enableAutoFitText(elem.parent());
+					callback = function(k, v) {
+						elem.text(v);
+						autofit();
+					};
+				} else {
+					callback = function(k, v) { elem.text(v); };
+				}
 			}
 		}
 
@@ -111,11 +129,25 @@ var WS = {
 		WS.send(JSON.stringify(req));
 	},
 
+	getPaths: function(elem, attr) {
+		var list = elem.attr(attr).split(",");
+		var path = WS._getContext(elem);
+		paths = new Array();
+		$.each(list, function(idx, item) {
+			item = $.trim(item);
+			if (path != null)
+				item = path + '.' + item;
+			paths.push(item);
+		});
+		return paths;
+	},
+
 	AutoRegister: function() {
 		$.each($("[sbDisplay]"), function(idx, elem) {
 			elem = $(elem);
-			var path = WS._getContext(elem, "sbDisplay");
-			WS.Register(path, { element: elem, modifyFunc: window[elem.attr("sbModify")] });
+			var paths = WS.getPaths(elem, "sbDisplay");
+			if (paths.length > 0)
+				WS.Register(paths, { element: elem, modifyFunc: window[elem.attr("sbModify")] });
 		});
 		$.each($("[sbTrigger]"), function(idx, elem) {
 			elem = $(elem);
@@ -123,17 +155,9 @@ var WS = {
 			if (sbTrigger == null)
 				return;
 
-			var sbTriggerOn = elem.attr("sbTriggerOn");
-			var path = WS._getContext(elem);
-			if (sbTriggerOn != null) {
-				paths = new Array();
-				$.each(sbTriggerOn.split(","), function(idx, triggerOn) {
-					if (path != null)
-						triggerOn = path + '.' + triggerOn;
-					paths.push(triggerOn);
-				});
+			var paths = WS.getPaths(elem, "sbTriggerOn");
+			if (paths.length > 0)
 				WS.Register(paths, { triggerFunc: sbTrigger } );
-			}
 		});
 	},
 

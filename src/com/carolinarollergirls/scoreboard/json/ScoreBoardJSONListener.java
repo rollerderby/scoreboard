@@ -166,6 +166,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put(path + "." + Team.EVENT_LOGO, t.getLogo());
 		updateMap.put(path + "." + Team.EVENT_SCORE, t.getScore());
 		updateMap.put(path + "." + Team.EVENT_LAST_SCORE, t.getLastScore());
+		updateMap.put(path + ".JamScore", t.getScore() - t.getLastScore());
 		updateMap.put(path + "." + Team.EVENT_TIMEOUTS, t.getTimeouts());
 		updateMap.put(path + "." + Team.EVENT_OFFICIAL_REVIEWS, t.getOfficialReviews());
 		updateMap.put(path + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());

@@ -38,6 +38,7 @@ function _include(dir, files) {
 _include("/external/jquery-ui", [ "jquery-ui.js", "css/default/jquery-ui.css" ]);
 
 _include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
+_include("/external/jquery-plugins/string/jquery.string.js");
 
 /* Good places to find fonts are:
  * http://fontspace.com/
@@ -66,3 +67,10 @@ $(function() {
 		_include(window.location.pathname.replace(/\.html$/, ".js"));
 	}
 });
+
+function isTrue(value) {
+	if (typeof value == "boolean")
+		return value;
+	else
+		return (String(value).toLowerCase() == "true");
+}

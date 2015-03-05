@@ -10,7 +10,7 @@
 	top: 0;
 	left: 0;
 }
-body:not(.Connected) .ConnectionError {
+.ConnectionError:not(.Connected) {
 	display: block;
 }
 
@@ -18,21 +18,21 @@ body {
 	color: #FFFFFF;
 	font-weight: bold; 
 	font-family: 'LiberationSans',helvetica;
+	background: #222222;
+	background: -moz-linear-gradient(top, #000000, #222222 50%, #777777 100%);
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), color-stop(50%, #222222), color-stop(100%, #777777));
+}
+.bg_whitetoblack {
+	background: -moz-linear-gradient(top, #C0C0C0, #222222 50%, #000000 100%);
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#C0C0C0), color-stop(50%, #222222), color-stop(100%, #000000));
+}
+.bg_black {
+  background: #000000;
 }
 
 #sb {
 	position: absolute;
 	left: 0px; top: 0px; width: 100%; height: 100%;
-	background: #222222;
-	background: -moz-linear-gradient(top, #000000, #222222 50%, #777777 100%);
-	background: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), color-stop(50%, #222222), color-stop(100%, #777777));
-}
-#sb.bg_whitetoblack {
-	background: -moz-linear-gradient(top, #C0C0C0, #222222 50%, #000000 100%);
-	background: -webkit-gradient(linear, 0 0, 0 100%, from(#C0C0C0), color-stop(50%, #222222), color-stop(100%, #000000));
-}
-#sb.bg_black {
-  background: #000000;
 }
 
 div {
@@ -50,33 +50,41 @@ a { display: inline-block; }
 	border-radius: 15px;
 }
 
-.Box.Red {
+body.box_flat .Box {
+	background: #EFEFEF;
+	background: -moz-linear-gradient(top, #EFEFEF, #D4D4D4 100%);
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#EFEFEF), color-stop(100%, #D4D4D4));
+	box-shadow: none;
+	border-radius: 5px !important;
+}
+
+.Red {
 	background: -moz-linear-gradient(top, #FF4040, #A04040 100%);
 	background: -webkit-gradient(linear, 0 0, 0 100%, from(#FF4040), color-stop(100%, #A04040));
 }
 
-#sb.box_flat .Box {
-  background: #EFEFEF;
-  background: -moz-linear-gradient(top, #EFEFEF, #D4D4D4 100%);
-  background: -webkit-gradient(linear, 0 0, 0 100%, from(#EFEFEF), color-stop(100%, #D4D4D4));
-  box-shadow: none;
-  border-radius: 5px !important;
+body.box_flat .Box.Red {
+	background: #EFEFEF;
+	background: -moz-linear-gradient(top, #FF4040, #A04040, 100%);
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#FF4040), color-stop(100%, #A04040));
+	box-shadow: none;
+	border-radius: 5px !important;
 }
 
-#sb.box_flat .FlatDark {
+body.box_flat .FlatDark {
   color: #FFFFFF;
 }
 
-#sb.box_flat .Box.FlatDark {
+body.box_flat .Box.FlatDark {
   background: #595959;
   background: -moz-linear-gradient(top, #595959, #474747 100%);
   background: -webkit-gradient(linear, 0 0, 0 100%, from(#595959), color-stop(100%, #474747));
 }
 
-#sb.box_flat .Box.FlatBottom {
+body.box_flat .Box.FlatBottom {
   border-radius: 5px 5px 0px 0px !important;
 }
-#sb.box_flat .Box.FlatTop {
+body.box_flat .Box.FlatTop {
   border-radius: 0px 0px 5px 5px !important;
 }
 
@@ -84,23 +92,23 @@ a { display: inline-block; }
 	position: absolute;
 	top: 0%;
 	width: 50%;
-	display: none;
 	overflow: none;
 }
-.Team1>.Name,.Team2.Swapped>.Name {
-	left: 0%; right: auto;
+.Team.Left>.Name { left: 0%; }
+.Team.Right>.Name { right: 0%; }
+
+.Team:not(.HasName)>.Name {
+	opacity: 0;
 }
-.Team2>.Name,.Team1.Swapped>.Name {
-	right: 0%; left: auto;
+.Team:not(.HasLogo)>.Logo {
+	opacity: 0;
 }
 .Team.HasName>.Name {
 	height: 30%;
-	display: block;
 	font-size: 33vh;
 }
 .Team.HasName.HasLogo>.Name {
 	height: 10%;
-	display: block;
 	font-size: 10vh;
 }
 
@@ -108,26 +116,19 @@ a { display: inline-block; }
 	position: absolute;
 	top: 0%;
 	width: 50%;
-	display: none;
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: contain;
 }
-.Team.Team1>.Logo,.Team.Team2.Swapped>.Logo {
-	left: 0%; right: auto;
-}
-.Team.Team2>.Logo,.Team.Team1.Swapped>.Logo {
-	right: 0%; left: auto;
-}
+.Team.Left>.Logo { left: 0%; }
+.Team.Right>.Logo { right: 0%; }
 .Team.HasName.HasLogo>.Logo {
 	top: 10%;
 	height: 20%;
-	display: block;
 }
 .Team.HasLogo>.Logo {
 	top: 0%;
 	height: 30%;
-	display: block;
 }
 
 .Team>.Score {
@@ -136,17 +137,25 @@ a { display: inline-block; }
 	width: 36%;
 	font-size: 20vh;
 	height: 20%;
+	line-height: 0.8;
 }
-.Team.Team1>.Score,.Team.Team2.Swapped>.Score {
-	left: 7%; right: auto;
-}
-.Team.Team2>.Score,.Team.Team1.Swapped>.Score {
-	right: 7%; left: auto;
-}
+.Team.Left>.Score { left: 7%; }
+.Team.Right>.Score { right: 7%; }
+#sb.JamScore .Team.Left>.Score { left: 4%; width: 35%; }
+#sb.JamScore .Team.Right>.Score { right: 4%; width: 35%; }
 
-.Team.JamScore {
-	display: none;
+.Team>.JamScore {
+	position: absolute;
+	width: 9%;
+	height: 12%;
+	top: 39%;
+	font-size: 11vh;
 }
+#sb:not(.JamScore) .JamScore {
+	opacity: 0;
+}
+.Team.Left>.JamScore { left: 39.5%; }
+.Team.Right>.JamScore { right: 39.5%; }
 
 .Team>.Timeouts,.Team>.OfficialReviews,.OfficialReviews.Header {
 	position: absolute;
@@ -155,18 +164,29 @@ a { display: inline-block; }
 	height: 9%;
 	font-size: 8vh;
 }
-.Team.Team1>.Timeouts,.Team.Team2.Swapped>.Timeouts {
-	left: 43.5%; right: auto;
-}
-.Team.Team2>.Timeouts,.Team.Team1.Swapped>.Timeouts {
-	right: 43.5%; left: auto;
-}
-.Team.Team1>.OfficialReviews,.Team.Team2.Swapped>.OfficialReviews {
-	left: 0.5%; right: auto;
-}
-.Team.Team2>.OfficialReviews,.Team.Team1.Swapped>.OfficialReviews {
-	right: 0.5%; left: auto;
-}
+.Team.Left>.Timeouts { left: 43.5%; }
+.Team.Right>.Timeouts { right: 43.5%; }
+.Team.Left>.OfficialReviews { left: 0.5%; }
+.Team.Right>.OfficialReviews { right: 0.5%; }
+
+#sb.JamScore .Timeouts.Header { opacity: 0; }
+#sb.JamScore .OfficialReviews.Header { opacity: 0; }
+#sb.JamScore .Timeouts { opacity: 0; }
+#sb.JamScore .OfficialReviews { opacity: 0; }
+
+#sb:not(.JamScore) .DotTimeouts { opacity: 0; }
+#sb:not(.JamScore) .DotOfficialReviews { opacity: 0; }
+
+.DotTimeouts { position: absolute; height: 14%; width: 3%; top: 31% }
+.DotOfficialReviews { position: absolute; height: 5%; width: 3%; top: 46% }
+.Team.Left>.DotTimeouts, .Team.Left>.DotOfficialReviews { left: 0.5%; }
+.Team.Right>.DotTimeouts, .Team.Right>.DotOfficialReviews { right: 0.5%; }
+.DotTimeouts .Dot { position: absolute; width: 60%; height: 20%; left: 20%; }
+.DotTimeouts .Timeout1 { top: 10%; }
+.DotTimeouts .Timeout2 { top: 40%; }
+.DotTimeouts .Timeout3 { top: 70%; }
+.DotOfficialReviews .Dot { position: absolute; width: 60%; height: 60%; left: 20%; top: 20%; }
+
 
 .Timeouts.Header {
 	position: absolute;
@@ -182,96 +202,68 @@ a { display: inline-block; }
 	font-size: 4vh;
 }
 
-.Clock.Period.Large>div {
-	position: absolute;
-	width: 40%;
-	left: 5%;
-}
-.Clock.Period.Large>.Name {
-	top: 65%;
-	width: 36%;
-	left: 7%;
-	height: 10%;
-	font-size: 9vh;
-}
-.Clock.Period.Large>.Time {
-	top: 77%;
-	height: 16%;
-	font-size: 15vh;
-}
-#sb.box_flat .Clock.Period.Large>.Name { left: 5%; width: 40%; }
-#sb.box_flat .Clock.Jam.Large>.Name { right: 5%; width: 40%; }
-#sb.box_flat .Clock.Period.Large>.Time { top: 75%; }
-#sb.box_flat .Clock.Jam.Large>.Time { top: 75%; }
+.HasLead a { color: #FF0000; animation: HasLead 1s infinite; -moz-animation: HasLead 1s infinite; -webkit-animation: HasLead 1s infinite; }
+	@-moz-keyframes HasLead         {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
+	@-webkit-keyframes HasLead      {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
+	@keyframes HasLead              {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
 
-.Clock.Jam.Large>div {
-	position: absolute;
-	width: 40%;
-	right: 5%;
-}
-.Clock.Jam.Large>.Name {
-	top: 65%;
-	width: 36%;
-	right: 7%;
-	height: 10%;
-	font-size: 9vh;
-}
-.Clock.Jam.Large>.Time {
-	top: 77%;
-	height: 16%;
-	font-size: 15vh;
-}
 
-.Clock.Small>div {
-	position: absolute;
-	top: 59%;
-	height: 12%;
-	font-size: 11vh;
-	right: 0%;
-}
-.Clock.Period.Small .Time {
-	left: 1%;
-	width: 27%;
-}
-.Clock.Period.Small .Name {
-	left: 29%;
-	width: 12%;
-}
-.Clock.Jam.Small .Name {
-	left: 42%;
-	width: 16%;
-}
-.Clock.Description.Small>div {
-	left: 59%;
-	width: 12%;
-	font-size: 5vh;
-}
-.Clock.Lineup.Small .Time,.Clock.Timeout.Small .Time {
-	left: 72%;
-	width: 27%;
-}
+.Team.Left .Clock.Lead          { position: absolute; top: 52%; left: -40%; right: auto; width:  40%; height: 13%; animation: PeriodHide 0.5s; -moz-animation: PeriodHide 0.5s; -webkit-animation: PeriodHide 0.5s; }
+.Team.Left .Clock.Lead.Show     { left: 5%; animation: PeriodShow 0.5s; -moz-animation: PeriodShow 0.5s; -webkit-animation: PeriodShow 0.5s; }
+.Clock.Period.Large       { position: absolute; top: 65%; left: -40%; right: auto; width:  40%; height: 28%; animation: PeriodHide 0.5s; -moz-animation: PeriodHide 0.5s; -webkit-animation: PeriodHide 0.5s; }
+.Clock.Period.Large.Show  { left: 5%; animation: PeriodShow 0.5s; -moz-animation: PeriodShow 0.5s; -webkit-animation: PeriodShow 0.5s; }
+.Clock.Period.Large>.Name { position: absolute; top:  0%; left: 5%; width:  90%; height: 35%; }
+.Clock.Period.Large>.Time { position: absolute; top: 40%; left: 0%; width: 100%; height: 60%; }
+body.box_flat .Clock.Period.Large>.Name { left: 0%; width: 100%; height: 40% }
+	@-moz-keyframes PeriodHide    {  0% { left:   5%; } 50% { left: -40%; } -40% { left: -40%; } }
+	@-moz-keyframes PeriodShow    {  0% { left: -40%; } 50% { left: -40%; } -40% { left:   5%; } }
+	@-webkit-keyframes PeriodHide {  0% { left:   5%; } 50% { left: -40%; } -40% { left: -40%; } }
+	@-webkit-keyframes PeriodShow {  0% { left: -40%; } 50% { left: -40%; } -40% { left:   5%; } }
+	@keyframes PeriodHide         {  0% { left:   5%; } 50% { left: -40%; } -40% { left: -40%; } }
+	@keyframes PeriodShow         {  0% { left: -40%; } 50% { left: -40%; } -40% { left:   5%; } }
 
-.Clock>div { display: none; }
-.Clock.Large:not(.LineupRunning):not(.TimeoutRunning):not(.IntermissionRunning)>div { display: block; }
-.Clock.Small.LineupRunning>div, .Clock.Small.TimeoutRunning>div { display: block; }
-.Clock.Lineup:not(.LineupRunning) { display: none; }
-.Clock.Timeout:not(.TimeoutRunning) { display: none; }
-.Clock.Intermission.IntermissionRunning>div { display: block; }
 
-.Clock.Intermission>div {
-	position: absolute;
-	left: 20%;
-	width: 60%;
-	display: none;
-}
-.Clock.Intermission>.Description {
-	top: 60%;
-	height: 12%;
-	font-size: 11vh;
-}
-.Clock.Intermission>.Time {
-	top: 75%;
-	height: 22%;
-	font-size: 21vh;
-}
-.Clock.Intermission>.Time.Hide { display: none; }
+.Team.Right .Clock.Lead      { position: absolute; top: 52%; right: -40%; left: auto; width:  40%; height: 13%; animation: JamHide 0.5s; -moz-animation: JamHide 0.5s; -webkit-animation: JamHide 0.5s; }
+.Team.Right .Clock.Lead.Show { right: 5%; animation: JamShow 0.5s; -moz-animation: JamShow 0.5s; -webkit-animation: JamShow 0.5s; }
+.Clock.Jam.Large       { position: absolute; top: 65%; right: -40%; left: auto; width:  40%; height: 28%; animation: JamHide 0.5s; -moz-animation: JamHide 0.5s; -webkit-animation: JamHide 0.5s; }
+.Clock.Jam.Large.Show  { right: 5%; animation: JamShow 0.5s; -moz-animation: JamShow 0.5s; -webkit-animation: JamShow 0.5s; }
+.Clock.Jam.Large>.Name { position: absolute; top:  0%;  left: 5%; width:  90%; height: 35%; }
+.Clock.Jam.Large>.Time { position: absolute; top: 40%;  left: 0%; width: 100%; height: 60%; }
+body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
+	@-moz-keyframes JamHide    {  0% { right:   5%; } 50% { right: -40%; } 100% { right: -40%; } }
+	@-moz-keyframes JamShow    {  0% { right: -40%; } 50% { right: -40%; } 100% { right:   5%; } }
+	@-webkit-keyframes JamHide {  0% { right:   5%; } 50% { right: -40%; } 100% { right: -40%; } }
+	@-webkit-keyframes JamShow {  0% { right: -40%; } 50% { right: -40%; } 100% { right:   5%; } }
+	@keyframes JamHide         {  0% { right:   5%; } 50% { right: -40%; } 100% { right: -40%; } }
+	@keyframes JamShow         {  0% { right: -40%; } 50% { right: -40%; } 100% { right:   5%; } }
+
+.Clock.Small      { position: absolute; top: 59%; height: 12%; opacity: 0; animation: SmallClockHide 0.5s; -moz-animation: SmallClockHide 0.5s; -webkit-animation: SmallClockHide 0.5s; }
+.Clock.Small.Show { opacity: 1; animation: SmallClockShow 0.5s; -moz-animation: SmallClockShow 0.5s; -webkit-animation: SmallClockShow 0.5s; }
+.Clock.Period.Time.Small            {  left:  1%; width: 27%; }
+.Clock.Period.NameNumber.Small      {  left: 29%; width: 12%; }
+.Clock.Jam.NameNumber.Small         {  left: 42%; width: 16%; }
+.Clock.Description.Small            { right: 29%; width: 12%; }
+.Clock.Lineup.Small                 { right:  1%; width: 27%; }
+.Clock.Timeout.Small                { right:  1%; width: 27%; }
+	@-moz-keyframes SmallClockHide    {  0% { opacity:   1; } 50% { opacity:   0; } 100% { opacity:   0; } }
+	@-moz-keyframes SmallClockShow    {  0% { opacity:   0; } 50% { opacity:   0; } 100% { opacity:   1; } }
+	@-webkit-keyframes SmallClockHide {  0% { opacity:   1; } 50% { opacity:   0; } 100% { opacity:   0; } }
+	@-webkit-keyframes SmallClockShow {  0% { opacity:   0; } 50% { opacity:   0; } 100% { opacity:   1; } }
+	@keyframes SmallClockHide         {  0% { opacity:   1; } 50% { opacity:   0; } 100% { opacity:   0; } }
+	@keyframes SmallClockShow         {  0% { opacity:   0; } 50% { opacity:   0; } 100% { opacity:   1; } }
+
+
+.Clock.Intermission { position: absolute; left: 20%; width: 60%; height: 35%; top: 100%; }
+.Clock.Intermission.Show { top: 60%; }
+.Clock.Intermission .Message { position: absolute; top:  0%; height: 35%; left: 0%; width: 100%; font-size: 11vh; line-height: 0.8; }
+.Clock.Intermission .Time { position: absolute;    top: 40%; height: 60%; left: 0%; width: 100%; font-size: 21vh; line-height: 0.8; }
+.Clock.Intermission .Time.Hide { opacity: 0; }
+
+.Dot, .Dot.Active { border-radius: 100%; }
+.Dot { background: #000000; }
+.Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite; -moz-animation: DotActive 0.75s infinite; -webkit-animation: DotActive 0.75s infinite; }
+body.MinAnimations .Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite steps(4); -moz-animation: DotActive 0.75s infinite steps(4); -webkit-animation: DotActive 0.75s infinite steps(4); }
+.Dot.Used { opacity: 0; }
+	@-moz-keyframes DotActive    {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+	@-webkit-keyframes DotActive {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+	@keyframes DotActive         {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }

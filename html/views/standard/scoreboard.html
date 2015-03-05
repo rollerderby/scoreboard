@@ -7,54 +7,64 @@
 	</head>
 	<body>
 		<div class="ConnectionError">Not connected</div>
-		<div id="sb" sbContext="ScoreBoard">
-			<div class="Team Team1" sbContext="Team(1)">
+		<div id="sb" sbContext="ScoreBoard" class="JamScore">
+			<div class="Team Team1 Left" sbContext="Team(1)">
 				<div class="Name AutoFit" sbTrigger="nameUpdate" sbTriggerOn="Name,AlternateName(scoreboard)"><a></a></div>
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
 				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
 				<div class="Timeouts Box">
 					<div class="Number AutoFit" sbDisplay="Timeouts"><div><a></a></div></div>
-					<div class="Dot 1"></div>
-					<div class="Dot 2"></div>
-					<div class="Dot 3"></div>
+				</div>
+				<div class="DotTimeouts Box">
+					<div class="Dot Timeout1"></div>
+					<div class="Dot Timeout2"></div>
+					<div class="Dot Timeout3"></div>
 				</div>
 				<div class="OfficialReviews Box Header">OR</div>
 				<div class="OfficialReviews Box">
 					<div class="Number AutoFit" sbDisplay="OfficialReviews"><div><a></a></div></div>
-					<div class="Dot 1"></div>
 				</div>
+				<div class="DotOfficialReviews Box">
+					<div class="Dot OfficialReview1"></div>
+				</div>
+				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
 			</div>
 
-			<div class="Team Team2" sbContext="Team(2)">
+			<div class="Team Team2 Right" sbContext="Team(2)">
 				<div class="Name AutoFit" sbTrigger="nameUpdate" sbTriggerOn="Name,AlternateName(scoreboard)"><a></a></div>
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
 				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
 				<div class="Timeouts Box">
 					<div class="Number AutoFit" sbDisplay="Timeouts"><div><a></a></div></div>
-					<div class="Dot 1"></div>
-					<div class="Dot 2"></div>
-					<div class="Dot 3"></div>
+				</div>
+				<div class="DotTimeouts Box">
+					<div class="Dot Timeout1"></div>
+					<div class="Dot Timeout2"></div>
+					<div class="Dot Timeout3"></div>
 				</div>
 				<div class="OfficialReviews Box Header">OR</div>
 				<div class="OfficialReviews Box">
 					<div class="Number AutoFit" sbDisplay="OfficialReviews"><div><a></a></div></div>
-					<div class="Dot 1"></div>
 				</div>
+				<div class="DotOfficialReviews Box">
+					<div class="Dot OfficialReview1"></div>
+				</div>
+				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
 			</div>
 
 			<div class="Timeouts Header Box AutoFit"><a>Timeouts</a></div>
 
 			<!-- Jam In Progress -->
-			<div class="Clock Period Large" sbContext="Clock(Period)">
+			<div class="ShowInJam Clock Period Large" sbContext="Clock(Period)">
 				<div class="Box Name FlatDark FlatBottom AutoFit">
 					<span class="Name" sbDisplay="Name"></span> 
 					<span class="Number" sbDisplay="Number"></span>
 				</div>
 				<div class="Box Time FlatTop AutoFit" sbDisplay="Time" sbModify="toTime"></div>
 			</div>
-			<div class="Clock Jam Large" sbContext="Clock(Jam)">
+			<div class="ShowInJam Clock Jam Large" sbContext="Clock(Jam)">
 				<div class="Box Name FlatDark FlatBottom AutoFit">
 					<span class="Name" sbDisplay="Name"></span> 
 					<span class="Number" sbDisplay="Number"></span>
@@ -63,27 +73,17 @@
 			</div>
 
 			<!-- Lineup / Timeout Clocks Running -->
-			<div class="Clock Period Small" sbContext="Clock(Period)">
-				<div class="Box Time AutoFit" sbDisplay="Time" sbModify="toTime"></div>
-				<div class="Box Name AutoFit"><span class="NameInitial" sbDisplay="Name" sbModify="toInitial"></span><span class="Number" sbDisplay="Number"></span></div>
-			</div>
-			<div class="Clock Jam Small" sbContext="Clock(Jam)">
-				<div class="Box Name AutoFit"><span class="NameInitial" sbDisplay="Name" sbModify="toInitial"></span><span class="Number" sbDisplay="Number"></span></div>
-			</div>
-			<div class="Clock Description Small">
-				<div class="Box AutoFit"></div>
-			</div>
-			<div class="Clock Lineup Small" sbContext="Clock(Lineup)">
-				<div class="Box Time AutoFit" sbDisplay="Time" sbModify="toTime"></div>
-			</div>
-			<div class="Clock Timeout Small" sbContext="Clock(Timeout)">
-				<div class="Box Time AutoFit" sbDisplay="Time" sbModify="toTime"></div>
-			</div>
+			<div class="ShowInLineup ShowInTimeout Clock Period Small Time Box AutoFit" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
+			<div class="ShowInLineup ShowInTimeout Clock Period Small NameNumber Box AutoFit" sbContext="Clock(Period)" sbDisplay="Name,Number" sbModify="toClockInitialNumber"></div>
+			<div class="ShowInLineup ShowInTimeout Clock Jam Small NameNumber Box AutoFit" sbContext="Clock(Jam)" sbDisplay="Name,Number" sbModify="toClockInitialNumber"></div>
+			<div class="ShowInLineup ShowInTimeout Clock Description Small Box AutoFit" sbDisplay="Clock(Lineup).Name, Clock(Lineup).Running, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReview, Team(1).Timeouts, Team(1).OfficialReviews, Team(2).Timeouts, Team(2).OfficialReviews" sbModify="smallDescriptionUpdate"></div>
+			<div class="ShowInLineup Clock Lineup Small Box AutoFit" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
+			<div class="ShowInTimeout Clock Timeout Small Box AutoFit" sbContext="Clock(Timeout)" sbDisplay="Time" sbModify="toTime"></div>
 
 			<!-- Intermission -->
-			<div class="Clock Intermission">
-				<div class="Box Description AutoFit"></div>
-				<div class="Box Time AutoFit" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
+			<div class="ShowInIntermission Clock Intermission">
+				<div class="Message Box AutoFit" sbDisplay="Setting(Intermission.PreGame), Setting(Intermission.Intermission), Setting(Intermission.Unofficial), Setting(Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
+				<div class="Time Box AutoFit" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 			</div>
 		</div>
 	</body>

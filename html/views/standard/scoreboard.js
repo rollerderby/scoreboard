@@ -2,10 +2,57 @@ $(initialize);
 
 function initialize() {
 	WS.Connect();
-
 	WS.AutoRegister();
-	WS.Register( ["ScoreBoard.Team(1).Skater", "ScoreBoard.Team(1).Position"], function (k, v) { updateLead("1"); } );
-	WS.Register( ["ScoreBoard.Team(2).Skater", "ScoreBoard.Team(2).Position"], function (k, v) { updateLead("2"); } );
+
+	// Set Styles
+	var view = "View";
+	if (_windowFunctions.checkParam("preview", "true"))
+		view = "Preview";
+	WS.Register( "ScoreBoard.Setting(" + view + "_SwapTeams)", function (k, v) {
+		$(".Team1").toggleClass("Left", !isTrue(v)).toggleClass("Right", isTrue(v));
+		$(".Team2").toggleClass("Left", isTrue(v)).toggleClass("Right", !isTrue(v));
+		$(".Team").toggleClass("Swapped", isTrue(v));
+	});
+
+	WS.Register( [ "ScoreBoard.Setting(" + view + "_BoxStyle)",
+		"ScoreBoard.Setting(" + view + "_BackgroundStyle)",
+		"ScoreBoard.Setting(" + view + "_HideJamTotals)",
+		"ScoreBoard.Setting(" + view + "_SidePadding)" ], function(k, v) {
+			var boxStyle = WS.state["ScoreBoard.Setting(" + view + "_BoxStyle)"];
+			var backgroundStyle = WS.state["ScoreBoard.Setting(" + view + "_BackgroundStyle)"];
+			var showJamTotals = !isTrue(WS.state["ScoreBoard.Setting(" + view + "_HideJamTotals)"]);
+			var sidePadding = WS.state["ScoreBoard.Setting(" + view + "_SidePadding)"];
+
+			$("body").removeClass();
+			if (boxStyle != "" && boxStyle != null)
+				$("body").addClass(boxStyle);
+			if (backgroundStyle != "" && backgroundStyle != null)
+				$("body").addClass(backgroundStyle);
+			$("#sb").toggleClass("JamScore", showJamTotals);
+
+			left = 0;
+			right = 0;
+			if (sidePadding != "" && sidePadding != null) {
+				left = sidePadding;
+				right = left;
+			}
+			$("#sb").css({ "left": left + "%", "width": (100 - left - right) + "%" });
+			$(window).trigger("resize");
+	});
+
+	/*
+	var v = $sb("ScoreBoard.Settings.Setting(" + view + "_CurrentView)");
+	v.$sbBindAndRun("sbchange", function(event, value) {
+		console.log(this, value);
+		$("video").each(function() { this.pause(); });
+		var showDiv = $("#"+value+"Div");
+		if (!showDiv.length)
+			showDiv = $("#sbDiv");
+		showDiv.children("video").each(function() { this.currentTime = 0; this.play(); });
+		$("#mainDiv>div.View").not(showDiv).removeClass("Show");
+		showDiv.addClass("Show");
+	});
+	*/
 
 	// Show Clocks
 	WS.Register( [
@@ -14,74 +61,40 @@ function initialize() {
 		"ScoreBoard.Clock(Lineup).Running",
 		"ScoreBoard.Clock(Timeout).Running",
 		"ScoreBoard.Clock(Intermission).Running" ], function(k, v) {
-			$.each(["Period", "Jam", "Lineup", "Timeout", "Intermission"], function (i, c) {
-				$(".Clock").toggleClass(c + "Running", WS.state["ScoreBoard.Clock(" + c + ").Running"] === true);
-			});
-	});
-
-	// Show Proper Intermission Text
-	WS.Register( [
-		"ScoreBoard.Setting(Intermission.PreGame)",
-		"ScoreBoard.Setting(Intermission.Intermission)",
-		"ScoreBoard.Setting(Intermission.Unofficial)",
-		"ScoreBoard.Setting(Intermission.Official)",
-		"ScoreBoard.OfficialScore",
-		"ScoreBoard.Clock(Intermission).Number",
-		"ScoreBoard.Clock(Intermission).MaximumNumber" ], function(k, v) {
-			var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
-			var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
-			var isOfficial = WS.state["ScoreBoard.OfficialScore"];
-			var text = '';
-			if (num == 0)
-				text = WS.state["ScoreBoard.Setting(Intermission.PreGame)"];
-			else if (num != max)
-				text = WS.state["ScoreBoard.Setting(Intermission.Intermission)"];
-			else if (!isOfficial)
-				text = WS.state["ScoreBoard.Setting(Intermission.Unofficial)"];
-			else
-				text = WS.state["ScoreBoard.Setting(Intermission.Official)"];
-
-			$(".Clock.Intermission .Description").text(text);
-			$(".Clock.Intermission .Time").toggleClass("Hide", num == max);
-	});
-
-	// Show Small Clock Description (and red box)
-	WS.Register( [
-		"ScoreBoard.Clock(Lineup).Name",
-		"ScoreBoard.Clock(Lineup).Running",
-		"ScoreBoard.Clock(Timeout).Name",
-		"ScoreBoard.Clock(Timeout).Running",
-		"ScoreBoard.TimeoutOwner",
-		"ScoreBoard.OfficialReview" ], function(k, v) {
 			var lc = WS.state["ScoreBoard.Clock(Lineup).Running"];
 			var tc = WS.state["ScoreBoard.Clock(Timeout).Running"];
-			var to = WS.state["ScoreBoard.TimeoutOwner"];
-			var or = WS.state["ScoreBoard.OfficialReview"];
-			var lcn = WS.state["ScoreBoard.Clock(Lineup).Name"];
-			var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
-			var text = '';
+			var ic = WS.state["ScoreBoard.Clock(Intermission).Running"];
 
-			$(".Clock.Description>div,.Team>.Timeouts,.Team>.OfficialReviews").removeClass("Red");
-			if (lc)
-				text = lcn;
-			else if (tcn) {
-				$(".Clock.Description>div").addClass("Red");
-
-				text = tcn;
-				if (to != "" && !or) {
-					text = "Team Timeout";
-					$(".Team" + to + ">.Timeouts").addClass("Red");
-				}
-				if (to != "" && or) {
-					text = "Official Review";
-					$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
-				}
-			}
-			$(".Clock.Description>div").text(text);
+			var clock = "Jam";
+			if (isTrue(tc))
+				clock = "Timeout";
+			else if (isTrue(lc))
+				clock = "Lineup";
+			else if (isTrue(ic))
+				clock = "Intermission";
+			$(".Clock").removeClass("Show");
+			$(".Clock.ShowIn" + clock).addClass("Show");
 	});
 }
 
-function updateLead(team) {
+function jammer(k, v) {
+	id = getTeamId(k);
+	var prefix = "ScoreBoard.Team(" + id + ").";
+	var jammerId = WS.state[prefix + "Position(Jammer).Skater"];
+	var jammerName = WS.state[prefix + "Skater(" + jammerId + ").Name"];
+	var pivotId = WS.state[prefix + "Position(Pivot).Skater"];
+	var pivotName = WS.state[prefix + "Skater(" + pivotId + ").Name"];
+	var leadJammer = (WS.state[prefix + "LeadJammer"] === "Lead");
+	var starPass = isTrue(WS.state[prefix + "StarPass"]);
+
+	if (jammerName == null)
+		jammerName = leadJammer ? "Lead" : "";
+	if (pivotName == null)
+		pivotName = "";
+
+	console.log(id, prefix, jammerId, jammerName, pivotId, pivotName, leadJammer, starPass);
+	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
+	return !starPass ? jammerName : pivotName;
 }
 
 function getTeamId(k) {
@@ -115,6 +128,81 @@ function logoUpdate(k, v) {
 
 	$(".Team" + id + ">.Logo").css("background-image", logo);
 	$(".Team" + id).toggleClass("HasLogo", logo != "");
+}
+
+function smallDescriptionUpdate(k, v) {
+	console.log(k, v);
+	var lc = WS.state["ScoreBoard.Clock(Lineup).Running"];
+	var tc = WS.state["ScoreBoard.Clock(Timeout).Running"];
+	var to = WS.state["ScoreBoard.TimeoutOwner"];
+	var or = WS.state["ScoreBoard.OfficialReview"];
+	var lcn = WS.state["ScoreBoard.Clock(Lineup).Name"];
+	var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
+	var ret = '';
+
+	$.each(["1", "2"], function (idx, id) {
+		tto = WS.state["ScoreBoard.Team(" + id + ").Timeouts"];
+		tor = WS.state["ScoreBoard.Team(" + id + ").OfficialReviews"];
+		$(".Team" + id + " .Timeout1").toggleClass("Used", tto < 1);
+		$(".Team" + id + " .Timeout2").toggleClass("Used", tto < 2);
+		$(".Team" + id + " .Timeout3").toggleClass("Used", tto < 3);
+		$(".Team" + id + " .OfficialReview1").toggleClass("Used", tor < 1);
+	});
+
+	$(".Team .Dot").removeClass("Active");
+	$(".Clock.Description,.Team>.Timeouts,.Team>.OfficialReviews").removeClass("Red");
+	if (lc)
+		ret = lcn;
+	else if (tc) {
+		$(".Clock.Description").addClass("Red");
+
+		ret = tcn;
+		if (to != "" && !or) {
+			ret = "Team Timeout";
+			$(".Team" + to + ">.Timeouts").addClass("Red");
+			var dotSel = ".Team" + to + " .Timeout" + (WS.state["ScoreBoard.Team(" + to + ").Timeouts"] + 1);
+			$(dotSel).addClass("Active");
+			console.log(dotSel);
+		}
+		if (to != "" && or) {
+			ret = "Official Review";
+			$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
+			var dotSel = ".Team" + to + " .OfficialReview" + (WS.state["ScoreBoard.Team(" + to + ").OfficialReviews"] + 1);
+			$(dotSel).addClass("Active");
+			console.log(dotSel);
+		}
+	}
+	return ret;
+}
+
+function intermissionDisplay() {
+	var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
+	var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
+	var isOfficial = WS.state["ScoreBoard.OfficialScore"];
+	var ret = '';
+	if (num == 0)
+		ret = WS.state["ScoreBoard.Setting(Intermission.PreGame)"];
+	else if (num != max)
+		ret = WS.state["ScoreBoard.Setting(Intermission.Intermission)"];
+	else if (!isOfficial)
+		ret = WS.state["ScoreBoard.Setting(Intermission.Unofficial)"];
+	else
+		ret = WS.state["ScoreBoard.Setting(Intermission.Official)"];
+
+	$(".Clock.Intermission .Time").toggleClass("Hide", num == max);
+	return ret;
+}
+
+function toClockInitialNumber(k, v) {
+	var ret = '';
+	$.each(["Period", "Jam"], function (i, c) {
+		if (k.indexOf("Clock(" + c + ")") > -1) {
+			var name = WS.state["ScoreBoard.Clock(" + c + ").Name"];
+			var number = WS.state["ScoreBoard.Clock(" + c + ").Number"];
+			ret = name.substring(0, 1) + number;
+		}
+	});
+	return ret;
 }
 
 function toTime(k, v) {
