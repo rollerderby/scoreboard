@@ -64,7 +64,11 @@ var WS = {
 		for (idx = 0; idx < WS.callbacks.length; idx++) {
 			c = WS.callbacks[idx];
 			if (k.indexOf(c.path) == 0) {
-				c.callback(k, v);
+				try {
+					c.callback(k, v);
+				} catch (err) {
+					console.log(err);
+				}
 			}
 		}
 	},
