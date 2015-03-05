@@ -92,7 +92,6 @@ function jammer(k, v) {
 	if (pivotName == null)
 		pivotName = "";
 
-	console.log(id, prefix, jammerId, jammerName, pivotId, pivotName, leadJammer, starPass);
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
 	return !starPass ? jammerName : pivotName;
 }
@@ -131,7 +130,6 @@ function logoUpdate(k, v) {
 }
 
 function smallDescriptionUpdate(k, v) {
-	console.log(k, v);
 	var lc = WS.state["ScoreBoard.Clock(Lineup).Running"];
 	var tc = WS.state["ScoreBoard.Clock(Timeout).Running"];
 	var to = WS.state["ScoreBoard.TimeoutOwner"];
@@ -162,14 +160,12 @@ function smallDescriptionUpdate(k, v) {
 			$(".Team" + to + ">.Timeouts").addClass("Red");
 			var dotSel = ".Team" + to + " .Timeout" + (WS.state["ScoreBoard.Team(" + to + ").Timeouts"] + 1);
 			$(dotSel).addClass("Active");
-			console.log(dotSel);
 		}
 		if (to != "" && or) {
 			ret = "Official Review";
 			$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
 			var dotSel = ".Team" + to + " .OfficialReview" + (WS.state["ScoreBoard.Team(" + to + ").OfficialReviews"] + 1);
 			$(dotSel).addClass("Active");
-			console.log(dotSel);
 		}
 	}
 	return ret;
@@ -199,7 +195,8 @@ function toClockInitialNumber(k, v) {
 		if (k.indexOf("Clock(" + c + ")") > -1) {
 			var name = WS.state["ScoreBoard.Clock(" + c + ").Name"];
 			var number = WS.state["ScoreBoard.Clock(" + c + ").Number"];
-			ret = name.substring(0, 1) + number;
+			if (name != null && number != null)
+				ret = name.substring(0, 1) + number;
 		}
 	});
 	return ret;
