@@ -112,8 +112,8 @@ function nameUpdate(k, v) {
 	if (altName != null && altName != "")
 		name = altName;
 
-	$(".Team" + id + ">.Name").text(name);
 	$(".Team" + id).toggleClass("HasName", name != "");
+	return name;
 }
 
 function logoUpdate(k, v) {
@@ -127,6 +127,10 @@ function logoUpdate(k, v) {
 
 	$(".Team" + id + ">.Logo").css("background-image", logo);
 	$(".Team" + id).toggleClass("HasLogo", logo != "");
+	var nameAutoFit = $(".Team" + id + ">.Name>div").data("AutoFit");
+	console.log(nameAutoFit);
+	if (nameAutoFit)
+		nameAutoFit();
 }
 
 function smallDescriptionUpdate(k, v) {
