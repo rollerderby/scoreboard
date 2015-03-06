@@ -987,7 +987,7 @@ function createScoreBoardViewContent(table) {
 		.click(function() {
 			$sb("ScoreBoard.Settings").find("Setting").each(function() {
 				oldPath = String($sb(this).$sbPath);
-				var path = oldPath.replace("(Preview_", "(View_");
+				var path = oldPath.replace("(ScoreBoard.Preview_", "(ScoreBoard.View_");
 				if (path != oldPath) {
 					var val = $sb(this).$sbGet();
 					$sb(path).$sbSet($sb(this).$sbGet());
@@ -1049,7 +1049,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.append("<label>Video</label><input type='radio' value='video'/>")
 		.append("<label>Custom Page</label><input type='radio' value='html'/>");
 
-	$sb("ScoreBoard.Settings.Setting(" + type + "_CurrentView)").$sbControl(currentViewTd.children());
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)").$sbControl(currentViewTd.children());
 	currentViewTd.buttonset()
 		.prepend("<a>Current View : </a>");
 
@@ -1062,7 +1062,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 	var intermissionControlButton = $("<button>Intermission Control</button>").button().addClass("ui-button-small")
 		.click(function() { intermissionControlDialog.dialog("open"); });
 	var swapTeamsButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.Settings.Setting(" + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -1073,7 +1073,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		} }).addClass("ui-button-small");
 
 	var showJamTotalsButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.Settings.Setting(" + type + "_HideJamTotals)").$sbControl(showJamTotalsButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_HideJamTotals)").$sbControl(showJamTotalsButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -1082,12 +1082,12 @@ function createScoreBoardViewPreviewRows(table, type) {
 				return value;
 			}
 		} }).addClass("ui-button-small");
-	var boxStyle = $sb("ScoreBoard.Settings.Setting(" + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
+	var boxStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Rounded", value: "" },
 			{ text: "Flat", value: "box_flat" }
 		]}});
-	var sidePadding = $sb("ScoreBoard.Settings.Setting(" + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
+	var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "None", value: "" },
 			{ text: "2%", value: "2" },
@@ -1096,28 +1096,28 @@ function createScoreBoardViewPreviewRows(table, type) {
 			{ text: "8%", value: "8" },
 			{ text: "10%", value: "10" }
 		]}});
-	var backgroundStyle = $sb("ScoreBoard.Settings.Setting(" + type + "_BackgroundStyle)").$sbControl("<label>Background Style: </label><select>", { sbelement: {
+	var backgroundStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BackgroundStyle)").$sbControl("<label>Background Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Black to White", value: "" },
 			{ text: "White to Black", value: "bg_whitetoblack" },
 			{ text: "Black", value: "bg_black" }
 		]}});
 
-	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(" + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
+	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
 			optionParent: "Images.Type(fullscreen)",
 			optionChildName: "Image",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Image", value: "" }
 		} });
-	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(" + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
+	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
 			optionParent: "Videos.Type(fullscreen)",
 			optionChildName: "Video",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Video", value: "" }
 		} });
-	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(" + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
+	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
 			optionParent: "CustomHtml.Type(fullscreen)",
 			optionChildName: "Html",
 			optionNameElement: "Name",
@@ -1150,28 +1150,27 @@ function createScoreBoardViewPreviewRows(table, type) {
 
 function createIntermissionControlDialog() {
 	var table = $("<table>").addClass("IntermissionControlDialog");
-	$.each( [ "Pregame", "Halftime", "Final" ], function(i,title) {
-		var intermissionControl = $sb("Pages.Page(scoreboard.html).Intermission("+i+")");
-		$("<td>").attr("colspan", "3").addClass("Name")
-			.append($("<a>").text(title+" (Intermission "+i+")"))
-			.appendTo($("<tr>").addClass("Name").appendTo(table));
-		var controlRow = $("<tr>").addClass("Control")
-			.append($("<td><label><span/></label><input type='checkbox'/></td>").addClass("ShowUnofficial"))
-			.append($("<td><a>Text:</a><input type='text'/></td>").addClass("Text"))
-			.append($("<td><label><span/></label><input type='checkbox'/></td>").addClass("HideClock"))
-			.appendTo(table);
-		intermissionControl.$sb("ShowUnofficial").$sbBindAndRun("sbchange", function(event,value) {
-				controlRow.find(">td.ShowUnofficial>label>span").text(isTrue(value)?"'Unofficial' Showing":"'Unofficial' Hidden");
-			}).$sbControl(controlRow.find(">td.ShowUnofficial>label,>td.ShowUnofficial>input:checkbox"), { sbcontrol: {
-				button: true
-			} });
-		intermissionControl.$sb("Text").$sbControl(controlRow.find(">td.Text>input:text"), { size: "12" });
-		intermissionControl.$sb("HideClock").$sbBindAndRun("sbchange", function(event,value) {
-				controlRow.find(">td.HideClock>label>span").text(isTrue(value)?"Clock Hidden":"Clock Showing");
-			}).$sbControl(controlRow.find(">td.HideClock>label,>td.HideClock>input:checkbox"), { sbcontrol: {
-				button: true
-			} });
+
+	var fields = [
+		{ id: "ScoreBoard.Intermission.PreGame", display: "Pre Game", type: "text" },
+		{ id: "ScoreBoard.Intermission.Intermission", display: "Intermission", type: "text" },
+		{ id: "ScoreBoard.Intermission.Unofficial", display: "Unofficial Score", type: "text" },
+		{ id: "ScoreBoard.Intermission.Official", display: "Official Score", type: "text" },
+		{ id: "Clock.Intermission.Time", display: "Time", type: "time" }
+	];
+	$.each( fields, function(i, field) {
+		var path = "ScoreBoard.Settings.Setting(" + field.id + ")";
+		var row = $("<tr>").appendTo(table);
+		$("<td>").addClass("Name").text(field.display).appendTo(row);
+		var options = {};
+		if (field.type == "time") {
+			options.sbelement = { convert: _timeConversions.msToMinSec };
+			options.sbcontrol = { convert: _timeConversions.minSecToMs };
+		}
+		$sb(path).$sbControl($("<input>").attr("type", "text"), options)
+			.appendTo($("<td>").addClass("Value").appendTo(row));
 	});
+
 	return $("<div>").append(table).dialog({
 		title: "Intermission Display Controls",
 		autoOpen: false,

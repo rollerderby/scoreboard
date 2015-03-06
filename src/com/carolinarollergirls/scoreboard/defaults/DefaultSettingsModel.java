@@ -29,7 +29,13 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	}
 
 	public void applyRule(String rule, Object value) {
-		set(rule, String.valueOf(value));
+		synchronized (settingsLock) {
+			if (ruleMapping.containsKey(rule)) {
+				for (String map : ruleMapping.get(rule))
+					set(map, String.valueOf(value));
+			} else
+				set(rule, String.valueOf(value));
+		}
 	}
 
 	public String getProviderName() { return "Settings"; }
@@ -48,14 +54,26 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 		sbm._getRuleset().apply(true, this);
 	}
 
+	public void addRuleMapping(String rule, String[] mapTo) {
+		synchronized (settingsLock) {
+			List<String> l = ruleMapping.get(rule);
+			if (l == null) {
+				l = new ArrayList<String>();
+				ruleMapping.put(rule, l);
+			}
+			for (String map : mapTo)
+				l.add(map);
+		}
+	}
+
 	public Map<String, String> getAll() {
 		synchronized (settingsLock) {
 			return Collections.unmodifiableMap(new Hashtable<String, String>(settings));
 		}
 	}
-	public String get(String k) { 
+	public String get(String k) {
 		synchronized (settingsLock) {
-			return settings.get(k); 
+			return settings.get(k);
 		}
 	}
 	public void set(String k, String v) {
@@ -82,6 +100,7 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 
 	protected ScoreBoardModel sbm = null;
 	protected Map<String, String> settings = new Hashtable<String, String>();
+	protected Map<String, List<String>> ruleMapping = new Hashtable<String, List<String>>();
 	protected Object settingsLock = new Object();
 	protected DefaultScoreBoardEventProvider parent = null;
 }

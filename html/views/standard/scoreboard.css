@@ -96,7 +96,6 @@ body.box_flat .Box.FlatTop {
 }
 .Team.Left>.Name { left: 0%; }
 .Team.Right>.Name { right: 0%; }
-
 .Team:not(.HasName)>.Name {
 	opacity: 0;
 }
@@ -111,6 +110,7 @@ body.box_flat .Box.FlatTop {
 	height: 10%;
 	font-size: 10vh;
 }
+#sb.JamScore .Team>.Name { width: 43%; }
 
 .Team>.Logo {
 	position: absolute;
@@ -130,6 +130,7 @@ body.box_flat .Box.FlatTop {
 	top: 0%;
 	height: 30%;
 }
+#sb.JamScore .Team>.Logo { width: 43%; }
 
 .Team>.Score {
 	position: absolute;
@@ -181,7 +182,7 @@ body.box_flat .Box.FlatTop {
 .DotOfficialReviews { position: absolute; height: 5%; width: 3%; top: 46% }
 .Team.Left>.DotTimeouts, .Team.Left>.DotOfficialReviews { left: 0.5%; }
 .Team.Right>.DotTimeouts, .Team.Right>.DotOfficialReviews { right: 0.5%; }
-.DotTimeouts .Dot { position: absolute; width: 60%; height: 20%; left: 20%; }
+.DotTimeouts .Dot { position: absolute; width: 60%; height: 22%; left: 20%; }
 .DotTimeouts .Timeout1 { top: 10%; }
 .DotTimeouts .Timeout2 { top: 40%; }
 .DotTimeouts .Timeout3 { top: 70%; }
@@ -202,7 +203,7 @@ body.box_flat .Box.FlatTop {
 	font-size: 4vh;
 }
 
-.HasLead a { color: #FF0000; animation: HasLead 1s infinite; -moz-animation: HasLead 1s infinite; -webkit-animation: HasLead 1s infinite; }
+.HasLead a { color: #FF0000; animation: HasLead 1s infinite steps(6); -moz-animation: HasLead 1s infinite steps(6); -webkit-animation: HasLead 1s infinite steps(6); }
 	@-moz-keyframes HasLead         {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
 	@-webkit-keyframes HasLead      {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
 	@keyframes HasLead              {  0% { color: #FF0000; } 50% { color: #FFFFFF; } 100% { color: #FF0000; } }
@@ -239,12 +240,12 @@ body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
 
 .Clock.Small      { position: absolute; top: 59%; height: 12%; opacity: 0; animation: SmallClockHide 0.5s; -moz-animation: SmallClockHide 0.5s; -webkit-animation: SmallClockHide 0.5s; }
 .Clock.Small.Show { opacity: 1; animation: SmallClockShow 0.5s; -moz-animation: SmallClockShow 0.5s; -webkit-animation: SmallClockShow 0.5s; }
-.Clock.Period.Time.Small            {  left:  1%; width: 27%; }
+.Clock.Period.Time.Small            {  left:  1%; width: 27%; line-height: 0.8; }
 .Clock.Period.NameNumber.Small      {  left: 29%; width: 12%; }
 .Clock.Jam.NameNumber.Small         {  left: 42%; width: 16%; }
 .Clock.Description.Small            { right: 29%; width: 12%; }
-.Clock.Lineup.Small                 { right:  1%; width: 27%; }
-.Clock.Timeout.Small                { right:  1%; width: 27%; }
+.Clock.Lineup.Small                 { right:  1%; width: 27%; line-height: 0.8; }
+.Clock.Timeout.Small                { right:  1%; width: 27%; line-height: 0.8; }
 	@-moz-keyframes SmallClockHide    {  0% { opacity:   1; } 50% { opacity:   0; } 100% { opacity:   0; } }
 	@-moz-keyframes SmallClockShow    {  0% { opacity:   0; } 50% { opacity:   0; } 100% { opacity:   1; } }
 	@-webkit-keyframes SmallClockHide {  0% { opacity:   1; } 50% { opacity:   0; } 100% { opacity:   0; } }
@@ -261,8 +262,7 @@ body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
 
 .Dot, .Dot.Active { border-radius: 100%; }
 .Dot { background: #000000; }
-.Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite; -moz-animation: DotActive 0.75s infinite; -webkit-animation: DotActive 0.75s infinite; }
-body.MinAnimations .Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite steps(4); -moz-animation: DotActive 0.75s infinite steps(4); -webkit-animation: DotActive 0.75s infinite steps(4); }
+.Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite steps(6); -moz-animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); }
 .Dot.Used { opacity: 0; }
 	@-moz-keyframes DotActive    {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 	@-webkit-keyframes DotActive {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }

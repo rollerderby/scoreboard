@@ -8,20 +8,20 @@ function initialize() {
 	var view = "View";
 	if (_windowFunctions.checkParam("preview", "true"))
 		view = "Preview";
-	WS.Register( "ScoreBoard.Setting(" + view + "_SwapTeams)", function (k, v) {
+	WS.Register( "ScoreBoard.Setting(ScoreBoard." + view + "_SwapTeams)", function (k, v) {
 		$(".Team1").toggleClass("Left", !isTrue(v)).toggleClass("Right", isTrue(v));
 		$(".Team2").toggleClass("Left", isTrue(v)).toggleClass("Right", !isTrue(v));
 		$(".Team").toggleClass("Swapped", isTrue(v));
 	});
 
-	WS.Register( [ "ScoreBoard.Setting(" + view + "_BoxStyle)",
-		"ScoreBoard.Setting(" + view + "_BackgroundStyle)",
-		"ScoreBoard.Setting(" + view + "_HideJamTotals)",
-		"ScoreBoard.Setting(" + view + "_SidePadding)" ], function(k, v) {
-			var boxStyle = WS.state["ScoreBoard.Setting(" + view + "_BoxStyle)"];
-			var backgroundStyle = WS.state["ScoreBoard.Setting(" + view + "_BackgroundStyle)"];
-			var showJamTotals = !isTrue(WS.state["ScoreBoard.Setting(" + view + "_HideJamTotals)"]);
-			var sidePadding = WS.state["ScoreBoard.Setting(" + view + "_SidePadding)"];
+	WS.Register( [ "ScoreBoard.Setting(ScoreBoard." + view + "_BoxStyle)",
+		"ScoreBoard.Setting(ScoreBoard." + view + "_BackgroundStyle)",
+		"ScoreBoard.Setting(ScoreBoard." + view + "_HideJamTotals)",
+		"ScoreBoard.Setting(ScoreBoard." + view + "_SidePadding)" ], function(k, v) {
+			var boxStyle = WS.state["ScoreBoard.Setting(ScoreBoard." + view + "_BoxStyle)"];
+			var backgroundStyle = WS.state["ScoreBoard.Setting(ScoreBoard." + view + "_BackgroundStyle)"];
+			var showJamTotals = !isTrue(WS.state["ScoreBoard.Setting(ScoreBoard." + view + "_HideJamTotals)"]);
+			var sidePadding = WS.state["ScoreBoard.Setting(ScoreBoard." + view + "_SidePadding)"];
 
 			$("body").removeClass();
 			if (boxStyle != "" && boxStyle != null)
@@ -41,7 +41,7 @@ function initialize() {
 	});
 
 	/*
-	var v = $sb("ScoreBoard.Settings.Setting(" + view + "_CurrentView)");
+	var v = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CurrentView)");
 	v.$sbBindAndRun("sbchange", function(event, value) {
 		console.log(this, value);
 		$("video").each(function() { this.pause(); });
