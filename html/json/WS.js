@@ -92,11 +92,11 @@ var WS = {
 				callback = function(k, v) { elem.attr(options.attr, v); };
 			} else {
 				if (elem.hasClass("AutoFit")) {
-					if (elem.children().length == 0) {
-						var div = $("<div>").css("width", "100%").css("height", "100%").appendTo(elem);
-						elem = $("<a>").appendTo(div);
-					}
-					var autofit = _autoFit.enableAutoFitText(elem.parent());
+					elem.empty();
+					var div = $("<div>").css("width", "100%").css("height", "100%").appendTo(elem);
+					elem = $("<a>").appendTo(div);
+					var autofit = _autoFit.enableAutoFitText(div);
+
 					callback = function(k, v) {
 						elem.text(v);
 						if (elem.data("lastText") != v) {

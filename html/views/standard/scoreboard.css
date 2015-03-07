@@ -21,6 +21,10 @@ body {
 	background: #222222;
 	background: -moz-linear-gradient(top, #000000, #222222 50%, #777777 100%);
 	background: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), color-stop(50%, #222222), color-stop(100%, #777777));
+	height: 100%;
+	width: 100%;
+	margin: 0;
+	padding: 0;
 }
 .bg_whitetoblack {
 	background: -moz-linear-gradient(top, #C0C0C0, #222222 50%, #000000 100%);
