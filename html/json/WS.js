@@ -67,7 +67,7 @@ var WS = {
 				try {
 					c.callback(k, v);
 				} catch (err) {
-					console.log(err);
+					console.log(err.message, err.stack);
 				}
 			}
 		}
@@ -99,13 +99,19 @@ var WS = {
 					var autofit = _autoFit.enableAutoFitText(elem.parent());
 					callback = function(k, v) {
 						elem.text(v);
-						autofit();
+						if (elem.data("lastText") != v) {
+							elem.data("lastText", v);
+							autofit();
+						}
 					};
 				} else if (elem.parent().hasClass("AutoFit")) {
 					var autofit = _autoFit.enableAutoFitText(elem.parent());
 					callback = function(k, v) {
 						elem.text(v);
-						autofit();
+						if (elem.data("lastText") != v) {
+							elem.data("lastText", v);
+							autofit();
+						}
 					};
 				} else {
 					callback = function(k, v) { elem.text(v); };

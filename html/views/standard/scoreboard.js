@@ -128,7 +128,6 @@ function logoUpdate(k, v) {
 	$(".Team" + id + ">.Logo").css("background-image", logo);
 	$(".Team" + id).toggleClass("HasLogo", logo != "");
 	var nameAutoFit = $(".Team" + id + ">.Name>div").data("AutoFit");
-	console.log(nameAutoFit);
 	if (nameAutoFit)
 		nameAutoFit();
 }
