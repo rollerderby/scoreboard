@@ -65,6 +65,9 @@ $(function() {
 	if (/\.html$/.test(window.location.pathname)) {
 		_include(window.location.pathname.replace(/\.html$/, ".css"));
 		_include(window.location.pathname.replace(/\.html$/, ".js"));
+	} else if (/\/$/.test(window.location.pathname)) {
+		_include(window.location.pathname + "index.css");
+		_include(window.location.pathname + "index.js");
 	}
 });
 
