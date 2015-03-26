@@ -119,6 +119,10 @@ public class WS extends WebSocketServlet {
 		protected Object value;
 	}
 
+	private boolean hasPermission(String action) {
+		return true;
+	}
+
 	public class Conn implements OnTextMessage {
 		private Connection connection;
 	
@@ -126,6 +130,12 @@ public class WS extends WebSocketServlet {
 			try {
 				JSONObject json = new JSONObject(data);
 				String action = json.getString("action");
+				if (!hasPermission(action)) {
+					json = new JSONObject();
+					json.put("authorization", "Not authorized for " + action);
+					send(json);
+					return;
+				}
 				if (action.equals("Register")) {
 					String path = json.optString("path", null);
 					JSONArray paths = json.optJSONArray("paths");
@@ -136,6 +146,11 @@ public class WS extends WebSocketServlet {
 							requestUpdates(paths.getString(i));
 					}
 					sendUpdates();
+				} else if (action.equals("Short")) {
+					sendShort = true;
+				} else if (action.equals("Long")) {
+					sendShort = false;
+				} else if (action.equals("Penalty")) {
 				} else {
 					sendError("Unknown Action '" + action + "'");
 				}
@@ -199,11 +214,63 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
+		private void setShortChild(JSONObject o, String k, Object v) {
+			List<String> path = new ArrayList<String>();
+			int s = 0;
+			boolean inside = false;
+			for (int i = 0; i < k.length(); i++) {
+				char c = k.charAt(i);
+				if (c == '(')
+					inside = true;
+				else if (c == ')')
+					inside = false;
+				else if (c == '.' && !inside) {
+					path.add(k.substring(s, i));
+					s = i + 1;
+				}
+			}
+			k = k.substring(s);
+			// String[] path = k.split("\\.");
+			System.out.print("k: " + k + "  path.size(): " + path.size() + "\n");
+			for (String p : path) {
+				System.out.print("p: " + p + "  has: " + o.has(p) + "\n");
+				if (!o.has(p)) {
+					o.put(p, new JSONObject());
+				}
+				Object n = o.getJSONObject(p);
+				if (!(n instanceof JSONObject)) {
+					JSONObject n2 = new JSONObject();
+					n2.put("_", n);
+					o = n2;
+				} else
+					o = (JSONObject)n;
+			}
+			if (!o.has(k)) {
+				o.put(k, v);
+			} else {
+				Object n = o.getJSONObject(k);
+				if (n instanceof JSONObject) {
+					((JSONObject)n).put("_", v);
+				} else {
+					o.put(k, v);
+				}
+			}
+		}
+
 		private void sendUpdates() {
 			synchronized (this) {
 				if (updates.size() == 0)
 					return;
-				JSONObject json = new JSONObject(updates);
+				JSONObject json = new JSONObject();
+				if (sendShort) {
+					JSONObject state = new JSONObject();
+					for (String k : updates.keySet()) {
+						setShortChild(state, k, updates.get(k));
+					}
+					json.put("state", state);
+				} else {
+					json.put("state", new JSONObject(updates));
+				}
 				stateID = WS.stateID;
 				send(json);
 				updates.clear();
@@ -231,5 +298,6 @@ public class WS extends WebSocketServlet {
 		protected List<String> paths = new LinkedList<String>();
 		protected long stateID = 0;
 		private Map<String, Object> updates = new LinkedHashMap<String, Object>();
+		private boolean sendShort = false;
 	}
 }
