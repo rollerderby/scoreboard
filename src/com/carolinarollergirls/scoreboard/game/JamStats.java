@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.game;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,15 +14,18 @@ import com.carolinarollergirls.scoreboard.Game;
 import com.carolinarollergirls.scoreboard.Team;
 
 public class JamStats {
-	public JamStats(Game game, long jam) {
-		this.game = game;
-		this.jam = jam;
-		this.teams = new TeamStats[2];
-		this.teams[0] = new TeamStats(game, Team.ID_1);
-		this.teams[1] = new TeamStats(game, Team.ID_2);
+	public JamStats(Game g, PeriodStats ps, long j) {
+		game = g;
+		periodStats = ps;
+		jam = j;
+		teams = new TeamStats[2];
+		teams[0] = new TeamStats(game, Team.ID_1);
+		teams[1] = new TeamStats(game, Team.ID_2);
 	}
 
-	public void snapshot(boolean jamEnd) {
+	public void snapshot(Map<String, Object> stateUpdates, String statePrefix, boolean jamEnd) {
+		statePrefix = statePrefix + ".Jam(" + jam + ")";
+
 		Clock periodClock = game.getClock(Clock.ID_PERIOD);
 		Clock jamClock = game.getClock(Clock.ID_JAM);
 		boolean jamClockRunning = jamClock.isRunning();
@@ -38,8 +42,14 @@ public class JamStats {
 			periodWallClockEnd = new Date();
 		}
 		this.jamClock = jamClock.getTime();
+
+		stateUpdates.put(statePrefix + ".PeriodClockStart", periodClockStart);
+		stateUpdates.put(statePrefix + ".PeriodWallClockStart", periodWallClockStart == null ? null : periodWallClockStart.toString());
+		stateUpdates.put(statePrefix + ".PeriodClockEnd", periodClockEnd);
+		stateUpdates.put(statePrefix + ".PeriodWallClockEnd", periodWallClockEnd == null ? null : periodWallClockEnd.toString());
+
 		for (TeamStats ts : teams)
-			ts.snapshot(jamClockRunning || jamEnd);
+			ts.snapshot(stateUpdates, statePrefix, jamClockRunning || jamEnd);
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -62,9 +72,18 @@ public class JamStats {
 		return json;
 	}
 
-	public long getJam() { return jam; }
+	public Game getGame()                 { return game; }
+	public PeriodStats getPeriodStats()   { return periodStats; }
+	public long getJam()                  { return jam; }
+	public TeamStats[] getTeams()         { return teams; }
+	public long getPeriodClockStart()     { return periodClockStart; }
+	public long getPeriodClockEnd()       { return periodClockEnd; }
+	public Date getPeriodWallClockStart() { return periodWallClockStart; }
+	public Date getPeriodWallClockEnd()   { return periodWallClockEnd; }
+	public long getJamClock()             { return jamClock; }
 
 	private Game game;
+	private PeriodStats periodStats;
 	private long jam;
 	private TeamStats[] teams;
 	private long periodClockStart;

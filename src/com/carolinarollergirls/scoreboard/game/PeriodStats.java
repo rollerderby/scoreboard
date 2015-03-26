@@ -26,11 +26,9 @@ public class PeriodStats {
 		return json;
 	}
 
-	public int getPeriod() { return period; }
-
 	public JamStats getJamStats(int jam, boolean truncateAfter) {
 		while (jams.size() < jam) {
-			jams.add(new JamStats(game, jams.size() + 1));
+			jams.add(new JamStats(game, this, jams.size() + 1));
 		}
 
 		while (truncateAfter && jams.size() > jam) {
@@ -39,6 +37,9 @@ public class PeriodStats {
 		return jams.get(jam - 1);
 	}
 
+	public Game getGame()                { return game; }
+	public int getPeriod()               { return period; }
+	public ArrayList<JamStats> getJams() { return jams; }
 
 	private Game game;
 	private int period;

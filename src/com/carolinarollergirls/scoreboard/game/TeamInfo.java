@@ -16,23 +16,33 @@ public class TeamInfo {
 	public TeamInfo(Game g, String t) {
 		game = g;
 		team = t;
-		snapshot();
 	}
 
-	public void snapshot() {
+	public void snapshot(Map<String, Object> stateUpdates, String statePrefix) {
+		statePrefix = statePrefix + ".Team(" + team + ")";
 		Team t = game.getTeam(team);
 		name = t.getName();
+		logo = t.getLogo();
 
-		alternate_names.clear();
+		stateUpdates.put(statePrefix + ".Name", name);
+		stateUpdates.put(statePrefix + ".Logo", logo);
+
+		// TODO: DO NOT CLEAR!  Just look for changes
+		alternateNames.clear();
 		colors.clear();
 		skaters.clear();
 
-		for (Team.AlternateName an : t.getAlternateNames())
-			alternate_names.put(an.getId(), an.getName());
-		for (Team.Color c : t.getColors())
+		for (Team.AlternateName an : t.getAlternateNames()) {
+			alternateNames.put(an.getId(), an.getName());
+			stateUpdates.put(statePrefix + ".AlternateName(" + an.getId() + ")", an.getName());
+		}
+		for (Team.Color c : t.getColors()) {
 			colors.put(c.getId(), c.getColor());
-		for (Skater s : t.getSkaters())
-			skaters.add(new SkaterInfo(game, s));
+			stateUpdates.put(statePrefix + ".Color(" + c.getId() + ")", c.getColor());
+		}
+		for (Skater s : t.getSkaters()) {
+			skaters.add(new SkaterInfo(game, this, s));
+		}
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -40,12 +50,12 @@ public class TeamInfo {
 		json.put("team", team);
 		json.put("name", name);
 		json.put("logo", logo);
-		json.put("color", alternate_names.get("operator"));
+		json.put("color", alternateNames.get("operator"));
 
 		JSONObject an = new JSONObject();
-		for (String key : alternate_names.keySet())
-			an.put(key, alternate_names.get(key));
-		json.put("alternate_names", an);
+		for (String key : alternateNames.keySet())
+			an.put(key, alternateNames.get(key));
+		json.put("alternateNames", an);
 
 		JSONObject c = new JSONObject();
 		for (String key : colors.keySet())
@@ -60,12 +70,19 @@ public class TeamInfo {
 		return json;
 	}
 
+	public Game                getGame()           { return game; }
+	public String              getTeam()           { return team; }
+	public String              getName()           { return name; }
+	public String              getLogo()           { return logo; }
+	public Map<String, String> getAlternateNames() { return alternateNames; }
+	public Map<String, String> getColors()         { return colors; }
+	public List<SkaterInfo>    getSkaters()        { return skaters; }
+
 	private Game game;
 	private String team;
 	private String name;
 	private String logo;
-
-	private Map<String, String> alternate_names = new Hashtable<String, String>();
+	private Map<String, String> alternateNames = new Hashtable<String, String>();
 	private Map<String, String> colors = new Hashtable<String, String>();
 	private List<SkaterInfo> skaters = new ArrayList<SkaterInfo>();
 }

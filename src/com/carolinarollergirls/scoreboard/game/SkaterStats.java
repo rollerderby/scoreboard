@@ -11,20 +11,25 @@ public class SkaterStats {
 		game = g;
 		id = s.getId();
 		position = s.getPosition();
-		isPenaltyBox = s.isPenaltyBox();
+		penaltyBox = s.isPenaltyBox();
 	}
 
 	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
 		json.put("id", id);
 		json.put("position", position);
-		json.put("isPenaltyBox", isPenaltyBox);
+		json.put("penaltyBox", penaltyBox);
 
 		return json;
 	}
 
+	public Game    getGame()       { return game; }
+	public String  getId()         { return id; }
+	public String  getPosition()   { return position; }
+	public boolean getPenaltyBox() { return penaltyBox; }
+
 	private Game game;
 	private String id;
 	private String position;
-	private boolean isPenaltyBox;
+	private boolean penaltyBox;
 }
