@@ -51,7 +51,7 @@ function clear() {
 	if (penaltyId == null || skaterId == null) {
 		penaltyEditor.dialog("close");
 	} else {
-		WS.Command("Penalty", { skaterId: skaterId, penaltyId: penaltyId, jam: 0, period: 0 });
+		WS.Command("Penalty", { skaterId: skaterId, penaltyId: penaltyId, fo_exp: fo_exp, jam: 0, period: 0 });
 		penaltyEditor.dialog('close');
 	}
 }

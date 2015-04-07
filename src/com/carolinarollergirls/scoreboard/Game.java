@@ -123,7 +123,6 @@ public class Game {
 	public void Penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
 		synchronized (saveLock) {
 			SkaterInfo si = getSkater(skaterId);
-			ScoreBoardManager.printMessage("Penalty: Skater is " + si.toString());
 			if (si == null)
 				return;
 

@@ -9,7 +9,6 @@ import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.Game;
 import com.carolinarollergirls.scoreboard.Skater;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class SkaterInfo extends Updater {
 	public SkaterInfo(Game g, TeamInfo ti, Skater s) {
@@ -42,6 +41,8 @@ public class SkaterInfo extends Updater {
 			pa.put(p.toJSON());
 		}
 		json.put("penalties", pa);
+		if (fo_exp != null)
+			json.put("fo_exp", fo_exp.toJSON());
 
 		return json;
 	}
@@ -60,8 +61,8 @@ public class SkaterInfo extends Updater {
 		}
 		if (fo_exp != null)
 			fo_exp.queueUpdates(getUpdaterBase() + ".Penalty(FO_EXP)");
-		else 
-			update(getUpdaterBase() + "Penalty(FO_EXP)", null);
+		else
+			update("Penalty(FO_EXP)", null);
 	}
 
 	public void Penalty(String penaltyId, boolean fe, int p, int j, String c) {
