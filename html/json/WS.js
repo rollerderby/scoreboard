@@ -37,7 +37,11 @@ var WS = {
 		};
 		WS.socket.onmessage = function(e) {
 			json = JSON.parse(e.data);
-			WS.processUpdate(json);
+			console.log(json);
+			if (json.authorization != null)
+				alert(json.authorization);
+			if (json.state != null)
+				WS.processUpdate(json.state);
 		};
 		WS.socket.onclose = function(e) {
 			console.log("Websocket: Close", e);
@@ -59,10 +63,20 @@ var WS = {
 		}
 	},
 
+	Command: function(command, data) {
+		req = {
+			action: command,
+			data: data
+		};
+		WS.send(JSON.stringify(req));
+	},
+
 	triggerCallback: function (k, v) {
 		WS.state[k] = v;
 		for (idx = 0; idx < WS.callbacks.length; idx++) {
 			c = WS.callbacks[idx];
+			if (c.callback == null)
+				continue;
 			if (k.indexOf(c.path) == 0) {
 				try {
 					c.callback(k, v);
@@ -73,8 +87,10 @@ var WS = {
 		}
 	},
 
-	processUpdate: function (json) {
-		$.each(json, WS.triggerCallback);
+	processUpdate: function (state) {
+		for (var prop in state) {
+			WS.triggerCallback(prop, state[prop]);
+		}
 	},
 
 	Register: function(paths, options) {
@@ -82,46 +98,50 @@ var WS = {
 			options = { triggerFunc: options };
 
 		var callback = null;
-		if (options.triggerFunc != null) {
-			callback = options.triggerFunc;
+		if (options == null) {
+			callback = null;
 		} else {
-			var elem = options.element;
-			if (options.css != null) {
-				callback = function(k, v) { elem.css(options.css, v); };
-			} else if (options.attr != null) {
-				callback = function(k, v) { elem.attr(options.attr, v); };
+			if (options.triggerFunc != null) {
+				callback = options.triggerFunc;
 			} else {
-				if (elem.hasClass("AutoFit")) {
-					elem.empty();
-					var div = $("<div>").css("width", "100%").css("height", "100%").appendTo(elem);
-					elem = $("<a>").appendTo(div);
-					var autofit = _autoFit.enableAutoFitText(div);
-
-					callback = function(k, v) {
-						elem.text(v);
-						if (elem.data("lastText") != v) {
-							elem.data("lastText", v);
-							autofit();
-						}
-					};
-				} else if (elem.parent().hasClass("AutoFit")) {
-					var autofit = _autoFit.enableAutoFitText(elem.parent());
-					callback = function(k, v) {
-						elem.text(v);
-						if (elem.data("lastText") != v) {
-							elem.data("lastText", v);
-							autofit();
-						}
-					};
+				var elem = options.element;
+				if (options.css != null) {
+					callback = function(k, v) { elem.css(options.css, v); };
+				} else if (options.attr != null) {
+					callback = function(k, v) { elem.attr(options.attr, v); };
 				} else {
-					callback = function(k, v) { elem.text(v); };
+					if (elem.hasClass("AutoFit")) {
+						elem.empty();
+						var div = $("<div>").css("width", "100%").css("height", "100%").appendTo(elem);
+						elem = $("<a>").appendTo(div);
+						var autofit = _autoFit.enableAutoFitText(div);
+
+						callback = function(k, v) {
+							elem.text(v);
+							if (elem.data("lastText") != v) {
+								elem.data("lastText", v);
+								autofit();
+							}
+						};
+					} else if (elem.parent().hasClass("AutoFit")) {
+						var autofit = _autoFit.enableAutoFitText(elem.parent());
+						callback = function(k, v) {
+							elem.text(v);
+							if (elem.data("lastText") != v) {
+								elem.data("lastText", v);
+								autofit();
+							}
+						};
+					} else {
+						callback = function(k, v) { elem.text(v); };
+					}
 				}
 			}
-		}
 
-		if (options.modifyFunc != null) {
-			var origCallback = callback;
-			callback = function(k, v) { origCallback(k, options.modifyFunc(k, v)); };
+			if (options.modifyFunc != null) {
+				var origCallback = callback;
+				callback = function(k, v) { origCallback(k, options.modifyFunc(k, v)); };
+			}
 		}
 
 		if (!$.isArray(paths)) {
