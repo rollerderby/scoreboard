@@ -1031,7 +1031,7 @@ function createScoreBoardViewContent(table) {
 			.replaceAll(this);
 	});
 
-	var sbUrl = "/views/standard/scoreboard.html?videomuted=true&videocontrols=true";
+	var sbUrl = "/views/standard/index.html?videomuted=true&videocontrols=true";
 	$("<tr><td/></tr>").appendTo(table)
 		.find("td").addClass("ViewFrames Footer")
 		.append(createRowTable(2))
