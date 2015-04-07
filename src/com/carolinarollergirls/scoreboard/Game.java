@@ -3,11 +3,13 @@ package com.carolinarollergirls.scoreboard;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.game.*;
+import com.carolinarollergirls.scoreboard.jetty.WS;
 
 public class Game {
 	public Game(ScoreBoard sb) {
@@ -25,6 +27,8 @@ public class Game {
 
 		Thread t = new Thread(new SaveThread());
 		t.start();
+
+		updateState();
 	}
 
 	public void stop() {
@@ -71,6 +75,8 @@ public class Game {
 				e.printStackTrace();
 			}
 		}
+
+		updateState();
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -102,6 +108,31 @@ public class Game {
 			return null;
 		return sb.getClock(id);
 	}
+
+	public SkaterInfo getSkater(String id) {
+		for (TeamInfo t : teams) {
+			for (SkaterInfo s : t.getSkaters()) {
+				if (s.getId().equals(id)) {
+					return s;
+				}
+			}
+		}
+		return null;
+	}
+
+	public void Penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
+		synchronized (saveLock) {
+			SkaterInfo si = getSkater(skaterId);
+			ScoreBoardManager.printMessage("Penalty: Skater is " + si.toString());
+			if (si == null)
+				return;
+
+			si.Penalty(penaltyId, fo_exp, period, jam, code);
+			saveLock.notifyAll();
+		}
+	}
+
+	public String getUpdaterBase() { return "Game"; }
 
 	private void saveFile() {
 		synchronized (saveLock) {
@@ -145,6 +176,22 @@ public class Game {
 		}
 	}
 
+	public void update(String key, Object value) {
+		synchronized (updateMap) {
+			updateMap.put(key, value);
+		}
+	}
+
+	public void updateState() {
+		synchronized (updateMap) {
+			if (updateMap.size() == 0)
+				return;
+			WS.updateState(updateMap);
+			updateMap.clear();
+		}
+	}
+
+	private LinkedHashMap<String, Object> updateMap = new LinkedHashMap<String, Object>();
 	protected ScoreBoard sb = null;
 	private TeamInfo[] teams = null;
 	private ArrayList<PeriodStats> periods = null;

@@ -251,6 +251,26 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_TIMEOUT_OWNER, sb.getTimeoutOwner());
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview());
 
+		updateMap.put("PenaltyCode.Penalty(B)", "Back Block");
+		updateMap.put("PenaltyCode.Penalty(A)", "High Block");
+		updateMap.put("PenaltyCode.Penalty(L)", "Low Block");
+		updateMap.put("PenaltyCode.Penalty(E)", "Elbows");
+		updateMap.put("PenaltyCode.Penalty(F)", "Forearms");
+		updateMap.put("PenaltyCode.Penalty(H)", "Blk w/ Head");
+		updateMap.put("PenaltyCode.Penalty(M)", "Multi-Player");
+		updateMap.put("PenaltyCode.Penalty(O)", "OOB Block-OOB Assist");
+		updateMap.put("PenaltyCode.Penalty(C)", "Dir of Play-Clockwise …-Stopped …");
+		updateMap.put("PenaltyCode.Penalty(P)", "Out of Play-Destroying-Failure …");
+		updateMap.put("PenaltyCode.Penalty(X)", "Cutting");
+		updateMap.put("PenaltyCode.Penalty(S)", "Skating OOB");
+		updateMap.put("PenaltyCode.Penalty(I)", "Illegal (Proc)-Failure to Yield-… Violation");
+		updateMap.put("PenaltyCode.Penalty(N)", "Insubordination");
+		updateMap.put("PenaltyCode.Penalty(Z)", "Delay of Game");
+		updateMap.put("PenaltyCode.Penalty(G)", "(Gross) Misconduct");
+		updateMap.put("PenaltyCode.Penalty(?)", "Unknown");
+		updateMap.put("PenaltyCode.FO_EXP(FO)", "Foul Out");
+		updateMap.put("PenaltyCode.FO_EXP(EXP)", "Expelled");
+
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());
 

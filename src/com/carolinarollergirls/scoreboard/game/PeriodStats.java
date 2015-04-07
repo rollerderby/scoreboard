@@ -7,11 +7,15 @@ import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.Game;
 
-public class PeriodStats {
+public class PeriodStats extends Updater {
 	public PeriodStats(Game g, int p) {
-		game = g;
+		super(g);
 		period = p;
 		jams = new ArrayList<JamStats>();
+	}
+
+	public String getUpdaterBase() {
+		return game.getUpdaterBase() + ".Period(" + period + ")";
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -26,11 +30,12 @@ public class PeriodStats {
 		return json;
 	}
 
-	public int getPeriod() { return period; }
+	protected void queueUpdates() {
+	}
 
 	public JamStats getJamStats(int jam, boolean truncateAfter) {
 		while (jams.size() < jam) {
-			jams.add(new JamStats(game, jams.size() + 1));
+			jams.add(new JamStats(game, this, jams.size() + 1));
 		}
 
 		while (truncateAfter && jams.size() > jam) {
@@ -39,8 +44,9 @@ public class PeriodStats {
 		return jams.get(jam - 1);
 	}
 
+	public int getPeriod()               { return period; }
+	public ArrayList<JamStats> getJams() { return jams; }
 
-	private Game game;
 	private int period;
 	private ArrayList<JamStats> jams;
 }

@@ -209,6 +209,9 @@ public class ScoreBoardManager {
 			return game;
 		}
 	}
+	public static Game getGame() {
+		return game;
+	}
 
 	/* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
 	public static boolean ObjectsEquals(Object a, Object b) {

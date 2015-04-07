@@ -119,13 +119,23 @@ public class WS extends WebSocketServlet {
 		protected Object value;
 	}
 
+	private boolean hasPermission(String action) {
+		return true;
+	}
+
 	public class Conn implements OnTextMessage {
 		private Connection connection;
 	
-		public void onMessage(String data) {
+		public void onMessage(String message_data) {
 			try {
-				JSONObject json = new JSONObject(data);
+				JSONObject json = new JSONObject(message_data);
 				String action = json.getString("action");
+				if (!hasPermission(action)) {
+					json = new JSONObject();
+					json.put("authorization", "Not authorized for " + action);
+					send(json);
+					return;
+				}
 				if (action.equals("Register")) {
 					String path = json.optString("path", null);
 					JSONArray paths = json.optJSONArray("paths");
@@ -136,6 +146,17 @@ public class WS extends WebSocketServlet {
 							requestUpdates(paths.getString(i));
 					}
 					sendUpdates();
+				} else if (action.equals("Penalty")) {
+					JSONObject data = json.getJSONObject("data");
+					String skaterId = data.optString("skaterId");
+					String penaltyId = data.optString("penaltyId", null);
+					boolean fo_exp = data.optBoolean("fo_exp", false);
+					int period = data.optInt("period", -1);
+					int jam = data.optInt("jam", -1);
+					String code = data.optString("code", null);
+					if (period == -1 || jam == -1)
+						return;
+					ScoreBoardManager.getGame().Penalty(skaterId, penaltyId, fo_exp, period, jam, code);
 				} else {
 					sendError("Unknown Action '" + action + "'");
 				}
@@ -203,7 +224,8 @@ public class WS extends WebSocketServlet {
 			synchronized (this) {
 				if (updates.size() == 0)
 					return;
-				JSONObject json = new JSONObject(updates);
+				JSONObject json = new JSONObject();
+				json.put("state", new JSONObject(updates));
 				stateID = WS.stateID;
 				send(json);
 				updates.clear();

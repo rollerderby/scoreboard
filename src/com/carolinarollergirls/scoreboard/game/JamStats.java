@@ -12,13 +12,18 @@ import com.carolinarollergirls.scoreboard.ClockConversion;
 import com.carolinarollergirls.scoreboard.Game;
 import com.carolinarollergirls.scoreboard.Team;
 
-public class JamStats {
-	public JamStats(Game game, long jam) {
-		this.game = game;
-		this.jam = jam;
-		this.teams = new TeamStats[2];
-		this.teams[0] = new TeamStats(game, Team.ID_1);
-		this.teams[1] = new TeamStats(game, Team.ID_2);
+public class JamStats extends Updater {
+	public JamStats(Game g, PeriodStats ps, long j) {
+		super(g);
+		period_stats = ps;
+		jam = j;
+		teams = new TeamStats[2];
+		teams[0] = new TeamStats(g, this, Team.ID_1);
+		teams[1] = new TeamStats(g, this, Team.ID_2);
+	}
+
+	public String getUpdaterBase() {
+		return period_stats.getUpdaterBase() + ".Jam(" + jam + ")";
 	}
 
 	public void snapshot(boolean jamEnd) {
@@ -40,6 +45,8 @@ public class JamStats {
 		this.jamClock = jamClock.getTime();
 		for (TeamStats ts : teams)
 			ts.snapshot(jamClockRunning || jamEnd);
+
+		queueUpdates();
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -62,9 +69,29 @@ public class JamStats {
 		return json;
 	}
 
-	public long getJam() { return jam; }
+	protected void queueUpdates() {
+		update("Jam", jam);
+		if (periodWallClockStart != null) {
+			update("PeriodClockStart", ClockConversion.toHumanReadable(periodClockStart));
+			update("PeriodWallClockStart", periodWallClockStart);
+		}
+		if (periodWallClockEnd != null) {
+			update("PeriodClockEnd", ClockConversion.toHumanReadable(periodClockEnd));
+			update("PeriodWallClockEnd", periodWallClockEnd);
+		}
+		update("JamClock", ClockConversion.toHumanReadable(jamClock));
+	}
 
-	private Game game;
+	public PeriodStats getPeriodStats()   { return period_stats; }
+	public long getJam()                  { return jam; }
+	public TeamStats[] getTeams()         { return teams; }
+	public long getPeriodClockStart()     { return periodClockStart; }
+	public long getPeriodClockEnd()       { return periodClockEnd; }
+	public Date getPeriodWallClockStart() { return periodWallClockStart; }
+	public Date getPeriodWallClockEnd()   { return periodWallClockEnd; }
+	public long getJamClock()             { return jamClock; }
+
+	private PeriodStats period_stats;
 	private long jam;
 	private TeamStats[] teams;
 	private long periodClockStart;
