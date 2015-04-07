@@ -314,7 +314,6 @@ function setupClocks() {
 	var intermissionText = { };
 
 	var intermissionUpdate = function() {
-		console.log(intermissionText);
 		var num = interNumber.$sbGet();
 		var max = interMax.$sbGet();
 		var isOfficial = isTrue(isOfficialScore.$sbGet());
@@ -324,22 +323,22 @@ function setupClocks() {
 
 		time.show();
 		if (num == '0')
-			a.text(intermissionText["Intermission.PreGame"]);
+			a.text(intermissionText["ScoreBoard.Intermission.PreGame"]);
 		else if (num == max) {
 			time.hide();
 			if (!isOfficial)
-				a.text(intermissionText["Intermission.Unofficial"]);
+				a.text(intermissionText["ScoreBoard.Intermission.Unofficial"]);
 			else
-				a.text(intermissionText["Intermission.Official"]);
+				a.text(intermissionText["ScoreBoard.Intermission.Official"]);
 		} else
-			a.text(intermissionText["Intermission.Intermission"]);
+			a.text(intermissionText["ScoreBoard.Intermission.Intermission"]);
 		intermissionAutoFitText();
 	};
 
 	settings.$sbBindAddRemoveEach("Setting",
 		function (event, node) {
 			var id = $sb(node).$sbId;
-			if (id == "Intermission.PreGame" || id == "Intermission.Intermission" || id == "Intermission.Unofficial" || id == "Intermission.Official") {
+			if (id == "ScoreBoard.Intermission.PreGame" || id == "ScoreBoard.Intermission.Intermission" || id == "ScoreBoard.Intermission.Unofficial" || id == "ScoreBoard.Intermission.Official") {
 				node.$sbBindAndRun("sbchange", function(event,val) {
 					intermissionText[id] = $.trim(val);
 					intermissionUpdate();

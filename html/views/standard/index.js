@@ -180,13 +180,13 @@ function intermissionDisplay() {
 	var isOfficial = WS.state["ScoreBoard.OfficialScore"];
 	var ret = '';
 	if (num == 0)
-		ret = WS.state["ScoreBoard.Setting(Intermission.PreGame)"];
+		ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.PreGame)"];
 	else if (num != max)
-		ret = WS.state["ScoreBoard.Setting(Intermission.Intermission)"];
+		ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.Intermission)"];
 	else if (!isOfficial)
-		ret = WS.state["ScoreBoard.Setting(Intermission.Unofficial)"];
+		ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.Unofficial)"];
 	else
-		ret = WS.state["ScoreBoard.Setting(Intermission.Official)"];
+		ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.Official)"];
 
 	$(".Clock.Intermission .Time").toggleClass("Hide", num == max);
 	return ret;
