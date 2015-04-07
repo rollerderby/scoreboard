@@ -26,6 +26,7 @@ public class TeamInfo extends Updater {
 	public void snapshot() {
 		Team t = game.getTeam(team);
 		name = t.getName();
+		logo = t.getLogo();
 
 		// Add/Update/Remove Alternate Names
 		List<Team.AlternateName> t_an = t.getAlternateNames();

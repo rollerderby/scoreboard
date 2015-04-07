@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.game;
 
 import java.util.Date;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,6 +44,7 @@ public class JamStats extends Updater {
 			periodWallClockEnd = new Date();
 		}
 		this.jamClock = jamClock.getTime();
+
 		for (TeamStats ts : teams)
 			ts.snapshot(jamClockRunning || jamEnd);
 
