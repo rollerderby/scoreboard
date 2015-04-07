@@ -224,7 +224,7 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
-		private void setShortChild(JSONObject o, String k, Object v) {
+		private void setShortChild(JSONObject o, String k, Object v) throws JSONException {
 			List<String> path = new ArrayList<String>();
 			int s = 0;
 			boolean inside = false;
@@ -271,19 +271,24 @@ public class WS extends WebSocketServlet {
 			synchronized (this) {
 				if (updates.size() == 0)
 					return;
-				JSONObject json = new JSONObject();
-				if (sendShort) {
-					JSONObject state = new JSONObject();
-					for (String k : updates.keySet()) {
-						setShortChild(state, k, updates.get(k));
+				try {
+					JSONObject json = new JSONObject();
+					if (sendShort) {
+						JSONObject state = new JSONObject();
+						for (String k : updates.keySet()) {
+							setShortChild(state, k, updates.get(k));
+						}
+						json.put("state", state);
+					} else {
+						json.put("state", new JSONObject(updates));
 					}
-					json.put("state", state);
-				} else {
-					json.put("state", new JSONObject(updates));
+					stateID = WS.stateID;
+					send(json);
+					updates.clear();
+				} catch (JSONException e) {
+					ScoreBoardManager.printMessage("Error sending updates to client: " + e);
+					e.printStackTrace();
 				}
-				stateID = WS.stateID;
-				send(json);
-				updates.clear();
 			}
 		}
 
