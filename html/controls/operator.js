@@ -163,30 +163,6 @@ function createMetaControlTable() {
 		.button()
 		.click(createGameControlDialog);
 
-	var selectJammerSpan = $("<span>").appendTo(buttonsTd);
-	var selectByLabel = $("<label>").attr("for", "SelectJammerBy")
-		.appendTo(selectJammerSpan);
-	var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
-		.appendTo(selectJammerSpan).button();
-	_crgUtils.bindAndRun(selectByButton, "click", function() {
-		$("#TeamTime table.Team td.Jammer, #TeamTime table.Team td.Pivot")
-			.toggleClass("ByNumber", !this.checked)
-			.toggleClass("ByName", this.checked);
-		$(this).button("option", "label", (this.checked?"Select Jammer by Name":"Select Jammer by Number"));
-	});
-	var selectSortLabel = $("<label>").attr("for", "SelectJammerSort")
-		.appendTo(selectJammerSpan);
-	var selectSortButton = $("<input type='checkbox'>").attr("id", "SelectJammerSort")
-		.appendTo(selectJammerSpan).button();
-	_crgUtils.bindAndRun(selectSortButton, "click", function() {
-		$("#TeamTime table.Team td.Jammer, #TeamTime table.Team td.Pivot")
-			.toggleClass("NumSort", this.checked)
-			.toggleClass("AlphaSort", !this.checked);
-		$(this).button("option", "label", (this.checked?"Numerically":"Alphabetically"));
-	});
-	// FIXME - jquery-ui seems buggy by defaulting to rtl if "direction" not specified
-	selectJammerSpan.css("direction", "ltr").buttonset();
-
 	var periodEndControlsLabel = $("<label>").attr("for", "PeriodEndControlsCheckbox")
 		.text("End of Period Controls")
 		.addClass("PeriodEndControls")
@@ -680,11 +656,8 @@ function createTeamTable() {
 				} }).addClass(pos+" By"+elem+" "+sort+"Sort");
 		};
 
-		var jammerSelectTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByNumber AlphaSort");
-		makeSkaterDropdown("Jammer", "Name", "Alpha").appendTo(jammerSelectTd);
+		var jammerSelectTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer");
 		makeSkaterDropdown("Jammer", "Number", "Alpha").appendTo(jammerSelectTd);
-		makeSkaterDropdown("Jammer", "Name", "Num").appendTo(jammerSelectTd);
-		makeSkaterDropdown("Jammer", "Number", "Num").appendTo(jammerSelectTd);
 
 		var jammerBox = sbTeam.$sb("Position(Jammer).PenaltyBox");
 		var jammerBoxButton = jammerBox.$sbControl("<button>").text("Box").val("true")
@@ -695,11 +668,8 @@ function createTeamTable() {
 		});
 		jammerBoxButton.appendTo(jammerSelectTd);
 
-		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot ByNumber AlphaSort");
-		makeSkaterDropdown("Pivot", "Name", "Alpha").appendTo(pivotSelectTd);
+		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot");
 		makeSkaterDropdown("Pivot", "Number", "Alpha").appendTo(pivotSelectTd);
-		makeSkaterDropdown("Pivot", "Name", "Num").appendTo(pivotSelectTd);
-		makeSkaterDropdown("Pivot", "Number", "Num").appendTo(pivotSelectTd);
 
 		var pivotBox = sbTeam.$sb("Position(Pivot).PenaltyBox");
 		var pivotBoxButton = pivotBox.$sbControl("<button>").text("Box").val("true")

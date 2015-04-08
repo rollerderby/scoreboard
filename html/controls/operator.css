@@ -57,14 +57,6 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Team tr.Score td a.JamScore { font-size: 200%; line-height: 175%; }
 	#TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; }
 	#TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.ByName) select.Jammer.ByName { display: none; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.ByNumber) select.Jammer.ByNumber { display: none; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.AlphaSort) select.Jammer.AlphaSort { display: none; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.NumSort) select.Jammer.NumSort { display: none; }
-	#TeamTime table.Team tr.Jammer td.Pivot:not(.ByName) select.Pivot.ByName { display: none; }
-	#TeamTime table.Team tr.Jammer td.Pivot:not(.ByNumber) select.Pivot.ByNumber { display: none; }
-	#TeamTime table.Team tr.Jammer td.Pivot:not(.AlphaSort) select.Pivot.AlphaSort { display: none; }
-	#TeamTime table.Team tr.Jammer td.Pivot:not(.NumSort) select.Pivot.NumSort { display: none; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label { font-size: 80%; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label.Lead.ui-state-active { background: #3f3; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label.StarPass.ui-state-active { background: #3f3; }
