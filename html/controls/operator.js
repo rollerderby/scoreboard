@@ -154,7 +154,7 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$("#TeamTime table.JamControl tr.UndoControls").toggleClass("ShowUndo", this.checked);
+			$(".UndoControls").toggleClass("ShowUndo", this.checked);
 		});
 
 	$("<button>").attr("id", "GameControl")
@@ -419,28 +419,28 @@ function createOvertimeDialog() {
 
 function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
-	var controlsTr = createRowTable(3,2).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
-	var undoTr = controlsTr.next().addClass("UndoControls ShowUndo");
+	var controlsTr = createRowTable(3,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
 
 	$sb("ScoreBoard.StartJam").$sbControl("<button>").text("Start Jam").val("true")
 		.attr("id", "StartJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(0)"));
+	$sb("ScoreBoard.UnStartJam").$sbControl("<button>").text("UN-Start Jam").val("true")
+		.attr("id", "UnStartJam").addClass("KeyControl UndoControls ShowUndo").button()
+		.appendTo(controlsTr.children("td:eq(0)"));
+
 	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam").val("true")
 		.attr("id", "StopJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
+	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam").val("true")
+		.attr("id", "UnStopJam").addClass("KeyControl UndoControls ShowUndo").button()
+		.appendTo(controlsTr.children("td:eq(1)"));
+
 	$sb("ScoreBoard.Timeout").$sbControl("<button>").text("Timeout").val("true")
 		.attr("id", "Timeout").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(2)"));
-
-	$sb("ScoreBoard.UnStartJam").$sbControl("<button>").text("UN-Start Jam").val("true")
-		.attr("id", "UnStartJam").addClass("KeyControl").button()
-		.appendTo(undoTr.children("td:eq(0)"));
-	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam").val("true")
-		.attr("id", "UnStopJam").addClass("KeyControl").button()
-		.appendTo(undoTr.children("td:eq(1)"));
 	$sb("ScoreBoard.UnTimeout").$sbControl("<button>").text("UN-Timeout").val("true")
-		.attr("id", "UnTimeout").addClass("KeyControl").button()
-		.appendTo(undoTr.children("td:eq(2)"));
+		.attr("id", "UnTimeout").addClass("KeyControl UndoControls ShowUndo").button()
+		.appendTo(controlsTr.children("td:eq(2)"));
 
 	return table;
 }
