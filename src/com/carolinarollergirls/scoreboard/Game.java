@@ -18,6 +18,10 @@ public class Game {
 	}
 	
 	public void start(String i) {
+		updateState();
+		update("Game", null);
+		updateState();
+
 		identifier = i;
 		teams = new TeamInfo[2];
 		teams[0] = new TeamInfo(this, Team.ID_1);
