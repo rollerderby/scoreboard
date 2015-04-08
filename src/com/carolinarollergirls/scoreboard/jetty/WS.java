@@ -66,6 +66,12 @@ public class WS extends WebSocketServlet {
 		}
 	}
 
+	private static void updateState(String key, Object value) {
+		Map<String, Object> updateMap = new LinkedHashMap<String, Object>();
+		updateMap.put(key, value);
+		updateState(updateMap);
+	}
+
 	public static void updateState(Map<String, Object> updates) {
 		synchronized (sourcesLock) {
 			stateID++;
@@ -157,6 +163,13 @@ public class WS extends WebSocketServlet {
 					if (period == -1 || jam == -1)
 						return;
 					ScoreBoardManager.getGame().Penalty(skaterId, penaltyId, fo_exp, period, jam, code);
+				} else if (action.equals("Set")) {
+					String key = json.getString("key");
+					Object value = json.get("value");
+					ScoreBoardManager.printMessage("Setting " + key + " to " + value);
+					if (key.startsWith("Custom.")) {
+						WS.updateState(key, value);
+					}
 				} else if (action.equals("Short")) {
 					sendShort = true;
 				} else if (action.equals("Long")) {

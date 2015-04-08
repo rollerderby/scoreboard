@@ -3,9 +3,12 @@ WS.Register("", display);
 
 function display(k, v) {
 	var row = findRow(k);
-	if (v != null)
-		row.find("td.Value").text(v);
-	else
+	if (v != null) {
+		if ($.isPlainObject(v)) {
+			row.find("td.Value").text(JSON.stringify(v));
+		} else
+			row.find("td.Value").text(v);
+	} else
 		row.remove();
 }
 

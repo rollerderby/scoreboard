@@ -71,6 +71,15 @@ var WS = {
 		WS.send(JSON.stringify(req));
 	},
 
+	Set: function(key, value) {
+		req = {
+			action: 'Set',
+			key: key,
+			value: value
+		};
+		WS.send(JSON.stringify(req));
+	},
+
 	triggerCallback: function (k, v) {
 		WS.state[k] = v;
 		for (idx = 0; idx < WS.callbacks.length; idx++) {
