@@ -157,6 +157,15 @@ function createMetaControlTable() {
 			$(".UndoControls").toggleClass("ShowUndo", this.checked);
 		});
 
+	$("<label>").text("Show Speed Score Controls").attr("for", "ShowSpeedScoreControlsButton")
+		.appendTo(buttonsTd);
+	$("<input type='checkbox'>").attr("id", "ShowSpeedScoreControlsButton")
+		.appendTo(buttonsTd)
+		.button()
+		.click(function() {
+			$("tr.SpeedScore").toggleClass("Show", this.checked);
+		});
+
 	$("<button>").attr("id", "GameControl")
 		.text("Start New Game")
 		.appendTo(buttonsTd)
@@ -426,6 +435,7 @@ function createTeamTable() {
 	var row = $("<tr></tr>");
 	var nameRow = row.clone().addClass("Name").appendTo(table);
 	var scoreRow = row.clone().addClass("Score").appendTo(table);
+	var speedScoreRow = row.clone().addClass("SpeedScore").appendTo(table);
 	var timeoutRow = row.clone().addClass("Timeout").appendTo(table);
 	var jammer1Row = row.clone().addClass("Jammer").appendTo(table);
 	var jammer2Row = row.clone().addClass("Jammer").appendTo(table);
@@ -437,6 +447,7 @@ function createTeamTable() {
 
 		var nameTr = createRowTable(2).appendTo($("<td>").appendTo(nameRow)).find("tr");
 		var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
+		var speedScoreTr = createRowTable(4).appendTo($("<td>").appendTo(speedScoreRow)).find("tr");
 		var timeoutTr = createRowTable(4).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
 		var jammer1Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer1Row)).find("tr");
 		var jammer2Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer2Row)).find("tr");
@@ -568,6 +579,18 @@ function createTeamTable() {
 			.text("Jam Score +1").val("-1")
 			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl JamScoreButton").button()
 			.appendTo(scoreTd);
+
+		for (var i = 2; i <= 5; i++) {
+			var pos = (i - 2);
+			if (!first)
+				pos = 3 - pos;
+			sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+				.text("+" + i).val(i)
+				.attr("id", "Team"+team+"ScoreUp"+i).addClass("KeyControl").button()
+				.appendTo(speedScoreTr.find("td:eq("+pos+")"));
+		}
+
+
 		// Note instantaneous score change is always towards the center.  Jam score total is on the outside.
 		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
 		var jamScore = $("<a>").appendTo(scoreSubTr.children("td:eq("+(first?"0":"2")+")")).addClass("JamScore");
