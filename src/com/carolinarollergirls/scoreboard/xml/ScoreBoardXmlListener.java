@@ -143,6 +143,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 				editor.setElement(e, "Name", null, (s==null?"":s.getName()));
 				editor.setElement(e, "Number", null, (s==null?"":s.getNumber()));
 				editor.setElement(e, "PenaltyBox", null, String.valueOf(s==null?false:s.isPenaltyBox()));
+				editor.setElement(e, "Flags", null, (s==null?"":s.getFlags()));
 			} else if (prop.equals(Position.EVENT_PENALTY_BOX)) {
 				editor.setElement(e, "PenaltyBox", null, String.valueOf(event.getValue()));
 			}

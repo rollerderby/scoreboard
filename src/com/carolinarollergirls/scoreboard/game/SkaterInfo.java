@@ -26,6 +26,7 @@ public class SkaterInfo extends Updater {
 	public void snapshot(Skater s) {
 		name = s.getName();
 		number = s.getNumber();
+		flags = s.getFlags();
 
 		queueUpdates();
 	}
@@ -35,6 +36,7 @@ public class SkaterInfo extends Updater {
 		json.put("id", id);
 		json.put("name", name);
 		json.put("number", number);
+		json.put("flags", flags);
 
 		JSONArray pa = new JSONArray();
 		for (Penalty p : penalties) {
@@ -51,6 +53,7 @@ public class SkaterInfo extends Updater {
 		update("Id", id);
 		update("Name", name);
 		update("Number", number);
+		update("Flags", flags);
 
 		for (int i = 0; i < 9; i++) {
 			String base = "Penalty(" + (i + 1) + ")";
@@ -106,6 +109,7 @@ public class SkaterInfo extends Updater {
 	public String        getId()        { return id; }
 	public String        getName()      { return name; }
 	public String        getNumber()    { return number; }
+	public String        getFlags()     { return flags; }
 	public List<Penalty> getPenalties() { return penalties; }
 	public Penalty       getFOExp()     { return fo_exp; }
 
@@ -113,6 +117,7 @@ public class SkaterInfo extends Updater {
 	private String id;
 	private String name;
 	private String number;
+	private String flags;
 	private List<Penalty> penalties;
 	private Penalty fo_exp;
 

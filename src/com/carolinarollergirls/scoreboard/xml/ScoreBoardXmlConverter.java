@@ -156,6 +156,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_NAME, null, (s==null?"":s.getName()));
 		editor.setElement(e, Skater.EVENT_NUMBER, null, (s==null?"":s.getNumber()));
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
+		editor.setElement(e, Skater.EVENT_FLAGS, null, (s==null?"":s.getFlags()));
 
 		return e;
 	}
@@ -187,6 +188,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
 		editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
+		editor.setElement(e, Skater.EVENT_FLAGS, null, s.getFlags());
 
 		return e;
 	}
@@ -543,7 +545,9 @@ public class ScoreBoardXmlConverter
 			String name = (nameE == null ? "" : editor.getText(nameE));
 			Element numberE = skater.getChild(Skater.EVENT_NUMBER);
 			String number = (numberE == null ? "" : editor.getText(numberE));
-			teamModel.addSkaterModel(id, name, number);
+			Element flagsE = skater.getChild(Skater.EVENT_FLAGS);
+			String flags = (flagsE == null ? "" : editor.getText(flagsE));
+			teamModel.addSkaterModel(id, name, number, flags);
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 
@@ -566,6 +570,8 @@ public class ScoreBoardXmlConverter
 					skaterModel.setPosition(value);
 				else if (name.equals(Skater.EVENT_PENALTY_BOX))
 					skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
+				else if (name.equals(Skater.EVENT_FLAGS))
+					skaterModel.setFlags(value);
 			} catch ( Exception e ) {
 			}
 		}

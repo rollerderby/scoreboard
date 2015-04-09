@@ -318,9 +318,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 				throw new SkaterNotFoundException(id);
 		}
 	}
-	public SkaterModel addSkaterModel(String id) { return addSkaterModel(id, "", ""); }
-	public SkaterModel addSkaterModel(String id, String n, String num) {
-		SkaterModel sM = new DefaultSkaterModel(this, id, n, num);
+	public SkaterModel addSkaterModel(String id) { return addSkaterModel(id, "", "", ""); }
+	public SkaterModel addSkaterModel(String id, String n, String num, String flags) {
+		SkaterModel sM = new DefaultSkaterModel(this, id, n, num, flags);
 		addSkaterModel(sM);
 		return sM;
 	}

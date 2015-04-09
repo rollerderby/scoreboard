@@ -1276,21 +1276,24 @@ function createNewTeamTable(team, teamid) {
 		.append("<col class='Id'>")
 		.append("<col class='Name'>")
 		.append("<col class='Number'>")
+		.append("<col class='Flags'>")
 		.append("<col class='Button'>")
 		.append("<thead/><tbody/>")
 		.children("thead")
-		.append("<tr><th colspan='4' class='Title'>Skaters</th></tr>")
-		.append("<tr><th>Id</th><th>Name</th><th>Number</th><th>Add</th>")
+		.append("<tr><th colspan='5' class='Title'>Skaters</th></tr>")
+		.append("<tr><th>Id</th><th>Name</th><th>Number</th><th>Flags</th><th>Add</th>")
 		.append("<tr class='AddSkater'><th/><th/><th/><th/></tr>")
-		.append("<tr><th colspan='4'><hr/></th></tr>")
+		.append("<tr><th colspan='5'><hr/></th></tr>")
 		.end();
 
 	var newSkaterName = $("<input type='text' size='20'>").addClass("Name")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(1)"));
 	var newSkaterNumber = $("<input type='text' size='20'>").addClass("Number")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(2)"));
+	var newSkaterFlags = $("<select>").addClass("Flags")
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"));
 	var newSkaterButton = $("<button>").text("Add Skater").button({ disabled: true }).addClass("AddSkater")
-		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(4)"))
 		.click(function() {
 			var id = _crgScoreBoard.newUUID(true);
 			team.$sb("Skater("+id+").Number").$sbSet(newSkaterNumber.val());
@@ -1305,6 +1308,11 @@ function createNewTeamTable(team, teamid) {
 		if (!newSkaterButton.button("option", "disabled") && (13 == event.which)) // Enter
 			newSkaterButton.click();
 	});
+	newSkaterFlags.append($("<option>").attr("value", "").text("Skater"));
+	newSkaterFlags.append($("<option>").attr("value", "C").text("Captain"));
+	newSkaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
+	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
+	newSkaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
 
 	team.$sbBindAddRemoveEach("Skater", function(event,node) {
 		var skaterid = node.$sbId;
@@ -1316,6 +1324,7 @@ function createNewTeamTable(team, teamid) {
 			.append("<td class='Id'>")
 			.append("<td class='Name'>")
 			.append("<td class='Number'>")
+			.append("<td class='Flags'>")
 			.append("<td class='Remove'>");
 		$("<a>").text(skaterid).appendTo(skaterRow.children("td.Id"));
 		node.$sb("Name").$sbControl("<input type='text' size='20'>")
@@ -1329,6 +1338,13 @@ function createNewTeamTable(team, teamid) {
 			skaterRow.attr("data-skaternum", node.$sb("Number").$sbGet());
 			_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "data-skaternum");
 		});
+		var skaterFlags = $("<select>").appendTo(skaterRow.children("td.Flags"));
+		skaterFlags.append($("<option>").attr("value", "").text("Skater"));
+		skaterFlags.append($("<option>").attr("value", "C").text("Captain"));
+		skaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
+		skaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
+		skaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
+		node.$sb("Flags").$sbControl(skaterFlags);
 
 		node.$sb("Number").$sbBindAndRun("sbchange", function(event, value) {
 			if (!numberInput.is(':focus')) {

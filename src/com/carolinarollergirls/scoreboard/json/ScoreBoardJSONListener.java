@@ -152,6 +152,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put(path + "." + Skater.EVENT_NAME, s.getName());
 		updateMap.put(path + "." + Skater.EVENT_NUMBER, s.getNumber());
 		updateMap.put(path + "." + Skater.EVENT_POSITION, s.getPosition());
+		updateMap.put(path + "." + Skater.EVENT_FLAGS, s.getFlags());
 		updateMap.put(path + "." + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox());
 	}
 
