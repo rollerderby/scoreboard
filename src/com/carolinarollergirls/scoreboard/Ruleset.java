@@ -102,7 +102,7 @@ public class Ruleset {
 			newRule( new StringRule( true, "Team", "2", "Name", "", "Team 2"));
 
 			base = new Ruleset();
-			base.name = "WFTDA Santioned";
+			base.name = "WFTDA Sanctioned";
 			base.parent = null;
 			for (Rule r : rule_definitions.values()) {
 				base.setRule(r.getFullName(), r.getDefaultValue());
