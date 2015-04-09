@@ -1282,7 +1282,7 @@ function createNewTeamTable(team, teamid) {
 		.children("thead")
 		.append("<tr><th colspan='5' class='Title'>Skaters</th></tr>")
 		.append("<tr><th>Id</th><th>Name</th><th>Number</th><th>Flags</th><th>Add</th>")
-		.append("<tr class='AddSkater'><th/><th/><th/><th/></tr>")
+		.append("<tr class='AddSkater'><th/><th/><th/><th/><th/></tr>")
 		.append("<tr><th colspan='5'><hr/></th></tr>")
 		.end();
 
