@@ -98,7 +98,12 @@ var WS = {
 
 	processUpdate: function (state) {
 		for (var prop in state) {
-			WS.triggerCallback(prop, state[prop]);
+			if (state[prop] == null)
+				WS.triggerCallback(prop, state[prop]);
+		}
+		for (var prop in state) {
+			if (state[prop] != null)
+				WS.triggerCallback(prop, state[prop]);
 		}
 	},
 
