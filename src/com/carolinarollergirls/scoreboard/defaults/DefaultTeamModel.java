@@ -295,7 +295,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public static Comparator<Skater> SkaterComparator = new Comparator<Skater>() {
 		public int compare(Skater s1, Skater s2) {
-			return s1.getNumber().compareTo(s2.getNumber());
+			if (s2 == null)
+				return 1;
+			String n1 = s1.getNumber();
+			String n2 = s2.getNumber();
+			if (n1 == null) return -1;
+			if (n2 == null) return 1;
+
+			return n1.compareTo(n2);
 		}
 	};
 
