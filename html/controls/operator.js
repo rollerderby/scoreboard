@@ -1298,7 +1298,9 @@ function createNewTeamTable(team, teamid) {
 			var id = _crgScoreBoard.newUUID(true);
 			team.$sb("Skater("+id+").Number").$sbSet(newSkaterNumber.val());
 			team.$sb("Skater("+id+").Name").$sbSet(newSkaterName.val());
+			team.$sb("Skater("+id+").Flags").$sbSet(newSkaterFlags.val());
 			newSkaterNumber.val("");
+			newSkaterFlags.val("");
 			newSkaterName.val("").focus();
 			$(this).blur();
 			newSkaterButton.button("option", "disabled", true);
