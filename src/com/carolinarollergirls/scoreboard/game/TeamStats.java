@@ -22,14 +22,16 @@ public class TeamStats extends Updater {
 		return jam_stats.getUpdaterBase() + ".Team(" + team + ")";
 	}
 
-	public void snapshot(boolean getSkaters) {
+	public void snapshot(boolean jamInProgress, boolean getSkaters) {
 		Team t = game.getTeam(team);
 		totalScore = t.getScore();
 		jamScore = t.getScore() - t.getLastScore();
 		timeouts = t.getTimeouts();
 		officialReviews = t.getOfficialReviews();
-		leadJammer = t.getLeadJammer();
-		starPass = t.isStarPass();
+		if (jamInProgress) {
+			leadJammer = t.getLeadJammer();
+			starPass = t.isStarPass();
+		}
 
 		if (getSkaters) {
 			skaters = new ArrayList<SkaterStats>();

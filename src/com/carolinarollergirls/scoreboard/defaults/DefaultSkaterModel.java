@@ -77,6 +77,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			String last = position;
 			position = p;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position, last));
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -102,6 +103,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			}
 
 			requestBatchEnd();
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -111,6 +113,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			String last = flags;
 			flags = f;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_FLAGS, flags, last));
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 

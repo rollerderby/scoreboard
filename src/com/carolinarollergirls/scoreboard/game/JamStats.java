@@ -46,7 +46,7 @@ public class JamStats extends Updater {
 		this.jamClock = jamClock.getTime();
 
 		for (TeamStats ts : teams)
-			ts.snapshot(jamClockRunning || jamEnd);
+			ts.snapshot(jamClockRunning, jamClockRunning || jamEnd);
 
 		queueUpdates();
 	}
