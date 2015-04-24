@@ -23,6 +23,10 @@ function initialize() {
 			var showJamTotals = !isTrue(WS.state["ScoreBoard.Setting(ScoreBoard." + view + "_HideJamTotals)"]);
 			var sidePadding = WS.state["ScoreBoard.Setting(ScoreBoard." + view + "_SidePadding)"];
 
+			// change box_flat_bright to two seperate classes in order to reuse much of the css
+			if (boxStyle == 'box_flat_bright')
+				boxStyle = 'box_flat bright';
+
 			$("body").removeClass();
 			if (boxStyle != "" && boxStyle != null)
 				$("body").addClass(boxStyle);

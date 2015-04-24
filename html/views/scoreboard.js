@@ -69,6 +69,11 @@ $sb(function() {
 		var backgroundStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BackgroundStyle)").$sbGet();
 		var hideJamTotals = isTrue($sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_HideJamTotals)").$sbGet());
 		var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SidePadding)").$sbGet();
+
+		// change box_flat_bright to two seperate classes in order to reuse much of the css
+		if (boxStyle == 'box_flat_bright')
+			boxStyle = 'box_flat bright';
+
 		$("#mainDiv").removeClass();
 		if (boxStyle != "" && boxStyle != null)
 			$("#mainDiv").addClass(boxStyle);

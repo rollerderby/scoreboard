@@ -1078,7 +1078,8 @@ function createScoreBoardViewPreviewRows(table, type) {
 	var boxStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Rounded", value: "" },
-			{ text: "Flat", value: "box_flat" }
+			{ text: "Flat", value: "box_flat" },
+			{ text: "Flat & Bright", value: "box_flat_bright" }
 		]}});
 	var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
 		prependOptions: [

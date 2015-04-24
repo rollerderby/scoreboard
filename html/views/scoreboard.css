@@ -394,6 +394,12 @@ div.WhiteBox {
   border-radius: 5px !important;
 }
 
+#mainDiv.box_flat.bright div.WhiteBox {
+  background: #FFFFFF;
+  box-shadow: none;
+  border-radius: 5px !important;
+}
+
 #mainDiv.box_flat .FlatDark {
   color: #FFFFFF;
 }

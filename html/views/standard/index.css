@@ -62,6 +62,12 @@ body.box_flat .Box {
 	border-radius: 5px !important;
 }
 
+body.box_flat.bright .Box {
+	background: #FFFFFF;
+	box-shadow: none;
+	border-radius: 5px !important;
+}
+
 .Red {
 	background: -moz-linear-gradient(top, #FF4040, #A04040 100%);
 	background: -webkit-gradient(linear, 0 0, 0 100%, from(#FF4040), color-stop(100%, #A04040));
