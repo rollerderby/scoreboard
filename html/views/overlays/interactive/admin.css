@@ -1,0 +1,9 @@
+
+button { width: 90%; }
+
+.current { background: red; color: white; }
+#Core .current { background: blue; color white; }
+
+#Controls { float: left; width: 8%; }
+#Preview  { float: left; width: 92%; height: 98%; }
+

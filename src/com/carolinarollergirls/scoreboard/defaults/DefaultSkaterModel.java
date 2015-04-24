@@ -16,11 +16,12 @@ import com.carolinarollergirls.scoreboard.model.*;
 
 public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implements SkaterModel
 {
-	public DefaultSkaterModel(TeamModel tm, String i, String n, String num) {
+	public DefaultSkaterModel(TeamModel tm, String i, String n, String num, String flags) {
 		teamModel = tm;
 		setId(i);
 		setName(n);
 		setNumber(num);
+		setFlags(flags);
 	}
 
 	public String getProviderName() { return "Skater"; }
@@ -76,6 +77,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			String last = position;
 			position = p;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position, last));
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -101,6 +103,17 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			}
 
 			requestBatchEnd();
+			ScoreBoardManager.gameSnapshot();
+		}
+	}
+
+	public String getFlags() { return flags; }
+	public void setFlags(String f) {
+		synchronized (flagsLock) {
+			String last = flags;
+			flags = f;
+			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_FLAGS, flags, last));
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -127,12 +140,14 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected String number;
 	protected String position = Position.ID_BENCH;
 	protected boolean penaltyBox = false;
+	protected String flags;
 
 	private String saved_position = Position.ID_BENCH;
 
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();
 	protected Object positionLock = new Object();
+	protected Object flagsLock = new Object();
 
 	protected boolean settingPositionSkater = false;
 }

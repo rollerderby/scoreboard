@@ -161,6 +161,9 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		Element sNumber = skater.getChild("Number");
 		if (null != sNumber)
 			editor.addElement(newSkater, "Number", null, editor.getText(sNumber));
+		Element sFlags = skater.getChild("Flags");
+		if (null != sFlags)
+			editor.addElement(newSkater, "Flags", null, editor.getText(sFlags));
 	}
 
 	protected void processTransfer(String type, String direction, String sbTeamId, String teamId) throws JDOMException {
@@ -177,7 +180,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		}
 	}
 
-	protected void toScoreBoard(String sbTeamId, String id, boolean reset) throws JDOMException {
+	public void toScoreBoard(String sbTeamId, String id, boolean reset) throws JDOMException {
 		Element newTeam = editor.getElement(getXPathElement(), "Team", id, false);
 		if (null == newTeam)
 			return; /* Ignore if no team info exists for given Id */
@@ -218,9 +221,11 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 				continue;
 			String sName = "";
 			String sNumber = "";
+			String sFlags = "";
 			sName = editor.getText(skater.getChild("Name"));
 			sNumber = editor.getText(skater.getChild("Number"));
-			team.addSkaterModel(sId, sName, sNumber);
+			sFlags = editor.getText(skater.getChild("Flags"));
+			team.addSkaterModel(sId, sName, sNumber, sFlags);
 		}
 	}
 
@@ -255,6 +260,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 			Element newSkater = editor.addElement(newTeam, "Skater", skater.getId());
 			editor.addElement(newSkater, "Name", null, skater.getName());
 			editor.addElement(newSkater, "Number", null, skater.getNumber());
+			editor.addElement(newSkater, "Flags", null, skater.getFlags());
 		}
 		update(newTeam);
 	}

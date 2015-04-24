@@ -3,39 +3,46 @@ package com.carolinarollergirls.scoreboard;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.game.*;
+import com.carolinarollergirls.scoreboard.jetty.WS;
 
 public class Game {
-	public Game() {
+	public Game(ScoreBoard sb) {
 		this.logging = false;
-		this.sb = null;
-
-		Thread t = new Thread(new SaveThread());
-		t.start();
-	}
-
-	public void setScoreBoard(ScoreBoard sb) {
 		this.sb = sb;
 	}
 	
 	public void start(String i) {
+		updateState();
+		update("Game", null);
+		updateState();
+
 		identifier = i;
 		teams = new TeamInfo[2];
 		teams[0] = new TeamInfo(this, Team.ID_1);
 		teams[1] = new TeamInfo(this, Team.ID_2);
 		periods = new ArrayList<PeriodStats>();
 		logging = true;
+
+		Thread t = new Thread(new SaveThread());
+		t.start();
+
+		updateState();
 	}
 
 	public void stop() {
-		this.identifier = "";
-		this.teams = null;
-		this.periods = null;
-		this.logging = false;
+		synchronized (saveLock) {
+			identifier = "";
+			teams = null;
+			periods = null;
+			logging = false;
+			saveLock.notifyAll();
+		}
 	}
 
 	private JamStats findJamStats(int period, int jam, boolean truncateAfter) {
@@ -72,6 +79,8 @@ public class Game {
 				e.printStackTrace();
 			}
 		}
+
+		updateState();
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -104,6 +113,32 @@ public class Game {
 		return sb.getClock(id);
 	}
 
+	public SkaterInfo getSkater(String teamId, String skaterId) {
+		for (TeamInfo t : teams) {
+			if (t.getTeam().equals(teamId)) {
+				for (SkaterInfo s : t.getSkaters()) {
+					if (s.getId().equals(skaterId)) {
+						return s;
+					}
+				}
+			}
+		}
+		return null;
+	}
+
+	public void Penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
+		synchronized (saveLock) {
+			SkaterInfo si = getSkater(teamId, skaterId);
+			if (si == null)
+				return;
+
+			si.Penalty(penaltyId, fo_exp, period, jam, code);
+			saveLock.notifyAll();
+		}
+	}
+
+	public String getUpdaterBase() { return "Game"; }
+
 	private void saveFile() {
 		synchronized (saveLock) {
 			saveLock.notifyAll();
@@ -112,30 +147,56 @@ public class Game {
 
 	private class SaveThread implements Runnable {
 		public void run() {
+			save();
 			while (true) {
 				synchronized (saveLock) {
 					try { saveLock.wait(); }
 					catch ( Exception e ) { }
 
-					File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
-					file.getParentFile().mkdirs();
-					FileWriter out = null;
-					try {
-						out = new FileWriter(file);
-						out.write(toJSON().toString(2));
-					} catch (Exception e) {
-						ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
-						e.printStackTrace();
-					} finally {
-						if (out != null) {
-							try { out.close(); } catch (Exception e) { }
-						}
+					if (!logging)
+						return;
+
+					save();
+				}
+			}
+		}
+
+		public void save() {
+			synchronized (saveLock) {
+				File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
+				file.getParentFile().mkdirs();
+				FileWriter out = null;
+				try {
+					out = new FileWriter(file);
+					out.write(toJSON().toString(2));
+				} catch (Exception e) {
+					ScoreBoardManager.printMessage("Error saving game data: " + e.getMessage());
+					e.printStackTrace();
+				} finally {
+					if (out != null) {
+						try { out.close(); } catch (Exception e) { }
 					}
 				}
 			}
 		}
 	}
 
+	public void update(String key, Object value) {
+		synchronized (updateMap) {
+			updateMap.put(key, value);
+		}
+	}
+
+	public void updateState() {
+		synchronized (updateMap) {
+			if (updateMap.size() == 0)
+				return;
+			WS.updateState(updateMap);
+			updateMap.clear();
+		}
+	}
+
+	private LinkedHashMap<String, Object> updateMap = new LinkedHashMap<String, Object>();
 	protected ScoreBoard sb = null;
 	private TeamInfo[] teams = null;
 	private ArrayList<PeriodStats> periods = null;

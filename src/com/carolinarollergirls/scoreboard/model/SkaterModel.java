@@ -22,4 +22,5 @@ public interface SkaterModel extends Skater
 	public void setNumber(String number);
 	public void setPosition(String position) throws PositionNotFoundException;
 	public void setPenaltyBox(boolean box);
+	public void setFlags(String flags);
 }

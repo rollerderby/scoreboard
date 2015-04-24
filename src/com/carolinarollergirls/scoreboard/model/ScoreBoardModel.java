@@ -40,6 +40,9 @@ public interface ScoreBoardModel extends ScoreBoard
 	public void unStopJam();
 	public void unTimeout();
 
+	public void setRuleset(String id);
+	public SettingsModel getSettingsModel();
+
 // FIXME - need methods to add/remove clocks and teams! */
 	public List<ClockModel> getClockModels();
 	public ClockModel getClockModel(String id);

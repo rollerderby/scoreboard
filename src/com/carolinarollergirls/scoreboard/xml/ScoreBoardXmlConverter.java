@@ -44,6 +44,9 @@ public class ScoreBoardXmlConverter
 		editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
 		editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
 		editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
+		editor.setElement(sb, ScoreBoard.EVENT_RULESET, null, String.valueOf(scoreBoard.getRuleset()));
+
+		toElement(sb, scoreBoard.getSettings());
 
 		Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
 		while (clocks.hasNext())
@@ -58,6 +61,18 @@ public class ScoreBoardXmlConverter
 			toElement(sb, policies.next());
 
 		return d;
+	}
+
+	public Element toElement(Element p, Settings s) {
+		Element e = editor.setElement(p, "Settings");
+		Iterator<String> keys = s.getAll().keySet().iterator();
+		while (keys.hasNext()) {
+			String k = keys.next();
+			String v = s.get(k);
+			if (v != null)
+				editor.setElement(e, Settings.EVENT_SETTING, k, v);
+		}
+		return e;
 	}
 
 	public Element toElement(Element sb, Clock c) {
@@ -141,6 +156,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_NAME, null, (s==null?"":s.getName()));
 		editor.setElement(e, Skater.EVENT_NUMBER, null, (s==null?"":s.getNumber()));
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
+		editor.setElement(e, Skater.EVENT_FLAGS, null, (s==null?"":s.getFlags()));
 
 		return e;
 	}
@@ -172,6 +188,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
 		editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
+		editor.setElement(e, Skater.EVENT_FLAGS, null, s.getFlags());
 
 		return e;
 	}
@@ -203,6 +220,8 @@ public class ScoreBoardXmlConverter
 					processTeam(scoreBoardModel, element);
 				else if (name.equals("Policy"))
 					processPolicy(scoreBoardModel, element);
+				else if (name.equals("Settings"))
+					processSettings(scoreBoardModel, element);
 				else if (null == value)
 					continue;
 				else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER))
@@ -215,6 +234,8 @@ public class ScoreBoardXmlConverter
 					scoreBoardModel.setInPeriod(bVal);
 				else if (name.equals(ScoreBoard.EVENT_OFFICIAL_SCORE))
 					scoreBoardModel.setOfficialScore(bVal);
+				else if (name.equals(ScoreBoard.EVENT_RULESET))
+					scoreBoardModel.setRuleset(value);
 				else if (bVal) {
 					if (name.equals("Reset"))
 						scoreBoardModel.reset();
@@ -233,6 +254,22 @@ public class ScoreBoardXmlConverter
 					else if (name.equals("StartOvertime"))
 						scoreBoardModel.startOvertime();
 				}
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
+		SettingsModel sm = scoreBoardModel.getSettingsModel();
+		Iterator children = settings.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String k = element.getAttributeValue("Id");
+				String v = editor.getText(element);
+				if (v == null)
+					v = "";
+				sm.set(k, v);
 			} catch ( Exception e ) {
 			}
 		}
@@ -508,7 +545,9 @@ public class ScoreBoardXmlConverter
 			String name = (nameE == null ? "" : editor.getText(nameE));
 			Element numberE = skater.getChild(Skater.EVENT_NUMBER);
 			String number = (numberE == null ? "" : editor.getText(numberE));
-			teamModel.addSkaterModel(id, name, number);
+			Element flagsE = skater.getChild(Skater.EVENT_FLAGS);
+			String flags = (flagsE == null ? "" : editor.getText(flagsE));
+			teamModel.addSkaterModel(id, name, number, flags);
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 
@@ -531,6 +570,8 @@ public class ScoreBoardXmlConverter
 					skaterModel.setPosition(value);
 				else if (name.equals(Skater.EVENT_PENALTY_BOX))
 					skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
+				else if (name.equals(Skater.EVENT_FLAGS))
+					skaterModel.setFlags(value);
 			} catch ( Exception e ) {
 			}
 		}

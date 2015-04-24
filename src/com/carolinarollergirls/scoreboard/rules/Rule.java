@@ -5,7 +5,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Rule {
-	public Rule(String type, String group, String subgroup, String name, String description, Object defaultValue) {
+	public Rule(boolean onResetOnly, String type, String group, String subgroup, String name, String description, Object defaultValue) {
+		this.onResetOnly = onResetOnly;
 		this.type = type;
 		this.group = group;
 		this.subgroup = subgroup;
@@ -26,6 +27,7 @@ public class Rule {
 		fullname = sb.toString();
 	}
 
+	public boolean isResetOnly() { return onResetOnly; }
 	public String getType() { return type; }
 	public String getName() { return name; }
 	public String getGroup() { return group; }
@@ -55,6 +57,7 @@ public class Rule {
 		return v.toString();
 	}
 
+	protected boolean onResetOnly;
 	protected String type;
 	protected String group;
 	protected String subgroup;

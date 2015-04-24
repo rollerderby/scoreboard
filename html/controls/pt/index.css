@@ -1,0 +1,26 @@
+body { font-size: 10pt; }
+
+.Team {
+	position: absolute;
+	width: 49%;
+	top: 0%;
+}
+.Team thead td { font-size: 1.1em; font-weight: bold; background-color: #000; color: #FFF; }
+.Team td { text-align: center; vertical-align: center; }
+.Team1 { left: 0.5%; }
+.Team2 { right: 0.5%; }
+.Team .Number, .Team .Box, .Team .FO_EXP, .Team .Total { width: 8.33%; }
+.Team tr:nth-child(4n+0), .Team tr:nth-child(4n-1) { background-color: #CCC; }
+
+.Team .Warn1 { background-color: #fffd38; }
+.Team .Warn1:nth-child(4n+0), .Team .Warn1:nth-child(4n-1) { background-color: #ccca2d; }
+.Team .Warn2 { background-color: #ff8f2b; }
+.Team .Warn2:nth-child(4n+0), .Team .Warn2:nth-child(4n-1) { background-color: #cc7222; }
+.Team .Warn3 { background-color: #ff8080; }
+.Team .Warn3:nth-child(4n+0), .Team .Warn3:nth-child(4n-1) { background-color: #cc2d2d; }
+
+.PenaltyEditor .Codes>div { float: left; width: 150px; height: 80px; margin: 10px; border: 1px solid black; font-weight: bold; }
+.PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }
+.PenaltyEditor .Codes>div div { text-align: center; }
+.PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; }
+.PenaltyEditor .Codes>div .Description { font-size: 0.75em; }

@@ -42,18 +42,11 @@ $sb(function() {
 		$("body").addClass("MinAnimations");
 
 	setupMainDiv($("#mainDiv")); // This needs to be part of scoreboard framework
-	var sbViewOptions = $sbThisPage.$sb("ViewOptions");
-	if (_windowFunctions.checkParam("preview", "true"))
-		sbViewOptions = $sbThisPage.$sb("PreviewOptions");
 
 	if (_windowFunctions.checkParam("videomuted", "true"))
 		$("video").prop({ muted: true, volume: "0.0" }); // Not all browsers support muted
 	if (_windowFunctions.checkParam("videocontrols", "true"))
 		$("video").prop("controls", true);
-
-	sbViewOptions.$sb("View(Image).Src").$sbElement("#imageDiv>img");
-	sbViewOptions.$sb("View(Video).Src").$sbElement("#videoDiv>video");
-	sbViewOptions.$sb("View(CustomHtml).Src").$sbElement("#htmlDiv>iframe");
 
 	setupSponsorBanners();
 	setupTeams();
@@ -61,15 +54,26 @@ $sb(function() {
 
 	setupBackgrounds();
 
-	sbViewOptions.$sb("SwapTeams").$sbBindAndRun("sbchange", function(event,value) {
+	var view = "View";
+	if (_windowFunctions.checkParam("preview", "true"))
+		view = "Preview";
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_Image)").$sbElement("#imageDiv>img");
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_Video)").$sbElement("#videoDiv>video");
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CustomHtml)").$sbElement("#htmlDiv>iframe");
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SwapTeams)").$sbBindAndRun("sbchange", function(event,value) {
 		$("#sbDiv>div.Team,.Timeouts>div.Team,.OfficialReviews>div.Team,.JamPoints>div.Team").toggleClass("SwapTeams", isTrue(value));
 	});
 
 	var styleSet = function() {
-		var boxStyle = sbViewOptions.$sb("BoxStyle").$sbGet();
-		var backgroundStyle = sbViewOptions.$sb("BackgroundStyle").$sbGet();
-		var hideJamTotals = isTrue(sbViewOptions.$sb("HideJamTotals").$sbGet());
-		var sidePadding = sbViewOptions.$sb("SidePadding").$sbGet();
+		var boxStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BoxStyle)").$sbGet();
+		var backgroundStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BackgroundStyle)").$sbGet();
+		var hideJamTotals = isTrue($sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_HideJamTotals)").$sbGet());
+		var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SidePadding)").$sbGet();
+
+		// change box_flat_bright to two seperate classes in order to reuse much of the css
+		if (boxStyle == 'box_flat_bright')
+			boxStyle = 'box_flat bright';
+
 		$("#mainDiv").removeClass();
 		if (boxStyle != "" && boxStyle != null)
 			$("#mainDiv").addClass(boxStyle);
@@ -86,13 +90,14 @@ $sb(function() {
 		}
 		$(window).trigger("resize");
 	}
-	sbViewOptions.$sb("BoxStyle").$sbBindAndRun("sbchange", styleSet);
-	sbViewOptions.$sb("BackgroundStyle").$sbBindAndRun("sbchange", styleSet);
-	sbViewOptions.$sb("HideJamTotals").$sbBindAndRun("sbchange", styleSet);
-	sbViewOptions.$sb("SidePadding").$sbBindAndRun("sbchange", styleSet);
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BoxStyle)").$sbBindAndRun("sbchange", styleSet);
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BackgroundStyle)").$sbBindAndRun("sbchange", styleSet);
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_HideJamTotals)").$sbBindAndRun("sbchange", styleSet);
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SidePadding)").$sbBindAndRun("sbchange", styleSet);
 
-	var view = sbViewOptions.$sb("CurrentView");
-	view.$sbBindAndRun("sbchange", function(event, value) {
+	var v = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CurrentView)");
+	v.$sbBindAndRun("sbchange", function(event, value) {
+		console.log(this, value);
 		$("video").each(function() { this.pause(); });
 		var showDiv = $("#"+value+"Div");
 		if (!showDiv.length)
@@ -304,45 +309,52 @@ function setupClocks() {
 		}
 	});
 
-// FIXME - this intermission stuff is a mess, can it get fixed up or simplified?!?
+	// Setup intermission
 	var intermissionAutoFitText = _autoFit.enableAutoFitText(".Intermission>div.Name.TextContainer");
-	$sbThisPage.$sbBindAddRemoveEach("Intermission", function(event,node) {
-		//$(".Intermission>div.Name>a")
-		//	.append($("<span>").addClass("Unofficial "+node.$sbId))
-		//	.append($("<span>").addClass("Name "+node.$sbId))
-		//	.children("span."+node.$sbId).toggle($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
+	var interNumber = $sb("ScoreBoard.Clock(Intermission).Number");
+	var interMax = $sb("ScoreBoard.Clock(Intermission).MaximumNumber");
+	var isOfficialScore = $sb("ScoreBoard.OfficialScore");
+	var ruleset = $sb("ScoreBoard.Ruleset");
+	var settings = $sb("ScoreBoard.Settings");
+	var intermissionText = { };
 
-		node.$sb("ShowUnofficial").$sbElement(".Intermission>div.Name>a>span.Unofficial."+node.$sbId, { sbelement: {
-			boolean: true,
-			convert: { "true": "Unofficial ", "false": "" },
-			autoFitText: true,
-			autoFitTextContainer: "div"
-		} });
-		node.$sb("Text").$sbElement(".Intermission>div.Name>a>span.Name."+node.$sbId, { sbelement: {
-			autoFitText: true,
-			autoFitTextContainer: "div"
-		} });
+	var intermissionUpdate = function() {
+		var num = interNumber.$sbGet();
+		var max = interMax.$sbGet();
+		var isOfficial = isTrue(isOfficialScore.$sbGet());
 
-		$sb("ScoreBoard.OfficialScore").$sbBindAndRun("sbchange", function(event,value) {
-			$(".Intermission>div.Name>a>span.Unofficial."+node.$sbId)
-				.toggle(!isTrue(value) && $sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId));
-			intermissionAutoFitText();
-		});
-		node.$sb("HideClock").$sbBindAndRun("sbchange", function(event,value) {
-			if ($sb("ScoreBoard.Clock(Intermission).Number").$sbIs(node.$sbId))
-				$(".Intermission>div.Time").toggle(!isTrue(value));		
-		});
-	}, function(event,node) {
-		$(".Intermission>div.Name>a>span."+node.$sbId).remove();
-	});
-	$sb("ScoreBoard.Clock(Intermission).Number").$sbBindAndRun("sbchange", function(event,value) {
-		$(".Intermission>div.Name>a>span")
-			.filter(":not(."+value+")").hide().end()
-			.filter("."+value).show()
-			.filter(".Unofficial").toggle(!$sbThisPage.$sb("Intermission("+value+").Confirmed").$sbIsTrue());
+		var a = $(".Intermission>div.Name>a");
+		var time = $(".Intermission>div.Time");
+
+		time.show();
+		if (num == '0')
+			a.text(intermissionText["ScoreBoard.Intermission.PreGame"]);
+		else if (num == max) {
+			time.hide();
+			if (!isOfficial)
+				a.text(intermissionText["ScoreBoard.Intermission.Unofficial"]);
+			else
+				a.text(intermissionText["ScoreBoard.Intermission.Official"]);
+		} else
+			a.text(intermissionText["ScoreBoard.Intermission.Intermission"]);
 		intermissionAutoFitText();
-		$(".Intermission>div.Time").toggle(!$sbThisPage.$sb("Intermission("+value+").HideClock").$sbIsTrue());
-	});
+	};
+
+	settings.$sbBindAddRemoveEach("Setting",
+		function (event, node) {
+			var id = $sb(node).$sbId;
+			if (id == "ScoreBoard.Intermission.PreGame" || id == "ScoreBoard.Intermission.Intermission" || id == "ScoreBoard.Intermission.Unofficial" || id == "ScoreBoard.Intermission.Official") {
+				node.$sbBindAndRun("sbchange", function(event,val) {
+					intermissionText[id] = $.trim(val);
+					intermissionUpdate();
+				});
+			}
+		},
+		function (event, node) {
+		});
+	interNumber.$sbBindAndRun("sbchange", intermissionUpdate);
+	interMax.$sbBindAndRun("sbchange", intermissionUpdate);
+	isOfficialScore.$sbBindAndRun("sbchange", intermissionUpdate);
 
 	var clockChange = function(event, value, intermission) {
 		if (isTrue(value) || intermission)

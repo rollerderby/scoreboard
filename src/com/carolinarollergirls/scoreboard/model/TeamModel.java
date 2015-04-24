@@ -58,7 +58,7 @@ public interface TeamModel extends Team
 
 	public void addSkaterModel(SkaterModel skater);
 	public SkaterModel addSkaterModel(String id);
-	public SkaterModel addSkaterModel(String id, String name, String number);
+	public SkaterModel addSkaterModel(String id, String name, String number, String flag);
 	public void removeSkaterModel(String id) throws SkaterNotFoundException;
 
 	public List<SkaterModel> getSkaterModels();
