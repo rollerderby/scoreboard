@@ -154,6 +154,7 @@ public class WS extends WebSocketServlet {
 					sendUpdates();
 				} else if (action.equals("Penalty")) {
 					JSONObject data = json.getJSONObject("data");
+					String teamId = data.optString("teamId");
 					String skaterId = data.optString("skaterId");
 					String penaltyId = data.optString("penaltyId", null);
 					boolean fo_exp = data.optBoolean("fo_exp", false);
@@ -162,7 +163,7 @@ public class WS extends WebSocketServlet {
 					String code = data.optString("code", null);
 					if (period == -1 || jam == -1)
 						return;
-					ScoreBoardManager.getGame().Penalty(skaterId, penaltyId, fo_exp, period, jam, code);
+					ScoreBoardManager.getGame().Penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
 				} else if (action.equals("Set")) {
 					String key = json.getString("key");
 					Object value = json.get("value");

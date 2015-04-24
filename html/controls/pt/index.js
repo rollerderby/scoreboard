@@ -2,6 +2,7 @@ $(initialize);
 var penaltyEditor = null;
 var period = null;
 var jam = null;
+var teamId = null;
 var skaterId = null;
 var penaltyId = null;
 var fo_exp = null;
@@ -51,7 +52,7 @@ function clear() {
 	if (penaltyId == null || skaterId == null) {
 		penaltyEditor.dialog("close");
 	} else {
-		WS.Command("Penalty", { skaterId: skaterId, penaltyId: penaltyId, fo_exp: fo_exp, jam: 0, period: 0 });
+		WS.Command("Penalty", { teamId: teamId, skaterId: skaterId, penaltyId: penaltyId, fo_exp: fo_exp, jam: 0, period: 0 });
 		penaltyEditor.dialog('close');
 	}
 }
@@ -65,9 +66,9 @@ function skaterUpdate(t, k, v) {
 	var id = match[1];
 	var prefix = 'Game.Team(' + t + ').Skater(' + id + ')';
 	if (k == prefix + '.Number') {
-		var row = $('.Skater.Penalty[id=' + id + ']');
+		var row = $('.Team' + t + ' .Skater.Penalty[id=' + id + ']');
 		if (v == null) {
-			$('.Skater[id=' + id + ']').remove();
+			$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 			return;
 		}
 
@@ -88,9 +89,9 @@ function skaterUpdate(t, k, v) {
 }
 
 function displayPenalty(t, s, p) {
-	var penaltyBox = $('.Skater.Penalty[id=' + s + '] .Box' + p);
-	var jamBox = $('.Skater.Jam[id=' + s + '] .Box' + p);
-	var totalBox = $('.Skater.Penalty[id=' + s + '] .Total');
+	var penaltyBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box' + p);
+	var jamBox = $('.Team' + t + ' .Skater.Jam[id=' + s + '] .Box' + p);
+	var totalBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Total');
 
 	var prefix = 'Game.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
 	code = WS.state[prefix + ".Code"];
@@ -108,11 +109,11 @@ function displayPenalty(t, s, p) {
 	}
 
 	var cnt = 0;
-	$('.Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
+	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	totalBox.text(cnt);
-	$('.Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5);
-	$('.Skater[id=' + s + ']').toggleClass("Warn2", cnt == 6);
-	$('.Skater[id=' + s + ']').toggleClass("Warn3", cnt > 6);
+	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5);
+	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn2", cnt == 6);
+	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn3", cnt > 6);
 }
 
 function makeSkaterRows(t, id, number) {
@@ -167,6 +168,7 @@ function openPenaltyEditor(t, id, which) {
 	prefix = 'Game.Team(' + t + ').Skater(' + id + ')';
 	var skaterName = WS.state[prefix + '.Name'];
 	var skaterNumber = WS.state[prefix + '.Number'];
+	teamId = t;
 	skaterId = id;
 	fo_exp = (which == 'FO_EXP');
 
@@ -180,7 +182,7 @@ function openPenaltyEditor(t, id, which) {
 	$('.Codes>.FO_EXP').toggle(which == 'FO_EXP');
 
 	if (which != null) {
-		var penaltyBox = $('.Skater.Penalty[id=' + id + '] .Box' + which);
+		var penaltyBox = $('.Team' + t + ' .Skater.Penalty[id=' + id + '] .Box' + which);
 		var c = WS.state[prefix + '.Penalty(' + which + ').Code'];
 		var p = WS.state[prefix + '.Penalty(' + which + ').Period'];
 		var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
@@ -204,7 +206,7 @@ function submitPenalty() {
 	var j = $('.PenaltyEditor .Jam').val();
 	var c = $('.PenaltyEditor .Codes .Active').attr('code');
 
-	WS.Command("Penalty", { skaterId: skaterId, penaltyId: penaltyId, period: p, jam: j, code: c, fo_exp: fo_exp });
+	WS.Command("Penalty", { teamId: teamId, skaterId: skaterId, penaltyId: penaltyId, period: p, jam: j, code: c, fo_exp: fo_exp });
 
 	penaltyEditor.dialog('close');
 }
