@@ -34,18 +34,27 @@ function initialize() {
 	WS.Register( 'ScoreBoard.Clock(Period).Number', function(k,v) {
 		if(v == 2) { $('.PPJBox .Team .Period2').show(); } else { $('.PPJBox .Team .Period2').hide(); }
 	});
-	WS.Register([ 'Custom.Overlay.Clock', 'Custom.Overlay.Score' ], function(k,v) { 
+
+	WS.Register([ 'Custom.Overlay.Clock', 'Custom.Overlay.Score' ], function(k,v) {  
 		o = $('div[data-setting="'+k+'"]')
 		if(v == 'On') { o.addClass('Show'); } else { o.removeClass('Show'); }
 	});
+
+	WS.Register('Custom.Overlay.Transition', function(k,v) { 
+		window.alert(k,v);
+	});
+
 	WS.Register('Custom.Overlay.Panel', function(k,v) { 
 		$('.OverlayPanel').removeClass('Show'); 
 		$('.OverlayPanel.'+v+' .SortBox').sortDivs(); 
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
 
-	WS.Register('Custom.Overlay.LowerThird.Subject', function(k,v) { $('.LowerThird .Subject').text(v); });
-	WS.Register('Custom.Overlay.LowerThird.Text', function(k,v) { $('.LowerThird .Text').text(v); });
+	WS.Register([ 'Custom.Overlay.LowerThird.Line1', 'Custom.Overlay.LowerThird.Line2' ] , function(k,v) { 
+		sp = '.' + k.split('.').slice(2,4).join(' .');
+		console.log(sp);
+		$(sp).text(v);
+	});
 
 
 }
@@ -201,13 +210,13 @@ function pointsPerJamColumnWidths() {
 
 
 $(function() {
-    $(document).keypress(function(e) {
+/*    $(document).keypress(function(e) {
         if (e.which === 32)   WS.Set('Custom.Overlay.Panel', 'Default');
         if (e.which === 112)  WS.Set('Custom.Overlay.Panel', 'PPJBox');
         if (e.which === 49)   WS.Set('Custom.Overlay.Panel', 'RosterTeam1');
         if (e.which === 50)   WS.Set('Custom.Overlay.Panel', 'RosterTeam2');
     });
-
+*/
 });
 
 $(document).ready(function() {

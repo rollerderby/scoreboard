@@ -10,28 +10,37 @@
 
 	<div id="Controls">
 
-		<div id="Core">
-			<button data-setting="Custom.Overlay.Clock" data-type="Toggle">Hide Clock</button><br/>
-			<button data-setting="Custom.Overlay.Score" data-type="Toggle">Hide Score</button><br/>
-		</div>
-
-		<br/>
-
-		<div id="Panel">
-		<button data-setting="Custom.Overlay.Panel" value="Default">Default</button><br/>
-		<button data-setting="Custom.Overlay.Panel" value="PPJBox">Points/Jam</button><br/>
-		<button data-setting="Custom.Overlay.Panel" value="RosterTeam1">Roster Team 1</button><br/>
-		<button data-setting="Custom.Overlay.Panel" value="RosterTeam2">Roster Team 2</button><br/>
-		<button data-setting="Custom.Overlay.Panel" value="PenaltyTeam1">Penalties Team 1</button><br/>
-		<button data-setting="Custom.Overlay.Panel" value="PenaltyTeam2">Penalties Team 2</button><br/>
-		<button data-setting="Custom.Overlay.Panel" value="BottomClock">Intermission Clock</button><br/>
+		<p id="Core" class="Panel">
+			<h2>Elements</h2>
+			<button data-setting="Custom.Overlay.Clock" class="ToggleSwitch">Clock</button> <button data-setting="Custom.Overlay.Score" class="ToggleSwitch">Score</button><br/>
+		</p>
 
 		<br/><br/>
-		<input data-setting="Custom.Overlay.LowerThird.Subject" type="text"/><br/>
-		<input data-setting="Custom.Overlay.LowerThird.Text" type="text"/><br/>
-		<button data-setting="Custom.Overlay.Panel" value="LowerThirdSlide">Lower Third: Slide</button><br/>
-		<button data-setting="Custom.Overlay.Panel" value="LowerThirdWobble">Lower Third: Wobble</button><br/>
-		</div>
+
+		<p id="Panel">
+			<h2>Panels</h2>
+			<select id="PanelOverlay" data-subforms=".ExtraForm" data-target="#OverlayType" data-setting="Custom.Overlay.Panel" data-field="data-next">
+				<option value="">--- No Panel ---</option>
+				<option value="PPJBox">Points per Jam</option>
+				<option value="RosterTeam1">Roster (T1)</option>
+				<option value="RosterTeam2">Roster (T2)</option>
+				<option value="PenaltyTeam1">Penalty (T1)</option>
+				<option value="PenaltyTeam2">Penalty (T2)</option>
+				<option value="LowerThird" data-form=".ExtraFormLower">Lower Third</option>
+			</select>
+
+
+			<button data-setting="Custom.Overlay.Panel" id="OverlayType" class="ToggleSwitch Reverse NoAuto" data-source="#PanelOverlay"> </button>
+
+			<div class="ExtraForm ExtraFormLower" style="display: none;">
+				<h2>Lower Third</h2>
+				<div class="in">
+					<label>Line 1<input data-setting="Custom.Overlay.LowerThird.Line1" type="text"/><br/></label>
+					<label>Line 2<input data-setting="Custom.Overlay.LowerThird.Line2" type="text"/><br/></label>
+				</div>
+			</div>
+
+		</p>
 
 	</div>
 	<div id="Preview">
