@@ -36,11 +36,7 @@ function initialize() {
 	});
 	WS.Register([ 'Custom.Overlay.Clock', 'Custom.Overlay.Score' ], function(k,v) { 
 		o = $('div[data-setting="'+k+'"]')
-		if(v == o.attr('data-onstate')) {
-			o.addClass('Show');
-		} else {
-			o.removeClass('Show');
-		}
+		if(v == 'On') { o.addClass('Show'); } else { o.removeClass('Show'); }
 	});
 	WS.Register('Custom.Overlay.Panel', function(k,v) { 
 		$('.OverlayPanel').removeClass('Show'); 
