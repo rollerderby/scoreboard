@@ -10,34 +10,42 @@
 
 			<div class="PanelWrapperTop">
 
-				<div data-setting="Custom.Overlay.Score" class="TeamBox AnimatedPanel PanelHideTop Wrapper barBackground">	
-		
-					<div class="Team Team1 Row Wrapper" sbContext="Team(1)">
-						<div class="Name Box AutoFit" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard)"></div>
-						<div class="Score Box AutoFit" sbDisplay="Score"></div>
+				<div data-setting="Custom.Overlay.Score" class="TeamBox AnimatedPanel PanelHideTop Wrapper">	
+					<div class="Team1" sbContext="Team(1)">	
+					<div class="Team Row Wrapper barBackgroundTop"> 
+						<div class="Name  VerticalCenter Box" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard)"></div>
+						<div class="Score VerticalCenter Box" sbDisplay="Score"></div>
 						<div class="Mini Box">
 							<div class="JamScore" sbDisplay="JamScore"></div>
 							<div class="LeadJammer Lead">&#9733;</div>
 						</div>
-						<div class="DotTimeouts Box"><div class="Dot Timeout1"></div><div class="Dot Timeout2"></div><div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div></div>
-						<div class="JammerBox ShowInJam Clock"><div class="JammerName AutoFit" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
+						<div class="DotTimeouts Box">
+							<div class="Dot Timeout1"></div><div class="Dot Timeout2"></div>
+							<div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div>
+						</div>
 					</div>
-
-				<div class="Team Team2 Row Wrapper" sbContext="Team(2)">
-					<div class="Name Box AutoFit" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard)"></div>
-					<div class="Score Box AutoFit" sbDisplay="Score"></div>
-					<div class="Mini Box"><div class="JamScore" sbDisplay="JamScore"></div><div class="LeadJammer Lead">&#9733;</div></div>
-					<div class="DotTimeouts Box"><div class="Dot Timeout1"></div><div class="Dot Timeout2"></div><div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div></div>
-					<div class="JammerBox ShowInJam Clock"><div class="JammerName AutoFit" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
+					<div class="JammerBox ShowInJam Clock barBackgroundTop">
+						<div class="JammerName VerticalCenter Box" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
+					</div>
+					</div>
+					<div class="Team2" sbContext="Team(2)">
+						<div class="Team Row Wrapper barBackgroundBottom">
+							<div class="Name Box" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard)"></div>
+							<div class="Score Box" sbDisplay="Score"></div>
+							<div class="Mini Box"><div class="JamScore" sbDisplay="JamScore"></div><div class="LeadJammer Lead">&#9733;</div></div>
+							<div class="DotTimeouts Box"><div class="Dot Timeout1"></div><div class="Dot Timeout2"></div><div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div></div>
+						</div>
+						<div class="JammerBox ShowInJam Clock barBackgroundBottom"><div class="JammerName" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
+					</div>
+			
 				</div>
-			</div>
 
 			
 			<div data-setting="Custom.Overlay.Clock"  class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper">
 
-					<div class="Wrapper Row ClockNames Clock ShowInJam ShowInLineup ShowInTimeout">
-						<div class="Box TextLeft Clock ShowInJam ShowInLineup ShowInTimeout Name AutoFit" sbDisplay="Name,Number" sbContext="Clock(Period)" sbModify="toClockInitialNumber"></div>
-						<div class="Box TextRight Clock ShowInJam ShowInLineup ShowInTimeout Name AutoFit" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
+					<div class="Wrapper Row ClockNames Clock ShowInJam ShowInLineup ShowInTimeout barBackgroundTop">
+						<div class="Box TextLeft Clock ShowInJam ShowInLineup ShowInTimeout Name" sbDisplay="Name,Number" sbContext="Clock(Period)" sbModify="toClockInitialNumber"></div>
+						<div class="Box TextRight Clock ShowInJam ShowInLineup ShowInTimeout Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
 					</div>
 
 					<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineUp ShowInTimeout">
@@ -45,12 +53,12 @@
 						<div class="Box BigName ShowInLineup ShowInTimeout Clock Description"><span sbDisplay="Clock(Lineup).Name, Clock(Lineup).Running, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReview, Team(1).Timeouts, Team(1).OfficialReviews, Team(2).Timeouts, Team(2).OfficialReviews" sbModify="smallDescriptionUpdate"></span></div> 
 					</div>
 					
-					<div class="Wrapper Row BottomRow">
-						<div class="Box TextLeft Time Clock Show AutoFit ShowInJam ShowInLineup ShowInTimeout" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
-						<div class="Box BoxLarge TextCenter Time AutoFit Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
-						<div class="Box TextRight Time AutoFit Clock Show ShowInJam" sbContext="Clock(Jam)" sbDisplay="Time" sbModify="toTime"></div>
-						<div class="Box TextRight Time AutoFit Clock ShowInLineUp" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
-						<div class="Box TextRight Time AutoFit Clock ShowInTimeout" sbContext="Clock(Timeout)" sbDisplay="Time" sbModify="toTime"></div>
+					<div class="Wrapper Row BottomRow barBackgroundBottom">
+						<div class="Box TextLeft Time Clock Show ShowInJam ShowInLineup ShowInTimeout" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
+						<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
+						<div class="Box TextRight Time Clock Show ShowInJam" sbContext="Clock(Jam)" sbDisplay="Time" sbModify="toTime"></div>
+						<div class="Box TextRight Time Clock ShowInLineUp" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
+						<div class="Box TextRight Time Clock ShowInTimeout" sbContext="Clock(Timeout)" sbDisplay="Time" sbModify="toTime"></div>
 					</div>
 
 			</div>
@@ -61,8 +69,8 @@
 
 				<div class="ClockBox Wrapper OverlayPanel PanelHideBottom MediumPanel AnimatedPanel">
 						<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineUp ShowInTimeout">
-							<div class="Box BigName AutoFit ShowInIntermission Clock" sbDisplay="Setting(ScoreBoard.Intermission.PreGame), Setting(Intermission.Intermission), Setting(Intermission.Unofficial), Setting(Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
-							<div class="Box BoxLarge TextCenter Time AutoFit Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
+							<div class="Box BigName ShowInIntermission Clock" sbDisplay="Setting(ScoreBoard.Intermission.PreGame), Setting(Intermission.Intermission), Setting(Intermission.Unofficial), Setting(Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
+							<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 						</div>
 				</div>
 
