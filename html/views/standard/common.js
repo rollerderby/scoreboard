@@ -150,7 +150,7 @@ function clockRunner(k,v) {
 			else if (isTrue(ic))
 				clock = "Intermission";
 
-			$(".Clock").removeClass("Show");
-			$(".Clock.ShowIn" + clock).addClass("Show");
+			$(".Clock").removeClass("Show").parent();
+			$(".Clock.ShowIn" + clock).addClass("Show").parents('div#sb').attr('Clock', clock);
 }
 
