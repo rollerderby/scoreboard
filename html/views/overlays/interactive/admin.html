@@ -12,9 +12,9 @@
 
 		<p id="Core" class="Panel">
 			<h2>Elements</h2>
-			<button data-setting="Custom.Overlay.Clock" class="ToggleSwitch">Clock</button> 
-			<button data-setting="Custom.Overlay.Score" class="ToggleSwitch">Score</button>
-			<button data-setting="Custom.Overlay.ShowJammers" class="ToggleSwitch">Jammers</button><br/>
+			<button data-key="C" data-setting="Custom.Overlay.Clock" class="ToggleSwitch">Clock [C]</button> 
+			<button data-key="S" data-setting="Custom.Overlay.Score" class="ToggleSwitch">Score [S]</button>
+			<button data-key="J" data-setting="Custom.Overlay.ShowJammers" class="ToggleSwitch">Jammers [J]</button><br/>
 		</p>
 
 		<br/><br/>
@@ -22,18 +22,18 @@
 		<p id="Panel">
 			<h2>Panels</h2>
 			<select id="PanelOverlay" data-subforms=".ExtraForm" data-target="#OverlayType" data-setting="Custom.Overlay.Panel" data-field="data-next">
-				<option value="">--- No Panel ---</option>
-				<option value="PPJBox">Points per Jam</option>
-				<option value="RosterTeam1">Roster (T1)</option>
-				<option value="RosterTeam2">Roster (T2)</option>
-				<option value="PenaltyTeam1">Penalty (T1)</option>
-				<option value="PenaltyTeam2">Penalty (T2)</option>
+				<option data-key="X" value="">--- No Panel --- [X]</option>
+				<option data-key="0" value="PPJBox">Points per Jam  [0]</option>
+				<option data-key="1" value="RosterTeam1">Roster (T1)  [1]</option>
+				<option data-key="2" value="RosterTeam2">Roster (T2)  [2]</option>
+				<option data-key="3" value="PenaltyTeam1">Penalty (T1) [3]</option>
+				<option data-key="4" value="PenaltyTeam2">Penalty (T2) [4]</option>
+				<option data-key="5" value="LowerThird" data-form=".ExtraFormLower">Lower Third [9]</option>
 				<option value="myDiv">Test</option>
-				<option value="LowerThird" data-form=".ExtraFormLower">Lower Third</option>
 			</select>
 
 
-			<button data-setting="Custom.Overlay.Panel" id="OverlayType" class="ToggleSwitch Reverse NoAuto" data-source="#PanelOverlay"> </button>
+			<button data-key=" " data-setting="Custom.Overlay.Panel" id="OverlayType" class="ToggleSwitch Reverse NoAuto" data-source="#PanelOverlay"> </button>
 
 			<div class="ExtraForm ExtraFormLower" style="display: none;">
 				<h2>Lower Third</h2>

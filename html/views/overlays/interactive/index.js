@@ -216,14 +216,6 @@ function pointsPerJamColumnWidths() {
 }
 
 
-$(function() {
-    $(document).keypress(function(e) {
-        if (e.which === 32)   WS.Set('Custom.Overlay.Panel', 'Default');
-        if (e.which === 112)  WS.Set('Custom.Overlay.Panel', 'PPJBox');
-        if (e.which === 49)   WS.Set('Custom.Overlay.Panel', 'RosterTeam1');
-        if (e.which === 50)   WS.Set('Custom.Overlay.Panel', 'RosterTeam2');
-    });
-});
 
 $(document).ready(function() {
 	$('#sb').css('opacity',1);

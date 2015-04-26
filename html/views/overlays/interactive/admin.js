@@ -78,5 +78,18 @@ $('#Controls button').click(function() {
 	WS.Set( $t.attr('data-setting'), v); 
 });
 
+$(function() {
+    $(document).keypress(function(e) {
+	var tag = e.target.tagName.toLowerCase();
+	var c = String.fromCharCode(e.which).toUpperCase();
+        if ( tag != 'input' && tag != 'textarea') {
+		$('[data-key="' + c + '"]').each(function() {
+			$t = $(this);
+			if($t.prop('tagName') == 'OPTION') { $t.attr('selected', 'selected'); }
+			if($t.prop('tagName') == 'BUTTON') { $t.click(); }
+		});
+	}
+    });
+});
 
 

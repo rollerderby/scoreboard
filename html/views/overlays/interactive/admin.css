@@ -39,9 +39,9 @@ button.Reverse.current	    { border-color: #999 #00FF00 #999 #999; border-right-
 button.Reverse.changed,
 button.Reverse.changed.current { border-color: #999 #999 #999 #ffa500; border-left-width: 20px; border-right-width: 0px; }
 
-button.Reverse:before			{ content: 'Show'; }
-button.Reverse.current:before		{ content: 'Hide'; }
-button.Reverse.changed.current:before	{ content: 'Switch'; }
+button.Reverse:before			{ content: 'Show [ ]'; }
+button.Reverse.current:before		{ content: 'Hide [ ]'; }
+button.Reverse.changed.current:before	{ content: 'Switch [ ]'; }
 
 h2  { font-variant: small-caps; font-size: 1.2em; }
 
