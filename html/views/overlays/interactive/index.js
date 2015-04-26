@@ -99,8 +99,6 @@ function teamData(team, k,v) {
 	}
 
 	if($(me).length == 0) { createRosterSkater(pa, skaterId); }
-
-
 	if($(mb).length == 0) 	{ createPenaltySkater(pb, skaterId); }
 
 	if(key == 'Code') 	{ createPenalty(mb,penalty,v); } 
@@ -108,6 +106,7 @@ function teamData(team, k,v) {
 
 	if(key == 'Flags') {
 		$('.'+key, me).attr('data-flag', v);
+		$(mb).attr('data-flag', v);
 	} else {	
 		c = $('.'+key, me).text(v);
 		c = $('.'+key, mb).text(v);
@@ -117,7 +116,7 @@ function teamData(team, k,v) {
 
 function updateSkaterNumber(me,mb,key,v) {
 	sv = v;
-	if(v == '' || v == '-') { sv = 'ZZZB'; v = '-'; }	
+	if(v == '' || v == '-' || v == null) { sv = 'ZZZB'; v = '-'; }	
 	$('.'+key,me).parent().attr('data-sort', sv);
 	$('.'+key,mb).parent().attr('data-sort', sv);
 	$(me).sortDivs(); $(mb).sortDivs();
@@ -128,7 +127,7 @@ function createRosterSkater(pa, skaterId) {
 	// create the roster entry for this skater
 	var xv = $('<div class="Skater"></div>');
 	xv.attr('data-skaterId', skaterId);
-	$('<div class="Number AutoFit">&nbsp;</div>').appendTo(xv);
+	$('<div class="Number">&nbsp;</div>').appendTo(xv);
 	$('<div class="Name"></div>').appendTo(xv);
 	$('<div class="Flags"></div>').appendTo(xv);
 	$(pa).append(xv);
@@ -178,7 +177,7 @@ function jamData(k,v) {
 
 	if($(me).length == 0) {
 		pointsPerJamColumnWidths();
-		xv = $('<div data-sort="' + jam + '" class="AutoFit ColumnWidth GraphBlock Jam' + jam + '"></div>');
+		xv = $('<div data-sort="' + jam + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
 		$('<div class="JammerStar ColumnWidth"></div>').appendTo(xv);
 		$('<div class="Points ColumnWidth"></div>').appendTo(xv);
 		$pId.append(xv);
