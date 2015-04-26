@@ -14,8 +14,10 @@ function jammer(k, v) {
 	if (pivotName == null)
 		pivotName = "";
 
+	var jn = !starPass ? jammerName : pivotName;
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
-	return !starPass ? jammerName : pivotName;
+	$(".Team" + id).toggleClass("HasJammerName", (jn != "" && jn != null));
+	return jn
 }
 
 function getTeamId(k) {
@@ -101,7 +103,6 @@ function intermissionDisplay() {
 	var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
 	var isOfficial = WS.state["ScoreBoard.OfficialScore"];
 	var ret = '';
-
 
 	if (num == 0) {
 		ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.PreGame)"];
