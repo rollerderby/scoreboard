@@ -7,6 +7,7 @@ function initialize() {
 
 	WS.Register(['Custom.Overlay.Clock', 
 		     'Custom.Overlay.Score', 
+		     'Custom.Overlay.ShowJammers',
 		     'Custom.Overlay.Panel'], function(k,v) { 
 
 		$('[data-setting="' + k +'"]').each(function(i) {

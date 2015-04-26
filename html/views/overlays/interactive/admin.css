@@ -21,12 +21,13 @@ button, input, select {
     color: white; background: #666;
 }
 
-select { display: inline-block; appearance:none; width: 13em; margin: 8px 0; }
+select { display: inline-block; appearance:none; width: 13em; margin: 2px 4px; }
 
 button.ToggleSwitch {
     cursor: pointer; outline: none; 
-    width: 48%;
+    width: 100%;
     transition: all .5s ease;
+    margin: 2px 4px;
 }
 
 button.ToggleSwitch	    { border: 0px solid; border-color: #999 #999 #999 #FF0000;    background: #666; border-left-width: 20px;  border-right-width: 0px; text-decoration: none; }

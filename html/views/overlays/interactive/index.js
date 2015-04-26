@@ -36,8 +36,15 @@ function initialize() {
 	});
 
 	WS.Register([ 'Custom.Overlay.Clock', 'Custom.Overlay.Score' ], function(k,v) {  
-		o = $('div[data-setting="'+k+'"]')
-		if(v == 'On') { o.addClass('Show'); } else { o.removeClass('Show'); }
+		$('div[data-setting="'+k+'"]').each(function() {
+			if(v == 'On') { $(this).addClass('Show'); } else { $(this).removeClass('Show'); }
+		});
+	});
+
+	WS.Register([ 'Custom.Overlay.ShowJammers' ], function(k,v) {  
+		$('div[data-setting="'+k+'"]').each(function() {
+			if(v == 'On') { $(this).addClass('ShowJammers'); } else { $(this).removeClass('ShowJammers'); }
+		});
 	});
 
 	WS.Register('Custom.Overlay.Transition', function(k,v) { 
@@ -46,6 +53,7 @@ function initialize() {
 
 	WS.Register('Custom.Overlay.Panel', function(k,v) { 
 		$('.OverlayPanel').removeClass('Show'); 
+		// sort divs in the panel before we show, just in case it's changed
 		$('.OverlayPanel.'+v+' .SortBox').sortDivs(); 
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
@@ -210,13 +218,12 @@ function pointsPerJamColumnWidths() {
 
 
 $(function() {
-/*    $(document).keypress(function(e) {
+    $(document).keypress(function(e) {
         if (e.which === 32)   WS.Set('Custom.Overlay.Panel', 'Default');
         if (e.which === 112)  WS.Set('Custom.Overlay.Panel', 'PPJBox');
         if (e.which === 49)   WS.Set('Custom.Overlay.Panel', 'RosterTeam1');
         if (e.which === 50)   WS.Set('Custom.Overlay.Panel', 'RosterTeam2');
     });
-*/
 });
 
 $(document).ready(function() {
