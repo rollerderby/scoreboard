@@ -1,8 +1,8 @@
 $(initialize);
 
 function initialize() {
-	WS.Connect();
-	WS.AutoRegister();
+
+	common_initialize();	
 
 	// Set Styles
 	var view = "View";
@@ -44,14 +44,6 @@ function initialize() {
 			$(window).trigger("resize");
 
 	});
-
-	// Show Clocks
-	WS.Register( [
-		"ScoreBoard.Clock(Period).Running",
-		"ScoreBoard.Clock(Jam).Running",
-		"ScoreBoard.Clock(Lineup).Running",
-		"ScoreBoard.Clock(Timeout).Running",
-		"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); });
 
 }
 

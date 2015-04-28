@@ -155,3 +155,18 @@ function clockRunner(k,v) {
 			$(".Clock.ShowIn" + clock).addClass("Show").parents('div#sb').attr('Clock', clock);
 }
 
+function common_initialize() {
+
+	WS.Connect();
+	WS.AutoRegister();
+
+	// Show Clocks
+	WS.Register( [
+		"ScoreBoard.Clock(Period).Running",
+		"ScoreBoard.Clock(Jam).Running",
+		"ScoreBoard.Clock(Lineup).Running",
+		"ScoreBoard.Clock(Timeout).Running",
+		"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); });
+
+}
+

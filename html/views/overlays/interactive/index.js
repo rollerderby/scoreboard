@@ -6,18 +6,8 @@ jQuery.fn.sortDivs = function sortDivs() {
 
 $(initialize);
 
-
 function initialize() {
-	WS.Connect();
-	WS.AutoRegister();
-
-
-	WS.Register( [
-		"ScoreBoard.Clock(Period).Running",
-		"ScoreBoard.Clock(Jam).Running",
-		"ScoreBoard.Clock(Lineup).Running",
-		"ScoreBoard.Clock(Timeout).Running",
-		"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k, v); } );
+	common_initialize();
 
 	WS.Register( [ "ScoreBoard.Clock(Intermission).Number",
 		       "ScoreBoard.Clock(Intermission).MaximumNumber",
