@@ -13,47 +13,56 @@ var WS = {
 		WS.connectTimeout = null;
 		var url = (document.location.protocol == "http:" ? "ws" : "wss") + "://";
 		url += document.location.host + "/WS/";
-		console.log("Connecting the websocket at " + url);
-		WS.socket = new WebSocket(url);
-		WS.socket.onopen = function(e) {
-			console.log("Websocket: Open");
-			$(".ConnectionError").addClass("Connected");
-			req = {
-				action: "Register",
-				paths: new Array()
+	
+		if(!WS.socket && WS.Connected != true) {
+			if(WS.debug) console.log("WS", "Connecting the websocket at " + url);
+
+			WS.socket = new WebSocket(url);
+			WS.socket.onopen = function(e) {
+				WS.Connected = true;
+				if(WS.debug) console.log("WS", "Websocket: Open");
+				$(".ConnectionError").addClass("Connected");
+				req = {
+					action: "Register",
+					paths: new Array()
+				};
+				$.each(Object.keys(WS.state), function(idx, k) {
+					WS.triggerCallback(k, null);
+				});
+				WS.state = new Array();
+				$.each(WS.callbacks, function (idx, c) {
+					req.paths.push(c.path);
+				});
+				if (req.paths.length > 0) {
+					WS.send(JSON.stringify(req));
+				}
+				if (WS.connectCallback != null)
+					WS.connectCallback();
 			};
-			$.each(Object.keys(WS.state), function(idx, k) {
-				WS.triggerCallback(k, null);
-			});
-			WS.state = new Array();
-			$.each(WS.callbacks, function (idx, c) {
-				req.paths.push(c.path);
-			});
-			if (req.paths.length > 0) {
-				WS.send(JSON.stringify(req));
+			WS.socket.onmessage = function(e) {
+				json = JSON.parse(e.data);
+				if (WS.debug) console.log("WS", json);
+				if (json.authorization != null)
+					alert(json.authorization);
+				if (json.state != null)
+					WS.processUpdate(json.state);
+			};
+			WS.socket.onclose = function(e) {
+				WS.Connected = false;
+				console.log("WS", "Websocket: Close", e);
+				$(".ConnectionError").removeClass("Connected");
+				if (WS.connectTimeout == null)
+					WS.connectTimeout = setTimeout(WS._connect, 1000);
+			};
+			WS.socket.onerror = function(e) {
+				console.log("WS", "Websocket: Error", e);
+				$(".ConnectionError").removeClass("Connected");
+				if (WS.connectTimeout == null)
+					WS.connectTimeout = setTimeout(WS._connect, 1000);
 			}
-			if (WS.connectCallback != null)
-				WS.connectCallback();
-		};
-		WS.socket.onmessage = function(e) {
-			json = JSON.parse(e.data);
-			console.log(json);
-			if (json.authorization != null)
-				alert(json.authorization);
-			if (json.state != null)
-				WS.processUpdate(json.state);
-		};
-		WS.socket.onclose = function(e) {
-			console.log("Websocket: Close", e);
-			$(".ConnectionError").removeClass("Connected");
-			if (WS.connectTimeout == null)
-				WS.connectTimeout = setTimeout(WS._connect, 1000);
-		};
-		WS.socket.onerror = function(e) {
-			console.log("Websocket: Error", e);
-			$(".ConnectionError").removeClass("Connected");
-			if (WS.connectTimeout == null)
-				WS.connectTimeout = setTimeout(WS._connect, 1000);
+		} else {
+			// better run the callback on post connect if we didn't need to connect
+			if(WS.connectCallback != null) WS.connectCallback();
 		}
 	},
 
