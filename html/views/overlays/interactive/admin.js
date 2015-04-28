@@ -57,7 +57,10 @@ $('#Controls select').change(function() {
 
 	$( $t.attr('data-subforms') ).hide();
 	forms = $( 'option[value=' + v + ']', $t ).attr('data-form');
-	$(forms).show();
+	if(forms) {
+		$(forms).show();
+		$('input[type=text],textarea', $(forms)).eq(0).select().focus();
+	}
 
 });
 
@@ -79,15 +82,18 @@ $('#Controls button').click(function() {
 });
 
 $(function() {
-    $(document).keypress(function(e) {
+    $(document).keyup(function(e) {
 	var tag = e.target.tagName.toLowerCase();
-	var c = String.fromCharCode(e.which).toUpperCase();
+	var c = String.fromCharCode(e.keyCode || e.charCode).toUpperCase();
+	console.log(c);
+	if (e.keyCode == 27) { $('body').focus(); e.preventDefault(); return false; }
         if ( tag != 'input' && tag != 'textarea') {
 		$('[data-key="' + c + '"]').each(function() {
 			$t = $(this);
-			if($t.prop('tagName') == 'OPTION') { $t.attr('selected', 'selected'); }
+			if($t.prop('tagName') == 'OPTION') { $t.attr('selected', 'selected').parent().change(); }
 			if($t.prop('tagName') == 'BUTTON') { $t.click(); }
 		});
+		e.preventDefault();
 	}
     });
 });
