@@ -327,7 +327,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	protected static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
-	protected static final long CLOCK_UPDATE_INTERVAL = 100; /* in ms */
+	protected static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
 
 	public static final int DEFAULT_MINIMUM_NUMBER = 1;
 	public static final int DEFAULT_MAXIMUM_NUMBER = 999;
@@ -337,12 +337,13 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	protected static class UpdateClockTimerTask extends TimerTask {
 		public UpdateClockTimerTask() {
-			timer.scheduleAtFixedRate(this, DefaultClockModel.CLOCK_UPDATE_INTERVAL, DefaultClockModel.CLOCK_UPDATE_INTERVAL);
+			startSystemTime = System.currentTimeMillis();
+			timer.scheduleAtFixedRate(this, DefaultClockModel.CLOCK_UPDATE_INTERVAL / 4, DefaultClockModel.CLOCK_UPDATE_INTERVAL / 4);
 		}
 
-		public void schedule(TimerTask task, long delay) {
-			timer.schedule(task, delay);
-		}
+		// public void schedule(TimerTask task, long delay) {
+		// 	timer.schedule(task, delay);
+		// }
 
 		public void addClock(DefaultClockModel c, boolean quickAdd) {
 			synchronized (clockLock) {
@@ -373,7 +374,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			}
 		}
 
-		public void run() {
+		private void tick() {
 			Iterator<DefaultClockModel> i;
 			ArrayList<DefaultClockModel> clocks;
 			synchronized (clockLock) {
@@ -398,11 +399,23 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			}
 		}
 
+		public void run() {
+			long curSystemTime = System.currentTimeMillis();
+			long curTicks = (curSystemTime - startSystemTime) / DefaultClockModel.CLOCK_UPDATE_INTERVAL;
+			while (curTicks != ticks) {
+				ScoreBoardManager.printMessage("tick " + curTicks + " " + ticks);
+				ticks++;
+				tick();
+			}
+		}
+
 		public long getCurrentTime() {
 			return currentTime;
 		}
 
 		private long currentTime = 0;
+		private long startSystemTime = 0;
+		private long ticks = 0;
 		protected static Timer timer = new Timer();
 		protected Object clockLock = new Object();
 		ArrayList<DefaultClockModel> clocks = new ArrayList<DefaultClockModel>();
