@@ -44,6 +44,7 @@ public class JamStats extends Updater {
 			periodWallClockEnd = new Date();
 		}
 		this.jamClock = jamClock.getTime();
+		this.jamLength = jamClock.isCountDirectionDown() ? (jamClock.getMaximumTime() - jamClock.getTime()) : jamClock.getTime();
 
 		for (TeamStats ts : teams)
 			ts.snapshot(jamClockRunning, jamClockRunning || jamEnd);
@@ -63,6 +64,7 @@ public class JamStats extends Updater {
 			json.put("periodWallClockEnd", periodWallClockEnd);
 		}
 		json.put("jamClock", ClockConversion.toHumanReadable(jamClock));
+		json.put("jamLength", ClockConversion.toHumanReadable(jamLength));
 		JSONArray t = new JSONArray();
 		for (TeamStats ts : teams)
 			t.put(ts.toJSON());
@@ -82,6 +84,7 @@ public class JamStats extends Updater {
 			update("PeriodWallClockEnd", periodWallClockEnd);
 		}
 		update("JamClock", ClockConversion.toHumanReadable(jamClock));
+		update("JamLength", ClockConversion.toHumanReadable(jamLength));
 	}
 
 	public PeriodStats getPeriodStats()   { return period_stats; }
@@ -92,6 +95,7 @@ public class JamStats extends Updater {
 	public Date getPeriodWallClockStart() { return periodWallClockStart; }
 	public Date getPeriodWallClockEnd()   { return periodWallClockEnd; }
 	public long getJamClock()             { return jamClock; }
+	public long getJamLength()            { return jamLength; }
 
 	private PeriodStats period_stats;
 	private long jam;
@@ -101,4 +105,5 @@ public class JamStats extends Updater {
 	private Date periodWallClockStart = null;
 	private Date periodWallClockEnd = null;
 	private long jamClock;
+	private long jamLength;
 }

@@ -356,6 +356,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			try {
 			        update_interval = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_INTERVAL_KEY));
 			} catch ( Exception e ) { }
+			startSystemTime = System.currentTimeMillis();
 			timer.scheduleAtFixedRate(this, update_interval / 4, update_interval / 4);
 		}
 
