@@ -340,7 +340,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	protected static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
-	protected static final long CLOCK_UPDATE_INTERVAL = 100; /* in ms */
+	protected static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
 
 	public static final int DEFAULT_MINIMUM_NUMBER = 1;
 	public static final int DEFAULT_MAXIMUM_NUMBER = 999;
@@ -356,11 +356,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			try {
 			        update_interval = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_INTERVAL_KEY));
 			} catch ( Exception e ) { }
-			timer.scheduleAtFixedRate(this, update_interval, update_interval);
-		}
-
-		public void schedule(TimerTask task, long delay) {
-			timer.schedule(task, delay);
+			timer.scheduleAtFixedRate(this, update_interval / 4, update_interval / 4);
 		}
 
 		public void addClock(DefaultClockModel c, boolean quickAdd) {
@@ -404,7 +400,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			}
 		}
 
-		public void run() {
+		private void tick() {
 			Iterator<DefaultClockModel> i;
 			ArrayList<DefaultClockModel> clocks;
 			synchronized (clockLock) {
@@ -429,11 +425,22 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			}
 		}
 
+		public void run() {
+			long curSystemTime = System.currentTimeMillis();
+			long curTicks = (curSystemTime - startSystemTime) / update_interval;
+			while (curTicks != ticks) {
+				ticks++;
+				tick();
+			}
+		}
+
 		public long getCurrentTime() {
 			return currentTime;
 		}
 
 		private long currentTime = 0;
+		private long startSystemTime = 0;
+		private long ticks = 0;
 		protected static Timer timer = new Timer();
 		protected Object clockLock = new Object();
 		protected DefaultClockModel masterClock = null;
