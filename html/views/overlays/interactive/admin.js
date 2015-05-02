@@ -1,9 +1,9 @@
 
-$(initialize);
+$(initialize)
 
 function initialize() {
+
 	WS.Connect();
-	WS.AutoRegister();
 
 	WS.Register(['Custom.Overlay.Clock', 
 		     'Custom.Overlay.Score', 

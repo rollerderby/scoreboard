@@ -1,8 +1,12 @@
+
 var WS = {
+
 	connectCallback: null,
 	connectTimeout: null,
 	callbacks: new Array(),
-	state: new Array(),
+	Connected: false,
+	state: { },
+	debug: true,
 
 	Connect: function(callback) {
 		WS.connectCallback = callback;
@@ -14,7 +18,7 @@ var WS = {
 		var url = (document.location.protocol == "http:" ? "ws" : "wss") + "://";
 		url += document.location.host + "/WS/";
 	
-		if(!WS.socket && WS.Connected != true) {
+		if(WS.Connected != true || !WS.socket) {
 			if(WS.debug) console.log("WS", "Connecting the websocket at " + url);
 
 			WS.socket = new WebSocket(url);
@@ -29,7 +33,7 @@ var WS = {
 				$.each(Object.keys(WS.state), function(idx, k) {
 					WS.triggerCallback(k, null);
 				});
-				WS.state = new Array();
+				WS.state = {};
 				$.each(WS.callbacks, function (idx, c) {
 					req.paths.push(c.path);
 				});
@@ -228,3 +232,4 @@ var WS = {
 		return ret;
 	},
 };
+

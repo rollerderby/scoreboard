@@ -53,7 +53,6 @@
 			kd = _getKeyObject(k);
 			if(kd) {
 				if(StatsFunction[kd.Type] && StatsFunction[kd.Type][kd.Key]) { 
-					if(options.debug) console.info('Running',kd.Type,kd.Key);
 					StatsFunction[kd.Type][kd.Key](kd,v);	
 				}
 			}
@@ -63,13 +62,10 @@
 			MaximumTime: function(kd,v) {
 				Data.Config.DefaultClocks[kd.ClockType] = v; /* Milliseconds */
 				if(kd.ClockType == 'Jam') {
-					var c = Data['Jams'].Filter();
-					console.log('filter results',c);
-					for(var i in c) {
-						rec = c[i];
-						tv = parseInt(Data.Config['DefaultClocks']['Jam']) - parseInt(rec['TimeRemaining']);
-						rec.set({ Duration: tv });
-					};
+					var c = Data['Jams'].All().Each(function() {
+						tv = parseInt(Data.Config['DefaultClocks']['Jam']) - parseInt(this['TimeRemaining']);
+						this.set({ Duration: tv });
+					});
 				}
 			}
 		}

@@ -4,10 +4,13 @@ jQuery.fn.sortDivs = function sortDivs() {
     function dec_sort(a, b){ return ($(b).attr("data-sort")) < ($(a).attr("data-sort")) ? 1 : -1; }
 }
 
+
 $(initialize);
 
 function initialize() {
-	common_initialize();
+
+	WS.Connect();
+	WS.AutoRegister();
 
 	WS.Register( [ "ScoreBoard.Clock(Intermission).Number",
 		       "ScoreBoard.Clock(Intermission).MaximumNumber",
@@ -53,6 +56,7 @@ function initialize() {
 		console.log(sp);
 		$(sp).text(v);
 	});
+
 
 
 }
