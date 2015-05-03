@@ -88,9 +88,6 @@ var DataSet = (function() {
 		for(var c = 0; c < up.length; c++ ) 
 			this.DataSet.Triggers.action( 'VALUE', up[c].Key, up[c].New, up[c].Original, this );
 
-		if(up.length > 0) 
-			this.DataSet.Triggers.action( 'CHANGED', '*', this, { }, this );
-
 		return this;
 	}
 
