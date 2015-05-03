@@ -14,7 +14,6 @@ Skaters.AddTrigger('UPDATE', '*', { }, function(n,o,k) {
 	}
 });
 Skaters.AddTrigger('DELETE', '*', { }, function(n,o,k) { 
-	console.log('DELETE ', this,n,o,k);
 	$('#Skaters option[value="' + this.Skater + '"]').remove();
 });
 
@@ -112,6 +111,34 @@ $('select#Skaters').change(function(e) {
 	$('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val(name).change();
 	$('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val(tnam).change();
 });
+
+$('select#Keepers').change(function(e) {
+	var $t = $(this);
+	v = $t.val();
+
+	$d = $('option[value="' + v + '"]', this);
+	var line1 = $d.attr('data-line1');
+	var line2 = $d.attr('data-line2');
+	var style = $d.attr('data-style');
+
+	$('#LowerThirdStyle option[value=' + style + ']').attr('selected', 'selected').change();
+	$('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val(line1).change();
+	$('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val(line2).change();
+});
+
+$('#KeeperAdd').click(function() {
+	$('#LowerThirdStyle').change();
+	var line1 = $('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val();
+	var line2 = $('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val();
+	var style = $('#LowerStyle').val();
+
+	$('<option>').attr('data-line1', line1)
+		     .attr('data-line2', line2)
+		     .attr('data-style', style)
+		     .attr('value', '_' + Math.random().toString(36).substr(2, 9) )
+		     .text( line1 + '/' + line2 + ' (' + style + ')' ).appendTo('#Keepers');
+});
+
 
 
 $('#Controls button').click(function() { 
