@@ -44,7 +44,6 @@ var DataSet = (function() {
 		for(var i = 0; i < trig.length; i++) {
 			var trigger = trig[i];
 			if(fullRecord.isMatch(trigger.Match)) {
-				console.log('Triggering ', trigger);
 				trigger.Func.call(fullRecord, newval, oldval, key);
 			}
 		}
@@ -88,6 +87,9 @@ var DataSet = (function() {
 		}
 		for(var c = 0; c < up.length; c++ ) 
 			this.DataSet.Triggers.action( 'VALUE', up[c].Key, up[c].New, up[c].Original, this );
+
+		if(up.length > 0) 
+			this.DataSet.Triggers.action( 'CHANGED', '*', this, { }, this );
 
 		return this;
 	}
@@ -147,7 +149,15 @@ var DataSet = (function() {
 		}
 		return found;
 	}
-
+	
+	DataSet.prototype.Delete = function(matches) {
+		for(var i = 0; i < this.length; i ++) {
+			var c = this[i];
+			var o = c.values();
+			this.Triggers.action('DELETE', '*', {}, o, c );
+			this.splice(i,1);
+		}
+	}
 	
 	DataSet.prototype.Filter = function(match) {
 		var items = this._filter(match);
