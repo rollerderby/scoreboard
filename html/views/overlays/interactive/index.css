@@ -43,7 +43,7 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 .Box 			{ float: left; margin: 0; padding: 0; position: relative; display: block; }
 
 /* Team Boxes */
-.Team .Name 		{ width: 50%; padding-left: 2%; padding-right: 3%; }
+.Team .Name 		{ width: 45%; padding-left: 2%; padding-right: 3%; }
 .Team .Score		{ width: 28%; text-align: right; padding-right: .1em ; }
 .Team .Mini		{ width: 10%; font-size: 50%; }
 
@@ -53,9 +53,9 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 .Team .Lead		{ opacity: .2; }
 .Team .HasLead		{ opacity: 1; color: red; }
 
-.Team .DotTimeouts	{ width: 5%; }
+.Team .DotTimeouts	{ width: 5%; margin-top: 1%; }
 
-.Dot 			{ width: 1vh; height: 1vh; margin: 10% 0 10% 20%; }
+.Dot 			{ width: .2em; height: .2em; margin: 10% 0 10% 20%; }
 .Dot, .Dot.Active 	{ border-radius: 100%; }
 .Dot 			{ background: #333; }
 .Dot.OfficialReview1 	{ background: #fff; }
@@ -70,6 +70,7 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 
 .ClockBox .Name		{ width: 49%;  }
 .ClockBox .Time		{ width: 49%;  }
+.ClockBox .Time.ShowInIntermission { width: 100%; }
 
 .BottomClock .Name	{ width: 100%; text-align: center; height: 2em; }
 .BottomClock .Time	{ width: 100%; text-align: center; height: 5em; }
@@ -92,7 +93,6 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 .ClockBarBottom		   { font-size: 1.7em; }
 .ClockBarMiddle.SlideDown  { background: #888; padding: 0; }
 
-.ClockBarBottom .Box	   { width: 100%; }
 
 .SlideDown		   { -webkit-transition: max-height 1s ease; width: 100%; overflow: hidden; padding: 0; }
 .SlideDown 	      	   { max-height: 0;  }
@@ -118,28 +118,29 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 
 
 .AnimatedPanel				{ position: absolute; display: block; overflow: none; padding: 0; }
-.AnimatedPanel.LargePanel		{ width: 70%; top: 15%;  height: 75%; margin: 0 auto; }
+.AnimatedPanel.LargePanel		{ width: 75%; top: 15%;  margin: 0 auto; }
 .AnimatedPanel.MediumPanel		{ bottom: 5%; width: 20%; height: 8em; top: auto; border-radius: 10px; left: 40%;  } 
 .AnimatedPanel.LowerThird 		{ top: 80%; %; left: 0; width: 35%; text-align: right; } 
 
-.TeamBox 				{ top: 4%; left: 10%; font-size: 2em; width: 16em;  }
+.TeamBox 				{ top: 4%; left: 10%; font-size: 2.2em; width: 16em;  }
 
-.TeamBox .Team				{ float: left; -webkit-transition: border-radius 1s; padding: 1px 0; }
+.TeamBox .Team				{ float: left; -webkit-transition: border-radius 1s; }
 .TeamBox .JammerBox			{ float: left; -webkit-transition: margin-left 2s;   padding: 1px 0; }
 
 .TeamBox .Team				{ width: 50%; }
-.TeamBox .JammerWrapper			{ width: 50%; overflow: none; position: relative; }
+.TeamBox .JammerWrapper			{ width: 40%; overflow: none; position: relative; }
 
 .TeamBox .JammerBox			{ width: 100%; }
 
 .TeamBox .JammerBox .JammerName,
 .TeamBox .Team .Name			{ text-align: left; overflow: hidden; }
-.TeamBox .JammerBox .JammerName		{ font-size: 60%; padding-top: .7vmin; margin-left: 1vw; min-height: 1em; }
+.TeamBox .Team .Indicator		{ width: .3em; min-height: 1em; }
+.TeamBox .JammerBox .JammerName		{ font-size: 50%; margin-left: 1vw; min-height: 1em; }
 
 .TeamBox .Team1	.Team			{ border-radius: 8px 8px 0 0; }
 .TeamBox .Team2	.Team			{ border-radius: 0 0 8px 8px; }
-.TeamBox .Team1 .JammerBox		{ border-radius: 0 8px 0 0; }
-.TeamBox .Team2 .JammerBox		{ border-radius: 0 0 8px 0; }
+.TeamBox .Team1 .JammerBox		{ border-radius: 0 8px 8px 0; }
+.TeamBox .Team2 .JammerBox		{ border-radius: 0 8px 8px 0; }
 
 .TeamBox .Team1.HasJammerName .Team	{ border-radius: 8px 0 0 0; }
 
@@ -162,7 +163,7 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 .OverlayPanel h2			{ background: #666; display: block; padding: 10px ; color: white; }
 
 .OverlayPanel h1			{ font-size: 2em;   line-height: 2.2em; border-radius: 10px 10px 0 0; text-transform: uppercase; text-align: center; background: #000; color: white; margin-bottom: 0; }
-.OverlayPanel h2			{ font-size: 1.4em; line-height: 1.6em; border-radius: 0 0 10px 10px; text-transform: uppercase; text-align: center; background: #666; color: white; margin-top: 0; }
+.OverlayPanel h2			{ font-size: 1.4em; line-height: 1.6em; border-radius: 0 0 10px 10px; text-transform: uppercase; text-align: center; background: #333; color: white; margin-top: 0; }
 
 .OverlayPanel h4			{ background: #333; color: white; border-radius: 0 10px 0 0; margin: 0; padding: 2%; font-size: 2em;   }
 .OverlayPanel h5			{ background: #ddd; color: #333;  border-radius: 0 0 10px 0; margin: 0; padding: 2%; font-size: 1.2em; }

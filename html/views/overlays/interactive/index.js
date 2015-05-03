@@ -58,20 +58,38 @@ function initialize() {
 
 
 
+
+
 }
 
-var skaterRegEx = /^Game.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
-var penaltyRegEx = /^Game.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
+var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
+var penaltyRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
+var colourRegEx = /^Game\.Team\((.+)\)\.Color\((.+)\)$/;
+
 function teamData(team, k,v) {
 
 	var skaterId;
 	var key;
+	var setting; 
 
 	var match = k.match(skaterRegEx);
 	if(match) { skaterId = match[2]; key = match[3]; penalty = null; }
 
 	var match = k.match(penaltyRegEx);
 	if(match) { skaterId = match[2]; key = match[4]; penalty = match[3]; }
+
+	var match = k.match(colourRegEx);
+	if(match) { setting = match[2]; key = 'Color'; }
+
+	if(key == 'Color') { 
+		var style;
+		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
+		if(style) {
+			if(setting == 'overlay_bg') style.addRule('#sb .ColourTeam'+team, 'background-color: ' + v);
+			if(setting == 'overlay_fg') style.addRule('#sb .ColourTeam'+team, 'color: ' + v);
+		}
+		return;
+	}
 
 	if(key != 'Name' && key != 'Number' && key != 'Code' && key != 'Flags')  { return; }
 
@@ -91,8 +109,8 @@ function teamData(team, k,v) {
 		return;
 	}
 
-	if($(me).length == 0) { createRosterSkater(pa, skaterId); }
-	if($(mb).length == 0) 	{ createPenaltySkater(pb, skaterId); }
+	if($(me).length == 0)   { createRosterSkater(pa, skaterId, team); }
+	if($(mb).length == 0) 	{ createPenaltySkater(pb, skaterId, team); }
 
 	if(key == 'Code') 	{ createPenalty(mb,penalty,v); } 
 	if(key == 'Number') 	{ updateSkaterNumber(me,mb,key,v); }
@@ -116,11 +134,11 @@ function updateSkaterNumber(me,mb,key,v) {
 }
 
 
-function createRosterSkater(pa, skaterId) {
+function createRosterSkater(pa, skaterId, team) {
 	// create the roster entry for this skater
 	var xv = $('<div class="Skater"></div>');
 	xv.attr('data-skaterId', skaterId);
-	$('<div class="Number">&nbsp;</div>').appendTo(xv);
+	$('<div class="Number ColourTeam' + team +'"></div>').appendTo(xv);
 	$('<div class="Name"></div>').appendTo(xv);
 	$('<div class="Flags"></div>').appendTo(xv);
 	$(pa).append(xv);
