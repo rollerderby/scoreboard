@@ -53,7 +53,6 @@ function initialize() {
 
 	WS.Register([ 'Custom.Overlay.LowerThird.Line1', 'Custom.Overlay.LowerThird.Line2' ] , function(k,v) { 
 		sp = '.' + k.split('.').slice(2,4).join(' .');
-		console.log(sp);
 		$(sp).text(v);
 	});
 
@@ -207,6 +206,44 @@ function pointsPerJamColumnWidths() {
 	$('.ColumnWidth').innerWidth(newwidth);
 	$('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['Game.Team(1).Color(overlay_bg)']);
 	$('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['Game.Team(2).Color(overlay_bg)']);
+}
+
+function clockType(k,v) {
+	var ret;
+	var to = WS.state["ScoreBoard.TimeoutOwner"];
+	var or = WS.state["ScoreBoard.OfficialReview"];
+	var tc = WS.state['ScoreBoard.Clock(Timeout).Running'];
+	var lc = WS.state['ScoreBoard.Clock(Lineup).Running'];
+	var ic = WS.state['ScoreBoard.Clock(Intermission).Running'];
+
+	if(tc) {
+		ret = WS.state["ScoreBoard.Clock(Timeout).Name"];
+		if(to != "" && or) { ret = 'Official Review'; }
+		if(to != "" && !or) { ret = 'Team Timeout'; }
+		$('.ClockDescription').css('backgroundColor', 'red');
+	} else if(lc) {
+		ret = WS.state["ScoreBoard.Clock(Lineup).Name"];
+		$('.ClockDescription').css('backgroundColor', '#888');
+	} else if(ic) {
+		var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
+		var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
+		var isOfficial = WS.state["ScoreBoard.OfficialScore"];
+		if (num == 0)  
+			ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.PreGame)"];
+		else if (num != max)
+			ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.Intermission)"];
+		else if (!isOfficial)
+			ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.Unofficial)"];
+		else
+			ret = WS.state["ScoreBoard.Setting(ScoreBoard.Intermission.Official)"];
+
+		$('.ClockDescription').css('backgroundColor', 'blue');
+	} else {
+		ret = 'Jam';
+	}
+
+	return ret;
+	
 }
 
 

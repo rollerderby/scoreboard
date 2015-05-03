@@ -2,7 +2,8 @@ $(initialize);
 
 function initialize() {
 
-	common_initialize();	
+	WS.Connect();
+	WS.AutoRegister();
 
 	// Set Styles
 	var view = "View";
@@ -46,4 +47,6 @@ function initialize() {
 	});
 
 }
+
+
 

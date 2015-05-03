@@ -85,7 +85,6 @@ $(function() {
     $(document).keyup(function(e) {
 	var tag = e.target.tagName.toLowerCase();
 	var c = String.fromCharCode(e.keyCode || e.charCode).toUpperCase();
-	console.log(c);
 	if (e.keyCode == 27) { $('body').focus(); e.preventDefault(); return false; }
         if ( tag != 'input' && tag != 'textarea') {
 		$('[data-key="' + c + '"]').each(function() {

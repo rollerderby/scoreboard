@@ -124,12 +124,11 @@ function toClockInitialNumber(k, v) {
 			var name = WS.state["ScoreBoard.Clock(" + c + ").Name"];
 			var number = WS.state["ScoreBoard.Clock(" + c + ").Number"];
 
-			console.log(name,number, WS.state['ScoreBoard.Clock(Period).MaximumNumber']);
-			if (name == 'Period' && WS.state['ScoreBoard.Clock(Period).MaximumNumber'] == 1) 
-				return 'Game';
-
 			if (name != null && number != null)
 				ret = name.substring(0, 1) + number;
+
+			if (name == 'Period' && WS.state['ScoreBoard.Clock(Period).MaximumNumber'] == 1) 
+				ret = 'Game';
 		}
 	});
 	return ret;
@@ -156,8 +155,8 @@ function clockRunner(k,v) {
 			else if (isTrue(ic))
 				clock = "Intermission";
 
-			$(".Clock").removeClass("Show").parent();
-			$(".Clock.ShowIn" + clock).addClass("Show").parents('div#sb').attr('Clock', clock);
+			$(".Clock,.SlideDown").removeClass("Show");
+			$(".SlideDown.ShowIn" + clock + ",.Clock.ShowIn" + clock).addClass("Show");
 }
 
 
@@ -170,3 +169,4 @@ WS.Register( [
 	"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); } );
 
 WS.Register(  'ScoreBoard.Clock(Period).MaximumNumber', function(k,v) { } );
+

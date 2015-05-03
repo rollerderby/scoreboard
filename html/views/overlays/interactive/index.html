@@ -25,7 +25,7 @@
 						</div>
 					</div>
 					<div class="JammerWrapper">
-						<div class="JammerBox ShowInJam Clock barBackgroundTop">
+						<div class="JammerBox ShowInJam Clock">
 							<div class="JammerName VerticalCenter Box" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
 						</div>
 					</div>
@@ -38,7 +38,7 @@
 							<div class="DotTimeouts Box"><div class="Dot Timeout1"></div><div class="Dot Timeout2"></div><div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div></div>
 						</div>
 						<div class="JammerWrapper">
-							<div class="JammerBox ShowInJam Clock barBackgroundBottom"><div class="JammerName" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
+							<div class="JammerBox ShowInJam Clock"><div class="JammerName" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
 						</div>
 					</div>
 			
@@ -47,17 +47,13 @@
 			
 			<div data-setting="Custom.Overlay.Clock"  class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper">
 
-					<div class="Wrapper Row ClockNames Clock ShowInJam ShowInLineup ShowInTimeout barBackgroundTop">
-						<div class="Box TextLeft Clock ShowInJam ShowInLineup ShowInTimeout Name" sbDisplay="Name,Number" sbContext="Clock(Period)" sbModify="toClockInitialNumber"></div>
-						<div class="Box TextRight Clock ShowInJam ShowInLineup ShowInTimeout Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
+					<div class="ClockBarTop Wrapper Row SlideDown ClockNames ShowInJam ShowInLineup ShowInTimeout barBackgroundTop">
+						<div class="Box TextLeft Name" sbDisplay="Name,Number" sbContext="Clock(Period)" sbModify="toClockInitialNumber"></div>
+						<div class="Box TextRight Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
 					</div>
 
-					<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineUp ShowInTimeout">
-						<div class="Box BigName ShowInLineup ShowInTimeout Clock Description"><span sbDisplay="Clock(Lineup).Name, Clock(Lineup).Running, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReview, Team(1).Timeouts, Team(1).OfficialReviews, Team(2).Timeouts, Team(2).OfficialReviews" sbModify="smallDescriptionUpdate"></span></div> 
-						<div class="Box BigName ShowInIntermission Clock" sbDisplay="Setting(Intermission.PreGame), Setting(Intermission.Intermission), Setting(Intermission.Unofficial), Setting(Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
-					</div>
-					
-					<div class="Wrapper Row BottomRow barBackgroundBottom">
+					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineUp ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Setting(Intermission.PreGame), Setting(Intermission.Intermission), Setting(Intermission.Unofficial), Setting(Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="clockType"></div>
+					<div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
 						<div class="Box TextLeft Time Clock Show ShowInJam ShowInLineup ShowInTimeout" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
 						<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 						<div class="Box TextRight Time Clock Show ShowInJam" sbContext="Clock(Jam)" sbDisplay="Time" sbModify="toTime"></div>
