@@ -44,6 +44,7 @@ var DataSet = (function() {
 		for(var i = 0; i < trig.length; i++) {
 			var trigger = trig[i];
 			if(fullRecord.isMatch(trigger.Match)) {
+				console.log('Triggering ', trigger);
 				trigger.Func.call(fullRecord, newval, oldval, key);
 			}
 		}

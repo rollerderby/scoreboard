@@ -28,7 +28,8 @@
 
 
 		function timeString2ms(a,b,c){// time(HH:MM:SS.mss)
-			 return c=0, a=a.split('.'), !a[1]||(c+=a[1]*1), a=a[0].split(':'),b=a.length, c+=(b==3?a[0]*3600+a[1]*60+a[2]*1:b==2?a[0]*60+a[1]*1:s=a[0]*1)*1e3, c ;
+		    if(!a) { return }
+		    return c=0, a=a.split('.'), !a[1]||(c+=a[1]*1), a=a[0].split(':'),b=a.length, c+=(b==3?a[0]*3600+a[1]*60+a[2]*1:b==2?a[0]*60+a[1]*1:s=a[0]*1)*1e3, c ;
 		}
 
 		var _getKeyObject = function(k) {
@@ -44,9 +45,12 @@
 			m = k.match(reJD); 
 			if(m) return { Type: 'Jam', FullKey: k, Period: m[1], Jam: m[2], Key: m[3] };
 
+			var reSk = /^Game.Team\(([0-9])\)\.Skater\((.+)\)\.(.+)$/;
+			m = k.match(reSk); 
+			if(m) return { Type: 'Skater', FullKey: k, Skater: m[2], Team: m[1], Key: m[3] }
+
 			var reCF = /^ScoreBoard.Clock\((.+)\)\.(.+)$/;
 			m = k.match(reCF);
-			//if(m) console.log(m);
 			if(m) return { Type: 'Setting', FullKey: k, ClockType: m[1], Key: m[2] };
 
 			return false;
@@ -54,11 +58,18 @@
 
 		var _handleJamData = function(k,v) {
 			kd = _getKeyObject(k);
+			console.log('Using Object',kd);
 			if(kd) {
 				if(StatsFunction[kd.Type] && StatsFunction[kd.Type][kd.Key]) { 
 					StatsFunction[kd.Type][kd.Key](kd,v);	
 				}
 			}
+		}
+
+		StatsFunction.Skater = {
+			'Name':   function(kd,v) { console.log('Name', kd,v); Data['Skaters'].Upsert( { 'Name': v }, { Team: kd.Team, Skater: kd.Skater } ); },
+			'Number': function(kd,v) { console.log('Number', kd,v); Data['Skaters'].Upsert( { 'Number': v }, { Team: kd.Team, Skater: kd.Skater } ); },
+			'Flags':  function(kd,v) { console.log('Flags', kd,v); Data['Skaters'].Upsert( { 'Flags': v }, { Team: kd.Team, Skater: kd.Skater } ); }
 		}
 
 		StatsFunction.Setting = {
@@ -132,7 +143,7 @@
 			if(options.debug) console.debug('Initialize');
 
 			if(!WS.socket) WS.Connect();
-			WS.Register( [ 'ScoreBoard.Clock', 'Game.Period', ], function(k,v) { _handleJamData(k,v); } );
+			WS.Register( [ 'ScoreBoard.Clock', 'Game.Period', 'Game.Team' ], function(k,v) { _handleJamData(k,v); } );
 			return this;
 		}
 
