@@ -6,7 +6,7 @@ var WS = {
 	callbacks: new Array(),
 	Connected: false,
 	state: { },
-	debug: true,
+	debug: false,
 
 	Connect: function(callback) {
 		WS.connectCallback = callback;
@@ -94,7 +94,6 @@ var WS = {
 	},
 
 	triggerCallback: function (k, v) {
-		WS.state[k] = v;
 		for (idx = 0; idx < WS.callbacks.length; idx++) {
 			c = WS.callbacks[idx];
 			if (c.callback == null)
@@ -110,6 +109,12 @@ var WS = {
 	},
 
 	processUpdate: function (state) {
+		for (var prop in state) {
+			// update all incoming properties before triggers 
+			// dependency issues causing problems
+			WS.state[prop] = state[prop];
+		}
+
 		for (var prop in state) {
 			if (state[prop] == null)
 				WS.triggerCallback(prop, state[prop]);
