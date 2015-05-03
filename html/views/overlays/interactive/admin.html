@@ -3,9 +3,9 @@
 		<script type="text/javascript" src="/external/jquery/jquery.js"></script>
 		<script type="text/javascript" src="/json/core.js"></script>
 		<script type="text/javascript" src="/json/WS.js"></script>
+		<script type="text/javascript" src="dataset.js"></script>
 	</head>
 
-	
 	<body>
 
 	<div id="Controls">
@@ -21,7 +21,7 @@
 
 		<p id="Panel">
 			<h2>Panels</h2>
-			<select id="PanelOverlay" data-subforms=".ExtraForm" data-target="#OverlayType" data-setting="Custom.Overlay.Panel" data-field="data-next">
+			<select class="SelectUpdator" id="PanelOverlay" data-subforms=".ExtraForm" data-target="#OverlayType" data-setting="Custom.Overlay.Panel" data-field="data-next">
 				<option data-key="X" value="">--- No Panel --- [X]</option>
 				<option data-key="0" value="PPJBox">Points per Jam  [0]</option>
 				<option data-key="1" value="RosterTeam1">Roster (T1)  [1]</option>
@@ -29,17 +29,29 @@
 				<option data-key="3" value="PenaltyTeam1">Penalty (T1) [3]</option>
 				<option data-key="4" value="PenaltyTeam2">Penalty (T2) [4]</option>
 				<option data-key="9" value="LowerThird" data-form=".ExtraFormLower">Lower Third [9]</option>
-				<option value="myDiv">Test</option>
 			</select>
 
 
 			<button data-key=" " data-setting="Custom.Overlay.Panel" id="OverlayType" class="ToggleSwitch Reverse NoAuto" data-source="#PanelOverlay"> </button>
+			<input type="hidden" data-setting="Custom.Overlay.LowerThird.Style" id="LowerStyle" data-source="#LowerThirdStyle"> </input>
 
 			<div class="ExtraForm ExtraFormLower" style="display: none;">
 				<h2>Lower Third</h2>
 				<div class="in">
-					<label>Line 1<input data-setting="Custom.Overlay.LowerThird.Line1" type="text"/><br/></label>
-					<label>Line 2<input data-setting="Custom.Overlay.LowerThird.Line2" type="text"/><br/></label>
+					<label>Line 1/Line 2/Style</label>
+					<input data-setting="Custom.Overlay.LowerThird.Line1" type="text"/><br/>
+					<input data-setting="Custom.Overlay.LowerThird.Line2" type="text"/><br/>
+					<select class="SelectUpdator" id="LowerThirdStyle" data-setting="Custom.Overlay.LowerThird.Style" data-target="#LowerStyle">
+						<option value="ColourDefault">--- Default --- </option>
+						<option value="ColourTeam1">Team 1</option>
+						<option value="ColourTeam2">Team 2</option>
+					</select>
+
+	
+					<label>Auto Skater Generator</label>
+					<select id="Skaters">
+					</select>
+
 				</div>
 			</div>
 

@@ -1,10 +1,10 @@
-body { font-family: Ubuntu, sans-serif; }
+body { font-family: Ubuntu, sans-serif;  margin: 0; }
 
 label  { font-variant: small-caps; }
 
 .current { background: red; color: white; }
-#Controls { float: left; width: 8%; }
-#Preview  { float: left; width: 92%; height: 98%; }
+#Controls { float: left; width: 10%; }
+#Preview  { float: left; width: 89%; height: 98%; }
 
 
 h2 { margin: 0 0 10px 0; padding: 4px 4px; display: block; border-radius: 6px; text-align: center; }
@@ -18,16 +18,17 @@ button, input, select {
     outline: none; cursor: pointer; 
     padding: 8px 8px; border-radius: 8px;
     font-size: .8em;
+    width: 100%; 
     color: white; background: #666;
+    margin-bottom: 2px;
 }
 
-select { display: inline-block; appearance:none; width: 13em; margin: 2px 4px; }
+select { display: inline-block; appearance:none; }
 
 button.ToggleSwitch {
     cursor: pointer; outline: none; 
     width: 100%;
     transition: all .5s ease;
-    margin: 2px 4px;
 }
 
 button.ToggleSwitch	    { border: 0px solid; border-color: #999 #999 #999 #FF0000;    background: #666; border-left-width: 20px;  border-right-width: 0px; text-decoration: none; }
