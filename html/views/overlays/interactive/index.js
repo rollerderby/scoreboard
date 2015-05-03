@@ -101,9 +101,20 @@ function teamData(team, k,v) {
 		var setting = match[2];
 		var style;
 		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
-		if(style) {
-			if(setting == 'overlay_bg') style.addRule('#sb .ColourTeam'+team, 'background-color: ' + v);
-			if(setting == 'overlay_fg') style.addRule('#sb .ColourTeam'+team, 'color: ' + v);
+		if(style && v) {
+			var ns,r;
+			var rule;
+			var rd = '#sb .ColourTeam'+team;
+
+			if(setting == 'overlay_bg') ns = 'background-color';
+			if(setting == 'overlay_fg') ns = 'color';
+			if(ns) {
+				for(var r=0; r<style.rules.length ; r++ ) {
+					var dd = style.rules[r];
+					if(dd.selectorText == rd && dd.style[0] == ns) style.deleteRule(r);
+				}
+				style.addRule(rd, ns + ': ' + v);
+			}
 		}
 		return;
 	}
