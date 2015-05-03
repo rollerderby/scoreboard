@@ -1,8 +1,9 @@
 
-jQuery.fn.sortDivs = function sortDivs() {
-    $("> div", this[0]).sort(dec_sort).appendTo(this[0]);
-    function dec_sort(a, b){ return ($(b).attr("data-sort")) < ($(a).attr("data-sort")) ? 1 : -1; }
-}
+function dec_sort(a, b){ return ( parseInt($(b).attr("data-sort")) < parseInt($(a).attr("data-sort")) ) ? 1 : -1; }
+function str_sort(a, b){ return ( $(b).attr("data-sort") < $(a).attr("data-sort") ) ? 1 : -1; }
+
+jQuery.fn.sortDivs = function sortDivsStr() { $("> div", this[0]).sort(str_sort).appendTo(this[0]); }
+jQuery.fn.sortDivsRev = function sortDivsRev() { $("> div", this[0]).sort(dec_sort).appendTo(this[0]); }
 
 
 $(initialize);
@@ -55,20 +56,18 @@ function initialize() {
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
 
-	WS.Register([ 'Custom.Overlay.LowerThird.Line1', 'Custom.Overlay.LowerThird.Line2' ] , function(k,v) { 
+	WS.Register([ 'Custom.Overlay.LowerThird.Line' ] , function(k,v) { 
 		sp = '.' + k.split('.').slice(2,4).join(' .');
 		$(sp).text(v);
 	});
 
-
-
+	WS.Register([ 'Custom.Overlay.LowerThird.Style' ] , function(k,v) { 
+		$('.LowerThird .Line2').removeClass( 'ColourTeam1 ColourTeam2 ColourDefault' ).addClass(v);
+	});
 
 
 }
 
-var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
-var penaltyRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
-var colourRegEx = /^Game\.Team\((.+)\)\.Color\((.+)\)$/;
 
 function teamData(team, k,v) {
 
@@ -76,16 +75,30 @@ function teamData(team, k,v) {
 	var key;
 	var setting; 
 
+	var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
 	var match = k.match(skaterRegEx);
-	if(match) { skaterId = match[2]; key = match[3]; penalty = null; }
+	if(match) { 
+		skaterId = match[2]; key = match[3]; penalty = null; 
+	}
 
+	var penaltyRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
 	var match = k.match(penaltyRegEx);
 	if(match) { skaterId = match[2]; key = match[4]; penalty = match[3]; }
 
-	var match = k.match(colourRegEx);
-	if(match) { setting = match[2]; key = 'Color'; }
+	var teamInfoRegEx = /^Game\.Team\((.+)\)\.(.+)$/;
+	var match = k.match(teamInfoRegEx);
+	if(match) { 
+		var subkey = match[2];
+		if(subkey == 'Logo') { 
+			if(v) $('img.TeamLogo'+team).attr('src', v).css('display', 'block');
+			else  $('img.TeamLogo'+team).css('display', 'none');
+		}
+	}
 
-	if(key == 'Color') { 
+	var colourRegEx = /^Game\.Team\((.+)\)\.Color\((.+)\)$/;
+	var match = k.match(colourRegEx);
+	if(match) { 
+		var setting = match[2];
 		var style;
 		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
 		if(style) {
@@ -140,22 +153,22 @@ function updateSkaterNumber(me,mb,key,v) {
 }
 
 
-function createRosterSkater(pa, skaterId) {
+function createRosterSkater(pa, skaterId, team) {
 	// create the roster entry for this skater
 	var xv = $('<div class="Skater"></div>');
 	xv.attr('data-skaterId', skaterId);
-	$('<div class="Number"></div>').appendTo(xv);
+	$('<div class="Number ColourTeam' + team +'"></div>').appendTo(xv);
 	$('<div class="Name"></div>').appendTo(xv);
 	$('<div class="Flags"></div>').appendTo(xv);
 	$(pa).append(xv);
 }
 
-function createPenaltySkater(pb, skaterId) {
+function createPenaltySkater(pb, skaterId, team) {
 	// create the penalty box entry for this skater
 	var xz = $('<div class="Skater"></div>');
 	xz.attr('data-skaterId', skaterId);
 	xz.attr('data-count', 0);
-	$('<div class="Number">&nbsp;</div>').appendTo(xz);
+	$('<div class="Number ColourTeam' + team + '">&nbsp;</div>').appendTo(xz);
 	$('<div class="Name">&nbsp;</div>').appendTo(xz);
 	$(pb).append(xz);
 }
