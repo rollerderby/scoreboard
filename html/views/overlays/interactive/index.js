@@ -47,6 +47,10 @@ function initialize() {
 	WS.Register('Custom.Overlay.Panel', function(k,v) { 
 		$('.OverlayPanel').removeClass('Show'); 
 		// sort divs in the panel before we show, just in case it's changed
+		if(v == 'PenaltyTeam1' || v == 'PenaltyTeam2') {
+			c = $('.PenaltyTeam [data-flag="BC"]');
+			c.empty().remove();
+		}
 		$('.OverlayPanel.'+v+' .SortBox').sortDivs(); 
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
@@ -109,6 +113,7 @@ function teamData(team, k,v) {
 		return;
 	}
 
+
 	if($(me).length == 0)   { createRosterSkater(pa, skaterId, team); }
 	if($(mb).length == 0) 	{ createPenaltySkater(pb, skaterId, team); }
 
@@ -123,6 +128,7 @@ function teamData(team, k,v) {
 		c = $('.'+key, mb).text(v);
 	}
 
+
 }
 
 function updateSkaterNumber(me,mb,key,v) {
@@ -134,11 +140,11 @@ function updateSkaterNumber(me,mb,key,v) {
 }
 
 
-function createRosterSkater(pa, skaterId, team) {
+function createRosterSkater(pa, skaterId) {
 	// create the roster entry for this skater
 	var xv = $('<div class="Skater"></div>');
 	xv.attr('data-skaterId', skaterId);
-	$('<div class="Number ColourTeam' + team +'"></div>').appendTo(xv);
+	$('<div class="Number"></div>').appendTo(xv);
 	$('<div class="Name"></div>').appendTo(xv);
 	$('<div class="Flags"></div>').appendTo(xv);
 	$(pa).append(xv);

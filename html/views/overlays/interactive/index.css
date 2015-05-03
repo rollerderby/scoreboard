@@ -232,8 +232,6 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 .PenaltyTeam .Team .Name { float: left; width: 20%; color: #333; }
 .PenaltyTeam .Team .Penalty { float: left; width: 10%; }
 
-.PenaltyTeam .Team .Skater[data-flag="BC"] { display: none }
-
 .PenaltyTeam .Skater:nth-child(1) { border-radius: 10px 10px 0 0; }
 .PenaltyTeam .Skater:nth-last-child(1) { border-radius: 0 0 10px 10px; }
 .PenaltyTeam .Skater { clear: both; }
