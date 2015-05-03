@@ -1,21 +1,24 @@
 
+function str_sort(a, b){ return ( $(b).text() < $(a).text() ) ? 1 : -1; }
+jQuery.fn.sortOptions = function sortOptions() { $("> option", this[0]).sort(str_sort).appendTo(this[0]); }
+
 Skaters = new DataSet();
-Skaters.AddTrigger('CHANGED', '*', { }, function(n,o,k) {
-	var s = $('#Skaters option[data-skater="' + this.Skater + '"]');
-	var c = s.length;
-	if(this.Name && this.Team) {
-		if(c == 0) $s = $('<option>');
-		$s.attr({ 'data-name': this.Name, 'data-team': this.Team, 'value': this.Skater });
-		$s.text(this.Name);
-		if(c == 0) $('#Skaters').append($s);
+Skaters.AddTrigger('UPDATE', '*', { }, function(n,o,k) {
+
+	if(this.Name && this.Team && this.Id) {
+		att = { 'data-name': this.Name, 'data-team': this.Team, 'value': this.Skater };
+		var $s = $('#Skaters option[value="' + this.Skater + '"]');
+		if($s.length == 0) $s = $('<option>').attr(att).appendTo('#Skaters');
+		$s.attr(att).text(this.Name);
+		$('#Skaters').sortOptions();
 	}
 });
 Skaters.AddTrigger('DELETE', '*', { }, function(n,o,k) { 
-	c = $('#Skaters option[data-skater="' + this.Skater + '"]').remove();
+	console.log('DELETE ', this,n,o,k);
+	$('#Skaters option[value="' + this.Skater + '"]').remove();
 });
 
 $(initialize)
-
 
 
 function initialize() {
@@ -41,15 +44,15 @@ function initialize() {
 		});
 	});
 
+	var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+?)\)\.(.+)$/;
 	WS.Register('Game.Team', function(k,v) {
-		var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+?)\)\.(.+)$/;
 		var m = k.match(skaterRegEx);
 		if(m) {
 			var key = m[3];
 			if(!(key == 'Id' || key == 'Name' || key == 'Number' || key == 'Flags')) return;
 
 			var d = {}; d[key] = v; d['Team'] = m[1];
-			if(key == 'Id' && (v == null || v == undefined)) {
+			if(key == 'Id' && v == null) {
 				Skaters.Delete({ Skater: m[2] });
 			} else {
 				Skaters.Upsert(d, { Skater: m[2] });	
@@ -104,6 +107,7 @@ $('select#Skaters').change(function(e) {
 	team = $( 'option[value=' + v + ']', $t ).attr('data-team');
 	name = $( 'option[value=' + v + ']', $t ).attr('data-name');
 	tnam = WS.state['Game.Team(' + team + ').AlternateName(overlay)'];
+	tnam = tnam ? tnam : WS.state['Game.Team(' + team + ').Name'];
 	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').change();
 	$('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val(name).change();
 	$('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val(tnam).change();
