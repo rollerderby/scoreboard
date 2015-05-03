@@ -92,6 +92,8 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 .ClockBarBottom		   { font-size: 1.7em; }
 .ClockBarMiddle.SlideDown  { background: #888; padding: 0; }
 
+.ClockBarBottom .Box	   { width: 100%; }
+
 .SlideDown		   { -webkit-transition: max-height 1s ease; width: 100%; overflow: hidden; padding: 0; }
 .SlideDown 	      	   { max-height: 0;  }
 
@@ -104,7 +106,9 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 
 .Wrapper.Row.ClockNames,
 .Wrapper.Row.BottomRow  { width: 100%; padding: 2% 5%; }
-.ClockBarTop.Show	{ width: 100%; padding: 2% 5%; }
+
+.Wrapper.Row.ClockBarTop		{ padding: 0; }
+.Wrapper.Row.ClockBarTop.Show	{ width: 100%; padding: 2% 5%; }
 
 html > body div.Wrapper .TextLeft	{ text-align: left !important; }
 html > body div.Wrapper .TextRight	{ text-align: right !important; }
