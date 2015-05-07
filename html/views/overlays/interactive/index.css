@@ -286,6 +286,23 @@ div.PanelWrapperTop    .AnimatedPanel.PanelHideTop.show	{ -webkit-transform: tra
 .JammerWrapper .JammerBox  { background: #333; color: white; }
 
 .TeamLogo	{ float: left; }
-.PenaltyTeam .TeamLogo {  height: 140px; margin-bottom: .5em; }
-.RosterTeam .TeamLogo {  height: 180px; margin-bottom: 1em; }
+.PenaltyTeam .TeamLogo {  margin-bottom: .5em; }
+.RosterTeam .TeamLogo {  margin-bottom: 1em; }
+
+.Upcoming	{ padding-top: 4em; }
+.Upcoming h1 	{ border-radius: 1em; }
+
+.Upcoming .UpcomingVS  { padding: 1em; margin: 0 auto; width: 4em; background: white; color: red; font-size: 1em;  border-radius: 1em; text-align: center; }
+
+.AnimatedPanel img	{ -webkit-transition: height 1s ease-in-out .3s; }
+.AnimatedPanel img	{ height: 0; }
+
+.AnimatedPanel.Show img  { height: 200px; }
+.PenaltyTeam.AnimatedPanel.Show img.TeamLogo  { height: 140px; }
+.RosterTeam.AnimatedPanel.Show  img.TeamLogo  { height: 180px; }
+
+.PanelWrapperCenter .AnimatedPanel.LowerPart { margin-top: 10em; }
+.PanelWrapperCenter .RosterTeam.AnimatedPanel.LowerPart { margin-top: 12em; }
+
+div.AnimatedPanel.AnimationDelay { -webkit-transition: -webkit-transform 1s ease-in-out .3s; }
 
