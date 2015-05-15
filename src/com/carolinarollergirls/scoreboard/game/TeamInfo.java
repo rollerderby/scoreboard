@@ -31,12 +31,13 @@ public class TeamInfo extends Updater {
 		// Add/Update/Remove Alternate Names
 		List<Team.AlternateName> t_an = t.getAlternateNames();
 		for (Team.AlternateName an : t_an) {
-			alternateNames.put(an.getId(), an.getName());
+			if (an != null && an.getId() != null && an.getName() != null)
+				alternateNames.put(an.getId(), an.getName());
 		}
 		for (String id : alternateNames.keySet()) {
 			boolean found = false;
 			for (Team.AlternateName an : t_an) {
-				if (an.getId().equals(id)) {
+				if (an != null && id.equals(an.getId()) && an.getName() != null) {
 					found = true;
 					break;
 				}
@@ -50,12 +51,13 @@ public class TeamInfo extends Updater {
 		// Add/Update/Remove Colors
 		List<Team.Color> t_c = t.getColors();
 		for (Team.Color c : t_c) {
-			colors.put(c.getId(), c.getColor());
+			if (c != null && c.getId() != null && c.getColor() != null)
+				colors.put(c.getId(), c.getColor());
 		}
 		for (String id : colors.keySet()) {
 			boolean found = false;
 			for (Team.Color c : t_c) {
-				if (c.getId().equals(id)) {
+				if (c != null && id.equals(c.getId()) && c.getColor() != null) {
 					found = true;
 					break;
 				}
@@ -71,7 +73,7 @@ public class TeamInfo extends Updater {
 		for (Skater s : t_s) {
 			boolean found = false;
 			for (SkaterInfo si : skaters) {
-				if (si.getId().equals(s.getId())) {
+				if (s != null && si.getId().equals(s.getId())) {
 					si.snapshot(s);
 					found = true;
 					break;
@@ -85,7 +87,7 @@ public class TeamInfo extends Updater {
 		for (SkaterInfo si : sa) {
 			boolean found = false;
 			for (Skater s : t_s) {
-				if (si.getId().equals(s.getId())) {
+				if (s != null && si.getId().equals(s.getId())) {
 					found = true;
 					break;
 				}
