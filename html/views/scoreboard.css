@@ -156,6 +156,53 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
     @-webkit-keyframes DotActive {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
     @keyframes DotActive         {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
+   .Dot.Retained {
+   	border-radius: 0;
+   	background: none;
+   }
+   .Dot.Retained:after {
+   	content: "";
+   	background: #000000;
+   	border-radius: 20%;
+   	height: 100%;
+   	position: absolute;
+   	top: 0%;
+   	left: 30%;
+   	width: 40%;
+   }
+   .Dot.Retained:before {
+   	content: "";
+   	background: #000000;
+   	border-radius: 20%;
+   	width: 100%;
+   	position: absolute;
+   	left: 0%;
+   	top: 30%;
+   	height: 40%;
+   }
+   
+   .Dot.Retained2:after {
+   	content: "";
+   	background: #FFFFFF;
+   	border-radius: 20%;
+   	height: 80%;
+   	position: absolute;
+   	top: 10%;
+   	left: 40%;
+   	width: 20%;
+   }
+   .Dot.Retained2:before {
+   	content: "";
+   	background: #FFFFFF;
+   	border-radius: 20%;
+   	width: 80%;
+   	position: absolute;
+   	left: 10%;
+   	top: 40%;
+   	height: 20%;
+   }
+
+
 /* Timeouts - Jam Totals */
   /* Main box */
   #mainDiv.HideJamTotals .Timeouts.JamTotals { opacity: 0 !important; }

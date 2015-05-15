@@ -229,6 +229,7 @@ function setupTeams() {
 
 		var timeouts = $sb("ScoreBoard.Team(" + team + ").Timeouts");
 		var officialReviews = $sb("ScoreBoard.Team(" + team + ").OfficialReviews");
+		var retainedOfficialReview = $sb("ScoreBoard.Team(" + team + ").RetainedOfficialReview");
 		var timeoutRunning = $sb("ScoreBoard.Clock(Timeout).Running");
 		var isOfficialReview = $sb("ScoreBoard.OfficialReview");
 		var timeoutOwner = $sb("ScoreBoard.TimeoutOwner");
@@ -237,11 +238,13 @@ function setupTeams() {
 			var or = officialReviews.$sbGet();
 			var tr = timeoutRunning.$sbIsTrue();
 			var isOR = isOfficialReview.$sbIsTrue();
+			var isRetained = retainedOfficialReview.$sbIsTrue();
 			var owner = timeoutOwner.$sbGet();
 
 			var pulse = (isOR && owner == team);
 			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Active", pulse);
 			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Used", or != 1);
+			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Retained", isRetained);
 			for (var to = 1; to <= 3; to++) {
 				pulse = (t == to - 1 && tr && !isOR && owner == team);
 				$("div.Team" + team + ">div.Dot.Timeout" + to).toggleClass("Active", pulse);
@@ -253,6 +256,7 @@ function setupTeams() {
 		timeoutRunning.$sbBindAndRun("sbchange", pulseTimeout);
 		isOfficialReview.$sbBindAndRun("sbchange", pulseTimeout);
 		timeoutOwner.$sbBindAndRun("sbchange", pulseTimeout);
+		retainedOfficialReview.$sbBindAndRun("sbchange", pulseTimeout);
 
 		// // Pulsate OR buttons.
 		// $.each( [ 1, 2 ], function(x, i) {
