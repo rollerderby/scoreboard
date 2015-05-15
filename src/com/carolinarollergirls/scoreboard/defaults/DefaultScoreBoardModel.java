@@ -250,6 +250,25 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			setTimeoutOwner(null==team?"":team.getId());
 			setOfficialReview(review);
 
+			TeamModel t1 = getTeamModel("1");
+			TeamModel t2 = getTeamModel("2");
+			if (null==team) {
+				t1.setInTimeout(false);
+				t1.setInOfficialReview(false);
+				t2.setInTimeout(false);
+				t2.setInOfficialReview(false);
+			} else if (t1.getId().equals(team.getId())) {
+				t1.setInTimeout(!review);
+				t1.setInOfficialReview(review);
+				t2.setInTimeout(false);
+				t2.setInOfficialReview(false);
+			} else {
+				t1.setInTimeout(false);
+				t1.setInOfficialReview(false);
+				t2.setInTimeout(!review);
+				t2.setInOfficialReview(review);
+			}
+
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);

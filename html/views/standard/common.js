@@ -68,10 +68,12 @@ function smallDescriptionUpdate(k, v) {
 	$.each(["1", "2"], function (idx, id) {
 		tto = WS.state["ScoreBoard.Team(" + id + ").Timeouts"];
 		tor = WS.state["ScoreBoard.Team(" + id + ").OfficialReviews"];
+		tror = WS.state["ScoreBoard.Team(" + id + ").RetainedOfficialReview"];
 		$(".Team" + id + " .Timeout1").toggleClass("Used", tto < 1);
 		$(".Team" + id + " .Timeout2").toggleClass("Used", tto < 2);
 		$(".Team" + id + " .Timeout3").toggleClass("Used", tto < 3);
 		$(".Team" + id + " .OfficialReview1").toggleClass("Used", tor < 1);
+		$(".Team" + id + " .OfficialReview1").toggleClass("Retained", tror);
 	});
 
 	$(".Team .Dot").removeClass("Active");
@@ -168,5 +170,4 @@ WS.Register( [
 	"ScoreBoard.Clock(Timeout).Running",
 	"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); } );
 
-WS.Register(  'ScoreBoard.Clock(Period).MaximumNumber', function(k,v) { } );
-
+WS.Register( 'ScoreBoard.Clock(Period).MaximumNumber' );

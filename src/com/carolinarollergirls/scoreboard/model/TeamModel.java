@@ -56,6 +56,10 @@ public interface TeamModel extends Team
 	public void setOfficialReviews(int reviews);
 	public void changeOfficialReviews(int reviews);
 
+	public void setInTimeout(boolean in_timeouts);
+	public void setInOfficialReview(boolean in_official_review);
+	public void setRetainedOfficialReview(boolean retained_official_review);
+
 	public void addSkaterModel(SkaterModel skater);
 	public SkaterModel addSkaterModel(String id);
 	public SkaterModel addSkaterModel(String id, String name, String number, String flag);

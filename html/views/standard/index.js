@@ -47,6 +47,3 @@ function initialize() {
 	});
 
 }
-
-
-

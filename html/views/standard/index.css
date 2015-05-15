@@ -101,11 +101,11 @@ body.box_flat .Box.FlatTop {
 .Team>.Name {
 	position: absolute;
 	top: 0%;
-	width: 50%;
+	width: 44%;
 	overflow: none;
 }
-.Team.Left>.Name { left: 0%; }
-.Team.Right>.Name { right: 0%; }
+.Team.Left>.Name { left: 3%; }
+.Team.Right>.Name { right: 3%; }
 .Team:not(.HasName)>.Name {
 	opacity: 0;
 }
@@ -198,6 +198,51 @@ body.box_flat .Box.FlatTop {
 .DotTimeouts .Timeout3 { top: 70%; }
 .DotOfficialReviews .Dot { position: absolute; width: 60%; height: 60%; left: 20%; top: 20%; }
 
+.DotOfficialReviews .Dot.Retained {
+	border-radius: 0;
+	background: none;
+}
+.DotOfficialReviews .Dot.Retained:after {
+	content: "";
+	background: #000000;
+	border-radius: 20%;
+	height: 100%;
+	position: absolute;
+	top: 0%;
+	left: 30%;
+	width: 40%;
+}
+.DotOfficialReviews .Dot.Retained:before {
+	content: "";
+	background: #000000;
+	border-radius: 20%;
+	width: 100%;
+	position: absolute;
+	left: 0%;
+	top: 30%;
+	height: 40%;
+}
+
+.DotOfficialReviews .Dot.Retained2:after {
+	content: "";
+	background: #FFFFFF;
+	border-radius: 20%;
+	height: 80%;
+	position: absolute;
+	top: 10%;
+	left: 40%;
+	width: 20%;
+}
+.DotOfficialReviews .Dot.Retained2:before {
+	content: "";
+	background: #FFFFFF;
+	border-radius: 20%;
+	width: 80%;
+	position: absolute;
+	left: 10%;
+	top: 40%;
+	height: 20%;
+}
 
 .Timeouts.Header {
 	position: absolute;

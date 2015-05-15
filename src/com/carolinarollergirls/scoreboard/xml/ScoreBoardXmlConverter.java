@@ -108,6 +108,9 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Team.EVENT_LAST_SCORE, null, String.valueOf(t.getLastScore()));
 		editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
 		editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
+		editor.setElement(e, Team.EVENT_IN_TIMEOUT, null, String.valueOf(t.inTimeout()));
+		editor.setElement(e, Team.EVENT_IN_OFFICIAL_REVIEW, null, String.valueOf(t.inOfficialReview()));
+		editor.setElement(e, Team.EVENT_RETAINED_OFFICIAL_REVIEW, null, String.valueOf(t.retainedOfficialReview()));
 		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, t.getLeadJammer());
 		editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
 
@@ -394,6 +397,12 @@ public class ScoreBoardXmlConverter
 					teamModel.changeOfficialReviews(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && !isChange)
 					teamModel.setOfficialReviews(Integer.parseInt(value));
+				else if (name.equals(Team.EVENT_IN_TIMEOUT))
+					teamModel.setInTimeout(Boolean.parseBoolean(value));
+				else if (name.equals(Team.EVENT_IN_OFFICIAL_REVIEW))
+					teamModel.setInOfficialReview(Boolean.parseBoolean(value));
+				else if (name.equals(Team.EVENT_RETAINED_OFFICIAL_REVIEW))
+					teamModel.setRetainedOfficialReview(Boolean.parseBoolean(value));
 				else if (name.equals(Team.EVENT_LEAD_JAMMER))
 					teamModel.setLeadJammer(value);
 				else if (name.equals(Team.EVENT_STAR_PASS))
