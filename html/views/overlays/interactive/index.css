@@ -43,8 +43,8 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 .Box 			{ float: left; margin: 0; padding: 0; position: relative; display: block; }
 
 /* Team Boxes */
-.Team .Name 		{ width: 45%; padding-left: 2%; padding-right: 3%; }
-.Team .Score		{ width: 28%; text-align: right; padding-right: .1em ; }
+.Team .Name 		{ width: 47%; padding-left: 2%; padding-right: 3%; }
+.Team .Score		{ width: 27%; text-align: right; padding-right: .1em ; }
 .Team .Mini		{ width: 10%; font-size: 50%; }
 
 .Team .Mini .LeadJammer,
@@ -173,7 +173,7 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 
 
 .OverlayPanel h1, .OverlayPanel h2	{ margin-left: 10%; margin-right: 0; }
-.OverlayPanel h1.NoLogo, .OverlayPanel h2.NoLogo { margin-left: 0; }
+.NoLogo h1, .NoLogo h2			{ margin-left: 0; }
 
 
 .PPJBox h4				{ text-transform: uppercase; text-align: center; font-size: 1.4em; }

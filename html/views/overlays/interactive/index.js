@@ -90,8 +90,13 @@ function teamData(team, k,v) {
 	if(match) { 
 		var subkey = match[2];
 		if(subkey == 'Logo') { 
-			if(v) $('img.TeamLogo'+team).attr('src', v).css('display', 'block');
-			else  $('img.TeamLogo'+team).css('display', 'none');
+			if(v && v != '') {
+				$('img.TeamLogo'+team).attr('src', v).css('display', 'block');
+				$('img.TeamLogo'+team).parent().removeClass('NoLogo');
+			} else {
+				$('img.TeamLogo'+team).css('display', 'none');
+				$('img.TeamLogo'+team).parent().addClass('NoLogo');
+			}
 		}
 	}
 
@@ -101,10 +106,11 @@ function teamData(team, k,v) {
 		var setting = match[2];
 		var style;
 		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
-		if(style && v) {
+		if(style) {
 			var ns,r;
 			var rule;
-			var rd = '#sb .ColourTeam'+team;
+			// chrome seems to like things in lowercase
+			var rd = '#sb .colourteam'+team;
 
 			if(setting == 'overlay_bg') ns = 'background-color';
 			if(setting == 'overlay_fg') ns = 'color';
@@ -113,7 +119,7 @@ function teamData(team, k,v) {
 					var dd = style.rules[r];
 					if(dd.selectorText == rd && dd.style[0] == ns) style.deleteRule(r);
 				}
-				style.addRule(rd, ns + ': ' + v);
+				if(v != null) style.addRule(rd, ns + ': ' + v);
 			}
 		}
 		return;
