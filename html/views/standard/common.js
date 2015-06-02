@@ -47,7 +47,7 @@ function logoUpdate(k, v) {
 	if (logo == null)
 		logo = "";
 	if (logo != "")
-		logo = "url(" + logo + ")";
+		logo = 'url("' + logo + '")';
 
 	$(".Team" + id + ">.Logo").css("background-image", logo);
 	$(".Team" + id).toggleClass("HasLogo", logo != "");
