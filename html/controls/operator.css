@@ -72,8 +72,8 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Time tr.Name td.Name a { font-size: 150%; }
 	#TeamTime table.Time tr.Name td.Name a.InvertedTime { padding-left: 5px; font-size: 75%; }
 	#TeamTime table.Time tr.Name td.Name a.InvertedTime:before { content: "("; }
-	#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountDown:after { content: " Runtime)"; }
-	#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountUp:after { content: " Remaining)"; }
+	#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountDown:after { content: " elapsed)"; }
+	#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountUp:after { content: " remaining)"; }
 	#TeamTime table.Time tr.Number td.Number a { font-size: 150%; }
 	#TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
 	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
