@@ -89,6 +89,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Clock.EVENT_MINIMUM_NUMBER, null, String.valueOf(c.getMinimumNumber()));
 		editor.setElement(e, Clock.EVENT_MAXIMUM_NUMBER, null, String.valueOf(c.getMaximumNumber()));
 		editor.setElement(e, Clock.EVENT_TIME, null, String.valueOf(c.getTime()));
+		editor.setElement(e, Clock.EVENT_INVERTED_TIME, null, String.valueOf(c.getInvertedTime()));
 		editor.setElement(e, Clock.EVENT_MINIMUM_TIME, null, String.valueOf(c.getMinimumTime()));
 		editor.setElement(e, Clock.EVENT_MAXIMUM_TIME, null, String.valueOf(c.getMaximumTime()));
 		editor.setElement(e, Clock.EVENT_RUNNING, null, String.valueOf(c.isRunning()));

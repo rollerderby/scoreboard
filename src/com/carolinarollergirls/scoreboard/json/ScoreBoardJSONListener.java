@@ -205,6 +205,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put(path + "." + Clock.EVENT_MINIMUM_NUMBER, c.getMinimumNumber());
 		updateMap.put(path + "." + Clock.EVENT_MAXIMUM_NUMBER, c.getMaximumNumber());
 		updateMap.put(path + "." + Clock.EVENT_TIME, c.getTime());
+		updateMap.put(path + "." + Clock.EVENT_INVERTED_TIME, c.getInvertedTime());
 		updateMap.put(path + "." + Clock.EVENT_MINIMUM_TIME, c.getMinimumTime());
 		updateMap.put(path + "." + Clock.EVENT_MAXIMUM_TIME, c.getMaximumTime());
 		updateMap.put(path + "." + Clock.EVENT_DIRECTION, c.isCountDirectionDown());
