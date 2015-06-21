@@ -65,6 +65,8 @@ function smallDescriptionUpdate(k, v) {
 	var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
 	var ret = '';
 
+	console.log(lc,tc,to,or,lcn,tcn);
+
 	$.each(["1", "2"], function (idx, id) {
 		tto = WS.state["ScoreBoard.Team(" + id + ").Timeouts"];
 		tor = WS.state["ScoreBoard.Team(" + id + ").OfficialReviews"];

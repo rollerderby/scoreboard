@@ -5,6 +5,34 @@ function str_sort(a, b){ return ( $(b).attr("data-sort") < $(a).attr("data-sort"
 jQuery.fn.sortDivs = function sortDivsStr() { $("> div", this[0]).sort(str_sort).appendTo(this[0]); }
 jQuery.fn.sortDivsRev = function sortDivsRev() { $("> div", this[0]).sort(dec_sort).appendTo(this[0]); }
 
+if(document.location.search == '?camera') {
+	console.log('Setting up Camera');
+
+	MediaStreamTrack.getSources(function(s) {
+		for(var c=0;c<s.length;c++) {
+			var src = s[c];
+			if(src.kind == 'video') {
+				console.log(src);
+			}
+		}
+	});
+
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+	if (navigator.getUserMedia) {
+		   navigator.getUserMedia({ video: true },
+		   function(stream) {
+			 var video = document.querySelector('video');
+			 video.src = window.URL.createObjectURL(stream);
+			 video.onloadedmetadata = function(e) { video.play(); $('#VIDEO-GREEN').hide(); };
+		      },
+		      function(err) {
+			 console.log("The following error occured: " + err.name);
+		      }
+		   );
+	} else {
+	   	console.log("getUserMedia not supported. Camera Unavailable");
+	}
+}
 
 $(initialize);
 
@@ -19,6 +47,16 @@ function initialize() {
 		       "ScoreBoard.Setting(ScoreBoard.Intermission.Unofficial)",
 		       "ScoreBoard.Setting(ScoreBoard.Intermission.Official)",
 		       "ScoreBoard.Setting(ScoreBoard.Intermission.Intermission)" ], function(k,v) { } );
+
+	WS.Register( [  'ScoreBoard.Clock(Timeout).Running', 
+		        'ScoreBoard.TimeoutOwner',
+			'ScoreBoard.OfficialReview',
+			'ScoreBoard.Team(1).Timeouts',
+			'ScoreBoard.Team(2).Timeouts',
+			'ScoreBoard.Team(1).OfficialReviews',
+			'ScoreBoard.Team(2).OfficialReviews',
+			'ScoreBoard.Team(1).RetainedOfficialReview',
+			'ScoreBoard.Team(2).RetainedOfficialReview' ], function(k,v) { smallDescriptionUpdate(k,v); } );
 
 	WS.Register( 'Game.Period', function(k,v) { jamData(k,v); } );
 
