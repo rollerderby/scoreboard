@@ -144,6 +144,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	public long getTime() { return time; }
+	public long getInvertedTime() {
+		return maximumTime - time;
+	}
 	public void setTime(long ms) {
 		boolean doStop;
 		synchronized (timeLock) {
@@ -152,6 +155,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				ms = ((ms / 1000) * 1000) + (time % 1000);
 			time = checkNewTime(ms);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
 			doStop = checkStop();
 		}
 		if (doStop)
@@ -165,8 +169,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			if (sync && isRunning() && isSyncTime())
 				change = ((change / 1000) * 1000);
 			time = checkNewTime(time + change);
-			if (time % 1000 == 0 || Math.abs(last - time) >= 1000)
+			if (time % 1000 == 0 || Math.abs(last - time) >= 1000) {
 				scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
+				scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
+			}
 			doStop = checkStop();
 		}
 		if (doStop)
