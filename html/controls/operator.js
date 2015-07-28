@@ -555,7 +555,7 @@ function createTeamTable() {
 		var scoreTd = scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down");
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score -1").val("-1")
-			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl").button()
+			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
@@ -572,7 +572,7 @@ function createTeamTable() {
 		var scoreTd = scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up");
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score +1").val("1")
-			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl").button()
+			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })

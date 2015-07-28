@@ -31,6 +31,8 @@ table.RowTable { border-spacing: 0px; }
 
 /* Team/Time Tab */
 	#TeamTime a { font-weight: bold; }
+	#TeamTime .ui-button-text { font-size: 80%; line-height: 1em; }
+	#TeamTime .BigButton .ui-button-text { font-size: 100%; line-height: 1.4em; }
 
 	#TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
 	#TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
@@ -58,14 +60,10 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; }
 	#TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; }
 	#TeamTime table.Team tr.Timeout td.RetainedOfficialReview button.Active { color: #000; background: #F33; }
-	#TeamTime table.Team tr.Jammer td.ui-buttonset label { font-size: 80%; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label.Lead.ui-state-active { background: #3f3; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label.StarPass.ui-state-active { background: #3f3; }
 
-	#TeamTime table.Team tr.Jammer button.Box { font-size: 80%; }
 	#TeamTime table.Team tr.Jammer button.Box.Active { color: #000; background: #F33; }
-
-	#TeamTime table.Team tr.Pass td.Pass a { font-size: 150%; }
 
 	#TeamTime table.Time>tbody>tr>td { width: 20%; }
 	#TeamTime table.Time tr.Name td.Name.Running { background: #3f3; }
@@ -74,8 +72,6 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
 	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 
-	#TeamTime .JamScoreButton { font-size: 80%; }
-	tr.SpeedScore button>span { font-size: 80%; }
 	tr.SpeedScore:not(.Show) { display: none; }
 /* End Team/Time Tab */
 
