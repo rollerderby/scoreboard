@@ -15,6 +15,24 @@ function initialize() {
 		$(".Team").toggleClass("Swapped", isTrue(v));
 	});
 
+	WS.Register( "ScoreBoard.Setting(ScoreBoard." + view + "_CurrentView", function(k, v) {
+		$("div#video>video").each(function() { this.pause(); });
+		$(".DisplayPane.Show").addClass("Hide");
+		$(".DisplayPane").removeClass("Show");
+		$("div#" + v + ".DisplayPane").addClass("Show");
+		$("div#" + v + ".DisplayPane>video").each(function() { this.currentTime = 0; this.play(); });
+	});
+
+	WS.Register( "ScoreBoard.Setting(ScoreBoard." + view + "_Image)", function(k, v) {
+		$("div#image>img").attr("src", v);
+	});
+	WS.Register( "ScoreBoard.Setting(ScoreBoard." + view + "_Video)", function(k, v) {
+		$("div#video>video").attr("src", v);
+	});
+	WS.Register( "ScoreBoard.Setting(ScoreBoard." + view + "_CustomHtml)", function(k, v) {
+		$("div#html>iframe").attr("src", v);
+	});
+
 	WS.Register( [ "ScoreBoard.Setting(ScoreBoard." + view + "_BoxStyle)",
 		"ScoreBoard.Setting(ScoreBoard." + view + "_BackgroundStyle)",
 		"ScoreBoard.Setting(ScoreBoard." + view + "_HideJamTotals)",
@@ -33,7 +51,7 @@ function initialize() {
 				$("body").addClass(boxStyle);
 			if (backgroundStyle != "" && backgroundStyle != null)
 				$("body").addClass(backgroundStyle);
-			$("#sb").toggleClass("JamScore", showJamTotals);
+			$("div#scoreboard").toggleClass("JamScore", showJamTotals);
 
 			left = 0;
 			right = 0;
@@ -41,7 +59,7 @@ function initialize() {
 				left = sidePadding;
 				right = left;
 			}
-			$("#sb").css({ "left": left + "%", "width": (100 - left - right) + "%" });
+			$("div#scoreboard").css({ "left": left + "%", "width": (100 - left - right) + "%" });
 			$(window).trigger("resize");
 
 	});

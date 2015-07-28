@@ -5,6 +5,34 @@ function str_sort(a, b){ return ( $(b).attr("data-sort") < $(a).attr("data-sort"
 jQuery.fn.sortDivs = function sortDivsStr() { $("> div", this[0]).sort(str_sort).appendTo(this[0]); }
 jQuery.fn.sortDivsRev = function sortDivsRev() { $("> div", this[0]).sort(dec_sort).appendTo(this[0]); }
 
+if(document.location.search == '?camera') {
+	console.log('Setting up Camera');
+
+	MediaStreamTrack.getSources(function(s) {
+		for(var c=0;c<s.length;c++) {
+			var src = s[c];
+			if(src.kind == 'video') {
+				console.log(src);
+			}
+		}
+	});
+
+	navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
+	if (navigator.getUserMedia) {
+		   navigator.getUserMedia({ video: true },
+		   function(stream) {
+			 var video = document.querySelector('video');
+			 video.src = window.URL.createObjectURL(stream);
+			 video.onloadedmetadata = function(e) { video.play(); $('#VIDEO-GREEN').hide(); };
+		      },
+		      function(err) {
+			 console.log("The following error occured: " + err.name);
+		      }
+		   );
+	} else {
+	   	console.log("getUserMedia not supported. Camera Unavailable");
+	}
+}
 
 $(initialize);
 
@@ -19,6 +47,16 @@ function initialize() {
 		       "ScoreBoard.Setting(ScoreBoard.Intermission.Unofficial)",
 		       "ScoreBoard.Setting(ScoreBoard.Intermission.Official)",
 		       "ScoreBoard.Setting(ScoreBoard.Intermission.Intermission)" ], function(k,v) { } );
+
+	WS.Register( [  'ScoreBoard.Clock(Timeout).Running', 
+		        'ScoreBoard.TimeoutOwner',
+			'ScoreBoard.OfficialReview',
+			'ScoreBoard.Team(1).Timeouts',
+			'ScoreBoard.Team(2).Timeouts',
+			'ScoreBoard.Team(1).OfficialReviews',
+			'ScoreBoard.Team(2).OfficialReviews',
+			'ScoreBoard.Team(1).RetainedOfficialReview',
+			'ScoreBoard.Team(2).RetainedOfficialReview' ], function(k,v) { smallDescriptionUpdate(k,v); } );
 
 	WS.Register( 'Game.Period', function(k,v) { jamData(k,v); } );
 
@@ -90,8 +128,13 @@ function teamData(team, k,v) {
 	if(match) { 
 		var subkey = match[2];
 		if(subkey == 'Logo') { 
-			if(v) $('img.TeamLogo'+team).attr('src', v).css('display', 'block');
-			else  $('img.TeamLogo'+team).css('display', 'none');
+			if(v && v != '') {
+				$('img.TeamLogo'+team).attr('src', v).css('display', 'block');
+				$('img.TeamLogo'+team).parent().removeClass('NoLogo');
+			} else {
+				$('img.TeamLogo'+team).css('display', 'none');
+				$('img.TeamLogo'+team).parent().addClass('NoLogo');
+			}
 		}
 	}
 
@@ -101,10 +144,11 @@ function teamData(team, k,v) {
 		var setting = match[2];
 		var style;
 		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
-		if(style && v) {
+		if(style) {
 			var ns,r;
 			var rule;
-			var rd = '#sb .ColourTeam'+team;
+			// chrome seems to like things in lowercase
+			var rd = '#sb .colourteam'+team;
 
 			if(setting == 'overlay_bg') ns = 'background-color';
 			if(setting == 'overlay_fg') ns = 'color';
@@ -113,7 +157,7 @@ function teamData(team, k,v) {
 					var dd = style.rules[r];
 					if(dd.selectorText == rd && dd.style[0] == ns) style.deleteRule(r);
 				}
-				style.addRule(rd, ns + ': ' + v);
+				if(v != null) style.addRule(rd, ns + ': ' + v);
 			}
 		}
 		return;

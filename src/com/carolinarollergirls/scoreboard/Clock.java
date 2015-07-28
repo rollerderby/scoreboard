@@ -23,6 +23,7 @@ public interface Clock extends ScoreBoardEventProvider
 	public int getMaximumNumber();
 
 	public long getTime();
+	public long getInvertedTime();
 	public long getMinimumTime();
 	public long getMaximumTime();
 	public boolean isTimeAtStart(long time);
@@ -45,6 +46,7 @@ public interface Clock extends ScoreBoardEventProvider
 	public static final String EVENT_MINIMUM_NUMBER = "MinimumNumber";
 	public static final String EVENT_MAXIMUM_NUMBER = "MaximumNumber";
 	public static final String EVENT_TIME = "Time";
+	public static final String EVENT_INVERTED_TIME = "InvertedTime";
 	public static final String EVENT_MINIMUM_TIME = "MinimumTime";
 	public static final String EVENT_MAXIMUM_TIME = "MaximumTime";
 	public static final String EVENT_DIRECTION = "Direction";

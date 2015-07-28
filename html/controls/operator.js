@@ -737,6 +737,13 @@ function createTimeTable() {
 		var timeResetTd = $("<td>").appendTo(timeResetRow);
 
 		sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
+		if (clock == "Period" || clock == "Jam") {
+			var it = sbClock.$sb("InvertedTime").$sbElement("<a>", { sbelement: { convert: _timeConversions.msToMinSec } }).appendTo(nameTd).addClass("InvertedTime");
+			sbClock.$sb("Direction").$sbBindAndRun("sbchange", function(event, value) {
+				it.toggleClass("CountDown", isTrue(value));
+				it.toggleClass("CountUp", !isTrue(value));
+			});
+		}
 		sbClock.$sb("Running").$sbBindAndRun("sbchange", function(event,value) {
 			nameTd.toggleClass("Running", isTrue(value));
 		});
