@@ -30,6 +30,7 @@ table.RowTable { border-spacing: 0px; }
 /*** Tabs ***/
 
 /* Team/Time Tab */
+	#TeamTime { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; }
 	#TeamTime a { font-weight: bold; }
 	#TeamTime .ui-button-text { font-size: 80%; line-height: 1em; }
 	#TeamTime .BigButton .ui-button-text { font-size: 100%; line-height: 1.4em; }
