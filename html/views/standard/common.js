@@ -32,9 +32,13 @@ function nameUpdate(k, v) {
 	id = getTeamId(k);
 	var prefix = "ScoreBoard.Team(" + id + ").";
 	var name = WS.state[prefix + "Name"];
-	var altName = WS.state[prefix + "AlternateName(scoreboard)"];
-	if (altName != null && altName != "")
-		name = altName;
+	var altName1 = WS.state[prefix + "AlternateName(overlay)"];
+	var altName2 = WS.state[prefix + "AlternateName(scoreboard)"];
+
+	if (altName1 != null && altName1 != "")
+		name = altName1;
+	else if (altName2 != null && altName2 != "")
+		name = altName2;
 
 	$(".Team" + id).toggleClass("HasName", name != "");
 	return name;

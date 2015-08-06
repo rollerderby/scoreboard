@@ -30,7 +30,17 @@ function createTeamTable(t) {
   var table = $("#tableDiv table.Template").clone().removeClass("Template").addClass("Team"+t)
     .appendTo("#tableDiv");
   table.sortedtable({ header: table.find("thead tr:eq(1)") });
-  team.$sb("Name").$sbElement(table.find("th.Team a.Team"));
+
+  var nameDiv = table.find("th.Team a.Team");
+  var namePicker = function(event, value) {
+    var n = team.$sb("Name").$sbGet();
+    var an = team.$sb("AlternateName(operator).Name").$sbGet();
+    if (an != null && an != "")
+      n = an;
+    nameDiv.text(n);
+  };
+  team.$sb("Name").$sbBindAndRun("sbchange", namePicker);
+  team.$sb("AlternateName(operator).Name").$sbBindAndRun("sbchange", namePicker);
 
   team.$sbBindAddRemoveEach("Skater", function(event, skater) {
     var row = table.find("tr.Template").clone().removeClass("Template").attr("data-id", skater.$sbId);

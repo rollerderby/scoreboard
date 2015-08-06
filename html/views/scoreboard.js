@@ -97,7 +97,6 @@ $sb(function() {
 
 	var v = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CurrentView)");
 	v.$sbBindAndRun("sbchange", function(event, value) {
-		console.log(this, value);
 		$("video").each(function() { this.pause(); });
 		var showDiv = $("#"+value+"Div");
 		if (!showDiv.length)
@@ -166,7 +165,7 @@ function setupTeams() {
 		} }, "Number");
 
 		var teamDiv = $("#sbDiv>div.Team"+team);
-		sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
+		// sbTeam.$sb("Name").$sbElement(teamDiv.find("div.Name>a"), { sbelement: { autoFitText: true } }, "Name");
 		sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
 		sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 40 } } }, "Score");
 
@@ -176,11 +175,18 @@ function setupTeams() {
 		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
 		_crgUtils.bindColors(sbTeam, "scoreboard", teamDiv.find("div.Name>a"));
 
-		var resizeName = teamDiv.find("div.Name").data("AutoFit");
-		sbTeam.$sb("Name").$sbBindAndRun("sbchange", function(event,value) {
-			teamDiv.find("div.NameLogo").toggleClass("NoName", !value);
+		var nameDiv = teamDiv.find("div.Name>a");
+		var resizeName = _autoFit.enableAutoFitText(teamDiv.find("div.Name")); 
+		var namePicker = function(event, value) {
+			var n = sbTeam.$sb("Name").$sbGet();
+			var an = sbTeam.$sb("AlternateName(scoreboard).Name").$sbGet();
+			if (an != null && an != "")
+				n = an;
+			nameDiv.text(n);
 			resizeName();
-		});
+		};
+		sbTeam.$sb("Name").$sbBindAndRun("sbchange", namePicker);
+		sbTeam.$sb("AlternateName(scoreboard).Name").$sbBindAndRun("sbchange", namePicker);
 		sbTeam.$sb("Logo").$sbBindAndRun("sbchange", function(event,value) {
 			teamDiv.find("div.NameLogo").toggleClass("NoLogo", !value);
 			resizeName();
