@@ -183,6 +183,7 @@ function setupTeams() {
 			if (an != null && an != "")
 				n = an;
 			nameDiv.text(n);
+			teamDiv.find("div.NameLogo").toggleClass("NoName", !(n != null && n != ""));
 			resizeName();
 		};
 		sbTeam.$sb("Name").$sbBindAndRun("sbchange", namePicker);
