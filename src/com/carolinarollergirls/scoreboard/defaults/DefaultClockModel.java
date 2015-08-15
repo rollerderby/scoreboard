@@ -392,8 +392,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 					if (c.countDown)
 						delay = -delay;
 					c.time = c.unstartTime - delay;
-
-					// ScoreBoardManager.printMessage("Starting clock " + c.id + " @ " + c.time + " (" + c.unstartTime + ") with " + delay + " delay due to masterclock " + masterClock.id + " @ " + masterClock.time + " nowMs:" + nowMs + " timeMs:" + timeMs);
 				} else {
 					c.lastTime = currentTime;
 				}

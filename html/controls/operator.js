@@ -224,6 +224,12 @@ function createMetaControlTable() {
 	return table;
 }
 
+function addDays(date, days) {
+	var result = new Date(date);
+	result.setDate(result.getDate() + days);
+	return result;
+}
+
 function createGameControlDialog() {
 	var dialog = $("<div>").addClass("GameControl");
 	var title = "Start New Game";
@@ -234,12 +240,25 @@ function createGameControlDialog() {
 	var adhocGame = $("<div>").addClass("section").appendTo(dialog);
 
 	var adhocStartGame = function() {
+		var StartTime = adhocGame.find("input.StartTime").val();
+		var IntermissionClock = null;
+		if (StartTime != "") {
+			var now = new Date();
+			var parts = StartTime.split(":");
+			StartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+					parts[0], parts[1]);
+			if (StartTime < now)
+				StartTime = addDays(StartTime, 1);
+			IntermissionClock = StartTime - now;
+		}
 		var game = {
 			Team1: adhocGame.find("select.Team1").val(),
 			Team2: adhocGame.find("select.Team2").val(),
 			Ruleset: adhocGame.find("select.Ruleset").val(),
 			Name: adhocGame.find("span.Name").text(),
+			IntermissionClock: IntermissionClock
 		};
+		console.log(game);
 		Game.Adhoc(game, function() {
 			dialog.dialog("close");
 		});
@@ -261,6 +280,10 @@ function createGameControlDialog() {
 	$("<div>")
 		.append($("<span>").append("Game Name: "))
 		.append($("<span>").addClass("Name"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Start Time: "))
+		.append($("<input>").attr("type", "time").addClass("StartTime"))
 		.appendTo(adhocGame);
 	$("<button>")
 		.addClass("StartGame")
@@ -1441,6 +1464,7 @@ function createAlternateNamesDialog(team) {
 			{ label: "mobile (Mobile Control)", value: "mobile" },
 			{ label: "operator (Operator Controls)", value: "operator" },
 			{ label: "overlay (Video Overlay)", value: "overlay" },
+			{ label: "scoreboard (Scoreboard Display)", value: "scoreboard" },
 			{ label: "twitter (Twitter)", value: "twitter" }
 		]
 	}).focus(function() { $(this).autocomplete("search", ""); });

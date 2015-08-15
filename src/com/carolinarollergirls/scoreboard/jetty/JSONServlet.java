@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.text.DateFormat;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -22,6 +23,7 @@ import org.eclipse.jetty.server.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.xml.TeamsXmlDocumentManager;
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentManager;
 
@@ -84,6 +86,7 @@ public class JSONServlet extends HttpServlet
 				String t2 = json.optString("Team2", null);
 				String rs = json.optString("Ruleset", null);
 				String name = json.optString("Name", null);
+				String intermissionClock = json.optString("IntermissionClock", null);
 				if (t1 == null || t2 == null || rs == null || name == null) {
 					error(response, "Error creating game");
 				}
@@ -98,6 +101,18 @@ public class JSONServlet extends HttpServlet
 
 				Game g = ScoreBoardManager.gameStart(name);
 				response.getWriter().print(g.toJSON());
+
+				if (intermissionClock != null) {
+					Long ic_time = new Long(intermissionClock);
+					ic_time = ic_time - (ic_time % 1000);
+					ClockModel c = scoreBoardModel.getClockModel(Clock.ID_INTERMISSION);
+					c.reset();
+					c.setNumber(0);
+					if (c.getMaximumTime() < ic_time)
+						c.setMaximumTime(ic_time);
+					c.setTime(ic_time);
+					c.start();
+				}
 
 			} else
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
