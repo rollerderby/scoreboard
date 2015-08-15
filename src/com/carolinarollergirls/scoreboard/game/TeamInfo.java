@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Set;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -34,7 +35,9 @@ public class TeamInfo extends Updater {
 			if (an != null && an.getId() != null && an.getName() != null)
 				alternateNames.put(an.getId(), an.getName());
 		}
-		for (String id : alternateNames.keySet()) {
+		Object[] keys = alternateNames.keySet().toArray();
+		for (Object oid : keys) {
+			String id = (String)oid;
 			boolean found = false;
 			for (Team.AlternateName an : t_an) {
 				if (an != null && id.equals(an.getId()) && an.getName() != null) {
@@ -54,7 +57,9 @@ public class TeamInfo extends Updater {
 			if (c != null && c.getId() != null && c.getColor() != null)
 				colors.put(c.getId(), c.getColor());
 		}
-		for (String id : colors.keySet()) {
+		keys = colors.keySet().toArray();
+		for (Object oid : keys) {
+			String id = (String)oid;
 			boolean found = false;
 			for (Team.Color c : t_c) {
 				if (c != null && id.equals(c.getId()) && c.getColor() != null) {
