@@ -116,7 +116,7 @@ $sb(function() {
 			console.log('lead change ' + t + '/' + val);
 			console.log(s);
 			console.log($v);
-			$v.toggleClass("IsLead", isTrue(val), 1000);
+			$v.toggleClass("IsLead", val == "Lead", 1000);
 		});
 	});
 
