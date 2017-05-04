@@ -36,42 +36,42 @@ function showOverlays() {
 
 <body>
 
-<a id="Top">
-<center>
-<img src="/Carolina.png" width="320" height="120" />
-<h1>Carolina Rollergirls Browser-based Roller Derby Scoreboard</h1>
-<p>Version: <a id="version"></a></p>
-</center>
-</a>
+<table><tr><td>
+  <img src="/Carolina.png" width="320" height="120" />
+  </td><td><h1>Carolina Rollergirls Roller Derby Scoreboard</h1></td>
+</table>
 
 <table>
-	<col width="50%">
-	<col width="50%">
 	<tr>
-		<td>
-			<h3>Scoreboard view/control pages</h3>
+		<td width="50%">
+			<h3>Core Scoreboard View/Control Pages</h3>
 			<a href="controls/operator.html">Main Operator Control Panel</a><br/>
-			<a href="views/scoreboard.html">Main Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp;
-				<a href="views/scoreboard.html?ani=min">(Minimal Animations)</a><br/>
-			<a href="views/standard/">BETA Websocket/JSON Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp;
-				<a href="views/standard/?ani=min">(Minimal Animations)</a><br/>
-			<a href="controls/rulesets.html">Ruleset Editor</a><br/>
-			<a href="controls/mobile.html">Mobile Device Operator Controls</a><br/>
-			<a href="controls/media_management.html">Media Management</a><br/>
-			<a href="javascript: showOverlays();">Overlays</a><br/>
-			<a href="controls/stream.html">Load/Save Scoreboard "Stream" (beta quality!)</a><br/>
-			<a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
+			<a href="views/scoreboard.html">Main Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="views/scoreboard.html?ani=min">(Minimal Animations)</a><br/>
+			<a href="views/standard/">Websocket/JSON Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="views/standard/?ani=min">(Minimal Animations)</a><br/>
+
+      <h3>Other NSO View/Control Pages</h3>
+			<a href="controls/mobile.html">Jam Timer Mobile Controls</a><br/>
 			<a href="controls/lineups.html">Team Lineup Control Panel (beta quality!)</a><br/>
 			<a href="controls/scoreboard_assist.html">Scoreboard Assistant</a><br/>
-			<br />
-			<a href="controls/pt/">Penalty Tracker</a><br/>
-			<a href="controls/pt/ptcolor.html">Penalty Tracker w/ Team Names and Colors</a><br/>
-                        <a href='views/wb/tcdg2016wb.html'>Graphical Penalty Whiteboard</a><br/>
-                        <a href='views/wb/whiteboard.html'>Text-based Penalty Whiteboard</a><br/>
+			<a href="controls/pt/">Penalty Tracker</a>  (<a href="controls/pt/ptcolor.html">w/ Team Names and Colors</a>)<br/>
+      <a href='views/wb/tcdg2016wb.html'>Graphical Penalty Whiteboard</a> &nbsp;&nbsp;&nbsp;&nbsp;<a href='views/wb/whiteboard.html'>(Text Version)</a><br/>
+      <br/>
+      <h3>Utilities</h3>
+			<a href="javascript: showOverlays();">Broadcast Overlays</a><br/>
+			<a href="controls/rulesets.html">Ruleset Editor</a><br/>
+			<a href="controls/media_management.html">Media Management</a><br/>
+			<a href="controls/stream.html">Load/Save Scoreboard "Stream" (beta quality!)</a><br/>
+			<a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
 
 		</td>
 
-		<td>
+		<td width="50%">
+        <a id="Top">
+        <center>
+        <p>Version: <a id="version"></a></p>
+        </center>
+        </a>
+
 			<p>
 				<b>Important notice:</b><br/>
 				The scoreboard no longer includes any team logos or sponsor (ad) images.

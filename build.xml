@@ -7,8 +7,7 @@
 	<property name="src.dir" value="src"/>
 	<property name="dest.dir" value="bin"/>
 	<property name="jdoc.dir" value="jdoc"/>
-
-	<property name="version.src.dir" value="${src.dir}/com/carolinarollergirls/scoreboard/version"/>
+<property name="version.src.dir" value="${src.dir}/com/carolinarollergirls/scoreboard/version"/>
 	<property name="version.dest.dir" value="${dest.dir}/com/carolinarollergirls/scoreboard/version"/>
 	<property name="version.release.file" value="release.properties"/>
 	<property name="version.build.file" value="build.properties"/>
