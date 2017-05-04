@@ -11,14 +11,12 @@ package com.carolinarollergirls.scoreboard.defaults;
 import java.util.*;
 import java.util.concurrent.*;
 
-import java.awt.image.*;
-
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.policy.*;
 
-public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel
+public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
 {
 	public DefaultTeamModel(ScoreBoardModel sbm, String i) {
 		Iterator<String> posIds = Position.FLOOR_POSITIONS.iterator();
@@ -31,7 +29,22 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 		scoreBoardModel = sbm;
 		id = i;
+
+		// Register for default values from the rulesets
+		Ruleset.registerRule(this, "Team." + id + ".Name");
+		Ruleset.registerRule(this, "Team.Timeouts");
+		Ruleset.registerRule(this, "Team.OfficialReviews");
+
 		reset();
+	}
+
+	public void applyRule(String rule, Object value) {
+		if (rule.equals("Team.Timeouts"))
+			setTimeouts((Integer)value);
+		else if (rule.equals("Team.OfficialReviews"))
+			setOfficialReviews((Integer)value);
+		else if (rule.equals("Team." + id + ".Name"))
+			setName((String)value);
 	}
 
 	public String getProviderName() { return "Team"; }
@@ -42,14 +55,19 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public ScoreBoardModel getScoreBoardModel() { return scoreBoardModel; }
 
 	public void reset() {
-		setName(DEFAULT_NAME_PREFIX+getId());
+		// Get default values from active ruleset
+		getScoreBoard()._getRuleset().apply(true, this);
+
 		setLogo(DEFAULT_LOGO);
 		setScore(DEFAULT_SCORE);
 		setLastScore(DEFAULT_SCORE);
-		setTimeouts(DEFAULT_TIMEOUTS);
-		setOfficialReviews(DEFAULT_OFFICIAL_REVIEWS);
-		setLeadJammer(DEFAULT_LEADJAMMER);
-		setPass(DEFAULT_PASS);
+		_setLeadJammer(DEFAULT_LEADJAMMER);
+		_setStarPass(DEFAULT_STARPASS);
+
+		setInTimeout(false);
+		setInOfficialReview(false);
+		setRetainedOfficialReview(false);
+
 		removeAlternateNameModels();
 		removeColorModels();
 		Iterator<PositionModel> p = getPositionModels().iterator();
@@ -75,14 +93,53 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
-	public void startJam() { saved_lastscore = getLastScore(); setLastScore(getScore()); }
-	public void unStartJam() { setLastScore(saved_lastscore); }
+	public void startJam() {
+		synchronized (scoreLock) {
+			saved_lastscore = getLastScore();
+			setLastScore(getScore());
+		}
+	}
+	public void unStartJam() {
+		setLastScore(saved_lastscore);
+	}
+
+	public void stopJam() {
+		requestBatchStart();
+
+		benchSkaters();
+		saved_leadJammer = leadJammer;
+		saved_starPass = starPass;
+		_setLeadJammer(Team.LEAD_NO_LEAD);
+		_setStarPass(false);
+
+		requestBatchEnd();
+	}
+	public void unStopJam() {
+		requestBatchStart();
+		unBenchSkaters();
+		_setLeadJammer(saved_leadJammer);
+		_setStarPass(saved_starPass);
+		requestBatchEnd();
+	}
+
+	public void benchSkaters() {
+		for (SkaterModel sM : skaters.values())
+			sM.bench();
+	}
+	public void unBenchSkaters() {
+		for (SkaterModel sM : skaters.values())
+			sM.unBench();
+	}
 
 	public List<AlternateName> getAlternateNames() {
-		return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
+		synchronized (alternateNameLock) {
+			return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
+		}
 	}
 	public List<AlternateNameModel> getAlternateNameModels() {
-		return Collections.unmodifiableList(new ArrayList<AlternateNameModel>(alternateNames.values()));
+		synchronized (alternateNameLock) {
+			return Collections.unmodifiableList(new ArrayList<AlternateNameModel>(alternateNames.values()));
+		}
 	}
 	public AlternateName getAlternateName(String i) { return getAlternateNameModel(i); }
 	public AlternateNameModel getAlternateNameModel(String i) { return alternateNames.get(i); }
@@ -114,10 +171,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public List<Color> getColors() {
-		return Collections.unmodifiableList(new ArrayList<Color>(colors.values()));
+		synchronized (colorLock) {
+			return Collections.unmodifiableList(new ArrayList<Color>(colors.values()));
+		}
 	}
 	public List<ColorModel> getColorModels() {
-		return Collections.unmodifiableList(new ArrayList<ColorModel>(colors.values()));
+		synchronized (colorLock) {
+			return Collections.unmodifiableList(new ArrayList<ColorModel>(colors.values()));
+		}
 	}
 	public Color getColor(String i) { return getColorModel(i); }
 	public ColorModel getColorModel(String i) { return colors.get(i); }
@@ -207,6 +268,55 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
+	public boolean inTimeout() {
+		synchronized (timeoutsLock) {
+			return in_timeout;
+		}
+	}
+	public void setInTimeout(boolean b) {
+		synchronized (timeoutsLock) {
+			if (b==in_timeout)
+				return;
+			Boolean last = new Boolean(in_timeout);
+			in_timeout = b;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_TIMEOUT, new Boolean(b), last));
+		}
+	}
+
+	public boolean inOfficialReview() {
+		synchronized (timeoutsLock) {
+			return in_official_review;
+		}
+	}
+	public void setInOfficialReview(boolean b) {
+		synchronized (timeoutsLock) {
+			if (b==in_official_review)
+				return;
+			Boolean last = new Boolean(in_official_review);
+			in_official_review = b;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_OFFICIAL_REVIEW, new Boolean(b), last));
+		}
+	}
+
+	public boolean retainedOfficialReview() {
+		synchronized (timeoutsLock) {
+			return retained_official_review;
+		}
+	}
+	public void setRetainedOfficialReview(boolean b) {
+		synchronized (timeoutsLock) {
+			if (b==retained_official_review)
+				return;
+
+			if (b && officialReviews == 0)
+				setOfficialReviews(1);
+
+			Boolean last = new Boolean(retained_official_review);
+			retained_official_review = b;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RETAINED_OFFICIAL_REVIEW, new Boolean(b), last));
+		}
+	}
+
 	public int getTimeouts() { return timeouts; }
 //FIXME - add MinimumTimeouts and MaximumTimeouts instead of hardcoding 0 and 3
 	public void setTimeouts(int t) {
@@ -244,11 +354,32 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
+	public static Comparator<Skater> SkaterComparator = new Comparator<Skater>() {
+		public int compare(Skater s1, Skater s2) {
+			if (s2 == null)
+				return 1;
+			String n1 = s1.getNumber();
+			String n2 = s2.getNumber();
+			if (n1 == null) return -1;
+			if (n2 == null) return 1;
+
+			return n1.compareTo(n2);
+		}
+	};
+
 	public List<SkaterModel> getSkaterModels() {
-		return Collections.unmodifiableList(new ArrayList<SkaterModel>(skaters.values()));
+		synchronized (skaterLock) {
+			ArrayList<SkaterModel> s = new ArrayList<SkaterModel>(skaters.values());
+			Collections.sort(s, SkaterComparator);
+			return Collections.unmodifiableList(s);
+		}
 	}
 	public List<Skater> getSkaters() {
-		return Collections.unmodifiableList(new ArrayList<Skater>(skaters.values()));
+		synchronized (skaterLock) {
+			ArrayList<Skater> s = new ArrayList<Skater>(skaters.values());
+			Collections.sort(s, SkaterComparator);
+			return Collections.unmodifiableList(s);
+		}
 	}
 	public Skater getSkater(String id) throws SkaterNotFoundException { return getSkaterModel(id); }
 	public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException {
@@ -259,9 +390,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 				throw new SkaterNotFoundException(id);
 		}
 	}
-	public SkaterModel addSkaterModel(String id) { return addSkaterModel(id, "", ""); }
-	public SkaterModel addSkaterModel(String id, String n, String num) {
-		SkaterModel sM = new DefaultSkaterModel(this, id, n, num);
+	public SkaterModel addSkaterModel(String id) { return addSkaterModel(id, "", "", ""); }
+	public SkaterModel addSkaterModel(String id, String n, String num, String flags) {
+		SkaterModel sM = new DefaultSkaterModel(this, id, n, num, flags);
 		addSkaterModel(sM);
 		return sM;
 	}
@@ -296,44 +427,53 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public List<Position> getPositions() { return Collections.unmodifiableList(new ArrayList<Position>(positions.values())); }
 	public List<PositionModel> getPositionModels() { return Collections.unmodifiableList(new ArrayList<PositionModel>(positions.values())); }
 
-	public boolean isLeadJammer() { return leadJammer; }
-	public void setLeadJammer(boolean lead) {
+	public String getLeadJammer() { return leadJammer; }
+	public void setLeadJammer(String lead) {
+		_setLeadJammer(lead);
+		ScoreBoardManager.gameSnapshot();
+	}
+	private void _setLeadJammer(String lead) {
+		if ("false".equals(lead.toLowerCase()))
+			lead = Team.LEAD_NO_LEAD;
+		else if ("true".equals(lead.toLowerCase()))
+			lead = Team.LEAD_LEAD;
 		synchronized (skaterLock) {
-			boolean leadIndependent = false;
-			try { leadIndependent = getScoreBoard().getPolicy(TeamLeadJammerIndependentPolicy.ID).isEnabled(); }
-			catch ( Exception e ) { }
-			if (leadIndependent) {
-				_setLeadJammer(lead);
-			} else {
-				try { getPositionModel(Position.ID_JAMMER).getSkaterModel().setLeadJammer(lead); }
-				catch ( NullPointerException npE ) { /* No Jammer set */ }
+			requestBatchStart();
+
+			String last = leadJammer;
+			leadJammer = lead;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, leadJammer, last));
+
+			if (Team.LEAD_LEAD.equals(lead)) {
+				String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
+				TeamModel otherTeam = getScoreBoardModel().getTeamModel(otherId);
+				if (Team.LEAD_LEAD.equals(otherTeam.getLeadJammer())) {
+					otherTeam.setLeadJammer(Team.LEAD_NO_LEAD);
+				}
 			}
+
+			requestBatchEnd();
 		}
-	}
-	public void _setLeadJammer(boolean lead) {
-		Boolean last = new Boolean(leadJammer);
-		leadJammer = lead;
-		scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, new Boolean(leadJammer), last));
 	}
 
+	public boolean isStarPass() { return starPass; }
+	public void setStarPass(boolean starPass) {
+		_setStarPass(starPass);
+		ScoreBoardManager.gameSnapshot();
+	}
+	private void _setStarPass(boolean starPass) {
+		synchronized (skaterLock) {
+			requestBatchStart();
 
-	public int getPass() { return pass; }
-	public void setPass(int pass) {
-		synchronized (skaterLock) {
-			try { getPositionModel(Position.ID_JAMMER).getSkaterModel().setPass(pass); }
-			catch ( NullPointerException npE ) { }
+			Boolean last = new Boolean(starPass);
+			this.starPass = starPass;
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(starPass), last));
+
+			if (starPass && Team.LEAD_LEAD.equals(leadJammer))
+				_setLeadJammer(Team.LEAD_LOST_LEAD);
+
+			requestBatchEnd();
 		}
-	}
-	public void changePass(int change) {
-		synchronized (skaterLock) {
-			try { getPositionModel(Position.ID_JAMMER).getSkaterModel().changePass(change); }
-			catch ( NullPointerException npE ) { }
-		}
-	}
-	public void _setPass(int p) {
-		Integer last = new Integer(pass);
-		pass = p;
-		scoreBoardChange(new ScoreBoardEvent(this, EVENT_PASS, new Integer(pass), last));
 	}
 
 
@@ -341,20 +481,27 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	protected String id;
 	protected String name;
-	protected Object nameLock = new Object();
 	protected String logo;
-	protected Object logoLock = new Object();
 	protected int score;
-	protected Object scoreLock = new Object();
-	protected int saved_lastscore;
 	protected int lastscore;
-	protected Object lastscoreLock = new Object();
 	protected int timeouts;
-	protected Object timeoutsLock = new Object();
 	protected int officialReviews;
+	protected String leadJammer = Team.LEAD_NO_LEAD;
+	protected boolean starPass = false;
+	protected boolean in_timeout = false;
+	protected boolean in_official_review = false;
+	protected boolean retained_official_review = false;
+
+	private int saved_lastscore = 0;
+	private String saved_leadJammer = Team.LEAD_NO_LEAD;
+	private boolean saved_starPass = false;
+
+	protected Object nameLock = new Object();
+	protected Object logoLock = new Object();
+	protected Object scoreLock = new Object();
+	protected Object lastscoreLock = new Object();
+	protected Object timeoutsLock = new Object();
 	protected Object officialReviewsLock = new Object();
-	protected boolean leadJammer = false;
-	protected int pass = 0;
 
 	protected Map<String,AlternateNameModel> alternateNames = new ConcurrentHashMap<String,AlternateNameModel>();
 	protected Object alternateNameLock = new Object();
@@ -371,8 +518,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public static final int DEFAULT_SCORE = 0;
 	public static final int DEFAULT_TIMEOUTS = 3;
 	public static final int DEFAULT_OFFICIAL_REVIEWS = 1;
-	public static final boolean DEFAULT_LEADJAMMER = false;
-	public static final int DEFAULT_PASS = 0;
+	public static final String DEFAULT_LEADJAMMER = Team.LEAD_NO_LEAD;
+	public static final boolean DEFAULT_STARPASS = false;
 
 	public class DefaultAlternateNameModel extends DefaultScoreBoardEventProvider implements AlternateNameModel
 	{

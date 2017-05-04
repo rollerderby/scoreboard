@@ -60,6 +60,7 @@ public class XmlScoreBoard
 
 	public void addXmlDocumentManager(XmlDocumentManager xdM) { managers.addXmlDocumentManager(xdM); }
 	public void removeXmlDocumentManager(XmlDocumentManager xdM) { managers.removeXmlDocumentManager(xdM); }
+	public List<XmlDocumentManager> findXmlDocumentManagers(Class c) { return managers.findXmlDocumentManagers(c); }
 
 	public void reset() {
 		synchronized (managerLock) {
@@ -208,7 +209,7 @@ public class XmlScoreBoard
 	}
 
 	protected void loadDefaultDocuments() {
-		File initialDocumentDir = new File(ScoreBoardManager.getProperties().getProperty(DOCUMENT_DIR_KEY, DEFAULT_DIRECTORY_NAME));
+		File initialDocumentDir = new File(ScoreBoardManager.getDefaultPath(), ScoreBoardManager.getProperties().getProperty(DOCUMENT_DIR_KEY, DEFAULT_DIRECTORY_NAME));
 		if (!initialDocumentDir.isDirectory()) {
 			ScoreBoardManager.printMessage("Initial XML document directory '"+initialDocumentDir.getPath()+"' does not exist.");
 			return;
@@ -238,10 +239,6 @@ public class XmlScoreBoard
 
 	protected void loadXmlDocumentManagers() {
 //FIXME - this isn't the right way to do this!	use properties file, or xml maybe?
-		// disable these until they are useful/complete.
-		//new XmlRealtimeStats().setXmlScoreBoard(this);
-		//new XmlInterpretedStats().setXmlScoreBoard(this);
-		//new XmlGoogleDocsStats().setXmlScoreBoard(this);
 		new LoadScoreBoard().setXmlScoreBoard(this);
 		new SaveScoreBoardStream().setXmlScoreBoard(this);
 		new LoadScoreBoardStream().setXmlScoreBoard(this);

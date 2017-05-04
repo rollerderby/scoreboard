@@ -24,6 +24,9 @@ public interface TeamModel extends Team
 
 	public void startJam();
 	public void unStartJam();
+	public void stopJam();
+	public void unStopJam();
+	public void benchSkaters();
 
 	public List<AlternateNameModel> getAlternateNameModels();
 	public AlternateNameModel getAlternateNameModel(String id);
@@ -53,9 +56,13 @@ public interface TeamModel extends Team
 	public void setOfficialReviews(int reviews);
 	public void changeOfficialReviews(int reviews);
 
+	public void setInTimeout(boolean in_timeouts);
+	public void setInOfficialReview(boolean in_official_review);
+	public void setRetainedOfficialReview(boolean retained_official_review);
+
 	public void addSkaterModel(SkaterModel skater);
 	public SkaterModel addSkaterModel(String id);
-	public SkaterModel addSkaterModel(String id, String name, String number);
+	public SkaterModel addSkaterModel(String id, String name, String number, String flag);
 	public void removeSkaterModel(String id) throws SkaterNotFoundException;
 
 	public List<SkaterModel> getSkaterModels();
@@ -64,14 +71,9 @@ public interface TeamModel extends Team
 	public List<PositionModel> getPositionModels();
 	public PositionModel getPositionModel(String id) throws PositionNotFoundException;
 
-	public void setLeadJammer(boolean lead);
-	/* For internal use only */
-	public void _setLeadJammer(boolean lead);
+	public void setLeadJammer(String lead);
 
-	public void setPass(int pass);
-	public void changePass(int change);
-	/* For internal use only */
-	public void _setPass(int pass);
+	public void setStarPass(boolean starPass);
 
 	public static interface AlternateNameModel extends AlternateName {
 		public void setName(String n);

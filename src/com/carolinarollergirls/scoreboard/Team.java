@@ -34,18 +34,25 @@ public interface Team extends ScoreBoardEventProvider
 	public int getTimeouts();
 	public int getOfficialReviews();
 
+	public boolean inTimeout();
+	public boolean inOfficialReview();
+	public boolean retainedOfficialReview();
+
 	public List<Skater> getSkaters();
 	public Skater getSkater(String id) throws SkaterNotFoundException;
 
 	public List<Position> getPositions();
 	public Position getPosition(String id) throws PositionNotFoundException;
 
-	public boolean isLeadJammer();
-
-	public int getPass();
+	public String getLeadJammer();
+	public boolean isStarPass();
 
 	public static final String ID_1 = "1";
 	public static final String ID_2 = "2";
+
+	public static final String LEAD_LEAD = "Lead";
+	public static final String LEAD_NO_LEAD = "NoLead";
+	public static final String LEAD_LOST_LEAD = "LostLead";
 
 	public static final String EVENT_NAME = "Name";
 	public static final String EVENT_LOGO = "Logo";
@@ -53,10 +60,13 @@ public interface Team extends ScoreBoardEventProvider
 	public static final String EVENT_LAST_SCORE = "LastScore";
 	public static final String EVENT_TIMEOUTS = "Timeouts";
 	public static final String EVENT_OFFICIAL_REVIEWS = "OfficialReviews";
+	public static final String EVENT_IN_TIMEOUT = "InTimeout";
+	public static final String EVENT_IN_OFFICIAL_REVIEW = "InOfficialReview";
+	public static final String EVENT_RETAINED_OFFICIAL_REVIEW = "RetainedOfficialReview";
 	public static final String EVENT_ADD_SKATER = "AddSkater";
 	public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
 	public static final String EVENT_LEAD_JAMMER = "LeadJammer";
-	public static final String EVENT_PASS = "Pass";
+	public static final String EVENT_STAR_PASS = "StarPass";
 	public static final String EVENT_ADD_ALTERNATE_NAME = "AddAlternateName";
 	public static final String EVENT_REMOVE_ALTERNATE_NAME = "RemoveAlternateName";
 	public static final String EVENT_ADD_COLOR = "AddColor";

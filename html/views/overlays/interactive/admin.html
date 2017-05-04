@@ -1,0 +1,74 @@
+<html>
+	<head>
+		<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+		<script type="text/javascript" src="/json/core.js"></script>
+		<script type="text/javascript" src="/json/WS.js"></script>
+		<script type="text/javascript" src="dataset.js"></script>
+	</head>
+
+	<body>
+
+	<div id="Controls">
+
+		<p id="Core" class="Panel">
+			<h2>Elements</h2>
+			<button data-key="C" data-setting="Custom.Overlay.Clock" class="ToggleSwitch">Clock [C]</button> 
+			<button data-key="S" data-setting="Custom.Overlay.Score" class="ToggleSwitch">Score [S]</button>
+			<button data-key="J" data-setting="Custom.Overlay.ShowJammers" class="ToggleSwitch">Jammers [J]</button><br/>
+		</p>
+
+		<h2>Notify</h2>
+		<button data-key="A" data-setting="Custom.Overlay.Alert" class="ToggleSwitch ToggleAlert">Cue Alert [A]</button><br/>
+
+		<p id="Panel">
+			<h2>Panels</h2>
+			<select class="SelectUpdator" id="PanelOverlay" data-subforms=".ExtraForm" data-target="#OverlayType" data-setting="Custom.Overlay.Panel" data-field="data-next">
+				<option data-key="X" value="">--- No Panel --- [X]</option>
+				<option data-key="0" value="PPJBox">Points per Jam  [0]</option>
+				<option data-key="1" value="RosterTeam1">Roster (T1)  [1]</option>
+				<option data-key="2" value="RosterTeam2">Roster (T2)  [2]</option>
+				<option data-key="3" value="PenaltyTeam1">Penalty (T1) [3]</option>
+				<option data-key="4" value="PenaltyTeam2">Penalty (T2) [4]</option>
+				<option data-key="9" value="LowerThird" data-form=".ExtraFormLower">Lower Third [9]</option>
+				<option data-key="N" value="Upcoming">Upcoming [n]</option>
+			</select>
+
+
+			<button data-key=" " data-setting="Custom.Overlay.Panel" id="OverlayType" class="ToggleSwitch Reverse NoAuto" data-source="#PanelOverlay"> </button>
+			<input type="hidden" data-setting="Custom.Overlay.LowerThird.Style" id="LowerStyle" data-source="#LowerThirdStyle"> </input>
+
+			<div class="ExtraForm ExtraFormLower" style="display: none;">
+				<h2>Lower Third</h2>
+				<div class="in">
+					<label>Line 1/Line 2/Style</label>
+					<input data-setting="Custom.Overlay.LowerThird.Line1" type="text"/><br/>
+					<input data-setting="Custom.Overlay.LowerThird.Line2" type="text"/><br/>
+					<select class="SelectUpdator" id="LowerThirdStyle" data-setting="Custom.Overlay.LowerThird.Style" data-target="#LowerStyle">
+						<option value="ColourDefault">--- Default --- </option>
+						<option value="ColourTeam1">Team 1</option>
+						<option value="ColourTeam2">Team 2</option>
+					</select>
+
+	
+					<label>Auto Skater Generator</label>
+					<select id="Skaters">
+					</select>
+
+					<select id="Keepers" style="width: 80%; float: left;">
+						<option data-line1="" data-line2="" data-style="ColourDefault">--- Clear ---</option>
+					</select>
+					<button id="KeeperAdd" style="width: 15%; ">+</button>
+
+				</div>
+			</div>
+
+		</p>
+
+	</div>
+	<div id="Preview">
+		<iframe src="index.html" style="border: 3px solid black; margin: 10px; width: 1080px; height: 720px; ">
+		</iframe>
+	</div>
+
+	</body>
+</html>

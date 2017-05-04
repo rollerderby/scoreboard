@@ -44,6 +44,9 @@ public class ScoreBoardXmlConverter
 		editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
 		editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
 		editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
+		editor.setElement(sb, ScoreBoard.EVENT_RULESET, null, String.valueOf(scoreBoard.getRuleset()));
+
+		toElement(sb, scoreBoard.getSettings());
 
 		Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
 		while (clocks.hasNext())
@@ -60,6 +63,18 @@ public class ScoreBoardXmlConverter
 		return d;
 	}
 
+	public Element toElement(Element p, Settings s) {
+		Element e = editor.setElement(p, "Settings");
+		Iterator<String> keys = s.getAll().keySet().iterator();
+		while (keys.hasNext()) {
+			String k = keys.next();
+			String v = s.get(k);
+			if (v != null)
+				editor.setElement(e, Settings.EVENT_SETTING, k, v);
+		}
+		return e;
+	}
+
 	public Element toElement(Element sb, Clock c) {
 		Element e = editor.setElement(sb, "Clock", c.getId());
 
@@ -74,6 +89,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Clock.EVENT_MINIMUM_NUMBER, null, String.valueOf(c.getMinimumNumber()));
 		editor.setElement(e, Clock.EVENT_MAXIMUM_NUMBER, null, String.valueOf(c.getMaximumNumber()));
 		editor.setElement(e, Clock.EVENT_TIME, null, String.valueOf(c.getTime()));
+		editor.setElement(e, Clock.EVENT_INVERTED_TIME, null, String.valueOf(c.getInvertedTime()));
 		editor.setElement(e, Clock.EVENT_MINIMUM_TIME, null, String.valueOf(c.getMinimumTime()));
 		editor.setElement(e, Clock.EVENT_MAXIMUM_TIME, null, String.valueOf(c.getMaximumTime()));
 		editor.setElement(e, Clock.EVENT_RUNNING, null, String.valueOf(c.isRunning()));
@@ -93,8 +109,11 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Team.EVENT_LAST_SCORE, null, String.valueOf(t.getLastScore()));
 		editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
 		editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
-		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, String.valueOf(t.isLeadJammer()));
-		editor.setElement(e, Team.EVENT_PASS, null, String.valueOf(t.getPass()));
+		editor.setElement(e, Team.EVENT_IN_TIMEOUT, null, String.valueOf(t.inTimeout()));
+		editor.setElement(e, Team.EVENT_IN_OFFICIAL_REVIEW, null, String.valueOf(t.inOfficialReview()));
+		editor.setElement(e, Team.EVENT_RETAINED_OFFICIAL_REVIEW, null, String.valueOf(t.retainedOfficialReview()));
+		editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, t.getLeadJammer());
+		editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
 
 		Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
 		while (alternateNames.hasNext())
@@ -140,6 +159,8 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, "Id", null, (s==null?"":s.getId()));
 		editor.setElement(e, Skater.EVENT_NAME, null, (s==null?"":s.getName()));
 		editor.setElement(e, Skater.EVENT_NUMBER, null, (s==null?"":s.getNumber()));
+		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
+		editor.setElement(e, Skater.EVENT_FLAGS, null, (s==null?"":s.getFlags()));
 
 		return e;
 	}
@@ -170,9 +191,8 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
 		editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
 		editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
-		editor.setElement(e, Skater.EVENT_LEAD_JAMMER, null, String.valueOf(s.isLeadJammer()));
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
-		editor.setElement(e, Skater.EVENT_PASS, null, String.valueOf(s.getPass()));
+		editor.setElement(e, Skater.EVENT_FLAGS, null, s.getFlags());
 
 		return e;
 	}
@@ -204,6 +224,8 @@ public class ScoreBoardXmlConverter
 					processTeam(scoreBoardModel, element);
 				else if (name.equals("Policy"))
 					processPolicy(scoreBoardModel, element);
+				else if (name.equals("Settings"))
+					processSettings(scoreBoardModel, element);
 				else if (null == value)
 					continue;
 				else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER))
@@ -216,6 +238,8 @@ public class ScoreBoardXmlConverter
 					scoreBoardModel.setInPeriod(bVal);
 				else if (name.equals(ScoreBoard.EVENT_OFFICIAL_SCORE))
 					scoreBoardModel.setOfficialScore(bVal);
+				else if (name.equals(ScoreBoard.EVENT_RULESET))
+					scoreBoardModel.setRuleset(value);
 				else if (bVal) {
 					if (name.equals("Reset"))
 						scoreBoardModel.reset();
@@ -239,9 +263,29 @@ public class ScoreBoardXmlConverter
 		}
 	}
 
+	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
+		SettingsModel sm = scoreBoardModel.getSettingsModel();
+		Iterator children = settings.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String k = element.getAttributeValue("Id");
+				String v = editor.getText(element);
+				if (v == null)
+					v = "";
+				sm.set(k, v);
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
 	public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {
 		String id = clock.getAttributeValue("Id");
 		ClockModel clockModel = scoreBoardModel.getClockModel(id);
+		boolean requestStart = false;
+		boolean requestStop = false;
+		boolean requestUnStart = false;
+		boolean requestUnStop = false;
 
 		Iterator children = clock.getChildren().iterator();
 		while (children.hasNext()) {
@@ -257,13 +301,13 @@ public class ScoreBoardXmlConverter
 				if ((null == value) && !isReset)
 					continue;
 				else if (name.equals("Start") && Boolean.parseBoolean(value))
-					clockModel.start();
+					requestStart = true;
 				else if (name.equals("Stop") && Boolean.parseBoolean(value))
-					clockModel.stop();
+					requestStop = true;
 				else if (name.equals("UnStart") && Boolean.parseBoolean(value))
-					clockModel.unstart();
+					requestUnStart = true;
 				else if (name.equals("UnStop") && Boolean.parseBoolean(value))
-					clockModel.unstop();
+					requestUnStop = true;
 				else if (name.equals("ResetTime") && Boolean.parseBoolean(value))
 					clockModel.resetTime();
 				else if (name.equals(Clock.EVENT_NAME))
@@ -291,14 +335,19 @@ public class ScoreBoardXmlConverter
 				else if (name.equals(Clock.EVENT_MAXIMUM_TIME))
 					clockModel.setMaximumTime(Long.parseLong(value));
 				else if (name.equals(Clock.EVENT_RUNNING) && Boolean.parseBoolean(value))
-					clockModel.start();
+					requestStart = true;
 				else if (name.equals(Clock.EVENT_RUNNING) && !Boolean.parseBoolean(value))
-					clockModel.stop();
+					requestStop = true;
 				else if (name.equals(Clock.EVENT_DIRECTION))
 					clockModel.setCountDirectionDown(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}
+		// Process start/stops at the end to allow setting of options (direction/min/max/etc) on load
+		if (requestStart) clockModel.start();
+		if (requestStop) clockModel.stop();
+		if (requestUnStart) clockModel.unstart();
+		if (requestUnStop) clockModel.unstop();
 	}
 
 	public void processTeam(ScoreBoardModel scoreBoardModel, Element team) {
@@ -349,12 +398,16 @@ public class ScoreBoardXmlConverter
 					teamModel.changeOfficialReviews(Integer.parseInt(value));
 				else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && !isChange)
 					teamModel.setOfficialReviews(Integer.parseInt(value));
+				else if (name.equals(Team.EVENT_IN_TIMEOUT))
+					teamModel.setInTimeout(Boolean.parseBoolean(value));
+				else if (name.equals(Team.EVENT_IN_OFFICIAL_REVIEW))
+					teamModel.setInOfficialReview(Boolean.parseBoolean(value));
+				else if (name.equals(Team.EVENT_RETAINED_OFFICIAL_REVIEW))
+					teamModel.setRetainedOfficialReview(Boolean.parseBoolean(value));
 				else if (name.equals(Team.EVENT_LEAD_JAMMER))
-					teamModel.setLeadJammer(Boolean.parseBoolean(value));
-				else if (name.equals(Team.EVENT_PASS) && isChange)
-					teamModel.changePass(Integer.parseInt(value));
-				else if (name.equals(Team.EVENT_PASS) && !isChange)
-					teamModel.setPass(Integer.parseInt(value));
+					teamModel.setLeadJammer(value);
+				else if (name.equals(Team.EVENT_STAR_PASS))
+					teamModel.setStarPass(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}
@@ -437,6 +490,8 @@ public class ScoreBoardXmlConverter
 					positionModel.clear();
 				else if (name.equals("Id"))
 					positionModel.setSkaterModel(value);
+				else if (name.equals(Position.EVENT_PENALTY_BOX))
+					positionModel.setPenaltyBox(Boolean.parseBoolean(value));
 			} catch ( Exception e ) {
 			}
 		}
@@ -497,10 +552,12 @@ public class ScoreBoardXmlConverter
 			skaterModel = teamModel.getSkaterModel(id);
 		} catch ( SkaterNotFoundException snfE ) {
 			Element nameE = skater.getChild(Skater.EVENT_NAME);
-			String name = (nameE == null ? id : editor.getText(nameE));
+			String name = (nameE == null ? "" : editor.getText(nameE));
 			Element numberE = skater.getChild(Skater.EVENT_NUMBER);
 			String number = (numberE == null ? "" : editor.getText(numberE));
-			teamModel.addSkaterModel(id, name, number);
+			Element flagsE = skater.getChild(Skater.EVENT_FLAGS);
+			String flags = (flagsE == null ? "" : editor.getText(flagsE));
+			teamModel.addSkaterModel(id, name, number, flags);
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 
@@ -521,14 +578,10 @@ public class ScoreBoardXmlConverter
 					skaterModel.setNumber(value);
 				else if (name.equals(Skater.EVENT_POSITION))
 					skaterModel.setPosition(value);
-				else if (name.equals(Skater.EVENT_LEAD_JAMMER))
-					skaterModel.setLeadJammer(Boolean.parseBoolean(value));
 				else if (name.equals(Skater.EVENT_PENALTY_BOX))
 					skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
-				else if (name.equals(Skater.EVENT_PASS) && isChange)
-					skaterModel.changePass(Integer.parseInt(value));
-				else if (name.equals(Skater.EVENT_PASS) && !isChange)
-					skaterModel.setPass(Integer.parseInt(value));
+				else if (name.equals(Skater.EVENT_FLAGS))
+					skaterModel.setFlags(value);
 			} catch ( Exception e ) {
 			}
 		}

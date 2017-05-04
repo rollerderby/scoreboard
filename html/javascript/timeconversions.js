@@ -87,6 +87,8 @@ _timeConversions = {
 	},
 	/* If converting the time from a $sb Clock, determine the rounding direction */
 	_roundClockUp: function() {
+		if (typeof $sb == "undefined")
+			return _timeConversions.defaultRoundUp;
 		if (!is$sb(this) || !(this.$sbName == "Time"))
 			return _timeConversions.defaultRoundUp; // Not a Clock.Time, use default
 		var countDir = this.parent().children("Direction");

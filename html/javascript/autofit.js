@@ -118,7 +118,8 @@ _autoFit = {
 		if (_autoFit._currentFontSize(container) < params.minFontSize)
 			container.css("fontSize", params.minFontSize);
 
-		while (0 < params.iterations--) {
+		var breakCnt = 0;
+		while (0 < params.iterations-- && ++breakCnt < 100) {
 			if (_autoFit._overSize(contents, params)) {
 				if (!_autoFit._updateMinMaxFontSizes(container, params, params.minFontSize, _autoFit._currentFontSize(container)))
 					break;
@@ -127,8 +128,10 @@ _autoFit = {
 			else if (!_autoFit._updateMinMaxFontSizes(container, params, _autoFit._currentFontSize(container), params.maxFontSize))
 				break;
 		}
+
 		var reduceBy = 1;
-		while (_autoFit._overSize(contents, params)) {
+		breakCnt = 0;
+		while (_autoFit._overSize(contents, params) && ++breakCnt < 100) {
 			if (!_autoFit._updateFontSize(container, _autoFit._currentFontSize(container) - reduceBy))
 				reduceBy++;
 		}

@@ -12,10 +12,6 @@ import java.util.*;
 
 import java.io.*;
 
-import java.awt.image.*;
-
-import javax.imageio.*;
-
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 import com.carolinarollergirls.scoreboard.event.*;
@@ -25,12 +21,36 @@ import com.carolinarollergirls.scoreboard.policy.OvertimeLineupTimePolicy;
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
+		settings = new DefaultSettingsModel(this, this);
+		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".PreGame");
+		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Intermission");
+		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Unofficial");
+		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Official");
+		Ruleset.registerRule(settings, "Clock." + Clock.ID_INTERMISSION + ".Time");
+
+		settings.addRuleMapping("ScoreBoard.BackgroundStyle", new String[] { "ScoreBoard.Preview_BackgroundStyle", "ScoreBoard.View_BackgroundStyle" });
+		settings.addRuleMapping("ScoreBoard.BoxStyle",        new String[] { "ScoreBoard.Preview_BoxStyle",        "ScoreBoard.View_BoxStyle" });
+		settings.addRuleMapping("ScoreBoard.CurrentView",     new String[] { "ScoreBoard.Preview_CurrentView",     "ScoreBoard.View_CurrentView" });
+		settings.addRuleMapping("ScoreBoard.CustomHtml",      new String[] { "ScoreBoard.Preview_CustomHtml",      "ScoreBoard.View_CustomHtml" });
+		settings.addRuleMapping("ScoreBoard.HideJamTotals",   new String[] { "ScoreBoard.Preview_HideJamTotals",   "ScoreBoard.View_HideJamTotals" });
+		settings.addRuleMapping("ScoreBoard.Image",           new String[] { "ScoreBoard.Preview_Image",           "ScoreBoard.View_Image" });
+		settings.addRuleMapping("ScoreBoard.SidePadding",     new String[] { "ScoreBoard.Preview_SidePadding",     "ScoreBoard.View_SidePadding" });
+		settings.addRuleMapping("ScoreBoard.SwapTeams",       new String[] { "ScoreBoard.Preview_SwapTeams",       "ScoreBoard.View_SwapTeams" });
+		settings.addRuleMapping("ScoreBoard.Video",           new String[] { "ScoreBoard.Preview_Video",           "ScoreBoard.View_Video" });
+
+		Ruleset.registerRule(settings, "ScoreBoard.BackgroundStyle");
+		Ruleset.registerRule(settings, "ScoreBoard.BoxStyle");
+		Ruleset.registerRule(settings, "ScoreBoard.CurrentView");
+		Ruleset.registerRule(settings, "ScoreBoard.CustomHtml");
+		Ruleset.registerRule(settings, "ScoreBoard.HideJamTotals");
+		Ruleset.registerRule(settings, "ScoreBoard.Image");
+		Ruleset.registerRule(settings, "ScoreBoard.SidePadding");
+		Ruleset.registerRule(settings, "ScoreBoard.SwapTeams");
+		Ruleset.registerRule(settings, "ScoreBoard.Video");
+
 		reset();
-
 		loadPolicies();
-
 		addInPeriodListeners();
-
 		xmlScoreBoard = new XmlScoreBoard(this);
 	}
 
@@ -63,6 +83,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public ScoreBoard getScoreBoard() { return this; }
 
 	public void reset() {
+		_getRuleset().apply(true);
+
 		Iterator<ClockModel> c = getClockModels().iterator();
 		while (c.hasNext())
 			c.next().reset();
@@ -81,6 +103,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setOfficialReview(false);
 		setInPeriod(false);
 		setInOvertime(false);
+
+		settings.reset();
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
@@ -95,8 +119,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.TRUE, periodStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, periodEndListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.TRUE, jamStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.TRUE, timeoutStartListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, timeoutEndListener));
 	}
 
 	public boolean isInOvertime() { return inOvertime; }
@@ -183,14 +209,36 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				getTeamModel("1").startJam();
 				getTeamModel("2").startJam();
 				requestBatchEnd();
+
+				ScoreBoardManager.gameSnapshot();
 			}
 		}
 	}
 	public void stopJam() {
 		synchronized (runLock) {
 			if (getClockModel(Clock.ID_JAM).isRunning()) {
-				getClockModel(Clock.ID_JAM).stop();
+				_stopJam();
 			}
+		}
+	}
+	private void _stopJam() {
+		synchronized (runLock) {
+			ScoreBoardManager.gameSnapshot(true);
+
+			ClockModel pc = getClockModel(Clock.ID_PERIOD);
+			ClockModel jc = getClockModel(Clock.ID_JAM);
+			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+
+			requestBatchStart();
+			jc.stop();
+			getTeamModel("1").stopJam();
+			getTeamModel("2").stopJam();
+
+			if (pc.isRunning()) {
+				lc.resetTime();
+				lc.start();
+			}
+			requestBatchEnd();
 		}
 	}
 
@@ -201,16 +249,51 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			requestBatchStart();
 			setTimeoutOwner(null==team?"":team.getId());
 			setOfficialReview(review);
-			if (!getClockModel(Clock.ID_TIMEOUT).isRunning()) {
-//FIXME - change to policy?
-				getClockModel(Clock.ID_PERIOD).stop();
-				jamClockWasRunning = getClockModel(Clock.ID_JAM).isRunning();
-				lineupClockWasRunning = getClockModel(Clock.ID_LINEUP).isRunning();
-				getClockModel(Clock.ID_JAM).stop();
-				getClockModel(Clock.ID_TIMEOUT).resetTime();
-				getClockModel(Clock.ID_TIMEOUT).start();
+
+			TeamModel t1 = getTeamModel("1");
+			TeamModel t2 = getTeamModel("2");
+			if (null==team) {
+				t1.setInTimeout(false);
+				t1.setInOfficialReview(false);
+				t2.setInTimeout(false);
+				t2.setInOfficialReview(false);
+			} else if (t1.getId().equals(team.getId())) {
+				t1.setInTimeout(!review);
+				t1.setInOfficialReview(review);
+				t2.setInTimeout(false);
+				t2.setInOfficialReview(false);
+			} else {
+				t1.setInTimeout(false);
+				t1.setInOfficialReview(false);
+				t2.setInTimeout(!review);
+				t2.setInOfficialReview(review);
+			}
+
+			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+			ClockModel pc = getClockModel(Clock.ID_PERIOD);
+			ClockModel jc = getClockModel(Clock.ID_JAM);
+			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+
+			if (!tc.isRunning()) {
+				// Make sure period clock, jam clock, and lineup clock are stopped
+				jamClockWasRunning = jc.isRunning();
+				lineupClockWasRunning = lc.isRunning();
+
+				pc.stop();
+				jc.stop();
+				lc.stop();
+
+				tc.resetTime();
+				tc.start();
+
+				if (jamClockWasRunning) {
+					getTeamModel("1").stopJam();
+					getTeamModel("2").stopJam();
+				}
 			}
 			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -230,6 +313,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			getTeamModel("1").unStartJam();
 			getTeamModel("2").unStartJam();
 			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 	public void unStopJam() {
@@ -240,7 +325,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			requestBatchStart();
 			getClockModel(Clock.ID_LINEUP).stop();
 			getClockModel(Clock.ID_JAM).unstop();
+			getTeamModel("1").unStopJam();
+			getTeamModel("2").unStopJam();
 			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
 	public void unTimeout() {
@@ -251,13 +340,39 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			requestBatchStart();
 			if (lineupClockWasRunning)
 				getClockModel(Clock.ID_LINEUP).unstop();
-			if (jamClockWasRunning)
+			if (jamClockWasRunning) {
 				getClockModel(Clock.ID_JAM).unstop();
+				getTeamModel("1").unStopJam();
+				getTeamModel("2").unStopJam();
+			}
 			getClockModel(Clock.ID_PERIOD).unstop();
 			getClockModel(Clock.ID_TIMEOUT).unstart();
 			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 	}
+
+	public Ruleset _getRuleset() {
+		synchronized (rulesetLock) {
+			if (ruleset == null) {
+				ruleset = Ruleset.findRuleset(null, true);
+			}
+			return ruleset;
+		}
+	}
+	public String getRuleset() { return _getRuleset().getId().toString(); }
+	public void setRuleset(String id) {
+		synchronized (rulesetLock) {
+			String last = getRuleset();
+			ruleset = Ruleset.findRuleset(id, true);
+			ruleset.apply(false);
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, ruleset.getId().toString(), last));
+		}
+	}
+
+	public Settings getSettings() { return (Settings)settings; }
+	public SettingsModel getSettingsModel() { return settings; }
 
 	public List<ClockModel> getClockModels() { return new ArrayList<ClockModel>(clocks.values()); }
 	public List<TeamModel> getTeamModels() { return new ArrayList<TeamModel>(teams.values()); }
@@ -378,6 +493,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected boolean officialScore = false;
 	protected Object officialScoreLock = new Object();
 
+	protected Ruleset ruleset = null;
+	protected Object rulesetLock = new Object();
+	protected DefaultSettingsModel settings = null;
+
 	protected boolean periodClockWasRunning = false;
 	protected boolean jamClockWasRunning = false;
 	protected boolean lineupClockWasRunning = false;
@@ -396,19 +515,38 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				Clock p = getClock(Clock.ID_PERIOD);
 				Clock j = getClock(Clock.ID_JAM);
 				Clock t = getClock(Clock.ID_TIMEOUT);
+				if (event.getProvider() == j && !j.isRunning() && j.getTime() == j.getMinimumTime()) {
+					_stopJam();
+				}
 				if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning() && !t.isRunning())
 					setInPeriod(false);
 			}
 		};
+	protected ScoreBoardListener jamStartListener = new ScoreBoardListener() {
+			public void scoreBoardChange(ScoreBoardEvent event) {
+				ClockModel lc = getClockModel(Clock.ID_LINEUP);
+				if (lc.isRunning())
+					lc.stop();
+			}
+		};
 	protected ScoreBoardListener timeoutStartListener = new ScoreBoardListener() {
 			public void scoreBoardChange(ScoreBoardEvent event) {
-				Clock i = getClock(Clock.ID_INTERMISSION);
-				Clock t = getClock(Clock.ID_TIMEOUT);
+				ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
+				Clock tc = getClock(Clock.ID_TIMEOUT);
 
-				if (!isInPeriod() && i.isRunning() && t.isRunning()) {
-					getClockModel(Clock.ID_INTERMISSION).stop();
+				if (!isInPeriod() && ic.isRunning() && tc.isRunning()) {
+					ic.stop();
 					setInPeriod(true);
 				}
+			}
+		};
+	protected ScoreBoardListener timeoutEndListener = new ScoreBoardListener() {
+			public void scoreBoardChange(ScoreBoardEvent event) {
+				requestBatchStart();
+				setTimeoutOwner("");
+				setOfficialReview(false);
+				getClockModel(Clock.ID_TIMEOUT).changeNumber(1);
+				requestBatchEnd();
 			}
 		};
 

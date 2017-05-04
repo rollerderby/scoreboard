@@ -15,30 +15,36 @@ import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
 
-public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel
+public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
 	public DefaultClockModel(ScoreBoardModel sbm, String i) {
 		scoreBoardModel = sbm;
 		id = i;
 
-		// The default value for these cannot be known
-		// as each clock has a different value,
-		// so we only set a default here so something will be set.
-		// These defaults are almost certainly not correct,
-		// so we really are relying on later configuration (like xml loading)
-		// to set the correct values for these.
-		// Additionally, we can't do this in reset() because
-		// then the clocks would all be reset to incorrect min,max,etc values.
-		// Even better, would be to force passing these in the constructor so
-		// we would have good default values, that could be reset to...
-		// FIXME ^^
-		setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
-		setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
-		setCountDirectionDown(DEFAULT_DIRECTION);
-		setMinimumTime(DEFAULT_MINIMUM_TIME);
-		setMaximumTime(DEFAULT_MAXIMUM_TIME);
+		// Register for default values from the rulesets
+		Ruleset.registerRule(this, "Clock." + id + ".Name");
+		Ruleset.registerRule(this, "Clock." + id + ".MinimumNumber");
+		Ruleset.registerRule(this, "Clock." + id + ".MaximumNumber");
+		Ruleset.registerRule(this, "Clock." + id + ".Direction");
+		Ruleset.registerRule(this, "Clock." + id + ".MinimumTime");
+		Ruleset.registerRule(this, "Clock." + id + ".MaximumTime");
 
 		reset();
+	}
+
+	public void applyRule(String rule, Object value) {
+		if (rule.equals("Clock." + id + ".Name"))
+			setName((String)value);
+		else if (rule.equals("Clock." + id + ".Direction"))
+			setCountDirectionDown((Boolean)value);
+		else if (rule.equals("Clock." + id + ".MinimumNumber"))
+			setMinimumNumber((Integer)value);
+		else if (rule.equals("Clock." + id + ".MaximumNumber"))
+			setMaximumNumber((Integer)value);
+		else if (rule.equals("Clock." + id + ".MinimumTime"))
+			setMinimumTime((Long)value);
+		else if (rule.equals("Clock." + id + ".MaximumTime"))
+			setMaximumTime((Long)value);
 	}
 
 	public String getProviderName() { return "Clock"; }
@@ -58,7 +64,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		unstopLastTime = 0;
 
 		stop();
-		setName(getId());
+
+		// Get default values from active ruleset
+		getScoreBoard()._getRuleset().apply(true, this);
 
 		// We hardcode the assumption that numbers count up.
 		setNumber(getMinimumNumber());
@@ -136,6 +144,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	public long getTime() { return time; }
+	public long getInvertedTime() {
+		return maximumTime - time;
+	}
 	public void setTime(long ms) {
 		boolean doStop;
 		synchronized (timeLock) {
@@ -144,6 +155,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				ms = ((ms / 1000) * 1000) + (time % 1000);
 			time = checkNewTime(ms);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
+			scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
 			doStop = checkStop();
 		}
 		if (doStop)
@@ -157,7 +169,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			if (sync && isRunning() && isSyncTime())
 				change = ((change / 1000) * 1000);
 			time = checkNewTime(time + change);
-			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
+			if (time % 1000 == 0 || Math.abs(last - time) >= 1000) {
+				scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
+				scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
+			}
 			doStop = checkStop();
 		}
 		if (doStop)
@@ -302,6 +317,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		return (syncPolicy == null ? true : syncPolicy.isEnabled());
 	}
 
+	protected boolean isMasterClock() {
+		return id == ID_PERIOD || id == ID_TIMEOUT || id == ID_INTERMISSION;
+	}
+
 	protected ScoreBoardModel scoreBoardModel;
 
 	protected String id;
@@ -336,22 +355,34 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public static final boolean DEFAULT_DIRECTION = false;
 
 	protected static class UpdateClockTimerTask extends TimerTask {
-		public UpdateClockTimerTask() {
-			startSystemTime = System.currentTimeMillis();
-			timer.scheduleAtFixedRate(this, DefaultClockModel.CLOCK_UPDATE_INTERVAL / 4, DefaultClockModel.CLOCK_UPDATE_INTERVAL / 4);
-		}
+		public static final String PROPERTY_INTERVAL_KEY = DefaultClockModel.class.getName() + ".interval";
+		private static long update_interval = DefaultClockModel.CLOCK_UPDATE_INTERVAL;
 
-		// public void schedule(TimerTask task, long delay) {
-		// 	timer.schedule(task, delay);
-		// }
+		public UpdateClockTimerTask() {
+			try {
+			        update_interval = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_INTERVAL_KEY));
+			} catch ( Exception e ) { }
+			startSystemTime = System.currentTimeMillis();
+			timer.scheduleAtFixedRate(this, update_interval / 4, update_interval / 4);
+		}
 
 		public void addClock(DefaultClockModel c, boolean quickAdd) {
 			synchronized (clockLock) {
+				if (c.isMasterClock()) {
+					masterClock = c;
+				}
 				long delayStartTime = 0;
 				if (c.isSyncTime() && !quickAdd) {
 					// This syncs all the clocks to change second at the same time
-					long timeMs = c.unstartTime % 1000;
+					// with respect to the master clock
 					long nowMs = currentTime % 1000;
+					if (masterClock != null) {
+						nowMs = masterClock.time % 1000;
+						if (masterClock.countDown)
+							nowMs = (1000 - nowMs) % 1000;
+					}
+
+					long timeMs = c.unstartTime % 1000;
 					if (c.countDown)
 						timeMs = (1000 - timeMs) % 1000;
 					long delay = timeMs - nowMs;
@@ -378,7 +409,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			Iterator<DefaultClockModel> i;
 			ArrayList<DefaultClockModel> clocks;
 			synchronized (clockLock) {
-				currentTime += DefaultClockModel.CLOCK_UPDATE_INTERVAL;
+				currentTime += update_interval;
 				clocks = new ArrayList<DefaultClockModel>(this.clocks);
 			}
 			DefaultClockModel clock;
@@ -390,7 +421,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			i = clocks.iterator();
 			while (i.hasNext()) {
 				clock = i.next();
-				clock.timerTick(DefaultClockModel.CLOCK_UPDATE_INTERVAL);
+				clock.timerTick(update_interval);
 			}
 			i = clocks.iterator();
 			while (i.hasNext()) {
@@ -401,9 +432,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 		public void run() {
 			long curSystemTime = System.currentTimeMillis();
-			long curTicks = (curSystemTime - startSystemTime) / DefaultClockModel.CLOCK_UPDATE_INTERVAL;
+			long curTicks = (curSystemTime - startSystemTime) / update_interval;
 			while (curTicks != ticks) {
-				ScoreBoardManager.printMessage("tick " + curTicks + " " + ticks);
 				ticks++;
 				tick();
 			}
@@ -418,6 +448,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		private long ticks = 0;
 		protected static Timer timer = new Timer();
 		protected Object clockLock = new Object();
+		protected DefaultClockModel masterClock = null;
 		ArrayList<DefaultClockModel> clocks = new ArrayList<DefaultClockModel>();
 	}
 }

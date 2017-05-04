@@ -319,7 +319,7 @@ _crgScoreBoard = {
 		do {
 			uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
 		} while (!notParanoid && $("[data-UUID="+uuid+"]").length);
-		return uuid;
+		return uuid.toLowerCase();
 	},
 
 	updateServer: function(e) {
@@ -482,7 +482,7 @@ _crgScoreBoard = {
 				e.css("color", v);
 			} else if (sbE.setBackground) {
 				e.css("background", v);
-			} else if (e.is("a,span")) {
+			} else if (e.is("a,span,div")) {
 				if (e.html() != v)
 					e.html(v);
 			} else if (e.is("img")) {

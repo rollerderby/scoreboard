@@ -1,0 +1,55 @@
+body { font-family: Ubuntu, sans-serif;  margin: 0; }
+
+label  { font-variant: small-caps; }
+
+.current { background: red; color: white; }
+#Controls { float: left; width: 10%; }
+#Preview  { float: left; width: 89%; height: 98%; }
+
+
+h2 { margin: 0 0 10px 0; padding: 4px 4px; display: block; border-radius: 6px; text-align: center; }
+
+.ExtraForm { margin: 20px 0; }
+.ExtraForm .in { margin: 6px;  text-align: center; }
+
+
+
+button, input, select { 
+    outline: none; cursor: pointer; 
+    padding: 8px 8px; border-radius: 8px;
+    font-size: .8em;
+    width: 100%; 
+    color: white; background: #666;
+    margin-bottom: 2px;
+}
+
+select { display: inline-block; appearance:none; }
+
+button.ToggleAlert,
+button.ToggleSwitch {
+    cursor: pointer; outline: none; 
+    width: 100%;
+    transition: all .5s ease;
+}
+
+
+button.ToggleSwitch	    { border: 0px solid; border-color: #999 #999 #999 #FF0000;    background: #666; border-left-width: 20px;  border-right-width: 0px; text-decoration: none; }
+button.ToggleSwitch.current { border: 0px solid; border-color: #999 #00FF00 #999 #999 ;  background: #666; border-right-width: 20px; border-left-width: 0px; text-decoration: none; }
+
+button.ToggleAlert	    { background: #666; border: 0; }
+button.ToggleAlert.current  { background: red; border: 0;  }
+button.ToggleAlert.current { animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); }
+@-webkit-keyframes DotActive {  0% { background: #000; } 50% { background: #d00; } 100% { background: #F00; } }
+
+button.Reverse 		     { border-color: #999 #999 #999 #FF0000; border-left-width: 20px; border-right-width: 0px; }
+button.Reverse.current	    { border-color: #999 #00FF00 #999 #999; border-right-width: 20px; border-left-width: 0px; }
+
+button.Reverse.changed,
+button.Reverse.changed.current { border-color: #999 #999 #999 #ffa500; border-left-width: 20px; border-right-width: 0px; }
+
+button.Reverse:before			{ content: 'Show [ ]'; }
+button.Reverse.current:before		{ content: 'Hide [ ]'; }
+button.Reverse.changed.current:before	{ content: 'Switch [ ]'; }
+
+h2  { font-variant: small-caps; font-size: 1.2em; }
+

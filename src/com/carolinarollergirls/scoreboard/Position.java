@@ -15,10 +15,9 @@ import com.carolinarollergirls.scoreboard.event.*;
 public interface Position extends ScoreBoardEventProvider
 {
 	public Team getTeam();
-
 	public String getId();
-
 	public Skater getSkater();
+	public boolean getPenaltyBox();
 
 	public static final String ID_BENCH = "Bench";
 	public static final String ID_JAMMER = "Jammer";
@@ -30,4 +29,5 @@ public interface Position extends ScoreBoardEventProvider
 	public static final List<String> FLOOR_POSITIONS = Arrays.asList(new String[]{ ID_JAMMER, ID_PIVOT, ID_BLOCKER1, ID_BLOCKER2, ID_BLOCKER3 });
 
 	public static final String EVENT_SKATER = "Skater";
+	public static final String EVENT_PENALTY_BOX = "PenaltyBox";
 }

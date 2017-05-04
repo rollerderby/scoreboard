@@ -28,7 +28,7 @@ public class AutoSaveScoreBoard implements Runnable
 
 	public synchronized void start() {
 		try {
-			FileUtils.forceMkdir(new File(DIRECTORY_NAME));
+			FileUtils.forceMkdir(new File(ScoreBoardManager.getDefaultPath(), DIRECTORY_NAME));
 		} catch ( IOException ioE ) {
 			ScoreBoardManager.printMessage("WARNING: Unable to create auto-save directory '"+DIRECTORY_NAME+"' : "+ioE.getMessage());
 			return;
@@ -71,7 +71,7 @@ public class AutoSaveScoreBoard implements Runnable
 		}
 	}
 
-	public static File getFile(int n) { return getFile(DIRECTORY_NAME, n); }
+	public static File getFile(int n) { return getFile(new File(ScoreBoardManager.getDefaultPath(), DIRECTORY_NAME), n); }
 	public static File getFile(String dir, int n) { return getFile(new File(dir), n); }
 	public static File getFile(File dir, int n) {
 		if (n == 0)
@@ -82,7 +82,7 @@ public class AutoSaveScoreBoard implements Runnable
 
 	protected void backupAutoSavedFiles() {
 		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH-mm-ss");
-		File mainBackupDir = new File(DIRECTORY_NAME, "backup");
+		File mainBackupDir = new File(new File(ScoreBoardManager.getDefaultPath(), DIRECTORY_NAME), "backup");
 		File backupDir = new File(mainBackupDir, dateFormat.format(new Date()));
 		if (backupDir.exists()) {
 			ScoreBoardManager.printMessage("Could not back up auto-save files, backup directory already exists");

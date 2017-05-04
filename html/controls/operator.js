@@ -10,6 +10,7 @@
 
 
 $.fx.interval = 33;
+_include("/json", [ "Game.js", "Rulesets.js" ]);
 
 $sb(function() {
 	createScoreTimeTab();
@@ -153,32 +154,23 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$("#TeamTime table.JamControl tr.UndoControls").toggleClass("ShowUndo", this.checked);
+			$(".UndoControls").toggleClass("ShowUndo", this.checked);
 		});
 
-	var selectJammerSpan = $("<span>").appendTo(buttonsTd);
-	var selectByLabel = $("<label>").attr("for", "SelectJammerBy")
-		.appendTo(selectJammerSpan);
-	var selectByButton = $("<input type='checkbox'>").attr("id", "SelectJammerBy")
-		.appendTo(selectJammerSpan).button();
-	_crgUtils.bindAndRun(selectByButton, "click", function() {
-		$("#TeamTime table.Team td.Jammer")
-			.toggleClass("ByNumber", !this.checked)
-			.toggleClass("ByName", this.checked);
-		$(this).button("option", "label", (this.checked?"Select Jammer by Name":"Select Jammer by Number"));
-	});
-	var selectSortLabel = $("<label>").attr("for", "SelectJammerSort")
-		.appendTo(selectJammerSpan);
-	var selectSortButton = $("<input type='checkbox'>").attr("id", "SelectJammerSort")
-		.appendTo(selectJammerSpan).button();
-	_crgUtils.bindAndRun(selectSortButton, "click", function() {
-		$("#TeamTime table.Team td.Jammer")
-			.toggleClass("NumSort", this.checked)
-			.toggleClass("AlphaSort", !this.checked);
-		$(this).button("option", "label", (this.checked?"Numerically":"Alphabetically"));
-	});
-	// FIXME - jquery-ui seems buggy by defaulting to rtl if "direction" not specified
-	selectJammerSpan.css("direction", "ltr").buttonset();
+	$("<label>").text("Show Speed Score Controls").attr("for", "ShowSpeedScoreControlsButton")
+		.appendTo(buttonsTd);
+	$("<input type='checkbox'>").attr("id", "ShowSpeedScoreControlsButton")
+		.appendTo(buttonsTd)
+		.button()
+		.click(function() {
+			$("tr.SpeedScore").toggleClass("Show", this.checked);
+		});
+
+	$("<button>").attr("id", "GameControl")
+		.text("Start New Game")
+		.appendTo(buttonsTd)
+		.button()
+		.click(createGameControlDialog);
 
 	var periodEndControlsLabel = $("<label>").attr("for", "PeriodEndControlsCheckbox")
 		.text("End of Period Controls")
@@ -230,6 +222,134 @@ function createMetaControlTable() {
 		.click(createOvertimeDialog);
 
 	return table;
+}
+
+function addDays(date, days) {
+	var result = new Date(date);
+	result.setDate(result.getDate() + days);
+	return result;
+}
+
+function createGameControlDialog() {
+	var dialog = $("<div>").addClass("GameControl");
+	var title = "Start New Game";
+
+	var preparedGame = $("<div>").addClass("section").appendTo(dialog);
+	$("<span>").addClass("header").append("Start a prepared game").appendTo(preparedGame);
+
+	var adhocGame = $("<div>").addClass("section").appendTo(dialog);
+
+	var adhocStartGame = function() {
+		var StartTime = adhocGame.find("input.StartTime").val();
+		var IntermissionClock = null;
+		if (StartTime != "") {
+			var now = new Date();
+			var parts = StartTime.split(":");
+			StartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
+					parts[0], parts[1]);
+			if (StartTime < now)
+				StartTime = addDays(StartTime, 1);
+			IntermissionClock = StartTime - now;
+		}
+		var game = {
+			Team1: adhocGame.find("select.Team1").val(),
+			Team2: adhocGame.find("select.Team2").val(),
+			Ruleset: adhocGame.find("select.Ruleset").val(),
+			Name: adhocGame.find("span.Name").text(),
+			IntermissionClock: IntermissionClock
+		};
+		console.log(game);
+		Game.Adhoc(game, function() {
+			dialog.dialog("close");
+		});
+	};
+
+	$("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Team 1: "))
+		.append($("<select>").addClass("Team1"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Team 2: "))
+		.append($("<select>").addClass("Team2"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Ruleset: "))
+		.append($("<select>").addClass("Ruleset"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Game Name: "))
+		.append($("<span>").addClass("Name"))
+		.appendTo(adhocGame);
+	$("<div>")
+		.append($("<span>").append("Start Time: "))
+		.append($("<input>").attr("type", "time").addClass("StartTime"))
+		.appendTo(adhocGame);
+	$("<button>")
+		.addClass("StartGame")
+		.append("Start Game")
+		.button({ disabled: true })
+		.appendTo(adhocGame)
+		.click(adhocStartGame);
+
+	updateAdhocName = function() {
+		var t1 = adhocGame.find("select.Team1 option:selected");
+		var t2 = adhocGame.find("select.Team2 option:selected");
+		if (t1.val() != "" && t2.val() != "") {
+			var now = new Date();
+			var d = now.getFullYear() + '-' +
+				_timeConversions.twoDigit(now.getMonth()) + '-' +
+				_timeConversions.twoDigit(now.getDate()) + ' ' +
+				_timeConversions.twoDigit(now.getHours()) + ':' +
+				_timeConversions.twoDigit(now.getMinutes());
+			var name = d + " - " + t1.text() + " vs " + t2.text();
+			adhocGame.find("span.Name").text(name);
+			adhocGame.find("button.StartGame").button("option", "disabled", false);
+		} else {
+			adhocGame.find("button.StartGame").button("option", "disabled", true);
+		}
+	};
+
+	_crgUtils.setupSelect(adhocGame.find("select.Team1"), {
+		optionParent: "Teams",
+		optionChildName: "Team",
+		prependOptions: [
+			{ text: "No Team Selected", value: "" },
+		]
+	}).change(function(e) { updateAdhocName(); });
+	_crgUtils.setupSelect(adhocGame.find("select.Team2"), {
+		optionParent: "Teams",
+		optionChildName: "Team",
+		prependOptions: [
+			{ text: "No Team Selected", value: "" },
+		]
+	}).change(function(e) { updateAdhocName(); });
+
+
+	// $("<button>").append("Start").button().appendTo(adhocGame);
+	Rulesets.List(function(rulesets) {
+		var select = adhocGame.find("select.Ruleset");
+		var active = $sb("ScoreBoard.Ruleset").$sbGet();
+		$.each(rulesets, function(idx, rs) {
+			var opt = $("<option>")
+				.attr("value", rs.id)
+				.prop("rulesetName", rs.name)
+				.append(rs.name);
+			console.log(rs.id, active);
+			if (rs.id == active)
+				opt.prop("selected", true);
+			_windowFunctions.appendAlphaSortedByProp(select, opt, "rulesetName");
+		});
+	});
+
+	dialog.dialog({
+		title: title,
+		width: "600px",
+		modal: true,
+		buttons: { Cancel: function() { $(this).dialog("close"); } },
+		close: function() { $(this).dialog("destroy").remove(); }
+	});
+	return dialog;
 }
 
 function createPeriodEndTimeoutDialog(td) {
@@ -307,28 +427,28 @@ function createOvertimeDialog() {
 
 function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
-	var controlsTr = createRowTable(3,2).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
-	var undoTr = controlsTr.next().addClass("UndoControls ShowUndo");
+	var controlsTr = createRowTable(3,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
 
 	$sb("ScoreBoard.StartJam").$sbControl("<button>").text("Start Jam").val("true")
 		.attr("id", "StartJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(0)"));
+	$sb("ScoreBoard.UnStartJam").$sbControl("<button>").text("UN-Start Jam").val("true")
+		.attr("id", "UnStartJam").addClass("KeyControl UndoControls ShowUndo").button()
+		.appendTo(controlsTr.children("td:eq(0)"));
+
 	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam").val("true")
 		.attr("id", "StopJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
+	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam").val("true")
+		.attr("id", "UnStopJam").addClass("KeyControl UndoControls ShowUndo").button()
+		.appendTo(controlsTr.children("td:eq(1)"));
+
 	$sb("ScoreBoard.Timeout").$sbControl("<button>").text("Timeout").val("true")
 		.attr("id", "Timeout").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(2)"));
-
-	$sb("ScoreBoard.UnStartJam").$sbControl("<button>").text("UN-Start Jam").val("true")
-		.attr("id", "UnStartJam").addClass("KeyControl").button()
-		.appendTo(undoTr.children("td:eq(0)"));
-	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam").val("true")
-		.attr("id", "UnStopJam").addClass("KeyControl").button()
-		.appendTo(undoTr.children("td:eq(1)"));
 	$sb("ScoreBoard.UnTimeout").$sbControl("<button>").text("UN-Timeout").val("true")
-		.attr("id", "UnTimeout").addClass("KeyControl").button()
-		.appendTo(undoTr.children("td:eq(2)"));
+		.attr("id", "UnTimeout").addClass("KeyControl UndoControls ShowUndo").button()
+		.appendTo(controlsTr.children("td:eq(2)"));
 
 	return table;
 }
@@ -338,9 +458,10 @@ function createTeamTable() {
 	var row = $("<tr></tr>");
 	var nameRow = row.clone().addClass("Name").appendTo(table);
 	var scoreRow = row.clone().addClass("Score").appendTo(table);
+	var speedScoreRow = row.clone().addClass("SpeedScore").appendTo(table);
 	var timeoutRow = row.clone().addClass("Timeout").appendTo(table);
-	var jammerRow = row.clone().addClass("Jammer").appendTo(table);
-	var passRow = row.clone().addClass("Pass").appendTo(table);
+	var jammer1Row = row.clone().addClass("Jammer").appendTo(table);
+	var jammer2Row = row.clone().addClass("Jammer").appendTo(table);
 
 	$.each( [ "1", "2" ], function() {
 		var team = String(this);
@@ -349,9 +470,10 @@ function createTeamTable() {
 
 		var nameTr = createRowTable(2).appendTo($("<td>").appendTo(nameRow)).find("tr");
 		var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
-		var timeoutTr = createRowTable(4).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
-		var jammerTr = createRowTable(2).appendTo($("<td>").appendTo(jammerRow)).find("tr");
-		var passTr = createRowTable(3).appendTo($("<td>").appendTo(passRow)).find("tr");
+		var speedScoreTr = createRowTable(4).appendTo($("<td>").appendTo(speedScoreRow)).find("tr");
+		var timeoutTr = createRowTable(5).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
+		var jammer1Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer1Row)).find("tr");
+		var jammer2Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer2Row)).find("tr");
 
 		var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
 		var nameDisplayDiv = $("<div>").appendTo(nameTd);
@@ -456,7 +578,7 @@ function createTeamTable() {
 		var scoreTd = scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down");
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score -1").val("-1")
-			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl").button()
+			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
@@ -473,13 +595,25 @@ function createTeamTable() {
 		var scoreTd = scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up");
 		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score +1").val("1")
-			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl").button()
+			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
 		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Jam Score +1").val("-1")
 			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl JamScoreButton").button()
 			.appendTo(scoreTd);
+
+		for (var i = 2; i <= 5; i++) {
+			var pos = (i - 2);
+			if (!first)
+				pos = 3 - pos;
+			sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+				.text("+" + i).val(i)
+				.attr("id", "Team"+team+"ScoreUp"+i).addClass("KeyControl").button()
+				.appendTo(speedScoreTr.find("td:eq("+pos+")"));
+		}
+
+
 		// Note instantaneous score change is always towards the center.  Jam score total is on the outside.
 		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
 		var jamScore = $("<a>").appendTo(scoreSubTr.children("td:eq("+(first?"0":"2")+")")).addClass("JamScore");
@@ -522,75 +656,83 @@ function createTeamTable() {
 
 		sbTeam.$sb("Timeout").$sbControl("<button>").text("Timeout").val("true")
 			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button()
-			.appendTo(timeoutTr.children("td:eq("+(first?"0":"3")+")").addClass("Timeout"));
+			.appendTo(timeoutTr.children("td:eq("+(first?"0":"4")+")").addClass("Timeout"));
 		sbTeam.$sb("Timeouts").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
-				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"2")+")")
-			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"2")+")").addClass("Timeouts"));
+				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"3")+")")
+			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"3")+")").addClass("Timeouts"));
 		sbTeam.$sb("OfficialReview").$sbControl("<button>").text("Off Review").val("true")
 			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button()
-			.appendTo(timeoutTr.children("td:eq("+(first?"2":"1")+")").addClass("OfficialReview"));
+			.appendTo(timeoutTr.children("td:eq("+(first?"2":"2")+")").addClass("OfficialReview"));
 		sbTeam.$sb("OfficialReviews").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
-				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"0")+")")
-			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"0")+")").addClass("OfficialReviews"));
+				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"1")+")")
+			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"1")+")").addClass("OfficialReviews"));
+		var retainedOR = sbTeam.$sb("RetainedOfficialReview");
+		var retainedORButton = retainedOR.$sbControl("<button>").text("Retained").val("true")
+			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl Box").button();
+		retainedOR.$sbBindAndRun("sbchange", function(event, value) {
+			retainedORButton.val(!isTrue(value));
+			retainedORButton.toggleClass("Active", isTrue(value));
+		});
+		retainedORButton.appendTo(timeoutTr.children("td:eq("+(first?"4":"0")+")").addClass("RetainedOfficialReview"));
 
-		var leadJammerTd = jammerTr.children("td:eq("+(first?"0":"1")+")")
-			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='true'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No Lead</label><input type='radio' value='false'/>");
+		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")")
+			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='Lead'/>")
+			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No</label><input type='radio' value='NoLead'/>")
+			[first?"append":"prepend"]("<label id='Team"+team+"LostLead' class='LostLead'>Lost</label><input type='radio' value='LostLead'/>");
 		sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
 			.addClass("KeyControl");
 		/* some strange bug, css direction is unset for leadJammerTd
 		 * so need to explicitly specify to style the buttonset as ltr
 		 */
 		leadJammerTd.css("direction", "ltr").buttonset();
-		var jammerSelectTd = jammerTr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer ByNumber AlphaSort");
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Name",
-				compareOptions: function(a, b) { return _windowFunctions.alphaCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByName AlphaSort")
-				.appendTo(jammerSelectTd);
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Number",
-				compareOptions: function(a, b) { return _windowFunctions.alphaCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByNumber AlphaSort")
-				.appendTo(jammerSelectTd);
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Name",
-				compareOptions: function(a, b) { return _windowFunctions.numCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByName NumSort")
-				.appendTo(jammerSelectTd);
-		sbTeam.$sb("Position(Jammer).Id").$sbControl("<select>", { sbelement: {
-				optionParent: sbTeam,
-				optionChildName: "Skater",
-				optionNameElement: "Number",
-				compareOptions: function(a, b) { return _windowFunctions.numCompareByProp("text", a, b); },
-				firstOption: { text: "No Jammer", value: "" }
-			} }).addClass("Jammer ByNumber NumSort")
-				.appendTo(jammerSelectTd);
 
-		sbTeam.$sb("Pass").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Pass -1").val("-1")
-			.attr("id", "Team"+team+"PassDown").addClass("KeyControl").button()
-			.appendTo(passTr.children("td:eq("+(first?"0":"2")+")").addClass("Down"));
-		sbTeam.$sb("Pass").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: passTr.children("td:eq(1)")
-			} }).appendTo(passTr.children("td:eq(1)").addClass("Pass"));
-		sbTeam.$sb("Pass").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Pass +1").val("1")
-			.attr("id", "Team"+team+"PassUp").addClass("KeyControl").button()
-			.appendTo(passTr.children("td:eq("+(first?"2":"0")+")").addClass("Up"));
+		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")")
+			.append("<label id='Team"+team+"StarPass' class='StarPass'>Star Pass</label><input type='radio' value='true'/>")
+			[first?"append":"prepend"]("<label id='Team"+team+"NoStarPass' class='NoStarPass'>No</label><input type='radio' value='false'/>");
+		sbTeam.$sb("StarPass").$sbControl(starPassTd.children())
+			.addClass("KeyControl");
+		/* some strange bug, css direction is unset for starPassTd
+		 * so need to explicitly specify to style the buttonset as ltr
+		 */
+		starPassTd.css("direction", "ltr").buttonset();
 
+		var makeSkaterDropdown = function(pos, elem, sort) {
+			var sortFunc = _windowFunctions.alphaCompareByProp;
+			if (sort == "Num") sortFunc = _windowFunctions.numCompareByProp;
+			return sbTeam.$sb("Position("+pos+").Id").$sbControl("<select>", { sbelement: {
+					optionParent: sbTeam,
+					optionChildName: "Skater",
+					optionNameElement: elem,
+					compareOptions: function(a, b) { return sortFunc("text", a, b); },
+					firstOption: { text: "No "+pos, value: "" }
+				} }).addClass(pos+" By"+elem+" "+sort+"Sort");
+		};
+
+		var jammerSelectTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer");
+		makeSkaterDropdown("Jammer", "Number", "Alpha").appendTo(jammerSelectTd);
+
+		var jammerBox = sbTeam.$sb("Position(Jammer).PenaltyBox");
+		var jammerBoxButton = jammerBox.$sbControl("<button>").text("Box").val("true")
+			.attr("id", "Team"+team+"JammerBox").addClass("KeyControl Box").button();
+		jammerBox.$sbBindAndRun("sbchange", function(event, value) {
+			jammerBoxButton.val(!isTrue(value));
+			jammerBoxButton.toggleClass("Active", isTrue(value));
+		});
+		jammerBoxButton.appendTo(jammerSelectTd);
+
+		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot");
+		makeSkaterDropdown("Pivot", "Number", "Alpha").appendTo(pivotSelectTd);
+
+		var pivotBox = sbTeam.$sb("Position(Pivot).PenaltyBox");
+		var pivotBoxButton = pivotBox.$sbControl("<button>").text("Box").val("true")
+			.attr("id", "Team"+team+"PivotBox").addClass("KeyControl Box").button();
+		pivotBox.$sbBindAndRun("sbchange", function(event, value) {
+			pivotBoxButton.val(!isTrue(value));
+			pivotBoxButton.toggleClass("Active", isTrue(value));
+		});
+		pivotBoxButton.appendTo(pivotSelectTd);
 	});
 
 	return table;
@@ -618,6 +760,13 @@ function createTimeTable() {
 		var timeResetTd = $("<td>").appendTo(timeResetRow);
 
 		sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
+		if (clock == "Period" || clock == "Jam") {
+			var it = sbClock.$sb("InvertedTime").$sbElement("<a>", { sbelement: { convert: _timeConversions.msToMinSec } }).appendTo(nameTd).addClass("InvertedTime");
+			sbClock.$sb("Direction").$sbBindAndRun("sbchange", function(event, value) {
+				it.toggleClass("CountDown", isTrue(value));
+				it.toggleClass("CountUp", !isTrue(value));
+			});
+		}
 		sbClock.$sb("Running").$sbBindAndRun("sbchange", function(event,value) {
 			nameTd.toggleClass("Running", isTrue(value));
 		});
@@ -867,13 +1016,17 @@ function createScoreBoardViewContent(table) {
 	});
 	var applyPreviewButton = $("<button>Apply Preview</button>").button()
 		.click(function() {
-			$sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
-				var path = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
-				$sb(path).$sbSet($sb(this).$sbGet());
+			$sb("ScoreBoard.Settings").find("Setting").each(function() {
+				oldPath = String($sb(this).$sbPath);
+				var path = oldPath.replace("(ScoreBoard.Preview_", "(ScoreBoard.View_");
+				if (path != oldPath) {
+					var val = $sb(this).$sbGet();
+					$sb(path).$sbSet($sb(this).$sbGet());
+				}
 			});
 		});
-	var viewOptions = $sb("Pages.Page(scoreboard.html)").children("PreviewOptions,ViewOptions");
-	_crgUtils.bindAndRun(viewOptions, "sbchange", function() {
+	// var viewOptions = $sb("Pages.Page(scoreboard.html)").children("PreviewOptions,ViewOptions");
+	_crgUtils.bindAndRun("ScoreBoard.Settings.Setting", "sbchange", function() {
 		var disableApplyButton = true;
 		$sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
 			var viewPath = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
@@ -909,7 +1062,7 @@ function createScoreBoardViewContent(table) {
 			.replaceAll(this);
 	});
 
-	var sbUrl = "/views/scoreboard.html?videomuted=true&videocontrols=true";
+	var sbUrl = "/views/standard/index.html?videomuted=true&videocontrols=true";
 	$("<tr><td/></tr>").appendTo(table)
 		.find("td").addClass("ViewFrames Footer")
 		.append(createRowTable(2))
@@ -920,8 +1073,6 @@ function createScoreBoardViewContent(table) {
 }
 
 function createScoreBoardViewPreviewRows(table, type) {
-	var pageSb = $sb("Pages.Page(scoreboard.html)."+type+"Options");
-
 	var currentViewTd = $("<tr><td/></tr>").addClass(type).appendTo(table)
 		.find("td").addClass("Header NoChildren CurrentView")
 		.append("<label>ScoreBoard</label><input type='radio' value='scoreboard'/>")
@@ -929,7 +1080,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.append("<label>Video</label><input type='radio' value='video'/>")
 		.append("<label>Custom Page</label><input type='radio' value='html'/>");
 
-	pageSb.$sb("CurrentView").$sbControl(currentViewTd.children());
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)").$sbControl(currentViewTd.children());
 	currentViewTd.buttonset()
 		.prepend("<a>Current View : </a>");
 
@@ -942,7 +1093,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 	var intermissionControlButton = $("<button>Intermission Control</button>").button().addClass("ui-button-small")
 		.click(function() { intermissionControlDialog.dialog("open"); });
 	var swapTeamsButton = $("<label/><input type='checkbox'/>");
-	pageSb.$sb("SwapTeams").$sbControl(swapTeamsButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -953,7 +1104,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		} }).addClass("ui-button-small");
 
 	var showJamTotalsButton = $("<label/><input type='checkbox'/>");
-	pageSb.$sb("HideJamTotals").$sbControl(showJamTotalsButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_HideJamTotals)").$sbControl(showJamTotalsButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -962,12 +1113,13 @@ function createScoreBoardViewPreviewRows(table, type) {
 				return value;
 			}
 		} }).addClass("ui-button-small");
-	var boxStyle = pageSb.$sb("BoxStyle").$sbControl("<label>Box Style: </label><select>", { sbelement: {
+	var boxStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Rounded", value: "" },
-			{ text: "Flat", value: "box_flat" }
+			{ text: "Flat", value: "box_flat" },
+			{ text: "Flat & Bright", value: "box_flat_bright" }
 		]}});
-	var sidePadding = pageSb.$sb("SidePadding").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
+	var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "None", value: "" },
 			{ text: "2%", value: "2" },
@@ -976,28 +1128,28 @@ function createScoreBoardViewPreviewRows(table, type) {
 			{ text: "8%", value: "8" },
 			{ text: "10%", value: "10" }
 		]}});
-	var backgroundStyle = pageSb.$sb("BackgroundStyle").$sbControl("<label>Background Style: </label><select>", { sbelement: {
+	var backgroundStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BackgroundStyle)").$sbControl("<label>Background Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Black to White", value: "" },
 			{ text: "White to Black", value: "bg_whitetoblack" },
 			{ text: "Black", value: "bg_black" }
 		]}});
 
-	var imageViewSelect = pageSb.$sb("View(Image).Src").$sbControl("<label>Image View: </label><select>", { sbelement: {
+	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
 			optionParent: "Images.Type(fullscreen)",
 			optionChildName: "Image",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Image", value: "" }
 		} });
-	var videoViewSelect = pageSb.$sb("View(Video).Src").$sbControl("<label>Video View: </label><select>", { sbelement: {
+	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
 			optionParent: "Videos.Type(fullscreen)",
 			optionChildName: "Video",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Video", value: "" }
 		} });
-	var customPageViewSelect = pageSb.$sb("View(CustomHtml).Src").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
+	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
 			optionParent: "CustomHtml.Type(fullscreen)",
 			optionChildName: "Html",
 			optionNameElement: "Name",
@@ -1030,28 +1182,27 @@ function createScoreBoardViewPreviewRows(table, type) {
 
 function createIntermissionControlDialog() {
 	var table = $("<table>").addClass("IntermissionControlDialog");
-	$.each( [ "Pregame", "Halftime", "Final" ], function(i,title) {
-		var intermissionControl = $sb("Pages.Page(scoreboard.html).Intermission("+i+")");
-		$("<td>").attr("colspan", "3").addClass("Name")
-			.append($("<a>").text(title+" (Intermission "+i+")"))
-			.appendTo($("<tr>").addClass("Name").appendTo(table));
-		var controlRow = $("<tr>").addClass("Control")
-			.append($("<td><label><span/></label><input type='checkbox'/></td>").addClass("ShowUnofficial"))
-			.append($("<td><a>Text:</a><input type='text'/></td>").addClass("Text"))
-			.append($("<td><label><span/></label><input type='checkbox'/></td>").addClass("HideClock"))
-			.appendTo(table);
-		intermissionControl.$sb("ShowUnofficial").$sbBindAndRun("sbchange", function(event,value) {
-				controlRow.find(">td.ShowUnofficial>label>span").text(isTrue(value)?"'Unofficial' Showing":"'Unofficial' Hidden");
-			}).$sbControl(controlRow.find(">td.ShowUnofficial>label,>td.ShowUnofficial>input:checkbox"), { sbcontrol: {
-				button: true
-			} });
-		intermissionControl.$sb("Text").$sbControl(controlRow.find(">td.Text>input:text"), { size: "12" });
-		intermissionControl.$sb("HideClock").$sbBindAndRun("sbchange", function(event,value) {
-				controlRow.find(">td.HideClock>label>span").text(isTrue(value)?"Clock Hidden":"Clock Showing");
-			}).$sbControl(controlRow.find(">td.HideClock>label,>td.HideClock>input:checkbox"), { sbcontrol: {
-				button: true
-			} });
+
+	var fields = [
+		{ id: "ScoreBoard.Intermission.PreGame", display: "Pre Game", type: "text" },
+		{ id: "ScoreBoard.Intermission.Intermission", display: "Intermission", type: "text" },
+		{ id: "ScoreBoard.Intermission.Unofficial", display: "Unofficial Score", type: "text" },
+		{ id: "ScoreBoard.Intermission.Official", display: "Official Score", type: "text" },
+		{ id: "Clock.Intermission.Time", display: "Time", type: "time" }
+	];
+	$.each( fields, function(i, field) {
+		var path = "ScoreBoard.Settings.Setting(" + field.id + ")";
+		var row = $("<tr>").appendTo(table);
+		$("<td>").addClass("Name").text(field.display).appendTo(row);
+		var options = {};
+		if (field.type == "time") {
+			options.sbelement = { convert: _timeConversions.msToMinSec };
+			options.sbcontrol = { convert: _timeConversions.minSecToMs };
+		}
+		$sb(path).$sbControl($("<input>").attr("type", "text"), options)
+			.appendTo($("<td>").addClass("Value").appendTo(row));
 	});
+
 	return $("<div>").append(table).dialog({
 		title: "Intermission Display Controls",
 		autoOpen: false,
@@ -1164,26 +1315,31 @@ function createNewTeamTable(team, teamid) {
 		.append("<col class='Id'>")
 		.append("<col class='Name'>")
 		.append("<col class='Number'>")
+		.append("<col class='Flags'>")
 		.append("<col class='Button'>")
 		.append("<thead/><tbody/>")
 		.children("thead")
-		.append("<tr><th colspan='4' class='Title'>Skaters</th></tr>")
-		.append("<tr><th>Id</th><th>Name</th><th>Number</th><th>Add</th>")
-		.append("<tr class='AddSkater'><th/><th/><th/><th/></tr>")
-		.append("<tr><th colspan='4'><hr/></th></tr>")
+		.append("<tr><th colspan='5' class='Title'>Skaters</th></tr>")
+		.append("<tr><th>Id</th><th>Name</th><th>Number</th><th>Flags</th><th>Add</th>")
+		.append("<tr class='AddSkater'><th/><th/><th/><th/><th/></tr>")
+		.append("<tr><th colspan='5'><hr/></th></tr>")
 		.end();
 
 	var newSkaterName = $("<input type='text' size='20'>").addClass("Name")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(1)"));
 	var newSkaterNumber = $("<input type='text' size='20'>").addClass("Number")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(2)"));
+	var newSkaterFlags = $("<select>").addClass("Flags")
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"));
 	var newSkaterButton = $("<button>").text("Add Skater").button({ disabled: true }).addClass("AddSkater")
-		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(4)"))
 		.click(function() {
-			var id = _crgUtils.checkSbId(newSkaterName.val());
+			var id = _crgScoreBoard.newUUID(true);
 			team.$sb("Skater("+id+").Number").$sbSet(newSkaterNumber.val());
 			team.$sb("Skater("+id+").Name").$sbSet(newSkaterName.val());
+			team.$sb("Skater("+id+").Flags").$sbSet(newSkaterFlags.val());
 			newSkaterNumber.val("");
+			newSkaterFlags.val("");
 			newSkaterName.val("").focus();
 			$(this).blur();
 			newSkaterButton.button("option", "disabled", true);
@@ -1193,6 +1349,11 @@ function createNewTeamTable(team, teamid) {
 		if (!newSkaterButton.button("option", "disabled") && (13 == event.which)) // Enter
 			newSkaterButton.click();
 	});
+	newSkaterFlags.append($("<option>").attr("value", "").text("Skater"));
+	newSkaterFlags.append($("<option>").attr("value", "C").text("Captain"));
+	newSkaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
+	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
+	newSkaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
 
 	team.$sbBindAddRemoveEach("Skater", function(event,node) {
 		var skaterid = node.$sbId;
@@ -1204,6 +1365,7 @@ function createNewTeamTable(team, teamid) {
 			.append("<td class='Id'>")
 			.append("<td class='Name'>")
 			.append("<td class='Number'>")
+			.append("<td class='Flags'>")
 			.append("<td class='Remove'>");
 		$("<a>").text(skaterid).appendTo(skaterRow.children("td.Id"));
 		node.$sb("Name").$sbControl("<input type='text' size='20'>")
@@ -1217,6 +1379,13 @@ function createNewTeamTable(team, teamid) {
 			skaterRow.attr("data-skaternum", node.$sb("Number").$sbGet());
 			_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "data-skaternum");
 		});
+		var skaterFlags = $("<select>").appendTo(skaterRow.children("td.Flags"));
+		skaterFlags.append($("<option>").attr("value", "").text("Skater"));
+		skaterFlags.append($("<option>").attr("value", "C").text("Captain"));
+		skaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
+		skaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
+		skaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
+		node.$sb("Flags").$sbControl(skaterFlags);
 
 		node.$sb("Number").$sbBindAndRun("sbchange", function(event, value) {
 			if (!numberInput.is(':focus')) {
@@ -1295,6 +1464,7 @@ function createAlternateNamesDialog(team) {
 			{ label: "mobile (Mobile Control)", value: "mobile" },
 			{ label: "operator (Operator Controls)", value: "operator" },
 			{ label: "overlay (Video Overlay)", value: "overlay" },
+			{ label: "scoreboard (Scoreboard Display)", value: "scoreboard" },
 			{ label: "twitter (Twitter)", value: "twitter" }
 		]
 	}).focus(function() { $(this).autocomplete("search", ""); });

@@ -55,6 +55,10 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
     return c.equals(this);
   }
 
+  public String toString() {
+    return provider.getClass().getName() + ": " + property + "='" + value + "' (was '" + previousValue + "')";
+  }
+
   protected ScoreBoardEventProvider provider;
   protected String property;
   protected Object value;

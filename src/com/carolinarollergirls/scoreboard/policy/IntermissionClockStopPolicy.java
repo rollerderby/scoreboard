@@ -94,6 +94,8 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
         	TeamModel team2 = getScoreBoardModel().getTeamModel("2");
         	team1.setOfficialReviews(1);
         	team2.setOfficialReviews(1);
+		team1.setRetainedOfficialReview(false);
+		team2.setRetainedOfficialReview(false);
         }	
       }
     }

@@ -30,7 +30,10 @@ table.RowTable { border-spacing: 0px; }
 /*** Tabs ***/
 
 /* Team/Time Tab */
+	#TeamTime { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; }
 	#TeamTime a { font-weight: bold; }
+	#TeamTime .ui-button-text { font-size: 80%; line-height: 1em; }
+	#TeamTime .BigButton .ui-button-text { font-size: 100%; line-height: 1.4em; }
 
 	#TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
 	#TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
@@ -46,7 +49,7 @@ table.RowTable { border-spacing: 0px; }
 
 	#TeamTime table.JamControl>tbody>tr>td { width: 100%; }
 	#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
-	#TeamTime table.JamControl tr.UndoControls:not(.ShowUndo) { display: none; }
+	.UndoControls:not(.ShowUndo) { display: none; }
 
 	#TeamTime table.Team>tbody>tr>td { width: 50%; }
 	#TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; }
@@ -57,22 +60,24 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Team tr.Score td a.JamScore { font-size: 200%; line-height: 175%; }
 	#TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; }
 	#TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.ByName) select.Jammer.ByName { display: none; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.ByNumber) select.Jammer.ByNumber { display: none; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.AlphaSort) select.Jammer.AlphaSort { display: none; }
-	#TeamTime table.Team tr.Jammer td.Jammer:not(.NumSort) select.Jammer.NumSort { display: none; }
+	#TeamTime table.Team tr.Timeout td.RetainedOfficialReview button.Active { color: #000; background: #F33; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label.Lead.ui-state-active { background: #3f3; }
+	#TeamTime table.Team tr.Jammer td.ui-buttonset label.StarPass.ui-state-active { background: #3f3; }
 
-	#TeamTime table.Team tr.Pass td.Pass a { font-size: 150%; }
+	#TeamTime table.Team tr.Jammer button.Box.Active { color: #000; background: #F33; }
 
 	#TeamTime table.Time>tbody>tr>td { width: 20%; }
 	#TeamTime table.Time tr.Name td.Name.Running { background: #3f3; }
 	#TeamTime table.Time tr.Name td.Name a { font-size: 150%; }
+	#TeamTime table.Time tr.Name td.Name a.InvertedTime { padding-left: 5px; font-size: 75%; }
+	#TeamTime table.Time tr.Name td.Name a.InvertedTime:before { content: "("; }
+	#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountDown:after { content: " elapsed)"; }
+	#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountUp:after { content: " remaining)"; }
 	#TeamTime table.Time tr.Number td.Number a { font-size: 150%; }
 	#TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
 	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 
-	#TeamTime .JamScoreButton { font-size: 80%; }
+	tr.SpeedScore:not(.Show) { display: none; }
 /* End Team/Time Tab */
 
 /* Policies */
@@ -209,3 +214,10 @@ table.RowTable { border-spacing: 0px; }
 	div.ResetDialog p { text-align: center; }
 /* End Reset ScoreBoard Dialog */
 
+/* Game Control Dialog */
+	div.GameControl { background-color: pink; }
+	div.GameControl div.section:not(:first-of-type) { padding-top: 10px; }
+	div.GameControl div.section:not(:last-of-type) { padding-bottom: 10px; border-bottom: solid 1px black; }
+	div.GameControl .header { font-weight: bold; }
+	div.GameControl button span { font-size: 50%; }
+/* End Game Control Dialog */

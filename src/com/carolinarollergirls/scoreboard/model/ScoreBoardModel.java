@@ -10,8 +10,6 @@ package com.carolinarollergirls.scoreboard.model;
 
 import java.util.*;
 
-import java.awt.image.*;
-
 import com.carolinarollergirls.scoreboard.*;
 
 public interface ScoreBoardModel extends ScoreBoard
@@ -41,6 +39,9 @@ public interface ScoreBoardModel extends ScoreBoard
 	public void unStartJam();
 	public void unStopJam();
 	public void unTimeout();
+
+	public void setRuleset(String id);
+	public SettingsModel getSettingsModel();
 
 // FIXME - need methods to add/remove clocks and teams! */
 	public List<ClockModel> getClockModels();

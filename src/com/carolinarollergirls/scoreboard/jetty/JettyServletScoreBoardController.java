@@ -8,13 +8,16 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
+import java.io.File;
 import java.net.*;
 import java.util.*;
 
-import org.mortbay.jetty.*;
-import org.mortbay.jetty.bio.*;
-import org.mortbay.jetty.handler.*;
-import org.mortbay.jetty.servlet.*;
+import org.eclipse.jetty.server.*;
+import org.eclipse.jetty.server.bio.*;
+import org.eclipse.jetty.server.handler.*;
+import org.eclipse.jetty.server.session.*;
+import org.eclipse.jetty.servlet.*;
+// import org.eclipse.jetty.util.resource.Resource;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
@@ -94,16 +97,21 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 
 		String staticPath = ScoreBoardManager.getProperty(PROPERTY_HTML_DIR_KEY);
 		if (null != staticPath) {
-			Context c = new Context(contexts, "/", Context.SESSIONS);
-			Map<String,String> initParams = new Hashtable<String,String>();
-			initParams.put("org.mortbay.jetty.servlet.Default.cacheControl", "no-cache");
-			c.setInitParams(initParams);
-			c.addServlet(new ServletHolder(new DefaultServlet()), "/*");
-			c.setResourceBase(staticPath);
+			ServletContextHandler c = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
+			ServletHolder sh = new ServletHolder(new DefaultServlet());
+			sh.setInitParameter("org.eclipse.jetty.servlet.Default.cacheControl", "no-cache");
+			c.addServlet(sh, "/*");
+			c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), staticPath)).getPath());
 		}
 
 		urlsServlet = new UrlsServlet(server);
-		new Context(contexts, "/urls", Context.SESSIONS).addServlet(new ServletHolder(urlsServlet), "/*");
+		new ServletContextHandler(contexts, "/urls", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(urlsServlet), "/*");
+
+		jsonServlet = new JSONServlet(server, scoreBoardModel);
+		new ServletContextHandler(contexts, "/JSON", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(jsonServlet), "/*");
+
+		ws = new WS(scoreBoardModel);
+		new ServletContextHandler(contexts, "/WS", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(ws), "/*");
 
 		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
 
@@ -117,7 +125,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 			try {
 				ScoreBoardControllerServlet sbcS = (ScoreBoardControllerServlet)Class.forName(servlet).newInstance();
 				sbcS.setScoreBoardModel(scoreBoardModel);
-				Context c = new Context(contexts, sbcS.getPath(), Context.SESSIONS);
+				ServletContextHandler c = new ServletContextHandler(contexts, sbcS.getPath(), ServletContextHandler.SESSIONS);
 				c.addServlet(new ServletHolder(sbcS), "/*");
 			} catch ( Exception e ) {
 				ScoreBoardManager.printMessage("Could not create Servlet " + servlet + " : " + e.getMessage());
@@ -135,6 +143,8 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 	protected ScoreBoardModel scoreBoardModel;
 	protected int port;
 	protected UrlsServlet urlsServlet;
+	protected JSONServlet jsonServlet;
+	protected WS ws;
 
 	public static final int DEFAULT_PORT = 8000;
 	public static final String DEFAULT_SECURE_SESSION_ID = "false";

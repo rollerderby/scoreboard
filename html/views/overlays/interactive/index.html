@@ -1,0 +1,159 @@
+<html>
+	<head>
+		<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+		<script type="text/javascript" src="/json/core.js"></script>
+		<script type="text/javascript" src="/json/WS.js"></script>
+		<script type="text/javascript" src="/views/standard/common.js"></script>
+
+		<style  type="text/css" title="jsStyle"></style>
+	</head>
+	<body>
+		<div id="sb" sbContext="ScoreBoard" class="JamScore StyleTraditional" data-setting="Custom.Overlay.ShowJammers">
+
+			<div class="PanelWrapperTop">
+
+				<div data-setting="Custom.Overlay.Score" class="TeamBox AnimatedPanel PanelHideTop Wrapper">	
+					<div class="Team1" sbContext="Team(1)">	
+					<div class="Team Row Wrapper barBackgroundTop"> 
+						<div class="Indicator ColourTeam1 Box">&nbsp;</div>
+						<div class="Name  VerticalCenter Box" sbModify="nameUpdate" sbDisplay="Name,AlternateName(overlay)"></div>
+						<div class="Score VerticalCenter Box" sbDisplay="Score"></div>
+						<div class="Mini Box">
+							<div class="JamScore" sbDisplay="JamScore"></div>
+							<div class="LeadJammer Lead">&#9733;</div>
+						</div>
+						<div class="DotTimeouts Box">
+							<div class="Dot Timeout1"></div><div class="Dot Timeout2"></div>
+							<div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div>
+						</div>
+					</div>
+					<div class="JammerWrapper">
+						<div class="JammerBox ShowInJam Clock ColourTeam1">
+							<div class="JammerName VerticalCenter Box" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
+						</div>
+					</div>
+					</div>
+					<div class="Team2" sbContext="Team(2)">
+						<div class="Team Row Wrapper barBackgroundBottom">
+							<div class="Indicator ColourTeam2 Box">&nbsp;</div>
+							<div class="Name Box" sbModify="nameUpdate" sbDisplay="Name,AlternateName(overlay)"></div>
+							<div class="Score Box" sbDisplay="Score"></div>
+							<div class="Mini Box"><div class="JamScore" sbDisplay="JamScore"></div><div class="LeadJammer Lead">&#9733;</div></div>
+							<div class="DotTimeouts Box"><div class="Dot Timeout1"></div><div class="Dot Timeout2"></div><div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div></div>
+						</div>
+						<div class="JammerWrapper">
+							<div class="JammerBox ShowInJam Clock ColourTeam2"><div class="JammerName" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
+						</div>
+					</div>
+			
+				</div>
+
+			
+			<div data-setting="Custom.Overlay.Clock"  class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper">
+
+					<div class="ClockBarTop Wrapper Row SlideDown ClockNames ShowInJam ShowInLineup ShowInTimeout barBackgroundTop">
+						<div class="Box TextLeft Name" sbDisplay="Name,Number" sbContext="Clock(Period)" sbModify="toClockInitialNumber"></div>
+						<div class="Box TextRight Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
+					</div>
+
+					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineUp ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Setting(Intermission.PreGame), Setting(Intermission.Intermission), Setting(Intermission.Unofficial), Setting(Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="clockType"></div>
+					<div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
+						<div class="Box TextLeft Time Clock Show ShowInJam ShowInLineup ShowInTimeout" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
+						<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
+						<div class="Box TextRight Time Clock Show ShowInJam" sbContext="Clock(Jam)" sbDisplay="Time" sbModify="toTime"></div>
+						<div class="Box TextRight Time Clock ShowInLineUp" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
+						<div class="Box TextRight Time Clock ShowInTimeout" sbContext="Clock(Timeout)" sbDisplay="Time" sbModify="toTime"></div>
+					</div>
+
+			</div>
+
+			</div>	
+
+			<div class="PanelWrapperCenter">
+
+				<div class="ClockBox Wrapper OverlayPanel PanelHideBottom MediumPanel AnimatedPanel">
+						<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineUp ShowInTimeout">
+							<div class="Box BigName ShowInIntermission Clock" sbDisplay="Setting(ScoreBoard.Intermission.PreGame), Setting(Intermission.Intermission), Setting(Intermission.Unofficial), Setting(Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
+							<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
+						</div>
+				</div>
+
+				<div class="PPJBox Wrapper PanelHideLeft OverlayPanel LargePanel AnimatedPanel">
+					<h1 class="NoLogo">Points Per Jam</h1>
+					<h4 class="htop ColourTeam1" sbDisplay="AlternateName(overlay),Name" sbContext="Team(1)"></h4>	
+					<div class="PPJContainer Wrapper">
+						<div class="Wrapper Team Team1">
+							<div class="Period Period1"></div><div class="Period Period2"></div>
+						</div>
+						<div class="Wrapper Team Team2">
+							<div class="Period Period1"></div><div class="Period Period2"></div>
+						</div> </div>
+					<h4 class="hbottom ColourTeam2" sbDisplay="AlternateName(overlay),Name" sbContext="Team(2)"></h4>	
+				</div>
+
+
+				<div class="RosterTeam1 RosterTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<img class="TeamLogo TeamLogo1" src="" />
+					<h1 class="ColourTeam1" sbDisplay="AlternateName(overlay),Name" sbContext="Team(1)"></h1>
+					<h2>Team Roster</h2>
+				</div>
+				<div class="RosterTeam1 RosterTeam LowerPart AnimationDelay PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<div class="Wrapper Team Team1 SortBox">
+					</div>
+				</div>
+
+				<div class="RosterTeam2 RosterTeam PanelHideRight Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<img class="TeamLogo TeamLogo2" src="" />
+					<h1 class="ColourTeam2" sbDisplay="AlternateName(overlay),Name" sbContext="Team(2)"></h1>	
+					<h2>Team Roster</h2>
+				</div>
+				<div class="RosterTeam2 RosterTeam LowerPart AnimationDelay PanelHideRight Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<div class="Wrapper Team Team2 SortBox">
+					</div>
+				</div>
+
+				<div class="PenaltyTeam1 PenaltyTeam PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<img class="TeamLogo TeamLogo1" src="" />
+					<h1>Penalty Board</h1>
+					<h2 class="ColourTeam1" sbDisplay="AlternateName(overlay),Name" sbContext="Team(1)"></h2>	
+				</div>
+				<div class="PenaltyTeam1 PenaltyTeam AnimationDelay LowerPart PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<div class="Wrapper Team Team1 SortBox">
+					</div>
+				</div>
+
+				<div class="PenaltyTeam2 PenaltyTeam PanelHideRight Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<img class="TeamLogo TeamLogo2" src="" />
+					<h1>Penalty Board</h1>
+					<h2 class="ColourTeam2" sbDisplay="AlternateName(overlay),Name" sbContext="Team(2)"></h2>	
+				</div>
+				<div class="PenaltyTeam2 PenaltyTeam AnimationDelay LowerPart PanelHideRight Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<div class="Wrapper Team Team2 SortBox">
+					</div>
+				</div>
+
+				<div class="Upcoming PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
+					<div>
+						<img class="TeamLogo TeamLogo1" src="" style="float: left;" />
+						<h1 class="ColourTeam1" sbDisplay="AlternateName(overlay),Name" sbContext="Team(1)" style="margin-top: 2em; margin-left: 4em; margin-right: 0;"></h1>	
+					</div>
+					<div class="UpcomingVS">VS</div>
+					<div>
+						<img class="TeamLogo TeamLogo2" src="" style="float: right;" />
+						<h1 class="ColourTeam2" sbDisplay="AlternateName(overlay),Name" sbContext="Team(2)" style="margin-top: 2em; margin-left: 0; margin-right: 4em;"></h1>	
+					</div>
+				</div>
+
+			</div>
+
+			<div class="PanelWrapperLeft">
+				<div class="LowerThird Wrapper OverlayPanel AnimatedPanel PanelHideLeft">
+					<h4 class="Line1" sbDisplay="Custom.Overlay.LowerThird.Line1" /> <h5 class="Line2" sbDisplay="Custom.Overlay.LowerThird.Line2" />
+				</div>
+			</div>
+
+	</div>
+	<div id="VIDEO-GREEN" class="VideoBackground"></div>
+	<div id="VIDEO-CAMERA" class="VideoBackground"><video></video></div>
+</html>
+

@@ -51,7 +51,11 @@ function showOverlays() {
 		<td>
 			<h3>Scoreboard view/control pages</h3>
 			<a href="controls/operator.html">Main Operator Control Panel</a><br/>
-			<a href="views/scoreboard.html">Main Scoreboard</a><br/>
+			<a href="views/scoreboard.html">Main Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="views/scoreboard.html?ani=min">(Minimal Animations)</a><br/>
+			<a href="views/standard/">BETA Websocket/JSON Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp;
+				<a href="views/standard/?ani=min">(Minimal Animations)</a><br/>
+			<a href="controls/rulesets.html">Ruleset Editor</a><br/>
 			<a href="controls/mobile.html">Mobile Device Operator Controls</a><br/>
 			<a href="controls/media_management.html">Media Management</a><br/>
 			<a href="javascript: showOverlays();">Overlays</a><br/>
@@ -59,6 +63,8 @@ function showOverlays() {
 			<a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
 			<a href="controls/lineups.html">Team Lineup Control Panel (beta quality!)</a><br/>
 			<a href="controls/scoreboard_assist.html">Scoreboard Assistant</a><br/>
+			<br />
+			<a href="controls/pt/">Penalty Tracker</a><br/>
 		</td>
 
 		<td>
@@ -97,15 +103,18 @@ function showOverlays() {
 <div id="OverlayDialog">
 	<a href='controls/wo.html'>Overlay Controls</a><br/>
 	<br/>
-	<a href='views/overlay-4x3.html'>Video Feed 4x3</a><br/>
-	<a href='views/overlay-16x9.html'>Video Feed 16x9</a><br/>
-	<a href='views/overlay-tcdg-4x3.html'>TCDG Video Feed 4x3</a><br/>
-	<a href='views/overlay-tcdg-4x3-trans.html'>TCDG Video Feed 4x3 (Partial Transparency)</a><br/>
-	<a href='views/overlay-tcdg-16x9-trans.html'>TCDG Video Feed 16x9 (Partial Transparency)</a><br/>
-	<a href='views/overlay-tcdg-16x9-pip.html'>TCDG Video Feed 16x9 (Picture in Picture)</a><br/>
-	<a href='views/overlay-ddu-top.html'>Downunder Derby Media - Top Bar 4x3/16x9</a><br/>
-	<a href='views/overlay-wftda.html'>WFTDA Styled Video Feed 16x9</a><br/>
-	<a href='views/overlay-wftda-logo.html'>WFTDA Styled (with logo) Video Feed 16x9</a><br/>
+	<a href='views/overlays/standard/overlay-4x3.html'>Video Feed 4x3</a><br/>
+	<a href='views/overlays/standard/overlay-16x9.html'>Video Feed 16x9</a><br/>
+	<a href='views/overlays/standard/overlay-top.html'>Top Bar 4x3/16x9</a><br/>
+	<a href='views/overlays/interactive/index.html'>Interactive Overlay 16x9/720p</a>
+		&nbsp;<a href='views/overlays/interactive/index.html?camera'>(Camera Underlay)</a>
+		&nbsp;&nbsp;&nbsp;<a style="color: green;" href='views/overlays/interactive/admin.html'>(Admin Page)</a><br/>
+	<a href='views/overlays/tcdg/overlay-4x3.html'>TCDG Video Feed 4x3</a><br/>
+	<a href='views/overlays/tcdg/overlay-4x3-trans.html'>TCDG Video Feed 4x3 (Partial Transparency)</a><br/>
+	<a href='views/overlays/tcdg/overlay-16x9-trans.html'>TCDG Video Feed 16x9 (Partial Transparency)</a><br/>
+	<a href='views/overlays/tcdg/overlay-16x9-pip.html'>TCDG Video Feed 16x9 (Picture in Picture)</a><br/>
+	<a href='views/overlays/wftda/overlay.html'>WFTDA Styled Video Feed 16x9</a><br/>
+	<a href='views/overlays/wftda/overlay-logo.html'>WFTDA Styled (with logo) Video Feed 16x9</a><br/>
 </div>
 
 </body>

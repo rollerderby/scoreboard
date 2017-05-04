@@ -12,35 +12,26 @@ import java.io.*;
 import java.util.*;
 import java.util.concurrent.*;
 
-import java.awt.*;
-import javax.swing.*;
-
-import gnu.getopt.*;
-
 import com.carolinarollergirls.scoreboard.model.*;
 
-public class ScoreBoardManager
-{
-	public static void main(String argv[]) {
-		parseArgv(argv);
+public class ScoreBoardManager {
+	public interface Logger {
+		void log(String msg);
+	}
 
+	public static void start() {
 		setSystemProperties();
-
 		loadVersion();
-
 		loadProperties();
-
 		loadModel();
-
 		loadControllers();
-
 		loadViewers();
 
 		//FIXME - not the best way to load autosave doc.
 		scoreBoardModel.getXmlScoreBoard().load();
+	}
 
-		if (guiFrameText != null)
-			guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
+	public static void stop() {
 	}
 
 	public static String getVersion() {
@@ -51,8 +42,8 @@ public class ScoreBoardManager
 	}
 
 	public static void printMessage(String msg) {
-		if (guiMessages != null)
-			guiMessages.append(msg+"\n");
+		if (logger != null)
+			logger.log(msg);
 		else
 			System.err.println(msg);
 	}
@@ -76,54 +67,8 @@ public class ScoreBoardManager
 		viewers.put(sbV.getClass().getName(), sbV);
 	}
 
-	private static void parseArgv(String[] argv) {
-		boolean gui = false;
-
-		int c;
-		String sopts = "gGp:";
-		LongOpt[] longopts = {
-			new LongOpt("gui", LongOpt.NO_ARGUMENT, null, 'g'),
-			new LongOpt("nogui", LongOpt.NO_ARGUMENT, null, 'G'),
-			new LongOpt("port", LongOpt.REQUIRED_ARGUMENT, null, 'p')
-		};
-		Getopt g = new Getopt("Carolina ScoreBoard", argv, sopts, longopts);
-		while ((c = g.getopt()) != -1)
-			switch (c) {
-			case 'g': gui = true; break;
-			case 'G': gui = false; break;
-			case 'p':
-				properties_overrides.put("com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController.port", g.getOptarg());
-				break;
-			}
-
-		if (gui)
-			createGui();
-	}
-
-	private static void createGui() {
-		if (guiFrame != null)
-			return;
-
-		guiFrame = new JFrame("Carolina Rollergirls ScoreBoard");
-		guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		guiMessages = new JTextArea();
-		guiMessages.setEditable(false);
-		guiFrameText = new JLabel("ScoreBoard status: starting...");
-		guiFrame.getContentPane().setLayout(new BoxLayout(guiFrame.getContentPane(), BoxLayout.Y_AXIS));
-		guiFrame.getContentPane().add(guiFrameText);
-		guiFrame.getContentPane().add(new JScrollPane(guiMessages));
-		guiFrame.setSize(800, 600);
-		Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
-		int w = guiFrame.getSize().width;
-		int h = guiFrame.getSize().height;
-		int x = (dim.width-w)/2;
-		int y = (dim.height-h)/2;
-		guiFrame.setLocation(x, y);
-		guiFrame.setVisible(true);
-	}
-
-	private static void doExit(String err) { doExit(err, null); }
-	private static void doExit(String err, Exception ex) {
+	public static void doExit(String err) { doExit(err, null); }
+	public static void doExit(String err, Exception ex) {
 		printMessage(err);
 		if (ex != null)
 			ex.printStackTrace();
@@ -166,7 +111,7 @@ public class ScoreBoardManager
 
 		if (null == is) {
 			try {
-				is = new FileInputStream(new File(PROPERTIES_DIR_NAME, PROPERTIES_FILE_NAME));
+				is = new FileInputStream(new File(new File(defaultPath, PROPERTIES_DIR_NAME), PROPERTIES_FILE_NAME));
 			} catch ( FileNotFoundException fnfE ) {
 				doExit("Could not find properties file " + PROPERTIES_FILE_NAME);
 			}
@@ -243,6 +188,31 @@ public class ScoreBoardManager
 		}
 	}
 
+	public static void gameSnapshot() {
+		synchronized (gameLock) {
+			if (game != null)
+				game.snapshot(false);
+		}
+	}
+	public static void gameSnapshot(boolean jamEnd) {
+		synchronized (gameLock) {
+			if (game != null)
+				game.snapshot(jamEnd);
+		}
+	}
+	public static Game gameStart(String name) {
+		synchronized (gameLock) {
+			if (game != null)
+				game.stop();
+			game = new Game(scoreBoardModel);
+			game.start(name);
+			return game;
+		}
+	}
+	public static Game getGame() {
+		return game;
+	}
+
 	/* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
 	public static boolean ObjectsEquals(Object a, Object b) {
 		if ((null == a) != (null == b))
@@ -252,19 +222,25 @@ public class ScoreBoardManager
 		return true;
 	}
 
+	public static void setLogger(Logger l) { logger = l; }
+	public static File getDefaultPath() { return defaultPath; }
+	public static void setDefaultPath(File f) { defaultPath = f; }
+	public static void setPropertyOverride(String key, String value) { properties_overrides.put(key, value); }
+
 	private static Properties properties = new Properties();
 	private static Map<String,String> properties_overrides = new HashMap<String,String>();
 	private static Map<String,ScoreBoardController> controllers = new ConcurrentHashMap<String,ScoreBoardController>();
 	private static Map<String,ScoreBoardViewer> viewers = new ConcurrentHashMap<String,ScoreBoardViewer>();
 
 	private static ScoreBoardModel scoreBoardModel;
-
-	private static JFrame guiFrame = null;
-	private static JTextArea guiMessages = null;
-	private static JLabel guiFrameText = null;
+	private static Logger logger = null;
 
 	private static String versionRelease;
 	private static String versionBuild;
+
+	private static File defaultPath = new File(".");
+	private static Game game = null;
+	private static Object gameLock = new Object();
 
 	public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
 	public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
