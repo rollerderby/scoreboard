@@ -17,6 +17,8 @@ body { margin: 0px; }
 #tabsDiv>div.TabContent>div.Loading { text-align: center; font-weight: bold; font-size: 300%; }
 table.RowTable { border-spacing: 0px; }
 
+#GameControl.clickMe { color: green !important; font-size: 200% !important; }
+
 /* Key Control */
 	.KeyControl span.Indicator { font-size: 75%; }
 	.KeyControl:not(.HasControlKey) span.Indicator { display: none; }
@@ -221,3 +223,7 @@ table.RowTable { border-spacing: 0px; }
 	div.GameControl .header { font-weight: bold; }
 	div.GameControl button span { font-size: 50%; }
 /* End Game Control Dialog */
+
+
+
+

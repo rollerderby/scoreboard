@@ -168,6 +168,7 @@ function createMetaControlTable() {
 
 	$("<button>").attr("id", "GameControl")
 		.text("Start New Game")
+		.addClass('clickMe')
 		.appendTo(buttonsTd)
 		.button()
 		.click(createGameControlDialog);
@@ -234,12 +235,14 @@ function createGameControlDialog() {
 	var dialog = $("<div>").addClass("GameControl");
 	var title = "Start New Game";
 
+
 	var preparedGame = $("<div>").addClass("section").appendTo(dialog);
 	$("<span>").addClass("header").append("Start a prepared game").appendTo(preparedGame);
 
 	var adhocGame = $("<div>").addClass("section").appendTo(dialog);
 
 	var adhocStartGame = function() {
+		$('#GameControl').removeClass('clickMe');
 		var StartTime = adhocGame.find("input.StartTime").val();
 		var IntermissionClock = null;
 		if (StartTime != "") {
