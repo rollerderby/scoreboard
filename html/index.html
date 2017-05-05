@@ -4,6 +4,7 @@
 <script type="text/javascript" src="/external/jquery/jquery.js"></script>
 <script type="text/javascript" src="/external/jquery-ui/jquery-ui.js"></script>
 <link rel="stylesheet" href="external/jquery-ui/css/default/jquery-ui.css" />
+<link rel="stylesheet" href="external/fontawesome/css/font-awesome.min.css" />
 
 <script type="text/javascript">
 
@@ -34,96 +35,124 @@ function showOverlays() {
 
 </script>
 
+<style>
+  body                          { font-family: sans-serif; box-sizing: border-box; }
+  a, a:hover, a:visited         { color: blue; text-decoration: none; }
+  a:hover                       { text-decoration: underline; color: red; cursor: pointer; }
+  table                         { margin: 0; }
+  td, th                        { vertical-align: top; width: 25%; }
+  .btn                          { padding: 8px; margin: 30px; border: 4px outset #999; text-align: center; border-radius: 10px; }
+  .btn i                        { margin: 10px; }
+  .btn a                        { font-size: 80%; }
+  span.pill                     { display: inline-block; margin-left: 10px; background: red; color: white; border-radius: 10%; font-size: 80%; line-height: 1em; padding: 3px; border-radius: 4px; }
+  .row                          { width: 100%; clear: both; }
+  .column                       { width: 25%; float: left; }
+</style>
+
 <body>
 
-<table><tr><td>
-  <img src="/Carolina.png" width="320" height="120" />
-  </td><td><h1>Carolina Rollergirls Roller Derby Scoreboard</h1></td>
-</table>
+  <div class="row">
+    <img style="float: left;" src="/Carolina.png" width="320" height="120">
+    <h1 style="float: right;">CRG Derby Scoreboard</h1>
+  </div>
 
-<table>
-	<tr>
-		<td width="50%">
-			<h3>Core Scoreboard View/Control Pages</h3>
-			<a href="controls/operator.html">Main Operator Control Panel</a><br/>
-			<a href="views/scoreboard.html">Main Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="views/scoreboard.html?ani=min">(Minimal Animations)</a><br/>
-			<a href="views/standard/">Websocket/JSON Scoreboard</a>&nbsp;&nbsp;&nbsp;&nbsp; <a href="views/standard/?ani=min">(Minimal Animations)</a><br/>
+  <div class="row">
+    <div class="column">
+        <div class="btn">
+          <a href="controls/operator.html"><i class="fa fa-4x fa-gamepad"></i></a><br/>
+          <a href="controls/operator.html">Main Control Panel</a><br/>
+          <a href="controls/scoreboard_assist.html">Scoreboard Assistant</a><br/>
+        </div>
+        <div class="btn">
+          <a href="views/scoreboard.html"><i class="fa fa-4x fa-desktop"></i></a><br/>
+          <a href="views/scoreboard.html"><strong>Main Scoreboard</strong></a><br/>
+          <a href="views/scoreboard.html?ani=min" title="Use for lower performance machines">Minimal Animations</a><br/><br/>
+          <a href="views/standard/"><strong>Websocket/JSON</strong></a><br/>
+          <a href="views/standard?ani=min">Minimal Animations</a><br/>
+        </div>
+    </div><!-- column -->
+    <div class="column">
+        <div class="btn">
+          <a href="controls/operator.html"><i class="fa fa-4x fa-list-alt"></i></a><br/>
+          <a href="controls/mobile.html">Jam Timer Mobile Controls</a><br/>
+          <a href="controls/lineups.html">Team Lineup Control Panel <span class="pill pill-beta">BETA</span></a><br/>
+          <br/>
+          <a href="controls/pt/">Penalty Tracker</a><br/>
+          <a href="controls/pt/ptcolor.html">Penalty Tracker (New Version)<span class="pill pill-beta">BETA</span></a><br/>
+          <br/>
+          <a href='views/wb/tcdg2016wb.html'>Graphical Penalty Whiteboard<span class="pill pill-beta">BETA</span></a><br/>
+          <a href='views/wb/whiteboard.html'>Text Penalty Whiteboard<span class="pill pill-beta">BETA</span></a>
+        </div>
+    </div><!-- column -->
+    <div class="column">
+        <div class="btn">
+          <a href="javascript: showOverlays();"><i class="fa fa-4x fa-video-camera"></i></a><br/>
+          <a href="javascript: showOverlays();">Broadcast Overlays</a><br/>
+        </div>
+        <div class="btn">
+          <a href="controls/rulesets.html"><i class="fa fa-4x fa-cogs"></i></a><br/>
+          <a href="controls/rulesets.html">Ruleset Editor</a><br/>
+          <a href="controls/media_management.html">Media Management</a><br/>
+          <a href="controls/twitter.html">Twitter Controls <span class="pill pill-beta">BETA</span></a><br/>
+          <a href="controls/stream.html">Load/Save Scoreboard "Stream" <span class="pill pill-beta">BETA</span></a>
+        </div>
+      </div><!-- column -->
+      <div class="column">
+        <div class="btn" style="text-align: left;">
+            <span>To access this scoreboard from other computers on this network, try one of these URLs:</span>
+            <ul id="URLs"></ul>
+            <p>
+              For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
+              see <a href="guide.html">the guide</a>.
+            </p>
 
-      <h3>Other NSO View/Control Pages</h3>
-			<a href="controls/mobile.html">Jam Timer Mobile Controls</a><br/>
-			<a href="controls/lineups.html">Team Lineup Control Panel (beta quality!)</a><br/>
-			<a href="controls/scoreboard_assist.html">Scoreboard Assistant</a><br/>
-			<a href="controls/pt/">Penalty Tracker</a>  (<a href="controls/pt/ptcolor.html">w/ Team Names and Colors</a>)<br/>
-      <a href='views/wb/tcdg2016wb.html'>Graphical Penalty Whiteboard</a> &nbsp;&nbsp;&nbsp;&nbsp;<a href='views/wb/whiteboard.html'>(Text Version)</a><br/>
-      <br/>
-      <h3>Utilities</h3>
-			<a href="javascript: showOverlays();">Broadcast Overlays</a><br/>
-			<a href="controls/rulesets.html">Ruleset Editor</a><br/>
-			<a href="controls/media_management.html">Media Management</a><br/>
-			<a href="controls/stream.html">Load/Save Scoreboard "Stream" (beta quality!)</a><br/>
-			<a href="controls/twitter.html">Twitter update controls (beta quality!)</a><br/>
+            <p>
+              <a href="release.html">Release Notes</a>
+            </p>
 
-		</td>
+        </div>
+      </div><!-- column -->
+  </div><!-- row -->
 
-		<td width="50%">
-        <a id="Top">
-        <center>
-        <p>Version: <a id="version"></a></p>
-        </center>
-        </a>
+  <div class="row">
 
-			<p>
-				<b>Important notice:</b><br/>
-				The scoreboard no longer includes any team logos or sponsor (ad) images.
-				The team logo images are now packaged separately.
-				To get the latest team logo images, go to the
-				<a href="http://sourceforge.net/projects/derbyscoreboard/files/crg-scoreboard/media/">sourceforge download area for media zip files</a>
-				and download the latest crg-scoreboard-images-teamlogo zip file.	Then go to the
-				<a href="controls/media_management.html">Media Management page</a>
-				and on the <i>Image</i> tab click the <i>Upload</i> button on the right side of the
-				<i>Type: teamlogo</i> section, and upload the entire zip file of teamlogos.
-				Alternately, you can just upload whatever individual team logo images you have.
-				You can also add or remove team logo (or sponsor/ad) images by simply adding or
-				removing files from the html/images/teamlogo (or sponsor_banner) directory.
-			</p>
+    <center>
+      <p>Version: <a id="version"></a></p>
+    </center>
 
-			<p>
-				For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
-				see <a href="guide.html">the guide</a>.
-			</p>
+      <p style="margin: 0 15%;">
+          <b>Important notice:</b><br/>
+          The scoreboard no longer includes any team logos or sponsor (ad) images.
+          The team logo images are now packaged separately.
+          To get the latest team logo images, go to the
+          <a href="http://sourceforge.net/projects/derbyscoreboard/files/crg-scoreboard/media/">sourceforge download area for media zip files</a>
+          and download the latest crg-scoreboard-images-teamlogo zip file.	Then go to the
+          <a href="controls/media_management.html">Media Management page</a>
+          and on the <i>Image</i> tab click the <i>Upload</i> button on the right side of the
+          <i>Type: teamlogo</i> section, and upload the entire zip file of teamlogos.
+          Alternately, you can just upload whatever individual team logo images you have.
+          You can also add or remove team logo (or sponsor/ad) images by simply adding or
+          removing files from the html/images/teamlogo (or sponsor_banner) directory.
+        </p>
+  </div>
 
-			<p>
-				<a href="release.html">Release Notes</a>
-			</p>
-
-			<p id="URLtext">
-				To access this scoreboard from other computers on this network, try one of these URLs:
-				<ul id="URLs"></ul>
-			</p>
-		</td>
-	</tr>
-</table>
-
-<div id="OverlayDialog">
-	<a href='controls/wo.html'>Overlay Controls</a><br/>
-	<br/>
-	<a href='views/overlays/standard/overlay-4x3.html'>Video Feed 4x3</a><br/>
-	<a href='views/overlays/standard/overlay-16x9.html'>Video Feed 16x9</a><br/>
-	<a href='views/overlays/standard/overlay-top.html'>Top Bar 4x3/16x9</a><br/>
-	<a href='views/overlays/interactive/index.html'>Interactive Overlay 16x9/720p</a>
-		&nbsp;<a href='views/overlays/interactive/index.html?camera'>(Camera Underlay)</a>
-		&nbsp;&nbsp;&nbsp;<a style="color: green;" href='views/overlays/interactive/admin.html'>(Admin Page)</a><br/>
-	<a href='views/overlays/tcdg/overlay-4x3.html'>TCDG Video Feed 4x3</a><br/>
-	<a href='views/overlays/tcdg/overlay-4x3-trans.html'>TCDG Video Feed 4x3 (Partial Transparency)</a><br/>
-	<a href='views/overlays/tcdg/overlay-16x9-trans.html'>TCDG Video Feed 16x9 (Partial Transparency)</a><br/>
-	<a href='views/overlays/tcdg/overlay-16x9-pip.html'>TCDG Video Feed 16x9 (Picture in Picture)</a><br/>
-	<a href='views/overlays/wftda/wg_color.html'>WFTDA Styled (with logo) Video Feed 16x9</a><br/>
-	<a href='views/overlays/wftda/wg_color_nl.html'>WFTDA Styled (no logo) Video Feed 16x9</a><br/>
-        <a href='views/overlays/wb/tcdg2016wb.html'>Penalty Whiteboard 16x9</a><br/>
-
-
-</div>
+  <div id="OverlayDialog">
+    <a href='controls/wo.html'>Overlay Controls</a><br/>
+    <br/>
+    <a href='views/overlays/standard/overlay-4x3.html'>Video Feed 4x3</a><br/>
+    <a href='views/overlays/standard/overlay-16x9.html'>Video Feed 16x9</a><br/>
+    <a href='views/overlays/standard/overlay-top.html'>Top Bar 4x3/16x9</a><br/>
+    <a href='views/overlays/interactive/index.html'>Interactive Overlay 16x9/720p</a>
+      &nbsp;<a href='views/overlays/interactive/index.html?camera'>(Camera Underlay)</a>
+      &nbsp;&nbsp;&nbsp;<a style="color: green;" href='views/overlays/interactive/admin.html'>(Admin Page)</a><br/>
+    <a href='views/overlays/tcdg/overlay-4x3.html'>TCDG Video Feed 4x3</a><br/>
+    <a href='views/overlays/tcdg/overlay-4x3-trans.html'>TCDG Video Feed 4x3 (Partial Transparency)</a><br/>
+    <a href='views/overlays/tcdg/overlay-16x9-trans.html'>TCDG Video Feed 16x9 (Partial Transparency)</a><br/>
+    <a href='views/overlays/tcdg/overlay-16x9-pip.html'>TCDG Video Feed 16x9 (Picture in Picture)</a><br/>
+    <a href='views/overlays/wftda/wg_color.html'>WFTDA Styled (with logo) Video Feed 16x9</a><br/>
+    <a href='views/overlays/wftda/wg_color_nl.html'>WFTDA Styled (no logo) Video Feed 16x9</a><br/>
+    <a href='views/overlays/wb/tcdg2016wb.html'>Penalty Whiteboard 16x9</a><br/>
+  </div>
 
 </body>
-
 </html>
