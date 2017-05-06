@@ -13,7 +13,7 @@ $(function() {
 		title: "Overlays",
 		autoOpen: false,
 		modal: true,
-		width: 600,
+		width: 800,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 
@@ -37,8 +37,12 @@ function showOverlays() {
 
 <style>
   body                          { font-family: sans-serif; box-sizing: border-box; }
-  a, a:hover, a:visited         { color: blue; text-decoration: none; }
+  a, a:hover, a:visited, a:active { color: blue; text-decoration: none; }
   a:hover                       { text-decoration: underline; color: red; cursor: pointer; }
+
+  #OverlayDialog a           { color: blue; text-decoration: underline; }
+  
+
   table                         { margin: 0; }
   td, th                        { vertical-align: top; width: 25%; }
   .btn                          { padding: 8px; margin: 30px; border: 4px outset #999; text-align: center; border-radius: 10px; }
@@ -88,6 +92,7 @@ function showOverlays() {
         <div class="btn">
           <a href="javascript: showOverlays();"><i class="fa fa-4x fa-video-camera"></i></a><br/>
           <a href="javascript: showOverlays();">Broadcast Overlays</a><br/>
+          <a href='controls/wo.html'>General Overlay Controls</a><br/>
         </div>
         <div class="btn">
           <a href="controls/rulesets.html"><i class="fa fa-4x fa-cogs"></i></a><br/>
@@ -137,21 +142,45 @@ function showOverlays() {
   </div>
 
   <div id="OverlayDialog">
-    <a href='controls/wo.html'>Overlay Controls</a><br/>
-    <br/>
-    <a href='views/overlays/standard/overlay-4x3.html'>Video Feed 4x3</a><br/>
-    <a href='views/overlays/standard/overlay-16x9.html'>Video Feed 16x9</a><br/>
-    <a href='views/overlays/standard/overlay-top.html'>Top Bar 4x3/16x9</a><br/>
-    <a href='views/overlays/interactive/index.html'>Interactive Overlay 16x9/720p</a>
-      &nbsp;<a href='views/overlays/interactive/index.html?camera'>(Camera Underlay)</a>
-      &nbsp;&nbsp;&nbsp;<a style="color: green;" href='views/overlays/interactive/admin.html'>(Admin Page)</a><br/>
-    <a href='views/overlays/tcdg/overlay-4x3.html'>TCDG Video Feed 4x3</a><br/>
-    <a href='views/overlays/tcdg/overlay-4x3-trans.html'>TCDG Video Feed 4x3 (Partial Transparency)</a><br/>
-    <a href='views/overlays/tcdg/overlay-16x9-trans.html'>TCDG Video Feed 16x9 (Partial Transparency)</a><br/>
-    <a href='views/overlays/tcdg/overlay-16x9-pip.html'>TCDG Video Feed 16x9 (Picture in Picture)</a><br/>
-    <a href='views/overlays/wftda/wg_color.html'>WFTDA Styled (with logo) Video Feed 16x9</a><br/>
-    <a href='views/overlays/wftda/wg_color_nl.html'>WFTDA Styled (no logo) Video Feed 16x9</a><br/>
-    <a href='views/overlays/wb/tcdg2016wb.html'>Penalty Whiteboard 16x9</a><br/>
+
+    <p style="columns: 2">
+
+        <strong>DDTV 2017 Interactive</strong> 
+        <br/>
+        <a href="views/overlays/ddtv/index.html">Overlay FullHD/HD</a><br/>
+        <a style="color: green;" href="views/overlays/ddtv/admin.html">Admin Page</a><br/>
+        <br/>
+
+        <strong>DDTV 2015 Interactive</strong>
+        <br/>
+        <a href='views/overlays/interactive/index.html'>Overlay 16x9/720p</a><br/>
+        <a href='views/overlays/interactive/index.html?camera'>Camera Underlay</a><br/>
+        <a style="color: green;" href='views/overlays/interactive/admin.html'>Admin Page</a><br/>
+        <br/>
+
+        <strong>WFTDA Style 16x9</strong>
+        <br/>
+        <a href='views/overlays/wftda/wg_color.html'>WFTDA Style With Logo</a><br/>
+        <a href='views/overlays/wftda/wg_color_nl.html'>WFTDA Style Without Logo</a><br/>
+
+
+        <strong style="break-before: column;" >TCDG Video Feed </strong>
+        <br/>
+        <a href='views/overlays/tcdg/overlay-4x3.html'>4x3 Overlay</a><br/>
+        <a href='views/overlays/tcdg/overlay-4x3-trans.html'>4x3 Partial Transparency</a><br/>
+        <a href='views/overlays/tcdg/overlay-16x9-pip.html'>16x9 Picture In Picture</a><br/>
+        <a href='views/overlays/tcdg/overlay-16x9-trans.html'>16x9 Partial Transparency</a><br/>
+        <a href='views/overlays/wb/tcdg2016wb.html'>Penalty Whiteboard 16x9</a><br/>
+        <br/>
+
+
+        <strong>Legacy Overlays</strong>
+        <br/>
+        <a href="views/overlays/standard/overlay-4x3.html">Standard 4x3 Version</a><br/>
+        <a href="views/overlays/standard/overlay-16x9.html">Standard 16x9 Pink Bar</a><br/>
+        <a href="views/overlays/standard/overlay-top.html">Full Width Top Bar</a><br/>
+
+    </p>
   </div>
 
 </body>
