@@ -114,6 +114,7 @@ function initialize() {
 		if(e.which == 32) { WS.Set('Custom.Overlay.Panel', ''); }
 	});
 
+	setTimeout(function() { $('body').removeClass('preload'); }, 1000);                                                                                                                                            
 
 }
 
