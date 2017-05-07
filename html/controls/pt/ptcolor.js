@@ -48,7 +48,7 @@ function initialize() {
 
 function adjust(which, inc) {
 	var elem = $(".PenaltyEditor ." + which);
-	console.log(elem, elem.val(), inc);
+	console.log('adjust:', elem, elem.val(), inc);
 	elem.val(parseInt(elem.val()) + inc);
 }
 
