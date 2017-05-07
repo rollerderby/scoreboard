@@ -37,7 +37,7 @@
 
 @font-face {
     font-family: Ubuntu;
-    src: url('./Ubuntu-R.ttf');
+    src: url('/fonts/Ubuntu-R.ttf');
 }
 
 .preload * { transition: none !important; }
