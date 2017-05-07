@@ -16,3 +16,4 @@ $sb(function() {
 			window.location.replace(window.location.protocol+"//"+window.location.host+"/controls/twitter.html");
 	});
 });
+//# sourceURL=controls\twitter_auth.js

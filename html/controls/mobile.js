@@ -464,13 +464,4 @@ function enablePenaltyButton(o, ms) {
 	o.parent().attr("data-theme", "e").trigger("mouseout");
 	updatePenaltyClocks(parseInt($sb("ScoreBoard.Clock(Period).Time").$sbGet()));
 }
-
-
-
-
-
-
-
-
-
-
+//# sourceURL=controls\mobile.js

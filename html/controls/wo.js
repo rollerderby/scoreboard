@@ -87,3 +87,4 @@ $sb("Pages.Page(Overlay).Logo").$sbControl($(".Logo"), { sbelement: {
 	optionValueElement: "Src",
 	firstOption: { text: "No Logo", value: "" }
 } });
+//# sourceURL=controls\wo.js
