@@ -49,6 +49,16 @@ html > body .TextCenter 	{ text-align: center !important; }
 html > body .FloatLeft 	{ float: left !important; }
 html > body .FloatRight 	{ float: right !important; right: 0; }
 
+#sb .ColourTeam2,
+#sb .ColourTeam1    { color: white; }
+#sb .ColourTeam1,
+#sb .ColourTeam2,
+#sb .Team2ColourBg,
+#sb .Team1ColourBg  { background-color: blue; }
+#sb .Team2ColourBgAsFg,
+#sb .Team1ColourBgAsFg  { color: blue; }
+#sb .AltColourTeam2,
+#sb .AltColourTeam1   { background-color: darkblue; }
 
 #sb          { position: absolute; top: 0; z-index: -99; }  
 
@@ -123,6 +133,7 @@ body .TopBar > div.Team2 { float: right; }
 .Clock              { text-align: center; vertical-align: middle;  }
 .Clock > DIV        { display: inline-block; }
 
+.Clock,
 .ClockFaceDigital7 .Clock  { font: 32px/36px "Digital7"; }
 
 .ClockFaceErics  .Clock    { font: 28px/36px "Erics"; }
