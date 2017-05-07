@@ -238,3 +238,4 @@ var WS = {
 	},
 };
 
+//# sourceURL=json\WS.js

@@ -76,3 +76,4 @@ function createTeamTable(t) {
 	});
 
 }
+//# sourceURL=controls\lineups.js

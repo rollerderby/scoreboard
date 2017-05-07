@@ -1817,3 +1817,4 @@ function showResetDialog(descriptionHtml, yesText, noText, sbReset) {
 	sbReset.$sbControl(yesButton).val(true);
 }
 
+//# sourceURL=controls\operator.js

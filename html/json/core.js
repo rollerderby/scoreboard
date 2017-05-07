@@ -77,3 +77,4 @@ function isTrue(value) {
 	else
 		return (String(value).toLowerCase() == "true");
 }
+//# sourceURL=json\core.js

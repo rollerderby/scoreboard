@@ -628,3 +628,4 @@ _crgScoreBoard = {
 			});
 	}
 };
+//# sourceURL=core.js
