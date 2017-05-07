@@ -219,3 +219,5 @@ _crgScoreBoardControl = {
 		}
 	},
 };
+
+//# sourceURL=controls.js

@@ -86,3 +86,4 @@ function createTeamTable(t) {
   });
 
 }
+//# sourceURL=controls\scoreboard_assist.js

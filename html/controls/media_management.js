@@ -189,3 +189,4 @@ function createUploadMediaDialog(table) {
 	}).change();
 }
 
+//# sourceURL=controls\media_management.js

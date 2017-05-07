@@ -119,3 +119,4 @@
 	});
 })(jQuery);
 
+//# sourceURL=sortedtable.js

@@ -40,3 +40,4 @@ var Rulesets = {
 		});
 	}
 };
+//# sourceURL=json\Rulesets.js
