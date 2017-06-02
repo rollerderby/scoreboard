@@ -12,6 +12,8 @@ import java.io.File;
 import java.net.*;
 import java.util.*;
 
+import io.prometheus.client.exporter.*;
+import io.prometheus.client.hotspot.*;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.bio.*;
 import org.eclipse.jetty.server.handler.*;
@@ -21,6 +23,7 @@ import org.eclipse.jetty.servlet.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
+
 
 public class JettyServletScoreBoardController implements ScoreBoardController
 {
@@ -95,6 +98,10 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		server.setHandler(contexts);
 
+		DefaultExports.initialize();
+		metricsServlet = new MetricsServlet();
+		new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(metricsServlet), "/metrics");
+
 		String staticPath = ScoreBoardManager.getProperty(PROPERTY_HTML_DIR_KEY);
 		if (null != staticPath) {
 			ServletContextHandler c = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
@@ -145,6 +152,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 	protected UrlsServlet urlsServlet;
 	protected JSONServlet jsonServlet;
 	protected WS ws;
+	protected MetricsServlet metricsServlet;
 
 	public static final int DEFAULT_PORT = 8000;
 	public static final String DEFAULT_SECURE_SESSION_ID = "false";
