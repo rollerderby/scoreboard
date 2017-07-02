@@ -8,6 +8,8 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
+import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -129,10 +131,20 @@ public class WS extends WebSocketServlet {
 		return true;
 	}
 
+	private static final Gauge connectionsActive = Gauge.build()
+		.name("websocket_active_connections").help("Current WebSocket connections").register();
+	private static final Counter messagesReceived = Counter.build()
+		.name("websocket_messages_received").help("Number of WebSocket messages received").register();
+	private static final Counter messagesSent = Counter.build()
+		.name("websocket_messages_sent").help("Number of WebSocket messages sent").register();
+	private static final Counter messagesSentFailures = Counter.build()
+		.name("websocket_messages_sent_failed").help("Number of WebSocket messages we failed to send").register();
+
 	public class Conn implements OnTextMessage {
 		private Connection connection;
 	
 		public void onMessage(String message_data) {
+			messagesReceived.inc();
 			try {
 				JSONObject json = new JSONObject(message_data);
 				String action = json.getString("action");
@@ -185,17 +197,20 @@ public class WS extends WebSocketServlet {
 		}
 		
 		public void send(JSONObject json) {
+			messagesSent.inc();
 			try {
 				json.put("stateID", stateID);
 				connection.sendMessage(json.toString());
 			} catch (Exception e) {
 				ScoreBoardManager.printMessage("Error sending JSON update: " + e);
 				e.printStackTrace();
+				messagesSentFailures.inc();
 			}
 		}
 	
 		@Override
 		public void onOpen(Connection connection) {
+			connectionsActive.inc();
 			this.connection = connection;
 			id = UUID.randomUUID();
 			register(this);
@@ -212,6 +227,7 @@ public class WS extends WebSocketServlet {
 	
 		@Override
 		public void onClose(int closeCode, String message) {
+			connectionsActive.dec();
 			unregister(this);
 		}
 
