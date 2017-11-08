@@ -1,20 +1,3 @@
+Instructions for installing the scoreboard software and getting started are available at the official wiki:
 
-Since you're reading this, you should already have the scoreboard code.
-
-If you don't have Java 1.5 or later installed in your system, go get it ( http://java.com ) and install it.
-
-Once you have Java installed, run the program for your system (listed below) that is in the same directory as this README.
-Windows: scoreboard-Windows.exe
-Mac: scoreboard-Mac.app
-Linux: scoreboard-Linux.sh
-
-Then, open (double-click) the "start.html" page that is in the same directory as this README
-(or, just open a browser to http://localhost:8000/ )
-
-The web page that opens in your browser has more details on how to use the scoreboard.
-
-If you have any problems, please email the project mailing list:
-derbyscoreboard-devel@lists.sourceforge.net
-
-And please feel free to join the mailing list to keep up to date on bugfixes, new features, and new releases.
-https://lists.sourceforge.net/lists/listinfo/derbyscoreboard-devel
+https://github.com/rollerderby/scoreboard/wiki
