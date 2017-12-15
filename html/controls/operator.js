@@ -439,10 +439,10 @@ function createJamControlTable() {
 		.attr("id", "UnStartJam").addClass("KeyControl UndoControls ShowUndo").button()
 		.appendTo(controlsTr.children("td:eq(0)"));
 
-	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam").val("true")
+	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam/TO").val("true")
 		.attr("id", "StopJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
-	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam").val("true")
+	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam/TO").val("true")
 		.attr("id", "UnStopJam").addClass("KeyControl UndoControls ShowUndo").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
 
@@ -657,16 +657,32 @@ function createTeamTable() {
 		sbTeam.$sb("Score").$sbBindAndRun("sbchange", jamScoreUpdate);
 		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
 
-		sbTeam.$sb("Timeout").$sbControl("<button>").text("Timeout").val("true")
-			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button()
-			.appendTo(timeoutTr.children("td:eq("+(first?"0":"4")+")").addClass("Timeout"));
+		var timeout = sbTeam.$sb("Timeout");
+		var timeoutButton = timeout.$sbControl("<button>").text("Timeout").val("true")
+			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button();
+		var timeoutHighlight = function() {
+			var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == team;
+			var or = $sb("ScoreBoard.OfficialReview").$sbIsTrue();
+			timeoutButton.toggleClass("Active", to && !or);
+		};
+		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", timeoutHighlight);
+		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", timeoutHighlight);
+		timeoutButton.appendTo(timeoutTr.children("td:eq("+(first?"0":"4")+")").addClass("Timeout"));
 		sbTeam.$sb("Timeouts").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
 				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"3")+")")
 			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"3")+")").addClass("Timeouts"));
-		sbTeam.$sb("OfficialReview").$sbControl("<button>").text("Off Review").val("true")
-			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button()
-			.appendTo(timeoutTr.children("td:eq("+(first?"2":"2")+")").addClass("OfficialReview"));
+		var review = sbTeam.$sb("OfficialReview");
+		var reviewButton = review.$sbControl("<button>").text("Off Review").val("true")
+			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button();
+		var reviewHighlight = function() {
+			var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == team;
+			var or = $sb("ScoreBoard.OfficialReview").$sbIsTrue();
+			reviewButton.toggleClass("Active", to && or);
+		};
+		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", reviewHighlight);
+		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", reviewHighlight);
+		reviewButton.appendTo(timeoutTr.children("td:eq("+(first?"2":"2")+")").addClass("OfficialReview"));
 		sbTeam.$sb("OfficialReviews").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
 				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"1")+")")
@@ -746,10 +762,10 @@ function createTimeTable() {
 	var row = $("<tr></tr>");
 	var nameRow = row.clone().addClass("Name").appendTo(table);
 	var numberRow = row.clone().addClass("Number").appendTo(table);
-	var controlRow = row.clone().addClass("Control").appendTo(table);
+//	var controlRow = row.clone().addClass("Control").appendTo(table);
 	var timeRow = row.clone().addClass("Time").appendTo(table);
-	var timeSetRow = row.clone().addClass("TimeSet").appendTo(table);
-	var timeResetRow = row.clone().addClass("TimeReset").appendTo(table);
+//	var timeSetRow = row.clone().addClass("TimeSet").appendTo(table);
+//	var timeResetRow = row.clone().addClass("TimeReset").appendTo(table);
 
 	$.each( [ "Period", "Jam", "Lineup", "Timeout", "Intermission" ], function() {
 		var clock = String(this);
@@ -757,10 +773,10 @@ function createTimeTable() {
 
 		var nameTd = $("<td>").appendTo(nameRow);
 		var numberTr = createRowTable(3).appendTo($("<td>").appendTo(numberRow)).find("tr");
-		var controlTr = createRowTable(2).appendTo($("<td>").appendTo(controlRow)).find("tr");
+//		var controlTr = createRowTable(2).appendTo($("<td>").appendTo(controlRow)).find("tr");
 		var timeTr = createRowTable(3).appendTo($("<td>").appendTo(timeRow)).find("tr");
-		var timeSetTr = createRowTable(2).appendTo($("<td>").appendTo(timeSetRow)).find("tr");
-		var timeResetTd = $("<td>").appendTo(timeResetRow);
+//		var timeSetTr = createRowTable(2).appendTo($("<td>").appendTo(timeSetRow)).find("tr");
+//		var timeResetTd = $("<td>").appendTo(timeResetRow);
 
 		sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
 		if (clock == "Period" || clock == "Jam") {
@@ -787,12 +803,12 @@ function createTimeTable() {
 			.attr("id", "Clock"+clock+"NumberUp").addClass("KeyControl").button()
 			.appendTo(numberTr.children("td:eq(2)").addClass("Up").css("width", "40%"));
 
-		sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
+/*		sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
 			.attr("id", "Clock"+clock+"Start").addClass("KeyControl").button()
 			.appendTo(controlTr.children("td:eq(0)").addClass("Start"));
 		sbClock.$sb("Stop").$sbControl("<button>").text("Stop").val("true")
 			.attr("id", "Clock"+clock+"Stop").addClass("KeyControl").button()
-			.appendTo(controlTr.children("td:eq(1)").addClass("Stop"));
+			.appendTo(controlTr.children("td:eq(1)").addClass("Stop"));*/
 
 		sbClock.$sb("Time").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: true } } })
 			.text("-1").val("-1000")
@@ -807,7 +823,7 @@ function createTimeTable() {
 			.attr("id", "Clock"+clock+"TimeUp").addClass("KeyControl").button()
 			.appendTo(timeTr.children("td:eq(2)").addClass("Button"));
 
-		$("<input type='text'/>")
+/*		$("<input type='text'/>")
 			.attr("size", "6")
 			.appendTo(timeSetTr.children("td:eq(0)").addClass("Text"))
 			.focus(function() { createTimeSetWarningDialog($(this)); });
@@ -822,7 +838,7 @@ function createTimeTable() {
 		sbClock.$sb("ResetTime").$sbControl("<button>")
 			.text("Reset Time").val("true")
 			.attr("id", "Clock"+clock+"ResetTime").addClass("KeyControl").button()
-			.appendTo(timeResetTd);
+			.appendTo(timeResetTd);*/
 	});
 
 	return table;
