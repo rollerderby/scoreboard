@@ -150,10 +150,11 @@ function manageStatusBar() {
     var timeoutOwner = $sb("ScoreBoard.TimeoutOwner").$sbGet();
     var statusString = "Error";
     if (!timeoutOwner) {
-      // It's an OTO
       statusString = "Timeout";
       $(".TimeOuts").animate({"background-color":'pink'}, 500);
-    } else {
+    } else if (timeoutOwner == "O") {
+		statusString = "Official Timeout";
+	} else {
       // It's owned. It'll either be an OR or a TTO.
       // Set the background of the owning team to red.
       $("#Team"+timeoutOwner+"TimeOuts").animate({"background-color":'red'}, 500);

@@ -210,6 +210,8 @@ function manageStatusBar() {
 
 	if ($sb("Scoreboard.InOvertime").$sbIsTrue()) {
 		statusString = "Overtime";
+		} else if ($sb("ScoreBoard.TimeoutOwner").$sbGet() == "O") {
+			statusString = "Off. T/O";
 	} else if ($sb("Scoreboard.Clock(Jam).Running").$sbIsTrue()) {
 		statusString = "Jam";
 	} else if ($sb("Scoreboard.Clock(Timeout).Running").$sbIsTrue()) { 
