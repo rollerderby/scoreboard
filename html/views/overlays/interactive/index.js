@@ -322,8 +322,9 @@ function clockType(k,v) {
 
 	if(tc) {
 		ret = WS.state["ScoreBoard.Clock(Timeout).Name"];
-		if(to != "" && or) { ret = 'Official Review'; }
-		if(to != "" && !or) { ret = 'Team Timeout'; }
+		if(to != "" && to != "O" && or) { ret = 'Official Review'; }
+		if(to != "" && to != "O" && !or) { ret = 'Team Timeout'; }
+		if(to == "O") { ret = 'Official Timeout'; }
 		$('.ClockDescription').css('backgroundColor', 'red');
 	} else if(lc) {
 		ret = WS.state["ScoreBoard.Clock(Lineup).Name"];

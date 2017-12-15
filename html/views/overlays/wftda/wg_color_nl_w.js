@@ -206,6 +206,8 @@ function manageStatusBar() {
 		// Who's timeout is it?
 		if (!$sb("ScoreBoard.TimeoutOwner").$sbGet()) {
 			statusString = "Timeout";
+		} else if ($sb("ScoreBoard.TimeoutOwner").$sbGet() == "O") {
+			statusString = "Off. T/O";
 		} else if ($sb("ScoreBoard.OfficialReview").$sbIsTrue()) {
 			statusString = "Review";
 		} else {

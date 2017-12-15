@@ -90,17 +90,22 @@ function smallDescriptionUpdate(k, v) {
 		$(".Clock.Description").addClass("Red");
 
 		ret = tcn;
-		if (to != "" && !or) {
-			ret = "Team Timeout";
-			$(".Team" + to + ">.Timeouts").addClass("Red");
-			var dotSel = ".Team" + to + " .Timeout" + (WS.state["ScoreBoard.Team(" + to + ").Timeouts"] + 1);
-			$(dotSel).addClass("Active");
-		}
-		if (to != "" && or) {
-			ret = "Official Review";
-			$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
-			var dotSel = ".Team" + to + " .OfficialReview" + (WS.state["ScoreBoard.Team(" + to + ").OfficialReviews"] + 1);
-			$(dotSel).addClass("Active");
+		if (to != "") {
+			if (to == "O") {
+				ret = "Official Timeout";
+			} else {
+				if (or) {
+					ret = "Official Review";
+					$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
+					var dotSel = ".Team" + to + " .OfficialReview" + (WS.state["ScoreBoard.Team(" + to + ").OfficialReviews"] + 1);
+					$(dotSel).addClass("Active");
+				} else {
+					ret = "Team Timeout";
+					$(".Team" + to + ">.Timeouts").addClass("Red");
+					var dotSel = ".Team" + to + " .Timeout" + (WS.state["ScoreBoard.Team(" + to + ").Timeouts"] + 1);
+					$(dotSel).addClass("Active");
+				}
+			}
 		}
 	}
 	return ret;

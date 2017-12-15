@@ -223,7 +223,11 @@ function setupTeams() {
 			if (isOfficialReview) {
 				$(".Timeout>div.Name>a>span.Name").html("Off. Rev.");	
 			} else if (isTeamTimeout) {
-				$(".Timeout>div.Name>a>span.Name").html("Team T/O");
+                if (isTeamTimeout == "O") {
+					$(".Timeout>div.Name>a>span.Name").html("Off. T/O");
+				} else {
+					$(".Timeout>div.Name>a>span.Name").html("Team T/O");
+                }                
 			} else {
 				$(".Timeout>div.Name>a>span.Name").html("Time Out");
 			}
