@@ -186,13 +186,23 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				ClockModel pc = getClockModel(Clock.ID_PERIOD);
 				ClockModel jc = getClockModel(Clock.ID_JAM);
 				ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+				ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
 				lineupClockWasRunning = getClockModel(Clock.ID_LINEUP).isRunning();
 
-//FIXME - change to policies
-				// If Period Clock is at end, increment number and reset time
+				// If intermission clock has almost run down, end intermission
+				if (ic.isRunning() && Math.abs(ic.getTime() - (ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime())) < 60000) {
+					ic.setTime(ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime());
+				}
+				// If Period Clock is at end, start a new period
 				if (pc.getTime() == (pc.isCountDirectionDown() ? pc.getMinimumTime() : pc.getMaximumTime())) {
 					pc.changeNumber(1);
 					pc.resetTime();
+					jc.setNumber(jc.getMinimumNumber());
+					jc.resetTime();
+					getTeamModel("1").setOfficialReviews(1);
+					getTeamModel("2").setOfficialReviews(1);
+					getTeamModel("1").setRetainedOfficialReview(false);
+					getTeamModel("2").setRetainedOfficialReview(false);
 				}
 				periodClockWasRunning = pc.isRunning();
 				pc.start();
@@ -218,9 +228,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			if (getClockModel(Clock.ID_JAM).isRunning()) {
 				_stopJam();
-			}
-			if (getClockModel(Clock.ID_TIMEOUT).isRunning()) {
+			} else if (getClockModel(Clock.ID_TIMEOUT).isRunning()) {
 				_stopTimeout();
+			} else if (!getClockModel(Clock.ID_LINEUP).isRunning()) {
+				_startLineup();
 			}
 		}
 	}
@@ -250,11 +261,29 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
 			lastTimeoutOwner = getTimeoutOwner();
 			wasOfficialReview = isOfficialReview();
+			timeoutClockWasRunning = true;
 			
 			requestBatchStart();
 			lc.resetTime();
 			lc.start();
 			tc.stop();
+			requestBatchEnd();
+		}
+	}
+	private void _startLineup() {
+		synchronized (runLock) {
+			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
+			// If intermission clock has almost run down, set it to end, so end of intermission policies are run
+			if (ic.isRunning() && Math.abs(ic.getTime() - (ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime())) < 60000) {
+				ic.setTime(ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime());
+			}
+
+			timeoutClockWasRunning = false;
+
+			requestBatchStart();
+			lc.resetTime();
+			lc.start();
 			requestBatchEnd();
 		}
 	}
@@ -352,10 +381,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				getTeamModel("1").unStopJam();
 				getTeamModel("2").unStopJam();
 				getClockModel(Clock.ID_JAM).unstop();
-			} else { 
-				getClockModel(Clock.ID_TIMEOUT).unstop();
+			} else if (timeoutClockWasRunning) {
 				setTimeoutOwner(lastTimeoutOwner);
 				setOfficialReview(wasOfficialReview);
+				getClockModel(Clock.ID_TIMEOUT).unstop();
 			}
 			requestBatchEnd();
 
