@@ -86,7 +86,7 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
         if (Boolean.parseBoolean(getParameter(JAM_INCREMENT_NUMBER).getValue()))
           jc.changeNumber(1);
         else if (Boolean.parseBoolean(getParameter(JAM_RESET_NUMBER).getValue()))
-          jc.setNumber(pc.getMinimumNumber());
+          jc.setNumber(jc.getMinimumNumber());
         if (Boolean.parseBoolean(getParameter(JAM_RESET_TIME).getValue()))
           jc.resetTime();
         if (Boolean.parseBoolean(getParameter(PERIOD_RESET_OR).getValue())) {
@@ -94,8 +94,8 @@ public class IntermissionClockStopPolicy extends AbstractClockRunningChangePolic
         	TeamModel team2 = getScoreBoardModel().getTeamModel("2");
         	team1.setOfficialReviews(1);
         	team2.setOfficialReviews(1);
-		team1.setRetainedOfficialReview(false);
-		team2.setRetainedOfficialReview(false);
+        	team1.setRetainedOfficialReview(false);
+        	team2.setRetainedOfficialReview(false);
         }	
       }
     }
