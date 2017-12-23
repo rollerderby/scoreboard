@@ -17,7 +17,7 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
   public IntermissionClockStartPolicy() {
     super(ID, DESCRIPTION);
 
-    addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_TIME_TO, "String", DEFAULT_INTERMISSION_TIME));
+    addParameterModel(new IntermissionTimeParameterModel(this, SET_INTERMISSION_TIME_TO, "String", DEFAULT_INTERMISSION_TIME));
     addParameterModel(new DefaultPolicyModel.DefaultParameterModel(this, SET_INTERMISSION_NUMBER, "Boolean", String.valueOf(true)));
   }
 
@@ -28,27 +28,6 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
     addClock(Clock.ID_TIMEOUT);
   }
 
-  // FIXME - these should be common utility methods, and probably implemented using Formatter and Scanner.
-  protected String msToMinSec(long ms) {
-    long min = ms / 60000;
-    long sec = (ms / 1000) % 60;
-    if (min > 0)
-      return Long.toString(min)+":"+(sec < 10?"0":"")+Long.toString(sec);
-    return Long.toString(sec);
-  }
-  protected long minSecToMs(String time) throws NumberFormatException {
-    int colon = time.indexOf(":");
-    long min = 0;
-    long sec = 0;
-    if (0 > colon) {
-      sec = Long.parseLong(time);
-    } else {
-      min = Long.parseLong(time.substring(0, colon));
-      sec = Long.parseLong(time.substring(colon+1));
-    }
-    return ((min*60)+sec)*1000;
-  }
-
   protected void startIntermissionClock() {
     ClockModel ic = getScoreBoardModel().getClockModel(Clock.ID_INTERMISSION);
     if (!ic.isRunning()) {
@@ -56,7 +35,7 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
         ic.setNumber(getScoreBoardModel().getClockModel(Clock.ID_PERIOD).getNumber());
       //FIXME - might be better to have some validity checking/enforcement in property setting instead of at usage time here
       try {
-        ic.setTime(minSecToMs(getParameter(SET_INTERMISSION_TIME_TO).getValue()));
+        ic.setTime(ClockConversion.fromHumanReadable(getParameter(SET_INTERMISSION_TIME_TO).getValue()));
       } catch ( NumberFormatException nfE ) {
         // This probably isn't really what is desired, but we should reset the time to something...
         ic.resetTime();
@@ -74,11 +53,34 @@ public class IntermissionClockStartPolicy extends AbstractClockRunningChangePoli
       startIntermissionClock();
   }
 
-  public static final String SET_INTERMISSION_TIME_TO = "SetIntermissionTimeTo";
-  public static final String SET_INTERMISSION_NUMBER = "SetIntermissionNumber";
+  public static final String SET_INTERMISSION_TIME_TO = "Set Intermission Time To";
+  public static final String SET_INTERMISSION_NUMBER = "Set Intermission Number";
 
   public static final String DEFAULT_INTERMISSION_TIME = "15:00";
 
   public static final String ID = "Intermission Clock Start";
   public static final String DESCRIPTION = "When the Period is over, this sets and starts the Intermission clock time and optionally sets the number to the Period number.";
+
+  public class IntermissionTimeParameterModel extends DefaultPolicyModel.DefaultParameterModel {
+
+	public IntermissionTimeParameterModel(PolicyModel pM, String n, String t, String v) {
+		super(pM, n, t, v);
+	}
+
+	public void reset() {
+		String d = "";
+		try {
+			d = ClockConversion.toHumanReadable(Long.parseLong(getScoreBoardModel().getSettings().get("Clock." + Clock.ID_INTERMISSION + ".Time")));
+		} catch ( Exception e ) {
+		}
+		try {
+			if (d != "") {
+				setValue(d);
+			} else {
+				setValue(defaultValue);
+			}
+		} catch ( IllegalArgumentException iaE ) {
+		}
+	}
+  }
 }
