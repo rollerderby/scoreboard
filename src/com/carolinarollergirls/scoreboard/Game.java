@@ -163,7 +163,7 @@ public class Game {
 
 		public void save() {
 			synchronized (saveLock) {
-				File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier + ".json");
+				File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier.replaceAll("[^a-zA-Z0-9\\.\\-]", "_") + ".json");
 				file.getParentFile().mkdirs();
 				FileWriter out = null;
 				try {

@@ -1264,17 +1264,29 @@ function createTeamsContent() {
 	createNewTeamTable($sb("ScoreBoard.Team(2)"), "(Current Team 2)")
 		.appendTo("#Teams>tbody>tr.Team>td");
 
+	// use this object to cache team nodes
+	// and render their display when first selected
+	// fixing major performance issues on this page
+	var teams = {};
+	
 	_crgUtils.bindAddRemoveEach($sb("Teams"), "Team", function(event, node) {
-		if (node.$sbId) /* skip any invalid team with no id */
-			createNewTeamTable(node).appendTo("#Teams>tbody>tr.Team>td");
+		if (node.$sbId){
+			teams[node.$sbId] = node;
+		} 
 	}, function(event, node) {
 		$("table.Team", "#Teams")
 			.filter(function() { return (node.$sbId == $(this).data("id")); })
 			.remove();
+		delete teams[node.$sbId];
 	});
 
 	_crgUtils.bindAndRun(selectTeam, "change", function(event) {
 		var teamid = selectTeam.val();
+		if(teams[teamid]) {
+			createNewTeamTable(teams[teamid]).appendTo("#Teams>tbody>tr.Team>td");
+			delete teams[teamid];
+		}
+		
 		var selectedTeam = $("#Teams table.Team").addClass("Hide")
 			.filter(function() { return (teamid == $(this).data("id")); })
 			.removeClass("Hide");
