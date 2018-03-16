@@ -148,107 +148,58 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
 /* End Timeouts - No Jam Totals */
 
   .Dot, .Dot.Active { border-radius: 100%; }
-  .Cross, .Cross.Active { border-radius: 100%; }
   .Dot { background: #000000; }
-  .Cross { background: #000000; }
   .Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite; -moz-animation: DotActive 0.75s infinite; -webkit-animation: DotActive 0.75s infinite; }
-  .Cross.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite; -moz-animation: DotActive 0.75s infinite; -webkit-animation: DotActive 0.75s infinite; }
   body.MinAnimations .Dot.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite steps(4); -moz-animation: DotActive 0.75s infinite steps(4); -webkit-animation: DotActive 0.75s infinite steps(4); }
-  body.MinAnimations .Cross.Active { background: #000000; opacity: 0; animation: DotActive 0.75s infinite steps(4); -moz-animation: DotActive 0.75s infinite steps(4); -webkit-animation: DotActive 0.75s infinite steps(4); }
   .Dot.Used { opacity: 0; }
-  .Cross.Used { opacity: 0; }
     @-moz-keyframes DotActive    {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
     @-webkit-keyframes DotActive {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
     @keyframes DotActive         {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 
    .Dot.Retained {
-        border-radius: 0;
-        background: none;
-   }
-   .Cross.Retained {
-        border-radius: 0;
-        background-color:rgba(0,255,0,0.0);
+   	border-radius: 0;
+   	background: none;
    }
    .Dot.Retained:after {
-        content: "";
-        background: #000000;
-        border-radius: 20%;
-        height: 100%;
-        position: absolute;
-        top: 0%;
-        left: 30%;
-        width: 40%;
-   }
-   .Cross.Retained>.CrossH {
-        content: "";
-        background: #000000;
-        border-radius: 20%;
-        height: 100%;
-        position: absolute;
-        top: 0%;
-        left: 30%;
-        width: 40%;
+   	content: "";
+   	background: #000000;
+   	border-radius: 20%;
+   	height: 100%;
+   	position: absolute;
+   	top: 0%;
+   	left: 30%;
+   	width: 40%;
    }
    .Dot.Retained:before {
-        content: "";
-        background: #000000;
-        border-radius: 20%;
-        width: 100%;
-        position: absolute;
-        left: 0%;
-        top: 30%;
-        height: 40%;
-   }
-   .Cross.Retained>.CrossV {
-        content: "";
-        background: #000000;
-        border-radius: 20%;
-        width: 100%;
-        position: absolute;
-        left: 0%;
-        top: 30%;
-        height: 40%;
+   	content: "";
+   	background: #000000;
+   	border-radius: 20%;
+   	width: 100%;
+   	position: absolute;
+   	left: 0%;
+   	top: 30%;
+   	height: 40%;
    }
    
    .Dot.Retained2:after {
-        content: "";
-        background: #FFFFFF;
-        border-radius: 20%;
-        height: 80%;
-        position: absolute;
-        top: 10%;
-        left: 40%;
-        width: 20%;
-   }
-   .Cross.Retained2:after {
-        content: "";
-        background: #FFFFFF;
-        border-radius: 20%;
-        height: 80%;
-        position: absolute;
-        top: 10%;
-        left: 40%;
-        width: 20%;
+   	content: "";
+   	background: #FFFFFF;
+   	border-radius: 20%;
+   	height: 80%;
+   	position: absolute;
+   	top: 10%;
+   	left: 40%;
+   	width: 20%;
    }
    .Dot.Retained2:before {
-        content: "";
-        background: #FFFFFF;
-        border-radius: 20%;
-        width: 80%;
-        position: absolute;
-        left: 10%;
-        top: 40%;
-        height: 20%;
-   }
-   .Cross.Retained2:before {
-        content: "";
-        background: #FFFFFF;
-        border-radius: 20%;
-        width: 80%;
-        position: absolute;
-        left: 10%;
-        top: 40%;
-        height: 20%;
+   	content: "";
+   	background: #FFFFFF;
+   	border-radius: 20%;
+   	width: 80%;
+   	position: absolute;
+   	left: 10%;
+   	top: 40%;
+   	height: 20%;
    }
 
 
@@ -263,7 +214,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
   .Timeouts.JamTotals>div.Team2,.Timeouts.JamTotals>div.Team1.SwapTeams { left: auto; right: 0%; }
  
   .Timeouts.JamTotals .TextContainer .Dot { width: 60%; height: 24%; left: 19%; }
-  .Timeouts.JamTotals .TextContainer .Cross { width: 60%; height: 24%; left: 19%; }
   .Timeouts.JamTotals .Timeout1 { top:  5%; }
   .Timeouts.JamTotals .Timeout2 { top: 37%; }
   .Timeouts.JamTotals .Timeout3 { top: 70%; }
@@ -540,3 +490,17 @@ div.WhiteBox {
 }
 
 #mainDiv>#sbDiv { overflow: hidden; }
+
+
+#leftDiv {position: absolute; right: 100%;}
+#rightDiv {position: absolute; left: 100%;}
+#topDiv {position: absolute; bottom: 100%;}
+#bottomDiv {position: absolute; top: 100%;}
+ 
+.mainDivSurround {
+	width: 100%; 
+	height: 100%; 
+	background-color: #000000; /* background color surrounding the scoreboard */
+	background-position: initial initial; 
+	background-repeat: initial initial;
+	}
