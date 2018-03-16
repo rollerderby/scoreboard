@@ -13,7 +13,7 @@ $(function() {
 		title: "Overlays",
 		autoOpen: false,
 		modal: true,
-		width: 600,
+		width: 800,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 
@@ -36,85 +36,126 @@ function showOverlays() {
 </script>
 
 <style>
-  body                          { font-family: sans-serif; box-sizing: border-box; }
-  a, a:hover, a:visited         { color: blue; text-decoration: none; }
+  @font-face                    { font-family: Ubuntu; src: url('/fonts/Ubuntu-R.ttf'); }
+  body                          { font-family: "Ubuntu"; sans-serif; box-sizing: border-box; padding: 0; margin: 0; font-size: 2vmin; }
+
+  a, a:hover, a:visited, a:active { color: darkblue; text-decoration: none; }
   a:hover                       { text-decoration: underline; color: red; cursor: pointer; }
+
+  #OverlayDialog a           { color: blue; text-decoration: underline; }
+  
+
   table                         { margin: 0; }
   td, th                        { vertical-align: top; width: 25%; }
-  .btn                          { padding: 8px; margin: 30px; border: 4px outset #999; text-align: center; border-radius: 10px; }
-  .btn i                        { margin: 10px; }
-  .btn a                        { font-size: 80%; }
-  span.pill                     { display: inline-block; margin-left: 10px; background: red; color: white; border-radius: 10%; font-size: 80%; line-height: 1em; padding: 3px; border-radius: 4px; }
+  .btn                          { margin: 5px; border: 1px inset #999; }
+  .btn span                     { display: inline-block; }
+  .btn h2 span                  { float: right; }
+  span.pill                     { display: inline-block; margin: 0 10px; background: red; color: white; border-radius: 10%; font-size: 80%; line-height: 80%; padding: 3px; border-radius: 4px; }
   .row                          { width: 100%; clear: both; }
   .column                       { width: 25%; float: left; }
+
+  h1,h2                         { color: white; display: block; font-size: 2vmin; line-height: 4vmin; vertical-align: middle; }
+  .heading h1                   { font-size: 4vmin; line-height: 5vmin; margin: 0; }
+  .btn h2                       { margin: 0 0 10px 0; text-align: left; padding: 4px 4px 4px 10px; }
+  h1 img                        { margin-top: 4px; float: left; height: 80px; opacity: .8; }
+
+  ul                            { padding-start: 0; -webkit-padding-start: 0; list-style: none; font-size: 80%; }
+  ul li                         { display: block; padding-left: 1em; margin-left: 0; text-indent: 0; }
+  .footer                       { font-size: 75%; 
+                                  padding-top: 10px; padding-bottom: 80px; margin-top: 100px; color: #333; clear: both; }
+  .footer a                     { color: red; }
+  h1,h2 { 
+    background-image: linear-gradient(to bottom, #282537 0%, #282537 10%, #999 100%); 
+      /*
+    background: #282537;
+    background-image: -webkit-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+    background-image: -moz-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+    background-image: -o-radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+    background-image: radial-gradient(top, circle cover, #3c3b52 0%, #252233 80%);
+      */
+  }
+
 </style>
 
 <body>
 
-  <div class="row">
-    <img style="float: left;" src="/Carolina.png" width="320" height="120">
-    <h1 style="float: right;">CRG Derby Scoreboard</h1>
+  <div class="heading">
+    <h1><img src="/Carolina.png">CRG DERBY SCOREBOARD</h1>
   </div>
 
   <div class="row">
     <div class="column">
         <div class="btn">
-          <a href="controls/operator.html"><i class="fa fa-4x fa-gamepad"></i></a><br/>
-          <a href="controls/operator.html">Main Control Panel</a><br/>
-          <a href="controls/scoreboard_assist.html">Scoreboard Assistant</a><br/>
+          <h2><span class="fa fa-2x fa-gamepad"></span> OPERATOR &amp CONTROLS</h2>
+          <ul>
+            <li><a href="controls/operator.html"><strong>Scoreboard Operator Panel</strong></a></li>
+            <li><a href="controls/lineups.html">Scoreboard Assistant (Lineup Tracking)</a></li>
+            <li><a href="controls/mobile.html">Jam Timer (Mobile Control)</a></li>
+          </ul>
         </div>
         <div class="btn">
-          <a href="views/scoreboard.html"><i class="fa fa-4x fa-desktop"></i></a><br/>
-          <a href="views/scoreboard.html"><strong>Main Scoreboard</strong></a><br/>
-          <a href="views/scoreboard.html?ani=min" title="Use for lower performance machines">Minimal Animations</a><br/><br/>
-          <a href="views/standard/"><strong>Websocket/JSON</strong></a><br/>
-          <a href="views/standard?ani=min">Minimal Animations</a><br/>
-        </div>
-    </div><!-- column -->
-    <div class="column">
-        <div class="btn">
-          <a href="controls/operator.html"><i class="fa fa-4x fa-list-alt"></i></a><br/>
-          <a href="controls/mobile.html">Jam Timer Mobile Controls</a><br/>
-          <a href="controls/lineups.html">Team Lineup Control Panel <span class="pill pill-beta">BETA</span></a><br/>
-          <br/>
-          <a href="controls/pt/">Penalty Tracker</a><br/>
-          <a href="controls/pt/ptcolor.html">Penalty Tracker (New Version)<span class="pill pill-beta">BETA</span></a><br/>
-          <br/>
-          <a href='views/wb/tcdg2016wb.html'>Graphical Penalty Whiteboard<span class="pill pill-beta">BETA</span></a><br/>
-          <a href='views/wb/whiteboard.html'>Text Penalty Whiteboard<span class="pill pill-beta">BETA</span></a>
+          <h2><span class="fa fa-2x fa-desktop"></span> SCOREBOARD DISPLAYS</h2>
+          <ul>
+            <li><a href="views/scoreboard.html"><strong>Main Scoreboard (Legacy)</strong></a></li>
+            <li><a href="views/scoreboard.html?ani=min" title="Use for lower performance machines">Minimal Animations</a></li>
+          </ul>
+          
+          <ul>
+            <li><a href="views/standard/"><strong>Main Scoreboard (Websocket/JSON)</strong></a></li>
+              <li><a href="views/standard?ani=min">Minimal Animations</a></li>
+          </ul>
         </div>
     </div><!-- column -->
     <div class="column">
         <div class="btn">
-          <a href="javascript: showOverlays();"><i class="fa fa-4x fa-video-camera"></i></a><br/>
-          <a href="javascript: showOverlays();">Broadcast Overlays</a><br/>
+          <h2><span class="fa fa-2x fa-list-alt"></span> PENALTY TRACKING</h2>
+          <ul>
+            <li><a href="controls/pt/ptcolor.html">Penalty Tracking <span class="pill pill-beta">BETA</span></a></li>
+            <li><a href="controls/pt/">Penalty Tracker (Legacy)</a></li>
+          </ul>
+          <ul>
+            <li><a href='views/wb/whiteboard.html'>Penalty Whiteboard Display<span class="pill pill-beta">BETA</span></a></li>
+            <li><a href='views/wb/tcdg2016wb.html'>TCDG16 Penalty Graphics Display</a></li>
+          </ul>
+        </div>
+    </div><!-- column -->
+    <div class="column">
+        <div class="btn">
+          <h2><span class="fa fa-2x fa-video-camera"></span> BROADCAST OVERLAYS</h2>
+          <ul>
+            <li><a href="javascript: showOverlays();">Broadcast Overlays</a></li>
+            <li><a href='controls/wo.html'>General Overlay Controls</a></li>
+          </ul>
         </div>
         <div class="btn">
-          <a href="controls/rulesets.html"><i class="fa fa-4x fa-cogs"></i></a><br/>
-          <a href="controls/rulesets.html">Ruleset Editor</a><br/>
-          <a href="controls/media_management.html">Media Management</a><br/>
-          <a href="controls/twitter.html">Twitter Controls <span class="pill pill-beta">BETA</span></a><br/>
-          <a href="controls/stream.html">Load/Save Scoreboard "Stream" <span class="pill pill-beta">BETA</span></a>
+          <h2><span class="fa fa-2x fa-cogs"></span> UTILITIES &amp; SETTINGS</h2>
+          <ul>
+            <li><a href="controls/rulesets.html">Ruleset Editor</a></li>
+            <li><a href="controls/media_management.html">Media Management</a></li>
+            <li><a href="controls/twitter.html">Twitter Controls <span class="pill pill-beta">BETA</span></a></li>
+            <li><a href="controls/stream.html">Load/Save Scoreboard "Stream" <span class="pill pill-beta">BETA</span></a></li>
+          </ul>
         </div>
       </div><!-- column -->
       <div class="column">
         <div class="btn" style="text-align: left;">
-            <span>To access this scoreboard from other computers on this network, try one of these URLs:</span>
-            <ul id="URLs"></ul>
-            <p>
-              For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
-              see <a href="guide.html">the guide</a>.
-            </p>
+          <h2><span class="fa fa-2x fa-info-circle"></span> INFO</h2>
+            <div style="padding: 4px; font-size: 80%;">
+              <p>To access this scoreboard from other computers on this network, try one of these URLs:</p>
 
-            <p>
-              <a href="release.html">Release Notes</a>
-            </p>
+              <ul id="URLs"></ul>
+              <p>
+                For info on using this scoreboard, contacting the developers, and/or modifying the scoreboard yourself,
+                see <a href="guide.html">the guide</a>.  For recent changes see the <a href="release.html">Release Notes</a>
+              </p>
+            </div>
 
         </div>
       </div><!-- column -->
+      <div style="clear: both;"></div>
   </div><!-- row -->
 
-  <div class="row">
+  <div class="row footer">
 
     <center>
       <p>Version: <a id="version"></a></p>
@@ -137,23 +178,45 @@ function showOverlays() {
   </div>
 
   <div id="OverlayDialog">
-    <a href='controls/wo.html'>Overlay Controls</a><br/>
-    <br/>
-    <a href='views/overlays/standard/overlay-4x3.html'>Video Feed 4x3</a><br/>
-    <a href='views/overlays/standard/overlay-16x9.html'>Video Feed 16x9</a><br/>
-    <a href='views/overlays/standard/overlay-top.html'>Top Bar 4x3/16x9</a><br/>
-    <a href='views/overlays/interactive/index.html'>Interactive Overlay 16x9/720p</a>
-      &nbsp;<a href='views/overlays/interactive/index.html?camera'>(Camera Underlay)</a>
-      &nbsp;&nbsp;&nbsp;<a style="color: green;" href='views/overlays/interactive/admin.html'>(Admin Page)</a><br/>
-    <a href='views/overlays/tcdg/overlay-4x3.html'>TCDG Video Feed 4x3</a><br/>
-    <a href='views/overlays/tcdg/overlay-4x3-trans.html'>TCDG Video Feed 4x3 (Partial Transparency)</a><br/>
-    <a href='views/overlays/tcdg/overlay-16x9-trans.html'>TCDG Video Feed 16x9 (Partial Transparency)</a><br/>
-    <a href='views/overlays/tcdg/overlay-16x9-pip.html'>TCDG Video Feed 16x9 (Picture in Picture)</a><br/>
-    <a href='views/overlays/wftda/wg_color_jammer.html'>WFTDA Styled (with jammer names, logo) Video Feed 16x9</a><br/>
-    <a href='views/overlays/wftda/wg_color_nl_jammer.html'>WFTDA Styled (with jammer names, no logo) Video Feed 16x9</a><br/>
-    <a href='views/overlays/wftda/wg_color.html'>WFTDA Styled (with logo, no jammer names) Video Feed 16x9</a><br/>
-    <a href='views/overlays/wftda/wg_color_nl.html'>WFTDA Styled (no logo, no jammer names) Video Feed 16x9</a><br/>
-    <a href='views/overlays/wb/tcdg2016wb.html'>Penalty Whiteboard 16x9</a><br/>
+
+    <p style="columns: 2">
+
+        <strong>DDTV 2017 Interactive</strong> 
+        <br/>
+        <a href="views/overlays/ddtv/index.html">Overlay FullHD/HD</a><br/>
+        <a style="color: green;" href="views/overlays/ddtv/admin.html">Admin Page</a><br/>
+        <br/>
+
+        <strong>DDTV 2015 Interactive</strong>
+        <br/>
+        <a href='views/overlays/interactive/index.html'>Overlay 16x9/720p</a><br/>
+        <a href='views/overlays/interactive/index.html?camera'>Camera Underlay</a><br/>
+        <a style="color: green;" href='views/overlays/interactive/admin.html'>Admin Page</a><br/>
+        <br/>
+
+        <strong>WFTDA Style 16x9</strong>
+        <br/>
+        <a href='views/overlays/wftda/wg_color.html'>WFTDA Style With Logo</a><br/>
+        <a href='views/overlays/wftda/wg_color_nl.html'>WFTDA Style Without Logo</a><br/>
+
+
+        <strong style="break-before: column;" >TCDG Video Feed </strong>
+        <br/>
+        <a href='views/overlays/tcdg/overlay-4x3.html'>4x3 Overlay</a><br/>
+        <a href='views/overlays/tcdg/overlay-4x3-trans.html'>4x3 Partial Transparency</a><br/>
+        <a href='views/overlays/tcdg/overlay-16x9-pip.html'>16x9 Picture In Picture</a><br/>
+        <a href='views/overlays/tcdg/overlay-16x9-trans.html'>16x9 Partial Transparency</a><br/>
+        <a href='views/overlays/wb/tcdg2016wb.html'>Penalty Whiteboard 16x9</a><br/>
+        <br/>
+
+
+        <strong>Legacy Overlays</strong>
+        <br/>
+        <a href="views/overlays/standard/overlay-4x3.html">Standard 4x3 Version</a><br/>
+        <a href="views/overlays/standard/overlay-16x9.html">Standard 16x9 Pink Bar</a><br/>
+        <a href="views/overlays/standard/overlay-top.html">Full Width Top Bar</a><br/>
+
+    </p>
   </div>
 
 </body>
