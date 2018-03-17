@@ -169,11 +169,16 @@ function setupTeams() {
 		sbTeam.$sb("Logo").$sbElement(teamDiv.find("div.Logo img"), "Logo");
 		sbTeam.$sb("Score").$sbElement(teamDiv.find("div.Score>a"), { sbelement: { autoFitText: { overage: 40 } } }, "Score");
 
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
-		_crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
-		_crgUtils.bindColors(sbTeam, "scoreboard", teamDiv.find("div.Name>a"));
+
+                _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
+                _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Cross"), null, { 'fg': 'background-color' } );
+                _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Cross>.CrossV"), null, { 'fg': 'background-color' } );
+                _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Cross>.CrossH"), null, { 'fg': 'background-color' } );
+//              _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">:not(.Active)"), null, { 'fg': 'background-color' } );
+                _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".Timeouts>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
+                _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Active"), null, { 'bg': 'background-color' } );
+                _crgUtils.bindColors(sbTeam, "scoreboard", teamDiv.find("div.Name>a"));
+
 
 		var nameDiv = teamDiv.find("div.Name>a");
 		var resizeName = _autoFit.enableAutoFitText(teamDiv.find("div.Name")); 
@@ -253,9 +258,15 @@ function setupTeams() {
 			var owner = timeoutOwner.$sbGet();
 
 			var pulse = (isOR && owner == team);
-			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Active", pulse);
-			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Used", or != 1);
-			$("div.Team" + team + ">div.Dot.OfficialReview").toggleClass("Retained", isRetained);
+                        $("div.Team" + team + ">div.Cross.OfficialReview").toggleClass("Active", pulse);
+                        $("div.Team" + team + ">div.Cross.OfficialReview").toggleClass("Used", or != 1);
+                        $("div.Team" + team + ">div.Cross.OfficialReview").toggleClass("Retained", isRetained);
+                        if (isRetained) {
+                                $("div.Team" + team + ">div.Cross.OfficialReview").css("background-color", "rgba(0,255,0,0.0)");
+                        } else {
+                                $("div.Team" + team + ">div.Cross.OfficialReview").css("background-color", "#000000");
+                                _crgUtils.bindColors(sbTeam, "scoreboard_dots", $(".OfficialReviews>.Team" + team + ">.Cross"), null, { 'fg': 'background-color' } );
+                        }
 			for (var to = 1; to <= 3; to++) {
 				pulse = (t == to - 1 && tr && !isOR && owner == team);
 				$("div.Team" + team + ">div.Dot.Timeout" + to).toggleClass("Active", pulse);
