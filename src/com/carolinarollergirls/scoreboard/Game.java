@@ -73,7 +73,9 @@ public class Game {
 				JamStats js = findJamStats(period, jam, true);
 				js.snapshot(jamEnd);
 
-				saveLock.notifyAll();
+				if (jamEnd) { // only write the data to file once per jam to combat lag from writing it multiple times over at the end of each jam
+					saveLock.notifyAll();
+				}
 			} catch (Exception e) {
 				ScoreBoardManager.printMessage("Error catching snapshot: " + e.getMessage());
 				e.printStackTrace();
