@@ -52,7 +52,10 @@ Once Chrome and Java are installed, use your file manager to navigate to the sco
 
 * Apple users: Run scoreboard-Mac.app to start the script. If you are unable to start it, you may have to download and run the [startscoreboard-mac.zip package](https://drive.google.com/file/d/0B2fZmT3bqA9oS25KNHphZjFFcWs/view?fref=gc&dti=480408282040949) to get the scoreboard started.
 
-* Linux users: Run scoreboard-Linux.sh to start the script. If you are unable to start it, you may have to allow script files to be executable as programs.
+* Linux users: Run scoreboard-Linux.sh to start the script. If you are unable to
+start it, you may have to allow script files to be executable as programs. The
+``lib/crg-scoreboard.jar`` file can be built from source by installing [Apache
+Ant](http://ant.apache.org/) and running ``ant compile`` from this directory.
 
 Once it starts successfully, the scoreboard script will open a new window and display a series of status messages. You must keep this script running in order for the scoreboard to function, so do not close the window. You may minimize the window without effect.
 
