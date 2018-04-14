@@ -62,7 +62,7 @@ When the control panel displays, it will ask you for an operator name. Enter you
 
 After logging in, you will be viewing the **Team/Time** tab. The first thing to do is reset the scoreboard controls in case information from an old game is still present. Click on the **Save/Load** tab, then click on the **Reset scoreboard only** button. Confirm by clicking **Yes, reset the scoreboard**. Click on the **Team/Time** tab to return to the main control panel.
 
-Next, define the team names. Click on the name of the team in the upper left, which should be _Team 1_. The **Team Name** and **Alternate Name** fields will appear. Highlight the text that says _Team 1_, type in the name for the team, and press Enter on the keyboard. Repeat these steps for _Team 2_ on the upper right.
+Next, if you need to get the scoreboard started quickly, and you do not have teams defined in the **Teams** tab, define the team names on the control panel. Click on the name of the team in the upper left, which should be _Team 1_. The **Team Name** and **Alternate Name** fields will appear. Highlight the text in the **Team Name** field that says _Team 1_, type in the name for the team, and press Enter on the keyboard. Repeat these steps for _Team 2_ on the upper right.
 
 Finally, make sure the undo controls are visible. If you do not see buttons for **UN-Start Jam**, **UN-Stop Jam**, and **UN-Timeout**, click the **Show UNDO controls** button at the top of the page.
 
