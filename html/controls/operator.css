@@ -82,6 +82,7 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 
 	tr.SpeedScore:not(.Show) { display: none; }
+	tr.Control:not(.Show) { display: none; }
 /* End Team/Time Tab */
 
 /* Policies */
