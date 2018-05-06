@@ -272,7 +272,18 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put("PenaltyCode.Penalty(G)", "Misconduct-Insubordination");
 		updateMap.put("PenaltyCode.Penalty(?)", "Unknown");
 		updateMap.put("PenaltyCode.FO_EXP(FO)", "Foul Out");
-		updateMap.put("PenaltyCode.FO_EXP(EXP)", "Expelled");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-B)", "Expulsion-Back Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-A)", "Expulsion-High Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-L)", "Expulsion-Low Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-E)", "Expulsion-Leg Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-F)", "Expulsion-Forearm");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-H)", "Expulsion-Head Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-M)", "Expulsion-Multiplayer");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-C)", "Expulsion-Illegal Contact");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-D)", "Expulsion-Direction");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-P)", "Expulsion-Illegal Position");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-N)", "Expulsion-Interference");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-G)", "Expulsion-Misconduct");
 
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());
