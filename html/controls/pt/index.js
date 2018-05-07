@@ -11,6 +11,8 @@ function initialize() {
 	WS.Connect();
 	WS.AutoRegister();
 
+	$.get('/JSON/Ruleset/Penalties',null).done(loadPenalties);
+	
 	$.each([1, 2], function(idx, t) {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
@@ -18,9 +20,9 @@ function initialize() {
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
 
+
 	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
-	WS.Register( [ 'PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
 	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
 	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
 
@@ -213,47 +215,47 @@ function submitPenalty() {
 	penaltyEditor.dialog('close');
 }
 
-var penaltyCodeRegex = /^PenaltyCode.([^\(]+)\(([^\)]+)\)/;
-function penaltyCode(k, v) {
-	match = k.match(penaltyCodeRegex);
-	if (match == null)
-		return;
-	var type = match[1];
-	var code = match[2];
-
-	var div = $('.Codes .' + type + '[code="' + code + '"]');
-	if (div.length > 0) {
-		if (v == null) {
-			div.detach();
-			return;
+function loadPenalties(data) {
+	data.penalties.forEach(function(penalty){
+		addPenalty(penalty, "Penalty");
+		if(penalty.expellable) {
+			addPenalty(penalty, "FO_EXP");
 		}
-		div.find('.Description').empty();
-	} else {
-		var div = $('<div>').attr('code', code).addClass(type).click(function (e) {
-			$('.PenaltyEditor .Codes>div').removeClass('Active');
-			div.addClass('Active');
-			submitPenalty();
-		});
-		$('<div>').addClass('Code').text(code).appendTo(div);
-		$('<div>').addClass('Description').appendTo(div);
-
-		var codes = $('.PenaltyEditor .Codes');
-		var inserted = false;
-		codes.children().each(function (idx, c) {
-			c = $(c);
-			if (c.attr('code') > code) {
-				c.before(div);
-				inserted = true;
-				return false;
-			}
-		});
-		if (!inserted)
-			codes.append(div);
-	}
-
-	var desc = div.find('.Description');
-	$.each(v.split('-'), function (idx, d) {
-		$('<div>').text(d).appendTo(desc);
 	});
+	
+	addPenalty({ "code": "?", "verbalCues": ["Unknown"]}, "Penalty");
+	addPenalty({ "code": "?", "verbalCues": ["Unknown"]}, "FO_EXP");
+	addPenalty({ "code": "FO", "verbalCues": ["Foul Out"]}, "FO_EXP");
+}
+
+function addPenalty(penalty, type) {
+	//{ "code": "C", "expellable": true, "verbalCues": ["Illegal Contact","Illegal Assist","OOP Block","Early/Late Hit"]},
+	var div = $('<div>').attr('code', penalty.code).addClass(type).click(function (e) {
+		$('.PenaltyEditor .Codes>div').removeClass('Active');
+		div.addClass('Active');
+		submitPenalty();
+	});
+	
+	var desc = $('<div>').addClass('Description');
+	penalty.verbalCues.forEach(function(vc){
+		$('<div>').text(vc).appendTo(desc);
+	});
+	
+	$('<div>').addClass('Code').text(penalty.code).appendTo(div);
+	desc.appendTo(div);
+	
+	var codes = $('.PenaltyEditor .Codes');
+	var inserted = false;
+	codes.children().each(function (idx, c) {
+		c = $(c);
+		if (c.attr('code') > penalty.code) {
+			c.before(div);
+			inserted = true;
+			return false;
+		}
+	});
+	if (!inserted)
+		codes.append(div);
+	
 }
 //# sourceURL=controls\pt\index.js

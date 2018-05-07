@@ -8,11 +8,13 @@ package com.carolinarollergirls.scoreboard.json;
  * See the file COPYING for details.
  */
 
+import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.penalties.*;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.jetty.WS;
 
@@ -288,36 +290,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_RULESET, sb.getRuleset());
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_TIMEOUT_OWNER, sb.getTimeoutOwner());
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview());
-
-		updateMap.put("PenaltyCode.Penalty(B)", "Back Block");
-		updateMap.put("PenaltyCode.Penalty(A)", "High Block");
-		updateMap.put("PenaltyCode.Penalty(L)", "Low Block");
-		updateMap.put("PenaltyCode.Penalty(E)", "Leg Block");
-		updateMap.put("PenaltyCode.Penalty(F)", "Forearm");
-		updateMap.put("PenaltyCode.Penalty(H)", "Head Block");
-		updateMap.put("PenaltyCode.Penalty(M)", "Multiplayer");
-		updateMap.put("PenaltyCode.Penalty(C)", "Illegal Contact-Illegal Assist-OOP Block-Early/Late Hit");
-		updateMap.put("PenaltyCode.Penalty(D)", "Direction-Stop Block");
-		updateMap.put("PenaltyCode.Penalty(P)", "Illegal Position-Destruction-Skating OOB-Failure to...");
-		updateMap.put("PenaltyCode.Penalty(X)", "Cut-Illegal Re-Entry");
-		updateMap.put("PenaltyCode.Penalty(I)", "Illegal Procedure-Star Pass Violation-Pass Interference");
-		updateMap.put("PenaltyCode.Penalty(N)", "Interference-Delay Of Game");
-		updateMap.put("PenaltyCode.Penalty(G)", "Misconduct-Insubordination");
-		updateMap.put("PenaltyCode.Penalty(?)", "Unknown");
-		updateMap.put("PenaltyCode.FO_EXP(FO)", "Foul Out");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-B)", "Expulsion-Back Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-A)", "Expulsion-High Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-L)", "Expulsion-Low Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-E)", "Expulsion-Leg Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-F)", "Expulsion-Forearm");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-H)", "Expulsion-Head Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-M)", "Expulsion-Multiplayer");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-C)", "Expulsion-Illegal Contact");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-D)", "Expulsion-Direction");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-P)", "Expulsion-Illegal Position");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-N)", "Expulsion-Interference");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-G)", "Expulsion-Misconduct");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-?)", "Expulsion-Unknown");
 
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());

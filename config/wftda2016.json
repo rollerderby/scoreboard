@@ -1,0 +1,20 @@
+{
+	"penalties": [
+	{ "code": "B", "expellable": true, "verbalCues": ["Back Block"]},
+{ "code": "A", "expellable": true, "verbalCues": ["High Block"]},
+{ "code": "L", "expellable": true, "verbalCues": ["Low Block"]},
+{ "code": "E", "expellable": true, "verbalCues": ["Elbows"]},
+{ "code": "F", "expellable": true, "verbalCues": ["Forearm"]},
+{ "code": "H", "expellable": true, "verbalCues": ["Blocking with the Head"]},
+{ "code": "M", "expellable": true, "verbalCues": ["Multi-player Block"]},
+{ "code": "O", "expellable": true, "verbalCues": ["Out of Bounds Block"]},
+{ "code": "C", "expellable": true, "verbalCues": ["Clockwise Block","Stop Block"]},
+{ "code": "P", "expellable": true, "verbalCues": ["Destroying the Pack","OOP Block","Failure to..."]},
+{ "code": "S", "expellable": true, "verbalCues": ["Skating OOB"]},
+{ "code": "X", "expellable": false, "verbalCues": ["Cutting"]},
+{ "code": "I", "expellable": false, "verbalCues": ["Illegal Procedure"]},
+{ "code": "N", "expellable": true, "verbalCues": ["Insubordination"]},
+{ "code": "G", "expellable": true, "verbalCues": ["Misconduct"]},
+{ "code": "Z", "expellable": true, "verbalCues": ["Delay of Game"]}
+]
+}
