@@ -301,7 +301,7 @@ function createGameControlDialog() {
 		if (t1.val() != "" && t2.val() != "") {
 			var now = new Date();
 			var d = now.getFullYear() + '-' +
-				_timeConversions.twoDigit(now.getMonth()) + '-' +
+				_timeConversions.twoDigit(now.getMonth()+1) + '-' +
 				_timeConversions.twoDigit(now.getDate()) + ' ' +
 				_timeConversions.twoDigit(now.getHours()) + ':' +
 				_timeConversions.twoDigit(now.getMinutes());
