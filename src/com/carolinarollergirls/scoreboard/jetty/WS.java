@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
+import io.prometheus.client.Histogram;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -75,6 +76,7 @@ public class WS extends WebSocketServlet {
 	}
 
 	public static void updateState(Map<String, Object> updates) {
+		Histogram.Timer timer = updateStateDuration.startTimer();
 		synchronized (sourcesLock) {
 			stateID++;
 			List<String> keys = new LinkedList<String>(updates.keySet());
@@ -109,6 +111,8 @@ public class WS extends WebSocketServlet {
 				source.sendUpdates(keys);
 			}
 		}
+		timer.observeDuration();
+		updateStateUpdates.observe(updates.size());
 	}
 
 	protected static List<Conn> sources = new LinkedList<Conn>();
@@ -131,14 +135,19 @@ public class WS extends WebSocketServlet {
 		return true;
 	}
 
+	private static final Histogram updateStateDuration = Histogram.build()
+		.name("crg_websocket_update_state_duration_seconds").help("Time spent in WS.updateState function").register();
+	private static final Histogram updateStateUpdates = Histogram.build()
+		.name("crg_websocket_update_state_updates").help("Updates sent to WS.updateState function")
+		.exponentialBuckets(1, 2, 10).register();
 	private static final Gauge connectionsActive = Gauge.build()
-		.name("websocket_active_connections").help("Current WebSocket connections").register();
+		.name("crg_websocket_active_connections").help("Current WebSocket connections").register();
 	private static final Counter messagesReceived = Counter.build()
-		.name("websocket_messages_received").help("Number of WebSocket messages received").register();
-	private static final Counter messagesSent = Counter.build()
-		.name("websocket_messages_sent").help("Number of WebSocket messages sent").register();
+		.name("crg_websocket_messages_received").help("Number of WebSocket messages received").register();
+	private static final Histogram messagesSentDuration = Histogram.build()
+		.name("crg_websocket_messages_sent_duration_seconds").help("Time spent sending WebSocket messages").register();
 	private static final Counter messagesSentFailures = Counter.build()
-		.name("websocket_messages_sent_failed").help("Number of WebSocket messages we failed to send").register();
+		.name("crg_websocket_messages_sent_failed").help("Number of WebSocket messages we failed to send").register();
 
 	public class Conn implements OnTextMessage {
 		private Connection connection;
@@ -163,7 +172,7 @@ public class WS extends WebSocketServlet {
 						for (int i = 0; i < paths.length(); i++)
 							requestUpdates(paths.getString(i));
 					}
-					sendUpdates();
+					sendPendingUpdates();
 				} else if (action.equals("Penalty")) {
 					JSONObject data = json.getJSONObject("data");
 					String teamId = data.optString("teamId");
@@ -197,7 +206,7 @@ public class WS extends WebSocketServlet {
 		}
 		
 		public void send(JSONObject json) {
-			messagesSent.inc();
+			Histogram.Timer timer = messagesSentDuration.startTimer();
 			try {
 				json.put("stateID", stateID);
 				connection.sendMessage(json.toString());
@@ -205,6 +214,8 @@ public class WS extends WebSocketServlet {
 				ScoreBoardManager.printMessage("Error sending JSON update: " + e);
 				e.printStackTrace();
 				messagesSentFailures.inc();
+			} finally {
+				timer.observeDuration();
 			}
 		}
 	
@@ -297,7 +308,7 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
-		private void sendUpdates() {
+		private void sendPendingUpdates() {
 			synchronized (this) {
 				if (updates.size() == 0)
 					return;
@@ -327,7 +338,7 @@ public class WS extends WebSocketServlet {
 				for (String p : paths) {
 					processUpdates(p, false);
 				}
-				sendUpdates();
+				sendPendingUpdates();
 			}
 		}
 
