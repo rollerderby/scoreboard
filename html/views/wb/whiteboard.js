@@ -21,16 +21,12 @@ function initialize() {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]); //called when team name changes?
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']); $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
-//		WS.Register([ 'ScoreBoard.Team(' + t + ')' ]);
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
 
 	WS.Register( [ 'Game.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes?
 	WS.Register( [ 'Game.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); //arguments: team number, skater id, jam number
-	WS.Register( [ 'PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
-	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
-	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
 
 }
 
@@ -110,36 +106,20 @@ function displayPenalty(t, s, p) { // team skater penalty#
 }
 
 function makeSkaterRows(t, id, number) { //team, id, number
-	var team = $('.Team' + t + ' tbody'); //for example team = $('.Team1 tbody)
+	var team = $('.Team' + t + ' tbody');
 	var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 	var head = document.getElementById('head' + t);
 	var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
 	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)'];
 	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)'];
-//	console.log("Smasher FTeam color is: " + teamFColor);
-//	console.log("Smasher BTeam color is: " + teamBColor);
 	
 	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)'] != null) {
 		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)']
 	}
 
 	head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';
-//	head.innerHTML = '<span class="Team' + t + 'custColor" style="background-color:' + WS.state['Game.Team(1).Color(overlay_bg)'] + '; font-size: 200%;">' + teamName + '</span>';
-//	console.log("Team color " + t + " is: " + WS.state['Game.Team(1).Color(overlay_bg)']);
-//        $('.Team' + t + 'custColor').css('backgroundColor', "#00ff00");
-//        $('.Team' + t + 'custColor').css('backgroundColor', WS.state['Game.Team(' + t + ').Color(overlay_bg)']);
-//        $('.Team' + t + 'custColor').css('backgroundColor', teamBColor);
-        $('.Team' + t + 'custColor').css('color', teamFColor);
-        $('.Team' + t + 'custColor').css('background-color', teamBColor);
-//        $('.Team2custColor').css('background-color', WS.state['Game.Team(2).Color(overlay_bg)']);
-	
-	//head.innerHTML = $sb("ScoreBoard.Team("+team+")")
-	//_crgUtils.bindColors($sb("ScoreBoard.Team("+team+")"), "scoreboard", head.style.backgroundColor, null, { 'fg': 'background-color' })
-	//head.style.backgroundColor = WS.state['Scoreboard.Team('+t+').overlay_bg'];
-	//_crgUtils.bindColors("Scoreboard.Team("+t+")", "overlay", head.style.color, head.style.backgroundColor)
-	
-	//_crgUtils.bindColors("ScoreBoard.Team("+team+")", "overlay", $("#Team" + team + "Name"));
-	//bindColors: function(team, colorName, fg_elem, bg_elem, map)
+  $('.Team' + t + 'custColor').css('color', teamFColor);
+  $('.Team' + t + 'custColor').css('background-color', teamBColor);
 	
 	p.append($('<td>').attr('rowspan', 1).text(number));
 	$.each([1, 2, 3, 4, 5, 6, 7, 8, 9], function(idx, c) {
@@ -152,13 +132,14 @@ function makeSkaterRows(t, id, number) { //team, id, number
 	team.find('tr.Penalty').each(function (idx, row) {
 		row = $(row);
 		if (row.data('number') > number) {
-			row.before(p).before(j);
+			row.before(p);
 			inserted = true;
 			return false;
 		}
 	});
-	if (!inserted)
-		team.append(p).append(j);
+	if (!inserted) {
+		team.append(p);
+  }
 }
 
 
