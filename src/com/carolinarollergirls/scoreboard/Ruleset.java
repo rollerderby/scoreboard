@@ -50,15 +50,17 @@ public class Ruleset {
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Intermission",  "", "Intermission"));
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Official",      "", "Final Score"));
-			newRule( new StringRule(false, "ScoreBoard", null, "BackgroundStyle", "", ""));
-			newRule( new StringRule(false, "ScoreBoard", null, "BoxStyle",        "", "box_flat"));
-			newRule( new StringRule(false, "ScoreBoard", null, "CurrentView",     "", "scoreboard"));
-			newRule( new StringRule(false, "ScoreBoard", null, "CustomHtml",      "", "/customhtml/fullscreen/example.html"));
-			newRule(new BooleanRule(false, "ScoreBoard", null, "HideJamTotals",   "", false, "Hide Jam Totals", "Show Jam Totals"));
-			newRule( new StringRule(false, "ScoreBoard", null, "Image",           "", "/images/fullscreen/American Flag.jpg"));
-			newRule(new IntegerRule(false, "ScoreBoard", null, "SidePadding",     "", 0));
-			newRule(new BooleanRule(false, "ScoreBoard", null, "SwapTeams",       "", false, "Teams Swapped", "Teams Normal"));
-			newRule( new StringRule(false, "ScoreBoard", null, "Video",           "", "/videos/fullscreen/American Flag.webm"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "BackgroundStyle", "", ""));
+			newRule( new StringRule(false, "ScoreBoard", null,      "BoxStyle",        "", "box_flat"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "CurrentView",     "", "scoreboard"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "CustomHtml",      "", "/customhtml/fullscreen/example.html"));
+			newRule(new BooleanRule(false, "ScoreBoard", null,      "HideJamTotals",   "", false, "Hide Jam Totals", "Show Jam Totals"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "Image",           "", "/images/fullscreen/American Flag.jpg"));
+			newRule(new IntegerRule(false, "ScoreBoard", null,      "SidePadding",     "", 0));
+			newRule(new BooleanRule(false, "ScoreBoard", null,      "SwapTeams",       "", false, "Teams Swapped", "Teams Normal"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "Video",           "", "/videos/fullscreen/American Flag.webm"));
+			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "TeamLogos",       "", true, "Display", "Hide"));
+			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "LogoBackground",  "", true, "Black", "Default"));
 
 			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
@@ -73,6 +75,7 @@ public class Ruleset {
 			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Direction",     "", true, "Count Down", "Count Up"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MaximumTime",   "", "2:00"));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Number",        "", true, "Reset Each Period", "Continue Counting"));
 
 			newRule( new StringRule(false, "Clock", Clock.ID_LINEUP,       "Name",          "", Clock.ID_LINEUP));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MinimumNumber", "", 1));
@@ -80,6 +83,11 @@ public class Ruleset {
 			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "Direction",     "", false, "Count Down", "Count Up"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MaximumTime",   "", "60:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "Time",          "", "00:30"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "OvertimeTime",  "", "01:00"));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "AutoStart",     "", false, "Auto Start", "Stay in Lineup"));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "AutoStartType", "", false, "Auto Start Jam", "Auto Start Timeout"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "BufferTime",    "", "00:00"));
 
 			newRule( new StringRule(false, "Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));
@@ -95,9 +103,13 @@ public class Ruleset {
 			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "Time",          "", "15:00"));
+			
+			newRule(new BooleanRule(false, "Clock", null,                  "Sync",          "", true, "Sync Clocks", "Don't Sync Clocks"));
 
 			newRule(new IntegerRule( true, "Team", null, "Timeouts", "", 3));
+			newRule(new BooleanRule( true, "Team", null, "TimeoutsPer", "", false, "Period", "Game"));
 			newRule(new IntegerRule( true, "Team", null, "OfficialReviews", "", 1));
+			newRule(new BooleanRule( true, "Team", null, "OfficialReviewsPer", "", true, "Period", "Game"));
 			newRule( new StringRule( true, "Team", "1", "Name", "", "Team 1"));
 			newRule( new StringRule( true, "Team", "2", "Name", "", "Team 2"));
 
@@ -291,7 +303,7 @@ public class Ruleset {
 				String rule = r.getFullName();
 				Object v = values.opt(rule);
 				if (v != null) {
-					boolean didSet = rs.setRule(rule, v);
+					rs.setRule(rule, v);
 				}
 			}
 			rs.immutable = json.optBoolean("immutable", false);

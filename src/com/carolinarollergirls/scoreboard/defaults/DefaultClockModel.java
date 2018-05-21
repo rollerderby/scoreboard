@@ -13,7 +13,6 @@ import java.util.*;
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
 import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
 import com.carolinarollergirls.scoreboard.states.ClockState;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
@@ -29,6 +28,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		Ruleset.registerRule(this, "Clock." + id + ".Direction");
 		Ruleset.registerRule(this, "Clock." + id + ".MinimumTime");
 		Ruleset.registerRule(this, "Clock." + id + ".MaximumTime");
+		Ruleset.registerRule(this, "Clock.Sync");
 
 		reset();
 	}
@@ -46,6 +46,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			setMinimumTime((Long)value);
 		else if (rule.equals("Clock." + id + ".MaximumTime"))
 			setMaximumTime((Long)value);
+		else if (rule.equals("Clock.Sync"))
+			syncTime = (Boolean)value;
 	}
 
 	public String getProviderName() { return "Clock"; }
@@ -312,8 +314,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	protected boolean isSyncTime() {
-		Policy syncPolicy = getScoreBoard().getPolicy(ClockSyncPolicy.ID);
-		return (syncPolicy == null ? true : syncPolicy.isEnabled());
+		return syncTime;
 	}
 
 	protected boolean isMasterClock() {
@@ -334,6 +335,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	protected long lastTime;
 	protected boolean isRunning = false;
+	protected boolean syncTime = true;
 
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();

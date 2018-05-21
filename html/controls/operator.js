@@ -14,7 +14,6 @@ _include("/json", [ "Game.js", "Rulesets.js" ]);
 
 $sb(function() {
 	createScoreTimeTab();
-	createPoliciesTab();
 	createScoreBoardViewTab();
 	createTeamsTab();
 	createSaveLoadTab();
@@ -921,84 +920,6 @@ function createTimeSetWarningDialog(source) {
 			}
 		]
 	});
-}
-
-
-///////////////
-// Policies tab
-///////////////
-
-function createPoliciesTab() {
-	$("<table>").attr("id", "Policies")
-		.appendTo(createTab("Policies", "PoliciesTab"))
-		.data("loadContentFunction", createPoliciesContent);
-}
-
-function createPoliciesContent(table) {
-	$("<td>").attr("colspan", "2")
-		.appendTo($("<tr>").addClass("ExpandCollapseAll").appendTo(table))
-		.append("<a>Click to Expand/Collapse all</a>")
-		.click(function() {
-			if ($("#Policies tr.Name>td.Hide").length)
-				$("#Policies tr.Name>td.Hide").click();
-			else
-				$("#Policies tr.Name>td:not(.Hide)").click();
-		});
-
-	$sb("ScoreBoard").$sbBindAddRemoveEach("Policy", 
-		function(event, node) { addPolicy(node); },
-		function(event, node) { removePolicy(node); }
-	);
-}
-
-function addPolicy(policy) {
-	var nameTr = $("<tr>").addClass("Name")
-		.attr("data-policy", policy.$sbId)
-		.append($("<td>").attr("colspan", "2"));
-	_windowFunctions.appendAlphaSortedByAttr($("#Policies>tbody"), nameTr, "data-policy", 1);
-	policy.$sb("Name").$sbElement("<a>").appendTo(nameTr.children("td"));
-
-	var contentTr = $("<tr>").addClass("Content").insertAfter(nameTr)
-		.attr("data-policy", policy.$sbId)
-		.append($("<td>").addClass("Description"))
-		.append($("<td>").addClass("Controls"));
-	$("<div>").append(policy.$sb("Description").$sbElement("<a>"))
-		.appendTo(contentTr.children("td.Description"));
-	var controls = $("<div>").appendTo(contentTr.children("td.Controls"));
-
-	$("<span>")
-		.append(policy.$sb("Enabled").$sbControl("<label>Enabled</label><input type='checkbox'/>"))
-		.append("<br>").append("<br>")
-		.appendTo(controls);
-
-	var toggleContent = function() {
-		if ($(this).toggleClass("Hide").hasClass("Hide"))
-			contentTr.find("td>div").hide("blind", 250);
-		else
-			contentTr.find("td>div").show("blind", 250);
-	};
-	_crgUtils.bindAndRun(nameTr.children("td"), "click", toggleContent);
-
-	policy.$sbBindAddRemoveEach("Parameter",
-		function(event, node) {
-			var span = $("<span>").attr("data-parameter", node.$sbId)
-				.append(node.$sb("Name").$sbElement("<a>"))
-				.append("<br>")
-				.appendTo(controls);
-			var type = node.$sb("Type").$sbGet();
-			if (type == "Boolean")
-				node.$sb("Value").$sbControl("<input type='checkbox'/>").insertAfter(span.children("a"));
-			else
-				node.$sb("Value").$sbControl("<input type='text' size='10'/>").insertAfter(span.children("a"));
-		},
-		function(event, node) {
-			controls.children("span[data-parameter='"+node.$sbId+"']").remove();
-		}
-	);
-}
-
-function removePolicy(policy) {
-	$("#Policies tr[data-policy='"+policy.$sbId+"']").remove();
 }
 
 

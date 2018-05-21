@@ -57,7 +57,8 @@ public interface TeamModel extends Team
 	public void changeTimeouts(int change);
 	public void setOfficialReviews(int reviews);
 	public void changeOfficialReviews(int reviews);
-
+	public void resetTimeouts(boolean gameStart);
+	
 	public void setInTimeout(boolean in_timeouts);
 	public void setInOfficialReview(boolean in_official_review);
 	public void setRetainedOfficialReview(boolean retained_official_review);

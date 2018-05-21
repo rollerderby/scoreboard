@@ -9,14 +9,11 @@ package com.carolinarollergirls.scoreboard.xml;
  */
 
 import java.util.Iterator;
-import java.util.NoSuchElementException;
-
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Policy;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.Settings;
@@ -24,7 +21,6 @@ import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
-import com.carolinarollergirls.scoreboard.model.PolicyModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
@@ -67,10 +63,6 @@ public class ScoreBoardXmlConverter
 		Iterator<Team> teams = scoreBoard.getTeams().iterator();
 		while (teams.hasNext())
 			toElement(sb, teams.next());
-
-		Iterator<Policy> policies = scoreBoard.getPolicies().iterator();
-		while (policies.hasNext())
-			toElement(sb, policies.next());
 
 		return d;
 	}
@@ -175,27 +167,6 @@ public class ScoreBoardXmlConverter
 		return e;
 	}
 
-	public Element toElement(Element sb, Policy p) {
-		Element e = editor.setElement(sb, "Policy", p.getId());
-		editor.setElement(e, Policy.EVENT_NAME, null, p.getName());
-		editor.setElement(e, Policy.EVENT_DESCRIPTION, null, p.getDescription());
-		editor.setElement(e, Policy.EVENT_ENABLED, null, String.valueOf(p.isEnabled()));
-
-		Iterator<Policy.Parameter> parameters = p.getParameters().iterator();
-		while (parameters.hasNext())
-			toElement(e, parameters.next());
-
-		return e;
-	}
-
-	public Element toElement(Element p, Policy.Parameter pp) {
-		Element e = editor.setElement(p, "Parameter", pp.getName());
-		editor.setElement(e, "Name", null, pp.getName());
-		editor.setElement(e, "Type", null, pp.getType());
-		editor.setElement(e, Policy.Parameter.EVENT_VALUE, null, pp.getValue());
-		return e;
-	}
-
 	public Element toElement(Element t, Skater s) {
 		Element e = editor.setElement(t, "Skater", s.getId());
 		editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
@@ -232,8 +203,6 @@ public class ScoreBoardXmlConverter
 					processClock(scoreBoardModel, element);
 				else if (name.equals("Team"))
 					processTeam(scoreBoardModel, element);
-				else if (name.equals("Policy"))
-					processPolicy(scoreBoardModel, element);
 				else if (name.equals("Settings"))
 					processSettings(scoreBoardModel, element);
 				else if (null == value)
@@ -489,48 +458,6 @@ public class ScoreBoardXmlConverter
 					positionModel.setSkaterModel(value);
 				else if (name.equals(Position.EVENT_PENALTY_BOX))
 					positionModel.setPenaltyBox(Boolean.parseBoolean(value));
-			} catch ( Exception e ) {
-			}
-		}
-	}
-
-	public void processPolicy(ScoreBoardModel scoreBoardModel, Element policy) throws NoSuchElementException {
-		String id = policy.getAttributeValue("Id");
-		PolicyModel policyModel = scoreBoardModel.getPolicyModel(id);
-
-		Iterator<?> children = policy.getChildren().iterator();
-		while (children.hasNext()) {
-			Element element= (Element)children.next();
-			try {
-				String name = element.getName();
-				String value = editor.getText(element);
-
-				if (name.equals("Parameter"))
-					processPolicyParameter(policyModel, element);
-				else if (null == value)
-					continue;
-				else if (name.equals(Policy.EVENT_ENABLED))
-					policyModel.setEnabled(Boolean.parseBoolean(value));
-			} catch ( Exception e ) {
-			}
-		}
-	}
-
-	public void processPolicyParameter(PolicyModel policyModel, Element parameter) throws NoSuchElementException {
-		String id = parameter.getAttributeValue("Id");
-		PolicyModel.ParameterModel parameterModel = policyModel.getParameterModel(id);
-
-		Iterator<?> children = parameter.getChildren().iterator();
-		while (children.hasNext()) {
-			Element element = (Element)children.next();
-			try {
-				String name = element.getName();
-				String value = editor.getText(element);
-
-				if (null == value)
-					continue;
-				else if (name.equals(Policy.Parameter.EVENT_VALUE))
-					parameterModel.setValue(value);
 			} catch ( Exception e ) {
 			}
 		}

@@ -47,10 +47,5 @@ public interface ScoreBoardModel extends ScoreBoard
 
 	public List<TeamModel> getTeamModels();
 	public TeamModel getTeamModel(String id);
-
-	public List<PolicyModel> getPolicyModels();
-	public PolicyModel getPolicyModel(String id);
-	public void addPolicyModel(PolicyModel model) throws IllegalArgumentException; /* If the model's Id is null/empty */
-	public void removePolicyModel(PolicyModel model);
 }
 
