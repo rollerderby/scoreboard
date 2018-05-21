@@ -117,6 +117,42 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		}
 	}
 
+  public List<Penalty> getPenalties() { return Collections.unmodifiableList(new ArrayList<Penalty>(penalties)); }
+  public Penalty getFOEXPPenalty() { return foexp_penalty; }
+  public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code) {
+    synchronized (penaltiesLock) {
+      if (foulout_explusion && code != null) {
+          id = UUID.randomUUID().toString();
+          foexp_penalty = new DefaultPenaltyModel(id, period, jam, code);
+      } else if (foulout_explusion && code == null) {
+        foexp_penalty = null;
+      } else if (id == null ) {
+        id = UUID.randomUUID().toString();
+        // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
+        if (penalties.size() < 9) {
+          penalties.add(new DefaultPenaltyModel(id, period, jam, code));
+        }
+      } else {
+        // Updating/Deleting existing Penalty.  Find it and process
+        for (DefaultPenaltyModel p2 : penalties) {
+          if (p2.getId().equals(id)) {
+            if (code != null) {
+              p2.period = period;
+              p2.jam = jam;
+              p2.code = code;
+            } else {
+              penalties.remove(p2);
+            }
+            break;
+          }
+        }
+      }
+
+      // Send a event for the entire skater.
+			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, this, null));
+    }
+  }
+
 	public void bench() {
 		synchronized (positionLock) {
 			saved_position = position;
@@ -141,6 +177,8 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected String position = Position.ID_BENCH;
 	protected boolean penaltyBox = false;
 	protected String flags;
+	protected List<DefaultPenaltyModel> penalties = new LinkedList<DefaultPenaltyModel>();
+	protected PenaltyModel foexp_penalty;
 
 	private String saved_position = Position.ID_BENCH;
 
@@ -148,6 +186,31 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected Object numberLock = new Object();
 	protected Object positionLock = new Object();
 	protected Object flagsLock = new Object();
+	protected Object penaltiesLock = new Object();
 
 	protected boolean settingPositionSkater = false;
+
+  public class DefaultPenaltyModel extends DefaultScoreBoardEventProvider implements PenaltyModel
+  { 
+    public DefaultPenaltyModel(String i, int p, int j, String c) {
+      id = i;
+      period = p;
+      jam = j;
+      code = c;
+    }
+    public String getId() { return id; }
+    public int getPeriod() { return period; }
+    public int getJam() { return jam; }
+    public String getCode() { return code; }
+
+    public String getProviderName() { return "Penalty"; }
+    public Class getProviderClass() { return Penalty.class; }
+    public String getProviderId() { return getId(); }
+
+    protected String id;
+    protected int period;
+    protected int jam;
+    protected String code;
+  }
+
 }

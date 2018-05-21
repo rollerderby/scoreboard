@@ -31,10 +31,12 @@ import org.json.JSONObject;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
-	public WS(ScoreBoard sb) {
-		ScoreBoardJSONListener listener = new ScoreBoardJSONListener(sb);
+	public WS(ScoreBoardModel s) {
+    sbm = s;
+		ScoreBoardJSONListener listener = new ScoreBoardJSONListener(s);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -105,6 +107,7 @@ public class WS extends WebSocketServlet {
 		updateStateUpdates.observe(updates.size());
 	}
 
+	protected static ScoreBoardModel sbm;
 	protected static List<Conn> sources = new LinkedList<Conn>();
 	protected static Object sourcesLock = new Object();
 
@@ -174,7 +177,7 @@ public class WS extends WebSocketServlet {
 					String code = data.optString("code", null);
 					if (period == -1 || jam == -1)
 						return;
-					ScoreBoardManager.getGame().Penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
+					sbm.penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
 				} else if (action.equals("Set")) {
 					String key = json.getString("key");
 					Object value = json.get("value");

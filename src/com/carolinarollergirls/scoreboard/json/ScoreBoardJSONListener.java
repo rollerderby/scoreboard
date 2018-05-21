@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.json;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.List;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
@@ -154,7 +155,28 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put(path + "." + Skater.EVENT_POSITION, s.getPosition());
 		updateMap.put(path + "." + Skater.EVENT_FLAGS, s.getFlags());
 		updateMap.put(path + "." + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox());
+
+    List<Skater.Penalty> penalties = s.getPenalties();
+    for (int i = 0; i < 9; i++) {
+      String base = path + ".Penalty(" + (i + 1) + ")";
+      if (i < penalties.size())
+        processPenalty(base, penalties.get(i), false);
+      else
+        processPenalty(base, null, true);
+    }
+		processPenalty(path + ".Penalty(FO_EXP)", s.getFOEXPPenalty(), s.getFOEXPPenalty() == null);
 	}
+
+	private void processPenalty(String path, Skater.Penalty p, boolean remove) {
+		if (remove) {
+			updateMap.put(path, null);
+			return;
+		}
+    updateMap.put(path + ".Id", p.getId());
+    updateMap.put(path + ".Period", p.getPeriod());
+    updateMap.put(path + ".Jam", p.getJam());
+    updateMap.put(path + ".Code", p.getCode());
+  }
 
 	private void processTeam(String path, Team t, boolean remove) {
 		path = path + ".Team(" + t.getId() + ")";
