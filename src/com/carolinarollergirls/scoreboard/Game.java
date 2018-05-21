@@ -116,30 +116,6 @@ public class Game {
 		return sb.getClock(id);
 	}
 
-	public SkaterInfo getSkater(String teamId, String skaterId) {
-		for (TeamInfo t : teams) {
-			if (t.getTeam().equals(teamId)) {
-				for (SkaterInfo s : t.getSkaters()) {
-					if (s.getId().equals(skaterId)) {
-						return s;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	public void Penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
-		synchronized (saveLock) {
-			SkaterInfo si = getSkater(teamId, skaterId);
-			if (si == null)
-				return;
-
-			si.Penalty(penaltyId, fo_exp, period, jam, code);
-			saveLock.notifyAll();
-		}
-	}
-
 	public String getUpdaterBase() { return "Game"; }
 
 	private void saveFile() {

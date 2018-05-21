@@ -75,6 +75,8 @@ public interface TeamModel extends Team
 
 	public void setStarPass(boolean starPass);
 
+  public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
+
 	public static interface AlternateNameModel extends AlternateName {
 		public void setName(String n);
 
