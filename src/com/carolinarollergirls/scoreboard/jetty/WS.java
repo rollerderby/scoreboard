@@ -59,16 +59,6 @@ public class WS extends WebSocketServlet {
 		}
 	}
 
-	public static void requestUpdates(UUID id, String path) {
-		synchronized (sourcesLock) {
-			for (Conn source : sources) {
-				if (source.id.equals(id)) {
-					source.requestUpdates(path);
-				}
-			}
-		}
-	}
-
 	private static void updateState(String key, Object value) {
 		Map<String, Object> updateMap = new LinkedHashMap<String, Object>();
 		updateMap.put(key, value);
@@ -108,7 +98,7 @@ public class WS extends WebSocketServlet {
 			keys.addAll(deletedKeys);
 
 			for (Conn source : sources) {
-				source.sendUpdates(keys);
+				source.sendUpdates();
 			}
 		}
 		timer.observeDuration();
@@ -333,7 +323,7 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
-		public void sendUpdates(List<String> paths) {
+		public void sendUpdates() {
 			synchronized (this) {
 				for (String p : paths) {
 					processUpdates(p, false);
