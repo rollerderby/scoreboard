@@ -146,6 +146,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public long getInvertedTime() {
 		return maximumTime - time;
 	}
+	public long getTimeElapsed() {
+		return isCountDirectionDown()? getInvertedTime() : getTime();
+	}
 	public long getTimeRemaining() {
 		return isCountDirectionDown()? getTime() : getInvertedTime();
 	}
@@ -195,7 +198,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			return ms;
 	}
 	protected boolean checkStop() {
-		return (getTime() == (isCountDirectionDown() ? getMinimumTime() : getMaximumTime()));
+		return isTimeAtEnd();
 	}
 
 	public long getMinimumTime() { return minimumTime; }

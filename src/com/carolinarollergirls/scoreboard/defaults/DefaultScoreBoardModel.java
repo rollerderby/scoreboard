@@ -275,10 +275,17 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			saveClockState();
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			
 			requestBatchStart();
-			lc.resetTime();
-			lc.start();
+			if (!pc.isTimeAtEnd()) {
+				lc.resetTime();
+				lc.start();
+			}
+			if (restartPcAtTimeoutEnd) {
+				restartPcAtTimeoutEnd = false;
+				pc.start();
+			}
 			tc.stop();
 			requestBatchEnd();
 		}
@@ -326,12 +333,20 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 				tc.resetTime();
 				tc.start();
+				
+				if (pc.getTimeRemaining() + lc.getTimeElapsed() < 30000) {
+					restartPcAtTimeoutEnd = true;
+				}
 			}
 			
 			if (!(getTimeoutOwner().equals(newOwner) && isOfficialReview() == review)) {
 				//allow to undo timeout type selection separately
 				saveClockState(); 
 
+				if (team != null) {
+					restartPcAtTimeoutEnd = false;
+				}
+				
 				setTimeoutOwner(newOwner);
 				setOfficialReview(review);
 
@@ -362,7 +377,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		for (TeamModel team : getTeamModels()) {
 			teamStates.put(team.getId(), team.getState());
 		}
-		undoStack.push(new StateSet(timeoutOwner, inOvertime, inPeriod, clockStates, teamStates));
+		undoStack.push(new StateSet(timeoutOwner, inOvertime, restartPcAtTimeoutEnd, inPeriod, clockStates, teamStates));
 	}
 	
 	public void undoClockChange() {
@@ -525,6 +540,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected Object timeoutOwnerLock = new Object();
 	protected boolean officialReview;
 	protected Object officialReviewLock = new Object();
+	protected boolean restartPcAtTimeoutEnd = false;
 
 	protected boolean inPeriod = false;
 	protected Object inPeriodLock = new Object();
