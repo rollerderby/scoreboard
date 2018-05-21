@@ -36,9 +36,7 @@ public interface ScoreBoardModel extends ScoreBoard
 	public void timeout(TeamModel team);
 	public void timeout(TeamModel team, boolean review);
 
-	public void unStartJam();
-	public void unStopJam();
-	public void unTimeout();
+	public void undoClockChange();
 
 	public void setRuleset(String id);
 	public SettingsModel getSettingsModel();

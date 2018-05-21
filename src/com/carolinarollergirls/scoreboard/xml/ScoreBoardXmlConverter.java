@@ -8,14 +8,28 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import org.jdom.*;
-import org.jdom.output.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Policy;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.PolicyModel;
+import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class ScoreBoardXmlConverter
 {
@@ -32,11 +46,9 @@ public class ScoreBoardXmlConverter
 
 		editor.setElement(sb, "Reset", null, "");
 		editor.setElement(sb, "StartJam", null, "");
-		editor.setElement(sb, "UnStartJam", null, "");
 		editor.setElement(sb, "StopJam", null, "");
-		editor.setElement(sb, "UnStopJam", null, "");
 		editor.setElement(sb, "Timeout", null, "");
-		editor.setElement(sb, "UnTimeout", null, "");
+		editor.setElement(sb, "ClockUndo", null, "");
 		editor.setElement(sb, "StartOvertime", null, "");
 
 		editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner());
@@ -79,9 +91,7 @@ public class ScoreBoardXmlConverter
 		Element e = editor.setElement(sb, "Clock", c.getId());
 
 		editor.setElement(e, "Start", null, "");
-		editor.setElement(e, "UnStart", null, "");
 		editor.setElement(e, "Stop", null, "");
-		editor.setElement(e, "UnStop", null, "");
 		editor.setElement(e, "ResetTime", null, "");
 
 		editor.setElement(e, Clock.EVENT_NAME, null, c.getName());
@@ -201,7 +211,7 @@ public class ScoreBoardXmlConverter
 	/* XML to ScoreBoard methods */
 
 	public void processDocument(ScoreBoardModel scoreBoardModel, Document document) {
-		Iterator children = document.getRootElement().getChildren().iterator();
+		Iterator<?> children = document.getRootElement().getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			if (element.getName().equals("ScoreBoard"))
@@ -210,7 +220,7 @@ public class ScoreBoardXmlConverter
 	}
 
 	public void processScoreBoard(ScoreBoardModel scoreBoardModel, Element scoreBoard) {
-		Iterator children = scoreBoard.getChildren().iterator();
+		Iterator<?> children = scoreBoard.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -249,12 +259,8 @@ public class ScoreBoardXmlConverter
 						scoreBoardModel.stopJam();
 					else if (name.equals("Timeout"))
 						scoreBoardModel.timeout();
-					else if (name.equals("UnStartJam"))
-						scoreBoardModel.unStartJam();
-					else if (name.equals("UnStopJam"))
-						scoreBoardModel.unStopJam();
-					else if (name.equals("UnTimeout"))
-						scoreBoardModel.unTimeout();
+					else if (name.equals("ClockUndo"))
+						scoreBoardModel.undoClockChange();
 					else if (name.equals("StartOvertime"))
 						scoreBoardModel.startOvertime();
 				}
@@ -265,7 +271,7 @@ public class ScoreBoardXmlConverter
 
 	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
 		SettingsModel sm = scoreBoardModel.getSettingsModel();
-		Iterator children = settings.getChildren().iterator();
+		Iterator<?> children = settings.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -284,10 +290,8 @@ public class ScoreBoardXmlConverter
 		ClockModel clockModel = scoreBoardModel.getClockModel(id);
 		boolean requestStart = false;
 		boolean requestStop = false;
-		boolean requestUnStart = false;
-		boolean requestUnStop = false;
 
-		Iterator children = clock.getChildren().iterator();
+		Iterator<?> children = clock.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -304,10 +308,6 @@ public class ScoreBoardXmlConverter
 					requestStart = true;
 				else if (name.equals("Stop") && Boolean.parseBoolean(value))
 					requestStop = true;
-				else if (name.equals("UnStart") && Boolean.parseBoolean(value))
-					requestUnStart = true;
-				else if (name.equals("UnStop") && Boolean.parseBoolean(value))
-					requestUnStop = true;
 				else if (name.equals("ResetTime") && Boolean.parseBoolean(value))
 					clockModel.resetTime();
 				else if (name.equals(Clock.EVENT_NAME))
@@ -346,20 +346,17 @@ public class ScoreBoardXmlConverter
 		// Process start/stops at the end to allow setting of options (direction/min/max/etc) on load
 		if (requestStart) clockModel.start();
 		if (requestStop) clockModel.stop();
-		if (requestUnStart) clockModel.unstart();
-		if (requestUnStop) clockModel.unstop();
 	}
 
 	public void processTeam(ScoreBoardModel scoreBoardModel, Element team) {
 		String id = team.getAttributeValue("Id");
 		TeamModel teamModel = scoreBoardModel.getTeamModel(id);
 
-		Iterator children = team.getChildren().iterator();
+		Iterator<?> children = team.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
 				String name = element.getName();
-				String eId = element.getAttributeValue("Id");
 				String value = editor.getText(element);
 
 				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
@@ -427,7 +424,7 @@ public class ScoreBoardXmlConverter
 			alternateNameModel = teamModel.getAlternateNameModel(id);
 		}
 
-		Iterator children = alternateName.getChildren().iterator();
+		Iterator<?> children = alternateName.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -457,7 +454,7 @@ public class ScoreBoardXmlConverter
 			colorModel = teamModel.getColorModel(id);
 		}
 
-		Iterator children = color.getChildren().iterator();
+		Iterator<?> children = color.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -477,7 +474,7 @@ public class ScoreBoardXmlConverter
 		String id = position.getAttributeValue("Id");
 		PositionModel positionModel = teamModel.getPositionModel(id);
 
-		Iterator children = position.getChildren().iterator();
+		Iterator<?> children = position.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -501,7 +498,7 @@ public class ScoreBoardXmlConverter
 		String id = policy.getAttributeValue("Id");
 		PolicyModel policyModel = scoreBoardModel.getPolicyModel(id);
 
-		Iterator children = policy.getChildren().iterator();
+		Iterator<?> children = policy.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element= (Element)children.next();
 			try {
@@ -523,7 +520,7 @@ public class ScoreBoardXmlConverter
 		String id = parameter.getAttributeValue("Id");
 		PolicyModel.ParameterModel parameterModel = policyModel.getParameterModel(id);
 
-		Iterator children = parameter.getChildren().iterator();
+		Iterator<?> children = parameter.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -561,14 +558,12 @@ public class ScoreBoardXmlConverter
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 
-		Iterator children = skater.getChildren().iterator();
+		Iterator<?> children = skater.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
 				String name = element.getName();
 				String value = editor.getText(element);
-
-				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
 
 				if (null == value)
 					continue;

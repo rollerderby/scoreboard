@@ -8,15 +8,35 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Deque;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
-import java.io.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Policy;
+import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.PolicyModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.policy.OvertimeLineupTimePolicy;
+import com.carolinarollergirls.scoreboard.states.ClockState;
+import com.carolinarollergirls.scoreboard.states.StateSet;
+import com.carolinarollergirls.scoreboard.states.TeamState;
+import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
@@ -55,13 +75,13 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }
-	public Class getProviderClass() { return ScoreBoard.class; }
+	public Class<?> getProviderClass() { return ScoreBoard.class; }
 	public String getProviderId() { return ""; }
 
 	public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
 	protected void loadPolicies() {
-		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
+		Enumeration<?> keys = ScoreBoardManager.getProperties().propertyNames();
 
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement().toString();
@@ -95,10 +115,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		while (p.hasNext())
 			p.next().reset();
 
-		periodClockWasRunning = false;
-		jamClockWasRunning = false;
-		lineupClockWasRunning = false;
-		timeoutClockWasRunning = false;
 		setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
 		setOfficialReview(false);
 		setInPeriod(false);
@@ -183,18 +199,18 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			if (!getClock(Clock.ID_JAM).isRunning()) {
 				requestBatchStart();
+				saveClockState();
 				ClockModel pc = getClockModel(Clock.ID_PERIOD);
 				ClockModel jc = getClockModel(Clock.ID_JAM);
 				ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 				ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
-				lineupClockWasRunning = getClockModel(Clock.ID_LINEUP).isRunning();
 
 				// If intermission clock has almost run down, end intermission
-				if (ic.isRunning() && Math.abs(ic.getTime() - (ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime())) < 60000) {
+				if (ic.isRunning() && Math.abs(ic.getTimeRemaining()) < 60000) {
 					ic.setTime(ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime());
 				}
 				// If Period Clock is at end, start a new period
-				if (pc.getTime() == (pc.isCountDirectionDown() ? pc.getMinimumTime() : pc.getMaximumTime())) {
+				if (pc.isTimeAtEnd()) {
 					pc.changeNumber(1);
 					pc.resetTime();
 					jc.setNumber(jc.getMinimumNumber());
@@ -204,16 +220,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 					getTeamModel("1").setRetainedOfficialReview(false);
 					getTeamModel("2").setRetainedOfficialReview(false);
 				}
-				periodClockWasRunning = pc.isRunning();
 				pc.start();
 
 				// If Jam Clock is not at start (2:00), increment number and reset time
-				if (jc.getTime() != (jc.isCountDirectionDown() ? jc.getMaximumTime() : jc.getMinimumTime()))
+				if (!jc.isTimeAtStart())
 					jc.changeNumber(1);
 				jc.resetTime();
 				jc.start();
 
-				timeoutClockWasRunning = tc.isRunning();
 				tc.stop();
 
 				getTeamModel("1").startJam();
@@ -237,6 +251,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	private void _stopJam() {
 		synchronized (runLock) {
+			saveClockState();
 			ScoreBoardManager.gameSnapshot(true);
 
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
@@ -257,11 +272,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	private void _stopTimeout() {
 		synchronized (runLock) {
+			saveClockState();
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
-			lastTimeoutOwner = getTimeoutOwner();
-			wasOfficialReview = isOfficialReview();
-			timeoutClockWasRunning = true;
 			
 			requestBatchStart();
 			lc.resetTime();
@@ -272,16 +285,16 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	private void _startLineup() {
 		synchronized (runLock) {
+			saveClockState();
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
 			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
+
+			requestBatchStart();
 			// If intermission clock has almost run down, set it to end, so end of intermission policies are run
-			if (ic.isRunning() && Math.abs(ic.getTime() - (ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime())) < 60000) {
+			if (ic.isRunning() && Math.abs(ic.getTimeRemaining()) < 60000) {
 				ic.setTime(ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime());
 			}
 
-			timeoutClockWasRunning = false;
-
-			requestBatchStart();
 			lc.resetTime();
 			lc.start();
 			requestBatchEnd();
@@ -298,117 +311,86 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel jc = getClockModel(Clock.ID_JAM);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
 
-			if (null==team && tc.isRunning() && getTimeoutOwner() == "") {
-				setTimeoutOwner("O");
-			} else {
-				setTimeoutOwner(null==team?"":team.getId());
+			String newOwner = (null==team?(tc.isRunning()?"O":""):team.getId());
+			
+			if (jc.isRunning()) {
+				_stopJam();
 			}
-			setOfficialReview(review);
-
-			TeamModel t1 = getTeamModel("1");
-			TeamModel t2 = getTeamModel("2");
-			if (null==team) {
-				t1.setInTimeout(false);
-				t1.setInOfficialReview(false);
-				t2.setInTimeout(false);
-				t2.setInOfficialReview(false);
-			} else if (t1.getId().equals(team.getId())) {
-				t1.setInTimeout(!review);
-				t1.setInOfficialReview(review);
-				t2.setInTimeout(false);
-				t2.setInOfficialReview(false);
-			} else {
-				t1.setInTimeout(false);
-				t1.setInOfficialReview(false);
-				t2.setInTimeout(!review);
-				t2.setInOfficialReview(review);
-			}
-
+			
 			if (!tc.isRunning()) {
-				// Make sure period clock, jam clock, and lineup clock are stopped
-				jamClockWasRunning = jc.isRunning();
-				lineupClockWasRunning = lc.isRunning();
+				saveClockState();
+				setTimeoutOwner("");
 
 				pc.stop();
-				jc.stop();
 				lc.stop();
 
 				tc.resetTime();
 				tc.start();
-
-				if (jamClockWasRunning) {
-					getTeamModel("1").stopJam();
-					getTeamModel("2").stopJam();
-				}
 			}
+			
+			if (!(getTimeoutOwner().equals(newOwner) && isOfficialReview() == review)) {
+				//allow to undo timeout type selection separately
+				saveClockState(); 
+
+				setTimeoutOwner(newOwner);
+				setOfficialReview(review);
+
+				TeamModel t1 = getTeamModel("1");
+				TeamModel t2 = getTeamModel("2");
+				t1.setInTimeout(t1.getId().equals(newOwner) && !review);
+				t1.setInOfficialReview(t1.getId().equals(newOwner) && review);
+				t2.setInTimeout(t2.getId().equals(newOwner) && !review);
+				t2.setInOfficialReview(t2.getId().equals(newOwner) && review);
+			}
+			
 			requestBatchEnd();
 
 			ScoreBoardManager.gameSnapshot();
 		}
 	}
-
-	public void unStartJam() {
-		synchronized (runLock) {
-			if (!getClock(Clock.ID_JAM).isRunning())
-				return;
-
-			requestBatchStart();
-			if (lineupClockWasRunning)
-				getClockModel(Clock.ID_LINEUP).unstop();
-			if (timeoutClockWasRunning) {
-				setTimeoutOwner(lastTimeoutOwner);
-				setOfficialReview(wasOfficialReview);
-				getClockModel(Clock.ID_TIMEOUT).unstop();
-			}
-			if (!periodClockWasRunning)
-				getClockModel(Clock.ID_PERIOD).unstart();
-			getClockModel(Clock.ID_JAM).unstart();
-			getTeamModel("1").unStartJam();
-			getTeamModel("2").unStartJam();
-			requestBatchEnd();
-
-			ScoreBoardManager.gameSnapshot();
+	
+	private void saveClockState() {
+		while (undoStack.size() >= 20) {
+			//keep the size of the stack limited
+			undoStack.remove();
 		}
-	}
-	public void unStopJam() {
-		synchronized (runLock) {
-			if (getClock(Clock.ID_JAM).isRunning() || !getClockModel(Clock.ID_LINEUP).isRunning())
-				return;
-
-			requestBatchStart();
-			getClockModel(Clock.ID_LINEUP).stop();
-			if (getClock(Clock.ID_PERIOD).isRunning()) {
-				getTeamModel("1").unStopJam();
-				getTeamModel("2").unStopJam();
-				getClockModel(Clock.ID_JAM).unstop();
-			} else if (timeoutClockWasRunning) {
-				setTimeoutOwner(lastTimeoutOwner);
-				setOfficialReview(wasOfficialReview);
-				getClockModel(Clock.ID_TIMEOUT).unstop();
-			}
-			requestBatchEnd();
-
-			ScoreBoardManager.gameSnapshot();
+		HashMap<String, ClockState> clockStates = new HashMap<String, ClockState>();
+		for (ClockModel clock : getClockModels()) {
+			clockStates.put(clock.getId(), clock.getState());
 		}
+		HashMap<String, TeamState> teamStates = new HashMap<String, TeamState>();
+		for (TeamModel team : getTeamModels()) {
+			teamStates.put(team.getId(), team.getState());
+		}
+		undoStack.push(new StateSet(timeoutOwner, inOvertime, inPeriod, clockStates, teamStates));
 	}
-	public void unTimeout() {
+	
+	public void undoClockChange() {
 		synchronized (runLock) {
-			if (!getClock(Clock.ID_TIMEOUT).isRunning())
-				return;
-
+			StateSet savedState = undoStack.pop();
 			requestBatchStart();
-			if (lineupClockWasRunning)
-				getClockModel(Clock.ID_LINEUP).unstop();
-			if (jamClockWasRunning) {
-				getClockModel(Clock.ID_JAM).unstop();
-				getTeamModel("1").unStopJam();
-				getTeamModel("2").unStopJam();
+			setTimeoutOwner(savedState.getTimeoutOwner());
+			setOfficialReview(savedState.isOfficialReview());
+			setInPeriod(savedState.inPeriod());
+			for (TeamState ts : savedState.getTeamStates().values()) {
+				getTeamModel(ts.getId()).undo(ts);
 			}
-			getClockModel(Clock.ID_PERIOD).unstop();
-			getClockModel(Clock.ID_TIMEOUT).unstart();
+			Collection<ClockState> clocks = savedState.getClockStates().values();
+			for (ClockState cs : clocks) {
+				//unstart clocks before unstop, as unstop may cause secondary effects
+				if (!cs.isRunning())
+					getClockModel(cs.getId()).undo(cs);
+			}
+			for (ClockState cs : clocks) {
+				//unstop period clock last as it can affect other running clocks
+				if (cs.isRunning() && !cs.getId().equals(Clock.ID_PERIOD))
+					getClockModel(cs.getId()).undo(cs);
+			}
+			ClockState pc = savedState.getClockState(Clock.ID_PERIOD);
+			if (pc.isRunning()) {
+				getClockModel(Clock.ID_PERIOD).undo(pc);
+			}
 			requestBatchEnd();
-
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -537,6 +519,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected HashMap<String,PolicyModel> policies = new HashMap<String,PolicyModel>();
 
 	protected Object runLock = new Object();
+	protected Deque<StateSet> undoStack = new ArrayDeque<StateSet>(20);
 
 	protected String timeoutOwner;
 	protected Object timeoutOwnerLock = new Object();
@@ -556,13 +539,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected Object rulesetLock = new Object();
 	protected DefaultSettingsModel settings = null;
 
-	protected boolean periodClockWasRunning = false;
-	protected boolean jamClockWasRunning = false;
-	protected boolean lineupClockWasRunning = false;
-	protected boolean timeoutClockWasRunning = false;
-	protected String lastTimeoutOwner = "";
-	protected boolean wasOfficialReview = false;
-
 	protected XmlScoreBoard xmlScoreBoard;
 
 	protected ScoreBoardListener periodStartListener = new ScoreBoardListener() {
@@ -576,10 +552,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				Clock p = getClock(Clock.ID_PERIOD);
 				Clock j = getClock(Clock.ID_JAM);
 				Clock t = getClock(Clock.ID_TIMEOUT);
-				if (event.getProvider() == j && !j.isRunning() && j.getTime() == j.getMinimumTime()) {
+				if (event.getProvider() == j && !j.isRunning() && j.isTimeAtEnd()) {
 					_stopJam();
 				}
-				if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning() && !t.isRunning())
+				if (isInPeriod() && !p.isRunning() && p.isTimeAtEnd() && !j.isRunning() && !t.isRunning())
 					setInPeriod(false);
 			}
 		};
