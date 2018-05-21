@@ -70,8 +70,8 @@ function initialize() {
 
 	WS.Register( 'Game.Period', function(k,v) { jamData(k,v); } );
 
-	WS.Register( 'Game.Team(1)', function(k,v) { teamData(1, k,v); } );
-	WS.Register( 'Game.Team(2)', function(k,v) { teamData(2, k,v); } );
+	WS.Register( 'ScoreBoard.Team(1)', function(k,v) { teamData(1, k,v); } );
+	WS.Register( 'ScoreBoard.Team(2)', function(k,v) { teamData(2, k,v); } );
 
 	WS.Register( 'ScoreBoard.Clock(Period).Number', function(k,v) {
 		if(v == 2) { $('.PPJBox .Team .Period2').show(); } else { $('.PPJBox .Team .Period2').hide(); }
@@ -358,8 +358,8 @@ function pointsPerJamColumnWidths() {
 	wid = parseInt( $('.PPJBox').innerWidth() );
 	newwidth = parseInt(wid / nel) - 3;
 	$('.ColumnWidth').innerWidth(newwidth);
-	$('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['Game.Team(1).Color(overlay_bg)']);
-	$('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['Game.Team(2).Color(overlay_bg)']);
+	$('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(1).Color(overlay_bg)']);
+	$('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(2).Color(overlay_bg)']);
 }
 
 function clockType(k,v) {
