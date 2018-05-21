@@ -50,6 +50,22 @@ public class Ruleset {
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Intermission",  "", "Intermission"));
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Official",      "", "Final Score"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Time",          "", "15:00"));
+			
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP,       "Time",          "", "00:30"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP,       "OvertimeTime",  "", "01:00"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP,       "AutoStart",     "", false, "Auto Start", "Stay in Lineup"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP,       "AutoStartType", "", false, "Auto Start Jam", "Auto Start Timeout"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP,       "BufferTime",    "", "00:00"));
+
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM,          "Number",        "", true, "Reset Each Period", "Continue Counting"));
+
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "ClockAfter",    "", true, "Show Lineup Clock", "Show Timeout Clock"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "UnspecifiedTO", "", true, "Stop Period Clock", "Keep Period Clock Running"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "OfficialTO",    "", true, "Stop Period Clock", "Keep Period Clock Running"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "TeamTO",        "", true, "Stop Period Clock", "Keep Period Clock Running"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "OR",            "", true, "Stop Period Clock", "Keep Period Clock Running"));
+			
 			newRule( new StringRule(false, "ScoreBoard", null,      "BackgroundStyle", "", ""));
 			newRule( new StringRule(false, "ScoreBoard", null,      "BoxStyle",        "", "box_flat"));
 			newRule( new StringRule(false, "ScoreBoard", null,      "CurrentView",     "", "scoreboard"));
@@ -75,7 +91,6 @@ public class Ruleset {
 			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Direction",     "", true, "Count Down", "Count Up"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MaximumTime",   "", "2:00"));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Number",        "", true, "Reset Each Period", "Continue Counting"));
 
 			newRule( new StringRule(false, "Clock", Clock.ID_LINEUP,       "Name",          "", Clock.ID_LINEUP));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MinimumNumber", "", 1));
@@ -83,11 +98,6 @@ public class Ruleset {
 			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "Direction",     "", false, "Count Down", "Count Up"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MaximumTime",   "", "60:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "Time",          "", "00:30"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "OvertimeTime",  "", "01:00"));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "AutoStart",     "", false, "Auto Start", "Stay in Lineup"));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "AutoStartType", "", false, "Auto Start Jam", "Auto Start Timeout"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "BufferTime",    "", "00:00"));
 
 			newRule( new StringRule(false, "Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));
@@ -102,7 +112,6 @@ public class Ruleset {
 			newRule(new BooleanRule(false, "Clock", Clock.ID_INTERMISSION, "Direction",     "", true, "Count Down", "Count Up"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "Time",          "", "15:00"));
 			
 			newRule(new BooleanRule(false, "Clock", null,                  "Sync",          "", true, "Sync Clocks", "Don't Sync Clocks"));
 
