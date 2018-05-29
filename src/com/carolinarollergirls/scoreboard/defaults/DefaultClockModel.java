@@ -185,6 +185,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		if (doStop)
 			stop();
 	}
+	public void elapseTime(long amount) {
+		changeTime(isCountDirectionDown()?-amount:amount);
+	}
 	public void resetTime() {
 		if (isCountDirectionDown())
 			setTime(getMaximumTime());
@@ -277,6 +280,11 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			updateClockTimerTask.addClock(this, quickAdd);
 		}
 	}
+	public void startNew() {
+		changeNumber(1);
+		resetTime();
+		start();
+	}
 	public void stop() {
 		synchronized (timeLock) {
 			if (!isRunning())
@@ -299,7 +307,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			setTime(saveState.getTime());
 			if (saveState.isRunning()) {
 				long change = updateClockTimerTask.getCurrentTime() - saveState.getLastTime();
-				changeTime(countDown?-change:change);
+				elapseTime(change);
 				start(true);				
 			}
 		}

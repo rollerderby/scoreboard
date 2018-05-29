@@ -22,6 +22,7 @@ public interface ClockModel extends Clock
 	public void reset();
 
 	public void start();
+	public void startNew();
 	public void stop();
 
 	public void undo(ClockState saveState);
@@ -37,6 +38,7 @@ public interface ClockModel extends Clock
 
 	public void setTime(long ms);
 	public void changeTime(long ms);
+	public void elapseTime(long ms);
 	public void resetTime();
 	public void setMinimumTime(long ms);
 	public void changeMinimumTime(long ms);

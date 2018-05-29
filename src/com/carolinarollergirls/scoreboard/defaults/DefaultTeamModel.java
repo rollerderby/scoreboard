@@ -57,9 +57,13 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public void applyRule(String rule, Object value) {
 		if (rule.equals("Team.Timeouts"))
-			setTimeouts((Integer)value);
+			maximumTimeouts = (Integer)value;
+		else if (rule.equals("Team.TimeoutsPer"))
+			timeoutsPerPeriod = (Boolean)value;
 		else if (rule.equals("Team.OfficialReviews"))
-			setOfficialReviews((Integer)value);
+			maximumOfficialReviews = (Integer)value;
+		else if (rule.equals("Team.OfficialReviewsPer"))
+			officialReviewsPerPeriod = (Boolean)value;
 		else if (rule.equals("Team." + id + ".Name"))
 			setName((String)value);
 	}
@@ -84,6 +88,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		setInTimeout(false);
 		setInOfficialReview(false);
 		setRetainedOfficialReview(false);
+		resetTimeouts(true);
 
 		removeAlternateNameModels();
 		removeColorModels();
@@ -141,8 +146,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			unBenchSkaters();
 		}
 		in_jam = savedState.inJam();
-		in_timeout = savedState.inTimeout();
-		in_official_review = savedState.inOfficialReview();
+		setInTimeout(savedState.inTimeout());
+		setInOfficialReview(savedState.inOfficialReview());
 		setScore(savedState.getScore());
 		setLastScore(savedState.getLastScore());
 		setTimeouts(savedState.getTimeouts());

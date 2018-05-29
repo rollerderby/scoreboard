@@ -402,7 +402,7 @@ function createPeriodEndTimeoutDialog(td) {
 
 function createOvertimeDialog() {
 	var dialog = $("<div>");
-	$("<span>").text("Overtime can only be started at the end of Period ").appendTo(dialog);
+	$("<span>").text("Note: Overtime can only be started at the end of Period ").appendTo(dialog);
 	$sb("ScoreBoard.Clock(Period).MaximumNumber").$sbElement("<span>").appendTo(dialog);
 	$("<button>").addClass("StartOvertime").text("Start Overtime Lineup clock").appendTo(dialog)
 		.click(function() {
@@ -422,21 +422,33 @@ function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
 	var controlsTr = createRowTable(4,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
 
-	$sb("ScoreBoard.StartJam").$sbControl("<button>").text("Start Jam").val("true")
-		.attr("id", "StartJam").addClass("KeyControl").button()
-		.appendTo(controlsTr.children("td:eq(0)"));
+	var jamStartButton = $sb("ScoreBoard.StartJam").$sbControl("<button>").html("<span class=\"Label\">Start Jam</span>").val("true")
+		.attr("id", "StartJam").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.StartLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		jamStartButton.find("span.Label").html(val);
+		});
+	jamStartButton.appendTo(controlsTr.children("td:eq(0)"));
 
-	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam/TO").val("true")
-		.attr("id", "StopJam").addClass("KeyControl").button()
-		.appendTo(controlsTr.children("td:eq(1)"));
+	var jamStopButton = $sb("ScoreBoard.StopJam").$sbControl("<button>").html("<span class=\"Label\">Lineup</span>").val("true")
+		.attr("id", "StopJam").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.StopLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		jamStopButton.find("span.Label").html(val);
+		});
+	jamStopButton.appendTo(controlsTr.children("td:eq(1)"));
 
-	$sb("ScoreBoard.Timeout").$sbControl("<button>").text("Timeout").val("true")
-		.attr("id", "Timeout").addClass("KeyControl").button()
-		.appendTo(controlsTr.children("td:eq(2)"));
+	var timeoutButton = $sb("ScoreBoard.Timeout").$sbControl("<button>").html("<span class=\"Label\">Timeout</span>").val("true")
+		.attr("id", "Timeout").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.TimeoutLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		timeoutButton.find("span.Label").html(val);
+		});
+	timeoutButton.appendTo(controlsTr.children("td:eq(2)"));
 
-	$sb("ScoreBoard.ClockUndo").$sbControl("<button>").text("Undo").val("true")
-		.attr("id", "ClockUndo").addClass("KeyControl").button()
-		.appendTo(controlsTr.children("td:eq(3)"));
+	var undoButton = $sb("ScoreBoard.ClockUndo").$sbControl("<button>").html("<span class=\"Label\"></span>").val("true")
+		.attr("id", "ClockUndo").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		undoButton.find("span.Label").html(val);
+		});
+	undoButton.appendTo(controlsTr.children("td:eq(3)"));
 
 	return table;
 }
@@ -643,7 +655,7 @@ function createTeamTable() {
 		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
 
 		var timeout = sbTeam.$sb("Timeout");
-		var timeoutButton = timeout.$sbControl("<button>").text("Timeout").val("true")
+		var timeoutButton = timeout.$sbControl("<button>").text("Team TO").val("true")
 			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button();
 		var timeoutHighlight = function() {
 			var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == team;
@@ -1114,7 +1126,7 @@ function createIntermissionControlDialog() {
 		{ id: "ScoreBoard.Intermission.Intermission", display: "Intermission", type: "text" },
 		{ id: "ScoreBoard.Intermission.Unofficial", display: "Unofficial Score", type: "text" },
 		{ id: "ScoreBoard.Intermission.Official", display: "Official Score", type: "text" },
-		{ id: "Clock.Intermission.Time", display: "Time", type: "time" }
+		{ id: "ScoreBoard.Intermission.Time", display: "Time", type: "time" }
 	];
 	$.each( fields, function(i, field) {
 		var path = "ScoreBoard.Settings.Setting(" + field.id + ")";
