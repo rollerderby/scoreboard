@@ -15,6 +15,8 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Ruleset;
@@ -55,6 +57,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		Ruleset.registerRule(settings, SETTING_STOP_CLOCK_TTO);
 		Ruleset.registerRule(settings, SETTING_STOP_CLOCK_OR);
 		Ruleset.registerRule(settings, SETTING_STOP_CLOCK_DURATION);
+		Ruleset.registerRule(settings, SETTING_UNDO_LIMIT);
+		Ruleset.registerRule(settings, SETTING_UNDO_STACK_SIZE);
 
 		settings.addRuleMapping("ScoreBoard.BackgroundStyle", new String[] { "ScoreBoard.Preview_BackgroundStyle", "ScoreBoard.View_BackgroundStyle" });
 		settings.addRuleMapping("ScoreBoard.BoxStyle",        new String[] { "ScoreBoard.Preview_BoxStyle",        "ScoreBoard.View_BoxStyle" });
@@ -195,20 +199,23 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			if (!getClock(Clock.ID_JAM).isRunning()) {
 				requestBatchStart();
+				ClockModel pc = getClockModel(Clock.ID_PERIOD);
+				ClockModel jc = getClockModel(Clock.ID_JAM);
+				ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+				ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
+				
+				if (tc.isRunning()) {
+					_stopTimeout();
+				}
+				
 				saveClockState(LABEL_UN_START);
 				setLabel(BUTTON_START, LABEL_EMPTY);
 				setLabel(BUTTON_STOP, LABEL_STOP_JAM);
 				setLabel(BUTTON_TIMEOUT, LABEL_TIMEOUT);
 
-				ClockModel pc = getClockModel(Clock.ID_PERIOD);
-				ClockModel jc = getClockModel(Clock.ID_JAM);
-				ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
-				ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
-
 				ic.stop();
 				pc.start();
 				jc.startNew();
-				tc.stop();
 
 				for (TeamModel tm : teams.values()) {
 					tm.startJam();
@@ -375,7 +382,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	
 	protected void saveClockState(String type) {
-		while (undoStack.size() >= 20) {
+		if (undoLabelTimer != null) {
+			//If the last change can still be cancelled, stop the task that resets the label.
+			undoLabelTimer.cancel();
+		}
+		while (undoStack.size() >= settings.getLong(SETTING_UNDO_STACK_SIZE)) {
 			//keep the size of the stack limited
 			undoStack.removeLast();
 		}
@@ -391,47 +402,74 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				getLabel(BUTTON_TIMEOUT), timeoutOwner, officialReview, inOvertime,
 				restartPcAtTimeoutEnd, inPeriod, clockStates, teamStates));
 		setLabel(BUTTON_UNDO, type);
+
+		if (type != LABEL_UN_TYPE) {
+			resetUndoLabelIn(settings.getLong(SETTING_UNDO_LIMIT));
+		}
 	}
 	
 	public void undoClockChange() {
 		synchronized (runLock) {
+			if (undoLabelTimer != null) {
+				undoLabelTimer.cancel();
+			}
 			requestBatchStart();
 			StateSet savedState = undoStack.pop();
-			setLabel(BUTTON_START, savedState.getStartType());
-			setLabel(BUTTON_STOP, savedState.getStopType());
-			setLabel(BUTTON_TIMEOUT, savedState.getTimeoutType());
-			setTimeoutOwner(savedState.getTimeoutOwner());
-			setOfficialReview(savedState.isOfficialReview());
-			setInOvertime(savedState.inOvertime());
-			restartPcAtTimeoutEnd = savedState.restartPc();
-			setInPeriod(savedState.inPeriod());
-			for (TeamState ts : savedState.getTeamStates().values()) {
-				getTeamModel(ts.getId()).undo(ts);
-			}
-			Collection<ClockState> clocks = savedState.getClockStates().values();
-			for (ClockState cs : clocks) {
-				//unstart clocks before unstop, as unstop may cause secondary effects
-				// from time having ticked away
-				if (!cs.isRunning())
-					getClockModel(cs.getId()).undo(cs);
-			}
-			for (ClockState cs : clocks) {
-				//unstop period clock last in order to avoid ending the period 
-				// even though we are in a Jam
-				if (cs.isRunning() && !cs.getId().equals(Clock.ID_PERIOD))
-					getClockModel(cs.getId()).undo(cs);
-			}
-			ClockState pc = savedState.getClockState(Clock.ID_PERIOD);
-			if (pc.isRunning()) {
-				getClockModel(Clock.ID_PERIOD).undo(pc);
+			if (System.currentTimeMillis() - savedState.getTimestamp() < settings.getLong(SETTING_UNDO_LIMIT)
+					|| savedState.getType() == LABEL_UN_TYPE) {
+				setLabel(BUTTON_START, savedState.getStartType());
+				setLabel(BUTTON_STOP, savedState.getStopType());
+				setLabel(BUTTON_TIMEOUT, savedState.getTimeoutType());
+				setTimeoutOwner(savedState.getTimeoutOwner());
+				setOfficialReview(savedState.isOfficialReview());
+				setInOvertime(savedState.inOvertime());
+				restartPcAtTimeoutEnd = savedState.restartPc();
+				setInPeriod(savedState.inPeriod());
+				for (TeamState ts : savedState.getTeamStates().values()) {
+					getTeamModel(ts.getId()).undo(ts);
+				}
+				Collection<ClockState> clocks = savedState.getClockStates().values();
+				for (ClockState cs : clocks) {
+					//unstart clocks before unstop, as unstop may cause secondary effects
+					// from time having ticked away
+					if (!cs.isRunning())
+						getClockModel(cs.getId()).undo(cs);
+				}
+				for (ClockState cs : clocks) {
+					//unstop period clock last in order to avoid ending the period 
+					// even though we are in a Jam
+					if (cs.isRunning() && !cs.getId().equals(Clock.ID_PERIOD))
+						getClockModel(cs.getId()).undo(cs);
+				}
+				ClockState pc = savedState.getClockState(Clock.ID_PERIOD);
+				if (pc.isRunning()) {
+					getClockModel(Clock.ID_PERIOD).undo(pc);
+				}
 			}
 			requestBatchEnd();
-			if (undoStack.isEmpty()) {
-				setLabel(BUTTON_UNDO, LABEL_EMPTY);
-			} else {
-				setLabel(BUTTON_UNDO, undoStack.peek().getType());
+			if (!undoStack.isEmpty()) {
+				StateSet previous = undoStack.peek();
+				long availableFor = settings.getLong(SETTING_UNDO_LIMIT) - (System.currentTimeMillis() - undoStack.peek().getTimestamp());
+				if (availableFor > 0) {
+					setLabel(BUTTON_UNDO, previous.getType());
+					resetUndoLabelIn(availableFor);
+				} else if (previous.getType() == LABEL_UN_TYPE) {
+					setLabel(BUTTON_UNDO, LABEL_UN_TYPE);
+				} else {
+					setLabel(BUTTON_UNDO, LABEL_EMPTY);
+				} 
 			}
 		}
+	}
+	
+	protected void resetUndoLabelIn(long delay) {
+		undoLabelTimer = new Timer();
+		undoLabelTimer.schedule(new TimerTask(){
+			@Override
+			public void run() {
+				setLabel(BUTTON_UNDO, LABEL_EMPTY);
+			}
+		}, delay);		
 	}
 	
 	protected String getLabel(String id) {
@@ -533,7 +571,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected HashMap<String,TeamModel> teams = new HashMap<String,TeamModel>();
 
 	protected Object runLock = new Object();
-	protected Deque<StateSet> undoStack = new ArrayDeque<StateSet>(20);
+	protected Deque<StateSet> undoStack = new ArrayDeque<StateSet>();
+	protected Timer undoLabelTimer = null;
 
 	protected String timeoutOwner;
 	protected Object timeoutOwnerLock = new Object();
@@ -703,6 +742,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String SETTING_AUTOSTART = "ScoreBoard." + Clock.ID_LINEUP + ".AutoStart";
 	public static final String SETTING_AUTOSTART_TYPE = "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartType";
 	public static final String SETTING_AUTOSTART_BUFFER_TIME = "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBufferTime";
+	public static final String SETTING_UNDO_LIMIT = "Clock.UndoLimit";
+	public static final String SETTING_UNDO_STACK_SIZE = "Clock.UndoStackSize";
 	
 	public static final String BUTTON_START = "ScoreBoard.Button.StartLabel";
 	public static final String BUTTON_STOP = "ScoreBoard.Button.StopLabel";

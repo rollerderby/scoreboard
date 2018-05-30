@@ -6,7 +6,8 @@ public class StateSet {
 	public StateSet(String type, String startType, String stopType, String timeoutType,
 			String timeoutOwner, boolean isOfficialReview, boolean inOvertime, boolean inPeriod, boolean restartPc,
 			HashMap<String, ClockState> clockStates, HashMap<String, TeamState> teamStates) {
-		
+
+		this.timestamp = System.currentTimeMillis();
 		this.type = type;
 		this.startType = startType;
 		this.stopType = stopType;
@@ -19,7 +20,8 @@ public class StateSet {
 		this.clockStates = clockStates;
 		this.teamStates = teamStates;
 	}
-	
+
+	public long getTimestamp() { return timestamp; }
 	public String getType() { return type; }
 	public String getStartType() { return startType; }
 	public String getStopType() { return stopType; }
@@ -34,6 +36,7 @@ public class StateSet {
 	public ClockState getClockState(String clock) { return clockStates.get(clock); }
 	public TeamState getTeamState(String team) { return teamStates.get(team); }
 	
+	protected long timestamp;
 	protected String type;
 	protected String startType;
 	protected String stopType;
