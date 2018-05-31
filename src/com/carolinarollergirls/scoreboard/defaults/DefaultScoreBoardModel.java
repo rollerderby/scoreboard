@@ -196,19 +196,24 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public void startJam() {
+		requestBatchStart();
+		saveClockState(LABEL_UN_START);
+		
+		if (getClockModel(Clock.ID_TIMEOUT).isRunning()) {
+			_stopTimeout();
+		}
+		
+		_startJam();
+		requestBatchEnd();
+	}
+	private void _startJam() {
 		synchronized (runLock) {
 			if (!getClock(Clock.ID_JAM).isRunning()) {
 				requestBatchStart();
 				ClockModel pc = getClockModel(Clock.ID_PERIOD);
 				ClockModel jc = getClockModel(Clock.ID_JAM);
-				ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 				ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
 				
-				if (tc.isRunning()) {
-					_stopTimeout();
-				}
-				
-				saveClockState(LABEL_UN_START);
 				setLabel(BUTTON_START, LABEL_EMPTY);
 				setLabel(BUTTON_STOP, LABEL_STOP_JAM);
 				setLabel(BUTTON_TIMEOUT, LABEL_TIMEOUT);
@@ -228,13 +233,18 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public void stopJam() {
 		synchronized (runLock) {
+			requestBatchStart();
 			if (getClockModel(Clock.ID_JAM).isRunning()) {
+				saveClockState(LABEL_UN_STOP_JAM);
 				_stopJam();
 			} else if (getClockModel(Clock.ID_TIMEOUT).isRunning()) {
+				saveClockState(LABEL_UN_STOP_TO);
 				_stopTimeout();
 			} else if (!getClockModel(Clock.ID_LINEUP).isRunning()) {
+				saveClockState(LABEL_UN_LINEUP);
 				_startLineup();
 			}
+			requestBatchEnd();
 		}
 	}
 	private void _stopJam() {
@@ -242,7 +252,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ScoreBoardManager.gameSnapshot(true);
 
 			requestBatchStart();
-			saveClockState(LABEL_UN_STOP_JAM);
 			setLabel(BUTTON_START, LABEL_START);
 			setLabel(BUTTON_STOP, LABEL_EMPTY);
 
@@ -267,7 +276,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	private void _stopTimeout() {
 		synchronized (runLock) {
 			requestBatchStart();
-			saveClockState(LABEL_UN_TO_END);
 			setLabel(BUTTON_STOP, LABEL_EMPTY);
 			setLabel(BUTTON_TIMEOUT, LABEL_TIMEOUT);
 
@@ -291,7 +299,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	private void _startLineup() {
 		synchronized (runLock) {
 			requestBatchStart();
-			saveClockState(LABEL_UN_LINEUP);
 			setLabel(BUTTON_STOP, LABEL_EMPTY);
 
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
@@ -306,73 +313,81 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void timeout() { timeout(null); }
 	public void timeout(TeamModel team) { timeout(team, false); }
 	public void timeout(TeamModel team, boolean review) {
+		requestBatchStart();
+		if (!getClockModel(Clock.ID_TIMEOUT).isRunning()) {
+			saveClockState(LABEL_UN_TO);
+
+			if (getClockModel(Clock.ID_JAM).isRunning()) {
+				_stopJam();
+			}
+			
+			_startTimeout();
+		}
+
+		_setTimeoutType(team, review);
+		requestBatchEnd();
+	}
+	private void _startTimeout() {
 		synchronized (runLock) {
 			requestBatchStart();
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
-			ClockModel jc = getClockModel(Clock.ID_JAM);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+	
+			setLabel(BUTTON_START, LABEL_START);
+			setLabel(BUTTON_STOP, LABEL_STOP_TO);
+			setLabel(BUTTON_TIMEOUT, LABEL_OTO);
+			setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
+	
+			if (settings.getBoolean(SETTING_STOP_CLOCK_TO)) {
+				pc.stop();
+			}
+			lc.stop();
+			tc.startNew();
+			
+			if (pc.getTimeRemaining() + lc.getTimeElapsed() < 30000) {
+				//last Jam did end with less than 30s on the period clock. If this is just an OTO, restart pc afterwards
+				restartPcAtTimeoutEnd = true;
+			}
+			requestBatchEnd();
+		}
+	}
+	private void _setTimeoutType(TeamModel team, boolean review) {
+		synchronized (runLock) {
+			requestBatchStart();
+			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 
 			String newOwner = (null==team ? (tc.isRunning() ? OFFICIAL_TIMEOUT_OWNER : DEFAULT_TIMEOUT_OWNER) : team.getId());
 			
-			if (jc.isRunning()) {
-				_stopJam();
-			}
-			
-			if (!tc.isRunning()) {
-				//We are starting a new timeout - start/stop clocks accordingly
-				saveClockState(LABEL_UN_TO);
-				setLabel(BUTTON_START, LABEL_START);
-				setLabel(BUTTON_STOP, LABEL_STOP_TO);
+			if (team != null) {
 				setLabel(BUTTON_TIMEOUT, LABEL_OTO);
-				setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
-
-				if (settings.getBoolean(SETTING_STOP_CLOCK_TO)) {
-					pc.stop();
-				}
-				lc.stop();
-
-				tc.startNew();
-				
-				if (pc.getTimeRemaining() + lc.getTimeElapsed() < 30000) {
-					//last Jam did end with less than 30s on the period clock. If this is just an OTO, restart pc afterwards
-					restartPcAtTimeoutEnd = true;
+				restartPcAtTimeoutEnd = false;
+			} else if (newOwner.equals(OFFICIAL_TIMEOUT_OWNER)) {
+				setLabel(BUTTON_TIMEOUT, LABEL_EMPTY);
+			} else {
+				setLabel(BUTTON_TIMEOUT, LABEL_OTO);
+			}
+			
+			if (pc.isRunning() && (
+					(team != null && !review && settings.getBoolean(SETTING_STOP_CLOCK_TTO)) ||
+					 (team != null && review && settings.getBoolean(SETTING_STOP_CLOCK_OR)) ||
+					 (newOwner == OFFICIAL_TIMEOUT_OWNER && settings.getBoolean(SETTING_STOP_CLOCK_OTO)))) {
+				//we have a rule set that stops the period clock only for some types of timeouts and this is one of them
+				pc.stop();
+				if (tc.getTimeElapsed() < 15000) {
+					//if type was changed within the first 15 seconds of timeout assume that it was this type
+					//of timeout from the start and adjust the period clock accordingly
+					pc.elapseTime(-tc.getTimeElapsed());
 				}
 			}
 			
-			if (!(getTimeoutOwner().equals(newOwner) && isOfficialReview() == review)) {
-				//Timeout type has changed
-				saveClockState(LABEL_UN_TYPE);
-				
-				if (team != null) {
-					setLabel(BUTTON_TIMEOUT, LABEL_OTO);
-					restartPcAtTimeoutEnd = false;
-				} else if (newOwner.equals(OFFICIAL_TIMEOUT_OWNER)) {
-					setLabel(BUTTON_TIMEOUT, LABEL_EMPTY);
-				} else {
-					setLabel(BUTTON_TIMEOUT, LABEL_OTO);
-				}
-				
-				if (pc.isRunning() && (
-						(team != null && !review && settings.getBoolean(SETTING_STOP_CLOCK_TTO)) ||
-						 (team != null && review && settings.getBoolean(SETTING_STOP_CLOCK_OR)) ||
-						 (newOwner == OFFICIAL_TIMEOUT_OWNER && settings.getBoolean(SETTING_STOP_CLOCK_OTO)))) {
-					//we have a rule set that stops the period clock only for some types of timeouts and this is one of them
-					pc.stop();
-					if (tc.getTimeElapsed() < 15000) {
-						//if type was changed within the first 15 seconds of timeout assume that it was this type
-						//of timeout from the start and adjust the period clock accordingly
-						pc.elapseTime(-tc.getTimeElapsed());
-					}
-				}
-				
-				setTimeoutOwner(newOwner);
-				setOfficialReview(review);
+			setTimeoutOwner(newOwner);
+			setOfficialReview(review);
 
-				for (TeamModel tm : teams.values()) {
-					tm.setInTimeout(tm == team  && !review);
-					tm.setInOfficialReview(tm == team && review);
-				}
+			for (TeamModel tm : teams.values()) {
+				tm.setInTimeout(tm == team  && !review);
+				tm.setInOfficialReview(tm == team && review);
 			}
 			
 			requestBatchEnd();
@@ -403,20 +418,19 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				restartPcAtTimeoutEnd, inPeriod, clockStates, teamStates));
 		setLabel(BUTTON_UNDO, type);
 
-		if (type != LABEL_UN_TYPE) {
-			resetUndoLabelIn(settings.getLong(SETTING_UNDO_LIMIT));
-		}
+		resetUndoLabelIn(settings.getLong(SETTING_UNDO_LIMIT));
 	}
 	
 	public void undoClockChange() {
 		synchronized (runLock) {
+			if (undoStack.isEmpty()) return;
+
 			if (undoLabelTimer != null) {
 				undoLabelTimer.cancel();
 			}
 			requestBatchStart();
 			StateSet savedState = undoStack.pop();
-			if (System.currentTimeMillis() - savedState.getTimestamp() < settings.getLong(SETTING_UNDO_LIMIT)
-					|| savedState.getType() == LABEL_UN_TYPE) {
+			if (System.currentTimeMillis() - savedState.getTimestamp() < settings.getLong(SETTING_UNDO_LIMIT)) {
 				setLabel(BUTTON_START, savedState.getStartType());
 				setLabel(BUTTON_STOP, savedState.getStopType());
 				setLabel(BUTTON_TIMEOUT, savedState.getTimeoutType());
@@ -449,15 +463,15 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			requestBatchEnd();
 			if (!undoStack.isEmpty()) {
 				StateSet previous = undoStack.peek();
-				long availableFor = settings.getLong(SETTING_UNDO_LIMIT) - (System.currentTimeMillis() - undoStack.peek().getTimestamp());
+				long availableFor = settings.getLong(SETTING_UNDO_LIMIT) - (System.currentTimeMillis() - previous.getTimestamp());
 				if (availableFor > 0) {
 					setLabel(BUTTON_UNDO, previous.getType());
 					resetUndoLabelIn(availableFor);
-				} else if (previous.getType() == LABEL_UN_TYPE) {
-					setLabel(BUTTON_UNDO, LABEL_UN_TYPE);
 				} else {
 					setLabel(BUTTON_UNDO, LABEL_EMPTY);
 				} 
+			} else {
+				setLabel(BUTTON_UNDO, LABEL_EMPTY);
 			}
 		}
 	}
@@ -742,7 +756,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String SETTING_AUTOSTART = "ScoreBoard." + Clock.ID_LINEUP + ".AutoStart";
 	public static final String SETTING_AUTOSTART_TYPE = "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartType";
 	public static final String SETTING_AUTOSTART_BUFFER_TIME = "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBufferTime";
-	public static final String SETTING_UNDO_LIMIT = "Clock.UndoLimit";
+	public static final String SETTING_UNDO_LIMIT = "Clock.UndoTimeLimit";
 	public static final String SETTING_UNDO_STACK_SIZE = "Clock.UndoStackSize";
 	
 	public static final String BUTTON_START = "ScoreBoard.Button.StartLabel";
@@ -760,9 +774,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String LABEL_UN_START = "Un-Start Jam";
 	public static final String LABEL_UN_STOP_JAM = "Un-Stop Jam";
 	public static final String LABEL_UN_LINEUP = "Un-Lineup";
-	public static final String LABEL_UN_TO = "Un-Start TO";
-	public static final String LABEL_UN_TYPE = "Undo TO Type";
-	public static final String LABEL_UN_TO_END = "Un-Stop TO";
+	public static final String LABEL_UN_TO = "Un-Timeout";
+	public static final String LABEL_UN_STOP_TO = "Un-Stop TO";
 	public static final String LABEL_UN_OVERTIME = "Un-Overtime";
 }
 

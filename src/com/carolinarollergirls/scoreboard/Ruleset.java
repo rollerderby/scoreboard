@@ -96,10 +96,10 @@ public class Ruleset {
 			
 			newRule(new BooleanRule(false, "Clock", null,           "Sync",
 					"Should seconds tick over at the same time for all clocks? When true, newly starting clocks will be adjusted by up to half a second to get in sync", true, "Sync Clocks", "Don't Sync Clocks"));
-			newRule(   new TimeRule(false, "Clock", null,			"UndoLimit",
-					"How long starting or stopping clocks can be undone", "00:10"));
+			newRule(   new TimeRule(false, "Clock", null,			"UndoTimeLimit",
+					"How long starting or stopping clocks can be undone", "60:00"));
 			newRule(new IntegerRule(false, "Clock", null,			"UndoStackSize",
-					"How many actions can be undone (if they happened within the time limit)", 5));
+					"How many actions can be undone (if they happened within the time limit)", 1));
 
 			newRule(new BooleanRule(false, "ScoreBoard", null,      "HideJamTotals",
 					"Should the score for the current Jam be displayed?", false, "Hide Jam Totals", "Show Jam Totals"));
