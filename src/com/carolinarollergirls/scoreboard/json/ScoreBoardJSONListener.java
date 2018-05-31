@@ -314,6 +314,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put("PenaltyCode.FO_EXP(EXP-P)", "Expulsion-Illegal Position");
 		updateMap.put("PenaltyCode.FO_EXP(EXP-N)", "Expulsion-Interference");
 		updateMap.put("PenaltyCode.FO_EXP(EXP-G)", "Expulsion-Misconduct");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-?)", "Expulsion-Unknown");
 
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());
