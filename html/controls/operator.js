@@ -154,7 +154,7 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$(".UndoControls").toggleClass("ShowUndo", this.checked);
+			$("#TeamTime").find(".UndoControls").toggleClass("ShowUndo", this.checked);
 		});
 
 	$("<label>").text("Show Speed Score Controls").attr("for", "ShowSpeedScoreControlsButton")
@@ -163,7 +163,7 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$("tr.SpeedScore").toggleClass("Show", this.checked);
+			$("#TeamTime").find("tr.SpeedScore").toggleClass("Show", this.checked);
 		});
 
 	$("<label>").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
@@ -172,7 +172,7 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$("tr.Control").toggleClass("Show", this.checked);
+			$("#TeamTime").find("tr.Control").toggleClass("Show", this.checked);
 		});
 
 	$("<button>").attr("id", "GameControl")
