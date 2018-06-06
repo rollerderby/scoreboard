@@ -8,23 +8,30 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.IOException;
+import java.io.*;
+import java.lang.reflect.*;
+import java.util.*;
+import java.util.concurrent.*;
 
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import javax.servlet.*;
+import javax.servlet.http.*;
 
-import org.jdom.Document;
-import org.jdom.JDOMException;
-import org.jdom.xpath.XPath;
+import org.jdom.*;
+import org.jdom.output.*;
+import org.jdom.xpath.*;
 
-import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.xml.*;
+import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.policy.*;
+import com.carolinarollergirls.scoreboard.defaults.*;
+
+import org.apache.commons.fileupload.*;
+import org.apache.commons.fileupload.servlet.*;
 
 public class XmlScoreBoardServlet extends AbstractXmlServlet
 {
-	private static final long serialVersionUID = 7299658481660605015L;
-
 	public String getPath() { return "/XmlScoreBoard"; }
 
 	protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {

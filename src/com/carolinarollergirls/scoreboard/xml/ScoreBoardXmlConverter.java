@@ -8,24 +8,14 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.Iterator;
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.output.XMLOutputter;
+import java.util.*;
 
-import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.Settings;
-import com.carolinarollergirls.scoreboard.Skater;
-import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
-import com.carolinarollergirls.scoreboard.Team;
-import com.carolinarollergirls.scoreboard.model.ClockModel;
-import com.carolinarollergirls.scoreboard.model.PositionModel;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
-import com.carolinarollergirls.scoreboard.model.SkaterModel;
-import com.carolinarollergirls.scoreboard.model.TeamModel;
+import org.jdom.*;
+import org.jdom.output.*;
+
+import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.defaults.*;
 
 public class ScoreBoardXmlConverter
 {
@@ -42,9 +32,11 @@ public class ScoreBoardXmlConverter
 
 		editor.setElement(sb, "Reset", null, "");
 		editor.setElement(sb, "StartJam", null, "");
+		editor.setElement(sb, "UnStartJam", null, "");
 		editor.setElement(sb, "StopJam", null, "");
+		editor.setElement(sb, "UnStopJam", null, "");
 		editor.setElement(sb, "Timeout", null, "");
-		editor.setElement(sb, "ClockUndo", null, "");
+		editor.setElement(sb, "UnTimeout", null, "");
 		editor.setElement(sb, "StartOvertime", null, "");
 
 		editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner());
@@ -63,6 +55,10 @@ public class ScoreBoardXmlConverter
 		Iterator<Team> teams = scoreBoard.getTeams().iterator();
 		while (teams.hasNext())
 			toElement(sb, teams.next());
+
+		Iterator<Policy> policies = scoreBoard.getPolicies().iterator();
+		while (policies.hasNext())
+			toElement(sb, policies.next());
 
 		return d;
 	}
@@ -83,7 +79,9 @@ public class ScoreBoardXmlConverter
 		Element e = editor.setElement(sb, "Clock", c.getId());
 
 		editor.setElement(e, "Start", null, "");
+		editor.setElement(e, "UnStart", null, "");
 		editor.setElement(e, "Stop", null, "");
+		editor.setElement(e, "UnStop", null, "");
 		editor.setElement(e, "ResetTime", null, "");
 
 		editor.setElement(e, Clock.EVENT_NAME, null, c.getName());
@@ -167,6 +165,27 @@ public class ScoreBoardXmlConverter
 		return e;
 	}
 
+	public Element toElement(Element sb, Policy p) {
+		Element e = editor.setElement(sb, "Policy", p.getId());
+		editor.setElement(e, Policy.EVENT_NAME, null, p.getName());
+		editor.setElement(e, Policy.EVENT_DESCRIPTION, null, p.getDescription());
+		editor.setElement(e, Policy.EVENT_ENABLED, null, String.valueOf(p.isEnabled()));
+
+		Iterator<Policy.Parameter> parameters = p.getParameters().iterator();
+		while (parameters.hasNext())
+			toElement(e, parameters.next());
+
+		return e;
+	}
+
+	public Element toElement(Element p, Policy.Parameter pp) {
+		Element e = editor.setElement(p, "Parameter", pp.getName());
+		editor.setElement(e, "Name", null, pp.getName());
+		editor.setElement(e, "Type", null, pp.getType());
+		editor.setElement(e, Policy.Parameter.EVENT_VALUE, null, pp.getValue());
+		return e;
+	}
+
 	public Element toElement(Element t, Skater s) {
 		Element e = editor.setElement(t, "Skater", s.getId());
 		editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
@@ -199,7 +218,7 @@ public class ScoreBoardXmlConverter
 	/* XML to ScoreBoard methods */
 
 	public void processDocument(ScoreBoardModel scoreBoardModel, Document document) {
-		Iterator<?> children = document.getRootElement().getChildren().iterator();
+		Iterator children = document.getRootElement().getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			if (element.getName().equals("ScoreBoard"))
@@ -208,7 +227,7 @@ public class ScoreBoardXmlConverter
 	}
 
 	public void processScoreBoard(ScoreBoardModel scoreBoardModel, Element scoreBoard) {
-		Iterator<?> children = scoreBoard.getChildren().iterator();
+		Iterator children = scoreBoard.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -220,6 +239,8 @@ public class ScoreBoardXmlConverter
 					processClock(scoreBoardModel, element);
 				else if (name.equals("Team"))
 					processTeam(scoreBoardModel, element);
+				else if (name.equals("Policy"))
+					processPolicy(scoreBoardModel, element);
 				else if (name.equals("Settings"))
 					processSettings(scoreBoardModel, element);
 				else if (null == value)
@@ -245,8 +266,12 @@ public class ScoreBoardXmlConverter
 						scoreBoardModel.stopJam();
 					else if (name.equals("Timeout"))
 						scoreBoardModel.timeout();
-					else if (name.equals("ClockUndo"))
-						scoreBoardModel.undoClockChange();
+					else if (name.equals("UnStartJam"))
+						scoreBoardModel.unStartJam();
+					else if (name.equals("UnStopJam"))
+						scoreBoardModel.unStopJam();
+					else if (name.equals("UnTimeout"))
+						scoreBoardModel.unTimeout();
 					else if (name.equals("StartOvertime"))
 						scoreBoardModel.startOvertime();
 				}
@@ -257,7 +282,7 @@ public class ScoreBoardXmlConverter
 
 	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
 		SettingsModel sm = scoreBoardModel.getSettingsModel();
-		Iterator<?> children = settings.getChildren().iterator();
+		Iterator children = settings.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -276,8 +301,10 @@ public class ScoreBoardXmlConverter
 		ClockModel clockModel = scoreBoardModel.getClockModel(id);
 		boolean requestStart = false;
 		boolean requestStop = false;
+		boolean requestUnStart = false;
+		boolean requestUnStop = false;
 
-		Iterator<?> children = clock.getChildren().iterator();
+		Iterator children = clock.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -294,6 +321,10 @@ public class ScoreBoardXmlConverter
 					requestStart = true;
 				else if (name.equals("Stop") && Boolean.parseBoolean(value))
 					requestStop = true;
+				else if (name.equals("UnStart") && Boolean.parseBoolean(value))
+					requestUnStart = true;
+				else if (name.equals("UnStop") && Boolean.parseBoolean(value))
+					requestUnStop = true;
 				else if (name.equals("ResetTime") && Boolean.parseBoolean(value))
 					clockModel.resetTime();
 				else if (name.equals(Clock.EVENT_NAME))
@@ -332,17 +363,20 @@ public class ScoreBoardXmlConverter
 		// Process start/stops at the end to allow setting of options (direction/min/max/etc) on load
 		if (requestStart) clockModel.start();
 		if (requestStop) clockModel.stop();
+		if (requestUnStart) clockModel.unstart();
+		if (requestUnStop) clockModel.unstop();
 	}
 
 	public void processTeam(ScoreBoardModel scoreBoardModel, Element team) {
 		String id = team.getAttributeValue("Id");
 		TeamModel teamModel = scoreBoardModel.getTeamModel(id);
 
-		Iterator<?> children = team.getChildren().iterator();
+		Iterator children = team.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
 				String name = element.getName();
+				String eId = element.getAttributeValue("Id");
 				String value = editor.getText(element);
 
 				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
@@ -410,7 +444,7 @@ public class ScoreBoardXmlConverter
 			alternateNameModel = teamModel.getAlternateNameModel(id);
 		}
 
-		Iterator<?> children = alternateName.getChildren().iterator();
+		Iterator children = alternateName.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -440,7 +474,7 @@ public class ScoreBoardXmlConverter
 			colorModel = teamModel.getColorModel(id);
 		}
 
-		Iterator<?> children = color.getChildren().iterator();
+		Iterator children = color.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -460,7 +494,7 @@ public class ScoreBoardXmlConverter
 		String id = position.getAttributeValue("Id");
 		PositionModel positionModel = teamModel.getPositionModel(id);
 
-		Iterator<?> children = position.getChildren().iterator();
+		Iterator children = position.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -475,6 +509,48 @@ public class ScoreBoardXmlConverter
 					positionModel.setSkaterModel(value);
 				else if (name.equals(Position.EVENT_PENALTY_BOX))
 					positionModel.setPenaltyBox(Boolean.parseBoolean(value));
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processPolicy(ScoreBoardModel scoreBoardModel, Element policy) throws NoSuchElementException {
+		String id = policy.getAttributeValue("Id");
+		PolicyModel policyModel = scoreBoardModel.getPolicyModel(id);
+
+		Iterator children = policy.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element= (Element)children.next();
+			try {
+				String name = element.getName();
+				String value = editor.getText(element);
+
+				if (name.equals("Parameter"))
+					processPolicyParameter(policyModel, element);
+				else if (null == value)
+					continue;
+				else if (name.equals(Policy.EVENT_ENABLED))
+					policyModel.setEnabled(Boolean.parseBoolean(value));
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processPolicyParameter(PolicyModel policyModel, Element parameter) throws NoSuchElementException {
+		String id = parameter.getAttributeValue("Id");
+		PolicyModel.ParameterModel parameterModel = policyModel.getParameterModel(id);
+
+		Iterator children = parameter.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String name = element.getName();
+				String value = editor.getText(element);
+
+				if (null == value)
+					continue;
+				else if (name.equals(Policy.Parameter.EVENT_VALUE))
+					parameterModel.setValue(value);
 			} catch ( Exception e ) {
 			}
 		}
@@ -502,14 +578,20 @@ public class ScoreBoardXmlConverter
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 
-		Iterator<?> children = skater.getChildren().iterator();
+		Iterator children = skater.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
 				String name = element.getName();
 				String value = editor.getText(element);
 
-        if (null == value)
+				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
+
+				if (name.equals(Skater.EVENT_PENALTY))
+					processPenalty(skaterModel, element, false);
+				else if (name.equals(Skater.EVENT_PENALTY_FOEXP))
+					processPenalty(skaterModel, element.getChild(Skater.EVENT_PENALTY), true);
+        else if (null == value)
 					continue;
 				else if (name.equals(Skater.EVENT_NAME))
 					skaterModel.setName(value);

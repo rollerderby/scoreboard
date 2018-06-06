@@ -51,7 +51,6 @@ table.RowTable { border-spacing: 0px; }
 
 	#TeamTime table.JamControl>tbody>tr>td { width: 100%; }
 	#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
-	#TeamTime table.JamControl .Label { display: inline-block; min-width:50px; }
 	#TeamTime .UndoControls:not(.ShowUndo) { display: none; }
 
 	#TeamTime table.Team>tbody>tr>td { width: 50%; }

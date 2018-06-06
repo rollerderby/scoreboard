@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard.rules;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -46,7 +47,6 @@ public class Rule {
 		json.put("group", group);
 		json.put("subgroup", subgroup);
 		json.put("fullname", fullname);
-		json.put("description", description);
 		json.put("default_value", toHumanReadable(defaultValue));
 		return json;
 	}

@@ -142,9 +142,6 @@ function toClockInitialNumber(k, v) {
 
 			if (name == 'Period' && WS.state['ScoreBoard.Clock(Period).MaximumNumber'] == 1) 
 				ret = 'Game';
-
-			if (name == 'Period' && isTrue(WS.state['ScoreBoard.InOvertime'])) 
-				ret = 'OT';
 		}
 	});
 	return ret;
@@ -185,4 +182,3 @@ WS.Register( [
 	"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); } );
 
 WS.Register( 'ScoreBoard.Clock(Period).MaximumNumber' );
-WS.Register( 'ScoreBoard.InOvertime' );
