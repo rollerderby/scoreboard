@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
+import io.prometheus.client.Histogram;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
@@ -30,10 +31,12 @@ import org.json.JSONObject;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
-	public WS(ScoreBoard sb) {
-		ScoreBoardJSONListener listener = new ScoreBoardJSONListener(sb);
+	public WS(ScoreBoardModel s) {
+    sbm = s;
+		ScoreBoardJSONListener listener = new ScoreBoardJSONListener(s);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -58,16 +61,6 @@ public class WS extends WebSocketServlet {
 		}
 	}
 
-	public static void requestUpdates(UUID id, String path) {
-		synchronized (sourcesLock) {
-			for (Conn source : sources) {
-				if (source.id.equals(id)) {
-					source.requestUpdates(path);
-				}
-			}
-		}
-	}
-
 	private static void updateState(String key, Object value) {
 		Map<String, Object> updateMap = new LinkedHashMap<String, Object>();
 		updateMap.put(key, value);
@@ -75,6 +68,7 @@ public class WS extends WebSocketServlet {
 	}
 
 	public static void updateState(Map<String, Object> updates) {
+		Histogram.Timer timer = updateStateDuration.startTimer();
 		synchronized (sourcesLock) {
 			stateID++;
 			List<String> keys = new LinkedList<String>(updates.keySet());
@@ -106,11 +100,14 @@ public class WS extends WebSocketServlet {
 			keys.addAll(deletedKeys);
 
 			for (Conn source : sources) {
-				source.sendUpdates(keys);
+				source.sendUpdates();
 			}
 		}
+		timer.observeDuration();
+		updateStateUpdates.observe(updates.size());
 	}
 
+	protected static ScoreBoardModel sbm;
 	protected static List<Conn> sources = new LinkedList<Conn>();
 	protected static Object sourcesLock = new Object();
 
@@ -131,14 +128,19 @@ public class WS extends WebSocketServlet {
 		return true;
 	}
 
+	private static final Histogram updateStateDuration = Histogram.build()
+		.name("crg_websocket_update_state_duration_seconds").help("Time spent in WS.updateState function").register();
+	private static final Histogram updateStateUpdates = Histogram.build()
+		.name("crg_websocket_update_state_updates").help("Updates sent to WS.updateState function")
+		.exponentialBuckets(1, 2, 10).register();
 	private static final Gauge connectionsActive = Gauge.build()
-		.name("websocket_active_connections").help("Current WebSocket connections").register();
+		.name("crg_websocket_active_connections").help("Current WebSocket connections").register();
 	private static final Counter messagesReceived = Counter.build()
-		.name("websocket_messages_received").help("Number of WebSocket messages received").register();
-	private static final Counter messagesSent = Counter.build()
-		.name("websocket_messages_sent").help("Number of WebSocket messages sent").register();
+		.name("crg_websocket_messages_received").help("Number of WebSocket messages received").register();
+	private static final Histogram messagesSentDuration = Histogram.build()
+		.name("crg_websocket_messages_sent_duration_seconds").help("Time spent sending WebSocket messages").register();
 	private static final Counter messagesSentFailures = Counter.build()
-		.name("websocket_messages_sent_failed").help("Number of WebSocket messages we failed to send").register();
+		.name("crg_websocket_messages_sent_failed").help("Number of WebSocket messages we failed to send").register();
 
 	public class Conn implements OnTextMessage {
 		private Connection connection;
@@ -163,7 +165,7 @@ public class WS extends WebSocketServlet {
 						for (int i = 0; i < paths.length(); i++)
 							requestUpdates(paths.getString(i));
 					}
-					sendUpdates();
+					sendPendingUpdates();
 				} else if (action.equals("Penalty")) {
 					JSONObject data = json.getJSONObject("data");
 					String teamId = data.optString("teamId");
@@ -175,7 +177,7 @@ public class WS extends WebSocketServlet {
 					String code = data.optString("code", null);
 					if (period == -1 || jam == -1)
 						return;
-					ScoreBoardManager.getGame().Penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
+					sbm.penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
 				} else if (action.equals("Set")) {
 					String key = json.getString("key");
 					Object value = json.get("value");
@@ -197,7 +199,7 @@ public class WS extends WebSocketServlet {
 		}
 		
 		public void send(JSONObject json) {
-			messagesSent.inc();
+			Histogram.Timer timer = messagesSentDuration.startTimer();
 			try {
 				json.put("stateID", stateID);
 				connection.sendMessage(json.toString());
@@ -205,6 +207,8 @@ public class WS extends WebSocketServlet {
 				ScoreBoardManager.printMessage("Error sending JSON update: " + e);
 				e.printStackTrace();
 				messagesSentFailures.inc();
+			} finally {
+				timer.observeDuration();
 			}
 		}
 	
@@ -297,7 +301,7 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
-		private void sendUpdates() {
+		private void sendPendingUpdates() {
 			synchronized (this) {
 				if (updates.size() == 0)
 					return;
@@ -322,12 +326,12 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
-		public void sendUpdates(List<String> paths) {
+		public void sendUpdates() {
 			synchronized (this) {
 				for (String p : paths) {
 					processUpdates(p, false);
 				}
-				sendUpdates();
+				sendPendingUpdates();
 			}
 		}
 

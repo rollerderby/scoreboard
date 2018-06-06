@@ -25,8 +25,11 @@ function initialize() {
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
 
-	WS.Register( [ 'Game.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes?
-	WS.Register( [ 'Game.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); //arguments: team number, skater id, jam number
+  WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes?
+	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); //arguments: team number, skater id, jam number
+	WS.Register( [ 'PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
+	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
+	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
 
 }
 
@@ -53,8 +56,8 @@ function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number
 	if (match == null || match.length == 0)
 		return;
 	var id = match[1]; // id = skater id
-	var prefix = 'Game.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = Game.Team('1').Skater('id')
-	if (k == prefix + '.Number') { //Example if skater id == Game.Team('team').Skater('id').Number
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = ScoreBoard.Team('1').Skater('id')
+	if (k == prefix + '.Number') { //Example if skater id == ScoreBoard.Team('team').Skater('id').Number
 		var row = $('.Team' + t + ' .Skater.Penalty[id=' + id + ']');
 		if (v == null) { // if jam number is null
 			$('.Team' + t + ' .Skater[id=' + id + ']').remove();
@@ -67,7 +70,7 @@ function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number
 		for (var i = 1; i <= 9; i++) // for penalty numbers one to nine..
 			displayPenalty(t, id, i); // display penalties (team, skater id, penalty #)
 		displayPenalty(t, id, 'FO_EXP'); // display foulout status
-	} else {  // if skater id does NOT match Game.Team('team').Skater('id').Number
+	} else {  // if skater id does NOT match ScoreBoard.Team('team').Skater('id').Number
 		// Look for penalty
 		match = k.match(penaltyRegex);
 		if (match == null || match.length == 0)
@@ -82,7 +85,7 @@ function displayPenalty(t, s, p) { // team skater penalty#
 	var jamBox = $('.Team' + t + ' .Skater.Jam[id=' + s + '] .Box' + p);
 	var totalBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Total');
 
-	var prefix = 'Game.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
 	code = WS.state[prefix + ".Code"];
 
 	if (code != null) {

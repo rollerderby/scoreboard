@@ -57,8 +57,8 @@ function initialize() {
 		});
 	});
 
-	var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+?)\)\.(.+)$/;
-	WS.Register('Game.Team', function(k,v) {
+	var skaterRegEx = /^ScoreBoard\.Team\((.+)\)\.Skater\((.+?)\)\.(.+)$/;
+	WS.Register('ScoreBoard.Team', function(k,v) {
 		var m = k.match(skaterRegEx);
 		if(m) {
 			var key = m[3];
@@ -119,8 +119,8 @@ $('select#Skaters').change(function(e) {
 	v = $t.val();
 	team = $( 'option[value=' + v + ']', $t ).attr('data-team');
 	name = $( 'option[value=' + v + ']', $t ).attr('data-name');
-	tnam = WS.state['Game.Team(' + team + ').AlternateName(overlay)'];
-	tnam = tnam ? tnam : WS.state['Game.Team(' + team + ').Name'];
+	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
+	tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
 	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').change();
 	$('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val(name).change();
 	$('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val(tnam).change();

@@ -41,8 +41,8 @@ function initialize() {
         WS.Register( [ 'ScoreBoard.Team(1).Logo' ], function(k, v) { $('.Logo1').attr('src', v); } );
         WS.Register( [ 'ScoreBoard.Team(2).Logo' ], function(k, v) { $('.Logo2').attr('src', v); } );
 
-	WS.Register( [ 'Game.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes?
-	WS.Register( [ 'Game.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); //arguments: team number, skater id, jam number
+	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes?
+	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); //arguments: team number, skater id, jam number
 
 }
 
@@ -54,8 +54,8 @@ function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number
 	if (match == null || match.length == 0)
 		return;
 	var id = match[1]; // id = skater id
-	var prefix = 'Game.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = Game.Team('1').Skater('id')
-	if (k == prefix + '.Number') { //Example if skater id == Game.Team('team').Skater('id').Number
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = Game.Team('1').Skater('id')
+	if (k == prefix + '.Number') { //Example if skater id == ScoreBoard.Team('team').Skater('id').Number
 		var rowd = $('.Teamd' + t + ' .Skater.Penalty[id=' + id + ']');
 		if (v == null) { // if jam number is null
 			$('.Teamd' + t + ' .Skater[id=' + id + ']').remove();
@@ -68,7 +68,7 @@ function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number
 		for (var i = 1; i <= 9; i++) { // for penalty numbers one to nine..
 			displayPenalty(t, id, i); } // display penalties (team, skater id, penalty #)
 		displayPenalty(t, id, 'FO_EXP'); // display foulout status
-	} else {  // if skater id does NOT match Game.Team('team').Skater('id').Number
+	} else {  // if skater id does NOT match ScoreBoard.Team('team').Skater('id').Number
 		// Look for penalty
 		match = k.match(penaltyRegex);
 		if (match == null || match.length == 0)
@@ -82,8 +82,8 @@ function displayPenalty(t, s, p) { // team skater penalty#
 	var penaltyBoxd = $('.Teamd' + t + ' .Skater.Penalty[id=' + s + '] .Box' + p);
 	var totalBoxd = $('.Teamd' + t + ' .Skater.Penalty[id=' + s + '] .Total');
 
-	var prefix = 'Game.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
-	var nprefix = 'Game.Team(' + t + ').Skater(' + s + ')';
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
+	var nprefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ')';
 	code = WS.state[prefix + ".Code"];
 	if (code != null) {
 		penaltyBoxd.data("id", WS.state[prefix + ".Id"]);
@@ -123,7 +123,7 @@ function makeSkaterRows(t, id, number) { //team, id, number
         $('.Team' + t + 'custColor').css('background-color', teamBColor);
 	
 	pd.append($('<div width=10%>').addClass('Number').text(number));
-	pd.append($('<div width=50%>').addClass('Name').text(WS.state['Game.Team(' + t + ').Skater(' + id + ').Name']));
+	pd.append($('<div width=50%>').addClass('Name').text(WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Name']));
 	$.each([1, 2, 3, 4, 5, 6, 7, 8, 9], function(idx, c) {
 		pd.append($('<div width=10%>').addClass('Box Box' + c).html('&nbsp;'));
 	});
