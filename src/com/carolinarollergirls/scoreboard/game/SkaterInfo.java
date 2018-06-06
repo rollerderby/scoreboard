@@ -28,8 +28,16 @@ public class SkaterInfo extends Updater {
 		number = s.getNumber();
 		flags = s.getFlags();
 
-		queueUpdates();
-	}
+    penalties.clear();
+    for (Skater.Penalty p : s.getPenalties()) {
+      penalties.add(new Penalty(game, p.getId(), p.getPeriod(), p.getJam(), p.getCode()));
+    }
+    fo_exp = null;
+    Skater.Penalty fe = s.getFOEXPPenalty();
+    if (fe != null) {
+      fo_exp = new Penalty(game, fe.getId(), fe.getPeriod(), fe.getJam(), fe.getCode());
+    }
+  }
 
 	public JSONObject toJSON() throws JSONException {
 		JSONObject json = new JSONObject();
@@ -50,59 +58,6 @@ public class SkaterInfo extends Updater {
 	}
 
 	private void queueUpdates() {
-		update("Id", id);
-		update("Name", name);
-		update("Number", number);
-		update("Flags", flags);
-
-		for (int i = 0; i < 9; i++) {
-			String base = "Penalty(" + (i + 1) + ")";
-			if (i < penalties.size())
-				penalties.get(i).queueUpdates(getUpdaterBase() + "." + base);
-			else
-				update(base, null);
-		}
-		if (fo_exp != null)
-			fo_exp.queueUpdates(getUpdaterBase() + ".Penalty(FO_EXP)");
-		else
-			update("Penalty(FO_EXP)", null);
-	}
-
-	public void Penalty(String penaltyId, boolean fe, int p, int j, String c) {
-		if (penaltyId == null || (fe && c != null)) {
-			// New Penalty (Or FO/Exp, just overwrite it)
-			newPenalty(fe, p, j, c);
-		} else if (fe) {
-			// Must be a delete request
-			fo_exp = null;
-		} else {
-			// Updating/Deleting existing Penalty.  Find it and process
-			for (Penalty p2 : penalties) {
-				if (p2.getId().equals(penaltyId)) {
-					if (c != null) {
-						p2.period = p;
-						p2.jam = j;
-						p2.code = c;
-					} else {
-						penalties.remove(p2);
-					}
-					break;
-				}
-			}
-		}
-		queueUpdates();
-		updateState();
-	}
-
-	private void newPenalty(boolean fe, int p, int j, String c) {
-		if (fe) {
-			fo_exp = new Penalty(game, p, j, c);
-		} else {
-			// Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
-			if (penalties.size() < 9) {
-				penalties.add(new Penalty(game, p, j, c));
-			}
-		}
 	}
 
 	public TeamInfo      getTeamInfo()  { return team_info; }
@@ -122,20 +77,15 @@ public class SkaterInfo extends Updater {
 	private Penalty fo_exp;
 
 	public class Penalty extends Updater {
-		public Penalty(Game g, int p, int j, String c) {
+		public Penalty(Game g, String i, int p, int j, String c) {
 			super(g);
-			id = UUID.randomUUID().toString();
+			id = i;
 			period = p;
 			jam = j;
 			code = c;
 		}
 
 		public void queueUpdates(String base) {
-			this.base = base;
-			update("Id", id);
-			update("Period", period);
-			update("Jam", jam);
-			update("Code", code);
 		}
 
 		public String getUpdaterBase() {

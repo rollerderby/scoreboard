@@ -430,6 +430,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 
+  public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code){
+    getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
+  }
+
 	public Settings getSettings() { return (Settings)settings; }
 	public SettingsModel getSettingsModel() { return settings; }
 

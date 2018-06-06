@@ -194,8 +194,25 @@ public class ScoreBoardXmlConverter
 		editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
 		editor.setElement(e, Skater.EVENT_FLAGS, null, s.getFlags());
 
+    for (Skater.Penalty p: s.getPenalties()) {
+			toElement(e, p);
+    }
+
+    if (s.getFOEXPPenalty() != null) {
+      Element fe = editor.setElement(e, Skater.EVENT_PENALTY_FOEXP, s.getFOEXPPenalty().getId());
+      toElement(fe, s.getFOEXPPenalty());
+    }
+
 		return e;
 	}
+
+	public Element toElement(Element s, Skater.Penalty p) {
+		Element e = editor.setElement(s, "Penalty", p.getId());
+		editor.setElement(e, Skater.EVENT_PENALTY_PERIOD, null, String.valueOf(p.getPeriod()));
+		editor.setElement(e, Skater.EVENT_PENALTY_JAM, null, String.valueOf(p.getJam()));
+		editor.setElement(e, Skater.EVENT_PENALTY_CODE, null, p.getCode());
+    return e;
+  }
 
 	/*****************************/
 	/* XML to ScoreBoard methods */
@@ -570,7 +587,11 @@ public class ScoreBoardXmlConverter
 
 				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
 
-				if (null == value)
+				if (name.equals(Skater.EVENT_PENALTY))
+					processPenalty(skaterModel, element, false);
+				else if (name.equals(Skater.EVENT_PENALTY_FOEXP))
+					processPenalty(skaterModel, element.getChild(Skater.EVENT_PENALTY), true);
+        else if (null == value)
 					continue;
 				else if (name.equals(Skater.EVENT_NAME))
 					skaterModel.setName(value);
@@ -586,6 +607,33 @@ public class ScoreBoardXmlConverter
 			}
 		}
 	}
+
+	public void processPenalty(SkaterModel skaterModel, Element penalty, boolean foulout_exp) {
+		String id = penalty.getAttributeValue("Id");
+    int period = 0;
+    int jam = 0;
+    String code = "";
+
+		Iterator children = penalty.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+      try {
+				String name = element.getName();
+				String value = editor.getText(element);
+
+				if (null == value)
+					continue;
+				else if (name.equals(Skater.EVENT_PENALTY_PERIOD))
+					period = Integer.parseInt(value);
+				else if (name.equals(Skater.EVENT_PENALTY_JAM))
+					jam = Integer.parseInt(value);
+				else if (name.equals(Skater.EVENT_PENALTY_CODE))
+					code = value;
+			} catch ( Exception e ) {
+			}
+    }
+    skaterModel.AddPenaltyModel(null, foulout_exp, period, jam, code);
+  }
 
 	public static ScoreBoardXmlConverter getInstance() { return scoreBoardXmlConverter; }
 
