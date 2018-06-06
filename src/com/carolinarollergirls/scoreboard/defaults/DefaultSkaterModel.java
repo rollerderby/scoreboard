@@ -8,6 +8,10 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.Position;
@@ -217,7 +221,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
     public String getCode() { return code; }
 
     public String getProviderName() { return "Penalty"; }
-    public Class getProviderClass() { return Penalty.class; }
+    public Class<?> getProviderClass() { return Penalty.class; }
     public String getProviderId() { return getId(); }
 
     protected String id;
