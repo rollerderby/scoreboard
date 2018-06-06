@@ -60,8 +60,8 @@ function initialize() {
 
 	WS.Register( 'Game.Period', function(k,v) { jamData(k,v); } );
 
-	WS.Register( 'Game.Team(1)', function(k,v) { teamData(1, k,v); } );
-	WS.Register( 'Game.Team(2)', function(k,v) { teamData(2, k,v); } );
+	WS.Register( 'ScoreBoard.Team(1)', function(k,v) { teamData(1, k,v); } );
+	WS.Register( 'ScoreBoard.Team(2)', function(k,v) { teamData(2, k,v); } );
 
 	WS.Register( 'ScoreBoard.Clock(Period).Number', function(k,v) {
 		if(v == 2) { $('.PPJBox .Team .Period2').show(); } else { $('.PPJBox .Team .Period2').hide(); }
@@ -125,17 +125,17 @@ function teamData(team, k,v) {
 	var key;
 	var setting; 
 
-	var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
+	var skaterRegEx = /^ScoreBoard\.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
 	var match = k.match(skaterRegEx);
 	if(match) { 
 		skaterId = match[2]; key = match[3]; penalty = null; 
 	}
 
-	var penaltyRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
+	var penaltyRegEx = /^ScoreBoard\.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
 	var match = k.match(penaltyRegEx);
 	if(match) { skaterId = match[2]; key = match[4]; penalty = match[3]; }
 
-	var teamInfoRegEx = /^Game\.Team\((.+)\)\.(.+)$/;
+	var teamInfoRegEx = /^ScoreBoard\.Team\((.+)\)\.(.+)$/;
 	var match = k.match(teamInfoRegEx);
 	if(match) { 
 		var subkey = match[2];
@@ -150,7 +150,7 @@ function teamData(team, k,v) {
 		}
 	}
 
-	var colourRegEx = /^Game\.Team\((.+)\)\.Color\((.+)\)$/;
+	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\)$/;
 	var match = k.match(colourRegEx);
 	if(match) { 
 		var setting = match[2];

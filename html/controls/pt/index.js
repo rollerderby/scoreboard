@@ -18,8 +18,8 @@ function initialize() {
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
 
-	WS.Register( [ 'Game.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
-	WS.Register( [ 'Game.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
+	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
+	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
 	WS.Register( [ 'PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
 	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
 	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
@@ -64,7 +64,7 @@ function skaterUpdate(t, k, v) {
 	if (match == null || match.length == 0)
 		return;
 	var id = match[1];
-	var prefix = 'Game.Team(' + t + ').Skater(' + id + ')';
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
 	if (k == prefix + '.Number') {
 		var row = $('.Team' + t + ' .Skater.Penalty[id=' + id + ']');
 		if (v == null) {
@@ -93,7 +93,7 @@ function displayPenalty(t, s, p) {
 	var jamBox = $('.Team' + t + ' .Skater.Jam[id=' + s + '] .Box' + p);
 	var totalBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Total');
 
-	var prefix = 'Game.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
 	code = WS.state[prefix + ".Code"];
 
 	if (code != null) {
@@ -165,7 +165,7 @@ function openPenaltyEditor(t, id, which) {
 	if (teamColor == null)
 		teamColor = WS.state[prefix + '.Name'];
 
-	prefix = 'Game.Team(' + t + ').Skater(' + id + ')';
+	prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
 	var skaterName = WS.state[prefix + '.Name'];
 	var skaterNumber = WS.state[prefix + '.Number'];
 	teamId = t;

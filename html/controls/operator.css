@@ -52,6 +52,7 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.JamControl>tbody>tr>td { width: 100%; }
 	#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
 	#TeamTime table.JamControl .Label { display: inline-block; min-width:50px; }
+	#TeamTime .UndoControls:not(.ShowUndo) { display: none; }
 
 	#TeamTime table.Team>tbody>tr>td { width: 50%; }
 	#TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; }
@@ -81,7 +82,8 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
 	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 
-	tr.SpeedScore:not(.Show) { display: none; }
+	#TeamTime tr.SpeedScore:not(.Show) { display: none; }
+	#TeamTime tr.Control:not(.Show) { display: none; }
 /* End Team/Time Tab */
 
 /* Policies */

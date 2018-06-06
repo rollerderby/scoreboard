@@ -151,7 +151,30 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 		} else if (p.getProviderName().equals("Color")) {
 			editor.setElement(getColorElement((Team.Color)p), prop, null, v);
 		} else if (p.getProviderName().equals("Skater")) {
-			editor.setElement(getSkaterElement((Skater)p), prop, null, v);
+      if (prop.equals(Skater.EVENT_PENALTY) || prop.equals(Skater.EVENT_PENALTY_FOEXP)) {
+        // Replace whole skater.
+				converter.toElement(getTeamElement(((Skater)p).getTeam()), (Skater)p);
+      } else if (prop.equals(Skater.EVENT_REMOVE_PENALTY)) {
+        Skater.Penalty prev = (Skater.Penalty)(event.getPreviousValue());
+        if (prev != null) {
+          if (isPersistent()) {
+            editor.removeElement(getSkaterElement((Skater)p), Skater.EVENT_PENALTY, prev.getId());
+          } else {
+            editor.setRemovePI(editor.addElement(getSkaterElement((Skater)p), Skater.EVENT_PENALTY, prev.getId()));
+          }
+        }
+      } else if (prop.equals(Skater.EVENT_PENALTY_REMOVE_FOEXP)) {
+				if (isPersistent()) {
+					editor.removeElement(getSkaterElement((Skater)p), Skater.EVENT_PENALTY_FOEXP);
+        } else {
+          Skater.Penalty prev = (Skater.Penalty)(event.getPreviousValue());
+          if (prev != null) {
+            editor.setRemovePI(editor.addElement(getSkaterElement((Skater)p), Skater.EVENT_PENALTY_FOEXP, prev.getId()));
+          }
+        }
+      } else {
+        editor.setElement(getSkaterElement((Skater)p), prop, null, v);
+      }
 		} else if (p.getProviderName().equals("Clock")) {
 			Element e = editor.setElement(getClockElement((Clock)p), prop, null, v);
 			if (prop.equals("Time")) {
