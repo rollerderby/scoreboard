@@ -258,6 +258,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+			timeoutClockWasRunning = false;
+			jamClockWasRunning = true;
 
 			jc.stop();
 			for (TeamModel tm : teams.values()) {
@@ -282,6 +284,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
+
+      lastTimeoutOwner = getTimeoutOwner();
+			wasOfficialReview = isOfficialReview();
+			timeoutClockWasRunning = true;
+			jamClockWasRunning = false;
 			
 			if (!pc.isTimeAtEnd() && settings.getBoolean(SETTING_LINEUP_AFTER_TO)) {
 				lc.startNew();
@@ -395,19 +402,32 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ScoreBoardManager.gameSnapshot();
 		}
 	}
-	
-	protected void saveClockState(String type) {
-		if (undoLabelTimer != null) {
-			//If the last change can still be cancelled, stop the task that resets the label.
-			undoLabelTimer.cancel();
-		}
-		while (undoStack.size() >= settings.getLong(SETTING_UNDO_STACK_SIZE)) {
-			//keep the size of the stack limited
-			undoStack.removeLast();
-		}
-		HashMap<String, ClockState> clockStates = new HashMap<String, ClockState>();
-		for (ClockModel clock : getClockModels()) {
-			clockStates.put(clock.getId(), clock.getState());
+
+	public void unStopJam() {
+		synchronized (runLock) {
+			if (!(getClock(Clock.ID_LINEUP).isRunning() || getClockModel(Clock.ID_INTERMISSION).isRunning()))
+				return;
+
+			requestBatchStart();
+			if (getClock(Clock.ID_LINEUP).isRunning()) {
+				getClockModel(Clock.ID_LINEUP).stop();
+			}
+			if (getClock(Clock.ID_INTERMISSION).isRunning()) {
+				getClockModel(Clock.ID_INTERMISSION).stop();
+			}
+			if (timeoutClockWasRunning) {
+				setTimeoutOwner(lastTimeoutOwner);
+				setOfficialReview(wasOfficialReview);
+				getClockModel(Clock.ID_TIMEOUT).unstop();
+			} 
+			if (jamClockWasRunning) {
+				getTeamModel("1").unStopJam();
+				getTeamModel("2").unStopJam();
+				getClockModel(Clock.ID_JAM).unstop();
+			}
+			requestBatchEnd();
+
+			ScoreBoardManager.gameSnapshot();
 		}
 		HashMap<String, TeamState> teamStates = new HashMap<String, TeamState>();
 		for (TeamModel team : getTeamModels()) {
