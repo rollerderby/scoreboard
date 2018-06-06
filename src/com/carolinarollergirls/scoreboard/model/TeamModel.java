@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.model;
 import java.util.*;
 
 import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.states.TeamState;
 
 public interface TeamModel extends Team
 {
@@ -18,14 +19,15 @@ public interface TeamModel extends Team
 
 	public Team getTeam();
 
+	public TeamState getState();
+	
 	public void reset();
 
 	public void setName(String name);
 
 	public void startJam();
-	public void unStartJam();
 	public void stopJam();
-	public void unStopJam();
+	public void undo(TeamState savedState);
 	public void benchSkaters();
 
 	public List<AlternateNameModel> getAlternateNameModels();
@@ -55,7 +57,8 @@ public interface TeamModel extends Team
 	public void changeTimeouts(int change);
 	public void setOfficialReviews(int reviews);
 	public void changeOfficialReviews(int reviews);
-
+	public void resetTimeouts(boolean gameStart);
+	
 	public void setInTimeout(boolean in_timeouts);
 	public void setInOfficialReview(boolean in_official_review);
 	public void setRetainedOfficialReview(boolean retained_official_review);

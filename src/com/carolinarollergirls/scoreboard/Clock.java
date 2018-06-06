@@ -24,6 +24,8 @@ public interface Clock extends ScoreBoardEventProvider
 
 	public long getTime();
 	public long getInvertedTime();
+	public long getTimeElapsed();
+	public long getTimeRemaining();
 	public long getMinimumTime();
 	public long getMaximumTime();
 	public boolean isTimeAtStart(long time);
