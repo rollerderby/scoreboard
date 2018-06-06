@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,60 +47,152 @@ public class Ruleset {
 				return base;
 			}
 
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "PreGame",       "", "Time To Derby"));
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Intermission",  "", "Intermission"));
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Official",      "", "Final Score"));
-			newRule( new StringRule(false, "ScoreBoard", null, "BackgroundStyle", "", ""));
-			newRule( new StringRule(false, "ScoreBoard", null, "BoxStyle",        "", "box_flat"));
-			newRule( new StringRule(false, "ScoreBoard", null, "CurrentView",     "", "scoreboard"));
-			newRule( new StringRule(false, "ScoreBoard", null, "CustomHtml",      "", "/customhtml/fullscreen/example.html"));
-			newRule(new BooleanRule(false, "ScoreBoard", null, "HideJamTotals",   "", false, "Hide Jam Totals", "Show Jam Totals"));
-			newRule( new StringRule(false, "ScoreBoard", null, "Image",           "", "/images/fullscreen/American Flag.jpg"));
-			newRule(new IntegerRule(false, "ScoreBoard", null, "SidePadding",     "", 0));
-			newRule(new BooleanRule(false, "ScoreBoard", null, "SwapTeams",       "", false, "Teams Swapped", "Teams Normal"));
-			newRule( new StringRule(false, "ScoreBoard", null, "Video",           "", "/videos/fullscreen/American Flag.webm"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Time",
+					"Duration of Intermissions", "15:00"));
+			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "PreGame",
+					"Text Displayed for clock before first period", "Time To Derby"));
+			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Intermission",
+					"Text Displayed for clock between periods", "Intermission"));
+			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Unofficial",
+					"Text Displayed immediately after last period", "Unofficial Score"));
+			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Official",
+					"Text Displayed when score is declared official", "Final Score"));
+			
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "ClockAfter",
+					"Which clock to show between the end of a timeout and the start of the next Jam", true, "Show Lineup Clock", "Show Timeout Clock"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "StopOnUnspecifiedTO",
+					"If this is set to Stop, period clock will stop for all timeouts. If this is set to Keep Running, the following options can override for specific types or based in duration. Period Clock will be corrected, if stopping type is selected within 15s.", true, "Stop Period Clock", "Keep Period Clock Running"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "StopOnOfficialTO",
+					"Stop the period clock for Official Timeouts", true, "Stop Period Clock", "Keep Period Clock Running"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "StopOnTeamTO",
+					"Stop the period clock for Team Timeouts", true, "Stop Period Clock", "Keep Period Clock Running"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "StopOnOR",
+					"Stop the period clock for Official Reviews", true, "Stop Period Clock", "Keep Period Clock Running"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_TIMEOUT,      "StopAfter",
+					"Stop the period clock for timeouts longer than this value. Set to a high value to disable.", "02:00"));
+			
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP,       "Time",
+					"(Maximum) duration of Lineup before a regular Jam", "00:30"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP,       "OvertimeTime",
+					"Duration of Lineup before an overtime Jam", "01:00"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP,       "AutoStart",
+					"Automatically start a Jam or Timeout after lineup time has elapsed?", false, "Auto Start", "Stay in Lineup"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP,       "AutoStartType",
+					"What to start after lineup is over. (Only has an effect if AutoStart is enabled)", false, "Auto Start Jam", "Auto Start Timeout"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartBufferTime",
+					"Time to wait after the end of lineup before auto starting. Period/Jam clock will be corrected accordingly. Must be 0 if lineup clock is counting down", "00:02"));
 
-			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MaximumNumber", "", 2));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_PERIOD,       "Direction",     "", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MaximumTime",   "", "30:00"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM,          "Number",
+					"How to count Jam numbers", true, "Reset Each Period", "Continue Counting"));
 
-			newRule( new StringRule(false, "Clock", Clock.ID_JAM,          "Name",          "", Clock.ID_JAM));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MinimumNumber", "", 1));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MaximumNumber", "", 999));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Direction",     "", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MaximumTime",   "", "2:00"));
+			newRule(new IntegerRule(false, "Team", null, "Timeouts",
+					"How many timeouts is each tem granted each game or period?", 3));
+			newRule(new BooleanRule(false, "Team", null, "TimeoutsPer",
+					"Are timeouts granted per period or per game?", false, "Period", "Game"));
+			newRule(new IntegerRule(false, "Team", null, "OfficialReviews",
+					"How many official reviews is each tem granted each game or period", 1));
+			newRule(new BooleanRule(false, "Team", null, "OfficialReviewsPer",
+					"Are official reviews per period or per game?", true, "Period", "Game"));
+			
+			newRule(new BooleanRule(false, "Clock", null,           "Sync",
+					"Should seconds tick over at the same time for all clocks? When true, newly starting clocks will be adjusted by up to half a second to get in sync", true, "Sync Clocks", "Don't Sync Clocks"));
+			newRule(   new TimeRule(false, "Clock", null,			"UndoTimeLimit",
+					"How long starting or stopping clocks can be undone", "60:00"));
+			newRule(new IntegerRule(false, "Clock", null,			"UndoStackSize",
+					"How many actions can be undone (if they happened within the time limit)", 1));
 
-			newRule( new StringRule(false, "Clock", Clock.ID_LINEUP,       "Name",          "", Clock.ID_LINEUP));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MinimumNumber", "", 1));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MaximumNumber", "", 999));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "Direction",     "", false, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MaximumTime",   "", "60:00"));
+			newRule(new BooleanRule(false, "ScoreBoard", null,      "HideJamTotals",
+					"Should the score for the current Jam be displayed?", false, "Hide Jam Totals", "Show Jam Totals"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "BackgroundStyle",
+					"Background style to be used. Possible values: bg_blacktowhite, bg_whitetoblack, bg_black", "bg_blacktowhite"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "BoxStyle",
+					"Style to use for the score and time boxes. Possible values: box_rounded, box_flat, box_flat_bright", "box_flat"));
+			newRule(new BooleanRule(false, "ScoreBoard", null,      "SwapTeams",
+					"Swap public Team display compared to operator display?", false, "Teams Swapped", "Teams Normal"));
+			newRule(new IntegerRule(false, "ScoreBoard", null,      "SidePadding",
+					"How much padding to use on the side (in % of display width).", 0));
+			newRule( new StringRule(false, "ScoreBoard", null,      "CurrentView",
+					"Default view to be shown. Possible values: scoreboard, image, video, html", "scoreboard"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "CustomHtml",
+					"Page to display on the html view", "/customhtml/fullscreen/example.html"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "Image",
+					"Image to show on the image view", "/images/fullscreen/American Flag.jpg"));
+			newRule( new StringRule(false, "ScoreBoard", null,      "Video",
+					"Video to display on the video view", "/videos/fullscreen/American Flag.webm"));
 
-			newRule( new StringRule(false, "Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumNumber", "", 999));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_TIMEOUT,      "Direction",     "", false, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumTime",   "", "60:00"));
+			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "TeamLogos",
+					"Display Teamlogos on Overlays that support it?", true, "Display", "Hide"));
+			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "LogoBackground",
+					"Background color used for teamlogo area.", true, "Black", "Default"));
 
-			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Name",          "", Clock.ID_INTERMISSION));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumNumber", "", 0));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumNumber", "", 2));
+			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",
+					"The name displayed on the operator screen", Clock.ID_PERIOD));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber",
+					"Don't change unless you know what you are doing", 1));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MaximumNumber",
+					"Number of periods", 2));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_PERIOD,       "Direction",
+					"Which way should this clock count?", true, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MinimumTime",
+					"Don't change unless you know what you are doing", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MaximumTime",
+					"Duration of a period.", "30:00"));
+
+			newRule( new StringRule(false, "Clock", Clock.ID_JAM,          "Name",
+					"The name displayed on the operator screen", Clock.ID_JAM));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MinimumNumber",
+					"Don't change unless you know what you are doing", 0));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MaximumNumber",
+					"Must be larger than the number of Jams", 999));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Direction",
+					"Which way should this clock count?", true, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MinimumTime",
+					"Don't change unless you know what you are doing", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MaximumTime",
+					"Maximum duration of a Jam.", "2:00"));
+
+			newRule( new StringRule(false, "Clock", Clock.ID_LINEUP,       "Name",
+					"The name displayed on the operator screen", Clock.ID_LINEUP));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MinimumNumber",
+					"Lineup number is not currently used for anything", 0));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MaximumNumber",
+					"Lineup number is not currently used for anything", 999));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "Direction",
+					"Which way should this clock count?", false, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MinimumTime",
+					"Don't change unless you know what you are doing", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MaximumTime",
+					"Must be length of lineup if counting down (will be automatically adjusted for overtime, if necessary). Must be larger than lineup time + buffer time if auto start is used", "60:00"));
+
+			newRule( new StringRule(false, "Clock", Clock.ID_TIMEOUT,      "Name",
+					"The name displayed on the operator screen", Clock.ID_TIMEOUT));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumNumber",
+					"Timeout number is not currently used for anything", 0));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumNumber",
+					"Timeout number is not currently used for anything", 999));
+			newRule(new BooleanRule(false, "Clock", Clock.ID_TIMEOUT,      "Direction",
+					"Which way should this clock count?", false, "Count Down", "Count Up"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumTime",
+					"Don't change unless you know what you are doing", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumTime",
+					"Timeout clock will stop after this time, possibly causing unexpected side effects", "60:00"));
+
+			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Name",
+					"The name displayed on the operator screen", Clock.ID_INTERMISSION));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumNumber",
+					"Don't change unless you know what you are doing", 0));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumNumber",
+					"Should be equal to the number of periods set above.", 2));
 			newRule(new BooleanRule(false, "Clock", Clock.ID_INTERMISSION, "Direction",     "", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "Time",          "", "15:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumTime",
+					"Don't change unless you know what you are doing", "0:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumTime",
+					"Value will be ignored. Set intermission duration under ScoreBoard - Intermission above.", "60:00"));
 
-			newRule(new IntegerRule( true, "Team", null, "Timeouts", "", 3));
-			newRule(new IntegerRule( true, "Team", null, "OfficialReviews", "", 1));
-			newRule( new StringRule( true, "Team", "1", "Name", "", "Team 1"));
-			newRule( new StringRule( true, "Team", "2", "Name", "", "Team 2"));
+			newRule( new StringRule( true, "Team", "1", "Name",
+					"Team name to display on scoreboard reset", "Team 1"));
+			newRule( new StringRule( true, "Team", "2", "Name",
+					"Team name to display on scoreboard reset", "Team 2"));
 
 			base = new Ruleset();
 			base.name = "WFTDA Sanctioned";
@@ -291,7 +384,7 @@ public class Ruleset {
 				String rule = r.getFullName();
 				Object v = values.opt(rule);
 				if (v != null) {
-					boolean didSet = rs.setRule(rule, v);
+					rs.setRule(rule, v);
 				}
 			}
 			rs.immutable = json.optBoolean("immutable", false);
@@ -422,7 +515,7 @@ public class Ruleset {
 	public Ruleset getParent() { return parent; }
 
 	private static Map<Rule, List<RulesetReceiver>> rule_receivers = new HashMap<Rule, List<RulesetReceiver>>();
-	private static Map<String, Rule> rule_definitions = new HashMap<String, Rule>();
+	private static Map<String, Rule> rule_definitions = new LinkedHashMap<String, Rule>();
 	private static List<Ruleset> rulesets = new LinkedList<Ruleset>();
 	private static Ruleset base = null;
 	private static Object baseLock = new Object();

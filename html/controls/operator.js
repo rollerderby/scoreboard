@@ -14,7 +14,6 @@ _include("/json", [ "Game.js", "Rulesets.js" ]);
 
 $sb(function() {
 	createScoreTimeTab();
-	createPoliciesTab();
 	createScoreBoardViewTab();
 	createTeamsTab();
 	createSaveLoadTab();
@@ -421,7 +420,7 @@ function createPeriodEndTimeoutDialog(td) {
 
 function createOvertimeDialog() {
 	var dialog = $("<div>");
-	$("<span>").text("Overtime can only be started at the end of Period ").appendTo(dialog);
+	$("<span>").text("Note: Overtime can only be started at the end of Period ").appendTo(dialog);
 	$sb("ScoreBoard.Clock(Period).MaximumNumber").$sbElement("<span>").appendTo(dialog);
 	$("<button>").addClass("StartOvertime").text("Start Overtime Lineup clock").appendTo(dialog)
 		.click(function() {
@@ -439,28 +438,35 @@ function createOvertimeDialog() {
 
 function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
-	var controlsTr = createRowTable(3,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
+	var controlsTr = createRowTable(4,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
 
-	$sb("ScoreBoard.StartJam").$sbControl("<button>").text("Start Jam").val("true")
-		.attr("id", "StartJam").addClass("KeyControl").button()
-		.appendTo(controlsTr.children("td:eq(0)"));
-	$sb("ScoreBoard.UnStartJam").$sbControl("<button>").text("UN-Start Jam").val("true")
-		.attr("id", "UnStartJam").addClass("KeyControl UndoControls ShowUndo").button()
-		.appendTo(controlsTr.children("td:eq(0)"));
+	var jamStartButton = $sb("ScoreBoard.StartJam").$sbControl("<button>").html("<span class=\"Label\">Start Jam</span>").val("true")
+		.attr("id", "StartJam").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.StartLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		jamStartButton.find("span.Label").html(val);
+		});
+	jamStartButton.appendTo(controlsTr.children("td:eq(0)"));
 
-	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam/TO").val("true")
-		.attr("id", "StopJam").addClass("KeyControl").button()
-		.appendTo(controlsTr.children("td:eq(1)"));
-	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam/TO").val("true")
-		.attr("id", "UnStopJam").addClass("KeyControl UndoControls ShowUndo").button()
-		.appendTo(controlsTr.children("td:eq(1)"));
+	var jamStopButton = $sb("ScoreBoard.StopJam").$sbControl("<button>").html("<span class=\"Label\">Lineup</span>").val("true")
+		.attr("id", "StopJam").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.StopLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		jamStopButton.find("span.Label").html(val);
+		});
+	jamStopButton.appendTo(controlsTr.children("td:eq(1)"));
 
-	$sb("ScoreBoard.Timeout").$sbControl("<button>").text("Timeout").val("true")
-		.attr("id", "Timeout").addClass("KeyControl").button()
-		.appendTo(controlsTr.children("td:eq(2)"));
-	$sb("ScoreBoard.UnTimeout").$sbControl("<button>").text("UN-Timeout").val("true")
-		.attr("id", "UnTimeout").addClass("KeyControl UndoControls ShowUndo").button()
-		.appendTo(controlsTr.children("td:eq(2)"));
+	var timeoutButton = $sb("ScoreBoard.Timeout").$sbControl("<button>").html("<span class=\"Label\">Timeout</span>").val("true")
+		.attr("id", "Timeout").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.TimeoutLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		timeoutButton.find("span.Label").html(val);
+		});
+	timeoutButton.appendTo(controlsTr.children("td:eq(2)"));
+
+	var undoButton = $sb("ScoreBoard.ClockUndo").$sbControl("<button>").html("<span class=\"Label\"></span>").val("true")
+		.attr("id", "ClockUndo").addClass("KeyControl").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		undoButton.find("span.Label").html(val);
+		});
+	undoButton.appendTo(controlsTr.children("td:eq(3)"));
 
 	return table;
 }
@@ -667,7 +673,7 @@ function createTeamTable() {
 		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
 
 		var timeout = sbTeam.$sb("Timeout");
-		var timeoutButton = timeout.$sbControl("<button>").text("Timeout").val("true")
+		var timeoutButton = timeout.$sbControl("<button>").text("Team TO").val("true")
 			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button();
 		var timeoutHighlight = function() {
 			var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == team;
@@ -947,84 +953,6 @@ function createTimeSetWarningDialog(source) {
 }
 
 
-///////////////
-// Policies tab
-///////////////
-
-function createPoliciesTab() {
-	$("<table>").attr("id", "Policies")
-		.appendTo(createTab("Policies", "PoliciesTab"))
-		.data("loadContentFunction", createPoliciesContent);
-}
-
-function createPoliciesContent(table) {
-	$("<td>").attr("colspan", "2")
-		.appendTo($("<tr>").addClass("ExpandCollapseAll").appendTo(table))
-		.append("<a>Click to Expand/Collapse all</a>")
-		.click(function() {
-			if ($("#Policies tr.Name>td.Hide").length)
-				$("#Policies tr.Name>td.Hide").click();
-			else
-				$("#Policies tr.Name>td:not(.Hide)").click();
-		});
-
-	$sb("ScoreBoard").$sbBindAddRemoveEach("Policy", 
-		function(event, node) { addPolicy(node); },
-		function(event, node) { removePolicy(node); }
-	);
-}
-
-function addPolicy(policy) {
-	var nameTr = $("<tr>").addClass("Name")
-		.attr("data-policy", policy.$sbId)
-		.append($("<td>").attr("colspan", "2"));
-	_windowFunctions.appendAlphaSortedByAttr($("#Policies>tbody"), nameTr, "data-policy", 1);
-	policy.$sb("Name").$sbElement("<a>").appendTo(nameTr.children("td"));
-
-	var contentTr = $("<tr>").addClass("Content").insertAfter(nameTr)
-		.attr("data-policy", policy.$sbId)
-		.append($("<td>").addClass("Description"))
-		.append($("<td>").addClass("Controls"));
-	$("<div>").append(policy.$sb("Description").$sbElement("<a>"))
-		.appendTo(contentTr.children("td.Description"));
-	var controls = $("<div>").appendTo(contentTr.children("td.Controls"));
-
-	$("<span>")
-		.append(policy.$sb("Enabled").$sbControl("<label>Enabled</label><input type='checkbox'/>"))
-		.append("<br>").append("<br>")
-		.appendTo(controls);
-
-	var toggleContent = function() {
-		if ($(this).toggleClass("Hide").hasClass("Hide"))
-			contentTr.find("td>div").hide("blind", 250);
-		else
-			contentTr.find("td>div").show("blind", 250);
-	};
-	_crgUtils.bindAndRun(nameTr.children("td"), "click", toggleContent);
-
-	policy.$sbBindAddRemoveEach("Parameter",
-		function(event, node) {
-			var span = $("<span>").attr("data-parameter", node.$sbId)
-				.append(node.$sb("Name").$sbElement("<a>"))
-				.append("<br>")
-				.appendTo(controls);
-			var type = node.$sb("Type").$sbGet();
-			if (type == "Boolean")
-				node.$sb("Value").$sbControl("<input type='checkbox'/>").insertAfter(span.children("a"));
-			else
-				node.$sb("Value").$sbControl("<input type='text' size='10'/>").insertAfter(span.children("a"));
-		},
-		function(event, node) {
-			controls.children("span[data-parameter='"+node.$sbId+"']").remove();
-		}
-	);
-}
-
-function removePolicy(policy) {
-	$("#Policies tr[data-policy='"+policy.$sbId+"']").remove();
-}
-
-
 //////////////////////
 // ScoreBoard View tab
 //////////////////////
@@ -1216,7 +1144,7 @@ function createIntermissionControlDialog() {
 		{ id: "ScoreBoard.Intermission.Intermission", display: "Intermission", type: "text" },
 		{ id: "ScoreBoard.Intermission.Unofficial", display: "Unofficial Score", type: "text" },
 		{ id: "ScoreBoard.Intermission.Official", display: "Official Score", type: "text" },
-		{ id: "Clock.Intermission.Time", display: "Time", type: "time" }
+		{ id: "ScoreBoard.Intermission.Time", display: "Time", type: "time" }
 	];
 	$.each( fields, function(i, field) {
 		var path = "ScoreBoard.Settings.Setting(" + field.id + ")";

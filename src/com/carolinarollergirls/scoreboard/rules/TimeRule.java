@@ -1,9 +1,5 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import com.carolinarollergirls.scoreboard.ClockConversion;
 
 public class TimeRule extends Rule {

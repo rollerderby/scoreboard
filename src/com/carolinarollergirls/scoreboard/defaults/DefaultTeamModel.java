@@ -8,13 +8,28 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.policy.*;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.PositionNotFoundException;
+import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.states.TeamState;
 
 public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
 {
@@ -33,22 +48,28 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		// Register for default values from the rulesets
 		Ruleset.registerRule(this, "Team." + id + ".Name");
 		Ruleset.registerRule(this, "Team.Timeouts");
+		Ruleset.registerRule(this, "Team.TimeoutsPer");
 		Ruleset.registerRule(this, "Team.OfficialReviews");
+		Ruleset.registerRule(this, "Team.OfficialReviewsPer");
 
 		reset();
 	}
 
 	public void applyRule(String rule, Object value) {
 		if (rule.equals("Team.Timeouts"))
-			setTimeouts((Integer)value);
+			maximumTimeouts = (Integer)value;
+		else if (rule.equals("Team.TimeoutsPer"))
+			timeoutsPerPeriod = (Boolean)value;
 		else if (rule.equals("Team.OfficialReviews"))
-			setOfficialReviews((Integer)value);
+			maximumOfficialReviews = (Integer)value;
+		else if (rule.equals("Team.OfficialReviewsPer"))
+			officialReviewsPerPeriod = (Boolean)value;
 		else if (rule.equals("Team." + id + ".Name"))
 			setName((String)value);
 	}
 
 	public String getProviderName() { return "Team"; }
-	public Class getProviderClass() { return Team.class; }
+	public Class<?> getProviderClass() { return Team.class; }
 	public String getProviderId() { return getId(); }
 
 	public ScoreBoard getScoreBoard() { return scoreBoardModel.getScoreBoard(); }
@@ -67,6 +88,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		setInTimeout(false);
 		setInOfficialReview(false);
 		setRetainedOfficialReview(false);
+		resetTimeouts(true);
 
 		removeAlternateNameModels();
 		removeColorModels();
@@ -84,6 +106,11 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public Team getTeam() { return this; }
 
+	public TeamState getState() {
+		return new TeamState(id, score, lastscore, timeouts, officialReviews,
+				leadJammer, starPass, in_jam, in_timeout, in_official_review);
+	}
+
 	public String getName() { return name; }
 	public void setName(String n) {
 		synchronized (nameLock) {
@@ -95,33 +122,40 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public void startJam() {
 		synchronized (scoreLock) {
-			saved_lastscore = getLastScore();
+			in_jam = true;
 			setLastScore(getScore());
 		}
-	}
-	public void unStartJam() {
-		setLastScore(saved_lastscore);
 	}
 
 	public void stopJam() {
 		requestBatchStart();
-
+		in_jam = false;
 		benchSkaters();
-		saved_leadJammer = leadJammer;
-		saved_starPass = starPass;
 		_setLeadJammer(Team.LEAD_NO_LEAD);
 		_setStarPass(false);
 
 		requestBatchEnd();
 	}
-	public void unStopJam() {
-		requestBatchStart();
-		unBenchSkaters();
-		_setLeadJammer(saved_leadJammer);
-		_setStarPass(saved_starPass);
-		requestBatchEnd();
-	}
 
+	public void undo(TeamState savedState) {
+		if (!savedState.getId().equals(id)) {
+			return;
+		}
+
+		if (!in_jam && savedState.inJam()) {
+			unBenchSkaters();
+		}
+		in_jam = savedState.inJam();
+		setInTimeout(savedState.inTimeout());
+		setInOfficialReview(savedState.inOfficialReview());
+		setScore(savedState.getScore());
+		setLastScore(savedState.getLastScore());
+		setTimeouts(savedState.getTimeouts());
+		setOfficialReviews(savedState.getOfficialReviews());
+		_setLeadJammer(savedState.getLeadJammer());
+		_setStarPass(savedState.getStarPass());
+	}
+	
 	public void benchSkaters() {
 		for (SkaterModel sM : skaters.values())
 			sM.bench();
@@ -221,14 +255,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public void timeout() {
 		if (getTimeouts() > 0) {
-			changeTimeouts(-1);
 			getScoreBoardModel().timeout(this);
+			changeTimeouts(-1);
 		}
 	}
 	public void officialReview() {
 		if (getOfficialReviews() > 0) {
-			changeOfficialReviews(-1);
 			getScoreBoardModel().timeout(this, true);
+			changeOfficialReviews(-1);
 		}
 	}
 
@@ -318,13 +352,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public int getTimeouts() { return timeouts; }
-//FIXME - add MinimumTimeouts and MaximumTimeouts instead of hardcoding 0 and 3
 	public void setTimeouts(int t) {
 		synchronized (timeoutsLock) {
 			if (0 > t)
 				t = 0;
-			if (3 < t)
-				t = 3;
+			if (maximumTimeouts < t)
+				t = maximumTimeouts;
 			Integer last = new Integer(timeouts);
 			timeouts = t;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUTS, new Integer(timeouts), last));
@@ -336,13 +369,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public int getOfficialReviews() { return officialReviews; }
-//FIXME - add MinimumOfficialReviews and MaximumOfficialReviews instead of hardcoding 0 and 1
 	public void setOfficialReviews(int r) {
 		synchronized (officialReviewsLock) {
 			if (0 > r)
 				r = 0;
-			if (1 < r)
-				r = 1;
+			if (maximumOfficialReviews < r)
+				r = maximumOfficialReviews;
 			Integer last = new Integer(officialReviews);
 			officialReviews = r;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEWS, new Integer(officialReviews), last));
@@ -351,6 +383,15 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public void changeOfficialReviews(int c) {
 		synchronized (officialReviewsLock) {
 			setOfficialReviews(getOfficialReviews() + c);
+		}
+	}
+	public void resetTimeouts(boolean gameStart) {
+		if (gameStart || timeoutsPerPeriod) {
+			setTimeouts(maximumTimeouts);
+		}
+		if (gameStart || officialReviewsPerPeriod) {
+			setOfficialReviews(maximumOfficialReviews);
+			setRetainedOfficialReview(false);
 		}
 	}
 
@@ -490,16 +531,17 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected int score;
 	protected int lastscore;
 	protected int timeouts;
+	protected int maximumTimeouts;
+	protected boolean timeoutsPerPeriod;
 	protected int officialReviews;
+	protected int maximumOfficialReviews;
+	protected boolean officialReviewsPerPeriod;
 	protected String leadJammer = Team.LEAD_NO_LEAD;
 	protected boolean starPass = false;
+	protected boolean in_jam = false;
 	protected boolean in_timeout = false;
 	protected boolean in_official_review = false;
 	protected boolean retained_official_review = false;
-
-	private int saved_lastscore = 0;
-	private String saved_leadJammer = Team.LEAD_NO_LEAD;
-	private boolean saved_starPass = false;
 
 	protected Object nameLock = new Object();
 	protected Object logoLock = new Object();
@@ -547,7 +589,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public TeamModel getTeamModel() { return teamModel; }
 
 		public String getProviderName() { return "AlternateName"; }
-		public Class getProviderClass() { return AlternateName.class; }
+		public Class<?> getProviderClass() { return AlternateName.class; }
 		public String getProviderId() { return getId(); }
 
 		protected TeamModel teamModel;
@@ -577,7 +619,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public TeamModel getTeamModel() { return teamModel; }
 
 		public String getProviderName() { return "Color"; }
-		public Class getProviderClass() { return Color.class; }
+		public Class<?> getProviderClass() { return Color.class; }
 		public String getProviderId() { return getId(); }
 
 		protected TeamModel teamModel;
