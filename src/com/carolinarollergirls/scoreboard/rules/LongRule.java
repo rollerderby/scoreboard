@@ -1,8 +1,5 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class LongRule extends Rule {
 	public LongRule(boolean onResetOnly, String group, String subgroup, String name, String description, int defaultValue) {

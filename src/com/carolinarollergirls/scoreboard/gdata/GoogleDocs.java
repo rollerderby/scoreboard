@@ -7,12 +7,12 @@ package com.carolinarollergirls.scoreboard.gdata;
  * License version 3 (or later), or the Apache License 2.0, at your option.
  * See the file COPYING for details.
  */
-
+/*
 import java.io.*;
 import java.net.*;
 import java.util.*;
 import java.text.SimpleDateFormat;
-
+*/
 // Disable this incomplete class until we have time
 // to update to the latest gdata code and complete
 // this functionality.

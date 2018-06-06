@@ -60,9 +60,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public List<Team> getTeams();
 	public Team getTeam(String id);
 
-	public List<Policy> getPolicies();
-	public Policy getPolicy(String id);
-
 	public Ruleset _getRuleset();
 	public String getRuleset();
 
