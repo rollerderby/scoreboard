@@ -68,5 +68,15 @@
       </Position>
     </Team>
   </ScoreBoard>
+  <Teams>
+    <Team Id="Black">
+      <Name><![CDATA[Black]]></Name>
+      <Logo />
+    </Team>
+    <Team Id="White">
+      <Name><![CDATA[White]]></Name>
+      <Logo />
+    </Team>
+  </Teams>
 </document>
 
