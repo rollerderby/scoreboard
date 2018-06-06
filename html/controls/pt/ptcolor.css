@@ -1,11 +1,21 @@
-body { font-size: 10pt; }
-
+body {	
+	font-size: 11pt;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;"; 
+}
+table,tr,td{
+	border-collapse: collapse;
+	border-color:#777;
+	}
+/*increase readability by making penalty codes bold */
+tr:nth-child(odd) {
+    font-weight:bold;
+}
 .Team {
 	position: absolute;
 	width: 49%;
 	top: 0%;
 }
-.Team thead td { font-size: 1.1em; font-weight: bold; background-color: #000; color: #FFF; }
+.Team thead td { font-size: 1em; font-weight: bold; background-color: #222; color: #FFF; }
 .Team td { text-align: center; vertical-align: center; }
 .Team1 { left: 0.5%; }
 .Team2 { right: 0.5%; }
@@ -24,3 +34,19 @@ body { font-size: 10pt; }
 .PenaltyEditor .Codes>div div { text-align: center; }
 .PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; }
 .PenaltyEditor .Codes>div .Description { font-size: 0.75em; }
+
+/* responsive vertical layout on phones and tablet portrait */
+@media only screen and (max-width: 960px) { 
+   .Team{
+	position: relative;
+	float:left;
+	width: 99%;
+	margin-bottom:1em;
+	}
+	.Team1, .Team2 { 
+	position: relative; 
+	margin:2px;
+	left:auto;
+	right:auto;
+	}
+}
