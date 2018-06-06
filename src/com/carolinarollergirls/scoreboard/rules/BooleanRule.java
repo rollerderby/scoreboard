@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard.rules;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 

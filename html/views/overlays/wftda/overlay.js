@@ -120,6 +120,35 @@ $sb(function() {
 
   // The following was brutally ripped from overlay.js . Team2 stuff is left in to make switching the logo a matter of a simple html edit for now
 
+  // It puts the logo in the box, or else it gets the hose again.
+//  $.each( [ 1, 2 ], function(i, team) {
+//          $sb("Pages.Page(Overlay).Logo").$sbElement("#OverlayLogo>img", { sbelement: { autoFitText: true, autoFitTextContainer: "img" } });
+//  });
+
+  // Disable or Enable Logos
+//  $sb("ScoreBoard.Policy(PagePolicy_overlay.html).Enabled").$sbBindAndRun("sbchange", function(x, state) {
+          // Note that 'state' is a string, not a Bool.
+//          if (state == "true") {
+//                  $(".logos>img").height("100%");
+//                  $(".logos>img").width("100%");
+//                  $(".logos").show(100);
+//          } else {
+//                  $(".logos>img").height("0");
+//                  $(".logos>img").width("0");
+//                  $(".logos").hide(100);
+//          }
+//  });
+
+  // Toggle black background on logos
+//  $sb("Scoreboard.Policy(PagePolicy_overlay.html).Parameter(Black Background).Value").$sbBindAndRun("sbchange", function(x, state) {
+//          if (state == "true") {
+//                  $(".logos").css("background-color", "black");
+//          } else {
+//                  $(".logos").css("background-color", "#0f0");
+//          }
+//  });
+
+
 
   // Statusbar text.
   var statusTriggers = $sb("ScoreBoard.Clock(Jam).Running")

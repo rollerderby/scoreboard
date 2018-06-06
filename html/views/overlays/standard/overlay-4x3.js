@@ -103,8 +103,9 @@ $sb(function() {
   });
   
   // Disable or Enable Logos
-  $sb("ScoreBoard.Settings.Setting(ScoreBoard.Overlay.TeamLogos)").$sbBindAndRun("sbchange", function(x, state) {
-	  if (isTrue(state)) {
+  $sb("ScoreBoard.Policy(PagePolicy_overlay.html).Enabled").$sbBindAndRun("sbchange", function(x, state) {
+	  // Note that 'state' is a string, not a Bool.
+	  if (state == "true") {
 		  $(".logos>img").height("100%");
 		  $(".logos>img").width("100%");
 		  $(".logos").show(100);
@@ -116,8 +117,8 @@ $sb(function() {
   });
   
   // Toggle black background on logos
-  $sb("Scoreboard.Settings.Setting(ScoreBoard.Overlay.LogoBackground)").$sbBindAndRun("sbchange", function(x, state) {
-	  if (isTrue(state)) {
+  $sb("Scoreboard.Policy(PagePolicy_overlay.html).Parameter(Black Background).Value").$sbBindAndRun("sbchange", function(x, state) {
+	  if (state == "true") {
 		  $(".logos").css("background-color", "black");
 	  } else {
 		  $(".logos").css("background-color", "#0f0");

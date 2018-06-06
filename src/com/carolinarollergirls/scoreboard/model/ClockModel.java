@@ -9,23 +9,20 @@ package com.carolinarollergirls.scoreboard.model;
  */
 
 import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.states.ClockState;
 
 public interface ClockModel extends Clock
 {
 	public ScoreBoardModel getScoreBoardModel();
 
 	public Clock getClock();
-	
-	public ClockState getState();
 
 	public void reset();
 
 	public void start();
-	public void startNew();
 	public void stop();
 
-	public void undo(ClockState saveState);
+	public void unstart();
+	public void unstop();
 
 	public void setName(String name);
 
@@ -38,7 +35,6 @@ public interface ClockModel extends Clock
 
 	public void setTime(long ms);
 	public void changeTime(long ms);
-	public void elapseTime(long ms);
 	public void resetTime();
 	public void setMinimumTime(long ms);
 	public void changeMinimumTime(long ms);

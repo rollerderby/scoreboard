@@ -50,17 +50,14 @@ function loadDefinitions() {
 			var newSection = function(def) {
 				var name = def.group;
 				var section = $("<div>")
-					.addClass("section folded")
+					.addClass("section")
 					.attr("group", def.group)
 				if (def.subgroup != null) {
 					name = name + " - " + def.subgroup;
 					section.attr("subgroup", def.subgroup);
 				}
 
-				section.append($("<div>").addClass("header")
-					.click(function(e) {
-						section.toggleClass("folded");
-					}).append(name));
+				section.append($("<div>").addClass("header").append(name));
 
 				return section;
 			};
@@ -74,14 +71,10 @@ function loadDefinitions() {
 				if (s.attr("group") == def.group && s.attr("subgroup") == def.subgroup) {
 					section = s;
 				}
-				/*
-				 * this block of code will sort the sections alphabetically. Leaving it out will make the sections
-				 * appear in the order in which they appear in the rule definitions in the Java code.
-				 * 
-				 * if (s.attr("group") > def.group || (s.attr("group") == def.group && s.attr("subgroup") > def.subgroup)) {
+				if (s.attr("group") > def.group || (s.attr("group") == def.group && s.attr("subgroup") > def.subgroup)) {
 					section = newSection(def);
 					section.insertBefore(s);
-				}*/
+				}
 			});
 			if (section == null) {
 				section = newSection(def);
@@ -96,14 +89,8 @@ function loadDefinitions() {
 		};
 	 	$.each(definitions, function(idx, def) {
 			var div = findSection(def);
-			var tooltiptext = null;
-			if (def.description != "") {
-				tooltiptext = $("<span>").addClass("tooltiptext").append(def.description);
-			}
 			$("<div>").addClass("name").appendTo(div)
-				.append($("<label>").append($("<input>").attr("type", "checkbox").prop("checked", true).click(definitionOverride))
-					.append(def.name).append(tooltiptext))/*)*/;
-			
+				.append($("<label>").append($("<input>").attr("type", "checkbox").prop("checked", true).click(definitionOverride)).append(def.name));
 
 			var value = $("<div>").addClass("value").appendTo(div);
 			value.append($("<span>").addClass("inherit"));

@@ -8,19 +8,13 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import org.jdom.Document;
-import org.jdom.Element;
+import java.util.*;
 
-import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.Skater;
-import com.carolinarollergirls.scoreboard.Team;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import org.jdom.*;
+
+import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.event.*;
 
 /**
  * Converts a ScoreBoardEvent into a representative XML Document or XML String.
@@ -106,26 +100,33 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 					editor.removeElement(getScoreBoardElement(), "Team", ((Team)event.getValue()).getId());
 				else
 					editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Team)event.getValue()));
+			} else if (prop.equals(ScoreBoard.EVENT_ADD_POLICY)) {
+				converter.toElement(getScoreBoardElement(), (Policy)event.getValue());
+			} else if (prop.equals(ScoreBoard.EVENT_REMOVE_POLICY)) {
+				if (isPersistent())
+					editor.removeElement(getScoreBoardElement(), "Policy", ((Policy)event.getValue()).getId());
+				else
+					editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Policy)event.getValue()));
 			} else {
 				editor.setElement(getScoreBoardElement(), prop, null, v);
 			}
 		} else if (p.getProviderName().equals("Team")) {
 			if (prop.equals(Team.EVENT_ADD_ALTERNATE_NAME)) {
-				converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue());
+				Element e = converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue());
 			} else if (prop.equals(Team.EVENT_REMOVE_ALTERNATE_NAME)) {
 				if (isPersistent())
 					editor.removeElement(getTeamElement((Team)p), "AlternateName", ((Team.AlternateName)event.getValue()).getId());
 				else
 					editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue()));
 			} else if (prop.equals(Team.EVENT_ADD_COLOR)) {
-				converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue());
+				Element e = converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue());
 			} else if (prop.equals(Team.EVENT_REMOVE_COLOR)) {
 				if (isPersistent())
 					editor.removeElement(getTeamElement((Team)p), "Color", ((Team.Color)event.getValue()).getId());
 				else
 					editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue()));
 			} else if (prop.equals(Team.EVENT_ADD_SKATER)) {
-				converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
+				Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
 			} else if (prop.equals(Team.EVENT_REMOVE_SKATER)) {
 				if (isPersistent())
 					editor.removeElement(getTeamElement((Team)p), "Skater", ((Skater)event.getValue()).getId());
@@ -179,6 +180,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 			Element e = editor.setElement(getClockElement((Clock)p), prop, null, v);
 			if (prop.equals("Time")) {
 				try {
+					Clock c = (Clock)p;
 					long time = ((Long)event.getValue()).longValue();
 					long prevTime = ((Long)event.getPreviousValue()).longValue();
 					if (time % 1000 == 0 || Math.abs(prevTime - time) >= 1000)
@@ -187,6 +189,10 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 						editor.setPI(e, "TimeUpdate", "ms");
 				} catch (Exception ee) { }
 			}
+		} else if (p.getProviderName().equals("Policy")) {
+			editor.setElement(getPolicyElement((Policy)p), prop, null, v);
+		} else if (p.getProviderName().equals("Parameter")) {
+			editor.setElement(getPolicyParameterElement((Policy.Parameter)p), prop, null, v);
 		} else {
 			return;
 		}
@@ -204,6 +210,14 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 		if (settings.getParent().getProviderName().equals("ScoreBoard"))
 			return getScoreBoardElement();
 		return null;
+	}
+
+	protected Element getPolicyElement(Policy policy) {
+		return editor.getElement(getScoreBoardElement(), "Policy", policy.getId());
+	}
+
+	protected Element getPolicyParameterElement(Policy.Parameter parameter) {
+		return editor.getElement(getPolicyElement(parameter.getPolicy()), "Parameter", parameter.getName());
 	}
 
 	protected Element getClockElement(Clock clock) {

@@ -8,14 +8,15 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import java.util.*;
+
+import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.event.*;
 
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener
 {
 	public abstract String getProviderName();
-	public abstract Class<?> getProviderClass();
+	public abstract Class getProviderClass();
 	public abstract String getProviderId();
 
 	public void scoreBoardChange(ScoreBoardEvent event) {
