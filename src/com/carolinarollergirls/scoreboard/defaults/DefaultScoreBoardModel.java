@@ -242,6 +242,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+			timeoutClockWasRunning = false;
+			jamClockWasRunning = true;
 
 			requestBatchStart();
 			jc.stop();
@@ -262,6 +264,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			lastTimeoutOwner = getTimeoutOwner();
 			wasOfficialReview = isOfficialReview();
 			timeoutClockWasRunning = true;
+			jamClockWasRunning = false;
 			
 			requestBatchStart();
 			lc.resetTime();
@@ -280,6 +283,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			}
 
 			timeoutClockWasRunning = false;
+			jamClockWasRunning = false;
 
 			requestBatchStart();
 			lc.resetTime();
@@ -372,19 +376,25 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public void unStopJam() {
 		synchronized (runLock) {
-			if (getClock(Clock.ID_JAM).isRunning() || !getClockModel(Clock.ID_LINEUP).isRunning())
+			if (!(getClock(Clock.ID_LINEUP).isRunning() || getClockModel(Clock.ID_INTERMISSION).isRunning()))
 				return;
 
 			requestBatchStart();
-			getClockModel(Clock.ID_LINEUP).stop();
-			if (getClock(Clock.ID_PERIOD).isRunning()) {
-				getTeamModel("1").unStopJam();
-				getTeamModel("2").unStopJam();
-				getClockModel(Clock.ID_JAM).unstop();
-			} else if (timeoutClockWasRunning) {
+			if (getClock(Clock.ID_LINEUP).isRunning()) {
+				getClockModel(Clock.ID_LINEUP).stop();
+			}
+			if (getClock(Clock.ID_INTERMISSION).isRunning()) {
+				getClockModel(Clock.ID_INTERMISSION).stop();
+			}
+			if (timeoutClockWasRunning) {
 				setTimeoutOwner(lastTimeoutOwner);
 				setOfficialReview(wasOfficialReview);
 				getClockModel(Clock.ID_TIMEOUT).unstop();
+			} 
+			if (jamClockWasRunning) {
+				getTeamModel("1").unStopJam();
+				getTeamModel("2").unStopJam();
+				getClockModel(Clock.ID_JAM).unstop();
 			}
 			requestBatchEnd();
 
