@@ -6,6 +6,8 @@ A mailing list and wiki were available on SourceForge (the original location for
 
 # Installing the Scoreboard Software
 
+These are instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard. If you have already done this, see **Quick Start Guide to Operating the Scoreboard** below.
+
 ## Hardware Requirements
 
 Most Apple or Windows computers that have been manufactured in the last ten years should be able to handle the scoreboard well on a standalone setup. In general, a machine with at least a dual-core 64-bit processor and 2 gigabytes of RAM should be sufficient. Using the scoreboard to provide video overlays or in a networked setup that includes a scoreboard assistant or penalty tracker typically requires more computing power.
@@ -46,7 +48,7 @@ Once Chrome and Java are installed, use your file manager to navigate to the sco
 
 * Apple users: Run scoreboard-Mac.app to start the script. If you are unable to start it, you may have to download and run the [startscoreboard-mac.zip package](https://drive.google.com/file/d/0B2fZmT3bqA9oS25KNHphZjFFcWs/view?fref=gc&dti=480408282040949) to get the scoreboard started.
 
-* Linux users: Run scoreboard-Linux.sh to start the script. If you are unable to start it, you may have to allow script files to be executable as programs. The ``lib/crg-scoreboard.jar`` file can be built from source by installing ``apache-ant`` and running ``ant compile`` from this directory.
+* Linux users: Run scoreboard-Linux.sh to start the script. If you are unable to start it, you may have to allow script files to be executable as programs.
 
 Once it starts successfully, the scoreboard script will open a new window and display a series of status messages. You must keep this script running in order for the scoreboard to function, so do not close the window. You may minimize the window without effect.
 
@@ -57,6 +59,17 @@ Assuming that your scoreboard computer is set up with a monitor/laptop screen as
 When the control panel displays, it will ask you for an operator name. Enter your name and click Login. This operator name is used to store your personalized settings such as key controls.
 
 # Quick Start Guide to Operating the Scoreboard
+
+These instructions are intended to get you up and running as fast as possible with operating a scoreboard computer that is in the following state:
+
+* The Carolina Roller Derby Scoreboard software is installed.
+* The scoreboard script is running.
+* The start page is open.
+* The computer is connected to a second display.
+* The Main Scoreboard page is on the second display, and the Main Operator Control Panel is on the primary display.
+* The operator is logged in to the control panel.
+
+For instructions on how to accomplish this, see **Installing the Scoreboard Software** above.
 
 ## Initial Setup
 
