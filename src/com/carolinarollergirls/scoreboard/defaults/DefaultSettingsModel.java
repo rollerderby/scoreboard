@@ -39,7 +39,7 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	}
 
 	public String getProviderName() { return "Settings"; }
-	public Class getProviderClass() { return Settings.class; }
+	public Class<?> getProviderClass() { return Settings.class; }
 	public String getProviderId() { return ""; }
 
 	public DefaultScoreBoardEventProvider getParent() { return parent; }
@@ -75,6 +75,12 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 		synchronized (settingsLock) {
 			return settings.get(k);
 		}
+	}
+	public boolean getBoolean(String k) {
+		return Boolean.parseBoolean(get(k));
+	}
+	public long getLong(String k) {
+		return Long.parseLong(get(k));
 	}
 	public void set(String k, String v) {
 		synchronized (settingsLock) {
