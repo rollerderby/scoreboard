@@ -61,12 +61,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 						processColor(childPath, (Team.Color)v, prop.equals(Team.EVENT_REMOVE_COLOR));
           // Fast path for jam start/end to avoid sending the entire team.
           else if (prop.equals(Team.EVENT_LAST_SCORE)) {
-            updateMap.put(childPath + ".Team(" + t.getId() + ")." + Team.EVENT_LAST_SCORE, t.getLastScore());
-            updateMap.put(childPath + ".Team(" + t.getId() + ").JamScore", t.getScore() - t.getLastScore());
+            updateMap.put(childPath + "." + Team.EVENT_LAST_SCORE, t.getLastScore());
+            updateMap.put(childPath + ".JamScore", t.getScore() - t.getLastScore());
           } else if (prop.equals(Team.EVENT_LEAD_JAMMER))
-            updateMap.put(childPath + ".Team(" + t.getId() + ")." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());
+            updateMap.put(childPath + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());
           else if (prop.equals(Team.EVENT_STAR_PASS))
-            updateMap.put(childPath + ".Team(" + t.getId() + ")." + Team.EVENT_STAR_PASS, t.isStarPass());
+            updateMap.put(childPath + "." + Team.EVENT_STAR_PASS, t.isStarPass());
 					else
 						processTeam("ScoreBoard", t, prop.equals(ScoreBoard.EVENT_REMOVE_TEAM));
 				} else if (p instanceof Skater) {
