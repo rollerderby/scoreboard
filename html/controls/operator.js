@@ -154,7 +154,7 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$(".UndoControls").toggleClass("ShowUndo", this.checked);
+			$("#TeamTime").find(".UndoControls").toggleClass("ShowUndo", this.checked);
 		});
 
 	$("<label>").text("Show Speed Score Controls").attr("for", "ShowSpeedScoreControlsButton")
@@ -163,7 +163,16 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$("tr.SpeedScore").toggleClass("Show", this.checked);
+			$("#TeamTime").find("tr.SpeedScore").toggleClass("Show", this.checked);
+		});
+
+	$("<label>").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
+		.appendTo(buttonsTd);
+	$("<input type='checkbox'>").attr("id", "ShowClockControlsButton")
+		.appendTo(buttonsTd)
+		.button()
+		.click(function() {
+			$("#TeamTime").find("tr.Control").toggleClass("Show", this.checked);
 		});
 
 	$("<button>").attr("id", "GameControl")
@@ -301,7 +310,7 @@ function createGameControlDialog() {
 		if (t1.val() != "" && t2.val() != "") {
 			var now = new Date();
 			var d = now.getFullYear() + '-' +
-				_timeConversions.twoDigit(now.getMonth()) + '-' +
+				_timeConversions.twoDigit(now.getMonth()+1) + '-' +
 				_timeConversions.twoDigit(now.getDate()) + ' ' +
 				_timeConversions.twoDigit(now.getHours()) + ':' +
 				_timeConversions.twoDigit(now.getMinutes());

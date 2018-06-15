@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard;
 
+import io.prometheus.client.Histogram;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
@@ -115,30 +116,6 @@ public class Game {
 		return sb.getClock(id);
 	}
 
-	public SkaterInfo getSkater(String teamId, String skaterId) {
-		for (TeamInfo t : teams) {
-			if (t.getTeam().equals(teamId)) {
-				for (SkaterInfo s : t.getSkaters()) {
-					if (s.getId().equals(skaterId)) {
-						return s;
-					}
-				}
-			}
-		}
-		return null;
-	}
-
-	public void Penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
-		synchronized (saveLock) {
-			SkaterInfo si = getSkater(teamId, skaterId);
-			if (si == null)
-				return;
-
-			si.Penalty(penaltyId, fo_exp, period, jam, code);
-			saveLock.notifyAll();
-		}
-	}
-
 	public String getUpdaterBase() { return "Game"; }
 
 	private void saveFile() {
@@ -168,6 +145,7 @@ public class Game {
 				File file = new File(new File(ScoreBoardManager.getDefaultPath(), "GameData"), identifier.replaceAll("[^a-zA-Z0-9\\.\\-]", "_") + ".json");
 				file.getParentFile().mkdirs();
 				FileWriter out = null;
+				Histogram.Timer timer = saveDuration.startTimer();
 				try {
 					out = new FileWriter(file);
 					out.write(toJSON().toString(2));
@@ -178,6 +156,7 @@ public class Game {
 					if (out != null) {
 						try { out.close(); } catch (Exception e) { }
 					}
+					timer.observeDuration();
 				}
 			}
 		}
@@ -205,4 +184,6 @@ public class Game {
 	private boolean logging = false;
 	private String identifier = "";
 	private Object saveLock = new Object();
+	private static final Histogram saveDuration = Histogram.build()
+	  .name("crg_game_save_duration_seconds").help("Time spent saving JSON to disk").register();
 }
