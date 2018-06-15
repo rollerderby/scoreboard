@@ -771,7 +771,7 @@ function createTimeTable() {
 	var row = $("<tr></tr>");
 	var nameRow = row.clone().addClass("Name").appendTo(table);
 	var numberRow = row.clone().addClass("Number").appendTo(table);
-	var controlRow = row.clone().addClass("Control").appendTo(table);
+//	var controlRow = row.clone().addClass("Control").appendTo(table);
 	var timeRow = row.clone().addClass("Time").appendTo(table);
 //	var timeSetRow = row.clone().addClass("TimeSet").appendTo(table);
 //	var timeResetRow = row.clone().addClass("TimeReset").appendTo(table);
@@ -782,7 +782,7 @@ function createTimeTable() {
 
 		var nameTd = $("<td>").appendTo(nameRow);
 		var numberTr = createRowTable(3).appendTo($("<td>").appendTo(numberRow)).find("tr");
-		var controlTr = createRowTable(2).appendTo($("<td>").appendTo(controlRow)).find("tr");
+//		var controlTr = createRowTable(2).appendTo($("<td>").appendTo(controlRow)).find("tr");
 		var timeTr = createRowTable(3).appendTo($("<td>").appendTo(timeRow)).find("tr");
 //		var timeSetTr = createRowTable(2).appendTo($("<td>").appendTo(timeSetRow)).find("tr");
 //		var timeResetTd = $("<td>").appendTo(timeResetRow);
@@ -812,12 +812,12 @@ function createTimeTable() {
 			.attr("id", "Clock"+clock+"NumberUp").addClass("KeyControl").button()
 			.appendTo(numberTr.children("td:eq(2)").addClass("Up").css("width", "40%"));
 
-		sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
+/*		sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
 			.attr("id", "Clock"+clock+"Start").addClass("KeyControl").button()
 			.appendTo(controlTr.children("td:eq(0)").addClass("Start"));
 		sbClock.$sb("Stop").$sbControl("<button>").text("Stop").val("true")
 			.attr("id", "Clock"+clock+"Stop").addClass("KeyControl").button()
-			.appendTo(controlTr.children("td:eq(1)").addClass("Stop"));
+			.appendTo(controlTr.children("td:eq(1)").addClass("Stop"));*/
 
 		sbClock.$sb("Time").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: true } } })
 			.text("-1").val("-1000")
