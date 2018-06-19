@@ -107,7 +107,9 @@ _crgKeyControls = {
 	addCondition: function(condition) {
 		_crgKeyControls._conditions.push(condition);
 	},
-	_conditions: [ function() { return !$("div.MultipleKeyAssignDialog").length; } ],
+	_conditions: [ function() { return !$("div.MultipleKeyAssignDialog").length; },
+		function() { return !$("#TeamTimeTab.ui-tabs-hide").length;} //disable keys when TeamTimeTab is hidden.
+	],
 
 	_start: function() {
 		if (!_crgKeyControls._keyControlStarted) {
