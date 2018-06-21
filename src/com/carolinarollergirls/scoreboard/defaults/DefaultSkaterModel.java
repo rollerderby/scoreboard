@@ -82,6 +82,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	}
 
 	public boolean isPenaltyBox() { return penaltyBox; }
+	
 	public void setPenaltyBox(boolean box) {
 		synchronized (positionLock) {
 			if (box == penaltyBox)
@@ -108,6 +109,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	}
 
 	public String getFlags() { return flags; }
+	
 	public void setFlags(String f) {
 		synchronized (flagsLock) {
 			String last = flags;
@@ -119,6 +121,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
   public List<Penalty> getPenalties() { return Collections.unmodifiableList(new ArrayList<Penalty>(penalties)); }
   public Penalty getFOEXPPenalty() { return foexp_penalty; }
+  
   public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code) {
     synchronized (penaltiesLock) {
       if (foulout_explusion && code != null) {
