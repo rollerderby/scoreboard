@@ -15,7 +15,8 @@ $sb(function() {
 	setupJamControlPage();
 	setupPeriodTimePage();
 	setupTeamScorePage();
-	setupPenaltyTimePage();
+	//setupPenaltyTimePage();
+	setupTeamTimeoutPage();
 
 	$.each( [ "1", "2" ], function(i, t) {
 		$sb("ScoreBoard.Team("+t+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
@@ -77,6 +78,18 @@ function setupJamControlPage() {
 				showJamControlClock(clock);
 		});
 	});
+}
+
+function setupTeamTimeoutPage() {
+	$sb("ScoreBoard.Team(1).Name").$sbElement("#TeamTimeoutPage a.Team1.Name");
+	$sb("ScoreBoard.Team(1).AlternateName(mobile).Name").$sbElement("#TeamTimeoutPage a.Team1.AlternateName");
+	$sb("ScoreBoard.Team(1).Timeouts").$sbControl("<a/><input type='text' />", { sbcontrol: { editOnClick: true }}).appendTo("#TeamTimeoutPage div.Team1.Timeout");
+	$sb("ScoreBoard.Team(1).OfficialReviews").$sbControl("<a/><input type='text' />", { sbcontrol: { editOnClick: true }}).appendTo("#TeamTimeoutPage div.Team1.OfficialReview");
+	
+	$sb("ScoreBoard.Team(2).Name").$sbElement("#TeamTimeoutPage a.Team2.Name");
+	$sb("ScoreBoard.Team(2).AlternateName(mobile).Name").$sbElement("#TeamTimeoutPage a.Team2.AlternateName");
+	$sb("ScoreBoard.Team(2).Timeouts").$sbControl("<a/><input type='text' />", { sbcontrol: { editOnClick: true }}).appendTo("#TeamTimeoutPage div.Team2.Timeout");
+	$sb("ScoreBoard.Team(2).OfficialReviews").$sbControl("<a/><input type='text' />", { sbcontrol: { editOnClick: true }}).appendTo("#TeamTimeoutPage div.Team2.OfficialReview");
 }
 
 function setupPeriodTimePage() {

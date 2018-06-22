@@ -171,14 +171,58 @@
 
 	<div data-role="content">
 		<p class="Time"><a class="Time"></a></p>
-		<p><hr/></p>
+		<hr/>
 		<p>
 			<button class="TimeDown" data-inline="true" value="-1000">-1 sec</button>
 			<button class="TimeUp" data-inline="true" value="1000">+1 sec</button>
 		</p>
-		<p><hr/></p>
+		<hr/>
 		<p><input type="text" class="SetTime"/></p>
 		<p><button class="SetTime" data-inline="true">Set Time</button></p>
+	</div>
+</div>
+
+<div data-role="page" id="TeamTimeoutPage">
+	<div data-role="header">
+		<a href="#Main" data-direction="reverse" data-icon="arrow-l">Main</a>
+		<h1>Timeouts</h1>
+	</div>
+
+	<div data-role="content">
+
+			<h3>
+				<a class="Team1 Name">Team 1</a>
+				<a class="Team1 AlternateName"></a>
+			</h3>
+			<div class="ui-grid-a">
+				<div class="ui-block-a">
+					<h4>Timeouts</h4>
+				</div>
+				<div class="ui-block-b">
+					<div class="ui-block-b Team1 Timeout"></div>
+				</div>
+
+				<div class="ui-block-a">
+					<h4>Official Review</h4>
+				</div>
+				<div class="ui-block-b Team1 OfficialReview"></div>
+			</div>
+
+		<h3>
+				<a class="Team2 Name">Team 2</a>
+				<a class="Team2 AlternateName"></a>
+			</h3>
+			<div class="ui-grid-a">
+				<div class="ui-block-a">
+					<h4>Timeouts</h4>
+				</div>
+				<div class="ui-block-b Team2 Timeout"></div>
+
+				<div class="ui-block-a">
+					<h4>Official Review</h4>
+				</div>
+				<div class="ui-block-b Team2 OfficialReview"></div>
+			</div>
 	</div>
 </div>
 
