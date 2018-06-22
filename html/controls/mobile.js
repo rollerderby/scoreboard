@@ -15,7 +15,6 @@ $sb(function() {
 	setupJamControlPage();
 	setupPeriodTimePage();
 	setupTeamScorePage();
-	//setupPenaltyTimePage();
 	setupTeamTimeoutPage();
 
 	$.each( [ "1", "2" ], function(i, t) {
