@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.jetty.WS;
 
@@ -47,7 +46,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 
 				Object v = event.getValue();
 				if (p instanceof ScoreBoard) {
-					update("ScoreBoard", prop, v);
+					// these properties are required for the XML listener, but are not used in the WS listener
+					// so they are ignored here
+					if(!prop.equals(ScoreBoard.EVENT_ADD_CLOCK) && !prop.equals(ScoreBoard.EVENT_ADD_TEAM)) {
+						update("ScoreBoard", prop, v);
+					}
 				} else if (p instanceof Team) {
 					Team t = (Team)p;
 					String childPath = "ScoreBoard.Team(" + t.getId() + ")";
@@ -59,14 +62,14 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 						processAlternateName(childPath, (Team.AlternateName)v, prop.equals(Team.EVENT_REMOVE_ALTERNATE_NAME));
 					else if (v instanceof Team.Color)
 						processColor(childPath, (Team.Color)v, prop.equals(Team.EVENT_REMOVE_COLOR));
-          // Fast path for jam start/end to avoid sending the entire team.
-          else if (prop.equals(Team.EVENT_LAST_SCORE)) {
-            updateMap.put(childPath + "." + Team.EVENT_LAST_SCORE, t.getLastScore());
-            updateMap.put(childPath + ".JamScore", t.getScore() - t.getLastScore());
-          } else if (prop.equals(Team.EVENT_LEAD_JAMMER))
-            updateMap.put(childPath + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());
-          else if (prop.equals(Team.EVENT_STAR_PASS))
-            updateMap.put(childPath + "." + Team.EVENT_STAR_PASS, t.isStarPass());
+					// Fast path for jam start/end to avoid sending the entire team.
+					else if (prop.equals(Team.EVENT_LAST_SCORE)) {
+						updateMap.put(childPath + "." + Team.EVENT_LAST_SCORE, t.getLastScore());
+						updateMap.put(childPath + ".JamScore", t.getScore() - t.getLastScore());
+					} else if (prop.equals(Team.EVENT_LEAD_JAMMER))
+						updateMap.put(childPath + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());
+					else if (prop.equals(Team.EVENT_STAR_PASS))
+						updateMap.put(childPath + "." + Team.EVENT_STAR_PASS, t.isStarPass());
 					else
 						processTeam("ScoreBoard", t, prop.equals(ScoreBoard.EVENT_REMOVE_TEAM));
 				} else if (p instanceof Skater) {
