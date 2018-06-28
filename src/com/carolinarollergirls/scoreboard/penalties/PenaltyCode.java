@@ -1,12 +1,26 @@
 package com.carolinarollergirls.scoreboard.penalties;
 
+import java.util.Arrays;
 import java.util.List;
 
 public class PenaltyCode {
 	
 	private String code;
 	private List<String> verbalCues;
-	private boolean expellable;
+
+	public PenaltyCode() {
+		
+	}
+	
+	public PenaltyCode(String code, List<String> verbalCues) {
+		this.code = code;
+		this.verbalCues = verbalCues;
+	}
+	
+	public PenaltyCode(String code, String... verbalCues) {
+		this.code = code;
+		this.verbalCues = Arrays.asList(verbalCues);
+	}
 	
 	public String getCode() {
 		return code;
@@ -20,27 +34,4 @@ public class PenaltyCode {
 	public void setVerbalCues(List<String> verbalCues) {
 		this.verbalCues = verbalCues;
 	}
-	public boolean isExpellable() {
-		return expellable;
-	}
-	public void setExpellable(boolean expellable) {
-		this.expellable = expellable;
-	}
-	
-	public String generateWSString() {
-		StringBuilder verbal = new StringBuilder();
-		
-		if(verbalCues != null) {
-			for(int i = 0; i < verbalCues.size(); i++) {
-				if(i != 0) {
-					verbal.append("-");
-				}
-				verbal.append(verbalCues.get(i));
-			}
-		}
-		
-		return verbal.toString();
-	}
-	
-	
 }

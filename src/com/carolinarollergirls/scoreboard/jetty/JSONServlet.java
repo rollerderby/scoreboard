@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.*;
 import java.net.*;
 import java.util.*;
+import java.text.DateFormat;
 
 import javax.servlet.*;
 import javax.servlet.http.*;
@@ -22,13 +23,10 @@ import org.eclipse.jetty.server.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
-import com.carolinarollergirls.scoreboard.penalties.PenaltiesManager;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.xml.TeamsXmlDocumentManager;
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentManager;
 
-@SuppressWarnings("serial")
 public class JSONServlet extends HttpServlet
 {
 	public JSONServlet(Server s, ScoreBoardModel m) { 
@@ -44,39 +42,12 @@ public class JSONServlet extends HttpServlet
 		response.setContentType("application/json");
 		response.setStatus(HttpServletResponse.SC_OK);
 		try {
-			
-
-			if("/Ruleset/List".equals(request.getPathInfo())) {
+			if ("/Ruleset/List".equals(request.getPathInfo())) {
 				response.getWriter().print(Ruleset.RequestType.LIST_ALL_RULESETS.toJSON());
-			}
-			else if("/Ruleset/ListDefinitions".equals(request.getPathInfo())) {
+			} else if ("/Ruleset/ListDefinitions".equals(request.getPathInfo())) {
 				response.getWriter().print(Ruleset.RequestType.LIST_DEFINITIONS.toJSON());
-			}
-			else if("/Ruleset/Penalties".equals(request.getPathInfo())) {
-				BufferedReader inputStream = null;
-				SettingsModel settings = scoreBoardModel.getSettingsModel();
-				try{
-					inputStream = new BufferedReader(new FileReader(new File(ScoreBoardManager.getDefaultPath(), settings.get(PenaltiesManager.PenaltiesFileSetting))));
-					String row;
-					while ((row = inputStream.readLine()) != null) {
-						response.getWriter().write(row);
-				    }
-				} catch(Exception e) {
-					
-				} finally {
-					try {
-						 if(inputStream != null) { inputStream.close(); }
-					} catch(Exception e) {
-						
-					}
-				}
-				
-			} else {
+			} else
 				response.sendError(HttpServletResponse.SC_NOT_FOUND);
-			}
-
-		
-
 		} catch ( SocketException sE ) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Socket Exception : "+sE.getMessage());
 		}
@@ -158,6 +129,7 @@ public class JSONServlet extends HttpServlet
 	}
 
 	private void error(HttpServletResponse response, String errorMessage) throws IOException {
+		// TODO: Return error message as JSON
 		response.getWriter().print(errorMessage);
 	}
 

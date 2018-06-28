@@ -3,12 +3,13 @@ package com.carolinarollergirls.scoreboard.penalties;
 import java.io.File;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.Settings;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class PenaltiesManager {
 
-	public PenaltiesManager(SettingsModel settings) {
+	public PenaltiesManager(Settings settings) {
 		this.settings = settings;
 	}
 	
@@ -26,10 +27,9 @@ public class PenaltiesManager {
 		}catch (Exception e) {
 			throw new RuntimeException("Failed writing Penalty Definition as JSON", e);
 		}
-		
 	}
 
-	private final SettingsModel settings;
+	private final Settings settings;
 	
 	private static final ObjectMapper mapper = new ObjectMapper();
 	public static final String PenaltiesFileSetting = "ScoreBoard.PenaltyDefinitionFile";

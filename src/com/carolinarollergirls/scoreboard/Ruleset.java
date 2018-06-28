@@ -51,7 +51,7 @@ public class Ruleset {
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Unofficial",    "", "Unofficial Score"));
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Official",      "", "Final Score"));
 			newRule( new StringRule(false, "ScoreBoard", null, "BackgroundStyle", "", "bg_black"));
-			newRule( new StringRule(false, "ScoreBoard", null, "PenaltyDefinitionFile", "", "/config/wftda2018.json"));
+			newRule( new StringRule(false, "ScoreBoard", null, "PenaltyDefinitionFile", "", "/config/penalties/wftda2018.json"));
 			newRule( new StringRule(false, "ScoreBoard", null, "BoxStyle",        "", "box_flat"));
 			newRule( new StringRule(false, "ScoreBoard", null, "CurrentView",     "", "scoreboard"));
 			newRule( new StringRule(false, "ScoreBoard", null, "CustomHtml",      "", "/customhtml/fullscreen/example.html"));

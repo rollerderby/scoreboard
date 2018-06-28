@@ -238,7 +238,7 @@
 				<include name="html/images/sponsor_banner" />
 				<include name="lib/crg-scoreboard.jar" />
 				<include name="config/crg.scoreboard.properties" />
-				<include name="config/penalties.json" />
+				<include name="config/penalties/**" />
 				<include name="config/default/**" />
 			</zipfileset>
 		</zip>

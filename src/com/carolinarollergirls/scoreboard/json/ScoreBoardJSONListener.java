@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.json;
  * See the file COPYING for details.
  */
 
-import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.List;
@@ -282,6 +281,25 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put(path + "." + Position.EVENT_SKATER, p.getSkater() == null ? null : p.getSkater().getId());
 		updateMap.put(path + "." + Position.EVENT_PENALTY_BOX, p.getPenaltyBox());
 	}
+	
+	private void processPenalties(Settings s) {
+		PenaltiesManager pm = new PenaltiesManager(s);
+
+        try {
+            PenaltiesDefinition penalties = pm.loadFromJSON();
+            for(PenaltyCode p : penalties.getPenalties()) {
+                
+                updateMap.put("PenaltyCode.("+p.getCode()+")", p);
+            }
+            
+            
+            updateMap.put("PenaltyCode.(?)", new PenaltyCode("?", "Unknown"));
+            updateMap.put("PenaltyCode.(FO)", new PenaltyCode("FO", "Foul-Out"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+	}
 
 	private void initialize(ScoreBoard sb) {
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_IN_PERIOD, sb.isInPeriod());
@@ -291,8 +309,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_TIMEOUT_OWNER, sb.getTimeoutOwner());
 		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview());
 
+		
+		
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());
+		
+		processPenalties(sb.getSettings());
 
 		// Process Teams
 		for (Team t : sb.getTeams()) {
