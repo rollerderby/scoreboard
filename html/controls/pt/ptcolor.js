@@ -71,15 +71,13 @@ function skaterUpdate(t, k, v) {
 	var id = match[1];
 	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
 	if (k == prefix + '.Number') {
-		var row = $('.Team' + t + ' .Skater.Penalty[id=' + id + ']');
+		$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 		if (v == null) {
-			$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 			return;
 		}
 
-		if (row.length == 0) {
-			row = makeSkaterRows(t, id, v);
-		}
+		// New skater, or number has been updated.
+		makeSkaterRows(t, id, v);
 		for (var i = 1; i <= 9; i++)
 			displayPenalty(t, id, i);
 		displayPenalty(t, id, 'FO_EXP');

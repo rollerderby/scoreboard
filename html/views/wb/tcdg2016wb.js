@@ -55,15 +55,13 @@ function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number
 	var id = match[1]; // id = skater id
 	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = ScoreBoard.Team('1').Skater('id')
 	if (k == prefix + '.Number') { //Example if skater id == ScoreBoard.Team('team').Skater('id').Number
-		var rowd = $('.Teamd' + t + ' .Skater.Penalty[id=' + id + ']');
-		if (v == null) { // if jam number is null
-			$('.Teamd' + t + ' .Skater[id=' + id + ']').remove();
+		$('.Teamd' + t + ' .Skater[id=' + id + ']').remove();
+		if (v == null) {
 			return;
 		}
 
-		if (rowd.length == 0) { //if the rows haven't been drawn yet?
-			rowd = makeSkaterRows(t, id, v); //create skater rows
-		}
+		// New skater, or number has been updated.
+		makeSkaterRows(t, id, v);
 		for (var i = 1; i <= 9; i++) { // for penalty numbers one to nine..
 			displayPenalty(t, id, i); } // display penalties (team, skater id, penalty #)
 		displayPenalty(t, id, 'FO_EXP'); // display foulout status
