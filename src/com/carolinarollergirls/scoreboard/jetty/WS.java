@@ -185,6 +185,8 @@ public class WS extends WebSocketServlet {
 					if (key.startsWith("Custom.")) {
 						WS.updateState(key, value);
 					}
+				} else if (action.equals("Ping")) {
+					send(new JSONObject().put("Pong", ""));
 				} else if (action.equals("Short")) {
 					sendShort = true;
 				} else if (action.equals("Long")) {
