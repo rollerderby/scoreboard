@@ -39,6 +39,6 @@
 	<classpathentry kind="lib" path="test-libs/mockito-all-1.9.5.jar"/>
 	<classpathentry kind="lib" path="lib/deps/jackson-annotations-2.9.5.jar"/>
 	<classpathentry kind="lib" path="lib/deps/jackson-core-2.9.5.jar"/>
-	<classpathentry kind="lib" path="lib/deps/jackson-databind-2.9.5.jar"/>
+	<classpathentry kind="lib" path="lib/deps/jackson-jr-objects-2.9.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
