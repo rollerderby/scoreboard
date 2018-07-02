@@ -92,7 +92,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 					String prefix = null;
 					if (s.getParent() instanceof ScoreBoard)
 						prefix = "ScoreBoard";
-					if (prefix == null)
+					if(prop.equals(PenaltyCodesManager.PenaltiesFileSetting)) {
+						update(prefix, "Setting(" + prop + ")", v);
+						processPenaltyCodes(s);
+					}
+					else if (prefix == null)
 						ScoreBoardManager.printMessage(provider + " update of unknown kind.  prop: " + prop + ", v: " + v);
 					else
 						update(prefix, "Setting(" + prop + ")", v);
@@ -282,19 +286,20 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put(path + "." + Position.EVENT_PENALTY_BOX, p.getPenaltyBox());
 	}
 	
-	private void processPenalties(Settings s) {
-		PenaltiesManager pm = new PenaltiesManager(s);
-
+	private void processPenaltyCodes(Settings s) {
+		PenaltyCodesManager pm = new PenaltyCodesManager(s);
+		updateMap.put("ScoreBoard.PenaltyCode", null);
+		
         try {
-            PenaltiesDefinition penalties = pm.loadFromJSON();
+            PenaltyCodesDefinition penalties = pm.loadFromJSON();
             for(PenaltyCode p : penalties.getPenalties()) {
                 
-                updateMap.put("PenaltyCode.("+p.getCode()+")", p);
+                updateMap.put("ScoreBoard.PenaltyCode."+p.getCode(), p.CuesForWS(p));
             }
             
             
-            updateMap.put("PenaltyCode.(?)", new PenaltyCode("?", "Unknown"));
-            updateMap.put("PenaltyCode.(FO)", new PenaltyCode("FO", "Foul-Out"));
+            updateMap.put("ScoreBoard.PenaltyCode.?","Unknown");
+            updateMap.put("ScoreBoard.PenaltyCode.FO", "Foul-Out");
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -314,7 +319,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());
 		
-		processPenalties(sb.getSettings());
+		processPenaltyCodes(sb.getSettings());
 
 		// Process Teams
 		for (Team t : sb.getTeams()) {

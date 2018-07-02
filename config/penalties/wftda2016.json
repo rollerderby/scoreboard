@@ -1,20 +1,20 @@
 {
 	"penalties": [
-	{ "code": "B", "verbalCues": ["Back Block"]},
-{ "code": "A", "verbalCues": ["High Block"]},
-{ "code": "L", "verbalCues": ["Low Block"]},
-{ "code": "E", "verbalCues": ["Elbows"]},
-{ "code": "F", "verbalCues": ["Forearm"]},
-{ "code": "H", "verbalCues": ["Blocking with the Head"]},
-{ "code": "M", "verbalCues": ["Multi-player Block"]},
-{ "code": "O", "verbalCues": ["Out of Bounds Block"]},
-{ "code": "C", "verbalCues": ["Clockwise Block","Stop Block"]},
-{ "code": "P", "verbalCues": ["Destroying the Pack","OOP Block","Failure to..."]},
-{ "code": "S", "verbalCues": ["Skating OOB"]},
-{ "code": "X", "verbalCues": ["Cutting"]},
-{ "code": "I", "verbalCues": ["Illegal Procedure"]},
-{ "code": "N", "verbalCues": ["Insubordination"]},
-{ "code": "G", "verbalCues": ["Misconduct"]},
-{ "code": "Z", "verbalCues": ["Delay of Game"]}
-]
+		{ "code": "B", "verbalCues": ["Back Block"]},
+		{ "code": "A", "verbalCues": ["High Block"]},
+		{ "code": "L", "verbalCues": ["Low Block"]},
+		{ "code": "E", "verbalCues": ["Elbows"]},
+		{ "code": "F", "verbalCues": ["Forearm"]},
+		{ "code": "H", "verbalCues": ["Blocking with the Head"]},
+		{ "code": "M", "verbalCues": ["Multi-player Block"]},
+		{ "code": "O", "verbalCues": ["Out of Bounds Block"]},
+		{ "code": "C", "verbalCues": ["Clockwise Block","Stop Block"]},
+		{ "code": "P", "verbalCues": ["Destroying the Pack","OOP Block","Failure to..."]},
+		{ "code": "S", "verbalCues": ["Skating OOB"]},
+		{ "code": "X", "verbalCues": ["Cutting"]},
+		{ "code": "I", "verbalCues": ["Illegal Procedure"]},
+		{ "code": "N", "verbalCues": ["Insubordination"]},
+		{ "code": "G", "verbalCues": ["Misconduct"]},
+		{ "code": "Z", "verbalCues": ["Delay of Game"]}
+	]
 }

@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.penalties;
 
 import java.util.List;
 
-public class PenaltiesDefinition {
+public class PenaltyCodesDefinition {
 	
 	private List<PenaltyCode> penalties;
 	

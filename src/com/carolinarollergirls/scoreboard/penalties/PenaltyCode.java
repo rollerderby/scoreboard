@@ -34,4 +34,8 @@ public class PenaltyCode {
 	public void setVerbalCues(List<String> verbalCues) {
 		this.verbalCues = verbalCues;
 	}
+	
+	public String CuesForWS(PenaltyCode c) {
+		return String.join(",", verbalCues);
+	}
 }

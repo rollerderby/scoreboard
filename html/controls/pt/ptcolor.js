@@ -25,7 +25,7 @@ function initialize() {
 
 	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
-	WS.Register( [ 'PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
+	WS.Register( [ 'ScoreBoard.PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
 	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
 	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
 
@@ -225,19 +225,25 @@ function submitPenalty() {
 	penaltyEditor.dialog('close');
 }
 
-function penaltyCode(k, penalty) {
-	if(penalty.code !== 'FO') {
-		addPenaltyCode('Penalty', penalty);
+function penaltyCode(k, v) {
+	var code = k.split('.').pop();
+
+
+	if(code !== 'FO') {
+		addPenaltyCode('Penalty', code, v);
 	}
-	
-	addPenaltyCode('FO_EXP',penalty);
+
+	addPenaltyCode('FO_EXP', code, v);
 }	
 		
-function addPenaltyCode(type, penalty) {
-	if(!penalty) { return; }
-	var code = penalty.code;
+function addPenaltyCode(type, code, verbalCues) {
+
 	var div = $('.Codes .' + type + '[code="' + code + '"]');
-	if (div.length > 0) {
+	
+	if(verbalCues === null) {
+		div.detach();
+		return;
+	} else if (div.length > 0) {
 		div.find('.Description').empty();
 	} else {
 		var div = $('<div>').attr('code', code).addClass(type).click(function (e) {
@@ -263,8 +269,8 @@ function addPenaltyCode(type, penalty) {
 	}
 
 	var desc = div.find('.Description');
-	penalty.verbalCues.forEach(function(d){
-		$('<div>').text(d.replace('\\-','-')).appendTo(desc);
+	verbalCues.split(',').forEach(function(d){
+		$('<div>').text(d).appendTo(desc);
 	});
 }
 //# sourceURL=controls\pt\ptcolor.js
