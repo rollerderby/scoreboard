@@ -48,7 +48,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	public String getProviderName() { return "Clock"; }
-	public Class getProviderClass() { return Clock.class; }
+	public Class<Clock> getProviderClass() { return Clock.class; }
 	public String getProviderId() { return getId(); }
 
 	public ScoreBoard getScoreBoard() { return scoreBoardModel.getScoreBoard(); }
@@ -371,7 +371,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				if (c.isMasterClock()) {
 					masterClock = c;
 				}
-				long delayStartTime = 0;
 				if (c.isSyncTime() && !quickAdd) {
 					// This syncs all the clocks to change second at the same time
 					// with respect to the master clock
