@@ -10,8 +10,6 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.*;
 
-import java.io.*;
-
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 import com.carolinarollergirls.scoreboard.event.*;
@@ -55,13 +53,13 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }
-	public Class getProviderClass() { return ScoreBoard.class; }
+	public Class<ScoreBoard> getProviderClass() { return ScoreBoard.class; }
 	public String getProviderId() { return ""; }
 
 	public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
 	protected void loadPolicies() {
-		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
+		Enumeration<?> keys = ScoreBoardManager.getProperties().propertyNames();
 
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement().toString();
