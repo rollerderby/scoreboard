@@ -38,6 +38,8 @@ function initialize() {
 		// buttons: [ { text: buttonText, click: login } ],
 		// close: function() { penaltyEditor.dialog('destroy'); }
 	});
+	
+	addFOCode();
 
 	$(".PenaltyEditor .period_minus").click(function() { adjust("Period", -1); });
 	$(".PenaltyEditor .period_plus").click(function() { adjust("Period", 1); });
@@ -228,13 +230,13 @@ function submitPenalty() {
 function penaltyCode(k, v) {
 	var code = k.split('.').pop();
 
-
-	if(code !== 'FO') {
-		addPenaltyCode('Penalty', code, v);
-	}
-
+	addPenaltyCode('Penalty', code, v);
 	addPenaltyCode('FO_EXP', code, v);
 }	
+
+function addFOCode() {
+	addPenaltyCode('FO_EXP','FO','Foul-Out');
+}
 		
 function addPenaltyCode(type, code, verbalCues) {
 
@@ -251,7 +253,14 @@ function addPenaltyCode(type, code, verbalCues) {
 			div.addClass('Active');
 			submitPenalty();
 		});
-		$('<div>').addClass('Code').text(code).appendTo(div);
+		
+		var title = code;
+		
+		if(type === 'FO_EXP' && code !== 'FO') {
+			title = 'EXP-'+title;
+		}
+		
+		$('<div>').addClass('Code').text(title).appendTo(div);
 		$('<div>').addClass('Description').appendTo(div);
 
 		var codes = $('.PenaltyEditor .Codes');

@@ -299,7 +299,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
             
             
             updates.add(new WSUpdate("ScoreBoard.PenaltyCode.?","Unknown"));
-            updates.add(new WSUpdate("ScoreBoard.PenaltyCode.FO", "Foul-Out"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
