@@ -6,6 +6,7 @@ var WS = {
 	callbacks: new Array(),
 	Connected: false,
 	state: { },
+	heartbeat: null,
 	debug: false,
 
 	Connect: function(callback) {
@@ -42,6 +43,8 @@ var WS = {
 				}
 				if (WS.connectCallback != null)
 					WS.connectCallback();
+				// Hearbeat every 30s so the connection is kept alive.
+				WS.heartbeat = setInterval(WS.Command, 30000, "Ping");
 			};
 			WS.socket.onmessage = function(e) {
 				json = JSON.parse(e.data);
@@ -57,12 +60,14 @@ var WS = {
 				$(".ConnectionError").removeClass("Connected");
 				if (WS.connectTimeout == null)
 					WS.connectTimeout = setTimeout(WS._connect, 1000);
+				clearInterval(WS.heartbeat);
 			};
 			WS.socket.onerror = function(e) {
 				console.log("WS", "Websocket: Error", e);
 				$(".ConnectionError").removeClass("Connected");
 				if (WS.connectTimeout == null)
 					WS.connectTimeout = setTimeout(WS._connect, 1000);
+				clearInterval(WS.heartbeat);
 			}
 		} else {
 			// better run the callback on post connect if we didn't need to connect

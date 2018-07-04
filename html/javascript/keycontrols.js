@@ -107,7 +107,9 @@ _crgKeyControls = {
 	addCondition: function(condition) {
 		_crgKeyControls._conditions.push(condition);
 	},
-	_conditions: [ function() { return !$("div.MultipleKeyAssignDialog").length; } ],
+	_conditions: [ function() { return !$("div.MultipleKeyAssignDialog").length; },
+		function() { return !$("#TeamTimeTab.ui-tabs-hide").length;} //disable keys when TeamTimeTab is hidden.
+	],
 
 	_start: function() {
 		if (!_crgKeyControls._keyControlStarted) {
@@ -145,7 +147,7 @@ _crgKeyControls = {
 		var key = String.fromCharCode(event.which);
 
 		var controls = $(_crgKeyControls.keySelector);
-		var active = controls.filter(":not(.Editing):visible");
+		var active = controls.filter(":not(.Editing)");
 		var editing = controls.filter(".Editing");
 
 		// Perform the corresponding button's action

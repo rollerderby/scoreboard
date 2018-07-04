@@ -10,9 +10,9 @@ package com.carolinarollergirls.scoreboard.json;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.List;
 
 import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.event.*;
 import com.carolinarollergirls.scoreboard.jetty.WS;
 
@@ -46,7 +46,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 
 				Object v = event.getValue();
 				if (p instanceof ScoreBoard) {
-					update("ScoreBoard", prop, v);
+					// these properties are required for the XML listener, but are not used in the WS listener
+					// so they are ignored here
+					if(!prop.equals(ScoreBoard.EVENT_ADD_CLOCK) && !prop.equals(ScoreBoard.EVENT_ADD_TEAM)) {
+						update("ScoreBoard", prop, v);
+					}
 				} else if (p instanceof Team) {
 					Team t = (Team)p;
 					String childPath = "ScoreBoard.Team(" + t.getId() + ")";
@@ -58,6 +62,14 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 						processAlternateName(childPath, (Team.AlternateName)v, prop.equals(Team.EVENT_REMOVE_ALTERNATE_NAME));
 					else if (v instanceof Team.Color)
 						processColor(childPath, (Team.Color)v, prop.equals(Team.EVENT_REMOVE_COLOR));
+					// Fast path for jam start/end to avoid sending the entire team.
+					else if (prop.equals(Team.EVENT_LAST_SCORE)) {
+						updateMap.put(childPath + "." + Team.EVENT_LAST_SCORE, t.getLastScore());
+						updateMap.put(childPath + ".JamScore", t.getScore() - t.getLastScore());
+					} else if (prop.equals(Team.EVENT_LEAD_JAMMER))
+						updateMap.put(childPath + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());
+					else if (prop.equals(Team.EVENT_STAR_PASS))
+						updateMap.put(childPath + "." + Team.EVENT_STAR_PASS, t.isStarPass());
 					else
 						processTeam("ScoreBoard", t, prop.equals(ScoreBoard.EVENT_REMOVE_TEAM));
 				} else if (p instanceof Skater) {
@@ -154,7 +166,28 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put(path + "." + Skater.EVENT_POSITION, s.getPosition());
 		updateMap.put(path + "." + Skater.EVENT_FLAGS, s.getFlags());
 		updateMap.put(path + "." + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox());
+
+    List<Skater.Penalty> penalties = s.getPenalties();
+    for (int i = 0; i < 9; i++) {
+      String base = path + ".Penalty(" + (i + 1) + ")";
+      if (i < penalties.size())
+        processPenalty(base, penalties.get(i), false);
+      else
+        processPenalty(base, null, true);
+    }
+		processPenalty(path + ".Penalty(FO_EXP)", s.getFOEXPPenalty(), s.getFOEXPPenalty() == null);
 	}
+
+	private void processPenalty(String path, Skater.Penalty p, boolean remove) {
+		if (remove) {
+			updateMap.put(path, null);
+			return;
+		}
+    updateMap.put(path + ".Id", p.getId());
+    updateMap.put(path + ".Period", p.getPeriod());
+    updateMap.put(path + ".Jam", p.getJam());
+    updateMap.put(path + ".Code", p.getCode());
+  }
 
 	private void processTeam(String path, Team t, boolean remove) {
 		path = path + ".Team(" + t.getId() + ")";
@@ -259,22 +292,32 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateMap.put("PenaltyCode.Penalty(B)", "Back Block");
 		updateMap.put("PenaltyCode.Penalty(A)", "High Block");
 		updateMap.put("PenaltyCode.Penalty(L)", "Low Block");
-		updateMap.put("PenaltyCode.Penalty(E)", "Elbows");
-		updateMap.put("PenaltyCode.Penalty(F)", "Forearms");
-		updateMap.put("PenaltyCode.Penalty(H)", "Blk w/ Head");
-		updateMap.put("PenaltyCode.Penalty(M)", "Multi-Player");
-		updateMap.put("PenaltyCode.Penalty(O)", "OOB Block-OOB Assist");
-		updateMap.put("PenaltyCode.Penalty(C)", "Dir of Play-Clockwise …-Stopped …");
-		updateMap.put("PenaltyCode.Penalty(P)", "Out of Play-Destroying-Failure …");
-		updateMap.put("PenaltyCode.Penalty(X)", "Cutting");
-		updateMap.put("PenaltyCode.Penalty(S)", "Skating OOB");
-		updateMap.put("PenaltyCode.Penalty(I)", "Illegal (Proc)-Failure to Yield-… Violation");
-		updateMap.put("PenaltyCode.Penalty(N)", "Insubordination");
-		updateMap.put("PenaltyCode.Penalty(Z)", "Delay of Game");
-		updateMap.put("PenaltyCode.Penalty(G)", "(Gross) Misconduct");
+		updateMap.put("PenaltyCode.Penalty(E)", "Leg Block");
+		updateMap.put("PenaltyCode.Penalty(F)", "Forearm");
+		updateMap.put("PenaltyCode.Penalty(H)", "Head Block");
+		updateMap.put("PenaltyCode.Penalty(M)", "Multiplayer");
+		updateMap.put("PenaltyCode.Penalty(C)", "Illegal Contact-Illegal Assist-OOP Block-Early/Late Hit");
+		updateMap.put("PenaltyCode.Penalty(D)", "Direction-Stop Block");
+		updateMap.put("PenaltyCode.Penalty(P)", "Illegal Position-Destruction-Skating OOB-Failure to...");
+		updateMap.put("PenaltyCode.Penalty(X)", "Cut-Illegal Re-Entry");
+		updateMap.put("PenaltyCode.Penalty(I)", "Illegal Procedure-Star Pass Violation-Pass Interference");
+		updateMap.put("PenaltyCode.Penalty(N)", "Interference-Delay Of Game");
+		updateMap.put("PenaltyCode.Penalty(G)", "Misconduct-Insubordination");
 		updateMap.put("PenaltyCode.Penalty(?)", "Unknown");
 		updateMap.put("PenaltyCode.FO_EXP(FO)", "Foul Out");
-		updateMap.put("PenaltyCode.FO_EXP(EXP)", "Expelled");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-B)", "Expulsion-Back Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-A)", "Expulsion-High Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-L)", "Expulsion-Low Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-E)", "Expulsion-Leg Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-F)", "Expulsion-Forearm");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-H)", "Expulsion-Head Block");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-M)", "Expulsion-Multiplayer");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-C)", "Expulsion-Illegal Contact");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-D)", "Expulsion-Direction");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-P)", "Expulsion-Illegal Position");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-N)", "Expulsion-Interference");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-G)", "Expulsion-Misconduct");
+		updateMap.put("PenaltyCode.FO_EXP(EXP-?)", "Expulsion-Unknown");
 
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());

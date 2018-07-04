@@ -82,6 +82,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	}
 
 	public boolean isPenaltyBox() { return penaltyBox; }
+	
 	public void setPenaltyBox(boolean box) {
 		synchronized (positionLock) {
 			if (box == penaltyBox)
@@ -108,6 +109,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	}
 
 	public String getFlags() { return flags; }
+	
 	public void setFlags(String f) {
 		synchronized (flagsLock) {
 			String last = flags;
@@ -116,6 +118,51 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			ScoreBoardManager.gameSnapshot();
 		}
 	}
+
+  public List<Penalty> getPenalties() { return Collections.unmodifiableList(new ArrayList<Penalty>(penalties)); }
+  public Penalty getFOEXPPenalty() { return foexp_penalty; }
+  
+  public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code) {
+    synchronized (penaltiesLock) {
+      if (foulout_explusion && code != null) {
+          Penalty prev = foexp_penalty;
+          id = UUID.randomUUID().toString();
+          if (prev != null) {
+            id = prev.getId();
+          }
+          foexp_penalty = new DefaultPenaltyModel(id, period, jam, code);
+          scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_FOEXP, foexp_penalty, null));
+      } else if (foulout_explusion && code == null) {
+        Penalty prev = foexp_penalty;
+        foexp_penalty = null;
+        scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_REMOVE_FOEXP, null, prev));
+      } else if (id == null ) {
+        id = UUID.randomUUID().toString();
+        // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
+        if (penalties.size() < 9) {
+          DefaultPenaltyModel dpm = new DefaultPenaltyModel(id, period, jam, code);
+          penalties.add(dpm);
+          scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, dpm, null));
+        }
+      } else {
+        // Updating/Deleting existing Penalty.  Find it and process
+        for (DefaultPenaltyModel p2 : penalties) {
+          if (p2.getId().equals(id)) {
+            if (code != null) {
+              p2.period = period;
+              p2.jam = jam;
+              p2.code = code;
+              scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, p2, null));
+            } else {
+              penalties.remove(p2);
+              scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_REMOVE_PENALTY, null, p2));
+            }
+            break;
+          }
+        }
+      }
+    }
+  }
 
 	public void bench() {
 		synchronized (positionLock) {
@@ -141,6 +188,8 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected String position = Position.ID_BENCH;
 	protected boolean penaltyBox = false;
 	protected String flags;
+	protected List<DefaultPenaltyModel> penalties = new LinkedList<DefaultPenaltyModel>();
+	protected PenaltyModel foexp_penalty;
 
 	private String saved_position = Position.ID_BENCH;
 
@@ -148,6 +197,31 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected Object numberLock = new Object();
 	protected Object positionLock = new Object();
 	protected Object flagsLock = new Object();
+	protected Object penaltiesLock = new Object();
 
 	protected boolean settingPositionSkater = false;
+
+  public class DefaultPenaltyModel extends DefaultScoreBoardEventProvider implements PenaltyModel
+  { 
+    public DefaultPenaltyModel(String i, int p, int j, String c) {
+      id = i;
+      period = p;
+      jam = j;
+      code = c;
+    }
+    public String getId() { return id; }
+    public int getPeriod() { return period; }
+    public int getJam() { return jam; }
+    public String getCode() { return code; }
+
+    public String getProviderName() { return "Penalty"; }
+    public Class getProviderClass() { return Penalty.class; }
+    public String getProviderId() { return getId(); }
+
+    protected String id;
+    protected int period;
+    protected int jam;
+    protected String code;
+  }
+
 }

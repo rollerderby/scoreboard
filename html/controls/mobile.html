@@ -33,9 +33,6 @@
 			<li><a href="#JamControlPage">Jam Control</a></li>
 			<li><a href="#PeriodTimePage">Period Time</a></li>
 			<li><a href="#TeamScorePage">Team Score</a></li>
-<!-- hide link for next release, then work on using on-server clocks
-			<li><a href="#PenaltyPage">Penalty Timing</a></li>
--->
 		</ul>
 	</div>
 </div>
@@ -119,26 +116,47 @@
 				<button class="StartJam" data-role="button" data-icon="check" data-iconpos="right">Start Jam</button>
 			</div>
 			<div class="ui-block-b">
-				<button class="StopJam" data-role="button" data-icon="delete" data-iconpos="left">Stop Jam</button>
+				<button class="StopJam" data-role="button" data-icon="delete" data-iconpos="left">Stop Jam/TO</button>
 			</div>
 		</div>
 		<button class="Timeout" data-role="button">Timeout</button>
 		<div class="ui-grid-b Timeout">
 			<div class="ui-block-a"><button class="Team1">
+				TO 
 				<span class="Team1 Name">Team 1</span>
 				<span class="Team1 AlternateName"></span>
+				
 			</button></div>
-			<div class="ui-block-b"><button class="Official">Official</button></div>
+			<div class="ui-block-b"><button class="Official">TO Official</button></div>
 			<div class="ui-block-c"><button class="Team2">
+			TO 
 				<span class="Team2 Name">Team 2</span>
 				<span class="Team2 AlternateName"></span>
+				
 			</button></div>
 		</div>
-		<p class="Clocks">
+		<div class="ui-grid-b OfficialReview">
+			<div class="ui-block-a"><button class="Team1">
+			OR
+				<span class="Team1 Name">Team 1</span>
+				<span class="Team1 AlternateName"></span>
+				 
+			</button></div>
+			<div class="ui-block-b">
+			</div>
+			<div class="ui-block-c"><button class="Team2">
+			 OR
+				<span class="Team2 Name">Team 2</span>
+				<span class="Team1 AlternateName"></span>
+				
+			</button></div>
+		</div>
+			<p class="Clocks">
 			<span class="ClockBubble Period">Period</span>
 			<span class="ClockBubble Jam">Jam</span>
 			<span class="ClockBubble Timeout">Timeout</span>
 		</p>
+		
 </div>
 </div>
 
@@ -150,14 +168,58 @@
 
 	<div data-role="content">
 		<p class="Time"><a class="Time"></a></p>
-		<p><hr/></p>
+		<hr/>
 		<p>
 			<button class="TimeDown" data-inline="true" value="-1000">-1 sec</button>
 			<button class="TimeUp" data-inline="true" value="1000">+1 sec</button>
 		</p>
-		<p><hr/></p>
+		<hr/>
 		<p><input type="text" class="SetTime"/></p>
 		<p><button class="SetTime" data-inline="true">Set Time</button></p>
+	</div>
+</div>
+
+<div data-role="page" id="TeamTimeoutPage">
+	<div data-role="header">
+		<a href="#Main" data-direction="reverse" data-icon="arrow-l">Main</a>
+		<h1>Timeouts</h1>
+	</div>
+
+	<div data-role="content">
+
+			<h3>
+				<a class="Team1 Name">Team 1</a>
+				<a class="Team1 AlternateName"></a>
+			</h3>
+			<div class="ui-grid-a">
+				<div class="ui-block-a">
+					<h4>Timeouts</h4>
+				</div>
+				<div class="ui-block-b">
+					<div class="ui-block-b Team1 Timeout"></div>
+				</div>
+
+				<div class="ui-block-a">
+					<h4>Official Review</h4>
+				</div>
+				<div class="ui-block-b Team1 OfficialReview"></div>
+			</div>
+
+		<h3>
+				<a class="Team2 Name">Team 2</a>
+				<a class="Team2 AlternateName"></a>
+			</h3>
+			<div class="ui-grid-a">
+				<div class="ui-block-a">
+					<h4>Timeouts</h4>
+				</div>
+				<div class="ui-block-b Team2 Timeout"></div>
+
+				<div class="ui-block-a">
+					<h4>Official Review</h4>
+				</div>
+				<div class="ui-block-b Team2 OfficialReview"></div>
+			</div>
 	</div>
 </div>
 

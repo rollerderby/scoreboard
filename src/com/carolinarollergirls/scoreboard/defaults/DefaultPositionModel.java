@@ -55,6 +55,7 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
 			clear();
 			SkaterModel last = skaterModel;
 			skaterModel = newSkaterModel;
+			_setPenaltyBox(newSkaterModel.isPenaltyBox());
 			scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
 		}
 	}

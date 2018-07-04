@@ -23,4 +23,10 @@ public interface SkaterModel extends Skater
 	public void setPosition(String position) throws PositionNotFoundException;
 	public void setPenaltyBox(boolean box);
 	public void setFlags(String flags);
+
+  // A null code removes the penalty.  
+  public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code);
+
+	public static interface PenaltyModel extends Penalty {
+	}
 }

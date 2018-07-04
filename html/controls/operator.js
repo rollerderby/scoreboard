@@ -154,7 +154,7 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$(".UndoControls").toggleClass("ShowUndo", this.checked);
+			$("#TeamTime").find(".UndoControls").toggleClass("ShowUndo", this.checked);
 		});
 
 	$("<label>").text("Show Speed Score Controls").attr("for", "ShowSpeedScoreControlsButton")
@@ -163,7 +163,16 @@ function createMetaControlTable() {
 		.appendTo(buttonsTd)
 		.button()
 		.click(function() {
-			$("tr.SpeedScore").toggleClass("Show", this.checked);
+			$("#TeamTime").find("tr.SpeedScore").toggleClass("Show", this.checked);
+		});
+
+	$("<label>").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
+		.appendTo(buttonsTd);
+	$("<input type='checkbox'>").attr("id", "ShowClockControlsButton")
+		.appendTo(buttonsTd)
+		.button()
+		.click(function() {
+			$("#TeamTime").find("tr.Control").toggleClass("Show", this.checked);
 		});
 
 	$("<button>").attr("id", "GameControl")
@@ -301,7 +310,7 @@ function createGameControlDialog() {
 		if (t1.val() != "" && t2.val() != "") {
 			var now = new Date();
 			var d = now.getFullYear() + '-' +
-				_timeConversions.twoDigit(now.getMonth()) + '-' +
+				_timeConversions.twoDigit(now.getMonth()+1) + '-' +
 				_timeConversions.twoDigit(now.getDate()) + ' ' +
 				_timeConversions.twoDigit(now.getHours()) + ':' +
 				_timeConversions.twoDigit(now.getMinutes());
@@ -439,10 +448,10 @@ function createJamControlTable() {
 		.attr("id", "UnStartJam").addClass("KeyControl UndoControls ShowUndo").button()
 		.appendTo(controlsTr.children("td:eq(0)"));
 
-	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam").val("true")
+	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam/TO").val("true")
 		.attr("id", "StopJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
-	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam").val("true")
+	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam/TO").val("true")
 		.attr("id", "UnStopJam").addClass("KeyControl UndoControls ShowUndo").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
 
@@ -657,16 +666,32 @@ function createTeamTable() {
 		sbTeam.$sb("Score").$sbBindAndRun("sbchange", jamScoreUpdate);
 		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
 
-		sbTeam.$sb("Timeout").$sbControl("<button>").text("Timeout").val("true")
-			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button()
-			.appendTo(timeoutTr.children("td:eq("+(first?"0":"4")+")").addClass("Timeout"));
+		var timeout = sbTeam.$sb("Timeout");
+		var timeoutButton = timeout.$sbControl("<button>").text("Timeout").val("true")
+			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button();
+		var timeoutHighlight = function() {
+			var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == team;
+			var or = $sb("ScoreBoard.OfficialReview").$sbIsTrue();
+			timeoutButton.toggleClass("Active", to && !or);
+		};
+		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", timeoutHighlight);
+		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", timeoutHighlight);
+		timeoutButton.appendTo(timeoutTr.children("td:eq("+(first?"0":"4")+")").addClass("Timeout"));
 		sbTeam.$sb("Timeouts").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
 				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"3")+")")
 			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"3")+")").addClass("Timeouts"));
-		sbTeam.$sb("OfficialReview").$sbControl("<button>").text("Off Review").val("true")
-			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button()
-			.appendTo(timeoutTr.children("td:eq("+(first?"2":"2")+")").addClass("OfficialReview"));
+		var review = sbTeam.$sb("OfficialReview");
+		var reviewButton = review.$sbControl("<button>").text("Off Review").val("true")
+			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button();
+		var reviewHighlight = function() {
+			var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == team;
+			var or = $sb("ScoreBoard.OfficialReview").$sbIsTrue();
+			reviewButton.toggleClass("Active", to && or);
+		};
+		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", reviewHighlight);
+		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", reviewHighlight);
+		reviewButton.appendTo(timeoutTr.children("td:eq("+(first?"2":"2")+")").addClass("OfficialReview"));
 		sbTeam.$sb("OfficialReviews").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
 				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"1")+")")
@@ -748,8 +773,8 @@ function createTimeTable() {
 	var numberRow = row.clone().addClass("Number").appendTo(table);
 	var controlRow = row.clone().addClass("Control").appendTo(table);
 	var timeRow = row.clone().addClass("Time").appendTo(table);
-	var timeSetRow = row.clone().addClass("TimeSet").appendTo(table);
-	var timeResetRow = row.clone().addClass("TimeReset").appendTo(table);
+//	var timeSetRow = row.clone().addClass("TimeSet").appendTo(table);
+//	var timeResetRow = row.clone().addClass("TimeReset").appendTo(table);
 
 	$.each( [ "Period", "Jam", "Lineup", "Timeout", "Intermission" ], function() {
 		var clock = String(this);
@@ -759,8 +784,8 @@ function createTimeTable() {
 		var numberTr = createRowTable(3).appendTo($("<td>").appendTo(numberRow)).find("tr");
 		var controlTr = createRowTable(2).appendTo($("<td>").appendTo(controlRow)).find("tr");
 		var timeTr = createRowTable(3).appendTo($("<td>").appendTo(timeRow)).find("tr");
-		var timeSetTr = createRowTable(2).appendTo($("<td>").appendTo(timeSetRow)).find("tr");
-		var timeResetTd = $("<td>").appendTo(timeResetRow);
+//		var timeSetTr = createRowTable(2).appendTo($("<td>").appendTo(timeSetRow)).find("tr");
+//		var timeResetTd = $("<td>").appendTo(timeResetRow);
 
 		sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
 		if (clock == "Period" || clock == "Jam") {
@@ -807,7 +832,7 @@ function createTimeTable() {
 			.attr("id", "Clock"+clock+"TimeUp").addClass("KeyControl").button()
 			.appendTo(timeTr.children("td:eq(2)").addClass("Button"));
 
-		$("<input type='text'/>")
+/*		$("<input type='text'/>")
 			.attr("size", "6")
 			.appendTo(timeSetTr.children("td:eq(0)").addClass("Text"))
 			.focus(function() { createTimeSetWarningDialog($(this)); });
@@ -822,7 +847,7 @@ function createTimeTable() {
 		sbClock.$sb("ResetTime").$sbControl("<button>")
 			.text("Reset Time").val("true")
 			.attr("id", "Clock"+clock+"ResetTime").addClass("KeyControl").button()
-			.appendTo(timeResetTd);
+			.appendTo(timeResetTd);*/
 	});
 
 	return table;
@@ -1264,17 +1289,29 @@ function createTeamsContent() {
 	createNewTeamTable($sb("ScoreBoard.Team(2)"), "(Current Team 2)")
 		.appendTo("#Teams>tbody>tr.Team>td");
 
+	// use this object to cache team nodes
+	// and render their display when first selected
+	// fixing major performance issues on this page
+	var teams = {};
+	
 	_crgUtils.bindAddRemoveEach($sb("Teams"), "Team", function(event, node) {
-		if (node.$sbId) /* skip any invalid team with no id */
-			createNewTeamTable(node).appendTo("#Teams>tbody>tr.Team>td");
+		if (node.$sbId){
+			teams[node.$sbId] = node;
+		} 
 	}, function(event, node) {
 		$("table.Team", "#Teams")
 			.filter(function() { return (node.$sbId == $(this).data("id")); })
 			.remove();
+		delete teams[node.$sbId];
 	});
 
 	_crgUtils.bindAndRun(selectTeam, "change", function(event) {
 		var teamid = selectTeam.val();
+		if(teams[teamid]) {
+			createNewTeamTable(teams[teamid]).appendTo("#Teams>tbody>tr.Team>td");
+			delete teams[teamid];
+		}
+		
 		var selectedTeam = $("#Teams table.Team").addClass("Hide")
 			.filter(function() { return (teamid == $(this).data("id")); })
 			.removeClass("Hide");

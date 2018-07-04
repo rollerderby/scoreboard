@@ -476,6 +476,11 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
+  public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
+    getSkaterModel(skaterId).AddPenaltyModel(penaltyId, fo_exp, period, jam, code);
+  }
+
+
 
 	protected ScoreBoardModel scoreBoardModel;
 
