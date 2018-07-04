@@ -80,12 +80,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 					processPosition("ScoreBoard.Team(" + pos.getTeam().getId() + ")", pos, false);
 				} else if (p instanceof Clock) {
 					processClock("ScoreBoard", (Clock)p, prop.equals(ScoreBoard.EVENT_REMOVE_CLOCK));
-				} else if (p instanceof Policy) {
-					processPolicy("ScoreBoard", (Policy)p, prop.equals(ScoreBoard.EVENT_REMOVE_POLICY));
-				} else if (p instanceof Policy.Parameter) {
-					Policy.Parameter param = (Policy.Parameter)p;
-					Policy pol = param.getPolicy();
-					update("ScoreBoard.Policy(" + pol.getId() + ")", param.getName(), v);
 				} else if (p instanceof Settings) {
 					Settings s = (Settings)p;
 					String prefix = null;
@@ -136,21 +130,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 			update(prefix, prop, (Skater)v);
 		else {
 			ScoreBoardManager.printMessage(prefix + " update of unknown type.  prop: " + prop + ", v: " + v + " v.getClass(): " + v.getClass());
-		}
-	}
-
-	private void processPolicy(String path, Policy p, boolean remove) {
-		path = path + ".Policy(" + p.getId() + ")";
-		if (remove) {
-			updateMap.put(path, null);
-			return;
-		}
-
-		updateMap.put(path + "." + Policy.EVENT_NAME, p.getName());
-		updateMap.put(path + "." + Policy.EVENT_DESCRIPTION, p.getDescription());
-		updateMap.put(path + "." + Policy.EVENT_ENABLED, p.isEnabled());
-		for (Policy.Parameter param : p.getParameters()) {
-			updateMap.put(path + "." + param.getName(), param.getValue());
 		}
 	}
 
@@ -330,11 +309,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		// Process Clocks
 		for (Clock c : sb.getClocks()) {
 			processClock("ScoreBoard", c, false);
-		}
-
-		// Process Policies TODO DELETE POLICIES
-		for (Policy p : sb.getPolicies()) {
-			processPolicy("ScoreBoard", p, false);
 		}
 
 		updateState();

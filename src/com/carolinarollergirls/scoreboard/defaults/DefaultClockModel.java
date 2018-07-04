@@ -8,12 +8,18 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
@@ -48,7 +54,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	public String getProviderName() { return "Clock"; }
-	public Class getProviderClass() { return Clock.class; }
+	public Class<?> getProviderClass() { return Clock.class; }
 	public String getProviderId() { return getId(); }
 
 	public ScoreBoard getScoreBoard() { return scoreBoardModel.getScoreBoard(); }
@@ -147,6 +153,12 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public long getInvertedTime() {
 		return maximumTime - time;
 	}
+	public long getTimeElapsed() {
+		return isCountDirectionDown()?getInvertedTime():getTime();
+	}
+	public long getTimeRemaining() {
+		return isCountDirectionDown()?getTime():getInvertedTime();
+	}
 	public void setTime(long ms) {
 		boolean doStop;
 		synchronized (timeLock) {
@@ -177,6 +189,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 		if (doStop)
 			stop();
+	}
+	public void elapseTime(long change) {
+		changeTime(isCountDirectionDown()?-change:change);
 	}
 	public void resetTime() {
 		if (isCountDirectionDown())
@@ -313,8 +328,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	protected boolean isSyncTime() {
-		Policy syncPolicy = getScoreBoard().getPolicy(ClockSyncPolicy.ID);
-		return (syncPolicy == null ? true : syncPolicy.isEnabled());
+		return (getScoreBoard().getSettings().getBoolean("Scoreboard.Clock.Sync"));
 	}
 
 	protected boolean isMasterClock() {
@@ -371,7 +385,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				if (c.isMasterClock()) {
 					masterClock = c;
 				}
-				long delayStartTime = 0;
 				if (c.isSyncTime() && !quickAdd) {
 					// This syncs all the clocks to change second at the same time
 					// with respect to the master clock

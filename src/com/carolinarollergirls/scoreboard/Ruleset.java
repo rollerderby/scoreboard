@@ -52,6 +52,14 @@ public class Ruleset {
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Unofficial",    "Text displayed immediately after last period", "Unofficial Score"));
 			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Official",      "Text displayed when score is declared official", "Final Score"));
 
+			newRule(new BooleanRule(false, "ScoreBoard", "Clock", "Sync",   "Make all clocks tick over seconds at the same time. Will cause clock starts/stops to be moved up to 0.5 seconds in order to sync.", true, "Sync Clocks", "Don't Sync Clocks"));
+
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM, "Number",   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
+
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStart",   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
+			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartBuffer",   "How long to wait after end of lineup before auto start is triggered.", "0:02"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartType",   "What to start after lineup is up", false, "Jam", "Timeout"));
+			
 			newRule(new BooleanRule(false, "ScoreBoard", null, "HideJamTotals",   "Should the score for the current Jam be displayed?", false, "Hide Jam Totals", "Show Jam Totals"));
 			newRule( new StringRule(false, "ScoreBoard", null, "BackgroundStyle", "Background style to be used. Possible values: bg_blacktowhite, bg_whitetoblack, bg_black", "bg_black"));
 			newRule( new StringRule(false, "ScoreBoard", null, "BoxStyle",        "Style to use for the score and time boxes. Possible values: box_rounded, box_flat, box_flat_bright", "box_flat"));
@@ -62,6 +70,9 @@ public class Ruleset {
 			newRule( new StringRule(false, "ScoreBoard", null, "Image",           "Image to show on the image view", "/images/fullscreen/American Flag.jpg"));
 			newRule( new StringRule(false, "ScoreBoard", null, "Video",           "Video to display on the video view", "/videos/fullscreen/American Flag.webm"));
 
+			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "TeamLogos",       "Show team logos in the 4x3 overlay?", true, "Display", "Hide"));
+			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "LogoBackground",  "Background color for the team logos", true, "Black", "Transparent"));
+			
 			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MaximumNumber", "Number of periods", 2));
@@ -82,6 +93,8 @@ public class Ruleset {
 			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "Direction",     "Which way should this clock count?", false, "Count Down", "Count Up"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MaximumTime",   "Must be length of lineup if counting down (will be automatically adjusted for overtime, if necessary). Must be larger than lineup time + buffer time if auto start is used", "60:00"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "Time",          "Duration of Lineup before a regular jam", "00:30"));
+			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "OvertimeTime",  "Duration of Lineup before an overtime jam", "01:00"));
 
 			newRule( new StringRule(false, "Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));

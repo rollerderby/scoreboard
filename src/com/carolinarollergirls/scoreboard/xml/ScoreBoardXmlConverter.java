@@ -8,14 +8,25 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Iterator;
 
-import org.jdom.*;
-import org.jdom.output.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class ScoreBoardXmlConverter
 {
@@ -55,10 +66,6 @@ public class ScoreBoardXmlConverter
 		Iterator<Team> teams = scoreBoard.getTeams().iterator();
 		while (teams.hasNext())
 			toElement(sb, teams.next());
-
-		Iterator<Policy> policies = scoreBoard.getPolicies().iterator();
-		while (policies.hasNext())
-			toElement(sb, policies.next());
 
 		return d;
 	}
@@ -165,27 +172,6 @@ public class ScoreBoardXmlConverter
 		return e;
 	}
 
-	public Element toElement(Element sb, Policy p) {
-		Element e = editor.setElement(sb, "Policy", p.getId());
-		editor.setElement(e, Policy.EVENT_NAME, null, p.getName());
-		editor.setElement(e, Policy.EVENT_DESCRIPTION, null, p.getDescription());
-		editor.setElement(e, Policy.EVENT_ENABLED, null, String.valueOf(p.isEnabled()));
-
-		Iterator<Policy.Parameter> parameters = p.getParameters().iterator();
-		while (parameters.hasNext())
-			toElement(e, parameters.next());
-
-		return e;
-	}
-
-	public Element toElement(Element p, Policy.Parameter pp) {
-		Element e = editor.setElement(p, "Parameter", pp.getName());
-		editor.setElement(e, "Name", null, pp.getName());
-		editor.setElement(e, "Type", null, pp.getType());
-		editor.setElement(e, Policy.Parameter.EVENT_VALUE, null, pp.getValue());
-		return e;
-	}
-
 	public Element toElement(Element t, Skater s) {
 		Element e = editor.setElement(t, "Skater", s.getId());
 		editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
@@ -218,7 +204,7 @@ public class ScoreBoardXmlConverter
 	/* XML to ScoreBoard methods */
 
 	public void processDocument(ScoreBoardModel scoreBoardModel, Document document) {
-		Iterator children = document.getRootElement().getChildren().iterator();
+		Iterator<?> children = document.getRootElement().getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			if (element.getName().equals("ScoreBoard"))
@@ -227,7 +213,7 @@ public class ScoreBoardXmlConverter
 	}
 
 	public void processScoreBoard(ScoreBoardModel scoreBoardModel, Element scoreBoard) {
-		Iterator children = scoreBoard.getChildren().iterator();
+		Iterator<?> children = scoreBoard.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -239,8 +225,6 @@ public class ScoreBoardXmlConverter
 					processClock(scoreBoardModel, element);
 				else if (name.equals("Team"))
 					processTeam(scoreBoardModel, element);
-				else if (name.equals("Policy"))
-					processPolicy(scoreBoardModel, element);
 				else if (name.equals("Settings"))
 					processSettings(scoreBoardModel, element);
 				else if (null == value)
@@ -282,7 +266,7 @@ public class ScoreBoardXmlConverter
 
 	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
 		SettingsModel sm = scoreBoardModel.getSettingsModel();
-		Iterator children = settings.getChildren().iterator();
+		Iterator<?> children = settings.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -304,7 +288,7 @@ public class ScoreBoardXmlConverter
 		boolean requestUnStart = false;
 		boolean requestUnStop = false;
 
-		Iterator children = clock.getChildren().iterator();
+		Iterator<?> children = clock.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -371,12 +355,11 @@ public class ScoreBoardXmlConverter
 		String id = team.getAttributeValue("Id");
 		TeamModel teamModel = scoreBoardModel.getTeamModel(id);
 
-		Iterator children = team.getChildren().iterator();
+		Iterator<?> children = team.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
 				String name = element.getName();
-				String eId = element.getAttributeValue("Id");
 				String value = editor.getText(element);
 
 				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
@@ -444,7 +427,7 @@ public class ScoreBoardXmlConverter
 			alternateNameModel = teamModel.getAlternateNameModel(id);
 		}
 
-		Iterator children = alternateName.getChildren().iterator();
+		Iterator<?> children = alternateName.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -474,7 +457,7 @@ public class ScoreBoardXmlConverter
 			colorModel = teamModel.getColorModel(id);
 		}
 
-		Iterator children = color.getChildren().iterator();
+		Iterator<?> children = color.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -494,7 +477,7 @@ public class ScoreBoardXmlConverter
 		String id = position.getAttributeValue("Id");
 		PositionModel positionModel = teamModel.getPositionModel(id);
 
-		Iterator children = position.getChildren().iterator();
+		Iterator<?> children = position.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -509,48 +492,6 @@ public class ScoreBoardXmlConverter
 					positionModel.setSkaterModel(value);
 				else if (name.equals(Position.EVENT_PENALTY_BOX))
 					positionModel.setPenaltyBox(Boolean.parseBoolean(value));
-			} catch ( Exception e ) {
-			}
-		}
-	}
-
-	public void processPolicy(ScoreBoardModel scoreBoardModel, Element policy) throws NoSuchElementException {
-		String id = policy.getAttributeValue("Id");
-		PolicyModel policyModel = scoreBoardModel.getPolicyModel(id);
-
-		Iterator children = policy.getChildren().iterator();
-		while (children.hasNext()) {
-			Element element= (Element)children.next();
-			try {
-				String name = element.getName();
-				String value = editor.getText(element);
-
-				if (name.equals("Parameter"))
-					processPolicyParameter(policyModel, element);
-				else if (null == value)
-					continue;
-				else if (name.equals(Policy.EVENT_ENABLED))
-					policyModel.setEnabled(Boolean.parseBoolean(value));
-			} catch ( Exception e ) {
-			}
-		}
-	}
-
-	public void processPolicyParameter(PolicyModel policyModel, Element parameter) throws NoSuchElementException {
-		String id = parameter.getAttributeValue("Id");
-		PolicyModel.ParameterModel parameterModel = policyModel.getParameterModel(id);
-
-		Iterator children = parameter.getChildren().iterator();
-		while (children.hasNext()) {
-			Element element = (Element)children.next();
-			try {
-				String name = element.getName();
-				String value = editor.getText(element);
-
-				if (null == value)
-					continue;
-				else if (name.equals(Policy.Parameter.EVENT_VALUE))
-					parameterModel.setValue(value);
 			} catch ( Exception e ) {
 			}
 		}
@@ -578,20 +519,18 @@ public class ScoreBoardXmlConverter
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 
-		Iterator children = skater.getChildren().iterator();
+		Iterator<?> children = skater.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
 				String name = element.getName();
 				String value = editor.getText(element);
 
-				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
-
 				if (name.equals(Skater.EVENT_PENALTY))
 					processPenalty(skaterModel, element, false);
 				else if (name.equals(Skater.EVENT_PENALTY_FOEXP))
 					processPenalty(skaterModel, element.getChild(Skater.EVENT_PENALTY), true);
-        else if (null == value)
+				else if (null == value)
 					continue;
 				else if (name.equals(Skater.EVENT_NAME))
 					skaterModel.setName(value);
@@ -610,14 +549,14 @@ public class ScoreBoardXmlConverter
 
 	public void processPenalty(SkaterModel skaterModel, Element penalty, boolean foulout_exp) {
 		String id = penalty.getAttributeValue("Id");
-    int period = 0;
-    int jam = 0;
-    String code = "";
+		int period = 0;
+		int jam = 0;
+		String code = "";
 
-		Iterator children = penalty.getChildren().iterator();
+		Iterator<?> children = penalty.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
-      try {
+			try {
 				String name = element.getName();
 				String value = editor.getText(element);
 
@@ -631,9 +570,9 @@ public class ScoreBoardXmlConverter
 					code = value;
 			} catch ( Exception e ) {
 			}
-    }
-    skaterModel.AddPenaltyModel(null, foulout_exp, period, jam, code);
-  }
+		}
+		skaterModel.AddPenaltyModel(null, foulout_exp, period, jam, code);
+	}
 
 	public static ScoreBoardXmlConverter getInstance() { return scoreBoardXmlConverter; }
 
