@@ -10,8 +10,6 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.*;
 
-import java.io.*;
-
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.xml.*;
 import com.carolinarollergirls.scoreboard.event.*;
@@ -55,13 +53,13 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }
-	public Class getProviderClass() { return ScoreBoard.class; }
+	public Class<ScoreBoard> getProviderClass() { return ScoreBoard.class; }
 	public String getProviderId() { return ""; }
 
 	public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
 	protected void loadPolicies() {
-		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
+		Enumeration<?> keys = ScoreBoardManager.getProperties().propertyNames();
 
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement().toString();
@@ -118,6 +116,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected void addInPeriodListeners() {
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.TRUE, periodStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE, periodEndListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, jamEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.TRUE, jamStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, periodEndListener));
@@ -194,7 +193,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 					ic.setTime(ic.isCountDirectionDown() ? ic.getMinimumTime() : ic.getMaximumTime());
 				}
 				// If Period Clock is at end, start a new period
-				if (pc.getTime() == (pc.isCountDirectionDown() ? pc.getMinimumTime() : pc.getMaximumTime())) {
+				if (pc.isTimeAtEnd()) {
 					pc.changeNumber(1);
 					pc.resetTime();
 					jc.setNumber(jc.getMinimumNumber());
@@ -208,7 +207,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				pc.start();
 
 				// If Jam Clock is not at start (2:00), increment number and reset time
-				if (jc.getTime() != (jc.isCountDirectionDown() ? jc.getMaximumTime() : jc.getMinimumTime()))
+				if (!jc.isTimeAtStart())
 					jc.changeNumber(1);
 				jc.resetTime();
 				jc.start();
@@ -590,10 +589,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				Clock p = getClock(Clock.ID_PERIOD);
 				Clock j = getClock(Clock.ID_JAM);
 				Clock t = getClock(Clock.ID_TIMEOUT);
-				if (event.getProvider() == j && !j.isRunning() && j.getTime() == j.getMinimumTime()) {
-					_stopJam();
-				}
-				if (isInPeriod() && !p.isRunning() && (p.getTime() == p.getMinimumTime()) && !j.isRunning() && !t.isRunning())
+
+				if (isInPeriod() && !p.isRunning() && p.isTimeAtEnd() && !j.isRunning() && !t.isRunning())
 					setInPeriod(false);
 			}
 		};
@@ -604,6 +601,16 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 					lc.stop();
 			}
 		};
+		
+		protected ScoreBoardListener jamEndListener = new ScoreBoardListener() {
+			public void scoreBoardChange(ScoreBoardEvent event) {
+				Clock j = getClock(Clock.ID_JAM);
+				if (event.getProvider() == j && !j.isRunning() && j.isTimeAtEnd()) {
+					_stopJam();
+				}
+			}
+		};
+		
 	protected ScoreBoardListener timeoutStartListener = new ScoreBoardListener() {
 			public void scoreBoardChange(ScoreBoardEvent event) {
 				ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
