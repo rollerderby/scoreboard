@@ -54,7 +54,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	public String getProviderName() { return "Clock"; }
-	public Class<?> getProviderClass() { return Clock.class; }
+	public Class<Clock> getProviderClass() { return Clock.class; }
 	public String getProviderId() { return getId(); }
 
 	public ScoreBoard getScoreBoard() { return scoreBoardModel.getScoreBoard(); }

@@ -28,6 +28,7 @@ import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
+
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
@@ -71,7 +72,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }
-	public Class<?> getProviderClass() { return ScoreBoard.class; }
+	public Class<ScoreBoard> getProviderClass() { return ScoreBoard.class; }
 	public String getProviderId() { return ""; }
 
 	public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
@@ -111,13 +112,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected void addInPeriodListeners() {
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.TRUE, periodStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE, periodEndListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, jamEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.TRUE, jamStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, periodEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.TRUE, timeoutStartListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Running", Boolean.FALSE, timeoutEndListener));
 		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_INTERMISSION, "Running", Boolean.FALSE, intermissionEndListener));
-		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_INTERMISSION, "Tine", lineupClockListener));
+		addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_INTERMISSION, "Time", lineupClockListener));
 	}
 
 	public boolean isInOvertime() { return inOvertime; }
@@ -227,6 +229,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (pc.isRunning()) {
 				lc.resetTime();
 				lc.start();
+			}
+			if (inOvertime) {
+				setInOvertime(false);
 			}
 			requestBatchEnd();
 		}
@@ -529,14 +534,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
-			if (event.getProvider() == jc && !jc.isRunning() && jc.isTimeAtEnd()) {
-				requestBatchStart();
-				_stopJam();
-				if (inOvertime) {
-					setInOvertime(false);
-				}
-				requestBatchEnd();
-			}
 			if (isInPeriod() && !pc.isRunning() && pc.isTimeAtEnd() && !jc.isRunning() && !tc.isRunning()) {
 				requestBatchStart();
 				setInPeriod(false);
@@ -558,6 +555,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
 			if (lc.isRunning())
 				lc.stop();
+		}
+	};
+	protected ScoreBoardListener jamEndListener = new ScoreBoardListener() {
+		public void scoreBoardChange(ScoreBoardEvent event) {
+			ClockModel jc = getClockModel(Clock.ID_JAM);
+			if (jc.isTimeAtEnd()) {
+				_stopJam();
+			}
 		}
 	};
 	protected ScoreBoardListener timeoutStartListener = new ScoreBoardListener() {

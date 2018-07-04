@@ -29,6 +29,9 @@ public class ScoreBoardManager {
 
 		//FIXME - not the best way to load autosave doc.
 		scoreBoardModel.getXmlScoreBoard().load();
+
+		// Register Prometheus metrics about scoreboard state.
+		new ScoreBoardMetricsCollector(scoreBoardModel).register();
 	}
 
 	public static void stop() {
