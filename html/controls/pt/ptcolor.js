@@ -257,7 +257,7 @@ function addPenaltyCode(type, code, verbalCues) {
 		var title = code;
 		
 		if(type === 'FO_EXP' && code !== 'FO') {
-			title = 'EXP-'+title;
+			title = title + '(EXP)';
 		}
 		
 		$('<div>').addClass('Code').text(title).appendTo(div);
