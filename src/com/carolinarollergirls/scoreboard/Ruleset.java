@@ -60,6 +60,7 @@ public class Ruleset {
 			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartBuffer",   "How long to wait after end of lineup before auto start is triggered.", "0:02"));
 			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartType",   "What to start after lineup is up", false, "Jam", "Timeout"));
 			
+			newRule( new StringRule(false, "ScoreBoard", null, "PenaltyDefinitionFile", "", "/config/penalties/wftda2018.json"));
 			newRule(new BooleanRule(false, "ScoreBoard", null, "HideJamTotals",   "Should the score for the current Jam be displayed?", false, "Hide Jam Totals", "Show Jam Totals"));
 			newRule( new StringRule(false, "ScoreBoard", null, "BackgroundStyle", "Background style to be used. Possible values: bg_blacktowhite, bg_whitetoblack, bg_black", "bg_black"));
 			newRule( new StringRule(false, "ScoreBoard", null, "BoxStyle",        "Style to use for the score and time boxes. Possible values: box_rounded, box_flat, box_flat_bright", "box_flat"));

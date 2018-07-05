@@ -28,15 +28,16 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
+import com.carolinarollergirls.scoreboard.json.WSUpdate;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
+
 	public WS(ScoreBoardModel s) {
-    sbm = s;
-		ScoreBoardJSONListener listener = new ScoreBoardJSONListener(s);
+		sbm = s;
+		new ScoreBoardJSONListener(s);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -62,43 +63,35 @@ public class WS extends WebSocketServlet {
 	}
 
 	private static void updateState(String key, Object value) {
-		Map<String, Object> updateMap = new LinkedHashMap<String, Object>();
-		updateMap.put(key, value);
-		updateState(updateMap);
+		List<WSUpdate> updates = new ArrayList<WSUpdate>();
+		updates.add(new WSUpdate(key, value));
+		updateState(updates);
 	}
 
-	public static void updateState(Map<String, Object> updates) {
+	public static void updateState(List<WSUpdate> updates) {
 		Histogram.Timer timer = updateStateDuration.startTimer();
 		synchronized (sourcesLock) {
 			stateID++;
-			List<String> keys = new LinkedList<String>(updates.keySet());
-			List<String> deletedKeys = new LinkedList<String>(updates.keySet());
-			for (String k : keys) {
-				Object v = updates.get(k);
-				if (v == null) {
-					// Remove this and all children from state
-					List<String> stateKeys = new ArrayList<String>(state.keySet());
-					for (String key : stateKeys) {
-						if (key.equals(k) || key.startsWith(k + ".")) {
-							deletedKeys.add(key);
-							State s = state.get(key);
+			for(WSUpdate update : updates) {
+				if(update.getValue() == null) {
+					for(String stateKey: state.keySet()) {
+						if(stateKey.equals(update.getKey()) || stateKey.startsWith(update.getKey()+".")) {
+							State s = state.get(stateKey);
 							s.stateID = stateID;
-							s.value = v;
+							s.value = null;
 						}
 					}
 				} else {
-					State s = state.get(k);
-					if (s == null) {
-						if (v != null)
-							state.put(k, new State(stateID, v));
-					} else if (!v.equals(s.value)) {
+					State s = state.get(update.getKey());
+					if(s == null) {
+						state.put(update.getKey(), new State(stateID, update.getValue()));
+					} else if(!update.getValue().equals(s.value)) {
 						s.stateID = stateID;
-						s.value = v;
+						s.value = update.getValue();
 					}
 				}
 			}
-			keys.addAll(deletedKeys);
-
+			
 			for (Conn source : sources) {
 				source.sendUpdates();
 			}
@@ -187,10 +180,6 @@ public class WS extends WebSocketServlet {
 					}
 				} else if (action.equals("Ping")) {
 					send(new JSONObject().put("Pong", ""));
-				} else if (action.equals("Short")) {
-					sendShort = true;
-				} else if (action.equals("Long")) {
-					sendShort = false;
 				} else {
 					sendError("Unknown Action '" + action + "'");
 				}
@@ -260,64 +249,13 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
-		private void setShortChild(JSONObject o, String k, Object v) throws JSONException {
-			List<String> path = new ArrayList<String>();
-			int s = 0;
-			boolean inside = false;
-			for (int i = 0; i < k.length(); i++) {
-				char c = k.charAt(i);
-				if (c == '(')
-					inside = true;
-				else if (c == ')')
-					inside = false;
-				else if (c == '.' && !inside) {
-					path.add(k.substring(s, i));
-					s = i + 1;
-				}
-			}
-			k = k.substring(s);
-			// String[] path = k.split("\\.");
-			System.out.print("k: " + k + "  path.size(): " + path.size() + "\n");
-			for (String p : path) {
-				System.out.print("p: " + p + "  has: " + o.has(p) + "\n");
-				if (!o.has(p)) {
-					o.put(p, new JSONObject());
-				}
-				Object n = o.getJSONObject(p);
-				if (!(n instanceof JSONObject)) {
-					JSONObject n2 = new JSONObject();
-					n2.put("_", n);
-					o = n2;
-				} else
-					o = (JSONObject)n;
-			}
-			if (!o.has(k)) {
-				o.put(k, v);
-			} else {
-				Object n = o.getJSONObject(k);
-				if (n instanceof JSONObject) {
-					((JSONObject)n).put("_", v);
-				} else {
-					o.put(k, v);
-				}
-			}
-		}
-
 		private void sendPendingUpdates() {
 			synchronized (this) {
 				if (updates.size() == 0)
 					return;
 				try {
 					JSONObject json = new JSONObject();
-					if (sendShort) {
-						JSONObject state = new JSONObject();
-						for (String k : updates.keySet()) {
-							setShortChild(state, k, updates.get(k));
-						}
-						json.put("state", state);
-					} else {
-						json.put("state", new JSONObject(updates));
-					}
+					json.put("state", new JSONObject(updates));
 					stateID = WS.stateID;
 					send(json);
 					updates.clear();
@@ -349,6 +287,5 @@ public class WS extends WebSocketServlet {
 		protected List<String> paths = new LinkedList<String>();
 		protected long stateID = 0;
 		private Map<String, Object> updates = new LinkedHashMap<String, Object>();
-		private boolean sendShort = false;
 	}
 }

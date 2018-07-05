@@ -26,6 +26,7 @@ import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 
@@ -65,6 +66,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		Ruleset.registerRule(settings, "ScoreBoard.SidePadding");
 		Ruleset.registerRule(settings, "ScoreBoard.SwapTeams");
 		Ruleset.registerRule(settings, "ScoreBoard.Video");
+		Ruleset.registerRule(settings, PenaltyCodesManager.PenaltiesFileSetting);
 
 		reset();
 		addInPeriodListeners();

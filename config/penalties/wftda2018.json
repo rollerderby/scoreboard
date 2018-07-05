@@ -1,0 +1,18 @@
+{
+	"penalties": [
+		{ "code": "B", "verbalCues": ["Back Block"]},
+		{ "code": "A", "verbalCues": ["High Block"]},
+		{ "code": "L", "verbalCues": ["Low Block"]},
+		{ "code": "E", "verbalCues": ["Leg Block"]},
+		{ "code": "F", "verbalCues": ["Forearm"]},
+		{ "code": "H", "verbalCues": ["Head Block"]},
+		{ "code": "M", "verbalCues": ["Multiplayer"]},
+		{ "code": "C", "verbalCues": ["Illegal Contact","Illegal Assist","OOP Block","Early/Late Hit"]},
+		{ "code": "D", "verbalCues": ["Direction","Stop Block"]},
+		{ "code": "P", "verbalCues": ["Illegal Position","Destruction","Skating OOB","Failure to..."]},
+		{ "code": "X", "verbalCues": ["Cut","Illegal Re-Entry"]},
+		{ "code": "I", "verbalCues": ["Illegal Procedure","Star Pass Violation","Pass Interference"]},
+		{ "code": "N", "verbalCues": ["Interference","Delay Of Game"]},
+		{ "code": "G", "verbalCues": ["Misconduct","Insubordination"]}
+	]
+}
