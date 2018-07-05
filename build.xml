@@ -100,6 +100,7 @@
 			includes="${src.dir}/com/carolinarollergirls/scoreboard/** json/*" >
 
 			<compilerarg value="-Xlint:unchecked"/>
+			<compilerarg value="-Xlint:-serial"/>
 			<classpath>
 				<fileset dir="${jar.dir}" includes="deps/*.jar" />
 			</classpath>

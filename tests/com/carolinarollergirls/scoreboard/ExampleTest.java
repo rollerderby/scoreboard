@@ -10,6 +10,7 @@ import com.carolinarollergirls.scoreboard.model.SkaterModel;
 public class ExampleTest {
 
 	@Test
+	@SuppressWarnings("all")
 	public void test() {
 		assertTrue(1==1);
 	}
