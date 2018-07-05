@@ -1,13 +1,21 @@
 package com.carolinarollergirls.scoreboard;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
+import com.carolinarollergirls.scoreboard.defaults.DefaultSkaterModel;
+import com.carolinarollergirls.scoreboard.defaults.DefaultTeamModel;
+import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class DefaultPositionModelTests {
 	private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";

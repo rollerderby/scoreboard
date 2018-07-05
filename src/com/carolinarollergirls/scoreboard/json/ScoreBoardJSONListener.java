@@ -8,9 +8,8 @@ package com.carolinarollergirls.scoreboard.json;
  * See the file COPYING for details.
  */
 
-import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Policy;
@@ -24,6 +23,9 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.WS;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 
 /**
  * Converts a ScoreBoardEvent into a representative JSON Update
@@ -73,12 +75,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 						processColor(childPath, (Team.Color)v, prop.equals(Team.EVENT_REMOVE_COLOR));
 					// Fast path for jam start/end to avoid sending the entire team.
 					else if (prop.equals(Team.EVENT_LAST_SCORE)) {
-						updateMap.put(childPath + "." + Team.EVENT_LAST_SCORE, t.getLastScore());
-						updateMap.put(childPath + ".JamScore", t.getScore() - t.getLastScore());
+						updates.add(new WSUpdate(childPath + "." + Team.EVENT_LAST_SCORE, t.getLastScore()));
+						updates.add(new WSUpdate(childPath + ".JamScore", t.getScore() - t.getLastScore()));
 					} else if (prop.equals(Team.EVENT_LEAD_JAMMER))
-						updateMap.put(childPath + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());
+						updates.add(new WSUpdate(childPath + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer()));
 					else if (prop.equals(Team.EVENT_STAR_PASS))
-						updateMap.put(childPath + "." + Team.EVENT_STAR_PASS, t.isStarPass());
+						updates.add(new WSUpdate(childPath + "." + Team.EVENT_STAR_PASS, t.isStarPass()));
 					else
 						processTeam("ScoreBoard", t, prop.equals(ScoreBoard.EVENT_REMOVE_TEAM));
 				} else if (p instanceof Skater) {
@@ -100,7 +102,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 					String prefix = null;
 					if (s.getParent() instanceof ScoreBoard)
 						prefix = "ScoreBoard";
-					if (prefix == null)
+					if(prop.equals(PenaltyCodesManager.PenaltiesFileSetting)) {
+						update(prefix, "Setting(" + prop + ")", v);
+						processPenaltyCodes(s);
+					}
+					else if (prefix == null)
 						ScoreBoardManager.printMessage(provider + " update of unknown kind.  prop: " + prop + ", v: " + v);
 					else
 						update(prefix, "Setting(" + prop + ")", v);
@@ -125,22 +131,22 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 
 	private void updateState() {
 		synchronized (this) {
-			if (updateMap.size() == 0)
+			if (updates.isEmpty())
 				return;
-			WS.updateState(updateMap);
-			updateMap.clear();
+			WS.updateState(updates);
+			updates.clear();
 		}
 	}
 
 	private void update(String prefix, String prop, Object v) {
 		if (v instanceof String)
-			updateMap.put(prefix + "." + prop, v);
+			updates.add(new WSUpdate(prefix + "." + prop, v));
 		else if (v instanceof Integer)
-			updateMap.put(prefix + "." + prop, v);
+			updates.add(new WSUpdate(prefix + "." + prop, v));
 		else if (v instanceof Long)
-			updateMap.put(prefix + "." + prop, v);
+			updates.add(new WSUpdate(prefix + "." + prop, v));
 		else if (v instanceof Boolean)
-			updateMap.put(prefix + "." + prop, v);
+			updates.add(new WSUpdate(prefix + "." + prop, v));
 		else if (v instanceof Skater)
 			update(prefix, prop, (Skater)v);
 		else {
@@ -151,72 +157,73 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	private void processPolicy(String path, Policy p, boolean remove) {
 		path = path + ".Policy(" + p.getId() + ")";
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
 
-		updateMap.put(path + "." + Policy.EVENT_NAME, p.getName());
-		updateMap.put(path + "." + Policy.EVENT_DESCRIPTION, p.getDescription());
-		updateMap.put(path + "." + Policy.EVENT_ENABLED, p.isEnabled());
+		updates.add(new WSUpdate(path + "." + Policy.EVENT_NAME, p.getName()));
+		updates.add(new WSUpdate(path + "." + Policy.EVENT_DESCRIPTION, p.getDescription()));
+		updates.add(new WSUpdate(path + "." + Policy.EVENT_ENABLED, p.isEnabled()));
 		for (Policy.Parameter param : p.getParameters()) {
-			updateMap.put(path + "." + param.getName(), param.getValue());
+			updates.add(new WSUpdate(path + "." + param.getName(), param.getValue()));
 		}
 	}
 
 	private void processSkater(String path, Skater s, boolean remove) {
 		path = path + ".Skater(" + s.getId() + ")";
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
 
-		updateMap.put(path + "." + Skater.EVENT_NAME, s.getName());
-		updateMap.put(path + "." + Skater.EVENT_NUMBER, s.getNumber());
-		updateMap.put(path + "." + Skater.EVENT_POSITION, s.getPosition());
-		updateMap.put(path + "." + Skater.EVENT_FLAGS, s.getFlags());
-		updateMap.put(path + "." + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox());
+		updates.add(new WSUpdate(path + "." + Skater.EVENT_NAME, s.getName()));
+		updates.add(new WSUpdate(path + "." + Skater.EVENT_NUMBER, s.getNumber()));
+		updates.add(new WSUpdate(path + "." + Skater.EVENT_POSITION, s.getPosition()));
+		updates.add(new WSUpdate(path + "." + Skater.EVENT_FLAGS, s.getFlags()));
+		updates.add(new WSUpdate(path + "." + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox()));
 
-    List<Skater.Penalty> penalties = s.getPenalties();
-    for (int i = 0; i < 9; i++) {
-      String base = path + ".Penalty(" + (i + 1) + ")";
-      if (i < penalties.size())
-        processPenalty(base, penalties.get(i), false);
-      else
-        processPenalty(base, null, true);
-    }
+		List<Skater.Penalty> penalties = s.getPenalties();
+		for (int i = 0; i < 9; i++) {
+			String base = path + ".Penalty(" + (i + 1) + ")";
+			if (i < penalties.size())
+				processPenalty(base, penalties.get(i), false);
+			else
+				processPenalty(base, null, true);
+		}
+		
 		processPenalty(path + ".Penalty(FO_EXP)", s.getFOEXPPenalty(), s.getFOEXPPenalty() == null);
 	}
 
 	private void processPenalty(String path, Skater.Penalty p, boolean remove) {
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
-    updateMap.put(path + ".Id", p.getId());
-    updateMap.put(path + ".Period", p.getPeriod());
-    updateMap.put(path + ".Jam", p.getJam());
-    updateMap.put(path + ".Code", p.getCode());
+    updates.add(new WSUpdate(path + ".Id", p.getId()));
+    updates.add(new WSUpdate(path + ".Period", p.getPeriod()));
+    updates.add(new WSUpdate(path + ".Jam", p.getJam()));
+    updates.add(new WSUpdate(path + ".Code", p.getCode()));
   }
 
 	private void processTeam(String path, Team t, boolean remove) {
 		path = path + ".Team(" + t.getId() + ")";
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
 
-		updateMap.put(path + "." + Team.EVENT_NAME, t.getName());
-		updateMap.put(path + "." + Team.EVENT_LOGO, t.getLogo());
-		updateMap.put(path + "." + Team.EVENT_SCORE, t.getScore());
-		updateMap.put(path + "." + Team.EVENT_LAST_SCORE, t.getLastScore());
-		updateMap.put(path + ".JamScore", t.getScore() - t.getLastScore());
-		updateMap.put(path + "." + Team.EVENT_TIMEOUTS, t.getTimeouts());
-		updateMap.put(path + "." + Team.EVENT_OFFICIAL_REVIEWS, t.getOfficialReviews());
-		updateMap.put(path + "." + Team.EVENT_IN_TIMEOUT, t.inTimeout());
-		updateMap.put(path + "." + Team.EVENT_IN_OFFICIAL_REVIEW, t.inOfficialReview());
-		updateMap.put(path + "." + Team.EVENT_RETAINED_OFFICIAL_REVIEW, t.retainedOfficialReview());
-		updateMap.put(path + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer());
-		updateMap.put(path + "." + Team.EVENT_STAR_PASS, t.isStarPass());
+		updates.add(new WSUpdate(path + "." + Team.EVENT_NAME, t.getName()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_LOGO, t.getLogo()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_SCORE, t.getScore()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_LAST_SCORE, t.getLastScore()));
+		updates.add(new WSUpdate(path + ".JamScore", t.getScore() - t.getLastScore()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_TIMEOUTS, t.getTimeouts()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_OFFICIAL_REVIEWS, t.getOfficialReviews()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_IN_TIMEOUT, t.inTimeout()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_IN_OFFICIAL_REVIEW, t.inOfficialReview()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_RETAINED_OFFICIAL_REVIEW, t.retainedOfficialReview()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer()));
+		updates.add(new WSUpdate(path + "." + Team.EVENT_STAR_PASS, t.isStarPass()));
 
 		// Skaters
 		for (Skater s : t.getSkaters())
@@ -238,98 +245,91 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	private void processClock(String path, Clock c, boolean remove) {
 		path = path + ".Clock(" + c.getId() + ")";
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
 
-		updateMap.put(path + "." + Clock.EVENT_NAME, c.getName());
-		updateMap.put(path + "." + Clock.EVENT_NUMBER, c.getNumber());
-		updateMap.put(path + "." + Clock.EVENT_MINIMUM_NUMBER, c.getMinimumNumber());
-		updateMap.put(path + "." + Clock.EVENT_MAXIMUM_NUMBER, c.getMaximumNumber());
-		updateMap.put(path + "." + Clock.EVENT_TIME, c.getTime());
-		updateMap.put(path + "." + Clock.EVENT_INVERTED_TIME, c.getInvertedTime());
-		updateMap.put(path + "." + Clock.EVENT_MINIMUM_TIME, c.getMinimumTime());
-		updateMap.put(path + "." + Clock.EVENT_MAXIMUM_TIME, c.getMaximumTime());
-		updateMap.put(path + "." + Clock.EVENT_DIRECTION, c.isCountDirectionDown());
-		updateMap.put(path + "." + Clock.EVENT_RUNNING, c.isRunning());
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_NAME, c.getName()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_NUMBER, c.getNumber()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_MINIMUM_NUMBER, c.getMinimumNumber()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_MAXIMUM_NUMBER, c.getMaximumNumber()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_TIME, c.getTime()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_INVERTED_TIME, c.getInvertedTime()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_MINIMUM_TIME, c.getMinimumTime()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_MAXIMUM_TIME, c.getMaximumTime()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_DIRECTION, c.isCountDirectionDown()));
+		updates.add(new WSUpdate(path + "." + Clock.EVENT_RUNNING, c.isRunning()));
 	}
 
 	private void processSettings(String path, Settings s) {
 		for (String key : s.getAll().keySet())
-			updateMap.put(path + ".Setting(" + key + ")", s.get(key));
+			updates.add(new WSUpdate(path + ".Setting(" + key + ")", s.get(key)));
 	}
 
 	private void processAlternateName(String path, Team.AlternateName an, boolean remove) {
 		path = path + ".AlternateName(" + an.getId() + ")";
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
 
-		updateMap.put(path, an.getName());
+		updates.add(new WSUpdate(path, an.getName()));
 	}
 
 	private void processColor(String path, Team.Color c, boolean remove) {
 		path = path + ".Color(" + c.getId() + ")";
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
 
-		updateMap.put(path, c.getColor());
+		updates.add(new WSUpdate(path, c.getColor()));
 	}
 
 	private void processPosition(String path, Position p, boolean remove) {
 		path = path + ".Position(" + p.getId() + ")";
 		if (remove) {
-			updateMap.put(path, null);
+			updates.add(new WSUpdate(path, null));
 			return;
 		}
 
-		updateMap.put(path + "." + Position.EVENT_SKATER, p.getSkater() == null ? null : p.getSkater().getId());
-		updateMap.put(path + "." + Position.EVENT_PENALTY_BOX, p.getPenaltyBox());
+		updates.add(new WSUpdate(path + "." + Position.EVENT_SKATER, p.getSkater() == null ? null : p.getSkater().getId()));
+		updates.add(new WSUpdate(path + "." + Position.EVENT_PENALTY_BOX, p.getPenaltyBox()));
+	}
+	
+	private void processPenaltyCodes(Settings s) {
+		PenaltyCodesManager pm = new PenaltyCodesManager(s);
+		updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
+		
+        try {
+            PenaltyCodesDefinition penalties = pm.loadFromJSON();
+            for(PenaltyCode p : penalties.getPenalties()) {
+                
+                updates.add(new WSUpdate("ScoreBoard.PenaltyCode."+p.getCode(), p.CuesForWS(p)));
+            }
+            
+            
+            updates.add(new WSUpdate("ScoreBoard.PenaltyCode.?","Unknown"));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
 	}
 
 	private void initialize(ScoreBoard sb) {
-		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_IN_PERIOD, sb.isInPeriod());
-		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_IN_OVERTIME, sb.isInOvertime());
-		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_SCORE, sb.isOfficialScore());
-		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_RULESET, sb.getRuleset());
-		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_TIMEOUT_OWNER, sb.getTimeoutOwner());
-		updateMap.put("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview());
+		updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_IN_PERIOD, sb.isInPeriod()));
+		updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_IN_OVERTIME, sb.isInOvertime()));
+		updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_SCORE, sb.isOfficialScore()));
+		updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_RULESET, sb.getRuleset()));
+		updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_TIMEOUT_OWNER, sb.getTimeoutOwner()));
+		updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview()));
 
-		updateMap.put("PenaltyCode.Penalty(B)", "Back Block");
-		updateMap.put("PenaltyCode.Penalty(A)", "High Block");
-		updateMap.put("PenaltyCode.Penalty(L)", "Low Block");
-		updateMap.put("PenaltyCode.Penalty(E)", "Leg Block");
-		updateMap.put("PenaltyCode.Penalty(F)", "Forearm");
-		updateMap.put("PenaltyCode.Penalty(H)", "Head Block");
-		updateMap.put("PenaltyCode.Penalty(M)", "Multiplayer");
-		updateMap.put("PenaltyCode.Penalty(C)", "Illegal Contact-Illegal Assist-OOP Block-Early/Late Hit");
-		updateMap.put("PenaltyCode.Penalty(D)", "Direction-Stop Block");
-		updateMap.put("PenaltyCode.Penalty(P)", "Illegal Position-Destruction-Skating OOB-Failure to...");
-		updateMap.put("PenaltyCode.Penalty(X)", "Cut-Illegal Re-Entry");
-		updateMap.put("PenaltyCode.Penalty(I)", "Illegal Procedure-Star Pass Violation-Pass Interference");
-		updateMap.put("PenaltyCode.Penalty(N)", "Interference-Delay Of Game");
-		updateMap.put("PenaltyCode.Penalty(G)", "Misconduct-Insubordination");
-		updateMap.put("PenaltyCode.Penalty(?)", "Unknown");
-		updateMap.put("PenaltyCode.FO_EXP(FO)", "Foul Out");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-B)", "Expulsion-Back Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-A)", "Expulsion-High Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-L)", "Expulsion-Low Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-E)", "Expulsion-Leg Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-F)", "Expulsion-Forearm");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-H)", "Expulsion-Head Block");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-M)", "Expulsion-Multiplayer");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-C)", "Expulsion-Illegal Contact");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-D)", "Expulsion-Direction");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-P)", "Expulsion-Illegal Position");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-N)", "Expulsion-Interference");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-G)", "Expulsion-Misconduct");
-		updateMap.put("PenaltyCode.FO_EXP(EXP-?)", "Expulsion-Unknown");
-
+		
+		
 		// Process Settings
 		processSettings("ScoreBoard", sb.getSettings());
+		
+		processPenaltyCodes(sb.getSettings());
 
 		// Process Teams
 		for (Team t : sb.getTeams()) {
@@ -349,6 +349,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateState();
 	}
 
-	private Map<String, Object> updateMap = new LinkedHashMap<String, Object>();
+	private List<WSUpdate> updates = new LinkedList<WSUpdate>();
 	private long batch = 0;
 }

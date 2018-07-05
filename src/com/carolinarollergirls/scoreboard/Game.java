@@ -5,7 +5,7 @@ import io.prometheus.client.Histogram;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -15,6 +15,7 @@ import com.carolinarollergirls.scoreboard.game.JamStats;
 import com.carolinarollergirls.scoreboard.game.PeriodStats;
 import com.carolinarollergirls.scoreboard.game.TeamInfo;
 import com.carolinarollergirls.scoreboard.jetty.WS;
+import com.carolinarollergirls.scoreboard.json.WSUpdate;
 
 public class Game {
 	public Game(ScoreBoard sb) {
@@ -161,21 +162,21 @@ public class Game {
 	}
 
 	public void update(String key, Object value) {
-		synchronized (updateMap) {
-			updateMap.put(key, value);
+		synchronized (updates) {
+			updates.add(new WSUpdate(key, value));
 		}
 	}
 
 	public void updateState() {
-		synchronized (updateMap) {
-			if (updateMap.size() == 0)
+		synchronized (updates) {
+			if (updates.isEmpty())
 				return;
-			WS.updateState(updateMap);
-			updateMap.clear();
+			WS.updateState(updates);
+			updates.clear();
 		}
 	}
 
-	private LinkedHashMap<String, Object> updateMap = new LinkedHashMap<String, Object>();
+	private List<WSUpdate> updates = new ArrayList<WSUpdate>();
 	protected ScoreBoard sb = null;
 	private TeamInfo[] teams = null;
 	private ArrayList<PeriodStats> periods = null;
