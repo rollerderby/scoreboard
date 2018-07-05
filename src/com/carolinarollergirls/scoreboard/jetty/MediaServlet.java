@@ -64,19 +64,19 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 		else if (request.getPathInfo().equals("/remove"))
 			remove(request, response);
 		else
-			response.sendError(response.SC_NOT_FOUND);
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		super.doGet(request, response);
 
-		response.sendError(response.SC_NOT_FOUND);
+		response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	protected void upload(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		try {
 			if (!ServletFileUpload.isMultipartContent(request)) {
-				response.sendError(response.SC_BAD_REQUEST);
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
 
@@ -101,20 +101,20 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			}
 
 			if (fileItems.size() == 0) {
-				setTextResponse(response, response.SC_BAD_REQUEST, "No files provided to upload");
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No files provided to upload");
 				return;
 			}
 
 			processFileItemList(fileItems, media, type);
 
 			int len = fileItems.size();
-			setTextResponse(response, response.SC_OK, "Successfully uploaded "+len+" file"+(len>1?"s":""));
+			setTextResponse(response, HttpServletResponse.SC_OK, "Successfully uploaded "+len+" file"+(len>1?"s":""));
 		} catch ( FileNotFoundException fnfE ) {
-			setTextResponse(response, response.SC_NOT_FOUND, fnfE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_NOT_FOUND, fnfE.getMessage());
 		} catch ( IllegalArgumentException iaE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, iaE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
 		} catch ( FileUploadException fuE ) {
-			setTextResponse(response, response.SC_INTERNAL_SERVER_ERROR, fuE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, fuE.getMessage());
 		}
 	}
 
@@ -132,13 +132,13 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			IOUtils.closeQuietly(iS);
 			IOUtils.closeQuietly(oS);
 
-			setTextResponse(response, response.SC_OK, "Successfully downloaded 1 remote file");
+			setTextResponse(response, HttpServletResponse.SC_OK, "Successfully downloaded 1 remote file");
 		} catch ( MalformedURLException muE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, muE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, muE.getMessage());
 		} catch ( IllegalArgumentException iaE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, iaE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
 		} catch ( FileNotFoundException fnfE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, fnfE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, fnfE.getMessage());
 		}
 	}
 
@@ -153,17 +153,17 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			String path = f.getAbsolutePath();
 
 			if (!f.exists())
-				setTextResponse(response, response.SC_BAD_REQUEST, "File does not exist : "+path);
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "File does not exist : "+path);
 			else if (f.isDirectory())
-				setTextResponse(response, response.SC_BAD_REQUEST, "Path is a directory : "+path);
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Path is a directory : "+path);
 			else if (!f.delete())
-				setTextResponse(response, response.SC_BAD_REQUEST, "Could not delete file "+path);
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Could not delete file "+path);
 			else
-				setTextResponse(response, response.SC_OK, "Successfully removed "+path);
+				setTextResponse(response, HttpServletResponse.SC_OK, "Successfully removed "+path);
 		} catch ( IllegalArgumentException iaE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, iaE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
 		} catch ( FileNotFoundException fnfE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, fnfE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, fnfE.getMessage());
 		}
 	}
 
