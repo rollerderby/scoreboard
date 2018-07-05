@@ -176,7 +176,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			if (item.isFormField()) {
 				fileItemIterator.remove();
 			} else {
-				File f = createFile(typeDir, item);
+				createFile(typeDir, item);
 			}
 		}
 	}

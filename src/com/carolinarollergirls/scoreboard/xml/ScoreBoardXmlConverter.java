@@ -390,7 +390,6 @@ public class ScoreBoardXmlConverter
 			Element element = (Element)children.next();
 			try {
 				String name = element.getName();
-				String eId = element.getAttributeValue("Id");
 				String value = editor.getText(element);
 
 				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
@@ -599,13 +598,11 @@ public class ScoreBoardXmlConverter
 				String name = element.getName();
 				String value = editor.getText(element);
 
-				boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
-
 				if (name.equals(Skater.EVENT_PENALTY))
 					processPenalty(skaterModel, element, false);
 				else if (name.equals(Skater.EVENT_PENALTY_FOEXP))
 					processPenalty(skaterModel, element.getChild(Skater.EVENT_PENALTY), true);
-        else if (null == value)
+				else if (null == value)
 					continue;
 				else if (name.equals(Skater.EVENT_NAME))
 					skaterModel.setName(value);
@@ -623,7 +620,7 @@ public class ScoreBoardXmlConverter
 	}
 
 	public void processPenalty(SkaterModel skaterModel, Element penalty, boolean foulout_exp) {
-		String id = penalty.getAttributeValue("Id");
+		String id = penalty.getAttributeValue("Id"); 
 		int period = 0;
 		int jam = 0;
 		String code = "";
@@ -631,7 +628,7 @@ public class ScoreBoardXmlConverter
 		Iterator<?> children = penalty.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
-      try {
+			try {
 				String name = element.getName();
 				String value = editor.getText(element);
 
@@ -646,7 +643,7 @@ public class ScoreBoardXmlConverter
 			} catch ( Exception e ) {
 			}
     }
-    skaterModel.AddPenaltyModel(null, foulout_exp, period, jam, code);
+    skaterModel.AddPenaltyModel(id, foulout_exp, period, jam, code);
   }
 
 	public static ScoreBoardXmlConverter getInstance() { return scoreBoardXmlConverter; }

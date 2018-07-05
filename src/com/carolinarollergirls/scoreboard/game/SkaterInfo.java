@@ -57,9 +57,6 @@ public class SkaterInfo extends Updater {
 		return json;
 	}
 
-	private void queueUpdates() {
-	}
-
 	public TeamInfo      getTeamInfo()  { return team_info; }
 	public String        getId()        { return id; }
 	public String        getName()      { return name; }

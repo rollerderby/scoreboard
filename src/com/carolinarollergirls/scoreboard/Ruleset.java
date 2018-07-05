@@ -295,7 +295,7 @@ public class Ruleset {
 				String rule = r.getFullName();
 				Object v = values.opt(rule);
 				if (v != null) {
-					boolean didSet = rs.setRule(rule, v);
+					rs.setRule(rule, v);
 				}
 			}
 			rs.immutable = json.optBoolean("immutable", false);

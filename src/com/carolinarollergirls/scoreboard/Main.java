@@ -23,7 +23,7 @@ import javax.swing.JTextArea;
 public class Main implements ScoreBoardManager.Logger
 {
 	public static void main(String argv[]) {
-		Main m = new Main(argv);
+		new Main(argv);
 	}
 
 	public Main(String argv[]) {

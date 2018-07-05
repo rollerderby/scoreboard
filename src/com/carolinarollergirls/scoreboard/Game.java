@@ -122,12 +122,6 @@ public class Game {
 
 	public String getUpdaterBase() { return "Game"; }
 
-	private void saveFile() {
-		synchronized (saveLock) {
-			saveLock.notifyAll();
-		}
-	}
-
 	private class SaveThread implements Runnable {
 		public void run() {
 			save();

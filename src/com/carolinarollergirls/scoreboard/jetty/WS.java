@@ -37,8 +37,8 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
 	public WS(ScoreBoardModel s) {
-    sbm = s;
-		ScoreBoardJSONListener listener = new ScoreBoardJSONListener(s);
+	    sbm = s;
+		new ScoreBoardJSONListener(s);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
