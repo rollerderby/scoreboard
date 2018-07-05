@@ -34,7 +34,6 @@ import com.carolinarollergirls.scoreboard.json.WSUpdate;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
-	private static final long serialVersionUID = 1L;
 
 	public WS(ScoreBoardModel s) {
 		sbm = s;
@@ -83,7 +82,7 @@ public class WS extends WebSocketServlet {
 						}
 					}
 				} else {
-					State s= state.get(update.getKey());
+					State s = state.get(update.getKey());
 					if(s == null) {
 						state.put(update.getKey(), new State(stateID, update.getValue()));
 					} else if(!update.getValue().equals(s.value)) {
