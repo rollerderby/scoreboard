@@ -134,7 +134,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 			c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), staticPath)).getPath());
 		}
 
-		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
+		Enumeration<?> keys = ScoreBoardManager.getProperties().propertyNames();
 
 		while (keys.hasMoreElements()) {
 			String key = keys.nextElement().toString();

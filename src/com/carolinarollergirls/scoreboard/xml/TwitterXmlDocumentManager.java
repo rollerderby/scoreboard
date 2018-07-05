@@ -206,7 +206,7 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
 		Element thisElement;
 		try { thisElement = getXPathElement(); }
 		catch ( JDOMException jE ) { return; }
-		Iterator conditionalTweets = thisElement.getChildren("ConditionalTweet").iterator();
+		Iterator<?> conditionalTweets = thisElement.getChildren("ConditionalTweet").iterator();
 		while (conditionalTweets.hasNext()) {
 			try { removeConditionalTweet((Element)conditionalTweets.next()); }
 			catch ( Exception e ) { /* Since we're removing existing ones, this shouldn't happen */ }

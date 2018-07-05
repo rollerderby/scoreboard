@@ -72,7 +72,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			FileItemFactory fiF = new DiskFileItemFactory();
 			ServletFileUpload sfU = new ServletFileUpload(fiF);
 			List<FileItem> fileItems = new LinkedList<FileItem>();
-			Iterator i = sfU.parseRequest(request).iterator();
+			Iterator<?> i = sfU.parseRequest(request).iterator();
 
 			while (i.hasNext()) {
 				FileItem item = (FileItem)i.next();

@@ -104,7 +104,7 @@ public class AutoSaveScoreBoard implements Runnable
 
 	protected XmlScoreBoard xmlScoreBoard;
 	protected ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-	protected ScheduledFuture running = null;
+	protected ScheduledFuture<?> running = null;
 	protected XmlDocumentEditor editor = new XmlDocumentEditor();
 	protected XMLOutputter xmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
 

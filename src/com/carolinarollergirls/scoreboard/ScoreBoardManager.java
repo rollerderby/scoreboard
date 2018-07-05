@@ -149,7 +149,7 @@ public class ScoreBoardManager {
 	}
 
 	private static void loadControllers() {
-		Iterator i = properties.keySet().iterator();
+		Iterator<Object> i = properties.keySet().iterator();
 		int count = 0;
 
 		while (i.hasNext()) {
@@ -173,7 +173,7 @@ public class ScoreBoardManager {
 	}
 
 	private static void loadViewers() {
-		Iterator i = properties.keySet().iterator();
+		Iterator<Object> i = properties.keySet().iterator();
 
 		while (i.hasNext()) {
 			String key = i.next().toString();

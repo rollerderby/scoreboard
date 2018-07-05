@@ -105,7 +105,7 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
 		if (path.endsWith("/"))
 			path = path.substring(0, path.length()-1);
 		if (path.length() > 0) {
-			Iterator nodes = XPath.selectNodes(node, path).iterator();
+			Iterator<?> nodes = XPath.selectNodes(node, path).iterator();
 			while (nodes.hasNext()) {
 				Document d = editor.cloneDocumentToClonedElement((Element)nodes.next()).getDocument();
 				if (doc == null)

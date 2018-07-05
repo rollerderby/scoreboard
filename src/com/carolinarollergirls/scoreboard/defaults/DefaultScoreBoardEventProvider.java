@@ -16,7 +16,7 @@ import com.carolinarollergirls.scoreboard.event.*;
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener
 {
 	public abstract String getProviderName();
-	public abstract Class getProviderClass();
+	public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
 	public abstract String getProviderId();
 
 	public void scoreBoardChange(ScoreBoardEvent event) {

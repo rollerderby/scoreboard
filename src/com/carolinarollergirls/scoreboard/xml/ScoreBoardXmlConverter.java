@@ -218,7 +218,7 @@ public class ScoreBoardXmlConverter
 	/* XML to ScoreBoard methods */
 
 	public void processDocument(ScoreBoardModel scoreBoardModel, Document document) {
-		Iterator children = document.getRootElement().getChildren().iterator();
+		Iterator<?> children = document.getRootElement().getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			if (element.getName().equals("ScoreBoard"))
@@ -227,7 +227,7 @@ public class ScoreBoardXmlConverter
 	}
 
 	public void processScoreBoard(ScoreBoardModel scoreBoardModel, Element scoreBoard) {
-		Iterator children = scoreBoard.getChildren().iterator();
+		Iterator<?> children = scoreBoard.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -282,7 +282,7 @@ public class ScoreBoardXmlConverter
 
 	public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
 		SettingsModel sm = scoreBoardModel.getSettingsModel();
-		Iterator children = settings.getChildren().iterator();
+		Iterator<?> children = settings.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -304,7 +304,7 @@ public class ScoreBoardXmlConverter
 		boolean requestUnStart = false;
 		boolean requestUnStop = false;
 
-		Iterator children = clock.getChildren().iterator();
+		Iterator<?> children = clock.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -371,7 +371,7 @@ public class ScoreBoardXmlConverter
 		String id = team.getAttributeValue("Id");
 		TeamModel teamModel = scoreBoardModel.getTeamModel(id);
 
-		Iterator children = team.getChildren().iterator();
+		Iterator<?> children = team.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -444,7 +444,7 @@ public class ScoreBoardXmlConverter
 			alternateNameModel = teamModel.getAlternateNameModel(id);
 		}
 
-		Iterator children = alternateName.getChildren().iterator();
+		Iterator<?> children = alternateName.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -474,7 +474,7 @@ public class ScoreBoardXmlConverter
 			colorModel = teamModel.getColorModel(id);
 		}
 
-		Iterator children = color.getChildren().iterator();
+		Iterator<?> children = color.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -494,7 +494,7 @@ public class ScoreBoardXmlConverter
 		String id = position.getAttributeValue("Id");
 		PositionModel positionModel = teamModel.getPositionModel(id);
 
-		Iterator children = position.getChildren().iterator();
+		Iterator<?> children = position.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -518,7 +518,7 @@ public class ScoreBoardXmlConverter
 		String id = policy.getAttributeValue("Id");
 		PolicyModel policyModel = scoreBoardModel.getPolicyModel(id);
 
-		Iterator children = policy.getChildren().iterator();
+		Iterator<?> children = policy.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element= (Element)children.next();
 			try {
@@ -540,7 +540,7 @@ public class ScoreBoardXmlConverter
 		String id = parameter.getAttributeValue("Id");
 		PolicyModel.ParameterModel parameterModel = policyModel.getParameterModel(id);
 
-		Iterator children = parameter.getChildren().iterator();
+		Iterator<?> children = parameter.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -578,7 +578,7 @@ public class ScoreBoardXmlConverter
 			skaterModel = teamModel.getSkaterModel(id);
 		}
 
-		Iterator children = skater.getChildren().iterator();
+		Iterator<?> children = skater.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
 			try {
@@ -610,11 +610,11 @@ public class ScoreBoardXmlConverter
 
 	public void processPenalty(SkaterModel skaterModel, Element penalty, boolean foulout_exp) {
 		String id = penalty.getAttributeValue("Id");
-    int period = 0;
-    int jam = 0;
-    String code = "";
+		int period = 0;
+		int jam = 0;
+		String code = "";
 
-		Iterator children = penalty.getChildren().iterator();
+		Iterator<?> children = penalty.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
       try {

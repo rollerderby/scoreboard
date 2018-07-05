@@ -48,7 +48,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public String getProviderName() { return "Team"; }
-	public Class getProviderClass() { return Team.class; }
+	public Class<Team> getProviderClass() { return Team.class; }
 	public String getProviderId() { return getId(); }
 
 	public ScoreBoard getScoreBoard() { return scoreBoardModel.getScoreBoard(); }
@@ -547,7 +547,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public TeamModel getTeamModel() { return teamModel; }
 
 		public String getProviderName() { return "AlternateName"; }
-		public Class getProviderClass() { return AlternateName.class; }
+		public Class<AlternateName> getProviderClass() { return AlternateName.class; }
 		public String getProviderId() { return getId(); }
 
 		protected TeamModel teamModel;
@@ -577,7 +577,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public TeamModel getTeamModel() { return teamModel; }
 
 		public String getProviderName() { return "Color"; }
-		public Class getProviderClass() { return Color.class; }
+		public Class<Color> getProviderClass() { return Color.class; }
 		public String getProviderId() { return getId(); }
 
 		protected TeamModel teamModel;

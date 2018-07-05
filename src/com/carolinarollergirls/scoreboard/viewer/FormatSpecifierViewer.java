@@ -323,7 +323,7 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
       scoreBoardCondition = new ScoreBoardCondition(p, prop, ScoreBoardCondition.ANY_VALUE);
       scoreBoardValues.put(format, this);
     }
-    public ScoreBoardValue(String f, String d, Class c, String i, String prop) {
+    public ScoreBoardValue(String f, String d, Class<? extends ScoreBoardEventProvider> c, String i, String prop) {
       format = f;
       description = d;
       scoreBoardCondition = new ScoreBoardCondition(c, i, prop, ScoreBoardCondition.ANY_VALUE);

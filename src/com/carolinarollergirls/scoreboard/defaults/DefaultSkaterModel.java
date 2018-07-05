@@ -25,7 +25,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	}
 
 	public String getProviderName() { return "Skater"; }
-	public Class getProviderClass() { return Skater.class; }
+	public Class<Skater> getProviderClass() { return Skater.class; }
 	public String getProviderId() { return getId(); }
 
 	public Team getTeam() { return teamModel.getTeam(); }
@@ -215,7 +215,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
     public String getCode() { return code; }
 
     public String getProviderName() { return "Penalty"; }
-    public Class getProviderClass() { return Penalty.class; }
+    public Class<Penalty> getProviderClass() { return Penalty.class; }
     public String getProviderId() { return getId(); }
 
     protected String id;

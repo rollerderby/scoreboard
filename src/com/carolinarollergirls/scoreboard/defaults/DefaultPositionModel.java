@@ -24,7 +24,7 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
 	}
 
 	public String getProviderName() { return "Position"; }
-	public Class getProviderClass() { return Position.class; }
+	public Class<Position> getProviderClass() { return Position.class; }
 	public String getProviderId() { return getId(); }
 
 	public Team getTeam() { return teamModel.getTeam(); }

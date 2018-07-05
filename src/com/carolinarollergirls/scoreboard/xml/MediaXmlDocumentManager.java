@@ -61,7 +61,7 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 				Element type = editor.getElement(getXPathElement(), "Type", editor.getId(e), false);
 				if (type == null)
 					return;
-				Iterator i = e.getChildren(getMediaName()).iterator();
+				Iterator<?> i = e.getChildren(getMediaName()).iterator();
 				while (i.hasNext())
 					if (!checkMediaNameElement(type, (Element)i.next()))
 						i.remove();

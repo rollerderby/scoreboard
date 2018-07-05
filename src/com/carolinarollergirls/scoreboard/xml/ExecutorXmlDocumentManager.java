@@ -30,7 +30,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager
 		}
 	}
 
-	public List<XmlDocumentManager> findXmlDocumentManagers(Class c) {
+	public List<XmlDocumentManager> findXmlDocumentManagers(Class<? extends XmlDocumentManager> c) {
 		synchronized (managerLock) {
 			List<XmlDocumentManager> l = new ArrayList<XmlDocumentManager>();
 			Iterator<XmlDocumentManager> m = managers.keySet().iterator();

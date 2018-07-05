@@ -12,22 +12,22 @@ import java.util.*;
 
 public class ConditionalScoreBoardListener implements ScoreBoardListener
 {
-  public ConditionalScoreBoardListener(Class c, String id, String prop, Object v, ScoreBoardListener l) {
+  public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop, Object v, ScoreBoardListener l) {
     this(new ScoreBoardCondition(c, id, prop, v), l);
   }
-  public ConditionalScoreBoardListener(Class c, String id, String prop, Object v) {
+  public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop, Object v) {
     this(new ScoreBoardCondition(c, id, prop, v));
   }
-  public ConditionalScoreBoardListener(Class c, String id, String prop, ScoreBoardListener l) {
+  public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop, ScoreBoardListener l) {
     this(c, id, prop, ScoreBoardCondition.ANY_VALUE, l);
   }
-  public ConditionalScoreBoardListener(Class c, String id, String prop) {
+  public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop) {
     this(c, id, prop, ScoreBoardCondition.ANY_VALUE);
   }
-  public ConditionalScoreBoardListener(Class c, String prop, ScoreBoardListener l) {
+  public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String prop, ScoreBoardListener l) {
     this(c, ScoreBoardCondition.ANY_ID, prop, ScoreBoardCondition.ANY_VALUE, l);
   }
-  public ConditionalScoreBoardListener(Class c, String prop) {
+  public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String prop) {
     this(c, ScoreBoardCondition.ANY_ID, prop, ScoreBoardCondition.ANY_VALUE);
   }
   public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop, Object v, ScoreBoardListener l) {

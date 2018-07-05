@@ -47,7 +47,7 @@ public class DefaultXmlDocumentManager implements XmlDocumentManager
 
 	protected void processElement(Element e) throws Exception {
 		/* By default, process all child elements. */
-		Iterator i = e.getChildren().iterator();
+		Iterator<?> i = e.getChildren().iterator();
 		while (i.hasNext()) {
 			try {
 				processChildElement((Element)i.next());
