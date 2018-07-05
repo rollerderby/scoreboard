@@ -99,7 +99,7 @@
 			includeAntRuntime="false"
 			includes="${src.dir}/com/carolinarollergirls/scoreboard/** json/*" >
 
-			<compilerarg value="-Xlint:unchecked"/>
+			<compilerarg value="-Xlint:all"/>
 			<compilerarg value="-Xlint:-serial"/>
 			<classpath>
 				<fileset dir="${jar.dir}" includes="deps/*.jar" />
