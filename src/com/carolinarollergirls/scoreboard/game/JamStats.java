@@ -1,13 +1,11 @@
 package com.carolinarollergirls.scoreboard.game;
 
 import java.util.Date;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.ClockConversion;
 import com.carolinarollergirls.scoreboard.Game;

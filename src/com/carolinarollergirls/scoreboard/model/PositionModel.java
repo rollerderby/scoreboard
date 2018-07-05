@@ -8,9 +8,8 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 
 public interface PositionModel extends Position
 {

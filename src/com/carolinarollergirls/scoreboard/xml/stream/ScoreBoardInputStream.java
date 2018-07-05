@@ -8,21 +8,20 @@ package com.carolinarollergirls.scoreboard.xml.stream;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.nio.charset.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import javax.xml.parsers.*;
+import javax.xml.parsers.SAXParserFactory;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-
-import org.jdom.*;
-import org.jdom.input.*;
-
-import org.xml.sax.*;
-import org.xml.sax.helpers.*;
+import org.jdom.input.SAXHandler;
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLFilter;
+import org.xml.sax.helpers.DefaultHandler;
+import org.xml.sax.helpers.XMLFilterImpl;
 
 public class ScoreBoardInputStream
 {

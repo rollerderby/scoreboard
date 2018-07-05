@@ -8,13 +8,13 @@ package com.carolinarollergirls.scoreboard.xml.policy;
  * See the file COPYING for details.
  */
 
-import org.jdom.*;
+import org.jdom.Element;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.policy.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.defaults.DefaultPolicyModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.policy.AbstractClockRunningChangePolicy;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public class PagePolicy_scoreboardhtml extends AbstractClockRunningChangePolicy
 {

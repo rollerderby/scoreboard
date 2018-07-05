@@ -8,11 +8,20 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.PositionNotFoundException;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implements SkaterModel
 {

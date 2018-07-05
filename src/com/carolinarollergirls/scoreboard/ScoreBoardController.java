@@ -8,7 +8,7 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public interface ScoreBoardController
 {

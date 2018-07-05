@@ -8,12 +8,11 @@ package com.carolinarollergirls.scoreboard.xml.stream;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Date;
 
-import org.jdom.*;
+import org.jdom.Document;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public class RealtimeStreamListenerFilter extends StreamListenerFilter implements StreamListener
 {

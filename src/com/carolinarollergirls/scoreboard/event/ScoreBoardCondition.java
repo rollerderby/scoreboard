@@ -8,8 +8,6 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class ScoreBoardCondition implements Cloneable

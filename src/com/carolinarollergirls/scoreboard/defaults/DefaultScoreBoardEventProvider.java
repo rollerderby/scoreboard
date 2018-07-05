@@ -8,10 +8,9 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener
 {

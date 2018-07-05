@@ -8,11 +8,19 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Timer;
+import java.util.TimerTask;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Policy;
+import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver

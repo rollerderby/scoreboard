@@ -8,14 +8,28 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.NoSuchElementException;
 
-import org.jdom.*;
-import org.jdom.output.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Policy;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.PolicyModel;
+import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class ScoreBoardXmlConverter
 {

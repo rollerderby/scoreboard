@@ -8,22 +8,22 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.IOException;
+import java.io.InputStream;
 
-import org.jdom.*;
-import org.jdom.xpath.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.jdom.Document;
+import org.jdom.JDOMException;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-import com.carolinarollergirls.scoreboard.model.*;
-
-import org.apache.commons.fileupload.*;
-import org.apache.commons.fileupload.servlet.*;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
+import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet
 {

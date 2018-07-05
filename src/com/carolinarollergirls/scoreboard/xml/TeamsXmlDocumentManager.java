@@ -8,14 +8,17 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-import org.jdom.*;
-import org.jdom.xpath.*;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 /**
  * This allows storing team info, e.g. name, logo, roster, etc., separate from the actual teams

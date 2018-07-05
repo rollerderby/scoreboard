@@ -8,11 +8,18 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class ScoreBoardManager {
 	public interface Logger {

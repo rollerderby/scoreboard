@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
-import java.util.*;
 
 public class ConditionalScoreBoardListener implements ScoreBoardListener
 {

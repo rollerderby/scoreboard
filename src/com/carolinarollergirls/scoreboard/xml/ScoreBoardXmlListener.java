@@ -8,13 +8,20 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import org.jdom.Document;
+import org.jdom.Element;
 
-import org.jdom.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Policy;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
-import com.carolinarollergirls.scoreboard.event.*;
 
 /**
  * Converts a ScoreBoardEvent into a representative XML Document or XML String.

@@ -8,23 +8,34 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
+import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.client.filter.MetricsFilter;
+import io.prometheus.client.hotspot.DefaultExports;
+
 import java.io.File;
-import java.net.*;
-import java.util.*;
-import javax.servlet.*;
+import java.net.MalformedURLException;
+import java.net.SocketException;
+import java.net.URL;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Random;
 
-import io.prometheus.client.exporter.*;
-import io.prometheus.client.filter.*;
-import io.prometheus.client.hotspot.*;
-import org.eclipse.jetty.server.*;
-import org.eclipse.jetty.server.bio.*;
-import org.eclipse.jetty.server.handler.*;
-import org.eclipse.jetty.server.session.*;
-import org.eclipse.jetty.servlet.*;
+import javax.servlet.ServletException;
+
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.SessionIdManager;
+import org.eclipse.jetty.server.bio.SocketConnector;
+import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.session.HashSessionIdManager;
+import org.eclipse.jetty.servlet.DefaultServlet;
+import org.eclipse.jetty.servlet.FilterHolder;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHolder;
+
+import com.carolinarollergirls.scoreboard.ScoreBoardController;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 // import org.eclipse.jetty.util.resource.Resource;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
 
 
 public class JettyServletScoreBoardController implements ScoreBoardController

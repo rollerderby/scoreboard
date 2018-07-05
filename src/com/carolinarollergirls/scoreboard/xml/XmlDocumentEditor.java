@@ -8,16 +8,31 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
-import org.jdom.*;
-import org.jdom.filter.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
-import org.jdom.xpath.*;
+import org.jdom.Attribute;
+import org.jdom.CDATA;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.ProcessingInstruction;
+import org.jdom.filter.ContentFilter;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class XmlDocumentEditor
 {

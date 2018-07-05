@@ -8,26 +8,38 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.zip.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 
-import org.jdom.*;
-
-import org.apache.commons.io.*;
-import org.apache.commons.io.filefilter.*;
-
-import org.apache.commons.fileupload.*;
-import org.apache.commons.fileupload.disk.*;
-import org.apache.commons.fileupload.servlet.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.xml.MediaXmlDocumentManager;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public class MediaServlet extends DefaultScoreBoardControllerServlet
 {

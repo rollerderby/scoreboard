@@ -8,7 +8,7 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Clock extends ScoreBoardEventProvider
 {

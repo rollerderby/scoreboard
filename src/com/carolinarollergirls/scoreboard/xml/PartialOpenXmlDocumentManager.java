@@ -8,13 +8,8 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
-import org.jdom.*;
-import org.jdom.xpath.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import org.jdom.Element;
+import org.jdom.xpath.XPath;
 
 /**
  * This class simply passes any Element under its management back to the XmlScoreBoard,

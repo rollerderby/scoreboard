@@ -8,18 +8,27 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.jdom.*;
-import org.jdom.xpath.*;
+import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.jdom.Element;
 
-import org.apache.commons.io.monitor.*;
-import org.apache.commons.io.filefilter.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.jetty.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 
 public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager implements XmlDocumentManager
 {

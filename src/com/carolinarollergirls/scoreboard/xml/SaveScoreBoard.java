@@ -8,14 +8,11 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileOutputStream;
 
-import org.jdom.*;
-import org.jdom.output.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import org.jdom.Element;
+import org.jdom.output.XMLOutputter;
 
 public class SaveScoreBoard extends SegmentedXmlDocumentManager
 {
