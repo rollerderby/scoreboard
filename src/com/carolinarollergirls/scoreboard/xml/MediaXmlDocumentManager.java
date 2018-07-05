@@ -96,8 +96,13 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 
 	protected void initializeType(File typeDir) {
 		Iterator<File> files = Arrays.asList(typeDir.listFiles((FileFilter)mediaFileFilter)).iterator();
-		while (files.hasNext())
+		while (files.hasNext()) {
 			addMediaElement(typeDir.getName(), files.next());
+		}
+		// Ensure we have an entry, even if dir is empty.
+		synchronized (updateLock) {
+			update(createTypeElement(typeDir.getName()));
+		}
 	}
 
 	protected void monitorType(File typeDir) {
