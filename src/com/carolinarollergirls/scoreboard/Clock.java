@@ -22,9 +22,25 @@ public interface Clock extends ScoreBoardEventProvider
 	public int getMinimumNumber();
 	public int getMaximumNumber();
 
+	/**
+	 * 
+	 * @return The time displayed on the clock (in ms)
+	 */
 	public long getTime();
+	/**
+	 * 
+	 * @return The clock's maximum time minus the time displayed on the clock (in ms)
+	 */
 	public long getInvertedTime();
+	/**
+	 * 
+	 * @return The time the clock has run (in ms). This is either the time or inverted time depending on the direction of the clock
+	 */
 	public long getTimeElapsed();
+	/**
+	 * 
+	 * @return The time until the clock reaches its maximum or zero (in ms). This is the inverse of getTimeElapsed.
+	 */
 	public long getTimeRemaining();
 	public long getMinimumTime();
 	public long getMaximumTime();

@@ -74,14 +74,6 @@ function loadDefinitions() {
 				if (s.attr("group") == def.group && s.attr("subgroup") == def.subgroup) {
 					section = s;
 				}
-				/*
-				 * this block of code will sort the sections alphabetically. Leaving it out will make the sections
-				 * appear in the order in which they appear in the rule definitions in the Java code.
-				 * 
-				 * if (s.attr("group") > def.group || (s.attr("group") == def.group && s.attr("subgroup") > def.subgroup)) {
-					section = newSection(def);
-					section.insertBefore(s);
-				}*/
 			});
 			if (section == null) {
 				section = newSection(def);

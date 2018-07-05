@@ -38,7 +38,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Unofficial");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Official");
 		Ruleset.registerRule(settings, "ScoreBoard.Clock.Sync");
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_JAM + ".Number");
+		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_JAM + ".ResetNumberEachPeriod");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStart");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBuffer");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartType");
@@ -590,14 +590,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);
-			if (ic.getTimeElapsed() > ic.getTimeRemaining() && pc.getNumber() < pc.getMaximumNumber()) {
-				//if more than half of the intermission has elapsed and there is another period, 
+			if (ic.getTimeRemaining() < 60000 && pc.getNumber() < pc.getMaximumNumber()) {
+				//If less than one minute of intermission is left and there is another period, 
 				// start the next period. Otherwise extend the previous period.
 				requestBatchStart();
 				pc.changeNumber(1);
 				pc.resetTime();
-				if (settings.getBoolean("ScoreBoard." + Clock.ID_JAM + ".Number")) {
-					jc.setNumber(1);
+				if (settings.getBoolean("ScoreBoard." + Clock.ID_JAM + ".ResetNumberEachPeriod")) {
+					jc.setNumber(jc.getMinimumNumber());
 				} else {
 					jc.changeNumber(1);
 				}

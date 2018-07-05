@@ -54,7 +54,7 @@ public class Ruleset {
 
 			newRule(new BooleanRule(false, "ScoreBoard", "Clock", "Sync",   "Make all clocks tick over seconds at the same time. Will cause clock starts/stops to be moved up to 0.5 seconds in order to sync.", true, "Sync Clocks", "Don't Sync Clocks"));
 
-			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM, "Number",   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
+			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM, "ResetNumberEachPeriod",   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
 
 			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStart",   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
 			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartBuffer",   "How long to wait after end of lineup before auto start is triggered.", "0:02"));

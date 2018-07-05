@@ -9,16 +9,15 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Policy;
 import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
 
 public class DefaultClockModelTests {
 
 	private ScoreBoardModel sbModelMock;
 	private Ruleset ruleMock;
-	private Policy policyMock;
+	private Settings settingsMock;
 	
 	
 	private DefaultClockModel clock;
@@ -32,7 +31,7 @@ public class DefaultClockModelTests {
 		sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);
 		
 		ruleMock = Mockito.mock(Ruleset.class);
-		policyMock = Mockito.mock(Policy.class);
+		settingsMock = Mockito.mock(Settings.class);
 		
 		Mockito
 			.when(sbModelMock.getScoreBoard())
@@ -43,12 +42,12 @@ public class DefaultClockModelTests {
 			.thenReturn(ruleMock);
 		
 		Mockito
-			.when(sbModelMock.getPolicy(ClockSyncPolicy.ID))
-			.thenReturn(policyMock);
+			.when(sbModelMock.getSettings())
+			.thenReturn(settingsMock);
 		
 		// makes it easier to test both sync and non-sync paths through clock model
 		Mockito
-			.when(policyMock.isEnabled())
+			.when(settingsMock.getBoolean("Scoreboard.Clock.Sync"))
 			.thenAnswer(new Answer<Boolean>() {
 				public Boolean answer(InvocationOnMock invocation) throws Throwable {
 					return syncStatus;
@@ -315,6 +314,37 @@ public class DefaultClockModelTests {
 	
 	
 	@Test
+	public void test_time_elapse_count_up()
+	{
+		clock.setMaximumTime(5000);
+		
+		clock.setTime(2000);
+		assertEquals(2000, clock.getTimeElapsed());
+		assertEquals(3000, clock.getTimeRemaining());
+
+		clock.elapseTime(1000);
+		assertEquals(3000, clock.getTime());
+		assertEquals(3000, clock.getTimeElapsed());
+		assertEquals(2000, clock.getTimeRemaining());
+	}
+
+	@Test
+	public void test_time_elapse_count_down()
+	{
+		clock.setCountDirectionDown(true);
+		clock.setMaximumTime(5000);
+		
+		clock.setTime(2000);
+		assertEquals(3000, clock.getTimeElapsed());
+		assertEquals(2000, clock.getTimeRemaining());
+
+		clock.elapseTime(1000);
+		assertEquals(1000, clock.getTime());
+		assertEquals(4000, clock.getTimeElapsed());
+		assertEquals(1000, clock.getTimeRemaining());
+	}
+	
+	@Test
 	public void test_time_at_start_count_up()
 	{
 		clock.setMaximumTime(5000);
@@ -433,7 +463,7 @@ public class DefaultClockModelTests {
 		assertEquals(10000, clock.getTime());
 
 		
-		clock.applyRule("Clock.OTHER.MaximumTime", (long)20000);
+		clock.applyRule("Clock.OTHER.MinimumTime", (long)20000);
 		assertEquals(10000, clock.getMinimumTime());
 		assertEquals(10000, clock.getMaximumTime());
 		assertEquals(10000, clock.getTime());

@@ -23,11 +23,6 @@ import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class XmlScoreBoardServlet extends AbstractXmlServlet
 {
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7299658481660605015L;
-
 	public String getPath() { return "/XmlScoreBoard"; }
 
 	protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
