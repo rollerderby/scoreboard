@@ -26,7 +26,7 @@ The scoreboard should be unzipped into a folder on the local machine. The user r
 
 ### Java
 
-Java is required for providing a Java Runtime Environment (JRE) version 1.5.0 or newer. Installing the latest version of Oracle's Java is recommended.
+Java is required for providing a Java Runtime Environment (JRE) version 1.7.0 or newer. Installing the latest version of Oracle's Java is recommended.
 
 * Windows users can install the standard Java for Windows package that is available when clicking on Free Java Download from [Oracle’s Java site](https://java.com/).
 
