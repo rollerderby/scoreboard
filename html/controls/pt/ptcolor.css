@@ -1,6 +1,7 @@
 body {	
 	font-size: 11pt;
-	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;"; 
+	background-color: #333;
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;";
 }
 table,tr,td{
 	border-collapse: collapse;
@@ -20,6 +21,7 @@ tr:nth-child(odd) {
 .Team1 { left: 0.5%; }
 .Team2 { right: 0.5%; }
 .Team .Number, .Team .Box, .Team .FO_EXP, .Team .Total { width: 8.33%; }
+.Team tr { background-color: #FFF; }
 .Team tr:nth-child(4n+0), .Team tr:nth-child(4n-1) { background-color: #CCC; }
 
 .Team .Warn1 { background-color: #fffd38; }
