@@ -8,12 +8,7 @@ package com.carolinarollergirls.scoreboard.xml.stream;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
-import org.jdom.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import org.jdom.Document;
 
 public class StreamListenerFilter implements StreamListener
 {

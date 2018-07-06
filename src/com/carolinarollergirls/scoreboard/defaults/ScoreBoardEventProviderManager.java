@@ -8,9 +8,14 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.Queue;
 
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public class ScoreBoardEventProviderManager {
 	private static final ScoreBoardEventProviderManager singleton = new ScoreBoardEventProviderManager();

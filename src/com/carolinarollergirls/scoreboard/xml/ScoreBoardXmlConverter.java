@@ -548,7 +548,7 @@ public class ScoreBoardXmlConverter
 	}
 
 	public void processPenalty(SkaterModel skaterModel, Element penalty, boolean foulout_exp) {
-		String id = penalty.getAttributeValue("Id");
+		String id = penalty.getAttributeValue("Id"); 
 		int period = 0;
 		int jam = 0;
 		String code = "";
@@ -570,9 +570,9 @@ public class ScoreBoardXmlConverter
 					code = value;
 			} catch ( Exception e ) {
 			}
-		}
-		skaterModel.AddPenaltyModel(null, foulout_exp, period, jam, code);
-	}
+	    }
+	    skaterModel.AddPenaltyModel(id, foulout_exp, period, jam, code);
+	  }
 
 	public static ScoreBoardXmlConverter getInstance() { return scoreBoardXmlConverter; }
 

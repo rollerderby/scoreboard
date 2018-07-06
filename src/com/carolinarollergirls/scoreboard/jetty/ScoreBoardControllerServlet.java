@@ -8,9 +8,9 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import javax.servlet.*;
+import javax.servlet.Servlet;
 
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardController;
 
 public interface ScoreBoardControllerServlet extends ScoreBoardController,Servlet
 {

@@ -39,7 +39,7 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	}
 
 	public String getProviderName() { return "Settings"; }
-	public Class<?> getProviderClass() { return Settings.class; }
+	public Class<Settings> getProviderClass() { return Settings.class; }
 	public String getProviderId() { return ""; }
 
 	public DefaultScoreBoardEventProvider getParent() { return parent; }

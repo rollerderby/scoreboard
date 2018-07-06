@@ -8,9 +8,7 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
-import java.lang.reflect.*;
+import java.util.EventObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 

@@ -8,16 +8,31 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Reader;
+import java.io.StringReader;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
 
-import org.jdom.*;
-import org.jdom.filter.*;
-import org.jdom.input.*;
-import org.jdom.output.*;
-import org.jdom.xpath.*;
+import org.jdom.Attribute;
+import org.jdom.CDATA;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.ProcessingInstruction;
+import org.jdom.filter.ContentFilter;
+import org.jdom.input.SAXBuilder;
+import org.jdom.output.Format;
+import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class XmlDocumentEditor
 {
@@ -116,7 +131,7 @@ public class XmlDocumentEditor
 	public Element getElement(Element parent, String name, String id, boolean create) {
 		id = checkId(id);
 		synchronized (parent.getDocument()) {
-			Iterator children = parent.getChildren(name).iterator();
+			Iterator<?> children = parent.getChildren(name).iterator();
 			while (children.hasNext()) {
 				Element child = (Element)children.next();
 				String childId = child.getAttributeValue("Id");
@@ -183,11 +198,11 @@ public class XmlDocumentEditor
 		synchronized (e) {
 			if ("true".equals(e.getAttributeValue("empty")))
 				return "";
-			List l = e.getContent(cdataFilter);
+			List<?> l = e.getContent(cdataFilter);
 			if (l.size() == 0)
 				return null;
 			StringBuffer sbuf = new StringBuffer();
-			Iterator cdata = l.iterator();
+			Iterator<?> cdata = l.iterator();
 			while (cdata.hasNext())
 				sbuf.append(((CDATA)cdata.next()).getText());
 			String s = sbuf.toString();
@@ -228,7 +243,7 @@ public class XmlDocumentEditor
 			return null;
 
 		synchronized (e) {
-			List matches = e.getContent(new NamedProcessingInstructionFilter(target));
+			List<?> matches = e.getContent(new NamedProcessingInstructionFilter(target));
 			if (matches.size() > 0)
 				return (ProcessingInstruction)matches.get(0);
 			else
@@ -242,9 +257,9 @@ public class XmlDocumentEditor
 
 	public boolean hasAnyPI(Document d) { return d.getDescendants(piFilter).hasNext(); }
 	public boolean hasRemovePI(Document d) { return d.getDescendants(removePIFilter).hasNext(); }
-	public Document removeAllPI(Document d, List targets, boolean inclusive) {
+	public Document removeAllPI(Document d, List<?> targets, boolean inclusive) {
 		LinkedList<ProcessingInstruction> list = new LinkedList<ProcessingInstruction>();
-		Iterator pis = d.getDescendants(piFilter);
+		Iterator<?> pis = d.getDescendants(piFilter);
 		while (pis.hasNext()) {
 			ProcessingInstruction pi = (ProcessingInstruction)pis.next();
 			if (inclusive == targets.contains(pi.getTarget()))
@@ -258,10 +273,10 @@ public class XmlDocumentEditor
 	/* Remove all PIs */
 	public Document removeAllPI(Document d) { return removeAllPI(d, Collections.emptyList(), false); }
 	/* Remove all PIs with targets specified in the List */
-	public Document removeAllPI(Document d, List targets) { return removeAllPI(d, targets, true); }
+	public Document removeAllPI(Document d, List<?> targets) { return removeAllPI(d, targets, true); }
 	public Document removeAllPI(Document d, String target) { return removeAllPI(d, Collections.singletonList(target)); }
 	/* Remove all PIs with targets not specified in the List */
-	public Document removeExceptPI(Document d, List targets) { return removeAllPI(d, targets, false); }
+	public Document removeExceptPI(Document d, List<?> targets) { return removeAllPI(d, targets, false); }
 	public Document removeExceptPI(Document d, String target) { return removeExceptPI(d, Collections.singletonList(target)); }
 
 	/* These methods remove any element that contains a matched PI */
@@ -279,7 +294,7 @@ public class XmlDocumentEditor
 			if (hasPI(e, target)) {
 				return true;
 			} else {
-				ListIterator children = e.getChildren().listIterator();
+				ListIterator<?> children = e.getChildren().listIterator();
 				while (children.hasNext())
 					if (filterPI((Element)children.next(), target))
 						children.remove();
@@ -390,17 +405,17 @@ public class XmlDocumentEditor
 
 	public void mergeElements(Element to, Element from) {
 		synchronized (to.getDocument()) {
-			Iterator pis = from.getContent(piFilter).iterator();
+			Iterator<?> pis = from.getContent(piFilter).iterator();
 			while (pis.hasNext())
 				setPI(to, (ProcessingInstruction)pis.next());
 
-			Iterator attrs = from.getAttributes().iterator();
+			Iterator<?> attrs = from.getAttributes().iterator();
 			while (attrs.hasNext())
 				to.setAttribute((Attribute)((Attribute)attrs.next()).clone());
 
 			setText(to, getText(from));
 
-			Iterator children = from.getChildren().iterator();
+			Iterator<?> children = from.getChildren().iterator();
 			while (children.hasNext()) {
 				Element child = (Element)children.next();
 				mergeElements(getElement(to, child.getName(), child.getAttributeValue("Id")), child);
@@ -414,8 +429,8 @@ public class XmlDocumentEditor
 	public void filterOutElementXPath(Element e, XPath filter) throws JDOMException {
 		if (e == null || filter == null)
 			return;
-		List nodes = filter.selectNodes(e);
-		Iterator i = nodes.iterator();
+		List<?> nodes = filter.selectNodes(e);
+		Iterator<?> i = nodes.iterator();
 		while (i.hasNext()) {
 			Element n = (Element)i.next();
 			Element p = n.getParentElement();
@@ -427,17 +442,19 @@ public class XmlDocumentEditor
 			}
 		}
 	}
+	// Suppress unchecked warnings because JDOM 1.x doesn't support Java generics
+	@SuppressWarnings("unchecked") 
 	public void filterElementXPath(Element e, XPath filter) throws JDOMException {
 		if (e == null || filter == null)
 			return;
 		filterElementList(e, filter.selectNodes(e));
 	}
-	public void filterElementList(Element e, List keep) {
+	public void filterElementList(Element e, List<Element> keep) {
 		if (e == null || keep == null)
 			return;
 		// Need to copy list first to avoid ConcurrentModificationException
 		// Suppress unchecked warnings because JDOM 1.x doesn't support Java generics
-		@SuppressWarnings("unchecked") Iterator<Element> children = new ArrayList(e.getChildren()).iterator();
+		@SuppressWarnings("unchecked") Iterator<Element> children = new ArrayList<Element>(e.getChildren()).iterator();
 		while (children.hasNext())
 			filterElementList(children.next(), keep);
 		if (e.getChildren().size() == 0 && !keep.contains(e))
@@ -487,10 +504,10 @@ public class XmlDocumentEditor
 			newE = (Element)e.clone();
 		else {
 			newE = new Element(e.getName());
-			Iterator attrs = e.getAttributes().iterator();
+			Iterator<?> attrs = e.getAttributes().iterator();
 			while (attrs.hasNext())
 				newE.setAttribute((Attribute)((Attribute)attrs.next()).clone());
-			Iterator pis = e.getContent(piFilter).iterator();
+			Iterator<?> pis = e.getContent(piFilter).iterator();
 			while (pis.hasNext())
 				setPI(newE, (ProcessingInstruction)pis.next());
 			if (includeTextFirst)

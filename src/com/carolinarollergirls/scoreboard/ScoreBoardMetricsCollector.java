@@ -8,12 +8,14 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 
 public class ScoreBoardMetricsCollector extends Collector {

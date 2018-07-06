@@ -8,15 +8,15 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-import org.jdom.*;
-import org.jdom.output.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.stream.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManager implements XmlScoreBoardListener
 {

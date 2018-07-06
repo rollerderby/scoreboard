@@ -8,12 +8,15 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.util.concurrent.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class DefaultPositionModel extends DefaultScoreBoardEventProvider implements PositionModel
 {
@@ -24,7 +27,7 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
 	}
 
 	public String getProviderName() { return "Position"; }
-	public Class getProviderClass() { return Position.class; }
+	public Class<Position> getProviderClass() { return Position.class; }
 	public String getProviderId() { return getId(); }
 
 	public Team getTeam() { return teamModel.getTeam(); }

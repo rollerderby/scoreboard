@@ -8,14 +8,17 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.TooManyListenersException;
+import java.util.UUID;
 
-import org.jdom.*;
+import org.jdom.Element;
+import org.jdom.JDOMException;
 
-import twitter4j.*;
+import twitter4j.TwitterException;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.viewer.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 
 public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
 {
@@ -206,7 +209,7 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager
 		Element thisElement;
 		try { thisElement = getXPathElement(); }
 		catch ( JDOMException jE ) { return; }
-		Iterator conditionalTweets = thisElement.getChildren("ConditionalTweet").iterator();
+		Iterator<?> conditionalTweets = thisElement.getChildren("ConditionalTweet").iterator();
 		while (conditionalTweets.hasNext()) {
 			try { removeConditionalTweet((Element)conditionalTweets.next()); }
 			catch ( Exception e ) { /* Since we're removing existing ones, this shouldn't happen */ }

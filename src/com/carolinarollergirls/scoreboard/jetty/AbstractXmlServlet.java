@@ -8,24 +8,18 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.lang.reflect.*;
-import java.util.*;
-import java.util.concurrent.*;
-import java.text.*;
+import java.io.IOException;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import org.jdom.*;
-import org.jdom.output.*;
-import org.jdom.xpath.*;
+import org.jdom.Document;
+import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.xml.SleepingQueueXmlScoreBoardListener;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public abstract class AbstractXmlServlet extends AbstractRegisterServlet
 {
