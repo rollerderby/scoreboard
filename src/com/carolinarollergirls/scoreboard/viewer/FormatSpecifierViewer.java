@@ -8,14 +8,21 @@ package com.carolinarollergirls.scoreboard.viewer;
  * See the file COPYING for details.
  */
 
-import java.text.*;
-import java.util.*;
-import java.util.regex.*;
-import java.util.concurrent.*;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardViewer;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardCondition;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public class FormatSpecifierViewer implements ScoreBoardViewer
 {
@@ -323,7 +330,7 @@ public class FormatSpecifierViewer implements ScoreBoardViewer
       scoreBoardCondition = new ScoreBoardCondition(p, prop, ScoreBoardCondition.ANY_VALUE);
       scoreBoardValues.put(format, this);
     }
-    public ScoreBoardValue(String f, String d, Class c, String i, String prop) {
+    public ScoreBoardValue(String f, String d, Class<? extends ScoreBoardEventProvider> c, String i, String prop) {
       format = f;
       description = d;
       scoreBoardCondition = new ScoreBoardCondition(c, i, prop, ScoreBoardCondition.ANY_VALUE);

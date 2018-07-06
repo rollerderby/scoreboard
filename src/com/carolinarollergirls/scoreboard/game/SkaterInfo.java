@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.game;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -55,9 +55,6 @@ public class SkaterInfo extends Updater {
 			json.put("fo_exp", fo_exp.toJSON());
 
 		return json;
-	}
-
-	private void queueUpdates() {
 	}
 
 	public TeamInfo      getTeamInfo()  { return team_info; }

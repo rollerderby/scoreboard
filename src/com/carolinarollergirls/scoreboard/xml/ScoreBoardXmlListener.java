@@ -8,13 +8,20 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import org.jdom.Document;
+import org.jdom.Element;
 
-import org.jdom.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Policy;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
-import com.carolinarollergirls.scoreboard.event.*;
 
 /**
  * Converts a ScoreBoardEvent into a representative XML Document or XML String.
@@ -112,21 +119,21 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 			}
 		} else if (p.getProviderName().equals("Team")) {
 			if (prop.equals(Team.EVENT_ADD_ALTERNATE_NAME)) {
-				Element e = converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue());
+				converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue());
 			} else if (prop.equals(Team.EVENT_REMOVE_ALTERNATE_NAME)) {
 				if (isPersistent())
 					editor.removeElement(getTeamElement((Team)p), "AlternateName", ((Team.AlternateName)event.getValue()).getId());
 				else
 					editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue()));
 			} else if (prop.equals(Team.EVENT_ADD_COLOR)) {
-				Element e = converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue());
+				converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue());
 			} else if (prop.equals(Team.EVENT_REMOVE_COLOR)) {
 				if (isPersistent())
 					editor.removeElement(getTeamElement((Team)p), "Color", ((Team.Color)event.getValue()).getId());
 				else
 					editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue()));
 			} else if (prop.equals(Team.EVENT_ADD_SKATER)) {
-				Element e = converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
+				converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
 			} else if (prop.equals(Team.EVENT_REMOVE_SKATER)) {
 				if (isPersistent())
 					editor.removeElement(getTeamElement((Team)p), "Skater", ((Skater)event.getValue()).getId());
@@ -180,7 +187,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 			Element e = editor.setElement(getClockElement((Clock)p), prop, null, v);
 			if (prop.equals("Time")) {
 				try {
-					Clock c = (Clock)p;
 					long time = ((Long)event.getValue()).longValue();
 					long prevTime = ((Long)event.getPreviousValue()).longValue();
 					if (time % 1000 == 0 || Math.abs(prevTime - time) >= 1000)

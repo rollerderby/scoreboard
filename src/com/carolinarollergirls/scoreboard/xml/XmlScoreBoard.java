@@ -8,16 +8,23 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FilenameFilter;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.jdom.*;
-import org.jdom.input.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class XmlScoreBoard
 {
@@ -60,7 +67,7 @@ public class XmlScoreBoard
 
 	public void addXmlDocumentManager(XmlDocumentManager xdM) { managers.addXmlDocumentManager(xdM); }
 	public void removeXmlDocumentManager(XmlDocumentManager xdM) { managers.removeXmlDocumentManager(xdM); }
-	public List<XmlDocumentManager> findXmlDocumentManagers(Class c) { return managers.findXmlDocumentManagers(c); }
+	public List<XmlDocumentManager> findXmlDocumentManagers(Class<? extends XmlDocumentManager> c) { return managers.findXmlDocumentManagers(c); }
 
 	public void reset() {
 		synchronized (managerLock) {

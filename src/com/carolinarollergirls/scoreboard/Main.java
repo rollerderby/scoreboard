@@ -8,21 +8,22 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import gnu.getopt.Getopt;
+import gnu.getopt.LongOpt;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.Dimension;
+import java.awt.Toolkit;
 
-import gnu.getopt.*;
-
-import com.carolinarollergirls.scoreboard.model.*;
+import javax.swing.BoxLayout;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
 
 public class Main implements ScoreBoardManager.Logger
 {
 	public static void main(String argv[]) {
-		Main m = new Main(argv);
+		new Main(argv);
 	}
 
 	public Main(String argv[]) {

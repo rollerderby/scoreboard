@@ -1,14 +1,15 @@
 package com.carolinarollergirls.scoreboard;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertSame;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.carolinarollergirls.scoreboard.defaults.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
+import com.carolinarollergirls.scoreboard.defaults.DefaultSettingsModel;
 
 public class DefaultSettingsModelTests {
 

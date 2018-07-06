@@ -11,7 +11,7 @@ package com.carolinarollergirls.scoreboard.event;
 public interface ScoreBoardEventProvider
 {
   public String getProviderName();
-  public Class getProviderClass();
+  public Class<? extends ScoreBoardEventProvider> getProviderClass();
   public String getProviderId();
 
   public void addScoreBoardListener(ScoreBoardListener listener);

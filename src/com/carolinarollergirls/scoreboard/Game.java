@@ -1,17 +1,19 @@
 package com.carolinarollergirls.scoreboard;
 
 import io.prometheus.client.Histogram;
+
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.game.*;
+import com.carolinarollergirls.scoreboard.game.JamStats;
+import com.carolinarollergirls.scoreboard.game.PeriodStats;
+import com.carolinarollergirls.scoreboard.game.TeamInfo;
 import com.carolinarollergirls.scoreboard.jetty.WS;
 import com.carolinarollergirls.scoreboard.json.WSUpdate;
 
@@ -120,12 +122,6 @@ public class Game {
 	}
 
 	public String getUpdaterBase() { return "Game"; }
-
-	private void saveFile() {
-		synchronized (saveLock) {
-			saveLock.notifyAll();
-		}
-	}
 
 	private class SaveThread implements Runnable {
 		public void run() {

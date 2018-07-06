@@ -8,10 +8,10 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public interface ScoreBoard extends ScoreBoardEventProvider
 {

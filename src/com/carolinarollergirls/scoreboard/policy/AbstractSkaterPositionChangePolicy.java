@@ -8,11 +8,8 @@ package com.carolinarollergirls.scoreboard.policy;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public abstract class AbstractSkaterPositionChangePolicy extends AbstractSkaterChangePolicy
 {

@@ -11,10 +11,21 @@ package com.carolinarollergirls.scoreboard.json;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.penalties.*;
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Policy;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.WS;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 
 /**
  * Converts a ScoreBoardEvent into a representative JSON Update

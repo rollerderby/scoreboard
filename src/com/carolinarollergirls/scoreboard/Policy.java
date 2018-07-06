@@ -10,7 +10,7 @@ package com.carolinarollergirls.scoreboard;
 
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Policy extends ScoreBoardEventProvider
 {

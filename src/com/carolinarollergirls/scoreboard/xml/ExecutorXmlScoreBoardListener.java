@@ -8,12 +8,13 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import org.jdom.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import java.util.*;
-import java.util.concurrent.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import org.jdom.Document;
 
 public class ExecutorXmlScoreBoardListener implements XmlScoreBoardListener
 {

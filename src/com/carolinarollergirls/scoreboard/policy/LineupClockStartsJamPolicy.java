@@ -8,10 +8,10 @@ package com.carolinarollergirls.scoreboard.policy;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.defaults.DefaultPolicyModel;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class LineupClockStartsJamPolicy extends AbstractClockTimeChangePolicy
 {

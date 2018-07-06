@@ -8,13 +8,27 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.policy.*;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.PositionNotFoundException;
+import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
 {
@@ -48,7 +62,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public String getProviderName() { return "Team"; }
-	public Class getProviderClass() { return Team.class; }
+	public Class<Team> getProviderClass() { return Team.class; }
 	public String getProviderId() { return getId(); }
 
 	public ScoreBoard getScoreBoard() { return scoreBoardModel.getScoreBoard(); }
@@ -547,7 +561,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public TeamModel getTeamModel() { return teamModel; }
 
 		public String getProviderName() { return "AlternateName"; }
-		public Class getProviderClass() { return AlternateName.class; }
+		public Class<AlternateName> getProviderClass() { return AlternateName.class; }
 		public String getProviderId() { return getId(); }
 
 		protected TeamModel teamModel;
@@ -577,7 +591,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public TeamModel getTeamModel() { return teamModel; }
 
 		public String getProviderName() { return "Color"; }
-		public Class getProviderClass() { return Color.class; }
+		public Class<Color> getProviderClass() { return Color.class; }
 		public String getProviderId() { return getId(); }
 
 		protected TeamModel teamModel;
