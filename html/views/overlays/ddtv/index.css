@@ -283,16 +283,6 @@ body .TopBar > div.Team2 { float: right; }
 */
 
 
-.PPJBox h4				{ text-transform: uppercase; text-align: center; font-size: 1.4em; }
-
-.PPJContainer	{ background: #ccc; padding: 10px; }
-.PPJBox .Team1  { border-bottom: 1px solid #777; }
-.PPJBox .Team2  { border-top: 1px solid #777; }
-
-.PPJBox .Team   { height: 23vh; }
-.PPJBox .Period	{ height: 23vh;  position: relative; display: block; float: left; }
-.PPJBox .Period2 { border-left: 2px solid #777; }
-
 .JammerStar { text-align: center;  color: #ddd; position: absolute; font-size: 1.6em; font-weight: normal; }
 .Points	    { width: 100%; text-align: center;  color: #333; position: absolute; font-size: 1.6em; font-weight: normal; height: 2em; }
  
@@ -315,7 +305,6 @@ body .TopBar > div.Team2 { float: right; }
 
 
 .GraphBlock 	{ display: block; float: left; width: 10px; background: #888; margin: 0 2px; font-size: 60%; text-align: center; }
-.PPJBox .Period2 .GraphBlock { background: #999; }
 
 .Team1 .GraphBlock { margin-top: 1px; }
 .Team2 .GraphBlock { margin-bottom: 1px; }
