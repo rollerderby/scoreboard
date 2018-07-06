@@ -28,7 +28,13 @@ function initialize() {
 	WS.Register( [ 'ScoreBoard.PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
 	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
 	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
+	
+	
 
+	if(_windowFunctions.checkParam("autoFit", "true")) {
+		$('.Team').addClass('auto-fit');
+	}
+	
 	penaltyEditor = $('div.PenaltyEditor').dialog({
 		modal: true,
 		closeOnEscape: false,

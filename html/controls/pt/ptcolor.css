@@ -37,7 +37,7 @@ tr:nth-child(odd) {
 
 /* responsive vertical layout on phones and tablet portrait */
 @media only screen and (min-width: 960px) {
-	.Team {
+	.Team.auto-fit {
 		height: 100vh;
 	}
 }
