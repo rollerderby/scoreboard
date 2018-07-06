@@ -40,7 +40,7 @@ public class WS extends WebSocketServlet {
 
 	public WS(ScoreBoardModel s) {
 		sbm = s;
-		new ScoreBoardJSONListener(s);
+		new ScoreBoardJSONListener(s, this);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,29 +49,29 @@ public class WS extends WebSocketServlet {
 
 	@Override
 	public WebSocket doWebSocketConnect(HttpServletRequest request, String arg1) {
-		return new Conn();
+		return new Conn(this);
 	}
 
-	protected static void register(Conn source) {
+	protected void register(Conn source) {
 		synchronized (sourcesLock) {
 			if (!sources.contains(source))
 				sources.add(source);
 		}
 	}
 
-	protected static void unregister(Conn source) {
+	protected void unregister(Conn source) {
 		synchronized (sourcesLock) {
 			sources.remove(source);
 		}
 	}
 
-	private static void updateState(String key, Object value) {
+	private void updateState(String key, Object value) {
 		List<WSUpdate> updates = new ArrayList<WSUpdate>();
 		updates.add(new WSUpdate(key, value));
 		updateState(updates);
 	}
 
-	public static void updateState(List<WSUpdate> updates) {
+	public void updateState(List<WSUpdate> updates) {
 		Histogram.Timer timer = updateStateDuration.startTimer();
 		synchronized (sourcesLock) {
 			stateID++;
@@ -103,12 +103,12 @@ public class WS extends WebSocketServlet {
 		updateStateUpdates.observe(updates.size());
 	}
 
-	protected static ScoreBoardModel sbm;
-	protected static List<Conn> sources = new LinkedList<Conn>();
-	protected static Object sourcesLock = new Object();
+	protected ScoreBoardModel sbm;
+	protected List<Conn> sources = new LinkedList<Conn>();
+	protected Object sourcesLock = new Object();
 
-	protected static long stateID = 0;
-	protected static Map<String, State> state = new LinkedHashMap<String, State>();
+	protected long stateID = 0;
+	protected Map<String, State> state = new LinkedHashMap<String, State>();
 
 	protected static class State {
 		public State(long sid, Object v) {
@@ -140,6 +140,11 @@ public class WS extends WebSocketServlet {
 
 	public class Conn implements OnTextMessage {
 		private Connection connection;
+		private WS ws;
+
+		public Conn(WS ws) {
+			this.ws = ws;
+		}
 	
 		public void onMessage(String message_data) {
 			messagesReceived.inc();
@@ -179,7 +184,7 @@ public class WS extends WebSocketServlet {
 					Object value = json.get("value");
 					ScoreBoardManager.printMessage("Setting " + key + " to " + value);
 					if (key.startsWith("Custom.")) {
-						WS.updateState(key, value);
+						ws.updateState(key, value);
 					}
 				} else if (action.equals("Ping")) {
 					send(new JSONObject().put("Pong", ""));
@@ -259,7 +264,7 @@ public class WS extends WebSocketServlet {
 				try {
 					JSONObject json = new JSONObject();
 					json.put("state", new JSONObject(updates));
-					stateID = WS.stateID;
+					stateID = ws.stateID;
 					send(json);
 					updates.clear();
 				} catch (JSONException e) {
