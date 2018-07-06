@@ -13,12 +13,12 @@ function initialize() {
 	WS.AutoRegister();
 
 	$.each([1, 2], function(idx, t) {
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
-		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
-//		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']); $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
-//		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']);  $('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);} );
-	console.log("Initialized Team " + t);
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ], function() { teamNameUpdate(t); });
+		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName(operator)' ], function() { teamNameUpdate(t); });
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { 
+			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_bg)']);  
+			$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_fg)']);
+		});
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
@@ -128,18 +128,21 @@ function displayPenalty(t, s, p) {
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn3", cnt > 6 || fo_exp);
 }
 
+function teamNameUpdate(t) {
+	var head = document.getElementById('head' + t);
+	var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
+
+    if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator)'] != null) {
+            teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator)']
+    }
+
+    head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';
+}
+
 function makeSkaterRows(t, id, number) {
 	var team = $('.Team' + t + ' tbody');
 	var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 	var j = $('<tr>').addClass('Skater Jam').attr('id', id);
-        var head = document.getElementById('head' + t);
-        var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
-
-        if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)'] != null) {
-                teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)']
-        }
-
-        head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';
 
 	p.append($('<td>').attr('rowspan', 2).text(number).click(function() { openPenaltyEditor(t, id); }));
 	$.each([1, 2, 3, 4, 5, 6, 7, 8, 9], function(idx, c) {
