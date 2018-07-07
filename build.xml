@@ -28,8 +28,6 @@
 	<property name="launch4j.dir" value="launch4j"/>
 	<property name="launch4j.outfile" value="scoreboard.exe"/>
 
-	<property name="media.dir" value="media-src" />
-
 	<property name="release.dir" value="release" />
 	<property name="android.dir" value="android" />
 
@@ -57,7 +55,6 @@
 		<echo message="	compile					Compile all classes and create jarfile (default)"/>
 		<echo message="	launcher				 Create Windows scoreboard.exe"/>
 		<echo message="	manifest				 (Re)create the manifest file"/>
-		<echo message="	media						Create media zip files"/>
 		<echo message="	help						 Show this help"/>
 		<echo message="	jdoc						 Create JavaDOC"/>
 		<echo message="	release					Create release zip file"/>
@@ -177,16 +174,6 @@
 				<messages jreVersionErr="You do not have Java installed.	Press OK to open the Java download website.	Restart the scoreboard after installing Java.\nError: The scoreboard requires Java JRE minimum version" />
 			</config>
 		</launch4j>
-	</target>
-
-	<!-- Create media zip files -->
-	<target name="media" >
-		<ant dir="${media.dir}" inheritAll="false" target="all" />
-		<copy overwrite="true" todir="${release.dir}" >
-			<fileset dir="${media.dir}/release" includes="*.zip" />
-			<fileset dir="${media.dir}/release" includes="*-latest-version" />
-		</copy>
-		<ant dir="${media.dir}" inheritAll="false" target="clean" />
 	</target>
 
 	<!-- Create android apk -->
