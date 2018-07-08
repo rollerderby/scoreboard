@@ -1,7 +1,12 @@
+(function(){ 
+	
+	'use strict';
 $(initialize);
 var penaltyEditor = null;
+
 var period = null;
 var jam = null;
+
 var teamId = null;
 var skaterId = null;
 var penaltyId = null;
@@ -15,13 +20,14 @@ function initialize() {
 	$.each([1, 2], function(idx, t) {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ], function() { teamNameUpdate(t); });
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName(operator)' ], function() { teamNameUpdate(t); });
+		
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { 
 			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_bg)']);  
 			$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_fg)']);
 		});
 	});
-	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
-	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
+	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; updateCurrentJamPeriod(); });
+	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; updateCurrentJamPeriod(); });
 
 	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
@@ -41,8 +47,6 @@ function initialize() {
 		title: 'Penalty Editor',
 		autoOpen: false,
 		width: '80%',
-		// buttons: [ { text: buttonText, click: login } ],
-		// close: function() { penaltyEditor.dialog('destroy'); }
 	});
 	
 	addFOCode();
@@ -56,8 +60,17 @@ function initialize() {
 
 function adjust(which, inc) {
 	var elem = $(".PenaltyEditor ." + which);
-	console.log('adjust:', elem, elem.val(), inc);
 	elem.val(parseInt(elem.val()) + inc);
+}
+
+function updateCurrentJamPeriod() {
+	if(jam === null || period === null) {
+		return;
+	}
+	
+	$('#current-jam-style').remove();
+	
+	$("<style> .Box.period-"+period+".jam-"+jam+" { text-decoration: underline; } </style>").attr('id','current-jam-style').appendTo('head');
 }
 
 function clear() {
@@ -73,7 +86,7 @@ function clear() {
 var skaterIdRegex = /Skater\(([^\)]+)\)/;
 var penaltyRegex = /Penalty\(([^\)]+)\)/;
 function skaterUpdate(t, k, v) {
-	match = k.match(skaterIdRegex);
+	var match = (k || "").match(skaterIdRegex);
 	if (match == null || match.length == 0)
 		return;
 	var id = match[1];
@@ -105,13 +118,36 @@ function displayPenalty(t, s, p) {
 	var totalBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Total');
 
 	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
-	code = WS.state[prefix + ".Code"];
+	var code = WS.state[prefix + ".Code"];
 
+	var penaltyPeriod = penaltyBox.data("period");
+	var penaltyJam = penaltyBox.data("jam");
+	
+	if(penaltyPeriod !== undefined) {
+		penaltyBox.removeClass("period-"+penaltyPeriod);
+		jamBox.removeClass("period-"+penaltyPeriod);
+	}
+	
+	if(penaltyJam !== undefined) {
+		penaltyBox.removeClass("jam-"+penaltyJam);
+		jamBox.removeClass("jam-"+penaltyJam);
+	}
+	
 	if (code != null) {
+		penaltyPeriod = WS.state[prefix + ".Period"];
+		penaltyJam = WS.state[prefix + ".Jam"];
+		
 		penaltyBox.data("id", WS.state[prefix + ".Id"]);
 		jamBox.data("id", WS.state[prefix + ".Id"]);
 		penaltyBox.text(WS.state[prefix + ".Code"]);
-		jamBox.text(WS.state[prefix + ".Period"] + '-' + WS.state[prefix + ".Jam"]);
+		jamBox.text(penaltyPeriod + '-' + penaltyJam);
+		
+		penaltyBox.data("period", penaltyPeriod);
+		penaltyBox.data("jam", penaltyJam);
+		
+		jamBox.addClass("period-"+penaltyPeriod).addClass("jam-"+penaltyJam);
+		penaltyBox.addClass("period-"+penaltyPeriod).addClass("jam-"+penaltyJam);
+		
 	} else {
 		penaltyBox.data("id", null);
 		jamBox.data("id", null);
@@ -120,7 +156,8 @@ function displayPenalty(t, s, p) {
 	}
 
 	var cnt = 0; // Change row colors for skaters on 5 or more penalties, or explusion.
-  var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
+    var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
+  
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	totalBox.text(cnt);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5 && !fo_exp);
@@ -145,10 +182,13 @@ function makeSkaterRows(t, id, number) {
 	var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
 	p.append($('<td>').attr('rowspan', 2).text(number).click(function() { openPenaltyEditor(t, id); }));
-	$.each([1, 2, 3, 4, 5, 6, 7, 8, 9], function(idx, c) {
+	
+	$.each(new Array(9), function(idx) {
+		var c = idx + 1;
 		p.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function() { openPenaltyEditor(t, id, c); }));
 		j.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function() { openPenaltyEditor(t, id, c); }));
 	});
+	
 	p.append($('<td>').addClass('BoxFO_EXP').html('&nbsp;').click(function() { openPenaltyEditor(t, id, 'FO_EXP'); }));
 	j.append($('<td>').addClass('BoxFO_EXP').html('&nbsp;').click(function() { openPenaltyEditor(t, id, 'FO_EXP'); }));
 	p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
@@ -289,4 +329,5 @@ function addPenaltyCode(type, code, verbalCues) {
 		$('<div>').text(d).appendTo(desc);
 	});
 }
+})();
 //# sourceURL=controls\pt\ptcolor.js
