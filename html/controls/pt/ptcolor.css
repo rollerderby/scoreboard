@@ -36,6 +36,11 @@ tr:nth-child(odd) {
 .PenaltyEditor .Codes>div .Description { font-size: 0.75em; }
 
 /* responsive vertical layout on phones and tablet portrait */
+@media only screen and (min-width: 960px) {
+	.Team.auto-fit {
+		height: 100vh;
+	}
+}
 @media only screen and (max-width: 960px) { 
    .Team{
 	position: relative;
