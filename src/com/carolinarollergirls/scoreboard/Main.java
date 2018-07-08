@@ -8,9 +8,6 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import gnu.getopt.Getopt;
-import gnu.getopt.LongOpt;
-
 import java.awt.Dimension;
 import java.awt.Toolkit;
 
@@ -44,26 +41,28 @@ public class Main implements ScoreBoardManager.Logger
 	private void parseArgv(String[] argv) {
 		boolean gui = false;
 		
-		int c;
-		String sopts = "gGp:";
-		LongOpt[] longopts = {
-		        new LongOpt("gui", LongOpt.NO_ARGUMENT, null, 'g'),
-		        new LongOpt("nogui", LongOpt.NO_ARGUMENT, null, 'G'),
-		        new LongOpt("port", LongOpt.REQUIRED_ARGUMENT, null, 'p')
-		};
-		Getopt g = new Getopt("Carolina ScoreBoard", argv, sopts, longopts);
-		while ((c = g.getopt()) != -1)
-		        switch (c) {
-		        case 'g': gui = true; break;
-		        case 'G': gui = false; break;
-		        case 'p':
-		                ScoreBoardManager.setPropertyOverride("com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController.port", g.getOptarg());
-		                break;
-		        }
 		
-		if (gui)
+		for(String arg : argv) {
+			if(arg.equals("--gui") || arg.equals("-g")) {
+				gui = true;
+			}
+			
+			else if(arg.equals("--nogui") || arg.equals("-G")) {
+				gui = false;
+			}
+			
+			else if(arg.startsWith("--port=") || arg.startsWith("-p=")) {
+				String port = arg.split("=")[1];
+				ScoreBoardManager.setPropertyOverride("com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController.port", port);
+			}
+		}
+		
+		if (gui) {
 			createGui();
+		}
 	}
+	
+
 
 
 	private void createGui() {
