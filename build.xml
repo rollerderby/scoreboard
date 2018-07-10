@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="Carolina Rollergirls Scoreboard" default="compile">
+<project name="Carolina Rollergirls Scoreboard" default="test">
 	<property name="ant.build.javac.source" value="1.7"/>
 	<property name="ant.build.javac.target" value="1.7"/>
 
