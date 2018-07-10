@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
@@ -56,8 +57,8 @@ public class DefaultSettingsModelTests {
 		
 		settingsModel.reset();
 		
-		assertNull(settingsModel.get("Example.Team1"));
-		assertNull(settingsModel.get("Example"));
+		assertEquals("",settingsModel.get("Example.Team1"));
+		assertEquals(null,settingsModel.get("Example"));
 	}
 
 }
