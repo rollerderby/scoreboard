@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
 <project name="Carolina Rollergirls Scoreboard" default="compile">
-	<property name="ant.build.javac.source" value="1.5"/>
-	<property name="ant.build.javac.target" value="1.5"/>
+	<property name="ant.build.javac.source" value="1.7"/>
+	<property name="ant.build.javac.target" value="1.7"/>
 
 	<property name="src.dir" value="src"/>
 	<property name="dest.dir" value="bin"/>
@@ -17,7 +17,7 @@
 
 	<property name="compile.deprecation" value="true"/>
 	<property name="compile.debug" value="true"/>
-	<property name="compile.nowarn" value="true"/>
+	<property name="compile.nowarn" value="false"/>
 	<property name="compile.verbose" value="false"/>
 
 	<property name="jar.dir" value="lib"/>
@@ -98,6 +98,7 @@
 
 			<compilerarg value="-Xlint:all"/>
 			<compilerarg value="-Xlint:-serial"/>
+			<compilerarg value="-Xlint:-options"/>
 			<classpath>
 				<fileset dir="${jar.dir}" includes="deps/*.jar" />
 			</classpath>

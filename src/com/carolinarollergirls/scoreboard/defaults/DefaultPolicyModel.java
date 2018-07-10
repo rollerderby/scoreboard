@@ -105,7 +105,7 @@ public class DefaultPolicyModel extends DefaultScoreBoardEventProvider implement
 			defaultValue = v;
 
 			try {
-				constructor = Class.forName("java.lang."+type).getConstructor(new Class[]{ String.class });
+				constructor = Class.forName("java.lang."+type).getConstructor(new Class<?>[]{ String.class });
 			} catch ( Exception e ) {
 				constructor = null;
 			}
