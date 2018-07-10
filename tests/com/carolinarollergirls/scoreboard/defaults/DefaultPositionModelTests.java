@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard;
+package com.carolinarollergirls.scoreboard.defaults;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -9,9 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
-import com.carolinarollergirls.scoreboard.defaults.DefaultSkaterModel;
-import com.carolinarollergirls.scoreboard.defaults.DefaultTeamModel;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.Position;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
