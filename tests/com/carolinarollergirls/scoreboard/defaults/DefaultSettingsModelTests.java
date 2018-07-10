@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard;
+package com.carolinarollergirls.scoreboard.defaults;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
@@ -8,9 +8,9 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
-import com.carolinarollergirls.scoreboard.defaults.DefaultSettingsModel;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Ruleset;
+
 
 public class DefaultSettingsModelTests {
 
