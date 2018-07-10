@@ -68,14 +68,8 @@ function initialize() {
 			'ScoreBoard.Team(1).RetainedOfficialReview',
 			'ScoreBoard.Team(2).RetainedOfficialReview' ], function(k,v) { smallDescriptionUpdate(k,v); } );
 
-	WS.Register( 'Game.Period', function(k,v) { jamData(k,v); } );
-
 	WS.Register( 'ScoreBoard.Team(1)', function(k,v) { teamData(1, k,v); } );
 	WS.Register( 'ScoreBoard.Team(2)', function(k,v) { teamData(2, k,v); } );
-
-	WS.Register( 'ScoreBoard.Clock(Period).Number', function(k,v) {
-		if(v == 2) { $('.PPJBox .Team .Period2').show(); } else { $('.PPJBox .Team .Period2').hide(); }
-	});
 
 	WS.Register([ 'Custom.Overlay.Score', 'Custom.Overlay.Top' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
@@ -107,7 +101,7 @@ function initialize() {
 		console.log('changed panel', k, v);
 		$('.OverlayPanel').removeClass('Show'); 
 		// sort divs in the panel before we show, just in case it's changed
-		if(v == 'PenaltyTeam1' || v == 'PenaltyTeam2' || v == 'PT1') {
+		if(v == 'PenaltyTeam1' || v == 'PenaltyTeam2') {
 			c = $('.PenaltyTeam [data-flag="BC"]');
 			c.empty().remove();
 		}
@@ -132,7 +126,6 @@ function initialize() {
 		if(e.which == 50) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
 		if(e.which == 51) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
 		if(e.which == 52) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
-		if(e.which == 87) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PPJBox' ? '' : 'PPJBox'); }
 		if(e.which == 84) { WS.Set('Custom.Overlay.Top',   WS.state['Custom.Overlay.Top'] == 'Off' ? 'On': 'Off'); }
 		if(e.which == 32) { WS.Set('Custom.Overlay.Panel', ''); }
 	});
@@ -146,17 +139,17 @@ function teamData(team, k,v) {
 	var key;
 	var setting; 
 
-	var skaterRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
+	var skaterRegEx = /^ScoreBoard\.Team\((.+)\)\.Skater\((.+)\)\.(.+)$/;
 	var match = k.match(skaterRegEx);
 	if(match) { 
 		skaterId = match[2]; key = match[3]; penalty = null; 
 	}
 
-	var penaltyRegEx = /^Game\.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
+	var penaltyRegEx = /^ScoreBoard\.Team\((.+)\)\.Skater\((.+)\)\.Penalty\((.+)\).(.+)$/;
 	var match = k.match(penaltyRegEx);
 	if(match) { skaterId = match[2]; key = match[4]; penalty = match[3]; }
 
-	var teamInfoRegEx = /^Game\.Team\((.+)\)\.(.+)$/;
+	var teamInfoRegEx = /^ScoreBoard\.Team\((.+)\)\.(.+)$/;
 	var match = k.match(teamInfoRegEx);
 	if(match) { 
 		var subkey = match[2];
@@ -172,7 +165,7 @@ function teamData(team, k,v) {
 		}
 	}
 
-	var colourRegEx = /^Game\.Team\((.+)\)\.Color\((.+)\)$/;
+	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\)$/;
 	var match = k.match(colourRegEx);
 	if(match) { 
 		var setting = match[2];
@@ -297,69 +290,6 @@ function createPenalty(mb, pnum, v) {
 	penalty.attr('data-sort', pnum);
 	$(mb).append(penalty);
 	$(mb).sortDivs();
-}
-
-var jamScoreRegEx = /^Game.Period\((.+)\)\.Jam\((.+)\)\.Team\((.+)\)\.(.+)$/;
-
-function jamData(k,v) {
-        match = k.match(jamScoreRegEx);
-        if (match == null) return;
-
-        var period = match[1];
-        var jam = match[2];
-        var team = match[3];
-	var key = match[4];
-
-	if (key != 'JamScore' && key != 'LeadJammer') return;
-
-	pa = '.PPJBox .Team'+ team + ' .Period'+period;
-	me = pa + ' .Jam'+jam;
-	$pId = $(pa); $mId = $(me)
-
-	if(v == null) {
-		$(me).remove();
-		$mId.sortDivs();
-		return;
-	}
-
-	if($(me).length == 0) {
-		pointsPerJamColumnWidths();
-		xv = $('<div data-sort="' + jam + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
-		$('<div class="JammerStar ColumnWidth"></div>').appendTo(xv);
-		$('<div class="Points ColumnWidth"></div>').appendTo(xv);
-		$pId.append(xv);
-		$pId.sortDivs();
-	}
-
-	if(key == 'LeadJammer') {
-		$(me).attr('lead', v);
-	}
-
-	if(key == 'JamScore') {
-		setHeight = v*4 + 'px';
-		$(me).css('height', setHeight);
-
-		if(team == 1) {
-			hid = $('.PPJBox .Team1 .Period').innerHeight();
-			marg = parseInt(hid)-parseInt(setHeight);
-			$(me).css('marginTop', marg);
-		}
-		if(v != 0) { $('.Points', me).text(v); }
-	}
-	pointsPerJamColumnWidths();
-
-}
-
-function pointsPerJamColumnWidths() {
-	ne1 = $('.PPJBox .Team1 .GraphBlock').length;
-	ne2 = $('.PPJBox .Team2 .GraphBlock').length;
-	if(ne2 > ne1)  ne1=ne2;
-	nel = ne1 + 3;
-	wid = parseInt( $('.PPJBox').innerWidth() );
-	newwidth = parseInt(wid / nel) - 3;
-	$('.ColumnWidth').innerWidth(newwidth);
-	$('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(1).Color(overlay_bg)']);
-	$('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(2).Color(overlay_bg)']);
 }
 
 function clockType(k,v) {

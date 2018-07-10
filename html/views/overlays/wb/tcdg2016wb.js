@@ -54,7 +54,7 @@ function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number
 	if (match == null || match.length == 0)
 		return;
 	var id = match[1]; // id = skater id
-	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = Game.Team('1').Skater('id')
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = ScoreBoard.Team('1').Skater('id')
 	if (k == prefix + '.Number') { //Example if skater id == ScoreBoard.Team('team').Skater('id').Number
 		var rowd = $('.Teamd' + t + ' .Skater.Penalty[id=' + id + ']');
 		if (v == null) { // if jam number is null
