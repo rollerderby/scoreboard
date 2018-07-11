@@ -12,7 +12,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Policy;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
@@ -107,13 +106,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 					editor.removeElement(getScoreBoardElement(), "Team", ((Team)event.getValue()).getId());
 				else
 					editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Team)event.getValue()));
-			} else if (prop.equals(ScoreBoard.EVENT_ADD_POLICY)) {
-				converter.toElement(getScoreBoardElement(), (Policy)event.getValue());
-			} else if (prop.equals(ScoreBoard.EVENT_REMOVE_POLICY)) {
-				if (isPersistent())
-					editor.removeElement(getScoreBoardElement(), "Policy", ((Policy)event.getValue()).getId());
-				else
-					editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Policy)event.getValue()));
 			} else {
 				editor.setElement(getScoreBoardElement(), prop, null, v);
 			}
@@ -195,10 +187,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 						editor.setPI(e, "TimeUpdate", "ms");
 				} catch (Exception ee) { }
 			}
-		} else if (p.getProviderName().equals("Policy")) {
-			editor.setElement(getPolicyElement((Policy)p), prop, null, v);
-		} else if (p.getProviderName().equals("Parameter")) {
-			editor.setElement(getPolicyParameterElement((Policy.Parameter)p), prop, null, v);
 		} else {
 			return;
 		}
@@ -216,14 +204,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 		if (settings.getParent().getProviderName().equals("ScoreBoard"))
 			return getScoreBoardElement();
 		return null;
-	}
-
-	protected Element getPolicyElement(Policy policy) {
-		return editor.getElement(getScoreBoardElement(), "Policy", policy.getId());
-	}
-
-	protected Element getPolicyParameterElement(Policy.Parameter parameter) {
-		return editor.getElement(getPolicyElement(parameter.getPolicy()), "Parameter", parameter.getName());
 	}
 
 	protected Element getClockElement(Clock clock) {

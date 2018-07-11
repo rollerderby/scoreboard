@@ -47,16 +47,22 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		// Register for default values from the rulesets
 		Ruleset.registerRule(this, "Team." + id + ".Name");
 		Ruleset.registerRule(this, "Team.Timeouts");
+		Ruleset.registerRule(this, "Team.TimeoutsPer");
 		Ruleset.registerRule(this, "Team.OfficialReviews");
+		Ruleset.registerRule(this, "Team.OfficialReviewsPer");
 
 		reset();
 	}
 
 	public void applyRule(String rule, Object value) {
 		if (rule.equals("Team.Timeouts"))
-			setTimeouts((Integer)value);
+			maximumTimeouts = (Integer)value;
+		else if (rule.equals("Team.TimeoutsPer"))
+			timeoutsPerPeriod = (Boolean)value;
 		else if (rule.equals("Team.OfficialReviews"))
-			setOfficialReviews((Integer)value);
+			maximumOfficialReviews = (Integer)value;
+		else if (rule.equals("Team.OfficialReviewsPer"))
+			officialReviewsPerPeriod = (Boolean)value;
 		else if (rule.equals("Team." + id + ".Name"))
 			setName((String)value);
 	}
@@ -78,9 +84,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		_setLeadJammer(DEFAULT_LEADJAMMER);
 		_setStarPass(DEFAULT_STARPASS);
 
-		setInTimeout(false);
-		setInOfficialReview(false);
-		setRetainedOfficialReview(false);
+		resetTimeouts(true);
 
 		removeAlternateNameModels();
 		removeColorModels();
@@ -332,13 +336,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public int getTimeouts() { return timeouts; }
-//FIXME - add MinimumTimeouts and MaximumTimeouts instead of hardcoding 0 and 3
 	public void setTimeouts(int t) {
 		synchronized (timeoutsLock) {
 			if (0 > t)
 				t = 0;
-			if (3 < t)
-				t = 3;
+			if (maximumTimeouts < t)
+				t = maximumTimeouts;
 			Integer last = new Integer(timeouts);
 			timeouts = t;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUTS, new Integer(timeouts), last));
@@ -350,13 +353,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public int getOfficialReviews() { return officialReviews; }
-//FIXME - add MinimumOfficialReviews and MaximumOfficialReviews instead of hardcoding 0 and 1
 	public void setOfficialReviews(int r) {
 		synchronized (officialReviewsLock) {
 			if (0 > r)
 				r = 0;
-			if (1 < r)
-				r = 1;
+			if (maximumOfficialReviews < r)
+				r = maximumOfficialReviews;
 			Integer last = new Integer(officialReviews);
 			officialReviews = r;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEWS, new Integer(officialReviews), last));
@@ -365,6 +367,18 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public void changeOfficialReviews(int c) {
 		synchronized (officialReviewsLock) {
 			setOfficialReviews(getOfficialReviews() + c);
+		}
+	}
+	public void resetTimeouts(boolean gameStart) {
+		setInTimeout(false);
+		setInOfficialReview(false);
+		setRetainedOfficialReview(false);
+		if (gameStart || timeoutsPerPeriod) {
+			setTimeouts(maximumTimeouts);
+		}
+		if (gameStart || officialReviewsPerPeriod) {
+			setOfficialReviews(maximumOfficialReviews);
+			setRetainedOfficialReview(false);
 		}
 	}
 
@@ -504,7 +518,11 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected int score;
 	protected int lastscore;
 	protected int timeouts;
+	protected int maximumTimeouts;
+	protected boolean timeoutsPerPeriod;
 	protected int officialReviews;
+	protected int maximumOfficialReviews;
+	protected boolean officialReviewsPerPeriod;
 	protected String leadJammer = Team.LEAD_NO_LEAD;
 	protected boolean starPass = false;
 	protected boolean in_timeout = false;

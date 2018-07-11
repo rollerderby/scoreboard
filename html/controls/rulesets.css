@@ -24,11 +24,39 @@ th { text-align: left; }
 
 .rules { padding-top: 10px; }
 .definitions .section { width: 100%; clear: both; }
-.definitions .section .header { background-color: lightgray; font-weight: bold; }
+.definitions .section .header { background-color: lightgray; font-weight: bold; margin-top: 2px; }
 .definitions .section .definition { width: 100%; height: 1em; clear: both; padding: 0px; margin: 0px; }
 .definitions .section .definition div { float: left; }
-.definitions .section .definition .name { width: 40%; }
+.definitions .section .definition .name { width: 40%; display: inline-block; position: relative; }
 .definitions .section .definition .value { width: 60%; }
+.definitions .section:not(.folded) .header:before {content: "-- "; }
+.definitions .section.folded .header:before {content: "+ "; }
+.definitions .section.folded .definition { display:none; }
+
+.tooltiptext { 
+	visibility: hidden; 
+	background-color: black; 
+	color: #fff; 
+	text-align: center; 
+	padding: 5px; 
+	border-radius: 6px; 
+	bottom: 100%; 
+	left: 10%; 
+	width: 80%; 
+	position: absolute; 
+	z-index: 1;
+}
+.definitions .section .definition .name:hover .tooltiptext { visibility: visible; }
+.tooltiptext::after { 
+	content: " "; 
+	position: absolute; 
+	top: 100%; 
+	left: 10%; 
+	margin-left: -5px;
+	border-width: 5px; 
+	border-style: solid; 
+	border-color: black transparent transparent transparent; 
+}
 
 h1 {
 	font-size: 12pt;

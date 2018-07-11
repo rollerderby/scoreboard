@@ -14,14 +14,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Policy;
 import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.policy.ClockSyncPolicy;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
@@ -155,6 +153,12 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public long getInvertedTime() {
 		return maximumTime - time;
 	}
+	public long getTimeElapsed() {
+		return isCountDirectionDown()?getInvertedTime():getTime();
+	}
+	public long getTimeRemaining() {
+		return isCountDirectionDown()?getTime():getInvertedTime();
+	}
 	public void setTime(long ms) {
 		boolean doStop;
 		synchronized (timeLock) {
@@ -185,6 +189,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 		if (doStop)
 			stop();
+	}
+	public void elapseTime(long change) {
+		changeTime(isCountDirectionDown()?-change:change);
 	}
 	public void resetTime() {
 		if (isCountDirectionDown())
@@ -321,8 +328,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	protected boolean isSyncTime() {
-		Policy syncPolicy = getScoreBoard().getPolicy(ClockSyncPolicy.ID);
-		return (syncPolicy == null ? true : syncPolicy.isEnabled());
+		return (getScoreBoard().getSettings().getBoolean("Scoreboard.Clock.Sync"));
 	}
 
 	protected boolean isMasterClock() {

@@ -76,6 +76,12 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 			return settings.get(k);
 		}
 	}
+	public boolean getBoolean(String k) {
+		return Boolean.parseBoolean(get(k));
+	}
+	public long getLong(String k) {
+		return Long.parseLong(get(k));
+	}
 	public void set(String k, String v) {
 		synchronized (settingsLock) {
 			String last = settings.get(k);
