@@ -65,6 +65,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 
 	public Settings getSettings();
 
+	public Stats getStats();
+
 	public XmlScoreBoard getXmlScoreBoard();
 
 	public static final String EVENT_IN_PERIOD = "InPeriod";
