@@ -87,23 +87,29 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       js.setPeriodClockWalltimeStart(System.currentTimeMillis());
 
       // Update all skater position, as they may have changed since
-      // the previous jam ended.
+      // the previous jam ended. Also initilise other settings.
       for(String tid : Arrays.asList(Team.ID_1, Team.ID_2)) {
-        TeamStatsModel tsm = js.getTeamStatsModel(tid);
+        TeamStatsModel ts = js.getTeamStatsModel(tid);
         Team t = scoreBoard.getTeam(tid);
-        tsm.removeSkaterStatsModels();
+        ts.removeSkaterStatsModels();
         for (Position p : t.getPositions()) {
           String pos = p.getId();
           if (Position.FLOOR_POSITIONS.contains(pos)) {
             Skater s = p.getSkater();
             if (s != null) {
-              tsm.addSkaterStatsModel(s.getId());
-              SkaterStatsModel ssm = tsm.getSkaterStatsModel(s.getId());
+              ts.addSkaterStatsModel(s.getId());
+              SkaterStatsModel ssm = ts.getSkaterStatsModel(s.getId());
               ssm.setPosition(s.getPosition());
               ssm.setPenaltyBox(s.isPenaltyBox());
             }
           }
         }
+        ts.setTotalScore(t.getScore());
+        ts.setJamScore(t.getScore() - t.getLastScore());
+        ts.setLeadJammer(t.getLeadJammer());
+        ts.setStarPass(t.isStarPass());
+        ts.setTimeouts(t.getTimeouts());
+        ts.setOfficialReviews(t.getOfficialReviews());
       }
 
       requestBatchEnd();

@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -175,7 +176,62 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
       } else {
         editor.setElement(getSkaterElement((Skater)p), prop, null, v);
       }
-		} else if (p.getProviderName().equals("Clock")) {
+		} else if (p.getProviderName().equals("Stats")) {
+			Element e = getStatsElement();
+			if (prop.equals(Stats.EVENT_REMOVE_PERIOD)) {
+				Stats.PeriodStats ps = (Stats.PeriodStats)(event.getValue());
+				if (isPersistent()) {
+					editor.removeElement(e, "PeriodStats", String.valueOf(ps.getPeriodNumber()));
+				} else {
+					editor.setRemovePI(converter.toElement(e, ps));
+				}
+			}
+		} else if (p.getProviderName().equals("PeriodStats")) {
+			Element e = getPeriodStatsElement((Stats.PeriodStats)p);
+			if (prop.equals(Stats.PeriodStats.EVENT_REMOVE_JAM)) {
+				Stats.JamStats js = (Stats.JamStats)(event.getValue());
+				if (isPersistent()) {
+					editor.removeElement(e, "JamStats", String.valueOf(js.getJamNumber()));
+				} else {
+					editor.setRemovePI(converter.toElement(e, js));
+				}
+			}
+		} else if (p.getProviderName().equals("JamStats")) {
+			Element e = getJamStatsElement((Stats.JamStats)p);
+			if (prop.equals(Stats.JamStats.EVENT_STATS)) {
+				Stats.JamStats js = (Stats.JamStats)event.getValue();
+				editor.setElement(e, "JamClockElapsedEnd", null, String.valueOf(js.getJamClockElapsedEnd()));
+				editor.setElement(e, "PeriodClockElapsedStart", null, String.valueOf(js.getPeriodClockElapsedStart()));
+				editor.setElement(e, "PeriodClockElapsedEnd", null, String.valueOf(js.getPeriodClockElapsedEnd()));
+				editor.setElement(e, "PeriodClockWalltimeStart", null, String.valueOf(js.getPeriodClockWalltimeStart()));
+				editor.setElement(e, "PeriodClockWalltimeEnd", null, String.valueOf(js.getPeriodClockWalltimeEnd()));
+			}
+		} else if (p.getProviderName().equals("TeamStats")) {
+			Element e = getTeamStatsElement((Stats.TeamStats)p);
+			if (prop.equals(Stats.TeamStats.EVENT_STATS)) {
+				Stats.TeamStats ts = (Stats.TeamStats)event.getValue();
+				editor.setElement(e, "JamScore", null, String.valueOf(ts.getJamScore()));
+				editor.setElement(e, "TotalScore", null, String.valueOf(ts.getTotalScore()));
+				editor.setElement(e, "LeadJammer", null, ts.getLeadJammer());
+				editor.setElement(e, "StarPass", null, String.valueOf(ts.getStarPass()));
+				editor.setElement(e, "Timeouts", null, String.valueOf(ts.getTimeouts()));
+				editor.setElement(e, "OfficialReviews", null, String.valueOf(ts.getOfficialReviews()));
+			} else if (prop.equals(Stats.TeamStats.EVENT_REMOVE_SKATER)) {
+				Stats.SkaterStats ss = (Stats.SkaterStats)(event.getValue());
+				if (isPersistent()) {
+					editor.removeElement(e, "SkaterStats", ss.getSkaterId());
+				} else {
+					editor.setRemovePI(converter.toElement(e, ss));
+				}
+			}
+		} else if (p.getProviderName().equals("SkaterStats")) {
+			Element e = getSkaterStatsElement((Stats.SkaterStats)p);
+			if (prop.equals(Stats.SkaterStats.EVENT_STATS)) {
+				Stats.SkaterStats ss = (Stats.SkaterStats)event.getValue();
+				editor.setElement(e, "Position", null, ss.getPosition());
+				editor.setElement(e, "PenaltyBox", null, String.valueOf(ss.getPenaltyBox()));
+			}
+    } else if (p.getProviderName().equals("Clock")) {
 			Element e = editor.setElement(getClockElement((Clock)p), prop, null, v);
 			if (prop.equals("Time")) {
 				try {
@@ -228,6 +284,41 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 
 	protected Element getColorElement(Team.Color color) {
 		return editor.getElement(getTeamElement(color.getTeam()), "Color", color.getId());
+	}
+
+	protected Element getStatsElement() {
+		return editor.getElement(getScoreBoardElement(), "Stats");
+	}
+
+	protected Element getPeriodStatsElement(Stats.PeriodStats ps) {
+		return editor.getElement(getStatsElement(), "Period", String.valueOf(ps.getPeriodNumber()));
+	}
+
+	protected Element getJamStatsElement(Stats.JamStats js) {
+		return editor.getElement(
+				editor.getElement(
+					getStatsElement(), "Period", String.valueOf(js.getPeriodNumber())),
+				"Jam", String.valueOf(js.getJamNumber()));
+	}
+
+	protected Element getTeamStatsElement(Stats.TeamStats ts) {
+		return editor.getElement(
+				editor.getElement(
+					editor.getElement(
+						getStatsElement(), "Period", String.valueOf(ts.getPeriodNumber())),
+					"Jam", String.valueOf(ts.getJamNumber())),
+				"Team", ts.getTeamId());
+	}
+
+	protected Element getSkaterStatsElement(Stats.SkaterStats ss) {
+		return editor.getElement(
+				editor.getElement(
+					editor.getElement(
+						editor.getElement(
+							getStatsElement(), "Period", String.valueOf(ss.getPeriodNumber())),
+						"Jam", String.valueOf(ss.getJamNumber())),
+					"Team", ss.getTeamId()),
+				"Skater", ss.getSkaterId());
 	}
 
 	protected XmlDocumentEditor editor = new XmlDocumentEditor();

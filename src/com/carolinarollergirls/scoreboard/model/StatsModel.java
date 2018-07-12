@@ -15,46 +15,46 @@ import com.carolinarollergirls.scoreboard.Stats;
 
 public interface StatsModel extends Stats
 {
-	public ScoreBoard getScoreBoard();
-	public void reset();
+  public ScoreBoard getScoreBoard();
+  public void reset();
 
-	public void ensureAtLeastNPeriods(int n);
-	public void truncateAfterNPeriods(int n);
-	public PeriodStatsModel getPeriodStatsModel(int p);
+  public void ensureAtLeastNPeriods(int n);
+  public void truncateAfterNPeriods(int n);
+  public PeriodStatsModel getPeriodStatsModel(int p);
 
-	public static interface PeriodStatsModel extends PeriodStats {
-		public void ensureAtLeastNJams(int n);
-		public void truncateAfterNJams(int n);
+  public static interface PeriodStatsModel extends PeriodStats {
+    public void ensureAtLeastNJams(int n);
+    public void truncateAfterNJams(int n);
 
-		public JamStatsModel getJamStatsModel(int j);
-	}
+    public JamStatsModel getJamStatsModel(int j);
+  }
 
-	public static interface JamStatsModel extends JamStats {
-		public TeamStatsModel getTeamStatsModel(String id);
+  public static interface JamStatsModel extends JamStats {
+    public TeamStatsModel getTeamStatsModel(String id);
 
-		public void setJamClockElapsedEnd(long t);
-		public void setPeriodClockElapsedStart(long t);
-		public void setPeriodClockElapsedEnd(long t);
-		public void setPeriodClockWalltimeStart(long t);
-		public void setPeriodClockWalltimeEnd(long t);
-	}
+    public void setJamClockElapsedEnd(long t);
+    public void setPeriodClockElapsedStart(long t);
+    public void setPeriodClockElapsedEnd(long t);
+    public void setPeriodClockWalltimeStart(long t);
+    public void setPeriodClockWalltimeEnd(long t);
+  }
 
-	public static interface TeamStatsModel extends TeamStats {
-		public void setJamScore(int s);
-		public void setTotalScore(int s);
-		public void setLeadJammer(String ls);
-		public void setStarPass(boolean sp);
-		public void setTimeouts(int t);
-		public void setOfficialReviews(int o);
+  public static interface TeamStatsModel extends TeamStats {
+    public void setJamScore(int s);
+    public void setTotalScore(int s);
+    public void setLeadJammer(String ls);
+    public void setStarPass(boolean sp);
+    public void setTimeouts(int t);
+    public void setOfficialReviews(int o);
 
-		public SkaterStatsModel getSkaterStatsModel(String sid);
-		public void addSkaterStatsModel(String sid);
-		public void removeSkaterStatsModel(String sid);
-		public void removeSkaterStatsModels();
-	}
+    public SkaterStatsModel getSkaterStatsModel(String sid);
+    public void addSkaterStatsModel(String sid);
+    public void removeSkaterStatsModel(String sid);
+    public void removeSkaterStatsModels();
+  }
 
-	public static interface SkaterStatsModel extends SkaterStats {
-		public void setPenaltyBox(boolean p);
-		public void setPosition(String p);
-	}
+  public static interface SkaterStatsModel extends SkaterStats {
+    public void setPenaltyBox(boolean p);
+    public void setPosition(String p);
+  }
 }
