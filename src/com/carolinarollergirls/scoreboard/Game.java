@@ -24,10 +24,6 @@ public class Game {
 	}
 	
 	public void start(String i) {
-		updateState();
-		update("Game", null);
-		updateState();
-
 		identifier = i;
 		teams = new TeamInfo[2];
 		teams[0] = new TeamInfo(this, Team.ID_1);
@@ -37,8 +33,6 @@ public class Game {
 
 		Thread t = new Thread(new SaveThread());
 		t.start();
-
-		updateState();
 	}
 
 	public void stop() {
@@ -87,8 +81,6 @@ public class Game {
 				e.printStackTrace();
 			}
 		}
-
-		updateState();
 	}
 
 	public JSONObject toJSON() throws JSONException {
@@ -161,22 +153,6 @@ public class Game {
 		}
 	}
 
-	public void update(String key, Object value) {
-		synchronized (updates) {
-			updates.add(new WSUpdate(key, value));
-		}
-	}
-
-	public void updateState() {
-		synchronized (updates) {
-			if (updates.isEmpty())
-				return;
-			WS.updateState(updates);
-			updates.clear();
-		}
-	}
-
-	private List<WSUpdate> updates = new ArrayList<WSUpdate>();
 	protected ScoreBoard sb = null;
 	private TeamInfo[] teams = null;
 	private ArrayList<PeriodStats> periods = null;
