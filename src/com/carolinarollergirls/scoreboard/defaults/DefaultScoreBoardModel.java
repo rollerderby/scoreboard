@@ -34,6 +34,13 @@ import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
+		setupScoreBoard(null);
+	}
+	protected DefaultScoreBoardModel(XmlScoreBoard xsb) {
+		setupScoreBoard(xsb);
+	}
+
+	protected void setupScoreBoard(XmlScoreBoard xsb){
 		settings = new DefaultSettingsModel(this, this);
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".PreGame");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Intermission");
@@ -73,7 +80,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		stats.addScoreBoardListener(this);
 		reset();
 		addInPeriodListeners();
-		xmlScoreBoard = new XmlScoreBoard(this);
+		if (xsb == null) {
+			xsb = new XmlScoreBoard(this);
+		}
+		xmlScoreBoard = xsb;
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }
@@ -413,9 +423,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 
-  public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code){
-    getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
-  }
+	public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code){
+		getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
+	}
 
 	public Settings getSettings() { return (Settings)settings; }
 	public SettingsModel getSettingsModel() { return settings; }
