@@ -7,6 +7,9 @@ var skaterId = null;
 var penaltyId = null;
 var fo_exp = null;
 
+
+	
+
 function initialize() {
 
 	WS.Connect();
@@ -15,20 +18,24 @@ function initialize() {
 	$.each([1, 2], function(idx, t) {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
-//		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']); $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
-//		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']);  $('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);} );
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_bg)']);  $('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_fg)']);} ); //get color from Operator colors
 	console.log("Initialized Team " + t);
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
 
-	WS.Register( [ 'Game.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
-	WS.Register( [ 'Game.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
-	WS.Register( [ 'PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
+	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
+	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
+	WS.Register( [ 'ScoreBoard.PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
 	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
 	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
+	
+	
 
+	if(_windowFunctions.checkParam("autoFit", "true")) {
+		$('.Team').addClass('auto-fit');
+	}
+	
 	penaltyEditor = $('div.PenaltyEditor').dialog({
 		modal: true,
 		closeOnEscape: false,
@@ -38,6 +45,8 @@ function initialize() {
 		// buttons: [ { text: buttonText, click: login } ],
 		// close: function() { penaltyEditor.dialog('destroy'); }
 	});
+	
+	addFOCode();
 
 	$(".PenaltyEditor .period_minus").click(function() { adjust("Period", -1); });
 	$(".PenaltyEditor .period_plus").click(function() { adjust("Period", 1); });
@@ -69,17 +78,15 @@ function skaterUpdate(t, k, v) {
 	if (match == null || match.length == 0)
 		return;
 	var id = match[1];
-	var prefix = 'Game.Team(' + t + ').Skater(' + id + ')';
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
 	if (k == prefix + '.Number') {
-		var row = $('.Team' + t + ' .Skater.Penalty[id=' + id + ']');
+		$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 		if (v == null) {
-			$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 			return;
 		}
 
-		if (row.length == 0) {
-			row = makeSkaterRows(t, id, v);
-		}
+		// New skater, or number has been updated.
+		makeSkaterRows(t, id, v);
 		for (var i = 1; i <= 9; i++)
 			displayPenalty(t, id, i);
 		displayPenalty(t, id, 'FO_EXP');
@@ -98,7 +105,7 @@ function displayPenalty(t, s, p) {
 	var jamBox = $('.Team' + t + ' .Skater.Jam[id=' + s + '] .Box' + p);
 	var totalBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Total');
 
-	var prefix = 'Game.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
 	code = WS.state[prefix + ".Code"];
 
 	if (code != null) {
@@ -113,12 +120,13 @@ function displayPenalty(t, s, p) {
 		jamBox.html("&nbsp;");
 	}
 
-	var cnt = 0;
+	var cnt = 0; // Change row colors for skaters on 5 or more penalties, or explusion.
+  var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	totalBox.text(cnt);
-	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5);
-	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn2", cnt == 6);
-	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn3", cnt > 6);
+	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5 && !fo_exp);
+	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn2", cnt == 6 && !fo_exp);
+	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn3", cnt > 6 || fo_exp);
 }
 
 function makeSkaterRows(t, id, number) {
@@ -178,7 +186,7 @@ function openPenaltyEditor(t, id, which) {
 	if (teamColor == null)
 		teamColor = WS.state[prefix + '.Name'];
 
-	prefix = 'Game.Team(' + t + ').Skater(' + id + ')';
+	prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
 	var skaterName = WS.state[prefix + '.Name'];
 	var skaterNumber = WS.state[prefix + '.Number'];
 	teamId = t;
@@ -224,20 +232,25 @@ function submitPenalty() {
 	penaltyEditor.dialog('close');
 }
 
-var penaltyCodeRegex = /^PenaltyCode.([^\(]+)\(([^\)]+)\)/;
 function penaltyCode(k, v) {
-	match = k.match(penaltyCodeRegex);
-	if (match == null)
-		return;
-	var type = match[1];
-	var code = match[2];
+	var code = k.split('.').pop();
+
+	addPenaltyCode('Penalty', code, v);
+	addPenaltyCode('FO_EXP', code, v);
+}	
+
+function addFOCode() {
+	addPenaltyCode('FO_EXP','FO','Foul-Out');
+}
+		
+function addPenaltyCode(type, code, verbalCues) {
 
 	var div = $('.Codes .' + type + '[code="' + code + '"]');
-	if (div.length > 0) {
-		if (v == null) {
-			div.detach();
-			return;
-		}
+	
+	if(verbalCues === null) {
+		div.detach();
+		return;
+	} else if (div.length > 0) {
 		div.find('.Description').empty();
 	} else {
 		var div = $('<div>').attr('code', code).addClass(type).click(function (e) {
@@ -245,7 +258,14 @@ function penaltyCode(k, v) {
 			div.addClass('Active');
 			submitPenalty();
 		});
-		$('<div>').addClass('Code').text(code).appendTo(div);
+		
+		var title = code;
+		
+		if(type === 'FO_EXP' && code !== 'FO') {
+			title = title + '(EXP)';
+		}
+		
+		$('<div>').addClass('Code').text(title).appendTo(div);
 		$('<div>').addClass('Description').appendTo(div);
 
 		var codes = $('.PenaltyEditor .Codes');
@@ -263,8 +283,17 @@ function penaltyCode(k, v) {
 	}
 
 	var desc = div.find('.Description');
-	$.each(v.split('-'), function (idx, d) {
+	verbalCues.split(',').forEach(function(d){
 		$('<div>').text(d).appendTo(desc);
 	});
 }
 //# sourceURL=controls\pt\ptcolor.js
+// Toggle Tables full height:
+$(document).ready(function() {
+	$("#toggle").click(function() {
+		$( ".Team" ).toggleClass( "FullHeight" );
+	});
+	$("#toggle").click(function() {
+		$( ".Team" ).toggleClass( "NormalHeight" );
+	});
+});
