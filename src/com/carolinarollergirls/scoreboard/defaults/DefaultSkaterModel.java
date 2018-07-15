@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -151,6 +152,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
         if (penalties.size() < 9) {
           DefaultPenaltyModel dpm = new DefaultPenaltyModel(id, period, jam, code);
           penalties.add(dpm);
+          sortPenalties();
           scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, dpm, null));
         }
       } else {
@@ -161,6 +163,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
               p2.period = period;
               p2.jam = jam;
               p2.code = code;
+              sortPenalties();
               scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, p2, null));
             } else {
               penalties.remove(p2);
@@ -171,6 +174,23 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
         }
       }
     }
+  }
+  
+  private void sortPenalties() {
+	  penalties.sort(new Comparator<DefaultPenaltyModel>() {
+
+		@Override
+		public int compare(DefaultPenaltyModel a, DefaultPenaltyModel b) {
+			int periodSort = Integer.valueOf(a.period).compareTo(b.period);
+			
+			if(periodSort != 0) {
+				return periodSort;
+			} else {
+				return Integer.valueOf(a.jam).compareTo(b.jam);
+			}
+		}
+		  
+	  });
   }
 
 	public void bench() {
