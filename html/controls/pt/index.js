@@ -27,11 +27,11 @@ function initialize() {
 		});
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], updatePeriod);
-	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; updateCurrentJamPeriod(); });
+	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], updateJam);
 
 	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
-	WS.Register( [ 'ScoreBoard.PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
+	WS.Register( [ 'ScoreBoard.PenaltyCode' ], penaltyCode);
 	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
 	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
 	
@@ -63,10 +63,14 @@ function adjust(which, inc) {
 	elem.val(parseInt(elem.val()) + inc);
 }
 
-function updatePeriod(k,v) {
+function updatePeriod(k, v) {
 	period = v;
-	
 	updateCurrentJamPeriodStyle();
+}
+
+function updateJam(k, v) {
+	 jam = v; 
+	 updateCurrentJamPeriod();
 }
 
 function updateCurrentJamPeriodStyle() {
