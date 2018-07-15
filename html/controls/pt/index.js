@@ -95,13 +95,15 @@
 	var skaterIdRegex = /Skater\(([^\)]+)\)/;
 	var penaltyRegex = /Penalty\(([^\)]+)\)/;
 	function skaterUpdate(t, k, v) {
+		
 		var match = (k || "").match(skaterIdRegex);
 		if (match == null || match.length == 0)
 			return;
 
 		var id = match[1];
+		var field = k.split('.').pop();
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
-		if (k == prefix + '.Number') {
+		if (field === 'Number') {
 			$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 			if (v == null) {
 				return;
@@ -112,6 +114,13 @@
 			for (var i = 1; i <= 9; i++)
 				displayPenalty(t, id, i);
 			displayPenalty(t, id, 'FO_EXP');
+		} else if (field === 'Position') {
+			var numberCell = $('.Team' + t + ' .Skater[id=' + id + '] .Number');
+			if(v === null || v === 'Bench') {
+				numberCell.removeClass('onTrack');
+			} else {
+				numberCell.addClass('onTrack');
+			}
 		} else {
 			// Look for penalty
 			match = k.match(penaltyRegex);
@@ -191,7 +200,7 @@
 		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
-		p.append($('<td>').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id); }));
+		p.append($('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id); }));
 
 		$.each(new Array(9), function (idx) {
 			var c = idx + 1;

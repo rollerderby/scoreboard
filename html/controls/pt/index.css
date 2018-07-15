@@ -37,6 +37,7 @@ tr:nth-child(odd) {
 .PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; }
 .PenaltyEditor .Codes>div .Description { font-size: 0.75em; }
 
+.Skater .Number.onTrack { background-color: #0f0 }
 /* responsive vertical layout on phones and tablet portrait */
 @media only screen and (min-width: 960px) {
 	.Team.auto-fit {
