@@ -36,6 +36,15 @@ public class PenaltyCode {
 	}
 	
 	public String CuesForWS(PenaltyCode c) {
-		return String.join(",", verbalCues);
+		//TODO: replace by String.join() when we move to Java 1.8
+		if (verbalCues.isEmpty()) {
+			return "";
+		}
+		StringBuilder sb = new StringBuilder();
+		for(String cue : verbalCues) {
+			sb.append(",").append(cue);
+		}
+		sb.deleteCharAt(0);
+		return sb.toString();
 	}
 }
