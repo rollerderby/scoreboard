@@ -65,12 +65,24 @@
 
 	function updatePeriod(k, v) {
 		period = v;
+		updateCurrentPeriodStyle();
 		updateCurrentJamPeriodStyle();
 	}
 
 	function updateJam(k, v) {
 		jam = v;
 		updateCurrentJamPeriod();
+	}
+	
+	function updateCurrentPeriodStyle() {
+		if(period === null) {
+			return;
+		}
+		
+		$('#current-period-style').remove();
+		$('<style> .Box.period-' + period +' { font-weight: bold; color: #000; }</style>')
+			.attr('id','current-period-style')
+			.appendTo('head');
 	}
 
 	function updateCurrentJamPeriodStyle() {
@@ -79,7 +91,9 @@
 		}
 
 		$('#current-jam-style').remove();
-		$("<style> .Box.period-" + period + ".jam-" + jam + " { text-decoration: underline; } </style>").attr('id', 'current-jam-style').appendTo('head');
+		$("<style> .Box.period-" + period + ".jam-" + jam + " { text-decoration: underline; } </style>")
+			.attr('id', 'current-jam-style')
+			.appendTo('head');
 	}
 
 	function clear() {
