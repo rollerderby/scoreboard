@@ -15,19 +15,12 @@ public class PenaltyCodesManager {
 	}
 	
 	public PenaltyCodesDefinition loadFromJSON() {
-		Reader reader = null;
-		try {
-			reader = new FileReader(new File(ScoreBoardManager.getDefaultPath(),settings.get(PenaltiesFileSetting)));
-			return JSON.std.beanFrom(PenaltyCodesDefinition.class, reader);
-		} catch (Exception e) {
-			throw new RuntimeException("Failed to load Penalty Data from file", e);
-		} finally {
-			try {
-				if(reader != null) {
-					reader.close();
-				}
-			} catch(Exception i) {
-				//ignored
+		synchronized(lock) {
+			File penaltyFile = new File(ScoreBoardManager.getDefaultPath(),settings.get(PenaltiesFileSetting));
+			try(Reader reader = new FileReader(penaltyFile)) {
+				return JSON.std.beanFrom(PenaltyCodesDefinition.class, reader);
+			} catch (Exception e) {
+				throw new RuntimeException("Failed to load Penalty Data from file", e);
 			}
 		}
 	}
@@ -41,5 +34,6 @@ public class PenaltyCodesManager {
 	}
 	
 	private final Settings settings;
+	private final Object lock = new Object();
 	public static final String PenaltiesFileSetting = "ScoreBoard.PenaltyDefinitionFile";
 }
