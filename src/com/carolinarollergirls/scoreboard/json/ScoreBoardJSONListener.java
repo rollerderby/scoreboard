@@ -319,21 +319,19 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	}
 	
 	private void processPenaltyCodes(Settings s) {
-		PenaltyCodesManager pm = new PenaltyCodesManager(s);
 		updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
-		
-        try {
-            PenaltyCodesDefinition penalties = pm.loadFromJSON();
-            for(PenaltyCode p : penalties.getPenalties()) {
-                
-                updates.add(new WSUpdate("ScoreBoard.PenaltyCode."+p.getCode(), p.CuesForWS(p)));
-            }
-            
-            
-            updates.add(new WSUpdate("ScoreBoard.PenaltyCode.?","Unknown"));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+		String file = s.get(PenaltyCodesManager.PenaltiesFileSetting);
+		if(file != null && !file.isEmpty()) {
+			try {
+				PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
+				for(PenaltyCode p : penalties.getPenalties()) {
+					updates.add(new WSUpdate("ScoreBoard.PenaltyCode."+p.getCode(), p.CuesForWS(p)));
+				}
+				updates.add(new WSUpdate("ScoreBoard.PenaltyCode.?","Unknown"));
+			} catch (Exception e) {
+				throw new RuntimeException(e);
+			}
+		}
 
 	}
 
@@ -365,7 +363,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updateState();
 	}
 
+
 	private WS ws;
+	private PenaltyCodesManager pm = new PenaltyCodesManager();
 	private List<WSUpdate> updates = new LinkedList<WSUpdate>();
 	private long batch = 0;
 }
