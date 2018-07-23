@@ -8,9 +8,7 @@ package com.carolinarollergirls.scoreboard.xml.stream;
  * See the file COPYING for details.
  */
 
-import org.jdom.*;
-
-import com.carolinarollergirls.scoreboard.xml.*;
+import com.carolinarollergirls.scoreboard.xml.XmlScoreBoardListener;
 
 public interface StreamListener extends XmlScoreBoardListener
 {

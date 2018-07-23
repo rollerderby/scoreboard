@@ -8,9 +8,9 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.List;
 
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
 
 public interface ScoreBoardModel extends ScoreBoard
 {
@@ -51,10 +51,5 @@ public interface ScoreBoardModel extends ScoreBoard
 
 	public List<TeamModel> getTeamModels();
 	public TeamModel getTeamModel(String id);
-
-	public List<PolicyModel> getPolicyModels();
-	public PolicyModel getPolicyModel(String id);
-	public void addPolicyModel(PolicyModel model) throws IllegalArgumentException; /* If the model's Id is null/empty */
-	public void removePolicyModel(PolicyModel model);
 }
 

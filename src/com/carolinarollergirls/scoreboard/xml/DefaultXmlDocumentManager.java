@@ -8,12 +8,12 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Iterator;
 
-import org.jdom.*;
-import org.jdom.xpath.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.xpath.XPath;
 
 public class DefaultXmlDocumentManager implements XmlDocumentManager
 {
@@ -47,7 +47,7 @@ public class DefaultXmlDocumentManager implements XmlDocumentManager
 
 	protected void processElement(Element e) throws Exception {
 		/* By default, process all child elements. */
-		Iterator i = e.getChildren().iterator();
+		Iterator<?> i = e.getChildren().iterator();
 		while (i.hasNext()) {
 			try {
 				processChildElement((Element)i.next());

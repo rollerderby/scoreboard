@@ -8,7 +8,7 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.EventListener;
 
 public interface ScoreBoardListener extends EventListener
 {

@@ -8,26 +8,38 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.util.zip.*;
-import java.util.concurrent.*;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.ListIterator;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import org.apache.commons.fileupload.FileItem;
+import org.apache.commons.fileupload.FileItemFactory;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.disk.DiskFileItemFactory;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 
-import org.jdom.*;
-
-import org.apache.commons.io.*;
-import org.apache.commons.io.filefilter.*;
-
-import org.apache.commons.fileupload.*;
-import org.apache.commons.fileupload.disk.*;
-import org.apache.commons.fileupload.servlet.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.xml.MediaXmlDocumentManager;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public class MediaServlet extends DefaultScoreBoardControllerServlet
 {
@@ -52,19 +64,19 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 		else if (request.getPathInfo().equals("/remove"))
 			remove(request, response);
 		else
-			response.sendError(response.SC_NOT_FOUND);
+			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		super.doGet(request, response);
 
-		response.sendError(response.SC_NOT_FOUND);
+		response.sendError(HttpServletResponse.SC_NOT_FOUND);
 	}
 
 	protected void upload(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
 		try {
 			if (!ServletFileUpload.isMultipartContent(request)) {
-				response.sendError(response.SC_BAD_REQUEST);
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
 
@@ -72,7 +84,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			FileItemFactory fiF = new DiskFileItemFactory();
 			ServletFileUpload sfU = new ServletFileUpload(fiF);
 			List<FileItem> fileItems = new LinkedList<FileItem>();
-			Iterator i = sfU.parseRequest(request).iterator();
+			Iterator<?> i = sfU.parseRequest(request).iterator();
 
 			while (i.hasNext()) {
 				FileItem item = (FileItem)i.next();
@@ -89,20 +101,20 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			}
 
 			if (fileItems.size() == 0) {
-				setTextResponse(response, response.SC_BAD_REQUEST, "No files provided to upload");
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "No files provided to upload");
 				return;
 			}
 
 			processFileItemList(fileItems, media, type);
 
 			int len = fileItems.size();
-			setTextResponse(response, response.SC_OK, "Successfully uploaded "+len+" file"+(len>1?"s":""));
+			setTextResponse(response, HttpServletResponse.SC_OK, "Successfully uploaded "+len+" file"+(len>1?"s":""));
 		} catch ( FileNotFoundException fnfE ) {
-			setTextResponse(response, response.SC_NOT_FOUND, fnfE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_NOT_FOUND, fnfE.getMessage());
 		} catch ( IllegalArgumentException iaE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, iaE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
 		} catch ( FileUploadException fuE ) {
-			setTextResponse(response, response.SC_INTERNAL_SERVER_ERROR, fuE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, fuE.getMessage());
 		}
 	}
 
@@ -120,13 +132,13 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			IOUtils.closeQuietly(iS);
 			IOUtils.closeQuietly(oS);
 
-			setTextResponse(response, response.SC_OK, "Successfully downloaded 1 remote file");
+			setTextResponse(response, HttpServletResponse.SC_OK, "Successfully downloaded 1 remote file");
 		} catch ( MalformedURLException muE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, muE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, muE.getMessage());
 		} catch ( IllegalArgumentException iaE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, iaE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
 		} catch ( FileNotFoundException fnfE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, fnfE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, fnfE.getMessage());
 		}
 	}
 
@@ -141,17 +153,17 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			String path = f.getAbsolutePath();
 
 			if (!f.exists())
-				setTextResponse(response, response.SC_BAD_REQUEST, "File does not exist : "+path);
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "File does not exist : "+path);
 			else if (f.isDirectory())
-				setTextResponse(response, response.SC_BAD_REQUEST, "Path is a directory : "+path);
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Path is a directory : "+path);
 			else if (!f.delete())
-				setTextResponse(response, response.SC_BAD_REQUEST, "Could not delete file "+path);
+				setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Could not delete file "+path);
 			else
-				setTextResponse(response, response.SC_OK, "Successfully removed "+path);
+				setTextResponse(response, HttpServletResponse.SC_OK, "Successfully removed "+path);
 		} catch ( IllegalArgumentException iaE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, iaE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
 		} catch ( FileNotFoundException fnfE ) {
-			setTextResponse(response, response.SC_BAD_REQUEST, fnfE.getMessage());
+			setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, fnfE.getMessage());
 		}
 	}
 
@@ -164,7 +176,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet
 			if (item.isFormField()) {
 				fileItemIterator.remove();
 			} else {
-				File f = createFile(typeDir, item);
+				createFile(typeDir, item);
 			}
 		}
 	}

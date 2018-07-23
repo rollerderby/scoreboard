@@ -8,10 +8,11 @@ package com.carolinarollergirls.scoreboard.policy;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
-import com.carolinarollergirls.scoreboard.model.*;
-import com.carolinarollergirls.scoreboard.defaults.*;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.defaults.DefaultPolicyModel;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public abstract class AbstractScoreBoardChangePolicy extends DefaultPolicyModel
 {

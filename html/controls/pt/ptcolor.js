@@ -25,10 +25,16 @@ function initialize() {
 
 	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } );
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } );
-	WS.Register( [ 'PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
+	WS.Register( [ 'ScoreBoard.PenaltyCode' ], function(k, v) { penaltyCode(k, v); } );
 	WS.Register( [ 'ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber' ], function(k, v) { setupSelect('Period'); } );
 	WS.Register( [ 'ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber' ], function(k, v) { setupSelect('Jam'); } );
+	
+	
 
+	if(_windowFunctions.checkParam("autoFit", "true")) {
+		$('.Team').addClass('auto-fit');
+	}
+	
 	penaltyEditor = $('div.PenaltyEditor').dialog({
 		modal: true,
 		closeOnEscape: false,
@@ -38,6 +44,8 @@ function initialize() {
 		// buttons: [ { text: buttonText, click: login } ],
 		// close: function() { penaltyEditor.dialog('destroy'); }
 	});
+	
+	addFOCode();
 
 	$(".PenaltyEditor .period_minus").click(function() { adjust("Period", -1); });
 	$(".PenaltyEditor .period_plus").click(function() { adjust("Period", 1); });
@@ -223,20 +231,25 @@ function submitPenalty() {
 	penaltyEditor.dialog('close');
 }
 
-var penaltyCodeRegex = /^PenaltyCode.([^\(]+)\(([^\)]+)\)/;
 function penaltyCode(k, v) {
-	match = k.match(penaltyCodeRegex);
-	if (match == null)
-		return;
-	var type = match[1];
-	var code = match[2];
+	var code = k.split('.').pop();
+
+	addPenaltyCode('Penalty', code, v);
+	addPenaltyCode('FO_EXP', code, v);
+}	
+
+function addFOCode() {
+	addPenaltyCode('FO_EXP','FO','Foul-Out');
+}
+		
+function addPenaltyCode(type, code, verbalCues) {
 
 	var div = $('.Codes .' + type + '[code="' + code + '"]');
-	if (div.length > 0) {
-		if (v == null) {
-			div.detach();
-			return;
-		}
+	
+	if(verbalCues === null) {
+		div.detach();
+		return;
+	} else if (div.length > 0) {
 		div.find('.Description').empty();
 	} else {
 		var div = $('<div>').attr('code', code).addClass(type).click(function (e) {
@@ -244,7 +257,14 @@ function penaltyCode(k, v) {
 			div.addClass('Active');
 			submitPenalty();
 		});
-		$('<div>').addClass('Code').text(code).appendTo(div);
+		
+		var title = code;
+		
+		if(type === 'FO_EXP' && code !== 'FO') {
+			title = title + '(EXP)';
+		}
+		
+		$('<div>').addClass('Code').text(title).appendTo(div);
 		$('<div>').addClass('Description').appendTo(div);
 
 		var codes = $('.PenaltyEditor .Codes');
@@ -262,7 +282,7 @@ function penaltyCode(k, v) {
 	}
 
 	var desc = div.find('.Description');
-	$.each(v.split('-'), function (idx, d) {
+	verbalCues.split(',').forEach(function(d){
 		$('<div>').text(d).appendTo(desc);
 	});
 }

@@ -8,12 +8,15 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import org.jdom.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import org.jdom.Document;
 
 public class ExecutorXmlDocumentManager implements XmlDocumentManager
 {
@@ -30,7 +33,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager
 		}
 	}
 
-	public List<XmlDocumentManager> findXmlDocumentManagers(Class c) {
+	public List<XmlDocumentManager> findXmlDocumentManagers(Class<? extends XmlDocumentManager> c) {
 		synchronized (managerLock) {
 			List<XmlDocumentManager> l = new ArrayList<XmlDocumentManager>();
 			Iterator<XmlDocumentManager> m = managers.keySet().iterator();

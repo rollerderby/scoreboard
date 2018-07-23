@@ -45,7 +45,7 @@
 			m = k.match(reJD); 
 			if(m) return { Type: 'Jam', FullKey: k, Period: m[1], Jam: m[2], Key: m[3] };
 
-			var reSk = /^Game.Team\(([0-9])\)\.Skater\((.+)\)\.(.+)$/;
+			var reSk = /^ScoreBoard.Team\(([0-9])\)\.Skater\((.+)\)\.(.+)$/;
 			m = k.match(reSk); 
 			if(m) return { Type: 'Skater', FullKey: k, Skater: m[2], Team: m[1], Key: m[3] }
 

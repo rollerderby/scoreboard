@@ -8,14 +8,17 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
-import org.jdom.*;
-import org.jdom.xpath.*;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 /**
  * This allows storing team info, e.g. name, logo, roster, etc., separate from the actual teams
@@ -55,7 +58,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		super.processElement(e);
 		Iterator<XPath> transferTypes = transferXPaths.iterator();
 		while (transferTypes.hasNext()) {
-			Iterator elements = transferTypes.next().selectNodes(e).iterator();
+			Iterator<?> elements = transferTypes.next().selectNodes(e).iterator();
 			while (elements.hasNext()) {
 				Element element = (Element)elements.next();
 				String teamId = element.getName();
@@ -94,15 +97,15 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		if (null != logo)
 			editor.addElement(newTeam, "Logo", null, editor.getText(logo));
 
-		Iterator alternateNames = team.getChildren("AlternateName").iterator();
+		Iterator<?> alternateNames = team.getChildren("AlternateName").iterator();
 		while (alternateNames.hasNext())
 			processAlternateName(newTeam, (Element)alternateNames.next());
 
-		Iterator colors = team.getChildren("Color").iterator();
+		Iterator<?> colors = team.getChildren("Color").iterator();
 		while (colors.hasNext())
 			processColor(newTeam, (Element)colors.next());
 
-		Iterator skaters = team.getChildren("Skater").iterator();
+		Iterator<?> skaters = team.getChildren("Skater").iterator();
 		while (skaters.hasNext())
 			processSkater(newTeam, (Element)skaters.next());
 
@@ -193,7 +196,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		Element logo = newTeam.getChild("Logo");
 		if (null != logo)
 			team.setLogo(editor.getText(logo));
-		Iterator alternateNames = newTeam.getChildren("AlternateName").iterator();
+		Iterator<?> alternateNames = newTeam.getChildren("AlternateName").iterator();
 		while (alternateNames.hasNext()) {
 			Element alternateName = (Element)alternateNames.next();
 			String aId = alternateName.getAttributeValue("Id");
@@ -203,7 +206,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 			aName = editor.getText(alternateName.getChild("Name"));
 			team.setAlternateNameModel(aId, aName);
 		}
-		Iterator colors = newTeam.getChildren("Color").iterator();
+		Iterator<?> colors = newTeam.getChildren("Color").iterator();
 		while (colors.hasNext()) {
 			Element color = (Element)colors.next();
 			String cId = color.getAttributeValue("Id");
@@ -213,7 +216,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 			cColor = editor.getText(color.getChild("Color"));
 			team.setColorModel(cId, cColor);
 		}
-		Iterator skaters = newTeam.getChildren("Skater").iterator();
+		Iterator<?> skaters = newTeam.getChildren("Skater").iterator();
 		while (skaters.hasNext()) {
 			Element skater = (Element)skaters.next();
 			String sId = skater.getAttributeValue("Id");
@@ -234,7 +237,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
 		Element newTeam = (Element)editor.getElement(getXPathElement(), "Team", id).clone();
 		if (clear) {
 			Element clearTeam = (Element)newTeam.clone();
-			Iterator clearSkaters = clearTeam.getChildren("Skater").iterator();
+			Iterator<?> clearSkaters = clearTeam.getChildren("Skater").iterator();
 			while (clearSkaters.hasNext())
 				editor.setRemovePI((Element)clearSkaters.next());
 			update(createXPathElement().addContent(clearTeam));

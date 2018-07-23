@@ -8,22 +8,27 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import java.text.DateFormat;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.net.SocketException;
+import java.util.List;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import org.eclipse.jetty.server.Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import org.eclipse.jetty.server.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.Game;
+import com.carolinarollergirls.scoreboard.Ruleset;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.xml.TeamsXmlDocumentManager;
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentManager;
 

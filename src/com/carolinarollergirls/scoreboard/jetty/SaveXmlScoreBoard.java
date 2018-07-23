@@ -8,20 +8,24 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.regex.*;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
-import org.jdom.*;
-import org.jdom.output.*;
-import org.jdom.xpath.*;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
-import javax.servlet.*;
-import javax.servlet.http.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.output.XMLOutputter;
+import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.xml.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
+import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
 {
@@ -105,7 +109,7 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet
 		if (path.endsWith("/"))
 			path = path.substring(0, path.length()-1);
 		if (path.length() > 0) {
-			Iterator nodes = XPath.selectNodes(node, path).iterator();
+			Iterator<?> nodes = XPath.selectNodes(node, path).iterator();
 			while (nodes.hasNext()) {
 				Document d = editor.cloneDocumentToClonedElement((Element)nodes.next()).getDocument();
 				if (doc == null)

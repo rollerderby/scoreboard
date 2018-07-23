@@ -8,15 +8,11 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.io.*;
-import java.util.*;
-import java.util.concurrent.*;
+import java.io.File;
 
-import org.jdom.*;
-import org.jdom.input.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
 
 public class LoadScoreBoard extends SegmentedXmlDocumentManager
 {

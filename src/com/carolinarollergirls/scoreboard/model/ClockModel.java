@@ -8,7 +8,7 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.Clock;
 
 public interface ClockModel extends Clock
 {
@@ -34,7 +34,17 @@ public interface ClockModel extends Clock
 	public void changeMaximumNumber(int n);
 
 	public void setTime(long ms);
+	/**
+	 * Add time to the clock.
+	 * @param ms The amount of change (can be negative)
+	 */
 	public void changeTime(long ms);
+	/**
+	 * Change the clock in the direction it is running.
+	 * This function is the inverse of changeTime(), when the clock counts down.
+	 * @param ms The amount of change (can be negative)
+	 */
+	public void elapseTime(long ms);
 	public void resetTime();
 	public void setMinimumTime(long ms);
 	public void changeMinimumTime(long ms);

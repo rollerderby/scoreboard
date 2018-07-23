@@ -8,18 +8,27 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.io.*;
+import java.io.File;
+import java.io.FileFilter;
+import java.util.Arrays;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.Map;
 
-import org.jdom.*;
-import org.jdom.xpath.*;
+import org.apache.commons.io.filefilter.AndFileFilter;
+import org.apache.commons.io.filefilter.DirectoryFileFilter;
+import org.apache.commons.io.filefilter.FileFileFilter;
+import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.io.filefilter.NotFileFilter;
+import org.apache.commons.io.filefilter.RegexFileFilter;
+import org.apache.commons.io.monitor.FileAlterationListener;
+import org.apache.commons.io.monitor.FileAlterationListenerAdaptor;
+import org.apache.commons.io.monitor.FileAlterationMonitor;
+import org.apache.commons.io.monitor.FileAlterationObserver;
+import org.jdom.Element;
 
-import org.apache.commons.io.monitor.*;
-import org.apache.commons.io.filefilter.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.jetty.*;
-import com.carolinarollergirls.scoreboard.xml.*;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 
 public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager implements XmlDocumentManager
 {
@@ -61,7 +70,7 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 				Element type = editor.getElement(getXPathElement(), "Type", editor.getId(e), false);
 				if (type == null)
 					return;
-				Iterator i = e.getChildren(getMediaName()).iterator();
+				Iterator<?> i = e.getChildren(getMediaName()).iterator();
 				while (i.hasNext())
 					if (!checkMediaNameElement(type, (Element)i.next()))
 						i.remove();
@@ -96,8 +105,13 @@ public class MediaXmlDocumentManager extends PartialOpenXmlDocumentManager imple
 
 	protected void initializeType(File typeDir) {
 		Iterator<File> files = Arrays.asList(typeDir.listFiles((FileFilter)mediaFileFilter)).iterator();
-		while (files.hasNext())
+		while (files.hasNext()) {
 			addMediaElement(typeDir.getName(), files.next());
+		}
+		// Ensure we have an entry, even if dir is empty.
+		synchronized (updateLock) {
+			update(createTypeElement(typeDir.getName()));
+		}
 	}
 
 	protected void monitorType(File typeDir) {

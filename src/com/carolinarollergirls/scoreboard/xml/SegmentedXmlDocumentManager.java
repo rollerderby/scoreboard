@@ -8,7 +8,7 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import org.jdom.*;
+import org.jdom.Element;
 
 /**
  * This abstract class simply divides a top-level element name into different

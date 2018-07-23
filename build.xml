@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
-<project name="Carolina Rollergirls Scoreboard" default="compile">
-	<property name="ant.build.javac.source" value="1.5"/>
-	<property name="ant.build.javac.target" value="1.5"/>
+<project name="Carolina Rollergirls Scoreboard" default="test">
+	<property name="ant.build.javac.source" value="1.7"/>
+	<property name="ant.build.javac.target" value="1.7"/>
 
 	<property name="src.dir" value="src"/>
 	<property name="dest.dir" value="bin"/>
@@ -17,7 +17,7 @@
 
 	<property name="compile.deprecation" value="true"/>
 	<property name="compile.debug" value="true"/>
-	<property name="compile.nowarn" value="true"/>
+	<property name="compile.nowarn" value="false"/>
 	<property name="compile.verbose" value="false"/>
 
 	<property name="jar.dir" value="lib"/>
@@ -27,8 +27,6 @@
 
 	<property name="launch4j.dir" value="launch4j"/>
 	<property name="launch4j.outfile" value="scoreboard.exe"/>
-
-	<property name="media.dir" value="media-src" />
 
 	<property name="release.dir" value="release" />
 	<property name="android.dir" value="android" />
@@ -57,7 +55,6 @@
 		<echo message="	compile					Compile all classes and create jarfile (default)"/>
 		<echo message="	launcher				 Create Windows scoreboard.exe"/>
 		<echo message="	manifest				 (Re)create the manifest file"/>
-		<echo message="	media						Create media zip files"/>
 		<echo message="	help						 Show this help"/>
 		<echo message="	jdoc						 Create JavaDOC"/>
 		<echo message="	release					Create release zip file"/>
@@ -99,7 +96,9 @@
 			includeAntRuntime="false"
 			includes="${src.dir}/com/carolinarollergirls/scoreboard/** json/*" >
 
-			<compilerarg value="-Xlint:unchecked"/>
+			<compilerarg value="-Xlint:all"/>
+			<compilerarg value="-Xlint:-serial"/>
+			<compilerarg value="-Xlint:-options"/>
 			<classpath>
 				<fileset dir="${jar.dir}" includes="deps/*.jar" />
 			</classpath>
@@ -178,16 +177,6 @@
 		</launch4j>
 	</target>
 
-	<!-- Create media zip files -->
-	<target name="media" >
-		<ant dir="${media.dir}" inheritAll="false" target="all" />
-		<copy overwrite="true" todir="${release.dir}" >
-			<fileset dir="${media.dir}/release" includes="*.zip" />
-			<fileset dir="${media.dir}/release" includes="*-latest-version" />
-		</copy>
-		<ant dir="${media.dir}" inheritAll="false" target="clean" />
-	</target>
-
 	<!-- Create android apk -->
 	<target name="android" depends="-version">
 		<mkdir dir="${release.dir}" />
@@ -238,6 +227,7 @@
 				<include name="html/images/sponsor_banner" />
 				<include name="lib/crg-scoreboard.jar" />
 				<include name="config/crg.scoreboard.properties" />
+				<include name="config/penalties/**" />
 				<include name="config/default/**" />
 			</zipfileset>
 		</zip>

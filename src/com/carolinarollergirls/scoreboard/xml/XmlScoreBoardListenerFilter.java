@@ -8,12 +8,7 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-
-import org.jdom.*;
-
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.model.*;
+import org.jdom.Document;
 
 public class XmlScoreBoardListenerFilter implements XmlScoreBoardListener
 {

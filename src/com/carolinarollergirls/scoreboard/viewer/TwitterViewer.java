@@ -8,16 +8,30 @@ package com.carolinarollergirls.scoreboard.viewer;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.util.concurrent.*;
-import java.io.*;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.TooManyListenersException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-import twitter4j.*;
-import twitter4j.conf.*;
-import twitter4j.auth.*;
+import twitter4j.Status;
+import twitter4j.Twitter;
+import twitter4j.TwitterException;
+import twitter4j.TwitterFactory;
+import twitter4j.TwitterStream;
+import twitter4j.TwitterStreamFactory;
+import twitter4j.UserStreamAdapter;
+import twitter4j.UserStreamListener;
+import twitter4j.auth.AccessToken;
+import twitter4j.auth.RequestToken;
+import twitter4j.conf.ConfigurationBuilder;
 
-import com.carolinarollergirls.scoreboard.*;
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardViewer;
+import com.carolinarollergirls.scoreboard.event.FormatSpecifierScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public class TwitterViewer implements ScoreBoardViewer
 {

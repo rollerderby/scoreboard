@@ -8,9 +8,11 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.List;
 
-import com.carolinarollergirls.scoreboard.*;
+import com.carolinarollergirls.scoreboard.PositionNotFoundException;
+import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Team;
 
 public interface TeamModel extends Team
 {
@@ -55,6 +57,7 @@ public interface TeamModel extends Team
 	public void changeTimeouts(int change);
 	public void setOfficialReviews(int reviews);
 	public void changeOfficialReviews(int reviews);
+	public void resetTimeouts(boolean gameStart);
 
 	public void setInTimeout(boolean in_timeouts);
 	public void setInOfficialReview(boolean in_official_review);

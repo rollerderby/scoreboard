@@ -8,12 +8,9 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import java.util.*;
-import java.util.concurrent.*;
+import java.util.LinkedList;
 
-import org.jdom.*;
-
-import com.carolinarollergirls.scoreboard.*;
+import org.jdom.Document;
 
 public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener implements XmlScoreBoardListener
 {

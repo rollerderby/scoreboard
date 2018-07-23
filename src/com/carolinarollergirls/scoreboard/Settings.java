@@ -8,13 +8,15 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import java.util.*;
+import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.event.*;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Settings extends ScoreBoardEventProvider {
 	public Map<String, String> getAll();
 	public String get(String k);
+	public boolean getBoolean(String k);
+	public long getLong(String k);
 	public ScoreBoardEventProvider getParent();
 
 	public static final String EVENT_SETTING = "Setting";

@@ -8,8 +8,10 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
-import org.jdom.*;
-import org.jdom.xpath.*;
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.JDOMException;
+import org.jdom.xpath.XPath;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
