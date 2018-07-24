@@ -328,7 +328,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	protected boolean isSyncTime() {
-		return (getScoreBoard().getSettings().getBoolean("Scoreboard.Clock.Sync"));
+		return (getScoreBoard().getSettings().getBoolean("ScoreBoard.Clock.Sync"));
 	}
 
 	protected boolean isMasterClock() {
