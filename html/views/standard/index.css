@@ -133,6 +133,7 @@ body.box_flat .Box.FlatTop {
 	top: 0%;
 	width: 44%;
 	overflow: none;
+	border-radius: 5px;
 }
 .Team.Left>.Name { left: 3%; }
 .Team.Right>.Name { right: 3%; }
