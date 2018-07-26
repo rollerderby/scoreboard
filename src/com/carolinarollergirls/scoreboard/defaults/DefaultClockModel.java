@@ -166,9 +166,11 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			if (isRunning() && isSyncTime())
 				ms = ((ms / 1000) * 1000) + (time % 1000);
 			time = checkNewTime(ms);
-			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
-			scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
-			doStop = checkStop();
+			if (isDisplayChange(time, last)) {
+				scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
+				scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
+			}
+			doStop = isTimeAtEnd();
 		}
 		if (doStop)
 			stop();
@@ -181,11 +183,11 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			if (sync && isRunning() && isSyncTime())
 				change = ((change / 1000) * 1000);
 			time = checkNewTime(time + change);
-			if (time % 1000 == 0 || Math.abs(last - time) >= 1000) {
+			if (isDisplayChange(time, last)) {
 				scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
 				scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
 			}
-			doStop = checkStop();
+			doStop = isTimeAtEnd();
 		}
 		if (doStop)
 			stop();
@@ -207,8 +209,13 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		else
 			return ms;
 	}
-	protected boolean checkStop() {
-		return (getTime() == (isCountDirectionDown() ? getMinimumTime() : getMaximumTime()));
+	protected boolean isDisplayChange(long current, long last) {
+		//on count down clocks are rounded down for display, on count up they are rounded down.
+		if (isCountDirectionDown()) {
+			return ((current-1)/1000 != (last-1)/1000);
+		} else {
+			return (current/1000 != last/1000);
+		}
 	}
 
 	public long getMinimumTime() { return minimumTime; }
@@ -444,6 +451,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 
 		public void run() {
+			if (paused) return;
 			long curSystemTime = System.currentTimeMillis();
 			long curTicks = (curSystemTime - startSystemTime) / update_interval;
 			while (curTicks != ticks) {
@@ -456,9 +464,23 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			return currentTime;
 		}
 
+		// For unittests.
+		protected void advance(long time_ms) {
+			long curTicks = time_ms / update_interval;
+			while (curTicks != 0) {
+				curTicks--;
+				tick();
+			}
+		}
+		protected void setPaused(boolean p) {
+			paused = p;
+		}
+
+
 		private long currentTime = 0;
 		private long startSystemTime = 0;
 		private long ticks = 0;
+		private boolean paused = false;
 		protected static Timer timer = new Timer();
 		protected Object clockLock = new Object();
 		protected DefaultClockModel masterClock = null;
