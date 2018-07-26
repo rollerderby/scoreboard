@@ -83,7 +83,6 @@ function initialize() {
 					if (dotColor == null) {dotColor = '#000000';}
 					$('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);
 					$('.Team' + t + ' .Dot.OfficialReview1').css('background', dotColor);
-					$('.Team' + t + ' .Dot.OfficialReview1 .Retained').css('background', 'none: !important')
 					
 					document.styleSheets[0].addRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:before', 
 							'background: ' + dotColor + ';');
