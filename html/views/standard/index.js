@@ -63,5 +63,34 @@ function initialize() {
 			$(window).trigger("resize");
 
 	});
+	
+	$.each([1, 2], function(idx, t) {
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) {
+			switch (k){
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_fg)':
+					$('.Team' + t + ' .Name').css('color', v);
+					break;
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_bg)':
+					$('.Team' + t + ' .Name').css('background-color', v);
+					break;
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_glow)':
+					var shadow = '0px 0px 0.2em ' + v;
+					var shadowCSS = shadow + ', ' + shadow + ', ' + shadow;
+					$('.Team' + t + ' .Name').css('text-shadow',shadowCSS);
+					break;
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_dots_fg)':
+					var dotColor = v;
+					if (dotColor == null) {dotColor = '#000000';}
+					$('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);
+					$('.Team' + t + ' .Dot.OfficialReview1').css('background', dotColor);
+					
+					document.styleSheets[0].addRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:before', 
+							'background: ' + dotColor + ';');
+					document.styleSheets[0].addRule('.Team' + t + ' .DotOfficialReviews .Dot.Retained:after', 
+							'background: ' + dotColor + ';');
+					break;
+			}
+		})
+	});
 
 }

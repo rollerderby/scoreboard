@@ -133,6 +133,7 @@ body.box_flat .Box.FlatTop {
 	top: 0%;
 	width: 44%;
 	overflow: none;
+	border-radius: 5px;
 }
 .Team.Left>.Name { left: 3%; }
 .Team.Right>.Name { right: 3%; }
@@ -231,6 +232,9 @@ body.box_flat .Box.FlatTop {
 .DotOfficialReviews .Dot.Retained {
 	border-radius: 0;
 	background: none;
+}
+.DotOfficialReviews .Dot.OfficialReview1.Retained{
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#E9E9E9), color-stop(100%, #D9D9D9)) !important;
 }
 .DotOfficialReviews .Dot.Retained:after {
 	content: "";
