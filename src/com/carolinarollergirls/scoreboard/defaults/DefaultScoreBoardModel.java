@@ -595,7 +595,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				//If less than one minute of intermission is left and there is another period, 
 				// start the next period. Otherwise extend the previous period.
 				requestBatchStart();
-				pc.changeNumber(1);
+				pc.setNumber(ic.getNumber()+1);
 				pc.resetTime();
 				if (settings.getBoolean("ScoreBoard." + Clock.ID_JAM + ".ResetNumberEachPeriod")) {
 					jc.setNumber(jc.getMinimumNumber());
