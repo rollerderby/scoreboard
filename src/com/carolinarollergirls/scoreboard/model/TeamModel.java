@@ -13,6 +13,7 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.PositionNotFoundException;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.snapshots.TeamSnapshot;
 
 public interface TeamModel extends Team
 {
@@ -25,10 +26,9 @@ public interface TeamModel extends Team
 	public void setName(String name);
 
 	public void startJam();
-	public void unStartJam();
 	public void stopJam();
-	public void unStopJam();
 	public void benchSkaters();
+	public void restoreSnapshot(TeamSnapshot s);
 
 	public List<AlternateNameModel> getAlternateNameModels();
 	public AlternateNameModel getAlternateNameModel(String id);
@@ -59,6 +59,7 @@ public interface TeamModel extends Team
 	public void changeOfficialReviews(int reviews);
 	public void resetTimeouts(boolean gameStart);
 
+	public void setInJam(boolean inJam);
 	public void setInTimeout(boolean in_timeouts);
 	public void setInOfficialReview(boolean in_official_review);
 	public void setRetainedOfficialReview(boolean retained_official_review);
