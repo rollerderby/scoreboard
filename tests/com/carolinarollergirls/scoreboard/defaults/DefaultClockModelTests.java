@@ -91,7 +91,7 @@ public class DefaultClockModelTests {
 	}
 
 	@Test
-	public void test_defaults() {
+	public void testDefaults() {
 		assertEquals(0, clock.getMinimumNumber());
 		assertEquals(0, clock.getMaximumNumber());
 		assertEquals(0, clock.getNumber());
@@ -112,7 +112,7 @@ public class DefaultClockModelTests {
 	}
 
 	@Test
-	public void test_reset() {
+	public void testReset() {
 		clock.setMaximumNumber(5);
 		clock.setMinimumNumber(2);
 		clock.setNumber(4);
@@ -128,7 +128,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void syncTimeTest() {
+	public void testSetting_ClockSync() {
 		//add a master clock
 		DefaultClockModel clock2 = new DefaultClockModel(sbModelMock, Clock.ID_TIMEOUT);
 		syncStatus = true;
@@ -169,7 +169,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_name() {
+	public void testSetName() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NAME, listener));
 		
 		clock.setName("Test Clock");
@@ -182,7 +182,7 @@ public class DefaultClockModelTests {
 		assertEquals(null, event.getPreviousValue());
 	}
 	
-	public void test_count_direction_setter() {
+	public void testSetCountDirectionDown() {
 		assertFalse(clock.isCountDirectionDown());
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_DIRECTION, listener));
 		
@@ -206,7 +206,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_min_number_setter() {
+	public void testSetMinimumNumber() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
 		
 		clock.setMinimumNumber(1);
@@ -224,7 +224,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_min_number_setter2() {
+	public void testSetMinimumNumber2() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NUMBER, listener));
@@ -246,7 +246,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_max_number_setter() {
+	public void testSetMaximumNumber() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
 		
 		clock.setMaximumNumber(5);
@@ -263,7 +263,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_max_number_setter2() {
+	public void testSetMaximumNumber2() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NUMBER, listener));
@@ -285,7 +285,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_max_number_change() {
+	public void testChangeMaximumNumber() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
 		
 		clock.setMaximumNumber(5);
@@ -306,7 +306,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_min_number_change() {
+	public void testChangeMinimumNumber() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
 		
 		clock.setMinimumNumber(5);
@@ -327,7 +327,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_number_changing() {
+	public void testChangeNumber() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NUMBER, listener));
 		
 		clock.setMaximumNumber(12);
@@ -399,7 +399,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_min_time_setter() {
+	public void testSetMinimumTime() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_TIME, listener));
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_TIME, listener));
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
@@ -419,7 +419,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_min_time_setter2() {
+	public void testSetMinimumTime2() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_TIME, listener));
 
 		
@@ -434,7 +434,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_min_time_setter3() {
+	public void testSetMinimumTime3() {
 		clock.setMaximumTime(2000);
 		clock.setMinimumTime(1000);
 		
@@ -446,7 +446,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_max_time_setter() {
+	public void testSetMaximumTime() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_TIME, listener));
 		
 		clock.setMaximumTime(5000);
@@ -464,7 +464,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_max_time_setter2() {
+	public void testSetMaximumTime2() {
 		clock.setMinimumTime(2000);
 		clock.setMaximumTime(1000);
 		
@@ -475,7 +475,7 @@ public class DefaultClockModelTests {
 	} 
 	
 	@Test
-	public void test_max_time_change() {
+	public void testChangeMaximumTime() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_TIME, listener));
 		
 		clock.setMaximumTime(1000);
@@ -495,7 +495,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_min_time_change() {
+	public void testChangeMinimumTime() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_TIME, listener));
 		
 		clock.setMinimumTime(5000);
@@ -516,7 +516,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_time_changing() {
+	public void testChangeTime() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
 		
 		clock.setMaximumTime(5000);
@@ -592,7 +592,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_time_elapse_count_up()
+	public void testElapseTime_countUp()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
 		clock.setMaximumTime(5000);
@@ -610,7 +610,7 @@ public class DefaultClockModelTests {
 	}
 
 	@Test
-	public void test_time_elapse_count_down()
+	public void testElapseTime_countDown()
 	{
 		clock.setCountDirectionDown(true);
 		clock.setMaximumTime(5000);
@@ -626,7 +626,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_time_at_start_count_up()
+	public void testIsTimeAtStart_countUp()
 	{
 		clock.setMaximumTime(5000);
 		
@@ -645,7 +645,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_time_at_start_count_down()
+	public void testIsTimeAtStart_countDown()
 	{
 		clock.setCountDirectionDown(true);
 		clock.setMaximumTime(5000);
@@ -666,7 +666,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_reset_time()
+	public void testResetTime()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
 		clock.setMaximumTime(5000);
@@ -688,7 +688,7 @@ public class DefaultClockModelTests {
 		assertEquals(5000, clock.getTime());
 	}
 	
-	public void test_running() {
+	public void testRunning() {
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_RUNNING, listener));
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
 		clock.setMaximumTime(30000);
@@ -732,7 +732,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_apply_rules_name()
+	public void testApplyRule_name()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NAME, listener));
 		clock.applyRule("Clock." + ID + ".Name", "New Name");
@@ -745,7 +745,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_apply_rules_direction()
+	public void testApplyRule_direction()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_DIRECTION, listener));
 		clock.applyRule("Clock." + ID + ".Direction", true);
@@ -758,7 +758,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_apply_rules_min_number()
+	public void testApplyRule_minimumNumber()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
 		clock.applyRule("Clock." + ID + ".MinimumNumber", 10);
@@ -776,7 +776,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_apply_rules_max_number()
+	public void testApplyRule_maximumNumber()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
 		clock.applyRule("Clock." + ID + ".MaximumNumber", 10);
@@ -794,7 +794,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_apply_rules_min_time()
+	public void testApplyRule_minimumTime()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_TIME, listener));
 		clock.applyRule("Clock." + ID + ".MinimumTime", (long)10000);
@@ -812,7 +812,7 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
-	public void test_apply_rules_max_time()
+	public void testApplyRule_maximumTime()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_TIME, listener));
 		clock.applyRule("Clock." + ID + ".MaximumTime", (long)10000);

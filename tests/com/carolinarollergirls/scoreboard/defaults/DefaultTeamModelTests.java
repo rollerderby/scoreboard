@@ -147,7 +147,7 @@ public class DefaultTeamModelTests {
 		advance(0);
 		assertEquals(3, team.getLastScore());
 		
-		//negative values are truncated
+		//negative values are clamped
 		collectedEvents.clear();
 		team.setScore(-1);
 		advance(0);
@@ -183,14 +183,14 @@ public class DefaultTeamModelTests {
 		assertEquals(5, event.getValue());
 		assertEquals(0, event.getPreviousValue());
 
-		//values higher than score are truncated
+		//values higher than score are clamped
 		team.setLastScore(12);
 		advance(0);
 		assertEquals(10, team.getLastScore());
 		assertEquals(1, collectedEvents.size());
 		assertEquals(10, collectedEvents.poll().getValue());
 		
-		//negative values are truncated
+		//negative values are clamped
 		team.setLastScore(-2);
 		assertEquals(0, team.getLastScore());
 	}
@@ -306,14 +306,14 @@ public class DefaultTeamModelTests {
 		assertEquals(4, event.getValue());
 		assertEquals(3, event.getPreviousValue());
 
-		//values higher than maximum are truncated
+		//values higher than maximum are clamped
 		team.setTimeouts(12);
 		advance(0);
 		assertEquals(5, team.getTimeouts());
 		assertEquals(1, collectedEvents.size());
 		assertEquals(5, collectedEvents.poll().getValue());
 		
-		//negative values are truncated
+		//negative values are clamped
 		team.setTimeouts(-2);
 		assertEquals(0, team.getTimeouts());
 	}
@@ -345,14 +345,14 @@ public class DefaultTeamModelTests {
 		assertEquals(4, event.getValue());
 		assertEquals(1, event.getPreviousValue());
 
-		//values higher than maximum are truncated
+		//values higher than maximum are clamped
 		team.setOfficialReviews(12);
 		advance(0);
 		assertEquals(5, team.getOfficialReviews());
 		assertEquals(1, collectedEvents.size());
 		assertEquals(5, collectedEvents.poll().getValue());
 		
-		//negative values are truncated
+		//negative values are clamped
 		team.setOfficialReviews(-2);
 		assertEquals(0, team.getOfficialReviews());
 	}
