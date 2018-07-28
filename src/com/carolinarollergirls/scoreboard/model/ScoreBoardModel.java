@@ -36,11 +36,12 @@ public interface ScoreBoardModel extends ScoreBoard
 	public void timeout(TeamModel team);
 	public void timeout(TeamModel team, boolean review);
 
+	public void clockUndo();
 	public void unStartJam();
 	public void unStopJam();
 	public void unTimeout();
 
-  public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
+	public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 
 	public void setRuleset(String id);
 	public SettingsModel getSettingsModel();
