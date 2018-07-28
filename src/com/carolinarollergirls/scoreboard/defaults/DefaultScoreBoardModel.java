@@ -140,8 +140,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			requestBatchStart();
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);
-			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
 			if (pc.isRunning() || jc.isRunning())
 				return;
 			if (pc.getNumber() < pc.getMaximumNumber())
@@ -151,6 +152,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			pc.setTime(1000); //TODO: Should not be needed
 			setInPeriod(true);
 			setInOvertime(true);
+			tc.stop();
 			ic.stop();
 			long otLineupTime = settings.getLong("Clock." + Clock.ID_LINEUP + ".OvertimeTime");
 			if (lc.getMaximumTime() < otLineupTime) {
@@ -241,14 +243,21 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+			ClockModel pc = getClockModel(Clock.ID_PERIOD);
+			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
 			lastTimeoutOwner = getTimeoutOwner();
 			wasOfficialReview = isOfficialReview();
 			timeoutClockWasRunning = true;
 			jamClockWasRunning = false;
 			
 			requestBatchStart();
-			lc.resetTime();
-			lc.start();
+			if (pc.isTimeAtEnd()) {
+				ic.resetTime(); //TODO: add a rule to make this optional
+				ic.start();
+			} else {
+				lc.resetTime();
+				lc.start();
+			}
 			tc.stop();
 			requestBatchEnd();
 		}
@@ -257,6 +266,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
 			ClockModel ic = getClockModel(Clock.ID_INTERMISSION);
+
 			ic.stop();
 
 			timeoutClockWasRunning = false;
@@ -285,25 +295,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				setTimeoutOwner(null==team?"":team.getId());
 			}
 			setOfficialReview(review);
-
-			TeamModel t1 = getTeamModel("1");
-			TeamModel t2 = getTeamModel("2");
-			if (null==team) {
-				t1.setInTimeout(false);
-				t1.setInOfficialReview(false);
-				t2.setInTimeout(false);
-				t2.setInOfficialReview(false);
-			} else if (t1.getId().equals(team.getId())) {
-				t1.setInTimeout(!review);
-				t1.setInOfficialReview(review);
-				t2.setInTimeout(false);
-				t2.setInOfficialReview(false);
-			} else {
-				t1.setInTimeout(false);
-				t1.setInOfficialReview(false);
-				t2.setInTimeout(!review);
-				t2.setInOfficialReview(review);
-			}
 
 			if (!tc.isRunning()) {
 				// Make sure period clock, jam clock, and lineup clock are stopped
@@ -458,6 +449,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (timeoutOwnerLock) {
 			String last = timeoutOwner;
 			timeoutOwner = owner;
+			for (TeamModel tm : getTeamModels()) {
+				tm.setInTimeout(tm.getId() == owner);
+			}
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUT_OWNER, timeoutOwner, last));
 		}
 	}
@@ -466,6 +460,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (officialReviewLock) {
 			boolean last = officialReview;
 			officialReview = official;
+			for (TeamModel tm : getTeamModels()) {
+				tm.setInOfficialReview(tm.getId() == getTimeoutOwner() && official);
+			}
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEW, new Boolean(officialReview), last));
 		}
 	}

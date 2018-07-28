@@ -75,6 +75,28 @@ public class ScoreBoardEventProviderManager {
 		}
 	}
 
+	// For unitests.
+	protected void waitForEvents() {
+		while (true) {
+			boolean empty = true;
+			synchronized (mapLock) {
+				for(Queue<ManagerRunnable> q: getSingleton().providerMap.values()) {
+					for(ManagerRunnable mr : q) {
+						if (!mr.isEmpty()) {
+							empty = false;
+						}
+					}
+				}
+			}
+			if (empty) {
+				break;
+			}
+			try {
+				Thread.sleep(1);
+			} catch (InterruptedException e) {};
+		}
+	}
+
 	protected Object mapLock = new Object();
 	protected Hashtable<ScoreBoardEventProvider, Queue<ManagerRunnable>> providerMap = new Hashtable<ScoreBoardEventProvider, Queue<ManagerRunnable>>();
 	protected Hashtable<ScoreBoardListener, ManagerRunnable> listenerMap = new Hashtable<ScoreBoardListener, ManagerRunnable>();
@@ -97,14 +119,19 @@ public class ScoreBoardEventProviderManager {
 				ScoreBoardEvent event;
 
 				synchronized (eventLock) {
-					if (null == (event = eventQueue.poll()))
+					if (null == (event = eventQueue.poll())) {
 						try { eventLock.wait(); }
 						catch ( Exception e ) { }
+					}
+					inProgress = true;
 				}
 
 				if (null != event) {
 					try { listener.scoreBoardChange(event); }
 					catch ( RuntimeException rE ) { /* Keep delivering events regardless of Exceptions in a listener's handler */ }
+				}
+				synchronized (eventLock) {
+					inProgress = false;
 				}
 			}
 		}
@@ -129,10 +156,17 @@ public class ScoreBoardEventProviderManager {
 			}
 		}
 
+		protected boolean isEmpty() {
+			synchronized (eventLock) {
+				return eventQueue.size() == 0 && !inProgress;
+			}
+		}
+
 		protected Object eventLock = new Object();
 		protected Queue<ScoreBoardEvent> eventQueue = new LinkedList<ScoreBoardEvent>();
 
 		protected ScoreBoardListener listener;
 		protected int providerCount = 0;
+		protected boolean inProgress = false;
 	}
 }

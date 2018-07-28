@@ -372,7 +372,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public void resetTimeouts(boolean gameStart) {
 		setInTimeout(false);
 		setInOfficialReview(false);
-		setRetainedOfficialReview(false);
 		if (gameStart || timeoutsPerPeriod) {
 			setTimeouts(maximumTimeouts);
 		}
@@ -493,7 +492,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (skaterLock) {
 			requestBatchStart();
 
-			Boolean last = new Boolean(starPass);
+			Boolean last = new Boolean(this.starPass);
 			this.starPass = starPass;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(starPass), last));
 
@@ -514,17 +513,17 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	protected String id;
 	protected String name;
-	protected String logo;
-	protected int score;
-	protected int lastscore;
-	protected int timeouts;
-	protected int maximumTimeouts;
-	protected boolean timeoutsPerPeriod;
-	protected int officialReviews;
-	protected int maximumOfficialReviews;
-	protected boolean officialReviewsPerPeriod;
-	protected String leadJammer = Team.LEAD_NO_LEAD;
-	protected boolean starPass = false;
+	protected String logo = DEFAULT_LOGO;
+	protected int score = DEFAULT_SCORE;
+	protected int lastscore = DEFAULT_SCORE;
+	protected int timeouts = DEFAULT_TIMEOUTS;
+	protected int maximumTimeouts = DEFAULT_TIMEOUTS;
+	protected boolean timeoutsPerPeriod = DEFAULT_TIMEOUTS_PER_PERIOD;
+	protected int officialReviews = DEFAULT_OFFICIAL_REVIEWS;
+	protected int maximumOfficialReviews = DEFAULT_OFFICIAL_REVIEWS;
+	protected boolean officialReviewsPerPeriod = DEFAULT_REVIEWS_PER_PERIOD;
+	protected String leadJammer = DEFAULT_LEADJAMMER;
+	protected boolean starPass = DEFAULT_STARPASS;
 	protected boolean in_timeout = false;
 	protected boolean in_official_review = false;
 	protected boolean retained_official_review = false;
@@ -554,7 +553,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public static final String DEFAULT_LOGO = "";
 	public static final int DEFAULT_SCORE = 0;
 	public static final int DEFAULT_TIMEOUTS = 3;
+	public static final boolean DEFAULT_TIMEOUTS_PER_PERIOD = false;
 	public static final int DEFAULT_OFFICIAL_REVIEWS = 1;
+	public static final boolean DEFAULT_REVIEWS_PER_PERIOD = true;
 	public static final String DEFAULT_LEADJAMMER = Team.LEAD_NO_LEAD;
 	public static final boolean DEFAULT_STARPASS = false;
 

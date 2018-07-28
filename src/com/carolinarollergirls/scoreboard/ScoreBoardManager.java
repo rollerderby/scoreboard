@@ -235,7 +235,10 @@ public class ScoreBoardManager {
 	public static void setLogger(Logger l) { logger = l; }
 	public static File getDefaultPath() { return defaultPath; }
 	public static void setDefaultPath(File f) { defaultPath = f; }
-	public static void setPropertyOverride(String key, String value) { properties_overrides.put(key, value); }
+	public static void setPropertyOverride(String key, String value) { 
+		properties_overrides.put(key, value);
+		properties.put(key, value);
+	}
 
 	private static Properties properties = new Properties();
 	private static Map<String,String> properties_overrides = new HashMap<String,String>();
