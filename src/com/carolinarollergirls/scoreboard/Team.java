@@ -34,6 +34,7 @@ public interface Team extends ScoreBoardEventProvider
 	public int getTimeouts();
 	public int getOfficialReviews();
 
+	public boolean inJam();
 	public boolean inTimeout();
 	public boolean inOfficialReview();
 	public boolean retainedOfficialReview();
