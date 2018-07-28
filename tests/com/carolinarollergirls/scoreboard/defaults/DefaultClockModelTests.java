@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.snapshots.ClockSnapshot;
 
 public class DefaultClockModelTests {
 
@@ -125,6 +126,34 @@ public class DefaultClockModelTests {
 		assertTrue(clock.isCountDirectionDown());
 		assertEquals(clock.getMinimumNumber(), clock.getNumber());
 		assertTrue(clock.isTimeAtStart());
+	}
+	
+	@Test
+	public void testRestoreSnapshot() {
+		clock.setMaximumNumber(5);
+		clock.setNumber(4);
+		clock.setMaximumTime(1200000);
+		clock.setTime(5000);
+		clock.start();
+		ClockSnapshot snapshot = new ClockSnapshot(clock);
+		
+		clock.reset();
+		assertFalse(clock.isRunning());
+		assertEquals(0, clock.getNumber());
+		assertEquals(0, clock.getTime());
+		
+		//of IDs don't match no restore should be done
+		clock.id = "OTHER";
+		clock.restoreSnapshot(snapshot);
+		assertFalse(clock.isRunning());
+		assertEquals(0, clock.getNumber());
+		assertEquals(0, clock.getTime());
+		
+		clock.id = "TEST";
+		clock.restoreSnapshot(snapshot);
+		assertTrue(clock.isRunning());
+		assertEquals(4, clock.getNumber());
+		assertEquals(5000, clock.getTime());		
 	}
 	
 	@Test

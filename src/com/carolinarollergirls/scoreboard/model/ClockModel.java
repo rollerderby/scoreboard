@@ -9,6 +9,7 @@ package com.carolinarollergirls.scoreboard.model;
  */
 
 import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.snapshots.ClockSnapshot;
 
 public interface ClockModel extends Clock
 {
@@ -17,12 +18,11 @@ public interface ClockModel extends Clock
 	public Clock getClock();
 
 	public void reset();
+	
+	public void restoreSnapshot(ClockSnapshot s);
 
 	public void start();
 	public void stop();
-
-	public void unstart();
-	public void unstop();
 
 	public void setName(String name);
 
