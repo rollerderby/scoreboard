@@ -210,7 +210,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			return ms;
 	}
 	protected boolean isDisplayChange(long current, long last) {
-		//on count down clocks are rounded down for display, on count up they are rounded down.
+		//the frontend rounds values that are not full seconds to the earlier second
+		//i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count down clock.
 		if (isCountDirectionDown()) {
 			return ((current-1)/1000 != (last-1)/1000);
 		} else {

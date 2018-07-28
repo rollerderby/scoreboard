@@ -26,9 +26,14 @@ public class DefaultScoreboardModelTests {
 	
 	private DefaultScoreBoardModel sbm;
 	private ScoreBoardEventProviderManager sbepm;
+	private ClockModel pc;
+	private ClockModel jc;
+	private ClockModel lc;
+	private ClockModel tc;
+	private ClockModel ic;
 	private Queue<ScoreBoardEvent> collectedEvents;
 	public ScoreBoardListener listener = new ScoreBoardListener() {
-		
+	
 		@Override
 		public void scoreBoardChange(ScoreBoardEvent event) {
 			collectedEvents.add(event);
@@ -41,6 +46,11 @@ public class DefaultScoreboardModelTests {
 		ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
 		sbepm = ScoreBoardEventProviderManager.getSingleton();
 		sbm = new DefaultScoreBoardModel();
+		pc = sbm.getClockModel(Clock.ID_PERIOD);      
+		jc = sbm.getClockModel(Clock.ID_JAM);         
+		lc = sbm.getClockModel(Clock.ID_LINEUP);      
+		tc = sbm.getClockModel(Clock.ID_TIMEOUT);     
+		ic = sbm.getClockModel(Clock.ID_INTERMISSION);
 		collectedEvents = new LinkedList<ScoreBoardEvent>();
 	}
 	
@@ -81,7 +91,7 @@ public class DefaultScoreboardModelTests {
 	@Test
 	public void testSetInOvertime() {
 		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		((DefaultSettingsModel) sbm.getSettings()).set("Clock." + Clock.ID_LINEUP + ".Time", "30000");
+		(sbm.getSettingsModel()).set("Clock." + Clock.ID_LINEUP + ".Time", "30000");
 		lc.setMaximumTime(999999999);
 
 		assertFalse(lc.isCountDirectionDown());
@@ -191,12 +201,7 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartOvertime_default() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-		((DefaultSettingsModel) sbm.getSettings()).set("Clock." + Clock.ID_LINEUP + ".OvertimeTime", "60000");
+		(sbm.getSettingsModel()).set("Clock." + Clock.ID_LINEUP + ".OvertimeTime", "60000");
 
 		assertFalse(pc.isRunning());
 		pc.setTime(0);
@@ -224,12 +229,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartOvertime_fromTimeout() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-		
 		assertFalse(pc.isRunning());
 		pc.setTime(0);
 		assertTrue(pc.isTimeAtEnd());
@@ -256,8 +255,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartOvertime_notLastPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		
 		assertNotEquals(pc.getNumber(), pc.getMaximumNumber());
 		
 		sbm.startOvertime();
@@ -267,8 +264,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartOvertime_periodRunning() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		
 		pc.start();
 		
 		sbm.startOvertime();
@@ -278,8 +273,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartOvertime_jamRunning() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		
 		pc.start();
 		
 		sbm.startOvertime();
@@ -289,12 +282,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartJam_duringPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		pc.start();
 		assertEquals(1, pc.getNumber());
 		assertFalse(jc.isRunning());
@@ -319,12 +306,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartJam_fromTimeout() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertFalse(jc.isRunning());
@@ -359,12 +340,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartJam_fromLineupAfterTimeout() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertFalse(jc.isRunning());
@@ -389,12 +364,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartJam_startOfPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertTrue(pc.isTimeAtStart());
 		assertEquals(1, pc.getNumber());
@@ -419,12 +388,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartJam_lateInIntermission() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		pc.setTime(pc.getMinimumTime());
 		assertTrue(pc.isTimeAtEnd());
@@ -457,12 +420,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartJam_earlyInIntermission() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		pc.setTime(pc.getMinimumTime());
 		assertTrue(pc.isTimeAtEnd());
@@ -495,8 +452,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStartJam_jamRunning() {
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-
 		jc.setTime(74000);
 		jc.setNumber(9);
 		jc.start();
@@ -511,12 +466,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStopJam_duringPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		pc.start();
 		jc.start();
 		assertFalse(lc.isRunning());
@@ -541,12 +490,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStopJam_endOfPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		pc.setTime(0);
 		assertTrue(pc.isTimeAtEnd());
@@ -579,12 +522,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStopJam_endTimeoutDuringPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertFalse(pc.isTimeAtEnd());
 		assertFalse(jc.isRunning());
@@ -612,12 +549,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStopJam_endTimeoutAfterPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		pc.setTime(0);
 		assertTrue(pc.isTimeAtEnd());
@@ -641,12 +572,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStopJam_lineupEarlyInIntermission() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		pc.setNumber(1);
 		assertFalse(jc.isRunning());
@@ -672,12 +597,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testStopJam_lineupLateInIntermission() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		pc.setNumber(1);
 		assertTrue(pc.isCountDirectionDown());
@@ -707,12 +626,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testTimeout_fromLineup() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		pc.start();
 		assertFalse(jc.isRunning());
 		lc.start();
@@ -738,12 +651,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testTimeout_fromJam() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		pc.start();
 		jc.start();
 		assertFalse(lc.isRunning());
@@ -764,12 +671,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testTimeout_fromIntermission() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -790,12 +691,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testTimeout_AfterGame() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -816,12 +711,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testTimeout_fromTimeout() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -852,12 +741,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testTimeoutTeamModel() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		sbm.setTimeoutOwner("");
 		advance(0);
 		
@@ -879,12 +762,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testTimeoutTeamModelBoolean() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		sbm.setTimeoutOwner("");
 		advance(0);
 		
@@ -907,12 +784,6 @@ public class DefaultScoreboardModelTests {
 	
 	@Test
 	public void testPeriodClockEnd_duringLineup() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(2000);
@@ -939,12 +810,6 @@ public class DefaultScoreboardModelTests {
 	
 	@Test
 	public void testPeriodClockEnd_duringJam() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(2000);
@@ -970,12 +835,6 @@ public class DefaultScoreboardModelTests {
 	
 	@Test
 	public void testJamClockEnd() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		pc.start();
 		jc.start();
 		assertTrue(jc.isCountDirectionDown());
@@ -997,12 +856,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testIntermissionClockEnd_notLastPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(0);
@@ -1035,12 +888,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testIntermissionClockEnd_lastPeriod() {
-		ClockModel pc = sbm.getClockModel(Clock.ID_PERIOD);
-		ClockModel jc = sbm.getClockModel(Clock.ID_JAM);
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
-		ClockModel tc = sbm.getClockModel(Clock.ID_TIMEOUT);
-		ClockModel ic = sbm.getClockModel(Clock.ID_INTERMISSION);
-
 		assertFalse(pc.isRunning());
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(0);
