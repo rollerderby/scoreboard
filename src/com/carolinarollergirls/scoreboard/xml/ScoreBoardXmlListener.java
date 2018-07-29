@@ -231,7 +231,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 				editor.setElement(e, "Position", null, ss.getPosition());
 				editor.setElement(e, "PenaltyBox", null, String.valueOf(ss.getPenaltyBox()));
 			}
-    } else if (p.getProviderName().equals("Clock")) {
+		} else if (p.getProviderName().equals("Clock")) {
 			Element e = editor.setElement(getClockElement((Clock)p), prop, null, v);
 			if (prop.equals("Time")) {
 				try {

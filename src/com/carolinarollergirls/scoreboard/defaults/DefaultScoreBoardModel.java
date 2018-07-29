@@ -34,13 +34,10 @@ import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
-		setupScoreBoard(null);
-	}
-	protected DefaultScoreBoardModel(XmlScoreBoard xsb) {
-		setupScoreBoard(xsb);
+		setupScoreBoard();
 	}
 
-	protected void setupScoreBoard(XmlScoreBoard xsb){
+	protected void setupScoreBoard(){
 		settings = new DefaultSettingsModel(this, this);
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".PreGame");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Intermission");
@@ -80,10 +77,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		stats.addScoreBoardListener(this);
 		reset();
 		addInPeriodListeners();
-		if (xsb == null) {
-			xsb = new XmlScoreBoard(this);
-		}
-		xmlScoreBoard = xsb;
+		xmlScoreBoard = new XmlScoreBoard(this);
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }

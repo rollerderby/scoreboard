@@ -1,8 +1,6 @@
 package com.carolinarollergirls.scoreboard.defaults;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -13,10 +11,11 @@ import java.util.Arrays;
 
 import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.defaults.DefaultClockModel;
 import com.carolinarollergirls.scoreboard.defaults.ScoreBoardEventProviderManager;
+import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
@@ -26,10 +25,9 @@ import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 public class DefaultStatsModelTests {
 
   private ScoreBoardModel sbm;
-  private XmlScoreBoard xsb;
   private StatsModel sm;
   private ScoreBoardEventProviderManager sbepm;
-  private TeamModel team1, team2;
+  private TeamModel team1;
 
   private final String ID_PREFIX = "00000000-0000-0000-0000-000000000";
 
@@ -37,8 +35,8 @@ public class DefaultStatsModelTests {
   public void setUp() throws Exception {
     DefaultClockModel.updateClockTimerTask.setPaused(true);
 
-    xsb = Mockito.mock(XmlScoreBoard.class);
-    sbm = new DefaultScoreBoardModel(xsb);
+    ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
+    sbm = new DefaultScoreBoardModel();
     sm = sbm.getStatsModel();
     sbepm = ScoreBoardEventProviderManager.getSingleton();
 
@@ -52,7 +50,6 @@ public class DefaultStatsModelTests {
       }
     }
     team1 = sbm.getTeamModel(Team.ID_1);
-    team2 = sbm.getTeamModel(Team.ID_2);
   }
 
   @After

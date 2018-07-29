@@ -81,13 +81,12 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     public void scoreBoardChange(ScoreBoardEvent event) {
       requestBatchStart();
       Clock pc = scoreBoard.getClock(Clock.ID_PERIOD);
-      Clock jc = scoreBoard.getClock(Clock.ID_JAM);
       JamStatsModel js = getCurentJam();
       js.setPeriodClockElapsedStart(pc.getTimeElapsed());
       js.setPeriodClockWalltimeStart(System.currentTimeMillis());
 
       // Update all skater position, as they may have changed since
-      // the previous jam ended. Also initilise other settings.
+      // the previous jam ended. Also initalise other settings.
       for(String tid : Arrays.asList(Team.ID_1, Team.ID_2)) {
         TeamStatsModel ts = js.getTeamStatsModel(tid);
         Team t = scoreBoard.getTeam(tid);

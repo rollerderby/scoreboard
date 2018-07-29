@@ -123,13 +123,13 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 					Stats.JamStats js = (Stats.JamStats)p;
 					processJamStats("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", js);
 				} else if (p instanceof Stats.TeamStats) {
-          Stats.TeamStats ts = (Stats.TeamStats)p;
-          processTeamStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ")", ts);
+					Stats.TeamStats ts = (Stats.TeamStats)p;
+					processTeamStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ")", ts);
 				} else if (p instanceof Stats.SkaterStats) {
-          Stats.SkaterStats ts = (Stats.SkaterStats)p;
-          processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Skater(" + ts.getSkaterId() + ")", ts);
+					Stats.SkaterStats ts = (Stats.SkaterStats)p;
+					processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Skater(" + ts.getSkaterId() + ")", ts);
 				} else
-					ScoreBoardManager.printMessage(provider + " update of unknown kind.  prop: " + prop + ", v: " + v);
+					ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + prop + ", v: " + v);
 
 			} catch (Exception e) {
 				ScoreBoardManager.printMessage("Error!  " + e.getMessage());
