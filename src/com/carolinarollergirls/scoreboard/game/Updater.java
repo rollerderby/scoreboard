@@ -8,11 +8,9 @@ public abstract class Updater {
 	public Updater(Game g) { game = g; }
 
 	protected void update(String key, Object value) {
-		game.update(getUpdaterBase() + "." + key, value);
 	}
 
 	protected void updateState() {
-		game.updateState();
 	}
 
 	public Game getGame() { return game; }

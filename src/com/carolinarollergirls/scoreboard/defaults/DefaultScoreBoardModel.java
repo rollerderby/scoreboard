@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -25,6 +26,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
@@ -32,6 +34,10 @@ import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
+		setupScoreBoard();
+	}
+
+	protected void setupScoreBoard(){
 		settings = new DefaultSettingsModel(this, this);
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".PreGame");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Intermission");
@@ -67,6 +73,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		Ruleset.registerRule(settings, "ScoreBoard.Video");
 		Ruleset.registerRule(settings, PenaltyCodesManager.PenaltiesFileSetting);
 
+		stats = new DefaultStatsModel(this);
+		stats.addScoreBoardListener(this);
 		reset();
 		addInPeriodListeners();
 		xmlScoreBoard = new XmlScoreBoard(this);
@@ -100,6 +108,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setInOvertime(false);
 
 		settings.reset();
+		stats.reset();
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
@@ -408,12 +417,15 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 
-  public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code){
-    getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
-  }
+	public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code){
+		getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
+	}
 
 	public Settings getSettings() { return (Settings)settings; }
 	public SettingsModel getSettingsModel() { return settings; }
+
+	public Stats getStats() { return (Stats)stats; }
+	public StatsModel getStatsModel() { return stats; }
 
 	public List<ClockModel> getClockModels() { return new ArrayList<ClockModel>(clocks.values()); }
 	public List<TeamModel> getTeamModels() { return new ArrayList<TeamModel>(teams.values()); }
@@ -509,6 +521,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected Ruleset ruleset = null;
 	protected Object rulesetLock = new Object();
 	protected DefaultSettingsModel settings = null;
+	protected DefaultStatsModel stats = null;
 
 	protected boolean periodClockWasRunning = false;
 	protected boolean jamClockWasRunning = false;

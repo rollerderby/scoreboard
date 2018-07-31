@@ -20,12 +20,14 @@ import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
+import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 public class ScoreBoardXmlConverter
@@ -66,6 +68,8 @@ public class ScoreBoardXmlConverter
 		Iterator<Team> teams = scoreBoard.getTeams().iterator();
 		while (teams.hasNext())
 			toElement(sb, teams.next());
+
+		toElement(sb, scoreBoard.getStats());
 
 		return d;
 	}
@@ -200,6 +204,56 @@ public class ScoreBoardXmlConverter
     return e;
   }
 
+	public Element toElement(Element sb, Stats s) {
+		Element e = editor.setElement(sb, "Stats");
+		for (Stats.PeriodStats p: s.getPeriodStats()) {
+			toElement(e, p);
+		}
+		return e;
+	}
+
+	public Element toElement(Element s, Stats.PeriodStats p) {
+		Element e = editor.setElement(s, "Period", String.valueOf(p.getPeriodNumber()));
+		for (Stats.JamStats j: p.getJamStats()) {
+			toElement(e, j);
+		}
+		return e;
+	}
+
+	public Element toElement(Element p, Stats.JamStats j) {
+		Element e = editor.setElement(p, "Jam", String.valueOf(j.getJamNumber()));
+		editor.setElement(e, "JamClockElapsedEnd", null, String.valueOf(j.getJamClockElapsedEnd()));
+		editor.setElement(e, "PeriodClockElapsedStart", null, String.valueOf(j.getPeriodClockElapsedStart()));
+		editor.setElement(e, "PeriodClockElapsedEnd", null, String.valueOf(j.getPeriodClockElapsedEnd()));
+		editor.setElement(e, "PeriodClockWalltimeStart", null, String.valueOf(j.getPeriodClockWalltimeStart()));
+		editor.setElement(e, "PeriodClockWalltimeEnd", null, String.valueOf(j.getPeriodClockWalltimeEnd()));
+		for (Stats.TeamStats t: j.getTeamStats()) {
+			toElement(e, t);
+		}
+		return e;
+	}
+
+	public Element toElement(Element j, Stats.TeamStats t) {
+		Element e = editor.setElement(j, "Team", t.getTeamId());
+		editor.setElement(e, "JamScore", null, String.valueOf(t.getJamScore()));
+		editor.setElement(e, "TotalScore", null, String.valueOf(t.getTotalScore()));
+		editor.setElement(e, "LeadJammer", null, t.getLeadJammer());
+		editor.setElement(e, "StarPass", null, String.valueOf(t.getStarPass()));
+		editor.setElement(e, "Timeouts", null, String.valueOf(t.getTimeouts()));
+		editor.setElement(e, "OfficialReviews", null, String.valueOf(t.getOfficialReviews()));
+		for (Stats.SkaterStats s: t.getSkaterStats()) {
+			toElement(e, s);
+		}
+		return e;
+	}
+
+	public Element toElement(Element t, Stats.SkaterStats s) {
+		Element e = editor.setElement(t, "Skater", s.getSkaterId());
+		editor.setElement(e, "Position", null, s.getPosition());
+		editor.setElement(e, "PenaltyBox", null, String.valueOf(s.getPenaltyBox()));
+		return e;
+	}
+
 	/*****************************/
 	/* XML to ScoreBoard methods */
 
@@ -227,6 +281,8 @@ public class ScoreBoardXmlConverter
 					processTeam(scoreBoardModel, element);
 				else if (name.equals("Settings"))
 					processSettings(scoreBoardModel, element);
+				else if (name.equals("Stats"))
+					processStats(scoreBoardModel.getStatsModel(), element);
 				else if (null == value)
 					continue;
 				else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER))
@@ -573,6 +629,123 @@ public class ScoreBoardXmlConverter
 	    }
 	    skaterModel.AddPenaltyModel(id, foulout_exp, period, jam, code);
 	  }
+
+	public void processStats(StatsModel statsModel, Element stats) {
+		Iterator<?> children = stats.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String id = element.getAttributeValue("Id");
+				String name = element.getName();
+
+				if (name.equals("Period")) {
+					int p = Integer.parseInt(id);
+					statsModel.ensureAtLeastNPeriods(p);
+					processPeriodStats(statsModel.getPeriodStatsModel(p), element);
+				}
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processPeriodStats(StatsModel.PeriodStatsModel periodStatsModel, Element periodStats) {
+		Iterator<?> children = periodStats.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String id = element.getAttributeValue("Id");
+				String name = element.getName();
+
+				if (name.equals("Jam")) {
+					int j = Integer.parseInt(id);
+					periodStatsModel.ensureAtLeastNJams(j);
+					processJamStats(periodStatsModel.getJamStatsModel(j), element);
+				}
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processJamStats(StatsModel.JamStatsModel jamStatsModel, Element jamStats) {
+		Iterator<?> children = jamStats.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String id = element.getAttributeValue("Id");
+				String name = element.getName();
+				String value = editor.getText(element);
+
+				if (name.equals("Team")) {
+					processTeamStats(jamStatsModel.getTeamStatsModel(id), element);
+				} else if (null == value) {
+					continue;
+				} else if (name.equals("JamClockElapsedEnd")) {
+					jamStatsModel.setJamClockElapsedEnd(Long.parseLong(value));
+				} else if (name.equals("PeriodClockElapsedStart")) {
+					jamStatsModel.setPeriodClockElapsedStart(Long.parseLong(value));
+				} else if (name.equals("PeriodClockElapsedEnd")) {
+					jamStatsModel.setPeriodClockElapsedEnd(Long.parseLong(value));
+				} else if (name.equals("PeriodClockWalltimeStart")) {
+					jamStatsModel.setPeriodClockWalltimeStart(Long.parseLong(value));
+				} else if (name.equals("PeriodClockWalltimeEnd")) {
+					jamStatsModel.setPeriodClockWalltimeEnd(Long.parseLong(value));
+				}
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processTeamStats(StatsModel.TeamStatsModel teamStatsModel, Element teamStats) {
+		Iterator<?> children = teamStats.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String id = element.getAttributeValue("Id");
+				String name = element.getName();
+				String value = editor.getText(element);
+
+				if (name.equals("Skater")) {
+					teamStatsModel.addSkaterStatsModel(id);
+					processSkaterStats(teamStatsModel.getSkaterStatsModel(id), element);
+				} else if (null == value) {
+					continue;
+				} else if (name.equals("JamScore")) {
+					teamStatsModel.setJamScore(Integer.parseInt(value));
+				} else if (name.equals("TotalScore")) {
+					teamStatsModel.setTotalScore(Integer.parseInt(value));
+				} else if (name.equals("LeadJammer")) {
+					teamStatsModel.setLeadJammer(value);
+				} else if (name.equals("StarPass")) {
+					teamStatsModel.setStarPass(Boolean.parseBoolean(value));
+				} else if (name.equals("Timeouts")) {
+					teamStatsModel.setTimeouts(Integer.parseInt(value));
+				} else if (name.equals("OfficialReviews")) {
+					teamStatsModel.setOfficialReviews(Integer.parseInt(value));
+				}
+			} catch ( Exception e ) {
+			}
+		}
+	}
+
+	public void processSkaterStats(StatsModel.SkaterStatsModel skaterStatsModel, Element skaterStats) {
+		Iterator<?> children = skaterStats.getChildren().iterator();
+		while (children.hasNext()) {
+			Element element = (Element)children.next();
+			try {
+				String name = element.getName();
+				String value = editor.getText(element);
+
+				if (null == value) {
+					continue;
+				} else if (name.equals("PenaltyBox")) {
+					skaterStatsModel.setPenaltyBox(Boolean.parseBoolean(value));
+				} else if (name.equals("Position")) {
+					skaterStatsModel.setPosition(value);
+				}
+			} catch ( Exception e ) {
+			}
+		}
+	}
 
 	public static ScoreBoardXmlConverter getInstance() { return scoreBoardXmlConverter; }
 

@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -109,8 +110,26 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 				} else if (p instanceof Team.Color) {
 					Team.Color c = (Team.Color)p;
 					update("ScoreBoard.Team(" + c.getTeam().getId() + ")", "Color(" + c.getId() + ")", v);
+				} else if (p instanceof Stats && prop.equals(Stats.EVENT_REMOVE_PERIOD)) {
+					Stats.PeriodStats ps = (Stats.PeriodStats)v;
+					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ps.getPeriodNumber() + ")", null));
+				} else if (p instanceof Stats.PeriodStats && prop.equals(Stats.PeriodStats.EVENT_REMOVE_JAM)) {
+					Stats.JamStats js = (Stats.JamStats)v;
+					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", null));
+				} else if (p instanceof Stats.TeamStats && prop.equals(Stats.TeamStats.EVENT_REMOVE_SKATER)) {
+					Stats.SkaterStats ss = (Stats.SkaterStats)v;
+					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ss.getPeriodNumber() + ").Jam(" + ss.getJamNumber() + ").Team(" + ss.getTeamId() + ").Position(" + ss.getPosition() + ")", null));
+				} else if (p instanceof Stats.JamStats) {
+					Stats.JamStats js = (Stats.JamStats)p;
+					processJamStats("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", js);
+				} else if (p instanceof Stats.TeamStats) {
+					Stats.TeamStats ts = (Stats.TeamStats)p;
+					processTeamStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ")", ts);
+				} else if (p instanceof Stats.SkaterStats) {
+					Stats.SkaterStats ts = (Stats.SkaterStats)p;
+					processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Skater(" + ts.getSkaterId() + ")", ts);
 				} else
-					ScoreBoardManager.printMessage(provider + " update of unknown kind.  prop: " + prop + ", v: " + v);
+					ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + prop + ", v: " + v);
 
 			} catch (Exception e) {
 				ScoreBoardManager.printMessage("Error!  " + e.getMessage());
@@ -273,6 +292,29 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 
 		updates.add(new WSUpdate(path + "." + Position.EVENT_SKATER, p.getSkater() == null ? null : p.getSkater().getId()));
 		updates.add(new WSUpdate(path + "." + Position.EVENT_PENALTY_BOX, p.getPenaltyBox()));
+	}
+
+	private void processJamStats(String path, Stats.JamStats js) {
+		updates.add(new WSUpdate(path + ".JamClockElapsedEnd", js.getJamClockElapsedEnd()));
+		updates.add(new WSUpdate(path + ".PeriodClockElapsedStart", js.getPeriodClockElapsedStart()));
+		updates.add(new WSUpdate(path + ".PeriodClockElapsedEnd", js.getPeriodClockElapsedEnd()));
+		updates.add(new WSUpdate(path + ".PeriodClockWalltimeStart", js.getPeriodClockWalltimeStart()));
+		updates.add(new WSUpdate(path + ".PeriodClockWalltimeEnd", js.getPeriodClockWalltimeEnd()));
+	}
+
+	private void processTeamStats(String path, Stats.TeamStats ts) {
+		updates.add(new WSUpdate(path + ".TotalScore", ts.getTotalScore()));
+		updates.add(new WSUpdate(path + ".JamScore", ts.getJamScore()));
+		updates.add(new WSUpdate(path + ".LeadJammer", ts.getLeadJammer()));
+		updates.add(new WSUpdate(path + ".StarPass", ts.getStarPass()));
+		updates.add(new WSUpdate(path + ".Timeouts", ts.getTimeouts()));
+		updates.add(new WSUpdate(path + ".OfficialReviews", ts.getOfficialReviews()));
+	}
+
+	private void processSkaterStats(String path, Stats.SkaterStats ss) {
+		updates.add(new WSUpdate(path + ".Id", ss.getSkaterId()));
+		updates.add(new WSUpdate(path + ".Position", ss.getPosition()));
+		updates.add(new WSUpdate(path + ".PenaltyBox", ss.getPenaltyBox()));
 	}
 	
 	private void processPenaltyCodes(Settings s) {
