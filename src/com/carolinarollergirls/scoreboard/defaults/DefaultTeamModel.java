@@ -29,7 +29,6 @@ import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.snapshots.TeamSnapshot;
 
 public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
 {
@@ -113,18 +112,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public void startJam() {
-		if (inJam()) { return; }
 		synchronized (scoreLock) {
-			setInJam(true);
 			setLastScore(getScore());
 		}
 	}
 
 	public void stopJam() {
-		if (!inJam()) { return; }
 		requestBatchStart();
 		
-		setInJam(false);
 		benchSkaters();
 		_setLeadJammer(Team.LEAD_NO_LEAD);
 		_setStarPass(false);
@@ -136,23 +131,20 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		for (SkaterModel sM : skaters.values())
 			sM.bench();
 	}
-	public void unBenchSkaters() {
-		for (SkaterModel sM : skaters.values())
-			sM.unBench();
-	}
 	
 	public void restoreSnapshot(TeamSnapshot s) {
 		if (s.getId() != getId()) {	return; }
-		if (!inJam() && s.inJam()) { unBenchSkaters(); }
 		//don't reset score
 		setLastScore(s.getLastScore());
 		setTimeouts(s.getTimeouts());
 		setOfficialReviews(s.getOfficialReviews());
 		setLeadJammer(s.getLeadJammer());
 		setStarPass(s.getStarPass());
-		setInJam(s.inJam());
 		setInTimeout(s.inTimeout());
 		setInOfficialReview(s.inOfficialReview());
+		for (SkaterModel skater : getSkaterModels()) {
+			skater.restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
+		}
 	}
 
 	public List<AlternateName> getAlternateNames() {
@@ -290,13 +282,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (lastscoreLock) {
 			setLastScore(getLastScore() + c);
 		}
-	}
-
-	public boolean inJam() {
-		return in_jam;
-	}
-	public void setInJam(boolean inJam) {
-		in_jam = inJam;
 	}
 
 	public boolean inTimeout() {

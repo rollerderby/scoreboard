@@ -484,9 +484,7 @@ public class DefaultScoreboardModelTests {
 		lc.setTime(50000);
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
-		sbm.getTeamModel("1").setInJam(true);
 		sbm.getTeamModel("1").setStarPass(true);
-		sbm.getTeamModel("2").setInJam(true);
 		sbm.getTeamModel("2").setLeadJammer(Team.LEAD_NO_LEAD);
 		
 		sbm.stopJam();

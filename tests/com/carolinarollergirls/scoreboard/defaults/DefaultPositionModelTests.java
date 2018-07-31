@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;

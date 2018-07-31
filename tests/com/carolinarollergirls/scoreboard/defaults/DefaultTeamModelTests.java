@@ -19,7 +19,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.snapshots.TeamSnapshot;
+import com.carolinarollergirls.scoreboard.model.TeamModel.TeamSnapshot;
 
 public class DefaultTeamModelTests {
 
@@ -92,7 +92,6 @@ public class DefaultTeamModelTests {
 
 	@Test
 	public void testStopJam() {
-		team.setInJam(true);
 		team.setLeadJammer(Team.LEAD_LOST_LEAD);
 		team.setStarPass(true);
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_LEAD_JAMMER, listener));
@@ -104,8 +103,14 @@ public class DefaultTeamModelTests {
 		assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
 		assertEquals(false, team.isStarPass());
 		assertEquals(2, collectedEvents.size());
-		assertEquals(Team.EVENT_LEAD_JAMMER, collectedEvents.poll().getProperty());
-		assertEquals(Team.EVENT_STAR_PASS, collectedEvents.poll().getProperty());
+		boolean leadJammerSeen = false;
+		boolean starPassSeen = false;
+		while (!collectedEvents.isEmpty()) {
+			String event = collectedEvents.poll().getProperty();
+			if (event == Team.EVENT_LEAD_JAMMER) { leadJammerSeen = true; }
+			if (event == Team.EVENT_STAR_PASS) { starPassSeen = true; }
+		}
+		assertTrue(leadJammerSeen && starPassSeen);
 	}
 
 	@Test
@@ -114,7 +119,6 @@ public class DefaultTeamModelTests {
 		assertFalse(team.isStarPass());
 		assertEquals(0, team.getScore());
 		assertEquals(0, team.getLastScore());
-		assertFalse(team.inJam());
 		assertFalse(team.inTimeout());
 		assertFalse(team.inOfficialReview());
 		assertEquals(3, team.getTimeouts());
@@ -125,7 +129,6 @@ public class DefaultTeamModelTests {
 		team.setStarPass(true);
 		team.setScore(5);
 		team.setLastScore(3);
-		team.setInJam(true);
 		team.setInTimeout(true);
 		team.setInOfficialReview(true);
 		team.setTimeouts(1);
@@ -140,7 +143,6 @@ public class DefaultTeamModelTests {
 		assertTrue(team.isStarPass());
 		assertEquals(5, team.getScore());
 		assertEquals(3, team.getLastScore());
-		assertTrue(team.inJam());
 		assertTrue(team.inTimeout());
 		assertTrue(team.inOfficialReview());
 		assertEquals(1, team.getTimeouts());
@@ -153,7 +155,6 @@ public class DefaultTeamModelTests {
 		assertFalse(team.isStarPass());
 		assertEquals(5, team.getScore()); //score is not reset
 		assertEquals(0, team.getLastScore());
-		assertFalse(team.inJam());
 		assertFalse(team.inTimeout());
 		assertFalse(team.inOfficialReview());
 		assertEquals(3, team.getTimeouts());
@@ -262,24 +263,6 @@ public class DefaultTeamModelTests {
 		
 		team.changeLastScore(-5);
 		assertEquals(3, team.getLastScore());
-	}
-
-	@Test
-	public void testSetInJam() {
-		assertFalse(team.inJam());
-		
-		team.setInJam(true);
-		advance(0);
-		assertTrue(team.inJam());
-
-		//check idempotency
-		team.setInJam(true);
-		advance(0);
-		assertTrue(team.inJam());
-		
-		team.setInJam(false);
-		advance(0);
-		assertFalse(team.inJam());
 	}
 
 	@Test

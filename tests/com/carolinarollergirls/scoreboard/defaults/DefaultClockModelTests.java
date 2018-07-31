@@ -20,8 +20,8 @@ import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.model.ClockModel.ClockSnapshot;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.snapshots.ClockSnapshot;
 
 public class DefaultClockModelTests {
 
