@@ -17,7 +17,7 @@ public interface SkaterModel extends Skater
 	public Skater getSkater();
 
 	public void bench();
-	public void unBench();
+	public void restoreSnapshot(SkaterSnapshot s);
 
 	public void setName(String id);
 	public void setNumber(String number);
@@ -25,9 +25,26 @@ public interface SkaterModel extends Skater
 	public void setPenaltyBox(boolean box);
 	public void setFlags(String flags);
 
-  // A null code removes the penalty.  
-  public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code);
+	// A null code removes the penalty.  
+	public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code);
 
 	public static interface PenaltyModel extends Penalty {
+	}
+	
+	public class SkaterSnapshot	{
+		public SkaterSnapshot(SkaterModel skater) {
+			id = skater.getId();
+			position = skater.getPosition();
+			box = skater.isPenaltyBox();
+		}
+		
+		public String getId( ) { return id; }
+		public String getPosition() { return position; }
+		public boolean isPenaltyBox() { return box; }
+		
+		protected String id;
+		protected String position;
+		protected boolean box;
+		
 	}
 }

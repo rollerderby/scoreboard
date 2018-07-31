@@ -27,7 +27,6 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
-import com.carolinarollergirls.scoreboard.snapshots.ScoreBoardSnapshot;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
@@ -609,6 +608,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			}
 		}
 	};
+
 	public static final String DEFAULT_TIMEOUT_OWNER = "";
 
 	public static final String POLICY_KEY = DefaultScoreBoardModel.class.getName() + ".policy";
