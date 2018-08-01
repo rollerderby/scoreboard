@@ -850,11 +850,11 @@ public class DefaultScoreboardModelTests {
 		sbm.setOfficialReview(true);
 		sbm.setInOvertime(true);
 		sbm.setInPeriod(false);
-		advance(0);
+		advance(2000);
 		
 		sbm.clockUndo();
 		advance(0);
-		assertTrue(sbm.relapseTime > 0);
+		assertEquals(2000, sbm.relapseTime);
 		assertTrue(pc.isRunning());
 		assertEquals(sbm.relapseTime, pc.getTimeElapsed());
 		assertTrue(jc.isRunning());
