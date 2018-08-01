@@ -36,7 +36,9 @@ public class DefaultScoreboardModelTests {
 	
 		@Override
 		public void scoreBoardChange(ScoreBoardEvent event) {
-			collectedEvents.add(event);
+			synchronized(collectedEvents) {
+				collectedEvents.add(event);
+			}
 		}
 	};
 	
