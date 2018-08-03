@@ -26,9 +26,8 @@ import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.model.ClockModel.ClockSnapshot;
-import com.carolinarollergirls.scoreboard.model.TeamModel.TeamSnapshot;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
+import com.carolinarollergirls.scoreboard.snapshots.ScoreBoardSnapshot;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
@@ -316,10 +315,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	protected void createSnapshot(String type) {
-		snapshot = new ScoreBoardSnapshot(this, type);
+		snapshot = new ScoreBoardSnapshot(this, DefaultClockModel.updateClockTimerTask.getCurrentTime(), type);
 	}
-	protected void restoreSnapshot() {
-		relapseTime = DefaultClockModel.updateClockTimerTask.getCurrentTime() - snapshot.getSnapshotTime();
+	protected long restoreSnapshot() {
+		long relapseTime = DefaultClockModel.updateClockTimerTask.getCurrentTime() - snapshot.getSnapshotTime();
 		for (ClockModel clock : getClockModels()) {
 			clock.restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
 		}
@@ -331,11 +330,12 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setInOvertime(snapshot.inOvertime());
 		setInPeriod(snapshot.inPeriod());
 		snapshot = null;
+		return relapseTime;
 	}
-	protected void relapseTime() {
+	protected void relapseTime(long time) {
 		for (ClockModel clock : getClockModels()) {
 			if (clock.isRunning()) {
-				clock.elapseTime(relapseTime);
+				clock.elapseTime(time);
 			}
 		}
 	}
@@ -343,8 +343,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		if (snapshot == null) { return; }
 		synchronized (runLock) {
 			requestBatchStart();
-			restoreSnapshot();
-			relapseTime();
+			long time = restoreSnapshot();
+			relapseTime(time);
 			requestBatchEnd();
 			ScoreBoardManager.gameSnapshot();
 		}
@@ -472,7 +472,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	protected Object runLock = new Object();
 	protected ScoreBoardSnapshot snapshot = null;
-	protected long relapseTime = 0;
 
 	protected String timeoutOwner;
 	protected Object timeoutOwnerLock = new Object();
@@ -610,45 +609,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			}
 		}
 	};
-
-	public class ScoreBoardSnapshot {
-		public ScoreBoardSnapshot(ScoreBoardModel sbm, String type) {
-			snapshotTime = DefaultClockModel.updateClockTimerTask.getCurrentTime();
-			this.type = type; 
-			timeoutOwner = sbm.getTimeoutOwner();
-			isOfficialReview = sbm.isOfficialReview();
-			inOvertime = sbm.isInOvertime();
-			inPeriod = sbm.isInPeriod();
-			clockSnapshots = new HashMap<String, ClockSnapshot>();
-			for (ClockModel clock : sbm.getClockModels()) {
-				clockSnapshots.put(clock.getId(), new ClockSnapshot(clock));
-			}
-			teamSnapshots = new HashMap<String, TeamSnapshot>();
-			for (TeamModel team : sbm.getTeamModels()) {
-				teamSnapshots.put(team.getId(), new TeamSnapshot(team));
-			}
-		}
-
-		public String getType() { return type; }
-		public long getSnapshotTime() { return snapshotTime; }
-		public String getTimeoutOwner() { return timeoutOwner; }
-		public boolean isOfficialReview() { return isOfficialReview; }
-		public boolean inOvertime() { return inOvertime; }
-		public boolean inPeriod() { return inPeriod; }
-		public HashMap<String, ClockSnapshot> getClockSnapshots() { return clockSnapshots; }
-		public HashMap<String, TeamSnapshot> getTeamSnapshots() { return teamSnapshots; }
-		public ClockSnapshot getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
-		public TeamSnapshot getTeamSnapshot(String team) { return teamSnapshots.get(team); }
-		
-		protected String type;
-		protected long snapshotTime;
-		protected String timeoutOwner;
-		protected boolean isOfficialReview;
-		protected boolean inOvertime;
-		protected boolean inPeriod;
-		protected HashMap<String, ClockSnapshot> clockSnapshots;
-		protected HashMap<String, TeamSnapshot> teamSnapshots;
-	}
 
 	public static final String DEFAULT_TIMEOUT_OWNER = "";
 

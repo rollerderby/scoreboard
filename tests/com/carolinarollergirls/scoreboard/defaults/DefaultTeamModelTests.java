@@ -19,7 +19,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.model.TeamModel.TeamSnapshot;
+import com.carolinarollergirls.scoreboard.snapshots.TeamSnapshot;
 
 public class DefaultTeamModelTests {
 

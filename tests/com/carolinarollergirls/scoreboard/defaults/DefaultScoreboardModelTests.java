@@ -856,11 +856,10 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.clockUndo();
 		advance(0);
-		assertEquals(2000, sbm.relapseTime);
 		assertTrue(pc.isRunning());
-		assertEquals(sbm.relapseTime, pc.getTimeElapsed());
+		assertEquals(2000, pc.getTimeElapsed());
 		assertTrue(jc.isRunning());
-		assertEquals(sbm.relapseTime, jc.getTimeElapsed());
+		assertEquals(2000, jc.getTimeElapsed());
 		assertFalse(lc.isRunning());
 		assertTrue(lc.isTimeAtStart());
 		assertFalse(tc.isRunning());

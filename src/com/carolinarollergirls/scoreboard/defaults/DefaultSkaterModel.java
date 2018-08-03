@@ -22,6 +22,7 @@ import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.snapshots.SkaterSnapshot;
 
 public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implements SkaterModel
 {
