@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.model;
 
 import com.carolinarollergirls.scoreboard.PositionNotFoundException;
 import com.carolinarollergirls.scoreboard.Skater;
+import com.carolinarollergirls.scoreboard.snapshots.SkaterSnapshot;
 
 public interface SkaterModel extends Skater
 {
@@ -17,7 +18,7 @@ public interface SkaterModel extends Skater
 	public Skater getSkater();
 
 	public void bench();
-	public void unBench();
+	public void restoreSnapshot(SkaterSnapshot s);
 
 	public void setName(String id);
 	public void setNumber(String number);
@@ -25,8 +26,8 @@ public interface SkaterModel extends Skater
 	public void setPenaltyBox(boolean box);
 	public void setFlags(String flags);
 
-  // A null code removes the penalty.  
-  public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code);
+	// A null code removes the penalty.  
+	public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code);
 
 	public static interface PenaltyModel extends Penalty {
 	}

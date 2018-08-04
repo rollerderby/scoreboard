@@ -20,6 +20,7 @@ import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.snapshots.ClockSnapshot;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
@@ -65,10 +66,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public Clock getClock() { return this; }
 
 	public void reset() {
-		unstartTime = 0;
-		unstopTime = 0;
-		unstopLastTime = 0;
-
 		stop();
 
 		// Get default values from active ruleset
@@ -78,6 +75,17 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		setNumber(getMinimumNumber());
 
 		resetTime();
+	}
+	
+	public void restoreSnapshot(ClockSnapshot s) {
+		if (s.getId() != getId()) { return; }
+		setNumber(s.getNumber());
+		setTime(s.getTime());
+		if (s.isRunning()) {
+			start();
+		} else {
+			stop();
+		}
 	}
 
 	public String getName() { return name; }
@@ -288,7 +296,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 				return;
 
 			isRunning = true;
-			unstartTime = getTime();
 
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.TRUE, Boolean.FALSE));
 			updateClockTimerTask.addClock(this, quickAdd);
@@ -301,29 +308,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 			isRunning = false;
 			updateClockTimerTask.removeClock(this);
-			unstopLastTime = lastTime;
-			unstopTime = getTime();
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.FALSE, Boolean.TRUE));
-		}
-	}
-	public void unstart() {
-		synchronized (timeLock) {
-			if (!isRunning())
-				return;
-
-			stop();
-			setTime(unstartTime);
-		}
-	}
-	public void unstop() {
-		synchronized (timeLock) {
-			if (isRunning())
-				return;
-
-			setTime(unstopTime);
-			long change = updateClockTimerTask.getCurrentTime() - unstopLastTime;
-			changeTime(countDown?-change:change);
-			start(true);
 		}
 	}
 
@@ -357,10 +342,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	protected long lastTime;
 	protected boolean isRunning = false;
-
-	protected long unstartTime = 0;
-	protected long unstopTime = 0;
-	protected long unstopLastTime = 0;
 
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();
@@ -404,7 +385,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 							nowMs = (1000 - nowMs) % 1000;
 					}
 
-					long timeMs = c.unstartTime % 1000;
+					long timeMs = c.time % 1000;
 					if (c.countDown)
 						timeMs = (1000 - timeMs) % 1000;
 					long delay = timeMs - nowMs;
@@ -413,7 +394,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 					c.lastTime = currentTime;
 					if (c.countDown)
 						delay = -delay;
-					c.time = c.unstartTime - delay;
+					c.time = c.time - delay;
 				} else {
 					c.lastTime = currentTime;
 				}
