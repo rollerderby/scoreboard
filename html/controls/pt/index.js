@@ -71,7 +71,7 @@
 
 	function updateJam(k, v) {
 		jam = v;
-		updateCurrentJamPeriod();
+		updateCurrentJamPeriodStyle();
 	}
 	
 	function updateCurrentPeriodStyle() {
@@ -129,7 +129,7 @@
 				displayPenalty(t, id, i);
 			displayPenalty(t, id, 'FO_EXP');
 		} else if (field === 'Position') {
-			var numberCell = $('.Team' + t + ' .Skater[id=' + id + '] .Number');
+			var numberCell = $('.Team' + t + ' .Skater.Penalty[id=' + id + '] .Number');
 			if(v === null || v === 'Bench') {
 				numberCell.removeClass('onTrack');
 			} else {
@@ -214,7 +214,14 @@
 		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
-		p.append($('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id); }));
+		var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id); });
+		var position = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Position'];
+		
+		if(position !== null && position !== 'Bench') {
+			numberCell.addClass('onTrack');
+		}
+		
+		p.append(numberCell);
 
 		$.each(new Array(9), function (idx) {
 			var c = idx + 1;

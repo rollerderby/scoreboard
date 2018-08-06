@@ -24,7 +24,7 @@ public class DefaultSkaterModelTests {
 		teamMock = Mockito.mock(TeamModel.class);
 		skaterId = UUID.randomUUID();
 		
-		model = new DefaultSkaterModel(teamMock, skaterId.toString(), "Test Skater","123","");
+		model = new DefaultSkaterModel(teamMock, skaterId.toString(), "Test Skater", "123", "");
 	}
 	
 	@Test

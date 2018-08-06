@@ -153,7 +153,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
           DefaultPenaltyModel dpm = new DefaultPenaltyModel(id, period, jam, code);
           penalties.add(dpm);
           sortPenalties();
-          scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, dpm, null));
+          scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
         }
       } else {
         // Updating/Deleting existing Penalty.  Find it and process
@@ -164,7 +164,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
               p2.jam = jam;
               p2.code = code;
               sortPenalties();
-              scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, p2, null));
+              scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
             } else {
               penalties.remove(p2);
               scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_REMOVE_PENALTY, null, p2));
