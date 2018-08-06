@@ -322,15 +322,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
 		String file = s.get(PenaltyCodesManager.PenaltiesFileSetting);
 		if(file != null && !file.isEmpty()) {
-			try {
-				PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
-				for(PenaltyCode p : penalties.getPenalties()) {
-					updates.add(new WSUpdate("ScoreBoard.PenaltyCode."+p.getCode(), p.CuesForWS(p)));
-				}
-				updates.add(new WSUpdate("ScoreBoard.PenaltyCode.?","Unknown"));
-			} catch (Exception e) {
-				throw new RuntimeException(e);
+			PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
+			for(PenaltyCode p : penalties.getPenalties()) {
+				updates.add(new WSUpdate("ScoreBoard.PenaltyCode."+p.getCode(), p.CuesForWS(p)));
 			}
+			updates.add(new WSUpdate("ScoreBoard.PenaltyCode.?","Unknown"));
 		}
 
 	}
