@@ -118,26 +118,33 @@
 		</one-jar>
 	</target>
 	
-	 <target name="test-compile" depends="compile">
-	    <mkdir dir="${test.build.dir}"/>
-	    <javac srcdir="${test.src.dir}" destdir="${test.build.dir}" includeantruntime="false">
-	        <classpath refid="classpath.test"/>
-	    </javac>
-	  </target>
+	<target name="test-compile" depends="compile">
+		<mkdir dir="${test.build.dir}"/>
+		<javac srcdir="${test.src.dir}"
+				destdir="${test.build.dir}"
+				debug="true"
+				includeantruntime="true">
+
+				<compilerarg value="-Xlint:all"/>
+				<compilerarg value="-Xlint:-serial"/>
+				<compilerarg value="-Xlint:-options"/>
+				<classpath refid="classpath.test"/>
+			</javac>
+	</target>
 	
 	
 	<target name="test" depends="test-compile">
-	    <junit printsummary="on" haltonfailure="yes" fork="true">
-	        <classpath>
-	          <path refid="classpath.test"/>
-	          <pathelement location="${test.build.dir}"/>
-	        </classpath>
-	        <formatter type="brief" usefile="false" />
-	        <batchtest>
-	            <fileset dir="${test.src.dir}" includes="**/*Test*.java" />
-	        </batchtest>
-	    </junit>
-	  </target>
+		<junit printsummary="on" haltonfailure="yes" fork="true">
+			<classpath>
+				<path refid="classpath.test"/>
+				<pathelement location="${test.build.dir}"/>
+			</classpath>
+			<formatter type="brief" usefile="false" />
+				<batchtest>
+					<fileset dir="${test.src.dir}" includes="**/*Test*.java" />
+				</batchtest>
+		</junit>
+	</target>
 
 	<!-- Create Manifest only if file doesn't exist -->
 	<target name="-manifest" unless="manifest.exists" >
@@ -248,6 +255,7 @@
 			<fileset dir="${dest.dir}"/>
 			<fileset dir="${jar.dir}" includes="${jar.file}"/>
 			<fileset dir="${jdoc.dir}"/>
+			<fileset dir="${test.build.dir}"/>
 		</delete>
 	</target>
 
