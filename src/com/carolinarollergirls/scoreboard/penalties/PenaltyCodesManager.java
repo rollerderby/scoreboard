@@ -5,30 +5,21 @@ import java.io.FileReader;
 import java.io.Reader;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.Settings;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 public class PenaltyCodesManager {
 
-	public PenaltyCodesManager(Settings settings) {
-		this.settings = settings;
+	public PenaltyCodesManager() {
+
 	}
 	
-	public PenaltyCodesDefinition loadFromJSON() {
-		Reader reader = null;
-		try {
-			reader = new FileReader(new File(ScoreBoardManager.getDefaultPath(),settings.get(PenaltiesFileSetting)));
+	public PenaltyCodesDefinition loadFromJSON(String file) {
+		File folder = ScoreBoardManager.getDefaultPath();
+		File penaltyFile = new File(folder,file);
+		try(Reader reader = new FileReader(penaltyFile)) {
 			return JSON.std.beanFrom(PenaltyCodesDefinition.class, reader);
 		} catch (Exception e) {
 			throw new RuntimeException("Failed to load Penalty Data from file", e);
-		} finally {
-			try {
-				if(reader != null) {
-					reader.close();
-				}
-			} catch(Exception i) {
-				//ignored
-			}
 		}
 	}
 	
@@ -40,6 +31,5 @@ public class PenaltyCodesManager {
 		}
 	}
 	
-	private final Settings settings;
 	public static final String PenaltiesFileSetting = "ScoreBoard.PenaltyDefinitionFile";
 }
