@@ -20,7 +20,7 @@ import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.model.ClockModel.ClockSnapshot;
+import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class DefaultClockModelTests {
@@ -137,7 +137,7 @@ public class DefaultClockModelTests {
 		clock.setMaximumTime(1200000);
 		clock.setTime(5000);
 		clock.start();
-		ClockSnapshot snapshot = new ClockSnapshot(clock);
+		ClockModel.ClockSnapshotModel snapshot = new DefaultClockModel.DefaultClockSnapshotModel(clock);
 		
 		clock.reset();
 		assertFalse(clock.isRunning());

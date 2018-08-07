@@ -17,7 +17,7 @@ public interface SkaterModel extends Skater
 	public Skater getSkater();
 
 	public void bench();
-	public void restoreSnapshot(SkaterSnapshot s);
+	public void restoreSnapshot(SkaterSnapshotModel s);
 
 	public void setName(String id);
 	public void setNumber(String number);
@@ -31,20 +31,9 @@ public interface SkaterModel extends Skater
 	public static interface PenaltyModel extends Penalty {
 	}
 	
-	public class SkaterSnapshot	{
-		public SkaterSnapshot(SkaterModel skater) {
-			id = skater.getId();
-			position = skater.getPosition();
-			box = skater.isPenaltyBox();
-		}
-		
-		public String getId( ) { return id; }
-		public String getPosition() { return position; }
-		public boolean isPenaltyBox() { return box; }
-		
-		protected String id;
-		protected String position;
-		protected boolean box;
-		
+	public static interface SkaterSnapshotModel	{
+		public String getId();
+		public String getPosition();
+		public boolean isPenaltyBox();
 	}
 }

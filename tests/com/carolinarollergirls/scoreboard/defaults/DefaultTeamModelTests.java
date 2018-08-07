@@ -19,7 +19,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.model.TeamModel.TeamSnapshot;
 
 public class DefaultTeamModelTests {
 
@@ -125,7 +124,7 @@ public class DefaultTeamModelTests {
 		assertFalse(team.inOfficialReview());
 		assertEquals(3, team.getTimeouts());
 		assertEquals(1, team.getOfficialReviews());
-		TeamSnapshot snapshot = new TeamSnapshot(team);
+		TeamModel.TeamSnapshotModel snapshot = new DefaultTeamModel.DefaultTeamSnapshotModel(team);
 		
 		team.setLeadJammer(Team.LEAD_LOST_LEAD);
 		team.setStarPass(true);

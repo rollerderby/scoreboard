@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Ruleset;
@@ -28,8 +29,6 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.model.ClockModel.ClockSnapshot;
-import com.carolinarollergirls.scoreboard.model.TeamModel.TeamSnapshot;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
@@ -632,13 +631,13 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			isOfficialReview = sbm.isOfficialReview();
 			inOvertime = sbm.isInOvertime();
 			inPeriod = sbm.isInPeriod();
-			clockSnapshots = new HashMap<String, ClockSnapshot>();
+			clockSnapshots = new HashMap<String, DefaultClockModel.ClockSnapshotModel>();
 			for (ClockModel clock : sbm.getClockModels()) {
-				clockSnapshots.put(clock.getId(), new ClockSnapshot(clock));
+				clockSnapshots.put(clock.getId(), new DefaultClockModel.DefaultClockSnapshotModel(clock));
 			}
-			teamSnapshots = new HashMap<String, TeamSnapshot>();
+			teamSnapshots = new HashMap<String, TeamModel.TeamSnapshotModel>();
 			for (TeamModel team : sbm.getTeamModels()) {
-				teamSnapshots.put(team.getId(), new TeamSnapshot(team));
+				teamSnapshots.put(team.getId(), new DefaultTeamModel.DefaultTeamSnapshotModel(team));
 			}
 		}
 
@@ -648,10 +647,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		public boolean isOfficialReview() { return isOfficialReview; }
 		public boolean inOvertime() { return inOvertime; }
 		public boolean inPeriod() { return inPeriod; }
-		public HashMap<String, ClockSnapshot> getClockSnapshots() { return clockSnapshots; }
-		public HashMap<String, TeamSnapshot> getTeamSnapshots() { return teamSnapshots; }
-		public ClockSnapshot getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
-		public TeamSnapshot getTeamSnapshot(String team) { return teamSnapshots.get(team); }
+		public Map<String, ClockModel.ClockSnapshotModel> getClockSnapshots() { return clockSnapshots; }
+		public Map<String, TeamModel.TeamSnapshotModel> getTeamSnapshots() { return teamSnapshots; }
+		public DefaultClockModel.ClockSnapshotModel getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
+		public TeamModel.TeamSnapshotModel getTeamSnapshot(String team) { return teamSnapshots.get(team); }
 		
 		protected String type;
 		protected long snapshotTime;
@@ -659,8 +658,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		protected boolean isOfficialReview;
 		protected boolean inOvertime;
 		protected boolean inPeriod;
-		protected HashMap<String, ClockSnapshot> clockSnapshots;
-		protected HashMap<String, TeamSnapshot> teamSnapshots;
+		protected Map<String, ClockModel.ClockSnapshotModel> clockSnapshots;
+		protected Map<String, TeamModel.TeamSnapshotModel> teamSnapshots;
 	}
 
 	public static final String DEFAULT_TIMEOUT_OWNER = "";

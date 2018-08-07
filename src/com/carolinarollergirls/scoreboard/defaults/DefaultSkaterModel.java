@@ -203,7 +203,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 				setPosition(Position.ID_JAMMER);
 		}
 	}
-	public void restoreSnapshot(SkaterSnapshot s) {
+	public void restoreSnapshot(SkaterSnapshotModel s) {
 		if (s.getId() != getId()) {	return; }
 		setPosition(s.getPosition());
 		setPenaltyBox(s.isPenaltyBox());
@@ -250,4 +250,22 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		protected int jam;
 		protected String code;
 	}
+
+	public static class DefaultSkaterSnapshotModel implements SkaterSnapshotModel {
+		public DefaultSkaterSnapshotModel(SkaterModel skater) {
+			id = skater.getId();
+			position = skater.getPosition();
+			box = skater.isPenaltyBox();
+		}
+
+		public String getId( ) { return id; }
+		public String getPosition() { return position; }
+		public boolean isPenaltyBox() { return box; }
+
+		protected String id;
+		protected String position;
+		protected boolean box;
+
+	}
+
 }

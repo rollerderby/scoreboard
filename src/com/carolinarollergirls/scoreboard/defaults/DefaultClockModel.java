@@ -76,7 +76,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		resetTime();
 	}
 	
-	public void restoreSnapshot(ClockSnapshot s) {
+	public void restoreSnapshot(ClockSnapshotModel s) {
 		if (s.getId() != getId()) { return; }
 		setNumber(s.getNumber());
 		setTime(s.getTime());
@@ -355,6 +355,25 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public static final long DEFAULT_MINIMUM_TIME = 0;
 	public static final long DEFAULT_MAXIMUM_TIME = 3600000;
 	public static final boolean DEFAULT_DIRECTION = false;
+
+	public static class DefaultClockSnapshotModel implements ClockSnapshotModel {
+		public DefaultClockSnapshotModel(ClockModel clock) {
+			id = clock.getId();
+			number = clock.getNumber();
+			time = clock.getTime();
+			isRunning = clock.isRunning();
+		}
+
+		public String getId() { return id; }
+		public int getNumber() { return number; }
+		public long getTime() { return time; }
+		public boolean isRunning() { return isRunning; }
+
+		protected String id;
+		protected int number;
+		protected long time;
+		protected boolean isRunning;
+	}
 
 	protected static class UpdateClockTimerTask extends TimerTask {
 		public static final String PROPERTY_INTERVAL_KEY = DefaultClockModel.class.getName() + ".interval";
