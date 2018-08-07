@@ -17,6 +17,7 @@ public interface SkaterModel extends Skater
 	public Skater getSkater();
 
 	public void bench();
+	public SkaterSnapshotModel snapshot();
 	public void restoreSnapshot(SkaterSnapshotModel s);
 
 	public void setName(String id);

@@ -75,7 +75,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 		resetTime();
 	}
-	
+
+	public ClockSnapshotModel snapshot(){
+		return new DefaultClockSnapshotModel(this);
+	}
 	public void restoreSnapshot(ClockSnapshotModel s) {
 		if (s.getId() != getId()) { return; }
 		setNumber(s.getNumber());
@@ -357,7 +360,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public static final boolean DEFAULT_DIRECTION = false;
 
 	public static class DefaultClockSnapshotModel implements ClockSnapshotModel {
-		public DefaultClockSnapshotModel(ClockModel clock) {
+		private DefaultClockSnapshotModel(ClockModel clock) {
 			id = clock.getId();
 			number = clock.getNumber();
 			time = clock.getTime();

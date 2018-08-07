@@ -133,6 +133,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			sM.bench();
 	}
 	
+	public TeamSnapshotModel snapshot(){
+		return new DefaultTeamSnapshotModel(this);
+	}
 	public void restoreSnapshot(TeamSnapshotModel s) {
 		if (s.getId() != getId()) {	return; }
 		//don't reset score
@@ -616,7 +619,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public static class DefaultTeamSnapshotModel implements TeamSnapshotModel {
-		public DefaultTeamSnapshotModel(TeamModel team) {
+		private DefaultTeamSnapshotModel(TeamModel team) {
 			id = team.getId();
 			score = team.getScore();
 			lastscore = team.getLastScore();
@@ -628,7 +631,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 			in_official_review = team.inOfficialReview();
 			skaterSnapshots = new HashMap<String, SkaterModel.SkaterSnapshotModel>();
 			for (SkaterModel skater : team.getSkaterModels()) {
-				skaterSnapshots.put(skater.getId(), new DefaultSkaterModel.DefaultSkaterSnapshotModel(skater));
+				skaterSnapshots.put(skater.getId(), skater.snapshot());
 			}
 		}
 

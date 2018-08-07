@@ -17,7 +17,8 @@ public interface ClockModel extends Clock
 	public Clock getClock();
 
 	public void reset();
-	
+
+	public ClockSnapshotModel snapshot();
 	public void restoreSnapshot(ClockSnapshotModel s);
 
 	public void start();

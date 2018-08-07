@@ -137,7 +137,7 @@ public class DefaultClockModelTests {
 		clock.setMaximumTime(1200000);
 		clock.setTime(5000);
 		clock.start();
-		ClockModel.ClockSnapshotModel snapshot = new DefaultClockModel.DefaultClockSnapshotModel(clock);
+		ClockModel.ClockSnapshotModel snapshot = clock.snapshot();
 		
 		clock.reset();
 		assertFalse(clock.isRunning());

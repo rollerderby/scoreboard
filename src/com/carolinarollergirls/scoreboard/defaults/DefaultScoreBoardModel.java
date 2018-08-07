@@ -623,8 +623,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	};
 
-	public class ScoreBoardSnapshot {
-		public ScoreBoardSnapshot(ScoreBoardModel sbm, long time, String type) {
+	public static class ScoreBoardSnapshot {
+		private ScoreBoardSnapshot(ScoreBoardModel sbm, long time, String type) {
 			snapshotTime = time;
 			this.type = type; 
 			timeoutOwner = sbm.getTimeoutOwner();
@@ -633,11 +633,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			inPeriod = sbm.isInPeriod();
 			clockSnapshots = new HashMap<String, DefaultClockModel.ClockSnapshotModel>();
 			for (ClockModel clock : sbm.getClockModels()) {
-				clockSnapshots.put(clock.getId(), new DefaultClockModel.DefaultClockSnapshotModel(clock));
+				clockSnapshots.put(clock.getId(), clock.snapshot());
 			}
 			teamSnapshots = new HashMap<String, TeamModel.TeamSnapshotModel>();
 			for (TeamModel team : sbm.getTeamModels()) {
-				teamSnapshots.put(team.getId(), new DefaultTeamModel.DefaultTeamSnapshotModel(team));
+				teamSnapshots.put(team.getId(), team.snapshot());
 			}
 		}
 

@@ -29,6 +29,7 @@ public interface TeamModel extends Team
 	public void startJam();
 	public void stopJam();
 	public void benchSkaters();
+	public TeamSnapshotModel snapshot();
 	public void restoreSnapshot(TeamSnapshotModel s);
 
 	public List<AlternateNameModel> getAlternateNameModels();

@@ -124,7 +124,7 @@ public class DefaultTeamModelTests {
 		assertFalse(team.inOfficialReview());
 		assertEquals(3, team.getTimeouts());
 		assertEquals(1, team.getOfficialReviews());
-		TeamModel.TeamSnapshotModel snapshot = new DefaultTeamModel.DefaultTeamSnapshotModel(team);
+		TeamModel.TeamSnapshotModel snapshot = team.snapshot();
 		
 		team.setLeadJammer(Team.LEAD_LOST_LEAD);
 		team.setStarPass(true);
