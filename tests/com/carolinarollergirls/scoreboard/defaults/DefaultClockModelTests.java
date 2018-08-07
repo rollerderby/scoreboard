@@ -763,6 +763,22 @@ public class DefaultClockModelTests {
 	}
 	
 	@Test
+	public void testStartNext() {
+		clock.setMaximumNumber(5);
+		clock.setNumber(2);
+		clock.setMaximumTime(60000);
+		clock.setTime(45000);
+		assertFalse(clock.isRunning());
+		advance(0);
+		
+		clock.startNext();
+		advance(0);
+		assertTrue(clock.isRunning());
+		assertEquals(3, clock.getNumber());
+		assertTrue(clock.isTimeAtStart());
+	}
+	
+	@Test
 	public void testApplyRule_name()
 	{
 		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NAME, listener));

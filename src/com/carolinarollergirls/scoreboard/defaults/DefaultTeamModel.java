@@ -242,13 +242,13 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public void timeout() {
 		if (getTimeouts() > 0) {
 			changeTimeouts(-1);
-			getScoreBoardModel().timeout(this);
+			getScoreBoardModel().setTimeoutType(getId(), false);
 		}
 	}
 	public void officialReview() {
 		if (getOfficialReviews() > 0) {
 			changeOfficialReviews(-1);
-			getScoreBoardModel().timeout(this, true);
+			getScoreBoardModel().setTimeoutType(getId(), true);
 		}
 	}
 

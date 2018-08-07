@@ -23,6 +23,7 @@ public interface ClockModel extends Clock
 
 	public void start();
 	public void stop();
+	public void startNext();
 
 	public void setName(String name);
 
