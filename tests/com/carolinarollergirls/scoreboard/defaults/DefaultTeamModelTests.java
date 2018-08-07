@@ -33,7 +33,9 @@ public class DefaultTeamModelTests {
 		
 		@Override
 		public void scoreBoardChange(ScoreBoardEvent event) {
-			collectedEvents.add(event);
+			synchronized(collectedEvents) {
+				collectedEvents.add(event);
+			}
 		}
 	};
 	
@@ -102,8 +104,62 @@ public class DefaultTeamModelTests {
 		assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
 		assertEquals(false, team.isStarPass());
 		assertEquals(2, collectedEvents.size());
-		assertEquals(Team.EVENT_LEAD_JAMMER, collectedEvents.poll().getProperty());
-		assertEquals(Team.EVENT_STAR_PASS, collectedEvents.poll().getProperty());
+		boolean leadJammerSeen = false;
+		boolean starPassSeen = false;
+		while (!collectedEvents.isEmpty()) {
+			String event = collectedEvents.poll().getProperty();
+			if (event == Team.EVENT_LEAD_JAMMER) { leadJammerSeen = true; }
+			if (event == Team.EVENT_STAR_PASS) { starPassSeen = true; }
+		}
+		assertTrue(leadJammerSeen && starPassSeen);
+	}
+
+	@Test
+	public void testRestoreSnapshot() {
+		assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
+		assertFalse(team.isStarPass());
+		assertEquals(0, team.getScore());
+		assertEquals(0, team.getLastScore());
+		assertFalse(team.inTimeout());
+		assertFalse(team.inOfficialReview());
+		assertEquals(3, team.getTimeouts());
+		assertEquals(1, team.getOfficialReviews());
+		TeamModel.TeamSnapshotModel snapshot = team.snapshot();
+		
+		team.setLeadJammer(Team.LEAD_LOST_LEAD);
+		team.setStarPass(true);
+		team.setScore(5);
+		team.setLastScore(3);
+		team.setInTimeout(true);
+		team.setInOfficialReview(true);
+		team.setTimeouts(1);
+		team.setOfficialReviews(0);
+		advance(0);
+		
+		//snapshot should not be applied when id doesn't match
+		team.id = "OTHER";
+		team.restoreSnapshot(snapshot);
+		advance(0);
+		assertEquals(Team.LEAD_LOST_LEAD, team.getLeadJammer());
+		assertTrue(team.isStarPass());
+		assertEquals(5, team.getScore());
+		assertEquals(3, team.getLastScore());
+		assertTrue(team.inTimeout());
+		assertTrue(team.inOfficialReview());
+		assertEquals(1, team.getTimeouts());
+		assertEquals(0, team.getOfficialReviews());
+		
+		team.id = "TEST";
+		team.restoreSnapshot(snapshot);
+		advance(0);
+		assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
+		assertFalse(team.isStarPass());
+		assertEquals(5, team.getScore()); //score is not reset
+		assertEquals(0, team.getLastScore());
+		assertFalse(team.inTimeout());
+		assertFalse(team.inOfficialReview());
+		assertEquals(3, team.getTimeouts());
+		assertEquals(1, team.getOfficialReviews());
 	}
 
 	@Test
@@ -498,5 +554,4 @@ public class DefaultTeamModelTests {
 		advance(0);
 		assertFalse(team.isStarPass());
 	}
-
 }

@@ -14,6 +14,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
 import com.carolinarollergirls.scoreboard.Position;
@@ -113,30 +114,17 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public void startJam() {
 		synchronized (scoreLock) {
-			saved_lastscore = getLastScore();
 			setLastScore(getScore());
 		}
-	}
-	public void unStartJam() {
-		setLastScore(saved_lastscore);
 	}
 
 	public void stopJam() {
 		requestBatchStart();
-
+		
 		benchSkaters();
-		saved_leadJammer = leadJammer;
-		saved_starPass = starPass;
 		_setLeadJammer(Team.LEAD_NO_LEAD);
 		_setStarPass(false);
 
-		requestBatchEnd();
-	}
-	public void unStopJam() {
-		requestBatchStart();
-		unBenchSkaters();
-		_setLeadJammer(saved_leadJammer);
-		_setStarPass(saved_starPass);
 		requestBatchEnd();
 	}
 
@@ -144,9 +132,23 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		for (SkaterModel sM : skaters.values())
 			sM.bench();
 	}
-	public void unBenchSkaters() {
-		for (SkaterModel sM : skaters.values())
-			sM.unBench();
+	
+	public TeamSnapshotModel snapshot(){
+		return new DefaultTeamSnapshotModel(this);
+	}
+	public void restoreSnapshot(TeamSnapshotModel s) {
+		if (s.getId() != getId()) {	return; }
+		//don't reset score
+		setLastScore(s.getLastScore());
+		setTimeouts(s.getTimeouts());
+		setOfficialReviews(s.getOfficialReviews());
+		setLeadJammer(s.getLeadJammer());
+		setStarPass(s.getStarPass());
+		setInTimeout(s.inTimeout());
+		setInOfficialReview(s.inOfficialReview());
+		for (SkaterModel skater : getSkaterModels()) {
+			skater.restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
+		}
 	}
 
 	public List<AlternateName> getAlternateNames() {
@@ -524,13 +526,10 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected boolean officialReviewsPerPeriod = DEFAULT_REVIEWS_PER_PERIOD;
 	protected String leadJammer = DEFAULT_LEADJAMMER;
 	protected boolean starPass = DEFAULT_STARPASS;
+	protected boolean in_jam = false;
 	protected boolean in_timeout = false;
 	protected boolean in_official_review = false;
 	protected boolean retained_official_review = false;
-
-	private int saved_lastscore = 0;
-	private String saved_leadJammer = Team.LEAD_NO_LEAD;
-	private boolean saved_starPass = false;
 
 	protected Object nameLock = new Object();
 	protected Object logoLock = new Object();
@@ -618,4 +617,46 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		protected String color;
 		protected Object colorLock = new Object();
 	}
+
+	public static class DefaultTeamSnapshotModel implements TeamSnapshotModel {
+		private DefaultTeamSnapshotModel(TeamModel team) {
+			id = team.getId();
+			score = team.getScore();
+			lastscore = team.getLastScore();
+			timeouts = team.getTimeouts();
+			officialReviews = team.getOfficialReviews();
+			leadJammer = team.getLeadJammer();
+			starPass = team.isStarPass();
+			in_timeout = team.inTimeout();
+			in_official_review = team.inOfficialReview();
+			skaterSnapshots = new HashMap<String, SkaterModel.SkaterSnapshotModel>();
+			for (SkaterModel skater : team.getSkaterModels()) {
+				skaterSnapshots.put(skater.getId(), skater.snapshot());
+			}
+		}
+
+		public String getId() { return id; }
+		public int getScore() { return score;}
+		public int getLastScore() { return lastscore; }
+		public int getTimeouts() { return timeouts; }
+		public int getOfficialReviews() { return officialReviews; }
+		public String getLeadJammer() { return leadJammer; }
+		public boolean getStarPass() { return starPass; }
+		public boolean inTimeout() { return in_timeout; }
+		public boolean inOfficialReview() { return in_official_review; }
+		public Map<String, SkaterModel.SkaterSnapshotModel> getSkaterSnapshots() { return skaterSnapshots; }
+		public SkaterModel.SkaterSnapshotModel getSkaterSnapshot(String skater) { return skaterSnapshots.get(skater); }
+
+		protected String id;
+		protected int score;
+		protected int lastscore;
+		protected int timeouts;
+		protected int officialReviews;
+		protected String leadJammer;
+		protected boolean starPass;
+		protected boolean in_timeout;
+		protected boolean in_official_review;
+		protected Map<String, SkaterModel.SkaterSnapshotModel> skaterSnapshots;
+	}
+
 }

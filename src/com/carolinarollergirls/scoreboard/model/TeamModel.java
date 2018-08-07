@@ -8,11 +8,13 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
+import java.util.Map;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.PositionNotFoundException;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.Skater;
 
 public interface TeamModel extends Team
 {
@@ -25,10 +27,10 @@ public interface TeamModel extends Team
 	public void setName(String name);
 
 	public void startJam();
-	public void unStartJam();
 	public void stopJam();
-	public void unStopJam();
 	public void benchSkaters();
+	public TeamSnapshotModel snapshot();
+	public void restoreSnapshot(TeamSnapshotModel s);
 
 	public List<AlternateNameModel> getAlternateNameModels();
 	public AlternateNameModel getAlternateNameModel(String id);
@@ -78,7 +80,7 @@ public interface TeamModel extends Team
 
 	public void setStarPass(boolean starPass);
 
-  public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
+	public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 
 	public static interface AlternateNameModel extends AlternateName {
 		public void setName(String n);
@@ -90,5 +92,19 @@ public interface TeamModel extends Team
 		public void setColor(String c);
 
 		public TeamModel getTeamModel();
+	}
+	
+	public static interface TeamSnapshotModel {
+		public String getId();
+		public int getScore();
+		public int getLastScore();
+		public int getTimeouts();
+		public int getOfficialReviews();
+		public String getLeadJammer();
+		public boolean getStarPass();
+		public boolean inTimeout();
+		public boolean inOfficialReview();
+		public Map<String, SkaterModel.SkaterSnapshotModel> getSkaterSnapshots();
+		public SkaterModel.SkaterSnapshotModel getSkaterSnapshot(String skater);
 	}
 }

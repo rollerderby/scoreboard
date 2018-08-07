@@ -129,55 +129,55 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		}
 	}
 
-  public List<Penalty> getPenalties() { return Collections.unmodifiableList(new ArrayList<Penalty>(penalties)); }
-  public Penalty getFOEXPPenalty() { return foexp_penalty; }
-  
-  public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code) {
-    synchronized (penaltiesLock) {
-      if (foulout_explusion && code != null) {
-          Penalty prev = foexp_penalty;
-          id = UUID.randomUUID().toString();
-          if (prev != null) {
-            id = prev.getId();
-          }
-          foexp_penalty = new DefaultPenaltyModel(id, period, jam, code);
-          scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_FOEXP, foexp_penalty, null));
-      } else if (foulout_explusion && code == null) {
-        Penalty prev = foexp_penalty;
-        foexp_penalty = null;
-        scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_REMOVE_FOEXP, null, prev));
-      } else if (id == null ) {
-        id = UUID.randomUUID().toString();
-        // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
-        if (penalties.size() < 9) {
-          DefaultPenaltyModel dpm = new DefaultPenaltyModel(id, period, jam, code);
-          penalties.add(dpm);
-          sortPenalties();
-          scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
-        }
-      } else {
-        // Updating/Deleting existing Penalty.  Find it and process
-        for (DefaultPenaltyModel p2 : penalties) {
-          if (p2.getId().equals(id)) {
-            if (code != null) {
-              p2.period = period;
-              p2.jam = jam;
-              p2.code = code;
-              sortPenalties();
-              scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
-            } else {
-              penalties.remove(p2);
-              scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_REMOVE_PENALTY, null, p2));
-            }
-            break;
-          }
-        }
-      }
-    }
-  }
-  
-  private void sortPenalties() {
-	  penalties.sort(new Comparator<DefaultPenaltyModel>() {
+	public List<Penalty> getPenalties() { return Collections.unmodifiableList(new ArrayList<Penalty>(penalties)); }
+	public Penalty getFOEXPPenalty() { return foexp_penalty; }
+	
+	public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code) {
+		synchronized (penaltiesLock) {
+			if (foulout_explusion && code != null) {
+					Penalty prev = foexp_penalty;
+					id = UUID.randomUUID().toString();
+					if (prev != null) {
+						id = prev.getId();
+					}
+					foexp_penalty = new DefaultPenaltyModel(id, period, jam, code);
+					scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_FOEXP, foexp_penalty, null));
+			} else if (foulout_explusion && code == null) {
+				Penalty prev = foexp_penalty;
+				foexp_penalty = null;
+				scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_REMOVE_FOEXP, null, prev));
+			} else if (id == null ) {
+				id = UUID.randomUUID().toString();
+				// Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
+				if (penalties.size() < 9) {
+					DefaultPenaltyModel dpm = new DefaultPenaltyModel(id, period, jam, code);
+					penalties.add(dpm);
+					sortPenalties();
+					scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
+				}
+			} else {
+				// Updating/Deleting existing Penalty.	Find it and process
+				for (DefaultPenaltyModel p2 : penalties) {
+					if (p2.getId().equals(id)) {
+						if (code != null) {
+							p2.period = period;
+							p2.jam = jam;
+							p2.code = code;
+							sortPenalties();
+							scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
+						} else {
+							penalties.remove(p2);
+							scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_REMOVE_PENALTY, null, p2));
+						}
+						break;
+					}
+				}
+			}
+		}
+	}
+	
+	private void sortPenalties() {
+		penalties.sort(new Comparator<DefaultPenaltyModel>() {
 
 		@Override
 		public int compare(DefaultPenaltyModel a, DefaultPenaltyModel b) {
@@ -189,24 +189,27 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 				return Integer.valueOf(a.jam).compareTo(b.jam);
 			}
 		}
-		  
-	  });
-  }
+			
+		});
+	}
+
 
 	public void bench() {
 		synchronized (positionLock) {
-			saved_position = position;
-
+	
 			if (!penaltyBox)
 				setPosition(Position.ID_BENCH);
 			else if (position.equals(Position.ID_PIVOT) && teamModel.isStarPass())
 				setPosition(Position.ID_JAMMER);
 		}
 	}
-	public void unBench() {
-		synchronized (positionLock) {
-			setPosition(saved_position);
-		}
+	public SkaterSnapshotModel snapshot() {
+		return new DefaultSkaterSnapshotModel(this);
+	}
+	public void restoreSnapshot(SkaterSnapshotModel s) {
+		if (s.getId() != getId()) {	return; }
+		setPosition(s.getPosition());
+		setPenaltyBox(s.isPenaltyBox());
 	}
 
 	protected TeamModel teamModel;
@@ -220,8 +223,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected List<DefaultPenaltyModel> penalties = new LinkedList<DefaultPenaltyModel>();
 	protected PenaltyModel foexp_penalty;
 
-	private String saved_position = Position.ID_BENCH;
-
 	protected Object nameLock = new Object();
 	protected Object numberLock = new Object();
 	protected Object positionLock = new Object();
@@ -230,27 +231,44 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 	protected boolean settingPositionSkater = false;
 
-  public class DefaultPenaltyModel extends DefaultScoreBoardEventProvider implements PenaltyModel
-  { 
-    public DefaultPenaltyModel(String i, int p, int j, String c) {
-      id = i;
-      period = p;
-      jam = j;
-      code = c;
-    }
-    public String getId() { return id; }
-    public int getPeriod() { return period; }
-    public int getJam() { return jam; }
-    public String getCode() { return code; }
+	public class DefaultPenaltyModel extends DefaultScoreBoardEventProvider implements PenaltyModel
+	{ 
+		public DefaultPenaltyModel(String i, int p, int j, String c) {
+			id = i;
+			period = p;
+			jam = j;
+			code = c;
+		}
+		public String getId() { return id; }
+		public int getPeriod() { return period; }
+		public int getJam() { return jam; }
+		public String getCode() { return code; }
 
-    public String getProviderName() { return "Penalty"; }
-    public Class<Penalty> getProviderClass() { return Penalty.class; }
-    public String getProviderId() { return getId(); }
+		public String getProviderName() { return "Penalty"; }
+		public Class<Penalty> getProviderClass() { return Penalty.class; }
+		public String getProviderId() { return getId(); }
 
-    protected String id;
-    protected int period;
-    protected int jam;
-    protected String code;
-  }
+		protected String id;
+		protected int period;
+		protected int jam;
+		protected String code;
+	}
+
+	public static class DefaultSkaterSnapshotModel implements SkaterSnapshotModel {
+		private DefaultSkaterSnapshotModel(SkaterModel skater) {
+			id = skater.getId();
+			position = skater.getPosition();
+			box = skater.isPenaltyBox();
+		}
+
+		public String getId( ) { return id; }
+		public String getPosition() { return position; }
+		public boolean isPenaltyBox() { return box; }
+
+		protected String id;
+		protected String position;
+		protected boolean box;
+
+	}
 
 }

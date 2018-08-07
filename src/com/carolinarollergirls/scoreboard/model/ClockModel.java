@@ -18,11 +18,11 @@ public interface ClockModel extends Clock
 
 	public void reset();
 
+	public ClockSnapshotModel snapshot();
+	public void restoreSnapshot(ClockSnapshotModel s);
+
 	public void start();
 	public void stop();
-
-	public void unstart();
-	public void unstop();
 
 	public void setName(String name);
 
@@ -52,5 +52,12 @@ public interface ClockModel extends Clock
 	public void changeMaximumTime(long ms);
 
 	public void setCountDirectionDown(boolean down);
+
+	public static interface ClockSnapshotModel {
+		public String getId();
+		public int getNumber();
+		public long getTime();
+		public boolean isRunning();
+	}
 }
 
