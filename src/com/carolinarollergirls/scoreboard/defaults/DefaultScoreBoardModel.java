@@ -140,11 +140,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public void startOvertime() {
 		synchronized (runLock) {
-			requestBatchStart();
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
-			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+
 			if (pc.isRunning() || jc.isRunning())
 				return;
 			if (pc.getNumber() < pc.getMaximumNumber())
@@ -153,10 +152,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				return;
 			createSnapshot(ACTION_OVERTIME);
 			
+			requestBatchStart();
 			setInOvertime(true);
-			if (tc.isRunning()) {
-				_endTimeout();
-			}
+			_endTimeout();
 			long otLineupTime = settings.getLong("Clock." + Clock.ID_LINEUP + ".OvertimeTime");
 			if (lc.getMaximumTime() < otLineupTime) {
 				lc.setMaximumTime(otLineupTime);
@@ -206,11 +204,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void timeout() { 
 		synchronized (runLock) {
 			createSnapshot(ACTION_TIMEOUT);
-
-			requestBatchStart();
 			_startTimeout();
-			requestBatchEnd();
-
 			ScoreBoardManager.gameSnapshot();
 		}
 	}
@@ -223,7 +217,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 		setTimeoutOwner(owner);
 		setOfficialReview(review);
-		if (owner != "" && owner != "O") {
+		if (owner != TIMEOUT_OWNER_NONE && owner != TIMEOUT_OWNER_OTO) {
 			restartPcAfterTimeout = false;
 		}
 		requestBatchEnd();
@@ -271,8 +265,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		pc.start();
 		jc.startNext();
 
-		getTeamModel("1").startJam();
-		getTeamModel("2").startJam();
+		getTeamModel(Team.ID_1).startJam();
+		getTeamModel(Team.ID_2).startJam();
 		requestBatchEnd();
 	}
 	private void _endJam(boolean force) {
@@ -283,10 +277,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		
 		requestBatchStart();
 		jc.stop();
-		getTeamModel("1").stopJam();
-		getTeamModel("2").stopJam();
+		getTeamModel(Team.ID_1).stopJam();
+		getTeamModel(Team.ID_2).stopJam();
 		setInOvertime(false);
 
+		//TODO: Make this value configurable in the ruleset.
 		if (pc.getTimeRemaining() < 30000) {
 			restartPcAfterTimeout = true;
 		}
@@ -320,11 +315,12 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		requestBatchStart();
 		if (tc.isRunning()) {
 			//TODO: Make Official Timeout its own button that calls setTimeoutType()
-			if (getTimeoutOwner()=="") {
-				setTimeoutOwner("O");
+			if (getTimeoutOwner()==TIMEOUT_OWNER_NONE) {
+				setTimeoutOwner(TIMEOUT_OWNER_OTO);
 			} else {
-				setTimeoutOwner("");
+				setTimeoutOwner(TIMEOUT_OWNER_NONE);
 			}
+			requestBatchEnd();
 			return; 
 		}
 		
@@ -334,6 +330,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		_endIntermission(false);
 		setInPeriod(true);
 		tc.startNext();
+		requestBatchEnd();
 	}
 	private void _endTimeout() {
 		ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
@@ -343,7 +340,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		
 		requestBatchStart();
 		tc.stop();
-		setTimeoutOwner("");
+		setTimeoutOwner(TIMEOUT_OWNER_NONE);
 		setOfficialReview(false);
 		if (pc.isTimeAtEnd()) {
 			_possiblyEndPeriod();
@@ -381,7 +378,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 		requestBatchEnd();
 	}
-	private void _checkAutostart() {
+	private void _possiblyAutostart() {
 		ClockModel pc = getClockModel(Clock.ID_PERIOD);
 		ClockModel jc = getClockModel(Clock.ID_JAM);
 		ClockModel lc = getClockModel(Clock.ID_LINEUP);
@@ -422,6 +419,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setOfficialReview(snapshot.isOfficialReview());
 		setInOvertime(snapshot.inOvertime());
 		setInPeriod(snapshot.inPeriod());
+		restartPcAfterTimeout = snapshot.restartPcAfterTo();
 		snapshot = null;
 		return relapseTime;
 	}
@@ -616,19 +614,20 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected ScoreBoardListener lineupClockListener = new ScoreBoardListener() {
 		public void scoreBoardChange(ScoreBoardEvent event) {
 			if (settings.getBoolean("ScoreBoard." + Clock.ID_LINEUP + ".AutoStart")) {
-				_checkAutostart();
+				_possiblyAutostart();
 			}
 		}
 	};
 
 	public static class ScoreBoardSnapshot {
-		private ScoreBoardSnapshot(ScoreBoardModel sbm, long time, String type) {
+		private ScoreBoardSnapshot(DefaultScoreBoardModel sbm, long time, String type) {
 			snapshotTime = time;
 			this.type = type; 
 			timeoutOwner = sbm.getTimeoutOwner();
 			isOfficialReview = sbm.isOfficialReview();
 			inOvertime = sbm.isInOvertime();
 			inPeriod = sbm.isInPeriod();
+			restartPcAfterTo = sbm.restartPcAfterTimeout;
 			clockSnapshots = new HashMap<String, DefaultClockModel.ClockSnapshotModel>();
 			for (ClockModel clock : sbm.getClockModels()) {
 				clockSnapshots.put(clock.getId(), clock.snapshot());
@@ -645,6 +644,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		public boolean isOfficialReview() { return isOfficialReview; }
 		public boolean inOvertime() { return inOvertime; }
 		public boolean inPeriod() { return inPeriod; }
+		public boolean restartPcAfterTo() { return restartPcAfterTo; }
 		public Map<String, ClockModel.ClockSnapshotModel> getClockSnapshots() { return clockSnapshots; }
 		public Map<String, TeamModel.TeamSnapshotModel> getTeamSnapshots() { return teamSnapshots; }
 		public DefaultClockModel.ClockSnapshotModel getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
@@ -656,11 +656,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		protected boolean isOfficialReview;
 		protected boolean inOvertime;
 		protected boolean inPeriod;
+		protected boolean restartPcAfterTo;
 		protected Map<String, ClockModel.ClockSnapshotModel> clockSnapshots;
 		protected Map<String, TeamModel.TeamSnapshotModel> teamSnapshots;
 	}
 
-	public static final String DEFAULT_TIMEOUT_OWNER = "";
+	public static final String TIMEOUT_OWNER_OTO = "O";
+	public static final String TIMEOUT_OWNER_NONE = "";
+	public static final String DEFAULT_TIMEOUT_OWNER = TIMEOUT_OWNER_NONE;
 
 	public static final String POLICY_KEY = DefaultScoreBoardModel.class.getName() + ".policy";
 	
