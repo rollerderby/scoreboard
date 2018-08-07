@@ -325,10 +325,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	protected void createSnapshot(String type) {
-		snapshot = new ScoreBoardSnapshot(this, type);
+		snapshot = new ScoreBoardSnapshot(this, DefaultClockModel.updateClockTimerTask.getCurrentTime(), type);
 	}
-	protected void restoreSnapshot() {
-		relapseTime = DefaultClockModel.updateClockTimerTask.getCurrentTime() - snapshot.getSnapshotTime();
+	protected long restoreSnapshot() {
+		long relapseTime = DefaultClockModel.updateClockTimerTask.getCurrentTime() - snapshot.getSnapshotTime();
 		for (ClockModel clock : getClockModels()) {
 			clock.restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
 		}
@@ -340,11 +340,12 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setInOvertime(snapshot.inOvertime());
 		setInPeriod(snapshot.inPeriod());
 		snapshot = null;
+		return relapseTime;
 	}
-	protected void relapseTime() {
+	protected void relapseTime(long time) {
 		for (ClockModel clock : getClockModels()) {
 			if (clock.isRunning()) {
-				clock.elapseTime(relapseTime);
+				clock.elapseTime(time);
 			}
 		}
 	}
@@ -352,8 +353,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		if (snapshot == null) { return; }
 		synchronized (runLock) {
 			requestBatchStart();
-			restoreSnapshot();
-			relapseTime();
+			long time = restoreSnapshot();
+			relapseTime(time);
 			requestBatchEnd();
 			ScoreBoardManager.gameSnapshot();
 		}
@@ -484,7 +485,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	protected Object runLock = new Object();
 	protected ScoreBoardSnapshot snapshot = null;
-	protected long relapseTime = 0;
 
 	protected String timeoutOwner;
 	protected Object timeoutOwnerLock = new Object();
@@ -625,8 +625,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	};
 
 	public class ScoreBoardSnapshot {
-		public ScoreBoardSnapshot(ScoreBoardModel sbm, String type) {
-			snapshotTime = DefaultClockModel.updateClockTimerTask.getCurrentTime();
+		public ScoreBoardSnapshot(ScoreBoardModel sbm, long time, String type) {
+			snapshotTime = time;
 			this.type = type; 
 			timeoutOwner = sbm.getTimeoutOwner();
 			isOfficialReview = sbm.isOfficialReview();
