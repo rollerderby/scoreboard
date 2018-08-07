@@ -58,6 +58,7 @@ public class DefaultStatsModelTests {
   }
 
   private void advance(long time_ms) {
+    sbepm.waitForEvents();
     DefaultClockModel.updateClockTimerTask.advance(time_ms);
     sbepm.waitForEvents();
   }
