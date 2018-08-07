@@ -93,7 +93,6 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testSetInOvertime() {
-		ClockModel lc = sbm.getClockModel(Clock.ID_LINEUP);
 		(sbm.getSettingsModel()).set("Clock." + Clock.ID_LINEUP + ".Time", "30000");
 		lc.setMaximumTime(999999999);
 

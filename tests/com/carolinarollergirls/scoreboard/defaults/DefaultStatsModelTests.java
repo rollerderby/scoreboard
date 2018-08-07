@@ -5,8 +5,6 @@ import static org.junit.Assert.assertEquals;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-
 import java.util.Arrays;
 
 import com.carolinarollergirls.scoreboard.Clock;
@@ -20,7 +18,6 @@ import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class DefaultStatsModelTests {
 
@@ -77,7 +74,7 @@ public class DefaultStatsModelTests {
 
 
     // Start the second jam and confirm it's there.
-    sbm.stopJam();
+    sbm.stopJamTO();
     advance(0);
     sbm.startJam();
     advance(1000);
@@ -93,7 +90,7 @@ public class DefaultStatsModelTests {
     for (int i = 0; i < 3; i++) {
       sbm.startJam();
       advance(1000);
-      sbm.stopJam();
+      sbm.stopJamTO();
       advance(0);
     }
     assertEquals(2, sm.getPeriodStats().size());
@@ -135,7 +132,7 @@ public class DefaultStatsModelTests {
     team1.changeScore(5);
     advance(0);
 
-    sbm.stopJam();
+    sbm.stopJamTO();
     advance(1000);
     sbm.startJam();
     advance(1000);
@@ -159,7 +156,7 @@ public class DefaultStatsModelTests {
   public void testJamStopListener() {
     sbm.startJam();
     advance(1000);
-    sbm.stopJam();
+    sbm.stopJamTO();
     advance(1000);
 
     // Confirm stats are as expected at end of first jam.
@@ -170,7 +167,7 @@ public class DefaultStatsModelTests {
 
     sbm.startJam();
     advance(1000);
-    sbm.stopJam();
+    sbm.stopJamTO();
     advance(1000);
     jsm = psm.getJamStatsModel(2);
     assertEquals(1000, jsm.getJamClockElapsedEnd());
@@ -202,7 +199,7 @@ public class DefaultStatsModelTests {
     advance(0);
     assertEquals(Team.LEAD_LEAD, tsm1.getLeadJammer());
 
-    sbm.stopJam();
+    sbm.stopJamTO();
     advance(1000);
     // Star pass and lead still correct after jam end.
     assertEquals(true, tsm1.getStarPass());
@@ -276,7 +273,7 @@ public class DefaultStatsModelTests {
     assertEquals(false, tsm1.getSkaterStatsModel(ID_PREFIX + "100").getPenaltyBox());
 
     // Jam ends.
-    sbm.stopJam();
+    sbm.stopJamTO();
     advance(1000);
     // New jammer does not replace jammer from previous jam.
     team1.getSkaterModel(ID_PREFIX + "103").setPosition(Position.ID_JAMMER);

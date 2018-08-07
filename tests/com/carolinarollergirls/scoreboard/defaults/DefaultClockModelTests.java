@@ -609,12 +609,25 @@ public class DefaultClockModelTests {
 		assertEquals(1000, clock.getTime());
 		assertEquals(4000, clock.getInvertedTime());
 		assertEquals(2, collectedEvents.size());
+		Boolean firstEventInverted;
 		event = collectedEvents.poll();
-		assertEquals(1000, (long)event.getValue());
-		assertEquals(3200, (long)event.getPreviousValue());
+		if (event.getProperty() == Clock.EVENT_TIME) {
+			firstEventInverted = false;
+			assertEquals(1000, (long)event.getValue());
+			assertEquals(3200, (long)event.getPreviousValue());
+		} else {
+			firstEventInverted = true;
+			assertEquals(4000, (long)event.getValue());
+			assertEquals(1800, (long)event.getPreviousValue());			
+		}
 		event = collectedEvents.poll();
-		assertEquals(4000, (long)event.getValue());
-		assertEquals(1800, (long)event.getPreviousValue());
+		if (firstEventInverted) {
+			assertEquals(1000, (long)event.getValue());
+			assertEquals(3200, (long)event.getPreviousValue());
+		} else {
+			assertEquals(4000, (long)event.getValue());
+			assertEquals(1800, (long)event.getPreviousValue());			
+		}
 		
 		clock.changeTime(4100);
 		advance(0);

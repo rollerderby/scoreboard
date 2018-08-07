@@ -381,6 +381,30 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 		requestBatchEnd();
 	}
+	private void _checkAutostart() {
+		ClockModel pc = getClockModel(Clock.ID_PERIOD);
+		ClockModel jc = getClockModel(Clock.ID_JAM);
+		ClockModel lc = getClockModel(Clock.ID_LINEUP);
+		ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+		
+		long bufferTime = settings.getLong("ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBuffer"); 
+		long triggerTime = bufferTime + (isInOvertime() ? 
+					settings.getLong("Clock." + Clock.ID_LINEUP + ".OvertimeTime") :
+					settings.getLong("Clock." + Clock.ID_LINEUP + ".Time"));
+
+		requestBatchStart();
+		if (lc.getTimeElapsed() >= triggerTime) {
+			if (Boolean.parseBoolean(settings.get("ScoreBoard." + Clock.ID_LINEUP + ".AutoStartType"))) {
+				startJam();
+				jc.elapseTime(bufferTime);
+			} else {
+				timeout();
+				pc.elapseTime(-bufferTime);
+				tc.elapseTime(bufferTime);
+			}
+		}
+		requestBatchEnd();
+	}
 
 
 	protected void createSnapshot(String type) {
@@ -592,28 +616,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected ScoreBoardListener lineupClockListener = new ScoreBoardListener() {
 		public void scoreBoardChange(ScoreBoardEvent event) {
 			if (settings.getBoolean("ScoreBoard." + Clock.ID_LINEUP + ".AutoStart")) {
-				ClockModel lc = getClockModel(Clock.ID_LINEUP);
-				long bufferTime = settings.getLong("ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBuffer"); 
-				long triggerTime = bufferTime + (isInOvertime() ? 
-							settings.getLong("Clock." + Clock.ID_LINEUP + ".OvertimeTime") :
-							settings.getLong("Clock." + Clock.ID_LINEUP + ".Time"));
-				if (lc.getTimeElapsed() >= triggerTime) {
-					if (Boolean.parseBoolean(settings.get("ScoreBoard." + Clock.ID_LINEUP + ".AutoStartType"))) {
-						requestBatchStart();
-						ClockModel jc = getClockModel(Clock.ID_JAM);
-						startJam();
-						jc.elapseTime(bufferTime);
-						requestBatchEnd();
-					} else {
-						requestBatchStart();
-						ClockModel pc = getClockModel(Clock.ID_PERIOD);
-						ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
-						timeout();
-						pc.elapseTime(-bufferTime);
-						tc.elapseTime(bufferTime);
-						requestBatchEnd();
-					}
-				}
+				_checkAutostart();
 			}
 		}
 	};
