@@ -97,7 +97,7 @@ function displayPenalty(t, s, p) {
 
 	// Change row colors for skaters on 5 or more penalties, or who have been expelled.
 	var cnt = 0; 
-    var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
+	var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	totalBox.text(cnt);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5 && !fo_exp);
@@ -122,8 +122,8 @@ function makeSkaterRows(t, id, number) { //team, id, number
 //	head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';
 //
 
-        $('.Team' + t + 'custColor').css('color', teamFColor);
-        $('.Team' + t + 'custColor').css('background-color', teamBColor);
+    $('.Team' + t + 'custColor').css('color', teamFColor);
+    $('.Team' + t + 'custColor').css('background-color', teamBColor);
 	
 	pd.append($('<div width=10%>').addClass('Number').text(number));
 	pd.append($('<div width=50%>').addClass('Name').text(WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Name']));

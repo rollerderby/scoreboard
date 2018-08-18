@@ -21,7 +21,9 @@ function initialize() {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) {
 			$('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);
 			$('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); 
-			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
+			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); 
+		});
+	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
 
@@ -55,6 +57,8 @@ function skaterUpdate(t, k, v) {
 	var id = match[1]; // id = skater id
 	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  
 	if (k == prefix + '.Number') { 
+	// If this is an update to the state of a skater number
+	// Example: if keyword = 'ScoreBoard.Team(1).Skater([id]).Number'
 		$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 		if (v == null) {
 			return;
@@ -99,7 +103,7 @@ function displayPenalty(t, s, p) {
 	}
 	// Change row colors for skaters on 5 or more penalties, or explusion.			  
 	var cnt = 0; 
-    var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
+	var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	totalBox.text(cnt);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5 && !fo_exp);
