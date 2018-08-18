@@ -125,10 +125,10 @@ function makeSkaterRows(t, id, number) { //team, id, number
 	pd.append($('<div width=10%>').addClass('Number').text(number));
 	pd.append($('<div width=50%>').addClass('Name').text(WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Name']));
 	$.each([1, 2, 3, 4, 5, 6, 7, 8, 9], function(idx, c) {
-		pd.append($('<div width=10%>').addClass('Box Box' + c).html('&nbsp;'));
+		pd.append($('<div width=10%>').addClass('Box Box' + c).html('&nbsp;').css('color',teamFColor));
 	});
-	pd.append($('<div>').addClass('BoxFO_EXP').html('&nbsp;'));
-	pd.append($('<div>').addClass('Total').text('0'));
+	pd.append($('<div>').addClass('BoxFO_EXP').html('&nbsp;').css('color',teamFColor));
+	pd.append($('<div>').addClass('Total').text('0').css('color',teamFColor));
 
 	var inserted = false;
 	teamd.find('div.Penalty').each(function (idx, row) {
