@@ -41,6 +41,21 @@ public class DefaultSkaterModelTests {
 		assertEquals(3, penalty.getJam());
 		
 	}
+
+	@Test
+	public void add_penalty_with_id() {
+		model.AddPenaltyModel("f03d5e2e-e581-4fcb-99c7-7fbd49101a36", false, 1, 3, "C");
+
+		assertEquals(1, model.getPenalties().size());
+		assertNull(model.getFOEXPPenalty());
+
+		Skater.Penalty penalty = model.getPenalties().get(0);
+
+		assertEquals("C", penalty.getCode());
+		assertEquals(1, penalty.getPeriod());
+		assertEquals(3, penalty.getJam());
+
+	}
 	
 	@Test
 	public void add_ooo_penalty() {

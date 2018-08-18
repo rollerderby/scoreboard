@@ -169,9 +169,14 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 							penalties.remove(p2);
 							scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_REMOVE_PENALTY, null, p2));
 						}
-						break;
+						return;
 					}
 				}
+				// Penalty has an ID we don't have likely from the autosave, add it.
+				DefaultPenaltyModel dpm = new DefaultPenaltyModel(id, period, jam, code);
+				penalties.add(dpm);
+				sortPenalties();
+				scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
 			}
 		}
 	}
