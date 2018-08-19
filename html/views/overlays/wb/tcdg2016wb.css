@@ -275,7 +275,7 @@ a {
 }
 .Team thead td { font-size: 100%; position: relative; font-family: 'roboto'; font-weight: bold; background-color: #000; color: #FFF; }
 .Teamd { top: 0%; font-size: 100%; font-family: 'roboto'; font-weight: bold; color: #FFF; }
-.tdivr { font-size: 58%; position: relative; font-family: 'roboto'; font-weight: bold; color: #FFF; height: 7%; }
+.tdivr { font-size: 58%; position: relative; font-family: 'roboto'; font-weight: bold; color: #FFF; height: 6.6%; }
 .Team td { text-align: center; vertical-align: center; font-size: 52%; color: #FFF; }
 .Team1  { right: 0.5%; font-family: 'roboto'; font-weight: bold; top: 12%; left: 1%; width: 47%; text-align: center; overflow: hidden;color: white; }
 .Teamd1 { left: 0.2%; height: 100%; width: 48%; text-align: center; overflow: hidden;color: white; }
