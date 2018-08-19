@@ -2,8 +2,6 @@ $(initialize);
 /*
  Inside whiteboard screen for use with CRG Penalty Tracking funcitonality.
  Basically just the original PT javascript with a few tweaks.
- Modified by Adam Smasher (Dan Alt)
- Last modified 7/3/16
 */
 var penaltyEditor = null;
 var period = null;
@@ -18,15 +16,19 @@ function initialize() {
 	WS.AutoRegister();
 
 	$.each([1, 2], function(idx, t) {
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]); //called when team name changes?
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']); $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) {
+			$('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);
+			$('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); 
+			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); 
+		});
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
 
-	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes?
-	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); //arguments: team number, skater id, jam number
+	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); 
+	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); 
 
 }
 
@@ -48,13 +50,15 @@ function clear() {
 
 var skaterIdRegex = /Skater\(([^\)]+)\)/;
 var penaltyRegex = /Penalty\(([^\)]+)\)/;
-function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number 
-	match = k.match(skaterIdRegex); //match = skater id cleaned up
+function skaterUpdate(t, k, v) { 
+	match = k.match(skaterIdRegex); 
 	if (match == null || match.length == 0)
 		return;
 	var id = match[1]; // id = skater id
-	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  //Example: prefix = ScoreBoard.Team('1').Skater('id')
-	if (k == prefix + '.Number') { //Example if skater id == ScoreBoard.Team('team').Skater('id').Number
+	var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';  
+	if (k == prefix + '.Number') { 
+	// If this is an update to the state of a skater number
+	// Example: if keyword = 'ScoreBoard.Team(1).Skater([id]).Number'
 		$('.Team' + t + ' .Skater[id=' + id + ']').remove();
 		if (v == null) {
 			return;
@@ -62,20 +66,23 @@ function skaterUpdate(t, k, v) { //arguments: team number, skater id, jam number
 
 		// New skater, or number has been updated.
 		makeSkaterRows(t, id, v);
-		for (var i = 1; i <= 9; i++) // for penalty numbers one to nine..
-			displayPenalty(t, id, i); // display penalties (team, skater id, penalty #)
-		displayPenalty(t, id, 'FO_EXP'); // display foulout status
-	} else {  // if skater id does NOT match ScoreBoard.Team('team').Skater('id').Number
-		// Look for penalty
+		for (var i = 1; i <= 9; i++) {
+		displayPenalty(t, id, i); }
+		displayPenalty(t, id, 'FO_EXP'); 
+	} else {  
+		// if this is NOT a new skater, see if it's a penalty 
 		match = k.match(penaltyRegex);
 		if (match == null || match.length == 0)
 			return;
+ 		// If this is a penalty, display it.									  
 		var p = match[1];
 		displayPenalty(t, id, p);
 	}
 }
 
-function displayPenalty(t, s, p) { // team skater penalty#
+function displayPenalty(t, s, p) { 
+	// Given a team, a skater, and a penalty ID, display that penalty
+
 	var penaltyBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box' + p);
 	var jamBox = $('.Team' + t + ' .Skater.Jam[id=' + s + '] .Box' + p);
 	var totalBox = $('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Total');
@@ -94,9 +101,9 @@ function displayPenalty(t, s, p) { // team skater penalty#
 		penaltyBox.html("&nbsp;");
 		jamBox.html("&nbsp;");
 	}
-
-	var cnt = 0; // Change row colors for skaters on 5 or more penalties, or explusion.
-  var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
+	// Change row colors for skaters on 5 or more penalties, or explusion.			  
+	var cnt = 0; 
+	var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	totalBox.text(cnt);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == 5 && !fo_exp);
