@@ -304,7 +304,7 @@ public class ScoreBoardXmlConverter
 					else if (name.equals("StartJam"))
 						scoreBoardModel.startJam();
 					else if (name.equals("StopJam"))
-						scoreBoardModel.stopJam();
+						scoreBoardModel.stopJamTO();
 					else if (name.equals("Timeout"))
 						scoreBoardModel.timeout();
 					else if (name.equals("UnStartJam"))

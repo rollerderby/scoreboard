@@ -86,7 +86,7 @@ public class Ruleset {
 			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MaximumTime",   "Duration of a period", "30:00"));
 
 			newRule( new StringRule(false, "Clock", Clock.ID_JAM,          "Name",          "", Clock.ID_JAM));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MinimumNumber", "", 1));
+			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MinimumNumber", "", 0));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MaximumNumber", "", 999));
 			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Direction",     "Which way should this clock count?", true, "Count Down", "Count Up"));
 			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));

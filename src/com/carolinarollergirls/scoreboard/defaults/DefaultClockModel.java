@@ -313,6 +313,14 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.FALSE, Boolean.TRUE));
 		}
 	}
+	
+	public void startNext() {
+		requestBatchStart();
+		changeNumber(1);
+		resetTime();
+		start();
+		requestBatchEnd();
+	}
 
 	protected void timerTick(long delta) {
 		if (!isRunning())
