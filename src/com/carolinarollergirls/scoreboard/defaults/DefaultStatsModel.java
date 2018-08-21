@@ -231,7 +231,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     }
 
     public void truncateAfterNJams(int n) {
-      requestBatchEnd();
+      requestBatchStart();
       synchronized (this) {
         while (jams.size() > n) {
           JamStatsModel jsm = jams.get(jams.size() - 1);
