@@ -79,9 +79,12 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
 
   protected ScoreBoardListener jamStartListener = new ScoreBoardListener() {
     public void scoreBoardChange(ScoreBoardEvent event) {
-      requestBatchStart();
       Clock pc = scoreBoard.getClock(Clock.ID_PERIOD);
       JamStatsModel js = getCurentJam();
+      if (js == null) {
+        return;
+      }
+      requestBatchStart();
       js.setPeriodClockElapsedStart(pc.getTimeElapsed());
       js.setPeriodClockWalltimeStart(System.currentTimeMillis());
 
@@ -117,10 +120,13 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
 
   protected ScoreBoardListener jamStopListener = new ScoreBoardListener() {
     public void scoreBoardChange(ScoreBoardEvent event) {
-      requestBatchStart();
       Clock pc = scoreBoard.getClock(Clock.ID_PERIOD);
       Clock jc = scoreBoard.getClock(Clock.ID_JAM);
       JamStatsModel js = getCurentJam();
+      if (js == null) {
+        return;
+      }
+      requestBatchStart();
       js.setJamClockElapsedEnd(jc.getTimeElapsed());
       js.setPeriodClockElapsedEnd(pc.getTimeElapsed());
       js.setPeriodClockWalltimeEnd(System.currentTimeMillis());
@@ -130,10 +136,15 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
 
   protected ScoreBoardListener teamEventListener = new ScoreBoardListener() {
     public void scoreBoardChange(ScoreBoardEvent event) {
-      requestBatchStart();
       Clock jc = scoreBoard.getClock(Clock.ID_JAM);
       Team t = (Team)event.getProvider();
-      TeamStatsModel ts = getCurentJam().getTeamStatsModel(t.getId());
+      JamStatsModel js = getCurentJam();
+      if (js == null) {
+        return;
+      }
+      TeamStatsModel ts = js.getTeamStatsModel(t.getId());
+
+      requestBatchStart();
       ts.setTotalScore(t.getScore());
       ts.setJamScore(t.getScore() - t.getLastScore());
       if (jc.isRunning()) {
@@ -150,10 +161,14 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
 
   protected ScoreBoardListener skaterEventListener = new ScoreBoardListener() {
     public void scoreBoardChange(ScoreBoardEvent event) {
-      requestBatchStart();
       Clock jc = scoreBoard.getClock(Clock.ID_JAM);
       Skater s = (Skater)event.getProvider();
-      TeamStatsModel ts = getCurentJam().getTeamStatsModel(s.getTeam().getId());
+      JamStatsModel js = getCurentJam();
+      if (js == null) {
+        return;
+      }
+      TeamStatsModel ts = js.getTeamStatsModel(s.getTeam().getId());
+      requestBatchStart();
       if (jc.isRunning()) {
         // If the jam is over, any skater changes are for the next jam.
         // We'll catch them when the jam starts.
@@ -173,6 +188,9 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
   protected JamStatsModel getCurentJam() {
     int p = scoreBoard.getClock(Clock.ID_PERIOD).getNumber();
     int j = scoreBoard.getClock(Clock.ID_JAM).getNumber();
+    if (j == 0) {
+      return null;
+    }
     ensureAtLeastNPeriods(p);
     PeriodStatsModel period = getPeriodStatsModel(p);
     period.ensureAtLeastNJams(j);
@@ -395,14 +413,14 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       SkaterStatsModel ssm = skaters.get(sid);
       if (ssm != null) {
         ssm.removeScoreBoardListener(this);
-        skaters.remove(sid, ssm);
+        skaters.remove(sid);
         scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, this, null));
       }
     }
     public synchronized void removeSkaterStatsModels() {
       for (SkaterStatsModel ssm : skaters.values()) {
         ssm.removeScoreBoardListener(this);
-        skaters.remove(ssm.getSkaterId(), ssm);
+        skaters.remove(ssm.getSkaterId());
         scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, this, null));
       }
     }
