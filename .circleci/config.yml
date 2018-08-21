@@ -1,0 +1,9 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: brianbrazil/crg-ci:jdk7-ant
+    steps:
+      - checkout
+      - run: ant
+
