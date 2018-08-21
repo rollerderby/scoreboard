@@ -182,7 +182,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	}
 	
 	private void sortPenalties() {
-		penalties.sort(new Comparator<DefaultPenaltyModel>() {
+		Collections.sort(penalties, new Comparator<DefaultPenaltyModel>() {
 
 		@Override
 		public int compare(DefaultPenaltyModel a, DefaultPenaltyModel b) {
