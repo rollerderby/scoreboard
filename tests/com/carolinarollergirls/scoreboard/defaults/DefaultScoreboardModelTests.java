@@ -48,12 +48,14 @@ public class DefaultScoreboardModelTests {
 		ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
 		sbepm = ScoreBoardEventProviderManager.getSingleton();
 		sbm = new DefaultScoreBoardModel();
-		pc = sbm.getClockModel(Clock.ID_PERIOD);      
-		jc = sbm.getClockModel(Clock.ID_JAM);         
-		lc = sbm.getClockModel(Clock.ID_LINEUP);      
-		tc = sbm.getClockModel(Clock.ID_TIMEOUT);     
+		pc = sbm.getClockModel(Clock.ID_PERIOD);
+		jc = sbm.getClockModel(Clock.ID_JAM);
+		lc = sbm.getClockModel(Clock.ID_LINEUP);
+		tc = sbm.getClockModel(Clock.ID_TIMEOUT);
 		ic = sbm.getClockModel(Clock.ID_INTERMISSION);
 		collectedEvents = new LinkedList<ScoreBoardEvent>();
+		//Clock Sync can cause clocks to be changed when started, breaking tests.
+		sbm.getSettingsModel().set("ScoreBoard.Clock.Sync", "False");
 	}
 	
 	@After
@@ -787,7 +789,7 @@ public class DefaultScoreboardModelTests {
 		sbm.setTimeoutOwner("");
 		advance(0);
 		
-		sbm.setTimeoutType("2", false);
+		sbm.startTimeoutType("2", false);
 		advance(0);
 
 		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
@@ -799,7 +801,7 @@ public class DefaultScoreboardModelTests {
 		assertEquals("2", sbm.getTimeoutOwner());
 		assertFalse(sbm.isOfficialReview());
 
-		sbm.setTimeoutType("1", true);
+		sbm.startTimeoutType("1", true);
 		advance(0);
 		assertEquals("1", sbm.getTimeoutOwner());
 		assertTrue(sbm.isOfficialReview());
@@ -1017,7 +1019,7 @@ public class DefaultScoreboardModelTests {
 		
 		//follow up with team timeout
 		advance(2000);
-		sbm.setTimeoutType("1", false);
+		sbm.startTimeoutType("1", false);
 		advance(60000);
 		sbm.stopJamTO();
 		advance(0);

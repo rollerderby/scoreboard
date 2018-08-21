@@ -208,7 +208,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ScoreBoardManager.gameSnapshot();
 		}
 	}
-	public void setTimeoutType(String owner, boolean review) {
+	public void startTimeoutType(String owner, boolean review) {
 		ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 
 		requestBatchStart();
@@ -314,7 +314,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 		requestBatchStart();
 		if (tc.isRunning()) {
-			//TODO: Make Official Timeout its own button that calls setTimeoutType()
+			//TODO: Make Official Timeout its own button that calls startTimeoutType()
 			if (getTimeoutOwner()==TIMEOUT_OWNER_NONE) {
 				setTimeoutOwner(TIMEOUT_OWNER_OTO);
 			} else {

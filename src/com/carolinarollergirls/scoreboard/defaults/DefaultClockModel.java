@@ -315,9 +315,11 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 	
 	public void startNext() {
+		requestBatchStart();
 		changeNumber(1);
 		resetTime();
 		start();
+		requestBatchEnd();
 	}
 
 	protected void timerTick(long delta) {
