@@ -32,25 +32,12 @@ public class DefaultScoreboardModelTests {
 	private ClockModel tc;
 	private ClockModel ic;
 	private Queue<ScoreBoardEvent> collectedEvents;
-	private ScoreBoardListener listener = new ScoreBoardListener() {
+	public ScoreBoardListener listener = new ScoreBoardListener() {
+	
 		@Override
 		public void scoreBoardChange(ScoreBoardEvent event) {
 			synchronized(collectedEvents) {
 				collectedEvents.add(event);
-			}
-		}
-	};
-
-	private int batchLevel;
-	private ScoreBoardListener batchCounter = new ScoreBoardListener() {
-		@Override
-		public void scoreBoardChange(ScoreBoardEvent event) {
-			synchronized(batchCounter) {
-				if (event.getProperty().equals(ScoreBoardEvent.BATCH_START)) {
-					batchLevel++;
-				} else if (event.getProperty().equals(ScoreBoardEvent.BATCH_END)) {
-					batchLevel--;
-				}
 			}
 		}
 	};
@@ -67,7 +54,6 @@ public class DefaultScoreboardModelTests {
 		tc = sbm.getClockModel(Clock.ID_TIMEOUT);
 		ic = sbm.getClockModel(Clock.ID_INTERMISSION);
 		collectedEvents = new LinkedList<ScoreBoardEvent>();
-		sbm.addScoreBoardListener(batchCounter);
 		//Clock Sync can cause clocks to be changed when started, breaking tests.
 		sbm.getSettingsModel().set("ScoreBoard.Clock.Sync", "False");
 	}
@@ -75,9 +61,6 @@ public class DefaultScoreboardModelTests {
 	@After
 	public void tearDown() throws Exception {
 		DefaultClockModel.updateClockTimerTask.setPaused(false);
-		// Check all started batches were ended.
-		advance(0);
-		assertEquals(0, batchLevel);
 	}
 
 	private void advance(long time_ms) {
@@ -471,7 +454,7 @@ public class DefaultScoreboardModelTests {
 
 		sbm.startJam();
 		advance(1000);
-
+		
 		assertEquals(DefaultScoreBoardModel.ACTION_START_JAM, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertEquals(1, pc.getNumber());
@@ -489,10 +472,10 @@ public class DefaultScoreboardModelTests {
 		jc.setTime(74000);
 		jc.setNumber(9);
 		jc.start();
-
+		
 		sbm.startJam();
 		advance(0);
-
+		
 		assertEquals(null, sbm.snapshot);
 		assertTrue(jc.isRunning());
 		assertEquals(9, jc.getNumber());
