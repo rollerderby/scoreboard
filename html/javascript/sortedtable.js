@@ -65,8 +65,8 @@
 				doSort(table);
 			})
 			.each(function(i, e) {
-				$("<span>^</span>").addClass(SORT_ASCEND).appendTo(e);
-				$("<span>v</span>").addClass(SORT_DESCEND).appendTo(e);
+				$("<span> ▲</span>").addClass(SORT_ASCEND).appendTo(e);
+				$("<span> ▼</span>").addClass(SORT_DESCEND).appendTo(e);
 			})
 			.first();
 		if (!th.length)
