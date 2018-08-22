@@ -46,9 +46,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Official");
 		Ruleset.registerRule(settings, "ScoreBoard.Clock.Sync");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_JAM + ".ResetNumberEachPeriod");
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStart");
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBuffer");
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartType");
 		Ruleset.registerRule(settings, "Clock." + Clock.ID_INTERMISSION + ".Time");
 		Ruleset.registerRule(settings, "Clock." + Clock.ID_LINEUP + ".Time");
 		Ruleset.registerRule(settings, "Clock." + Clock.ID_LINEUP + ".OvertimeTime");
@@ -384,17 +381,17 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		ClockModel lc = getClockModel(Clock.ID_LINEUP);
 		ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 		
-		long bufferTime = settings.getLong("ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBuffer"); 
+		long bufferTime = settings.getLong(SETTING_AUTO_START_BUFFER); 
 		long triggerTime = bufferTime + (isInOvertime() ? 
 					settings.getLong("Clock." + Clock.ID_LINEUP + ".OvertimeTime") :
 					settings.getLong("Clock." + Clock.ID_LINEUP + ".Time"));
 
 		requestBatchStart();
 		if (lc.getTimeElapsed() >= triggerTime) {
-			if (Boolean.parseBoolean(settings.get("ScoreBoard." + Clock.ID_LINEUP + ".AutoStartType"))) {
+			if (settings.get(SETTING_AUTO_START).equals(AUTO_START_JAM)) {
 				startJam();
 				jc.elapseTime(bufferTime);
-			} else {
+			} else if (settings.get(SETTING_AUTO_START).equals(AUTO_START_TIMEOUT)) {
 				timeout();
 				pc.elapseTime(-bufferTime);
 				tc.elapseTime(bufferTime);
@@ -613,7 +610,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	};
 	protected ScoreBoardListener lineupClockListener = new ScoreBoardListener() {
 		public void scoreBoardChange(ScoreBoardEvent event) {
-			if (settings.getBoolean("ScoreBoard." + Clock.ID_LINEUP + ".AutoStart")) {
+			if (!settings.get(SETTING_AUTO_START).equals(AUTO_START_DISABLED)) {
 				_possiblyAutostart();
 			}
 		}
@@ -665,7 +662,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String TIMEOUT_OWNER_NONE = "";
 	public static final String DEFAULT_TIMEOUT_OWNER = TIMEOUT_OWNER_NONE;
 
-	public static final String POLICY_KEY = DefaultScoreBoardModel.class.getName() + ".policy";
+	public static final String SETTING_AUTO_START = "Operator.AutoStart";
+	public static final String SETTING_AUTO_START_BUFFER = "Operator.AutoStartBuffer";
 	
 	public static final String ACTION_START_JAM = "Start Jam";
 	public static final String ACTION_STOP_JAM = "Stop Jam";
@@ -673,5 +671,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String ACTION_LINEUP = "Lineup";
 	public static final String ACTION_TIMEOUT = "Timeout";
 	public static final String ACTION_OVERTIME = "Overtime";
+
+	public static final String AUTO_START_DISABLED = "Off";
+	public static final String AUTO_START_JAM = "Jam";
+	public static final String AUTO_START_TIMEOUT = "Timeout";
 }
 

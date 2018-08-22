@@ -431,7 +431,13 @@ var operatorSettings = [
 	}},
 	{ id: "ShowStartStop", display: "Show Start/Stop Buttons", type: "boolean", defaultValue: "False", func: function(value) {
 		$("#TeamTime").find("tr.Control").toggleClass("Show", isTrue(value));
-	}}
+	}},
+	{ id: "AutoStart", display: "Auto start Jam or Timeout after lineup time is up", type: "select", values: [
+			{ text: "Neither", value: "Off"},
+			{ text: "Jam", value: "Jam"},
+			{ text: "Timeout", value: "Timeout"}
+		], defaultValue: "Off", func: function(value) {}},
+	{ id: "AutoStartBuffer", display: "Delay auto start by (and adjust clocks afterwards)", type: "time", defaultValue: "0", func: function(value) {}}
 ];
 
 function setOperatorSettingsToDefault() {
