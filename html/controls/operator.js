@@ -55,7 +55,9 @@ function login(name) {
 	$("#operatorId").text(name);
 	if (window.history.replaceState)
 		window.history.replaceState(null, "", "?operator="+$("#operatorId").text());
-	_crgKeyControls.setupKeyControls($sb("Pages.Page(operator.html).Operator("+$("#operatorId").text()+")"));
+	var path = "Pages.Page(operator.html).Operator("+$("#operatorId").text()+")";
+	_crgKeyControls.setupKeyControls($sb(path));
+	loadOperatorSettings(path);
 }
 
 function logout() {
@@ -63,6 +65,7 @@ function logout() {
 	if (window.history.replaceState)
 		window.history.replaceState(null, "", "?");
 	_crgKeyControls.destroyKeyControls();
+	setOperatorSettingsToDefault();
 	_crgUtils.showLoginDialog("Operator Login", "Operator:", "Login", function(value) {
 		if (!value)
 			return false;
@@ -99,7 +102,7 @@ function createRowTable(n, r) {
 
 
 ////////////////////////////
-// Score & Time operator tab
+// Team/Time operator tab
 ////////////////////////////
 
 function createScoreTimeTab() {
@@ -147,32 +150,10 @@ function createMetaControlTable() {
 	$("<a>").text("Key Control Edit mode enabled.	 Buttons do not operate in this mode.	 Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
 		.appendTo(helpTd);
 
-	$("<label>").text("Show UNDO Controls").attr("for", "ShowUndoControlsButton")
-		.appendTo(buttonsTd);
-	$("<input type='checkbox' checked='true'>").attr("id", "ShowUndoControlsButton")
+	$("<button>").text("Operator Settings")
 		.appendTo(buttonsTd)
 		.button()
-		.click(function() {
-			$("#TeamTime").find(".UndoControls").toggleClass("ShowUndo", this.checked);
-		});
-
-	$("<label>").text("Show Speed Score Controls").attr("for", "ShowSpeedScoreControlsButton")
-		.appendTo(buttonsTd);
-	$("<input type='checkbox'>").attr("id", "ShowSpeedScoreControlsButton")
-		.appendTo(buttonsTd)
-		.button()
-		.click(function() {
-			$("#TeamTime").find("tr.SpeedScore").toggleClass("Show", this.checked);
-		});
-
-	$("<label>").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
-		.appendTo(buttonsTd);
-	$("<input type='checkbox'>").attr("id", "ShowClockControlsButton")
-		.appendTo(buttonsTd)
-		.button()
-		.click(function() {
-			$("#TeamTime").find("tr.Control").toggleClass("Show", this.checked);
-		});
+		.click(createOperatorSettingsDialog);
 
 	$("<button>").attr("id", "GameControl")
 		.text("Start New Game")
@@ -436,31 +417,119 @@ function createOvertimeDialog() {
 	});
 }
 
+var operatorSettings = [
+	{ id: "ShowUndo", display: "Show UNDO Controls", type: "select", values: [
+			{ text:"None", value: "0" }, 
+			{ text: "Single Button", value: "1" },
+			{ text: "Three Buttons", value: "3" }
+		], defaultValue: "1", func: function(value) {
+			$("#TeamTime").find(".UndoControls").toggleClass("ShowUndo", value == "3");
+			$("#TeamTime").find(".SingleUndoControl").toggleClass("ShowUndo", value == "1");
+		}},
+	{ id: "ShowSpeedScore", display: "Show Speed Score Controls", type: "boolean", defaultValue: "False", func: function(value) {
+		$("#TeamTime").find("tr.SpeedScore").toggleClass("Show", isTrue(value));
+	}},
+	{ id: "ShowStartStop", display: "Show Start/Stop Buttons", type: "boolean", defaultValue: "False", func: function(value) {
+		$("#TeamTime").find("tr.Control").toggleClass("Show", isTrue(value));
+	}}
+];
+
+function setOperatorSettingsToDefault() {
+	$.each( operatorSettings, function(i, setting) {
+		var path = "ScoreBoard.Settings.Setting(Operator." + setting.id + ")";
+		$sb(path).$sbSet(setting.defaultValue);
+	})
+}
+
+function loadOperatorSettings(path) {
+	$.each( operatorSettings, function(i, setting) {
+		var settingsPath = "ScoreBoard.Settings.Setting(Operator." + setting.id + ")";
+		var operatorPath = path + ".Setting(" + setting.id + ")";
+		var value = $sb(operatorPath).$sbGet();
+		if (value == null) {
+			value = setting.defaultValue;
+			$sb(operatorPath).$sbSet(value);
+		}
+		$sb(settingsPath).$sbSet(value);
+	})
+}
+
+function createOperatorSettingsDialog() {
+	var dialog = $("<div>");
+	$("<span>").text("These settings will be stored under your login.").appendTo(dialog);
+
+	var table = $("<table>").appendTo(dialog).addClass("OperatorSettingsDialog");
+
+	$.each( operatorSettings, function(i, setting) {
+		var path = "ScoreBoard.Settings.Setting(Operator." + setting.id + ")";
+		var row = $("<tr>").appendTo(table);
+		$("<td>").addClass("Name").text(setting.display).appendTo(row);
+		var options = {};
+		if (setting.type == "time") {
+			options.sbelement = { convert: _timeConversions.msToMinSec };
+			options.sbcontrol = { convert: _timeConversions.minSecToMs };
+		}
+		if (setting.type == "boolean") {
+			$sb(path).$sbControl($("<select>"), { sbelement: {
+				prependOptions: [
+					{ text: "Yes", value: "True" },
+					{ text: "No", value: "False" }
+			]}})
+			.appendTo($("<td>").addClass("Value").appendTo(row));			
+		} else if (setting.type == "select") {
+			$sb(path).$sbControl($("<select>"), { sbelement: {
+				prependOptions: setting.values
+			}})
+			.appendTo($("<td>").addClass("Value").appendTo(row));						
+		} else {
+			$sb(path).$sbControl($("<input>").attr("type", "text"), options)
+				.appendTo($("<td>").addClass("Value").appendTo(row));
+		}
+		$sb(path).$sbBindAndRun("sbchange", function(event, value) {
+			var perOperatorPath = "Pages.Page(operator.html).Operator("+$("#operatorId").text()+").Setting("+setting.id+")";
+			$sb(perOperatorPath).$sbSet(value);
+			setting.func(value);
+		})
+	});
+
+	return $("<div>").append(table).dialog({
+		title: "Operator Settings",
+		width: "600px",
+		modal: true,
+		buttons: { Close: function() { $(this).dialog("close"); } },
+		close: function() { $(this).dialog("destroy").remove(); }
+	});
+}
+
 function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
-	var controlsTr = createRowTable(3,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
+	var controlsTr = createRowTable(4,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
 
 	$sb("ScoreBoard.StartJam").$sbControl("<button>").text("Start Jam").val("true")
 		.attr("id", "StartJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(0)"));
 	$sb("ScoreBoard.UnStartJam").$sbControl("<button>").text("UN-Start Jam").val("true")
-		.attr("id", "UnStartJam").addClass("KeyControl UndoControls ShowUndo").button()
+		.attr("id", "UnStartJam").addClass("KeyControl UndoControls").button()
 		.appendTo(controlsTr.children("td:eq(0)"));
 
 	$sb("ScoreBoard.StopJam").$sbControl("<button>").text("Stop Jam/TO").val("true")
 		.attr("id", "StopJam").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
 	$sb("ScoreBoard.UnStopJam").$sbControl("<button>").text("UN-Stop Jam/TO").val("true")
-		.attr("id", "UnStopJam").addClass("KeyControl UndoControls ShowUndo").button()
+		.attr("id", "UnStopJam").addClass("KeyControl UndoControls").button()
 		.appendTo(controlsTr.children("td:eq(1)"));
 
 	$sb("ScoreBoard.Timeout").$sbControl("<button>").text("Timeout").val("true")
 		.attr("id", "Timeout").addClass("KeyControl").button()
 		.appendTo(controlsTr.children("td:eq(2)"));
 	$sb("ScoreBoard.UnTimeout").$sbControl("<button>").text("UN-Timeout").val("true")
-		.attr("id", "UnTimeout").addClass("KeyControl UndoControls ShowUndo").button()
+		.attr("id", "UnTimeout").addClass("KeyControl UndoControls").button()
 		.appendTo(controlsTr.children("td:eq(2)"));
 
+	$sb("ScoreBoard.ClockUndo").$sbControl("<button>").text("Undo").val("true")
+		.attr("id", "ClockUndo").addClass("KeyControl SingleUndoControl ShowUndo").button()
+		.appendTo(controlsTr.children("td:eq(3)"));
+	
 	return table;
 }
 
