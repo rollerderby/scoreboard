@@ -101,9 +101,18 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setInPeriod(false);
 		setInOvertime(false);
 		restartPcAfterTimeout = false;
+		snapshot = null;
 		
 		settings.reset();
 		stats.reset();
+		
+		setLabel(BUTTON_START, ACTION_START_JAM);
+		setLabel(BUTTON_UNSTART, ACTION_NONE);
+		setLabel(BUTTON_STOP, ACTION_LINEUP);
+		setLabel(BUTTON_UNSTOP, ACTION_NONE);
+		setLabel(BUTTON_TIMEOUT, ACTION_TIMEOUT);
+		setLabel(BUTTON_UNTIMEOUT, ACTION_NONE);
+		setLabel(BUTTON_UNDO, ACTION_NONE);
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
@@ -148,6 +157,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (!pc.isTimeAtEnd())
 				return;
 			createSnapshot(ACTION_OVERTIME);
+			setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 			
 			requestBatchStart();
 			setInOvertime(true);
@@ -174,6 +184,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			if (!getClock(Clock.ID_JAM).isRunning()) {
 				createSnapshot(ACTION_START_JAM);
+				setLabels(ACTION_NONE, ACTION_STOP_JAM, ACTION_TIMEOUT);
 				_startJam();
 				ScoreBoardManager.gameSnapshot();
 			}
@@ -188,12 +199,15 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (jc.isRunning()) {
 				ScoreBoardManager.gameSnapshot(true);
 				createSnapshot(ACTION_STOP_JAM);
+				setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 				_endJam(false);
 			} else if (tc.isRunning()) {
 				createSnapshot(ACTION_STOP_TO);
+				setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 				_endTimeout();
 			} else if (!lc.isRunning()) {
 				createSnapshot(ACTION_LINEUP);
+				setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 				_startLineup();
 			}
 		}
@@ -201,6 +215,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public void timeout() { 
 		synchronized (runLock) {
 			createSnapshot(ACTION_TIMEOUT);
+			setLabels(ACTION_START_JAM, ACTION_STOP_TO, ACTION_NONE);
 			_startTimeout();
 			ScoreBoardManager.gameSnapshot();
 		}
@@ -402,6 +417,25 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 
 	protected void createSnapshot(String type) {
+		setLabel(BUTTON_UNDO, UNDO_PREFIX + type);
+		if (type == ACTION_START_JAM) {
+			setLabel(BUTTON_UNSTART, UNDO_PREFIX + type);
+		} else {
+			setLabel(BUTTON_UNSTART, ACTION_NONE);
+		}
+		if (type == ACTION_STOP_JAM ||
+				type == ACTION_STOP_TO ||
+				type == ACTION_LINEUP ||
+				type == ACTION_OVERTIME) {
+			setLabel(BUTTON_UNSTOP, UNDO_PREFIX + type);
+		} else {
+			setLabel(BUTTON_UNSTOP, ACTION_NONE);
+		}
+		if (type == ACTION_TIMEOUT) {
+			setLabel(BUTTON_UNTIMEOUT, UNDO_PREFIX + type);
+		} else {
+			setLabel(BUTTON_UNTIMEOUT, ACTION_NONE);
+		}
 		snapshot = new ScoreBoardSnapshot(this, DefaultClockModel.updateClockTimerTask.getCurrentTime(), type);
 	}
 	protected long restoreSnapshot() {
@@ -417,7 +451,12 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setInOvertime(snapshot.inOvertime());
 		setInPeriod(snapshot.inPeriod());
 		restartPcAfterTimeout = snapshot.restartPcAfterTo();
+		setLabels(snapshot.getStartLabel(), snapshot.getStopLabel(), snapshot.getTimeoutLabel());
 		snapshot = null;
+		setLabel(BUTTON_UNDO, ACTION_NONE);
+		setLabel(BUTTON_UNSTART, ACTION_NONE);
+		setLabel(BUTTON_UNSTOP, ACTION_NONE);
+		setLabel(BUTTON_UNTIMEOUT, ACTION_NONE);
 		return relapseTime;
 	}
 	protected void relapseTime(long time) {
@@ -447,7 +486,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		if (snapshot != null && 
 				(snapshot.getType() == ACTION_STOP_JAM ||
 				 snapshot.getType() == ACTION_STOP_TO ||
-				 snapshot.getType() == ACTION_LINEUP)) {
+				 snapshot.getType() == ACTION_LINEUP ||
+				 snapshot.getType() == ACTION_OVERTIME)) {
 			clockUndo();
 		}
 	}
@@ -458,6 +498,15 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 
+	protected void setLabel(String id, String value) {
+		settings.set(id, value);
+	}
+	protected void setLabels(String startLabel, String stopLabel, String timeoutLabel) {
+		setLabel(BUTTON_START, startLabel);
+		setLabel(BUTTON_STOP, stopLabel);
+		setLabel(BUTTON_TIMEOUT, timeoutLabel);
+	}
+	
 	public Ruleset _getRuleset() {
 		synchronized (rulesetLock) {
 			if (ruleset == null) {
@@ -625,6 +674,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			inOvertime = sbm.isInOvertime();
 			inPeriod = sbm.isInPeriod();
 			restartPcAfterTo = sbm.restartPcAfterTimeout;
+			startLabel = sbm.getSettings().get(BUTTON_START);
+			stopLabel = sbm.getSettings().get(BUTTON_STOP);
+			timeoutLabel = sbm.getSettings().get(BUTTON_TIMEOUT);
 			clockSnapshots = new HashMap<String, DefaultClockModel.ClockSnapshotModel>();
 			for (ClockModel clock : sbm.getClockModels()) {
 				clockSnapshots.put(clock.getId(), clock.snapshot());
@@ -642,6 +694,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		public boolean inOvertime() { return inOvertime; }
 		public boolean inPeriod() { return inPeriod; }
 		public boolean restartPcAfterTo() { return restartPcAfterTo; }
+		public String getStartLabel() { return startLabel; }
+		public String getStopLabel() { return stopLabel; }
+		public String getTimeoutLabel() { return timeoutLabel; }
 		public Map<String, ClockModel.ClockSnapshotModel> getClockSnapshots() { return clockSnapshots; }
 		public Map<String, TeamModel.TeamSnapshotModel> getTeamSnapshots() { return teamSnapshots; }
 		public DefaultClockModel.ClockSnapshotModel getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
@@ -654,6 +709,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		protected boolean inOvertime;
 		protected boolean inPeriod;
 		protected boolean restartPcAfterTo;
+		protected String startLabel;
+		protected String stopLabel;
+		protected String timeoutLabel;
 		protected Map<String, ClockModel.ClockSnapshotModel> clockSnapshots;
 		protected Map<String, TeamModel.TeamSnapshotModel> teamSnapshots;
 	}
@@ -664,6 +722,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	public static final String SETTING_AUTO_START = "Operator.AutoStart";
 	public static final String SETTING_AUTO_START_BUFFER = "Operator.AutoStartBuffer";
+
+	public static final String BUTTON_START = "ScoreBoard.Button.StartLabel";
+	public static final String BUTTON_UNSTART = "ScoreBoard.Button.UnStartLabel";
+	public static final String BUTTON_STOP = "ScoreBoard.Button.StopLabel";
+	public static final String BUTTON_UNSTOP = "ScoreBoard.Button.UnStopLabel";
+	public static final String BUTTON_TIMEOUT = "ScoreBoard.Button.TimeoutLabel";
+	public static final String BUTTON_UNTIMEOUT = "ScoreBoard.Button.UnTimeoutLabel";
+	public static final String BUTTON_UNDO = "ScoreBoard.Button.UndoLabel";
 	
 	public static final String ACTION_START_JAM = "Start Jam";
 	public static final String ACTION_STOP_JAM = "Stop Jam";
@@ -671,6 +737,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String ACTION_LINEUP = "Lineup";
 	public static final String ACTION_TIMEOUT = "Timeout";
 	public static final String ACTION_OVERTIME = "Overtime";
+	public static final String ACTION_NONE = "";
+	public static final String UNDO_PREFIX = "Un-";
 
 	public static final String AUTO_START_DISABLED = "Off";
 	public static final String AUTO_START_JAM = "Jam";
