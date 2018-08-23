@@ -60,10 +60,6 @@ public class Ruleset {
 
 			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM, "ResetNumberEachPeriod",   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
 
-			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStart",   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
-			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartBuffer",   "How long to wait after end of lineup before auto start is triggered.", "0:02"));
-			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartType",   "What to start after lineup is up", false, "Jam", "Timeout"));
-			
 			newRule( new StringRule(false, "ScoreBoard", null, "PenaltyDefinitionFile", "", "/config/penalties/wftda2018.json"));
 			newRule(new BooleanRule(false, "ScoreBoard", null, "HideJamTotals",   "Should the score for the current Jam be displayed?", false, "Hide Jam Totals", "Show Jam Totals"));
 			newRule( new StringRule(false, "ScoreBoard", null, "BackgroundStyle", "Background style to be used. Possible values: bg_blacktowhite, bg_whitetoblack, bg_black", "bg_black"));
