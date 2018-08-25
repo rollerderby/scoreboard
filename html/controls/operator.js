@@ -266,7 +266,6 @@ function createGameControlDialog() {
 			Team1: adhocGame.find("select.Team1").val(),
 			Team2: adhocGame.find("select.Team2").val(),
 			Ruleset: adhocGame.find("select.Ruleset").val(),
-			Name: adhocGame.find("span.Name").text(),
 			IntermissionClock: IntermissionClock
 		};
 		console.log(game);
@@ -289,10 +288,6 @@ function createGameControlDialog() {
 		.append($("<select>").addClass("Ruleset"))
 		.appendTo(adhocGame);
 	$("<div>")
-		.append($("<span>").append("Game Name: "))
-		.append($("<span>").addClass("Name"))
-		.appendTo(adhocGame);
-	$("<div>")
 		.append($("<span>").append("Start Time: "))
 		.append($("<input>").attr("type", "time").addClass("StartTime"))
 		.appendTo(adhocGame);
@@ -307,14 +302,6 @@ function createGameControlDialog() {
 		var t1 = adhocGame.find("select.Team1 option:selected");
 		var t2 = adhocGame.find("select.Team2 option:selected");
 		if (t1.val() != "" && t2.val() != "") {
-			var now = new Date();
-			var d = now.getFullYear() + '-' +
-				_timeConversions.twoDigit(now.getMonth()+1) + '-' +
-				_timeConversions.twoDigit(now.getDate()) + ' ' +
-				_timeConversions.twoDigit(now.getHours()) + ':' +
-				_timeConversions.twoDigit(now.getMinutes());
-			var name = d + " - " + t1.text() + " vs " + t2.text();
-			adhocGame.find("span.Name").text(name);
 			adhocGame.find("button.StartGame").button("option", "disabled", false);
 		} else {
 			adhocGame.find("button.StartGame").button("option", "disabled", true);

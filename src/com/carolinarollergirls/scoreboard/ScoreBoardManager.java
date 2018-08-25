@@ -157,19 +157,6 @@ public class ScoreBoardManager {
 		catch ( IOException ioE ) { }
 	}
 
-	public static Game gameStart(String name) {
-		synchronized (gameLock) {
-			if (game != null)
-				game.stop();
-			game = new Game(scoreBoardModel);
-			game.start(name);
-			return game;
-		}
-	}
-	public static Game getGame() {
-		return game;
-	}
-
 	/* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
 	public static boolean ObjectsEquals(Object a, Object b) {
 		if ((null == a) != (null == b))
@@ -199,8 +186,6 @@ public class ScoreBoardManager {
 	private static String versionBuild;
 
 	private static File defaultPath = new File(".");
-	private static Game game = null;
-	private static Object gameLock = new Object();
 
 	public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
 	public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
@@ -210,8 +195,4 @@ public class ScoreBoardManager {
 
 	public static final String PROPERTIES_DIR_NAME = "config";
 	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
-
-	public static final String PROPERTY_MODEL_KEY = ScoreBoardManager.class.getName()+".model";
-	public static final String PROPERTY_CONTROLLER_KEY = ScoreBoardManager.class.getName()+".controller";
-	public static final String PROPERTY_VIEWER_KEY = ScoreBoardManager.class.getName()+".viewer";
 }
