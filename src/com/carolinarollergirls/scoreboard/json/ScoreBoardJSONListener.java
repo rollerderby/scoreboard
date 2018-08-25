@@ -32,8 +32,8 @@ import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
  */
 public class ScoreBoardJSONListener implements ScoreBoardListener
 {
-	public ScoreBoardJSONListener(ScoreBoard sb, WS ws) {
-		this.ws = ws;
+	public ScoreBoardJSONListener(ScoreBoard sb, JSONStateManager jsm) {
+		this.jsm = jsm;
 		initialize(sb);
 		sb.addScoreBoardListener(this);
 	}
@@ -146,7 +146,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		synchronized (this) {
 			if (updates.isEmpty())
 				return;
-			ws.updateState(updates);
+			jsm.updateState(updates);
 			updates.clear();
 		}
 	}
@@ -360,7 +360,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	}
 
 
-	private WS ws;
+	private JSONStateManager jsm;
 	private PenaltyCodesManager pm = new PenaltyCodesManager();
 	private List<WSUpdate> updates = new LinkedList<WSUpdate>();
 	private long batch = 0;
