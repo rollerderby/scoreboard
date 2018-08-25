@@ -107,6 +107,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setOfficialReview(false);
 		setInPeriod(false);
 		setInOvertime(false);
+		setOfficialScore(false);
 		restartPcAfterTimeout = false;
 		
 		settings.reset();
