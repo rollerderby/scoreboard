@@ -183,7 +183,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (!getClock(Clock.ID_JAM).isRunning()) {
 				createSnapshot(ACTION_START_JAM);
 				_startJam();
-				ScoreBoardManager.gameSnapshot();
 			}
 		}
 	}
@@ -194,7 +193,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 
 			if (jc.isRunning()) {
-				ScoreBoardManager.gameSnapshot(true);
 				createSnapshot(ACTION_STOP_JAM);
 				_endJam(false);
 			} else if (tc.isRunning()) {
@@ -210,7 +208,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			createSnapshot(ACTION_TIMEOUT);
 			_startTimeout();
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 	public void startTimeoutType(String owner, boolean review) {
@@ -442,7 +439,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			long time = restoreSnapshot();
 			relapseTime(time);
 			requestBatchEnd();
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 	public void unStartJam() {

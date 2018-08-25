@@ -89,7 +89,6 @@ public class DefaultPositionModel extends DefaultScoreBoardEventProvider impleme
 				Boolean last = new Boolean(penaltyBox);
 				penaltyBox = box;
 				scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
-				ScoreBoardManager.gameSnapshot();
 			}
 		}
 	}

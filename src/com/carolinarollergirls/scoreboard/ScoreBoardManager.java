@@ -157,18 +157,6 @@ public class ScoreBoardManager {
 		catch ( IOException ioE ) { }
 	}
 
-	public static void gameSnapshot() {
-		synchronized (gameLock) {
-			if (game != null)
-				game.snapshot(false);
-		}
-	}
-	public static void gameSnapshot(boolean jamEnd) {
-		synchronized (gameLock) {
-			if (game != null)
-				game.snapshot(jamEnd);
-		}
-	}
 	public static Game gameStart(String name) {
 		synchronized (gameLock) {
 			if (game != null)
