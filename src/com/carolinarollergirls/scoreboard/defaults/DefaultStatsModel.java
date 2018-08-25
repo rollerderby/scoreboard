@@ -414,14 +414,14 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       if (ssm != null) {
         ssm.removeScoreBoardListener(this);
         skaters.remove(sid);
-        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, this, null));
+        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ssm, null));
       }
     }
     public synchronized void removeSkaterStatsModels() {
       for (SkaterStatsModel ssm : skaters.values()) {
         ssm.removeScoreBoardListener(this);
         skaters.remove(ssm.getSkaterId());
-        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, this, null));
+        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ssm, null));
       }
     }
 
