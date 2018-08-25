@@ -32,15 +32,14 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardController;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 // import org.eclipse.jetty.util.resource.Resource;
 
 
-public class JettyServletScoreBoardController implements ScoreBoardController
+public class JettyServletScoreBoardController
 {
-	public void setScoreBoardModel(ScoreBoardModel model) {
+	public JettyServletScoreBoardController(ScoreBoardModel model) {
 		scoreBoardModel = model;
 
 		init();
