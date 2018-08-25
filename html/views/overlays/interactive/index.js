@@ -103,6 +103,18 @@ function initialize() {
 		$('.LowerThird .Line2').removeClass( 'ColourTeam1 ColourTeam2 ColourDefault' ).addClass(v);
 	});
 
+	$(document).keyup(function(e) {
+		if(e.which == 74) { WS.Set('Custom.Overlay.ShowJammers', WS.state['Custom.Overlay.ShowJammers'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 67) { WS.Set('Custom.Overlay.Clock', WS.state['Custom.Overlay.Clock'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 83) { WS.Set('Custom.Overlay.Score', WS.state['Custom.Overlay.Score'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 49) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'RosterTeam1' ? '' : 'RosterTeam1'); }
+		if(e.which == 50) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
+		if(e.which == 51) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
+		if(e.which == 52) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
+		if(e.which == 32) { WS.Set('Custom.Overlay.Panel', ''); }
+	});
+
+	setTimeout(function() { $('body').removeClass('preload'); }, 1000);                                                                                                                                            
 
 }
 
@@ -310,8 +322,9 @@ function clockType(k,v) {
 
 	if(tc) {
 		ret = WS.state["ScoreBoard.Clock(Timeout).Name"];
-		if(to != "" && or) { ret = 'Official Review'; }
-		if(to != "" && !or) { ret = 'Team Timeout'; }
+		if(to != "" && to != "O" && or) { ret = 'Official Review'; }
+		if(to != "" && to != "O" && !or) { ret = 'Team Timeout'; }
+		if(to == "O") { ret = 'Official Timeout'; }
 		$('.ClockDescription').css('backgroundColor', 'red');
 	} else if(lc) {
 		ret = WS.state["ScoreBoard.Clock(Lineup).Name"];

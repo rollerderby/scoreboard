@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Penalty Tracker</title>
+		<!--
+		 Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
+
+		 This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+		 The CRG ScoreBoard is licensed under either the GNU General Public
+		 License version 3 (or later), or the Apache License 2.0, at your option.
+		 See the file COPYING for details.
+		-->
+		<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+		<script type="text/javascript" src="/json/core.js"></script>
+		<script type="text/javascript" src="ptcolor.js"></script>
+	</head>
+	<body>
+		<table class="Team Team1 NormalHeight" cellpadding="0" cellspacing="0" border="1">
+			<thead>
+				<tr>
+					<td>#</td>
+					<td colspan="9" id="head1" style="opacity: .7;">PENALTY / JAM #</td>
+					<td>FO/EXP</td>
+					<td>TOTAL</td>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+		<table class="Team Team2 NormalHeight" cellpadding="0" cellspacing="0" border="1">
+			<thead>
+				<tr>
+					<td>#</td>
+					<td colspan="9" id="head2" style="opacity: .7;">PENALTY / JAM #</td>
+					<td>FO/EXP</td>
+					<td id="toggle">
+						<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" width="25" height="25" viewBox="0 0 612.363 612.363" style="enable-background:new 0 0 612.363 612.363;" xml:space="preserve">
+							<g id="_x35_">
+									<path d="M210.498,344.459L90.804,466.526l-41.742-41.742c-9.034-9.033-18.201-18.641-29.129-18.66     c-10.928-0.019-19.77,8.823-19.751,19.751l0.229,165.034c0,5.837,2.641,10.928,6.661,14.564c3.636,4.019,8.746,6.641,14.564,6.66     l165.053,0.229c10.928,0.02,19.77-8.823,19.751-19.751c-0.019-10.929-12.766-23.216-18.239-28.689l-41.742-41.741     l121.455-120.307L210.498,344.459z M611.952,21.952c0-5.972-2.68-11.196-6.775-14.909c-3.693-4.115-8.88-6.794-14.813-6.813     L422.536,0c-11.101-0.02-20.096,9.033-20.096,20.21c0.019,11.177,12.976,23.77,18.545,29.359l42.45,42.718L344.469,210.469     l57.416,57.416l118.144-118.641l42.45,42.718c9.187,9.244,18.507,19.082,29.607,19.101c11.12,0.019,20.096-9.034,20.096-20.21     L611.952,21.952z" fill="#FFFFFF"/>
+							</g>
+						</svg>
+				</td>
+				</tr>
+			</thead>
+			<tbody>
+			</tbody>
+		</table>
+		<div class="PenaltyEditor">
+			<table width="75%">
+				<tr>
+					<td width="33%">Period: <button class="period_minus">-1</button> <select class="Period"></select> <button class="period_plus">+1</button></td>
+					<td width="33%">Jam: <button class="jam_minus">-1</button> <select class="Jam"></select> <button class="jam_plus">+1</button></td>
+					<td width="33%"><button class="clear">Clear</button></td>
+				</tr>
+			</table>
+			<div class="Codes"></div>
+		</div>
+	</body>
+</html>

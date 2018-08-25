@@ -1,0 +1,323 @@
+/**
+ * Copyright (C) 2008-2013 Mr Temper <MrTemper@CarolinaRollergirls.com>, Rob Thomas, and WrathOfJon <crgscorespam@sacredregion.com>
+ *
+ * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
+ * The CRG ScoreBoard is licensed under either the GNU General Public
+ * License version 3 (or later), or the Apache License 2.0, at your option.
+ * See the file COPYING for details.
+ */
+
+@font-face {
+    font-family: 'franklin_gothic_mediumregular';
+    src: url('/fonts/franklin_gothic_mediumregular/framd-webfont.eot');
+    src: url('/fonts/franklin_gothic_mediumregular/framd-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/fonts/franklin_gothic_mediumregular/framd-webfont.woff') format('woff'),
+         url('/fonts/franklin_gothic_mediumregular/framd-webfont.ttf') format('truetype'),
+         url('/fonts/franklin_gothic_mediumregular/framd-webfont.svg#franklin_gothic_mediumregular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+/* Change this background color to whatever your overlay chromakey is set to */
+body { background-color: #000; font-size: 10pt; 
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+}
+
+img { position: absolute; }
+div { position: absolute; } 
+
+div.Full { width: 100%; height: 100%; }
+img.Bar { width: 100%; top: 0%; }
+img.BotBar { width: 100%; top: 75.6%; }
+/* img.Bar { width: 100%; top: 79.5%; } */
+
+#mainDiv.hideyou { visibility: hidden; }
+
+#WftdaMainF { z-index:104; }
+#WftdaMainB { z-index:102; }
+#WftdaMainL3 { z-index:101; }
+
+
+#WftdaT1JB { z-index:85; }
+#WftdaT1JB.SwapTeams { left: 23.6%; }
+#WftdaT2JB { z-index:86; }
+#WftdaT2JB.SwapTeams { right: 23.6%; }
+
+
+/* These slide up from behind the main image, in front of the jammer bar */
+#WftdaT1LD { z-index:87; top: 3.3%; }
+#WftdaT1LD.Show {top: 0%; }
+#WftdaT1LD.SwapTeams { left: 23.6%; }
+#WftdaT2LD { z-index:88; top: 3.3%; }
+#WftdaT2LD.Show { top: 0%; }
+#WftdaT2LD.SwapTeams { right: 23.6%; }
+
+/* These probably DON'T need to be on seperate z-indexes.. But if they want to change the logos, they may. */
+
+#WftdaOTO { z-index:59; top: 4% ; }
+#WftdaOTO.Show { top: 0%; }
+
+#WftdaT1ORB { z-index:57; top: 4%; }
+#WftdaT1ORB.Show { top: 0%; }
+#WftdaT1ORB.SwapTeams { left: 23.6%; }
+#WftdaT1OR { z-index:200; }
+#WftdaT1OR.SwapTeams { left: 23.6%; }
+#WftdaT1TOB { z-index:58; top: 4%; }
+#WftdaT1TOB.Show { top: 0%; }
+#WftdaT1TOB.SwapTeams { left: 23.6%; }
+#WftdaT1T1 { z-index:190; }
+#WftdaT1T1.SwapTeams { left: 23.6%; }
+#WftdaT1T2 { z-index:180; }
+#WftdaT1T2.SwapTeams { left: 23.6%; }
+#WftdaT1T3 { z-index:170; }
+#WftdaT1T3.SwapTeams { left: 23.6%; }
+
+#WftdaT2ORB { z-index:67; top: 4%; }
+#WftdaT2ORB.Show { top: 0%; }
+#WftdaT2ORB.SwapTeams { right: 23.6%; }
+#WftdaT2OR { z-index:150; }
+#WftdaT2OR.SwapTeams { right: 23.6%; }
+#WftdaT2TOB { z-index:68; top: 4%; }
+#WftdaT2TOB.Show { top: 0%; }
+#WftdaT2TOB.SwapTeams { right: 23.6%; }
+#WftdaT2T1 { z-index:140; }
+#WftdaT2T1.SwapTeams { right: 23.6%; }
+#WftdaT2T2 { z-index:130; }
+#WftdaT2T2.SwapTeams { right: 23.6%; }
+#WftdaT2T3 { z-index:120; }
+#WftdaT2T3.SwapTeams { right: 23.6%; }
+
+#WftdaSTB { z-index:53; top: 4%; }
+#WftdaSTB.Show { top: 0%; }
+
+
+/*
+a {
+  position: relative;
+  font-family: 'LiberationSans',helvetica;
+  font-weight: bold;
+}
+*/
+
+
+a {
+  position: relative;
+  font-family: 'roboto';
+  font-weight: bold;
+}
+
+
+/*
+a {
+  position: relative;
+  font-family: 'franklin_gothic_mediumregular';
+}
+*/
+
+#StatusBar { left: 25.4%; right: 23.7%; top: 12.6%; bottom: 2%; height: 6.5%; text-align: center; font-size: 4.9%; z-index: 300; color: white; }
+ 
+#StatusBar.Prebout { left: 61.5%; right: 23.7%; top: 86.8%; bottom: 2%; height: 7%; text-align: center; font-size: 3.9%; z-index: 300; color: black; }
+#StatusBar.Halftime { left: 61.5%; right: 23.7%; top: 86.3%; bottom: 2%; height: 7%; text-align: center; font-size: 4.9%; z-index: 300; color: black; }
+#StatusBar.Postgame { left: 61.5%; right: 23.7%; top: 86.5%; bottom: 2%; height: 7%; text-align: center; font-size: 4.9%; z-index: 300; color: black; }
+
+#TopBar { left: 15.9%; width: 66.27%; top: 49.6%; height: 100%; text-align: center; z-index: 300; font-size: 4.3%; }
+#BottomBar { left: 0.6%; width: 100%; top: 19.8%; height: 67.2%; text-align: center; z-index: 300; font-size: 6.5%; }
+
+/* #StatusBar a { color: white; } */
+#ClockPeriodNumber { top: 88.3%; height: 3.5%; left: 62.1%; width: 3%; text-align: center; font-size: 2.9%; }
+#ClockPeriodNumber.ShowIntermission { display: none; } 
+
+#ClockPeriodTime { top: 86.65%; height: 6%; left: 64.8%; width: 8%; text-align: center; font-size: 4.75%; }
+#ClockPeriodTime:not(.ShowPeriod) { display: none; }
+
+#ClockIntermissionTime { top: 92%; height: 4%; left: 65.9%; width: 6%; text-align: center; font-size: 3.6%; color: white; }
+#ClockIntermissionTime:not(.ShowIntermission) { display: none; }
+
+#ClockJamTime { top: 92%; height: 4%; left: 65.9%; width: 6%; text-align: center; font-size: 3.6%; color: white; }
+#ClockJamTime:not(.ShowJam) { display: none; }
+
+#ClockLineupTime { top: 92%; height: 4%; left: 65.9%; width: 6%; text-align: center; font-size: 3.6%; color: white; }
+#ClockLineupTime:not(.ShowLineup) { display: none; }
+
+#ClockTimeoutTime { top: 92%; height: 4%; left: 65.9%; width: 6%; text-align: center; font-size: 3.6%; color: white; }
+#ClockTimeoutTime:not(.ShowTimeout) { display: none; }
+
+#ClockJamNumber { top: 88.3%; height: 3.5%; left: 72.5%; width: 3.5%; text-align: center; font-size: 2.9%; }
+#ClockJamNumber.ShowIntermission { display: none; } 
+
+
+
+#JammerBar { left: 0%; width: 100%; top: 3.3%; height: 100%;}
+#JammerBar.Show { left: 0%; width: 100%; top: 0%; height: 100%;}
+
+#BottomSwatchBar { left: 27.5%; width: 72.3%; top: 19.2%; height: 67.5%; text-align: center; z-index: 103; }
+
+#Team1Color,#Team2Color.SwapTeams { top: 85.9%; height: 7.85%; left: 14.3%; width: 1.3%; text-align: center; overflow: hidden; font-size: 3.5%; z-index: 95; }
+
+#Team1Name,#Team2Name.SwapTeams { top: 87%; height: 5%; left: 15.4%; width: 16%; text-align: center; overflow: hidden; font-size: 3.5%; color: white; transform: scale(1,2); -webkit-transform: scale(1,2); }
+#Team1Name.SwapTeams { top: 87%; height: 5%; left: 38.9%; width: 16%; text-align: center; overflow: hidden; font-size: 3.5%; color: white; }
+
+
+#Team1JammerName,#Team2JammerName.SwapTeams { top: 81.7%; height: 4%; left: 14.8%; width: 18.5%; text-align: center; overflow: hidden; font-size: 3.5%; color: white; z-index: 90; }
+
+#Team1Score,#Team2Score.SwapTeams { top: 86.6%; height: 7%; right: 63%; width: 5.3%; text-align: center; font-size: 4.5%; }
+
+
+#Team2Color,#Team1Color.SwapTeams { top: 85.9%; height: 7.85%; left: 37.9%; width: 1.3%; text-align: center; overflow: hidden; font-size: 3.5%; z-index: 95; }
+
+#Team2Name,#Team1Name.SwapTeams { top: 87%; height: 5%; left: 38.9%; width: 16%; text-align: center; overflow: hidden; font-size: 3.5%; color: white; transform: scale(1,2); -webkit-transform: scale(1,2); }
+
+
+#Team2JammerName,#Team1JammerName.SwapTeams { top: 81.7%; height: 4%; left: 38.3%; width: 18.5%; text-align: center; overflow: hidden; font-size: 3.5%; color: white; z-index: 90; }
+
+#Team2Score,#Team1Score.SwapTeams { top: 86.6%; height: 7%; left: 55.2%; width: 5.3%; text-align: center; font-size: 4.5%; }
+#Team2Score.SwapTeams { top: 86.6%; height: 7%; left: 31.6%; width: 5.3%; text-align: center; font-size: 4.5%; }
+
+
+#Team1Name.AlternateName a.Name { display: none; }
+#Team1Name:not(.AlternateName) a.AlternateName { display: none; }
+#Team2Name.AlternateName a.Name { display: none; }
+#Team2Name:not(.AlternateName) a.AlternateName { display: none; }
+
+
+
+/* Jam Points */
+  /* Main box */
+#Team1JamPoints,#Team2JamPoints.SwapTeams { left: 31.4%; top: 93.48%; ; height: 3%; width: 5.8%; font-size: 2.4%; text-align: center; z-index: 150; }
+#Team2JamPoints,#Team1JamPoints.SwapTeams { left: 54.93%; top: 93.48%; ; height: 3%; width: 5.8%; font-size: 2.4%; text-align: center; z-index: 150; } 
+
+  /* Number sub-boxes */
+  .JamPoints>div.Team1,.JamPoints>div.Team2.SwapTeams { left: 0.8%; right: auto; }
+  .JamPoints>div.Team2,.JamPoints>div.Team1.SwapTeams { left: auto; right: 0.8%; }
+/* End Jam Points */
+
+
+
+
+
+/* New L3 stuff */
+
+#EventName { left: 35.4%; right: 31.1%; top: 76.2%; bottom: 2%; height: 4.5%; text-align: center; font-size: 2.5%; z-index: 300; color: white; transform: scale(1,1.5); -webkit-transform: scale(1,1.5); }
+
+#L3ClockIntermissionTime.Prebout { top: 88%; height: 10%; left: 49.4%; width: 11%; text-align: center; font-size: 7.6%; color: white; }
+#L3ClockIntermissionTime.Halftime { top: 86.8%; height: 7%; left: 50.5%; width: 9%; text-align: center; font-size: 5.6%; color: white; }
+
+#L3StatusBar { left: 61.4%; right: 23.7%; top: 82.8%; bottom: 2%; height: 4%; text-align: center; font-size: 2.9%; z-index: 300; color: white; }
+ 
+#L3StatusBar.Prebout { left: 40.5%; right: 31.1%; top: 86%; bottom: 2%; height: 7%; text-align: center; font-size: 2.7%; z-index: 300; color: pink; transform: scale(1,2); -webkit-transform: scale(1,2); }
+#L3StatusBar.Halftime { left: 41.2%; right: 31.1%; top: 92.5%; bottom: 2%; height: 7%; text-align: center; font-size: 4%; z-index: 300; color: pink; }
+#L3StatusBar.Postgame { left: 41.4%; right: 31.1%; top: 91.5%; bottom: 2%; height: 7%; text-align: center; font-size: 5%; z-index: 300; color: pink; }
+
+#BottomBarFullWidth { left: 0%; width: 100%; top 0%; height: 100%; text-align: center; z-index: 300; }
+
+#vs { top: 83.6%; height: 7%; left: 52.3%; width: 5.3%; text-align: center; font-size: 3%; color: white; }
+
+#L3Team1Name.AlternateName a.Name { display: none; }
+#L3Team1Name:not(.AlternateName) a.AlternateName { display: none; }
+#L3Team2Name.AlternateName a.Name { display: none; }
+#L3Team2Name:not(.AlternateName) a.AlternateName { display: none; }
+
+#L3Team1Name,#L3Team2Name.SwapTeams { top: 84.1%; height: 4%; left: 41%; width: 13%; text-align: center; overflow: hidden; font-size: 2.5%; color: white; transform: scale(1,2); -webkit-transform: scale(1,2); }
+
+#L3Team2Name,#L3Team1Name.SwapTeams { top: 84.1%; height: 4%; left: 55.9%; width: 13%; text-align: center; overflow: hidden; font-size: 2.5%; color: white; transform: scale(1,2); -webkit-transform: scale(1,2); }
+
+#L3Team1Score,#L3Team2Score.SwapTeams { top: 87.6%; height: 7%; left: 45.4%; width: 4.3%; text-align: center; font-size: 4.5%; color: white; }
+
+#L3Team2Score,#L3Team1Score.SwapTeams { top: 87.6%; height: 7%; left: 60.5%; width: 4.3%; text-align: center; font-size: 4.5%; color: white; }
+
+
+/* Team Logo sub-box */
+
+#LogoBar { z-index:150; }
+#ClockBar { z-index:150; }
+
+#Team1Logo { top: 0.2%; height: 18%; width: 10.5%; left: 22.4%; }
+#Team1Logo> img { top: 0%; bottom: 0%; left: 0%; right: 0%; max-height: 100%; max-width: 100%; display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto; } /* center img */
+
+#Team2Logo { top: 0.2%; height: 18%; width: 10.5%; left: 72.8%; }
+#Team2Logo> img { top: 0%; bottom: 0%; left: 0%; right: 0%; max-height: 100%; max-width: 100%; display: block; margin-left: auto; margin-right: auto; margin-top: auto; margin-bottom: auto; } /* center img */
+
+
+#Team1Logo.SwapTeams { left: 60.7%; }
+#Team2Logo.SwapTeams { left: 40.9%; }
+
+
+
+
+/*
+#Team1Logo,#Team2Logo { bottom: 0; height: 100%; }
+#Team1Logo { left: 0%; right: 90%; }
+#Team2Logo { left: 90%; right: 0% }
+*/
+
+.noBack {
+	background-color:rgba(0,255,0,0.0);
+}
+
+.hideme {
+        visibility: hidden;
+}
+
+/* Same css as the pt screen */
+.Team {
+	position: absolute;
+	width: 48.3%;
+	top: 0%;
+}
+.Team thead td { font-size: 100%; position: relative; font-family: 'roboto'; font-weight: bold; background-color: #000; color: #FFF; }
+.Teamd { top: 0%; font-size: 100%; font-family: 'roboto'; font-weight: bold; color: #FFF; }
+.tdivr { font-size: 58%; position: relative; font-family: 'roboto'; font-weight: bold; color: #FFF; height: 6.5%; }
+.Team td { text-align: center; vertical-align: center; font-size: 52%; color: #FFF; }
+.Team1  { right: 0.5%; font-family: 'roboto'; font-weight: bold; top: 12%; left: 1%; width: 47%; text-align: center; overflow: hidden;color: white; }
+.Teamd1 { left: 0.2%; height: 100%; width: 48%; text-align: center; overflow: hidden;color: white; }
+.Team2  { right: 0.5%; font-family: 'roboto'; font-weight: bold; top: 12%; left: 51%; width: 47%; text-align: center; overflow: hidden;color: white; }
+.Teamd2 { left: 51%; height: 100%; width: 48%; text-align: center; overflow: hidden;color: white; }
+/*
+.Team1 { right: 0.5%; font-family: 'roboto'; font-weight: bold; top: 12%; left: 1%; width: 47%; text-align: center; overflow: hidden;color: white; transform: scale(1,2); -webkit-transform: scale(1,2); }
+.Team2 { right: 0.5%; font-family: 'roboto'; font-weight: bold; top: 12%; left: 51%; width: 47%; text-align: center; overflow: hidden;color: white; transform: scale(1,2); -webkit-transform: scale(1,2); }
+*/
+.Team .Name .Number, .Team .Box, .Team .FO_EXP, .Team .Total { width: 5%; }
+.Number { left: 0%; width: 10%; text-align: right; }
+.Name { left: 12%; width: 44%; height: 100%; text-align: left; overflow: hidden; }
+/* .Team tr:nth-child(4n-2), .Team tr:nth-child(4n-0) { background-color: #CCC; } */
+/* .Penalty { height: 50%; } */
+/* 
+.Teamd1 { height: 50%; }
+.Teamd2 { height: 50%; }
+*/
+/*
+.Team .Warn1 { background-color: #fffd38; }
+.Team .Warn1:nth-child(4n-2), .Team .Warn1:nth-child(4n-0) { background-color: #ccca2d; }
+.Team .Warn2 { background-color: #ff8f2b; }
+.Team .Warn2:nth-child(4n-2), .Team .Warn2:nth-child(4n-0) { background-color: #cc7222; }
+.Team .Warn3 { background-color: #ff8080; }
+.Team .Warn3:nth-child(4n-2), .Team .Warn3:nth-child(4n-0) { background-color: #cc2d2d; }
+*/
+.PenaltyEditor .Codes>div { float: left; width: 150px; height: 80px; margin: 10px; font-weight: bold; }
+.PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }
+.PenaltyEditor .Codes>div div { text-align: center; }
+.PenaltyEditor .Codes>div .Code { font-size: 52%; background-color: #FAA; color: #000; }
+.PenaltyEditor .Codes>div .Description { font-size: 51%; }
+
+.Team1custColor { top: 0%; left: 0%; height: 100%; width:30%; background-color: #000000; opacity: .6; }
+.Team2custColor { top: 0%; right: 0%; height: 100%; width:30%; background-color: #000000; opacity: .6; }
+
+.Box { color: #FFF; width: 4%; font-size: 90%; top: 6%; }
+.Box1 { left: 56.5%; }
+.Box2 { left: 60.3%; }
+.Box3 { left: 64.2%; }
+.Box4 { left: 68.1%; }
+.Box5 { left: 72%; }
+.Box6 { left: 75.9%; }
+.Box7 { left: 79.8%; }
+.Box8 { left: 83.9%; }
+.Box9 { left: 87.9%; }
+.BoxFO_EXP { top: 12%; left: 92.3%; color: #FFF; font-size: 76%; }
+.Total { left: 97%; color: #FFF; }
+

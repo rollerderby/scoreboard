@@ -11,7 +11,11 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.File;
 import java.net.*;
 import java.util.*;
+import javax.servlet.*;
 
+import io.prometheus.client.exporter.*;
+import io.prometheus.client.filter.*;
+import io.prometheus.client.hotspot.*;
 import org.eclipse.jetty.server.*;
 import org.eclipse.jetty.server.bio.*;
 import org.eclipse.jetty.server.handler.*;
@@ -21,6 +25,7 @@ import org.eclipse.jetty.servlet.*;
 
 import com.carolinarollergirls.scoreboard.*;
 import com.carolinarollergirls.scoreboard.model.*;
+
 
 public class JettyServletScoreBoardController implements ScoreBoardController
 {
@@ -95,23 +100,39 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 		ContextHandlerCollection contexts = new ContextHandlerCollection();
 		server.setHandler(contexts);
 
+		ServletContextHandler sch = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
+		FilterHolder mf;
+		try {
+			// Only keep the first two path components.
+			mf = new FilterHolder(new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
+		} catch ( ServletException e ) {
+			// Can't actually throw an exception, so this should never happen.
+			throw new RuntimeException("Could not create MetricsFilter : "+e.getMessage());
+		}
+		sch.addFilter(mf, "/*", 1);
+
+		urlsServlet = new UrlsServlet(server);
+		sch.addServlet(new ServletHolder(urlsServlet), "/urls/*");
+
+		jsonServlet = new JSONServlet(server, scoreBoardModel);
+		sch.addServlet(new ServletHolder(jsonServlet), "/JSON/*");
+
+		ws = new WS(scoreBoardModel);
+		sch.addServlet(new ServletHolder(ws), "/WS/*");
+
+		DefaultExports.initialize();
+		metricsServlet = new MetricsServlet();
+		sch.addServlet(new ServletHolder(metricsServlet), "/metrics");
+
 		String staticPath = ScoreBoardManager.getProperty(PROPERTY_HTML_DIR_KEY);
 		if (null != staticPath) {
 			ServletContextHandler c = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
 			ServletHolder sh = new ServletHolder(new DefaultServlet());
 			sh.setInitParameter("org.eclipse.jetty.servlet.Default.cacheControl", "no-cache");
 			c.addServlet(sh, "/*");
+			c.addFilter(mf, "/*", 1);
 			c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), staticPath)).getPath());
 		}
-
-		urlsServlet = new UrlsServlet(server);
-		new ServletContextHandler(contexts, "/urls", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(urlsServlet), "/*");
-
-		jsonServlet = new JSONServlet(server, scoreBoardModel);
-		new ServletContextHandler(contexts, "/JSON", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(jsonServlet), "/*");
-
-		ws = new WS(scoreBoardModel);
-		new ServletContextHandler(contexts, "/WS", ServletContextHandler.SESSIONS).addServlet(new ServletHolder(ws), "/*");
 
 		Enumeration keys = ScoreBoardManager.getProperties().propertyNames();
 
@@ -126,6 +147,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 				ScoreBoardControllerServlet sbcS = (ScoreBoardControllerServlet)Class.forName(servlet).newInstance();
 				sbcS.setScoreBoardModel(scoreBoardModel);
 				ServletContextHandler c = new ServletContextHandler(contexts, sbcS.getPath(), ServletContextHandler.SESSIONS);
+				c.addFilter(mf, "/*", 1);
 				c.addServlet(new ServletHolder(sbcS), "/*");
 			} catch ( Exception e ) {
 				ScoreBoardManager.printMessage("Could not create Servlet " + servlet + " : " + e.getMessage());
@@ -145,6 +167,7 @@ public class JettyServletScoreBoardController implements ScoreBoardController
 	protected UrlsServlet urlsServlet;
 	protected JSONServlet jsonServlet;
 	protected WS ws;
+	protected MetricsServlet metricsServlet;
 
 	public static final int DEFAULT_PORT = 8000;
 	public static final String DEFAULT_SECURE_SESSION_ID = "false";

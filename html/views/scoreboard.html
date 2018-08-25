@@ -39,16 +39,22 @@
 						<div class="Timeout3 Dot"></div>
 					</div>
 				</div>
-				<div class="JamTotals OfficialReviews">
-					<div class="Team Team1 Number WhiteBox"></div>
-					<div class="Team Team1 Number TextContainer">
-						<div class="OfficialReview Dot"></div>
-					</div>
-					<div class="Team Team2 Number WhiteBox"></div>
-					<div class="Team Team2 Number TextContainer">
-						<div class="OfficialReview Dot"></div>
-					</div>
-				</div>
+                                <div class="JamTotals OfficialReviews">
+                                        <div class="Team Team1 Number WhiteBox"></div>
+                                        <div class="Team Team1 Number TextContainer">
+                                                <div class="OfficialReview Cross">
+                                                        <div class="CrossH"></div>
+                                                        <div class="CrossV"></div>
+                                                </div>
+                                        </div>
+                                        <div class="Team Team2 Number WhiteBox"></div>
+                                        <div class="Team Team2 Number TextContainer">
+                                                <div class="OfficialReview Cross">
+                                                        <div class="CrossH"></div>
+                                                        <div class="CrossV"></div>
+                                                </div>
+                                        </div>
+                                </div>
 				<div class="JamTotals JamPoints">
 					<!--
 					<div class="Name WhiteBox"></div>
@@ -161,10 +167,10 @@
 			<div id="imageDiv" class="View"><img /></div>
 			<div id="videoDiv" class="View"><video onended="this.play();"></video></div>
 			<div id="htmlDiv" class="View"><iframe></iframe></div>
-			<div style="width: 100%; height: 100%; background-color: rgb(128, 128, 128); position: absolute; bottom: 100%; background-position: initial initial; background-repeat: initial initial;"></div>
-			<div style="width: 100%; height: 100%; background-color: rgb(128, 128, 128); position: absolute; top: 100%; background-position: initial initial; background-repeat: initial initial;"></div>
-			<div style="width: 100%; height: 100%; background-color: rgb(128, 128, 128); position: absolute; left: 100%; background-position: initial initial; background-repeat: initial initial;"></div>
-			<div style="width: 100%; height: 100%; background-color: rgb(128, 128, 128); position: absolute; right: 100%; background-position: initial initial; background-repeat: initial initial;"></div>
+			<div id="topDiv" class="mainDivSurround"></div>
+			<div id="bottomDiv" class="mainDivSurround"></div>
+			<div id="rightDiv" class="mainDivSurround"></div>
+			<div id="leftDiv" class="mainDivSurround"></div>
 		</div>
 	</body>
 </html>

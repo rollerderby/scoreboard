@@ -10,3 +10,4 @@ var Game = {
 		});
 	}
 };
+//# sourceURL=json\Game.js

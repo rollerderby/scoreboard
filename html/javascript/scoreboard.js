@@ -74,3 +74,4 @@ $(function() {
 	});
 });
 
+//# sourceURL=scoreboard.js

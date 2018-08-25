@@ -92,3 +92,4 @@ $sb(function() {
 
 	$("#tabsDiv").tabs();
 });
+//# sourceURL=controls\stream.js
