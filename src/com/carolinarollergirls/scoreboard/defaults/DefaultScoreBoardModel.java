@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.CustomSettings;
 import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
@@ -22,6 +23,7 @@ import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.model.CustomSettingsModel;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
@@ -76,6 +78,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 		stats = new DefaultStatsModel(this);
 		stats.addScoreBoardListener(this);
+		customSettings = new DefaultCustomSettingsModel(this);
+		customSettings.addScoreBoardListener(this);
 		reset();
 		addInPeriodListeners();
 		xmlScoreBoard = new XmlScoreBoard(this);
@@ -106,6 +110,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		restartPcAfterTimeout = false;
 		
 		settings.reset();
+		customSettings.reset();
 		stats.reset();
 	}
 
@@ -483,8 +488,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
 	}
 
-	public Settings getSettings() { return (Settings)settings; }
+	public Settings getSettings() { return settings; }
 	public SettingsModel getSettingsModel() { return settings; }
+
+	public CustomSettings getCustomSettings() { return customSettings; }
+	public CustomSettingsModel getCustomSettingsModel() { return customSettings; }
 
 	public Stats getStats() { return (Stats)stats; }
 	public StatsModel getStatsModel() { return stats; }
@@ -585,6 +593,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected Ruleset ruleset = null;
 	protected Object rulesetLock = new Object();
 	protected DefaultSettingsModel settings = null;
+	protected DefaultCustomSettingsModel customSettings = null;
 	protected DefaultStatsModel stats = null;
 
 	protected XmlScoreBoard xmlScoreBoard;

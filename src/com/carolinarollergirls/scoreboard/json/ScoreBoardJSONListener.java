@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.CustomSettings;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
@@ -129,8 +130,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 				} else if (p instanceof Stats.SkaterStats) {
 					Stats.SkaterStats ts = (Stats.SkaterStats)p;
 					processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Skater(" + ts.getSkaterId() + ")", ts);
-				} else
+				} else if (p instanceof CustomSettings) {
+					updates.add(new WSUpdate("Custom." + prop, v));
+				} else {
 					ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + prop + ", v: " + v);
+				}
 
 			} catch (Exception e) {
 				ScoreBoardManager.printMessage("Error!  " + e.getMessage());

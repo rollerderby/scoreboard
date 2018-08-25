@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.model.CustomSettingsModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 
 /**
@@ -92,6 +93,18 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 					editor.setElement(e, "Setting", prop, v);
 			} else
 				ScoreBoardManager.printMessage("************ ADD SUPPORT FOR SETTINGS TO ScoreBoardXmlListener FOR " + settings.getParent().getProviderName());
+		} else if (p.getProviderName().equals("CustomSettings")) {
+			CustomSettingsModel settings = (CustomSettingsModel)p;
+			Element e = editor.setElement(getScoreBoardElement(), "Custom");
+				if (v == null) {
+					if (isPersistent()) {
+						editor.removeElement(e, "Custom", prop);
+					} else {
+						editor.setRemovePI(editor.setElement(e, "Custom", prop));
+					}
+				} else {
+					editor.setElement(e, "Custom", prop, v);
+				}
 		} else if (p.getProviderName().equals("ScoreBoard")) {
 			if (prop.equals(ScoreBoard.EVENT_ADD_CLOCK)) {
 				converter.toElement(getScoreBoardElement(), (Clock)event.getValue());

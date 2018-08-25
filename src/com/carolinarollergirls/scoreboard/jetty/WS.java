@@ -117,11 +117,18 @@ public class WS extends WebSocketServlet {
 				} else if (action.equals("Set")) {
 					String key = json.getString("key");
 					Object value = json.get("value");
-					ScoreBoardManager.printMessage("Setting " + key + " to " + value);
-					// TODO implement this
-					//if (key.startsWith("Custom.")) {
-					//	ws.updateState(key, value);
-					//}
+					String v;
+					if (value == JSONObject.NULL) {
+						// Null deletes the setting.
+						v = null;
+					} else {
+						v = value.toString();
+					}
+					ScoreBoardManager.printMessage("Setting " + key + " to " + v);
+
+					if (key.startsWith("Custom.")) {
+						sbm.getCustomSettingsModel().set(key.substring(7), v);
+					}
 				} else if (action.equals("Ping")) {
 					send(new JSONObject().put("Pong", ""));
 				} else {
