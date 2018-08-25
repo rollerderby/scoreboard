@@ -23,6 +23,7 @@ public interface Stats extends ScoreBoardEventProvider
 
 		public List<JamStats> getJamStats();
 
+		public static final String EVENT_ADD_JAM = "AddJam";
 		public static final String EVENT_REMOVE_JAM = "RemoveJam";
 	}
 
@@ -71,5 +72,6 @@ public interface Stats extends ScoreBoardEventProvider
 		public static final String EVENT_STATS = "Stats";
 	}
 
+	public static final String EVENT_ADD_PERIOD = "AddPeriod";
 	public static final String EVENT_REMOVE_PERIOD = "RemovePeriod";
 }

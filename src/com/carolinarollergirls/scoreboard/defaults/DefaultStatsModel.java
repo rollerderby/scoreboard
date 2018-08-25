@@ -202,6 +202,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       PeriodStatsModel psm = new DefaultPeriodStatsModel(periods.size() + 1);
       psm.addScoreBoardListener(this);
       periods.add(psm);
+      scoreBoardChange(new ScoreBoardEvent(this, Stats.EVENT_ADD_PERIOD, psm, null));
     }
   }
 
@@ -245,6 +246,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
         JamStatsModel jsm = new DefaultJamStatsModel(getPeriodNumber(), jams.size() + 1);
         jsm.addScoreBoardListener(this);
         jams.add(jsm);
+        scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_JAM, jsm, null));
       }
     }
 

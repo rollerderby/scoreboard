@@ -190,24 +190,28 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
         editor.setElement(getSkaterElement((Skater)p), prop, null, v);
       }
 		} else if (p.getProviderName().equals("Stats")) {
+			Stats.PeriodStats ps = (Stats.PeriodStats)(event.getValue());
 			Element e = getStatsElement();
 			if (prop.equals(Stats.EVENT_REMOVE_PERIOD)) {
-				Stats.PeriodStats ps = (Stats.PeriodStats)(event.getValue());
 				if (isPersistent()) {
 					editor.removeElement(e, "PeriodStats", String.valueOf(ps.getPeriodNumber()));
 				} else {
 					editor.setRemovePI(converter.toElement(e, ps));
 				}
+			} else if (prop.equals(Stats.EVENT_ADD_PERIOD)) {
+				getPeriodStatsElement(ps);
 			}
 		} else if (p.getProviderName().equals("PeriodStats")) {
 			Element e = getPeriodStatsElement((Stats.PeriodStats)p);
+			Stats.JamStats js = (Stats.JamStats)(event.getValue());
 			if (prop.equals(Stats.PeriodStats.EVENT_REMOVE_JAM)) {
-				Stats.JamStats js = (Stats.JamStats)(event.getValue());
 				if (isPersistent()) {
 					editor.removeElement(e, "JamStats", String.valueOf(js.getJamNumber()));
 				} else {
 					editor.setRemovePI(converter.toElement(e, js));
 				}
+			} else if (prop.equals(Stats.PeriodStats.EVENT_ADD_JAM)) {
+				getJamStatsElement(js);
 			}
 		} else if (p.getProviderName().equals("JamStats")) {
 			Element e = getJamStatsElement((Stats.JamStats)p);

@@ -112,12 +112,15 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 				} else if (p instanceof Team.Color) {
 					Team.Color c = (Team.Color)p;
 					update("ScoreBoard.Team(" + c.getTeam().getId() + ")", "Color(" + c.getId() + ")", v);
-				} else if (p instanceof Stats && prop.equals(Stats.EVENT_REMOVE_PERIOD)) {
-					Stats.PeriodStats ps = (Stats.PeriodStats)v;
-					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ps.getPeriodNumber() + ")", null));
-				} else if (p instanceof Stats.PeriodStats && prop.equals(Stats.PeriodStats.EVENT_REMOVE_JAM)) {
-					Stats.JamStats js = (Stats.JamStats)v;
-					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", null));
+				} else if (p instanceof Stats) {
+					if (prop.equals(Stats.EVENT_REMOVE_PERIOD)) {
+						Stats.PeriodStats ps = (Stats.PeriodStats)v;
+						updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ps.getPeriodNumber() + ")", null));
+					}
+				} else if (p instanceof Stats.PeriodStats) { 
+					if (prop.equals(Stats.PeriodStats.EVENT_REMOVE_JAM)) {
+						Stats.JamStats js = (Stats.JamStats)v;
+						updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", null));}
 				} else if (p instanceof Stats.TeamStats && prop.equals(Stats.TeamStats.EVENT_REMOVE_SKATER)) {
 					Stats.SkaterStats ss = (Stats.SkaterStats)v;
 					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ss.getPeriodNumber() + ").Jam(" + ss.getJamNumber() + ").Team(" + ss.getTeamId() + ").Position(" + ss.getPosition() + ")", null));
@@ -129,7 +132,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 					processTeamStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ")", ts);
 				} else if (p instanceof Stats.SkaterStats) {
 					Stats.SkaterStats ts = (Stats.SkaterStats)p;
-					processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Skater(" + ts.getSkaterId() + ")", ts);
+					processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ").Skater(" + ts.getSkaterId() + ")", ts);
 				} else if (p instanceof CustomSettings) {
 					updates.add(new WSUpdate("Custom." + prop, v));
 				} else {
