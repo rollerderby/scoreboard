@@ -23,6 +23,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 
@@ -38,8 +40,12 @@ public class ScoreBoardManager {
 
 		scoreBoardModel = new DefaultScoreBoardModel();
 
+		// JSON updates.
+		JSONStateManager jsm = new JSONStateManager();
+		new ScoreBoardJSONListener(scoreBoardModel, jsm);
+
 		// Controllers.
-		registerScoreBoardController(new JettyServletScoreBoardController(scoreBoardModel));
+		registerScoreBoardController(new JettyServletScoreBoardController(scoreBoardModel, jsm));
 
 		// Viewers.
 		registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoardModel));

@@ -33,14 +33,16 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 // import org.eclipse.jetty.util.resource.Resource;
 
 
 public class JettyServletScoreBoardController
 {
-	public JettyServletScoreBoardController(ScoreBoardModel model) {
+	public JettyServletScoreBoardController(ScoreBoardModel model, JSONStateManager jsm) {
 		scoreBoardModel = model;
+		this.jsm = jsm;
 
 		init();
 
@@ -127,7 +129,7 @@ public class JettyServletScoreBoardController
 		jsonServlet = new JSONServlet(server, scoreBoardModel);
 		sch.addServlet(new ServletHolder(jsonServlet), "/JSON/*");
 
-		ws = new WS(scoreBoardModel);
+		ws = new WS(scoreBoardModel, jsm);
 		sch.addServlet(new ServletHolder(ws), "/WS/*");
 
 		DefaultExports.initialize();
@@ -173,6 +175,7 @@ public class JettyServletScoreBoardController
 	}
 
 	protected ScoreBoardModel scoreBoardModel;
+	protected JSONStateManager jsm;
 	protected int port;
 	protected UrlsServlet urlsServlet;
 	protected JSONServlet jsonServlet;

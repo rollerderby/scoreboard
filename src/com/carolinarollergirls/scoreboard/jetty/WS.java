@@ -32,17 +32,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
 
-	public WS(ScoreBoardModel s) {
+	public WS(ScoreBoardModel s, JSONStateManager j) {
 		sbm = s;
-		jsm = new JSONStateManager();
-		new ScoreBoardJSONListener(s, jsm);
+		jsm = j;
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
