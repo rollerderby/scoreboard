@@ -24,6 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
@@ -50,6 +51,7 @@ public class ScoreBoardManager {
 		// Viewers.
 		registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoardModel));
 		registerScoreBoardViewer(new ScoreBoardMetricsCollector((ScoreBoard)scoreBoardModel).register());
+		registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
 
 		//FIXME - not the best way to load autosave doc.
 		scoreBoardModel.getXmlScoreBoard().load();
