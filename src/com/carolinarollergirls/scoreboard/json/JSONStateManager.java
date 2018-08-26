@@ -64,7 +64,7 @@ public class JSONStateManager {
       if ((old == null && cur == null)
           || (old != null && old.equals(cur))) {
         it.remove();
-          }
+      }
     }
 
     state = Collections.unmodifiableMap(newState);

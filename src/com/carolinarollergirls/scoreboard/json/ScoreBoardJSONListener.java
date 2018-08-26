@@ -123,7 +123,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 						updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", null));}
 				} else if (p instanceof Stats.TeamStats && prop.equals(Stats.TeamStats.EVENT_REMOVE_SKATER)) {
 					Stats.SkaterStats ss = (Stats.SkaterStats)v;
-					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ss.getPeriodNumber() + ").Jam(" + ss.getJamNumber() + ").Team(" + ss.getTeamId() + ").Position(" + ss.getPosition() + ")", null));
+					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ss.getPeriodNumber() + ").Jam(" + ss.getJamNumber() + ").Team(" + ss.getTeamId() + ").Skater(" + ss.getSkaterId() + ")", null));
 				} else if (p instanceof Stats.JamStats) {
 					Stats.JamStats js = (Stats.JamStats)p;
 					processJamStats("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", js);

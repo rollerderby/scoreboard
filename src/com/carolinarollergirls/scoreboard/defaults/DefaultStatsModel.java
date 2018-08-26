@@ -163,6 +163,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     public void scoreBoardChange(ScoreBoardEvent event) {
       Clock jc = scoreBoard.getClock(Clock.ID_JAM);
       Skater s = (Skater)event.getProvider();
+      String prop = event.getProperty();
       JamStatsModel js = getCurentJam();
       if (js == null) {
         return;
@@ -172,7 +173,8 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       if (jc.isRunning()) {
         // If the jam is over, any skater changes are for the next jam.
         // We'll catch them when the jam starts.
-        if (s.getPosition() == Position.ID_BENCH) {
+        if (s.getPosition().equals(Position.ID_BENCH)
+            || prop.equals(Team.EVENT_REMOVE_SKATER)) {
           ts.removeSkaterStatsModel(s.getId());
         } else {
           ts.addSkaterStatsModel(s.getId());
@@ -329,7 +331,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     }
 
     public TeamStatsModel getTeamStatsModel(String id) {
-      if (id == Team.ID_1) {
+      if (id.equals(Team.ID_1)) {
         return teams[0];
       } else {
         return teams[1];

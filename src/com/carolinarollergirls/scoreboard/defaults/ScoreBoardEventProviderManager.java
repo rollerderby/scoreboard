@@ -76,7 +76,7 @@ public class ScoreBoardEventProviderManager {
 	}
 
 	// For unitests.
-	protected void waitForEvents() {
+	public void waitForEvents() {
 		while (true) {
 			boolean empty = true;
 			synchronized (mapLock) {
