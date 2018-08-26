@@ -111,8 +111,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		restartPcAfterTimeout = false;
 		
 		settings.reset();
-		customSettings.reset();
 		stats.reset();
+		// Custom settings are not reset, as broadcast overlays settings etc.
+		// shouldn't be lost just because the next game is starting.
 	}
 
 	public boolean isInPeriod() { return inPeriod; }

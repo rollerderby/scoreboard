@@ -1043,4 +1043,11 @@ public class DefaultScoreboardModelTests {
 		assertFalse(pc.isRunning());
 		assertEquals(22000, pc.getTimeRemaining());
 	}
+
+	@Test
+	public void testResetDoesntAffectCustomSettings() {
+		sbm.getCustomSettingsModel().set("foo", "bar");
+		sbm.reset();
+		assertEquals("bar", sbm.getCustomSettings().get("foo"));
+	}
 }
