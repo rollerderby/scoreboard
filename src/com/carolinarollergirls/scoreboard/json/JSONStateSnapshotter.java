@@ -36,12 +36,16 @@ public class JSONStateSnapshotter implements JSONStateListener {
   public void writeFile(Map<String, Object> state) {
     Histogram.Timer timer = updateStateDuration.startTimer();
 
-    String name = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss").format(new Date())
+    // Fallback to current time.
+    long startTime = System.currentTimeMillis();
+    Object periodState = state.get("ScoreBoard.Stats.Period(1).Jam(1).PeriodClockWalltimeStart");
+    if (periodState != null) {
+      startTime = (long)periodState;
+    }
+
+    String name = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss").format(startTime)
       + " - " + state.get("ScoreBoard.Team(1).Name") 
       + " vs " + state.get("ScoreBoard.Team(2).Name") 
-      + " - Period " + state.get("ScoreBoard.Clock(Period).Number") 
-      + " Jam " + state.get("ScoreBoard.Clock(Jam).Number")
-      + (bool(state.get("ScoreBoard.OfficialScore")) ? " - Final": "")
       + ".json";
     name = name.replaceAll("[^a-zA-Z0-9\\.\\- ]", "_");
     File file = new File(new File(directory, "game-data"), name);
