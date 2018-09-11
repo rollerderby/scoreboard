@@ -14,7 +14,6 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.PositionNotFoundException;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.Team;
-import com.carolinarollergirls.scoreboard.Skater;
 
 public interface TeamModel extends Team
 {

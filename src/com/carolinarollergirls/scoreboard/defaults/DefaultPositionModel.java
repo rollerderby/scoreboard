@@ -9,7 +9,6 @@ package com.carolinarollergirls.scoreboard.defaults;
  */
 
 import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.Team;

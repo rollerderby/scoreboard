@@ -17,7 +17,6 @@ import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.PositionNotFoundException;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;

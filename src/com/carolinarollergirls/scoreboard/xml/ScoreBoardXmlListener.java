@@ -94,7 +94,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 			} else
 				ScoreBoardManager.printMessage("************ ADD SUPPORT FOR SETTINGS TO ScoreBoardXmlListener FOR " + settings.getParent().getProviderName());
 		} else if (p.getProviderName().equals("CustomSettings")) {
-			CustomSettingsModel settings = (CustomSettingsModel)p;
 			Element e = editor.setElement(getScoreBoardElement(), "Custom");
 				if (v == null) {
 					if (isPersistent()) {

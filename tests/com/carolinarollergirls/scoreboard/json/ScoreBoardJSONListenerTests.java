@@ -10,18 +10,13 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.defaults.DefaultClockModel;
 import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
 import com.carolinarollergirls.scoreboard.defaults.ScoreBoardEventProviderManager;
-import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
-import com.carolinarollergirls.scoreboard.model.ClockModel;
 
 public class ScoreBoardJSONListenerTests {
 

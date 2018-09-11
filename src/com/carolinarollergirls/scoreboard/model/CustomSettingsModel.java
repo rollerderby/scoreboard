@@ -8,8 +8,6 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import java.util.Map;
-
 import com.carolinarollergirls.scoreboard.CustomSettings;
 
 public interface CustomSettingsModel extends CustomSettings {

@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.CustomSettings;
