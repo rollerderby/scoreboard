@@ -12,6 +12,7 @@ import org.jdom.Document;
 import org.jdom.Element;
 
 import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.FrontendSettings;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
@@ -21,7 +22,6 @@ import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.model.CustomSettingsModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 
 /**
@@ -93,16 +93,16 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 					editor.setElement(e, "Setting", prop, v);
 			} else
 				ScoreBoardManager.printMessage("************ ADD SUPPORT FOR SETTINGS TO ScoreBoardXmlListener FOR " + settings.getParent().getProviderName());
-		} else if (p.getProviderName().equals("CustomSettings")) {
-			Element e = editor.setElement(getScoreBoardElement(), "Custom");
+		} else if (p.getProviderName().equals("FrontendSettings")) {
+			Element e = editor.setElement(getScoreBoardElement(), "FrontendSettings");
 				if (v == null) {
 					if (isPersistent()) {
-						editor.removeElement(e, "Custom", prop);
+						editor.removeElement(e, FrontendSettings.EVENT_SETTING, prop);
 					} else {
-						editor.setRemovePI(editor.setElement(e, "Custom", prop));
+						editor.setRemovePI(editor.setElement(e, FrontendSettings.EVENT_SETTING, prop));
 					}
 				} else {
-					editor.setElement(e, "Custom", prop, v);
+					editor.setElement(e, FrontendSettings.EVENT_SETTING, prop, v);
 				}
 		} else if (p.getProviderName().equals("ScoreBoard")) {
 			if (prop.equals(ScoreBoard.EVENT_ADD_CLOCK)) {

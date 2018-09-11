@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document Version="0.2.0-20120128144059" SystemTime="1327779979435">
+  <ScoreBoard>
+    <FrontendSettings>
+      <FrontendSetting Id="Overlay.Clock"><![CDATA[On]]></FrontendSetting>
+      <FrontendSetting Id="Overlay.Score"><![CDATA[On]]></FrontendSetting>
+      <FrontendSetting Id="Overlay.ShowJammers"><![CDATA[On]]></FrontendSetting>
+    </FrontendSettings>
+  </ScoreBoard>
+</document>
+

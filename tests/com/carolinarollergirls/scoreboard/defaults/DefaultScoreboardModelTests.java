@@ -1045,9 +1045,9 @@ public class DefaultScoreboardModelTests {
 	}
 
 	@Test
-	public void testResetDoesntAffectCustomSettings() {
-		sbm.getCustomSettingsModel().set("foo", "bar");
+	public void testResetDoesntAffectFrontendSettings() {
+		sbm.getFrontendSettingsModel().set("foo", "bar");
 		sbm.reset();
-		assertEquals("bar", sbm.getCustomSettings().get("foo"));
+		assertEquals("bar", sbm.getFrontendSettings().get("foo"));
 	}
 }

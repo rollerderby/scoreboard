@@ -8,9 +8,9 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.CustomSettings;
+import com.carolinarollergirls.scoreboard.FrontendSettings;
 
-public interface CustomSettingsModel extends CustomSettings {
+public interface FrontendSettingsModel extends FrontendSettings {
 	public void reset();
 
   // Setting to null deletes a setting.

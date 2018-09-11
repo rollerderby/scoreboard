@@ -123,8 +123,8 @@ public class WS extends WebSocketServlet {
 					}
 					ScoreBoardManager.printMessage("Setting " + key + " to " + v);
 
-					if (key.startsWith("Custom.")) {
-						sbm.getCustomSettingsModel().set(key.substring(7), v);
+					if (key.startsWith("ScoreBoard.FrontendSettings.")) {
+						sbm.getFrontendSettingsModel().set(key.substring(28), v);
 					}
 				} else if (action.equals("Ping")) {
 					send(new JSONObject().put("Pong", ""));

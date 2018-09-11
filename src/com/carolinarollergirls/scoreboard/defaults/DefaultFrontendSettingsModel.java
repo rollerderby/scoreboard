@@ -12,18 +12,18 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.CustomSettings;
+import com.carolinarollergirls.scoreboard.FrontendSettings;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.model.CustomSettingsModel;
+import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
-public class DefaultCustomSettingsModel extends DefaultScoreBoardEventProvider implements CustomSettingsModel {
-	public DefaultCustomSettingsModel(ScoreBoardModel s) {
+public class DefaultFrontendSettingsModel extends DefaultScoreBoardEventProvider implements FrontendSettingsModel {
+	public DefaultFrontendSettingsModel(ScoreBoardModel s) {
 		sbm = s;
 	}
 
-	public String getProviderName() { return "CustomSettings"; }
-	public Class<CustomSettings> getProviderClass() { return CustomSettings.class; }
+	public String getProviderName() { return "FrontendSettings"; }
+	public Class<FrontendSettings> getProviderClass() { return FrontendSettings.class; }
 	public String getProviderId() { return ""; }
 
 	public void reset() {

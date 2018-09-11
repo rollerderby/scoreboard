@@ -15,7 +15,7 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.CustomSettings;
+import com.carolinarollergirls.scoreboard.FrontendSettings;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.Settings;
@@ -24,7 +24,7 @@ import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
-import com.carolinarollergirls.scoreboard.model.CustomSettingsModel;
+import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
@@ -63,7 +63,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(sb, ScoreBoard.EVENT_RULESET, null, String.valueOf(scoreBoard.getRuleset()));
 
 		toElement(sb, scoreBoard.getSettings());
-		toElement(sb, scoreBoard.getCustomSettings());
+		toElement(sb, scoreBoard.getFrontendSettings());
 
 		Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
 		while (clocks.hasNext())
@@ -90,13 +90,13 @@ public class ScoreBoardXmlConverter
 		return e;
 	}
 
-	public Element toElement(Element p, CustomSettings s) {
-		Element e = editor.setElement(p, "Custom");
+	public Element toElement(Element p, FrontendSettings s) {
+		Element e = editor.setElement(p, "FrontendSettings");
 		Iterator<String> keys = s.getAll().keySet().iterator();
 		while (keys.hasNext()) {
 			String k = keys.next();
 			String v = s.get(k);
-		  editor.setElement(e, CustomSettings.EVENT_SETTING, k, v);
+		  editor.setElement(e, FrontendSettings.EVENT_SETTING, k, v);
 		}
 		return e;
 	}
@@ -296,8 +296,8 @@ public class ScoreBoardXmlConverter
 					processTeam(scoreBoardModel, element);
 				else if (name.equals("Settings"))
 					processSettings(scoreBoardModel, element);
-				else if (name.equals("Custom"))
-					processCustomSettings(scoreBoardModel, element);
+				else if (name.equals("FrontendSettings"))
+					processFrontendSettings(scoreBoardModel, element);
 				else if (name.equals("Stats"))
 					processStats(scoreBoardModel.getStatsModel(), element);
 				else if (null == value)
@@ -355,8 +355,8 @@ public class ScoreBoardXmlConverter
 		}
 	}
 
-	public void processCustomSettings(ScoreBoardModel scoreBoardModel, Element settings) {
-		CustomSettingsModel sm = scoreBoardModel.getCustomSettingsModel();
+	public void processFrontendSettings(ScoreBoardModel scoreBoardModel, Element settings) {
+		FrontendSettingsModel sm = scoreBoardModel.getFrontendSettingsModel();
 		Iterator<?> children = settings.getChildren().iterator();
 		while (children.hasNext()) {
 			Element element = (Element)children.next();
