@@ -71,33 +71,33 @@ function initialize() {
 	WS.Register( 'ScoreBoard.Team(1)', function(k,v) { teamData(1, k,v); } );
 	WS.Register( 'ScoreBoard.Team(2)', function(k,v) { teamData(2, k,v); } );
 
-	WS.Register([ 'Custom.Overlay.Score', 'Custom.Overlay.Top' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.FrontendSettings.Overlay.Score', 'ScoreBoard.FrontendSettings.Overlay.Top' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
 			if(v == 'On') { $(this).addClass('Show'); } else { $(this).removeClass('Show'); }
 		});
 	});
 
-	WS.Register([ 'Custom.Overlay.ShowJammers' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.FrontendSettings.Overlay.ShowJammers' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
 			if(v == 'On') { $(this).addClass('ShowJammers'); } else { $(this).removeClass('ShowJammers'); }
 		});
 	});
 
-	WS.Register([ 'Custom.Overlay.Mode' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.FrontendSettings.Overlay.Mode' ], function(k,v) {  
 		$('body').removeClass('alpha').removeClass('green').addClass(v);
 	});
-	WS.Register([ 'Custom.Overlay.Resolution' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.FrontendSettings.Overlay.Resolution' ], function(k,v) {  
 		$('body').removeClass('FHD HD SDW SD LDW LD').addClass(v);
 	});
-	WS.Register([ 'Custom.Overlay.Font.Clock' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.FrontendSettings.Overlay.Font.Clock' ], function(k,v) {  
 		$('body').removeClass('ClockFaceDigital7 ClockFaceErics ClockFaceTick ClockFaceLCD14 ClockFaceUbuntu ClockFaceVerdana ClockFaceHelvetica ClockFaceArial ClockFaceSerif ClockFaceSans').addClass(v);
 	});
 
-	WS.Register('Custom.Overlay.Transition', function(k,v) { 
+	WS.Register('ScoreBoard.FrontendSettings.Overlay.Transition', function(k,v) { 
 		window.alert(k,v);
 	});
 
-	WS.Register('Custom.Overlay.Panel', function(k,v) { 
+	WS.Register('ScoreBoard.FrontendSettings.Overlay.Panel', function(k,v) { 
 		console.log('changed panel', k, v);
 		$('.OverlayPanel').removeClass('Show'); 
 		// sort divs in the panel before we show, just in case it's changed
@@ -109,25 +109,25 @@ function initialize() {
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
 
-	WS.Register([ 'Custom.Overlay.LowerThird.Line' ] , function(k,v) { 
+	WS.Register([ 'ScoreBoard.FrontendSettings.Overlay.LowerThird.Line' ] , function(k,v) { 
 		sp = '.' + k.split('.').slice(2,4).join(' .');
 		$(sp).text(v);
 	});
 
-	WS.Register([ 'Custom.Overlay.LowerThird.Style' ] , function(k,v) { 
+	WS.Register([ 'ScoreBoard.FrontendSettings.Overlay.LowerThird.Style' ] , function(k,v) { 
 		$('.LowerThird .Line2').removeClass( 'ColourTeam1 ColourTeam2 ColourDefault' ).addClass(v);
 	});
 
 	$(document).keyup(function(e) {
-		if(e.which == 74) { WS.Set('Custom.Overlay.ShowJammers', WS.state['Custom.Overlay.ShowJammers'] == 'On' ? 'Off' : 'On'); }
-		if(e.which == 67) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'ClockBox' ? '' : 'ClockBox'); }
-		if(e.which == 69) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PT1' ? '' : 'PT1'); } /* E */
-		if(e.which == 49) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'RosterTeam1' ? '' : 'RosterTeam1'); }
-		if(e.which == 50) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
-		if(e.which == 51) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
-		if(e.which == 52) { WS.Set('Custom.Overlay.Panel', WS.state['Custom.Overlay.Panel'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
-		if(e.which == 84) { WS.Set('Custom.Overlay.Top',   WS.state['Custom.Overlay.Top'] == 'Off' ? 'On': 'Off'); }
-		if(e.which == 32) { WS.Set('Custom.Overlay.Panel', ''); }
+		if(e.which == 74) { WS.Set('ScoreBoard.FrontendSettings.Overlay.ShowJammers', WS.state['ScoreBoard.FrontendSettings.Overlay.ShowJammers'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 67) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Panel', WS.state['ScoreBoard.FrontendSettings.Overlay.Panel'] == 'ClockBox' ? '' : 'ClockBox'); }
+		if(e.which == 69) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Panel', WS.state['ScoreBoard.FrontendSettings.Overlay.Panel'] == 'PT1' ? '' : 'PT1'); } /* E */
+		if(e.which == 49) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Panel', WS.state['ScoreBoard.FrontendSettings.Overlay.Panel'] == 'RosterTeam1' ? '' : 'RosterTeam1'); }
+		if(e.which == 50) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Panel', WS.state['ScoreBoard.FrontendSettings.Overlay.Panel'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
+		if(e.which == 51) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Panel', WS.state['ScoreBoard.FrontendSettings.Overlay.Panel'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
+		if(e.which == 52) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Panel', WS.state['ScoreBoard.FrontendSettings.Overlay.Panel'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
+		if(e.which == 84) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Top',   WS.state['ScoreBoard.FrontendSettings.Overlay.Top'] == 'Off' ? 'On': 'Off'); }
+		if(e.which == 32) { WS.Set('ScoreBoard.FrontendSettings.Overlay.Panel', ''); }
 	});
 
 	setTimeout(function() { $('body').removeClass('preload'); }, 1000);

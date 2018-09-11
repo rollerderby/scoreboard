@@ -15,13 +15,14 @@ import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.FrontendSettings;
 import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
@@ -76,6 +77,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 		stats = new DefaultStatsModel(this);
 		stats.addScoreBoardListener(this);
+		frontendSettings = new DefaultFrontendSettingsModel(this);
+		frontendSettings.addScoreBoardListener(this);
 		reset();
 		addInPeriodListeners();
 		xmlScoreBoard = new XmlScoreBoard(this);
@@ -103,10 +106,13 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setOfficialReview(false);
 		setInPeriod(false);
 		setInOvertime(false);
+		setOfficialScore(false);
 		restartPcAfterTimeout = false;
 		
 		settings.reset();
 		stats.reset();
+		// Custom settings are not reset, as broadcast overlays settings etc.
+		// shouldn't be lost just because the next game is starting.
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
@@ -178,7 +184,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (!getClock(Clock.ID_JAM).isRunning()) {
 				createSnapshot(ACTION_START_JAM);
 				_startJam();
-				ScoreBoardManager.gameSnapshot();
 			}
 		}
 	}
@@ -189,7 +194,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 
 			if (jc.isRunning()) {
-				ScoreBoardManager.gameSnapshot(true);
 				createSnapshot(ACTION_STOP_JAM);
 				_endJam(false);
 			} else if (tc.isRunning()) {
@@ -205,7 +209,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		synchronized (runLock) {
 			createSnapshot(ACTION_TIMEOUT);
 			_startTimeout();
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 	public void startTimeoutType(String owner, boolean review) {
@@ -437,7 +440,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			long time = restoreSnapshot();
 			relapseTime(time);
 			requestBatchEnd();
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 	public void unStartJam() {
@@ -483,8 +485,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
 	}
 
-	public Settings getSettings() { return (Settings)settings; }
+	public Settings getSettings() { return settings; }
 	public SettingsModel getSettingsModel() { return settings; }
+
+	public FrontendSettings getFrontendSettings() { return frontendSettings; }
+	public FrontendSettingsModel getFrontendSettingsModel() { return frontendSettings; }
 
 	public Stats getStats() { return (Stats)stats; }
 	public StatsModel getStatsModel() { return stats; }
@@ -585,6 +590,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected Ruleset ruleset = null;
 	protected Object rulesetLock = new Object();
 	protected DefaultSettingsModel settings = null;
+	protected DefaultFrontendSettingsModel frontendSettings = null;
 	protected DefaultStatsModel stats = null;
 
 	protected XmlScoreBoard xmlScoreBoard;

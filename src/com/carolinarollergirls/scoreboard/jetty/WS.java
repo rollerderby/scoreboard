@@ -13,10 +13,9 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
 
@@ -32,15 +31,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
-import com.carolinarollergirls.scoreboard.json.WSUpdate;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
 
-	public WS(ScoreBoardModel s) {
+	public WS(ScoreBoardModel s, JSONStateManager j) {
 		sbm = s;
-		new ScoreBoardJSONListener(s, this);
+		jsm = j;
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,86 +48,18 @@ public class WS extends WebSocketServlet {
 
 	@Override
 	public WebSocket doWebSocketConnect(HttpServletRequest request, String arg1) {
-		return new Conn(this);
+		return new Conn(jsm);
 	}
 
-	protected void register(Conn source) {
-		synchronized (sourcesLock) {
-			if (!sources.contains(source))
-				sources.add(source);
-		}
-	}
 
-	protected void unregister(Conn source) {
-		synchronized (sourcesLock) {
-			sources.remove(source);
-		}
-	}
+	private ScoreBoardModel sbm;
+	private JSONStateManager jsm;
 
-	private void updateState(String key, Object value) {
-		List<WSUpdate> updates = new ArrayList<WSUpdate>();
-		updates.add(new WSUpdate(key, value));
-		updateState(updates);
-	}
-
-	public void updateState(List<WSUpdate> updates) {
-		Histogram.Timer timer = updateStateDuration.startTimer();
-		synchronized (sourcesLock) {
-			stateID++;
-			for(WSUpdate update : updates) {
-				if(update.getValue() == null) {
-					for(String stateKey: state.keySet()) {
-						if(stateKey.equals(update.getKey()) || stateKey.startsWith(update.getKey()+".")) {
-							State s = state.get(stateKey);
-							s.stateID = stateID;
-							s.value = null;
-						}
-					}
-				} else {
-					State s = state.get(update.getKey());
-					if(s == null) {
-						state.put(update.getKey(), new State(stateID, update.getValue()));
-					} else if(!update.getValue().equals(s.value)) {
-						s.stateID = stateID;
-						s.value = update.getValue();
-					}
-				}
-			}
-			
-			for (Conn source : sources) {
-				source.sendUpdates();
-			}
-		}
-		timer.observeDuration();
-		updateStateUpdates.observe(updates.size());
-	}
-
-	protected ScoreBoardModel sbm;
-	protected List<Conn> sources = new LinkedList<Conn>();
-	protected Object sourcesLock = new Object();
-
-	protected long stateID = 0;
-	protected Map<String, State> state = new LinkedHashMap<String, State>();
-
-	protected static class State {
-		public State(long sid, Object v) {
-			stateID = sid;
-			value = v;
-		}
-
-		protected long stateID;
-		protected Object value;
-	}
 
 	private boolean hasPermission(String action) {
 		return true;
 	}
 
-	private static final Histogram updateStateDuration = Histogram.build()
-		.name("crg_websocket_update_state_duration_seconds").help("Time spent in WS.updateState function").register();
-	private static final Histogram updateStateUpdates = Histogram.build()
-		.name("crg_websocket_update_state_updates").help("Updates sent to WS.updateState function")
-		.exponentialBuckets(1, 2, 10).register();
 	private static final Gauge connectionsActive = Gauge.build()
 		.name("crg_websocket_active_connections").help("Current WebSocket connections").register();
 	private static final Counter messagesReceived = Counter.build()
@@ -138,15 +69,15 @@ public class WS extends WebSocketServlet {
 	private static final Counter messagesSentFailures = Counter.build()
 		.name("crg_websocket_messages_sent_failed").help("Number of WebSocket messages we failed to send").register();
 
-	public class Conn implements OnTextMessage {
+	public class Conn implements OnTextMessage, JSONStateListener {
 		private Connection connection;
-		private WS ws;
+		private JSONStateManager jsm;
 
-		public Conn(WS ws) {
-			this.ws = ws;
+		public Conn(JSONStateManager jsm) {
+			this.jsm = jsm;
 		}
 	
-		public void onMessage(String message_data) {
+		public synchronized void onMessage(String message_data) {
 			messagesReceived.inc();
 			try {
 				JSONObject json = new JSONObject(message_data);
@@ -158,15 +89,16 @@ public class WS extends WebSocketServlet {
 					return;
 				}
 				if (action.equals("Register")) {
-					String path = json.optString("path", null);
 					JSONArray paths = json.optJSONArray("paths");
-					if (path != null)
-						requestUpdates(path);
-					else if (paths != null) {
-						for (int i = 0; i < paths.length(); i++)
-							requestUpdates(paths.getString(i));
+					if (paths != null) {
+						Set<String> newPaths = new HashSet<String>();
+						for (int i = 0; i < paths.length(); i++) {
+							newPaths.add(paths.getString(i));
+						}
+						// Send on updates for the newly registered paths.
+						sendWSUpdatesForPaths(newPaths, state.keySet());
+						this.paths.addAll(newPaths);
 					}
-					sendPendingUpdates();
 				} else if (action.equals("Penalty")) {
 					JSONObject data = json.getJSONObject("data");
 					String teamId = data.optString("teamId");
@@ -182,9 +114,17 @@ public class WS extends WebSocketServlet {
 				} else if (action.equals("Set")) {
 					String key = json.getString("key");
 					Object value = json.get("value");
-					ScoreBoardManager.printMessage("Setting " + key + " to " + value);
-					if (key.startsWith("Custom.")) {
-						ws.updateState(key, value);
+					String v;
+					if (value == JSONObject.NULL) {
+						// Null deletes the setting.
+						v = null;
+					} else {
+						v = value.toString();
+					}
+					ScoreBoardManager.printMessage("Setting " + key + " to " + v);
+
+					if (key.startsWith("ScoreBoard.FrontendSettings.")) {
+						sbm.getFrontendSettingsModel().set(key.substring(28), v);
 					}
 				} else if (action.equals("Ping")) {
 					send(new JSONObject().put("Pong", ""));
@@ -216,7 +156,7 @@ public class WS extends WebSocketServlet {
 			connectionsActive.inc();
 			this.connection = connection;
 			id = UUID.randomUUID();
-			register(this);
+			jsm.register(this);
 
 			try {
 				JSONObject json = new JSONObject();
@@ -231,7 +171,7 @@ public class WS extends WebSocketServlet {
 		@Override
 		public void onClose(int closeCode, String message) {
 			connectionsActive.dec();
-			unregister(this);
+			jsm.unregister(this);
 		}
 
 		public void sendError(String message) {
@@ -245,55 +185,42 @@ public class WS extends WebSocketServlet {
 			}
 		}
 
-		private void processUpdates(String path, boolean force) {
-			for (String k : state.keySet()) {
-				State s = state.get(k);
-				if (k.startsWith(path) && (stateID < s.stateID || force)) {
-					if (s.value == null)
-						updates.put(k, JSONObject.NULL);
-					else
-						updates.put(k, s.value);
-				}
-			}
+		// State changes from JSONStateManager.
+		public synchronized void sendUpdates(Map<String, Object> state, Set<String> changed) {
+			this.state = state;
+			sendWSUpdatesForPaths(paths, changed);
 		}
 
-		private void sendPendingUpdates() {
-			synchronized (this) {
-				if (updates.size() == 0)
-					return;
-				try {
-					JSONObject json = new JSONObject();
-					json.put("state", new JSONObject(updates));
-					stateID = ws.stateID;
-					send(json);
-					updates.clear();
-				} catch (JSONException e) {
-					ScoreBoardManager.printMessage("Error sending updates to client: " + e);
-					e.printStackTrace();
-				}
-			}
-		}
-
-		public void sendUpdates() {
-			synchronized (this) {
+		private void sendWSUpdatesForPaths(Set<String>paths, Set<String> changed) {
+			Map<String, Object> updates = new HashMap<String, Object>();
+			for (String k: changed) {
 				for (String p : paths) {
-					processUpdates(p, false);
+					if (k.startsWith(p)) {
+						if (state.get(k) == null) {
+							updates.put(k, JSONObject.NULL);
+						} else {
+							updates.put(k, state.get(k));
+						}
+					}
 				}
-				sendPendingUpdates();
 			}
-		}
-
-		public void requestUpdates(String path) {
-			synchronized (this) {
-				if (!paths.contains(path))
-					paths.add(path);
-				processUpdates(path, true);
+			if (updates.size() == 0) {
+				return;
+			}
+			try {
+				JSONObject json = new JSONObject();
+				json.put("state", new JSONObject(updates));
+				send(json);
+				updates.clear();
+			} catch (JSONException e) {
+				ScoreBoardManager.printMessage("Error sending updates to client: " + e);
+				e.printStackTrace();
 			}
 		}
 
 		protected UUID id;
-		protected List<String> paths = new LinkedList<String>();
+		protected Set<String> paths = new HashSet<String>();
 		protected long stateID = 0;
-		private Map<String, Object> updates = new LinkedHashMap<String, Object>();
+		private Map<String, Object> state;
 	}
 }

@@ -17,7 +17,6 @@ import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.PositionNotFoundException;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -87,7 +86,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			String last = position;
 			position = p;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position, last));
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -114,7 +112,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			}
 
 			requestBatchEnd();
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 
@@ -125,7 +122,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 			String last = flags;
 			flags = f;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_FLAGS, flags, last));
-			ScoreBoardManager.gameSnapshot();
 		}
 	}
 

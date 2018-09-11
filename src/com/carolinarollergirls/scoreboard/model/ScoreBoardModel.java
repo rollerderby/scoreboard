@@ -44,6 +44,7 @@ public interface ScoreBoardModel extends ScoreBoard
 
 	public void setRuleset(String id);
 	public SettingsModel getSettingsModel();
+	public FrontendSettingsModel getFrontendSettingsModel();
 	public StatsModel getStatsModel();
 
 // FIXME - need methods to add/remove clocks and teams! */

@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.FrontendSettings;
 import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
@@ -22,7 +23,6 @@ import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.jetty.WS;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
@@ -32,8 +32,8 @@ import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
  */
 public class ScoreBoardJSONListener implements ScoreBoardListener
 {
-	public ScoreBoardJSONListener(ScoreBoard sb, WS ws) {
-		this.ws = ws;
+	public ScoreBoardJSONListener(ScoreBoard sb, JSONStateManager jsm) {
+		this.jsm = jsm;
 		initialize(sb);
 		sb.addScoreBoardListener(this);
 	}
@@ -111,15 +111,18 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 				} else if (p instanceof Team.Color) {
 					Team.Color c = (Team.Color)p;
 					update("ScoreBoard.Team(" + c.getTeam().getId() + ")", "Color(" + c.getId() + ")", v);
-				} else if (p instanceof Stats && prop.equals(Stats.EVENT_REMOVE_PERIOD)) {
-					Stats.PeriodStats ps = (Stats.PeriodStats)v;
-					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ps.getPeriodNumber() + ")", null));
-				} else if (p instanceof Stats.PeriodStats && prop.equals(Stats.PeriodStats.EVENT_REMOVE_JAM)) {
-					Stats.JamStats js = (Stats.JamStats)v;
-					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", null));
+				} else if (p instanceof Stats) {
+					if (prop.equals(Stats.EVENT_REMOVE_PERIOD)) {
+						Stats.PeriodStats ps = (Stats.PeriodStats)v;
+						updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ps.getPeriodNumber() + ")", null));
+					}
+				} else if (p instanceof Stats.PeriodStats) { 
+					if (prop.equals(Stats.PeriodStats.EVENT_REMOVE_JAM)) {
+						Stats.JamStats js = (Stats.JamStats)v;
+						updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", null));}
 				} else if (p instanceof Stats.TeamStats && prop.equals(Stats.TeamStats.EVENT_REMOVE_SKATER)) {
 					Stats.SkaterStats ss = (Stats.SkaterStats)v;
-					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ss.getPeriodNumber() + ").Jam(" + ss.getJamNumber() + ").Team(" + ss.getTeamId() + ").Position(" + ss.getPosition() + ")", null));
+					updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ss.getPeriodNumber() + ").Jam(" + ss.getJamNumber() + ").Team(" + ss.getTeamId() + ").Skater(" + ss.getSkaterId() + ")", null));
 				} else if (p instanceof Stats.JamStats) {
 					Stats.JamStats js = (Stats.JamStats)p;
 					processJamStats("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", js);
@@ -128,9 +131,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 					processTeamStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ")", ts);
 				} else if (p instanceof Stats.SkaterStats) {
 					Stats.SkaterStats ts = (Stats.SkaterStats)p;
-					processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Skater(" + ts.getSkaterId() + ")", ts);
-				} else
+					processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ").Skater(" + ts.getSkaterId() + ")", ts);
+				} else if (p instanceof FrontendSettings) {
+					updates.add(new WSUpdate("ScoreBoard.FrontendSettings." + prop, v));
+				} else {
 					ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + prop + ", v: " + v);
+				}
 
 			} catch (Exception e) {
 				ScoreBoardManager.printMessage("Error!  " + e.getMessage());
@@ -146,7 +152,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 		synchronized (this) {
 			if (updates.isEmpty())
 				return;
-			ws.updateState(updates);
+			jsm.updateState(updates);
 			updates.clear();
 		}
 	}
@@ -360,7 +366,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	}
 
 
-	private WS ws;
+	private JSONStateManager jsm;
 	private PenaltyCodesManager pm = new PenaltyCodesManager();
 	private List<WSUpdate> updates = new LinkedList<WSUpdate>();
 	private long batch = 0;

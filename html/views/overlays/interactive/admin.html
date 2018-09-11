@@ -12,17 +12,17 @@
 
 		<p id="Core" class="Panel">
 			<h2>Elements</h2>
-			<button data-key="C" data-setting="Custom.Overlay.Clock" class="ToggleSwitch">Clock [C]</button> 
-			<button data-key="S" data-setting="Custom.Overlay.Score" class="ToggleSwitch">Score [S]</button>
-			<button data-key="J" data-setting="Custom.Overlay.ShowJammers" class="ToggleSwitch">Jammers [J]</button><br/>
+			<button data-key="C" data-setting="ScoreBoard.FrontendSettings.Overlay.Clock" class="ToggleSwitch">Clock [C]</button> 
+			<button data-key="S" data-setting="ScoreBoard.FrontendSettings.Overlay.Score" class="ToggleSwitch">Score [S]</button>
+			<button data-key="J" data-setting="ScoreBoard.FrontendSettings.Overlay.ShowJammers" class="ToggleSwitch">Jammers [J]</button><br/>
 		</p>
 
 		<h2>Notify</h2>
-		<button data-key="A" data-setting="Custom.Overlay.Alert" class="ToggleSwitch ToggleAlert">Cue Alert [A]</button><br/>
+		<button data-key="A" data-setting="ScoreBoard.FrontendSettings.Overlay.Alert" class="ToggleSwitch ToggleAlert">Cue Alert [A]</button><br/>
 
 		<p id="Panel">
 			<h2>Panels</h2>
-			<select class="SelectUpdator" id="PanelOverlay" data-subforms=".ExtraForm" data-target="#OverlayType" data-setting="Custom.Overlay.Panel" data-field="data-next">
+			<select class="SelectUpdator" id="PanelOverlay" data-subforms=".ExtraForm" data-target="#OverlayType" data-setting="ScoreBoard.FrontendSettings.Overlay.Panel" data-field="data-next">
 				<option data-key="X" value="">--- No Panel --- [X]</option>
 				<option data-key="0" value="PPJBox">Points per Jam  [0]</option>
 				<option data-key="1" value="RosterTeam1">Roster (T1)  [1]</option>
@@ -34,16 +34,16 @@
 			</select>
 
 
-			<button data-key=" " data-setting="Custom.Overlay.Panel" id="OverlayType" class="ToggleSwitch Reverse NoAuto" data-source="#PanelOverlay"> </button>
-			<input type="hidden" data-setting="Custom.Overlay.LowerThird.Style" id="LowerStyle" data-source="#LowerThirdStyle"> </input>
+			<button data-key=" " data-setting="ScoreBoard.FrontendSettings.Overlay.Panel" id="OverlayType" class="ToggleSwitch Reverse NoAuto" data-source="#PanelOverlay"> </button>
+			<input type="hidden" data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Style" id="LowerStyle" data-source="#LowerThirdStyle"> </input>
 
 			<div class="ExtraForm ExtraFormLower" style="display: none;">
 				<h2>Lower Third</h2>
 				<div class="in">
 					<label>Line 1/Line 2/Style</label>
-					<input data-setting="Custom.Overlay.LowerThird.Line1" type="text"/><br/>
-					<input data-setting="Custom.Overlay.LowerThird.Line2" type="text"/><br/>
-					<select class="SelectUpdator" id="LowerThirdStyle" data-setting="Custom.Overlay.LowerThird.Style" data-target="#LowerStyle">
+					<input data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line1" type="text"/><br/>
+					<input data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line2" type="text"/><br/>
+					<select class="SelectUpdator" id="LowerThirdStyle" data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Style" data-target="#LowerStyle">
 						<option value="ColourDefault">--- Default --- </option>
 						<option value="ColourTeam1">Team 1</option>
 						<option value="ColourTeam2">Team 2</option>

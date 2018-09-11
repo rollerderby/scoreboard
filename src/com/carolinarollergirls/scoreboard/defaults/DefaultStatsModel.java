@@ -163,6 +163,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     public void scoreBoardChange(ScoreBoardEvent event) {
       Clock jc = scoreBoard.getClock(Clock.ID_JAM);
       Skater s = (Skater)event.getProvider();
+      String prop = event.getProperty();
       JamStatsModel js = getCurentJam();
       if (js == null) {
         return;
@@ -172,7 +173,8 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       if (jc.isRunning()) {
         // If the jam is over, any skater changes are for the next jam.
         // We'll catch them when the jam starts.
-        if (s.getPosition() == Position.ID_BENCH) {
+        if (s.getPosition().equals(Position.ID_BENCH)
+            || prop.equals(Team.EVENT_REMOVE_SKATER)) {
           ts.removeSkaterStatsModel(s.getId());
         } else {
           ts.addSkaterStatsModel(s.getId());
@@ -202,6 +204,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       PeriodStatsModel psm = new DefaultPeriodStatsModel(periods.size() + 1);
       psm.addScoreBoardListener(this);
       periods.add(psm);
+      scoreBoardChange(new ScoreBoardEvent(this, Stats.EVENT_ADD_PERIOD, psm, null));
     }
   }
 
@@ -245,6 +248,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
         JamStatsModel jsm = new DefaultJamStatsModel(getPeriodNumber(), jams.size() + 1);
         jsm.addScoreBoardListener(this);
         jams.add(jsm);
+        scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_JAM, jsm, null));
       }
     }
 
@@ -327,7 +331,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     }
 
     public TeamStatsModel getTeamStatsModel(String id) {
-      if (id == Team.ID_1) {
+      if (id.equals(Team.ID_1)) {
         return teams[0];
       } else {
         return teams[1];
@@ -414,14 +418,14 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
       if (ssm != null) {
         ssm.removeScoreBoardListener(this);
         skaters.remove(sid);
-        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, this, null));
+        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ssm, null));
       }
     }
     public synchronized void removeSkaterStatsModels() {
       for (SkaterStatsModel ssm : skaters.values()) {
         ssm.removeScoreBoardListener(this);
         skaters.remove(ssm.getSkaterId());
-        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, this, null));
+        scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ssm, null));
       }
     }
 

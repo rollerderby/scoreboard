@@ -21,7 +21,6 @@ import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.PositionNotFoundException;
 import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.Team;
@@ -459,7 +458,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public String getLeadJammer() { return leadJammer; }
 	public void setLeadJammer(String lead) {
 		_setLeadJammer(lead);
-		ScoreBoardManager.gameSnapshot();
 	}
 	private void _setLeadJammer(String lead) {
 		if ("false".equals(lead.toLowerCase()))
@@ -488,7 +486,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public boolean isStarPass() { return starPass; }
 	public void setStarPass(boolean starPass) {
 		_setStarPass(starPass);
-		ScoreBoardManager.gameSnapshot();
 	}
 	private void _setStarPass(boolean starPass) {
 		synchronized (skaterLock) {

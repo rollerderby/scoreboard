@@ -18,8 +18,8 @@ Skaters.AddTrigger('DELETE', '*', { }, function(n,o,k) {
 });
 
 $(initialize)
-if(WS.state['Custom.Overlay.Resolution'] == undefined) {
-	WS.Set('Custom.Overlay.Resolution', 'HD');
+if(WS.state['ScoreBoard.FrontendSettings.Overlay.Resolution'] == undefined) {
+	WS.Set('ScoreBoard.FrontendSettings.Overlay.Resolution', 'HD');
 }
 
 
@@ -27,15 +27,15 @@ function initialize() {
 
 	WS.Connect();
 
-	WS.Register(['Custom.Overlay.Clock', 
-		     'Custom.Overlay.Score', 
-		     'Custom.Overlay.Top', 
-		     'Custom.Overlay.ShowJammers',
-		     'Custom.Overlay.Alert',
-		     'Custom.Overlay.Mode',
-		     'Custom.Overlay.Resolution',
-		     'Custom.Overlay.Font.Clock',
-		     'Custom.Overlay.Panel'], function(k,v) { 
+	WS.Register(['ScoreBoard.FrontendSettings.Overlay.Clock', 
+		     'ScoreBoard.FrontendSettings.Overlay.Score', 
+		     'ScoreBoard.FrontendSettings.Overlay.Top', 
+		     'ScoreBoard.FrontendSettings.Overlay.ShowJammers',
+		     'ScoreBoard.FrontendSettings.Overlay.Alert',
+		     'ScoreBoard.FrontendSettings.Overlay.Mode',
+		     'ScoreBoard.FrontendSettings.Overlay.Resolution',
+		     'ScoreBoard.FrontendSettings.Overlay.Font.Clock',
+		     'ScoreBoard.FrontendSettings.Overlay.Panel'], function(k,v) { 
 		console.log(k,v);
 		$('[data-setting="' + k +'"]').each(function(i) {
 			$t = $(this);
@@ -73,8 +73,8 @@ function initialize() {
 		}	
 	});
 
-	WS.Register('Custom.Overlay.LowerThird.Line', function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
-	WS.Register('Custom.Overlay.LowerThird.Style', function(k,v) { $('#LowerThirdStyle option[value="'+v+'"]').attr('selected', 'selected'); });
+	WS.Register('ScoreBoard.FrontendSettings.Overlay.LowerThird.Line', function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
+	WS.Register('ScoreBoard.FrontendSettings.Overlay.LowerThird.Style', function(k,v) { $('#LowerThirdStyle option[value="'+v+'"]').attr('selected', 'selected'); });
 
 }
 
@@ -122,8 +122,8 @@ $('select#Skaters').change(function(e) {
 	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
 	tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
 	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').change();
-	$('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val(name).change();
-	$('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val(tnam).change();
+	$('input[data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line1"]').val(name).change();
+	$('input[data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line2"]').val(tnam).change();
 });
 
 $('select#Keepers').change(function(e) {
@@ -136,14 +136,14 @@ $('select#Keepers').change(function(e) {
 	var style = $d.attr('data-style');
 
 	$('#LowerThirdStyle option[value=' + style + ']').attr('selected', 'selected').change();
-	$('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val(line1).change();
-	$('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val(line2).change();
+	$('input[data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line1"]').val(line1).change();
+	$('input[data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line2"]').val(line2).change();
 });
 
 $('#KeeperAdd').click(function() {
 	$('#LowerThirdStyle').change();
-	var line1 = $('input[data-setting="Custom.Overlay.LowerThird.Line1"]').val();
-	var line2 = $('input[data-setting="Custom.Overlay.LowerThird.Line2"]').val();
+	var line1 = $('input[data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line1"]').val();
+	var line2 = $('input[data-setting="ScoreBoard.FrontendSettings.Overlay.LowerThird.Line2"]').val();
 	var style = $('#LowerStyle').val();
 
 	$('<option>').attr('data-line1', line1)

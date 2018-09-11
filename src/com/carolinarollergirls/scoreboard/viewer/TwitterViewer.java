@@ -28,18 +28,14 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.ScoreBoardViewer;
 import com.carolinarollergirls.scoreboard.event.FormatSpecifierScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
-public class TwitterViewer implements ScoreBoardViewer
+public class TwitterViewer
 {
-  public TwitterViewer() {
+  public TwitterViewer(ScoreBoard sB) {
     reset();
-  }
-
-  public void setScoreBoard(ScoreBoard sB) {
     scoreBoard = sB;
     formatSpecifier = new FormatSpecifierViewer(scoreBoard);
   }

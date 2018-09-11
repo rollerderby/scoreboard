@@ -357,7 +357,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	protected Object numberLock = new Object();
 	protected Object timeLock = new Object();
 
-	protected static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
+	public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
 	protected static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
 
@@ -386,7 +386,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		protected boolean isRunning;
 	}
 
-	protected static class UpdateClockTimerTask extends TimerTask {
+	public static class UpdateClockTimerTask extends TimerTask {
 		public static final String PROPERTY_INTERVAL_KEY = DefaultClockModel.class.getName() + ".interval";
 		private static long update_interval = DefaultClockModel.CLOCK_UPDATE_INTERVAL;
 
@@ -477,14 +477,14 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 
 		// For unittests.
-		protected void advance(long time_ms) {
+		public void advance(long time_ms) {
 			long curTicks = time_ms / update_interval;
 			while (curTicks != 0) {
 				curTicks--;
 				tick();
 			}
 		}
-		protected void setPaused(boolean p) {
+		public void setPaused(boolean p) {
 			paused = p;
 		}
 

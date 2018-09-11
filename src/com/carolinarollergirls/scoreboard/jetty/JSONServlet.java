@@ -23,9 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Game;
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
@@ -90,9 +88,8 @@ public class JSONServlet extends HttpServlet
 				String t1 = json.optString("Team1", null);
 				String t2 = json.optString("Team2", null);
 				String rs = json.optString("Ruleset", null);
-				String name = json.optString("Name", null);
 				String intermissionClock = json.optString("IntermissionClock", null);
-				if (t1 == null || t2 == null || rs == null || name == null) {
+				if (t1 == null || t2 == null || rs == null) {
 					error(response, "Error creating game");
 				}
 				scoreBoardModel.setRuleset(rs);
@@ -104,9 +101,7 @@ public class JSONServlet extends HttpServlet
 					txdM.toScoreBoard(Team.ID_2, t2, false);
 				}
 
-				Game g = ScoreBoardManager.gameStart(name);
-				response.getWriter().print(g.toJSON());
-
+				response.getWriter().print("{}");
 				if (intermissionClock != null) {
 					Long ic_time = new Long(intermissionClock);
 					ic_time = ic_time - (ic_time % 1000);

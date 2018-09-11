@@ -64,6 +64,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public String getRuleset();
 
 	public Settings getSettings();
+	// Frontend (i.e. javascript only) settings.
+	public FrontendSettings getFrontendSettings();
 
 	public Stats getStats();
 

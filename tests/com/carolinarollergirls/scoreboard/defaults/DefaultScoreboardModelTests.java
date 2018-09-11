@@ -1043,4 +1043,11 @@ public class DefaultScoreboardModelTests {
 		assertFalse(pc.isRunning());
 		assertEquals(22000, pc.getTimeRemaining());
 	}
+
+	@Test
+	public void testResetDoesntAffectFrontendSettings() {
+		sbm.getFrontendSettingsModel().set("foo", "bar");
+		sbm.reset();
+		assertEquals("bar", sbm.getFrontendSettings().get("foo"));
+	}
 }

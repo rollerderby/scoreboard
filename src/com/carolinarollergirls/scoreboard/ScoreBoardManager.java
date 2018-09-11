@@ -14,12 +14,17 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
+import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
+import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 
 public class ScoreBoardManager {
 	public interface Logger {
@@ -30,15 +35,23 @@ public class ScoreBoardManager {
 		setSystemProperties();
 		loadVersion();
 		loadProperties();
-		loadModel();
-		loadControllers();
-		loadViewers();
+
+		scoreBoardModel = new DefaultScoreBoardModel();
+
+		// JSON updates.
+		JSONStateManager jsm = new JSONStateManager();
+		new ScoreBoardJSONListener(scoreBoardModel, jsm);
+
+		// Controllers.
+		registerScoreBoardController(new JettyServletScoreBoardController(scoreBoardModel, jsm));
+
+		// Viewers.
+		registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoardModel));
+		registerScoreBoardViewer(new ScoreBoardMetricsCollector((ScoreBoard)scoreBoardModel).register());
+		registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
 
 		//FIXME - not the best way to load autosave doc.
 		scoreBoardModel.getXmlScoreBoard().load();
-
-		// Register Prometheus metrics about scoreboard state.
-		new ScoreBoardMetricsCollector(scoreBoardModel).register();
 	}
 
 	public static void stop() {
@@ -58,22 +71,22 @@ public class ScoreBoardManager {
 			System.err.println(msg);
 	}
 
+
 	public static Properties getProperties() { return new Properties(properties); }
 
 	public static String getProperty(String key) { return properties.getProperty(key); }
 	public static String getProperty(String key, String dflt) { return properties.getProperty(key, dflt); }
 
-	public static ScoreBoardController getScoreBoardController(String key) { return controllers.get(key); }
 
-	public static ScoreBoardViewer getScoreBoardViewer(String key) { return viewers.get(key); }
+	public static Object getScoreBoardController(String key) { return controllers.get(key); }
 
-	public static void registerScoreBoardController(ScoreBoardController sbC) {
-		sbC.setScoreBoardModel(scoreBoardModel);
+	public static Object getScoreBoardViewer(String key) { return viewers.get(key); }
+
+	public static void registerScoreBoardController(Object sbC) {
 		controllers.put(sbC.getClass().getName(), sbC);
 	}
 
-	public static void registerScoreBoardViewer(ScoreBoardViewer sbV) {
-		sbV.setScoreBoard(scoreBoardModel.getScoreBoard());
+	public static void registerScoreBoardViewer(Object sbV) {
 		viewers.put(sbV.getClass().getName(), sbV);
 	}
 
@@ -141,88 +154,6 @@ public class ScoreBoardManager {
 		catch ( IOException ioE ) { }
 	}
 
-	private static void loadModel() {
-		String s = properties.getProperty(PROPERTY_MODEL_KEY);
-
-		if (null == s)
-			doExit("No model defined.");
-
-		try {
-			scoreBoardModel = (ScoreBoardModel)Class.forName(s).newInstance();
-			printMessage("Loaded ScoreBoardModel : "+s);
-		} catch ( Exception e ) {
-			doExit("Could not create model : " + e.getMessage(), e);
-		}
-	}
-
-	private static void loadControllers() {
-		Iterator<Object> i = properties.keySet().iterator();
-		int count = 0;
-
-		while (i.hasNext()) {
-			String key = i.next().toString();
-			if (!key.startsWith(PROPERTY_CONTROLLER_KEY))
-				continue;
-
-			String value = properties.getProperty(key);
-			try {
-				registerScoreBoardController((ScoreBoardController)Class.forName(value).newInstance());
-				printMessage("Started ScoreBoardController : "+value);
-				count++;
-			} catch ( Exception e ) {
-				printMessage("Could not create controller " + value + " : " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-
-		if (0 == count)
-			doExit("No controllers created.");
-	}
-
-	private static void loadViewers() {
-		Iterator<Object> i = properties.keySet().iterator();
-
-		while (i.hasNext()) {
-			String key = i.next().toString();
-			if (!key.startsWith(PROPERTY_VIEWER_KEY))
-				continue;
-
-			String value = properties.getProperty(key);
-			try {
-				registerScoreBoardViewer((ScoreBoardViewer)Class.forName(value).newInstance());
-				printMessage("Started ScoreBoardViewer : "+value);
-			} catch ( Exception e ) {
-				printMessage("Could not create controller " + value + " : " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-	}
-
-	public static void gameSnapshot() {
-		synchronized (gameLock) {
-			if (game != null)
-				game.snapshot(false);
-		}
-	}
-	public static void gameSnapshot(boolean jamEnd) {
-		synchronized (gameLock) {
-			if (game != null)
-				game.snapshot(jamEnd);
-		}
-	}
-	public static Game gameStart(String name) {
-		synchronized (gameLock) {
-			if (game != null)
-				game.stop();
-			game = new Game(scoreBoardModel);
-			game.start(name);
-			return game;
-		}
-	}
-	public static Game getGame() {
-		return game;
-	}
-
 	/* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
 	public static boolean ObjectsEquals(Object a, Object b) {
 		if ((null == a) != (null == b))
@@ -242,8 +173,8 @@ public class ScoreBoardManager {
 
 	private static Properties properties = new Properties();
 	private static Map<String,String> properties_overrides = new HashMap<String,String>();
-	private static Map<String,ScoreBoardController> controllers = new ConcurrentHashMap<String,ScoreBoardController>();
-	private static Map<String,ScoreBoardViewer> viewers = new ConcurrentHashMap<String,ScoreBoardViewer>();
+	private static Map<String,Object> controllers = new ConcurrentHashMap<String,Object>();
+	private static Map<String,Object> viewers = new ConcurrentHashMap<String,Object>();
 
 	private static ScoreBoardModel scoreBoardModel;
 	private static Logger logger = null;
@@ -252,8 +183,6 @@ public class ScoreBoardManager {
 	private static String versionBuild;
 
 	private static File defaultPath = new File(".");
-	private static Game game = null;
-	private static Object gameLock = new Object();
 
 	public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
 	public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
@@ -263,8 +192,4 @@ public class ScoreBoardManager {
 
 	public static final String PROPERTIES_DIR_NAME = "config";
 	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
-
-	public static final String PROPERTY_MODEL_KEY = ScoreBoardManager.class.getName()+".model";
-	public static final String PROPERTY_CONTROLLER_KEY = ScoreBoardManager.class.getName()+".controller";
-	public static final String PROPERTY_VIEWER_KEY = ScoreBoardManager.class.getName()+".viewer";
 }
