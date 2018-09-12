@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.defaults.DefaultClockModel;
 import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
 import com.carolinarollergirls.scoreboard.defaults.ScoreBoardEventProviderManager;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 
 public class ScoreBoardJSONListenerTests {
@@ -57,8 +58,10 @@ public class ScoreBoardJSONListenerTests {
 
   private void advance(long time_ms) {
     sbepm.waitForEvents();
+    AsyncScoreBoardListener.waitForEvents();
     DefaultClockModel.updateClockTimerTask.advance(time_ms);
     sbepm.waitForEvents();
+    AsyncScoreBoardListener.waitForEvents();
   }
 
   @Test

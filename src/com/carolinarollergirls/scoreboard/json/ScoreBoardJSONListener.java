@@ -20,6 +20,7 @@ import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -35,7 +36,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	public ScoreBoardJSONListener(ScoreBoard sb, JSONStateManager jsm) {
 		this.jsm = jsm;
 		initialize(sb);
-		sb.addScoreBoardListener(this);
+		sb.addScoreBoardListener(new AsyncScoreBoardListener(this));
 	}
 
 	public void scoreBoardChange(ScoreBoardEvent event) {

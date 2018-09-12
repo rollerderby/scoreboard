@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Skater;
 import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -37,10 +38,10 @@ public class ScoreBoardXmlListener implements ScoreBoardListener
 	}
 	public ScoreBoardXmlListener(ScoreBoard sb, boolean p) {
 		setPersistent(p);
-		sb.addScoreBoardListener(this);
+		sb.addScoreBoardListener(new AsyncScoreBoardListener(this));
 	}
 	public ScoreBoardXmlListener(ScoreBoard sb) {
-		sb.addScoreBoardListener(this);
+		sb.addScoreBoardListener(new AsyncScoreBoardListener(this));
 	}
 
 	public boolean isEmpty() { return empty; }

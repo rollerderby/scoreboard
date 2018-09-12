@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -81,9 +82,11 @@ public class DefaultScoreboardModelTests {
 	}
 
 	private void advance(long time_ms) {
-	    sbepm.waitForEvents();
-	    DefaultClockModel.updateClockTimerTask.advance(time_ms);
-	    sbepm.waitForEvents();
+		sbepm.waitForEvents();
+		AsyncScoreBoardListener.waitForEvents();
+		DefaultClockModel.updateClockTimerTask.advance(time_ms);
+		sbepm.waitForEvents();
+		AsyncScoreBoardListener.waitForEvents();
 	}
 	
 	@Test
