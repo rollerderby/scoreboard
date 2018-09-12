@@ -26,7 +26,6 @@ import com.carolinarollergirls.scoreboard.model.ClockModel;
 public class DefaultScoreboardModelTests {
 	
 	private DefaultScoreBoardModel sbm;
-	private ScoreBoardEventProviderManager sbepm;
 	private ClockModel pc;
 	private ClockModel jc;
 	private ClockModel lc;
@@ -60,7 +59,6 @@ public class DefaultScoreboardModelTests {
 	public void setUp() throws Exception {
 		DefaultClockModel.updateClockTimerTask.setPaused(true);
 		ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
-		sbepm = ScoreBoardEventProviderManager.getSingleton();
 		sbm = new DefaultScoreBoardModel();
 		pc = sbm.getClockModel(Clock.ID_PERIOD);
 		jc = sbm.getClockModel(Clock.ID_JAM);
@@ -82,10 +80,8 @@ public class DefaultScoreboardModelTests {
 	}
 
 	private void advance(long time_ms) {
-		sbepm.waitForEvents();
 		AsyncScoreBoardListener.waitForEvents();
 		DefaultClockModel.updateClockTimerTask.advance(time_ms);
-		sbepm.waitForEvents();
 		AsyncScoreBoardListener.waitForEvents();
 	}
 	

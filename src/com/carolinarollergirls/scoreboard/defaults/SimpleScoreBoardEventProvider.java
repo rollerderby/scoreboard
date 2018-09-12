@@ -22,6 +22,10 @@ public abstract class SimpleScoreBoardEventProvider implements ScoreBoardEventPr
 	public abstract String getProviderId();
 
 	public void scoreBoardChange(ScoreBoardEvent event) {
+		dispatch(event);
+	}
+
+	protected void dispatch(ScoreBoardEvent event) {
 		// Synchronously send events to listeners.
 		synchronized(scoreBoardEventListeners) {
 			for (ScoreBoardListener l : scoreBoardEventListeners) {
@@ -49,5 +53,5 @@ public abstract class SimpleScoreBoardEventProvider implements ScoreBoardEventPr
 		}
 	}
 
-	private Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
+	protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
 }

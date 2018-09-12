@@ -12,7 +12,7 @@ import com.carolinarollergirls.scoreboard.Position;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.defaults.DefaultClockModel;
-import com.carolinarollergirls.scoreboard.defaults.ScoreBoardEventProviderManager;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
@@ -23,7 +23,6 @@ public class DefaultStatsModelTests {
 
   private ScoreBoardModel sbm;
   private StatsModel sm;
-  private ScoreBoardEventProviderManager sbepm;
   private TeamModel team1;
 
   private final String ID_PREFIX = "00000000-0000-0000-0000-000000000";
@@ -35,7 +34,6 @@ public class DefaultStatsModelTests {
     ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
     sbm = new DefaultScoreBoardModel();
     sm = sbm.getStatsModel();
-    sbepm = ScoreBoardEventProviderManager.getSingleton();
 
     // Add a full roster for each team.
     // Skater numbers are 100..114 and 200..214.
@@ -55,9 +53,9 @@ public class DefaultStatsModelTests {
   }
 
   private void advance(long time_ms) {
-    sbepm.waitForEvents();
+    AsyncScoreBoardListener.waitForEvents();
     DefaultClockModel.updateClockTimerTask.advance(time_ms);
-    sbepm.waitForEvents();
+    AsyncScoreBoardListener.waitForEvents();
   }
 
   @Test
