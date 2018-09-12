@@ -21,7 +21,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
-public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
+public class DefaultClockModel extends SimpleScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
 	public DefaultClockModel(ScoreBoardModel sbm, String i) {
 		scoreBoardModel = sbm;

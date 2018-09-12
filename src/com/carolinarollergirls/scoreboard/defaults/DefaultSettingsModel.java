@@ -17,14 +17,14 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 
-public class DefaultSettingsModel extends DefaultScoreBoardEventProvider implements SettingsModel, Ruleset.RulesetReceiver {
-	public DefaultSettingsModel(ScoreBoardModel s, DefaultScoreBoardEventProvider p) {
+public class DefaultSettingsModel extends SimpleScoreBoardEventProvider implements SettingsModel, Ruleset.RulesetReceiver {
+	public DefaultSettingsModel(ScoreBoardModel s) {
 		sbm = s;
-		parent = p;
-		addScoreBoardListener(parent);
+		parent = s;
 		reset();
 	}
 
@@ -42,7 +42,7 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	public Class<Settings> getProviderClass() { return Settings.class; }
 	public String getProviderId() { return ""; }
 
-	public DefaultScoreBoardEventProvider getParent() { return parent; }
+	public ScoreBoardEventProvider getParent() { return parent; }
 
 	public void reset() {
 		synchronized (settingsLock) {
@@ -108,5 +108,5 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	protected Map<String, String> settings = new Hashtable<String, String>();
 	protected Map<String, List<String>> ruleMapping = new Hashtable<String, List<String>>();
 	protected Object settingsLock = new Object();
-	protected DefaultScoreBoardEventProvider parent = null;
+	protected ScoreBoardEventProvider parent = null;
 }

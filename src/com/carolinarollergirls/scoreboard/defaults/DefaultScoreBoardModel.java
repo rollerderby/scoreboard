@@ -40,7 +40,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	protected void setupScoreBoard(){
-		settings = new DefaultSettingsModel(this, this);
+		settings = new DefaultSettingsModel(this);
+		settings.addScoreBoardListener(this);
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".PreGame");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Intermission");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Unofficial");

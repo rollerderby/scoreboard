@@ -30,7 +30,7 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 
-public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
+public class DefaultTeamModel extends SimpleScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
 {
 	public DefaultTeamModel(ScoreBoardModel sbm, String i) {
 		Iterator<String> posIds = Position.FLOOR_POSITIONS.iterator();
@@ -555,7 +555,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public static final String DEFAULT_LEADJAMMER = Team.LEAD_NO_LEAD;
 	public static final boolean DEFAULT_STARPASS = false;
 
-	public class DefaultAlternateNameModel extends DefaultScoreBoardEventProvider implements AlternateNameModel
+	public class DefaultAlternateNameModel extends SimpleScoreBoardEventProvider implements AlternateNameModel
 	{
 		public DefaultAlternateNameModel(TeamModel t, String i, String n) {
 			teamModel = t;
@@ -585,7 +585,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		protected Object nameLock = new Object();
 	}
 
-	public class DefaultColorModel extends DefaultScoreBoardEventProvider implements ColorModel
+	public class DefaultColorModel extends SimpleScoreBoardEventProvider implements ColorModel
 	{
 		public DefaultColorModel(TeamModel t, String i, String c) {
 			teamModel = t;

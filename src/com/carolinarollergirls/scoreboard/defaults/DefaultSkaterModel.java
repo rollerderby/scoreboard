@@ -23,7 +23,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 
-public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implements SkaterModel
+public class DefaultSkaterModel extends SimpleScoreBoardEventProvider implements SkaterModel
 {
 	public DefaultSkaterModel(TeamModel tm, String i, String n, String num, String flags) {
 		teamModel = tm;
@@ -232,7 +232,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 	protected boolean settingPositionSkater = false;
 
-	public class DefaultPenaltyModel extends DefaultScoreBoardEventProvider implements PenaltyModel
+	public class DefaultPenaltyModel extends SimpleScoreBoardEventProvider implements PenaltyModel
 	{ 
 		public DefaultPenaltyModel(String i, int p, int j, String c) {
 			id = i;

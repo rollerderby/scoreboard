@@ -17,7 +17,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
-public class DefaultFrontendSettingsModel extends DefaultScoreBoardEventProvider implements FrontendSettingsModel {
+public class DefaultFrontendSettingsModel extends SimpleScoreBoardEventProvider implements FrontendSettingsModel {
 	public DefaultFrontendSettingsModel(ScoreBoardModel s) {
 		sbm = s;
 	}

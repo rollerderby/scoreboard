@@ -26,7 +26,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 
-public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements StatsModel
+public class DefaultStatsModel extends SimpleScoreBoardEventProvider implements StatsModel
 {
   public DefaultStatsModel(ScoreBoard sb) {
     scoreBoard = sb;
@@ -231,7 +231,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
   protected List<PeriodStatsModel> periods = new ArrayList<PeriodStatsModel>();
 
 
-  public class DefaultPeriodStatsModel extends DefaultScoreBoardEventProvider implements PeriodStatsModel
+  public class DefaultPeriodStatsModel extends SimpleScoreBoardEventProvider implements PeriodStatsModel
   {
     public DefaultPeriodStatsModel(int p) {
       period = p;
@@ -277,7 +277,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
   }
 
 
-  public class DefaultJamStatsModel extends DefaultScoreBoardEventProvider implements JamStatsModel
+  public class DefaultJamStatsModel extends SimpleScoreBoardEventProvider implements JamStatsModel
   {
     public DefaultJamStatsModel(int p, int j) {
       period = p;
@@ -348,7 +348,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     protected TeamStatsModel teams[];
   }
 
-  public class DefaultTeamStatsModel extends DefaultScoreBoardEventProvider implements TeamStatsModel
+  public class DefaultTeamStatsModel extends SimpleScoreBoardEventProvider implements TeamStatsModel
   {
     public DefaultTeamStatsModel(String team_id, int p, int j) {
       id = team_id;
@@ -442,7 +442,7 @@ public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements
     private Map<String, SkaterStatsModel>skaters = new ConcurrentHashMap<String, SkaterStatsModel>();
   }
 
-  public class DefaultSkaterStatsModel extends DefaultScoreBoardEventProvider implements SkaterStatsModel
+  public class DefaultSkaterStatsModel extends SimpleScoreBoardEventProvider implements SkaterStatsModel
   {
     public DefaultSkaterStatsModel(String skater_id, String team_id, int p, int j) {
       id = skater_id;
