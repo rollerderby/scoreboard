@@ -21,7 +21,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 
-public class DefaultSettingsModel extends SimpleScoreBoardEventProvider implements SettingsModel, Ruleset.RulesetReceiver {
+public class DefaultSettingsModel extends DefaultScoreBoardEventProvider implements SettingsModel, Ruleset.RulesetReceiver {
 	public DefaultSettingsModel(ScoreBoardModel s) {
 		sbm = s;
 		parent = s;

@@ -34,7 +34,7 @@ import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
-public class DefaultScoreBoardModel extends SimpleScoreBoardEventProvider implements ScoreBoardModel
+public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
 		setupScoreBoard();

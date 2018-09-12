@@ -17,7 +17,7 @@ import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 
-public class DefaultPositionModel extends SimpleScoreBoardEventProvider implements PositionModel
+public class DefaultPositionModel extends DefaultScoreBoardEventProvider implements PositionModel
 {
 	public DefaultPositionModel(TeamModel tM, String i) {
 		teamModel = tM;
