@@ -223,9 +223,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		//the frontend rounds values that are not full seconds to the earlier second
 		//i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count down clock.
 		if (isCountDirectionDown()) {
-			return ((current-1)/1000 != (last-1)/1000);
+			return Math.floor(((float)current-1)/1000) != Math.floor(((float)last-1)/1000);
 		} else {
-			return (current/1000 != last/1000);
+			return Math.floor((float)current/1000) != Math.floor((float)last/1000);
 		}
 	}
 

@@ -773,6 +773,24 @@ public class DefaultClockModelTests {
 		advance(2000);
 		assertEquals(2000, clock.getTimeElapsed());
 	}
+
+	@Test
+	public void testRunningDownHasZeroTimeEvent() {
+		clock.setCountDirectionDown(true);
+		clock.setMaximumTime(1000);
+		clock.setTime(1000);
+
+		clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
+		clock.start();
+		advance(200);
+		advance(200);
+		advance(200);
+		advance(200);
+		advance(200);
+		assertEquals(1, collectedEvents.size());
+		ScoreBoardEvent event = collectedEvents.poll();
+		assertEquals(0, ((Long)event.getValue()).longValue());
+	}
 	
 	@Test
 	public void testStartNext() {
