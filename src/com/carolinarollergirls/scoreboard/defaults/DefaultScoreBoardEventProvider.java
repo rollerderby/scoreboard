@@ -8,6 +8,9 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
+import java.util.LinkedHashSet;
+import java.util.Set;
+
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -19,7 +22,16 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 	public abstract String getProviderId();
 
 	public void scoreBoardChange(ScoreBoardEvent event) {
-		manager.addScoreBoardEvent(this, event);
+		dispatch(event);
+	}
+
+	protected void dispatch(ScoreBoardEvent event) {
+		// Synchronously send events to listeners.
+		synchronized(scoreBoardEventListeners) {
+			for (ScoreBoardListener l : scoreBoardEventListeners) {
+				l.scoreBoardChange(event);
+			}
+		}
 	}
 
 	protected void requestBatchStart() {
@@ -31,11 +43,15 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 	}
 
 	public void addScoreBoardListener(ScoreBoardListener listener) {
-		manager.addProviderListener(this, listener);
+		synchronized(scoreBoardEventListeners) {
+			scoreBoardEventListeners.add(listener);
+		}
 	}
 	public void removeScoreBoardListener(ScoreBoardListener listener) {
-		manager.removeProviderListener(this, listener);
+		synchronized(scoreBoardEventListeners) {
+			scoreBoardEventListeners.remove(listener);
+		}
 	}
 
-	private ScoreBoardEventProviderManager manager = ScoreBoardEventProviderManager.getSingleton();
+	protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
 }

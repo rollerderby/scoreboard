@@ -17,6 +17,7 @@ import org.mockito.stubbing.Answer;
 import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -29,7 +30,6 @@ public class DefaultClockModelTests {
 	private Ruleset ruleMock;
 	private Settings settingsMock;
 	
-	private ScoreBoardEventProviderManager sbepm;
 	private Queue<ScoreBoardEvent> collectedEvents;
 	public ScoreBoardListener listener = new ScoreBoardListener() {
 		
@@ -49,13 +49,12 @@ public class DefaultClockModelTests {
 	
 	private void advance(long time_ms) {
 	    DefaultClockModel.updateClockTimerTask.advance(time_ms);
-	    sbepm.waitForEvents();
+	    AsyncScoreBoardListener.waitForEvents();
 	}
 	
 	@Before
 	public void setUp() throws Exception {
 		syncStatus = false;
-		sbepm = ScoreBoardEventProviderManager.getSingleton();
 		collectedEvents = new LinkedList<ScoreBoardEvent>();
 		
 		sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);

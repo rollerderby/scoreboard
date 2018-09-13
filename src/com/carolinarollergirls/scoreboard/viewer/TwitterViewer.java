@@ -28,6 +28,7 @@ import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
 import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.FormatSpecifierScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -49,7 +50,7 @@ public class TwitterViewer
       ScoreBoardListener conditionalListener =
         new FormatSpecifierScoreBoardListener(formatSpecifier, conditionFormat, tweetListener);
       conditionalListeners.put(key, conditionalListener);
-      scoreBoard.addScoreBoardListener(conditionalListener);
+      scoreBoard.addScoreBoardListener(new AsyncScoreBoardListener(conditionalListener));
     }
   }
   public void removeConditionalTweet(String conditionFormat, String tweet) {

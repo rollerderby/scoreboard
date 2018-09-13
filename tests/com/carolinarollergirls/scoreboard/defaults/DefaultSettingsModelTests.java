@@ -15,20 +15,18 @@ public class DefaultSettingsModelTests {
 
 	private DefaultScoreBoardModel sbModelMock;
 	private Ruleset ruleMock;
-	private DefaultScoreBoardEventProvider listenMock;
 	private DefaultSettingsModel settingsModel;
 	
 	@Before
 	public void setup() {
 		sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);
 		ruleMock = Mockito.mock(Ruleset.class);
-		listenMock = Mockito.mock(DefaultScoreBoardEventProvider.class);
 
 		Mockito
 		.when(sbModelMock._getRuleset())
 		.thenReturn(ruleMock);
 		
-		settingsModel = new DefaultSettingsModel(sbModelMock, listenMock);
+		settingsModel = new DefaultSettingsModel(sbModelMock);
 	}
 	
 	@Test

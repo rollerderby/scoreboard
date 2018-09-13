@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.Settings;
 import com.carolinarollergirls.scoreboard.Stats;
 import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -40,7 +41,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	protected void setupScoreBoard(){
-		settings = new DefaultSettingsModel(this, this);
+		settings = new DefaultSettingsModel(this);
+		settings.addScoreBoardListener(this);
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".PreGame");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Intermission");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Unofficial");
@@ -565,6 +567,21 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		teams.put(id, model);
 		scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_TEAM, model, null));
 	}
+
+	// Have all events delivered by the ScoreBoard asynchronously.
+	@Override
+	public void scoreBoardChange(ScoreBoardEvent event) {
+		asbl.scoreBoardChange(event);
+	}
+
+	protected AsyncScoreBoardListener asbl = new AsyncScoreBoardListener(
+			new ScoreBoardListener(){
+				public void scoreBoardChange(ScoreBoardEvent event) {
+					DefaultScoreBoardModel.this.dispatch(event);
+				}
+			}
+			);
+
 
 	protected HashMap<String,ClockModel> clocks = new HashMap<String,ClockModel>();
 	protected HashMap<String,TeamModel> teams = new HashMap<String,TeamModel>();
