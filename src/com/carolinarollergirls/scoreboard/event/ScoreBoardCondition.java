@@ -8,6 +8,8 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
+import java.util.Objects;
+
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class ScoreBoardCondition implements Cloneable
@@ -65,6 +67,9 @@ public class ScoreBoardCondition implements Cloneable
       return false;
     return true;
   }
+	public int hashCode() {
+		return Objects.hash(providerClass, providerId, property, value);
+	}
 
   protected Class<? extends ScoreBoardEventProvider> providerClass;
   protected String providerId;
