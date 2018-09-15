@@ -133,6 +133,9 @@ public class JSONObject {
         public String toString() {
             return "null";
         }
+        public int hashCode() {
+            return 0;
+        }
     }
 
     /**

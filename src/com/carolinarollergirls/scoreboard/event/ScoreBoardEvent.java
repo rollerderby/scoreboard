@@ -9,6 +9,7 @@ package com.carolinarollergirls.scoreboard.event;
  */
 
 import java.util.EventObject;
+import java.util.Objects;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
@@ -52,6 +53,9 @@ public class ScoreBoardEvent extends EventObject implements Cloneable
   public boolean equals(ScoreBoardCondition c) {
     return c.equals(this);
   }
+	public int hashCode() {
+		return Objects.hash(provider, property, value, previousValue);
+	}
 
   public String toString() {
     return provider.getClass().getName() + ": " + property + "='" + value + "' (was '" + previousValue + "')";
