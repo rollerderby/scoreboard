@@ -55,16 +55,18 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public void applyRule(String rule, Object value) {
-		if (rule.equals("Team.Timeouts"))
-			maximumTimeouts = (Integer)value;
-		else if (rule.equals("Team.TimeoutsPer"))
-			timeoutsPerPeriod = (Boolean)value;
-		else if (rule.equals("Team.OfficialReviews"))
-			maximumOfficialReviews = (Integer)value;
-		else if (rule.equals("Team.OfficialReviewsPer"))
-			officialReviewsPerPeriod = (Boolean)value;
-		else if (rule.equals("Team." + id + ".Name"))
-			setName((String)value);
+		synchronized (coreLock) {
+			if (rule.equals("Team.Timeouts"))
+				maximumTimeouts = (Integer)value;
+			else if (rule.equals("Team.TimeoutsPer"))
+				timeoutsPerPeriod = (Boolean)value;
+			else if (rule.equals("Team.OfficialReviews"))
+				maximumOfficialReviews = (Integer)value;
+			else if (rule.equals("Team.OfficialReviewsPer"))
+				officialReviewsPerPeriod = (Boolean)value;
+			else if (rule.equals("Team." + id + ".Name"))
+				setName((String)value);
+		}
 	}
 
 	public String getProviderName() { return "Team"; }
@@ -75,27 +77,29 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public ScoreBoardModel getScoreBoardModel() { return scoreBoardModel; }
 
 	public void reset() {
-		// Get default values from active ruleset
-		getScoreBoard()._getRuleset().apply(true, this);
-
-		setLogo(DEFAULT_LOGO);
-		setScore(DEFAULT_SCORE);
-		setLastScore(DEFAULT_SCORE);
-		_setLeadJammer(DEFAULT_LEADJAMMER);
-		_setStarPass(DEFAULT_STARPASS);
-
-		resetTimeouts(true);
-
-		removeAlternateNameModels();
-		removeColorModels();
-		Iterator<PositionModel> p = getPositionModels().iterator();
-		Iterator<SkaterModel> s = getSkaterModels().iterator();
-		while (s.hasNext()) {
-			try { removeSkaterModel(s.next().getId()); }
-			catch ( SkaterNotFoundException snfE ) { }
+		synchronized (coreLock) {
+			// Get default values from active ruleset
+			getScoreBoard()._getRuleset().apply(true, this);
+	
+			setLogo(DEFAULT_LOGO);
+			setScore(DEFAULT_SCORE);
+			setLastScore(DEFAULT_SCORE);
+			_setLeadJammer(DEFAULT_LEADJAMMER);
+			_setStarPass(DEFAULT_STARPASS);
+	
+			resetTimeouts(true);
+	
+			removeAlternateNameModels();
+			removeColorModels();
+			Iterator<PositionModel> p = getPositionModels().iterator();
+			Iterator<SkaterModel> s = getSkaterModels().iterator();
+			while (s.hasNext()) {
+				try { removeSkaterModel(s.next().getId()); }
+				catch ( SkaterNotFoundException snfE ) { }
+			}
+			while (p.hasNext())
+				p.next().reset();
 		}
-		while (p.hasNext())
-			p.next().reset();
 	}
 
 	public String getId() { return id; }
@@ -104,7 +108,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public String getName() { return name; }
 	public void setName(String n) {
-		synchronized (nameLock) {
+		synchronized (coreLock) {
 			String last = name;
 			name = n;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
@@ -112,58 +116,66 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public void startJam() {
-		synchronized (scoreLock) {
+		synchronized (coreLock) {
 			setLastScore(getScore());
 		}
 	}
 
 	public void stopJam() {
-		requestBatchStart();
-		
-		benchSkaters();
-		_setLeadJammer(Team.LEAD_NO_LEAD);
-		_setStarPass(false);
-
-		requestBatchEnd();
+		synchronized (coreLock) {
+			requestBatchStart();
+			
+			benchSkaters();
+			_setLeadJammer(Team.LEAD_NO_LEAD);
+			_setStarPass(false);
+	
+			requestBatchEnd();
+		}
 	}
 
 	public void benchSkaters() {
-		for (SkaterModel sM : skaters.values())
-			sM.bench();
+		synchronized (coreLock) {
+			for (SkaterModel sM : skaters.values())
+				sM.bench();
+		}
 	}
 	
 	public TeamSnapshotModel snapshot(){
-		return new DefaultTeamSnapshotModel(this);
+		synchronized (coreLock) {
+			return new DefaultTeamSnapshotModel(this);
+		}
 	}
 	public void restoreSnapshot(TeamSnapshotModel s) {
-		if (s.getId() != getId()) {	return; }
-		//don't reset score
-		setLastScore(s.getLastScore());
-		setTimeouts(s.getTimeouts());
-		setOfficialReviews(s.getOfficialReviews());
-		setLeadJammer(s.getLeadJammer());
-		setStarPass(s.getStarPass());
-		setInTimeout(s.inTimeout());
-		setInOfficialReview(s.inOfficialReview());
-		for (SkaterModel skater : getSkaterModels()) {
-			skater.restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
+		synchronized (coreLock) {
+			if (s.getId() != getId()) {	return; }
+			//don't reset score
+			setLastScore(s.getLastScore());
+			setTimeouts(s.getTimeouts());
+			setOfficialReviews(s.getOfficialReviews());
+			setLeadJammer(s.getLeadJammer());
+			setStarPass(s.getStarPass());
+			setInTimeout(s.inTimeout());
+			setInOfficialReview(s.inOfficialReview());
+			for (SkaterModel skater : getSkaterModels()) {
+				skater.restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
+			}
 		}
 	}
 
 	public List<AlternateName> getAlternateNames() {
-		synchronized (alternateNameLock) {
+		synchronized (coreLock) {
 			return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
 		}
 	}
 	public List<AlternateNameModel> getAlternateNameModels() {
-		synchronized (alternateNameLock) {
+		synchronized (coreLock) {
 			return Collections.unmodifiableList(new ArrayList<AlternateNameModel>(alternateNames.values()));
 		}
 	}
 	public AlternateName getAlternateName(String i) { return getAlternateNameModel(i); }
 	public AlternateNameModel getAlternateNameModel(String i) { return alternateNames.get(i); }
 	public void setAlternateNameModel(String i, String n) {
-		synchronized (alternateNameLock) {
+		synchronized (coreLock) {
 			if (alternateNames.containsKey(i)) {
 				alternateNames.get(i).setName(n);
 			} else {
@@ -175,14 +187,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public void removeAlternateNameModel(String i) {
-		synchronized (alternateNameLock) {
+		synchronized (coreLock) {
 			AlternateNameModel anm = alternateNames.remove(i);
 			anm.removeScoreBoardListener(this);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_ALTERNATE_NAME, anm, null));
 		}
 	}
 	public void removeAlternateNameModels() {
-		synchronized (alternateNameLock) {
+		synchronized (coreLock) {
 			Iterator<AlternateNameModel> i = getAlternateNameModels().iterator();
 			while (i.hasNext())
 				removeAlternateNameModel(i.next().getId());
@@ -190,19 +202,19 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public List<Color> getColors() {
-		synchronized (colorLock) {
+		synchronized (coreLock) {
 			return Collections.unmodifiableList(new ArrayList<Color>(colors.values()));
 		}
 	}
 	public List<ColorModel> getColorModels() {
-		synchronized (colorLock) {
+		synchronized (coreLock) {
 			return Collections.unmodifiableList(new ArrayList<ColorModel>(colors.values()));
 		}
 	}
 	public Color getColor(String i) { return getColorModel(i); }
 	public ColorModel getColorModel(String i) { return colors.get(i); }
 	public void setColorModel(String i, String c) {
-		synchronized (colorLock) {
+		synchronized (coreLock) {
 			if (colors.containsKey(i)) {
 				ColorModel cm = colors.get(i);
 				cm.setColor(c);
@@ -215,14 +227,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public void removeColorModel(String i) {
-		synchronized (colorLock) {
+		synchronized (coreLock) {
 			ColorModel cm = colors.remove(i);
 			cm.removeScoreBoardListener(this);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_COLOR, cm, null));
 		}
 	}
 	public void removeColorModels() {
-		synchronized (colorLock) {
+		synchronized (coreLock) {
 			Iterator<ColorModel> i = getColorModels().iterator();
 			while (i.hasNext())
 				removeColorModel(i.next().getId());
@@ -231,7 +243,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public String getLogo() { return logo; }
 	public void setLogo(String l) {
-		synchronized (logoLock) {
+		synchronized (coreLock) {
 			String last = logo;
 			logo = l;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_LOGO, logo, last));
@@ -239,21 +251,25 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
 	public void timeout() {
-		if (getTimeouts() > 0) {
-			changeTimeouts(-1);
-			getScoreBoardModel().startTimeoutType(getId(), false);
+		synchronized (coreLock) {
+			if (getTimeouts() > 0) {
+				changeTimeouts(-1);
+				getScoreBoardModel().startTimeoutType(getId(), false);
+			}
 		}
 	}
 	public void officialReview() {
-		if (getOfficialReviews() > 0) {
-			changeOfficialReviews(-1);
-			getScoreBoardModel().startTimeoutType(getId(), true);
+		synchronized (coreLock) {
+			if (getOfficialReviews() > 0) {
+				changeOfficialReviews(-1);
+				getScoreBoardModel().startTimeoutType(getId(), true);
+			}
 		}
 	}
 
 	public int getScore() { return score; }
 	public void setScore(int s) {
-		synchronized (scoreLock) {
+		synchronized (coreLock) {
 			if (0 > s)
 				s = 0;
 			Integer last = new Integer(score);
@@ -264,14 +280,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public void changeScore(int c) {
-		synchronized (scoreLock) {
+		synchronized (coreLock) {
 			setScore(getScore() + c);
 		}
 	}
 
 	public int getLastScore() { return lastscore; }
 	public void setLastScore(int s) {
-		synchronized (lastscoreLock) {
+		synchronized (coreLock) {
 			if (0 > s)
 				s = 0;
 			if (getScore() < s)
@@ -282,18 +298,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public void changeLastScore(int c) {
-		synchronized (lastscoreLock) {
+		synchronized (coreLock) {
 			setLastScore(getLastScore() + c);
 		}
 	}
 
-	public boolean inTimeout() {
-		synchronized (timeoutsLock) {
-			return in_timeout;
-		}
-	}
+	public boolean inTimeout() { return in_timeout; }
 	public void setInTimeout(boolean b) {
-		synchronized (timeoutsLock) {
+		synchronized (coreLock) {
 			if (b==in_timeout)
 				return;
 			Boolean last = new Boolean(in_timeout);
@@ -302,13 +314,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
-	public boolean inOfficialReview() {
-		synchronized (timeoutsLock) {
-			return in_official_review;
-		}
-	}
+	public boolean inOfficialReview() { return in_official_review; }
 	public void setInOfficialReview(boolean b) {
-		synchronized (timeoutsLock) {
+		synchronized (coreLock) {
 			if (b==in_official_review)
 				return;
 			Boolean last = new Boolean(in_official_review);
@@ -317,13 +325,9 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 
-	public boolean retainedOfficialReview() {
-		synchronized (timeoutsLock) {
-			return retained_official_review;
-		}
-	}
+	public boolean retainedOfficialReview() { return retained_official_review; }
 	public void setRetainedOfficialReview(boolean b) {
-		synchronized (timeoutsLock) {
+		synchronized (coreLock) {
 			if (b==retained_official_review)
 				return;
 
@@ -338,7 +342,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public int getTimeouts() { return timeouts; }
 	public void setTimeouts(int t) {
-		synchronized (timeoutsLock) {
+		synchronized (coreLock) {
 			if (0 > t)
 				t = 0;
 			if (maximumTimeouts < t)
@@ -349,13 +353,13 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public void changeTimeouts(int c) {
-		synchronized (timeoutsLock) {
+		synchronized (coreLock) {
 			setTimeouts(getTimeouts() + c);
 		}
 	}
 	public int getOfficialReviews() { return officialReviews; }
 	public void setOfficialReviews(int r) {
-		synchronized (officialReviewsLock) {
+		synchronized (coreLock) {
 			if (0 > r)
 				r = 0;
 			if (maximumOfficialReviews < r)
@@ -366,19 +370,21 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public void changeOfficialReviews(int c) {
-		synchronized (officialReviewsLock) {
+		synchronized (coreLock) {
 			setOfficialReviews(getOfficialReviews() + c);
 		}
 	}
 	public void resetTimeouts(boolean gameStart) {
-		setInTimeout(false);
-		setInOfficialReview(false);
-		if (gameStart || timeoutsPerPeriod) {
-			setTimeouts(maximumTimeouts);
-		}
-		if (gameStart || officialReviewsPerPeriod) {
-			setOfficialReviews(maximumOfficialReviews);
-			setRetainedOfficialReview(false);
+		synchronized (coreLock) {
+			setInTimeout(false);
+			setInOfficialReview(false);
+			if (gameStart || timeoutsPerPeriod) {
+				setTimeouts(maximumTimeouts);
+			}
+			if (gameStart || officialReviewsPerPeriod) {
+				setOfficialReviews(maximumOfficialReviews);
+				setRetainedOfficialReview(false);
+			}
 		}
 	}
 
@@ -396,14 +402,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	};
 
 	public List<SkaterModel> getSkaterModels() {
-		synchronized (skaterLock) {
+		synchronized (coreLock) {
 			ArrayList<SkaterModel> s = new ArrayList<SkaterModel>(skaters.values());
 			Collections.sort(s, SkaterComparator);
 			return Collections.unmodifiableList(s);
 		}
 	}
 	public List<Skater> getSkaters() {
-		synchronized (skaterLock) {
+		synchronized (coreLock) {
 			ArrayList<Skater> s = new ArrayList<Skater>(skaters.values());
 			Collections.sort(s, SkaterComparator);
 			return Collections.unmodifiableList(s);
@@ -411,7 +417,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 	public Skater getSkater(String id) throws SkaterNotFoundException { return getSkaterModel(id); }
 	public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException {
-		synchronized (skaterLock) {
+		synchronized (coreLock) {
 			if (skaters.containsKey(id))
 				return skaters.get(id);
 			else
@@ -420,12 +426,14 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 	public SkaterModel addSkaterModel(String id) { return addSkaterModel(id, "", "", ""); }
 	public SkaterModel addSkaterModel(String id, String n, String num, String flags) {
-		SkaterModel sM = new DefaultSkaterModel(this, id, n, num, flags);
-		addSkaterModel(sM);
-		return sM;
+		synchronized (coreLock) {
+			SkaterModel sM = new DefaultSkaterModel(this, id, n, num, flags);
+			addSkaterModel(sM);
+			return sM;
+		}
 	}
 	public void addSkaterModel(SkaterModel skater) {
-		synchronized (skaterLock) {
+		synchronized (coreLock) {
 			if (null == skater.getId() || "".equals(skater.getId()) || skaters.containsKey(skater.getId()))
 				return;
 
@@ -435,7 +443,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		}
 	}
 	public void removeSkaterModel(String id) throws SkaterNotFoundException {
-		synchronized (skaterLock) {
+		synchronized (coreLock) {
 			SkaterModel sm = getSkaterModel(id);
 			try { getPositionModel(sm.getPosition()).clear(); }
 			catch ( PositionNotFoundException pnfE ) { /* was on BENCH */ }
@@ -447,48 +455,54 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public Position getPosition(String id) throws PositionNotFoundException { return getPositionModel(id); }
 	public PositionModel getPositionModel(String id) throws PositionNotFoundException {
-		if (positions.containsKey(id))
-			return positions.get(id);
-		else
-			throw new PositionNotFoundException(id);
+		synchronized (coreLock) {
+			if (positions.containsKey(id))
+				return positions.get(id);
+			else
+				throw new PositionNotFoundException(id);
+		}
 	}
 	public List<Position> getPositions() { return Collections.unmodifiableList(new ArrayList<Position>(positions.values())); }
 	public List<PositionModel> getPositionModels() { return Collections.unmodifiableList(new ArrayList<PositionModel>(positions.values())); }
 
 	public String getLeadJammer() { return leadJammer; }
 	public void setLeadJammer(String lead) {
-		_setLeadJammer(lead);
+		synchronized (coreLock) {
+			_setLeadJammer(lead);
+		}
 	}
 	private void _setLeadJammer(String lead) {
-		if ("false".equals(lead.toLowerCase()))
+		if ("false".equals(lead.toLowerCase())) {
 			lead = Team.LEAD_NO_LEAD;
-		else if ("true".equals(lead.toLowerCase()))
-			lead = Team.LEAD_LEAD;
-		synchronized (skaterLock) {
-			requestBatchStart();
-
-			String last = leadJammer;
-			leadJammer = lead;
-			scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, leadJammer, last));
-
-			if (Team.LEAD_LEAD.equals(lead)) {
-				String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
-				TeamModel otherTeam = getScoreBoardModel().getTeamModel(otherId);
-				if (Team.LEAD_LEAD.equals(otherTeam.getLeadJammer())) {
-					otherTeam.setLeadJammer(Team.LEAD_NO_LEAD);
-				}
-			}
-
-			requestBatchEnd();
 		}
+		else if ("true".equals(lead.toLowerCase())) {
+			lead = Team.LEAD_LEAD;
+		}
+		requestBatchStart();
+
+		String last = leadJammer;
+		leadJammer = lead;
+		scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, leadJammer, last));
+
+		if (Team.LEAD_LEAD.equals(lead)) {
+			String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
+			TeamModel otherTeam = getScoreBoardModel().getTeamModel(otherId);
+			if (Team.LEAD_LEAD.equals(otherTeam.getLeadJammer())) {
+				otherTeam.setLeadJammer(Team.LEAD_NO_LEAD);
+			}
+		}
+
+		requestBatchEnd();
 	}
 
 	public boolean isStarPass() { return starPass; }
 	public void setStarPass(boolean starPass) {
-		_setStarPass(starPass);
+		synchronized (coreLock) {
+			_setStarPass(starPass);
+		}
 	}
 	private void _setStarPass(boolean starPass) {
-		synchronized (skaterLock) {
+		synchronized (coreLock) {
 			requestBatchStart();
 
 			Boolean last = new Boolean(this.starPass);
@@ -503,12 +517,16 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	}
 
   public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
-    getSkaterModel(skaterId).AddPenaltyModel(penaltyId, fo_exp, period, jam, code);
+	  synchronized(coreLock) {
+		  getSkaterModel(skaterId).AddPenaltyModel(penaltyId, fo_exp, period, jam, code);
+	  }
   }
 
 
 
 	protected ScoreBoardModel scoreBoardModel;
+	
+	protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
 
 	protected String id;
 	protected String name;
@@ -528,22 +546,12 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected boolean in_official_review = false;
 	protected boolean retained_official_review = false;
 
-	protected Object nameLock = new Object();
-	protected Object logoLock = new Object();
-	protected Object scoreLock = new Object();
-	protected Object lastscoreLock = new Object();
-	protected Object timeoutsLock = new Object();
-	protected Object officialReviewsLock = new Object();
-
 	protected Map<String,AlternateNameModel> alternateNames = new ConcurrentHashMap<String,AlternateNameModel>();
-	protected Object alternateNameLock = new Object();
 
 	protected Map<String,ColorModel> colors = new ConcurrentHashMap<String,ColorModel>();
-	protected Object colorLock = new Object();
 
 	protected Map<String,SkaterModel> skaters = new ConcurrentHashMap<String,SkaterModel>();
 	protected Map<String,PositionModel> positions = new ConcurrentHashMap<String,PositionModel>();
-	protected Object skaterLock = new Object();
 
 	public static final String DEFAULT_NAME_PREFIX = "Team ";
 	public static final String DEFAULT_LOGO = "";
@@ -565,7 +573,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public String getId() { return id; }
 		public String getName() { return name; }
 		public void setName(String n) {
-			synchronized (nameLock) {
+			synchronized (coreLock) {
 				String last = name;
 				name = n;
 				scoreBoardChange(new ScoreBoardEvent(this, AlternateName.EVENT_NAME, name, last));
@@ -582,7 +590,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		protected TeamModel teamModel;
 		protected String id;
 		protected String name;
-		protected Object nameLock = new Object();
 	}
 
 	public class DefaultColorModel extends DefaultScoreBoardEventProvider implements ColorModel
@@ -595,7 +602,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		public String getId() { return id; }
 		public String getColor() { return color; }
 		public void setColor(String c) {
-			synchronized (colorLock) {
+			synchronized (coreLock) {
 				String last = color;
 				color = c;
 				scoreBoardChange(new ScoreBoardEvent(this, Color.EVENT_COLOR, color, last));
@@ -612,7 +619,6 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		protected TeamModel teamModel;
 		protected String id;
 		protected String color;
-		protected Object colorLock = new Object();
 	}
 
 	public static class DefaultTeamSnapshotModel implements TeamSnapshotModel {
