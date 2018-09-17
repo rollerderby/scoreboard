@@ -23,6 +23,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class DefaultClockModelTests {
 
@@ -48,12 +49,13 @@ public class DefaultClockModelTests {
 	private boolean syncStatus = false;
 	
 	private void advance(long time_ms) {
-	    DefaultClockModel.updateClockTimerTask.advance(time_ms);
+		ScoreBoardClock.getInstance().advance(time_ms);
 	    AsyncScoreBoardListener.waitForEvents();
 	}
 	
 	@Before
 	public void setUp() throws Exception {
+		ScoreBoardClock.getInstance().stop();
 		syncStatus = false;
 		collectedEvents = new LinkedList<ScoreBoardEvent>();
 		
@@ -84,12 +86,11 @@ public class DefaultClockModelTests {
 			});
 		
 		clock = new DefaultClockModel(sbModelMock, ID);
-		DefaultClockModel.updateClockTimerTask.setPaused(true);
 	}
 	
 	@After
 	public void tearDown() throws Exception {
-		DefaultClockModel.updateClockTimerTask.setPaused(false);
+		ScoreBoardClock.getInstance().start(false);
 	}
 
 	@Test

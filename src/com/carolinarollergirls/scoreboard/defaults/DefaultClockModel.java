@@ -18,8 +18,10 @@ import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
@@ -386,7 +388,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		protected boolean isRunning;
 	}
 
-	public static class UpdateClockTimerTask extends TimerTask {
+	protected static class UpdateClockTimerTask extends TimerTask implements ScoreBoardListener {
 		public static final String PROPERTY_INTERVAL_KEY = DefaultClockModel.class.getName() + ".interval";
 		private static long update_interval = DefaultClockModel.CLOCK_UPDATE_INTERVAL;
 
@@ -394,7 +396,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			try {
 				update_interval = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_INTERVAL_KEY));
 			} catch ( Exception e ) { }
-			startSystemTime = System.currentTimeMillis();
+			startSystemTime = scoreBoardClock.getCurrentTime();
+			scoreBoardClock.addScoreBoardListener(this);
 			timer.scheduleAtFixedRate(this, update_interval / 4, update_interval / 4);
 		}
 
@@ -463,10 +466,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 
 		public void run() {
-			if (paused) return;
-			long curSystemTime = System.currentTimeMillis();
+			long curSystemTime = scoreBoardClock.getCurrentTime();
 			long curTicks = (curSystemTime - startSystemTime) / update_interval;
-			while (curTicks != ticks) {
+			while (curTicks > ticks) {
 				ticks++;
 				tick();
 			}
@@ -475,24 +477,17 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		public long getCurrentTime() {
 			return currentTime;
 		}
-
-		// For unittests.
-		public void advance(long time_ms) {
-			long curTicks = time_ms / update_interval;
-			while (curTicks != 0) {
-				curTicks--;
-				tick();
+		
+		public void scoreBoardChange(ScoreBoardEvent event) {
+			if (event.getProperty() == ScoreBoardClock.EVENT_MANUAL_CHANGE) {
+				run();
 			}
 		}
-		public void setPaused(boolean p) {
-			paused = p;
-		}
 
-
+		private ScoreBoardClock scoreBoardClock = ScoreBoardClock.getInstance();
 		private long currentTime = 0;
 		private long startSystemTime = 0;
 		private long ticks = 0;
-		private boolean paused = false;
 		protected static Timer timer = new Timer();
 		protected Object clockLock = new Object();
 		protected DefaultClockModel masterClock = null;

@@ -32,6 +32,7 @@ import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
+import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
@@ -410,10 +411,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 
 	protected void createSnapshot(String type) {
-		snapshot = new ScoreBoardSnapshot(this, DefaultClockModel.updateClockTimerTask.getCurrentTime(), type);
+		snapshot = new ScoreBoardSnapshot(this, type);
 	}
-	protected long restoreSnapshot() {
-		long relapseTime = DefaultClockModel.updateClockTimerTask.getCurrentTime() - snapshot.getSnapshotTime();
+	protected void restoreSnapshot() {
+		ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
 		for (ClockModel clock : getClockModels()) {
 			clock.restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
 		}
@@ -426,21 +427,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		setInPeriod(snapshot.inPeriod());
 		restartPcAfterTimeout = snapshot.restartPcAfterTo();
 		snapshot = null;
-		return relapseTime;
-	}
-	protected void relapseTime(long time) {
-		for (ClockModel clock : getClockModels()) {
-			if (clock.isRunning()) {
-				clock.elapseTime(time);
-			}
-		}
 	}
 	public void clockUndo() {
 		if (snapshot == null) { return; }
 		synchronized (runLock) {
 			requestBatchStart();
-			long time = restoreSnapshot();
-			relapseTime(time);
+			ScoreBoardClock.getInstance().stop();
+			restoreSnapshot();
+			ScoreBoardClock.getInstance().start(true);
 			requestBatchEnd();
 		}
 	}
@@ -643,8 +637,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	};
 
 	public static class ScoreBoardSnapshot {
-		private ScoreBoardSnapshot(DefaultScoreBoardModel sbm, long time, String type) {
-			snapshotTime = time;
+		private ScoreBoardSnapshot(DefaultScoreBoardModel sbm, String type) {
+			snapshotTime = ScoreBoardClock.getInstance().getCurrentTime();
 			this.type = type; 
 			timeoutOwner = sbm.getTimeoutOwner();
 			isOfficialReview = sbm.isOfficialReview();
