@@ -12,8 +12,8 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.Settings;
-import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.base.Settings;
+import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;

@@ -1,6 +1,6 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import com.carolinarollergirls.scoreboard.ClockConversion;
+import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 
 public class TimeRule extends Rule {
 	public TimeRule(boolean onResetOnly, String group, String subgroup, String name, String description, String defaultValue) {

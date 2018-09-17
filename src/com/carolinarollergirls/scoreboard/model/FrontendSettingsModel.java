@@ -8,7 +8,7 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.FrontendSettings;
+import com.carolinarollergirls.scoreboard.base.FrontendSettings;
 
 public interface FrontendSettingsModel extends FrontendSettings {
 	public void reset();

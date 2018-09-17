@@ -8,8 +8,8 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.Stats;
+import com.carolinarollergirls.scoreboard.base.ScoreBoard;
+import com.carolinarollergirls.scoreboard.base.Stats;
 
 public interface StatsModel extends Stats
 {

@@ -10,12 +10,12 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.base.Position;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.utils.SkaterNotFoundException;
 
 public class DefaultPositionModelTests {
 	private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";

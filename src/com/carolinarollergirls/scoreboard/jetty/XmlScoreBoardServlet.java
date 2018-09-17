@@ -18,8 +18,8 @@ import org.jdom.Document;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.base.ScoreBoard;
 
 public class XmlScoreBoardServlet extends AbstractXmlServlet
 {

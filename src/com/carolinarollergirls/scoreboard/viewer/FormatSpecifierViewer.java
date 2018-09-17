@@ -14,11 +14,11 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.Skater;
-import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.base.Clock;
+import com.carolinarollergirls.scoreboard.base.Position;
+import com.carolinarollergirls.scoreboard.base.ScoreBoard;
+import com.carolinarollergirls.scoreboard.base.Skater;
+import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardCondition;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;

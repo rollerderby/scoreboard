@@ -10,7 +10,7 @@ package com.carolinarollergirls.scoreboard.model;
 
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.ScoreBoard;
+import com.carolinarollergirls.scoreboard.base.ScoreBoard;
 
 public interface ScoreBoardModel extends ScoreBoard
 {

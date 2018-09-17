@@ -8,7 +8,7 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.Clock;
+import com.carolinarollergirls.scoreboard.base.Clock;
 
 public interface ClockModel extends Clock
 {

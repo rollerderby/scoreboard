@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard;
+package com.carolinarollergirls.scoreboard.base;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard;
 
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 

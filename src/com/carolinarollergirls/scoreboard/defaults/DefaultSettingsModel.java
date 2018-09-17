@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.base.Settings;
+import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;

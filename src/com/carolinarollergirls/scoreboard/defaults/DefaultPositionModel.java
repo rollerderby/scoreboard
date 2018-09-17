@@ -8,14 +8,15 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.Skater;
-import com.carolinarollergirls.scoreboard.SkaterNotFoundException;
-import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.base.Position;
+import com.carolinarollergirls.scoreboard.base.Skater;
+import com.carolinarollergirls.scoreboard.base.Team;
+import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.utils.SkaterNotFoundException;
 
 public class DefaultPositionModel extends DefaultScoreBoardEventProvider implements PositionModel
 {

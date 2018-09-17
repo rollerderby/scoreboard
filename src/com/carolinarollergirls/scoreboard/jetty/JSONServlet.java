@@ -22,9 +22,9 @@ import org.eclipse.jetty.server.Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.base.Clock;
+import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.xml.TeamsXmlDocumentManager;

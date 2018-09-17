@@ -16,8 +16,8 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.Skater;
-import com.carolinarollergirls.scoreboard.Team;
+import com.carolinarollergirls.scoreboard.base.Skater;
+import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 
 /**
