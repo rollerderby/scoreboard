@@ -15,16 +15,17 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.Position;
-import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.Skater;
-import com.carolinarollergirls.scoreboard.Stats;
-import com.carolinarollergirls.scoreboard.Team;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
+import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.view.Skater;
+import com.carolinarollergirls.scoreboard.view.Stats;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 public class DefaultStatsModel extends DefaultScoreBoardEventProvider implements StatsModel
 {

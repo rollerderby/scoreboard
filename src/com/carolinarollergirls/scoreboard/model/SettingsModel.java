@@ -10,7 +10,7 @@ package com.carolinarollergirls.scoreboard.model;
 
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.view.Settings;
 
 public interface SettingsModel extends Settings {
 	public void reset();
