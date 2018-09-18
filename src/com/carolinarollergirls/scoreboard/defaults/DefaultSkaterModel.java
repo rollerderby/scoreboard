@@ -43,20 +43,22 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 	public String getId() { return id; }
 	public void setId(String i) {
-		UUID uuid;
-		try {
-			uuid = UUID.fromString(i);
-		} catch (IllegalArgumentException iae) {
-			uuid = UUID.randomUUID();
+		synchronized (coreLock) {
+			UUID uuid;
+			try {
+				uuid = UUID.fromString(i);
+			} catch (IllegalArgumentException iae) {
+				uuid = UUID.randomUUID();
+			}
+			id = uuid.toString();
 		}
-		id = uuid.toString();
 	}
 
 	public Skater getSkater() { return this; }
 
 	public String getName() { return name; }
 	public void setName(String n) {
-		synchronized (nameLock) {
+		synchronized (coreLock) {
 			String last = name;
 			name = n;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NAME, name, last));
@@ -65,7 +67,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 	public String getNumber() { return number; }
 	public void setNumber(String n) {
-		synchronized (numberLock) {
+		synchronized (coreLock) {
 			String last = number;
 			number = n;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NUMBER, number, last));
@@ -74,7 +76,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 	public String getPosition() { return position; }
 	public void setPosition(String p) throws PositionNotFoundException {
-		synchronized (positionLock) {
+		synchronized (coreLock) {
 			if (position.equals(p))
 				return;
 
@@ -93,7 +95,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	public boolean isPenaltyBox() { return penaltyBox; }
 	
 	public void setPenaltyBox(boolean box) {
-		synchronized (positionLock) {
+		synchronized (coreLock) {
 			if (box == penaltyBox)
 				return;
 
@@ -119,18 +121,22 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	public String getFlags() { return flags; }
 	
 	public void setFlags(String f) {
-		synchronized (flagsLock) {
+		synchronized (coreLock) {
 			String last = flags;
 			flags = f;
 			scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_FLAGS, flags, last));
 		}
 	}
 
-	public List<Penalty> getPenalties() { return Collections.unmodifiableList(new ArrayList<Penalty>(penalties)); }
+	public List<Penalty> getPenalties() { 
+		synchronized (coreLock) {
+			return Collections.unmodifiableList(new ArrayList<Penalty>(penalties));
+		}
+	}
 	public Penalty getFOEXPPenalty() { return foexp_penalty; }
 	
 	public void AddPenaltyModel(String id, boolean foulout_explusion, int period, int jam, String code) {
-		synchronized (penaltiesLock) {
+		synchronized (coreLock) {
 			if (foulout_explusion && code != null) {
 					Penalty prev = foexp_penalty;
 					id = UUID.randomUUID().toString();
@@ -197,7 +203,7 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 
 
 	public void bench() {
-		synchronized (positionLock) {
+		synchronized (coreLock) {
 	
 			if (!penaltyBox)
 				setPosition(Position.ID_BENCH);
@@ -206,15 +212,20 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 		}
 	}
 	public SkaterSnapshotModel snapshot() {
-		return new DefaultSkaterSnapshotModel(this);
+		synchronized (coreLock) {
+			return new DefaultSkaterSnapshotModel(this);
+		}
 	}
 	public void restoreSnapshot(SkaterSnapshotModel s) {
-		if (s.getId() != getId()) {	return; }
-		setPosition(s.getPosition());
-		setPenaltyBox(s.isPenaltyBox());
+		synchronized (coreLock) {
+			if (s.getId() != getId()) {	return; }
+			setPosition(s.getPosition());
+			setPenaltyBox(s.isPenaltyBox());
+		}
 	}
 
 	protected TeamModel teamModel;
+	protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
 
 	protected String id;
 	protected String name;
@@ -224,12 +235,6 @@ public class DefaultSkaterModel extends DefaultScoreBoardEventProvider implement
 	protected String flags;
 	protected List<DefaultPenaltyModel> penalties = new LinkedList<DefaultPenaltyModel>();
 	protected PenaltyModel foexp_penalty;
-
-	protected Object nameLock = new Object();
-	protected Object numberLock = new Object();
-	protected Object positionLock = new Object();
-	protected Object flagsLock = new Object();
-	protected Object penaltiesLock = new Object();
 
 	protected boolean settingPositionSkater = false;
 
