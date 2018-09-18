@@ -13,15 +13,16 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.carolinarollergirls.scoreboard.Clock;
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.ScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
 {
@@ -41,18 +42,20 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 
 	public void applyRule(String rule, Object value) {
-		if (rule.equals("Clock." + id + ".Name"))
-			setName((String)value);
-		else if (rule.equals("Clock." + id + ".Direction"))
-			setCountDirectionDown((Boolean)value);
-		else if (rule.equals("Clock." + id + ".MinimumNumber"))
-			setMinimumNumber((Integer)value);
-		else if (rule.equals("Clock." + id + ".MaximumNumber"))
-			setMaximumNumber((Integer)value);
-		else if (rule.equals("Clock." + id + ".MinimumTime"))
-			setMinimumTime((Long)value);
-		else if (rule.equals("Clock." + id + ".MaximumTime"))
-			setMaximumTime((Long)value);
+		synchronized (coreLock) {
+			if (rule.equals("Clock." + id + ".Name"))
+				setName((String)value);
+			else if (rule.equals("Clock." + id + ".Direction"))
+				setCountDirectionDown((Boolean)value);
+			else if (rule.equals("Clock." + id + ".MinimumNumber"))
+				setMinimumNumber((Integer)value);
+			else if (rule.equals("Clock." + id + ".MaximumNumber"))
+				setMaximumNumber((Integer)value);
+			else if (rule.equals("Clock." + id + ".MinimumTime"))
+				setMinimumTime((Long)value);
+			else if (rule.equals("Clock." + id + ".MaximumTime"))
+				setMaximumTime((Long)value);
+		}
 	}
 
 	public String getProviderName() { return "Clock"; }
@@ -67,34 +70,40 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public Clock getClock() { return this; }
 
 	public void reset() {
-		stop();
+		synchronized (coreLock) {
+			stop();
 
-		// Get default values from active ruleset
-		getScoreBoard()._getRuleset().apply(true, this);
+			// Get default values from active ruleset
+			getScoreBoard()._getRuleset().apply(true, this);
 
-		// We hardcode the assumption that numbers count up.
-		setNumber(getMinimumNumber());
+			// We hardcode the assumption that numbers count up.
+			setNumber(getMinimumNumber());
 
-		resetTime();
+			resetTime();
+		}
 	}
 
 	public ClockSnapshotModel snapshot(){
-		return new DefaultClockSnapshotModel(this);
+		synchronized (coreLock) {
+			return new DefaultClockSnapshotModel(this);
+		}
 	}
 	public void restoreSnapshot(ClockSnapshotModel s) {
-		if (s.getId() != getId()) { return; }
-		setNumber(s.getNumber());
-		setTime(s.getTime());
-		if (s.isRunning()) {
-			start();
-		} else {
-			stop();
+		synchronized (coreLock) {
+			if (s.getId() != getId()) { return; }
+			setNumber(s.getNumber());
+			setTime(s.getTime());
+			if (s.isRunning()) {
+				start();
+			} else {
+				stop();
+			}
 		}
 	}
 
 	public String getName() { return name; }
 	public void setName(String n) {
-		synchronized (nameLock) {
+		synchronized (coreLock) {
 			String last = name;
 			name = n;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
@@ -103,31 +112,32 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	public int getNumber() { return number; }
 	public void setNumber(int n) {
-		synchronized (numberLock) {
+		synchronized (coreLock) {
 			Integer last = new Integer(number);
 			number = checkNewNumber(n);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_NUMBER, new Integer(number), last));
 		}
 	}
 	public void changeNumber(int change) {
-		synchronized (numberLock) {
+		synchronized (coreLock) {
 			Integer last = new Integer(number);
 			number = checkNewNumber(number + change);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_NUMBER, new Integer(number), last));
 		}
 	}
 	protected int checkNewNumber(int n) {
-		if (n < minimumNumber)
+		if (n < minimumNumber) {
 			return minimumNumber;
-		else if (n > maximumNumber)
+		} else if (n > maximumNumber) {
 			return maximumNumber;
-		else
+		} else {
 			return n;
+		}
 	}
 
 	public int getMinimumNumber() { return minimumNumber; }
 	public void setMinimumNumber(int n) {
-		synchronized (numberLock) {
+		synchronized (coreLock) {
 			Integer last = new Integer(minimumNumber);
 			minimumNumber = n;
 			if (maximumNumber < minimumNumber)
@@ -138,14 +148,14 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 	}
 	public void changeMinimumNumber(int change) {
-		synchronized (numberLock) {
+		synchronized (coreLock) {
 			setMinimumNumber(minimumNumber + change);
 		}
 	}
 
 	public int getMaximumNumber() { return maximumNumber; }
 	public void setMaximumNumber(int n) {
-		synchronized (numberLock) {
+		synchronized (coreLock) {
 			Integer last = new Integer(maximumNumber);
 			if (n < minimumNumber)
 				n = minimumNumber;
@@ -156,70 +166,82 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 	}
 	public void changeMaximumNumber(int change) {
-		synchronized (numberLock) {
+		synchronized (coreLock) {
 			setMaximumNumber(maximumNumber + change);
 		}
 	}
 
 	public long getTime() { return time; }
 	public long getInvertedTime() {
-		return maximumTime - time;
+		synchronized (coreLock) {
+			return maximumTime - time;
+		}
 	}
 	public long getTimeElapsed() {
-		return isCountDirectionDown()?getInvertedTime():getTime();
+		synchronized (coreLock) {
+			return isCountDirectionDown()?getInvertedTime():getTime();
+		}
 	}
 	public long getTimeRemaining() {
-		return isCountDirectionDown()?getTime():getInvertedTime();
+		synchronized (coreLock) {
+			return isCountDirectionDown()?getTime():getInvertedTime();
+		}
 	}
 	public void setTime(long ms) {
-		boolean doStop;
-		synchronized (timeLock) {
+		synchronized (coreLock) {
 			Long last = new Long(time);
-			if (isRunning() && isSyncTime())
+			if (isRunning() && isSyncTime()) {
 				ms = ((ms / 1000) * 1000) + (time % 1000);
+			}
 			time = checkNewTime(ms);
 			if (isDisplayChange(time, last)) {
 				scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
 				scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
 			}
-			doStop = isTimeAtEnd();
+			if (isTimeAtEnd()) {
+				stop();
+			}
 		}
-		if (doStop)
-			stop();
 	}
 	public void changeTime(long change) { _changeTime(change, true); }
 	protected void _changeTime(long change, boolean sync) {
-		boolean doStop;
-		synchronized (timeLock) {
+		synchronized (coreLock) {
 			Long last = new Long(time);
-			if (sync && isRunning() && isSyncTime())
+			if (sync && isRunning() && isSyncTime()) {
 				change = ((change / 1000) * 1000);
+			}
 			time = checkNewTime(time + change);
 			if (isDisplayChange(time, last)) {
 				scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
 				scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
 			}
-			doStop = isTimeAtEnd();
+			if(isTimeAtEnd()) {
+				stop();
+			}
 		}
-		if (doStop)
-			stop();
 	}
 	public void elapseTime(long change) {
-		changeTime(isCountDirectionDown()?-change:change);
+		synchronized (coreLock) {
+			changeTime(isCountDirectionDown()?-change:change);
+		}
 	}
 	public void resetTime() {
-		if (isCountDirectionDown())
-			setTime(getMaximumTime());
-		else
-			setTime(getMinimumTime());
+		synchronized (coreLock) {
+			if (isCountDirectionDown()) {
+				setTime(getMaximumTime());
+			} else {
+				setTime(getMinimumTime());
+			}
+		}
 	}
 	protected long checkNewTime(long ms) {
-		if (ms < minimumTime && minimumTime - ms > 500)
+		if (ms < minimumTime && minimumTime - ms > 500) {
 			return minimumTime;
-		else if (ms > maximumTime && ms - maximumTime > 500)
+		} else if (ms > maximumTime && ms - maximumTime > 500) {
 			return maximumTime;
-		else
+		} else {
 			return ms;
+		}
 	}
 	protected boolean isDisplayChange(long current, long last) {
 		//the frontend rounds values that are not full seconds to the earlier second
@@ -233,7 +255,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	public long getMinimumTime() { return minimumTime; }
 	public void setMinimumTime(long ms) {
-		synchronized (timeLock) {
+		synchronized (coreLock) {
 			Long last = new Long(minimumTime);
 			minimumTime = ms;
 			if (maximumTime < minimumTime)
@@ -244,45 +266,53 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 	}
 	public void changeMinimumTime(long change) {
-		synchronized (timeLock) {
+		synchronized (coreLock) {
 			setMinimumTime(minimumTime + change);
 		}
 	}
 	public long getMaximumTime() { return maximumTime; }
 	public void setMaximumTime(long ms) {
-		synchronized (timeLock) {
+		synchronized (coreLock) {
 			Long last = new Long(maximumTime);
-			if (ms < minimumTime)
+			if (ms < minimumTime) {
 				ms = minimumTime;
+			}
 			maximumTime = ms;
-			if (getTime() != checkNewTime(getTime()))
+			if (getTime() != checkNewTime(getTime())) {
 				setTime(getTime());
+			}
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_MAXIMUM_TIME, new Long(maximumTime), last));
 		}
 	}
 	public void changeMaximumTime(long change) {
-		synchronized (timeLock) {
+		synchronized (coreLock) {
 			setMaximumTime(maximumTime + change);
 		}
 	}
 	public boolean isTimeAtStart(long t) {
-		if (isCountDirectionDown())
-			return t == getMaximumTime();
-		else
-			return t == getMinimumTime();
+		synchronized (coreLock) {
+			if (isCountDirectionDown()) {
+				return t == getMaximumTime();
+			} else {
+				return t == getMinimumTime();
+			}
+		}
 	}
 	public boolean isTimeAtStart() { return isTimeAtStart(getTime()); }
 	public boolean isTimeAtEnd(long t) {
-		if (isCountDirectionDown())
-			return t == getMinimumTime();
-		else
-			return t == getMaximumTime();
+		synchronized (coreLock) {
+			if (isCountDirectionDown()) {
+				return t == getMinimumTime();
+			} else {
+				return t == getMaximumTime();
+			}
+		}
 	}
 	public boolean isTimeAtEnd() { return isTimeAtEnd(getTime()); }
 
 	public boolean isCountDirectionDown() { return countDown; }
 	public void setCountDirectionDown(boolean down) {
-		synchronized (timeLock) {
+		synchronized (coreLock) {
 			Boolean last = new Boolean(countDown);
 			countDown = down;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_DIRECTION, new Boolean(countDown), last));
@@ -292,24 +322,21 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public boolean isRunning() { return isRunning; }
 
 	public void start() {
-		start(false);
+		synchronized (coreLock) {
+			start(false);
+		}
 	}
 	public void start(boolean quickAdd) {
-		synchronized (timeLock) {
-			if (isRunning())
-				return;
-
+		synchronized (coreLock) {
+			if (isRunning()) { return; }
 			isRunning = true;
-
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.TRUE, Boolean.FALSE));
 			updateClockTimerTask.addClock(this, quickAdd);
 		}
 	}
 	public void stop() {
-		synchronized (timeLock) {
-			if (!isRunning())
-				return;
-
+		synchronized (coreLock) {
+			if (!isRunning()) { return; }
 			isRunning = false;
 			updateClockTimerTask.removeClock(this);
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.FALSE, Boolean.TRUE));
@@ -317,17 +344,17 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	}
 	
 	public void startNext() {
-		requestBatchStart();
-		changeNumber(1);
-		resetTime();
-		start();
-		requestBatchEnd();
+		synchronized (coreLock) {
+			requestBatchStart();
+			changeNumber(1);
+			resetTime();
+			start();
+			requestBatchEnd();
+		}
 	}
 
 	protected void timerTick(long delta) {
-		if (!isRunning())
-			return;
-
+		if (!isRunning()) { return; }
 		lastTime += delta;
 		_changeTime(countDown?-delta:delta, false);
 	}
@@ -354,10 +381,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	protected long lastTime;
 	protected boolean isRunning = false;
-
-	protected Object nameLock = new Object();
-	protected Object numberLock = new Object();
-	protected Object timeLock = new Object();
+	
+	protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
 
 	public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
@@ -403,7 +428,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 
 		public void addClock(DefaultClockModel c, boolean quickAdd) {
-			synchronized (clockLock) {
+			synchronized (coreLock) {
 				if (c.isMasterClock()) {
 					masterClock = c;
 				}
@@ -435,7 +460,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 
 		public void removeClock(DefaultClockModel c) {
-			synchronized (clockLock) {
+			synchronized (coreLock) {
 				clocks.remove(c);
 			}
 		}
@@ -443,7 +468,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		private void tick() {
 			Iterator<DefaultClockModel> i;
 			ArrayList<DefaultClockModel> clocks;
-			synchronized (clockLock) {
+			synchronized (coreLock) {
 				currentTime += update_interval;
 				clocks = new ArrayList<DefaultClockModel>(this.clocks);
 			}
@@ -489,7 +514,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		private long startSystemTime = 0;
 		private long ticks = 0;
 		protected static Timer timer = new Timer();
-		protected Object clockLock = new Object();
 		protected DefaultClockModel masterClock = null;
 		ArrayList<DefaultClockModel> clocks = new ArrayList<DefaultClockModel>();
 	}

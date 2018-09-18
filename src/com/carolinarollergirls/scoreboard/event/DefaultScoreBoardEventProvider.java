@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.defaults;
+package com.carolinarollergirls.scoreboard.event;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -10,10 +10,6 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.LinkedHashSet;
 import java.util.Set;
-
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener
 {

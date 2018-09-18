@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard;
+package com.carolinarollergirls.scoreboard.utils;
 
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;

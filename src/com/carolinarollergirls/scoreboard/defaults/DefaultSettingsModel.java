@@ -15,11 +15,12 @@ import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.Settings;
+import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.view.Settings;
 
 public class DefaultSettingsModel extends DefaultScoreBoardEventProvider implements SettingsModel, Ruleset.RulesetReceiver {
 	public DefaultSettingsModel(ScoreBoardModel s) {
@@ -29,7 +30,7 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	}
 
 	public void applyRule(String rule, Object value) {
-		synchronized (settingsLock) {
+		synchronized (coreLock) {
 			if (ruleMapping.containsKey(rule)) {
 				for (String map : ruleMapping.get(rule))
 					set(map, String.valueOf(value));
@@ -45,17 +46,17 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	public ScoreBoardEventProvider getParent() { return parent; }
 
 	public void reset() {
-		synchronized (settingsLock) {
+		synchronized (coreLock) {
 			List<String> keys = new ArrayList<String>(settings.keySet());
 			for (String k : keys) {
 				set(k, null);
 			}
+			sbm._getRuleset().apply(true, this);
 		}
-		sbm._getRuleset().apply(true, this);
 	}
 
 	public void addRuleMapping(String rule, String[] mapTo) {
-		synchronized (settingsLock) {
+		synchronized (coreLock) {
 			List<String> l = ruleMapping.get(rule);
 			if (l == null) {
 				l = new ArrayList<String>();
@@ -67,23 +68,27 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	}
 
 	public Map<String, String> getAll() {
-		synchronized (settingsLock) {
+		synchronized (coreLock) {
 			return Collections.unmodifiableMap(new Hashtable<String, String>(settings));
 		}
 	}
 	public String get(String k) {
-		synchronized (settingsLock) {
+		synchronized (coreLock) {
 			return settings.get(k);
 		}
 	}
 	public boolean getBoolean(String k) {
-		return Boolean.parseBoolean(get(k));
+		synchronized (coreLock) {
+			return Boolean.parseBoolean(get(k));
+		}
 	}
 	public long getLong(String k) {
-		return Long.parseLong(get(k));
+		synchronized (coreLock) {
+			return Long.parseLong(get(k));
+		}
 	}
 	public void set(String k, String v) {
-		synchronized (settingsLock) {
+		synchronized (coreLock) {
 			String last = settings.get(k);
 			if (v == null || v.equals(""))
 				v = "";
@@ -92,7 +97,7 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 		}
 	}
 	public void set(Map<String, String> s) {
-		synchronized (settingsLock) {
+		synchronized (coreLock) {
 			// Remove settings not in the new set
 			for (String k : settings.keySet())
 				if (!s.containsKey(k))
@@ -107,6 +112,6 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 	protected ScoreBoardModel sbm = null;
 	protected Map<String, String> settings = new Hashtable<String, String>();
 	protected Map<String, List<String>> ruleMapping = new Hashtable<String, List<String>>();
-	protected Object settingsLock = new Object();
 	protected ScoreBoardEventProvider parent = null;
+	protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
 }

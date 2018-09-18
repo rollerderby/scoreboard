@@ -24,6 +24,8 @@ import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
 import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 
 public class ScoreBoardManager {

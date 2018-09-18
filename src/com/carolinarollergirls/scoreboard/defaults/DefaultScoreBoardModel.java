@@ -14,15 +14,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.Clock;
-import com.carolinarollergirls.scoreboard.FrontendSettings;
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.ScoreBoard;
-import com.carolinarollergirls.scoreboard.Settings;
-import com.carolinarollergirls.scoreboard.Stats;
-import com.carolinarollergirls.scoreboard.Team;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -33,12 +27,18 @@ import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.Stats;
+import com.carolinarollergirls.scoreboard.view.Team;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel
 {
 	public DefaultScoreBoardModel() {
-		setupScoreBoard();
+			setupScoreBoard();
 	}
 
 	protected void setupScoreBoard(){
@@ -92,35 +92,39 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public String getProviderId() { return ""; }
 
 	public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
+	
+	public static Object getCoreLock() { return coreLock; }
 
 	public ScoreBoard getScoreBoard() { return this; }
 
 	public void reset() {
-		_getRuleset().apply(true);
-
-		Iterator<ClockModel> c = getClockModels().iterator();
-		while (c.hasNext())
-			c.next().reset();
-		Iterator<TeamModel> t = getTeamModels().iterator();
-		while (t.hasNext())
-			t.next().reset();
-
-		setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
-		setOfficialReview(false);
-		setInPeriod(false);
-		setInOvertime(false);
-		setOfficialScore(false);
-		restartPcAfterTimeout = false;
-		
-		settings.reset();
-		stats.reset();
-		// Custom settings are not reset, as broadcast overlays settings etc.
-		// shouldn't be lost just because the next game is starting.
+		synchronized (coreLock) {
+			_getRuleset().apply(true);
+	
+			Iterator<ClockModel> c = getClockModels().iterator();
+			while (c.hasNext())
+				c.next().reset();
+			Iterator<TeamModel> t = getTeamModels().iterator();
+			while (t.hasNext())
+				t.next().reset();
+	
+			setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
+			setOfficialReview(false);
+			setInPeriod(false);
+			setInOvertime(false);
+			setOfficialScore(false);
+			restartPcAfterTimeout = false;
+			
+			settings.reset();
+			stats.reset();
+			// Custom settings are not reset, as broadcast overlays settings etc.
+			// shouldn't be lost just because the next game is starting.
+		}
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
 	public void setInPeriod(boolean p) {
-		synchronized (inPeriodLock) {
+		synchronized (coreLock) {
 			if (p == inPeriod) { return; }
 			Boolean last = new Boolean(inPeriod);
 			inPeriod = p;
@@ -136,19 +140,19 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	public boolean isInOvertime() { return inOvertime; }
 	public void setInOvertime(boolean o) {
-		if (o == inOvertime) { return; }
-		synchronized (inOvertimeLock) {
+		synchronized (coreLock) {
+			if (o == inOvertime) { return; }
 			Boolean last = new Boolean(inOvertime);
 			inOvertime = o;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_OVERTIME, new Boolean(inOvertime), last));
-		}
-		ClockModel lc = getClockModel(Clock.ID_LINEUP);
-		if (!o && lc.isCountDirectionDown()) {
-			lc.setMaximumTime(settings.getLong("Clock." + Clock.ID_LINEUP + ".Time"));
+			ClockModel lc = getClockModel(Clock.ID_LINEUP);
+			if (!o && lc.isCountDirectionDown()) {
+				lc.setMaximumTime(settings.getLong("Clock." + Clock.ID_LINEUP + ".Time"));
+			}
 		}
 	}
 	public void startOvertime() {
-		synchronized (runLock) {
+		synchronized (coreLock) {
 			ClockModel pc = getClockModel(Clock.ID_PERIOD);
 			ClockModel jc = getClockModel(Clock.ID_JAM);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
@@ -175,7 +179,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	public boolean isOfficialScore() { return officialScore; }
 	public void setOfficialScore(boolean o) {
-		synchronized (officialScoreLock) {
+		synchronized (coreLock) {
 			Boolean last = new Boolean(officialScore);
 			officialScore = o;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_SCORE, new Boolean(officialScore), last));
@@ -183,7 +187,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public void startJam() {
-		synchronized (runLock) {
+		synchronized (coreLock) {
 			if (!getClock(Clock.ID_JAM).isRunning()) {
 				createSnapshot(ACTION_START_JAM);
 				_startJam();
@@ -191,7 +195,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 	public void stopJamTO() {
-		synchronized (runLock) {
+		synchronized (coreLock) {
 			ClockModel jc = getClockModel(Clock.ID_JAM);
 			ClockModel lc = getClockModel(Clock.ID_LINEUP);
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
@@ -209,24 +213,26 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 	public void timeout() { 
-		synchronized (runLock) {
+		synchronized (coreLock) {
 			createSnapshot(ACTION_TIMEOUT);
 			_startTimeout();
 		}
 	}
 	public void startTimeoutType(String owner, boolean review) {
-		ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
-
-		requestBatchStart();
-		if (!tc.isRunning()) {
-			timeout();
+		synchronized (coreLock) {
+			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
+	
+			requestBatchStart();
+			if (!tc.isRunning()) {
+				timeout();
+			}
+			setTimeoutOwner(owner);
+			setOfficialReview(review);
+			if (owner != TIMEOUT_OWNER_NONE && owner != TIMEOUT_OWNER_OTO) {
+				restartPcAfterTimeout = false;
+			}
+			requestBatchEnd();
 		}
-		setTimeoutOwner(owner);
-		setOfficialReview(review);
-		if (owner != TIMEOUT_OWNER_NONE && owner != TIMEOUT_OWNER_OTO) {
-			restartPcAfterTimeout = false;
-		}
-		requestBatchEnd();
 	}
 	private void _preparePeriod() {
 		ClockModel pc = getClockModel(Clock.ID_PERIOD);
@@ -429,8 +435,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		snapshot = null;
 	}
 	public void clockUndo() {
-		if (snapshot == null) { return; }
-		synchronized (runLock) {
+		synchronized (coreLock) {
+			if (snapshot == null) { return; }
 			requestBatchStart();
 			ScoreBoardClock.getInstance().stop();
 			restoreSnapshot();
@@ -439,28 +445,34 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		}
 	}
 	public void unStartJam() {
-		if (snapshot != null && 
-				snapshot.getType() == ACTION_START_JAM) {
-			clockUndo();
+		synchronized (coreLock) {
+			if (snapshot != null && 
+					snapshot.getType() == ACTION_START_JAM) {
+				clockUndo();
+			}
 		}
 	}
 	public void unStopJam() {
-		if (snapshot != null && 
-				(snapshot.getType() == ACTION_STOP_JAM ||
-				 snapshot.getType() == ACTION_STOP_TO ||
-				 snapshot.getType() == ACTION_LINEUP)) {
-			clockUndo();
+		synchronized (coreLock) {
+			if (snapshot != null && 
+					(snapshot.getType() == ACTION_STOP_JAM ||
+					snapshot.getType() == ACTION_STOP_TO ||
+					snapshot.getType() == ACTION_LINEUP)) {
+				clockUndo();
+			}
 		}
 	}
 	public void unTimeout() {
-		if (snapshot != null && 
-				snapshot.getType() == ACTION_TIMEOUT) {
-			clockUndo();
+		synchronized (coreLock) {
+			if (snapshot != null && 
+					snapshot.getType() == ACTION_TIMEOUT) {
+				clockUndo();
+			}
 		}
 	}
 
 	public Ruleset _getRuleset() {
-		synchronized (rulesetLock) {
+		synchronized (coreLock) {
 			if (ruleset == null) {
 				ruleset = Ruleset.findRuleset(null, true);
 			}
@@ -469,7 +481,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public String getRuleset() { return _getRuleset().getId().toString(); }
 	public void setRuleset(String id) {
-		synchronized (rulesetLock) {
+		synchronized (coreLock) {
 			String last = getRuleset();
 			ruleset = Ruleset.findRuleset(id, true);
 			ruleset.apply(false);
@@ -478,7 +490,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code){
-		getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
+		synchronized (coreLock) {
+			getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
+		}
 	}
 
 	public Settings getSettings() { return settings; }
@@ -500,7 +514,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public Team getTeam(String id) { return getTeamModel(id).getTeam(); }
 
 	public ClockModel getClockModel(String id) {
-		synchronized (clocks) {
+		synchronized (coreLock) {
 // FIXME - don't auto-create!	 return null instead - or throw exception.	Need to update all callers to handle first.
 			if (!clocks.containsKey(id))
 				createClockModel(id);
@@ -510,7 +524,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 
 	public TeamModel getTeamModel(String id) {
-		synchronized (teams) {
+		synchronized (coreLock) {
 // FIXME - don't auto-create!	 return null instead - or throw exception.	Need to update all callers to handle first.
 			if (!teams.containsKey(id))
 				createTeamModel(id);
@@ -521,7 +535,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 	public String getTimeoutOwner() { return timeoutOwner; }
 	public void setTimeoutOwner(String owner) {
-		synchronized (timeoutOwnerLock) {
+		synchronized (coreLock) {
 			String last = timeoutOwner;
 			timeoutOwner = owner;
 			for (TeamModel tm : getTeamModels()) {
@@ -532,7 +546,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public boolean isOfficialReview() { return officialReview; }
 	public void setOfficialReview(boolean official) {
-		synchronized (officialReviewLock) {
+		synchronized (coreLock) {
 			boolean last = officialReview;
 			officialReview = official;
 			for (TeamModel tm : getTeamModels()) {
@@ -562,44 +576,24 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_TEAM, model, null));
 	}
 
-	// Have all events delivered by the ScoreBoard asynchronously.
-	@Override
-	public void scoreBoardChange(ScoreBoardEvent event) {
-		asbl.scoreBoardChange(event);
-	}
-
-	protected AsyncScoreBoardListener asbl = new AsyncScoreBoardListener(
-			new ScoreBoardListener(){
-				public void scoreBoardChange(ScoreBoardEvent event) {
-					DefaultScoreBoardModel.this.dispatch(event);
-				}
-			}
-			);
-
-
 	protected HashMap<String,ClockModel> clocks = new HashMap<String,ClockModel>();
 	protected HashMap<String,TeamModel> teams = new HashMap<String,TeamModel>();
 
-	protected Object runLock = new Object();
 	protected ScoreBoardSnapshot snapshot = null;
+	
+	protected static Object coreLock = new Object();
 
 	protected String timeoutOwner;
-	protected Object timeoutOwnerLock = new Object();
 	protected boolean officialReview;
-	protected Object officialReviewLock = new Object();
 	protected boolean restartPcAfterTimeout;
 
 	protected boolean inPeriod = false;
-	protected Object inPeriodLock = new Object();
 
 	protected boolean inOvertime = false;
-	protected Object inOvertimeLock = new Object();
 
 	protected boolean officialScore = false;
-	protected Object officialScoreLock = new Object();
 
 	protected Ruleset ruleset = null;
-	protected Object rulesetLock = new Object();
 	protected DefaultSettingsModel settings = null;
 	protected DefaultFrontendSettingsModel frontendSettings = null;
 	protected DefaultStatsModel stats = null;

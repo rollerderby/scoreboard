@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard;
+package com.carolinarollergirls.scoreboard.view;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
