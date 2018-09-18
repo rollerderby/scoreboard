@@ -16,12 +16,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
-import com.carolinarollergirls.scoreboard.base.Clock;
 import com.carolinarollergirls.scoreboard.rules.BooleanRule;
 import com.carolinarollergirls.scoreboard.rules.IntegerRule;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.StringRule;
 import com.carolinarollergirls.scoreboard.rules.TimeRule;
+import com.carolinarollergirls.scoreboard.view.Clock;
 
 public class Ruleset {
 	public interface RulesetReceiver {

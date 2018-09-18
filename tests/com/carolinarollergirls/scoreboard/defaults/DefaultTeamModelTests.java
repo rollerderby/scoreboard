@@ -12,14 +12,14 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.base.Settings;
-import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 public class DefaultTeamModelTests {
 

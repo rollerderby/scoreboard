@@ -14,14 +14,14 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import com.carolinarollergirls.scoreboard.base.Clock;
-import com.carolinarollergirls.scoreboard.base.Position;
-import com.carolinarollergirls.scoreboard.base.ScoreBoard;
-import com.carolinarollergirls.scoreboard.base.Skater;
-import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardCondition;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.view.Skater;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 public class FormatSpecifierViewer
 {

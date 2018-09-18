@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.base;
+package com.carolinarollergirls.scoreboard.view;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -11,8 +11,6 @@ package com.carolinarollergirls.scoreboard.base;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.utils.PositionNotFoundException;
-import com.carolinarollergirls.scoreboard.utils.SkaterNotFoundException;
 
 public interface Team extends ScoreBoardEventProvider
 {

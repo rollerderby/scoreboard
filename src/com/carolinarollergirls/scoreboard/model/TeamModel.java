@@ -11,9 +11,9 @@ package com.carolinarollergirls.scoreboard.model;
 import java.util.Map;
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.base.Team;
-import com.carolinarollergirls.scoreboard.utils.PositionNotFoundException;
-import com.carolinarollergirls.scoreboard.utils.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.view.PositionNotFoundException;
+import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 public interface TeamModel extends Team
 {

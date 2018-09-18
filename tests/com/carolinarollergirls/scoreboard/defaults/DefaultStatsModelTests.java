@@ -8,9 +8,6 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.base.Clock;
-import com.carolinarollergirls.scoreboard.base.Position;
-import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.defaults.DefaultClockModel;
 import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
@@ -18,6 +15,9 @@ import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 public class DefaultStatsModelTests {
 

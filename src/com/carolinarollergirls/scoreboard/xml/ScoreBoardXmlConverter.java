@@ -14,14 +14,6 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
-import com.carolinarollergirls.scoreboard.base.Clock;
-import com.carolinarollergirls.scoreboard.base.FrontendSettings;
-import com.carolinarollergirls.scoreboard.base.Position;
-import com.carolinarollergirls.scoreboard.base.ScoreBoard;
-import com.carolinarollergirls.scoreboard.base.Settings;
-import com.carolinarollergirls.scoreboard.base.Skater;
-import com.carolinarollergirls.scoreboard.base.Stats;
-import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
@@ -30,7 +22,15 @@ import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.utils.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.Skater;
+import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.view.Stats;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 public class ScoreBoardXmlConverter
 {

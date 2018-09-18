@@ -16,9 +16,9 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.base.Skater;
-import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.view.Skater;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 /**
  * This allows storing team info, e.g. name, logo, roster, etc., separate from the actual teams

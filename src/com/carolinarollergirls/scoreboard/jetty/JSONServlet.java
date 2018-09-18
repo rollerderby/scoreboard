@@ -23,10 +23,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.base.Clock;
-import com.carolinarollergirls.scoreboard.base.Team;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Team;
 import com.carolinarollergirls.scoreboard.xml.TeamsXmlDocumentManager;
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentManager;
 

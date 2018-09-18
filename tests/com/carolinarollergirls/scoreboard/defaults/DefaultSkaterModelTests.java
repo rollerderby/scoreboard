@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.carolinarollergirls.scoreboard.base.Skater;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.view.Skater;
 
 public class DefaultSkaterModelTests {
 
