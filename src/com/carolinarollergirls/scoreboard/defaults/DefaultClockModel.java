@@ -263,7 +263,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 	}
 	public void changeMinimumTime(long change) {
-		synchronized (scoreBoardModel) {
+		synchronized (coreLock) {
 			setMinimumTime(minimumTime + change);
 		}
 	}
@@ -287,7 +287,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		}
 	}
 	public boolean isTimeAtStart(long t) {
-		synchronized (scoreBoardModel) {
+		synchronized (coreLock) {
 			if (isCountDirectionDown()) {
 				return t == getMaximumTime();
 			} else {
