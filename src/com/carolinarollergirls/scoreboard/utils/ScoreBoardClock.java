@@ -1,21 +1,17 @@
 package com.carolinarollergirls.scoreboard.utils;
 
-import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class ScoreBoardClock extends DefaultScoreBoardEventProvider{
+public class ScoreBoardClock extends TimerTask {
 	private ScoreBoardClock() {
 		offset = System.currentTimeMillis();
+		timer.scheduleAtFixedRate(this, CLOCK_UPDATE_INTERVAL / 4, CLOCK_UPDATE_INTERVAL / 4);
 	}
-	
-	public String getProviderName() { return "ScoreBoardClock"; }
-	public Class<ScoreBoardClock> getProviderClass() { return ScoreBoardClock.class; }
-	public String getProviderId() { return ""; }
 
 	public static ScoreBoardClock getInstance() {
-		if (instance == null) {
-			instance = new ScoreBoardClock();
-		}
 		return instance;
 	}
 	
@@ -24,29 +20,34 @@ public class ScoreBoardClock extends DefaultScoreBoardEventProvider{
 		return currentTime;
 	}
 	public synchronized void rewindTo(long time) {
-		long difference = currentTime - time;
+		lastRewind = currentTime - time;
 		// changing offset instead of currentTime has two reasons:
 		// 1. The change only becomes visible to clients after the clock has restarted.
 		// 2. Repeating values for currentTime would cause UpdateClockTimerTask to just 
 		//    idle until it has caught up, instead of advancing the clocks by the desired amount.
-		offset -= difference;
-		scoreBoardChange(new ScoreBoardEvent(this, EVENT_REWIND, difference, 0));
+		offset -= lastRewind;
+	}
+	public synchronized long getLastRewind() {
+		return lastRewind;
 	}
 	public synchronized void advance(long ms) {
-		long last = currentTime;
 		currentTime += ms;
-		scoreBoardChange(new ScoreBoardEvent(this, EVENT_MANUAL_CHANGE, currentTime, last));
+		updateClients();
 	}
 	
 	public synchronized void stop() {
 		updateTime();
 		stopCounter++;
 	}
-	public synchronized void start(Boolean doCatchUp) {
+	public synchronized void start(boolean doCatchUp) {
 		if (!doCatchUp) {
 			offset = System.currentTimeMillis() - currentTime;
 		}
 		stopCounter--;
+	}
+	
+	public void registerClient(ScoreBoardClockClient client) {
+		clients.add(client);
 	}
 	
 	private synchronized void updateTime() {
@@ -55,12 +56,33 @@ public class ScoreBoardClock extends DefaultScoreBoardEventProvider{
 		}
 	}
 	
+	private void updateClients() {
+		for (ScoreBoardClockClient client: clients) {
+			client.updateTime(currentTime);
+		}
+	}
+	
+	public synchronized void run() {
+		if (stopCounter == 0) {
+			updateTime();
+			updateClients();
+		}
+	}
+	
 	private long offset;
 	private long currentTime;
 	private int stopCounter = 0;
+	private long lastRewind = 0;
 	
-	private static ScoreBoardClock instance = null;
+	private static Timer timer = new Timer();
+
+	private static final ScoreBoardClock instance = new ScoreBoardClock();
 	
-	public final static String EVENT_MANUAL_CHANGE = "ManualChange";
-	public final static String EVENT_REWIND = "Rewind";
+	private List<ScoreBoardClockClient> clients = new ArrayList<ScoreBoardClockClient>();
+	
+	public static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
+
+	public interface ScoreBoardClockClient {
+		void updateTime(long ms);
+	}
 }

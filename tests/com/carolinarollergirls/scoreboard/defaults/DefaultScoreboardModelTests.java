@@ -826,8 +826,6 @@ public class DefaultScoreboardModelTests {
 	
 	@Test
 	public void testClockUndo() {
-		ScoreBoardClock.getInstance().addScoreBoardListener(new ConditionalScoreBoardListener(
-				ScoreBoardClock.getInstance(), ScoreBoardClock.EVENT_REWIND, listener));
 		pc.start();
 		jc.start();
 		sbm.setInPeriod(true);
@@ -856,10 +854,8 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.clockUndo();
 		advance(0);
-		assertEquals(1, collectedEvents.size());
-		long offset = (long) collectedEvents.poll().getValue();
 		//need to manually advance as the stopped clock will not catch up to system time
-		advance(offset);
+		advance(ScoreBoardClock.getInstance().getLastRewind());
 		assertTrue(pc.isRunning());
 		assertEquals(2000, pc.getTimeElapsed());
 		assertTrue(jc.isRunning());

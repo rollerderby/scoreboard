@@ -10,14 +10,9 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Timer;
-import java.util.TimerTask;
-
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -386,8 +381,6 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 
 	public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
-	protected static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
-
 	public static final int DEFAULT_MINIMUM_NUMBER = 1;
 	public static final int DEFAULT_MAXIMUM_NUMBER = 999;
 	public static final long DEFAULT_MINIMUM_TIME = 0;
@@ -413,17 +406,12 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		protected boolean isRunning;
 	}
 
-	protected static class UpdateClockTimerTask extends TimerTask implements ScoreBoardListener {
-		public static final String PROPERTY_INTERVAL_KEY = DefaultClockModel.class.getName() + ".interval";
-		private static long update_interval = DefaultClockModel.CLOCK_UPDATE_INTERVAL;
+	protected static class UpdateClockTimerTask implements ScoreBoardClock.ScoreBoardClockClient {
+		private static long update_interval = ScoreBoardClock.CLOCK_UPDATE_INTERVAL;
 
 		public UpdateClockTimerTask() {
-			try {
-				update_interval = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_INTERVAL_KEY));
-			} catch ( Exception e ) { }
 			startSystemTime = scoreBoardClock.getCurrentTime();
-			scoreBoardClock.addScoreBoardListener(this);
-			timer.scheduleAtFixedRate(this, update_interval / 4, update_interval / 4);
+			ScoreBoardClock.getInstance().registerClient(this);
 		}
 
 
@@ -490,8 +478,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			}
 		}
 
-		public void run() {
-			long curSystemTime = scoreBoardClock.getCurrentTime();
+		public void updateTime(long time) {
+			long curSystemTime = time;
 			long curTicks = (curSystemTime - startSystemTime) / update_interval;
 			while (curTicks > ticks) {
 				ticks++;
@@ -503,17 +491,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 			return currentTime;
 		}
 		
-		public void scoreBoardChange(ScoreBoardEvent event) {
-			if (event.getProperty() == ScoreBoardClock.EVENT_MANUAL_CHANGE) {
-				run();
-			}
-		}
-
 		private ScoreBoardClock scoreBoardClock = ScoreBoardClock.getInstance();
 		private long currentTime = 0;
 		private long startSystemTime = 0;
 		private long ticks = 0;
-		protected static Timer timer = new Timer();
 		protected DefaultClockModel masterClock = null;
 		ArrayList<DefaultClockModel> clocks = new ArrayList<DefaultClockModel>();
 	}
