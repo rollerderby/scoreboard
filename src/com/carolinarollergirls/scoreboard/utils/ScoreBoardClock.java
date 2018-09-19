@@ -74,7 +74,7 @@ public class ScoreBoardClock extends TimerTask {
 	private int stopCounter = 0;
 	private long lastRewind = 0;
 	
-	private static Timer timer = new Timer();
+	private Timer timer = new Timer();
 
 	private static final ScoreBoardClock instance = new ScoreBoardClock();
 	
