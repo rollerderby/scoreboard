@@ -469,7 +469,7 @@ function createTeamTable() {
 		var nameTr = createRowTable(2).appendTo($("<td>").appendTo(nameRow)).find("tr");
 		var scoreTr = createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
 		var speedScoreTr = createRowTable(4).appendTo($("<td>").appendTo(speedScoreRow)).find("tr");
-		var timeoutTr = createRowTable(5).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
+		var timeoutTr = createRowTable(6).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
 		var jammer1Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer1Row)).find("tr");
 		var jammer2Tr = createRowTable(2).appendTo($("<td>").appendTo(jammer2Row)).find("tr");
 
@@ -653,7 +653,7 @@ function createTeamTable() {
 		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
 
 		var timeout = sbTeam.$sb("Timeout");
-		var timeoutButton = timeout.$sbControl("<button>").text("Timeout").val("true")
+		var timeoutButton = timeout.$sbControl("<button>").text("Team TO").val("true")
 			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button();
 		var timeoutHighlight = function() {
 			var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == team;
@@ -662,11 +662,11 @@ function createTeamTable() {
 		};
 		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", timeoutHighlight);
 		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", timeoutHighlight);
-		timeoutButton.appendTo(timeoutTr.children("td:eq("+(first?"0":"4")+")").addClass("Timeout"));
+		timeoutButton.appendTo(timeoutTr.children("td:eq("+(first?"0":"5")+")").addClass("Timeout"));
 		sbTeam.$sb("Timeouts").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
-				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"3")+")")
-			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"3")+")").addClass("Timeouts"));
+				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"4")+")")
+			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"4")+")").addClass("Timeouts"));
 		var review = sbTeam.$sb("OfficialReview");
 		var reviewButton = review.$sbControl("<button>").text("Off Review").val("true")
 			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button();
@@ -677,11 +677,11 @@ function createTeamTable() {
 		};
 		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", reviewHighlight);
 		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", reviewHighlight);
-		reviewButton.appendTo(timeoutTr.children("td:eq("+(first?"2":"2")+")").addClass("OfficialReview"));
+		reviewButton.appendTo(timeoutTr.children("td:eq("+(first?"2":"3")+")").addClass("OfficialReview"));
 		sbTeam.$sb("OfficialReviews").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
 				editOnClick: true,
-				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"1")+")")
-			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"1")+")").addClass("OfficialReviews"));
+				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"2")+")")
+			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"2")+")").addClass("OfficialReviews"));
 		var retainedOR = sbTeam.$sb("RetainedOfficialReview");
 		var retainedORButton = retainedOR.$sbControl("<button>").text("Retained").val("true")
 			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl Box").button();
@@ -689,8 +689,19 @@ function createTeamTable() {
 			retainedORButton.val(!isTrue(value));
 			retainedORButton.toggleClass("Active", isTrue(value));
 		});
-		retainedORButton.appendTo(timeoutTr.children("td:eq("+(first?"4":"0")+")").addClass("RetainedOfficialReview"));
-
+		retainedORButton.appendTo(timeoutTr.children("td:eq("+(first?"4":"1")+")").addClass("RetainedOfficialReview"));
+		if (first) {
+			var oto = $sb("ScoreBoard.OfficialTimeout");
+			var otoButton = oto.$sbControl("<button>").text("Official TO").val("true")
+				.attr("id", "OfficialTimeout").addClass("KeyControl").button();
+			var otoHighlight = function() {
+				var to = $sb("ScoreBoard.TimeoutOwner").$sbGet() == "O";
+				otoButton.toggleClass("Active", to);
+			};
+			$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", otoHighlight);
+			otoButton.appendTo(timeoutTr.children("td:eq(5)").addClass("OfficialTimeout"));
+			otoButton.wrap("<div></div>");
+		}
 		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")")
 			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='Lead'/>")
 			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No</label><input type='radio' value='NoLead'/>")

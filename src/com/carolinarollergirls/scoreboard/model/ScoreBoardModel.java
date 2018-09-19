@@ -33,7 +33,7 @@ public interface ScoreBoardModel extends ScoreBoard
 	public void stopJamTO();
 
 	public void timeout();
-	public void startTimeoutType(String team, boolean review);
+	public void setTimeoutType(String team, boolean review);
 
 	public void clockUndo();
 	public void unStartJam();

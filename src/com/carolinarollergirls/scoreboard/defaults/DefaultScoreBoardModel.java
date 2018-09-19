@@ -167,7 +167,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			
 			requestBatchStart();
 			setInOvertime(true);
-			_endTimeout();
+			_endTimeout(false);
 			long otLineupTime = settings.getLong("Clock." + Clock.ID_LINEUP + ".OvertimeTime");
 			if (lc.getMaximumTime() < otLineupTime) {
 				lc.setMaximumTime(otLineupTime);
@@ -205,7 +205,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				_endJam(false);
 			} else if (tc.isRunning()) {
 				createSnapshot(ACTION_STOP_TO);
-				_endTimeout();
+				_endTimeout(false);
 			} else if (!lc.isRunning()) {
 				createSnapshot(ACTION_LINEUP);
 				_startLineup();
@@ -214,11 +214,15 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	}
 	public void timeout() { 
 		synchronized (coreLock) {
-			createSnapshot(ACTION_TIMEOUT);
+			if (getClock(Clock.ID_TIMEOUT).isRunning()) {
+				createSnapshot(ACTION_RE_TIMEOUT);
+			} else {
+				createSnapshot(ACTION_TIMEOUT);
+			}
 			_startTimeout();
 		}
 	}
-	public void startTimeoutType(String owner, boolean review) {
+	public void setTimeoutType(String owner, boolean review) {
 		synchronized (coreLock) {
 			ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 	
@@ -226,11 +230,18 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (!tc.isRunning()) {
 				timeout();
 			}
+			//if overridden TO type is Team TO or OR, credit it back
+			for (TeamModel tm : getTeamModels()) {
+				if (tm.getId().equals(getTimeoutOwner())) {
+					if (isOfficialReview()) {
+						tm.changeOfficialReviews(1);
+					} else {
+						tm.changeTimeouts(1);
+					}
+				}
+			}
 			setTimeoutOwner(owner);
 			setOfficialReview(review);
-			if (owner != TIMEOUT_OWNER_NONE && owner != TIMEOUT_OWNER_OTO) {
-				restartPcAfterTimeout = false;
-			}
 			requestBatchEnd();
 		}
 	}
@@ -271,7 +282,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 		requestBatchStart();
 		_endIntermission(false);
-		_endTimeout();
+		_endTimeout(false);
 		_endLineup();
 		setInPeriod(true);
 		pc.start();
@@ -326,14 +337,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 		requestBatchStart();
 		if (tc.isRunning()) {
-			//TODO: Make Official Timeout its own button that calls startTimeoutType()
-			if (getTimeoutOwner()==TIMEOUT_OWNER_NONE) {
-				setTimeoutOwner(TIMEOUT_OWNER_OTO);
-			} else {
-				setTimeoutOwner(TIMEOUT_OWNER_NONE);
-			}
-			requestBatchEnd();
-			return; 
+			//end the previous timeout before starting a new one
+			_endTimeout(true);
 		}
 		
 		pc.stop();
@@ -344,7 +349,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		tc.startNext();
 		requestBatchEnd();
 	}
-	private void _endTimeout() {
+	private void _endTimeout(boolean timeoutFollows) {
 		ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 		ClockModel pc = getClockModel(Clock.ID_PERIOD);
 
@@ -352,15 +357,20 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		
 		requestBatchStart();
 		tc.stop();
+		if (getTimeoutOwner() != TIMEOUT_OWNER_NONE && getTimeoutOwner() != TIMEOUT_OWNER_OTO) {
+			restartPcAfterTimeout = false;
+		}
 		setTimeoutOwner(TIMEOUT_OWNER_NONE);
 		setOfficialReview(false);
-		if (pc.isTimeAtEnd()) {
-			_possiblyEndPeriod();
-		} else {
-			if (restartPcAfterTimeout) {
-				pc.start();
+		if (!timeoutFollows) {
+			if (pc.isTimeAtEnd()) {
+				_possiblyEndPeriod();
+			} else {
+				if (restartPcAfterTimeout) {
+					pc.start();
+				}
+				_startLineup();
 			}
-			_startLineup();
 		}
 		requestBatchEnd();
 	}
@@ -683,6 +693,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String ACTION_STOP_TO = "End Timeout";
 	public static final String ACTION_LINEUP = "Lineup";
 	public static final String ACTION_TIMEOUT = "Timeout";
+	public static final String ACTION_RE_TIMEOUT = "New Timeout";
 	public static final String ACTION_OVERTIME = "Overtime";
 }
 

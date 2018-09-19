@@ -54,6 +54,7 @@ public class ScoreBoardXmlConverter
 		editor.setElement(sb, "UnTimeout", null, "");
 		editor.setElement(sb, "ClockUndo", null, "");
 		editor.setElement(sb, "StartOvertime", null, "");
+		editor.setElement(sb, "OfficialTimeout", null, "");
 
 		editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner());
 		editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_REVIEW, null, String.valueOf(scoreBoard.isOfficialReview()));
@@ -333,6 +334,8 @@ public class ScoreBoardXmlConverter
 						scoreBoardModel.clockUndo();
 					else if (name.equals("StartOvertime"))
 						scoreBoardModel.startOvertime();
+					else if (name.equals("OfficialTimeout"))
+						scoreBoardModel.setTimeoutType("O", false);
 				}
 			} catch ( Exception e ) {
 			}

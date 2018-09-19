@@ -168,20 +168,20 @@ public class DefaultTeamModelTests {
 		
 		team.timeout();
 		assertEquals(0, team.getTimeouts());
-		Mockito.verify(sbModelMock).startTimeoutType("TEST", false);
+		Mockito.verify(sbModelMock).setTimeoutType("TEST", false);
 		
 		team.timeout();
-		Mockito.verify(sbModelMock, Mockito.times(1)).startTimeoutType("TEST", false);
+		Mockito.verify(sbModelMock, Mockito.times(1)).setTimeoutType("TEST", false);
 	}
 
 	@Test
 	public void testOfficialReview() {
 		team.officialReview();
 		assertEquals(0, team.getOfficialReviews());
-		Mockito.verify(sbModelMock).startTimeoutType("TEST", true);
+		Mockito.verify(sbModelMock).setTimeoutType("TEST", true);
 		
 		team.officialReview();
-		Mockito.verify(sbModelMock, Mockito.times(1)).startTimeoutType("TEST", true);
+		Mockito.verify(sbModelMock, Mockito.times(1)).setTimeoutType("TEST", true);
 	}
 
 	@Test

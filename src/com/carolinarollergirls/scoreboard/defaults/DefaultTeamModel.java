@@ -255,7 +255,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (coreLock) {
 			if (getTimeouts() > 0) {
 				changeTimeouts(-1);
-				getScoreBoardModel().startTimeoutType(getId(), false);
+				getScoreBoardModel().setTimeoutType(getId(), false);
 			}
 		}
 	}
@@ -263,7 +263,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (coreLock) {
 			if (getOfficialReviews() > 0) {
 				changeOfficialReviews(-1);
-				getScoreBoardModel().startTimeoutType(getId(), true);
+				getScoreBoardModel().setTimeoutType(getId(), true);
 			}
 		}
 	}

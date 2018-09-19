@@ -38,7 +38,7 @@ function setupJamControlPage() {
 	$sb("ScoreBoard.Team(1).AlternateName(mobile).Name").$sbElement("#JamControlPage div.Timeout button.Team1>span.AlternateName");
 	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.OfficialReview button.Team1>span.Name");
 	$sb("ScoreBoard.Team(1).AlternateName(mobile).Name").$sbElement("#JamControlPage div.OfficialReview button.Team1>span.AlternateName");
-	$sb("ScoreBoard.Timeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
+	$sb("ScoreBoard.OfficialTimeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
 	$sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
 	$sb("ScoreBoard.Team(2).OfficialReview").$sbControl("#JamControlPage div.OfficialReview button.Team2").val(true);
 	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>span.Name");
