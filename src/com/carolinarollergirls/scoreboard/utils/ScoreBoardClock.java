@@ -46,11 +46,11 @@ public class ScoreBoardClock extends TimerTask {
 		stopCounter--;
 	}
 	
-	public void registerClient(ScoreBoardClockClient client) {
+	public synchronized void registerClient(ScoreBoardClockClient client) {
 		clients.add(client);
 	}
 	
-	private synchronized void updateTime() {
+	private void updateTime() {
 		if (stopCounter == 0) {
 			currentTime = System.currentTimeMillis() - offset;
 		}
@@ -83,6 +83,10 @@ public class ScoreBoardClock extends TimerTask {
 	public static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
 
 	public interface ScoreBoardClockClient {
+		/*
+		 * Callback that notifies the client of the current time.
+		 * Parameter is the time elapsed since scoreboard startup.
+		 */
 		void updateTime(long ms);
 	}
 }

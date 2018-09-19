@@ -19,7 +19,6 @@ public class ScoreBoardService extends Service implements ScoreBoardManager.Logg
 		super.onCreate();
 
 		ScoreBoardManager.setLogger(this);
-		ScoreBoardManager.setPropertyOverride("com.carolinarollergirls.scoreboard.defaults.DefaultClockModel.interval", "250");
 		initBaseFiles("BaseFiles.zip");
 	}
 
