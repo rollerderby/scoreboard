@@ -52,6 +52,11 @@ function setupJamControlPage() {
 			$("#JamControlPage span.ClockBubble."+clock).toggleClass("Running", isTrue(value));
 		});
 	});
+	$.each( [ "Start", "Stop", "Timeout", "Undo" ], function(i, button) {
+		$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button."+button+"Label)").$sbBindAndRun("sbchange", function(event, val) {
+			$("#JamControlPage span."+button+"Label").html(val);
+		});
+	});
 	
 	// Period number
 	$sb("ScoreBoard.Clock(Period).Number").$sbElement("#JamControlPage div.PeriodNumber a.Number");
