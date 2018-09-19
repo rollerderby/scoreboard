@@ -36,9 +36,6 @@ public interface ScoreBoardModel extends ScoreBoard
 	public void setTimeoutType(String team, boolean review);
 
 	public void clockUndo();
-	public void unStartJam();
-	public void unStopJam();
-	public void unTimeout();
 
 	public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 

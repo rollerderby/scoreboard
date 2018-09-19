@@ -32,6 +32,7 @@ function setupJamControlPage() {
 	$sb("ScoreBoard.StartJam").$sbControl("#JamControlPage button.StartJam").val(true);
 	$sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
 	$sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
+	$sb("ScoreBoard.ClockUndo").$sbControl("#JamControlPage button.Undo").val(true);
 	$sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
 	$sb("ScoreBoard.Team(1).OfficialReview").$sbControl("#JamControlPage div.OfficialReview button.Team1").val(true);
 	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>span.Name");

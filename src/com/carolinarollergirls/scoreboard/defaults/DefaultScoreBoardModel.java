@@ -454,32 +454,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			requestBatchEnd();
 		}
 	}
-	public void unStartJam() {
-		synchronized (coreLock) {
-			if (snapshot != null && 
-					snapshot.getType() == ACTION_START_JAM) {
-				clockUndo();
-			}
-		}
-	}
-	public void unStopJam() {
-		synchronized (coreLock) {
-			if (snapshot != null && 
-					(snapshot.getType() == ACTION_STOP_JAM ||
-					snapshot.getType() == ACTION_STOP_TO ||
-					snapshot.getType() == ACTION_LINEUP)) {
-				clockUndo();
-			}
-		}
-	}
-	public void unTimeout() {
-		synchronized (coreLock) {
-			if (snapshot != null && 
-					snapshot.getType() == ACTION_TIMEOUT) {
-				clockUndo();
-			}
-		}
-	}
 
 	public Ruleset _getRuleset() {
 		synchronized (coreLock) {

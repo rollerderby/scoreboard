@@ -47,11 +47,8 @@ public class ScoreBoardXmlConverter
 
 		editor.setElement(sb, "Reset", null, "");
 		editor.setElement(sb, "StartJam", null, "");
-		editor.setElement(sb, "UnStartJam", null, "");
 		editor.setElement(sb, "StopJam", null, "");
-		editor.setElement(sb, "UnStopJam", null, "");
 		editor.setElement(sb, "Timeout", null, "");
-		editor.setElement(sb, "UnTimeout", null, "");
 		editor.setElement(sb, "ClockUndo", null, "");
 		editor.setElement(sb, "StartOvertime", null, "");
 		editor.setElement(sb, "OfficialTimeout", null, "");
@@ -324,12 +321,6 @@ public class ScoreBoardXmlConverter
 						scoreBoardModel.stopJamTO();
 					else if (name.equals("Timeout"))
 						scoreBoardModel.timeout();
-					else if (name.equals("UnStartJam"))
-						scoreBoardModel.unStartJam();
-					else if (name.equals("UnStopJam"))
-						scoreBoardModel.unStopJam();
-					else if (name.equals("UnTimeout"))
-						scoreBoardModel.unTimeout();
 					else if (name.equals("ClockUndo"))
 						scoreBoardModel.clockUndo();
 					else if (name.equals("StartOvertime"))
