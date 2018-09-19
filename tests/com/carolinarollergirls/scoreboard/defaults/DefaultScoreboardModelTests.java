@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Team;
@@ -57,7 +58,7 @@ public class DefaultScoreboardModelTests {
 	
 	@Before
 	public void setUp() throws Exception {
-		DefaultClockModel.updateClockTimerTask.setPaused(true);
+		ScoreBoardClock.getInstance().stop();
 		ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
 		sbm = new DefaultScoreBoardModel();
 		pc = sbm.getClockModel(Clock.ID_PERIOD);
@@ -73,7 +74,7 @@ public class DefaultScoreboardModelTests {
 	
 	@After
 	public void tearDown() throws Exception {
-		DefaultClockModel.updateClockTimerTask.setPaused(false);
+		ScoreBoardClock.getInstance().start(false);
 		// Check all started batches were ended.
 		advance(0);
 		assertEquals(0, batchLevel);
@@ -81,7 +82,7 @@ public class DefaultScoreboardModelTests {
 
 	private void advance(long time_ms) {
 		AsyncScoreBoardListener.waitForEvents();
-		DefaultClockModel.updateClockTimerTask.advance(time_ms);
+		ScoreBoardClock.getInstance().advance(time_ms);
 		AsyncScoreBoardListener.waitForEvents();
 	}
 	
@@ -825,8 +826,6 @@ public class DefaultScoreboardModelTests {
 	
 	@Test
 	public void testClockUndo() {
-		//need to turn off clock sync, so exact relapse time is applied
-		sbm.getSettingsModel().set("ScoreBoard.Clock.Sync", "False");
 		pc.start();
 		jc.start();
 		sbm.setInPeriod(true);
@@ -855,6 +854,8 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.clockUndo();
 		advance(0);
+		//need to manually advance as the stopped clock will not catch up to system time
+		advance(ScoreBoardClock.getInstance().getLastRewind());
 		assertTrue(pc.isRunning());
 		assertEquals(2000, pc.getTimeElapsed());
 		assertTrue(jc.isRunning());

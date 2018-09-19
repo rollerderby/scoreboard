@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
+import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Team;
 
@@ -44,7 +45,7 @@ public class DefaultTeamModelTests {
 	private static String ID = "TEST";
 	
 	private void advance(long time_ms) {
-	    DefaultClockModel.updateClockTimerTask.advance(time_ms);
+		ScoreBoardClock.getInstance().advance(time_ms);
 	    AsyncScoreBoardListener.waitForEvents();
 	}
 	
@@ -75,7 +76,7 @@ public class DefaultTeamModelTests {
 			.thenReturn(otherTeamMock);
 		
 		team = new DefaultTeamModel(sbModelMock, ID);
-		DefaultClockModel.updateClockTimerTask.setPaused(true);
+		ScoreBoardClock.getInstance().stop();
 }
 
 	@Test
