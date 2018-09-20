@@ -16,5 +16,5 @@ public interface FrontendSettings extends ScoreBoardEventProvider {
 	public Map<String, String> getAll();
 	public String get(String k);
 
-	public static final String EVENT_SETTING = "FrontendSetting";
+	public static final String EVENT_SETTING = "Setting";
 }

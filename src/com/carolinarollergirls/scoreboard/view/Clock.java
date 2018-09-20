@@ -53,6 +53,8 @@ public interface Clock extends ScoreBoardEventProvider
 
 	public boolean isCountDirectionDown();
 
+	public static final String FRONTEND_SETTING_SYNC = "ScoreBoard.Clock.Sync"; 
+	
 	public static final String ID_PERIOD = "Period";
 	public static final String ID_JAM = "Jam";
 	public static final String ID_LINEUP = "Lineup";

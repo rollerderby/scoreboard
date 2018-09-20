@@ -69,7 +69,8 @@ public class DefaultScoreboardModelTests {
 		collectedEvents = new LinkedList<ScoreBoardEvent>();
 		sbm.addScoreBoardListener(batchCounter);
 		//Clock Sync can cause clocks to be changed when started, breaking tests.
-		sbm.getSettingsModel().set("ScoreBoard.Clock.Sync", "False");
+		sbm.getFrontendSettingsModel().set(Clock.FRONTEND_SETTING_SYNC, "False");
+		sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
 	}
 	
 	@After
@@ -607,6 +608,33 @@ public class DefaultScoreboardModelTests {
 		assertEquals(3, tc.getNumber());
 		assertTrue(ic.isRunning());
 		assertTrue(ic.isTimeAtStart());
+	}
+
+	@Test
+	public void testStopJam_endTimeoutKeepTimeoutClock() {
+		sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
+		assertFalse(pc.isRunning());
+		assertFalse(pc.isTimeAtEnd());
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isRunning());
+		tc.setTime(32000);
+		tc.start();
+		tc.setNumber(8);
+		assertFalse(ic.isRunning());
+		assertEquals("", sbm.getTimeoutOwner());
+		assertFalse(sbm.isOfficialReview());
+		
+		sbm.stopJamTO();
+		
+		assertFalse(pc.isRunning());
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isRunning());
+		assertTrue(tc.isRunning());
+		assertEquals(32000, tc.getTimeElapsed());
+		assertEquals(8, tc.getNumber());
+		assertFalse(ic.isRunning());
+		assertEquals("", sbm.getTimeoutOwner());
+		assertFalse(sbm.isOfficialReview());
 	}
 
 	@Test

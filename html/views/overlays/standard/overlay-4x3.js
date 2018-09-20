@@ -103,7 +103,7 @@ $sb(function() {
   });
   
   // Disable or Enable Logos
-  $sb("ScoreBoard.Settings.Setting(ScoreBoard.Overlay.TeamLogos)").$sbBindAndRun("sbchange", function(x, state) {
+  $sb("ScoreBoard.FrontendSettings.Setting(Overlay.4x3.TeamLogos)").$sbBindAndRun("sbchange", function(x, state) {
 	  if (isTrue(state)) {
 		  $(".logos>img").height("100%");
 		  $(".logos>img").width("100%");
@@ -116,7 +116,7 @@ $sb(function() {
   });
   
   // Toggle black background on logos
-  $sb("Scoreboard.Settings.Setting(ScoreBoard.Overlay.LogoBackground)").$sbBindAndRun("sbchange", function(x, state) {
+  $sb("Scoreboard.FrontendSettings.Setting(Overlay.4x3.LogoBackground)").$sbBindAndRun("sbchange", function(x, state) {
 	  if (isTrue(state)) {
 		  $(".logos").css("background-color", "black");
 	  } else {

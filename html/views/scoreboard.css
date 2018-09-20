@@ -47,6 +47,7 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
   #imageDiv>img { width: 100%; height: 100%; }
   #videoDiv>video { width: 100%; height: 100%; }
   #htmlDiv>iframe { width: 100%; height: 100%; scrolling: no; frameborder: 0px; border: 0px; }
+  #whiteboardDiv>iframe { width: 100%; height: 100%; scrolling: no; frameborder: 0px; border: 0px; }
 /* End Views */
 
 /* Teams */
@@ -57,8 +58,8 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
 
   /* Team Name/Logo sub-box */
   #sbDiv>div.Team>div.NameLogo { top: 0%; left: 5%; right: 5%; height: 48%; }
-  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1>div.NameLogo,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2.SwapTeams>div.NameLogo { left: 1%; right: 13%; }
-  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2>div.NameLogo,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1.SwapTeams>div.NameLogo { left: 13%; right: 1%; }
+  #sbDiv>div.Team1>div.NameLogo,#sbDiv>div.Team2.SwapTeams>div.NameLogo { left: 1%; right: 13%; }
+  #sbDiv>div.Team2>div.NameLogo,#sbDiv>div.Team1.SwapTeams>div.NameLogo { left: 13%; right: 1%; }
 
     /* Team sub-box */
     #sbDiv>div.Team>div.NameLogo>div.Name { width: 100%; height: 34%; }
@@ -74,8 +75,8 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
 
   /* Team Score sub-box */
   #mainDiv.HideJamTotals>#sbDiv>div.Team>div.Score { top: 49%; left: 15%; right: 15%; height: 31.5%; border-radius: 12% / 25%; }
-  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1>div.Score,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2.SwapTeams>div.Score { top: 49%; left: 11%; right: 23%; height: 31.5%; border-radius: 12% / 25%; }
-  #mainDiv:not(.HideJamTotals)>#sbDiv>div.Team2>div.Score,#mainDiv:not(.HideJamTotals)>#sbDiv>div.Team1.SwapTeams>div.Score { top: 49%; left: 23%; right: 11%; height: 31.5%; border-radius: 12% / 25%; }
+  #sbDiv>div.Team1>div.Score,#sbDiv>div.Team2.SwapTeams>div.Score { top: 49%; left: 11%; right: 23%; height: 31.5%; border-radius: 12% / 25%; }
+  #sbDiv>div.Team2>div.Score,#sbDiv>div.Team1.SwapTeams>div.Score { top: 49%; left: 23%; right: 11%; height: 31.5%; border-radius: 12% / 25%; }
 
   /* Team Jammer sub-box */
   #sbDiv>div.Team>div.JammerBox { bottom: 0%; width: 90%; height: 18%; color: #FFFFFF; }
@@ -132,20 +133,6 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
   .JamPoints>div.Team2,.JamPoints>div.Team1.SwapTeams { left: auto; right: 0.8%; }
 /* End Jam Points */
 
-
-/* Timeouts - No Jam Totals */
-  /* Main box */
-  #mainDiv:not(.HideJamTotals) .Timeouts:not(.JamTotals) { opacity: 0 !important; }
-  .Timeouts { left: 43.5%; top: 31%; right: 43.5%; height: 17%; }
-
-  /* Name sub-box */
-  .Timeouts:not(.JamTotals)>div.Name { left: 0%; top: 0%; width: 100%; height: 30%; border-radius: 8% / 25%; }
-
-  /* Number sub-boxes */
-  .Timeouts:not(.JamTotals)>div.Number { bottom: 0%; width: 45%; height: 50%; border-radius: 25%/ 25%; }
-  .Timeouts:not(.JamTotals)>div.Team1,.Timeouts:not(.JamTotals)>div.Team2.SwapTeams { left: 0%; right: auto; }
-  .Timeouts:not(.JamTotals)>div.Team2,.Timeouts:not(.JamTotals)>div.Team1.SwapTeams { left: auto; right: 0%; }
-/* End Timeouts - No Jam Totals */
 
   .Dot, .Dot.Active { border-radius: 100%; }
   .Cross, .Cross.Active { border-radius: 100%; }
@@ -251,55 +238,37 @@ a { font-weight: bold; font-family: 'LiberationSans',helvetica; display: inline-
         height: 20%;
    }
 
-
-/* Timeouts - Jam Totals */
+/* Timeouts */
   /* Main box */
-  #mainDiv.HideJamTotals .Timeouts.JamTotals { opacity: 0 !important; }
-  .Timeouts.JamTotals { left: 0.5%; top: 31%; right: 0.5%; height: 12.8%; }
+  .Timeouts { left: 0.5%; top: 31%; right: 0.5%; height: 12.8%; }
   
   /* Number sub-boxes */
-  .Timeouts.JamTotals>div.Number { bottom: 0%; width: 4%; height: 100%; border-radius: 25%/ 12%; }
-  .Timeouts.JamTotals>div.Team1,.Timeouts.JamTotals>div.Team2.SwapTeams { left: 0%; right: auto; }
-  .Timeouts.JamTotals>div.Team2,.Timeouts.JamTotals>div.Team1.SwapTeams { left: auto; right: 0%; }
+  .Timeouts>div.Number { bottom: 0%; width: 4%; height: 100%; border-radius: 25%/ 12%; }
+  .Timeouts>div.Team1,.Timeouts>div.Team2.SwapTeams { left: 0%; right: auto; }
+  .Timeouts>div.Team2,.Timeouts>div.Team1.SwapTeams { left: auto; right: 0%; }
  
-  .Timeouts.JamTotals .TextContainer .Dot { width: 60%; height: 24%; left: 19%; }
-  .Timeouts.JamTotals .TextContainer .Cross { width: 60%; height: 24%; left: 19%; }
-  .Timeouts.JamTotals .Timeout1 { top:  5%; }
-  .Timeouts.JamTotals .Timeout2 { top: 37%; }
-  .Timeouts.JamTotals .Timeout3 { top: 70%; }
-/* End Timeouts - Jam Totals */
+  .Timeouts .TextContainer .Dot { width: 60%; height: 24%; left: 19%; }
+  .Timeouts .TextContainer .Cross { width: 60%; height: 24%; left: 19%; }
+  .Timeouts .Timeout1 { top:  5%; }
+  .Timeouts .Timeout2 { top: 37%; }
+  .Timeouts .Timeout3 { top: 70%; }
+/* End Timeouts */
 
-/* Official Reviews - No Jam Totals */
+/* Official Reviews */
   /* Main box */
-  #mainDiv:not(.HideJamTotals) .OfficialReviews:not(.JamTotals) { opacity: 0 !important; }
-  .OfficialReviews:not(.JamTotals) { left: 0%; top: 31%; right: 0%; height: 17%; }
-
-  /* Name sub-boxes */
-  .OfficialReviews:not(.JamTotals)>div.Team1.Name { left: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
-  .OfficialReviews:not(.JamTotals)>div.Team2.Name { right: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
-
-  /* Number sub-boxes */
-  .OfficialReviews:not(.JamTotals)>div.Number { bottom: 0%; width: 6%; height: 50%; border-radius: 25%/ 25%; }
-  .OfficialReviews:not(.JamTotals)>div.Team1,.OfficialReviews:not(.JamTotals)>div.Team2.SwapTeams { left: 0.8%; right: auto; }
-  .OfficialReviews:not(.JamTotals)>div.Team2,.OfficialReviews:not(.JamTotals)>div.Team1.SwapTeams { left: auto; right: 0.8%; }
-/* End Official Reviews - No Jam Totals */
-
-/* Official Reviews - Jam Totals */
-  /* Main box */
-  #mainDiv.HideJamTotals .OfficialReviews.JamTotals { opacity: 0 !important; }
-  .OfficialReviews.JamTotals { left: 0.5%; top: 45.2%; right: 0.5%; height: 5.5%; }
+  .OfficialReviews { left: 0.5%; top: 45.2%; right: 0.5%; height: 5.5%; }
   
   /* Name sub-boxes */
-  .OfficialReviews.JamTotals>div.Name { left: 36%; top: 6%; width: 29%; height: 91%; border-radius: 20% / 25%; }
-  .OfficialReviews.JamTotals>div.Team2.Name { right: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
+  .OfficialReviews>div.Name { left: 36%; top: 6%; width: 29%; height: 91%; border-radius: 20% / 25%; }
+  .OfficialReviews>div.Team2.Name { right: 0.8%; top: 0%; width: 6%; height: 30%; border-radius: 20% / 25%; }
   
   /* Number sub-boxes */
-  .OfficialReviews.JamTotals>div.Number { bottom: 0%; width: 4%; height: 100%; border-radius: 25%/ 25%; }
-  .OfficialReviews.JamTotals>div.Team1,.OfficialReviews.JamTotals>div.Team2.SwapTeams { left: 0%; right: auto; }
-  .OfficialReviews.JamTotals>div.Team2,.OfficialReviews.JamTotals>div.Team1.SwapTeams { left: auto; right: 0%; }
+  .OfficialReviews>div.Number { bottom: 0%; width: 4%; height: 100%; border-radius: 25%/ 25%; }
+  .OfficialReviews>div.Team1,.OfficialReviews>div.Team2.SwapTeams { left: 0%; right: auto; }
+  .OfficialReviews>div.Team2,.OfficialReviews>div.Team1.SwapTeams { left: auto; right: 0%; }
   
-  .OfficialReviews.JamTotals .OfficialReview { width: 60%; left: 19%; top: 23%; height: 55%; }
-/* End Official Reviews - Jam Totals */
+  .OfficialReviews .OfficialReview { width: 60%; left: 19%; top: 23%; height: 55%; }
+/* End Official Reviews */
 
 /* Period */
   /* Main box */
@@ -525,17 +494,6 @@ div.WhiteBox {
 
 /* http://net.tutsplus.com/tutorials/html-css-techniques/quick-tip-understanding-css3-gradients/ */
 #mainDiv {
-  background: #222222;
-  background: -moz-linear-gradient(top, #000000, #222222 50%, #777777 100%);
-  background: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), color-stop(50%, #222222), color-stop(100%, #777777));
-}
-
-#mainDiv.bg_whitetoblack {
-  background: -moz-linear-gradient(top, #C0C0C0, #222222 50%, #000000 100%);
-  background: -webkit-gradient(linear, 0 0, 0 100%, from(#C0C0C0), color-stop(50%, #222222), color-stop(100%, #000000));
-}
-
-#mainDiv.bg_black {
   background: #000000;
 }
 

@@ -84,8 +84,9 @@ public class ScoreBoardXmlConverter
 		while (keys.hasNext()) {
 			String k = keys.next();
 			String v = s.get(k);
-			if (v != null)
+			if (v != null) {
 				editor.setElement(e, Settings.EVENT_SETTING, k, v);
+			}
 		}
 		return e;
 	}
@@ -96,7 +97,9 @@ public class ScoreBoardXmlConverter
 		while (keys.hasNext()) {
 			String k = keys.next();
 			String v = s.get(k);
-		  editor.setElement(e, FrontendSettings.EVENT_SETTING, k, v);
+			if (v != null) {
+				editor.setElement(e, FrontendSettings.EVENT_SETTING, k, v);
+			}
 		}
 		return e;
 	}
@@ -347,8 +350,9 @@ public class ScoreBoardXmlConverter
 			try {
 				String k = element.getAttributeValue("Id");
 				String v = editor.getText(element);
-				if (v == null)
+				if (v == null) {
 					v = "";
+				}
 				sm.set(k, v);
 			} catch ( Exception e ) {
 			}
@@ -363,6 +367,9 @@ public class ScoreBoardXmlConverter
 			try {
 				String k = element.getAttributeValue("Id");
 				String v = editor.getText(element);
+				if (v == null) {
+					v = "";
+				}
 				sm.set(k, v);
 			} catch ( Exception e ) {
 			}

@@ -23,13 +23,13 @@ import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.FrontendSettings;
 
 public class DefaultClockModelTests {
 
 	private ScoreBoardModel sbModelMock;
 	private Ruleset ruleMock;
-	private Settings settingsMock;
+	private FrontendSettings frontendSettingsMock;
 	
 	private Queue<ScoreBoardEvent> collectedEvents;
 	public ScoreBoardListener listener = new ScoreBoardListener() {
@@ -46,7 +46,7 @@ public class DefaultClockModelTests {
 	private DefaultClockModel clock;
 	private static String ID = "TEST";
 	
-	private boolean syncStatus = false;
+	private String syncStatus = "false";
 	
 	private void advance(long time_ms) {
 		ScoreBoardClock.getInstance().advance(time_ms);
@@ -56,13 +56,13 @@ public class DefaultClockModelTests {
 	@Before
 	public void setUp() throws Exception {
 		ScoreBoardClock.getInstance().stop();
-		syncStatus = false;
+		syncStatus = "false";
 		collectedEvents = new LinkedList<ScoreBoardEvent>();
 		
 		sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);
 		
 		ruleMock = Mockito.mock(Ruleset.class);
-		settingsMock = Mockito.mock(Settings.class);
+		frontendSettingsMock = Mockito.mock(FrontendSettings.class);
 		
 		Mockito
 			.when(sbModelMock.getScoreBoard())
@@ -73,14 +73,14 @@ public class DefaultClockModelTests {
 			.thenReturn(ruleMock);
 		
 		Mockito
-			.when(sbModelMock.getSettings())
-			.thenReturn(settingsMock);
+			.when(sbModelMock.getFrontendSettings())
+			.thenReturn(frontendSettingsMock);
 		
 		// makes it easier to test both sync and non-sync paths through clock model
 		Mockito
-			.when(settingsMock.getBoolean("ScoreBoard.Clock.Sync"))
-			.thenAnswer(new Answer<Boolean>() {
-				public Boolean answer(InvocationOnMock invocation) throws Throwable {
+			.when(frontendSettingsMock.get(Clock.FRONTEND_SETTING_SYNC))
+			.thenAnswer(new Answer<String>() {
+				public String answer(InvocationOnMock invocation) throws Throwable {
 					return syncStatus;
 				}
 			});
@@ -162,7 +162,7 @@ public class DefaultClockModelTests {
 	public void testSetting_ClockSync() {
 		//add a master clock
 		DefaultClockModel clock2 = new DefaultClockModel(sbModelMock, Clock.ID_TIMEOUT);
-		syncStatus = true;
+		syncStatus = "true";
 		clock.setMaximumTime(10000);
 		clock2.setMaximumTime(10000);
 		clock2.setTime(3400);

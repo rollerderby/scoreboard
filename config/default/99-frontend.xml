@@ -1,11 +1,34 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document Version="0.2.0-20120128144059" SystemTime="1327779979435">
-  <ScoreBoard>
-    <FrontendSettings>
-      <FrontendSetting Id="Overlay.Clock"><![CDATA[On]]></FrontendSetting>
-      <FrontendSetting Id="Overlay.Score"><![CDATA[On]]></FrontendSetting>
-      <FrontendSetting Id="Overlay.ShowJammers"><![CDATA[On]]></FrontendSetting>
-    </FrontendSettings>
-  </ScoreBoard>
+<document Version="0.2.0-20120128144059"
+	SystemTime="1327779979435">
+	<ScoreBoard>
+		<FrontendSettings>
+			<FrontendSetting Id="Overlay.4x3.LogoBackground"><![CDATA[true]]></FrontendSetting>
+			<FrontendSetting Id="Overlay.4x3.TeamLogos"><![CDATA[true]]></FrontendSetting>
+			<FrontendSetting Id="Overlay.Interactive.Clock"><![CDATA[On]]></FrontendSetting>
+			<FrontendSetting Id="Overlay.Interactive.Score"><![CDATA[On]]></FrontendSetting>
+			<FrontendSetting Id="Overlay.Interactive.ShowJammers"><![CDATA[On]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Clock.Sync"><![CDATA[true]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.ClockAfterTimeout"><![CDATA[Lineup]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Intermission.PreGame"><![CDATA[Time To Derby]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Intermission.Intermission"><![CDATA[Intermission]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Intermission.Unofficial"><![CDATA[Unofficial Score]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Intermission.Official"><![CDATA[Final Score]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Preview_BoxStyle"><![CDATA[box_flat]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Preview_CurrentView"><![CDATA[scoreboard]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Preview_CustomHtml"><![CDATA[/customhtml/fullscreen/example.html]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Preview_Image"><![CDATA[/images/fullscreen/American Flag.jpg]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Preview_SidePadding"><![CDATA[]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Preview_SwapTeams"><![CDATA[false]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.Preview_Video"><![CDATA[/videos/fullscreen/American Flag.webm]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.View_BoxStyle"><![CDATA[box_flat]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.View_CurrentView"><![CDATA[scoreboard]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.View_CustomHtml"><![CDATA[/customhtml/fullscreen/example.html]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.View_Image"><![CDATA[/images/fullscreen/American Flag.jpg]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.View_SidePadding"><![CDATA[]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.View_SwapTeams"><![CDATA[false]]></FrontendSetting>
+			<FrontendSetting Id="ScoreBoard.View_Video"><![CDATA[/videos/fullscreen/American Flag.webm]]></FrontendSetting>
+		</FrontendSettings>
+	</ScoreBoard>
 </document>
 

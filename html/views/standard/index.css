@@ -18,20 +18,11 @@ body {
 	color: #FFFFFF;
 	font-weight: bold; 
 	font-family: 'LiberationSans',helvetica;
-	background: #222222;
-	background: -moz-linear-gradient(top, #000000, #222222 50%, #777777 100%);
-	background: -webkit-gradient(linear, 0 0, 0 100%, from(#000000), color-stop(50%, #222222), color-stop(100%, #777777));
+	background: #000000;
 	height: 100%;
 	width: 100%;
 	margin: 0;
 	padding: 0;
-}
-.bg_whitetoblack {
-	background: -moz-linear-gradient(top, #C0C0C0, #222222 50%, #000000 100%);
-	background: -webkit-gradient(linear, 0 0, 0 100%, from(#C0C0C0), color-stop(50%, #222222), color-stop(100%, #000000));
-}
-.bg_black {
-  background: #000000;
 }
 
 #scoreboard {
@@ -131,7 +122,7 @@ body.box_flat .Box.FlatTop {
 .Team>.Name {
 	position: absolute;
 	top: 0%;
-	width: 44%;
+	width: 43%;
 	overflow: none;
 	border-radius: 5px;
 }
@@ -151,12 +142,11 @@ body.box_flat .Box.FlatTop {
 	height: 10%;
 	font-size: 10vh;
 }
-#scoreboard.JamScore .Team>.Name { width: 43%; }
 
 .Team>.Logo {
 	position: absolute;
 	top: 0%;
-	width: 50%;
+	width: 43%;
 	background-repeat: no-repeat;
 	background-position: center;
 	background-size: contain;
@@ -171,7 +161,6 @@ body.box_flat .Box.FlatTop {
 	top: 0%;
 	height: 30%;
 }
-#scoreboard.JamScore .Team>.Logo { width: 43%; }
 
 .Team>.Score {
 	position: absolute;
@@ -181,10 +170,8 @@ body.box_flat .Box.FlatTop {
 	height: 20%;
 	line-height: 0.8;
 }
-.Team.Left>.Score { left: 7%; }
-.Team.Right>.Score { right: 7%; }
-#scoreboard.JamScore .Team.Left>.Score { left: 4%; width: 35%; }
-#scoreboard.JamScore .Team.Right>.Score { right: 4%; width: 35%; }
+.Team.Left>.Score { left: 4%; width: 35%; }
+.Team.Right>.Score { right: 4%; width: 35%; }
 
 .Team>.JamScore {
 	position: absolute;
@@ -193,31 +180,8 @@ body.box_flat .Box.FlatTop {
 	top: 39%;
 	font-size: 11vh;
 }
-#scoreboard:not(.JamScore) .JamScore {
-	opacity: 0;
-}
 .Team.Left>.JamScore { left: 39.5%; }
 .Team.Right>.JamScore { right: 39.5%; }
-
-.Team>.Timeouts,.Team>.OfficialReviews,.OfficialReviews.Header {
-	position: absolute;
-	top: 39%;
-	width: 6%;
-	height: 9%;
-	font-size: 8vh;
-}
-.Team.Left>.Timeouts { left: 43.5%; }
-.Team.Right>.Timeouts { right: 43.5%; }
-.Team.Left>.OfficialReviews { left: 0.5%; }
-.Team.Right>.OfficialReviews { right: 0.5%; }
-
-#scoreboard.JamScore .Timeouts.Header { opacity: 0; }
-#scoreboard.JamScore .OfficialReviews.Header { opacity: 0; }
-#scoreboard.JamScore .Timeouts { opacity: 0; }
-#scoreboard.JamScore .OfficialReviews { opacity: 0; }
-
-#scoreboard:not(.JamScore) .DotTimeouts { opacity: 0; }
-#scoreboard:not(.JamScore) .DotOfficialReviews { opacity: 0; }
 
 .DotTimeouts { position: absolute; height: 14%; width: 3%; top: 31% }
 .DotOfficialReviews { position: absolute; height: 5%; width: 3%; top: 46% }
@@ -276,20 +240,6 @@ body.box_flat .Box.FlatTop {
 	left: 10%;
 	top: 40%;
 	height: 20%;
-}
-
-.Timeouts.Header {
-	position: absolute;
-	top: 32%;
-	height: 5%;
-	width: 13%;
-	left: 43.5%;
-	font-size: 3.5vh;
-}
-.OfficialReviews.Header {
-	top: 32%;
-	height: 5%;
-	font-size: 4vh;
 }
 
 .HasLead a { color: #FF0000; animation: HasLead 1s infinite steps(6); -moz-animation: HasLead 1s infinite steps(6); -webkit-animation: HasLead 1s infinite steps(6); }

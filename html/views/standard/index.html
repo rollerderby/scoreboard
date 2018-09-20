@@ -8,25 +8,19 @@
 	<body>
 		<div class="ConnectionError">Not connected</div>
 		<div class="DisplayPane" id="image"><img class="object"/></div>
-		<div class="DisplayPane" id="video"><video class="object"onended="this.play();"></video></div>
+		<div class="DisplayPane" id="video"><video class="object" onended="this.play();"></video></div>
 		<div class="DisplayPane" id="html"><iframe class="object"></iframe></div>
+		<div class="DisplayPane" id="whiteboard"><iframe class="object" src="../wb/tcdg2016wb.html"></iframe></div>
 		<div class="DisplayPane Show" id="scoreboard" sbContext="ScoreBoard" class="JamScore">
 			<div class="Team Team1 Left" sbContext="Team(1)">
 				<div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard)"></div>
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
 				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
-				<div class="Timeouts Box">
-					<div class="Number AutoFit" sbDisplay="Timeouts"></div>
-				</div>
 				<div class="DotTimeouts Box">
 					<div class="Dot Timeout1"></div>
 					<div class="Dot Timeout2"></div>
 					<div class="Dot Timeout3"></div>
-				</div>
-				<div class="OfficialReviews Box Header">OR</div>
-				<div class="OfficialReviews Box">
-					<div class="Number AutoFit" sbDisplay="OfficialReviews"></div>
 				</div>
 				<div class="DotOfficialReviews Box">
 					<div class="Dot OfficialReview1"></div>
@@ -39,25 +33,16 @@
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
 				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
-				<div class="Timeouts Box">
-					<div class="Number AutoFit" sbDisplay="Timeouts"></div>
-				</div>
 				<div class="DotTimeouts Box">
 					<div class="Dot Timeout1"></div>
 					<div class="Dot Timeout2"></div>
 					<div class="Dot Timeout3"></div>
-				</div>
-				<div class="OfficialReviews Box Header">OR</div>
-				<div class="OfficialReviews Box">
-					<div class="Number AutoFit" sbDisplay="OfficialReviews"></div>
 				</div>
 				<div class="DotOfficialReviews Box">
 					<div class="Dot OfficialReview1"></div>
 				</div>
 				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
 			</div>
-
-			<div class="Timeouts Header Box AutoFit"><a>Timeouts</a></div>
 
 			<!-- Jam In Progress -->
 			<div class="ShowInJam Clock Period Large" sbContext="Clock(Period)">
@@ -85,7 +70,7 @@
 
 			<!-- Intermission -->
 			<div class="ShowInIntermission Clock Intermission">
-				<div class="Message Box AutoFit" sbDisplay="Setting(ScoreBoard.Intermission.PreGame), Setting(ScoreBoard.Intermission.Intermission), Setting(ScoreBoard.Intermission.Unofficial), Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
+				<div class="Message Box AutoFit" sbDisplay="FrontendSettings.ScoreBoard.Intermission.PreGame, FrontendSettings.ScoreBoard.Intermission.Intermission, FrontendSettings.ScoreBoard.Intermission.Unofficial, FrontendSettings.ScoreBoard.Intermission.Official, OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
 				<div class="Time Box AutoFit" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 			</div>
 		</div>

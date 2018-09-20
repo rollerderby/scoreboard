@@ -71,6 +71,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public Stats getStats();
 
 	public XmlScoreBoard getXmlScoreBoard();
+	
+	public static final String FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 
 	public static final String EVENT_IN_PERIOD = "InPeriod";
 	public static final String EVENT_IN_OVERTIME = "InOvertime";

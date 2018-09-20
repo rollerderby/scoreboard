@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Team;
 
 public class DefaultStatsModelTests {
@@ -33,6 +34,7 @@ public class DefaultStatsModelTests {
 
 		ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
 		sbm = new DefaultScoreBoardModel();
+		sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
 		sm = sbm.getStatsModel();
 
 		// Add a full roster for each team.
