@@ -124,7 +124,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			setLabel(BUTTON_START, ACTION_START_JAM);
 			setLabel(BUTTON_STOP, ACTION_LINEUP);
 			setLabel(BUTTON_TIMEOUT, ACTION_TIMEOUT);
-			setLabel(BUTTON_UNDO, ACTION_NONE);		}
+			setLabel(BUTTON_UNDO, ACTION_NONE);
+		}
 	}
 
 	public boolean isInPeriod() { return inPeriod; }
@@ -703,7 +704,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String BUTTON_TIMEOUT = "ScoreBoard.Button.TimeoutLabel";
 	public static final String BUTTON_UNDO = "ScoreBoard.Button.UndoLabel";
 	
-	public static final String ACTION_NONE = "";
+	public static final String ACTION_NONE = "---";
 	public static final String ACTION_START_JAM = "Start Jam";
 	public static final String ACTION_STOP_JAM = "Stop Jam";
 	public static final String ACTION_STOP_TO = "End Timeout";
