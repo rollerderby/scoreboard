@@ -12,7 +12,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -43,11 +42,6 @@ public class DefaultTeamModelTests {
 	
 	private DefaultTeamModel team;
 	private static String ID = "TEST";
-	
-	private void advance(long time_ms) {
-		ScoreBoardClock.getInstance().advance(time_ms);
-	    AsyncScoreBoardListener.waitForEvents();
-	}
 	
 	@Before
 	public void setUp() throws Exception {
@@ -85,7 +79,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_LAST_SCORE, listener));
 		
 		team.startJam();
-		advance(0);
 		
 		assertEquals(34, team.getLastScore());
 		assertEquals(1, collectedEvents.size());
@@ -99,7 +92,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_STAR_PASS, listener));
 		
 		team.stopJam();
-		advance(0);
 		
 		assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
 		assertEquals(false, team.isStarPass());
@@ -134,12 +126,10 @@ public class DefaultTeamModelTests {
 		team.setInOfficialReview(true);
 		team.setTimeouts(1);
 		team.setOfficialReviews(0);
-		advance(0);
 		
 		//snapshot should not be applied when id doesn't match
 		team.id = "OTHER";
 		team.restoreSnapshot(snapshot);
-		advance(0);
 		assertEquals(Team.LEAD_LOST_LEAD, team.getLeadJammer());
 		assertTrue(team.isStarPass());
 		assertEquals(5, team.getScore());
@@ -151,7 +141,6 @@ public class DefaultTeamModelTests {
 		
 		team.id = "TEST";
 		team.restoreSnapshot(snapshot);
-		advance(0);
 		assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
 		assertFalse(team.isStarPass());
 		assertEquals(5, team.getScore()); //score is not reset
@@ -189,7 +178,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_SCORE, listener));
 		
 		team.setScore(5);
-		advance(0);
 		assertEquals(5, team.getScore());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -200,13 +188,11 @@ public class DefaultTeamModelTests {
 		//setting a value below lastScore changes lastScore
 		team.setLastScore(4);
 		team.setScore(3);
-		advance(0);
 		assertEquals(3, team.getLastScore());
 		
 		//negative values are clamped
 		collectedEvents.clear();
 		team.setScore(-1);
-		advance(0);
 		assertEquals(0,team.getScore());
 		assertEquals(1, collectedEvents.size());
 		assertEquals(0, collectedEvents.poll().getValue());
@@ -218,7 +204,6 @@ public class DefaultTeamModelTests {
 
 		team.setScore(5);
 		team.changeScore(3);
-		advance(0);
 		assertEquals(8, team.getScore());
 		assertEquals(2, collectedEvents.size());
 		
@@ -232,7 +217,6 @@ public class DefaultTeamModelTests {
 		team.setScore(10);
 		
 		team.setLastScore(5);
-		advance(0);
 		assertEquals(5, team.getLastScore());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -241,7 +225,6 @@ public class DefaultTeamModelTests {
 
 		//values higher than score are clamped
 		team.setLastScore(12);
-		advance(0);
 		assertEquals(10, team.getLastScore());
 		assertEquals(1, collectedEvents.size());
 		assertEquals(10, collectedEvents.poll().getValue());
@@ -258,7 +241,6 @@ public class DefaultTeamModelTests {
 		team.setScore(10);
 		team.setLastScore(5);
 		team.changeLastScore(3);
-		advance(0);
 		assertEquals(8, team.getLastScore());
 		assertEquals(2, collectedEvents.size());
 		
@@ -272,7 +254,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_IN_TIMEOUT, listener));
 		
 		team.setInTimeout(true);
-		advance(0);
 		assertTrue(team.inTimeout());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -281,12 +262,10 @@ public class DefaultTeamModelTests {
 
 		//check idempotency
 		team.setInTimeout(true);
-		advance(0);
 		assertTrue(team.inTimeout());
 		assertEquals(0, collectedEvents.size());
 		
 		team.setInTimeout(false);
-		advance(0);
 		assertFalse(team.inTimeout());
 	}
 
@@ -296,7 +275,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_IN_OFFICIAL_REVIEW, listener));
 		
 		team.setInOfficialReview(true);
-		advance(0);
 		assertTrue(team.inOfficialReview());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -305,12 +283,10 @@ public class DefaultTeamModelTests {
 
 		//check idempotency
 		team.setInOfficialReview(true);
-		advance(0);
 		assertTrue(team.inOfficialReview());
 		assertEquals(0, collectedEvents.size());
 		
 		team.setInOfficialReview(false);
-		advance(0);
 		assertFalse(team.inOfficialReview());
 	}
 
@@ -322,7 +298,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_OFFICIAL_REVIEWS, listener));
 		
 		team.setRetainedOfficialReview(true);
-		advance(0);
 		assertTrue(team.retainedOfficialReview());
 		assertEquals(1, team.getOfficialReviews());
 		assertEquals(1, collectedEvents.size());
@@ -332,19 +307,15 @@ public class DefaultTeamModelTests {
 
 		//check idempotency
 		team.setRetainedOfficialReview(true);
-		advance(0);
 		assertTrue(team.retainedOfficialReview());
 		assertEquals(0, collectedEvents.size());
 		
 		team.setRetainedOfficialReview(false);
-		advance(0);
 		assertFalse(team.retainedOfficialReview());
 	
 		team.setOfficialReviews(0);
-		advance(0);
 		collectedEvents.clear();
 		team.setRetainedOfficialReview(true);
-		advance(0);
 		assertEquals(1, team.getOfficialReviews());
 		assertEquals(2, collectedEvents.size());
 	}
@@ -355,7 +326,6 @@ public class DefaultTeamModelTests {
 		team.maximumTimeouts = 5;
 		
 		team.setTimeouts(4);
-		advance(0);
 		assertEquals(4, team.getTimeouts());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -364,7 +334,6 @@ public class DefaultTeamModelTests {
 
 		//values higher than maximum are clamped
 		team.setTimeouts(12);
-		advance(0);
 		assertEquals(5, team.getTimeouts());
 		assertEquals(1, collectedEvents.size());
 		assertEquals(5, collectedEvents.poll().getValue());
@@ -380,7 +349,6 @@ public class DefaultTeamModelTests {
 		assertEquals(3, team.getTimeouts());
 
 		team.changeTimeouts(-2);
-		advance(0);
 		assertEquals(1, team.getTimeouts());
 		assertEquals(1, collectedEvents.size());
 		
@@ -394,7 +362,6 @@ public class DefaultTeamModelTests {
 		team.maximumOfficialReviews = 5;
 		
 		team.setOfficialReviews(4);
-		advance(0);
 		assertEquals(4, team.getOfficialReviews());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -403,7 +370,6 @@ public class DefaultTeamModelTests {
 
 		//values higher than maximum are clamped
 		team.setOfficialReviews(12);
-		advance(0);
 		assertEquals(5, team.getOfficialReviews());
 		assertEquals(1, collectedEvents.size());
 		assertEquals(5, collectedEvents.poll().getValue());
@@ -420,7 +386,6 @@ public class DefaultTeamModelTests {
 		assertEquals(1, team.getOfficialReviews());
 
 		team.changeOfficialReviews(2);
-		advance(0);
 		assertEquals(3, team.getOfficialReviews());
 		assertEquals(1, collectedEvents.size());
 		
@@ -440,11 +405,9 @@ public class DefaultTeamModelTests {
 		team.setRetainedOfficialReview(true);
 		team.setTimeouts(1);
 		team.setOfficialReviews(0);
-		advance(0);
 		collectedEvents.clear();
 		
 		team.resetTimeouts(false);
-		advance(0);
 		assertFalse(team.inTimeout());
 		assertFalse(team.inOfficialReview());
 		assertEquals(1, team.getTimeouts());
@@ -466,10 +429,8 @@ public class DefaultTeamModelTests {
 		team.setRetainedOfficialReview(true);
 		team.setTimeouts(1);
 		team.setOfficialReviews(0);
-		advance(0);
 		collectedEvents.clear();
 		team.resetTimeouts(true);
-		advance(0);
 		assertFalse(team.inTimeout());
 		assertFalse(team.inOfficialReview());
 		assertEquals(3, team.getTimeouts());
@@ -492,10 +453,8 @@ public class DefaultTeamModelTests {
 		team.setRetainedOfficialReview(true);
 		team.setTimeouts(1);
 		team.setOfficialReviews(0);
-		advance(0);
 		collectedEvents.clear();
 		team.resetTimeouts(false);
-		advance(0);
 		assertEquals(4, team.getTimeouts());
 		assertEquals(0, team.getOfficialReviews());
 		assertTrue(team.retainedOfficialReview());
@@ -509,7 +468,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_LEAD_JAMMER, listener));
 		
 		team.setLeadJammer(Team.LEAD_LEAD);
-		advance(0);
 		assertEquals(Team.LEAD_LEAD, team.getLeadJammer());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -518,16 +476,13 @@ public class DefaultTeamModelTests {
 
 		//check idempotency
 		team.setLeadJammer(Team.LEAD_LEAD);
-		advance(0);
 		assertEquals(Team.LEAD_LEAD, team.getLeadJammer());
 		assertEquals(1, collectedEvents.size());
 		
 		team.setLeadJammer(Team.LEAD_LOST_LEAD);
-		advance(0);
 		assertEquals(Team.LEAD_LOST_LEAD, team.getLeadJammer());
 		
 		team.setLeadJammer(Team.LEAD_NO_LEAD);
-		advance(0);
 		assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
 	}
 
@@ -537,7 +492,6 @@ public class DefaultTeamModelTests {
 		team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.EVENT_STAR_PASS, listener));
 		
 		team.setStarPass(true);
-		advance(0);
 		assertTrue(team.isStarPass());
 		assertEquals(1, collectedEvents.size());
 		ScoreBoardEvent event = collectedEvents.poll();
@@ -546,12 +500,10 @@ public class DefaultTeamModelTests {
 
 		//check idempotency
 		team.setStarPass(true);
-		advance(0);
 		assertTrue(team.isStarPass());
 		assertEquals(1, collectedEvents.size());
 		
 		team.setStarPass(false);
-		advance(0);
 		assertFalse(team.isStarPass());
 	}
 }
