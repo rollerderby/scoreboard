@@ -876,6 +876,23 @@ public class DefaultScoreboardModelTests {
 	}
 	
 	@Test
+	public void testTimeoutCountOnUndo() {
+		assertEquals(3, sbm.getTeam("1").getTimeouts());
+		assertEquals(1, sbm.getTeam("2").getOfficialReviews());
+		pc.start();
+		lc.start();
+		sbm.timeout();
+		sbm.getTeamModel("1").timeout();
+		assertEquals(2, sbm.getTeam("1").getTimeouts());
+		sbm.clockUndo();
+		assertEquals(3, sbm.getTeam("1").getTimeouts());
+		sbm.getTeamModel("2").officialReview();
+		assertEquals(0, sbm.getTeam("2").getOfficialReviews());
+		sbm.clockUndo();
+		assertEquals(1, sbm.getTeam("2").getOfficialReviews());
+	}
+	
+	@Test
 	public void testPeriodClockEnd_duringLineup() {
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());

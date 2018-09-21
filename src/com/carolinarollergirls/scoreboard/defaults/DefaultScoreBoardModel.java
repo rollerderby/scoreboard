@@ -85,6 +85,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		reset();
 		addInPeriodListeners();
 		xmlScoreBoard = new XmlScoreBoard(this);
+		//Button may have a label from autosave but undo will not work after restart
+		setLabel(BUTTON_UNDO, ACTION_NONE);
 	}
 
 	public String getProviderName() { return "ScoreBoard"; }
