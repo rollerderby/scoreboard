@@ -254,16 +254,16 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public void timeout() {
 		synchronized (coreLock) {
 			if (getTimeouts() > 0) {
+				getScoreBoardModel().setTimeoutType(getId(), false);
 				changeTimeouts(-1);
-				getScoreBoardModel().startTimeoutType(getId(), false);
 			}
 		}
 	}
 	public void officialReview() {
 		synchronized (coreLock) {
 			if (getOfficialReviews() > 0) {
+				getScoreBoardModel().setTimeoutType(getId(), true);
 				changeOfficialReviews(-1);
-				getScoreBoardModel().startTimeoutType(getId(), true);
 			}
 		}
 	}

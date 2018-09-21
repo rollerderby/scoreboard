@@ -779,21 +779,21 @@ public class DefaultScoreboardModelTests {
 		tc.setTime(24000);
 		tc.setNumber(7);
 		assertFalse(ic.isRunning());
-		sbm.setTimeoutOwner("");
+		sbm.setTimeoutOwner(DefaultScoreBoardModel.TIMEOUT_OWNER_NONE);
 		advance(0);
 		
 		sbm.timeout();
 		advance(0);
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(DefaultScoreBoardModel.ACTION_RE_TIMEOUT, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
 		assertTrue(tc.isRunning());
-		assertEquals(24000, tc.getTime());
-		assertEquals(7, tc.getNumber());
+		assertTrue(tc.isTimeAtStart());
+		assertEquals(8, tc.getNumber());
 		assertFalse(ic.isRunning());
-		assertEquals("O", sbm.getTimeoutOwner());
+		assertEquals(DefaultScoreBoardModel.TIMEOUT_OWNER_NONE, sbm.getTimeoutOwner());
 		
 		sbm.timeout();
 		advance(0);
@@ -806,7 +806,8 @@ public class DefaultScoreboardModelTests {
 		sbm.setTimeoutOwner("");
 		advance(0);
 		
-		sbm.startTimeoutType("2", false);
+		sbm.setTimeoutType("2", false);
+		sbm.getTeamModel("2").setTimeouts(2);
 		advance(0);
 
 		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
@@ -817,11 +818,13 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertEquals("2", sbm.getTimeoutOwner());
 		assertFalse(sbm.isOfficialReview());
+		assertEquals(2, sbm.getTeam("2").getTimeouts());
 
-		sbm.startTimeoutType("1", true);
+		sbm.setTimeoutType("1", true);
 		advance(0);
 		assertEquals("1", sbm.getTimeoutOwner());
 		assertTrue(sbm.isOfficialReview());
+		assertEquals(3, sbm.getTeam("2").getTimeouts());
 	}
 	
 	@Test
@@ -870,6 +873,23 @@ public class DefaultScoreboardModelTests {
 		assertFalse(sbm.isOfficialReview());
 		assertFalse(sbm.isInOvertime());
 		assertTrue(sbm.isInPeriod());
+	}
+	
+	@Test
+	public void testTimeoutCountOnUndo() {
+		assertEquals(3, sbm.getTeam("1").getTimeouts());
+		assertEquals(1, sbm.getTeam("2").getOfficialReviews());
+		pc.start();
+		lc.start();
+		sbm.timeout();
+		sbm.getTeamModel("1").timeout();
+		assertEquals(2, sbm.getTeam("1").getTimeouts());
+		sbm.clockUndo();
+		assertEquals(3, sbm.getTeam("1").getTimeouts());
+		sbm.getTeamModel("2").officialReview();
+		assertEquals(0, sbm.getTeam("2").getOfficialReviews());
+		sbm.clockUndo();
+		assertEquals(1, sbm.getTeam("2").getOfficialReviews());
 	}
 	
 	@Test
@@ -1036,7 +1056,7 @@ public class DefaultScoreboardModelTests {
 		
 		//follow up with team timeout
 		advance(2000);
-		sbm.startTimeoutType("1", false);
+		sbm.setTimeoutType("1", false);
 		advance(60000);
 		sbm.stopJamTO();
 		advance(0);

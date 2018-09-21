@@ -44,14 +44,14 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.TabTable>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; }
 	#TeamTime table.TabTable>tbody>tr:only-of-type>td { border-radius: 12px; }
 	#TeamTime table.TabTable>tbody>tr.Hidden>td { display: none; }
-
+	
 	#TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
 	#TeamTime table.MetaControl { font-size: 65%; }
 	#TeamTime table.MetaControl>tbody>tr>td { background: #eee; }
 
 	#TeamTime table.JamControl>tbody>tr>td { width: 100%; }
 	#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
-	#TeamTime .UndoControls:not(.ShowUndo) { display: none; }
+	#TeamTime table.JamControl .Label { display: inline-block; min-width:50px; }
 
 	#TeamTime table.Team>tbody>tr>td { width: 50%; }
 	#TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; }
@@ -65,6 +65,10 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Team tr.Timeout td.OfficialReview button.Active { color: #000; background: #3f3; }
 	#TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; }
 	#TeamTime table.Team tr.Timeout td.RetainedOfficialReview button.Active { color: #000; background: #F33; }
+	#TeamTime table.Team tr.Timeout td.OfficialTimeout { position: relative; }
+	#TeamTime table.Team tr.Timeout td.OfficialTimeout>div { position: absolute; left: 50%; width: 100%; }
+	#TeamTime table.Team tr.Timeout td.OfficialTimeout button { transform: translateY(-50%); }
+	#TeamTime table.Team tr.Timeout td.OfficialTimeout button.Active { color: #000; background: #3f3; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label.Lead.ui-state-active { background: #3f3; }
 	#TeamTime table.Team tr.Jammer td.ui-buttonset label.StarPass.ui-state-active { background: #3f3; }
 
