@@ -94,12 +94,12 @@ The scoreboard operator has two essential jobs during the game: controlling the 
 Controlling the clock should always be done using the **Start Jam**, **Stop Jam**, and **Timeout** buttons at the top of the page. _Do not_ use the **Start** and **Stop** buttons under the individual clocks at the bottom of the page.
 
 * **Start Jam**: Click this button when the jam timer blows the whistle to start the jam, which should always come after a "five seconds" warning.
-* **Stop Jam**: Click this button during the burst of four whistles that ends the jam, either by the lead jam referee, or (rarely) another referee that ends the jam. You _do not_ need to click this button if the jam runs a full two minutes and is ended by the jam timer. In a two minute jam, you can let the Jam clock run out by itself and the scoreboard will automatically go back to the Lineup clock.
+* **Stop Jam/TO**: Click this button during the burst of four whistles that ends the jam, either by the lead jam referee, or (rarely) another referee that ends the jam. In a two minute jam, you can let the Jam clock run out by itself and the scoreboard will automatically go back to the Lineup clock. If you also press the **Stop Jam/TO** button at the same time or shortly after, it will simply be ignored.
 * **Timeout**: Click this button if a referee or the jam timer blows a burst of four whistles for a timeout. Once the timeout clock is started, determine what type of timeout it is.
   * If it is an official timeout, do nothing.
   * If it is a team timeout, click the **Timeout** button under the appropriate team.
   * If it is an official review, click the **Off Review** button under the appropriate team. Once the official review is over, if the team has retained their review, click the **Retained** button for that team.
-  * For all types of timeouts, you _do not_ need to do anything when a rolling whistle is blown by the jam timer or referees. Click the **Start Jam** button when the jam timer blows the whistle for the next jam.
+  * For all types of timeouts, you can start a lineup clock when a rolling whistle is blown by the jam timer or referees by clicking the **Stop Jam/TO** button. No matter if you do this or not, click the **Start Jam** button when the jam timer blows the whistle for the next jam.
 
 ### Updating the Score
 
