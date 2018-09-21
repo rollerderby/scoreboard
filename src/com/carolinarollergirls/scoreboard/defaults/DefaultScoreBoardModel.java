@@ -349,6 +349,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		if (!frontendSettings.get(FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) {
 			tc.stop();
 		}
+		if (getTimeoutOwner() != TIMEOUT_OWNER_NONE && getTimeoutOwner() != TIMEOUT_OWNER_OTO) {
+			restartPcAfterTimeout = false;
+		}
 		setTimeoutOwner(TIMEOUT_OWNER_NONE);
 		setOfficialReview(false);
 		if (!timeoutFollows) {
@@ -358,8 +361,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				if (restartPcAfterTimeout) {
 					pc.start();
 				}
-  			if (frontendSettings.get(FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_LINEUP)) {
-          _startLineup();
+				if (frontendSettings.get(FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_LINEUP)) {
+					_startLineup();
+				}
 			}
 		}
 		requestBatchEnd();
