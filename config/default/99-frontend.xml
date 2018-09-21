@@ -3,31 +3,34 @@
 	SystemTime="1327779979435">
 	<ScoreBoard>
 		<FrontendSettings>
-			<FrontendSetting Id="Overlay.4x3.LogoBackground"><![CDATA[true]]></FrontendSetting>
-			<FrontendSetting Id="Overlay.4x3.TeamLogos"><![CDATA[true]]></FrontendSetting>
-			<FrontendSetting Id="Overlay.Interactive.Clock"><![CDATA[On]]></FrontendSetting>
-			<FrontendSetting Id="Overlay.Interactive.Score"><![CDATA[On]]></FrontendSetting>
-			<FrontendSetting Id="Overlay.Interactive.ShowJammers"><![CDATA[On]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Clock.Sync"><![CDATA[true]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.ClockAfterTimeout"><![CDATA[Lineup]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Intermission.PreGame"><![CDATA[Time To Derby]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Intermission.Intermission"><![CDATA[Intermission]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Intermission.Unofficial"><![CDATA[Unofficial Score]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Intermission.Official"><![CDATA[Final Score]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Preview_BoxStyle"><![CDATA[box_flat]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Preview_CurrentView"><![CDATA[scoreboard]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Preview_CustomHtml"><![CDATA[/customhtml/fullscreen/example.html]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Preview_Image"><![CDATA[/images/fullscreen/American Flag.jpg]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Preview_SidePadding"><![CDATA[]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Preview_SwapTeams"><![CDATA[false]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.Preview_Video"><![CDATA[/videos/fullscreen/American Flag.webm]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.View_BoxStyle"><![CDATA[box_flat]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.View_CurrentView"><![CDATA[scoreboard]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.View_CustomHtml"><![CDATA[/customhtml/fullscreen/example.html]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.View_Image"><![CDATA[/images/fullscreen/American Flag.jpg]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.View_SidePadding"><![CDATA[]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.View_SwapTeams"><![CDATA[false]]></FrontendSetting>
-			<FrontendSetting Id="ScoreBoard.View_Video"><![CDATA[/videos/fullscreen/American Flag.webm]]></FrontendSetting>
+			<Setting Id="Overlay.4x3.LogoBackground"><![CDATA[true]]></Setting>
+			<Setting Id="Overlay.4x3.TeamLogos"><![CDATA[true]]></Setting>
+			<Setting Id="Overlay.DDTV.Clock"><![CDATA[On]]></Setting>
+			<Setting Id="Overlay.DDTV.Score"><![CDATA[On]]></Setting>
+			<Setting Id="Overlay.DDTV.ShowJammers"><![CDATA[On]]></Setting>
+			<Setting Id="Overlay.Interactive.Clock"><![CDATA[On]]></Setting>
+			<Setting Id="Overlay.Interactive.Score"><![CDATA[On]]></Setting>
+			<Setting Id="Overlay.Interactive.ShowJammers"><![CDATA[On]]></Setting>
+			<Setting Id="ScoreBoard.Clock.Sync"><![CDATA[true]]></Setting>
+			<Setting Id="ScoreBoard.ClockAfterTimeout"><![CDATA[Lineup]]></Setting>
+			<Setting Id="ScoreBoard.Intermission.PreGame"><![CDATA[Time To Derby]]></Setting>
+			<Setting Id="ScoreBoard.Intermission.Intermission"><![CDATA[Intermission]]></Setting>
+			<Setting Id="ScoreBoard.Intermission.Unofficial"><![CDATA[Unofficial Score]]></Setting>
+			<Setting Id="ScoreBoard.Intermission.Official"><![CDATA[Final Score]]></Setting>
+			<Setting Id="ScoreBoard.Preview_BoxStyle"><![CDATA[box_flat]]></Setting>
+			<Setting Id="ScoreBoard.Preview_CurrentView"><![CDATA[scoreboard]]></Setting>
+			<Setting Id="ScoreBoard.Preview_CustomHtml"><![CDATA[/customhtml/fullscreen/example.html]]></Setting>
+			<Setting Id="ScoreBoard.Preview_Image"><![CDATA[/images/fullscreen/American Flag.jpg]]></Setting>
+			<Setting Id="ScoreBoard.Preview_SidePadding"><![CDATA[]]></Setting>
+			<Setting Id="ScoreBoard.Preview_SwapTeams"><![CDATA[false]]></Setting>
+			<Setting Id="ScoreBoard.Preview_Video"><![CDATA[/videos/fullscreen/American Flag.webm]]></Setting>
+			<Setting Id="ScoreBoard.View_BoxStyle"><![CDATA[box_flat]]></Setting>
+			<Setting Id="ScoreBoard.View_CurrentView"><![CDATA[scoreboard]]></Setting>
+			<Setting Id="ScoreBoard.View_CustomHtml"><![CDATA[/customhtml/fullscreen/example.html]]></Setting>
+			<Setting Id="ScoreBoard.View_Image"><![CDATA[/images/fullscreen/American Flag.jpg]]></Setting>
+			<Setting Id="ScoreBoard.View_SidePadding"><![CDATA[]]></Setting>
+			<Setting Id="ScoreBoard.View_SwapTeams"><![CDATA[false]]></Setting>
+			<Setting Id="ScoreBoard.View_Video"><![CDATA[/videos/fullscreen/American Flag.webm]]></Setting>
 		</FrontendSettings>
 	</ScoreBoard>
 </document>

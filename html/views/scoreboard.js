@@ -333,7 +333,7 @@ function setupClocks() {
 	var interMax = $sb("ScoreBoard.Clock(Intermission).MaximumNumber");
 	var isOfficialScore = $sb("ScoreBoard.OfficialScore");
 	var ruleset = $sb("ScoreBoard.Ruleset");
-	var settings = $sb("ScoreBoard.Settings");
+	var settings = $sb("ScoreBoard.FrontendSettings");
 	var intermissionText = { };
 
 	var intermissionUpdate = function() {
