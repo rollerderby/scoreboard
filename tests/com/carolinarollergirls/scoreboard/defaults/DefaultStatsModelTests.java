@@ -73,7 +73,6 @@ public class DefaultStatsModelTests {
 
 		// Start the second jam and confirm it's there.
 		sbm.stopJamTO();
-		advance(0);
 		sbm.startJam();
 		advance(1000);
 		assertEquals(2, psm.getJamStats().size());
@@ -89,7 +88,6 @@ public class DefaultStatsModelTests {
 			sbm.startJam();
 			advance(1000);
 			sbm.stopJamTO();
-			advance(0);
 		}
 		assertEquals(2, sm.getPeriodStats().size());
 		StatsModel.PeriodStatsModel psm = sm.getPeriodStatsModel(2);
@@ -97,7 +95,6 @@ public class DefaultStatsModelTests {
 
 		// Truncate jams.
 		jc.setNumber(1);
-		advance(0);
 		assertEquals(1, psm.getJamStats().size());
 	}
 
@@ -105,7 +102,6 @@ public class DefaultStatsModelTests {
 	public void testJamStartListener() {
 		team1.getSkaterModel(ID_PREFIX + "100").setPosition(Position.ID_JAMMER);
 		team1.getSkaterModel(ID_PREFIX + "101").setPosition(Position.ID_PIVOT);
-		advance(0);
 
 		sbm.startJam();
 		advance(1000);
@@ -128,7 +124,6 @@ public class DefaultStatsModelTests {
 		// Team 1 gets lead and scores.
 		team1.setLeadJammer(Team.LEAD_LEAD);
 		team1.changeScore(5);
-		advance(0);
 
 		sbm.stopJamTO();
 		advance(1000);
@@ -183,18 +178,15 @@ public class DefaultStatsModelTests {
 
 		// Change the score during the jam.
 		team1.changeScore(5);
-		advance(0);
 		assertEquals(5, tsm1.getTotalScore());
 		assertEquals(5, tsm1.getJamScore());
 
 		// Star pass during the jam.
 		team1.setStarPass(true);
-		advance(0);
 		assertEquals(true, tsm1.getStarPass());
 
 		// Lead during the jam.
 		team1.setLeadJammer(Team.LEAD_LEAD);
-		advance(0);
 		assertEquals(Team.LEAD_LEAD, tsm1.getLeadJammer());
 
 		sbm.stopJamTO();
@@ -205,7 +197,6 @@ public class DefaultStatsModelTests {
 
 		// Some points arrive after end of jam.
 		team1.changeScore(4);
-		advance(0);
 		assertEquals(9, tsm1.getTotalScore());
 		assertEquals(9, tsm1.getJamScore());
 
@@ -229,7 +220,6 @@ public class DefaultStatsModelTests {
 
 		// Add points during the jam, jam score is correct.
 		team1.changeScore(3);
-		advance(0);
 		assertEquals(12, tsm1.getTotalScore());
 		assertEquals(3, tsm1.getJamScore());
 	}
@@ -239,7 +229,6 @@ public class DefaultStatsModelTests {
 		// Some skater positions set before jam.
 		team1.getSkaterModel(ID_PREFIX + "100").setPosition(Position.ID_JAMMER);
 		team1.getSkaterModel(ID_PREFIX + "101").setPosition(Position.ID_PIVOT);
-		advance(0);
 
 		sbm.startJam();
 		advance(1000);
@@ -250,24 +239,20 @@ public class DefaultStatsModelTests {
 
 		// Blocker is added after the jam stats. All positions in place.
 		team1.getSkaterModel(ID_PREFIX + "102").setPosition(Position.ID_BLOCKER1);
-		advance(0);
 		assertEquals(Position.ID_JAMMER, tsm1.getSkaterStatsModel(ID_PREFIX + "100").getPosition());
 		assertEquals(Position.ID_PIVOT, tsm1.getSkaterStatsModel(ID_PREFIX + "101").getPosition());
 		assertEquals(Position.ID_BLOCKER1, tsm1.getSkaterStatsModel(ID_PREFIX + "102").getPosition());
 
 		// Skater was actually on bench.
 		team1.getSkaterModel(ID_PREFIX + "102").setPosition(Position.ID_BENCH);
-		advance(0);
 		assertEquals(null, tsm1.getSkaterStatsModel(ID_PREFIX + "102"));
 
 		// Skater goes to the box.
 		team1.getSkaterModel(ID_PREFIX + "100").setPenaltyBox(true);
-		advance(0);
 		assertEquals(true, tsm1.getSkaterStatsModel(ID_PREFIX + "100").getPenaltyBox());
 
 		// Skater exits the box.
 		team1.getSkaterModel(ID_PREFIX + "100").setPenaltyBox(false);
-		advance(0);
 		assertEquals(false, tsm1.getSkaterStatsModel(ID_PREFIX + "100").getPenaltyBox());
 
 		// Jam ends.
@@ -275,7 +260,6 @@ public class DefaultStatsModelTests {
 		advance(1000);
 		// New jammer does not replace jammer from previous jam.
 		team1.getSkaterModel(ID_PREFIX + "103").setPosition(Position.ID_JAMMER);
-		advance(0);
 		assertEquals(Position.ID_JAMMER, tsm1.getSkaterStatsModel(ID_PREFIX + "100").getPosition());
 	}
 
