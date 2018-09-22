@@ -180,7 +180,7 @@
 	<target name="launcher" >
 		<launch4j>
 			<config outfile="${launch4j.outfile}" dontWrapJar="true" jarPath="${jar.dir}/${jar.file}" stayAlive="true" headerType="gui" chdir="." errTitle="CRG ScoreBoard" cmdLine="--gui" >
-				<jre minVersion="1.5.0" jdkPreference="preferJre" maxHeapSize="512" />
+				<jre minVersion="1.7.0" jdkPreference="preferJre" maxHeapSize="512" />
 				<messages jreVersionErr="You do not have Java installed.	Press OK to open the Java download website.	Restart the scoreboard after installing Java.\nError: The scoreboard requires Java JRE minimum version" />
 			</config>
 		</launch4j>
@@ -219,7 +219,7 @@
 		<property name="zip.prefix" value="crg-scoreboard_${version}"/>
 		<zip destfile="${release.dir}/${zip.prefix}.zip" >
 			<zipfileset dir="." prefix="${zip.prefix}" filemode="755" >
-				<include name="README" />
+				<include name="README.md" />
 				<include name="COPYING" />
 				<include name="COPYING-GPL" />
 				<include name="COPYING-AL" />
