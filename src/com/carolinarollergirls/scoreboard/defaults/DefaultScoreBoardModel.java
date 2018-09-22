@@ -44,11 +44,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected void setupScoreBoard(){
 		settings = new DefaultSettingsModel(this);
 		settings.addScoreBoardListener(this);
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".PreGame");
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Intermission");
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Unofficial");
-		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_INTERMISSION + ".Official");
-		Ruleset.registerRule(settings, "ScoreBoard.Clock.Sync");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_JAM + ".ResetNumberEachPeriod");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStart");
 		Ruleset.registerRule(settings, "ScoreBoard." + Clock.ID_LINEUP + ".AutoStartBuffer");
@@ -56,26 +51,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		Ruleset.registerRule(settings, "Clock." + Clock.ID_INTERMISSION + ".Time");
 		Ruleset.registerRule(settings, "Clock." + Clock.ID_LINEUP + ".Time");
 		Ruleset.registerRule(settings, "Clock." + Clock.ID_LINEUP + ".OvertimeTime");
-
-		settings.addRuleMapping("ScoreBoard.BackgroundStyle", new String[] { "ScoreBoard.Preview_BackgroundStyle", "ScoreBoard.View_BackgroundStyle" });
-		settings.addRuleMapping("ScoreBoard.BoxStyle",        new String[] { "ScoreBoard.Preview_BoxStyle",        "ScoreBoard.View_BoxStyle" });
-		settings.addRuleMapping("ScoreBoard.CurrentView",     new String[] { "ScoreBoard.Preview_CurrentView",     "ScoreBoard.View_CurrentView" });
-		settings.addRuleMapping("ScoreBoard.CustomHtml",      new String[] { "ScoreBoard.Preview_CustomHtml",      "ScoreBoard.View_CustomHtml" });
-		settings.addRuleMapping("ScoreBoard.HideJamTotals",   new String[] { "ScoreBoard.Preview_HideJamTotals",   "ScoreBoard.View_HideJamTotals" });
-		settings.addRuleMapping("ScoreBoard.Image",           new String[] { "ScoreBoard.Preview_Image",           "ScoreBoard.View_Image" });
-		settings.addRuleMapping("ScoreBoard.SidePadding",     new String[] { "ScoreBoard.Preview_SidePadding",     "ScoreBoard.View_SidePadding" });
-		settings.addRuleMapping("ScoreBoard.SwapTeams",       new String[] { "ScoreBoard.Preview_SwapTeams",       "ScoreBoard.View_SwapTeams" });
-		settings.addRuleMapping("ScoreBoard.Video",           new String[] { "ScoreBoard.Preview_Video",           "ScoreBoard.View_Video" });
-
-		Ruleset.registerRule(settings, "ScoreBoard.BackgroundStyle");
-		Ruleset.registerRule(settings, "ScoreBoard.BoxStyle");
-		Ruleset.registerRule(settings, "ScoreBoard.CurrentView");
-		Ruleset.registerRule(settings, "ScoreBoard.CustomHtml");
-		Ruleset.registerRule(settings, "ScoreBoard.HideJamTotals");
-		Ruleset.registerRule(settings, "ScoreBoard.Image");
-		Ruleset.registerRule(settings, "ScoreBoard.SidePadding");
-		Ruleset.registerRule(settings, "ScoreBoard.SwapTeams");
-		Ruleset.registerRule(settings, "ScoreBoard.Video");
 		Ruleset.registerRule(settings, PenaltyCodesManager.PenaltiesFileSetting);
 
 		stats = new DefaultStatsModel(this);
@@ -371,7 +346,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		if (!tc.isRunning()) { return; }
 		
 		requestBatchStart();
-		tc.stop();
+		if (!frontendSettings.get(FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) {
+			tc.stop();
+		}
 		if (getTimeoutOwner() != TIMEOUT_OWNER_NONE && getTimeoutOwner() != TIMEOUT_OWNER_OTO) {
 			restartPcAfterTimeout = false;
 		}
@@ -384,7 +361,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				if (restartPcAfterTimeout) {
 					pc.start();
 				}
-				_startLineup();
+				if (frontendSettings.get(FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_LINEUP)) {
+					_startLineup();
+				}
 			}
 		}
 		requestBatchEnd();

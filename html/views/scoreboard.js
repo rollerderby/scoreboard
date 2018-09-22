@@ -57,18 +57,16 @@ $sb(function() {
 	var view = "View";
 	if (_windowFunctions.checkParam("preview", "true"))
 		view = "Preview";
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_Image)").$sbElement("#imageDiv>img");
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_Video)").$sbElement("#videoDiv>video");
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CustomHtml)").$sbElement("#htmlDiv>iframe");
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SwapTeams)").$sbBindAndRun("sbchange", function(event,value) {
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_Image)").$sbElement("#imageDiv>img");
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_Video)").$sbElement("#videoDiv>video");
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_CustomHtml)").$sbElement("#htmlDiv>iframe");
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_SwapTeams)").$sbBindAndRun("sbchange", function(event,value) {
 		$("#sbDiv>div.Team,.Timeouts>div.Team,.OfficialReviews>div.Team,.JamPoints>div.Team").toggleClass("SwapTeams", isTrue(value));
 	});
 
 	var styleSet = function() {
-		var boxStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BoxStyle)").$sbGet();
-		var backgroundStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BackgroundStyle)").$sbGet();
-		var hideJamTotals = isTrue($sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_HideJamTotals)").$sbGet());
-		var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SidePadding)").$sbGet();
+		var boxStyle = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_BoxStyle)").$sbGet();
+		var sidePadding = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_SidePadding)").$sbGet();
 
 		// change box_flat_bright to two seperate classes in order to reuse much of the css
 		if (boxStyle == 'box_flat_bright')
@@ -77,10 +75,6 @@ $sb(function() {
 		$("#mainDiv").removeClass();
 		if (boxStyle != "" && boxStyle != null)
 			$("#mainDiv").addClass(boxStyle);
-		if (backgroundStyle != "" && backgroundStyle != null)
-			$("#mainDiv").addClass(backgroundStyle);
-		if (hideJamTotals)
-			$("#mainDiv").addClass("HideJamTotals");
 		if (sidePadding != "" && sidePadding != null) {
 			var left = sidePadding + "%";
 			var width = (100 - (2 * sidePadding)) + "%";
@@ -90,12 +84,10 @@ $sb(function() {
 		}
 		$(window).trigger("resize");
 	}
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BoxStyle)").$sbBindAndRun("sbchange", styleSet);
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BackgroundStyle)").$sbBindAndRun("sbchange", styleSet);
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_HideJamTotals)").$sbBindAndRun("sbchange", styleSet);
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SidePadding)").$sbBindAndRun("sbchange", styleSet);
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_BoxStyle)").$sbBindAndRun("sbchange", styleSet);
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_SidePadding)").$sbBindAndRun("sbchange", styleSet);
 
-	var v = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CurrentView)");
+	var v = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + view + "_CurrentView)");
 	v.$sbBindAndRun("sbchange", function(event, value) {
 		$("video").each(function() { this.pause(); });
 		var showDiv = $("#"+value+"Div");
@@ -341,7 +333,7 @@ function setupClocks() {
 	var interMax = $sb("ScoreBoard.Clock(Intermission).MaximumNumber");
 	var isOfficialScore = $sb("ScoreBoard.OfficialScore");
 	var ruleset = $sb("ScoreBoard.Ruleset");
-	var settings = $sb("ScoreBoard.Settings");
+	var settings = $sb("ScoreBoard.FrontendSettings");
 	var intermissionText = { };
 
 	var intermissionUpdate = function() {

@@ -52,13 +52,6 @@ public class Ruleset {
 				return base;
 			}
 
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "PreGame",       "Text displayed for clock before first period", "Time To Derby"));
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Intermission",  "Text displayed for clock between periods", "Intermission"));
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Unofficial",    "Text displayed immediately after last period", "Unofficial Score"));
-			newRule( new StringRule(false, "ScoreBoard", Clock.ID_INTERMISSION, "Official",      "Text displayed when score is declared official", "Final Score"));
-
-			newRule(new BooleanRule(false, "ScoreBoard", "Clock", "Sync",   "Make all clocks tick over seconds at the same time. Will cause clock starts/stops to be moved up to 0.5 seconds in order to sync.", true, "Sync Clocks", "Don't Sync Clocks"));
-
 			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM, "ResetNumberEachPeriod",   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
 
 			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStart",   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
@@ -66,19 +59,7 @@ public class Ruleset {
 			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartType",   "What to start after lineup is up", false, "Jam", "Timeout"));
 			
 			newRule( new StringRule(false, "ScoreBoard", null, "PenaltyDefinitionFile", "", "/config/penalties/wftda2018.json"));
-			newRule(new BooleanRule(false, "ScoreBoard", null, "HideJamTotals",   "Should the score for the current Jam be displayed?", false, "Hide Jam Totals", "Show Jam Totals"));
-			newRule( new StringRule(false, "ScoreBoard", null, "BackgroundStyle", "Background style to be used. Possible values: bg_blacktowhite, bg_whitetoblack, bg_black", "bg_black"));
-			newRule( new StringRule(false, "ScoreBoard", null, "BoxStyle",        "Style to use for the score and time boxes. Possible values: box_rounded, box_flat, box_flat_bright", "box_flat"));
-			newRule(new BooleanRule(false, "ScoreBoard", null, "SwapTeams",       "Swap public Team display compared to operator display?", false, "Teams Swapped", "Teams Normal"));
-			newRule(new IntegerRule(false, "ScoreBoard", null, "SidePadding",     "How much padding to use on the side (in % of display width)", 0));
-			newRule( new StringRule(false, "ScoreBoard", null, "CurrentView",     "Default view to be shown. Possible values: scoreboard, image, video, html", "scoreboard"));
-			newRule( new StringRule(false, "ScoreBoard", null, "CustomHtml",      "Page to display on the html view", "/customhtml/fullscreen/example.html"));
-			newRule( new StringRule(false, "ScoreBoard", null, "Image",           "Image to show on the image view", "/images/fullscreen/American Flag.jpg"));
-			newRule( new StringRule(false, "ScoreBoard", null, "Video",           "Video to display on the video view", "/videos/fullscreen/American Flag.webm"));
 
-			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "TeamLogos",       "Show team logos in the 4x3 overlay?", true, "Display", "Hide"));
-			newRule(new BooleanRule(false, "ScoreBoard", "Overlay", "LogoBackground",  "Background color for the team logos", true, "Black", "Transparent"));
-			
 			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
 			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MaximumNumber", "Number of periods", 2));
