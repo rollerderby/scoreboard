@@ -38,6 +38,22 @@ $sb(function() {
 	$("<button>").text("Logout").click(logout).button().css("float", "right").appendTo("#tabBar");
 });
 
+function setOperatorSettings(op) {
+	var operator;
+	if (op !== "") {
+		operator = "__"+ op + ".";
+	} else {
+		operator = "_Default.";
+	}
+	$sb("ScoreBoard.FrontendSettings").find("Setting").each(function() {
+		var oldPath = String($sb(this).$sbPath);
+		var path = oldPath.replace("ScoreBoard.Operator"+operator, "ScoreBoard.Operator.");
+		if (path != oldPath) {
+			$sb(path).$sbSet($sb(this).$sbGet());
+		}
+	});
+}
+
 // FIXME - this is done after the team/time panel is loaded,
 //				 as the button setup needs to happen after that panel creates its buttons...
 //				 really, the keycontrol helper lib needs to have a per-tab interface so
@@ -45,6 +61,7 @@ $sb(function() {
 function initialLogin() {
 	var operator = _windowFunctions.getParam("operator");
 	if (operator) {
+		setOperatorSettings("");
 		login(operator);
 	} else {
 		logout();
@@ -56,6 +73,7 @@ function login(name) {
 	if (window.history.replaceState)
 		window.history.replaceState(null, "", "?operator="+$("#operatorId").text());
 	_crgKeyControls.setupKeyControls($sb("Pages.Page(operator.html).Operator("+$("#operatorId").text()+")"));
+	setOperatorSettings(name);
 }
 
 function logout() {
@@ -63,6 +81,7 @@ function logout() {
 	if (window.history.replaceState)
 		window.history.replaceState(null, "", "?");
 	_crgKeyControls.destroyKeyControls();
+	setOperatorSettings("");
 	_crgUtils.showLoginDialog("Operator Login", "Operator:", "Login", function(value) {
 		if (!value)
 			return false;
@@ -147,23 +166,22 @@ function createMetaControlTable() {
 	$("<a>").text("Key Control Edit mode enabled.	 Buttons do not operate in this mode.	 Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
 		.appendTo(helpTd);
 
-	$("<label>").text("Show Speed Score Controls").attr("for", "ShowSpeedScoreControlsButton")
-		.appendTo(buttonsTd);
-	$("<input type='checkbox'>").attr("id", "ShowSpeedScoreControlsButton")
-		.appendTo(buttonsTd)
-		.button()
-		.click(function() {
-			$("#TeamTime").find("tr.SpeedScore").toggleClass("Show", this.checked);
-		});
-
-	$("<label>").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
-		.appendTo(buttonsTd);
-	$("<input type='checkbox'>").attr("id", "ShowClockControlsButton")
-		.appendTo(buttonsTd)
-		.button()
-		.click(function() {
-			$("#TeamTime").find("tr.Control").toggleClass("Show", this.checked);
-		});
+	var showStartStopButton = $("<label/><input type='checkbox'/>");
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator.StartStopButtons)").$sbControl(showStartStopButton, { sbcontrol: {
+			button: true
+		}, sbelement: {
+			convert: function(value) {
+				showStartStopButton.filter("input:checkbox")
+				.button("option", "label", (isTrue(value)?"Start/Stop Buttons shown":"Start/Stop Buttons hidden"));
+				$("#TeamTime").find("tr.Control").toggleClass("Show", isTrue(value));
+				var operator = $("#operatorId").text();
+				if (operator) {
+					$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+operator+".StartStopButtons)").$sbSet(value);
+				}
+				return value;
+			}
+		} });
+	showStartStopButton.appendTo(buttonsTd);
 
 	$("<button>").attr("id", "GameControl")
 		.text("Start New Game")
@@ -315,7 +333,6 @@ function createGameControlDialog() {
 	}).change(function(e) { updateAdhocName(); });
 
 
-	// $("<button>").append("Start").button().appendTo(adhocGame);
 	Rulesets.List(function(rulesets) {
 		var select = adhocGame.find("select.Ruleset");
 		var active = $sb("ScoreBoard.Ruleset").$sbGet();
@@ -773,8 +790,6 @@ function createTimeTable() {
 	var numberRow = row.clone().addClass("Number").appendTo(table);
 	var controlRow = row.clone().addClass("Control").appendTo(table);
 	var timeRow = row.clone().addClass("Time").appendTo(table);
-//	var timeSetRow = row.clone().addClass("TimeSet").appendTo(table);
-//	var timeResetRow = row.clone().addClass("TimeReset").appendTo(table);
 
 	$.each( [ "Period", "Jam", "Lineup", "Timeout", "Intermission" ], function() {
 		var clock = String(this);
@@ -784,8 +799,6 @@ function createTimeTable() {
 		var numberTr = createRowTable(3).appendTo($("<td>").appendTo(numberRow)).find("tr");
 		var controlTr = createRowTable(2).appendTo($("<td>").appendTo(controlRow)).find("tr");
 		var timeTr = createRowTable(3).appendTo($("<td>").appendTo(timeRow)).find("tr");
-//		var timeSetTr = createRowTable(2).appendTo($("<td>").appendTo(timeSetRow)).find("tr");
-//		var timeResetTd = $("<td>").appendTo(timeResetRow);
 
 		sbClock.$sb("Name").$sbElement("<a>").appendTo(nameTd.addClass("Name"));
 		if (clock == "Period" || clock == "Jam") {
@@ -831,23 +844,6 @@ function createTimeTable() {
 			.text("+1").val("1000")
 			.attr("id", "Clock"+clock+"TimeUp").addClass("KeyControl").button()
 			.appendTo(timeTr.children("td:eq(2)").addClass("Button"));
-
-/*		$("<input type='text'/>")
-			.attr("size", "6")
-			.appendTo(timeSetTr.children("td:eq(0)").addClass("Text"))
-			.focus(function() { createTimeSetWarningDialog($(this)); });
-		$("<button/>").text("Set").button()
-			.appendTo(timeSetTr.children("td:eq(1)").addClass("Button"));
-		sbClock.$sb("Time").$sbControl(timeSetTr.find("td"), { sbcontrol: {
-			convert: _timeConversions.minSecToMs,
-			delayupdate: true,
-			noSetControlValue: true
-		}});
-
-		sbClock.$sb("ResetTime").$sbControl("<button>")
-			.text("Reset Time").val("true")
-			.attr("id", "Clock"+clock+"ResetTime").addClass("KeyControl").button()
-			.appendTo(timeResetTd);*/
 	});
 
 	return table;
@@ -975,7 +971,6 @@ function createScoreBoardViewContent(table) {
 				}
 			});
 		});
-	// var viewOptions = $sb("Pages.Page(scoreboard.html)").children("PreviewOptions,ViewOptions");
 	_crgUtils.bindAndRun("ScoreBoard.FrontendSettings.Setting", "sbchange", function() {
 		var disableApplyButton = true;
 		$sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
