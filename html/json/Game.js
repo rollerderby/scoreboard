@@ -6,7 +6,8 @@ var Game = {
 			data: JSON.stringify(obj),
 			success: callback,
 			error: error,
-			dataType: "json"
+			dataType: "json",
+			headers: {"Content-Type": "application/json;charset=UTF-8"}
 		});
 	}
 };
