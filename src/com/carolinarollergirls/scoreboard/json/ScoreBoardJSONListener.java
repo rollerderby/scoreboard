@@ -12,7 +12,6 @@ import java.util.LinkedList;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -36,7 +35,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	public ScoreBoardJSONListener(ScoreBoard sb, JSONStateManager jsm) {
 		this.jsm = jsm;
 		initialize(sb);
-		sb.addScoreBoardListener(new AsyncScoreBoardListener(this));
+		sb.addScoreBoardListener(this);
 	}
 
 	public void scoreBoardChange(ScoreBoardEvent event) {
