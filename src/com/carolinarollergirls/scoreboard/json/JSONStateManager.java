@@ -10,16 +10,21 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class JSONStateManager {
 
   public synchronized void register(JSONStateListener source) {
-    sources.add(source);
+    sources.put(source, new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>()));
     // Send on the current state.
     source.sendUpdates(state, state.keySet());
   }
 
   public synchronized void unregister(JSONStateListener source) {
+    sources.get(source).shutdown();
     sources.remove(source);
   }
 
@@ -68,19 +73,41 @@ public class JSONStateManager {
     }
 
     state = Collections.unmodifiableMap(newState);
+    final Map<String, Object> localState = state;
     if (!changed.isEmpty()) {
-      Set<String> immutableChanged = Collections.unmodifiableSet(changed);
+      final Set<String> immutableChanged = Collections.unmodifiableSet(changed);
 
-      for (JSONStateListener source : sources) {
-        source.sendUpdates(state, immutableChanged);
+      // Send updates async, as the WS connections can block if the
+      // kernel TCP send buffer fills up.
+      for (JSONStateListener source : sources.keySet()) {
+        final JSONStateListener localSource = source;
+        pending.incrementAndGet();
+        sources.get(source).execute(
+            new Runnable() {
+              public void run() {
+                localSource.sendUpdates(localState, immutableChanged);
+                pending.decrementAndGet();
+              }
+            }
+            );
       }
     }
     timer.observeDuration();
     updateStateUpdates.observe(updates.size());
   }
 
-  private Set<JSONStateListener> sources = new HashSet<JSONStateListener>();
+  // For unittests.
+  protected void waitForSent() {
+    while(pending.get() > 0) {
+      try{
+        Thread.sleep(1);
+      } catch (InterruptedException e) {};
+    }
+  }
+
+  private Map<JSONStateListener, ThreadPoolExecutor> sources = new HashMap<JSONStateListener, ThreadPoolExecutor>();
   private Map<String, Object> state = new HashMap<String, Object>();
+  private final AtomicInteger pending = new AtomicInteger();
 
   private static final Histogram updateStateDuration = Histogram.build()
     .name("crg_json_update_state_duration_seconds").help("Time spent in JSONStateManager.updateState function").register();
