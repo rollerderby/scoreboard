@@ -12,7 +12,6 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.Position;
@@ -37,9 +36,6 @@ public class ScoreBoardJSONListenerTests {
 		ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
 		sbm = new DefaultScoreBoardModel();
 
-		//Clock Sync can cause clocks to be changed when started, breaking tests.
-		sbm.getSettingsModel().set("ScoreBoard.Clock.Sync", "False");
-
 		jsm = new JSONStateManager();
 		new ScoreBoardJSONListener(sbm, jsm);
 		jsm.register(jsonListener);
@@ -55,9 +51,8 @@ public class ScoreBoardJSONListenerTests {
 	}
 
 	private void advance(long time_ms) {
-		AsyncScoreBoardListener.waitForEvents();
 		ScoreBoardClock.getInstance().advance(time_ms);
-		AsyncScoreBoardListener.waitForEvents();
+		jsm.waitForSent();
 	}
 
 	@Test

@@ -8,7 +8,6 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
@@ -55,9 +54,7 @@ public class DefaultStatsModelTests {
 	}
 
 	private void advance(long time_ms) {
-		AsyncScoreBoardListener.waitForEvents();
 		ScoreBoardClock.getInstance().advance(time_ms);
-		AsyncScoreBoardListener.waitForEvents();
 	}
 
 	@Test

@@ -41,6 +41,7 @@ public class JSONStateManagerTest {
     HashMap<String, Object> hm = new HashMap<String, Object>();
     hm.put("foo", "bar");
 
+    jsm.waitForSent();
     assertEquals(1, listener.num_updates);
     assertEquals(hm, listener.state);
   }
@@ -50,8 +51,10 @@ public class JSONStateManagerTest {
     jsm.register(listener);
     assertEquals(1, listener.num_updates);
     jsm.updateState("foo", "bar");
+    jsm.waitForSent();
     assertEquals(2, listener.num_updates);
     jsm.updateState("foo", "bar");
+    jsm.waitForSent();
     assertEquals(2, listener.num_updates);
   }
 
@@ -64,6 +67,7 @@ public class JSONStateManagerTest {
     assertEquals(3, listener.state.size());
 
     jsm.updateState("foo.12", null);
+    jsm.waitForSent();
     assertEquals(1, listener.state.size());
   }
 
@@ -76,6 +80,7 @@ public class JSONStateManagerTest {
     assertEquals(3, listener.state.size());
 
     jsm.updateState("foo.1", null);
+    jsm.waitForSent();
     assertEquals(3, listener.state.size());
   }
 
@@ -84,6 +89,7 @@ public class JSONStateManagerTest {
     jsm.register(listener);
     assertEquals(1, listener.num_updates);
     jsm.updateState("foo", null);
+    jsm.waitForSent();
     assertEquals(1, listener.num_updates);
   }
 
@@ -98,6 +104,7 @@ public class JSONStateManagerTest {
 
     HashMap<String, Object> hm = new HashMap<String, Object>();
     hm.put("foo.1", "baz");
+    jsm.waitForSent();
     assertEquals(hm, listener.state);
   }
 

@@ -13,7 +13,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -81,9 +80,7 @@ public class DefaultScoreboardModelTests {
 	}
 
 	private void advance(long time_ms) {
-		AsyncScoreBoardListener.waitForEvents();
 		ScoreBoardClock.getInstance().advance(time_ms);
-		AsyncScoreBoardListener.waitForEvents();
 	}
 	
 	@Test
