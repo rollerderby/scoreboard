@@ -15,7 +15,6 @@ import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import com.carolinarollergirls.scoreboard.Ruleset;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -50,7 +49,6 @@ public class DefaultClockModelTests {
 	
 	private void advance(long time_ms) {
 		ScoreBoardClock.getInstance().advance(time_ms);
-	    AsyncScoreBoardListener.waitForEvents();
 	}
 	
 	@Before
