@@ -140,7 +140,8 @@ public class JettyServletScoreBoardController
 		if (null != staticPath) {
 			ServletContextHandler c = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
 			ServletHolder sh = new ServletHolder(new DefaultServlet());
-			sh.setInitParameter("org.eclipse.jetty.servlet.Default.cacheControl", "no-cache");
+			sh.setInitParameter("cacheControl", "no-cache");
+			sh.setInitParameter("etags", "true");
 			c.addServlet(sh, "/*");
 			c.addFilter(mf, "/*", 1);
 			c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), staticPath)).getPath());
