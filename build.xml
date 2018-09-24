@@ -9,11 +9,8 @@
 	<property name="test.src.dir" value="tests" />
 	<property name="test.build.dir" value="test-bin" />
 	<property name="jdoc.dir" value="jdoc"/>
-	<property name="version.src.dir" value="${src.dir}/com/carolinarollergirls/scoreboard/version"/>
 	<property name="version.dest.dir" value="${dest.dir}/com/carolinarollergirls/scoreboard/version"/>
 	<property name="version.release.file" value="release.properties"/>
-	<property name="version.build.file" value="build.properties"/>
-	<property file="${version.src.dir}/release.properties" prefix="version"/>
 
 	<property name="compile.deprecation" value="true"/>
 	<property name="compile.debug" value="true"/>
@@ -59,29 +56,30 @@
 		<echo message="	manifest				 (Re)create the manifest file"/>
 		<echo message="	help						 Show this help"/>
 		<echo message="	jdoc						 Create JavaDOC"/>
-		<echo message="	release					Create release zip file"/>
+		<echo message="	release					Create release zip file based on a git tag"/>
 		<echo message="	zip							Create non-release zip file"/>
 		<echo message=""/>
 	</target>
 
-	<!-- Add build timestamp to version -->
-	<target name="-buildversion" unless="isRelease" >
-		<tstamp>
-			<format property="version.build" pattern="yyyyMMddHHmmss" />
-		</tstamp>
-		<mkdir dir="${version.dest.dir}"/>
-		<propertyfile file="${version.dest.dir}/${version.build.file}">
-			<entry key="build" value="${version.build}"/>
-		</propertyfile>
-	</target>
-
 	<!-- Determine version -->
-	<target name="-version" depends="-buildversion" >
-		<mkdir dir="${version.dest.dir}"/>
-		<copy file="${version.src.dir}/${version.release.file}" todir="${version.dest.dir}"/>
-		<condition property="version" value="${version.release}-${version.build}" else="${version.release}">
-			<isset property="version.build"/>
+	<target name="-version">
+		<exec executable="git" outputproperty="version.git">
+			<arg line="describe --tags --always --dirty"/>
+		</exec>
+		<tstamp>
+			<format property="version.time" pattern="yyyyMMddHHmmss" />
+		</tstamp>
+		<hostinfo prefix="host"/>
+		<condition property="version" value="${version.git}-${version.time}" else="${version.git}">
+			<isfalse value="${isRelease}"/>
 		</condition>
+		<mkdir dir="${version.dest.dir}"/>
+		<propertyfile file="${version.dest.dir}/${version.release.file}">
+			<entry key="release" value="${version}"/>
+			<entry key="release.user" value="${user.name}"/>
+			<entry key="release.time" value="${version.time}"/>
+			<entry key="release.host" value="${host.NAME}"/>
+		</propertyfile>
 	</target>
 
 	<!-- Compile source files -->
@@ -238,6 +236,9 @@
 				<include name="config/crg.scoreboard.properties" />
 				<include name="config/penalties/**" />
 				<include name="config/default/**" />
+			</zipfileset>
+			<zipfileset dir="${version.dest.dir}" prefix="${zip.prefix}/html/" filemode="755" >
+				<include name="${version.release.file}" />
 			</zipfileset>
 		</zip>
 	</target>
