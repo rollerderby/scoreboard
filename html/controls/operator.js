@@ -39,19 +39,16 @@ $sb(function() {
 });
 
 function setOperatorSettings(op) {
-	var operator;
+	var prefix;
 	if (op !== "") {
-		operator = "__"+ op + ".";
+		prefix = "ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+ op + ".";
 	} else {
-		operator = "_Default.";
+		// Default settings are intentionally separate from settings of the default operator
+		// This ensures users logging in for the first time always get the former and not whatever
+		// the latter currently happens to be.
+		prefix = "ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator_Default.";
 	}
-	$sb("ScoreBoard.FrontendSettings").find("Setting").each(function() {
-		var oldPath = String($sb(this).$sbPath);
-		var path = oldPath.replace("ScoreBoard.Operator"+operator, "ScoreBoard.Operator.");
-		if (path != oldPath) {
-			$sb(path).$sbSet($sb(this).$sbGet());
-		}
-	});
+	setClockControls(isTrue($sb(prefix+"StartStopButtons)").$sbGet()));
 }
 
 // FIXME - this is done after the team/time panel is loaded,
@@ -141,6 +138,11 @@ function createScoreTimeContent(table) {
 	initialLogin();
 }
 
+function setClockControls(value) {
+	$("#ShowClockControlsButton").checked = value;
+	$("#TeamTime").find("tr.Control").toggleClass("Show", value);
+}
+
 function createMetaControlTable() {
 	var table = $("<table><tr><td/></tr><tr><td/></tr><tr><td/></tr></table>")
 		.addClass("MetaControl");
@@ -166,22 +168,19 @@ function createMetaControlTable() {
 	$("<a>").text("Key Control Edit mode enabled.	 Buttons do not operate in this mode.	 Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
 		.appendTo(helpTd);
 
-	var showStartStopButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator.StartStopButtons)").$sbControl(showStartStopButton, { sbcontrol: {
-			button: true
-		}, sbelement: {
-			convert: function(value) {
-				showStartStopButton.filter("input:checkbox")
-				.button("option", "label", (isTrue(value)?"Start/Stop Buttons shown":"Start/Stop Buttons hidden"));
-				$("#TeamTime").find("tr.Control").toggleClass("Show", isTrue(value));
-				var operator = $("#operatorId").text();
-				if (operator) {
-					$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+operator+".StartStopButtons)").$sbSet(value);
-				}
-				return value;
+	$("<label>").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
+		.appendTo(buttonsTd);
+	$("<input type='checkbox'>").attr("id", "ShowClockControlsButton")
+		.appendTo(buttonsTd)
+		.button()
+		.click(function() {
+			var value = this.checked;
+			setClockControls(value);
+			var operator = $("#operatorId").text();
+			if (operator) {
+				$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+operator+".StartStopButtons)").$sbSet(value);
 			}
-		} });
-	showStartStopButton.appendTo(buttonsTd);
+		});
 
 	$("<button>").attr("id", "GameControl")
 		.text("Start New Game")
