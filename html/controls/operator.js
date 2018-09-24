@@ -1272,27 +1272,26 @@ function createNewTeamTable(team, teamid) {
 
 	var skatersTable = $("<table>").addClass("Skaters Empty")
 		.appendTo(teamTable.find("tr.Skaters>td"))
-		.append("<col class='Id'>")
 		.append("<col class='Name'>")
 		.append("<col class='Number'>")
 		.append("<col class='Flags'>")
 		.append("<col class='Button'>")
 		.append("<thead/><tbody/>")
 		.children("thead")
-		.append("<tr><th colspan='5' class='Title'>Skaters</th></tr>")
-		.append("<tr><th>Id</th><th>Name</th><th>Number</th><th>Flags</th><th>Add</th>")
+		.append("<tr><th colspan='4' class='Title'>Skaters</th></tr>")
+		.append("<tr><th>Name</th><th>Number</th><th>Flags</th><th>Add</th>")
 		.append("<tr class='AddSkater'><th/><th/><th/><th/><th/></tr>")
-		.append("<tr><th colspan='5'><hr/></th></tr>")
+		.append("<tr><th colspan='4'><hr/></th></tr>")
 		.end();
 
-	var newSkaterName = $("<input type='text' size='20'>").addClass("Name")
+	var newSkaterName = $("<input type='text' size='30'>").addClass("Name")
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(0)"));
+	var newSkaterNumber = $("<input type='text' size='10'>").addClass("Number")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(1)"));
-	var newSkaterNumber = $("<input type='text' size='20'>").addClass("Number")
-		.appendTo(skatersTable.find("tr.AddSkater>th:eq(2)"));
 	var newSkaterFlags = $("<select>").addClass("Flags")
-		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"));
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(2)"));
 	var newSkaterButton = $("<button>").text("Add Skater").button({ disabled: true }).addClass("AddSkater")
-		.appendTo(skatersTable.find("tr.AddSkater>th:eq(4)"))
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
 		.click(function() {
 			var id = _crgScoreBoard.newUUID(true);
 			team.$sb("Skater("+id+").Number").$sbSet(newSkaterNumber.val());
@@ -1322,15 +1321,13 @@ function createNewTeamTable(team, teamid) {
 		skatersTable.removeClass("Empty");
 
 		var skaterRow = $("<tr>").attr("data-skaterid", skaterid)
-			.append("<td class='Id'>")
 			.append("<td class='Name'>")
 			.append("<td class='Number'>")
 			.append("<td class='Flags'>")
 			.append("<td class='Remove'>");
-		$("<a>").text(skaterid).appendTo(skaterRow.children("td.Id"));
-		node.$sb("Name").$sbControl("<input type='text' size='20'>")
+		node.$sb("Name").$sbControl("<input type='text' size='30'>")
 			.appendTo(skaterRow.children("td.Name"));
-		var numberInput = node.$sb("Number").$sbControl("<input type='text' size='20'>")
+		var numberInput = node.$sb("Number").$sbControl("<input type='text' size='10'>")
 			.appendTo(skaterRow.children("td.Number"));
 		$("<button>").text("Remove").addClass("RemoveSkater").button()
 			.click(function() { createTeamsSkaterRemoveDialog(team, teamid, node); })
@@ -1641,12 +1638,12 @@ function createTeamsSkaterRemoveDialog(team, teamId, skater) {
 	$("<a>").addClass("Title").text("Team: "+teamId).appendTo(dialog);
 	$("<br>").appendTo(dialog);
 
-	var skaterId = skater.$sbId;
 	var skaterName = skater.$sb("Name").$sbGet();
+	var skaterNumber = skater.$sb("Number").$sbGet();
 	$("<a>").addClass("Remove").text("Remove Skater: ").appendTo(dialog);
-	$("<a>").addClass("Target").text(skaterId).appendTo(dialog);
+	$("<a>").addClass("Target").text(skaterNumber).appendTo(dialog);
 	$("<br>").appendTo(dialog);
-	if (skaterId != skaterName) {
+	if (skaterName) {
 		$("<a>").addClass("Name").text("(Skater Name: "+skaterName+")").appendTo(dialog);
 		$("<br>").appendTo(dialog);
 	}
