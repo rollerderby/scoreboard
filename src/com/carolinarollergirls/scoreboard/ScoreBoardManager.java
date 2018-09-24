@@ -60,10 +60,7 @@ public class ScoreBoardManager {
 	}
 
 	public static String getVersion() {
-		if ("".equals(versionBuild))
-			return versionRelease;
-		else
-			return versionRelease+"-"+versionBuild;
+		return versionRelease;
 	}
 
 	public static void printMessage(String msg) {
@@ -110,7 +107,6 @@ public class ScoreBoardManager {
 		Properties versionProperties = new Properties();
 		ClassLoader cL = ScoreBoardManager.class.getClassLoader();
 		InputStream releaseIs = cL.getResourceAsStream(VERSION_RELEASE_PROPERTIES_NAME);
-		InputStream buildIs = cL.getResourceAsStream(VERSION_BUILD_PROPERTIES_NAME);
 		try {
 			versionProperties.load(releaseIs);
 		} catch ( NullPointerException npE ) {
@@ -118,16 +114,8 @@ public class ScoreBoardManager {
 		} catch ( IOException ioE ) {
 			doExit("Could not load version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'", ioE);
 		}
-		try {
-			versionProperties.load(buildIs);
-		} catch ( Exception e ) {
-			/* Ignore missing build properties */
-			versionProperties.setProperty(VERSION_BUILD_KEY, "");
-		}
 		try { releaseIs.close(); } catch ( Exception e ) { }
-		try { buildIs.close(); } catch ( Exception e ) { }
 		versionRelease = versionProperties.getProperty(VERSION_RELEASE_KEY);
-		versionBuild = versionProperties.getProperty(VERSION_BUILD_KEY);
 		printMessage("Carolina Rollergirls Scoreboard version "+getVersion());
 	}
 
@@ -181,16 +169,13 @@ public class ScoreBoardManager {
 	private static ScoreBoardModel scoreBoardModel;
 	private static Logger logger = null;
 
-	private static String versionRelease;
-	private static String versionBuild;
+	private static String versionRelease = "";
 
 	private static File defaultPath = new File(".");
 
 	public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
 	public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
-	public static final String VERSION_BUILD_PROPERTIES_NAME = VERSION_PATH+"/build.properties";
 	public static final String VERSION_RELEASE_KEY = "release";
-	public static final String VERSION_BUILD_KEY = "build";
 
 	public static final String PROPERTIES_DIR_NAME = "config";
 	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
