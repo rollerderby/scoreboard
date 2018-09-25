@@ -140,6 +140,7 @@ function createScoreTimeContent(table) {
 
 function setClockControls(value) {
 	$("#ShowClockControlsButton").checked = value;
+	$("label.ShowClockControlsButton").toggleClass("ui-state-active", value);
 	$("#TeamTime").find("tr.Control").toggleClass("Show", value);
 }
 
@@ -168,7 +169,7 @@ function createMetaControlTable() {
 	$("<a>").text("Key Control Edit mode enabled.	 Buttons do not operate in this mode.	 Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
 		.appendTo(helpTd);
 
-	$("<label>").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
+	$("<label>").addClass("ShowClockControlsButton").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
 		.appendTo(buttonsTd);
 	$("<input type='checkbox'>").attr("id", "ShowClockControlsButton")
 		.appendTo(buttonsTd)
