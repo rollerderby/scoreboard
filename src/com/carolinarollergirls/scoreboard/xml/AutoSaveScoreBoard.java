@@ -96,7 +96,6 @@ public class AutoSaveScoreBoard implements Runnable
 				if (from.exists()) {
 					try {
 						FileUtils.copyFileToDirectory(from, backupDir, true);
-						ScoreBoardManager.printMessage("Copied auto-save file "+from.getName()+" to "+backupDir.getPath());
 					} catch ( Exception e ) {
 						ScoreBoardManager.printMessage("Could not back up auto-save file '"+from.getName()+"' : "+e.getMessage());
 					}
