@@ -48,7 +48,7 @@ function setOperatorSettings(op) {
 		// the latter currently happens to be.
 		prefix = "ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator_Default.";
 	}
-	setClockControls(isTrue($sb(prefix+"StartStopButtons)").$sbGet()));
+	setClockControls($sb(prefix+"StartStopButtons)").$sbIsTrue());
 }
 
 // FIXME - this is done after the team/time panel is loaded,
@@ -139,7 +139,7 @@ function createScoreTimeContent(table) {
 }
 
 function setClockControls(value) {
-	$("#ShowClockControlsButton").checked = value;
+	$("#ShowClockControlsButton").prop("checked", value);
 	$("label.ShowClockControlsButton").toggleClass("ui-state-active", value);
 	$("#TeamTime").find("tr.Control").toggleClass("Show", value);
 }

@@ -11,7 +11,7 @@
 			<Setting Id="Overlay.Interactive.Clock"><![CDATA[On]]></Setting>
 			<Setting Id="Overlay.Interactive.Score"><![CDATA[On]]></Setting>
 			<Setting Id="Overlay.Interactive.ShowJammers"><![CDATA[On]]></Setting>
-			<Setting Id="ScoreBoard.Operator_Default.StartStopButtons"><![CDATA[false]]></Setting>
+			<Setting Id="ScoreBoard.Operator_Default.StartStopButtons" empty="true"><![CDATA[]]></Setting>
 			<Setting Id="ScoreBoard.Clock.Sync"><![CDATA[true]]></Setting>
 			<Setting Id="ScoreBoard.ClockAfterTimeout"><![CDATA[Lineup]]></Setting>
 			<Setting Id="ScoreBoard.Intermission.PreGame"><![CDATA[Time To Derby]]></Setting>
