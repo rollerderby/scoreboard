@@ -16,6 +16,7 @@ public interface Settings extends ScoreBoardEventProvider {
 	public Map<String, String> getAll();
 	public String get(String k);
 	public boolean getBoolean(String k);
+	public int getInt(String k);
 	public long getLong(String k);
 	public ScoreBoardEventProvider getParent();
 

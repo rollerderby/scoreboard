@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
@@ -18,39 +17,15 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.view.Settings;
 
-public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel, Ruleset.RulesetReceiver
+public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel
 {
 	public DefaultClockModel(ScoreBoardModel sbm, String i) {
 		scoreBoardModel = sbm;
 		id = i;
 
-		// Register for default values from the rulesets
-		Ruleset.registerRule(this, "Clock." + id + ".Name");
-		Ruleset.registerRule(this, "Clock." + id + ".MinimumNumber");
-		Ruleset.registerRule(this, "Clock." + id + ".MaximumNumber");
-		Ruleset.registerRule(this, "Clock." + id + ".Direction");
-		Ruleset.registerRule(this, "Clock." + id + ".MinimumTime");
-		Ruleset.registerRule(this, "Clock." + id + ".MaximumTime");
-
 		reset();
-	}
-
-	public void applyRule(String rule, Object value) {
-		synchronized (coreLock) {
-			if (rule.equals("Clock." + id + ".Name"))
-				setName((String)value);
-			else if (rule.equals("Clock." + id + ".Direction"))
-				setCountDirectionDown((Boolean)value);
-			else if (rule.equals("Clock." + id + ".MinimumNumber"))
-				setMinimumNumber((Integer)value);
-			else if (rule.equals("Clock." + id + ".MaximumNumber"))
-				setMaximumNumber((Integer)value);
-			else if (rule.equals("Clock." + id + ".MinimumTime"))
-				setMinimumTime((Long)value);
-			else if (rule.equals("Clock." + id + ".MaximumTime"))
-				setMaximumTime((Long)value);
-		}
 	}
 
 	public String getProviderName() { return "Clock"; }
@@ -68,9 +43,27 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 		synchronized (coreLock) {
 			stop();
 
-			// Get default values from active ruleset
-			getScoreBoard()._getRuleset().apply(true, this);
-
+			// Get default values from current settings or use hardcoded values
+			Settings settings = getScoreBoardModel().getSettings();
+			setName(id);
+			setCountDirectionDown(settings.getBoolean("Rule." + id + ".Direction"));
+			if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION)) {
+				setMinimumNumber(0);
+			} else {
+				setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
+			}
+			if (id.equals(ID_PERIOD) || id.equals(ID_INTERMISSION)) {
+				setMaximumNumber(settings.getInt("Clock." + id + ".MaximumNumber"));
+			} else {
+				setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
+			}
+			setMinimumTime(DEFAULT_MINIMUM_TIME);
+			if (id.equals(ID_PERIOD) || id.equals(ID_JAM)) {
+				setMaximumTime(settings.getLong("Clock." + id + ".MaximumTime"));
+			} else {
+				setMaximumTime(DEFAULT_MAXIMUM_TIME);
+			}
+			
 			// We hardcode the assumption that numbers count up.
 			setNumber(getMinimumNumber());
 
@@ -384,8 +377,8 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public static final int DEFAULT_MINIMUM_NUMBER = 1;
 	public static final int DEFAULT_MAXIMUM_NUMBER = 999;
 	public static final long DEFAULT_MINIMUM_TIME = 0;
-	public static final long DEFAULT_MAXIMUM_TIME = 3600000;
-	public static final boolean DEFAULT_DIRECTION = false;
+	public static final long DEFAULT_MAXIMUM_TIME = 3600000; // 60 minutes
+	public static final boolean DEFAULT_DIRECTION = false;   // up
 
 	public static class DefaultClockSnapshotModel implements ClockSnapshotModel {
 		private DefaultClockSnapshotModel(ClockModel clock) {
