@@ -960,6 +960,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(pc.isTimeAtStart());
 		assertEquals(2, pc.getNumber());
 		assertFalse(jc.isRunning());
+		assertTrue(jc.isTimeAtStart());
 		assertEquals(0, jc.getNumber());
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());

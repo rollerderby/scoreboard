@@ -246,6 +246,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		if (settings.getBoolean("ScoreBoard." + Clock.ID_JAM + ".ResetNumberEachPeriod")) {
 			jc.setNumber(jc.getMinimumNumber());
 		}
+		jc.resetTime();
 		for (TeamModel t : getTeamModels()) {
 			t.resetTimeouts(false);
 		}		
