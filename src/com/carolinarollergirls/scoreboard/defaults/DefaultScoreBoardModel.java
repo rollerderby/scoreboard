@@ -698,7 +698,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (jc.isTimeAtEnd() && settings.getBoolean(SETTING_AUTO_END_JAM)) {
 				//clock has run down naturally
 				requestBatchStart();
-				setLabels(ACTION_NONE, ACTION_STOP_JAM, ACTION_TIMEOUT);
+				setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 				_endJam(true);
 				requestBatchEnd();
 			}
