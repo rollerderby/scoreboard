@@ -44,6 +44,7 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.TabTable>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; }
 	#TeamTime table.TabTable>tbody>tr:only-of-type>td { border-radius: 12px; }
 	#TeamTime table.TabTable>tbody>tr.Hidden>td { display: none; }
+	#TeamTime table.TabTable .ReplaceInfo { font-weight: bold; font-size: 150%; padding: 1px; }
 	
 	#TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
 	#TeamTime table.MetaControl { font-size: 65%; }
@@ -52,6 +53,7 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.JamControl>tbody>tr>td { width: 100%; }
 	#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
 	#TeamTime table.JamControl .Label { display: inline-block; min-width:50px; }
+	#TeamTime table.JamControl .Hidden { display: none; }
 
 	#TeamTime table.Team>tbody>tr>td { width: 50%; }
 	#TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; }
@@ -86,6 +88,8 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 
 	#TeamTime tr.Control:not(.Show) { display: none; }
+	
+	#TeamTime .Faded { opacity: 0.2; }
 /* End Team/Time Tab */
 
 /* Policies */

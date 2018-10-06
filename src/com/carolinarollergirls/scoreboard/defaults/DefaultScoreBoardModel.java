@@ -57,6 +57,13 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		stats.addScoreBoardListener(this);
 		frontendSettings = new DefaultFrontendSettingsModel(this);
 		frontendSettings.addScoreBoardListener(this);
+		createTeamModel(Team.ID_1);
+		createTeamModel(Team.ID_2);
+		createClockModel(Clock.ID_PERIOD);
+		createClockModel(Clock.ID_JAM);
+		createClockModel(Clock.ID_LINEUP);
+		createClockModel(Clock.ID_TIMEOUT);
+		createClockModel(Clock.ID_INTERMISSION);
 		reset();
 		addInPeriodListeners();
 		xmlScoreBoard = new XmlScoreBoard(this);
@@ -92,6 +99,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			setOfficialScore(false);
 			restartPcAfterTimeout = false;
 			snapshot = null;
+			replacePending = false;
 			
 			settings.reset();
 			stats.reset();
@@ -176,6 +184,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				createSnapshot(ACTION_START_JAM);
 				setLabels(ACTION_NONE, ACTION_STOP_JAM, ACTION_TIMEOUT);
 				_startJam();
+				finishReplace();
 			}
 		}
 	}
@@ -189,14 +198,17 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 				createSnapshot(ACTION_STOP_JAM);
 				setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 				_endJam(false);
+				finishReplace();
 			} else if (tc.isRunning()) {
 				createSnapshot(ACTION_STOP_TO);
 				setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 				_endTimeout(false);
+				finishReplace();
 			} else if (!lc.isRunning()) {
 				createSnapshot(ACTION_LINEUP);
 				setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 				_startLineup();
+				finishReplace();
 			}
 		}
 	}
@@ -209,6 +221,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			}
 			setLabels(ACTION_START_JAM, ACTION_STOP_TO, ACTION_RE_TIMEOUT);
 			_startTimeout();
+			finishReplace();
 		}
 	}
 	public void setTimeoutType(String owner, boolean review) {
@@ -439,15 +452,32 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		restartPcAfterTimeout = snapshot.restartPcAfterTo();
 		setLabels(snapshot.getStartLabel(), snapshot.getStopLabel(), snapshot.getTimeoutLabel());
 		setLabel(BUTTON_UNDO, ACTION_NONE);
+		setLabel(BUTTON_REPLACED, snapshot.getType());
 		snapshot = null;
 	}
-	public void clockUndo() {
+	protected void finishReplace() {
+		if (!replacePending) { return; }
+		requestBatchStart();
+		ScoreBoardClock.getInstance().start(true);
+		replacePending = false;
+		requestBatchEnd();
+	}
+	public void clockUndo(boolean replace) {
 		synchronized (coreLock) {
-			if (snapshot == null) { return; }
 			requestBatchStart();
-			ScoreBoardClock.getInstance().stop();
-			restoreSnapshot();
-			ScoreBoardClock.getInstance().start(true);
+			if (replacePending) {
+				createSnapshot(ACTION_NO_REPLACE);
+				finishReplace();
+			} else if (snapshot != null) {
+				ScoreBoardClock.getInstance().stop();
+				restoreSnapshot();
+				if (replace) {
+					replacePending = true;
+					setLabel(BUTTON_UNDO, ACTION_NO_REPLACE);
+				} else {
+					ScoreBoardClock.getInstance().start(true);
+				}
+			}
 			requestBatchEnd();
 		}
 	}
@@ -570,6 +600,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	protected HashMap<String,TeamModel> teams = new HashMap<String,TeamModel>();
 
 	protected ScoreBoardSnapshot snapshot = null;
+	protected boolean replacePending = false;
 	
 	protected static Object coreLock = new Object();
 
@@ -684,8 +715,10 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 	public static final String BUTTON_STOP = "ScoreBoard.Button.StopLabel";
 	public static final String BUTTON_TIMEOUT = "ScoreBoard.Button.TimeoutLabel";
 	public static final String BUTTON_UNDO = "ScoreBoard.Button.UndoLabel";
+	public static final String BUTTON_REPLACED = "ScoreBoard.Button.ReplacedLabel";
 	
 	public static final String ACTION_NONE = "---";
+	public static final String ACTION_NO_REPLACE = "No Action";
 	public static final String ACTION_START_JAM = "Start Jam";
 	public static final String ACTION_STOP_JAM = "Stop Jam";
 	public static final String ACTION_STOP_TO = "End Timeout";

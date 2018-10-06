@@ -49,6 +49,7 @@ function setOperatorSettings(op) {
 		prefix = "ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator_Default.";
 	}
 	setClockControls($sb(prefix+"StartStopButtons)").$sbIsTrue());
+	setReplaceButton($sb(prefix+"ReplaceButton)").$sbIsTrue());
 }
 
 // FIXME - this is done after the team/time panel is loaded,
@@ -144,6 +145,13 @@ function setClockControls(value) {
 	$("#TeamTime").find("tr.Control").toggleClass("Show", value);
 }
 
+function setReplaceButton(value) {
+	$("#EnableReplaceButton").prop("checked", value);
+	$("label.EnableReplaceButton").toggleClass("ui-state-active", value);
+	$("#ClockUndo").toggleClass("Hidden KeyInactive", value);
+	$("#ClockReplace").toggleClass("Hidden KeyInactive", !value);
+}
+
 function createMetaControlTable() {
 	var table = $("<table><tr><td/></tr><tr><td/></tr><tr><td/></tr></table>")
 		.addClass("MetaControl");
@@ -168,6 +176,20 @@ function createMetaControlTable() {
 		});
 	$("<a>").text("Key Control Edit mode enabled.	 Buttons do not operate in this mode.	 Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
 		.appendTo(helpTd);
+
+	$("<label>").addClass("EnableReplaceButton").text("Enable Replace on Undo").attr("for", "EnableReplaceButton")
+		.appendTo(buttonsTd);
+	$("<input type='checkbox'>").attr("id", "EnableReplaceButton")
+		.appendTo(buttonsTd)
+		.button()
+		.click(function() {
+			var value = this.checked;
+			setReplaceButton(value);
+			var operator = $("#operatorId").text();
+			if (operator) {
+				$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+operator+".ReplaceButton)").$sbSet(value);
+			}
+		});
 
 	$("<label>").addClass("ShowClockControlsButton").text("Show Start/Stop Buttons").attr("for", "ShowClockControlsButton")
 		.appendTo(buttonsTd);
@@ -433,8 +455,15 @@ function createOvertimeDialog() {
 
 function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
+	var replaceInfoTr = createRowTable(1).addClass("ReplaceInfo Hidden").appendTo(table.find("td"));
 	var controlsTr = createRowTable(4,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
 
+	var replaceInfoText = $("<span>").html("Replace &quot;<span id=\"replacedLabel\"></span>&quot; with").appendTo(replaceInfoTr);
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.ReplacedLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		$("#replacedLabel").html(val);
+	});
+	
+	
 	var jamStartButton = $sb("ScoreBoard.StartJam").$sbControl("<button>")
 		.html("<span class=\"Label\">Start Jam</span>").val("true")
 		.attr("id", "StartJam").addClass("KeyControl").button();
@@ -466,7 +495,22 @@ function createJamControlTable() {
 	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
 		undoButton.find("span.Label").html(val);
 		});
-	undoButton.appendTo(controlsTr.children("td:eq(3)"));
+	var replaceButton = $sb("ScoreBoard.ClockReplace").$sbControl("<button>")
+		.html("<span class=\"Label\">Undo</span>").val("true")
+		.attr("id", "ClockReplace").addClass("KeyControl Hidden KeyInactive").button();
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
+		replaceButton.find("span.Label").html(val);
+		if (!replaceButton.hasClass("Hidden")) {
+			var rep = (val == "No Action");
+			$("#TeamTime").find(".TabTable:not(.JamControl)").toggleClass("Faded", rep);
+			$("#TeamTime").find(".ReplaceInfo").toggleClass("Hidden", !rep);
+		}});
+	undoButton
+		.bind("mouseenter mouseleave", function(event) {replaceButton.toggleClass("hover", (event.type == "mouseenter"));})
+		.appendTo(controlsTr.children("td:eq(3)"));
+	replaceButton
+		.bind("mouseenter mouseleave", function(event) {undoButton.toggleClass("hover", (event.type == "mouseenter"));})
+		.appendTo(controlsTr.children("td:eq(3)"));
 	
 	return table;
 }
