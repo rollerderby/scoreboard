@@ -26,6 +26,7 @@ import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
+import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.FrontendSettings;
@@ -65,13 +66,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 		Ruleset.registerRule(settings, SETTING_STOP_PC_ON_OTO);
 		Ruleset.registerRule(settings, SETTING_STOP_PC_ON_TTO);
 		Ruleset.registerRule(settings, SETTING_STOP_PC_ON_OR);
-		Ruleset.registerRule(settings, SETTING_STOP_PC_AFTER);
-		Ruleset.registerRule(settings, SETTING_INTERMISSION_DURATION + "1");
-		Ruleset.registerRule(settings, SETTING_INTERMISSION_DURATION + "2");
-		Ruleset.registerRule(settings, SETTING_INTERMISSION_DURATION + "3");
-		Ruleset.registerRule(settings, SETTING_INTERMISSION_DURATION + "4");
-		Ruleset.registerRule(settings, SETTING_INTERMISSION_DURATION + "5");
-		Ruleset.registerRule(settings, SETTING_INTERMISSION_TYPE_SEQUENCE);
+		Ruleset.registerRule(settings, SETTING_STOP_PC_AFTER_TO_DURATION);
+		Ruleset.registerRule(settings, SETTING_INTERMISSION_DURATIONS);
 		Ruleset.registerRule(settings, SETTING_INTERMISSION_DIRECTION);
 		Ruleset.registerRule(settings, SETTING_AUTO_START);
 		Ruleset.registerRule(settings, SETTING_AUTO_START_BUFFER);
@@ -435,15 +431,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
 		requestBatchStart();
 		ic.setNumber(pc.getNumber());
-		long duration = settings.getLong(SETTING_INTERMISSION_DURATION + "1");
-		if (!settings.get(SETTING_INTERMISSION_TYPE_SEQUENCE).equals("")) {
-			String[] sequence = settings.get(SETTING_INTERMISSION_TYPE_SEQUENCE).split(",");
-			if (sequence.length >= ic.getNumber()) {
-				int index = Integer.parseInt(sequence[ic.getNumber()-1]);
-				if (index > 0 && index < 6) {
-					duration = settings.getLong(SETTING_INTERMISSION_DURATION + index);
-				}
-			}
+		long duration = 0;
+		String[] sequence = settings.get(SETTING_INTERMISSION_DURATIONS).split(",");
+		int number = Math.min(ic.getNumber(), sequence.length);
+		if (number > 0) {
+			duration = ClockConversion.fromHumanReadable(sequence[number-1]);
 		}
 		ic.setMaximumTime(duration);
 		ic.resetTime();
@@ -703,7 +695,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 					(long)event.getValue() == settings.getLong(SETTING_TTO_DURATION)) {
 				stopJamTO();
 			}
-			if ((long)event.getValue() == settings.getLong(SETTING_STOP_PC_AFTER) &&
+			if ((long)event.getValue() == settings.getLong(SETTING_STOP_PC_AFTER_TO_DURATION) &&
 					getClock(Clock.ID_PERIOD).isRunning()) {
 				getClockModel(Clock.ID_PERIOD).stop();
 			}

@@ -90,9 +90,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public static final String SETTING_STOP_PC_ON_OTO = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockOnOTO";
 	public static final String SETTING_STOP_PC_ON_TTO = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockOnTTO";
 	public static final String SETTING_STOP_PC_ON_OR = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockOnOR";
-	public static final String SETTING_STOP_PC_AFTER = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockAfter";
-	public static final String SETTING_INTERMISSION_DURATION = "Rule." + Clock.ID_INTERMISSION+ ".Duration";
-	public static final String SETTING_INTERMISSION_TYPE_SEQUENCE = "Rule." + Clock.ID_INTERMISSION+ ".TypeSequence";
+	public static final String SETTING_STOP_PC_AFTER_TO_DURATION = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockAfterTODuration";
+	public static final String SETTING_INTERMISSION_DURATIONS = "Rule." + Clock.ID_INTERMISSION+ ".Durations";
 	public static final String SETTING_INTERMISSION_DIRECTION = "Rule." + Clock.ID_INTERMISSION + ".Direction";
 	public static final String SETTING_AUTO_START = "Rule.ClockControl.AutoStart";
 	public static final String SETTING_AUTO_START_JAM = "Rule.ClockControl.AutoStartType";

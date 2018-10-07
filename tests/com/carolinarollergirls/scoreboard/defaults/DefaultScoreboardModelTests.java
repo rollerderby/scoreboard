@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
@@ -521,7 +522,8 @@ public class DefaultScoreboardModelTests {
 		assertFalse(tc.isRunning());
 		assertTrue(ic.isRunning());
 		assertEquals(2, ic.getNumber());
-		assertEquals(sbm.getSettings().getLong(ScoreBoard.SETTING_INTERMISSION_DURATION + "2"), ic.getMaximumTime());
+		long dur = ClockConversion.fromHumanReadable(sbm.getSettings().get(ScoreBoard.SETTING_INTERMISSION_DURATIONS).split(",")[1]);
+		assertEquals(dur, ic.getMaximumTime());
 		assertTrue(ic.isTimeAtStart());
 		assertFalse(sbm.isInPeriod());
 		assertFalse(sbm.isOfficialScore());
@@ -870,7 +872,7 @@ public class DefaultScoreboardModelTests {
 	
 	@Test
 	public void testPeriodClockEnd_duringLineup() {
-		sbm.getSettingsModel().set(ScoreBoard.SETTING_INTERMISSION_TYPE_SEQUENCE, "1,3,1,2");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
 		
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());
@@ -893,7 +895,8 @@ public class DefaultScoreboardModelTests {
 		assertTrue(ic.isRunning());
 		assertTrue(ic.isTimeAtStart());
 		assertEquals(2, ic.getNumber());
-		assertEquals(sbm.getSettings().getLong(ScoreBoard.SETTING_INTERMISSION_DURATION + "3"), ic.getTimeRemaining());
+		long dur = ClockConversion.fromHumanReadable(sbm.getSettings().get(ScoreBoard.SETTING_INTERMISSION_DURATIONS).split(",")[1]);
+		assertEquals(dur, ic.getTimeRemaining());
 	}
 	
 	@Test
@@ -1110,7 +1113,7 @@ public class DefaultScoreboardModelTests {
 		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_OTO, "false");
 		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_TTO, "true");
 		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_OR, "true");
-		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_AFTER, "120000");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "120000");
 		
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(1200000);

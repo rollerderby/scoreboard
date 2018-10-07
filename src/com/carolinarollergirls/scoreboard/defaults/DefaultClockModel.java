@@ -377,7 +377,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
 	public static final int DEFAULT_MINIMUM_NUMBER = 1;
 	public static final int DEFAULT_MAXIMUM_NUMBER = 999;
 	public static final long DEFAULT_MINIMUM_TIME = 0;
-	public static final long DEFAULT_MAXIMUM_TIME = 3600000; // 60 minutes
+	public static final long DEFAULT_MAXIMUM_TIME = 24 * 60 * 60 * 1000; // 1 day for long time to derby
 	public static final boolean DEFAULT_DIRECTION = false;   // up
 
 	public static class DefaultClockSnapshotModel implements ClockSnapshotModel {

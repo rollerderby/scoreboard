@@ -74,14 +74,9 @@ public class Ruleset {
 			newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_OTO, "Stop the period clock on official timeouts?", false, "True", "False"));
 			newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_TTO, "Stop the period clock on team timeouts?", false, "True", "False"));
 			newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_OR, "Stop the period clock on official reviews?", false, "True", "False"));
-			newRule(   new TimeRule(false, ScoreBoard.SETTING_STOP_PC_AFTER, "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00"));
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00"));
 			
-			newRule( new StringRule(false, ScoreBoard.SETTING_INTERMISSION_TYPE_SEQUENCE, "List of the types of intermissions as they appear in the game, separated by commas.", "1,2"));
-			newRule(   new TimeRule(false, ScoreBoard.SETTING_INTERMISSION_DURATION + "1", "Duration of the first type of intermission", "15:00"));
-			newRule(   new TimeRule(false, ScoreBoard.SETTING_INTERMISSION_DURATION + "2", "Duration of the second type of intermission", "60:00"));
-			newRule(   new TimeRule(false, ScoreBoard.SETTING_INTERMISSION_DURATION + "3", "Duration of the third type of intermission", "5:00"));
-			newRule(   new TimeRule(false, ScoreBoard.SETTING_INTERMISSION_DURATION + "4", "Duration of the fourth type of intermission", "15:00"));
-			newRule(   new TimeRule(false, ScoreBoard.SETTING_INTERMISSION_DURATION + "5", "Duration of the fifth type of intermission", "15:00"));
+			newRule( new StringRule(false, ScoreBoard.SETTING_INTERMISSION_DURATIONS, "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00"));
 			newRule(new BooleanRule(false, ScoreBoard.SETTING_INTERMISSION_DIRECTION, "Which way should the intermission clock count?", true, "Count Down", "Count Up"));
 			
 			newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_START,   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
