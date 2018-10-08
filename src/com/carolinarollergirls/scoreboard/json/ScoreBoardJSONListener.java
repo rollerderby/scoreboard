@@ -97,7 +97,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 					String prefix = null;
 					if (s.getParent() instanceof ScoreBoard)
 						prefix = "ScoreBoard";
-					if(prop.equals(PenaltyCodesManager.PenaltiesFileSetting)) {
+					if(prop.equals(PenaltyCodesManager.SETTING_PENALTIES_FILE)) {
 						update(prefix, "Setting(" + prop + ")", v);
 						processPenaltyCodes(s);
 					}
@@ -326,7 +326,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener
 	
 	private void processPenaltyCodes(Settings s) {
 		updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
-		String file = s.get(PenaltyCodesManager.PenaltiesFileSetting);
+		String file = s.get(PenaltyCodesManager.SETTING_PENALTIES_FILE);
 		if(file != null && !file.isEmpty()) {
 			PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
 			for(PenaltyCode p : penalties.getPenalties()) {

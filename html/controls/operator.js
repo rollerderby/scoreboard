@@ -264,6 +264,12 @@ function createMetaControlTable() {
 	return table;
 }
 
+function hideEndOfPeriodControls() {
+	$("#PeriodEndControlsCheckbox").removeAttr("checked");
+	$("#PeriodEndControlsCheckbox").button("refresh");
+	$("tr.PeriodEnd").addClass("Hidden");
+}
+
 function addDays(date, days) {
 	var result = new Date(date);
 	result.setDate(result.getDate() + days);
@@ -302,6 +308,7 @@ function createGameControlDialog() {
 		console.log(game);
 		Game.Adhoc(game, function() {
 			dialog.dialog("close");
+			hideEndOfPeriodControls();
 		});
 	};
 

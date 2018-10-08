@@ -54,6 +54,11 @@ public interface Team extends ScoreBoardEventProvider
 	public static final String LEAD_NO_LEAD = "NoLead";
 	public static final String LEAD_LOST_LEAD = "LostLead";
 
+	public static final String SETTING_NUMBER_TIMEOUTS = "Rule.Team.Timeouts";
+	public static final String SETTING_TIMEOUTS_PER_PERIOD = "Rule.Team.TimeoutsPer";
+	public static final String SETTING_NUMBER_REVIEWS = "Rule.Team.OfficialReviews";
+	public static final String SETTING_REVIEWS_PER_PERIOD = "Rule.Team.OfficialReviewsPer";
+	
 	public static final String EVENT_NAME = "Name";
 	public static final String EVENT_LOGO = "Logo";
 	public static final String EVENT_SCORE = "Score";

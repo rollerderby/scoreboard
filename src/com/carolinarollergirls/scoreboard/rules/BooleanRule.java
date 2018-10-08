@@ -4,8 +4,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class BooleanRule extends Rule {
-	public BooleanRule(boolean onResetOnly, String group, String subgroup, String name, String description, boolean defaultValue, String trueValue, String falseValue) {
-		super(onResetOnly, "Boolean", group, subgroup, name, description, new Boolean(defaultValue));
+	public BooleanRule(boolean onResetOnly, String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
+		super(onResetOnly, "Boolean", fullname, description, new Boolean(defaultValue));
 
 		this.trueValue = trueValue;
 		this.falseValue = falseValue;

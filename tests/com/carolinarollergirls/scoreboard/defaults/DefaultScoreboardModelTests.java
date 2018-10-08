@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
@@ -220,7 +221,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.startOvertime();
 
-		assertEquals(DefaultScoreBoardModel.ACTION_OVERTIME, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_OVERTIME, sbm.snapshot.getType());
 		assertTrue(sbm.isInOvertime());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
@@ -246,7 +247,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.startOvertime();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_OVERTIME, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_OVERTIME, sbm.snapshot.getType());
 		assertTrue(sbm.isInOvertime());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
@@ -299,7 +300,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.startJam();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_START_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_START_JAM, sbm.snapshot.getType());
 		assertTrue(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertTrue(jc.isRunning());
@@ -328,7 +329,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.startJam();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_START_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_START_JAM, sbm.snapshot.getType());
 		assertTrue(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertTrue(jc.isRunning());
@@ -357,7 +358,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.startJam();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_START_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_START_JAM, sbm.snapshot.getType());
 		assertTrue(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertTrue(jc.isRunning());
@@ -382,7 +383,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.startJam();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_START_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_START_JAM, sbm.snapshot.getType());
 		assertTrue(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertTrue(jc.isRunning());
@@ -412,7 +413,7 @@ public class DefaultScoreboardModelTests {
 
 		sbm.startJam();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_START_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_START_JAM, sbm.snapshot.getType());
 		assertTrue(pc.isRunning());
 		assertEquals(2, pc.getNumber());
 		assertTrue(jc.isRunning());
@@ -445,7 +446,7 @@ public class DefaultScoreboardModelTests {
 		sbm.startJam();
 		advance(1000);
 
-		assertEquals(DefaultScoreBoardModel.ACTION_START_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_START_JAM, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertTrue(jc.isRunning());
@@ -484,7 +485,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.stopJamTO();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_STOP_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_STOP_JAM, sbm.snapshot.getType());
 		assertTrue(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertTrue(lc.isRunning());
@@ -513,7 +514,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.stopJamTO();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_STOP_JAM, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_STOP_JAM, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertTrue(pc.isTimeAtEnd());
 		assertFalse(jc.isRunning());
@@ -521,7 +522,8 @@ public class DefaultScoreboardModelTests {
 		assertFalse(tc.isRunning());
 		assertTrue(ic.isRunning());
 		assertEquals(2, ic.getNumber());
-		assertEquals(sbm.getSettings().getLong("Clock." + Clock.ID_INTERMISSION + ".Time"), ic.getMaximumTime());
+		long dur = ClockConversion.fromHumanReadable(sbm.getSettings().get(ScoreBoard.SETTING_INTERMISSION_DURATIONS).split(",")[1]);
+		assertEquals(dur, ic.getMaximumTime());
 		assertTrue(ic.isTimeAtStart());
 		assertFalse(sbm.isInPeriod());
 		assertFalse(sbm.isOfficialScore());
@@ -542,7 +544,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.stopJamTO();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_STOP_TO, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_STOP_TO, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertTrue(lc.isRunning());
@@ -567,7 +569,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.stopJamTO();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_STOP_TO, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_STOP_TO, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -619,7 +621,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.stopJamTO();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_LINEUP, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_LINEUP, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertEquals(1, pc.getNumber());
 		assertFalse(jc.isRunning());
@@ -648,7 +650,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.stopJamTO();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_LINEUP, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_LINEUP, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertEquals(2, pc.getNumber());
 		assertTrue(pc.isTimeAtStart());
@@ -685,7 +687,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.timeout();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_TIMEOUT, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -707,7 +709,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.timeout();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_TIMEOUT, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -726,7 +728,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.timeout();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_TIMEOUT, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -745,7 +747,7 @@ public class DefaultScoreboardModelTests {
 		
 		sbm.timeout();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_TIMEOUT, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -763,11 +765,11 @@ public class DefaultScoreboardModelTests {
 		tc.setTime(24000);
 		tc.setNumber(7);
 		assertFalse(ic.isRunning());
-		sbm.setTimeoutOwner(DefaultScoreBoardModel.TIMEOUT_OWNER_NONE);
+		sbm.setTimeoutOwner(ScoreBoard.TIMEOUT_OWNER_NONE);
 		
 		sbm.timeout();
 		
-		assertEquals(DefaultScoreBoardModel.ACTION_RE_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_RE_TIMEOUT, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -775,7 +777,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(tc.isTimeAtStart());
 		assertEquals(8, tc.getNumber());
 		assertFalse(ic.isRunning());
-		assertEquals(DefaultScoreBoardModel.TIMEOUT_OWNER_NONE, sbm.getTimeoutOwner());
+		assertEquals(ScoreBoard.TIMEOUT_OWNER_NONE, sbm.getTimeoutOwner());
 		
 		sbm.timeout();
 		
@@ -789,7 +791,7 @@ public class DefaultScoreboardModelTests {
 		sbm.setTimeoutType("2", false);
 		sbm.getTeamModel("2").setTimeouts(2);
 
-		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_TIMEOUT, sbm.snapshot.getType());
 		assertFalse(pc.isRunning());
 		assertFalse(jc.isRunning());
 		assertFalse(lc.isRunning());
@@ -937,6 +939,8 @@ public class DefaultScoreboardModelTests {
 	
 	@Test
 	public void testPeriodClockEnd_duringLineup() {
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
+		
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(2000);
@@ -958,6 +962,33 @@ public class DefaultScoreboardModelTests {
 		assertTrue(ic.isRunning());
 		assertTrue(ic.isTimeAtStart());
 		assertEquals(2, ic.getNumber());
+		long dur = ClockConversion.fromHumanReadable(sbm.getSettings().get(ScoreBoard.SETTING_INTERMISSION_DURATIONS).split(",")[1]);
+		assertEquals(dur, ic.getTimeRemaining());
+	}
+	
+	@Test
+	public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "false");
+		
+		pc.start();
+		assertTrue(pc.isCountDirectionDown());
+		pc.setTime(2000);
+		pc.setNumber(1);
+		assertFalse(jc.isRunning());
+		lc.start();
+		assertTrue(lc.isTimeAtStart());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		advance(2000);
+		
+		assertFalse(pc.isRunning());
+		assertEquals(1, pc.getNumber());
+		assertFalse(jc.isRunning());
+		assertTrue(lc.isRunning());
+		assertEquals(2000, lc.getTimeElapsed());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
 	}
 	
 	@Test
@@ -983,9 +1014,9 @@ public class DefaultScoreboardModelTests {
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
 	}
-	
+
 	@Test
-	public void testJamClockEnd() {
+	public void testJamClockEnd_pcRemaining() {
 		pc.start();
 		jc.start();
 		assertTrue(jc.isCountDirectionDown());
@@ -1001,6 +1032,27 @@ public class DefaultScoreboardModelTests {
 		assertFalse(jc.isRunning());
 		assertTrue(lc.isRunning());
 		assertTrue(lc.isTimeAtStart());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+	}
+
+	@Test
+	public void testJamClockEnd_autoEndDisabled() {
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
+		
+		pc.start();
+		jc.start();
+		assertTrue(jc.isCountDirectionDown());
+		jc.setTime(3000);
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		advance(3000);
+		
+		assertTrue(pc.isRunning());
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
 	}
@@ -1027,12 +1079,36 @@ public class DefaultScoreboardModelTests {
 		assertTrue(pc.isTimeAtStart());
 		assertEquals(2, pc.getNumber());
 		assertFalse(jc.isRunning());
+		assertTrue(jc.isTimeAtStart());
 		assertEquals(0, jc.getNumber());
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
 		assertTrue(ic.isTimeAtEnd());
 		assertEquals(1, ic.getNumber());
+	}
+
+	@Test
+	public void testIntermissionClockEnd_notLastPeriodContinueCountingJams() {
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_JAM_NUMBER_PER_PERIOD, "false");
+		
+		assertFalse(pc.isRunning());
+		assertTrue(pc.isCountDirectionDown());
+		pc.setTime(0);
+		pc.setNumber(1);
+		assertFalse(jc.isRunning());
+		jc.setTime(4000);
+		jc.setNumber(20);
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		ic.start();
+		assertTrue(ic.isCountDirectionDown());
+		ic.setNumber(1);
+		ic.setTime(3000);
+		
+		advance(3000);
+		
+		assertEquals(20, jc.getNumber());
 	}
 
 	@Test
@@ -1099,6 +1175,116 @@ public class DefaultScoreboardModelTests {
 		assertEquals(22000, pc.getTimeRemaining());
 	}
 
+	@Test
+	public void testTimeoutsThatDontAlwaysStopPc() {
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_TO, "false");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_OTO, "false");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_TTO, "true");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_OR, "true");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "120000");
+		
+		assertTrue(pc.isCountDirectionDown());
+		pc.setTime(1200000);
+		pc.start();
+		assertFalse(jc.isRunning());
+		lc.start();
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		sbm.timeout();
+		
+		assertTrue(pc.isRunning());
+		assertEquals(600000, pc.getTimeElapsed());
+		assertTrue(tc.isRunning());
+		assertEquals(0, tc.getTimeElapsed());
+		
+		advance(2000);
+		assertEquals(602000, pc.getTimeElapsed());
+		
+		sbm.setTimeoutType("1", false);
+		
+		assertFalse(pc.isRunning());
+		assertEquals(600000, pc.getTimeElapsed());
+		assertTrue(tc.isRunning());
+		
+		advance(3000);
+		assertEquals(600000, pc.getTimeElapsed());
+		
+		sbm.setTimeoutType("O", false);
+		
+		assertTrue(pc.isRunning());
+		assertEquals(605000, pc.getTimeElapsed());
+		assertTrue(tc.isRunning());
+		
+		advance(115000);
+		
+		assertFalse(pc.isRunning());
+		assertEquals(719800, pc.getTimeElapsed()); //tc ticks first, stopping pc, so pc's tick is skipped 
+		assertTrue(tc.isRunning());
+	}
+	
+	@Test
+	public void testAutoStartJam() {
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START, "true");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START_JAM, "true");
+		
+		pc.start();
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isCountDirectionDown());
+		assertTrue(32000 <= lc.getMaximumTime());
+		lc.setTime(0);
+		lc.start();
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		advance(31000);
+		assertFalse(jc.isRunning());
+		advance(1000);
+		
+		assertTrue(pc.isRunning());
+		assertTrue(jc.isRunning());
+		assertEquals(2000, jc.getTimeElapsed());
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+	}
+	
+	@Test
+	public void testAutoStartAndEndTimeout() {
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START, "true");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START_JAM, "false");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_END_TTO, "true");
+		sbm.getSettingsModel().set(ScoreBoard.SETTING_TTO_DURATION, "25000");
+		
+		pc.start();
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isCountDirectionDown());
+		lc.setTime(0);
+		lc.start();
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		advance(30000);
+		
+		assertFalse(pc.isRunning());
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isRunning());
+		assertTrue(tc.isRunning());
+		assertTrue(tc.isTimeAtStart());
+		assertFalse(ic.isRunning());
+		
+		sbm.setTimeoutType("2", true);
+		
+		advance(25000);
+		
+		assertFalse(pc.isRunning());
+		assertFalse(jc.isRunning());
+		assertTrue(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+	}
+	
 	@Test
 	public void testResetDoesntAffectFrontendSettings() {
 		sbm.getFrontendSettingsModel().set("foo", "bar");

@@ -31,5 +31,5 @@ public class PenaltyCodesManager {
 		}
 	}
 	
-	public static final String PenaltiesFileSetting = "ScoreBoard.PenaltyDefinitionFile";
+	public static final String SETTING_PENALTIES_FILE = "Rule.Penalties.DefinitionFile";
 }

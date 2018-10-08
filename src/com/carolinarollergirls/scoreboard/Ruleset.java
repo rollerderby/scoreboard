@@ -16,12 +16,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONTokener;
 
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.rules.BooleanRule;
 import com.carolinarollergirls.scoreboard.rules.IntegerRule;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.StringRule;
 import com.carolinarollergirls.scoreboard.rules.TimeRule;
-import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.view.Skater.Penalty;
+import com.carolinarollergirls.scoreboard.view.Team;
 
 public class Ruleset {
 	public interface RulesetReceiver {
@@ -52,58 +55,43 @@ public class Ruleset {
 				return base;
 			}
 
-			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_JAM, "ResetNumberEachPeriod",   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
+			newRule(new IntegerRule(false, ScoreBoard.SETTING_NUMBER_PERIODS, "Number of periods", 2));
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_PERIOD_DURATION, "Duration of a period", "30:00"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_PERIOD_DIRECTION, "Which way should the period clock count?", true, "Count Down", "Count Up"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "When can a period end?", true, "Anytime outside a jam", "Only on jam end"));
 
-			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStart",   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
-			newRule(   new TimeRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartBuffer",   "How long to wait after end of lineup before auto start is triggered.", "0:02"));
-			newRule(new BooleanRule(false, "ScoreBoard", Clock.ID_LINEUP, "AutoStartType",   "What to start after lineup is up", false, "Jam", "Timeout"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_JAM_NUMBER_PER_PERIOD,   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_JAM_DURATION, "Maximum duration of a jam", "2:00"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_JAM_DIRECTION, "Which way should the jam clock count?", true, "Count Down", "Count Up"));
+
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_LINEUP_DURATION, "Duration of lineup", "0:30"));
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_OVERTIME_LINEUP_DURATION, "Duration of lineup before an overtime jam", "1:00"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_LINEUP_DIRECTION, "Which way should the lineup clock count?", false, "Count Down", "Count Up"));
 			
-			newRule( new StringRule(false, "ScoreBoard", null, "PenaltyDefinitionFile", "", "/config/penalties/wftda2018.json"));
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_TTO_DURATION, "Duration of a team timeout", "1:00"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_TIMEOUT_DIRECTION, "Which way should the timeout clock count?", false, "Count Down", "Count Up"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_TO, "Stop the period clock on every timeout? If false, the options below control the behaviour per type of timeout.", true, "True", "False"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_OTO, "Stop the period clock on official timeouts?", false, "True", "False"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_TTO, "Stop the period clock on team timeouts?", false, "True", "False"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_OR, "Stop the period clock on official reviews?", false, "True", "False"));
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00"));
+			
+			newRule( new StringRule(false, ScoreBoard.SETTING_INTERMISSION_DURATIONS, "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_INTERMISSION_DIRECTION, "Which way should the intermission clock count?", true, "Count Down", "Count Up"));
+			
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_START,   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
+			newRule(   new TimeRule(false, ScoreBoard.SETTING_AUTO_START_BUFFER,   "How long to wait after end of lineup before auto start is triggered.", "0:02"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_START_JAM,   "What to start after lineup is up", false, "Jam", "Timeout"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_END_JAM,   "End a jam, when the jam clock has run down", true, "Enabled", "Disabled"));
+			newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_END_TTO,   "End a team timeout, after it's defined duration has elapsed", false, "Enabled", "Disabled"));
 
-			newRule( new StringRule(false, "Clock", Clock.ID_PERIOD,       "Name",          "", Clock.ID_PERIOD));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MinimumNumber", "", 1));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_PERIOD,       "MaximumNumber", "Number of periods", 2));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_PERIOD,       "Direction",     "Which way should this clock count?", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_PERIOD,       "MaximumTime",   "Duration of a period", "30:00"));
-
-			newRule( new StringRule(false, "Clock", Clock.ID_JAM,          "Name",          "", Clock.ID_JAM));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MinimumNumber", "", 0));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_JAM,          "MaximumNumber", "", 999));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_JAM,          "Direction",     "Which way should this clock count?", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_JAM,          "MaximumTime",   "Maximum duration of a Jam", "2:00"));
-
-			newRule( new StringRule(false, "Clock", Clock.ID_LINEUP,       "Name",          "", Clock.ID_LINEUP));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MinimumNumber", "", 1));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_LINEUP,       "MaximumNumber", "", 999));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_LINEUP,       "Direction",     "Which way should this clock count?", false, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "MaximumTime",   "Must be length of lineup if counting down (will be automatically adjusted for overtime, if necessary). Must be larger than lineup time + buffer time if auto start is used", "60:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "Time",          "Duration of Lineup before a regular jam", "00:30"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_LINEUP,       "OvertimeTime",  "Duration of Lineup before an overtime jam", "01:00"));
-
-			newRule( new StringRule(false, "Clock", Clock.ID_TIMEOUT,      "Name",          "", Clock.ID_TIMEOUT));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumNumber", "", 1));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumNumber", "", 999));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_TIMEOUT,      "Direction",     "Which way should this clock count?", false, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_TIMEOUT,      "MaximumTime",   "", "60:00"));
-
-			newRule( new StringRule(false, "Clock", Clock.ID_INTERMISSION, "Name",          "", Clock.ID_INTERMISSION));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumNumber", "", 0));
-			newRule(new IntegerRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumNumber", "", 2));
-			newRule(new BooleanRule(false, "Clock", Clock.ID_INTERMISSION, "Direction",     "Which way should this clock count?", true, "Count Down", "Count Up"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MinimumTime",   "", "0:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "MaximumTime",   "", "60:00"));
-			newRule(   new TimeRule(false, "Clock", Clock.ID_INTERMISSION, "Time",          "Duration of Intermissions", "15:00"));
-
-			newRule(new IntegerRule(false, "Team", null, "Timeouts", "How many timeouts each team is granted per game or period", 3));
-			newRule(new BooleanRule(false, "Team", null, "TimeoutsPer", "Are timeouts granted per period or per game?", false, "Period", "Game"));
-			newRule(new IntegerRule(false, "Team", null, "OfficialReviews", "How many official reviews each team is granted per game or period", 1));
-			newRule(new BooleanRule(false, "Team", null, "OfficialReviewsPer", "Are official reviews granted per period or per game?", true, "Period", "Game"));
-			newRule( new StringRule( true, "Team", "1", "Name", "Team name to display on scoreboard reset", "Team 1"));
-			newRule( new StringRule( true, "Team", "2", "Name", "Team name to display on scoreboard reset", "Team 2"));
+			newRule(new IntegerRule(false, Team.SETTING_NUMBER_TIMEOUTS, "How many timeouts each team is granted per game or period", 3));
+			newRule(new BooleanRule(false, Team.SETTING_TIMEOUTS_PER_PERIOD, "Are timeouts granted per period or per game?", false, "Period", "Game"));
+			newRule(new IntegerRule(false, Team.SETTING_NUMBER_REVIEWS, "How many official reviews each team is granted per game or period", 1));
+			newRule(new BooleanRule(false, Team.SETTING_REVIEWS_PER_PERIOD, "Are official reviews granted per period or per game?", true, "Period", "Game"));
+			
+			newRule( new StringRule(false, PenaltyCodesManager.SETTING_PENALTIES_FILE, "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json"));
+			newRule(new IntegerRule(false, Penalty.SETTING_FO_LIMIT, "After how many penalties a skater has fouled out of the game. Note that the software currently does not suppert more than 9 penalties per skater.", 7));
 
 			base = new Ruleset();
 			base.name = "WFTDA Sanctioned";

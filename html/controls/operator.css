@@ -92,15 +92,6 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime .Faded { opacity: 0.2; }
 /* End Team/Time Tab */
 
-/* Policies */
-	#Policies tr.ExpandCollapseAll>td { background: #eee; border-radius: 12px; text-align: center; }
-	#Policies tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; text-align: center; }
-	#Policies tr.Name>td.Hide { border-radius: 12px; }
-	#Policies tr.Content>td { background: #eee; }
-	#Policies tr.Content>td.Description { border-radius: 0px 0px 0px 12px; width: 60%; text-align: left; }
-	#Policies tr.Content>td.Controls { border-radius: 0px 0px 12px 0px; width: 40%; text-align: center; }
-/* End Policies */
-
 /* ScoreBoard View */
 	#ScoreBoardView.UsePreview>tbody>tr.View { display: none; }
 	#ScoreBoardView:not(.UsePreview)>tbody>tr.Preview { display: none; }

@@ -53,7 +53,7 @@ function loadDefinitions() {
 					.addClass("section folded")
 					.attr("group", def.group)
 				if (def.subgroup != null) {
-					name = name + " - " + def.subgroup;
+					name = def.subgroup;
 					section.attr("subgroup", def.subgroup);
 				}
 
