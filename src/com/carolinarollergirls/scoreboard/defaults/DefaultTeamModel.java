@@ -17,7 +17,6 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
@@ -31,7 +30,7 @@ import com.carolinarollergirls.scoreboard.view.Skater;
 import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.view.Team;
 
-public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel, Ruleset.RulesetReceiver
+public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements TeamModel
 {
 	public DefaultTeamModel(ScoreBoardModel sbm, String i) {
 		Iterator<String> posIds = Position.FLOOR_POSITIONS.iterator();
@@ -45,29 +44,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		scoreBoardModel = sbm;
 		id = i;
 
-		// Register for default values from the rulesets
-		Ruleset.registerRule(this, "Team." + id + ".Name");
-		Ruleset.registerRule(this, "Team.Timeouts");
-		Ruleset.registerRule(this, "Team.TimeoutsPer");
-		Ruleset.registerRule(this, "Team.OfficialReviews");
-		Ruleset.registerRule(this, "Team.OfficialReviewsPer");
-
 		reset();
-	}
-
-	public void applyRule(String rule, Object value) {
-		synchronized (coreLock) {
-			if (rule.equals("Team.Timeouts"))
-				maximumTimeouts = (Integer)value;
-			else if (rule.equals("Team.TimeoutsPer"))
-				timeoutsPerPeriod = (Boolean)value;
-			else if (rule.equals("Team.OfficialReviews"))
-				maximumOfficialReviews = (Integer)value;
-			else if (rule.equals("Team.OfficialReviewsPer"))
-				officialReviewsPerPeriod = (Boolean)value;
-			else if (rule.equals("Team." + id + ".Name"))
-				setName((String)value);
-		}
 	}
 
 	public String getProviderName() { return "Team"; }
@@ -79,9 +56,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 
 	public void reset() {
 		synchronized (coreLock) {
-			// Get default values from active ruleset
-			getScoreBoard()._getRuleset().apply(true, this);
-	
+			setName(DEFAULT_NAME_PREFIX + id);
 			setLogo(DEFAULT_LOGO);
 			setScore(DEFAULT_SCORE);
 			setLastScore(DEFAULT_SCORE);
@@ -346,8 +321,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (coreLock) {
 			if (0 > t)
 				t = 0;
-			if (maximumTimeouts < t)
-				t = maximumTimeouts;
+			if (scoreBoardModel.getSettings().getInt(SETTING_NUMBER_TIMEOUTS) < t)
+				t = scoreBoardModel.getSettings().getInt(SETTING_NUMBER_TIMEOUTS);
 			Integer last = new Integer(timeouts);
 			timeouts = t;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUTS, new Integer(timeouts), last));
@@ -363,8 +338,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (coreLock) {
 			if (0 > r)
 				r = 0;
-			if (maximumOfficialReviews < r)
-				r = maximumOfficialReviews;
+			if (scoreBoardModel.getSettings().getInt(SETTING_NUMBER_REVIEWS) < r)
+				r = scoreBoardModel.getSettings().getInt(SETTING_NUMBER_REVIEWS);
 			Integer last = new Integer(officialReviews);
 			officialReviews = r;
 			scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEWS, new Integer(officialReviews), last));
@@ -379,11 +354,11 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 		synchronized (coreLock) {
 			setInTimeout(false);
 			setInOfficialReview(false);
-			if (gameStart || timeoutsPerPeriod) {
-				setTimeouts(maximumTimeouts);
+			if (gameStart || scoreBoardModel.getSettings().getBoolean(SETTING_TIMEOUTS_PER_PERIOD)) {
+				setTimeouts(scoreBoardModel.getSettings().getInt(SETTING_NUMBER_TIMEOUTS));
 			}
-			if (gameStart || officialReviewsPerPeriod) {
-				setOfficialReviews(maximumOfficialReviews);
+			if (gameStart || scoreBoardModel.getSettings().getBoolean(SETTING_REVIEWS_PER_PERIOD)) {
+				setOfficialReviews(scoreBoardModel.getSettings().getInt(SETTING_NUMBER_REVIEWS));
 				setRetainedOfficialReview(false);
 			}
 		}
@@ -535,11 +510,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	protected int score = DEFAULT_SCORE;
 	protected int lastscore = DEFAULT_SCORE;
 	protected int timeouts = DEFAULT_TIMEOUTS;
-	protected int maximumTimeouts = DEFAULT_TIMEOUTS;
-	protected boolean timeoutsPerPeriod = DEFAULT_TIMEOUTS_PER_PERIOD;
 	protected int officialReviews = DEFAULT_OFFICIAL_REVIEWS;
-	protected int maximumOfficialReviews = DEFAULT_OFFICIAL_REVIEWS;
-	protected boolean officialReviewsPerPeriod = DEFAULT_REVIEWS_PER_PERIOD;
 	protected String leadJammer = DEFAULT_LEADJAMMER;
 	protected boolean starPass = DEFAULT_STARPASS;
 	protected boolean in_jam = false;
@@ -558,9 +529,7 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
 	public static final String DEFAULT_LOGO = "";
 	public static final int DEFAULT_SCORE = 0;
 	public static final int DEFAULT_TIMEOUTS = 3;
-	public static final boolean DEFAULT_TIMEOUTS_PER_PERIOD = false;
 	public static final int DEFAULT_OFFICIAL_REVIEWS = 1;
-	public static final boolean DEFAULT_REVIEWS_PER_PERIOD = true;
 	public static final String DEFAULT_LEADJAMMER = Team.LEAD_NO_LEAD;
 	public static final boolean DEFAULT_STARPASS = false;
 

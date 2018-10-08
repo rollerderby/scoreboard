@@ -82,6 +82,11 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 			return Boolean.parseBoolean(get(k));
 		}
 	}
+	public int getInt(String k) {
+		synchronized (coreLock) {
+			return Integer.parseInt(get(k));
+		}
+	}
 	public long getLong(String k) {
 		synchronized (coreLock) {
 			return Long.parseLong(get(k));

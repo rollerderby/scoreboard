@@ -4,26 +4,26 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class Rule {
-	public Rule(boolean onResetOnly, String type, String group, String subgroup, String name, String description, Object defaultValue) {
+	public Rule(boolean onResetOnly, String type, String fullname, String description, Object defaultValue) {
 		this.onResetOnly = onResetOnly;
 		this.type = type;
-		this.group = group;
-		this.subgroup = subgroup;
-		this.name = name;
+		this.fullname = fullname;
 		this.defaultValue = defaultValue;
 		this.description = description;
 
-		StringBuilder sb = new StringBuilder();
-		if (group != null) {
-			sb.append(group);
-			sb.append(".");
+		name = "";
+		group = "";
+		subgroup = "";
+		String[] parts = fullname.split("[.]");
+		if (parts.length > 0) {
+			name = parts[parts.length - 1];
 		}
-		if (subgroup != null) {
-			sb.append(subgroup);
-			sb.append(".");
+		if (parts.length > 1) {
+			group = parts[0];
 		}
-		sb.append(name);
-		fullname = sb.toString();
+		if (parts.length > 2) {
+			subgroup = fullname.substring(fullname.indexOf(".")+1, fullname.lastIndexOf("."));
+		}
 	}
 
 	public boolean isResetOnly() { return onResetOnly; }
