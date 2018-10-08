@@ -876,6 +876,46 @@ public class DefaultScoreboardModelTests {
 		assertEquals(2000, lc.getTimeElapsed());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		
+		sbm.clockUndo(true);
+		sbm.clockUndo(true);
+		advance(ScoreBoardClock.getInstance().getLastRewind());
+		
+		assertTrue(pc.isRunning());
+		assertEquals(602000, pc.getTimeElapsed());
+		assertTrue(jc.isRunning());
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		sbm.clockUndo(true);
+		sbm.timeout();
+		advance(ScoreBoardClock.getInstance().getLastRewind());
+		
+		assertFalse(pc.isRunning());
+		assertEquals(600000, pc.getTimeElapsed());
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isRunning());
+		assertTrue(tc.isRunning());
+		assertEquals(2000, tc.getTimeElapsed());
+		assertFalse(ic.isRunning());
+		
+		sbm.stopJamTO();
+		advance(5000);
+		sbm.timeout();
+		advance(3000);
+		
+		sbm.clockUndo(true);
+		sbm.startJam();
+		advance(ScoreBoardClock.getInstance().getLastRewind());
+
+		assertTrue(pc.isRunning());
+		assertEquals(603000, pc.getTimeElapsed());
+		assertTrue(jc.isRunning());
+		assertEquals(3000, jc.getTimeElapsed());
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
 	}
 	
 	@Test
