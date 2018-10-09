@@ -132,7 +132,7 @@
 	
 	
 	<target name="test" depends="test-compile">
-		<junit printsummary="on" haltonfailure="yes" fork="true">
+		<junit printsummary="on" haltonfailure="yes" fork="true" showoutput="yes">
 			<classpath>
 				<path refid="classpath.test"/>
 				<pathelement location="${test.build.dir}"/>
