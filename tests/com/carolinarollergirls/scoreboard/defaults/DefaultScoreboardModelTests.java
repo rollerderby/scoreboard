@@ -808,7 +808,7 @@ public class DefaultScoreboardModelTests {
 	}
 	
 	@Test
-	public void testClockUndo() {
+	public void testClockUndo_undo() {
 		pc.start();
 		jc.start();
 		sbm.setInPeriod(true);
@@ -834,7 +834,7 @@ public class DefaultScoreboardModelTests {
 		sbm.setInPeriod(false);
 		advance(2000);
 		
-		sbm.clockUndo();
+		sbm.clockUndo(false);
 		//need to manually advance as the stopped clock will not catch up to system time
 		advance(ScoreBoardClock.getInstance().getLastRewind());
 		assertTrue(pc.isRunning());
@@ -854,6 +854,73 @@ public class DefaultScoreboardModelTests {
 	}
 	
 	@Test
+	public void testClockUndo_replace() {
+		pc.elapseTime(600000);
+		pc.start();
+		jc.start();
+		sbm.setInPeriod(true);
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+
+		sbm.timeout();
+		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		advance(2000);
+		
+		sbm.clockUndo(true);
+		sbm.stopJamTO();
+		
+		advance(ScoreBoardClock.getInstance().getLastRewind());
+		assertTrue(pc.isRunning());
+		assertEquals(602000, pc.getTimeElapsed());
+		assertFalse(jc.isRunning());
+		assertTrue(lc.isRunning());
+		assertEquals(2000, lc.getTimeElapsed());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		sbm.clockUndo(true);
+		sbm.clockUndo(true);
+		advance(ScoreBoardClock.getInstance().getLastRewind());
+		
+		assertTrue(pc.isRunning());
+		assertEquals(602000, pc.getTimeElapsed());
+		assertTrue(jc.isRunning());
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+		
+		sbm.clockUndo(true);
+		sbm.timeout();
+		advance(ScoreBoardClock.getInstance().getLastRewind());
+		
+		assertFalse(pc.isRunning());
+		assertEquals(600000, pc.getTimeElapsed());
+		assertFalse(jc.isRunning());
+		assertFalse(lc.isRunning());
+		assertTrue(tc.isRunning());
+		assertEquals(2000, tc.getTimeElapsed());
+		assertFalse(ic.isRunning());
+		
+		sbm.stopJamTO();
+		advance(5000);
+		sbm.timeout();
+		advance(3000);
+		
+		sbm.clockUndo(true);
+		sbm.startJam();
+		advance(ScoreBoardClock.getInstance().getLastRewind());
+
+		assertTrue(pc.isRunning());
+		assertEquals(603000, pc.getTimeElapsed());
+		assertTrue(jc.isRunning());
+		assertEquals(3000, jc.getTimeElapsed());
+		assertFalse(lc.isRunning());
+		assertFalse(tc.isRunning());
+		assertFalse(ic.isRunning());
+	}
+	
+	@Test
 	public void testTimeoutCountOnUndo() {
 		assertEquals(3, sbm.getTeam("1").getTimeouts());
 		assertEquals(1, sbm.getTeam("2").getOfficialReviews());
@@ -862,11 +929,11 @@ public class DefaultScoreboardModelTests {
 		sbm.timeout();
 		sbm.getTeamModel("1").timeout();
 		assertEquals(2, sbm.getTeam("1").getTimeouts());
-		sbm.clockUndo();
+		sbm.clockUndo(false);
 		assertEquals(3, sbm.getTeam("1").getTimeouts());
 		sbm.getTeamModel("2").officialReview();
 		assertEquals(0, sbm.getTeam("2").getOfficialReviews());
-		sbm.clockUndo();
+		sbm.clockUndo(false);
 		assertEquals(1, sbm.getTeam("2").getOfficialReviews());
 	}
 	

@@ -120,8 +120,10 @@ public interface ScoreBoard extends ScoreBoardEventProvider
 	public static final String BUTTON_STOP = "ScoreBoard.Button.StopLabel";
 	public static final String BUTTON_TIMEOUT = "ScoreBoard.Button.TimeoutLabel";
 	public static final String BUTTON_UNDO = "ScoreBoard.Button.UndoLabel";
+	public static final String BUTTON_REPLACED = "ScoreBoard.Button.ReplacedLabel";
 	
 	public static final String ACTION_NONE = "---";
+	public static final String ACTION_NO_REPLACE = "No Action";
 	public static final String ACTION_START_JAM = "Start Jam";
 	public static final String ACTION_STOP_JAM = "Stop Jam";
 	public static final String ACTION_STOP_TO = "End Timeout";
