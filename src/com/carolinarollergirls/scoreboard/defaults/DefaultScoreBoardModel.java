@@ -184,11 +184,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 			if (!pc.isTimeAtEnd())
 				return;
 			createSnapshot(ACTION_OVERTIME);
-			setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-			
+
 			requestBatchStart();
-			setInOvertime(true);
 			_endTimeout(false);
+			setInOvertime(true);
+			setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
 			long otLineupTime = settings.getLong(SETTING_OVERTIME_LINEUP_DURATION);
 			if (lc.getMaximumTime() < otLineupTime) {
 				lc.setMaximumTime(otLineupTime);
