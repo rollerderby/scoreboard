@@ -84,6 +84,18 @@ public class DefaultScoreboardModelTests {
 		ScoreBoardClock.getInstance().advance(time_ms);
 	}
 	
+	private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel) {
+		assertEquals(startLabel, sbm.getSettings().get(ScoreBoard.BUTTON_START));
+		assertEquals(stopLabel, sbm.getSettings().get(ScoreBoard.BUTTON_STOP));
+		assertEquals(timeoutLabel, sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT));
+		assertEquals(undoLabel, sbm.getSettings().get(ScoreBoard.BUTTON_UNDO));
+	}
+	
+	private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel, String replaceLabel) {
+		checkLabels(startLabel, stopLabel, timeoutLabel, undoLabel);
+		assertEquals(replaceLabel, sbm.getSettings().get(ScoreBoard.BUTTON_REPLACED));
+	}
+	
 	@Test
 	public void testSetInPeriod() {
 		assertFalse(sbm.isInPeriod());
@@ -229,6 +241,7 @@ public class DefaultScoreboardModelTests {
 		assertEquals(60000, lc.getMaximumTime());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_OVERTIME);
 	}
 
 	@Test
@@ -255,6 +268,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(tc.isRunning());
 		assertEquals(6, tc.getNumber());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_OVERTIME);
 	}
 
 	@Test
@@ -309,6 +323,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
 	}
 
 	@Test
@@ -343,6 +358,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertFalse(sbm.getTeamModel("2").inTimeout());
 		assertFalse(sbm.getTeamModel("2").inOfficialReview());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
 	}
 
 	@Test
@@ -367,6 +383,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
 	}
 
 	@Test
@@ -391,6 +408,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
 	}
 
 	@Test
@@ -423,6 +441,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
 		assertTrue(sbm.isInPeriod());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
 	}
 
 	@Test
@@ -456,6 +475,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
 		assertTrue(sbm.isInPeriod());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
 	}
 
 	@Test
@@ -463,6 +483,8 @@ public class DefaultScoreboardModelTests {
 		jc.setTime(74000);
 		jc.setNumber(9);
 		jc.start();
+		sbm.setLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT);
+		sbm.setLabel(ScoreBoard.BUTTON_UNDO, ScoreBoard.ACTION_NONE);
 
 		sbm.startJam();
 
@@ -470,6 +492,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(jc.isRunning());
 		assertEquals(9, jc.getNumber());
 		assertEquals(74000, jc.getTime());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.ACTION_NONE);
 	}
 
 	@Test
@@ -494,6 +517,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertFalse(sbm.getTeamModel("1").isStarPass());
 		assertEquals(Team.LEAD_NO_LEAD, sbm.getTeamModel("2").getLeadJammer());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_JAM);
 	}
 
 	@Test
@@ -527,6 +551,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(ic.isTimeAtStart());
 		assertFalse(sbm.isInPeriod());
 		assertFalse(sbm.isOfficialScore());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_JAM);
 	}
 
 	@Test
@@ -554,6 +579,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertEquals("", sbm.getTimeoutOwner());
 		assertFalse(sbm.isOfficialReview());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
 	}
 
 	@Test
@@ -577,6 +603,7 @@ public class DefaultScoreboardModelTests {
 		assertEquals(3, tc.getNumber());
 		assertTrue(ic.isRunning());
 		assertTrue(ic.isTimeAtStart());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
 	}
 
 	@Test
@@ -604,6 +631,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertEquals("", sbm.getTimeoutOwner());
 		assertFalse(sbm.isOfficialReview());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
 	}
 
 	@Test
@@ -629,6 +657,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(lc.isTimeAtStart());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_LINEUP);
 	}
 
 	@Test
@@ -659,10 +688,13 @@ public class DefaultScoreboardModelTests {
 		assertTrue(lc.isTimeAtStart());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_LINEUP);
 	}
 
 	@Test
 	public void testStopJam_lineupRunning() {
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
+		sbm.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
 		lc.setTime(14000);
 		lc.setNumber(9);
 		lc.start();
@@ -673,6 +705,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(lc.isRunning());
 		assertEquals(9, lc.getNumber());
 		assertEquals(14000, lc.getTime());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
 	}
 
 	@Test
@@ -697,6 +730,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertEquals("", sbm.getTimeoutOwner());
 		assertFalse(sbm.isOfficialReview());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
 	}
 
 	@Test
@@ -716,6 +750,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(tc.isRunning());
 		assertTrue(tc.isTimeAtStart());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
 	}
 
 	@Test
@@ -735,6 +770,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(tc.isRunning());
 		assertTrue(tc.isTimeAtStart());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
 	}
 
 	@Test
@@ -754,6 +790,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(tc.isRunning());
 		assertTrue(tc.isTimeAtStart());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
 	}
 	
 	@Test
@@ -778,6 +815,7 @@ public class DefaultScoreboardModelTests {
 		assertEquals(8, tc.getNumber());
 		assertFalse(ic.isRunning());
 		assertEquals(ScoreBoard.TIMEOUT_OWNER_NONE, sbm.getTimeoutOwner());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_RE_TIMEOUT);
 		
 		sbm.timeout();
 		
@@ -819,9 +857,12 @@ public class DefaultScoreboardModelTests {
 		assertFalse(sbm.isOfficialReview());
 		assertFalse(sbm.isInOvertime());
 		assertTrue(sbm.isInPeriod());
+		sbm.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT);
+		sbm.setLabel(ScoreBoard.BUTTON_UNDO, ScoreBoard.ACTION_NONE);
 
 		sbm.createSnapshot("TEST");
 		assertEquals("TEST", sbm.snapshot.getType());
+		assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", sbm.getSettings().get(ScoreBoard.BUTTON_UNDO));
 		
 		pc.stop();
 		jc.stop();
@@ -832,6 +873,7 @@ public class DefaultScoreboardModelTests {
 		sbm.setOfficialReview(true);
 		sbm.setInOvertime(true);
 		sbm.setInPeriod(false);
+		sbm.setLabels(ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.ACTION_OVERTIME);
 		advance(2000);
 		
 		sbm.clockUndo(false);
@@ -851,6 +893,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(sbm.isOfficialReview());
 		assertFalse(sbm.isInOvertime());
 		assertTrue(sbm.isInPeriod());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.ACTION_NONE);
 	}
 	
 	@Test
@@ -862,12 +905,15 @@ public class DefaultScoreboardModelTests {
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		sbm.setLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT);
 
 		sbm.timeout();
-		assertEquals(DefaultScoreBoardModel.ACTION_TIMEOUT, sbm.snapshot.getType());
+		assertEquals(ScoreBoard.ACTION_TIMEOUT, sbm.snapshot.getType());
 		advance(2000);
 		
 		sbm.clockUndo(true);
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT,
+				ScoreBoard.ACTION_NO_REPLACE, ScoreBoard.ACTION_TIMEOUT);
 		sbm.stopJamTO();
 		
 		advance(ScoreBoardClock.getInstance().getLastRewind());
@@ -940,6 +986,7 @@ public class DefaultScoreboardModelTests {
 	@Test
 	public void testPeriodClockEnd_duringLineup() {
 		sbm.getSettingsModel().set(ScoreBoard.SETTING_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 		
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());
@@ -964,11 +1011,14 @@ public class DefaultScoreboardModelTests {
 		assertEquals(2, ic.getNumber());
 		long dur = ClockConversion.fromHumanReadable(sbm.getSettings().get(ScoreBoard.SETTING_INTERMISSION_DURATIONS).split(",")[1]);
 		assertEquals(dur, ic.getTimeRemaining());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
 	}
 	
 	@Test
 	public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
 		sbm.getSettingsModel().set(ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "false");
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
+		sbm.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
 		
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());
@@ -989,10 +1039,15 @@ public class DefaultScoreboardModelTests {
 		assertEquals(2000, lc.getTimeElapsed());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
 	}
 	
 	@Test
 	public void testPeriodClockEnd_duringJam() {
+		String prevStartLabel = sbm.getSettings().get(ScoreBoard.BUTTON_START);
+		String prevStopLabel = sbm.getSettings().get(ScoreBoard.BUTTON_STOP);
+		String prevTimeoutLabel = sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 		pc.start();
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(2000);
@@ -1013,10 +1068,12 @@ public class DefaultScoreboardModelTests {
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, prevUndoLabel);
 	}
 
 	@Test
 	public void testJamClockEnd_pcRemaining() {
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 		pc.start();
 		jc.start();
 		assertTrue(jc.isCountDirectionDown());
@@ -1034,11 +1091,16 @@ public class DefaultScoreboardModelTests {
 		assertTrue(lc.isTimeAtStart());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
 	}
 
 	@Test
 	public void testJamClockEnd_autoEndDisabled() {
 		sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
+		String prevStartLabel = sbm.getSettings().get(ScoreBoard.BUTTON_START);
+		String prevStopLabel = sbm.getSettings().get(ScoreBoard.BUTTON_STOP);
+		String prevTimeoutLabel = sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 		
 		pc.start();
 		jc.start();
@@ -1055,10 +1117,12 @@ public class DefaultScoreboardModelTests {
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, prevUndoLabel);
 	}
 
 	@Test
 	public void testIntermissionClockEnd_notLastPeriod() {
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 		assertFalse(pc.isRunning());
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(0);
@@ -1086,6 +1150,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertTrue(ic.isTimeAtEnd());
 		assertEquals(1, ic.getNumber());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
 	}
 
 	@Test
@@ -1113,6 +1178,10 @@ public class DefaultScoreboardModelTests {
 
 	@Test
 	public void testIntermissionClockEnd_lastPeriod() {
+		String prevStartLabel = sbm.getSettings().get(ScoreBoard.BUTTON_START);
+		String prevStopLabel = sbm.getSettings().get(ScoreBoard.BUTTON_STOP);
+		String prevTimeoutLabel = sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
+		String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 		assertFalse(pc.isRunning());
 		assertTrue(pc.isCountDirectionDown());
 		pc.setTime(0);
@@ -1140,6 +1209,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(ic.isRunning());
 		assertTrue(ic.isTimeAtEnd());
 		assertEquals(pc.getMaximumNumber(), ic.getNumber());
+		checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, prevUndoLabel);
 	}
 
 	@Test
@@ -1247,6 +1317,7 @@ public class DefaultScoreboardModelTests {
 		assertFalse(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
 	}
 	
 	@Test
@@ -1273,6 +1344,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(tc.isRunning());
 		assertTrue(tc.isTimeAtStart());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
 		
 		sbm.setTimeoutType("2", true);
 		
@@ -1283,6 +1355,7 @@ public class DefaultScoreboardModelTests {
 		assertTrue(lc.isRunning());
 		assertFalse(tc.isRunning());
 		assertFalse(ic.isRunning());
+		checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
 	}
 	
 	@Test
