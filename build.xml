@@ -132,12 +132,12 @@
 	
 	
 	<target name="test" depends="test-compile">
-		<junit printsummary="on" haltonfailure="yes" fork="true" showoutput="yes">
+		<junit printsummary="withOutAndErr" haltonfailure="true" fork="true" showoutput="yes" maxmemory="128m">
 			<classpath>
 				<path refid="classpath.test"/>
 				<pathelement location="${test.build.dir}"/>
 			</classpath>
-			<formatter type="brief" usefile="false" />
+			<formatter type="plain" usefile="false" />
 				<batchtest>
 					<fileset dir="${test.src.dir}" includes="**/*Test*.java" />
 				</batchtest>
