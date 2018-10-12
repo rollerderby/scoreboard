@@ -23,7 +23,7 @@
 	<available property="manifest.exists" file="${jar.dir}/${manifest.file}" />
 
 	<property name="launch4j.dir" value="launch4j"/>
-	<property name="launch4j.outfile" value="scoreboard.exe"/>
+	<property name="launch4j.outfile" value="scoreboard-Windows.exe"/>
 
 	<property name="release.dir" value="release" />
 	<property name="android.dir" value="android" />
@@ -173,7 +173,7 @@
 	<!-- Do everything -->
 	<target name="all" depends="clean,test"/>
 
-	<!-- Create Windows scoreboard.exe -->
+	<!-- Create Windows scoreboard-Windows.exe -->
 	<taskdef name="launch4j" classname="net.sf.launch4j.ant.Launch4jTask" classpath="${launch4j.dir}/launch4j.jar:${launch4j.dir}/lib/xstream.jar" />
 	<target name="launcher" >
 		<launch4j>
