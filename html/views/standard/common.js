@@ -97,7 +97,7 @@ function smallDescriptionUpdate(k, v) {
 				if (or) {
 					ret = "Official Review";
 					$(".Team" + to + ">.OfficialReviews:not(.Header)").addClass("Red");
-					var dotSel = ".Team" + to + " .OfficialReview" + (WS.state["ScoreBoard.Team(" + to + ").OfficialReviews"] + 1);
+					var dotSel = ".Team" + to + " .OfficialReview1";
 					$(dotSel).addClass("Active");
 				} else {
 					ret = "Team Timeout";

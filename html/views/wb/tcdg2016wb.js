@@ -101,7 +101,6 @@ function displayPenalty(t, s, p) {
 	var limit = WS.state['ScoreBoard.Setting(Rule.Penalties.NumberToFoulout)'];
 	var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
-	totalBox.text(cnt);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn2", cnt == limit-1 && !fo_exp);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn3", cnt >= limit || fo_exp);
