@@ -198,7 +198,7 @@ body.box_flat .Box.FlatTop {
 	background: none;
 }
 .DotOfficialReviews .Dot.OfficialReview1.Retained{
-	background: -webkit-gradient(linear, 0 0, 0 100%, from(#E9E9E9), color-stop(100%, #AFAFAF)) !important;
+	background: -webkit-gradient(linear, 0 0, 0 100%, from(#E9E9E9), color-stop(100%, #D9D9D9)) !important;
 }
 .DotOfficialReviews .Dot.Retained:after {
 	content: "";
