@@ -69,110 +69,106 @@ import org.apache.regexp.RESyntaxException;
 
 /* package */ class JakartaRegExpXPathMatcher extends XPathMatcher {
 
-   /**
-    * The compiled regular expression this matcher matches.
-    */
-   private final RE re;
+    /**
+     * The compiled regular expression this matcher matches.
+     */
+    private final RE re;
 
-   private final XPath test;
+    private final XPath test;
 
-   /**
-    * Creates a new XPath matcher using Jakarta RegExp regular
-    * expression matcher implementation.
-    *
-    * @param  expression   the XPath-like expression to match.
-    * @param  listener     the element listener to notify when an
-    *                      element matches the expression.
-    *
-    * @throws JDOMException  if one of the arguments is invalid.
-    */
-   public JakartaRegExpXPathMatcher(
-                                String expression, ElementListener listener)
-                                                        throws JDOMException {
-      super(expression, listener);
+    /**
+     * Creates a new XPath matcher using Jakarta RegExp regular
+     * expression matcher implementation.
+     *
+     * @param  expression   the XPath-like expression to match.
+     * @param  listener     the element listener to notify when an
+     *                      element matches the expression.
+     *
+     * @throws JDOMException  if one of the arguments is invalid.
+     */
+    public JakartaRegExpXPathMatcher(
+        String expression, ElementListener listener)
+    throws JDOMException {
+        super(expression, listener);
 
-      try {
-         String pathPattern = getPathPatternAsRE(expression);
+        try {
+            String pathPattern = getPathPatternAsRE(expression);
 
-         this.re = new RE(pathPattern);
+            this.re = new RE(pathPattern);
 
-         String testPattern = getTestPattern(expression);
-         if (testPattern != null) {
-            testPattern = "." + testPattern;
+            String testPattern = getTestPattern(expression);
+            if (testPattern != null) {
+                testPattern = "." + testPattern;
 
-            this.test = XPath.newInstance(testPattern);
-         }
-         else {
-            this.test = null;
-         }
+                this.test = XPath.newInstance(testPattern);
+            } else {
+                this.test = null;
+            }
 
-         if (isDebug()) {
-            System.out.println("Listener " + listener + ":");
-            System.out.println("   " + expression +
-                                        " -> RE    = " + pathPattern);
-            System.out.println("   " + expression +
-                                        " -> XPath = " + testPattern);
-         }
-      }
-      catch (RESyntaxException ex1) {
-         throw (new JDOMException(
-                        "Illegal XPath expression: " + expression, ex1));
-      }
-   }
+            if (isDebug()) {
+                System.out.println("Listener " + listener + ":");
+                System.out.println("   " + expression +
+                                   " -> RE    = " + pathPattern);
+                System.out.println("   " + expression +
+                                   " -> XPath = " + testPattern);
+            }
+        } catch (RESyntaxException ex1) {
+            throw (new JDOMException(
+                       "Illegal XPath expression: " + expression, ex1));
+        }
+    }
 
-   /**
-    * Tries to match an element path and attributes with the XPath
-    * expression this matcher matches.
-    * <p>
-    * This method is invoked when processing the
-    * <code>startElement</code> SAX event.</p>
-    * <p>
-    * This implementation only matches the element path, ignoring
-    * the attributes.</p>
-    *
-    * @param  path    the path to the element.
-    * @param  attrs   the SAX attributes of the element.
-    *
-    * @return <code>true</code> is the element matches the XPath
-    *         expression, <code>false</code> otherwise.
-    */
-   public boolean match(String path, Attributes attrs) {
-      return (this.re.match(path));
-   }
+    /**
+     * Tries to match an element path and attributes with the XPath
+     * expression this matcher matches.
+     * <p>
+     * This method is invoked when processing the
+     * <code>startElement</code> SAX event.</p>
+     * <p>
+     * This implementation only matches the element path, ignoring
+     * the attributes.</p>
+     *
+     * @param  path    the path to the element.
+     * @param  attrs   the SAX attributes of the element.
+     *
+     * @return <code>true</code> is the element matches the XPath
+     *         expression, <code>false</code> otherwise.
+     */
+    public boolean match(String path, Attributes attrs) {
+        return (this.re.match(path));
+    }
 
-   /**
-    * Tries to match an element with the XPath expression this
-    * matcher matches.
-    * <p>
-    * This method is invoked when processing the
-    * <code>endElement</code> SAX event.  It allows matching on
-    * data not part of the <code>startElement</code> event such
-    * as the presence of child elements.</p>
-    * <p>
-    * This implementation always return <code>true</code> as it
-    * does not support matching on anything but the path.</p>
-    *
-    * @param  path   the path to the element.
-    * @param  elt    the JDOM element.
-    *
-    * @return <code>true</code> is the element matches the XPath
-    *         expression, <code>false</code> otherwise.
-    */
-   public boolean match(String path, Element elt) {
-      if (this.test != null) {
-         boolean match = false;
+    /**
+     * Tries to match an element with the XPath expression this
+     * matcher matches.
+     * <p>
+     * This method is invoked when processing the
+     * <code>endElement</code> SAX event.  It allows matching on
+     * data not part of the <code>startElement</code> event such
+     * as the presence of child elements.</p>
+     * <p>
+     * This implementation always return <code>true</code> as it
+     * does not support matching on anything but the path.</p>
+     *
+     * @param  path   the path to the element.
+     * @param  elt    the JDOM element.
+     *
+     * @return <code>true</code> is the element matches the XPath
+     *         expression, <code>false</code> otherwise.
+     */
+    public boolean match(String path, Element elt) {
+        if (this.test != null) {
+            boolean match = false;
 
-         try {
-            match = (this.test.selectNodes(elt).size() != 0);
-         }
-         catch (Exception ex1) {
-            ex1.printStackTrace();
-         }
-         return (match);
-      }
-      else {
-         return (true);
-      }
-   }
+            try {
+                match = (this.test.selectNodes(elt).size() != 0);
+            } catch (Exception ex1) {
+                ex1.printStackTrace();
+            }
+            return (match);
+        } else {
+            return (true);
+        }
+    }
 }
 

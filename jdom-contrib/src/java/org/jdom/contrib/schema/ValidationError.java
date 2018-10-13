@@ -149,11 +149,9 @@ public class ValidationError {
         buf.append('[');
         if (this.severity == WARNING) {
             buf.append("WARNING");
-        }
-        else if (this.severity == ERROR) {
+        } else if (this.severity == ERROR) {
             buf.append("ERROR");
-        }
-        else if (this.severity == FATAL) {
+        } else if (this.severity == FATAL) {
             buf.append("FATAL");
         }
         buf.append("] message: \"").append(this.getMessage());
@@ -223,7 +221,7 @@ public class ValidationError {
         public boolean equals(Object o) {
             return ((o == this) ||
                     ((o != null) && (this.hashCode() == o.hashCode()) &&
-                    (this.getClass().getName().equals(o.getClass().getName()))));
+                     (this.getClass().getName().equals(o.getClass().getName()))));
         }
     }
 }

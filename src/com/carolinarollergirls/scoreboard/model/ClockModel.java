@@ -10,55 +10,54 @@ package com.carolinarollergirls.scoreboard.model;
 
 import com.carolinarollergirls.scoreboard.view.Clock;
 
-public interface ClockModel extends Clock
-{
-	public ScoreBoardModel getScoreBoardModel();
+public interface ClockModel extends Clock {
+    public ScoreBoardModel getScoreBoardModel();
 
-	public Clock getClock();
+    public Clock getClock();
 
-	public void reset();
+    public void reset();
 
-	public ClockSnapshotModel snapshot();
-	public void restoreSnapshot(ClockSnapshotModel s);
+    public ClockSnapshotModel snapshot();
+    public void restoreSnapshot(ClockSnapshotModel s);
 
-	public void start();
-	public void stop();
-	public void startNext();
+    public void start();
+    public void stop();
+    public void startNext();
 
-	public void setName(String name);
+    public void setName(String name);
 
-	public void setNumber(int n);
-	public void changeNumber(int n);
-	public void setMinimumNumber(int n);
-	public void changeMinimumNumber(int n);
-	public void setMaximumNumber(int n);
-	public void changeMaximumNumber(int n);
+    public void setNumber(int n);
+    public void changeNumber(int n);
+    public void setMinimumNumber(int n);
+    public void changeMinimumNumber(int n);
+    public void setMaximumNumber(int n);
+    public void changeMaximumNumber(int n);
 
-	public void setTime(long ms);
-	/**
-	 * Add time to the clock.
-	 * @param ms The amount of change (can be negative)
-	 */
-	public void changeTime(long ms);
-	/**
-	 * Change the clock in the direction it is running.
-	 * This function is the inverse of changeTime(), when the clock counts down.
-	 * @param ms The amount of change (can be negative)
-	 */
-	public void elapseTime(long ms);
-	public void resetTime();
-	public void setMinimumTime(long ms);
-	public void changeMinimumTime(long ms);
-	public void setMaximumTime(long ms);
-	public void changeMaximumTime(long ms);
+    public void setTime(long ms);
+    /**
+     * Add time to the clock.
+     * @param ms The amount of change (can be negative)
+     */
+    public void changeTime(long ms);
+    /**
+     * Change the clock in the direction it is running.
+     * This function is the inverse of changeTime(), when the clock counts down.
+     * @param ms The amount of change (can be negative)
+     */
+    public void elapseTime(long ms);
+    public void resetTime();
+    public void setMinimumTime(long ms);
+    public void changeMinimumTime(long ms);
+    public void setMaximumTime(long ms);
+    public void changeMaximumTime(long ms);
 
-	public void setCountDirectionDown(boolean down);
+    public void setCountDirectionDown(boolean down);
 
-	public static interface ClockSnapshotModel {
-		public String getId();
-		public int getNumber();
-		public long getTime();
-		public boolean isRunning();
-	}
+    public static interface ClockSnapshotModel {
+        public String getId();
+        public int getNumber();
+        public long getTime();
+        public boolean isRunning();
+    }
 }
 

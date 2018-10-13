@@ -15,95 +15,94 @@ import com.carolinarollergirls.scoreboard.view.PositionNotFoundException;
 import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.view.Team;
 
-public interface TeamModel extends Team
-{
-	public ScoreBoardModel getScoreBoardModel();
+public interface TeamModel extends Team {
+    public ScoreBoardModel getScoreBoardModel();
 
-	public Team getTeam();
+    public Team getTeam();
 
-	public void reset();
+    public void reset();
 
-	public void setName(String name);
+    public void setName(String name);
 
-	public void startJam();
-	public void stopJam();
-	public void benchSkaters();
-	public TeamSnapshotModel snapshot();
-	public void restoreSnapshot(TeamSnapshotModel s);
+    public void startJam();
+    public void stopJam();
+    public void benchSkaters();
+    public TeamSnapshotModel snapshot();
+    public void restoreSnapshot(TeamSnapshotModel s);
 
-	public List<AlternateNameModel> getAlternateNameModels();
-	public AlternateNameModel getAlternateNameModel(String id);
-	public void setAlternateNameModel(String id, String name);
-	public void removeAlternateNameModel(String id);
-	public void removeAlternateNameModels();
+    public List<AlternateNameModel> getAlternateNameModels();
+    public AlternateNameModel getAlternateNameModel(String id);
+    public void setAlternateNameModel(String id, String name);
+    public void removeAlternateNameModel(String id);
+    public void removeAlternateNameModels();
 
-	public List<ColorModel> getColorModels();
-	public ColorModel getColorModel(String id);
-	public void setColorModel(String id, String color);
-	public void removeColorModel(String id);
-	public void removeColorModels();
+    public List<ColorModel> getColorModels();
+    public ColorModel getColorModel(String id);
+    public void setColorModel(String id, String color);
+    public void removeColorModel(String id);
+    public void removeColorModels();
 
-	public void setLogo(String logo);
+    public void setLogo(String logo);
 
-	public void timeout();
-	public void officialReview();
+    public void timeout();
+    public void officialReview();
 
-	public void setScore(int score);
-	public void changeScore(int change);
+    public void setScore(int score);
+    public void changeScore(int change);
 
-	public void setLastScore(int score);
-	public void changeLastScore(int change);
+    public void setLastScore(int score);
+    public void changeLastScore(int change);
 
-	public void setTimeouts(int timeouts);
-	public void changeTimeouts(int change);
-	public void setOfficialReviews(int reviews);
-	public void changeOfficialReviews(int reviews);
-	public void resetTimeouts(boolean gameStart);
+    public void setTimeouts(int timeouts);
+    public void changeTimeouts(int change);
+    public void setOfficialReviews(int reviews);
+    public void changeOfficialReviews(int reviews);
+    public void resetTimeouts(boolean gameStart);
 
-	public void setInTimeout(boolean in_timeouts);
-	public void setInOfficialReview(boolean in_official_review);
-	public void setRetainedOfficialReview(boolean retained_official_review);
+    public void setInTimeout(boolean in_timeouts);
+    public void setInOfficialReview(boolean in_official_review);
+    public void setRetainedOfficialReview(boolean retained_official_review);
 
-	public void addSkaterModel(SkaterModel skater);
-	public SkaterModel addSkaterModel(String id);
-	public SkaterModel addSkaterModel(String id, String name, String number, String flag);
-	public void removeSkaterModel(String id) throws SkaterNotFoundException;
+    public void addSkaterModel(SkaterModel skater);
+    public SkaterModel addSkaterModel(String id);
+    public SkaterModel addSkaterModel(String id, String name, String number, String flag);
+    public void removeSkaterModel(String id) throws SkaterNotFoundException;
 
-	public List<SkaterModel> getSkaterModels();
-	public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException;
+    public List<SkaterModel> getSkaterModels();
+    public SkaterModel getSkaterModel(String id) throws SkaterNotFoundException;
 
-	public List<PositionModel> getPositionModels();
-	public PositionModel getPositionModel(String id) throws PositionNotFoundException;
+    public List<PositionModel> getPositionModels();
+    public PositionModel getPositionModel(String id) throws PositionNotFoundException;
 
-	public void setLeadJammer(String lead);
+    public void setLeadJammer(String lead);
 
-	public void setStarPass(boolean starPass);
+    public void setStarPass(boolean starPass);
 
-	public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
+    public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 
-	public static interface AlternateNameModel extends AlternateName {
-		public void setName(String n);
+    public static interface AlternateNameModel extends AlternateName {
+        public void setName(String n);
 
-		public TeamModel getTeamModel();
-	}
+        public TeamModel getTeamModel();
+    }
 
-	public static interface ColorModel extends Color {
-		public void setColor(String c);
+    public static interface ColorModel extends Color {
+        public void setColor(String c);
 
-		public TeamModel getTeamModel();
-	}
-	
-	public static interface TeamSnapshotModel {
-		public String getId();
-		public int getScore();
-		public int getLastScore();
-		public int getTimeouts();
-		public int getOfficialReviews();
-		public String getLeadJammer();
-		public boolean getStarPass();
-		public boolean inTimeout();
-		public boolean inOfficialReview();
-		public Map<String, SkaterModel.SkaterSnapshotModel> getSkaterSnapshots();
-		public SkaterModel.SkaterSnapshotModel getSkaterSnapshot(String skater);
-	}
+        public TeamModel getTeamModel();
+    }
+
+    public static interface TeamSnapshotModel {
+        public String getId();
+        public int getScore();
+        public int getLastScore();
+        public int getTimeouts();
+        public int getOfficialReviews();
+        public String getLeadJammer();
+        public boolean getStarPass();
+        public boolean inTimeout();
+        public boolean inOfficialReview();
+        public Map<String, SkaterModel.SkaterSnapshotModel> getSkaterSnapshots();
+        public SkaterModel.SkaterSnapshotModel getSkaterSnapshot(String skater);
+    }
 }

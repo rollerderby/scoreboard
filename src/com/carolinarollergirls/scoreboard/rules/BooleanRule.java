@@ -4,45 +4,48 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class BooleanRule extends Rule {
-	public BooleanRule(boolean onResetOnly, String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
-		super(onResetOnly, "Boolean", fullname, description, new Boolean(defaultValue));
+    public BooleanRule(boolean onResetOnly, String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
+        super(onResetOnly, "Boolean", fullname, description, new Boolean(defaultValue));
 
-		this.trueValue = trueValue;
-		this.falseValue = falseValue;
-	}
+        this.trueValue = trueValue;
+        this.falseValue = falseValue;
+    }
 
-	public Object convertValue(String v) {
-		if (trueValue.equalsIgnoreCase(v))
-			return new Boolean(true);
-		if (falseValue.equalsIgnoreCase(v))
-			return new Boolean(false);
+    public Object convertValue(String v) {
+        if (trueValue.equalsIgnoreCase(v)) {
+            return new Boolean(true);
+        }
+        if (falseValue.equalsIgnoreCase(v)) {
+            return new Boolean(false);
+        }
 
-		try {
-			return new Boolean(v);
-		} catch (Exception e) {
-			return null;
-		}
-	}
+        try {
+            return new Boolean(v);
+        } catch (Exception e) {
+            return null;
+        }
+    }
 
-	public JSONObject toJSON() throws JSONException {
-		JSONObject json = super.toJSON();
-		json.put("trueValue", trueValue);
-		json.put("falseValue", falseValue);
-		return json;
-	}
+    public JSONObject toJSON() throws JSONException {
+        JSONObject json = super.toJSON();
+        json.put("trueValue", trueValue);
+        json.put("falseValue", falseValue);
+        return json;
+    }
 
-	public String toHumanReadable(Object v) {
-		if (v == null)
-			return "";
+    public String toHumanReadable(Object v) {
+        if (v == null) {
+            return "";
+        }
 
-		Object v2 = convertValue(v.toString());
-		if (v2 != null) {
-			Boolean b = (Boolean)v2;
-			return b ? trueValue : falseValue;
-		}
-		return v.toString();
-	}
+        Object v2 = convertValue(v.toString());
+        if (v2 != null) {
+            Boolean b = (Boolean)v2;
+            return b ? trueValue : falseValue;
+        }
+        return v.toString();
+    }
 
-	private String trueValue;
-	private String falseValue;
+    private String trueValue;
+    private String falseValue;
 }

@@ -11,43 +11,42 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener
-{
-	public abstract String getProviderName();
-	public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
-	public abstract String getProviderId();
+public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener {
+    public abstract String getProviderName();
+    public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
+    public abstract String getProviderId();
 
-	public void scoreBoardChange(ScoreBoardEvent event) {
-		dispatch(event);
-	}
+    public void scoreBoardChange(ScoreBoardEvent event) {
+        dispatch(event);
+    }
 
-	protected void dispatch(ScoreBoardEvent event) {
-		// Synchronously send events to listeners.
-		synchronized(scoreBoardEventListeners) {
-			for (ScoreBoardListener l : scoreBoardEventListeners) {
-				l.scoreBoardChange(event);
-			}
-		}
-	}
+    protected void dispatch(ScoreBoardEvent event) {
+        // Synchronously send events to listeners.
+        synchronized(scoreBoardEventListeners) {
+            for (ScoreBoardListener l : scoreBoardEventListeners) {
+                l.scoreBoardChange(event);
+            }
+        }
+    }
 
-	protected void requestBatchStart() {
-		scoreBoardChange(new ScoreBoardEvent(this, ScoreBoardEvent.BATCH_START, Boolean.TRUE, Boolean.TRUE));
-	}
+    protected void requestBatchStart() {
+        scoreBoardChange(new ScoreBoardEvent(this, ScoreBoardEvent.BATCH_START, Boolean.TRUE, Boolean.TRUE));
+    }
 
-	protected void requestBatchEnd() {
-		scoreBoardChange(new ScoreBoardEvent(this, ScoreBoardEvent.BATCH_END, Boolean.TRUE, Boolean.TRUE));
-	}
+    protected void requestBatchEnd() {
+        scoreBoardChange(new ScoreBoardEvent(this, ScoreBoardEvent.BATCH_END, Boolean.TRUE, Boolean.TRUE));
+    }
 
-	public void addScoreBoardListener(ScoreBoardListener listener) {
-		synchronized(scoreBoardEventListeners) {
-			scoreBoardEventListeners.add(listener);
-		}
-	}
-	public void removeScoreBoardListener(ScoreBoardListener listener) {
-		synchronized(scoreBoardEventListeners) {
-			scoreBoardEventListeners.remove(listener);
-		}
-	}
+    public void addScoreBoardListener(ScoreBoardListener listener) {
+        synchronized(scoreBoardEventListeners) {
+            scoreBoardEventListeners.add(listener);
+        }
+    }
+    public void removeScoreBoardListener(ScoreBoardListener listener) {
+        synchronized(scoreBoardEventListeners) {
+            scoreBoardEventListeners.remove(listener);
+        }
+    }
 
-	protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
+    protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
 }

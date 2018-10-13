@@ -15,32 +15,31 @@ import org.jdom.xpath.XPath;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
-public class FilterXmlScoreBoardListener implements XmlScoreBoardListener
-{
-	public void xmlChange(Document d) {
-		try {
-			editor.filterOutDocumentXPath(d, getFilter());
-			batchCnt += batchAdjustment(d, "BATCH_START");
-			batchCnt -= batchAdjustment(d, "BATCH_END");
-		} catch ( JDOMException jE ) {
-			ScoreBoardManager.printMessage("Error filtering XML event : "+jE.getMessage());
-		}
-	}
+public class FilterXmlScoreBoardListener implements XmlScoreBoardListener {
+    public void xmlChange(Document d) {
+        try {
+            editor.filterOutDocumentXPath(d, getFilter());
+            batchCnt += batchAdjustment(d, "BATCH_START");
+            batchCnt -= batchAdjustment(d, "BATCH_END");
+        } catch ( JDOMException jE ) {
+            ScoreBoardManager.printMessage("Error filtering XML event : "+jE.getMessage());
+        }
+    }
 
-	private int batchAdjustment(Document d, String which) {
-		Element root = d.getRootElement();
-		String b = root.getAttributeValue(which);
-		return (b == null ? 0 : b.length());
-	}
+    private int batchAdjustment(Document d, String which) {
+        Element root = d.getRootElement();
+        String b = root.getAttributeValue(which);
+        return (b == null ? 0 : b.length());
+    }
 
-	public void clearFilter() { filterXPath = null; }
-	public void setFilter(XPath f) { filterXPath = f; }
-	public XPath getFilter() { return filterXPath; }
+    public void clearFilter() { filterXPath = null; }
+    public void setFilter(XPath f) { filterXPath = f; }
+    public XPath getFilter() { return filterXPath; }
 
-	public boolean isBatchActive() { return batchCnt > 0; }
-	public int batchCnt = 0;
+    public boolean isBatchActive() { return batchCnt > 0; }
+    public int batchCnt = 0;
 
-	protected XmlDocumentEditor editor = new XmlDocumentEditor();
+    protected XmlDocumentEditor editor = new XmlDocumentEditor();
 
-	protected XPath filterXPath = null;
+    protected XPath filterXPath = null;
 }

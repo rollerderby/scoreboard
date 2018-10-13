@@ -113,8 +113,8 @@ import org.jdom.output.JDOMLocator;
  * </pre>
  * <p>
  * The current limitations are those of JARV, i&#46;e&#46; no support for
- * validating a document against multiple schemas. This can be work around 
- * for elements (calling validate(Element) on another Schema) but not for 
+ * validating a document against multiple schemas. This can be work around
+ * for elements (calling validate(Element) on another Schema) but not for
  * attributes.</p>
  *
  * @author Laurent Bihanic
@@ -125,28 +125,28 @@ public class Schema {
      * Type for W3C XML Schema definitions.
      */
     public final static Type W3C_XML_SCHEMA =
-            new Type("W3C XML Schema", "http://www.w3.org/2001/XMLSchema");
+        new Type("W3C XML Schema", "http://www.w3.org/2001/XMLSchema");
     /**
      * Type for RELAX NG schema definitions.
      */
     public final static Type RELAX_NG =
-            new Type("RELAX NG", "http://relaxng.org/ns/structure/0.9");
+        new Type("RELAX NG", "http://relaxng.org/ns/structure/0.9");
     /**
      * Type for RELAX Core schema definitions.
      */
     public final static Type RELAX_CORE =
-            new Type("RELAX Core", "http://www.xml.gr.jp/xmlns/relaxCore");
+        new Type("RELAX Core", "http://www.xml.gr.jp/xmlns/relaxCore");
     /**
      * Type for RELAX Namespace schema definitions.
      */
     public final static Type RELAX_NAMESPACE =
-            new Type("RELAX Namespace",
-                     "http://www.xml.gr.jp/xmlns/relaxNamespace");
+        new Type("RELAX Namespace",
+                 "http://www.xml.gr.jp/xmlns/relaxNamespace");
     /**
      * Type for TREX schema definitions.
      */
     public final static Type TREX =
-            new Type("TREX", "http://www.thaiopensource.com/trex");
+        new Type("TREX", "http://www.thaiopensource.com/trex");
 
     /**
      * The URI of the schema document, if known.
@@ -176,7 +176,7 @@ public class Schema {
      *                         the schema document.
      */
     private Schema(InputSource source, Type type)
-            throws JDOMException, IOException {
+    throws JDOMException, IOException {
 
         if ((source == null) || (type == null)) {
             throw new IllegalArgumentException("source/type/compiledSchema");
@@ -188,11 +188,9 @@ public class Schema {
             VerifierFactory vf = VerifierFactory.newInstance(type.getLanguage());
 
             this.compiledSchema = vf.compileSchema(source);
-        }
-        catch (IOException e) {
+        } catch (IOException e) {
             throw e;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new JDOMException("Failed to parse schema \"" + this.uri +
                                     "\": " + e.getMessage(), e);
         }
@@ -229,10 +227,9 @@ public class Schema {
     private Verifier newVerifier() throws JDOMException {
         try {
             return this.compiledSchema.newVerifier();
-        }
-        catch (VerifierConfigurationException e) {
+        } catch (VerifierConfigurationException e) {
             throw new JDOMException(
-                    "Failed to allocate schema verifier: " + e.getMessage(), e);
+                "Failed to allocate schema verifier: " + e.getMessage(), e);
         }
     }
 
@@ -256,8 +253,7 @@ public class Schema {
 
             errorHandler.setContentHandler(verifier.getVerifierHandler());
             new SAXOutputter(errorHandler).output(doc);
-        }
-        catch (SAXException e) { /* Fatal validation error encountered. */
+        } catch (SAXException e) { /* Fatal validation error encountered. */
         }
 
         // Retrieve validation errors, if any.
@@ -287,8 +283,7 @@ public class Schema {
 
             errorHandler.setContentHandler(verifier.getVerifierHandler());
             new SAXOutputter(errorHandler).output(nodes);
-        }
-        catch (SAXException e) { /* Fatal validation error encountered. */
+        } catch (SAXException e) { /* Fatal validation error encountered. */
         }
 
         // Retrieve validation errors, if any.
@@ -311,7 +306,7 @@ public class Schema {
      *                         the schema document.
      */
     public static Schema parse(String uri, Type type)
-            throws JDOMException, IOException {
+    throws JDOMException, IOException {
         return parse(new InputSource(uri), type);
     }
 
@@ -334,7 +329,7 @@ public class Schema {
      *                         the schema document.
      */
     public static Schema parse(InputStream byteStream, Type type, String uri)
-            throws JDOMException, IOException {
+    throws JDOMException, IOException {
         InputSource source = new InputSource(byteStream);
         source.setSystemId(uri);
 
@@ -360,7 +355,7 @@ public class Schema {
      *                         the schema document.
      */
     public static Schema parse(Reader reader, Type type, String uri)
-            throws JDOMException, IOException {
+    throws JDOMException, IOException {
         InputSource source = new InputSource(reader);
         source.setSystemId(uri);
 
@@ -383,7 +378,7 @@ public class Schema {
      *                         the schema document.
      */
     public static Schema parse(File file, Type type)
-            throws JDOMException, IOException {
+    throws JDOMException, IOException {
         InputSource source = new InputSource(new FileInputStream(file));
         source.setSystemId(file.getAbsolutePath());
 
@@ -407,7 +402,7 @@ public class Schema {
      *                         the schema document.
      */
     public static Schema parse(InputSource source, Type type)
-            throws JDOMException, IOException {
+    throws JDOMException, IOException {
         return new Schema(source, type);
     }
 
@@ -601,7 +596,7 @@ public class Schema {
         public boolean equals(Object o) {
             return ((o == this) ||
                     ((o != null) && (this.hashCode() == o.hashCode()) &&
-                    (this.getClass().getName().equals(o.getClass().getName()))));
+                     (this.getClass().getName().equals(o.getClass().getName()))));
         }
     }
 }

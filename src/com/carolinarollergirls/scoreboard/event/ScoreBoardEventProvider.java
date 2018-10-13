@@ -8,12 +8,11 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
-public interface ScoreBoardEventProvider
-{
-  public String getProviderName();
-  public Class<? extends ScoreBoardEventProvider> getProviderClass();
-  public String getProviderId();
+public interface ScoreBoardEventProvider {
+    public String getProviderName();
+    public Class<? extends ScoreBoardEventProvider> getProviderClass();
+    public String getProviderId();
 
-  public void addScoreBoardListener(ScoreBoardListener listener);
-  public void removeScoreBoardListener(ScoreBoardListener listener);
+    public void addScoreBoardListener(ScoreBoardListener listener);
+    public void removeScoreBoardListener(ScoreBoardListener listener);
 }

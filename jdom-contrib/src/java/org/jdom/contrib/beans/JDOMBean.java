@@ -92,22 +92,22 @@ import org.jdom.output.XMLOutputter;
  * </pre>
  *
  * <h3>Usage from JSP:</h3>
- * 
+ *
  * <pre>
- *  
+ *
  * &lt;jsp:useBean id="jdom" class="JDOMBean" scope="application"&gt;
  *  &lt;% jdom.setFileRoot(application.getRealPath("")); %&gt;
  * &lt;/jsp:useBean&gt;
- *  
+ *
  * or
- *  
+ *
  * &lt;jsp:useBean id="jdom" class="JDOMBean" scope="application"&gt;
  *  &lt;jsp:setProperty name="jdom" property="fileRoot"
  * +value='&lt;%=application.getRealPath("")%&gt;' /&gt;
  * &lt;/jsp:useBean&gt;
- *                                           
- * then 
- *  
+ *
+ * then
+ *
  * &lt;%
  * Element root = jdom.getRootElement("foo.xml");
  * %&gt;
@@ -127,7 +127,7 @@ public class JDOMBean {
 
     /** <code>{@link SAXBuilder}</code> instance to use */
     private SAXBuilder builder;
-    
+
     /** file cache **/
     private Map files = new HashMap();
 
@@ -147,7 +147,7 @@ public class JDOMBean {
     public JDOMBean(String parser) {
         setParser(parser);
     }
-    
+
     /**
      * <p>
      * This will create an instance of <code>{@link SAXBuilder}</code>
@@ -184,10 +184,10 @@ public class JDOMBean {
      * @return the path (absolute or relative) to the document root
      **/
     public String getFileRoot() {
-        if (fileRoot == null) return null;
-        else return fileRoot.getAbsolutePath();
+        if (fileRoot == null) { return null; }
+        else { return fileRoot.getAbsolutePath(); }
     }
-    
+
     /**
      * Load a file, parse it with JDOM, return a org.jdom.Document.
      * If the file has already been parsed, return the previously
@@ -210,9 +210,8 @@ public class JDOMBean {
         FileInfo info = (FileInfo) files.get(filename);
         File file = getFile(filename);
         if (info == null ||
-            info.modified < file.lastModified())
-        {
-            Document doc = builder.build(file);     
+                info.modified < file.lastModified()) {
+            Document doc = builder.build(file);
             info = new FileInfo(filename, file.lastModified(), doc);
             files.put(filename, info);
         }
@@ -224,7 +223,7 @@ public class JDOMBean {
      **/
     public Element getRootElement(String file) throws JDOMException, IOException {
         Document doc = getDocument(file);
-        if (doc != null) return doc.getRootElement();
+        if (doc != null) { return doc.getRootElement(); }
         return null;
     }
 
@@ -232,12 +231,11 @@ public class JDOMBean {
         File file;
         if (fileRoot == null) {
             return new File(filename);
-        }
-        else {
+        } else {
             return new File(fileRoot, filename);
         }
     }
-    
+
     /**
      * Information stored in the cache
      **/
@@ -261,19 +259,18 @@ public class JDOMBean {
             ++i;
             bean = new JDOMBean(args[i]);
             i++;
-        }
-        else {
+        } else {
             bean = new JDOMBean();
         }
 
         XMLOutputter out = new XMLOutputter();
-                
+
         for (; i<args.length; ++i) {
             Document doc = bean.getDocument(args[i]);
             out.output(doc, System.out);
             System.out.println();
-        }       
+        }
     }
-    
+
 }
 

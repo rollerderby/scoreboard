@@ -158,15 +158,15 @@ public class JTreeOutputterDemo implements ActionListener {
     }
 
     public void doFile() {
-                JFileChooser fc = new JFileChooser();
-                fc.setDialogTitle("Select an XML File");
-                int returnVal = fc.showDialog(frame, "Load XML");
-                if (returnVal == 0) {
-                        try {
-                                doc = saxBuilder.build(fc.getSelectedFile());
-                        } catch (Exception e) {e.printStackTrace();}
-                        outputter.output(doc, root);
-                }
+        JFileChooser fc = new JFileChooser();
+        fc.setDialogTitle("Select an XML File");
+        int returnVal = fc.showDialog(frame, "Load XML");
+        if (returnVal == 0) {
+            try {
+                doc = saxBuilder.build(fc.getSelectedFile());
+            } catch (Exception e) {e.printStackTrace();}
+            outputter.output(doc, root);
+        }
     }
 
     public void doURL() {

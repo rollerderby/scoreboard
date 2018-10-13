@@ -53,23 +53,22 @@ import org.jdom.contrib.input.*;
  * @author Per Norrman
  *
  */
-public class LineNumberSAXBuilderDemo
-{
+public class LineNumberSAXBuilderDemo {
 
-	public static void main(String[] args) throws Exception {
-		SAXBuilder builder = new LineNumberSAXBuilder();
-		Document doc = builder.build(new StringReader(xml));
+    public static void main(String[] args) throws Exception {
+        SAXBuilder builder = new LineNumberSAXBuilder();
+        Document doc = builder.build(new StringReader(xml));
 
-		for (Iterator iter = doc.getDescendants(new ElementFilter());
-         iter.hasNext(); ) {
-			LineNumberElement e = (LineNumberElement) iter.next();
-			System.out.println(
-				e.getName() + ": lines " + e.getStartLine() + " to " + e.getEndLine());
-		}
+        for (Iterator iter = doc.getDescendants(new ElementFilter());
+                iter.hasNext(); ) {
+            LineNumberElement e = (LineNumberElement) iter.next();
+            System.out.println(
+                e.getName() + ": lines " + e.getStartLine() + " to " + e.getEndLine());
+        }
 
-	}
+    }
 
-	private static String xml =
-		"<a>\n<b/>\n<c/>\n<d>\n<e/>\n<f/>\n</d>\n</a>\n";
+    private static String xml =
+        "<a>\n<b/>\n<c/>\n<d>\n<e/>\n<f/>\n</d>\n</a>\n";
 
 }

@@ -13,8 +13,8 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.view.Settings;
 
 public interface SettingsModel extends Settings {
-	public void reset();
+    public void reset();
 
-	public void set(String k, String v);
-	public void set(Map<String, String> s);
+    public void set(String k, String v);
+    public void set(Map<String, String> s);
 }

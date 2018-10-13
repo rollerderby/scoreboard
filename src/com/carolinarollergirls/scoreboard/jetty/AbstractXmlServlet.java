@@ -21,42 +21,40 @@ import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.xml.SleepingQueueXmlScoreBoardListener;
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
-public abstract class AbstractXmlServlet extends AbstractRegisterServlet
-{
-	protected void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		XmlListener listener = createXmlListener(scoreBoardModel);
-		String key = addRegisteredListener(listener);
-		response.setContentType("text/xml");
-		rawXmlOutputter.output(editor.createDocument("Key", null, key), response.getOutputStream());
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+public abstract class AbstractXmlServlet extends AbstractRegisterServlet {
+    protected void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
+        XmlListener listener = createXmlListener(scoreBoardModel);
+        String key = addRegisteredListener(listener);
+        response.setContentType("text/xml");
+        rawXmlOutputter.output(editor.createDocument("Key", null, key), response.getOutputStream());
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 
-	protected XmlListener getXmlListenerForRequest(HttpServletRequest request) {
-		return (XmlListener)getRegisteredListenerForRequest(request);
-	}
+    protected XmlListener getXmlListenerForRequest(HttpServletRequest request) {
+        return (XmlListener)getRegisteredListenerForRequest(request);
+    }
 
-	protected XmlListener createXmlListener(ScoreBoard scoreBoard) {
-		return new XmlListener(scoreBoard);
-	}
+    protected XmlListener createXmlListener(ScoreBoard scoreBoard) {
+        return new XmlListener(scoreBoard);
+    }
 
-	protected XmlDocumentEditor editor = new XmlDocumentEditor();
-	protected XMLOutputter prettyXmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
-	protected XMLOutputter rawXmlOutputter = XmlDocumentEditor.getRawXmlOutputter();
+    protected XmlDocumentEditor editor = new XmlDocumentEditor();
+    protected XMLOutputter prettyXmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();
+    protected XMLOutputter rawXmlOutputter = XmlDocumentEditor.getRawXmlOutputter();
 
-	protected class XmlListener extends RegisteredListener
-	{
-		public XmlListener(ScoreBoard sB) {
-			queueListener = new SleepingQueueXmlScoreBoardListener(sB.getXmlScoreBoard());
-		}
+    protected class XmlListener extends RegisteredListener {
+        public XmlListener(ScoreBoard sB) {
+            queueListener = new SleepingQueueXmlScoreBoardListener(sB.getXmlScoreBoard());
+        }
 
-		public Document getDocument(int timeout) { return queueListener.getNextDocument(timeout); }
+        public Document getDocument(int timeout) { return queueListener.getNextDocument(timeout); }
 
-		public boolean isEmpty() { return queueListener.isEmpty(); }
+        public boolean isEmpty() { return queueListener.isEmpty(); }
 
-		public void clearFilter() { queueListener.clearFilter(); }
-		public void setFilter(XPath f) { queueListener.setFilter(f); }
-		public XPath getFilter() { return queueListener.getFilter(); }
+        public void clearFilter() { queueListener.clearFilter(); }
+        public void setFilter(XPath f) { queueListener.setFilter(f); }
+        public XPath getFilter() { return queueListener.getFilter(); }
 
-		protected SleepingQueueXmlScoreBoardListener queueListener;
-	}
+        protected SleepingQueueXmlScoreBoardListener queueListener;
+    }
 }

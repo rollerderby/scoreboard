@@ -67,32 +67,32 @@ import org.jdom.JDOMException;
  */
 public interface ElementListener {
 
-   /**
-    * Notifies of the parsing of an Element.
-    * <p>
-    * <code>ElementScanner</code> invokes this method when
-    * encountering the closing tag of the element definition.  Thus,
-    * element <code>e</code> and all its child nodes are fully built
-    * but the parent element is not.</p>
-    * <p>
-    * Note that the element is not attached to any
-    * {@link Element#getDocument document} and that the
-    * {@link Element#getParent() parent element} is <code>null</code>
-    * unless another listener is listening on one of the element
-    * ancestors.</p>
-    * <p>
-    * As no copy of the notified elements is performed, all changes
-    * made on element <code>e</code> will be visible of the
-    * not-yet-notified listeners listening on this same element and
-    * of the listeners listening on one of the element ancestors.</p>
-    *
-    * @param  path   the path to the parsed element.
-    * @param  e      the parsed <code>Element</code>.
-    *
-    * @throws JDOMException   if the listener wishes to abort the
-    *                         parsing of the input XML document.
-    */
-   abstract public void elementMatched(String path, Element e)
-                                                        throws JDOMException;
+    /**
+     * Notifies of the parsing of an Element.
+     * <p>
+     * <code>ElementScanner</code> invokes this method when
+     * encountering the closing tag of the element definition.  Thus,
+     * element <code>e</code> and all its child nodes are fully built
+     * but the parent element is not.</p>
+     * <p>
+     * Note that the element is not attached to any
+     * {@link Element#getDocument document} and that the
+     * {@link Element#getParent() parent element} is <code>null</code>
+     * unless another listener is listening on one of the element
+     * ancestors.</p>
+     * <p>
+     * As no copy of the notified elements is performed, all changes
+     * made on element <code>e</code> will be visible of the
+     * not-yet-notified listeners listening on this same element and
+     * of the listeners listening on one of the element ancestors.</p>
+     *
+     * @param  path   the path to the parsed element.
+     * @param  e      the parsed <code>Element</code>.
+     *
+     * @throws JDOMException   if the listener wishes to abort the
+     *                         parsing of the input XML document.
+     */
+    abstract public void elementMatched(String path, Element e)
+    throws JDOMException;
 }
 

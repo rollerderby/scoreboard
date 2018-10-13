@@ -60,7 +60,7 @@ import org.jdom.*;
 import java.util.*;
 
 /**   <p>
- *    This class contains static helper methods. 
+ *    This class contains static helper methods.
  *    </p>
  *    @author Alex Rosen
  */
@@ -93,7 +93,7 @@ public class JDOMHelper {
         List children = new ArrayList(parent.getChildren());
         Collections.sort(children, c);
         ListIterator childrenIter = children.listIterator();
-        
+
         // Create a new, static list of all content items.
         List content = new ArrayList(parent.getContent());
         ListIterator contentIter = content.listIterator();
@@ -104,8 +104,9 @@ public class JDOMHelper {
         // added twice.
         while(contentIter.hasNext()) {
             Object obj = contentIter.next();
-            if (obj instanceof Element)
+            if (obj instanceof Element) {
                 contentIter.set(childrenIter.next());
+            }
         }
 
         // Finally, we set the content list back into the parent Element.

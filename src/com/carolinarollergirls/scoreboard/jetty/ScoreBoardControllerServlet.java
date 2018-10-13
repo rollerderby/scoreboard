@@ -12,7 +12,6 @@ import javax.servlet.Servlet;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardController;
 
-public interface ScoreBoardControllerServlet extends ScoreBoardController,Servlet
-{
-	public String getPath();
+public interface ScoreBoardControllerServlet extends ScoreBoardController,Servlet {
+    public String getPath();
 }

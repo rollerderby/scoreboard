@@ -19,48 +19,48 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.view.FrontendSettings;
 
 public class DefaultFrontendSettingsModel extends DefaultScoreBoardEventProvider implements FrontendSettingsModel {
-	public DefaultFrontendSettingsModel(ScoreBoardModel s) {
-		sbm = s;
-	}
+    public DefaultFrontendSettingsModel(ScoreBoardModel s) {
+        sbm = s;
+    }
 
-	public String getProviderName() { return "FrontendSettings"; }
-	public Class<FrontendSettings> getProviderClass() { return FrontendSettings.class; }
-	public String getProviderId() { return ""; }
+    public String getProviderName() { return "FrontendSettings"; }
+    public Class<FrontendSettings> getProviderClass() { return FrontendSettings.class; }
+    public String getProviderId() { return ""; }
 
-	public void reset() {
-		synchronized (coreLock) {
-			Map<String, String> old = new HashMap<String, String>(settings);
-			settings.clear();
-			for (String k : old.keySet()) {
-				scoreBoardChange(new ScoreBoardEvent(this, k, null, old.get(k)));
-			}
-		}
-	}
+    public void reset() {
+        synchronized (coreLock) {
+            Map<String, String> old = new HashMap<String, String>(settings);
+            settings.clear();
+            for (String k : old.keySet()) {
+                scoreBoardChange(new ScoreBoardEvent(this, k, null, old.get(k)));
+            }
+        }
+    }
 
-	public Map<String, String> getAll() {
-		synchronized (coreLock) {
-			return Collections.unmodifiableMap(new HashMap<String, String>(settings));
-		}
-	}
-	public String get(String k) {
-		synchronized (coreLock) {
-			return settings.get(k);
-		}
-	}
-	public void set(String k, String v) {
-		synchronized (coreLock) {
-			String last = settings.get(k);
-			if (v == null) {
-				settings.remove(k);
-			} else {
-				settings.put(k, v);
-			}
-			scoreBoardChange(new ScoreBoardEvent(this, k, v, last));
-		}
-	}
+    public Map<String, String> getAll() {
+        synchronized (coreLock) {
+            return Collections.unmodifiableMap(new HashMap<String, String>(settings));
+        }
+    }
+    public String get(String k) {
+        synchronized (coreLock) {
+            return settings.get(k);
+        }
+    }
+    public void set(String k, String v) {
+        synchronized (coreLock) {
+            String last = settings.get(k);
+            if (v == null) {
+                settings.remove(k);
+            } else {
+                settings.put(k, v);
+            }
+            scoreBoardChange(new ScoreBoardEvent(this, k, v, last));
+        }
+    }
 
-	protected ScoreBoardModel sbm = null;
-	protected Map<String, String> settings = new HashMap<String, String>();
-	
-	protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
+    protected ScoreBoardModel sbm = null;
+    protected Map<String, String> settings = new HashMap<String, String>();
+
+    protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
 }

@@ -54,7 +54,7 @@
 
  */
 
- package org.jdom.contrib.beans;
+package org.jdom.contrib.beans;
 
 import org.jdom.*;
 import org.jdom.output.*;
@@ -68,73 +68,72 @@ public class TestBean implements java.io.Serializable {
     private TestBean friend;
 
     public String getName() {
-	return name;
+        return name;
     }
     public int getAge() {
-	return age;
+        return age;
     }
     public Date getBirthdate() {
-	return birthdate;
+        return birthdate;
     }
     public TestBean getFriend() {
-	return friend;
+        return friend;
     }
 
     public void setName(String name) {
-	this.name = name;
+        this.name = name;
     }
     public void setAge(int age) {
-	this.age = age;
+        this.age = age;
     }
     public void setBirthdate(Date birthdate) {
-	this.birthdate = birthdate;
+        this.birthdate = birthdate;
     }
     public void setFriend(TestBean friend) {
-	this.friend = friend;
+        this.friend = friend;
     }
 
     public String toString() {
-	return "TestBean[name='" + name + "', age=" + age + ", birthdate=" + birthdate + ", friend=" + friend + "]";
+        return "TestBean[name='" + name + "', age=" + age + ", birthdate=" + birthdate + ", friend=" + friend + "]";
     }
 
 
     // Test
-        
+
     public static void main(String[] args) throws java.beans.IntrospectionException, java.io.IOException {
 
-	try {
-	    BeanMapper mapper = new BeanMapper();
-	    mapper.addMapping("birthdate", "dob");	// element mapping
-	    mapper.addMapping("age", "dob", "age");	// attribute mapping
+        try {
+            BeanMapper mapper = new BeanMapper();
+            mapper.addMapping("birthdate", "dob");	// element mapping
+            mapper.addMapping("age", "dob", "age");	// attribute mapping
 
-	    mapper.setBeanPackage("org.jdom.contrib.beans");
-	
-	    // test bean->jdom
+            mapper.setBeanPackage("org.jdom.contrib.beans");
 
-	    TestBean alex = new TestBean();
-	    alex.setName("Alex");
-	    alex.setAge(31);
-	    alex.setBirthdate(new Date(69, 7, 8));
+            // test bean->jdom
 
-	    TestBean amy = new TestBean();
-	    amy.setName("Amy");
-	    amy.setAge(25);
-	    amy.setBirthdate(new Date(75, 4, 1));
+            TestBean alex = new TestBean();
+            alex.setName("Alex");
+            alex.setAge(31);
+            alex.setBirthdate(new Date(69, 7, 8));
 
-	    alex.setFriend(amy);
-	    
-	    Document doc = mapper.toDocument(alex);
-	    XMLOutputter o = new XMLOutputter(Format.getPrettyFormat());
-	    o.output(doc, System.out);
-	    System.out.println();
+            TestBean amy = new TestBean();
+            amy.setName("Amy");
+            amy.setAge(25);
+            amy.setBirthdate(new Date(75, 4, 1));
 
-	    // test jdom->bean
-	    TestBean test2 = (TestBean)mapper.toBean(doc);
-	    System.out.println(test2);
-	}
-	catch (BeanMapperException e) {
-	    e.printStackTrace();
-	}
-    }	
-    
+            alex.setFriend(amy);
+
+            Document doc = mapper.toDocument(alex);
+            XMLOutputter o = new XMLOutputter(Format.getPrettyFormat());
+            o.output(doc, System.out);
+            System.out.println();
+
+            // test jdom->bean
+            TestBean test2 = (TestBean)mapper.toBean(doc);
+            System.out.println(test2);
+        } catch (BeanMapperException e) {
+            e.printStackTrace();
+        }
+    }
+
 }

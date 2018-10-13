@@ -98,7 +98,7 @@ public class IdFactory extends DefaultJDOMFactory {
      * Creates a new IdFactory object.
      */
     public IdFactory() {
-       super();
+        super();
     }
 
     // Allow Javadocs to inherit from superclass
@@ -108,7 +108,7 @@ public class IdFactory extends DefaultJDOMFactory {
     }
 
     public Attribute attribute(String name, String value,
-                                            int type, Namespace namespace) {
+                               int type, Namespace namespace) {
         return new IdAttribute(name, value, type, namespace);
     }
 

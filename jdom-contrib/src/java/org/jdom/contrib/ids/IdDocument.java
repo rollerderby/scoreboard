@@ -84,75 +84,75 @@ import org.jdom.Element;
  */
 public class IdDocument extends Document {
 
-   /**
-    * <p>The ID lookup table for the document.</p>
-    */
-   private Map ids = new HashMap();
+    /**
+     * <p>The ID lookup table for the document.</p>
+     */
+    private Map ids = new HashMap();
 
-   /**
-    * <p>
-    * Creates a new <code>IdDocument</code>, with the supplied
-    * <code>{@link Element}</code> as the root element and the
-    * supplied <code>{@link DocType}</code> declaration.</p>
-    *
-    * @param  rootElement   <code>Element</code> for document root.
-    * @param  docType       <code>DocType</code> declaration.
-    */
-   public IdDocument(Element root, DocType docType) {
-      super(root, docType);
-   }
+    /**
+     * <p>
+     * Creates a new <code>IdDocument</code>, with the supplied
+     * <code>{@link Element}</code> as the root element and the
+     * supplied <code>{@link DocType}</code> declaration.</p>
+     *
+     * @param  rootElement   <code>Element</code> for document root.
+     * @param  docType       <code>DocType</code> declaration.
+     */
+    public IdDocument(Element root, DocType docType) {
+        super(root, docType);
+    }
 
-   /**
-    * <p>
-    * Creates a new <code>Document</code>, with the supplied
-    * <code>{@link Element}</code> as the root element, and no
-    * <code>{@link DocType document type}</code> declaration.
-    * </p>
-    *
-    * @param  rootElement   <code>Element</code> for document root.
-    */
-   public IdDocument(Element root) {
-      super(root);
-   }
+    /**
+     * <p>
+     * Creates a new <code>Document</code>, with the supplied
+     * <code>{@link Element}</code> as the root element, and no
+     * <code>{@link DocType document type}</code> declaration.
+     * </p>
+     *
+     * @param  rootElement   <code>Element</code> for document root.
+     */
+    public IdDocument(Element root) {
+        super(root);
+    }
 
-   /**
-    * <p>
-    * Retrieves an element using the value of its ID attribute as
-    * key.</p>
-    *
-    * @param  id   the value of the ID attribute of the element to
-    *              retrieve.
-    * @return the <code>Element</code> associated to <code>id</code>
-    *         or <code>null</code> if none was found.
-    */
-   public Element getElementById(String id) {
-      return ((Element)(ids.get(id)));
-   }
+    /**
+     * <p>
+     * Retrieves an element using the value of its ID attribute as
+     * key.</p>
+     *
+     * @param  id   the value of the ID attribute of the element to
+     *              retrieve.
+     * @return the <code>Element</code> associated to <code>id</code>
+     *         or <code>null</code> if none was found.
+     */
+    public Element getElementById(String id) {
+        return ((Element)(ids.get(id)));
+    }
 
-   /**
-    * <p>
-    * Adds the specified ID to the ID lookup table of this document
-    * and make it point to the associated element.</p>
-    *
-    * @param  id   the ID to add.
-    * @param  elt  the <code>Element</code> associated to the ID.
-    */
-   protected void addId(String id, Element elt) {
-      ids.put(id, elt);
-      return;
-   }
+    /**
+     * <p>
+     * Adds the specified ID to the ID lookup table of this document
+     * and make it point to the associated element.</p>
+     *
+     * @param  id   the ID to add.
+     * @param  elt  the <code>Element</code> associated to the ID.
+     */
+    protected void addId(String id, Element elt) {
+        ids.put(id, elt);
+        return;
+    }
 
-   /**
-    * <p>
-    * Removes the specified ID from the ID lookup table of this
-    * document.</p>
-    *
-    * @param  id   the ID to remove.
-    * @return <code>true</code> if the ID was found and removed;
-    *         <code>false</code> otherwise.
-    */
-   protected boolean removeId(String id) {
-      return (ids.remove(id) != null);
-   }
+    /**
+     * <p>
+     * Removes the specified ID from the ID lookup table of this
+     * document.</p>
+     *
+     * @param  id   the ID to remove.
+     * @return <code>true</code> if the ID was found and removed;
+     *         <code>false</code> otherwise.
+     */
+    protected boolean removeId(String id) {
+        return (ids.remove(id) != null);
+    }
 }
 

@@ -18,99 +18,98 @@ import com.carolinarollergirls.scoreboard.view.Skater;
 import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.view.Team;
 
-public class DefaultPositionModel extends DefaultScoreBoardEventProvider implements PositionModel
-{
-	public DefaultPositionModel(TeamModel tm, String i) {
-		teamModel = tm;
-		id = i;
-		reset();
-	}
+public class DefaultPositionModel extends DefaultScoreBoardEventProvider implements PositionModel {
+    public DefaultPositionModel(TeamModel tm, String i) {
+        teamModel = tm;
+        id = i;
+        reset();
+    }
 
-	public String getProviderName() { return "Position"; }
-	public Class<Position> getProviderClass() { return Position.class; }
-	public String getProviderId() { return getId(); }
+    public String getProviderName() { return "Position"; }
+    public Class<Position> getProviderClass() { return Position.class; }
+    public String getProviderId() { return getId(); }
 
-	public Team getTeam() { return teamModel.getTeam(); }
-	public TeamModel getTeamModel() { return teamModel; }
+    public Team getTeam() { return teamModel.getTeam(); }
+    public TeamModel getTeamModel() { return teamModel; }
 
-	public String getId() { return id; }
+    public String getId() { return id; }
 
-	public Position getPosition() { return this; }
+    public Position getPosition() { return this; }
 
-	public void reset() {
-		synchronized (coreLock) {
-			clear();
-		}
-	}
+    public void reset() {
+        synchronized (coreLock) {
+            clear();
+        }
+    }
 
-	public Skater getSkater() {
-		synchronized (coreLock) {
-			try { return getSkaterModel().getSkater(); }
-			catch ( NullPointerException npE ) { return null; }
-		}
-	}
-	public SkaterModel getSkaterModel() { return skaterModel; }
-	public void setSkaterModel(String skaterId) throws SkaterNotFoundException {
-		synchronized (coreLock) {
-			if (skaterId == null || skaterId.equals("")) {
-				clear();
-			} else {
-				getTeamModel().getSkaterModel(skaterId).setPosition(getId());
-			}
-		}
-	}
-	public void _setSkaterModel(String skaterId) throws SkaterNotFoundException {
-		synchronized (coreLock) {
-			SkaterModel newSkaterModel = getTeamModel().getSkaterModel(skaterId);
-			clear();
-			SkaterModel last = skaterModel;
-			skaterModel = newSkaterModel;
-			_setPenaltyBox(newSkaterModel.isPenaltyBox());
-			scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
-		}
-	}
-	public void clear() {
-		synchronized (coreLock) {
-			try { skaterModel.setPosition(ID_BENCH); }
-			catch ( NullPointerException npE ) { /* Was no skater in this position */ }
-		}
-	}
-	public void _clear() {
-		synchronized (coreLock) {
-			if (null != skaterModel) {
-				SkaterModel last = skaterModel;
-				skaterModel = null;
-				scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
-			}
-			_setPenaltyBox(false);
-		}
-	}
-	public boolean getPenaltyBox() {
-		return penaltyBox;
-	}
-	public void setPenaltyBox(boolean box) {
-		synchronized (coreLock) {
-			try { skaterModel.setPenaltyBox(box); }
-			catch ( NullPointerException npE ) { /* Was no skater in this position */ }
-		}
-	}
-	public void _setPenaltyBox(boolean box) {
-		synchronized (coreLock) {
-			if (box != penaltyBox) {
-				Boolean last = new Boolean(penaltyBox);
-				penaltyBox = box;
-				scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
-			}
-		}
-	}
+    public Skater getSkater() {
+        synchronized (coreLock) {
+            try { return getSkaterModel().getSkater(); }
+            catch ( NullPointerException npE ) { return null; }
+        }
+    }
+    public SkaterModel getSkaterModel() { return skaterModel; }
+    public void setSkaterModel(String skaterId) throws SkaterNotFoundException {
+        synchronized (coreLock) {
+            if (skaterId == null || skaterId.equals("")) {
+                clear();
+            } else {
+                getTeamModel().getSkaterModel(skaterId).setPosition(getId());
+            }
+        }
+    }
+    public void _setSkaterModel(String skaterId) throws SkaterNotFoundException {
+        synchronized (coreLock) {
+            SkaterModel newSkaterModel = getTeamModel().getSkaterModel(skaterId);
+            clear();
+            SkaterModel last = skaterModel;
+            skaterModel = newSkaterModel;
+            _setPenaltyBox(newSkaterModel.isPenaltyBox());
+            scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
+        }
+    }
+    public void clear() {
+        synchronized (coreLock) {
+            try { skaterModel.setPosition(ID_BENCH); }
+            catch ( NullPointerException npE ) { /* Was no skater in this position */ }
+        }
+    }
+    public void _clear() {
+        synchronized (coreLock) {
+            if (null != skaterModel) {
+                SkaterModel last = skaterModel;
+                skaterModel = null;
+                scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
+            }
+            _setPenaltyBox(false);
+        }
+    }
+    public boolean getPenaltyBox() {
+        return penaltyBox;
+    }
+    public void setPenaltyBox(boolean box) {
+        synchronized (coreLock) {
+            try { skaterModel.setPenaltyBox(box); }
+            catch ( NullPointerException npE ) { /* Was no skater in this position */ }
+        }
+    }
+    public void _setPenaltyBox(boolean box) {
+        synchronized (coreLock) {
+            if (box != penaltyBox) {
+                Boolean last = new Boolean(penaltyBox);
+                penaltyBox = box;
+                scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+            }
+        }
+    }
 
-	protected TeamModel teamModel;
-	
-	protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
+    protected TeamModel teamModel;
 
-	protected String id;
+    protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
 
-	protected SkaterModel skaterModel = null;
-	protected boolean penaltyBox = false;
-	protected boolean settingSkaterPosition = false;
+    protected String id;
+
+    protected SkaterModel skaterModel = null;
+    protected boolean penaltyBox = false;
+    protected boolean settingSkaterPosition = false;
 }

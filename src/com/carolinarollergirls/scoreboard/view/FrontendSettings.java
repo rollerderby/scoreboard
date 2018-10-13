@@ -13,8 +13,8 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface FrontendSettings extends ScoreBoardEventProvider {
-	public Map<String, String> getAll();
-	public String get(String k);
+    public Map<String, String> getAll();
+    public String get(String k);
 
-	public static final String EVENT_SETTING = "Setting";
+    public static final String EVENT_SETTING = "Setting";
 }

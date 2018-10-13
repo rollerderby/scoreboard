@@ -12,66 +12,65 @@ import java.util.List;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
-public interface Stats extends ScoreBoardEventProvider
-{
-	public ScoreBoard getScoreBoard();
+public interface Stats extends ScoreBoardEventProvider {
+    public ScoreBoard getScoreBoard();
 
-	public List<PeriodStats> getPeriodStats();
+    public List<PeriodStats> getPeriodStats();
 
-	public static interface PeriodStats extends ScoreBoardEventProvider {
-		public int getPeriodNumber();
+    public static interface PeriodStats extends ScoreBoardEventProvider {
+        public int getPeriodNumber();
 
-		public List<JamStats> getJamStats();
+        public List<JamStats> getJamStats();
 
-		public static final String EVENT_ADD_JAM = "AddJam";
-		public static final String EVENT_REMOVE_JAM = "RemoveJam";
-	}
+        public static final String EVENT_ADD_JAM = "AddJam";
+        public static final String EVENT_REMOVE_JAM = "RemoveJam";
+    }
 
-	public static interface JamStats extends ScoreBoardEventProvider {
-		public int getPeriodNumber();
-		public int getJamNumber();
+    public static interface JamStats extends ScoreBoardEventProvider {
+        public int getPeriodNumber();
+        public int getJamNumber();
 
-		public long getJamClockElapsedEnd();
-		public long getPeriodClockElapsedStart();
-		public long getPeriodClockElapsedEnd();
-		public long getPeriodClockWalltimeStart();
-		public long getPeriodClockWalltimeEnd();
+        public long getJamClockElapsedEnd();
+        public long getPeriodClockElapsedStart();
+        public long getPeriodClockElapsedEnd();
+        public long getPeriodClockWalltimeStart();
+        public long getPeriodClockWalltimeEnd();
 
-		public List<TeamStats> getTeamStats();
+        public List<TeamStats> getTeamStats();
 
-		public static final String EVENT_STATS = "Stats";
-	}
+        public static final String EVENT_STATS = "Stats";
+    }
 
-	public static interface TeamStats extends ScoreBoardEventProvider {
-		public int getPeriodNumber();
-		public int getJamNumber();
-		public String getTeamId();
+    public static interface TeamStats extends ScoreBoardEventProvider {
+        public int getPeriodNumber();
+        public int getJamNumber();
+        public String getTeamId();
 
-		public int getJamScore();
-		public int getTotalScore();
-		public String getLeadJammer();
-		public boolean getStarPass();
-		public int getTimeouts();
-		public int getOfficialReviews();
+        public int getJamScore();
+        public int getTotalScore();
+        public String getLeadJammer();
+        public boolean getStarPass();
+        public int getTimeouts();
+        public int getOfficialReviews();
 
-		public List<SkaterStats> getSkaterStats();
+        public List<SkaterStats> getSkaterStats();
 
-		public static final String EVENT_STATS = "Stats";
-		public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
-	}
+        public static final String EVENT_STATS = "Stats";
+        public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
+    }
 
-	public static interface SkaterStats extends ScoreBoardEventProvider {
-		public int getPeriodNumber();
-		public int getJamNumber();
-		public String getTeamId();
-		public String getSkaterId();
+    public static interface SkaterStats extends ScoreBoardEventProvider {
+        public int getPeriodNumber();
+        public int getJamNumber();
+        public String getTeamId();
+        public String getSkaterId();
 
-		public boolean getPenaltyBox();
-		public String getPosition();
+        public boolean getPenaltyBox();
+        public String getPosition();
 
-		public static final String EVENT_STATS = "Stats";
-	}
+        public static final String EVENT_STATS = "Stats";
+    }
 
-	public static final String EVENT_ADD_PERIOD = "AddPeriod";
-	public static final String EVENT_REMOVE_PERIOD = "RemovePeriod";
+    public static final String EVENT_ADD_PERIOD = "AddPeriod";
+    public static final String EVENT_REMOVE_PERIOD = "RemovePeriod";
 }

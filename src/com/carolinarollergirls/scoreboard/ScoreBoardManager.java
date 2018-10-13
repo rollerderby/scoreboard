@@ -29,154 +29,158 @@ import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
 import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 
 public class ScoreBoardManager {
-	public interface Logger {
-		void log(String msg);
-	}
+    public interface Logger {
+        void log(String msg);
+    }
 
-	public static void start() {
-		setSystemProperties();
-		loadVersion();
-		loadProperties();
+    public static void start() {
+        setSystemProperties();
+        loadVersion();
+        loadProperties();
 
-		scoreBoardModel = new DefaultScoreBoardModel();
+        scoreBoardModel = new DefaultScoreBoardModel();
 
-		// JSON updates.
-		JSONStateManager jsm = new JSONStateManager();
-		new ScoreBoardJSONListener(scoreBoardModel, jsm);
+        // JSON updates.
+        JSONStateManager jsm = new JSONStateManager();
+        new ScoreBoardJSONListener(scoreBoardModel, jsm);
 
-		// Controllers.
-		registerScoreBoardController(new JettyServletScoreBoardController(scoreBoardModel, jsm));
+        // Controllers.
+        registerScoreBoardController(new JettyServletScoreBoardController(scoreBoardModel, jsm));
 
-		// Viewers.
-		registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoardModel));
-		registerScoreBoardViewer(new ScoreBoardMetricsCollector((ScoreBoard)scoreBoardModel).register());
-		registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
+        // Viewers.
+        registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoardModel));
+        registerScoreBoardViewer(new ScoreBoardMetricsCollector((ScoreBoard)scoreBoardModel).register());
+        registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
 
-		//FIXME - not the best way to load autosave doc.
-		scoreBoardModel.getXmlScoreBoard().load();
-	}
+        //FIXME - not the best way to load autosave doc.
+        scoreBoardModel.getXmlScoreBoard().load();
+    }
 
-	public static void stop() {
-	}
+    public static void stop() {
+    }
 
-	public static String getVersion() {
-		return versionRelease;
-	}
+    public static String getVersion() {
+        return versionRelease;
+    }
 
-	public static void printMessage(String msg) {
-		if (logger != null)
-			logger.log(msg);
-		else
-			System.err.println(msg);
-	}
-
-
-	public static Properties getProperties() { return new Properties(properties); }
-
-	public static String getProperty(String key) { return properties.getProperty(key); }
-	public static String getProperty(String key, String dflt) { return properties.getProperty(key, dflt); }
+    public static void printMessage(String msg) {
+        if (logger != null) {
+            logger.log(msg);
+        } else {
+            System.err.println(msg);
+        }
+    }
 
 
-	public static Object getScoreBoardController(String key) { return controllers.get(key); }
+    public static Properties getProperties() { return new Properties(properties); }
 
-	public static Object getScoreBoardViewer(String key) { return viewers.get(key); }
+    public static String getProperty(String key) { return properties.getProperty(key); }
+    public static String getProperty(String key, String dflt) { return properties.getProperty(key, dflt); }
 
-	public static void registerScoreBoardController(Object sbC) {
-		controllers.put(sbC.getClass().getName(), sbC);
-	}
 
-	public static void registerScoreBoardViewer(Object sbV) {
-		viewers.put(sbV.getClass().getName(), sbV);
-	}
+    public static Object getScoreBoardController(String key) { return controllers.get(key); }
 
-	public static void doExit(String err) { doExit(err, null); }
-	public static void doExit(String err, Exception ex) {
-		printMessage(err);
-		if (ex != null)
-			ex.printStackTrace();
-		printMessage("Fatal error.	Exiting in 15 seconds.");
-		try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
-		System.exit(1);
-	}
+    public static Object getScoreBoardViewer(String key) { return viewers.get(key); }
 
-	private static void setSystemProperties() {
-		System.getProperties().setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
-	}
+    public static void registerScoreBoardController(Object sbC) {
+        controllers.put(sbC.getClass().getName(), sbC);
+    }
 
-	private static void loadVersion() {
-		Properties versionProperties = new Properties();
-		ClassLoader cL = ScoreBoardManager.class.getClassLoader();
-		InputStream releaseIs = cL.getResourceAsStream(VERSION_RELEASE_PROPERTIES_NAME);
-		try {
-			versionProperties.load(releaseIs);
-		} catch ( NullPointerException npE ) {
-			doExit("Could not find version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'");
-		} catch ( IOException ioE ) {
-			doExit("Could not load version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'", ioE);
-		}
-		try { releaseIs.close(); } catch ( Exception e ) { }
-		versionRelease = versionProperties.getProperty(VERSION_RELEASE_KEY);
-		printMessage("Carolina Rollergirls Scoreboard version "+getVersion());
-	}
+    public static void registerScoreBoardViewer(Object sbV) {
+        viewers.put(sbV.getClass().getName(), sbV);
+    }
 
-	private static void loadProperties() {
-		InputStream is = ScoreBoardManager.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE_NAME);
+    public static void doExit(String err) { doExit(err, null); }
+    public static void doExit(String err, Exception ex) {
+        printMessage(err);
+        if (ex != null) {
+            ex.printStackTrace();
+        }
+        printMessage("Fatal error.	Exiting in 15 seconds.");
+        try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
+        System.exit(1);
+    }
 
-		if (null == is) {
-			try {
-				is = new FileInputStream(new File(new File(defaultPath, PROPERTIES_DIR_NAME), PROPERTIES_FILE_NAME));
-			} catch ( FileNotFoundException fnfE ) {
-				doExit("Could not find properties file " + PROPERTIES_FILE_NAME);
-			}
-		}
+    private static void setSystemProperties() {
+        System.getProperties().setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
+    }
 
-		try {
-			properties.load(is);
-		} catch ( Exception e ) {
-			doExit("Could not load " + PROPERTIES_FILE_NAME + " file : " + e.getMessage(), e);
-		}
+    private static void loadVersion() {
+        Properties versionProperties = new Properties();
+        ClassLoader cL = ScoreBoardManager.class.getClassLoader();
+        InputStream releaseIs = cL.getResourceAsStream(VERSION_RELEASE_PROPERTIES_NAME);
+        try {
+            versionProperties.load(releaseIs);
+        } catch ( NullPointerException npE ) {
+            doExit("Could not find version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'");
+        } catch ( IOException ioE ) {
+            doExit("Could not load version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'", ioE);
+        }
+        try { releaseIs.close(); } catch ( Exception e ) { }
+        versionRelease = versionProperties.getProperty(VERSION_RELEASE_KEY);
+        printMessage("Carolina Rollergirls Scoreboard version "+getVersion());
+    }
 
-		for (String key : properties_overrides.keySet()) {
-			properties.put(key, properties_overrides.get(key));
-		}
+    private static void loadProperties() {
+        InputStream is = ScoreBoardManager.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE_NAME);
 
-		try { is.close(); }
-		catch ( IOException ioE ) { }
-	}
+        if (null == is) {
+            try {
+                is = new FileInputStream(new File(new File(defaultPath, PROPERTIES_DIR_NAME), PROPERTIES_FILE_NAME));
+            } catch ( FileNotFoundException fnfE ) {
+                doExit("Could not find properties file " + PROPERTIES_FILE_NAME);
+            }
+        }
 
-	/* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
-	public static boolean ObjectsEquals(Object a, Object b) {
-		if ((null == a) != (null == b))
-			return false;
-		if ((null != a) && !a.equals(b))
-			return false;
-		return true;
-	}
+        try {
+            properties.load(is);
+        } catch ( Exception e ) {
+            doExit("Could not load " + PROPERTIES_FILE_NAME + " file : " + e.getMessage(), e);
+        }
 
-	public static void setLogger(Logger l) { logger = l; }
-	public static File getDefaultPath() { return defaultPath; }
-	public static void setDefaultPath(File f) { defaultPath = f; }
-	public static void setPropertyOverride(String key, String value) { 
-		properties_overrides.put(key, value);
-		properties.put(key, value);
-	}
+        for (String key : properties_overrides.keySet()) {
+            properties.put(key, properties_overrides.get(key));
+        }
 
-	private static Properties properties = new Properties();
-	private static Map<String,String> properties_overrides = new HashMap<String,String>();
-	private static Map<String,Object> controllers = new ConcurrentHashMap<String,Object>();
-	private static Map<String,Object> viewers = new ConcurrentHashMap<String,Object>();
+        try { is.close(); }
+        catch ( IOException ioE ) { }
+    }
 
-	private static ScoreBoardModel scoreBoardModel;
-	private static Logger logger = null;
+    /* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
+    public static boolean ObjectsEquals(Object a, Object b) {
+        if ((null == a) != (null == b)) {
+            return false;
+        }
+        if ((null != a) && !a.equals(b)) {
+            return false;
+        }
+        return true;
+    }
 
-	private static String versionRelease = "";
+    public static void setLogger(Logger l) { logger = l; }
+    public static File getDefaultPath() { return defaultPath; }
+    public static void setDefaultPath(File f) { defaultPath = f; }
+    public static void setPropertyOverride(String key, String value) {
+        properties_overrides.put(key, value);
+        properties.put(key, value);
+    }
 
-	private static File defaultPath = new File(".");
+    private static Properties properties = new Properties();
+    private static Map<String,String> properties_overrides = new HashMap<String,String>();
+    private static Map<String,Object> controllers = new ConcurrentHashMap<String,Object>();
+    private static Map<String,Object> viewers = new ConcurrentHashMap<String,Object>();
 
-	public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
-	public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
-	public static final String VERSION_RELEASE_KEY = "release";
+    private static ScoreBoardModel scoreBoardModel;
+    private static Logger logger = null;
 
-	public static final String PROPERTIES_DIR_NAME = "config";
-	public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
+    private static String versionRelease = "";
+
+    private static File defaultPath = new File(".");
+
+    public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
+    public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
+    public static final String VERSION_RELEASE_KEY = "release";
+
+    public static final String PROPERTIES_DIR_NAME = "config";
+    public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
 }

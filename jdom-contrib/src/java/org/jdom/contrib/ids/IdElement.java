@@ -74,139 +74,138 @@ import org.jdom.Namespace;
  */
 public class IdElement extends Element {
 
-   // Allow Javadocs to inherit from superclass
+    // Allow Javadocs to inherit from superclass
 
-   public IdElement(String name, Namespace namespace) {
-      super(name, namespace);
-   }
+    public IdElement(String name, Namespace namespace) {
+        super(name, namespace);
+    }
 
-   public IdElement(String name) {
-      this(name, (Namespace)null);
-   }
+    public IdElement(String name) {
+        this(name, (Namespace)null);
+    }
 
-   public IdElement(String name, String uri) {
-      this(name, Namespace.getNamespace("", uri));
-   }
+    public IdElement(String name, String uri) {
+        this(name, Namespace.getNamespace("", uri));
+    }
 
-   public IdElement(String name, String prefix, String uri) {
-      this(name, Namespace.getNamespace(prefix, uri));
-   }
+    public IdElement(String name, String prefix, String uri) {
+        this(name, Namespace.getNamespace(prefix, uri));
+    }
 
-   protected Content setParent(Parent parent) {
-      // Save previous owning document (if any).
-      Document prevDoc = this.getDocument();
-      Document newDoc  = (parent != null)? parent.getDocument(): null;
+    protected Content setParent(Parent parent) {
+        // Save previous owning document (if any).
+        Document prevDoc = this.getDocument();
+        Document newDoc  = (parent != null)? parent.getDocument(): null;
 
-      // Attach to new parent element.
-      super.setParent(parent);
+        // Attach to new parent element.
+        super.setParent(parent);
 
-      if (newDoc != prevDoc) {
-         // New and previous owning documents are different.
-         // => Remove all the IDs for the subtree this element is the root
-         //    of from the previous owning document's lookup table and
-         //    insert them into the new owning document's lookup table.
-         transferIds(prevDoc, newDoc);
-      }
-      return this;
-   }
+        if (newDoc != prevDoc) {
+            // New and previous owning documents are different.
+            // => Remove all the IDs for the subtree this element is the root
+            //    of from the previous owning document's lookup table and
+            //    insert them into the new owning document's lookup table.
+            transferIds(prevDoc, newDoc);
+        }
+        return this;
+    }
 
 
-   /**
-    * <p>
-    * Transfers all the IDs for the subtree this element is the root
-    * of from the lookup table of the previous owning document to
-    * the lookup table of the new owning document.</p>
-    * <p>
-    * If either of the documents is <code>null</code> or is not an
-    * {@link IdDocument}, this method performs not action on the
-    * document. Hence, this method supports being called with both
-    * documents equal to <code>null</code>.</p>
-    *
-    * @param  prevDoc   the previous owning document.
-    * @param  newDoc    the new owning document.
-    */
-   private void transferIds(Document prevDoc, Document newDoc)
-   {
-      if ((prevDoc instanceof IdDocument) || (newDoc instanceof IdDocument)) {
-         // At least one of the documents supports lookup by ID.
-         // => Walk subtree to collect ID mappings.
-         Map ids = getIds(this, new HashMap());
+    /**
+     * <p>
+     * Transfers all the IDs for the subtree this element is the root
+     * of from the lookup table of the previous owning document to
+     * the lookup table of the new owning document.</p>
+     * <p>
+     * If either of the documents is <code>null</code> or is not an
+     * {@link IdDocument}, this method performs not action on the
+     * document. Hence, this method supports being called with both
+     * documents equal to <code>null</code>.</p>
+     *
+     * @param  prevDoc   the previous owning document.
+     * @param  newDoc    the new owning document.
+     */
+    private void transferIds(Document prevDoc, Document newDoc) {
+        if ((prevDoc instanceof IdDocument) || (newDoc instanceof IdDocument)) {
+            // At least one of the documents supports lookup by ID.
+            // => Walk subtree to collect ID mappings.
+            Map ids = getIds(this, new HashMap());
 
-         // Update previous owning document.
-         if (prevDoc instanceof IdDocument) {
-            // Document supports lookup by ID.
-            // => Remove IDs from document's lookup table.
-            IdDocument idDoc = (IdDocument)prevDoc;
+            // Update previous owning document.
+            if (prevDoc instanceof IdDocument) {
+                // Document supports lookup by ID.
+                // => Remove IDs from document's lookup table.
+                IdDocument idDoc = (IdDocument)prevDoc;
 
-            for (Iterator i=ids.keySet().iterator(); i.hasNext(); ) {
-               idDoc.removeId(i.next().toString());
+                for (Iterator i=ids.keySet().iterator(); i.hasNext(); ) {
+                    idDoc.removeId(i.next().toString());
+                }
             }
-         }
-         // Else: Lookup by ID not supported. => Nothing to update!
+            // Else: Lookup by ID not supported. => Nothing to update!
 
-         // Update new owning document.
-         if (newDoc instanceof IdDocument) {
-            // Document supports lookup by ID.
-            // => Add IDs from document's lookup table.
-            IdDocument idDoc = (IdDocument)newDoc;
+            // Update new owning document.
+            if (newDoc instanceof IdDocument) {
+                // Document supports lookup by ID.
+                // => Add IDs from document's lookup table.
+                IdDocument idDoc = (IdDocument)newDoc;
 
-            for (Iterator i=ids.keySet().iterator(); i.hasNext(); ) {
-               String key = i.next().toString();
-               idDoc.addId(key, (Element)(ids.get(key)));
+                for (Iterator i=ids.keySet().iterator(); i.hasNext(); ) {
+                    String key = i.next().toString();
+                    idDoc.addId(key, (Element)(ids.get(key)));
+                }
             }
-         }
-         // Else: Lookup by ID not supported. => Nothing to update!
-      }
-      // Else: None of the documents supports lookup by ID not supported.
-      //       => Ignore call.
-      return;
-   }
+            // Else: Lookup by ID not supported. => Nothing to update!
+        }
+        // Else: None of the documents supports lookup by ID not supported.
+        //       => Ignore call.
+        return;
+    }
 
-   /**
-    * <p>
-    * Retrieves the ID attributes for the subtree rooted at
-    * <code>root</code> to populate the ID mapping table
-    * <code>ids</code>. In the mapping table, ID attribute values are
-    * the keys to access the elements.</p>
-    *
-    * @param  root   the root element of the subtree to walk.
-    * @param  ids    the ID lookup table to populate.
-    *
-    * @return the updated ID lookup table.
-    */
-   private static Map getIds(Element root, Map ids) {
-      addIdAttributes(root, ids);
+    /**
+     * <p>
+     * Retrieves the ID attributes for the subtree rooted at
+     * <code>root</code> to populate the ID mapping table
+     * <code>ids</code>. In the mapping table, ID attribute values are
+     * the keys to access the elements.</p>
+     *
+     * @param  root   the root element of the subtree to walk.
+     * @param  ids    the ID lookup table to populate.
+     *
+     * @return the updated ID lookup table.
+     */
+    private static Map getIds(Element root, Map ids) {
+        addIdAttributes(root, ids);
 
-      List children = root.getContent();
-      for (Iterator i=children.iterator(); i.hasNext(); ) {
-         Object o = i.next();
-         if (o instanceof Element) {
-            getIds((Element)o, ids);
-         }
-      }
-      return ids;
-   }
+        List children = root.getContent();
+        for (Iterator i=children.iterator(); i.hasNext(); ) {
+            Object o = i.next();
+            if (o instanceof Element) {
+                getIds((Element)o, ids);
+            }
+        }
+        return ids;
+    }
 
-   /**
-    * <p>
-    * Gets the ID attribute for <code>elt</code> and adds the
-    * correpsonding entries in the ID mapping table
-    * <code>ids</code>.</p>
-    *
-    * @param  elt   the element to the ID attributes from.
-    * @param  ids   the ID lookup table to populate.
-    */
-   private static void addIdAttributes(Element elt, Map ids) {
-      List attrs = elt.getAttributes();
-      for (Iterator i=attrs.iterator(); i.hasNext(); ) {
-         Attribute attr = (Attribute)(i.next());
+    /**
+     * <p>
+     * Gets the ID attribute for <code>elt</code> and adds the
+     * correpsonding entries in the ID mapping table
+     * <code>ids</code>.</p>
+     *
+     * @param  elt   the element to the ID attributes from.
+     * @param  ids   the ID lookup table to populate.
+     */
+    private static void addIdAttributes(Element elt, Map ids) {
+        List attrs = elt.getAttributes();
+        for (Iterator i=attrs.iterator(); i.hasNext(); ) {
+            Attribute attr = (Attribute)(i.next());
 
-         if (attr.getAttributeType() == Attribute.ID_TYPE) {
-            ids.put(attr.getValue(), elt);
-            break;
-         }
-      }
-      return;
-   }
+            if (attr.getAttributeType() == Attribute.ID_TYPE) {
+                ids.put(attr.getValue(), elt);
+                break;
+            }
+        }
+        return;
+    }
 }
 
