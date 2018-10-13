@@ -21,149 +21,157 @@ import org.jdom.xpath.XPath;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 
-public class XmlScoreBoardServlet extends AbstractXmlServlet
-{
-	public String getPath() { return "/XmlScoreBoard"; }
+public class XmlScoreBoardServlet extends AbstractXmlServlet {
+    public String getPath() { return "/XmlScoreBoard"; }
 
-	protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		response.setContentType("text/xml");
-		prettyXmlOutputter.output(scoreBoardModel.getXmlScoreBoard().getDocument(), response.getOutputStream());
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+    protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
+        response.setContentType("text/xml");
+        prettyXmlOutputter.output(scoreBoardModel.getXmlScoreBoard().getDocument(), response.getOutputStream());
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 
-	protected void get(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		XmlListener listener = getXmlListenerForRequest(request);
-		if (null == listener) {
-			registrationKeyNotFound(request, response);
-			return;
-		}
+    protected void get(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
+        XmlListener listener = getXmlListenerForRequest(request);
+        if (null == listener) {
+            registrationKeyNotFound(request, response);
+            return;
+        }
 
-		Document d = listener.getDocument(LONGPOLL_TIMEOUT);
-		if (null == d) {
-			if (debugGet)
-				ScoreBoardManager.printMessage("GET to "+listener.getKey()+" no change");
-			response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
-		} else {
-			if (debugGet)
-				ScoreBoardManager.printMessage("GET to "+listener.getKey()+"\n"+prettyXmlOutputter.outputString(d));
-			response.setContentType("text/xml");
-			rawXmlOutputter.output(d, response.getOutputStream());
-			response.setStatus(HttpServletResponse.SC_OK);
-		}
-	}
+        Document d = listener.getDocument(LONGPOLL_TIMEOUT);
+        if (null == d) {
+            if (debugGet) {
+                ScoreBoardManager.printMessage("GET to "+listener.getKey()+" no change");
+            }
+            response.sendError(HttpServletResponse.SC_NOT_MODIFIED);
+        } else {
+            if (debugGet) {
+                ScoreBoardManager.printMessage("GET to "+listener.getKey()+"\n"+prettyXmlOutputter.outputString(d));
+            }
+            response.setContentType("text/xml");
+            rawXmlOutputter.output(d, response.getOutputStream());
+            response.setStatus(HttpServletResponse.SC_OK);
+        }
+    }
 
-	protected void set(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
-		XmlListener listener = getXmlListenerForRequest(request);
-		if (null == listener) {
-			registrationKeyNotFound(request, response);
-			return;
-		}
+    protected void set(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
+        XmlListener listener = getXmlListenerForRequest(request);
+        if (null == listener) {
+            registrationKeyNotFound(request, response);
+            return;
+        }
 
-		Document requestDocument = editor.toDocument(request.getInputStream());
-		if (null == requestDocument) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-			return;
-		}
+        Document requestDocument = editor.toDocument(request.getInputStream());
+        if (null == requestDocument) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
-		if (debugSet)
-			ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+rawXmlOutputter.outputString(requestDocument));
+        if (debugSet) {
+            ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+rawXmlOutputter.outputString(requestDocument));
+        }
 
-		scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
+        scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
 
-		response.setContentType("text/plain");
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+        response.setContentType("text/plain");
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 
-	protected void setDebug(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		String get = request.getParameter("get");
-		String set = request.getParameter("set");
+    protected void setDebug(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+        String get = request.getParameter("get");
+        String set = request.getParameter("set");
 
-		if (null != get) {
-			if (get.equals("1") || get.equalsIgnoreCase("true"))
-				debugGet = true;
-			else if (get.equals("0") || get.equalsIgnoreCase("false"))
-				debugGet = false;
-		}
-		if (null != set) {
-			if (set.equals("1") || set.equalsIgnoreCase("true"))
-				debugSet = true;
-			else if (set.equals("0") || set.equalsIgnoreCase("false"))
-				debugSet = false;
-		}
+        if (null != get) {
+            if (get.equals("1") || get.equalsIgnoreCase("true")) {
+                debugGet = true;
+            } else if (get.equals("0") || get.equalsIgnoreCase("false")) {
+                debugGet = false;
+            }
+        }
+        if (null != set) {
+            if (set.equals("1") || set.equalsIgnoreCase("true")) {
+                debugSet = true;
+            } else if (set.equals("0") || set.equalsIgnoreCase("false")) {
+                debugSet = false;
+            }
+        }
 
-		response.setContentType("text/plain");
-		response.getWriter().println("Debug /get : "+debugGet);
-		response.getWriter().println("Debug /set : "+debugSet);
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+        response.setContentType("text/plain");
+        response.getWriter().println("Debug /get : "+debugGet);
+        response.getWriter().println("Debug /set : "+debugSet);
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 
-	protected void listenerConfig(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		XmlListener listener = getXmlListenerForRequest(request);
-		if (null == listener) {
-			registrationKeyNotFound(request, response);
-			return;
-		}
+    protected void listenerConfig(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+        XmlListener listener = getXmlListenerForRequest(request);
+        if (null == listener) {
+            registrationKeyNotFound(request, response);
+            return;
+        }
 
-		String timeUpdate = request.getParameter("timeUpdate");
-		if ("sec".equalsIgnoreCase(timeUpdate) || "seconds".equalsIgnoreCase(timeUpdate))
-			listener.setFilter(timeUpdateSecondFilter);
-		else if ("ms".equalsIgnoreCase(timeUpdate) || "milliseconds".equalsIgnoreCase(timeUpdate))
-			listener.clearFilter();
+        String timeUpdate = request.getParameter("timeUpdate");
+        if ("sec".equalsIgnoreCase(timeUpdate) || "seconds".equalsIgnoreCase(timeUpdate)) {
+            listener.setFilter(timeUpdateSecondFilter);
+        } else if ("ms".equalsIgnoreCase(timeUpdate) || "milliseconds".equalsIgnoreCase(timeUpdate)) {
+            listener.clearFilter();
+        }
 
-		String currentTimeUpdateStr = "milliseconds";
-		if (timeUpdateSecondFilter == listener.getFilter())
-			currentTimeUpdateStr = "seconds";
+        String currentTimeUpdateStr = "milliseconds";
+        if (timeUpdateSecondFilter == listener.getFilter()) {
+            currentTimeUpdateStr = "seconds";
+        }
 
-		response.setContentType("text/plain");
-		response.getWriter().println("Time Update : "+currentTimeUpdateStr);
-		response.setStatus(HttpServletResponse.SC_OK);
-	}
+        response.setContentType("text/plain");
+        response.getWriter().println("Time Update : "+currentTimeUpdateStr);
+        response.setStatus(HttpServletResponse.SC_OK);
+    }
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doPost(request, response);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+        super.doPost(request, response);
 
-		try {
-			if ("/set".equals(request.getPathInfo()))
-				set(request, response);
-			else if (!response.isCommitted())
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		} catch ( JDOMException jE ) {
-			ScoreBoardManager.printMessage("XmlScoreBoardServlet ERROR: "+jE.getMessage());
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
-	}
+        try {
+            if ("/set".equals(request.getPathInfo())) {
+                set(request, response);
+            } else if (!response.isCommitted()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch ( JDOMException jE ) {
+            ScoreBoardManager.printMessage("XmlScoreBoardServlet ERROR: "+jE.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-		super.doGet(request, response);
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+        super.doGet(request, response);
 
-		try {
-			if ("/get".equals(request.getPathInfo()))
-				get(request, response);
-			else if ("/debug".equals(request.getPathInfo()))
-				setDebug(request, response);
-			else if ("/config".equals(request.getPathInfo()))
-				listenerConfig(request, response);
-			else if (request.getPathInfo().endsWith(".xml"))
-				getAll(request, response);
-			else if (!response.isCommitted())
-				response.sendError(HttpServletResponse.SC_NOT_FOUND);
-		} catch ( JDOMException jE ) {
-			ScoreBoardManager.printMessage("XmlScoreBoardServlet ERROR: "+jE.getMessage());
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-		}
-	}
+        try {
+            if ("/get".equals(request.getPathInfo())) {
+                get(request, response);
+            } else if ("/debug".equals(request.getPathInfo())) {
+                setDebug(request, response);
+            } else if ("/config".equals(request.getPathInfo())) {
+                listenerConfig(request, response);
+            } else if (request.getPathInfo().endsWith(".xml")) {
+                getAll(request, response);
+            } else if (!response.isCommitted()) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
+        } catch ( JDOMException jE ) {
+            ScoreBoardManager.printMessage("XmlScoreBoardServlet ERROR: "+jE.getMessage());
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+        }
+    }
 
-	protected XmlListener createXmlListener(ScoreBoard scoreBoard) {
-		XmlListener listener = super.createXmlListener(scoreBoard);
-		listener.setFilter(timeUpdateSecondFilter);
-		return listener;
-	}
+    protected XmlListener createXmlListener(ScoreBoard scoreBoard) {
+        XmlListener listener = super.createXmlListener(scoreBoard);
+        listener.setFilter(timeUpdateSecondFilter);
+        return listener;
+    }
 
-	protected XPath timeUpdateSecondFilter =
-		editor.createXPath("/*/ScoreBoard/Clock/Time[string(processing-instruction('TimeUpdate'))='ms']");
+    protected XPath timeUpdateSecondFilter =
+        editor.createXPath("/*/ScoreBoard/Clock/Time[string(processing-instruction('TimeUpdate'))='ms']");
 
-	protected boolean debugGet = false;
-	protected boolean debugSet = false;
+    protected boolean debugGet = false;
+    protected boolean debugSet = false;
 
-	private static final int LONGPOLL_TIMEOUT = 10000;
+    private static final int LONGPOLL_TIMEOUT = 10000;
 }

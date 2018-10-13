@@ -77,7 +77,7 @@ public class IdAttribute extends Attribute {
     }
 
     public IdAttribute(String name, String value,
-                                        int type, Namespace namespace) {
+                       int type, Namespace namespace) {
         super(name, value, type, namespace);
     }
 

@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.xml.stream;
 
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoardListener;
 
-public interface StreamListener extends XmlScoreBoardListener
-{
-	public void end();
+public interface StreamListener extends XmlScoreBoardListener {
+    public void end();
 }

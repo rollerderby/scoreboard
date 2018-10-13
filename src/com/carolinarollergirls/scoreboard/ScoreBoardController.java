@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard;
 
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
-public interface ScoreBoardController
-{
-	public void setScoreBoardModel(ScoreBoardModel scoreBoardModel);
+public interface ScoreBoardController {
+    public void setScoreBoardModel(ScoreBoardModel scoreBoardModel);
 }

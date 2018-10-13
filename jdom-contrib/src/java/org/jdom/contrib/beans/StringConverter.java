@@ -68,68 +68,63 @@ import java.util.*;
 public class StringConverter {
 
     public static interface Factory {
-	public Object instantiate(String string);
+        public Object instantiate(String string);
     }
 
-    public static class DateFactory implements StringConverter.Factory
-    {
-	public Object instantiate(String string) {
-	    return DateUtils.parseDate(string);
-	}
+    public static class DateFactory implements StringConverter.Factory {
+        public Object instantiate(String string) {
+            return DateUtils.parseDate(string);
+        }
     }
 
     protected Map factories = new HashMap();
 
     public StringConverter() {
-	try {
-	    factories.put( Class.forName("java.util.Date"),
-			      new DateFactory() );
-	}
-	catch (ClassNotFoundException e) {}
+        try {
+            factories.put( Class.forName("java.util.Date"),
+                           new DateFactory() );
+        } catch (ClassNotFoundException e) {}
     }
 
     public void setFactory(Class type, Factory factory) {
-	factories.put(type, factory);
+        factories.put(type, factory);
     }
-    
+
     protected static Class[] argString = new Class[] { String.class };
-    
-    public Object parse(String string, Class type)
-    {
-	// if it's a string, return it
-	if (type == String.class) {
-	    return string;
-	}
 
-	// if we have a Factory for it
-	Factory factory = (Factory)factories.get(type);
-	if (factory != null) {
-	    return factory.instantiate(string);
-	}
+    public Object parse(String string, Class type) {
+        // if it's a string, return it
+        if (type == String.class) {
+            return string;
+        }
 
-	// if it's a primitive, convert to wrapper (???)
-	if (type == short.class) type = Short.class;
-	if (type == int.class) type = Integer.class;
-	if (type == long.class) type = Long.class;
-	if (type == boolean.class) type = Boolean.class;
-	if (type == char.class) type = Character.class;
-	if (type == byte.class) type = Byte.class;
-	
-	// last ditch: see if the class has a String Factory
-	try {
-	    Constructor c = type.getConstructor(argString);
-	    if (c != null) {
-		return c.newInstance( new Object[] { string } );
-	    }
-	}
-	catch (NoSuchMethodException e) {
-	    // ignore & fall through
-	}
-	catch (Exception e) {
-	    System.err.println("Couldn't instantiate " + type + "(" + string + ")");
-	    e.printStackTrace();
-	}
-	
-	return null;
+        // if we have a Factory for it
+        Factory factory = (Factory)factories.get(type);
+        if (factory != null) {
+            return factory.instantiate(string);
+        }
+
+        // if it's a primitive, convert to wrapper (???)
+        if (type == short.class) { type = Short.class; }
+        if (type == int.class) { type = Integer.class; }
+        if (type == long.class) { type = Long.class; }
+        if (type == boolean.class) { type = Boolean.class; }
+        if (type == char.class) { type = Character.class; }
+        if (type == byte.class) { type = Byte.class; }
+
+        // last ditch: see if the class has a String Factory
+        try {
+            Constructor c = type.getConstructor(argString);
+            if (c != null) {
+                return c.newInstance( new Object[] { string } );
+            }
+        } catch (NoSuchMethodException e) {
+            // ignore & fall through
+        } catch (Exception e) {
+            System.err.println("Couldn't instantiate " + type + "(" + string + ")");
+            e.printStackTrace();
+        }
+
+        return null;
     }
 }

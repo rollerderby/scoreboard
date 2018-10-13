@@ -11,8 +11,8 @@ package com.carolinarollergirls.scoreboard.model;
 import com.carolinarollergirls.scoreboard.view.FrontendSettings;
 
 public interface FrontendSettingsModel extends FrontendSettings {
-	public void reset();
+    public void reset();
 
-  // Setting to null deletes a setting.
-	public void set(String k, String v);
+    // Setting to null deletes a setting.
+    public void set(String k, String v);
 }

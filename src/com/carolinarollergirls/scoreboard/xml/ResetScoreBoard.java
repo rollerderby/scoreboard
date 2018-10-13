@@ -10,16 +10,15 @@ package com.carolinarollergirls.scoreboard.xml;
 
 import org.jdom.Element;
 
-public class ResetScoreBoard extends DefaultXmlDocumentManager implements XmlDocumentManager
-{
-	public ResetScoreBoard() { super("Reset"); }
+public class ResetScoreBoard extends DefaultXmlDocumentManager implements XmlDocumentManager {
+    public ResetScoreBoard() { super("Reset"); }
 
-	protected void processElement(Element e) throws Exception {
-		if (Boolean.parseBoolean(editor.getText(e))) {
-			getXmlScoreBoard().reset();
-			getXmlScoreBoard().loadDefaultDocuments();
-			getXmlScoreBoard().reloadViewers();
-		}
-	}
+    protected void processElement(Element e) throws Exception {
+        if (Boolean.parseBoolean(editor.getText(e))) {
+            getXmlScoreBoard().reset();
+            getXmlScoreBoard().loadDefaultDocuments();
+            getXmlScoreBoard().reloadViewers();
+        }
+    }
 }
 

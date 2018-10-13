@@ -54,7 +54,7 @@
 
  */
 
- import java.util.zip.ZipFile;
+import java.util.zip.ZipFile;
 import java.util.zip.ZipEntry;
 
 import java.io.IOException;
@@ -66,9 +66,9 @@ import java.util.Enumeration;
 
 /**
  * <p>
- * The <code>Ident</code> class is a class which works like the 
+ * The <code>Ident</code> class is a class which works like the
  * ident(1) program used to display RCS keys stored in binary files,
- * but with the added facility of being able to look inside .zip/.jar 
+ * but with the added facility of being able to look inside .zip/.jar
  * files and check each one on the file contain within.
  * </p>
  *
@@ -79,13 +79,13 @@ import java.util.Enumeration;
  * @author Jools Enticknap
  */
 public final class Ident {
-    
+
     /** Starting character for an RCS string */
     private final static int KDELIM = '$';
 
     /** Delimiter withing the tags */
     private final static int VDELIM = ':';
-    
+
     /** All the known RCS tags */
     private final static String[] rcsTags = {
         "Author", // The login name of the user who checked in the revision.
@@ -93,33 +93,33 @@ public final class Ident {
         "Date",   // The date and time the revision was checked in.
 
         "Header", // A standard header containing the full pathname of the RCS
-                  // file, the revision number, the date and time, the author,
-                  // the state, and the locker (if locked).
- 
-        "Id",     // Same as $Header: /home/cvspublic/jdom-contrib/src/java/Ident.java,v 1.2 2004/02/06 09:57:48 jhunter Exp $, except that the RCS filename is without 
-                  // a path.
- 
+        // file, the revision number, the date and time, the author,
+        // the state, and the locker (if locked).
+
+        "Id",     // Same as $Header: /home/cvspublic/jdom-contrib/src/java/Ident.java,v 1.2 2004/02/06 09:57:48 jhunter Exp $, except that the RCS filename is without
+        // a path.
+
         "Locker", // The login name of the user who locked the revision (empty
-                  // if not locked).
- 
-        "Log",    // The log message supplied during checkin.  For ident's  
-                  // purposes, this is equivalent to $RCSfile: Ident.java,v $.
- 
+        // if not locked).
+
+        "Log",    // The log message supplied during checkin.  For ident's
+        // purposes, this is equivalent to $RCSfile: Ident.java,v $.
+
         "Name",   // The symbolic name used to check out the revision, if any.
-        
+
         "RCSfile",// The name of the RCS file without a path.
- 
+
         "Revision",// The revision number assigned to the revision.
- 
+
         "Source", // The full pathname of the RCS file.
- 
-        "State"   // The state assigned to the revision with the -s option 
-                  // of rcs(1) or ci(1).
+
+        "State"   // The state assigned to the revision with the -s option
+        // of rcs(1) or ci(1).
     };
-    
+
     /** A Map of all the tags for easy lookup */
     private final static HashMap tagMap;
-    
+
     public static void main(String args[]) throws IOException {
         if (args.length > 0 ) {
             for (int i = 0; i < args.length; i++) {
@@ -144,7 +144,7 @@ public final class Ident {
 
     private static void printUsage() {
         System.out.println(
-          "This program prints RCS information about a class file.");
+            "This program prints RCS information about a class file.");
         System.out.println("Usage: java Ident [classfile.class | jarfile.jar]");
     }
 
@@ -159,12 +159,12 @@ public final class Ident {
 
         boolean inTag    = false;
         boolean validTag = false;
-        
+
         while ((i = is.read()) != -1) {
-            
+
             // We have found a starting tag.
             if (i == KDELIM) {
-                // We are at the end of the 
+                // We are at the end of the
                 if (inTag) {
                     if (validTag) {
                         System.out.println("     $"+sb.toString()+"$");
@@ -187,8 +187,8 @@ public final class Ident {
                         validTag = true;
                     }
                 }
-            } 
-            
+            }
+
             if (inTag) {
                 sb.append((char)i);
             }
@@ -198,7 +198,7 @@ public final class Ident {
     static {
         tagMap = new HashMap();
         for (int i = 0; i < rcsTags.length; i++) {
-            tagMap.put(rcsTags[i],rcsTags[i]); 
+            tagMap.put(rcsTags[i],rcsTags[i]);
         }
     }
 }

@@ -60,7 +60,7 @@ package org.jdom.contrib.output;
  * A JTree outputter.
  * <p>
  * This outputter builds a JTree representation of the JDOM document for
- * easy visual navigation.  This is a full rewrite of the JTreeOutputter 
+ * easy visual navigation.  This is a full rewrite of the JTreeOutputter
  * originally written by James Davies.
  * </p>
  *
@@ -104,7 +104,7 @@ public class JTreeOutputter {
     }
 
     protected void processElement(Element el, DefaultMutableTreeNode dmtn) {
-        DefaultMutableTreeNode dmtnLocal = 
+        DefaultMutableTreeNode dmtnLocal =
             new DefaultMutableTreeNode(el.getName());
         String elText = el.getTextNormalize();
         if (elText != null && !elText.equals("")) {
@@ -125,7 +125,7 @@ public class JTreeOutputter {
         Iterator atts = el.getAttributes().iterator();
         while (atts.hasNext()) {
             Attribute att = (Attribute)atts.next();
-            DefaultMutableTreeNode node = 
+            DefaultMutableTreeNode node =
                 new DefaultMutableTreeNode("@" + att.getName());
             node.add(new DefaultMutableTreeNode(att.getValue()));
             dmtn.add(node);

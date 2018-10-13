@@ -59,15 +59,15 @@ package org.jdom.contrib.helpers;
 import org.jdom.*;
 
 /** <p>
- *    This class contains static helper methods. 
+ *    This class contains static helper methods.
  *    </p>
  *    @author Alex Rosen
  */
 public class TextHelper {
     /**
      * <p>
-     * This returns the text with surrounding whitespace removed and 
-     * internal whitespace normalized to a single space.  
+     * This returns the text with surrounding whitespace removed and
+     * internal whitespace normalized to a single space.
      * </p>
      */
     public static String normalize(String text) {
@@ -82,8 +82,7 @@ public class TextHelper {
                     newChars[pos++] = ' ';
                     white = true;
                 }
-            }
-            else {
+            } else {
                 newChars[pos++] = c;
                 white = false;
             }
@@ -139,8 +138,8 @@ public class TextHelper {
 
     /**
      * <p>
-     *  This convenience method returns the trimmed textual content of the 
-     *    named child element, or returns null if there's no such child.  
+     *  This convenience method returns the trimmed textual content of the
+     *    named child element, or returns null if there's no such child.
      *    See <code>String.trim()</code> for details of text trimming.
      * </p>
      *
@@ -160,8 +159,8 @@ public class TextHelper {
 
     /**
      * <p>
-     *  This convenience method returns the trimmed textual content of the 
-     *    named child element, or returns null if there's no such child.  
+     *  This convenience method returns the trimmed textual content of the
+     *    named child element, or returns null if there's no such child.
      *    See <code>String.trim()</code> for
      *    details of text trimming.
      * </p>
@@ -183,8 +182,8 @@ public class TextHelper {
 
     /**
      * <p>
-     *  This convenience method returns the normalized textual content of the 
-     *    named child element, or returns null if there's no such child.  
+     *  This convenience method returns the normalized textual content of the
+     *    named child element, or returns null if there's no such child.
      *    See <code>{@link #normalize}</code> for details of text normalization.
      * </p>
      *
@@ -204,8 +203,8 @@ public class TextHelper {
 
     /**
      * <p>
-     *  This convenience method returns the normalized textual content of the 
-     *    named child element, or returns null if there's no such child.  
+     *  This convenience method returns the normalized textual content of the
+     *    named child element, or returns null if there's no such child.
      *    See <code>{@link #normalize}</code> for
      *    details of text normalization.
      * </p>

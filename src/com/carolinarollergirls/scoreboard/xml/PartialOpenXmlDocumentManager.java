@@ -15,24 +15,24 @@ import org.jdom.xpath.XPath;
  * This class simply passes any Element under its management back to the XmlScoreBoard,
  * So the subtree managed by this is open for anyone to edit.
  */
-public abstract class PartialOpenXmlDocumentManager extends DefaultXmlDocumentManager implements XmlDocumentManager
-{
-	public PartialOpenXmlDocumentManager(String n) { super(n); }
+public abstract class PartialOpenXmlDocumentManager extends DefaultXmlDocumentManager implements XmlDocumentManager {
+    public PartialOpenXmlDocumentManager(String n) { super(n); }
 
-	public void setXmlScoreBoard(XmlScoreBoard xsB) {
-		myPartialXPath = editor.createXPath(getPartialXPathString());
-		super.setXmlScoreBoard(xsB);
-	}
+    public void setXmlScoreBoard(XmlScoreBoard xsB) {
+        myPartialXPath = editor.createXPath(getPartialXPathString());
+        super.setXmlScoreBoard(xsB);
+    }
 
-	/* Write back all child elements after pruning (except a Reset) */
-	protected void processChildElement(Element e) throws Exception {
-		super.processChildElement(e);
-		if (!e.getName().equals("Reset"))
-			update(editor.cloneDocumentToClonedElement(e, myPartialXPath));
-	}
+    /* Write back all child elements after pruning (except a Reset) */
+    protected void processChildElement(Element e) throws Exception {
+        super.processChildElement(e);
+        if (!e.getName().equals("Reset")) {
+            update(editor.cloneDocumentToClonedElement(e, myPartialXPath));
+        }
+    }
 
-	protected abstract String getPartialXPathString();
+    protected abstract String getPartialXPathString();
 
-	protected XPath myPartialXPath;
+    protected XPath myPartialXPath;
 }
 

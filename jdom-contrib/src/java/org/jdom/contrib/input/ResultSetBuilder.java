@@ -64,25 +64,25 @@ import java.util.*;
 import org.jdom.*;
 
 /**
- * <p><code>ResultSetBuilder</code> builds a JDOM tree from a 
+ * <p><code>ResultSetBuilder</code> builds a JDOM tree from a
  * <code>java.sql.ResultSet</code>.  Many good ideas were leveraged from
  * SQLBuilder written from Jon Baer.</p>
  *
  * Notes:
- *   Uses name returned by rsmd.getColumnName(), not getColumnLabel() 
+ *   Uses name returned by rsmd.getColumnName(), not getColumnLabel()
  *   because that is less likely to be a valid XML element title.
  *   Null values are given empty bodies, but you can mark them as empty with
  *   an attribute using the setNullAttribute() method.  Be aware that databases
  *   may change the case of column names.  setAsXXX() methods are case
  *   insensitive on input column name.  Assign each one a proper output name
- *   if you're worried.  Only build() throws JDOMException.  Any exceptions 
- *   encountered in the set methods are thrown during the build().  
- *   The setAsXXX(String columnName, ...) methods do not verify that a column 
+ *   if you're worried.  Only build() throws JDOMException.  Any exceptions
+ *   encountered in the set methods are thrown during the build().
+ *   The setAsXXX(String columnName, ...) methods do not verify that a column
  *   with the given name actually exists.
  *
  *   Still needs method-by-method Javadocs.
  * <p>
- * Issues: 
+ * Issues:
  *   Do attributes have to be added in a namespace?
  *
  * @author Jason Hunter
@@ -92,7 +92,7 @@ import org.jdom.*;
  * @version 0.5
  */
 public class ResultSetBuilder {
-    
+
     /** The ResultSet that becomes a <code>Document</code> */
     private ResultSet rs;
 
@@ -129,7 +129,7 @@ public class ResultSetBuilder {
 
     /** Value for attribute to mark that a field was null  */
     private String nullAttribValue = null;
-    
+
     /**
      * <p>
      *   This sets up a <code>java.sql.ResultSet</code> to be built
@@ -139,14 +139,13 @@ public class ResultSetBuilder {
      * @param rs <code>java.sql.ResultSet</code> to build
      */
     public ResultSetBuilder(ResultSet rs) {
-      this.rs = rs;
-      try {
-        rsmd = rs.getMetaData();
-      }
-      catch (SQLException e) {
-        // Hold the exception until build() is called
-        exception = e;
-      }
+        this.rs = rs;
+        try {
+            rsmd = rs.getMetaData();
+        } catch (SQLException e) {
+            // Hold the exception until build() is called
+            exception = e;
+        }
     }
 
     /**
@@ -157,9 +156,9 @@ public class ResultSetBuilder {
      *
      * @param rs <code>java.sql.ResultSet</code> to build from
      * @param rootName <code>String</code> name for the root
-     * <code>Element</code> 
+     * <code>Element</code>
      * of the <code>Document</code>
-     * @param rowName <code>String</code> name for the each immediate child 
+     * @param rowName <code>String</code> name for the each immediate child
      * <code>Element</code> of the root
      */
     public ResultSetBuilder(ResultSet rs, String rootName, String rowName) {
@@ -176,9 +175,9 @@ public class ResultSetBuilder {
      *
      * @param rs <code>java.sql.ResultSet</code> to build from
      * @param rootName <code>String</code> name for the root
-     * <code>Element</code> 
+     * <code>Element</code>
      * of the <code>Document</code>
-     * @param rowName <code>String</code> name for the each immediate child 
+     * @param rowName <code>String</code> name for the each immediate child
      * <code>Element</code> of the root
      * @param ns <code>Namespace</code> to use for each <code>Element</code>
      */
@@ -200,75 +199,72 @@ public class ResultSetBuilder {
      *
      */
     public Document build() throws JDOMException {
-      if (exception != null) {
-        throw new JDOMException("Database problem", exception);
-      }
-
-      try {
-        int colCount = rsmd.getColumnCount();
-
-        Element root = new Element(rootName, ns);
-        Document doc = new Document(root);
-
-        int rowCount = 0;
-
-        // get the column labels for this record set 
-        String[] columnName = new String[colCount]; 
-        for (int index = 0; index < colCount; index++) { 
-          columnName[index] = rsmd.getColumnName(index+1); 
-        } 
-
-        // build the org.jdom.Document out of the result set 
-        String name; 
-        String value; 
-        Element entry; 
-        Element child; 
-        
-        while (rs.next() && (rowCount++ < maxRows)) {
-          entry = new Element(rowName, ns);
-          for (int col = 1; col <= colCount; col++) {
-            if (names.isEmpty()) {
-              name = columnName[col-1];
-            }
-            else {
-              name = lookupName(columnName[col-1]);
-            }
-
-            value = getString(rs, col, rsmd.getColumnType(col));
-            if (!attribs.isEmpty() && isAttribute(columnName[col-1])) {
-              if (!rs.wasNull()) {
-                entry.setAttribute(name, value);
-              }
-            }
-            else {
-              child = new Element(name, ns);
-              if (!rs.wasNull()) {
-                child.setText(value);
-              } else {
-                if (nullAttribName != null) {
-                  child.setAttribute(nullAttribName, nullAttribValue);
-                }
-              }
-              entry.addContent(child);
-            }
-          }
-          root.addContent(entry);
+        if (exception != null) {
+            throw new JDOMException("Database problem", exception);
         }
 
-        return doc;
-      }
-      catch (SQLException e) {
-        throw new JDOMException("Database problem", e);
-      }
+        try {
+            int colCount = rsmd.getColumnCount();
+
+            Element root = new Element(rootName, ns);
+            Document doc = new Document(root);
+
+            int rowCount = 0;
+
+            // get the column labels for this record set
+            String[] columnName = new String[colCount];
+            for (int index = 0; index < colCount; index++) {
+                columnName[index] = rsmd.getColumnName(index+1);
+            }
+
+            // build the org.jdom.Document out of the result set
+            String name;
+            String value;
+            Element entry;
+            Element child;
+
+            while (rs.next() && (rowCount++ < maxRows)) {
+                entry = new Element(rowName, ns);
+                for (int col = 1; col <= colCount; col++) {
+                    if (names.isEmpty()) {
+                        name = columnName[col-1];
+                    } else {
+                        name = lookupName(columnName[col-1]);
+                    }
+
+                    value = getString(rs, col, rsmd.getColumnType(col));
+                    if (!attribs.isEmpty() && isAttribute(columnName[col-1])) {
+                        if (!rs.wasNull()) {
+                            entry.setAttribute(name, value);
+                        }
+                    } else {
+                        child = new Element(name, ns);
+                        if (!rs.wasNull()) {
+                            child.setText(value);
+                        } else {
+                            if (nullAttribName != null) {
+                                child.setAttribute(nullAttribName, nullAttribValue);
+                            }
+                        }
+                        entry.addContent(child);
+                    }
+                }
+                root.addContent(entry);
+            }
+
+            return doc;
+        } catch (SQLException e) {
+            throw new JDOMException("Database problem", e);
+        }
     }
 
-    protected String getString(ResultSet rs, int column, int columnType) 
-                                   throws SQLException {
+    protected String getString(ResultSet rs, int column, int columnType)
+    throws SQLException {
         if (columnType == Types.TIMESTAMP) {
             Timestamp timeStamp = rs.getTimestamp(column);
             if (timeStamp != null) {
                 return DateFormat.getDateTimeInstance(DateFormat.FULL,
-                                     DateFormat.FULL).format(timeStamp);
+                                                      DateFormat.FULL).format(timeStamp);
             }
         }
         if (columnType == Types.DATE) {
@@ -287,23 +283,21 @@ public class ResultSetBuilder {
     }
 
     private String lookupName(String origName) {
-      String name = (String) names.get(origName.toLowerCase());
-      if (name != null) {
-        return name;
-      }
-      else {
-        return origName;
-      }
+        String name = (String) names.get(origName.toLowerCase());
+        if (name != null) {
+            return name;
+        } else {
+            return origName;
+        }
     }
 
     private boolean isAttribute(String origName) {
-      Boolean val = (Boolean) attribs.get(origName.toLowerCase());
-      if (val == Boolean.TRUE) {
-        return true;
-      }
-      else {
-        return false;
-      }
+        Boolean val = (Boolean) attribs.get(origName.toLowerCase());
+        if (val == Boolean.TRUE) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -314,7 +308,7 @@ public class ResultSetBuilder {
      *
      */
     public void setRootName(String rootName) {
-      this.rootName = rootName;
+        this.rootName = rootName;
     }
 
     /**
@@ -325,7 +319,7 @@ public class ResultSetBuilder {
      *
      */
     public void setRowName(String rowName) {
-      this.rowName = rowName;
+        this.rowName = rowName;
     }
 
     /**
@@ -338,20 +332,20 @@ public class ResultSetBuilder {
      *
      */
     public void setNamespace(Namespace ns) {
-      this.ns = ns;
+        this.ns = ns;
     }
 
-     /**
-     * <p>
-     *   Set the maximum number of rows to add to your
-     *   <code>Document</code>.
-     * </p>
-     *
-     * @param maxRows <code>int</code>
-     *
-     */
+    /**
+    * <p>
+    *   Set the maximum number of rows to add to your
+    *   <code>Document</code>.
+    * </p>
+    *
+    * @param maxRows <code>int</code>
+    *
+    */
     public void setMaxRows(int maxRows) {
-      this.maxRows = maxRows;
+        this.maxRows = maxRows;
     }
 
     /**
@@ -365,7 +359,7 @@ public class ResultSetBuilder {
      *
      */
     public void setAsAttribute(String columnName) {
-      attribs.put(columnName.toLowerCase(), Boolean.TRUE);
+        attribs.put(columnName.toLowerCase(), Boolean.TRUE);
     }
 
     /**
@@ -379,8 +373,8 @@ public class ResultSetBuilder {
      *
      */
     public void setAsAttribute(String columnName, String attribName) {
-      attribs.put(columnName.toLowerCase(), Boolean.TRUE);
-      names.put(columnName.toLowerCase(), attribName);
+        attribs.put(columnName.toLowerCase(), Boolean.TRUE);
+        names.put(columnName.toLowerCase(), attribName);
     }
 
     /**
@@ -394,13 +388,12 @@ public class ResultSetBuilder {
      *
      */
     public void setAsAttribute(int columnNum) {
-      try {
-        String name = rsmd.getColumnName(columnNum).toLowerCase();
-        attribs.put(name, Boolean.TRUE);
-      }
-      catch (SQLException e) {
-        exception = e;
-      }
+        try {
+            String name = rsmd.getColumnName(columnNum).toLowerCase();
+            attribs.put(name, Boolean.TRUE);
+        } catch (SQLException e) {
+            exception = e;
+        }
     }
 
     /**
@@ -414,14 +407,13 @@ public class ResultSetBuilder {
      *
      */
     public void setAsAttribute(int columnNum, String attribName) {
-      try {
-        String name = rsmd.getColumnName(columnNum).toLowerCase();
-        attribs.put(name, Boolean.TRUE);
-        names.put(name, attribName);
-      }
-      catch (SQLException e) {
-        exception = e;
-      }
+        try {
+            String name = rsmd.getColumnName(columnNum).toLowerCase();
+            attribs.put(name, Boolean.TRUE);
+            names.put(name, attribName);
+        } catch (SQLException e) {
+            exception = e;
+        }
     }
 
     /**
@@ -435,9 +427,9 @@ public class ResultSetBuilder {
      *
      */
     public void setAsElement(String columnName, String elemName) {
-      String name = columnName.toLowerCase();
-      attribs.put(name, Boolean.FALSE);
-      names.put(name, elemName);
+        String name = columnName.toLowerCase();
+        attribs.put(name, Boolean.FALSE);
+        names.put(name, elemName);
     }
 
     /**
@@ -451,19 +443,18 @@ public class ResultSetBuilder {
      *
      */
     public void setAsElement(int columnNum, String elemName) {
-      try {
-        String name = rsmd.getColumnName(columnNum).toLowerCase();
-        attribs.put(name, Boolean.FALSE);
-        names.put(name, elemName);
-      }
-      catch (SQLException e) {
-        exception = e;
-      }
+        try {
+            String name = rsmd.getColumnName(columnNum).toLowerCase();
+            attribs.put(name, Boolean.FALSE);
+            names.put(name, elemName);
+        } catch (SQLException e) {
+            exception = e;
+        }
     }
 
     /**
      * <p>
-     *   Set a specific attribute to use to mark that a value in the 
+     *   Set a specific attribute to use to mark that a value in the
      *   database was null, not just an empty string.  This is necessary
      *   because &lt;foo/&gt; semantically represents both null and empty.
      *   This method lets you have &lt;foo null="true"&gt;.
@@ -479,12 +470,12 @@ public class ResultSetBuilder {
         this.nullAttribValue = nullAttribValue;
     }
 
-/*
-    public void setAsIngore(String columnName) {
-    }
+    /*
+        public void setAsIngore(String columnName) {
+        }
 
-    public void setAsIngore(int columnNum) {
-    }
-*/
+        public void setAsIngore(int columnNum) {
+        }
+    */
 
 }

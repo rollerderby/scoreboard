@@ -65,17 +65,17 @@ package org.jdom.contrib.beans;
 public class BeanMapperException extends Exception {
 
     Exception rootCause;
-    
+
     public BeanMapperException(Exception rootCause) {
         super(rootCause.toString());
         this.rootCause = rootCause;
     }
-    
+
     public BeanMapperException(String message, Exception rootCause) {
         super(message + ": " +           rootCause.toString());
         this.rootCause = rootCause;
     }
-    
+
     public BeanMapperException(String message) {
         super(message);
     }
@@ -90,5 +90,5 @@ public class BeanMapperException extends Exception {
             System.err.print("Root cause: " );
             rootCause.printStackTrace();
         }
-    }    
+    }
 }

@@ -10,28 +10,28 @@ package com.carolinarollergirls.scoreboard.xml;
 
 import org.jdom.Document;
 
-public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListener implements XmlScoreBoardListener
-{
-	public SleepingQueueXmlScoreBoardListener() { super(); }
-	public SleepingQueueXmlScoreBoardListener(XmlScoreBoard sb) { super(sb); }
+public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListener implements XmlScoreBoardListener {
+    public SleepingQueueXmlScoreBoardListener() { super(); }
+    public SleepingQueueXmlScoreBoardListener(XmlScoreBoard sb) { super(sb); }
 
-	public void xmlChange(Document d) {
-		synchronized (documentsLock) {
-			super.xmlChange(d);
-			if (!isEmpty() && !isBatchActive()) {
-				documentsLock.notifyAll();
-			}
-		}
-	}
+    public void xmlChange(Document d) {
+        synchronized (documentsLock) {
+            super.xmlChange(d);
+            if (!isEmpty() && !isBatchActive()) {
+                documentsLock.notifyAll();
+            }
+        }
+    }
 
-	public Document getNextDocument() { return getNextDocument(0); }
-	public Document getNextDocument(int timeout) {
-		synchronized (documentsLock) {
-			try {
-				if (isEmpty() || isBatchActive())
-					documentsLock.wait(timeout);
-			} catch ( InterruptedException iE ) { }
-			return super.getNextDocument();
-		}
-	}
+    public Document getNextDocument() { return getNextDocument(0); }
+    public Document getNextDocument(int timeout) {
+        synchronized (documentsLock) {
+            try {
+                if (isEmpty() || isBatchActive()) {
+                    documentsLock.wait(timeout);
+                }
+            } catch ( InterruptedException iE ) { }
+            return super.getNextDocument();
+        }
+    }
 }

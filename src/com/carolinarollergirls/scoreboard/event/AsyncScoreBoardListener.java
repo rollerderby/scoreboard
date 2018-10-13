@@ -12,69 +12,68 @@ import java.util.LinkedList;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class AsyncScoreBoardListener extends Thread implements ScoreBoardListener
-{
-	public AsyncScoreBoardListener(ScoreBoardListener l) {
-		this.listener = l;
-		listeners.add(this);
-		start();
-	}
+public class AsyncScoreBoardListener extends Thread implements ScoreBoardListener {
+    public AsyncScoreBoardListener(ScoreBoardListener l) {
+        this.listener = l;
+        listeners.add(this);
+        start();
+    }
 
-	public void scoreBoardChange(ScoreBoardEvent event) {
-		synchronized(this) {
-			queue.add(event);
-			this.notifyAll();
-		}
-	}
+    public void scoreBoardChange(ScoreBoardEvent event) {
+        synchronized(this) {
+            queue.add(event);
+            this.notifyAll();
+        }
+    }
 
-	public void run() {
-		while (true) {
-			ScoreBoardEvent event = null;
-			synchronized(this) {
-				try {
-					if((event = queue.poll()) == null){
-						this.wait();
-					}
-				} catch (InterruptedException e) {}
-				inProgress = true;
-			}
-			if (event != null) {
-				listener.scoreBoardChange(event);
-			}
-			synchronized(this) {
-				inProgress = false;
-			}
-		}
+    public void run() {
+        while (true) {
+            ScoreBoardEvent event = null;
+            synchronized(this) {
+                try {
+                    if((event = queue.poll()) == null) {
+                        this.wait();
+                    }
+                } catch (InterruptedException e) {}
+                inProgress = true;
+            }
+            if (event != null) {
+                listener.scoreBoardChange(event);
+            }
+            synchronized(this) {
+                inProgress = false;
+            }
+        }
 
-	}
+    }
 
-	private boolean isEmpty() {
-		synchronized(this) {
-			return queue.size() == 0 && !inProgress;
-		}
-	}
+    private boolean isEmpty() {
+        synchronized(this) {
+            return queue.size() == 0 && !inProgress;
+        }
+    }
 
-	private ScoreBoardListener listener;
-	private boolean inProgress;
-	private Queue<ScoreBoardEvent> queue = new LinkedList<ScoreBoardEvent>();
+    private ScoreBoardListener listener;
+    private boolean inProgress;
+    private Queue<ScoreBoardEvent> queue = new LinkedList<ScoreBoardEvent>();
 
-	// For unittests.
-	public static void waitForEvents() {
-		while (true) {
-			boolean empty = true;
-			for (AsyncScoreBoardListener asbl : listeners) {
-				if (!asbl.isEmpty()) {
-					empty = false;
-				}
-			}
-			if (empty) {
-				break;
-			}
-			try{
-				Thread.sleep(1);
-			} catch (InterruptedException e) {};
-		}
-	}
-	private static Queue<AsyncScoreBoardListener> listeners = new ConcurrentLinkedQueue<AsyncScoreBoardListener>();
+    // For unittests.
+    public static void waitForEvents() {
+        while (true) {
+            boolean empty = true;
+            for (AsyncScoreBoardListener asbl : listeners) {
+                if (!asbl.isEmpty()) {
+                    empty = false;
+                }
+            }
+            if (empty) {
+                break;
+            }
+            try {
+                Thread.sleep(1);
+            } catch (InterruptedException e) {};
+        }
+    }
+    private static Queue<AsyncScoreBoardListener> listeners = new ConcurrentLinkedQueue<AsyncScoreBoardListener>();
 }
 

@@ -12,43 +12,42 @@ import java.util.List;
 
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 
-public interface ScoreBoardModel extends ScoreBoard
-{
-	public ScoreBoard getScoreBoard();
+public interface ScoreBoardModel extends ScoreBoard {
+    public ScoreBoard getScoreBoard();
 
-	/** Reset the entire ScoreBoard. */
-	public void reset();
+    /** Reset the entire ScoreBoard. */
+    public void reset();
 
-	public void setTimeoutOwner(String owner);
-	public void setOfficialReview(boolean official);
+    public void setTimeoutOwner(String owner);
+    public void setOfficialReview(boolean official);
 
-	public void setInOvertime(boolean inOvertime);
-	public void startOvertime();
+    public void setInOvertime(boolean inOvertime);
+    public void startOvertime();
 
-	public void setInPeriod(boolean inPeriod);
+    public void setInPeriod(boolean inPeriod);
 
-	public void setOfficialScore(boolean official);
+    public void setOfficialScore(boolean official);
 
-	public void startJam();
-	public void stopJamTO();
+    public void startJam();
+    public void stopJamTO();
 
-	public void timeout();
-	public void setTimeoutType(String team, boolean review);
+    public void timeout();
+    public void setTimeoutType(String team, boolean review);
 
-	public void clockUndo(boolean replace);
+    public void clockUndo(boolean replace);
 
-	public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
+    public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 
-	public void setRuleset(String id);
-	public SettingsModel getSettingsModel();
-	public FrontendSettingsModel getFrontendSettingsModel();
-	public StatsModel getStatsModel();
+    public void setRuleset(String id);
+    public SettingsModel getSettingsModel();
+    public FrontendSettingsModel getFrontendSettingsModel();
+    public StatsModel getStatsModel();
 
 // FIXME - need methods to add/remove clocks and teams! */
-	public List<ClockModel> getClockModels();
-	public ClockModel getClockModel(String id);
+    public List<ClockModel> getClockModels();
+    public ClockModel getClockModel(String id);
 
-	public List<TeamModel> getTeamModels();
-	public TeamModel getTeamModel(String id);
+    public List<TeamModel> getTeamModels();
+    public TeamModel getTeamModel(String id);
 }
 

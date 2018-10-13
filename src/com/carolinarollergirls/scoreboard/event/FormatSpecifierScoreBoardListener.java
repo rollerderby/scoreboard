@@ -10,20 +10,19 @@ package com.carolinarollergirls.scoreboard.event;
 
 import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
-public class FormatSpecifierScoreBoardListener extends ConditionalScoreBoardListener implements ScoreBoardListener
-{
-  public FormatSpecifierScoreBoardListener(FormatSpecifierViewer v, String f, ScoreBoardListener l) throws IllegalArgumentException {
-    super(v.getScoreBoardCondition(f), l);
-    formatSpecifierViewer = v;
-    format = f;
-  }
+public class FormatSpecifierScoreBoardListener extends ConditionalScoreBoardListener implements ScoreBoardListener {
+    public FormatSpecifierScoreBoardListener(FormatSpecifierViewer v, String f, ScoreBoardListener l) throws IllegalArgumentException {
+        super(v.getScoreBoardCondition(f), l);
+        formatSpecifierViewer = v;
+        format = f;
+    }
 
-  public String getFormat() { return format; }
+    public String getFormat() { return format; }
 
-  protected boolean checkScoreBoardEvent(ScoreBoardEvent e) {
-    return (super.checkScoreBoardEvent(e) && formatSpecifierViewer.checkCondition(getFormat(), e));
-  }
+    protected boolean checkScoreBoardEvent(ScoreBoardEvent e) {
+        return (super.checkScoreBoardEvent(e) && formatSpecifierViewer.checkCondition(getFormat(), e));
+    }
 
-  protected FormatSpecifierViewer formatSpecifierViewer;
-  protected String format;
+    protected FormatSpecifierViewer formatSpecifierViewer;
+    protected String format;
 }

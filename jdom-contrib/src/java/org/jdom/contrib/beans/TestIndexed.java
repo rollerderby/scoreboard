@@ -63,11 +63,11 @@ import java.util.*;
 import java.util.List;
 import java.beans.*;
 import java.lang.reflect.*;
-    
+
 public class TestIndexed implements java.io.Serializable {
     private String name;
     private List toppings = new ArrayList();
-    private int[] measurements = new int[]{36, 24, 38};
+    private int[] measurements = new int[] {36, 24, 38};
 
     public String getName() {
         return name;
@@ -97,8 +97,9 @@ public class TestIndexed implements java.io.Serializable {
     }
 
     public void setTopping(String[] x) {
-        if (x != null)
+        if (x != null) {
             toppings = Arrays.asList(x);
+        }
     }
 
     public int[] getMeasurements() {

@@ -8,14 +8,13 @@ package com.carolinarollergirls.scoreboard.view;
  * See the file COPYING for details.
  */
 
-public class SkaterNotFoundException extends RuntimeException
-{
-	public SkaterNotFoundException(String s) {
-		super("Skater '"+s+"' not found");
-		skater = s;
-	}
+public class SkaterNotFoundException extends RuntimeException {
+    public SkaterNotFoundException(String s) {
+        super("Skater '"+s+"' not found");
+        skater = s;
+    }
 
-	public String getSkater() { return skater; }
+    public String getSkater() { return skater; }
 
-	protected String skater = "";
+    protected String skater = "";
 }

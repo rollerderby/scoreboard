@@ -12,38 +12,40 @@ import java.util.LinkedList;
 
 import org.jdom.Document;
 
-public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener implements XmlScoreBoardListener
-{
-	public QueueXmlScoreBoardListener() { }
-	public QueueXmlScoreBoardListener(XmlScoreBoard sb) {
-		sb.addXmlScoreBoardListener(this);
-	}
+public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener implements XmlScoreBoardListener {
+    public QueueXmlScoreBoardListener() { }
+    public QueueXmlScoreBoardListener(XmlScoreBoard sb) {
+        sb.addXmlScoreBoardListener(this);
+    }
 
-	public void xmlChange(Document d) {
-		super.xmlChange(d);
-		if (editor.isEmptyDocument(d))
-			return;
-		synchronized (documentsLock) {
-			if (queueNextDocument || documents.isEmpty())
-				documents.addLast(d);
-			else
-				editor.mergeDocuments(documents.getLast(), d);
+    public void xmlChange(Document d) {
+        super.xmlChange(d);
+        if (editor.isEmptyDocument(d)) {
+            return;
+        }
+        synchronized (documentsLock) {
+            if (queueNextDocument || documents.isEmpty()) {
+                documents.addLast(d);
+            } else {
+                editor.mergeDocuments(documents.getLast(), d);
+            }
 
-			queueNextDocument = editor.hasRemovePI(d);
-		}
-	}
+            queueNextDocument = editor.hasRemovePI(d);
+        }
+    }
 
-	public Document getNextDocument() {
-		synchronized (documentsLock) {
-			if (isBatchActive())
-				return null;
-			return documents.poll();
-		}
-	}
+    public Document getNextDocument() {
+        synchronized (documentsLock) {
+            if (isBatchActive()) {
+                return null;
+            }
+            return documents.poll();
+        }
+    }
 
-	public boolean isEmpty() { return (null == documents.peek()); }
+    public boolean isEmpty() { return (null == documents.peek()); }
 
-	protected boolean queueNextDocument = false;
-	protected LinkedList<Document> documents = new LinkedList<Document>();
-	protected Object documentsLock = new Object();
+    protected boolean queueNextDocument = false;
+    protected LinkedList<Document> documents = new LinkedList<Document>();
+    protected Object documentsLock = new Object();
 }

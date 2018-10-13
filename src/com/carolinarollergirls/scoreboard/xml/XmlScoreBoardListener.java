@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.xml;
 
 import org.jdom.Document;
 
-public interface XmlScoreBoardListener
-{
-	public void xmlChange(Document d);
+public interface XmlScoreBoardListener {
+    public void xmlChange(Document d);
 }
