@@ -18,8 +18,6 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Random;
-
 import javax.servlet.ServletException;
 
 import org.eclipse.jetty.server.Server;
