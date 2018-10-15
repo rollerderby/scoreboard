@@ -3,8 +3,8 @@ package com.carolinarollergirls.scoreboard.rules;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 
 public class TimeRule extends Rule {
-    public TimeRule(boolean onResetOnly, String fullname, String description, String defaultValue) {
-        super(onResetOnly, "Time", fullname, description, null);
+    public TimeRule(String fullname, String description, String defaultValue) {
+        super("Time", fullname, description, null);
         this.defaultValue = convertValue(defaultValue);
     }
 

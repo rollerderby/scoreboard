@@ -57,43 +57,43 @@ public class Ruleset {
                 return base;
             }
 
-            newRule(new IntegerRule(false, ScoreBoard.SETTING_NUMBER_PERIODS, "Number of periods", 2));
-            newRule(   new TimeRule(false, ScoreBoard.SETTING_PERIOD_DURATION, "Duration of a period", "30:00"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_PERIOD_DIRECTION, "Which way should the period clock count?", true, "Count Down", "Count Up"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "When can a period end?", true, "Anytime outside a jam", "Only on jam end"));
+            newRule(new IntegerRule(ScoreBoard.SETTING_NUMBER_PERIODS, "Number of periods", 2));
+            newRule(   new TimeRule(ScoreBoard.SETTING_PERIOD_DURATION, "Duration of a period", "30:00"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_PERIOD_DIRECTION, "Which way should the period clock count?", true, "Count Down", "Count Up"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "When can a period end?", true, "Anytime outside a jam", "Only on jam end"));
 
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_JAM_NUMBER_PER_PERIOD,   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
-            newRule(   new TimeRule(false, ScoreBoard.SETTING_JAM_DURATION, "Maximum duration of a jam", "2:00"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_JAM_DIRECTION, "Which way should the jam clock count?", true, "Count Down", "Count Up"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_JAM_NUMBER_PER_PERIOD,   "How to handle Jam Numbers", true, "Reset each period", "Continue counting"));
+            newRule(   new TimeRule(ScoreBoard.SETTING_JAM_DURATION, "Maximum duration of a jam", "2:00"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_JAM_DIRECTION, "Which way should the jam clock count?", true, "Count Down", "Count Up"));
 
-            newRule(   new TimeRule(false, ScoreBoard.SETTING_LINEUP_DURATION, "Duration of lineup", "0:30"));
-            newRule(   new TimeRule(false, ScoreBoard.SETTING_OVERTIME_LINEUP_DURATION, "Duration of lineup before an overtime jam", "1:00"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_LINEUP_DIRECTION, "Which way should the lineup clock count?", false, "Count Down", "Count Up"));
+            newRule(   new TimeRule(ScoreBoard.SETTING_LINEUP_DURATION, "Duration of lineup", "0:30"));
+            newRule(   new TimeRule(ScoreBoard.SETTING_OVERTIME_LINEUP_DURATION, "Duration of lineup before an overtime jam", "1:00"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_LINEUP_DIRECTION, "Which way should the lineup clock count?", false, "Count Down", "Count Up"));
 
-            newRule(   new TimeRule(false, ScoreBoard.SETTING_TTO_DURATION, "Duration of a team timeout", "1:00"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_TIMEOUT_DIRECTION, "Which way should the timeout clock count?", false, "Count Down", "Count Up"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_TO, "Stop the period clock on every timeout? If false, the options below control the behaviour per type of timeout.", true, "True", "False"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_OTO, "Stop the period clock on official timeouts?", false, "True", "False"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_TTO, "Stop the period clock on team timeouts?", false, "True", "False"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_STOP_PC_ON_OR, "Stop the period clock on official reviews?", false, "True", "False"));
-            newRule(   new TimeRule(false, ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00"));
+            newRule(   new TimeRule(ScoreBoard.SETTING_TTO_DURATION, "Duration of a team timeout", "1:00"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_TIMEOUT_DIRECTION, "Which way should the timeout clock count?", false, "Count Down", "Count Up"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_TO, "Stop the period clock on every timeout? If false, the options below control the behaviour per type of timeout.", true, "True", "False"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_OTO, "Stop the period clock on official timeouts?", false, "True", "False"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_TTO, "Stop the period clock on team timeouts?", false, "True", "False"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_OR, "Stop the period clock on official reviews?", false, "True", "False"));
+            newRule(   new TimeRule(ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00"));
 
-            newRule( new StringRule(false, ScoreBoard.SETTING_INTERMISSION_DURATIONS, "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_INTERMISSION_DIRECTION, "Which way should the intermission clock count?", true, "Count Down", "Count Up"));
+            newRule( new StringRule(ScoreBoard.SETTING_INTERMISSION_DURATIONS, "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_INTERMISSION_DIRECTION, "Which way should the intermission clock count?", true, "Count Down", "Count Up"));
 
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_START,   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
-            newRule(   new TimeRule(false, ScoreBoard.SETTING_AUTO_START_BUFFER,   "How long to wait after end of lineup before auto start is triggered.", "0:02"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_START_JAM,   "What to start after lineup is up", false, "Jam", "Timeout"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_END_JAM,   "End a jam, when the jam clock has run down", true, "Enabled", "Disabled"));
-            newRule(new BooleanRule(false, ScoreBoard.SETTING_AUTO_END_TTO,   "End a team timeout, after it's defined duration has elapsed", false, "Enabled", "Disabled"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_AUTO_START,   "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"));
+            newRule(   new TimeRule(ScoreBoard.SETTING_AUTO_START_BUFFER,   "How long to wait after end of lineup before auto start is triggered.", "0:02"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_AUTO_START_JAM,   "What to start after lineup is up", false, "Jam", "Timeout"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_AUTO_END_JAM,   "End a jam, when the jam clock has run down", true, "Enabled", "Disabled"));
+            newRule(new BooleanRule(ScoreBoard.SETTING_AUTO_END_TTO,   "End a team timeout, after it's defined duration has elapsed", false, "Enabled", "Disabled"));
 
-            newRule(new IntegerRule(false, Team.SETTING_NUMBER_TIMEOUTS, "How many timeouts each team is granted per game or period", 3));
-            newRule(new BooleanRule(false, Team.SETTING_TIMEOUTS_PER_PERIOD, "Are timeouts granted per period or per game?", false, "Period", "Game"));
-            newRule(new IntegerRule(false, Team.SETTING_NUMBER_REVIEWS, "How many official reviews each team is granted per game or period", 1));
-            newRule(new BooleanRule(false, Team.SETTING_REVIEWS_PER_PERIOD, "Are official reviews granted per period or per game?", true, "Period", "Game"));
+            newRule(new IntegerRule(Team.SETTING_NUMBER_TIMEOUTS, "How many timeouts each team is granted per game or period", 3));
+            newRule(new BooleanRule(Team.SETTING_TIMEOUTS_PER_PERIOD, "Are timeouts granted per period or per game?", false, "Period", "Game"));
+            newRule(new IntegerRule(Team.SETTING_NUMBER_REVIEWS, "How many official reviews each team is granted per game or period", 1));
+            newRule(new BooleanRule(Team.SETTING_REVIEWS_PER_PERIOD, "Are official reviews granted per period or per game?", true, "Period", "Game"));
 
-            newRule( new StringRule(false, PenaltyCodesManager.SETTING_PENALTIES_FILE, "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json"));
-            newRule(new IntegerRule(false, Penalty.SETTING_FO_LIMIT, "After how many penalties a skater has fouled out of the game. Note that the software currently does not suppert more than 9 penalties per skater.", 7));
+            newRule( new StringRule(PenaltyCodesManager.SETTING_PENALTIES_FILE, "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json"));
+            newRule(new IntegerRule(Penalty.SETTING_FO_LIMIT, "After how many penalties a skater has fouled out of the game. Note that the software currently does not suppert more than 9 penalties per skater.", 7));
 
             base = new Ruleset();
             base.name = "WFTDA Sanctioned";
@@ -131,19 +131,17 @@ public class Ruleset {
         rule_definitions.put(rule.getFullName(), rule);
     }
 
-    public void apply(boolean isReset) {
-        apply(isReset, null);
+    public void apply() {
+        apply(null);
     }
-    public void apply(boolean isReset, RulesetReceiver target) {
+    public void apply(RulesetReceiver target) {
         for (Rule rule : rule_definitions.values()) {
-            if (isReset || !rule.isResetOnly()) {
-                Object value = getRule(rule, true);
-                List<RulesetReceiver> receivers = rule_receivers.get(rule);
-                if (receivers != null) {
-                    for (RulesetReceiver rsr : receivers) {
-                        if (target == null || rsr == target) {
-                            rsr.applyRule(rule.getFullName(), value);
-                        }
+            Object value = getRule(rule, true);
+            List<RulesetReceiver> receivers = rule_receivers.get(rule);
+            if (receivers != null) {
+                for (RulesetReceiver rsr : receivers) {
+                    if (target == null || rsr == target) {
+                        rsr.applyRule(rule.getFullName(), value);
                     }
                 }
             }

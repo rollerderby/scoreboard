@@ -110,7 +110,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
     public void reset() {
         synchronized (coreLock) {
-            _getRuleset().apply(true);
+            _getRuleset().apply();
 
             Iterator<ClockModel> c = getClockModels().iterator();
             while (c.hasNext()) {
@@ -572,7 +572,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         synchronized (coreLock) {
             String last = getRuleset();
             ruleset = Ruleset.findRuleset(id, true);
-            ruleset.apply(false);
+            ruleset.apply();
             scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, ruleset.getId().toString(), last));
         }
     }

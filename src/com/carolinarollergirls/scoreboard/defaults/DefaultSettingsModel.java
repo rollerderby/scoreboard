@@ -53,7 +53,7 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
             for (String k : keys) {
                 set(k, null);
             }
-            sbm._getRuleset().apply(true, this);
+            sbm._getRuleset().apply(this);
         }
     }
 
