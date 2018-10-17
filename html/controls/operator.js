@@ -10,7 +10,7 @@
 
 
 $.fx.interval = 33;
-_include("/json", [ "Game.js", "Rulesets.js" ]);
+_include("/json", [ "Game.js" ]);
 
 $sb(function() {
 	createScoreTimeTab();
@@ -362,20 +362,12 @@ function createGameControlDialog() {
 	}).change(function(e) { updateAdhocName(); });
 
 
-	Rulesets.List(function(rulesets) {
-		var select = adhocGame.find("select.Ruleset");
-		var active = $sb("ScoreBoard.Ruleset").$sbGet();
-		$.each(rulesets, function(idx, rs) {
-			var opt = $("<option>")
-				.attr("value", rs.id)
-				.prop("rulesetName", rs.name)
-				.append(rs.name);
-			console.log(rs.id, active);
-			if (rs.id == active)
-				opt.prop("selected", true);
-			_windowFunctions.appendAlphaSortedByProp(select, opt, "rulesetName");
-		});
+	_crgUtils.setupSelect(adhocGame.find("select.Ruleset"), {
+		optionParent: "ScoreBoard.KnownRulesets",
+		optionChildName: "Ruleset",
+		optionNameElement: "Name",
 	});
+	adhocGame.find("select.Ruleset").val($sb("ScoreBoard.Rules.Id").$sbGet());
 
 	dialog.dialog({
 		title: title,
@@ -683,7 +675,7 @@ function createTeamTable() {
 		}
 
 
-		// Note instantaneous score change is always towards the center.  Jam score total is on the outside.
+		// Note instantaneous score change is always towards the center.	Jam score total is on the outside.
 		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
 		var jamScore = $("<a>").appendTo(scoreSubTr.children("td:eq("+(first?"0":"2")+")")).addClass("JamScore");
 

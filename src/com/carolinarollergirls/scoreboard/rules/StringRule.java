@@ -6,7 +6,7 @@ public class StringRule extends Rule {
         super("String", fullname, description, defaultValue);
     }
 
-    public Object convertValue(String v) {
-        return v;
+    public boolean isValueValid(String v) {
+        return v != null;
     }
 }

@@ -9,6 +9,8 @@ package com.carolinarollergirls.scoreboard.xml;
  */
 
 import java.util.Iterator;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.jdom.Document;
 import org.jdom.Element;
@@ -17,6 +19,7 @@ import org.jdom.output.XMLOutputter;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
+import com.carolinarollergirls.scoreboard.model.RulesetsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
@@ -25,6 +28,7 @@ import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.FrontendSettings;
 import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Skater;
@@ -62,6 +66,7 @@ public class ScoreBoardXmlConverter {
 
         toElement(sb, scoreBoard.getSettings());
         toElement(sb, scoreBoard.getFrontendSettings());
+        toElement(sb, scoreBoard.getRulesets());
 
         Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
         while (clocks.hasNext()) {
@@ -101,6 +106,37 @@ public class ScoreBoardXmlConverter {
                 editor.setElement(e, FrontendSettings.EVENT_SETTING, k, v);
             }
         }
+        return e;
+    }
+
+    public Element toElement(Element p, Rulesets rs) {
+        Element e = editor.setElement(p, "Rules");
+        Iterator<String> keys = rs.getAll().keySet().iterator();
+        while (keys.hasNext()) {
+            String k = keys.next();
+            String v = rs.get(k);
+            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, k, v);
+        }
+        editor.setElement(e, "Id", null, rs.getId());
+        editor.setElement(e, "Name", null, rs.getName());
+
+        e = editor.setElement(p, Rulesets.EVENT_RULESET);
+        for (Rulesets.Ruleset r :  rs.getRulesets().values()) {
+            toElement(e, r);
+        }
+        return e;
+    }
+
+    public Element toElement(Element p, Rulesets.Ruleset r) {
+        Element e = editor.setElement(p, "Ruleset", r.getId());
+        Iterator<String> keys = r.getAll().keySet().iterator();
+        while (keys.hasNext()) {
+            String k = keys.next();
+            String v = r.get(k);
+            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, k, v);
+        }
+        editor.setElement(e, "Name", null, r.getName());
+        editor.setElement(e, "ParentId", null, r.getParentRulesetId());
         return e;
     }
 
@@ -306,6 +342,10 @@ public class ScoreBoardXmlConverter {
                     processSettings(scoreBoardModel, element);
                 } else if (name.equals("FrontendSettings")) {
                     processFrontendSettings(scoreBoardModel, element);
+                } else if (name.equals("Rules")) {
+                    processRules(scoreBoardModel, element);
+                } else if (name.equals("KnownRulesets")) {
+                    processRulesets(scoreBoardModel, element);
                 } else if (name.equals("Stats")) {
                     processStats(scoreBoardModel.getStatsModel(), element);
                 } else if (null == value) {
@@ -378,6 +418,76 @@ public class ScoreBoardXmlConverter {
             } catch ( Exception e ) {
             }
         }
+    }
+
+    public void processRules(ScoreBoardModel scoreBoardModel, Element rules) {
+        RulesetsModel rs = scoreBoardModel.getRulesetsModel();
+        Iterator<?> children = rules.getChildren().iterator();
+        while (children.hasNext()) {
+            Element element = (Element)children.next();
+            try {
+                String name = element.getName();
+                String k = element.getAttributeValue("Id");
+                String v = editor.getText(element);
+                if (v == null) {
+                    v = "";
+                }
+                if (name.equals(Rulesets.EVENT_CURRENT_RULES)) {
+                    rs.set(k, v);
+                } else if (name.equals("Id")) {
+                    rs.setId(v);
+                } else if (name.equals("Name")) {
+                    rs.setName(v);
+                }
+            } catch ( Exception e ) {
+            }
+        }
+    }
+
+    public void processRulesets(ScoreBoardModel scoreBoardModel, Element rulesets) {
+        RulesetsModel rs = scoreBoardModel.getRulesetsModel();
+        Iterator<?> children = rulesets.getChildren().iterator();
+        while (children.hasNext()) {
+            Element element = (Element)children.next();
+            try {
+                String name = element.getName();
+                if (name.equals(Rulesets.EVENT_CURRENT_RULESET)) {
+                    processRuleset(rs, element);
+                }
+            } catch ( Exception e ) {
+            }
+        }
+    }
+
+    public void processRuleset(RulesetsModel rulesetsModel, Element ruleset) {
+        String name = "";
+        String parentId = "";
+        String id = ruleset.getAttributeValue("Id");
+        Map<String, String> rules = new HashMap<String, String>();
+
+
+        Iterator<?> children = ruleset.getChildren().iterator();
+        while (children.hasNext()) {
+            Element element = (Element)children.next();
+            try {
+                String n = element.getName();
+                String k = element.getAttributeValue("Id");
+                String v = editor.getText(element);
+                if (v == null) {
+                    v = "";
+                }
+                if (n.equals(Rulesets.EVENT_CURRENT_RULES)) {
+                    rules.put(k, v);
+                } else if (n.equals("ParentId")) {
+                    parentId = v;
+                } else if (n.equals("Name")) {
+                    name = v;
+                }
+            } catch ( Exception e ) {
+            }
+        }
+        RulesetsModel.RulesetModel r = rulesetsModel.addRuleset(name, parentId, id);
+        r.setAll(rules);
     }
 
     public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {

@@ -11,26 +11,13 @@ public class BooleanRule extends Rule {
         this.falseValue = falseValue;
     }
 
-    public Object convertValue(String v) {
-        if (trueValue.equalsIgnoreCase(v)) {
-            return new Boolean(true);
-        }
-        if (falseValue.equalsIgnoreCase(v)) {
-            return new Boolean(false);
-        }
-
+    public boolean isValueValid(String v) {
         try {
-            return new Boolean(v);
+            new Boolean(v);
+            return true;
         } catch (Exception e) {
-            return null;
+            return false;
         }
-    }
-
-    public JSONObject toJSON() throws JSONException {
-        JSONObject json = super.toJSON();
-        json.put("trueValue", trueValue);
-        json.put("falseValue", falseValue);
-        return json;
     }
 
     public String toHumanReadable(Object v) {
@@ -38,12 +25,14 @@ public class BooleanRule extends Rule {
             return "";
         }
 
-        Object v2 = convertValue(v.toString());
-        if (v2 != null) {
-            Boolean b = (Boolean)v2;
-            return b ? trueValue : falseValue;
-        }
-        return v.toString();
+        return new Boolean(v.toString()) ? trueValue : falseValue;
+    }
+
+    public String getTrueValue() {
+        return trueValue;
+    }
+    public String getFalseValue() {
+        return falseValue;
     }
 
     private String trueValue;

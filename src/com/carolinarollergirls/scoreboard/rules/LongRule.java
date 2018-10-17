@@ -6,11 +6,12 @@ public class LongRule extends Rule {
         super("Long", fullname, description, new Long(defaultValue));
     }
 
-    public Object convertValue(String v) {
+    public boolean isValueValid(String v) {
         try {
-            return new Long(v);
+            new Long(v);
+            return true;
         } catch (Exception e) {
-            return null;
+            return false;
         }
     }
 }

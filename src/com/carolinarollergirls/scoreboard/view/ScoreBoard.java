@@ -67,6 +67,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     // Frontend (i.e. javascript only) settings.
     public FrontendSettings getFrontendSettings();
 
+    public Rulesets getRulesets();
+
     public Stats getStats();
 
     public XmlScoreBoard getXmlScoreBoard();

@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.RulesetsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
@@ -30,6 +31,7 @@ import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Skater.Penalty;
@@ -84,6 +86,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         stats.addScoreBoardListener(this);
         frontendSettings = new DefaultFrontendSettingsModel(this);
         frontendSettings.addScoreBoardListener(this);
+        rulesets = new DefaultRulesetsModel(this);
+        rulesets.addScoreBoardListener(this);
         reset();
         createTeamModel(Team.ID_1);
         createTeamModel(Team.ID_2);
@@ -131,6 +135,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             replacePending = false;
 
             settings.reset();
+            rulesets.reset();
             stats.reset();
             // Custom settings are not reset, as broadcast overlays settings etc.
             // shouldn't be lost just because the next game is starting.
@@ -589,6 +594,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     public FrontendSettings getFrontendSettings() { return frontendSettings; }
     public FrontendSettingsModel getFrontendSettingsModel() { return frontendSettings; }
 
+    public Rulesets getRulesets() { return rulesets; }
+    public RulesetsModel getRulesetsModel() { return rulesets; }
+
     public Stats getStats() { return (Stats)stats; }
     public StatsModel getStatsModel() { return stats; }
 
@@ -687,6 +695,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     protected boolean officialScore = false;
 
     protected Ruleset ruleset = null;
+    protected DefaultRulesetsModel rulesets = null;
     protected DefaultSettingsModel settings = null;
     protected DefaultFrontendSettingsModel frontendSettings = null;
     protected DefaultStatsModel stats = null;

@@ -1,41 +1,40 @@
 initialize();
-var rulesets = array();
-var definitions = array();
+var rulesets = {};
+var definitions = {};
+var knownRulesets = {};
 
-function loadRulesets(displayID) {
+function loadRulesets(displayId) {
 	var rs = $(".rulesets div");
-	Rulesets.List(function (data) {
-		$("#new_parent").empty();
-		rs.empty();
-		rulesets = data;
-		rs.append(displayRulesetTree(""));
-		if (displayID != null)
-			displayRuleset(displayID);
-	});
+	$("#new_parent").empty();
+	rs.empty();
+	rs.append(displayRulesetTree(""));
+	if (displayId != null) {
+		displayRuleset(displayId);
+	}
 }
 
-function displayRulesetTree(parentID) {
+function displayRulesetTree(parentId) {
 	var list = null;
 	 	$.each(rulesets, function(idx, val) {
-			if (val.parent == parentID) {
+			if (val.ParentId == parentId) {
 				if (list == null)
 					list = $("<ul>");
 
 				$("<option>")
-					.prop("value", val.id)
-					.append(val.name)
+					.prop("value", val.Id)
+					.append(val.Name)
 					.appendTo($("#new_parent"));
 				$("<li>")
 					.append(
 						$("<a>")
 							.attr("href", "#")
 							.click(function() {
-								displayRuleset(val.id);
+								displayRuleset(val.Id);
 							}
-							).append($("<span>").append(val.name)
+							).append($("<span>").append(val.Name)
 						)
 					)
-					.append(displayRulesetTree(val.id))
+					.append(displayRulesetTree(val.Id))
 					.appendTo(list);
 			}
 	 	});
@@ -44,83 +43,154 @@ function displayRulesetTree(parentID) {
 
 function loadDefinitions() {
 	var d = $(".definitions .rules");
-	Rulesets.ListDefinitions(function (data) {
-		definitions = data;
-		var findSection = function(def) {
-			var newSection = function(def) {
-				var name = def.group;
-				var section = $("<div>")
-					.addClass("section folded")
-					.attr("group", def.group)
-				if (def.subgroup != null) {
-					name = def.subgroup;
-					section.attr("subgroup", def.subgroup);
-				}
-
-				section.append($("<div>").addClass("header")
-					.click(function(e) {
-						section.toggleClass("folded");
-					}).append(name));
-
-				return section;
-			};
-			var section = null;
-
-			var children = d.find(".section");
-			$.each(children, function (idx, s) {
-				if (section != null)
-					return;
-				s = $(s);
-				if (s.attr("group") == def.group && s.attr("subgroup") == def.subgroup) {
-					section = s;
-				}
-			});
-			if (section == null) {
-				section = newSection(def);
-				d.append(section);
+	d.empty();
+	var findSection = function(def) {
+		var newSection = function(def) {
+			var name = def.Group;
+			var section = $("<div>")
+				.addClass("section folded")
+				.attr("group", def.Group)
+			if (def.Subgroup != null) {
+				name = def.Subgroup;
+				section.attr("subgroup", def.Subgroup);
 			}
 
-			var div = $("<div>")
-				.addClass("definition")
-				.attr("fullname", def.fullname);
-			section.append(div);
-			return div;
+			section.append($("<div>").addClass("header")
+				.click(function(e) {
+					section.toggleClass("folded");
+				}).append(name));
+
+			return section;
 		};
-	 	$.each(definitions, function(idx, def) {
-			var div = findSection(def);
-			var tooltiptext = null;
-			if (def.description != "") {
-				tooltiptext = $("<span>").addClass("tooltiptext").append(def.description);
-			}
-			$("<div>").addClass("name").appendTo(div)
-				.append($("<label>").append($("<input>").attr("type", "checkbox").prop("checked", true).click(definitionOverride))
-				.append(def.name).append(tooltiptext));
+		var section = null;
 
-			var value = $("<div>").addClass("value").appendTo(div);
-			value.append($("<span>").addClass("inherit"));
-			if (def.type == "Boolean") {
-				var select = $("<select>").addClass("override");
-				select.append($("<option>").attr("value", def.trueValue).append(def.trueValue));
-				select.append($("<option>").attr("value", def.falseValue).append(def.falseValue));
-
-				select.appendTo(value);
-			} else if (def.type == "Integer") {
-				value.append($("<input>").addClass("override").attr("type", "text"));
-			} else if (def.type == "Long") {
-				value.append($("<input>").addClass("override").attr("type", "text"));
-			} else if (def.type == "Time") {
-				value.append($("<input>").addClass("override").attr("type", "text"));
-			} else {
-				// Treat as string
-				value.append($("<input>").addClass("override").attr("type", "text"));
+		var children = d.find(".section");
+		$.each(children, function (idx, s) {
+			if (section != null)
+				return;
+			s = $(s);
+			if (s.attr("group") == def.Group && s.attr("subgroup") == def.Subgroup) {
+				section = s;
 			}
-	 	});
+		});
+		if (section == null) {
+			section = newSection(def);
+			d.append(section);
+		}
+
+		var div = $("<div>")
+			.addClass("definition")
+			.attr("fullname", def.Fullname);
+		section.append(div);
+		return div;
+	};
+	// Keep them in the same order they are in the Java code.
+	var sortedValues = $.map(definitions, function(v) {
+		return v;
+	}).sort(function(a, b){return a.Index - b.Index});
+	$.each(sortedValues, function(idx, def) {
+		var div = findSection(def);
+		var tooltiptext = null;
+		if (def.Description != "") {
+			tooltiptext = $("<span>").addClass("tooltiptext").append(def.Description);
+		}
+		$("<div>").addClass("name").appendTo(div)
+			.append($("<label>").append($("<input>").attr("type", "checkbox").prop("checked", true).click(definitionOverride))
+			.append(def.Name).append(tooltiptext));
+
+		var value = $("<div>").addClass("value").appendTo(div);
+		value.append($("<span>").addClass("inherit"));
+		if (def.Type == "Boolean") {
+			var select = $("<select>").addClass("override");
+			select.append($("<option>").attr("value", true).append(def.TrueValue));
+			select.append($("<option>").attr("value", false).append(def.FalseValue));
+
+			select.appendTo(value);
+		} else if (def.Type == "Integer") {
+			value.append($("<input>").addClass("override").attr("type", "text"));
+		} else if (def.Type == "Long") {
+			value.append($("<input>").addClass("override").attr("type", "text"));
+		} else if (def.Type == "Time") {
+			value.append($("<input>").addClass("override").attr("type", "text"));
+		} else {
+			// Treat as string
+			value.append($("<input>").addClass("override").attr("type", "text"));
+		}
 	});
 }
 
 function initialize() {
-	loadRulesets();
-	loadDefinitions();
+	WS.Connect();
+	WS.AutoRegister();
+
+	WS.Register(['ScoreBoard.RuleDefinitions'], {triggerBatchFunc: function() {
+		definitions = {};
+		for (var prop in WS.state) {
+			if (WS.state[prop] == null) {
+				continue;
+			}
+			var re = /ScoreBoard.RuleDefinitions\(((\w+)\.(\w+)\.(\w+))\).(\w+)/;
+			var m = prop.match(re);
+			if (m != null) {
+				var key = m[5];
+				definitions[m[1]] = definitions[m[1]] || {};
+				definitions[m[1]][key] = WS.state[prop];
+				definitions[m[1]]['Fullname'] = m[1];
+				definitions[m[1]]['Group'] = m[2];
+				definitions[m[1]]['Subgroup'] = m[3];
+				definitions[m[1]]['Name'] = m[4];
+			}
+		}
+		loadDefinitions();
+	}});
+
+	// If the definitions change, we'll have to refraw the rulesets too.
+	WS.Register(['ScoreBoard.RuleDefinitions', 'ScoreBoard.KnownRulesets'], {triggerBatchFunc: function() {
+		rulesets = {};
+		for (var prop in WS.state) {
+			if (WS.state[prop] == null) {
+				continue;
+			}
+			re = /ScoreBoard.KnownRulesets\(([^)]+)\)\.(\w+)(?:\(([^)]+)\))?/;
+			m = prop.match(re);
+			if (m != null) {
+				rulesets[m[1]] = rulesets[m[1]] || {Rules: {}};
+				var key = m[2];
+				if (key == "Rule") {
+					rulesets[m[1]].Rules[m[3]] = WS.state[prop]
+				} else {
+					rulesets[m[1]][key] = WS.state[prop];
+				}
+				rulesets[m[1]].Immutable = (m[1] == "00000000-0000-0000-0000-000000000000");
+			}
+		}
+ 
+		// Populate inherited values from parents.
+		$.each(rulesets, function(idx, rs) {
+			rs.Inherited = {};
+			var pid = rs.ParentId;
+			while (rulesets[pid]) {
+				$.each(rulesets[pid].Rules, function(name, value) {
+					if (rs.Inherited[name] == undefined) {
+						rs.Inherited[name] = value;
+					}
+				});
+				pid = rulesets[pid].ParentId;
+			}
+		});
+		var toLoad = null;
+		if (!$.isEmptyObject(knownRulesets)) {
+			// A new ruleset was added by us, find it and display it.
+			$.each(rulesets, function(id) {
+				if (!knownRulesets[id]) {
+					toLoad = id;;
+				}
+			});
+			knownRulesets = {};
+		}
+		loadRulesets(toLoad);
+	}});
+
 
 	$(".New").click(New);
 	$(".Delete").click(Delete);
@@ -142,25 +212,24 @@ function definitionOverride(e) {
 
 function displayRuleset(id) {
 	$.each(rulesets, function(idx, rs) {
-		if (rs.id == id) {
+		if (rs.Id == id) {
 			activeRuleset = rs;
 			var definitions = $(".definitions");
-			// definitions.find("h1").empty().append(rs.name);
 
-			$("#name").val(rs.name);
+			$("#name").val(rs.Name);
 
-			if (!rs.immutable)
-				$(".definition *").prop("disabled", rs.immutable);
+			if (!rs.Immutable)
+				$(".definition *").prop("disabled", rs.Immutable);
 
-			$.each(rs.inherit_values, function(key, val) {
+			$.each(rs.Inherited, function(key, val) {
 				setDefinition(key, val, true);
 			});
-			$.each(rs.values, function(key, val) {
+			$.each(rs.Rules, function(key, val) {
 				setDefinition(key, val, false);
 			});
 
-			if (rs.immutable) {
-				$(".definition *").prop("disabled", rs.immutable);
+			if (rs.Immutable) {
+				$(".definition *").prop("disabled", rs.Immutable);
 				$(".Update, .Delete").hide();
 			} else {
 				$(".Update, .Delete").show();
@@ -175,54 +244,46 @@ function New() {
 		parent: $("#new_parent").val(),
 		name: $("#new_name").val()
 	};
-	Rulesets.New(o, function(rs) {
-		loadRulesets(rs.id);
+	// Note what rulesets we know about so we can determine
+	// the id of the new one when we get an update.
+	knownRulesets = {};
+	$.each(rulesets, function(id) {
+		knownRulesets[id] = true;
 	});
+	$("#new_name").val("");
+	WS.Command("AddRuleset", o);
 }
 
 function Update() {
+	$(".definitions").hide();
 	if (!activeRuleset.immutable) {
 		var o = {
 			name: $("#name").val(),
-			id: activeRuleset.id,
-			values: {},
+			id: activeRuleset.Id,
+			rules: {},
 		};
-		var values = new Array();
 		$.each(definitions, function(idx, val) {
-			var def = $(".definition[fullname='" + val.fullname + "']");
+			var def = $(".definition[fullname='" + val.Fullname + "']");
 			if (def.find(".name input").prop("checked")) {
 				var input = def.find(".value>input").prop("value");
 				var select = def.find(".value>select").val();
 				if (input != null)
-					o.values[val.fullname] = input;
+					o.rules[val.Fullname] = input;
 				if (select != null)
-					o.values[val.fullname] = select;
+					o.rules[val.Fullname] = select;
 			}
 		});
-		Rulesets.Update(o, function() {
-			loadRulesets();
-			$(".definitions").hide();
-		}, function(err) {
-			alert(err.responseText);
-		});
-	} else {
-		$(".definitions").hide();
+		WS.Command("UpdateRuleset", o);
 	}
 }
 
 function Delete() {
+	$(".definitions").hide();
 	if (!activeRuleset.immutable) {
 		var o = {
-			id: activeRuleset.id,
+			id: activeRuleset.Id,
 		};
-		Rulesets.Delete(o, function() {
-			loadRulesets();
-			$(".definitions").hide();
-		}, function(err) {
-			alert(err.responseText);
-		});
-	} else {
-		$(".definitions").hide();
+		WS.Command("RemoveRuleset", o);
 	}
 }
 
@@ -234,6 +295,7 @@ function setDefinition(key, value, inherited) {
 	var def = $(".definition[fullname='" + key + "']");
 	def.find(".value>input").prop("value", value);
 	def.find(".value>select").val(value);
+	value = def.find(".value>select>option:selected").text() || value;
 	if (inherited) {
 		def.find(".name input").prop("checked", false);
 		def.find(".value .inherit").show().empty().append(value);
