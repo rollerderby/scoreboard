@@ -18,11 +18,10 @@ function initialize() {
 	$.each([1, 2], function(idx, t) {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) {
-			$('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);
-			$('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); 
-			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); 
-		});
+		WS.Register(['ScoreBoard.Team(' + t + ').Color'], function (k, v) {
+				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_bg)']);
+				$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_fg)']);
+			});
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
 	WS.Register( [ 'ScoreBoard.Clock(Jam).Number' ], function(k, v) { jam = v; });
