@@ -284,7 +284,7 @@ a {
 */
 .Team .Name .Number, .Team .Box, .Team .FO_EXP, .Team .Total { width: 5%; }
 .Number { left: 0%; width: 10%; text-align: right; }
-.Name { left: 12%; width: 44%; height: 100%; text-align: left; overflow: hidden; }
+.Name { left: 12%; width: 44%; height: 110%; text-align: left; overflow: hidden; }
 /* .Team tr:nth-child(4n-2), .Team tr:nth-child(4n-0) { background-color: #CCC; } */
 /* .Penalty { height: 50%; } */
 /* 
