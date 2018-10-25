@@ -57,7 +57,6 @@ public class ScoreBoardJSONListenerTests {
 
     @Test
     public void testScoreBoardEvents() {
-        assertEquals("00000000-0000-0000-0000-000000000000", state.get("ScoreBoard.Ruleset"));
         assertEquals(false, state.get("ScoreBoard.InPeriod"));
         assertEquals(false, state.get("ScoreBoard.InOvertime"));
         assertEquals(false, state.get("ScoreBoard.OfficialScore"));

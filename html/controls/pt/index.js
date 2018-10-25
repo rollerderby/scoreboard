@@ -35,7 +35,7 @@
 		WS.Register(['ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber'], function (k, v) { setupSelect('Period'); });
 		WS.Register(['ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber'], function (k, v) { setupSelect('Jam'); });
 
-		WS.Register(['ScoreBoard.Setting(Rule.Penalties.NumberToFoulout)']);
+		WS.Register(['ScoreBoard.Rule(Rule.Penalties.NumberToFoulout)']);
 		
 
 		if (_windowFunctions.checkParam("autoFit", "true")) {
@@ -190,7 +190,7 @@
 		}
 
 		var cnt = 0; // Change row colors for skaters on 5 or more penalties, or expulsion.
-		var limit = WS.state["ScoreBoard.Setting(Rule.Penalties.NumberToFoulout)"];
+		var limit = WS.state["ScoreBoard.Rule(Rule.Penalties.NumberToFoulout)"];
 		var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 
 		$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function (idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });

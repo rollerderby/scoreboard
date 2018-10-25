@@ -14,7 +14,6 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -23,13 +22,12 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.FrontendSettings;
-import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.Rulesets;
 
 public class DefaultClockModelTests {
 
     private ScoreBoardModel sbModelMock;
-    private Ruleset ruleMock;
-    private Settings settingsMock;
+    private Rulesets rulesetsMock;
     private FrontendSettings frontendSettingsMock;
 
     private Queue<ScoreBoardEvent> collectedEvents;
@@ -69,8 +67,7 @@ public class DefaultClockModelTests {
 
         sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);
 
-        ruleMock = Mockito.mock(Ruleset.class);
-        settingsMock = Mockito.mock(Settings.class);
+        rulesetsMock = Mockito.mock(Rulesets.class);
         frontendSettingsMock = Mockito.mock(FrontendSettings.class);
 
         Mockito
@@ -78,16 +75,12 @@ public class DefaultClockModelTests {
         .thenReturn(sbModelMock);
 
         Mockito
-        .when(sbModelMock._getRuleset())
-        .thenReturn(ruleMock);
-
-        Mockito
         .when(sbModelMock.getFrontendSettings())
         .thenReturn(frontendSettingsMock);
 
         Mockito
-        .when(sbModelMock.getSettings())
-        .thenReturn(settingsMock);
+        .when(sbModelMock.getRulesets())
+        .thenReturn(rulesetsMock);
 
         // makes it easier to test both sync and non-sync paths through clock model
         Mockito
@@ -98,66 +91,66 @@ public class DefaultClockModelTests {
             }
         });
         Mockito
-        .when(settingsMock.getBoolean("Clock.TEST.Direction"))
+        .when(rulesetsMock.getBoolean("Clock.TEST.Direction"))
         .thenReturn(false);
         Mockito
-        .when(settingsMock.getBoolean("Clock." + Clock.ID_PERIOD + ".Direction"))
+        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_PERIOD + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return periodClockDirection;
             }
         });
         Mockito
-        .when(settingsMock.getBoolean("Clock." + Clock.ID_JAM + ".Direction"))
+        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_JAM + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return jamClockDirection;
             }
         });
         Mockito
-        .when(settingsMock.getBoolean("Clock." + Clock.ID_LINEUP + ".Direction"))
+        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_LINEUP + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return lineupClockDirection;
             }
         });
         Mockito
-        .when(settingsMock.getBoolean("Clock." + Clock.ID_TIMEOUT + ".Direction"))
+        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_TIMEOUT + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return timeoutClockDirection;
             }
         });
         Mockito
-        .when(settingsMock.getBoolean("Clock." + Clock.ID_INTERMISSION + ".Direction"))
+        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_INTERMISSION + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return intermissionClockDirection;
             }
         });
         Mockito
-        .when(settingsMock.getInt("Clock." + Clock.ID_PERIOD + ".MaximumNumber"))
+        .when(rulesetsMock.getInt("Clock." + Clock.ID_PERIOD + ".MaximumNumber"))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return numberPeriods;
             }
         });
         Mockito
-        .when(settingsMock.getInt("Clock." + Clock.ID_INTERMISSION + ".MaximumNumber"))
+        .when(rulesetsMock.getInt("Clock." + Clock.ID_INTERMISSION + ".MaximumNumber"))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return numberPeriods;
             }
         });
         Mockito
-        .when(settingsMock.getInt("Clock." + Clock.ID_PERIOD + ".MaximumTime"))
+        .when(rulesetsMock.getInt("Clock." + Clock.ID_PERIOD + ".MaximumTime"))
         .thenAnswer(new Answer<Long>() {
             public Long answer(InvocationOnMock invocation) throws Throwable {
                 return periodDuration;
             }
         });
         Mockito
-        .when(settingsMock.getInt("Clock." + Clock.ID_JAM + ".MaximumTime"))
+        .when(rulesetsMock.getInt("Clock." + Clock.ID_JAM + ".MaximumTime"))
         .thenAnswer(new Answer<Long>() {
             public Long answer(InvocationOnMock invocation) throws Throwable {
                 return jamDuration;

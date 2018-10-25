@@ -333,8 +333,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
             if (0 > t) {
                 t = 0;
             }
-            if (scoreBoardModel.getSettings().getInt(SETTING_NUMBER_TIMEOUTS) < t) {
-                t = scoreBoardModel.getSettings().getInt(SETTING_NUMBER_TIMEOUTS);
+            if (scoreBoardModel.getRulesets().getInt(SETTING_NUMBER_TIMEOUTS) < t) {
+                t = scoreBoardModel.getRulesets().getInt(SETTING_NUMBER_TIMEOUTS);
             }
             Integer last = new Integer(timeouts);
             timeouts = t;
@@ -352,8 +352,8 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
             if (0 > r) {
                 r = 0;
             }
-            if (scoreBoardModel.getSettings().getInt(SETTING_NUMBER_REVIEWS) < r) {
-                r = scoreBoardModel.getSettings().getInt(SETTING_NUMBER_REVIEWS);
+            if (scoreBoardModel.getRulesets().getInt(SETTING_NUMBER_REVIEWS) < r) {
+                r = scoreBoardModel.getRulesets().getInt(SETTING_NUMBER_REVIEWS);
             }
             Integer last = new Integer(officialReviews);
             officialReviews = r;
@@ -369,11 +369,11 @@ public class DefaultTeamModel extends DefaultScoreBoardEventProvider implements 
         synchronized (coreLock) {
             setInTimeout(false);
             setInOfficialReview(false);
-            if (gameStart || scoreBoardModel.getSettings().getBoolean(SETTING_TIMEOUTS_PER_PERIOD)) {
-                setTimeouts(scoreBoardModel.getSettings().getInt(SETTING_NUMBER_TIMEOUTS));
+            if (gameStart || scoreBoardModel.getRulesets().getBoolean(SETTING_TIMEOUTS_PER_PERIOD)) {
+                setTimeouts(scoreBoardModel.getRulesets().getInt(SETTING_NUMBER_TIMEOUTS));
             }
-            if (gameStart || scoreBoardModel.getSettings().getBoolean(SETTING_REVIEWS_PER_PERIOD)) {
-                setOfficialReviews(scoreBoardModel.getSettings().getInt(SETTING_NUMBER_REVIEWS));
+            if (gameStart || scoreBoardModel.getRulesets().getBoolean(SETTING_REVIEWS_PER_PERIOD)) {
+                setOfficialReviews(scoreBoardModel.getRulesets().getInt(SETTING_NUMBER_REVIEWS));
                 setRetainedOfficialReview(false);
             }
         }

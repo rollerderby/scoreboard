@@ -143,7 +143,7 @@ public class WS extends WebSocketServlet {
                     JSONObject rules = data.getJSONObject("rules");
                     Map<String, String> s = new HashMap<String, String>();
                     for (String k : rules.keySet()) {
-                      s.put(k, rules.getString(k));
+                        s.put(k, rules.getString(k));
                     }
                     sbm.getRulesetsModel().getRulesetModel(i).setAll(s);
                     sbm.getRulesetsModel().getRulesetModel(i).setName(n);

@@ -22,7 +22,6 @@ import org.eclipse.jetty.server.Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.view.Clock;
@@ -54,8 +53,8 @@ public class JSONServlet extends HttpServlet {
                 if (t1 == null || t2 == null || rs == null) {
                     error(response, "Error creating game");
                 }
-                scoreBoardModel.setRuleset(rs);
                 scoreBoardModel.reset();
+                scoreBoardModel.getRulesetsModel().setCurrentRuleset(rs);
                 List<XmlDocumentManager> l = scoreBoardModel.getXmlScoreBoard().findXmlDocumentManagers(TeamsXmlDocumentManager.class);
                 for (XmlDocumentManager xdM : l) {
                     TeamsXmlDocumentManager txdM = (TeamsXmlDocumentManager)xdM;

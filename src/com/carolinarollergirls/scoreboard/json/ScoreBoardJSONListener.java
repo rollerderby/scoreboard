@@ -105,10 +105,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     if (s.getParent() instanceof ScoreBoard) {
                         prefix = "ScoreBoard";
                     }
-                    if(prop.equals(PenaltyCodesManager.SETTING_PENALTIES_FILE)) {
-                        update(prefix, "Setting(" + prop + ")", v);
-                        processPenaltyCodes(s);
-                    } else if (prefix == null) {
+                    if (prefix == null) {
                         ScoreBoardManager.printMessage(provider + " update of unknown kind.  prop: " + prop + ", v: " + v);
                     } else {
                         update(prefix, "Setting(" + prop + ")", v);
@@ -301,6 +298,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         }
         updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULESET + ".Id", r.getId()));
         updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULESET + ".Name", r.getName()));
+        processPenaltyCodes(r);
     }
 
     private void processRuleset(String path, Rulesets.Ruleset r, boolean remove) {
@@ -372,9 +370,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path + ".PenaltyBox", ss.getPenaltyBox()));
     }
 
-    private void processPenaltyCodes(Settings s) {
+    private void processPenaltyCodes(Rulesets r) {
         updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
-        String file = s.get(PenaltyCodesManager.SETTING_PENALTIES_FILE);
+        String file = r.get(PenaltyCodesManager.SETTING_PENALTIES_FILE);
         if(file != null && !file.isEmpty()) {
             PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
             for(PenaltyCode p : penalties.getPenalties()) {
@@ -389,7 +387,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_IN_PERIOD, sb.isInPeriod()));
         updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_IN_OVERTIME, sb.isInOvertime()));
         updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_SCORE, sb.isOfficialScore()));
-        updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_RULESET, sb.getRuleset()));
         updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_TIMEOUT_OWNER, sb.getTimeoutOwner()));
         updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview()));
 
@@ -415,7 +412,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         // Process Settings
         processSettings("ScoreBoard", sb.getSettings());
 
-        processPenaltyCodes(sb.getSettings());
+        processPenaltyCodes(sb.getRulesets());
 
         // Process Teams
         for (Team t : sb.getTeams()) {

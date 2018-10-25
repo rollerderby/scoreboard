@@ -14,7 +14,6 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -22,23 +21,11 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.view.Settings;
 
-public class DefaultSettingsModel extends DefaultScoreBoardEventProvider implements SettingsModel, Ruleset.RulesetReceiver {
+public class DefaultSettingsModel extends DefaultScoreBoardEventProvider implements SettingsModel {
     public DefaultSettingsModel(ScoreBoardModel s) {
         sbm = s;
         parent = s;
         reset();
-    }
-
-    public void applyRule(String rule, Object value) {
-        synchronized (coreLock) {
-            if (ruleMapping.containsKey(rule)) {
-                for (String map : ruleMapping.get(rule)) {
-                    set(map, String.valueOf(value));
-                }
-            } else {
-                set(rule, String.valueOf(value));
-            }
-        }
     }
 
     public String getProviderName() { return "Settings"; }
@@ -52,20 +39,6 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
             List<String> keys = new ArrayList<String>(settings.keySet());
             for (String k : keys) {
                 set(k, null);
-            }
-            sbm._getRuleset().apply(this);
-        }
-    }
-
-    public void addRuleMapping(String rule, String[] mapTo) {
-        synchronized (coreLock) {
-            List<String> l = ruleMapping.get(rule);
-            if (l == null) {
-                l = new ArrayList<String>();
-                ruleMapping.put(rule, l);
-            }
-            for (String map : mapTo) {
-                l.add(map);
             }
         }
     }
@@ -122,7 +95,6 @@ public class DefaultSettingsModel extends DefaultScoreBoardEventProvider impleme
 
     protected ScoreBoardModel sbm = null;
     protected Map<String, String> settings = new Hashtable<String, String>();
-    protected Map<String, List<String>> ruleMapping = new Hashtable<String, List<String>>();
     protected ScoreBoardEventProvider parent = null;
     protected static Object coreLock = DefaultScoreBoardModel.getCoreLock();
 }

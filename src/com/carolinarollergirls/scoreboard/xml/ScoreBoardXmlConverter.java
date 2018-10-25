@@ -62,7 +62,6 @@ public class ScoreBoardXmlConverter {
         editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
         editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
         editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
-        editor.setElement(sb, ScoreBoard.EVENT_RULESET, null, String.valueOf(scoreBoard.getRuleset()));
 
         toElement(sb, scoreBoard.getSettings());
         toElement(sb, scoreBoard.getFrontendSettings());
@@ -360,8 +359,6 @@ public class ScoreBoardXmlConverter {
                     scoreBoardModel.setInPeriod(bVal);
                 } else if (name.equals(ScoreBoard.EVENT_OFFICIAL_SCORE)) {
                     scoreBoardModel.setOfficialScore(bVal);
-                } else if (name.equals(ScoreBoard.EVENT_RULESET)) {
-                    scoreBoardModel.setRuleset(value);
                 } else if (bVal) {
                     if (name.equals("Reset")) {
                         scoreBoardModel.reset();

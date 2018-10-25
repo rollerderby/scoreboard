@@ -14,7 +14,7 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.view.Position;
-import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.view.Team;
 
@@ -24,7 +24,7 @@ public class DefaultPositionModelTests {
     private final String thirdId = "5df0a35b-aaa6-4c30-93ef-07ba4f174cdc";
 
     private ScoreBoardModel sbModelMock;
-    private Settings settingsMock;
+    private Rulesets rulesetsMock;
     private TeamModel teamModel;
     private SkaterModel first;
     private SkaterModel second;
@@ -34,28 +34,28 @@ public class DefaultPositionModelTests {
     public void setup() {
         sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);
 
-        settingsMock = Mockito.mock(Settings.class);
+        rulesetsMock = Mockito.mock(Rulesets.class);
 
         Mockito
         .when(sbModelMock.getScoreBoard())
         .thenReturn(sbModelMock);
 
         Mockito
-        .when(sbModelMock.getSettings())
-        .thenReturn(settingsMock);
+        .when(sbModelMock.getRulesets())
+        .thenReturn(rulesetsMock);
 
         Mockito
-        .when(settingsMock.getInt(Team.SETTING_NUMBER_TIMEOUTS))
+        .when(rulesetsMock.getInt(Team.SETTING_NUMBER_TIMEOUTS))
         .thenReturn(3);
         Mockito
-        .when(settingsMock.getBoolean(Team.SETTING_TIMEOUTS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.SETTING_TIMEOUTS_PER_PERIOD))
         .thenReturn(false);
         Mockito
-        .when(settingsMock.getInt(Team.SETTING_NUMBER_REVIEWS))
+        .when(rulesetsMock.getInt(Team.SETTING_NUMBER_REVIEWS))
         .thenReturn(1);
 
         Mockito
-        .when(settingsMock.getBoolean(Team.SETTING_REVIEWS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.SETTING_REVIEWS_PER_PERIOD))
         .thenReturn(true);
 
         teamModel = new DefaultTeamModel(sbModelMock, "A");

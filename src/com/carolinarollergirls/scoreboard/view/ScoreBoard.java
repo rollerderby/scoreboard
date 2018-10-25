@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.view;
 
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.Ruleset;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
@@ -60,9 +59,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public List<Team> getTeams();
     public Team getTeam(String id);
 
-    public Ruleset _getRuleset();
-    public String getRuleset();
-
     public Settings getSettings();
     // Frontend (i.e. javascript only) settings.
     public FrontendSettings getFrontendSettings();
@@ -92,18 +88,17 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public static final String SETTING_STOP_PC_ON_TTO = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockOnTTO";
     public static final String SETTING_STOP_PC_ON_OR = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockOnOR";
     public static final String SETTING_STOP_PC_AFTER_TO_DURATION = "Rule." + Clock.ID_TIMEOUT + ".StopPeriodClockAfterTODuration";
-    public static final String SETTING_INTERMISSION_DURATIONS = "Rule." + Clock.ID_INTERMISSION+ ".Durations";
+    public static final String SETTING_INTERMISSION_DURATIONS = "Rule." + Clock.ID_INTERMISSION + ".Durations";
     public static final String SETTING_INTERMISSION_DIRECTION = "Rule." + Clock.ID_INTERMISSION + ".Direction";
     public static final String SETTING_AUTO_START = "Rule.ClockControl.AutoStart";
     public static final String SETTING_AUTO_START_JAM = "Rule.ClockControl.AutoStartType";
     public static final String SETTING_AUTO_START_BUFFER = "Rule.ClockControl.AutoStartBuffer";
-    public static final String SETTING_AUTO_END_JAM = "Rule.ClockControl.AutoEndJam"; //-
-    public static final String SETTING_AUTO_END_TTO = "Rule.ClockControl.AutoEndTTO"; //-
+    public static final String SETTING_AUTO_END_JAM = "Rule.ClockControl.AutoEndJam";
+    public static final String SETTING_AUTO_END_TTO = "Rule.ClockControl.AutoEndTTO";
 
     public static final String EVENT_IN_PERIOD = "InPeriod";
     public static final String EVENT_IN_OVERTIME = "InOvertime";
     public static final String EVENT_OFFICIAL_SCORE = "OfficialScore";
-    public static final String EVENT_RULESET = "Ruleset";
     public static final String EVENT_ADD_POLICY = "AddPolicy";
     public static final String EVENT_REMOVE_POLICY = "RemovePolicy";
     public static final String EVENT_TIMEOUT_OWNER = "TimeoutOwner";
