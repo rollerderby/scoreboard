@@ -58,7 +58,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
         }
     }
 
-    private ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
+    protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoardModel().getRulesets();

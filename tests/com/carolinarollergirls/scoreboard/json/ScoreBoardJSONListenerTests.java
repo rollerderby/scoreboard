@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.json;
 
 import static org.junit.Assert.assertEquals;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
@@ -12,9 +13,11 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
+import com.carolinarollergirls.scoreboard.defaults.DefaultRulesetsModel;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Team;
 
 public class ScoreBoardJSONListenerTests {
@@ -37,8 +40,9 @@ public class ScoreBoardJSONListenerTests {
         sbm = new DefaultScoreBoardModel();
 
         jsm = new JSONStateManager();
-        new ScoreBoardJSONListener(sbm, jsm);
         jsm.register(jsonListener);
+        new ScoreBoardJSONListener(sbm, jsm);
+        advance(0);
     }
 
     @After
@@ -274,6 +278,50 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(null, state.get("ScoreBoard.Stats.Period(2).Jam(4).PeriodClockElapsedStart"));
         assertEquals(null, state.get("ScoreBoard.Stats.Period(2).Jam(5).PeriodClockElapsedStart"));
 
+    }
+
+    @Test
+    public void testRulesetsEvents() {
+        String rootId = DefaultRulesetsModel.rootId;
+        String cid = "11111111-1111-1111-1111-111111111111";
+        assertEquals(rootId, state.get("ScoreBoard.Ruleset.Id"));
+        assertEquals("WFTDA Sanctioned", state.get("ScoreBoard.Ruleset.Name"));
+
+        assertEquals("2", state.get("ScoreBoard.Rule(Rule.Period.Number)"));
+        assertEquals("Rule.Period.Number", state.get("ScoreBoard.RuleDefinitions(Rule.Period.Number).Name"));
+        assertEquals("Number of periods", state.get("ScoreBoard.RuleDefinitions(Rule.Period.Number).Description"));
+        assertEquals("Integer", state.get("ScoreBoard.RuleDefinitions(Rule.Period.Number).Type"));
+        assertEquals(0, state.get("ScoreBoard.RuleDefinitions(Rule.Period.Number).Index"));
+
+        assertEquals("Boolean", state.get("ScoreBoard.RuleDefinitions(Rule.Period.Direction).Type"));
+        assertEquals(2, state.get("ScoreBoard.RuleDefinitions(Rule.Period.Direction).Index"));
+        assertEquals("Count Down", state.get("ScoreBoard.RuleDefinitions(Rule.Period.Direction).TrueValue"));
+        assertEquals("Count Up", state.get("ScoreBoard.RuleDefinitions(Rule.Period.Direction).FalseValue"));
+
+        sbm.getRulesetsModel().addRuleset("child", rootId, cid);
+        advance(0);
+        assertEquals(cid, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Id"));
+        assertEquals(rootId, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).ParentId"));
+        assertEquals("child", state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Name"));
+        assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Rule.Period.Number)"));
+        Map<String,String> s = new HashMap<String,String>();
+        s.put(ScoreBoard.SETTING_NUMBER_PERIODS, "3");
+        sbm.getRulesetsModel().getRulesetModel(cid).setAll(s);
+        advance(0);
+        assertEquals("3", state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Rule.Period.Number)"));
+
+        sbm.getRulesetsModel().setCurrentRuleset(cid);
+        advance(0);
+        assertEquals(cid, state.get("ScoreBoard.Ruleset.Id"));
+        assertEquals("child", state.get("ScoreBoard.Ruleset.Name"));
+        assertEquals("3", state.get("ScoreBoard.Rule(Rule.Period.Number)"));
+
+        sbm.getRulesetsModel().removeRuleset(cid);
+        advance(0);
+        assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Id"));
+        assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).ParentId"));
+        assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Name"));
+        assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Rule.Period.Number)"));
     }
 
 }

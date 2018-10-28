@@ -91,66 +91,66 @@ public class DefaultClockModelTests {
             }
         });
         Mockito
-        .when(rulesetsMock.getBoolean("Clock.TEST.Direction"))
+        .when(rulesetsMock.getBoolean("Rule.TEST.Direction"))
         .thenReturn(false);
         Mockito
-        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_PERIOD + ".Direction"))
+        .when(rulesetsMock.getBoolean("Rule." + Clock.ID_PERIOD + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return periodClockDirection;
             }
         });
         Mockito
-        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_JAM + ".Direction"))
+        .when(rulesetsMock.getBoolean("Rule." + Clock.ID_JAM + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return jamClockDirection;
             }
         });
         Mockito
-        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_LINEUP + ".Direction"))
+        .when(rulesetsMock.getBoolean("Rule." + Clock.ID_LINEUP + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return lineupClockDirection;
             }
         });
         Mockito
-        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_TIMEOUT + ".Direction"))
+        .when(rulesetsMock.getBoolean("Rule." + Clock.ID_TIMEOUT + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return timeoutClockDirection;
             }
         });
         Mockito
-        .when(rulesetsMock.getBoolean("Clock." + Clock.ID_INTERMISSION + ".Direction"))
+        .when(rulesetsMock.getBoolean("Rule." + Clock.ID_INTERMISSION + ".Direction"))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return intermissionClockDirection;
             }
         });
         Mockito
-        .when(rulesetsMock.getInt("Clock." + Clock.ID_PERIOD + ".MaximumNumber"))
+        .when(rulesetsMock.getInt("Rule." + Clock.ID_PERIOD + ".MaximumNumber"))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return numberPeriods;
             }
         });
         Mockito
-        .when(rulesetsMock.getInt("Clock." + Clock.ID_INTERMISSION + ".MaximumNumber"))
+        .when(rulesetsMock.getInt("Rule." + Clock.ID_INTERMISSION + ".MaximumNumber"))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return numberPeriods;
             }
         });
         Mockito
-        .when(rulesetsMock.getInt("Clock." + Clock.ID_PERIOD + ".MaximumTime"))
+        .when(rulesetsMock.getInt("Rule." + Clock.ID_PERIOD + ".MaximumTime"))
         .thenAnswer(new Answer<Long>() {
             public Long answer(InvocationOnMock invocation) throws Throwable {
                 return periodDuration;
             }
         });
         Mockito
-        .when(rulesetsMock.getInt("Clock." + Clock.ID_JAM + ".MaximumTime"))
+        .when(rulesetsMock.getInt("Rule." + Clock.ID_JAM + ".MaximumTime"))
         .thenAnswer(new Answer<Long>() {
             public Long answer(InvocationOnMock invocation) throws Throwable {
                 return jamDuration;
@@ -850,5 +850,16 @@ public class DefaultClockModelTests {
         assertTrue(clock.isRunning());
         assertEquals(3, clock.getNumber());
         assertTrue(clock.isTimeAtStart());
+    }
+
+    @Test
+    public void testSetttingsEvent() {
+        assertFalse(clock.isCountDirectionDown());
+
+        Mockito
+        .when(rulesetsMock.getBoolean("Rule.TEST.Direction"))
+        .thenReturn(true);
+        clock.rulesetChangeListener.scoreBoardChange(null);
+        assertTrue(clock.isCountDirectionDown());
     }
 }
