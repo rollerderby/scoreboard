@@ -118,13 +118,13 @@ function intermissionDisplay() {
 	var ret = '';
 
 	if (num == 0) {
-		ret = WS.state["ScoreBoard.FrontendSettings.ScoreBoard.Intermission.PreGame"];
+		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.PreGame"];
 	} else if (num != max)
-		ret = WS.state["ScoreBoard.FrontendSettings.ScoreBoard.Intermission.Intermission"];
+		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Intermission"];
 	else if (!isOfficial)
-		ret = WS.state["ScoreBoard.FrontendSettings.ScoreBoard.Intermission.Unofficial"];
+		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Unofficial"];
 	else
-		ret = WS.state["ScoreBoard.FrontendSettings.ScoreBoard.Intermission.Official"];
+		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Official"];
 
 	$(".Clock.Intermission .Time").toggleClass("Hide", num == max);
 	return ret;

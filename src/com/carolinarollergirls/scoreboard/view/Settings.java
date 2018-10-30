@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.model;
+package com.carolinarollergirls.scoreboard.view;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -8,11 +8,13 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import java.util.Map;
 
-public interface FrontendSettingsModel extends FrontendSettings {
-    public void reset();
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
-    // Setting to null deletes a setting.
-    public void set(String k, String v);
+public interface Settings extends ScoreBoardEventProvider {
+    public Map<String, String> getAll();
+    public String get(String k);
+
+    public static final String EVENT_SETTING = "Setting";
 }

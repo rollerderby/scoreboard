@@ -365,7 +365,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
     }
 
     protected boolean isSyncTime() {
-        return Boolean.parseBoolean(getScoreBoard().getFrontendSettings().get(FRONTEND_SETTING_SYNC));
+        return Boolean.parseBoolean(getScoreBoard().getSettings().get(SETTING_SYNC));
     }
 
     protected boolean isMasterClock() {

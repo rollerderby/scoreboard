@@ -22,7 +22,6 @@ import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.BooleanRule;
 import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
@@ -99,17 +98,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     processPosition("ScoreBoard.Team(" + pos.getTeam().getId() + ")", pos, false);
                 } else if (p instanceof Clock) {
                     processClock("ScoreBoard", (Clock)p, prop.equals(ScoreBoard.EVENT_REMOVE_CLOCK));
-                } else if (p instanceof Settings) {
-                    Settings s = (Settings)p;
-                    String prefix = null;
-                    if (s.getParent() instanceof ScoreBoard) {
-                        prefix = "ScoreBoard";
-                    }
-                    if (prefix == null) {
-                        ScoreBoardManager.printMessage(provider + " update of unknown kind.  prop: " + prop + ", v: " + v);
-                    } else {
-                        update(prefix, "Setting(" + prop + ")", v);
-                    }
                 } else if (p instanceof Rulesets) {
                     if (prop.equals(Rulesets.EVENT_CURRENT_RULESET)) {
                         processCurrentRuleset("ScoreBoard", (Rulesets)p);
@@ -146,8 +134,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 } else if (p instanceof Stats.SkaterStats) {
                     Stats.SkaterStats ts = (Stats.SkaterStats)p;
                     processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ").Skater(" + ts.getSkaterId() + ")", ts);
-                } else if (p instanceof FrontendSettings) {
-                    updates.add(new WSUpdate("ScoreBoard.FrontendSettings." + prop, v));
+                } else if (p instanceof Settings) {
+                    updates.add(new WSUpdate("ScoreBoard.Settings." + prop, v));
                 } else {
                     ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + prop + ", v: " + v);
                 }

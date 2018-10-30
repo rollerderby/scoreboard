@@ -28,7 +28,7 @@ public class DefaultRulesetsModelTests {
     public void setUp() throws Exception {
         ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
         sbm = new DefaultScoreBoardModel();
-        sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
+        sbm.getSettingsModel().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
         rm = sbm.getRulesetsModel();
     }
 

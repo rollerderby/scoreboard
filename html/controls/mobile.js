@@ -53,7 +53,7 @@ function setupJamControlPage() {
 		});
 	});
 	$.each( [ "Start", "Stop", "Timeout", "Undo" ], function(i, button) {
-		$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Button."+button+"Label)").$sbBindAndRun("sbchange", function(event, val) {
+		$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button."+button+"Label)").$sbBindAndRun("sbchange", function(event, val) {
 			$("#JamControlPage span."+button+"Label").html(val);
 		});
 	});

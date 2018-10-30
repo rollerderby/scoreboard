@@ -21,7 +21,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
@@ -87,31 +87,15 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         } else if (prop.equals(ScoreBoardEvent.BATCH_END)) {
             batchEnd();
         } else if (p.getProviderName().equals("Settings")) {
-            SettingsModel settings = (SettingsModel)p;
-            Element e = editor.setElement(getSettingsElement(settings), "Settings");
-            if (e != null) {
-                if (v == null) {
-                    if (isPersistent()) {
-                        editor.removeElement(e, "Setting", prop);
-                    } else {
-                        editor.setRemovePI(editor.setElement(e, "Setting", prop));
-                    }
-                } else {
-                    editor.setElement(e, "Setting", prop, v);
-                }
-            } else {
-                ScoreBoardManager.printMessage("************ ADD SUPPORT FOR SETTINGS TO ScoreBoardXmlListener FOR " + settings.getParent().getProviderName());
-            }
-        } else if (p.getProviderName().equals("FrontendSettings")) {
-            Element e = editor.setElement(getScoreBoardElement(), "FrontendSettings");
+            Element e = editor.setElement(getScoreBoardElement(), "Settings");
             if (v == null) {
                 if (isPersistent()) {
-                    editor.removeElement(e, FrontendSettings.EVENT_SETTING, prop);
+                    editor.removeElement(e, Settings.EVENT_SETTING, prop);
                 } else {
-                    editor.setRemovePI(editor.setElement(e, FrontendSettings.EVENT_SETTING, prop));
+                    editor.setRemovePI(editor.setElement(e, Settings.EVENT_SETTING, prop));
                 }
             } else {
-                editor.setElement(e, FrontendSettings.EVENT_SETTING, prop, v);
+                editor.setElement(e, Settings.EVENT_SETTING, prop, v);
             }
         } else if (p.getProviderName().equals("Rulesets")) {
             if (prop.equals(Rulesets.EVENT_REMOVE_RULESET)) {
@@ -318,10 +302,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
     }
 
     private Element getSettingsElement(SettingsModel settings) {
-        if (settings.getParent().getProviderName().equals("ScoreBoard")) {
-            return getScoreBoardElement();
-        }
-        return null;
+        return getScoreBoardElement();
     }
 
     protected Element getClockElement(Clock clock) {

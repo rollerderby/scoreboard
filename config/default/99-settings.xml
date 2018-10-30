@@ -2,7 +2,7 @@
 <document Version="0.2.0-20120128144059"
 	SystemTime="1327779979435">
 	<ScoreBoard>
-		<FrontendSettings>
+		<Settings>
 			<Setting Id="Overlay.4x3.LogoBackground"><![CDATA[true]]></Setting>
 			<Setting Id="Overlay.4x3.TeamLogos"><![CDATA[true]]></Setting>
 			<Setting Id="Overlay.DDTV.Clock"><![CDATA[On]]></Setting>
@@ -33,7 +33,7 @@
 			<Setting Id="ScoreBoard.View_SidePadding"><![CDATA[]]></Setting>
 			<Setting Id="ScoreBoard.View_SwapTeams"><![CDATA[false]]></Setting>
 			<Setting Id="ScoreBoard.View_Video"><![CDATA[/videos/fullscreen/American Flag.webm]]></Setting>
-		</FrontendSettings>
+		</Settings>
 	</ScoreBoard>
 </document>
 

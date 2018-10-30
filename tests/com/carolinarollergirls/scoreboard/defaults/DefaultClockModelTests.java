@@ -21,14 +21,14 @@ import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 
 public class DefaultClockModelTests {
 
     private ScoreBoardModel sbModelMock;
     private Rulesets rulesetsMock;
-    private FrontendSettings frontendSettingsMock;
+    private Settings settingsMock;
 
     private Queue<ScoreBoardEvent> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
@@ -68,15 +68,15 @@ public class DefaultClockModelTests {
         sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);
 
         rulesetsMock = Mockito.mock(Rulesets.class);
-        frontendSettingsMock = Mockito.mock(FrontendSettings.class);
+        settingsMock = Mockito.mock(Settings.class);
 
         Mockito
         .when(sbModelMock.getScoreBoard())
         .thenReturn(sbModelMock);
 
         Mockito
-        .when(sbModelMock.getFrontendSettings())
-        .thenReturn(frontendSettingsMock);
+        .when(sbModelMock.getSettings())
+        .thenReturn(settingsMock);
 
         Mockito
         .when(sbModelMock.getRulesets())
@@ -84,7 +84,7 @@ public class DefaultClockModelTests {
 
         // makes it easier to test both sync and non-sync paths through clock model
         Mockito
-        .when(frontendSettingsMock.get(Clock.FRONTEND_SETTING_SYNC))
+        .when(settingsMock.get(Clock.SETTING_SYNC))
         .thenAnswer(new Answer<String>() {
             public String answer(InvocationOnMock invocation) throws Throwable {
                 return syncStatus;

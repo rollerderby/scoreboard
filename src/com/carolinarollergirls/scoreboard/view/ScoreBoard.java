@@ -59,8 +59,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public List<Team> getTeams();
     public Team getTeam(String id);
 
-    // Frontend (i.e. javascript only) settings.
-    public FrontendSettings getFrontendSettings();
+    public Settings getSettings();
 
     public Rulesets getRulesets();
 
@@ -68,7 +67,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public XmlScoreBoard getXmlScoreBoard();
 
-    public static final String FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
+    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 
     public static final String SETTING_NUMBER_PERIODS = "Rule." + Clock.ID_PERIOD + ".Number";
     public static final String SETTING_PERIOD_DURATION = "Rule." + Clock.ID_PERIOD + ".Duration";

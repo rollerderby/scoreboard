@@ -48,9 +48,9 @@ public class ScoreBoardJSONListenerTests {
     @After
     public void tearDown() throws Exception {
         // Make sure events are still flowing through the ScoreBoardJSONListener.
-        sbm.getFrontendSettingsModel().set("teardownTest", "foo");
+        sbm.getSettingsModel().set("teardownTest", "foo");
         advance(0);
-        assertEquals("foo", state.get("ScoreBoard.FrontendSettings.teardownTest"));
+        assertEquals("foo", state.get("ScoreBoard.Settings.teardownTest"));
         ScoreBoardClock.getInstance().start(false);
     }
 

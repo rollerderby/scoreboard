@@ -14,17 +14,17 @@ import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.model.SettingsModel;
+import com.carolinarollergirls.scoreboard.view.Settings;
 
-public class DefaultFrontendSettingsModel extends DefaultScoreBoardEventProvider implements FrontendSettingsModel {
-    public DefaultFrontendSettingsModel(ScoreBoardModel s) {
+public class DefaultSettingsModel extends DefaultScoreBoardEventProvider implements SettingsModel {
+    public DefaultSettingsModel(ScoreBoardModel s) {
         sbm = s;
     }
 
-    public String getProviderName() { return "FrontendSettings"; }
-    public Class<FrontendSettings> getProviderClass() { return FrontendSettings.class; }
+    public String getProviderName() { return "Settings"; }
+    public Class<Settings> getProviderClass() { return Settings.class; }
     public String getProviderId() { return ""; }
 
     public void reset() {

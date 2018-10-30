@@ -69,8 +69,8 @@ public class DefaultScoreboardModelTests {
         collectedEvents = new LinkedList<ScoreBoardEvent>();
         sbm.addScoreBoardListener(batchCounter);
         //Clock Sync can cause clocks to be changed when started, breaking tests.
-        sbm.getFrontendSettingsModel().set(Clock.FRONTEND_SETTING_SYNC, "False");
-        sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
+        sbm.getSettingsModel().set(Clock.SETTING_SYNC, "False");
+        sbm.getSettingsModel().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
     }
 
     @After
@@ -85,15 +85,15 @@ public class DefaultScoreboardModelTests {
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel) {
-        assertEquals(startLabel, sbm.getFrontendSettings().get(ScoreBoard.BUTTON_START));
-        assertEquals(stopLabel, sbm.getFrontendSettings().get(ScoreBoard.BUTTON_STOP));
-        assertEquals(timeoutLabel, sbm.getFrontendSettings().get(ScoreBoard.BUTTON_TIMEOUT));
-        assertEquals(undoLabel, sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO));
+        assertEquals(startLabel, sbm.getSettings().get(ScoreBoard.BUTTON_START));
+        assertEquals(stopLabel, sbm.getSettings().get(ScoreBoard.BUTTON_STOP));
+        assertEquals(timeoutLabel, sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT));
+        assertEquals(undoLabel, sbm.getSettings().get(ScoreBoard.BUTTON_UNDO));
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel, String replaceLabel) {
         checkLabels(startLabel, stopLabel, timeoutLabel, undoLabel);
-        assertEquals(replaceLabel, sbm.getFrontendSettings().get(ScoreBoard.BUTTON_REPLACED));
+        assertEquals(replaceLabel, sbm.getSettings().get(ScoreBoard.BUTTON_REPLACED));
     }
 
     @Test
@@ -608,7 +608,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testStopJam_endTimeoutKeepTimeoutClock() {
-        sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
+        sbm.getSettingsModel().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
         assertFalse(pc.isRunning());
         assertFalse(pc.isTimeAtEnd());
         assertFalse(jc.isRunning());
@@ -693,7 +693,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testStopJam_lineupRunning() {
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
         sbm.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
         lc.setTime(14000);
         lc.setNumber(9);
@@ -862,7 +862,7 @@ public class DefaultScoreboardModelTests {
 
         sbm.createSnapshot("TEST");
         assertEquals("TEST", sbm.snapshot.getType());
-        assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO));
+        assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", sbm.getSettings().get(ScoreBoard.BUTTON_UNDO));
 
         pc.stop();
         jc.stop();
@@ -986,7 +986,7 @@ public class DefaultScoreboardModelTests {
     @Test
     public void testPeriodClockEnd_duringLineup() {
         sbm.getRulesetsModel().set(ScoreBoard.SETTING_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 
         pc.start();
         assertTrue(pc.isCountDirectionDown());
@@ -1017,7 +1017,7 @@ public class DefaultScoreboardModelTests {
     @Test
     public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
         sbm.getRulesetsModel().set(ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "false");
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
         sbm.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
 
         pc.start();
@@ -1044,10 +1044,10 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testPeriodClockEnd_duringJam() {
-        String prevStartLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = sbm.getSettings().get(ScoreBoard.BUTTON_START);
+        String prevStopLabel = sbm.getSettings().get(ScoreBoard.BUTTON_STOP);
+        String prevTimeoutLabel = sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
         pc.start();
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(2000);
@@ -1073,7 +1073,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testJamClockEnd_pcRemaining() {
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
         pc.start();
         jc.start();
         assertTrue(jc.isCountDirectionDown());
@@ -1097,10 +1097,10 @@ public class DefaultScoreboardModelTests {
     @Test
     public void testJamClockEnd_autoEndDisabled() {
         sbm.getRulesetsModel().set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
-        String prevStartLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = sbm.getSettings().get(ScoreBoard.BUTTON_START);
+        String prevStopLabel = sbm.getSettings().get(ScoreBoard.BUTTON_STOP);
+        String prevTimeoutLabel = sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 
         pc.start();
         jc.start();
@@ -1122,7 +1122,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testIntermissionClockEnd_notLastPeriod() {
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(0);
@@ -1178,10 +1178,10 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testIntermissionClockEnd_lastPeriod() {
-        String prevStartLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sbm.getFrontendSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = sbm.getSettings().get(ScoreBoard.BUTTON_START);
+        String prevStopLabel = sbm.getSettings().get(ScoreBoard.BUTTON_STOP);
+        String prevTimeoutLabel = sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
+        String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(0);
@@ -1359,9 +1359,9 @@ public class DefaultScoreboardModelTests {
     }
 
     @Test
-    public void testResetDoesntAffectFrontendSettings() {
-        sbm.getFrontendSettingsModel().set("foo", "bar");
+    public void testResetDoesntAffectSettings() {
+        sbm.getSettingsModel().set("foo", "bar");
         sbm.reset();
-        assertEquals("bar", sbm.getFrontendSettings().get("foo"));
+        assertEquals("bar", sbm.getSettings().get("foo"));
     }
 }

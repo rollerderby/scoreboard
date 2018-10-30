@@ -38,7 +38,7 @@ public interface ScoreBoardModel extends ScoreBoard {
 
     public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 
-    public FrontendSettingsModel getFrontendSettingsModel();
+    public SettingsModel getSettingsModel();
     public RulesetsModel getRulesetsModel();
     public StatsModel getStatsModel();
 

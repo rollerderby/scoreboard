@@ -124,8 +124,8 @@ public class WS extends WebSocketServlet {
                     }
                     ScoreBoardManager.printMessage("Setting " + key + " to " + v);
 
-                    if (key.startsWith("ScoreBoard.FrontendSettings.")) {
-                        sbm.getFrontendSettingsModel().set(key.substring(28), v);
+                    if (key.startsWith("ScoreBoard.Settings.")) {
+                        sbm.getSettingsModel().set(key.substring(20), v);
                     }
                 } else if (action.equals("AddRuleset")) {
                     JSONObject data = json.getJSONObject("data");

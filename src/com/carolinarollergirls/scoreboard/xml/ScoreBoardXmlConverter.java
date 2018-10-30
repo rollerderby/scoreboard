@@ -17,7 +17,7 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import com.carolinarollergirls.scoreboard.model.ClockModel;
-import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
+import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.RulesetsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
@@ -25,7 +25,7 @@ import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
@@ -61,7 +61,7 @@ public class ScoreBoardXmlConverter {
         editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
         editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
 
-        toElement(sb, scoreBoard.getFrontendSettings());
+        toElement(sb, scoreBoard.getSettings());
         toElement(sb, scoreBoard.getRulesets());
 
         Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
@@ -79,14 +79,14 @@ public class ScoreBoardXmlConverter {
         return d;
     }
 
-    public Element toElement(Element p, FrontendSettings s) {
-        Element e = editor.setElement(p, "FrontendSettings");
+    public Element toElement(Element p, Settings s) {
+        Element e = editor.setElement(p, "Settings");
         Iterator<String> keys = s.getAll().keySet().iterator();
         while (keys.hasNext()) {
             String k = keys.next();
             String v = s.get(k);
             if (v != null) {
-                editor.setElement(e, FrontendSettings.EVENT_SETTING, k, v);
+                editor.setElement(e, Settings.EVENT_SETTING, k, v);
             }
         }
         return e;
@@ -321,8 +321,8 @@ public class ScoreBoardXmlConverter {
                     processClock(scoreBoardModel, element);
                 } else if (name.equals("Team")) {
                     processTeam(scoreBoardModel, element);
-                } else if (name.equals("FrontendSettings")) {
-                    processFrontendSettings(scoreBoardModel, element);
+                } else if (name.equals("Settings")) {
+                    processSettings(scoreBoardModel, element);
                 } else if (name.equals("Rules")) {
                     processRules(scoreBoardModel, element);
                 } else if (name.equals("KnownRulesets")) {
@@ -365,8 +365,8 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processFrontendSettings(ScoreBoardModel scoreBoardModel, Element settings) {
-        FrontendSettingsModel sm = scoreBoardModel.getFrontendSettingsModel();
+    public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
+        SettingsModel sm = scoreBoardModel.getSettingsModel();
         Iterator<?> children = settings.getChildren().iterator();
         while (children.hasNext()) {
             Element element = (Element)children.next();

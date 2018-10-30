@@ -16,7 +16,6 @@ import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
@@ -29,7 +28,6 @@ import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Settings;
@@ -46,8 +44,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     protected void setupScoreBoard() {
         stats = new DefaultStatsModel(this);
         stats.addScoreBoardListener(this);
-        frontendSettings = new DefaultFrontendSettingsModel(this);
-        frontendSettings.addScoreBoardListener(this);
+        settings = new DefaultSettingsModel(this);
+        settings.addScoreBoardListener(this);
         rulesets = new DefaultRulesetsModel(this);
         rulesets.addScoreBoardListener(this);
         reset();
@@ -385,7 +383,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         if (!tc.isRunning()) { return; }
 
         requestBatchStart();
-        if (!frontendSettings.get(FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) {
+        if (!settings.get(SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) {
             tc.stop();
         }
         if (getTimeoutOwner() != TIMEOUT_OWNER_NONE && getTimeoutOwner() != TIMEOUT_OWNER_OTO) {
@@ -400,7 +398,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
                 if (restartPcAfterTimeout) {
                     pc.start();
                 }
-                if (frontendSettings.get(FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_LINEUP)) {
+                if (settings.get(SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_LINEUP)) {
                     _startLineup();
                 }
             }
@@ -515,7 +513,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     }
 
     protected void setLabel(String id, String value) {
-        frontendSettings.set(id, value);
+        settings.set(id, value);
     }
     protected void setLabels(String startLabel, String stopLabel, String timeoutLabel) {
         setLabel(BUTTON_START, startLabel);
@@ -529,8 +527,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         }
     }
 
-    public FrontendSettings getFrontendSettings() { return frontendSettings; }
-    public FrontendSettingsModel getFrontendSettingsModel() { return frontendSettings; }
+    public Settings getSettings() { return settings; }
+    public SettingsModel getSettingsModel() { return settings; }
 
     public Rulesets getRulesets() { return rulesets; }
     public RulesetsModel getRulesetsModel() { return rulesets; }
@@ -633,7 +631,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     protected boolean officialScore = false;
 
     protected DefaultRulesetsModel rulesets = null;
-    protected DefaultFrontendSettingsModel frontendSettings = null;
+    protected DefaultSettingsModel settings = null;
     protected DefaultStatsModel stats = null;
 
     protected XmlScoreBoard xmlScoreBoard;
@@ -696,9 +694,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             inOvertime = sbm.isInOvertime();
             inPeriod = sbm.isInPeriod();
             restartPcAfterTo = sbm.restartPcAfterTimeout;
-            startLabel = sbm.getFrontendSettings().get(BUTTON_START);
-            stopLabel = sbm.getFrontendSettings().get(BUTTON_STOP);
-            timeoutLabel = sbm.getFrontendSettings().get(BUTTON_TIMEOUT);
+            startLabel = sbm.getSettings().get(BUTTON_START);
+            stopLabel = sbm.getSettings().get(BUTTON_STOP);
+            timeoutLabel = sbm.getSettings().get(BUTTON_TIMEOUT);
             clockSnapshots = new HashMap<String, DefaultClockModel.ClockSnapshotModel>();
             for (ClockModel clock : sbm.getClockModels()) {
                 clockSnapshots.put(clock.getId(), clock.snapshot());
