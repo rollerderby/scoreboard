@@ -409,9 +409,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             processRuleset("ScoreBoard", r, false);
         }
 
-        // Process Settings
-        processSettings("ScoreBoard", sb.getSettings());
-
         processPenaltyCodes(sb.getRulesets());
 
         // Process Teams

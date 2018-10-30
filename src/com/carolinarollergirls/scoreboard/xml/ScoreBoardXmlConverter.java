@@ -21,7 +21,6 @@ import com.carolinarollergirls.scoreboard.model.FrontendSettingsModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.RulesetsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
@@ -30,7 +29,6 @@ import com.carolinarollergirls.scoreboard.view.FrontendSettings;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
-import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Skater;
 import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.view.Stats;
@@ -63,7 +61,6 @@ public class ScoreBoardXmlConverter {
         editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
         editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
 
-        toElement(sb, scoreBoard.getSettings());
         toElement(sb, scoreBoard.getFrontendSettings());
         toElement(sb, scoreBoard.getRulesets());
 
@@ -80,19 +77,6 @@ public class ScoreBoardXmlConverter {
         toElement(sb, scoreBoard.getStats());
 
         return d;
-    }
-
-    public Element toElement(Element p, Settings s) {
-        Element e = editor.setElement(p, "Settings");
-        Iterator<String> keys = s.getAll().keySet().iterator();
-        while (keys.hasNext()) {
-            String k = keys.next();
-            String v = s.get(k);
-            if (v != null) {
-                editor.setElement(e, Settings.EVENT_SETTING, k, v);
-            }
-        }
-        return e;
     }
 
     public Element toElement(Element p, FrontendSettings s) {
@@ -337,8 +321,6 @@ public class ScoreBoardXmlConverter {
                     processClock(scoreBoardModel, element);
                 } else if (name.equals("Team")) {
                     processTeam(scoreBoardModel, element);
-                } else if (name.equals("Settings")) {
-                    processSettings(scoreBoardModel, element);
                 } else if (name.equals("FrontendSettings")) {
                     processFrontendSettings(scoreBoardModel, element);
                 } else if (name.equals("Rules")) {
@@ -378,23 +360,6 @@ public class ScoreBoardXmlConverter {
                         scoreBoardModel.setTimeoutType("O", false);
                     }
                 }
-            } catch ( Exception e ) {
-            }
-        }
-    }
-
-    public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
-        SettingsModel sm = scoreBoardModel.getSettingsModel();
-        Iterator<?> children = settings.getChildren().iterator();
-        while (children.hasNext()) {
-            Element element = (Element)children.next();
-            try {
-                String k = element.getAttributeValue("Id");
-                String v = editor.getText(element);
-                if (v == null) {
-                    v = "";
-                }
-                sm.set(k, v);
             } catch ( Exception e ) {
             }
         }

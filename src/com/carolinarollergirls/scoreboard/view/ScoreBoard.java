@@ -59,7 +59,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public List<Team> getTeams();
     public Team getTeam(String id);
 
-    public Settings getSettings();
     // Frontend (i.e. javascript only) settings.
     public FrontendSettings getFrontendSettings();
 

@@ -44,9 +44,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     }
 
     protected void setupScoreBoard() {
-        settings = new DefaultSettingsModel(this);
-        settings.addScoreBoardListener(this);
-
         stats = new DefaultStatsModel(this);
         stats.addScoreBoardListener(this);
         frontendSettings = new DefaultFrontendSettingsModel(this);
@@ -97,7 +94,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             snapshot = null;
             replacePending = false;
 
-            settings.reset();
             rulesets.reset();
             stats.reset();
             // Custom settings are not reset, as broadcast overlays settings etc.
@@ -519,7 +515,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     }
 
     protected void setLabel(String id, String value) {
-        settings.set(id, value);
+        frontendSettings.set(id, value);
     }
     protected void setLabels(String startLabel, String stopLabel, String timeoutLabel) {
         setLabel(BUTTON_START, startLabel);
@@ -532,9 +528,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             getTeamModel(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
         }
     }
-
-    public Settings getSettings() { return settings; }
-    public SettingsModel getSettingsModel() { return settings; }
 
     public FrontendSettings getFrontendSettings() { return frontendSettings; }
     public FrontendSettingsModel getFrontendSettingsModel() { return frontendSettings; }
@@ -640,7 +633,6 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     protected boolean officialScore = false;
 
     protected DefaultRulesetsModel rulesets = null;
-    protected DefaultSettingsModel settings = null;
     protected DefaultFrontendSettingsModel frontendSettings = null;
     protected DefaultStatsModel stats = null;
 
@@ -704,9 +696,9 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             inOvertime = sbm.isInOvertime();
             inPeriod = sbm.isInPeriod();
             restartPcAfterTo = sbm.restartPcAfterTimeout;
-            startLabel = sbm.getSettings().get(BUTTON_START);
-            stopLabel = sbm.getSettings().get(BUTTON_STOP);
-            timeoutLabel = sbm.getSettings().get(BUTTON_TIMEOUT);
+            startLabel = sbm.getFrontendSettings().get(BUTTON_START);
+            stopLabel = sbm.getFrontendSettings().get(BUTTON_STOP);
+            timeoutLabel = sbm.getFrontendSettings().get(BUTTON_TIMEOUT);
             clockSnapshots = new HashMap<String, DefaultClockModel.ClockSnapshotModel>();
             for (ClockModel clock : sbm.getClockModels()) {
                 clockSnapshots.put(clock.getId(), clock.snapshot());

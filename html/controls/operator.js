@@ -458,7 +458,7 @@ function createJamControlTable() {
 	var controlsTr = createRowTable(4,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
 
 	var replaceInfoText = $("<span>").html("Replace &quot;<span id=\"replacedLabel\"></span>&quot; with").appendTo(replaceInfoTr);
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.ReplacedLabel)").$sbBindAndRun("sbchange", function(event, val) {
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Button.ReplacedLabel)").$sbBindAndRun("sbchange", function(event, val) {
 		$("#replacedLabel").html(val);
 	});
 	
@@ -466,7 +466,7 @@ function createJamControlTable() {
 	var jamStartButton = $sb("ScoreBoard.StartJam").$sbControl("<button>")
 		.html("<span class=\"Label\">Start Jam</span>").val("true")
 		.attr("id", "StartJam").addClass("KeyControl").button();
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.StartLabel)").$sbBindAndRun("sbchange", function(event, val) {
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Button.StartLabel)").$sbBindAndRun("sbchange", function(event, val) {
 		jamStartButton.find("span.Label").html(val);
 	});
 	jamStartButton.appendTo(controlsTr.children("td:eq(0)"));
@@ -474,7 +474,7 @@ function createJamControlTable() {
 	var stopButton = $sb("ScoreBoard.StopJam").$sbControl("<button>")
 		.html("<span class=\"Label\">Stop Jam/TO</span>").val("true")
 		.attr("id", "StopJam").addClass("KeyControl").button();
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.StopLabel)").$sbBindAndRun("sbchange", function(event, val) {
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Button.StopLabel)").$sbBindAndRun("sbchange", function(event, val) {
 		stopButton.find("span.Label").html(val);
 	});
 	stopButton.appendTo(controlsTr.children("td:eq(1)"));
@@ -483,7 +483,7 @@ function createJamControlTable() {
 	var timeoutButton = $sb("ScoreBoard.Timeout").$sbControl("<button>")
 		.html("<span class=\"Label\">Timeout</span>").val("true")
 		.attr("id", "Timeout").addClass("KeyControl").button();
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.TimeoutLabel)").$sbBindAndRun("sbchange", function(event, val) {
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Button.TimeoutLabel)").$sbBindAndRun("sbchange", function(event, val) {
 		timeoutButton.find("span.Label").html(val);
 		});
 	timeoutButton.appendTo(controlsTr.children("td:eq(2)"));
@@ -491,13 +491,13 @@ function createJamControlTable() {
 	var undoButton = $sb("ScoreBoard.ClockUndo").$sbControl("<button>")
 		.html("<span class=\"Label\">Undo</span>").val("true")
 		.attr("id", "ClockUndo").addClass("KeyControl").button();
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
 		undoButton.find("span.Label").html(val);
 		});
 	var replaceButton = $sb("ScoreBoard.ClockReplace").$sbControl("<button>")
 		.html("<span class=\"Label\">Undo</span>").val("true")
 		.attr("id", "ClockReplace").addClass("KeyControl Hidden KeyInactive").button();
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
+	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Button.UndoLabel)").$sbBindAndRun("sbchange", function(event, val) {
 		replaceButton.find("span.Label").html(val);
 		if (!replaceButton.hasClass("Hidden")) {
 			var rep = (val == "No Action");
