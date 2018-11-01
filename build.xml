@@ -66,6 +66,9 @@
 		<exec executable="git" outputproperty="version.git">
 			<arg line="describe --tags --always --dirty"/>
 		</exec>
+		<exec executable="git" outputproperty="version.commit">
+			<arg line="describe --exclude * --always --abbrev=100"/>
+		</exec>
 		<tstamp>
 			<format property="version.time" pattern="yyyyMMddHHmmss" />
 		</tstamp>
@@ -76,6 +79,7 @@
 		<mkdir dir="${version.dest.dir}"/>
 		<propertyfile file="${version.dest.dir}/${version.release.file}">
 			<entry key="release" value="${version}"/>
+			<entry key="release.commit" value="${version.commit}"/>
 			<entry key="release.user" value="${user.name}"/>
 			<entry key="release.time" value="${version.time}"/>
 			<entry key="release.host" value="${host.NAME}"/>
