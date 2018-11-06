@@ -274,12 +274,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path + "." + Clock.EVENT_RUNNING, c.isRunning()));
     }
 
-    private void processSettings(String path, Settings s) {
-        for (String key : s.getAll().keySet()) {
-            updates.add(new WSUpdate(path + ".Setting(" + key + ")", s.get(key)));
-        }
-    }
-
     private void processCurrentRuleset(String path, Rulesets r) {
         for (Map.Entry<String,String> e : r.getAll().entrySet()) {
             updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULES + "(" + e.getKey() + ")", e.getValue()));
@@ -360,7 +354,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
     private void processPenaltyCodes(Rulesets r) {
         updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
-        String file = r.get(PenaltyCodesManager.SETTING_PENALTIES_FILE);
+        String file = r.get(PenaltyCodesManager.RULE_PENALTIES_FILE);
         if(file != null && !file.isEmpty()) {
             PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
             for(PenaltyCode p : penalties.getPenalties()) {

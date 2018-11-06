@@ -13,7 +13,6 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.RulesetsModel;
 import com.carolinarollergirls.scoreboard.model.RulesetsModel.RulesetModel;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
-import com.carolinarollergirls.scoreboard.view.Rulesets;
 
 public class DefaultRulesetsModelTests {
 
@@ -36,48 +35,48 @@ public class DefaultRulesetsModelTests {
     public void testChangingRuleset() {
         RulesetModel child = rm.addRuleset("child", rootId, id1);
         assertEquals(rootId, child.getParentRulesetId());
-        assertEquals(2, rm.getInt(ScoreBoard.SETTING_NUMBER_PERIODS));
-        assertEquals(1800000, rm.getLong(ScoreBoard.SETTING_PERIOD_DURATION));
+        assertEquals(2, rm.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
+        assertEquals(1800000, rm.getLong(ScoreBoard.RULE_PERIOD_DURATION));
         assertEquals(rootId, rm.getId());
         assertEquals("WFTDA Sanctioned", rm.getName());
 
         Map<String,String> s = new HashMap<String,String>();
-        s.put(ScoreBoard.SETTING_NUMBER_PERIODS, "5");
+        s.put(ScoreBoard.RULE_NUMBER_PERIODS, "5");
         child.setAll(s);
         rm.setCurrentRuleset(id1);
-        assertEquals(5, rm.getInt(ScoreBoard.SETTING_NUMBER_PERIODS));
-        assertEquals(1800000, rm.getLong(ScoreBoard.SETTING_PERIOD_DURATION));
+        assertEquals(5, rm.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
+        assertEquals(1800000, rm.getLong(ScoreBoard.RULE_PERIOD_DURATION));
         assertEquals(id1, rm.getId());
         assertEquals("child", rm.getName());
 
         rm.setCurrentRuleset(rootId);
-        assertEquals(2, rm.getInt(ScoreBoard.SETTING_NUMBER_PERIODS));
-        assertEquals(1800000, rm.getLong(ScoreBoard.SETTING_PERIOD_DURATION));
+        assertEquals(2, rm.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
+        assertEquals(1800000, rm.getLong(ScoreBoard.RULE_PERIOD_DURATION));
         assertEquals(rootId, rm.getId());
         assertEquals("WFTDA Sanctioned", rm.getName());
 
-        rm.set(ScoreBoard.SETTING_NUMBER_PERIODS, "6");
-        assertEquals(6, rm.getInt(ScoreBoard.SETTING_NUMBER_PERIODS));
+        rm.set(ScoreBoard.RULE_NUMBER_PERIODS, "6");
+        assertEquals(6, rm.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
 
-        rm.set(ScoreBoard.SETTING_NUMBER_PERIODS, "zz");
-        assertEquals(6, rm.getInt(ScoreBoard.SETTING_NUMBER_PERIODS));
+        rm.set(ScoreBoard.RULE_NUMBER_PERIODS, "zz");
+        assertEquals(6, rm.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
     }
 
     public void testTimeRule() {
         RulesetModel child = rm.addRuleset("child", rootId, id1);
         assertEquals(rootId, child.getParentRulesetId());
-        assertEquals(1800000, rm.getLong(ScoreBoard.SETTING_PERIOD_DURATION));
+        assertEquals(1800000, rm.getLong(ScoreBoard.RULE_PERIOD_DURATION));
 
         Map<String,String> s = new HashMap<String,String>();
-        s.put(ScoreBoard.SETTING_PERIOD_DURATION, "1:00");
+        s.put(ScoreBoard.RULE_PERIOD_DURATION, "1:00");
         child.setAll(s);
         rm.setCurrentRuleset(id1);
-        assertEquals(60000, rm.getLong(ScoreBoard.SETTING_PERIOD_DURATION));
+        assertEquals(60000, rm.getLong(ScoreBoard.RULE_PERIOD_DURATION));
     }
 
     @Test
     public void testReparentingToGrandparent() {
-        RulesetModel child = rm.addRuleset("child", rootId, id1);
+        rm.addRuleset("child", rootId, id1);
         RulesetModel grandchild = rm.addRuleset("grandchild", id1, id2);
         assertEquals(id1, grandchild.getParentRulesetId());
 

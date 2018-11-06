@@ -8,12 +8,10 @@ package com.carolinarollergirls.scoreboard.defaults;
  * See the file COPYING for details.
  */
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -36,7 +34,6 @@ import com.carolinarollergirls.scoreboard.view.Team;
 
 public class DefaultRulesetsModel extends DefaultScoreBoardEventProvider implements RulesetsModel {
     public DefaultRulesetsModel(ScoreBoardModel s) {
-        sbm = s;
         parent = s;
         initialize();
         reset();
@@ -50,43 +47,43 @@ public class DefaultRulesetsModel extends DefaultScoreBoardEventProvider impleme
 
     private void initialize() {
         Rule[] knownRules = {
-            new IntegerRule(ScoreBoard.SETTING_NUMBER_PERIODS, "Number of periods", 2),
-            new TimeRule(ScoreBoard.SETTING_PERIOD_DURATION, "Duration of a period", "30:00"),
-            new BooleanRule(ScoreBoard.SETTING_PERIOD_DIRECTION, "Which way should the period clock count?", true, "Count Down", "Count Up"),
-            new BooleanRule(ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "When can a period end?", true, "Anytime outside a jam", "Only on jam end"),
+            new IntegerRule(ScoreBoard.RULE_NUMBER_PERIODS, "Number of periods", 2),
+            new TimeRule(ScoreBoard.RULE_PERIOD_DURATION, "Duration of a period", "30:00"),
+            new BooleanRule(ScoreBoard.RULE_PERIOD_DIRECTION, "Which way should the period clock count?", true, "Count Down", "Count Up"),
+            new BooleanRule(ScoreBoard.RULE_PERIOD_END_BETWEEN_JAMS, "When can a period end?", true, "Anytime outside a jam", "Only on jam end"),
 
-            new BooleanRule(ScoreBoard.SETTING_JAM_NUMBER_PER_PERIOD, "How to handle Jam Numbers", true, "Reset each period", "Continue counting"),
-            new TimeRule(ScoreBoard.SETTING_JAM_DURATION, "Maximum duration of a jam", "2:00"),
-            new BooleanRule(ScoreBoard.SETTING_JAM_DIRECTION, "Which way should the jam clock count?", true, "Count Down", "Count Up"),
+            new BooleanRule(ScoreBoard.RULE_JAM_NUMBER_PER_PERIOD, "How to handle Jam Numbers", true, "Reset each period", "Continue counting"),
+            new TimeRule(ScoreBoard.RULE_JAM_DURATION, "Maximum duration of a jam", "2:00"),
+            new BooleanRule(ScoreBoard.RULE_JAM_DIRECTION, "Which way should the jam clock count?", true, "Count Down", "Count Up"),
 
-            new TimeRule(ScoreBoard.SETTING_LINEUP_DURATION, "Duration of lineup", "0:30"),
-            new TimeRule(ScoreBoard.SETTING_OVERTIME_LINEUP_DURATION, "Duration of lineup before an overtime jam", "1:00"),
-            new BooleanRule(ScoreBoard.SETTING_LINEUP_DIRECTION, "Which way should the lineup clock count?", false, "Count Down", "Count Up"),
+            new TimeRule(ScoreBoard.RULE_LINEUP_DURATION, "Duration of lineup", "0:30"),
+            new TimeRule(ScoreBoard.RULE_OVERTIME_LINEUP_DURATION, "Duration of lineup before an overtime jam", "1:00"),
+            new BooleanRule(ScoreBoard.RULE_LINEUP_DIRECTION, "Which way should the lineup clock count?", false, "Count Down", "Count Up"),
 
-            new TimeRule(ScoreBoard.SETTING_TTO_DURATION, "Duration of a team timeout", "1:00"),
-            new BooleanRule(ScoreBoard.SETTING_TIMEOUT_DIRECTION, "Which way should the timeout clock count?", false, "Count Down", "Count Up"),
-            new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_TO, "Stop the period clock on every timeout? If false, the options below control the behaviour per type of timeout.", true, "True", "False"),
-            new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_OTO, "Stop the period clock on official timeouts?", false, "True", "False"),
-            new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_TTO, "Stop the period clock on team timeouts?", false, "True", "False"),
-            new BooleanRule(ScoreBoard.SETTING_STOP_PC_ON_OR, "Stop the period clock on official reviews?", false, "True", "False"),
-            new TimeRule(ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00"),
+            new TimeRule(ScoreBoard.RULE_TTO_DURATION, "Duration of a team timeout", "1:00"),
+            new BooleanRule(ScoreBoard.RULE_TIMEOUT_DIRECTION, "Which way should the timeout clock count?", false, "Count Down", "Count Up"),
+            new BooleanRule(ScoreBoard.RULE_STOP_PC_ON_TO, "Stop the period clock on every timeout? If false, the options below control the behaviour per type of timeout.", true, "True", "False"),
+            new BooleanRule(ScoreBoard.RULE_STOP_PC_ON_OTO, "Stop the period clock on official timeouts?", false, "True", "False"),
+            new BooleanRule(ScoreBoard.RULE_STOP_PC_ON_TTO, "Stop the period clock on team timeouts?", false, "True", "False"),
+            new BooleanRule(ScoreBoard.RULE_STOP_PC_ON_OR, "Stop the period clock on official reviews?", false, "True", "False"),
+            new TimeRule(ScoreBoard.RULE_STOP_PC_AFTER_TO_DURATION, "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00"),
 
-            new StringRule(ScoreBoard.SETTING_INTERMISSION_DURATIONS, "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00"),
-            new BooleanRule(ScoreBoard.SETTING_INTERMISSION_DIRECTION, "Which way should the intermission clock count?", true, "Count Down", "Count Up"),
+            new StringRule(ScoreBoard.RULE_INTERMISSION_DURATIONS, "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00"),
+            new BooleanRule(ScoreBoard.RULE_INTERMISSION_DIRECTION, "Which way should the intermission clock count?", true, "Count Down", "Count Up"),
 
-            new BooleanRule(ScoreBoard.SETTING_AUTO_START, "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"),
-            new TimeRule(ScoreBoard.SETTING_AUTO_START_BUFFER, "How long to wait after end of lineup before auto start is triggered.", "0:02"),
-            new BooleanRule(ScoreBoard.SETTING_AUTO_START_JAM, "What to start after lineup is up", false, "Jam", "Timeout"),
-            new BooleanRule(ScoreBoard.SETTING_AUTO_END_JAM, "End a jam, when the jam clock has run down", true, "Enabled", "Disabled"),
-            new BooleanRule(ScoreBoard.SETTING_AUTO_END_TTO, "End a team timeout, after it's defined duration has elapsed", false, "Enabled", "Disabled"),
+            new BooleanRule(ScoreBoard.RULE_AUTO_START, "Start a Jam or Timeout when the Linup time is over its maximum by BufferTime start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled"),
+            new TimeRule(ScoreBoard.RULE_AUTO_START_BUFFER, "How long to wait after end of lineup before auto start is triggered.", "0:02"),
+            new BooleanRule(ScoreBoard.RULE_AUTO_START_JAM, "What to start after lineup is up", false, "Jam", "Timeout"),
+            new BooleanRule(ScoreBoard.RULE_AUTO_END_JAM, "End a jam, when the jam clock has run down", true, "Enabled", "Disabled"),
+            new BooleanRule(ScoreBoard.RULE_AUTO_END_TTO, "End a team timeout, after it's defined duration has elapsed", false, "Enabled", "Disabled"),
 
-            new IntegerRule(Team.SETTING_NUMBER_TIMEOUTS, "How many timeouts each team is granted per game or period", 3),
-            new BooleanRule(Team.SETTING_TIMEOUTS_PER_PERIOD, "Are timeouts granted per period or per game?", false, "Period", "Game"),
-            new IntegerRule(Team.SETTING_NUMBER_REVIEWS, "How many official reviews each team is granted per game or period", 1),
-            new BooleanRule(Team.SETTING_REVIEWS_PER_PERIOD, "Are official reviews granted per period or per game?", true, "Period", "Game"),
+            new IntegerRule(Team.RULE_NUMBER_TIMEOUTS, "How many timeouts each team is granted per game or period", 3),
+            new BooleanRule(Team.RULE_TIMEOUTS_PER_PERIOD, "Are timeouts granted per period or per game?", false, "Period", "Game"),
+            new IntegerRule(Team.RULE_NUMBER_REVIEWS, "How many official reviews each team is granted per game or period", 1),
+            new BooleanRule(Team.RULE_REVIEWS_PER_PERIOD, "Are official reviews granted per period or per game?", true, "Period", "Game"),
 
-            new StringRule(PenaltyCodesManager.SETTING_PENALTIES_FILE, "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json"),
-            new IntegerRule(Penalty.SETTING_FO_LIMIT, "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.", 7),
+            new StringRule(PenaltyCodesManager.RULE_PENALTIES_FILE, "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json"),
+            new IntegerRule(Penalty.RULE_FO_LIMIT, "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.", 7),
         };
         Map<String, String> rootSettings = new HashMap<String, String>();
         for (Rule r : knownRules) {
@@ -243,7 +240,6 @@ public class DefaultRulesetsModel extends DefaultScoreBoardEventProvider impleme
         }
     }
 
-    private ScoreBoardModel sbm = null;
     private Map<String, String> current = new HashMap<String, String>();
     private Map<String, RulesetModel> rulesets = new HashMap<String, RulesetModel>();
     private String id = null;

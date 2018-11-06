@@ -14,7 +14,6 @@ import java.util.Set;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -299,10 +298,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
 
     protected Element getScoreBoardElement() {
         return editor.getElement(document.getRootElement(), "ScoreBoard");
-    }
-
-    private Element getSettingsElement(SettingsModel settings) {
-        return getScoreBoardElement();
     }
 
     protected Element getClockElement(Clock clock) {

@@ -70,7 +70,7 @@ public class DefaultTeamModelTests {
         .thenReturn(otherTeamMock);
 
         Mockito
-        .when(rulesetsMock.getInt(Team.SETTING_NUMBER_TIMEOUTS))
+        .when(rulesetsMock.getInt(Team.RULE_NUMBER_TIMEOUTS))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return maxNumberTimeouts;
@@ -78,14 +78,14 @@ public class DefaultTeamModelTests {
         });
 
         Mockito
-        .when(rulesetsMock.getBoolean(Team.SETTING_TIMEOUTS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.RULE_TIMEOUTS_PER_PERIOD))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return timeoutsPerPeriod;
             }
         });
         Mockito
-        .when(rulesetsMock.getInt(Team.SETTING_NUMBER_REVIEWS))
+        .when(rulesetsMock.getInt(Team.RULE_NUMBER_REVIEWS))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return maxNumberReviews;
@@ -93,7 +93,7 @@ public class DefaultTeamModelTests {
         });
 
         Mockito
-        .when(rulesetsMock.getBoolean(Team.SETTING_REVIEWS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.RULE_REVIEWS_PER_PERIOD))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return reviewsPerPeriod;

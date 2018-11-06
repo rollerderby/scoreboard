@@ -45,17 +45,17 @@ public class DefaultPositionModelTests {
         .thenReturn(rulesetsMock);
 
         Mockito
-        .when(rulesetsMock.getInt(Team.SETTING_NUMBER_TIMEOUTS))
+        .when(rulesetsMock.getInt(Team.RULE_NUMBER_TIMEOUTS))
         .thenReturn(3);
         Mockito
-        .when(rulesetsMock.getBoolean(Team.SETTING_TIMEOUTS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.RULE_TIMEOUTS_PER_PERIOD))
         .thenReturn(false);
         Mockito
-        .when(rulesetsMock.getInt(Team.SETTING_NUMBER_REVIEWS))
+        .when(rulesetsMock.getInt(Team.RULE_NUMBER_REVIEWS))
         .thenReturn(1);
 
         Mockito
-        .when(rulesetsMock.getBoolean(Team.SETTING_REVIEWS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.RULE_REVIEWS_PER_PERIOD))
         .thenReturn(true);
 
         teamModel = new DefaultTeamModel(sbModelMock, "A");

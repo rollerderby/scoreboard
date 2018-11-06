@@ -1,8 +1,5 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class BooleanRule extends Rule {
     public BooleanRule(String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
         super("Boolean", fullname, description, new Boolean(defaultValue));

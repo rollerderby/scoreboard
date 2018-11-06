@@ -24,14 +24,12 @@ import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Settings;
-import com.carolinarollergirls.scoreboard.view.Skater.Penalty;
 import com.carolinarollergirls.scoreboard.view.Stats;
 import com.carolinarollergirls.scoreboard.view.Team;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
@@ -130,7 +128,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_OVERTIME, new Boolean(inOvertime), last));
             ClockModel lc = getClockModel(Clock.ID_LINEUP);
             if (!o && lc.isCountDirectionDown()) {
-                lc.setMaximumTime(rulesets.getLong(SETTING_LINEUP_DURATION));
+                lc.setMaximumTime(rulesets.getLong(RULE_LINEUP_DURATION));
             }
         }
     }
@@ -155,7 +153,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             _endTimeout(false);
             setInOvertime(true);
             setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-            long otLineupTime = rulesets.getLong(SETTING_OVERTIME_LINEUP_DURATION);
+            long otLineupTime = rulesets.getLong(RULE_OVERTIME_LINEUP_DURATION);
             if (lc.getMaximumTime() < otLineupTime) {
                 lc.setMaximumTime(otLineupTime);
             }
@@ -240,18 +238,18 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             }
             setTimeoutOwner(owner);
             setOfficialReview(review);
-            if (!rulesets.getBoolean(SETTING_STOP_PC_ON_TO)) {
+            if (!rulesets.getBoolean(RULE_STOP_PC_ON_TO)) {
                 boolean stopPc = false;
                 if (!owner.equals(TIMEOUT_OWNER_NONE)) {
                     if (owner.equals(TIMEOUT_OWNER_OTO) ) {
-                        if (rulesets.getBoolean(SETTING_STOP_PC_ON_OTO)) {
+                        if (rulesets.getBoolean(RULE_STOP_PC_ON_OTO)) {
                             stopPc = true;
                         }
                     } else {
-                        if (review && rulesets.getBoolean(SETTING_STOP_PC_ON_OR)) {
+                        if (review && rulesets.getBoolean(RULE_STOP_PC_ON_OR)) {
                             stopPc = true;
                         }
-                        if (!review && rulesets.getBoolean(SETTING_STOP_PC_ON_TTO)) {
+                        if (!review && rulesets.getBoolean(RULE_STOP_PC_ON_TTO)) {
                             stopPc = true;
                         }
                     }
@@ -277,7 +275,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         pc.setNumber(ic.getNumber()+1);
         pc.resetTime();
         restartPcAfterTimeout = false;
-        if (rulesets.getBoolean(SETTING_JAM_NUMBER_PER_PERIOD)) {
+        if (rulesets.getBoolean(RULE_JAM_NUMBER_PER_PERIOD)) {
             jc.setNumber(jc.getMinimumNumber());
         }
         jc.resetTime();
@@ -366,7 +364,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
             _endTimeout(true);
         }
 
-        if (rulesets.getBoolean(SETTING_STOP_PC_ON_TO)) {
+        if (rulesets.getBoolean(RULE_STOP_PC_ON_TO)) {
             pc.stop();
         }
         _endLineup();
@@ -412,7 +410,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         requestBatchStart();
         ic.setNumber(pc.getNumber());
         long duration = 0;
-        String[] sequence = rulesets.get(SETTING_INTERMISSION_DURATIONS).split(",");
+        String[] sequence = rulesets.get(RULE_INTERMISSION_DURATIONS).split(",");
         int number = Math.min(ic.getNumber(), sequence.length);
         if (number > 0) {
             duration = ClockConversion.fromHumanReadable(sequence[number-1]);
@@ -443,14 +441,14 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         ClockModel lc = getClockModel(Clock.ID_LINEUP);
         ClockModel tc = getClockModel(Clock.ID_TIMEOUT);
 
-        long bufferTime = rulesets.getLong(SETTING_AUTO_START_BUFFER);
+        long bufferTime = rulesets.getLong(RULE_AUTO_START_BUFFER);
         long triggerTime = bufferTime + (isInOvertime() ?
-                                         rulesets.getLong(SETTING_OVERTIME_LINEUP_DURATION) :
-                                         rulesets.getLong(SETTING_LINEUP_DURATION));
+                                         rulesets.getLong(RULE_OVERTIME_LINEUP_DURATION) :
+                                         rulesets.getLong(RULE_LINEUP_DURATION));
 
         requestBatchStart();
         if (lc.getTimeElapsed() >= triggerTime) {
-            if (Boolean.parseBoolean(rulesets.get(SETTING_AUTO_START_JAM))) {
+            if (Boolean.parseBoolean(rulesets.get(RULE_AUTO_START_JAM))) {
                 startJam();
                 jc.elapseTime(bufferTime);
             } else {
@@ -638,7 +636,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
 
     protected ScoreBoardListener periodEndListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
-            if (rulesets.getBoolean(SETTING_PERIOD_END_BETWEEN_JAMS)) {
+            if (rulesets.getBoolean(RULE_PERIOD_END_BETWEEN_JAMS)) {
                 _possiblyEndPeriod();
             }
         }
@@ -646,7 +644,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     protected ScoreBoardListener jamEndListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
             ClockModel jc = getClockModel(Clock.ID_JAM);
-            if (jc.isTimeAtEnd() && rulesets.getBoolean(SETTING_AUTO_END_JAM)) {
+            if (jc.isTimeAtEnd() && rulesets.getBoolean(RULE_AUTO_END_JAM)) {
                 //clock has run down naturally
                 requestBatchStart();
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
@@ -665,20 +663,20 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     };
     protected ScoreBoardListener lineupClockListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
-            if (rulesets.getBoolean(SETTING_AUTO_START)) {
+            if (rulesets.getBoolean(RULE_AUTO_START)) {
                 _possiblyAutostart();
             }
         }
     };
     protected ScoreBoardListener timeoutClockListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
-            if (rulesets.getBoolean(SETTING_AUTO_END_TTO) &&
+            if (rulesets.getBoolean(RULE_AUTO_END_TTO) &&
                     !getTimeoutOwner().equals(TIMEOUT_OWNER_NONE) &&
                     !getTimeoutOwner().equals(TIMEOUT_OWNER_OTO) &&
-                    (long)event.getValue() == rulesets.getLong(SETTING_TTO_DURATION)) {
+                    (long)event.getValue() == rulesets.getLong(RULE_TTO_DURATION)) {
                 stopJamTO();
             }
-            if ((long)event.getValue() == rulesets.getLong(SETTING_STOP_PC_AFTER_TO_DURATION) &&
+            if ((long)event.getValue() == rulesets.getLong(RULE_STOP_PC_AFTER_TO_DURATION) &&
                     getClock(Clock.ID_PERIOD).isRunning()) {
                 getClockModel(Clock.ID_PERIOD).stop();
             }

@@ -69,7 +69,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
                 setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
             }
             if (id.equals(ID_PERIOD) || id.equals(ID_INTERMISSION)) {
-                setMaximumNumber(r.getInt(ScoreBoard.SETTING_NUMBER_PERIODS));
+                setMaximumNumber(r.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
             } else {
                 setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
             }

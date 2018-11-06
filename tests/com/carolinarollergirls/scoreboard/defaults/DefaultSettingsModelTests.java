@@ -1,7 +1,5 @@
 package com.carolinarollergirls.scoreboard.defaults;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 
 import org.junit.Before;

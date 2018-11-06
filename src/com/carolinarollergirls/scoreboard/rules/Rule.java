@@ -1,8 +1,5 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 public class Rule {
     public Rule(String type, String fullname, String description, Object defaultValue) {
         this.type = type;

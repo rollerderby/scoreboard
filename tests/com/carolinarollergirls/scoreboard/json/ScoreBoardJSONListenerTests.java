@@ -305,7 +305,7 @@ public class ScoreBoardJSONListenerTests {
         assertEquals("child", state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Name"));
         assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Rule.Period.Number)"));
         Map<String,String> s = new HashMap<String,String>();
-        s.put(ScoreBoard.SETTING_NUMBER_PERIODS, "3");
+        s.put(ScoreBoard.RULE_NUMBER_PERIODS, "3");
         sbm.getRulesetsModel().getRulesetModel(cid).setAll(s);
         advance(0);
         assertEquals("3", state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Rule.Period.Number)"));
