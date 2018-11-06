@@ -19,13 +19,13 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
-import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.Team;
 
 public class DefaultTeamModelTests {
 
     private ScoreBoardModel sbModelMock;
-    private Settings settingsMock;
+    private Rulesets rulesetsMock;
     private TeamModel otherTeamMock;
 
     private int maxNumberTimeouts = 3;
@@ -54,7 +54,7 @@ public class DefaultTeamModelTests {
 
         sbModelMock = Mockito.mock(DefaultScoreBoardModel.class);
 
-        settingsMock = Mockito.mock(Settings.class);
+        rulesetsMock = Mockito.mock(Rulesets.class);
         otherTeamMock = Mockito.mock(DefaultTeamModel.class);
 
         Mockito
@@ -62,15 +62,15 @@ public class DefaultTeamModelTests {
         .thenReturn(sbModelMock);
 
         Mockito
-        .when(sbModelMock.getSettings())
-        .thenReturn(settingsMock);
+        .when(sbModelMock.getRulesets())
+        .thenReturn(rulesetsMock);
 
         Mockito
         .when(sbModelMock.getTeamModel(Mockito.anyString()))
         .thenReturn(otherTeamMock);
 
         Mockito
-        .when(settingsMock.getInt(Team.SETTING_NUMBER_TIMEOUTS))
+        .when(rulesetsMock.getInt(Team.RULE_NUMBER_TIMEOUTS))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return maxNumberTimeouts;
@@ -78,14 +78,14 @@ public class DefaultTeamModelTests {
         });
 
         Mockito
-        .when(settingsMock.getBoolean(Team.SETTING_TIMEOUTS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.RULE_TIMEOUTS_PER_PERIOD))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return timeoutsPerPeriod;
             }
         });
         Mockito
-        .when(settingsMock.getInt(Team.SETTING_NUMBER_REVIEWS))
+        .when(rulesetsMock.getInt(Team.RULE_NUMBER_REVIEWS))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return maxNumberReviews;
@@ -93,7 +93,7 @@ public class DefaultTeamModelTests {
         });
 
         Mockito
-        .when(settingsMock.getBoolean(Team.SETTING_REVIEWS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Team.RULE_REVIEWS_PER_PERIOD))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return reviewsPerPeriod;

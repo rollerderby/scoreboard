@@ -11,11 +11,11 @@
 
     <div id="logo"></div>
 
-		<div id="sb" sbContext="ScoreBoard" class="JamScore StyleTraditional" data-setting="ScoreBoard.FrontendSettings.Overlay.Interactive.ShowJammers">
+		<div id="sb" sbContext="ScoreBoard" class="JamScore StyleTraditional" data-setting="ScoreBoard.Settings.Overlay.Interactive.ShowJammers">
 
 			<div class="PanelWrapperTop">
 
-				<div data-setting="ScoreBoard.FrontendSettings.Overlay.Interactive.Score" class="TeamBox AnimatedPanel PanelHideTop Wrapper">	
+				<div data-setting="ScoreBoard.Settings.Overlay.Interactive.Score" class="TeamBox AnimatedPanel PanelHideTop Wrapper">	
 					<div class="Team1" sbContext="Team(1)">	
 					<div class="Team Row Wrapper barBackgroundTop"> 
 						<div class="Indicator ColourTeam1 Box">&nbsp;</div>
@@ -52,14 +52,14 @@
 				</div>
 
 			
-			<div data-setting="ScoreBoard.FrontendSettings.Overlay.Interactive.Clock"  class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper">
+			<div data-setting="ScoreBoard.Settings.Overlay.Interactive.Clock"  class="ClockBox TopClock AnimatedPanel PanelHideTop Wrapper">
 
 					<div class="ClockBarTop Wrapper Row SlideDown ClockNames ShowInJam ShowInLineup ShowInTimeout barBackgroundTop">
 						<div class="Box TextLeft Name" sbDisplay="Name,Number" sbContext="Clock(Period)" sbModify="toClockInitialNumber"></div>
 						<div class="Box TextRight Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
 					</div>
 
-					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineUp ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, FrontendSettings.ScoreBoard.Intermission.PreGame, FrontendSettings.ScoreBoard.Intermission.Intermission, FrontendSettings.ScoreBoard.Intermission.Unofficial, FrontendSettings.ScoreBoard.Intermission.Official, OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="clockType"></div>
+					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineUp ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Settings.ScoreBoard.Intermission.PreGame, Settings.ScoreBoard.Intermission.Intermission, Settings.ScoreBoard.Intermission.Unofficial, Settings.ScoreBoard.Intermission.Official, OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="clockType"></div>
 					<div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
 						<div class="Box TextLeft Time Clock Show ShowInJam ShowInLineup ShowInTimeout" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
 						<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
@@ -76,7 +76,7 @@
 
 				<div class="ClockBox Wrapper OverlayPanel PanelHideBottom MediumPanel AnimatedPanel">
 						<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineUp ShowInTimeout">
-							<div class="Box BigName ShowInIntermission Clock" sbDisplay="FrontendSettings.ScoreBoard.Intermission.PreGame, FrontendSettings.ScoreBoard.Intermission.Intermission, FrontendSettings.ScoreBoard.Intermission.Unofficial, FrontendSettings.ScoreBoard.Intermission.Official, OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
+							<div class="Box BigName ShowInIntermission Clock" sbDisplay="Settings.ScoreBoard.Intermission.PreGame, Settings.ScoreBoard.Intermission.Intermission, Settings.ScoreBoard.Intermission.Unofficial, Settings.ScoreBoard.Intermission.Official, OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
 							<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 						</div>
 				</div>
@@ -151,7 +151,7 @@
 
 			<div class="PanelWrapperLeft">
 				<div class="LowerThird Wrapper OverlayPanel AnimatedPanel PanelHideLeft">
-					<h4 class="Line1" sbDisplay="ScoreBoard.FrontendSettings.Overlay.Interactive.LowerThird.Line1" /> <h5 class="Line2" sbDisplay="ScoreBoard.FrontendSettings.Overlay.Interactive.LowerThird.Line2" />
+					<h4 class="Line1" sbDisplay="ScoreBoard.Settings.Overlay.Interactive.LowerThird.Line1" /> <h5 class="Line2" sbDisplay="ScoreBoard.Settings.Overlay.Interactive.LowerThird.Line2" />
 				</div>
 			</div>
 

@@ -2,15 +2,16 @@ package com.carolinarollergirls.scoreboard.rules;
 
 
 public class IntegerRule extends Rule {
-    public IntegerRule(boolean onResetOnly, String fullname, String description, int defaultValue) {
-        super(onResetOnly, "Integer", fullname, description, new Integer(defaultValue));
+    public IntegerRule(String fullname, String description, int defaultValue) {
+        super("Integer", fullname, description, new Integer(defaultValue));
     }
 
-    public Object convertValue(String v) {
+    public boolean isValueValid(String v) {
         try {
-            return new Integer(Integer.parseInt(v));
+            Integer.parseInt(v);
+            return true;
         } catch (Exception e) {
-            return null;
+            return false;
         }
     }
 }

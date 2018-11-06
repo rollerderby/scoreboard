@@ -10,19 +10,23 @@ package com.carolinarollergirls.scoreboard.defaults;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
-import com.carolinarollergirls.scoreboard.view.Settings;
+import com.carolinarollergirls.scoreboard.view.Rulesets;
 
 public class DefaultClockModel extends DefaultScoreBoardEventProvider implements ClockModel {
     public DefaultClockModel(ScoreBoardModel sbm, String i) {
         scoreBoardModel = sbm;
         id = i;
+
+        sbm.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.EVENT_CURRENT_RULESET, rulesetChangeListener));
 
         reset();
     }
@@ -42,26 +46,10 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
         synchronized (coreLock) {
             stop();
 
-            // Get default values from current settings or use hardcoded values
-            Settings settings = getScoreBoardModel().getSettings();
             setName(id);
-            setCountDirectionDown(settings.getBoolean("Rule." + id + ".Direction"));
-            if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION)) {
-                setMinimumNumber(0);
-            } else {
-                setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
-            }
-            if (id.equals(ID_PERIOD) || id.equals(ID_INTERMISSION)) {
-                setMaximumNumber(settings.getInt("Clock." + id + ".MaximumNumber"));
-            } else {
-                setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
-            }
-            setMinimumTime(DEFAULT_MINIMUM_TIME);
-            if (id.equals(ID_PERIOD) || id.equals(ID_JAM)) {
-                setMaximumTime(settings.getLong("Clock." + id + ".MaximumTime"));
-            } else {
-                setMaximumTime(DEFAULT_MAXIMUM_TIME);
-            }
+
+            // Pull in settings.
+            rulesetChangeListener.scoreBoardChange(null);
 
             // We hardcode the assumption that numbers count up.
             setNumber(getMinimumNumber());
@@ -69,6 +57,30 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
             resetTime();
         }
     }
+
+    protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
+        public void scoreBoardChange(ScoreBoardEvent event) {
+            // Get default values from current settings or use hardcoded values
+            Rulesets r = getScoreBoardModel().getRulesets();
+            setCountDirectionDown(r.getBoolean("Rule." + id + ".Direction"));
+            if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION)) {
+                setMinimumNumber(0);
+            } else {
+                setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
+            }
+            if (id.equals(ID_PERIOD) || id.equals(ID_INTERMISSION)) {
+                setMaximumNumber(r.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
+            } else {
+                setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
+            }
+            setMinimumTime(DEFAULT_MINIMUM_TIME);
+            if (id.equals(ID_PERIOD) || id.equals(ID_JAM)) {
+                setMaximumTime(r.getLong("Rule." + id + ".Duration"));
+            } else {
+                setMaximumTime(DEFAULT_MAXIMUM_TIME);
+            }
+        }
+    };
 
     public ClockSnapshotModel snapshot() {
         synchronized (coreLock) {
@@ -353,7 +365,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
     }
 
     protected boolean isSyncTime() {
-        return Boolean.parseBoolean(getScoreBoard().getFrontendSettings().get(FRONTEND_SETTING_SYNC));
+        return Boolean.parseBoolean(getScoreBoard().getSettings().get(SETTING_SYNC));
     }
 
     protected boolean isMasterClock() {

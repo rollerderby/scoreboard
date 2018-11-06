@@ -8,13 +8,11 @@ package com.carolinarollergirls.scoreboard.model;
  * See the file COPYING for details.
  */
 
-import java.util.Map;
-
 import com.carolinarollergirls.scoreboard.view.Settings;
 
 public interface SettingsModel extends Settings {
     public void reset();
 
+    // Setting to null deletes a setting.
     public void set(String k, String v);
-    public void set(Map<String, String> s);
 }

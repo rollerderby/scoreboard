@@ -69,8 +69,8 @@ public class DefaultScoreboardModelTests {
         collectedEvents = new LinkedList<ScoreBoardEvent>();
         sbm.addScoreBoardListener(batchCounter);
         //Clock Sync can cause clocks to be changed when started, breaking tests.
-        sbm.getFrontendSettingsModel().set(Clock.FRONTEND_SETTING_SYNC, "False");
-        sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
+        sbm.getSettingsModel().set(Clock.SETTING_SYNC, "False");
+        sbm.getSettingsModel().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
     }
 
     @After
@@ -119,7 +119,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testSetInOvertime() {
-        (sbm.getSettingsModel()).set("Clock." + Clock.ID_LINEUP + ".Time", "30000");
+        (sbm.getRulesetsModel()).set("Clock." + Clock.ID_LINEUP + ".Time", "30000");
         lc.setMaximumTime(999999999);
 
         assertFalse(lc.isCountDirectionDown());
@@ -217,7 +217,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testStartOvertime_default() {
-        (sbm.getSettingsModel()).set("Clock." + Clock.ID_LINEUP + ".OvertimeTime", "60000");
+        (sbm.getRulesetsModel()).set("Clock." + Clock.ID_LINEUP + ".OvertimeTime", "60000");
 
         assertFalse(pc.isRunning());
         pc.setTime(0);
@@ -546,7 +546,7 @@ public class DefaultScoreboardModelTests {
         assertFalse(tc.isRunning());
         assertTrue(ic.isRunning());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sbm.getSettings().get(ScoreBoard.SETTING_INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(sbm.getRulesets().get(ScoreBoard.RULE_INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getMaximumTime());
         assertTrue(ic.isTimeAtStart());
         assertFalse(sbm.isInPeriod());
@@ -608,7 +608,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testStopJam_endTimeoutKeepTimeoutClock() {
-        sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
+        sbm.getSettingsModel().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
         assertFalse(pc.isRunning());
         assertFalse(pc.isTimeAtEnd());
         assertFalse(jc.isRunning());
@@ -985,7 +985,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testPeriodClockEnd_duringLineup() {
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
         String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
 
         pc.start();
@@ -1009,14 +1009,14 @@ public class DefaultScoreboardModelTests {
         assertTrue(ic.isRunning());
         assertTrue(ic.isTimeAtStart());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sbm.getSettings().get(ScoreBoard.SETTING_INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(sbm.getRulesets().get(ScoreBoard.RULE_INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getTimeRemaining());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
     }
 
     @Test
     public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_PERIOD_END_BETWEEN_JAMS, "false");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_PERIOD_END_BETWEEN_JAMS, "false");
         String prevUndoLabel = sbm.getSettings().get(ScoreBoard.BUTTON_UNDO);
         sbm.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
 
@@ -1096,7 +1096,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testJamClockEnd_autoEndDisabled() {
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_AUTO_END_JAM, "false");
         String prevStartLabel = sbm.getSettings().get(ScoreBoard.BUTTON_START);
         String prevStopLabel = sbm.getSettings().get(ScoreBoard.BUTTON_STOP);
         String prevTimeoutLabel = sbm.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
@@ -1155,7 +1155,7 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testIntermissionClockEnd_notLastPeriodContinueCountingJams() {
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_JAM_NUMBER_PER_PERIOD, "false");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_JAM_NUMBER_PER_PERIOD, "false");
 
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
@@ -1247,11 +1247,11 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testTimeoutsThatDontAlwaysStopPc() {
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_TO, "false");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_OTO, "false");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_TTO, "true");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_ON_OR, "true");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_STOP_PC_AFTER_TO_DURATION, "120000");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_STOP_PC_ON_TO, "false");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_STOP_PC_ON_OTO, "false");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_STOP_PC_ON_TTO, "true");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_STOP_PC_ON_OR, "true");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_STOP_PC_AFTER_TO_DURATION, "120000");
 
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(1200000);
@@ -1295,8 +1295,8 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testAutoStartJam() {
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START, "true");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START_JAM, "true");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_AUTO_START, "true");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_AUTO_START_JAM, "true");
 
         pc.start();
         assertFalse(jc.isRunning());
@@ -1322,11 +1322,11 @@ public class DefaultScoreboardModelTests {
 
     @Test
     public void testAutoStartAndEndTimeout() {
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START, "true");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START_JAM, "false");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_AUTO_END_TTO, "true");
-        sbm.getSettingsModel().set(ScoreBoard.SETTING_TTO_DURATION, "25000");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_AUTO_START, "true");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_AUTO_START_JAM, "false");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_AUTO_START_BUFFER, "0");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_AUTO_END_TTO, "true");
+        sbm.getRulesetsModel().set(ScoreBoard.RULE_TTO_DURATION, "25000");
 
         pc.start();
         assertFalse(jc.isRunning());
@@ -1359,9 +1359,9 @@ public class DefaultScoreboardModelTests {
     }
 
     @Test
-    public void testResetDoesntAffectFrontendSettings() {
-        sbm.getFrontendSettingsModel().set("foo", "bar");
+    public void testResetDoesntAffectSettings() {
+        sbm.getSettingsModel().set("foo", "bar");
         sbm.reset();
-        assertEquals("bar", sbm.getFrontendSettings().get("foo"));
+        assertEquals("bar", sbm.getSettings().get("foo"));
     }
 }

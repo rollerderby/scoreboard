@@ -9,13 +9,13 @@ function initialize() {
 	var view = "View";
 	if (_windowFunctions.checkParam("preview", "true"))
 		view = "Preview";
-	WS.Register( "ScoreBoard.FrontendSettings.ScoreBoard." + view + "_SwapTeams", function (k, v) {
+	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_SwapTeams", function (k, v) {
 		$(".Team1").toggleClass("Left", !isTrue(v)).toggleClass("Right", isTrue(v));
 		$(".Team2").toggleClass("Left", isTrue(v)).toggleClass("Right", !isTrue(v));
 		$(".Team").toggleClass("Swapped", isTrue(v));
 	});
 
-	WS.Register( "ScoreBoard.FrontendSettings.ScoreBoard." + view + "_CurrentView", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_CurrentView", function(k, v) {
 		$("div#video>video").each(function() { this.pause(); });
 		$(".DisplayPane.Show").addClass("Hide");
 		$(".DisplayPane").removeClass("Show");
@@ -23,20 +23,20 @@ function initialize() {
 		$("div#" + v + ".DisplayPane>video").each(function() { this.currentTime = 0; this.play(); });
 	});
 
-	WS.Register( "ScoreBoard.FrontendSettings.ScoreBoard." + view + "_Image", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_Image", function(k, v) {
 		$("div#image>img").attr("src", v);
 	});
-	WS.Register( "ScoreBoard.FrontendSettings.ScoreBoard." + view + "_Video", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_Video", function(k, v) {
 		$("div#video>video").attr("src", v);
 	});
-	WS.Register( "ScoreBoard.FrontendSettings.ScoreBoard." + view + "_CustomHtml", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_CustomHtml", function(k, v) {
 		$("div#html>iframe").attr("src", v);
 	});
 
-	WS.Register( [ "ScoreBoard.FrontendSettings.ScoreBoard." + view + "_BoxStyle",
-		"ScoreBoard.FrontendSettings.ScoreBoard." + view + "_SidePadding" ], function(k, v) {
-			var boxStyle = WS.state["ScoreBoard.FrontendSettings.ScoreBoard." + view + "_BoxStyle"];
-			var sidePadding = WS.state["ScoreBoard.FrontendSettings.ScoreBoard." + view + "_SidePadding"];
+	WS.Register( [ "ScoreBoard.Settings.ScoreBoard." + view + "_BoxStyle",
+		"ScoreBoard.Settings.ScoreBoard." + view + "_SidePadding" ], function(k, v) {
+			var boxStyle = WS.state["ScoreBoard.Settings.ScoreBoard." + view + "_BoxStyle"];
+			var sidePadding = WS.state["ScoreBoard.Settings.ScoreBoard." + view + "_SidePadding"];
 
 			// change box_flat_bright to two separate classes in order to reuse much of the css
 			if (boxStyle == 'box_flat_bright')

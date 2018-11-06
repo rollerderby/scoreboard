@@ -33,7 +33,7 @@ public class DefaultStatsModelTests {
 
         ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
         sbm = new DefaultScoreBoardModel();
-        sbm.getFrontendSettingsModel().set(ScoreBoard.FRONTEND_SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
+        sbm.getSettingsModel().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
         sm = sbm.getStatsModel();
 
         // Add a full roster for each team.

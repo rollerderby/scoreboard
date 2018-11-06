@@ -10,7 +10,7 @@
 
 
 $.fx.interval = 33;
-_include("/json", [ "Game.js", "Rulesets.js" ]);
+_include("/json", [ "Game.js" ]);
 
 $sb(function() {
 	createScoreTimeTab();
@@ -41,12 +41,12 @@ $sb(function() {
 function setOperatorSettings(op) {
 	var prefix;
 	if (op !== "") {
-		prefix = "ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+ op + ".";
+		prefix = "ScoreBoard.Settings.Setting(ScoreBoard.Operator__"+ op + ".";
 	} else {
 		// Default settings are intentionally separate from settings of the default operator
 		// This ensures users logging in for the first time always get the former and not whatever
 		// the latter currently happens to be.
-		prefix = "ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator_Default.";
+		prefix = "ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.";
 	}
 	setClockControls($sb(prefix+"StartStopButtons)").$sbIsTrue());
 	setReplaceButton($sb(prefix+"ReplaceButton)").$sbIsTrue());
@@ -187,7 +187,7 @@ function createMetaControlTable() {
 			setReplaceButton(value);
 			var operator = $("#operatorId").text();
 			if (operator) {
-				$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+operator+".ReplaceButton)").$sbSet(value);
+				$sb("ScoreBoard.Settings.Setting(ScoreBoard.Operator__"+operator+".ReplaceButton)").$sbSet(value);
 			}
 		});
 
@@ -201,7 +201,7 @@ function createMetaControlTable() {
 			setClockControls(value);
 			var operator = $("#operatorId").text();
 			if (operator) {
-				$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Operator__"+operator+".StartStopButtons)").$sbSet(value);
+				$sb("ScoreBoard.Settings.Setting(ScoreBoard.Operator__"+operator+".StartStopButtons)").$sbSet(value);
 			}
 		});
 
@@ -362,20 +362,12 @@ function createGameControlDialog() {
 	}).change(function(e) { updateAdhocName(); });
 
 
-	Rulesets.List(function(rulesets) {
-		var select = adhocGame.find("select.Ruleset");
-		var active = $sb("ScoreBoard.Ruleset").$sbGet();
-		$.each(rulesets, function(idx, rs) {
-			var opt = $("<option>")
-				.attr("value", rs.id)
-				.prop("rulesetName", rs.name)
-				.append(rs.name);
-			console.log(rs.id, active);
-			if (rs.id == active)
-				opt.prop("selected", true);
-			_windowFunctions.appendAlphaSortedByProp(select, opt, "rulesetName");
-		});
+	_crgUtils.setupSelect(adhocGame.find("select.Ruleset"), {
+		optionParent: "ScoreBoard.KnownRulesets",
+		optionChildName: "Ruleset",
+		optionNameElement: "Name",
 	});
+	adhocGame.find("select.Ruleset").val($sb("ScoreBoard.Rules.Id").$sbGet());
 
 	dialog.dialog({
 		title: title,
@@ -683,7 +675,7 @@ function createTeamTable() {
 		}
 
 
-		// Note instantaneous score change is always towards the center.  Jam score total is on the outside.
+		// Note instantaneous score change is always towards the center.	Jam score total is on the outside.
 		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
 		var jamScore = $("<a>").appendTo(scoreSubTr.children("td:eq("+(first?"0":"2")+")")).addClass("JamScore");
 
@@ -1013,7 +1005,7 @@ function createScoreBoardViewContent(table) {
 	});
 	var applyPreviewButton = $("<button>Apply Preview</button>").button()
 		.click(function() {
-			$sb("ScoreBoard.FrontendSettings").find("Setting").each(function() {
+			$sb("ScoreBoard.Settings").find("Setting").each(function() {
 				oldPath = String($sb(this).$sbPath);
 				var path = oldPath.replace("(ScoreBoard.Preview_", "(ScoreBoard.View_");
 				if (path != oldPath) {
@@ -1022,7 +1014,7 @@ function createScoreBoardViewContent(table) {
 				}
 			});
 		});
-	_crgUtils.bindAndRun("ScoreBoard.FrontendSettings.Setting", "sbchange", function() {
+	_crgUtils.bindAndRun("ScoreBoard.Settings.Setting", "sbchange", function() {
 		var disableApplyButton = true;
 		$sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
 			var viewPath = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
@@ -1077,7 +1069,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.append("<label>Video</label><input type='radio' value='video'/>")
 		.append("<label>Custom Page</label><input type='radio' value='html'/>");
 
-	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + type + "_CurrentView)").$sbControl(currentViewTd.children());
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)").$sbControl(currentViewTd.children());
 	currentViewTd.buttonset()
 		.prepend("<a>Current View : </a>");
 
@@ -1089,13 +1081,13 @@ function createScoreBoardViewPreviewRows(table, type) {
 	var intermissionControlDialog = createIntermissionControlDialog();
 	var intermissionControlButton = $("<button>Intermission Labels</button>").button().addClass("ui-button-small")
 		.click(function() { intermissionControlDialog.dialog("open"); });
-	var clockAfterTimeout = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.ClockAfterTimeout)").$sbControl("<label>Clock shown after Timeout: </label><select>", { sbelement: {
+	var clockAfterTimeout = $sb("ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)").$sbControl("<label>Clock shown after Timeout: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Lineup", value: "Lineup" },
 			{ text: "Timeout", value: "Timeout" }
 		]}});
 	var syncClocksButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard.Clock.Sync)").$sbControl(syncClocksButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)").$sbControl(syncClocksButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -1106,7 +1098,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		} }).addClass("ui-button-small");
 
 	var swapTeamsButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
 			button: true
 		}, sbelement: {
 			convert: function(value) {
@@ -1115,13 +1107,13 @@ function createScoreBoardViewPreviewRows(table, type) {
 				return value;
 			}
 		} }).addClass("ui-button-small");
-	var boxStyle = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
+	var boxStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "Rounded", value: "" },
 			{ text: "Flat", value: "box_flat" },
 			{ text: "Flat & Bright", value: "box_flat_bright" }
 		]}});
-	var sidePadding = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
+	var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
 		prependOptions: [
 			{ text: "None", value: "" },
 			{ text: "2%", value: "2" },
@@ -1130,21 +1122,21 @@ function createScoreBoardViewPreviewRows(table, type) {
 			{ text: "8%", value: "8" },
 			{ text: "10%", value: "10" }
 		]}});
-	var imageViewSelect = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
+	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
 			optionParent: "Images.Type(fullscreen)",
 			optionChildName: "Image",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Image", value: "" }
 		} });
-	var videoViewSelect = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
+	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
 			optionParent: "Videos.Type(fullscreen)",
 			optionChildName: "Video",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Video", value: "" }
 		} });
-	var customPageViewSelect = $sb("ScoreBoard.FrontendSettings.Setting(ScoreBoard." + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
+	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
 			optionParent: "CustomHtml.Type(fullscreen)",
 			optionChildName: "Html",
 			optionNameElement: "Name",
@@ -1185,7 +1177,7 @@ function createIntermissionControlDialog() {
 		{ id: "ScoreBoard.Intermission.Official", display: "Official Score", type: "text" },
 	];
 	$.each( fields, function(i, field) {
-		var path = "ScoreBoard.FrontendSettings.Setting(" + field.id + ")";
+		var path = "ScoreBoard.Settings.Setting(" + field.id + ")";
 		var row = $("<tr>").appendTo(table);
 		$("<td>").addClass("Name").text(field.display).appendTo(row);
 		var options = {};

@@ -13,21 +13,21 @@
 
 		<div class="controls controls-vertical controls-left">
 
-			<button data-key="S" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Top" class="ToggleSwitch SlideSwitch"><span class="key">S</span>corebar</button> 
-			<button data-key="J" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.ShowJammers" class="ToggleSwitch SlideSwitch"><span class="key">J</span>ammer Name</button><br/>
+			<button data-key="S" data-setting="ScoreBoard.Settings.Overlay.DDTV.Top" class="ToggleSwitch SlideSwitch"><span class="key">S</span>corebar</button> 
+			<button data-key="J" data-setting="ScoreBoard.Settings.Overlay.DDTV.ShowJammers" class="ToggleSwitch SlideSwitch"><span class="key">J</span>ammer Name</button><br/>
 	
 			<br/>OVERLAY PANELS<br/><br/>
 			<small style="display: block; text-align: center;">ROSTERS</small>
 			<div class="group">
-				<button data-key="1" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="RosterTeam1">Team <span class="key">1</span></button>
-				<button data-key="2" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="RosterTeam2">Team <span class="key">2</span></button>
+				<button data-key="1" data-setting="ScoreBoard.Settings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="RosterTeam1">Team <span class="key">1</span></button>
+				<button data-key="2" data-setting="ScoreBoard.Settings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="RosterTeam2">Team <span class="key">2</span></button>
 			</div>
 			<small style="display: block; text-align: center;">PENALTY BOARDS</small>
 			<div class="group">
-				<button data-key="3" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="PenaltyTeam1"><span class="key">3</span> Pen 1</button>
-				<button data-key="4" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="PenaltyTeam2"><span class="key">4</span> Pen 2</button>
+				<button data-key="3" data-setting="ScoreBoard.Settings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="PenaltyTeam1"><span class="key">3</span> Pen 1</button>
+				<button data-key="4" data-setting="ScoreBoard.Settings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" style="" data-value="PenaltyTeam2"><span class="key">4</span> Pen 2</button>
 			</div>
-			<button data-key=" " data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" data-value=""><span class="key"> </span> Clear</button><br/>
+			<button data-key=" " data-setting="ScoreBoard.Settings.Overlay.DDTV.Panel" class="ToggleSwitch FullButton SetValue" data-value=""><span class="key"> </span> Clear</button><br/>
 		</div>
 
 		<div class="wrap FHD"><iframe class="frame FHD" src="index.html"></iframe></div>
@@ -35,8 +35,8 @@
 		<div class="controls controls-vertical controls-right">
 			<small style="display: block; text-align: center;">DISPLAY MODE</small>
 			<div class="group">
-				<input type="hidden" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Mode" id="OverlayMode" data-source="#OverlayModeSelect"> </input>
-				<select class="SelectUpdator" id="OverlayModeSelect" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Mode" data-target="#OverlayMode">
+				<input type="hidden" data-setting="ScoreBoard.Settings.Overlay.DDTV.Mode" id="OverlayMode" data-source="#OverlayModeSelect"> </input>
+				<select class="SelectUpdator" id="OverlayModeSelect" data-setting="ScoreBoard.Settings.Overlay.DDTV.Mode" data-target="#OverlayMode">
 					<option value="alpha">Alpha</option>
 					<option value="green">Green</option>
 				</select>
@@ -44,8 +44,8 @@
 
 			<small style="display: block; text-align: center;">RESOLUTION</small>
 			<div class="group">
-				<input type="hidden" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Resolution" id="OverlayRes" data-add-class-to=".frame, .wrap" data-remove-class="FHD HD SDW SD LDW LD" data-source="#OverlayResSelect"> </input>
-				<select class="SelectUpdator" id="OverlayResSelect" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Resolution" data-target="#OverlayRes">
+				<input type="hidden" data-setting="ScoreBoard.Settings.Overlay.DDTV.Resolution" id="OverlayRes" data-add-class-to=".frame, .wrap" data-remove-class="FHD HD SDW SD LDW LD" data-source="#OverlayResSelect"> </input>
+				<select class="SelectUpdator" id="OverlayResSelect" data-setting="ScoreBoard.Settings.Overlay.DDTV.Resolution" data-target="#OverlayRes">
 					<option value="FHD">Full HD (1920x1080)</option>
 					<option value="HD">HD (1280x720)</option>
 					<!--<option value="SD">SDTV (768x576)</option>
@@ -57,8 +57,8 @@
 
 			<small style="display: block; text-align: center;">CLOCK FONT</small>
 			<div class="group">
-				<input type="hidden" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Font.Clock" id="OverlayClockFont" data-source="#OverlayClockFontSelect"> </input>
-				<select class="SelectUpdator" id="OverlayClockFontSelect" data-setting="ScoreBoard.FrontendSettings.Overlay.DDTV.Font.Clock" data-target="#OverlayClockFont">
+				<input type="hidden" data-setting="ScoreBoard.Settings.Overlay.DDTV.Font.Clock" id="OverlayClockFont" data-source="#OverlayClockFontSelect"> </input>
+				<select class="SelectUpdator" id="OverlayClockFontSelect" data-setting="ScoreBoard.Settings.Overlay.DDTV.Font.Clock" data-target="#OverlayClockFont">
 					<option value="ClockFaceDigital7">Digital 7</option>
 					<option value="ClockFaceErics">Erics</option>
 					<option value="ClockFaceTick">Tick</option>

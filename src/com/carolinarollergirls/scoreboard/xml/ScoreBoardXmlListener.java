@@ -8,18 +8,21 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
+
+import java.util.Set;
+
 import org.jdom.Document;
 import org.jdom.Element;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.FrontendSettings;
+import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Position;
+import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Skater;
 import com.carolinarollergirls.scoreboard.view.Stats;
@@ -83,31 +86,45 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         } else if (prop.equals(ScoreBoardEvent.BATCH_END)) {
             batchEnd();
         } else if (p.getProviderName().equals("Settings")) {
-            SettingsModel settings = (SettingsModel)p;
-            Element e = editor.setElement(getSettingsElement(settings), "Settings");
-            if (e != null) {
-                if (v == null) {
-                    if (isPersistent()) {
-                        editor.removeElement(e, "Setting", prop);
-                    } else {
-                        editor.setRemovePI(editor.setElement(e, "Setting", prop));
-                    }
-                } else {
-                    editor.setElement(e, "Setting", prop, v);
-                }
-            } else {
-                ScoreBoardManager.printMessage("************ ADD SUPPORT FOR SETTINGS TO ScoreBoardXmlListener FOR " + settings.getParent().getProviderName());
-            }
-        } else if (p.getProviderName().equals("FrontendSettings")) {
-            Element e = editor.setElement(getScoreBoardElement(), "FrontendSettings");
+            Element e = editor.setElement(getScoreBoardElement(), "Settings");
             if (v == null) {
                 if (isPersistent()) {
-                    editor.removeElement(e, FrontendSettings.EVENT_SETTING, prop);
+                    editor.removeElement(e, Settings.EVENT_SETTING, prop);
                 } else {
-                    editor.setRemovePI(editor.setElement(e, FrontendSettings.EVENT_SETTING, prop));
+                    editor.setRemovePI(editor.setElement(e, Settings.EVENT_SETTING, prop));
                 }
             } else {
-                editor.setElement(e, FrontendSettings.EVENT_SETTING, prop, v);
+                editor.setElement(e, Settings.EVENT_SETTING, prop, v);
+            }
+        } else if (p.getProviderName().equals("Rulesets")) {
+            if (prop.equals(Rulesets.EVENT_REMOVE_RULESET)) {
+                Element e = editor.setElement(getScoreBoardElement(), "KnownRulesets");
+                if (isPersistent()) {
+                    editor.removeElement(e, "Ruleset", ((Rulesets.Ruleset)event.getValue()).getId());
+                } else {
+                    editor.setRemovePI(converter.toElement(e, (Rulesets.Ruleset)event.getValue()));
+                }
+            } else {
+                converter.toElement(getScoreBoardElement(), (Rulesets)p);
+            }
+        } else if (p.getProviderName().equals("Ruleset")) {
+            Element e = editor.setElement(getScoreBoardElement(), "KnownRulesets");
+            Rulesets.Ruleset r = (Rulesets.Ruleset)p;
+            converter.toElement(e, r);
+            // Look for overrides that have been removed.
+            Element re = editor.setElement(e, "Ruleset", r.getId());
+            if (event.getPreviousValue() != null) {
+                Set<String> newKeys = r.getAll().keySet();
+                for (Object o : (Set<?>)event.getPreviousValue()) {
+                    String k = (String)o;
+                    if (!newKeys.contains(k)) {
+                        if (isPersistent()) {
+                            editor.removeElement(re, "Rule", k);
+                        } else {
+                            editor.setRemovePI(editor.setElement(re, "Rule", k));
+                        }
+                    }
+                }
             }
         } else if (p.getProviderName().equals("ScoreBoard")) {
             if (prop.equals(ScoreBoard.EVENT_ADD_CLOCK)) {
@@ -281,13 +298,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
 
     protected Element getScoreBoardElement() {
         return editor.getElement(document.getRootElement(), "ScoreBoard");
-    }
-
-    private Element getSettingsElement(SettingsModel settings) {
-        if (settings.getParent().getProviderName().equals("ScoreBoard")) {
-            return getScoreBoardElement();
-        }
-        return null;
     }
 
     protected Element getClockElement(Clock clock) {

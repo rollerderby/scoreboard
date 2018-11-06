@@ -44,7 +44,7 @@ function initialize() {
 	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); 
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); 
 
-	WS.Register( [ 'ScoreBoard.Setting(Rule.Penalties.NumberToFoulout)' ]);
+	WS.Register( [ 'ScoreBoard.Rule(Rule.Penalties.NumberToFoulout)' ]);
 }
 
 
@@ -98,7 +98,7 @@ function displayPenalty(t, s, p) {
 
 	// Change row colors for skaters on 5 or more penalties, or who have been expelled.
 	var cnt = 0; 
-	var limit = WS.state['ScoreBoard.Setting(Rule.Penalties.NumberToFoulout)'];
+	var limit = WS.state['ScoreBoard.Rule(Rule.Penalties.NumberToFoulout)'];
 	var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);

@@ -38,9 +38,8 @@ public interface ScoreBoardModel extends ScoreBoard {
 
     public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 
-    public void setRuleset(String id);
     public SettingsModel getSettingsModel();
-    public FrontendSettingsModel getFrontendSettingsModel();
+    public RulesetsModel getRulesetsModel();
     public StatsModel getStatsModel();
 
 // FIXME - need methods to add/remove clocks and teams! */

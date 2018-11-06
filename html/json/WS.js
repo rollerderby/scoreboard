@@ -4,6 +4,7 @@ var WS = {
 	connectCallback: null,
 	connectTimeout: null,
 	callbacks: new Array(),
+	batchCallbacks: new Array(),
 	Connected: false,
 	state: { },
 	heartbeat: null,
@@ -36,6 +37,9 @@ var WS = {
 				});
 				WS.state = {};
 				$.each(WS.callbacks, function (idx, c) {
+					req.paths.push(c.path);
+				});
+				$.each(WS.batchCallbacks, function (idx, c) {
 					req.paths.push(c.path);
 				});
 				if (req.paths.length > 0) {
@@ -128,6 +132,30 @@ var WS = {
 			if (state[prop] != null)
 				WS.triggerCallback(prop, state[prop]);
 		}
+
+		// Batch functions are only called once per update.
+		// This is useful to avoid n^2 operations when
+		// every callback redraws everything.
+		var batched = {};
+		$.each(WS.batchCallbacks, function(idx, c) {
+			if (c.callback == null) {
+				return;
+			}
+			for (var prop in state) {
+				if (prop.indexOf(c.path) == 0) {
+					batched[c.callback] = c.callback;
+					return;
+				}
+			}
+		});
+		$.each(batched, function(idx, c) {
+			try {
+				c();
+			} catch (err) {
+				console.log(err.message, err.stack);
+			}
+		});
+
 	},
 
 	Register: function(paths, options) {
@@ -135,11 +163,14 @@ var WS = {
 			options = { triggerFunc: options };
 
 		var callback = null;
+		var batchCallback = null;
 		if (options == null) {
 			callback = null;
 		} else {
 			if (options.triggerFunc != null) {
 				callback = options.triggerFunc;
+			} else if (options.triggerBatchFunc != null) {
+				batchCallback = options.triggerBatchFunc;
 			} else {
 				var elem = options.element;
 				if (options.css != null) {
@@ -187,6 +218,7 @@ var WS = {
 
 		$.each(paths, function(idx, path) {
 			WS.callbacks.push( { path: path, callback: callback } );
+			WS.batchCallbacks.push( { path: path, callback: batchCallback } );
 		});
 
 		req = {

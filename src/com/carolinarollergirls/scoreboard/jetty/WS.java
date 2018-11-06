@@ -124,9 +124,29 @@ public class WS extends WebSocketServlet {
                     }
                     ScoreBoardManager.printMessage("Setting " + key + " to " + v);
 
-                    if (key.startsWith("ScoreBoard.FrontendSettings.")) {
-                        sbm.getFrontendSettingsModel().set(key.substring(28), v);
+                    if (key.startsWith("ScoreBoard.Settings.")) {
+                        sbm.getSettingsModel().set(key.substring(20), v);
                     }
+                } else if (action.equals("AddRuleset")) {
+                    JSONObject data = json.getJSONObject("data");
+                    String n = data.getString("name");
+                    String p = data.getString("parent");
+                    sbm.getRulesetsModel().addRuleset(n, p);
+                } else if (action.equals("RemoveRuleset")) {
+                    JSONObject data = json.getJSONObject("data");
+                    String i = data.getString("id");
+                    sbm.getRulesetsModel().removeRuleset(i);
+                } else if (action.equals("UpdateRuleset")) {
+                    JSONObject data = json.getJSONObject("data");
+                    String i = data.getString("id");
+                    String n = data.getString("name");
+                    JSONObject rules = data.getJSONObject("rules");
+                    Map<String, String> s = new HashMap<String, String>();
+                    for (String k : rules.keySet()) {
+                        s.put(k, rules.getString(k));
+                    }
+                    sbm.getRulesetsModel().getRulesetModel(i).setAll(s);
+                    sbm.getRulesetsModel().getRulesetModel(i).setName(n);
                 } else if (action.equals("Ping")) {
                     send(new JSONObject().put("Pong", ""));
                 } else {
