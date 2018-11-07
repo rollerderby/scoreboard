@@ -50,10 +50,6 @@ function loadDefinitions() {
 			var section = $("<div>")
 				.addClass("section folded")
 				.attr("group", def.Group)
-			if (def.Subgroup != null) {
-				name = def.Subgroup;
-				section.attr("subgroup", def.Subgroup);
-			}
 
 			section.append($("<div>").addClass("header")
 				.click(function(e) {
@@ -69,7 +65,7 @@ function loadDefinitions() {
 			if (section != null)
 				return;
 			s = $(s);
-			if (s.attr("group") == def.Group && s.attr("subgroup") == def.Subgroup) {
+			if (s.attr("group") == def.Group) {
 				section = s;
 			}
 		});
@@ -129,22 +125,21 @@ function initialize() {
 			if (WS.state[prop] == null) {
 				continue;
 			}
-			var re = /ScoreBoard.RuleDefinitions\(((\w+)\.(\w+)\.(\w+))\).(\w+)/;
+			var re = /ScoreBoard.RuleDefinitions\(((\w+)\.(\w+))\).(\w+)/;
 			var m = prop.match(re);
 			if (m != null) {
-				var key = m[5];
+				var key = m[4];
 				definitions[m[1]] = definitions[m[1]] || {};
 				definitions[m[1]][key] = WS.state[prop];
 				definitions[m[1]]['Fullname'] = m[1];
 				definitions[m[1]]['Group'] = m[2];
-				definitions[m[1]]['Subgroup'] = m[3];
-				definitions[m[1]]['Name'] = m[4];
+				definitions[m[1]]['Name'] = m[3];
 			}
 		}
 		loadDefinitions();
 	}});
 
-	// If the definitions change, we'll have to refraw the rulesets too.
+	// If the definitions change, we'll have to redraw the rulesets too.
 	WS.Register(['ScoreBoard.RuleDefinitions', 'ScoreBoard.KnownRulesets'], {triggerBatchFunc: function() {
 		rulesets = {};
 		for (var prop in WS.state) {

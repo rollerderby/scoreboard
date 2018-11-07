@@ -857,7 +857,7 @@ public class DefaultClockModelTests {
         assertFalse(clock.isCountDirectionDown());
 
         Mockito
-        .when(rulesetsMock.getBoolean("Rule.TEST.Direction"))
+        .when(rulesetsMock.getBoolean("TEST.Direction"))
         .thenReturn(true);
         clock.rulesetChangeListener.scoreBoardChange(null);
         assertTrue(clock.isCountDirectionDown());

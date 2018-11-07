@@ -7,25 +7,9 @@ public class Rule {
         this.defaultValue = defaultValue.toString();
         this.description = description;
 
-        name = "";
-        group = "";
-        subgroup = "";
-        String[] parts = fullname.split("[.]");
-        if (parts.length > 0) {
-            name = parts[parts.length - 1];
-        }
-        if (parts.length > 1) {
-            group = parts[0];
-        }
-        if (parts.length > 2) {
-            subgroup = fullname.substring(fullname.indexOf(".")+1, fullname.lastIndexOf("."));
-        }
     }
 
     public String getType() { return type; }
-    public String getName() { return name; }
-    public String getGroup() { return group; }
-    public String getSubgroup() { return subgroup; }
     public String getFullName() { return fullname; }
     public String getDefaultValue() { return defaultValue; }
     public String getDescription() { return description; }
