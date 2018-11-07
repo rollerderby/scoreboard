@@ -62,7 +62,7 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
         public void scoreBoardChange(ScoreBoardEvent event) {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoardModel().getRulesets();
-            setCountDirectionDown(r.getBoolean("" + id + ".Direction"));
+            setCountDirectionDown(r.getBoolean(id + ".Direction"));
             if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION)) {
                 setMinimumNumber(0);
             } else {
@@ -283,6 +283,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
                 ms = minimumTime;
             }
             maximumTime = ms;
+            if (isCountDirectionDown()) {
+                changeTime(ms - last);
+            }
             if (getTime() != checkNewTime(getTime())) {
                 setTime(getTime());
             }
@@ -321,6 +324,9 @@ public class DefaultClockModel extends DefaultScoreBoardEventProvider implements
             Boolean last = new Boolean(countDown);
             countDown = down;
             scoreBoardChange(new ScoreBoardEvent(this, EVENT_DIRECTION, new Boolean(countDown), last));
+            if (last != down) {
+                setTime(getInvertedTime());
+            }
         }
     }
 
