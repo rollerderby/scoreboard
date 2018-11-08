@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.MediaModel;
 import com.carolinarollergirls.scoreboard.model.RulesetsModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
@@ -27,12 +28,14 @@ import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Media;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Stats;
 import com.carolinarollergirls.scoreboard.view.Team;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider implements ScoreBoardModel {
     public DefaultScoreBoardModel() {
@@ -46,6 +49,8 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
         settings.addScoreBoardListener(this);
         rulesets = new DefaultRulesetsModel(this);
         rulesets.addScoreBoardListener(this);
+        media = new DefaultMediaModel(ScoreBoardManager.getDefaultPath());
+        media.addScoreBoardListener(this);
         reset();
         createTeamModel(Team.ID_1);
         createTeamModel(Team.ID_2);
@@ -531,8 +536,11 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     public Rulesets getRulesets() { return rulesets; }
     public RulesetsModel getRulesetsModel() { return rulesets; }
 
-    public Stats getStats() { return (Stats)stats; }
+    public Stats getStats() { return stats; }
     public StatsModel getStatsModel() { return stats; }
+
+    public Media getMedia() { return media; }
+    public MediaModel getMediaModel() { return media; }
 
     public List<ClockModel> getClockModels() { return new ArrayList<ClockModel>(clocks.values()); }
     public List<TeamModel> getTeamModels() { return new ArrayList<TeamModel>(teams.values()); }
@@ -631,6 +639,7 @@ public class DefaultScoreBoardModel extends DefaultScoreBoardEventProvider imple
     protected DefaultRulesetsModel rulesets = null;
     protected DefaultSettingsModel settings = null;
     protected DefaultStatsModel stats = null;
+    protected DefaultMediaModel media = null;
 
     protected XmlScoreBoard xmlScoreBoard;
 

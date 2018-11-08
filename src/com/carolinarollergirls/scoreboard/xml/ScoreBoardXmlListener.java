@@ -18,8 +18,8 @@ import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Media;
 import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
@@ -168,6 +168,18 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
             } else {
                 editor.setElement(getSkaterElement((Skater)p), prop, null, v);
             }
+        } else if (p.getProviderName().equals("Media")) {
+            Media.MediaFile mf = (Media.MediaFile)(event.getValue());
+            Element e = getMediaFileElement(mf);
+            if (prop.equals(Media.EVENT_REMOVE_FILE)) {
+                editor.setRemovePI(converter.toElement(e, mf));
+            }
+        } else if (p.getProviderName().equals("MediaFile")) {
+            Media.MediaFile mf = (Media.MediaFile)(event.getValue());
+            Element e = getMediaFileElement(mf);
+            if (prop.equals(Media.MediaFile.EVENT_FILE)) {
+                converter.toElement(e, mf);
+            }
         } else if (p.getProviderName().equals("Stats")) {
             Stats.PeriodStats ps = (Stats.PeriodStats)(event.getValue());
             Element e = getStatsElement();
@@ -295,6 +307,17 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
                            "Jam", String.valueOf(ss.getJamNumber())),
                        "Team", ss.getTeamId()),
                    "Skater", ss.getSkaterId());
+    }
+
+    protected Element getMediaFileElement(Media.MediaFile mf) {
+        return editor.getElement(
+                   editor.getElement(
+                       editor.getElement(
+                           editor.getElement(
+                               getScoreBoardElement(), "Media"),
+                           mf.getFormat()),
+                       mf.getType()),
+                   "File", mf.getId());
     }
 
     protected XmlDocumentEditor editor = new XmlDocumentEditor();

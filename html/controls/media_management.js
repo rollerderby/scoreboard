@@ -17,7 +17,7 @@ $sb(function() {
 			$(this).closest("table").toggleClass("Hide");
 		}).end();
 
-	$.each( [ "Images", "Videos", "CustomHtml" ], function() {
+	$.each( [ "images", "videos", "customhtml" ], function() {
 		$("body>div.TabTemplate").clone()
 			.removeClass("TabTemplate").attr("id", String(this))
 			.appendTo("#tabsDiv");
@@ -25,17 +25,17 @@ $sb(function() {
 
 	$("#tabsDiv").tabs();
 
-	setupTab("Images", "Image", "<img>");
-	setupTab("Videos", "Video", "<video>");
-	setupTab("CustomHtml", "Html", "<iframe>");
+	setupTab("ScoreBoard.Media.images", "File", "<img>");
+	setupTab("ScoreBoard.Media.videos", "File", "<video>");
+	setupTab("ScoreBoard.Media.customhtml", "File", "<iframe>");
 });
 
 function setupTab(parentName, childName, previewElement) {
-	$sb(parentName).$sbBindAddRemoveEach("Type", function(event,node) {
+	$sb(parentName).$sbBindAddRemoveEach("", function(event,node) {
 		var newTable = $("body>table.TypeTemplate").clone(true)
 			.removeClass("TypeTemplate").addClass("Type")
 			.data({
-				type: node.$sbId,
+				type: node.$sbName,
 				sbType: node,
 				parentName: parentName,
 				childName: childName,
@@ -45,11 +45,11 @@ function setupTab(parentName, childName, previewElement) {
 				createUploadMediaDialog($(this).closest("table"));
 			}).end()
 			.find("thead button").button().end()
-			.find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
-		_windowFunctions.appendAlphaSortedByData($("#"+parentName+">div.Type"), newTable, "type");
+			.find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbName).end();
+		_windowFunctions.appendAlphaSortedByData($("#"+parentName.split(".")[2]+">div.Type"), newTable, childName);
 	}, function(event,node) {
-		$("#"+parentName+">div.Type>table.Type")
-			.filter(function() { return $(this).data("type") == node.$sbId; })
+		$("#"+parentName.split(".")[2]+">div.Type>table.Type")
+			.filter(function() { return $(this).data("type") == node.$sbName; })
 			.remove();
 	});
 
@@ -58,31 +58,28 @@ function setupTab(parentName, childName, previewElement) {
 		subChildren: true,
 		add: function(event,node) {
 			var sbType = $sb(node.parent());
-			var media = parentName.toLowerCase();
-			var type = sbType.$sbId;
+			var media = parentName.split(".")[2];
+			var type = sbType.$sbName;
 			var srcprefix = "/"+media+"/"+type+"/";
-			var table = $("#"+parentName+">div.Type>table.Type")
+			var table = $("#"+media+">div.Type>table.Type")
 				.filter(function() { return $(this).data("type") == type; });
 			var newRow = table.find("tr.ItemTemplate").clone(true)
-				.removeClass("ItemTemplate").addClass("Item").data("sbId", node.$sbId);
+				.removeClass("ItemTemplate").addClass("Item").data("sbName", node.$sbName);
 			newRow.find("button").button()
 				.filter(".Remove").click(function() { createRemoveMediaDialog(media, type, node); });
 			node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
-			node.$sb("Src").$sbControl(newRow.find("td.Src>input:text"), {
+			node.$sb("Src").$sbElement(newRow.find("td.Src>span"), {
 				sbelement: {
 					convert: function(val) { return String(val).replace(new RegExp("^"+srcprefix), ""); }
-				}, sbcontrol: {
-					convert: function(val) { return srcprefix + String(val); }
-				}
-			});
+				}});
 			node.$sb("Src").$sbElement(previewElement).appendTo(newRow.find("td.Preview"));
-			_windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbId", 1);
+			_windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbName", 1);
 		},
 		remove: function(event,node) {
-			$("#"+parentName+">div.Type>table.Type")
-				.filter(function() { return $(this).data("type") == $sb(node.parent()).$sbId; })
+			$("#"+parentName.split(".")[2]+">div.Type>table.Type")
+				.filter(function() { return $(this).data("type") == $sb(node.parent()).$sbName; })
 				.find("tr.Item")
-				.filter(function() { return $(this).data("sbId") == node.$sbId; })
+				.filter(function() { return $(this).data("sbName") == node.$sbName; })
 				.remove();
 		}
 	});
@@ -121,7 +118,7 @@ function createRemoveMediaDialog(media, type, node) {
 }
 
 function createUploadMediaDialog(table) {
-	var media = table.data("parentName").toLowerCase();
+	var media = table.data("parentName").split(".")[2];
 	var type = table.data("type");
 	var div = $("body>div.UploadMediaDialog.DialogTemplate").clone(true)
 		.removeClass("DialogTemplate");
@@ -131,18 +128,14 @@ function createUploadMediaDialog(table) {
 		singleFileUploads: false
 	});
 	var inputFile = div.find("input:file.File");
-	var inputName = div.find("input:text.Name");
 	var uploadFunction = function() {
 		var data = { files: $(this).find("input:file.File")[0].files };
 		var length = data.files.length;
-		var name = (inputName.prop("disabled") ? undefined : inputName.val());
-		var statustxt = "file"+(length>1?"s":"")+(name?" '"+name+"'":"");
+		var statustxt = "file"+(length>1?"s":"");
 		uploader.fileupload("option", "formData", [
 			{ name: "media", value: media },
 			{ name: "type", value: type }
 		]);
-		if (name)
-			uploader.fileupload("option", "formData").push({ name: "name", value: name });
 		uploader.fileupload("send", data)
 			.done(function(data, textStatus, jqxhr) {
 				div.find("a.Status").text(data);

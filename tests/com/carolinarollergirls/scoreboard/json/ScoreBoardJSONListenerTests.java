@@ -2,19 +2,23 @@ package com.carolinarollergirls.scoreboard.json;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
 import com.carolinarollergirls.scoreboard.defaults.DefaultRulesetsModel;
-import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.view.Clock;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
@@ -24,6 +28,10 @@ public class ScoreBoardJSONListenerTests {
 
     private DefaultScoreBoardModel sbm;
     private JSONStateManager jsm;
+
+    @Rule
+    public TemporaryFolder dir = new TemporaryFolder();
+    private File oldDir;
 
     private Map<String, Object> state;
     private JSONStateListener jsonListener = new JSONStateListener() {
@@ -35,8 +43,15 @@ public class ScoreBoardJSONListenerTests {
 
     @Before
     public void setUp() throws Exception {
+        oldDir = ScoreBoardManager.getDefaultPath();
+        ScoreBoardManager.setDefaultPath(dir.getRoot());
+        dir.newFolder("config", "penalties");
+        Files.copy(oldDir.toPath().resolve("config/penalties/wftda2018.json"),
+                   dir.getRoot().toPath().resolve("config/penalties/wftda2018.json"));
+        dir.newFolder("html", "images", "teamlogo");
+        dir.newFile("html/images/teamlogo/init.png");
+
         ScoreBoardClock.getInstance().stop();
-        ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
         sbm = new DefaultScoreBoardModel();
 
         jsm = new JSONStateManager();
@@ -52,6 +67,7 @@ public class ScoreBoardJSONListenerTests {
         advance(0);
         assertEquals("foo", state.get("ScoreBoard.Settings.teardownTest"));
         ScoreBoardClock.getInstance().start(false);
+        ScoreBoardManager.setDefaultPath(oldDir);
     }
 
     private void advance(long time_ms) {
@@ -322,6 +338,28 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).ParentId"));
         assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Name"));
         assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Period.Number)"));
+    }
+
+    @Test
+    public void testMediaEvents() throws Exception {
+        assertEquals("", state.get("ScoreBoard.Media.images.fullscreen"));
+        assertEquals("", state.get("ScoreBoard.Media.images.teamlogo"));
+        assertEquals("init.png", state.get("ScoreBoard.Media.images.teamlogo(init.png).Id"));
+        assertEquals("init", state.get("ScoreBoard.Media.images.teamlogo(init.png).Name"));
+        assertEquals("/images/teamlogo/init.png", state.get("ScoreBoard.Media.images.teamlogo(init.png).Src"));
+
+        sbm.getMediaModel().removeMediaFile("images", "teamlogo", "init.png");
+        dir.newFile("html/images/fullscreen/new.png");
+
+        Thread.sleep(100);
+        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo(init.png).Id"));
+        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo(init.png).Name"));
+        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo(init.png).Src"));
+        assertEquals("", state.get("ScoreBoard.Media.images.teamlogo"));
+        assertEquals("new.png", state.get("ScoreBoard.Media.images.fullscreen(new.png).Id"));
+        assertEquals("new", state.get("ScoreBoard.Media.images.fullscreen(new.png).Name"));
+        assertEquals("/images/fullscreen/new.png", state.get("ScoreBoard.Media.images.fullscreen(new.png).Src"));
+
     }
 
 }

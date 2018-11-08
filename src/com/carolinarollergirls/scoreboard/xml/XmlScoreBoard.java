@@ -257,9 +257,6 @@ public class XmlScoreBoard {
         reloadScoreBoardViewers = new ReloadScoreBoardViewers();
         reloadScoreBoardViewers.setXmlScoreBoard(this);
         new OpenXmlDocumentManager("Pages").setXmlScoreBoard(this);
-        new MediaXmlDocumentManager("Images", "Image").setXmlScoreBoard(this);
-        new MediaXmlDocumentManager("Videos", "Video").setXmlScoreBoard(this);
-        new MediaXmlDocumentManager("CustomHtml", "Html").setXmlScoreBoard(this);
         new TwitterXmlDocumentManager().setXmlScoreBoard(this);
     }
 

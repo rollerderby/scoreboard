@@ -117,16 +117,13 @@ public class JettyServletScoreBoardController {
         metricsServlet = new MetricsServlet();
         sch.addServlet(new ServletHolder(metricsServlet), "/metrics");
 
-        String staticPath = ScoreBoardManager.getProperty(PROPERTY_HTML_DIR_KEY);
-        if (null != staticPath) {
-            ServletContextHandler c = new ServletContextHandler(contexts, "/");
-            ServletHolder sh = new ServletHolder(new DefaultServlet());
-            sh.setInitParameter("cacheControl", "no-cache");
-            sh.setInitParameter("etags", "true");
-            c.addServlet(sh, "/*");
-            c.addFilter(mf, "/*", 1);
-            c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), staticPath)).getPath());
-        }
+        ServletContextHandler c = new ServletContextHandler(contexts, "/");
+        ServletHolder sh = new ServletHolder(new DefaultServlet());
+        sh.setInitParameter("cacheControl", "no-cache");
+        sh.setInitParameter("etags", "true");
+        c.addServlet(sh, "/*");
+        c.addFilter(mf, "/*", 1);
+        c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), "html")).getPath());
 
         Enumeration<?> keys = ScoreBoardManager.getProperties().propertyNames();
 
@@ -141,7 +138,7 @@ public class JettyServletScoreBoardController {
             try {
                 ScoreBoardControllerServlet sbcS = (ScoreBoardControllerServlet)Class.forName(servlet).newInstance();
                 sbcS.setScoreBoardModel(scoreBoardModel);
-                ServletContextHandler c = new ServletContextHandler(contexts, sbcS.getPath());
+                c = new ServletContextHandler(contexts, sbcS.getPath());
                 c.addFilter(mf, "/*", 1);
                 c.addServlet(new ServletHolder(sbcS), "/*");
             } catch ( Exception e ) {
@@ -170,5 +167,4 @@ public class JettyServletScoreBoardController {
     public static final String PROPERTY_LOCALHOST_KEY = JettyServletScoreBoardController.class.getName() + ".localhost";
     public static final String PROPERTY_PORT_KEY = JettyServletScoreBoardController.class.getName() + ".port";
     public static final String PROPERTY_SERVLET_KEY = JettyServletScoreBoardController.class.getName() + ".servlet";
-    public static final String PROPERTY_HTML_DIR_KEY = JettyServletScoreBoardController.class.getName() + ".html.dir";
 }

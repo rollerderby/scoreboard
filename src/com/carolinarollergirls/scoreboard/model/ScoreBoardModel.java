@@ -41,6 +41,7 @@ public interface ScoreBoardModel extends ScoreBoard {
     public SettingsModel getSettingsModel();
     public RulesetsModel getRulesetsModel();
     public StatsModel getStatsModel();
+    public MediaModel getMediaModel();
 
 // FIXME - need methods to add/remove clocks and teams! */
     public List<ClockModel> getClockModels();
