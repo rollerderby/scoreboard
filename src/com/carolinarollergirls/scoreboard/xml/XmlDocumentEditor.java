@@ -149,19 +149,6 @@ public class XmlDocumentEditor {
         return create ? addElement(parent, name, id, null) : null;
     }
 
-    public void removeElement(Element parent, String name) {
-        removeElement(parent, name, null);
-    }
-
-    public void removeElement(Element parent, String name, String id) {
-        synchronized (parent.getDocument()) {
-            Element child = getElement(parent, name, id, false);
-            if (null != child) {
-                parent.getChildren().remove(child);
-            }
-        }
-    }
-
     public String getId(Element e) {
         if (null == e) {
             return null;
