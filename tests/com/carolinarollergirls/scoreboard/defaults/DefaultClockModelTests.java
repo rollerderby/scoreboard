@@ -562,6 +562,22 @@ public class DefaultClockModelTests {
     }
 
     @Test
+    public void testSetMaximumTime_countDown() {
+        clock.setMaximumTime(5000);
+        clock.setCountDirectionDown(true);
+        clock.setTime(3000);
+        clock.start();
+
+        clock.setMaximumTime(10000);
+        assertEquals(8000, clock.getTime());
+        assertTrue(clock.isRunning());
+
+        clock.setMaximumTime(1000);
+        assertEquals(0, clock.getTime());
+        assertFalse(clock.isRunning());
+    }
+
+    @Test
     public void testSetMaximumTime2() {
         clock.setMinimumTime(2000);
         clock.setMaximumTime(1000);
@@ -646,9 +662,9 @@ public class DefaultClockModelTests {
         clock.changeTime(-201);
         assertEquals(999, clock.getTime());
         assertEquals(1, collectedEvents.size());
-        collectedEvents.clear();
 
         clock.setCountDirectionDown(true);
+        collectedEvents.clear();
         clock.changeTime(1);
         assertEquals(0, collectedEvents.size());
 
@@ -814,6 +830,8 @@ public class DefaultClockModelTests {
         assertTrue((Boolean)event.getPreviousValue());
 
         clock.setCountDirectionDown(true);
+        assertEquals(4000, clock.getTimeElapsed());
+
         clock.resetTime();
         clock.start();
         advance(2000);
@@ -855,11 +873,13 @@ public class DefaultClockModelTests {
     @Test
     public void testSetttingsEvent() {
         assertFalse(clock.isCountDirectionDown());
+        assertEquals(0, clock.getTime());
 
         Mockito
-        .when(rulesetsMock.getBoolean("Rule.TEST.Direction"))
+        .when(rulesetsMock.getBoolean("TEST.Direction"))
         .thenReturn(true);
         clock.rulesetChangeListener.scoreBoardChange(null);
         assertTrue(clock.isCountDirectionDown());
+        assertEquals(86400000, clock.getTime());
     }
 }

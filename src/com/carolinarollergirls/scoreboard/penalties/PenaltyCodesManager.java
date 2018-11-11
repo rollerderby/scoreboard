@@ -31,5 +31,5 @@ public class PenaltyCodesManager {
         }
     }
 
-    public static final String RULE_PENALTIES_FILE = "Rule.Penalties.DefinitionFile";
+    public static final String RULE_PENALTIES_FILE = "Penalties.DefinitionFile";
 }
