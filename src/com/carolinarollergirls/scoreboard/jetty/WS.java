@@ -161,7 +161,6 @@ public class WS extends WebSocketServlet {
         public void send(JSONObject json) {
             Histogram.Timer timer = messagesSentDuration.startTimer();
             try {
-                json.put("stateID", stateID);
                 connection.sendMessage(json.toString());
             } catch (Exception e) {
                 ScoreBoardManager.printMessage("Error sending JSON update: " + e);
@@ -241,7 +240,6 @@ public class WS extends WebSocketServlet {
 
         protected UUID id;
         protected Set<String> paths = new HashSet<String>();
-        protected long stateID = 0;
         private Map<String, Object> state;
     }
 }
