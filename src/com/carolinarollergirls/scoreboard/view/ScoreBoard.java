@@ -65,6 +65,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Stats getStats();
 
+    public Media getMedia();
+
     public XmlScoreBoard getXmlScoreBoard();
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";

@@ -22,6 +22,7 @@ import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.BooleanRule;
 import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Media;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
 import com.carolinarollergirls.scoreboard.view.ScoreBoard;
@@ -136,6 +137,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ").Skater(" + ts.getSkaterId() + ")", ts);
                 } else if (p instanceof Settings) {
                     updates.add(new WSUpdate("ScoreBoard.Settings." + prop, v));
+                } else if (p instanceof Media && prop.equals(Media.EVENT_REMOVE_FILE)) {
+                    Media.MediaFile mf = (Media.MediaFile)v;
+                    updates.add(new WSUpdate("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + "(" + mf.getId() + ")", null));
+                } else if (p instanceof Media.MediaFile) {
+                    Media.MediaFile mf = (Media.MediaFile)p;
+                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + "(" + mf.getId() + ")", mf);
                 } else {
                     ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + prop + ", v: " + v);
                 }
@@ -352,6 +359,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path + ".PenaltyBox", ss.getPenaltyBox()));
     }
 
+    private void processMediaFile(String path, Media.MediaFile mf) {
+        updates.add(new WSUpdate(path + ".Id", mf.getId()));
+        updates.add(new WSUpdate(path + ".Name", mf.getName()));
+        updates.add(new WSUpdate(path + ".Src", mf.getSrc()));
+    }
+
     private void processPenaltyCodes(Rulesets r) {
         updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
         String file = r.get(PenaltyCodesManager.RULE_PENALTIES_FILE);
@@ -402,6 +415,19 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         for (Clock c : sb.getClocks()) {
             processClock("ScoreBoard", c, false);
         }
+
+        // Process Media
+        Media m = sb.getMedia();
+        for (String format : m.getFormats()) {
+            for (String type : m.getTypes(format)) {
+                updates.add(new WSUpdate("ScoreBoard.Media." + format + "." + type, ""));
+                Map<String, Media.MediaFile> h = m.getMediaFiles(format, type);
+                for (Media.MediaFile mf: h.values()) {
+                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + "(" + mf.getId() + ")", mf);
+                }
+            }
+        }
+
 
         updateState();
     }

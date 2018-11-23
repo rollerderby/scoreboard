@@ -17,6 +17,7 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import com.carolinarollergirls.scoreboard.model.ClockModel;
+import com.carolinarollergirls.scoreboard.model.MediaModel;
 import com.carolinarollergirls.scoreboard.model.SettingsModel;
 import com.carolinarollergirls.scoreboard.model.PositionModel;
 import com.carolinarollergirls.scoreboard.model.RulesetsModel;
@@ -25,6 +26,7 @@ import com.carolinarollergirls.scoreboard.model.SkaterModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
 import com.carolinarollergirls.scoreboard.model.TeamModel;
 import com.carolinarollergirls.scoreboard.view.Clock;
+import com.carolinarollergirls.scoreboard.view.Media;
 import com.carolinarollergirls.scoreboard.view.Settings;
 import com.carolinarollergirls.scoreboard.view.Position;
 import com.carolinarollergirls.scoreboard.view.Rulesets;
@@ -63,6 +65,7 @@ public class ScoreBoardXmlConverter {
 
         toElement(sb, scoreBoard.getSettings());
         toElement(sb, scoreBoard.getRulesets());
+        toElement(sb, scoreBoard.getMedia());
 
         Iterator<Clock> clocks = scoreBoard.getClocks().iterator();
         while (clocks.hasNext()) {
@@ -120,6 +123,27 @@ public class ScoreBoardXmlConverter {
         }
         editor.setElement(e, "Name", null, r.getName());
         editor.setElement(e, "ParentId", null, r.getParentRulesetId());
+        return e;
+    }
+
+    public Element toElement(Element sb, Media m) {
+        Element e = editor.setElement(sb, "Media");
+        for (String format : m.getFormats()) {
+            Element f = editor.setElement(e, format);
+            for (String type : m.getTypes(format)) {
+                Element t = editor.setElement(f, type);
+                for (Media.MediaFile mf: m.getMediaFiles(format, type).values()) {
+                    Element fi = editor.setElement(t, "File", mf.getId());
+                    toElement(fi, mf);
+                }
+            }
+        }
+        return e;
+    }
+
+    public Element toElement(Element e, Media.MediaFile mf) {
+        editor.setElement(e, "Name", null, mf.getName());
+        editor.setElement(e, "Src", null, mf.getSrc());
         return e;
     }
 
@@ -327,6 +351,8 @@ public class ScoreBoardXmlConverter {
                     processRules(scoreBoardModel, element);
                 } else if (name.equals("KnownRulesets")) {
                     processRulesets(scoreBoardModel, element);
+                } else if (name.equals("Media")) {
+                    processMedia(scoreBoardModel.getMediaModel(), element);
                 } else if (name.equals("Stats")) {
                     processStats(scoreBoardModel.getStatsModel(), element);
                 } else if (null == value) {
@@ -450,6 +476,33 @@ public class ScoreBoardXmlConverter {
         }
         RulesetsModel.RulesetModel r = rulesetsModel.addRuleset(name, parentId, id);
         r.setAll(rules);
+    }
+
+    public void processMedia(MediaModel mm, Element media) {
+        for (Object f: media.getChildren()) {
+            Element format = (Element)f;
+            for (Object t: format.getChildren()) {
+                Element type = (Element)t;
+                Map<String, MediaModel.MediaFileModel> tm = mm.getMediaFileModels(format.getName(), type.getName());
+                if (tm == null) {
+                    continue;  // Invalid type.
+                }
+                for (Object fi: type.getChildren()) {
+                    Element file = (Element)fi;
+                    MediaModel.MediaFileModel mf = tm.get(file.getAttributeValue("Id"));
+                    if (mf == null) {
+                        continue;  // The file has been deleted.
+                    }
+                    for (Object p: file.getChildren()) {
+                        Element prop = (Element)p;
+                        if (prop.getName() == "Name") {
+                            // Only the name can come from the XML.
+                            mf.setName(editor.getText(prop));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {

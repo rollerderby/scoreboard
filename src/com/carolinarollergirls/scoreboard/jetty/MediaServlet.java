@@ -14,14 +14,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -35,20 +31,11 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.xml.MediaXmlDocumentManager;
-import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public class MediaServlet extends DefaultScoreBoardControllerServlet {
     public MediaServlet() {
-        mediaElementNameMap.put("images", "Images");
-        mediaElementNameMap.put("videos", "Videos");
-        mediaElementNameMap.put("customhtml", "CustomHtml");
-        mediaChildNameMap.put("images", "Image");
-        mediaChildNameMap.put("videos", "Video");
-        mediaChildNameMap.put("customhtml", "Html");
     }
 
     public String getPath() { return "/Media"; }
@@ -58,8 +45,6 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
 
         if (request.getPathInfo().equals("/upload")) {
             upload(request, response);
-        } else if (request.getPathInfo().equals("/download")) {
-            download(request, response);
         } else if (request.getPathInfo().equals("/remove")) {
             remove(request, response);
         } else {
@@ -96,7 +81,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
                     }
                 } else if (item.getName().matches(zipExtRegex)) {
                     processZipFileItem(fiF, item, fileItems);
-                } else if (uploadFileNameFilter.accept(null, item.getName())) {
+                } else if (scoreBoardModel.getMediaModel().validFileName(item.getName())) {
                     fileItems.add(item);
                 }
             }
@@ -119,58 +104,21 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         }
     }
 
-    protected void download(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        String media = request.getParameter("media");
-        String type = request.getParameter("type");
-
-        try {
-            URL url = new URL(request.getParameter("url"));
-            File typeDir = getTypeDir(media, type, true);
-            String name = url.getPath().replaceAll("^([^/]*/)*", "");
-            InputStream iS = url.openStream();
-            OutputStream oS = new FileOutputStream(new File(typeDir, name));
-            IOUtils.copyLarge(iS, oS);
-            IOUtils.closeQuietly(iS);
-            IOUtils.closeQuietly(oS);
-
-            setTextResponse(response, HttpServletResponse.SC_OK, "Successfully downloaded 1 remote file");
-        } catch ( MalformedURLException muE ) {
-            setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, muE.getMessage());
-        } catch ( IllegalArgumentException iaE ) {
-            setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
-        } catch ( FileNotFoundException fnfE ) {
-            setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, fnfE.getMessage());
-        }
-    }
-
     protected void remove(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         String media = request.getParameter("media");
         String type = request.getParameter("type");
         String filename = request.getParameter("filename");
 
-        try {
-            File typeDir = getTypeDir(media, type, false);
-            File f = new File(typeDir, filename);
-            String path = f.getAbsolutePath();
-
-            if (!f.exists()) {
-                setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "File does not exist : "+path);
-            } else if (f.isDirectory()) {
-                setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Path is a directory : "+path);
-            } else if (!f.delete()) {
-                setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Could not delete file "+path);
-            } else {
-                setTextResponse(response, HttpServletResponse.SC_OK, "Successfully removed "+path);
-            }
-        } catch ( IllegalArgumentException iaE ) {
-            setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
-        } catch ( FileNotFoundException fnfE ) {
-            setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, fnfE.getMessage());
+        boolean success = scoreBoardModel.getMediaModel().removeMediaFile(media, type, filename);
+        if (!success) {
+            setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Failed to remove file");
+        } else {
+            setTextResponse(response, HttpServletResponse.SC_OK, "Successfully removed");
         }
     }
 
     protected void processFileItemList(List<FileItem> fileItems, String media, String type) throws FileNotFoundException,IOException {
-        File typeDir = getTypeDir(media, type, true);
+        File typeDir = getTypeDir(media, type);
 
         ListIterator<FileItem> fileItemIterator = fileItems.listIterator();
         while (fileItemIterator.hasNext()) {
@@ -183,41 +131,14 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         }
     }
 
-    protected void checkMediaTypeParams(String media, String type) throws IllegalArgumentException {
-        if (null == media) {
-            throw new IllegalArgumentException("Missing media parameter");
+    protected File getTypeDir(String media, String type) throws FileNotFoundException,IllegalArgumentException {
+        if (scoreBoardModel.getMedia().getMediaFiles(media, type) == null) {
+            throw new IllegalArgumentException("Invalid media '"+media+"' or type '"+type+"'");
         }
-        if (null == type) {
-            throw new IllegalArgumentException("Missing type parameter");
-        }
-        if (!mediaElementNameMap.containsKey(media)) {
-            throw new IllegalArgumentException("Invalid media path '"+media+"'");
-        }
-        if (type.matches(invalidTypePathRegex)) {
-            throw new IllegalArgumentException("Invalid type path '"+type+"'");
-        }
-    }
-
-    protected File getTypeDir(String media, String type, boolean createTypeDir) throws FileNotFoundException,IllegalArgumentException {
-        checkMediaTypeParams(media, type);
 
         File htmlDir = new File(htmlDirName);
-        if (!htmlDir.exists() || !htmlDir.isDirectory()) {
-            throw new FileNotFoundException("Could not find html dir");
-        }
         File mediaDir = new File(htmlDir, media);
-        if (!mediaDir.exists() || !mediaDir.isDirectory()) {
-            throw new FileNotFoundException("Could not find '"+media+"' dir");
-        }
         File typeDir = new File(mediaDir, type);
-        if (!typeDir.exists() || !typeDir.isDirectory()) {
-            if (!createTypeDir) {
-                throw new FileNotFoundException("Could not find '"+type+"' dir");
-            }
-            if (!typeDir.mkdir()) {
-                throw new FileNotFoundException("Could not create '"+type+"' dir");
-            }
-        }
         return typeDir;
     }
 
@@ -242,7 +163,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         ZipEntry zE;
         try {
             while (null != (zE = ziS.getNextEntry())) {
-                if (zE.isDirectory() || !uploadFileNameFilter.accept(null, zE.getName())) {
+                if (zE.isDirectory() || !scoreBoardModel.getMediaModel().validFileName(zE.getName())) {
                     continue;
                 }
                 FileItem item = factory.createItem(null, null, false, zE.getName());
@@ -256,16 +177,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         }
     }
 
-    protected XmlDocumentEditor editor = new XmlDocumentEditor();
-
-    protected String htmlDirName = ScoreBoardManager.getProperty(JettyServletScoreBoardController.PROPERTY_HTML_DIR_KEY);
-
-    protected static final Map<String,String> mediaElementNameMap = new ConcurrentHashMap<String,String>();
-    protected static final Map<String,String> mediaChildNameMap = new ConcurrentHashMap<String,String>();
-
-    public static final String invalidTypePathRegex = "/|\\|[.][.]";
+    protected String htmlDirName = ScoreBoardManager.getDefaultPath() + File.separator + "html";
 
     public static final String zipExtRegex = "^.*[.][zZ][iI][pP]$";
-
-    public static final IOFileFilter uploadFileNameFilter = MediaXmlDocumentManager.mediaFileNameFilter;
 }

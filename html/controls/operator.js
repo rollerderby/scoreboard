@@ -612,8 +612,8 @@ function createTeamTable() {
 		var logoTd = nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo");
 		var logoNone = $("<a>").html("No Logo").addClass("NoLogo").appendTo(logoTd);
 		var logoSelect = sbTeam.$sb("Logo").$sbControl("<select>", { sbelement: {
-				optionParent: "Images.Type(teamlogo)",
-				optionChildName: "Image",
+				optionParent: "ScoreBoard.Media.images.teamlogo",
+				optionChildName: "File",
 				optionNameElement: "Name",
 				optionValueElement: "Src",
 				firstOption: { text: "No Logo", value: "" }
@@ -1123,22 +1123,22 @@ function createScoreBoardViewPreviewRows(table, type) {
 			{ text: "10%", value: "10" }
 		]}});
 	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
-			optionParent: "Images.Type(fullscreen)",
-			optionChildName: "Image",
+			optionParent: "ScoreBoard.Media.images.fullscreen",
+			optionChildName: "File",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Image", value: "" }
 		} });
 	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
-			optionParent: "Videos.Type(fullscreen)",
-			optionChildName: "Video",
+			optionParent: "ScoreBoard.Media.videos.fullscreen",
+			optionChildName: "File",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Video", value: "" }
 		} });
 	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
-			optionParent: "CustomHtml.Type(fullscreen)",
-			optionChildName: "Html",
+			optionParent: "ScoreBoard.Media.customhtml.fullscreen",
+			optionChildName: "File",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Page", value: "" }
@@ -1289,8 +1289,8 @@ function createNewTeamTable(team, teamid) {
 	team.$sb("Name").$sbControl("<input type='text'>")
 		.appendTo(controlTable.find("td:eq(0)"));
 	team.$sb("Logo").$sbControl("<select>", { sbelement: {
-		optionParent: "Images.Type(teamlogo)",
-		optionChildName: "Image",
+		optionParent: "ScoreBoard.Media.images.teamlogo",
+		optionChildName: "File",
 		optionNameElement: "Name",
 		optionValueElement: "Src",
 		firstOption: { text: "No Logo", value: "" }

@@ -12,11 +12,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -59,7 +57,6 @@ public class DefaultScoreboardModelTests {
     @Before
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
-        ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
         sbm = new DefaultScoreBoardModel();
         pc = sbm.getClockModel(Clock.ID_PERIOD);
         jc = sbm.getClockModel(Clock.ID_JAM);

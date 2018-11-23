@@ -7,8 +7,6 @@ import org.junit.Before;
 import org.junit.Test;
 import java.util.Arrays;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.model.ClockModel;
 import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 import com.carolinarollergirls.scoreboard.model.StatsModel;
@@ -31,7 +29,6 @@ public class DefaultStatsModelTests {
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
 
-        ScoreBoardManager.setPropertyOverride(JettyServletScoreBoardController.class.getName() + ".html.dir", "html");
         sbm = new DefaultScoreBoardModel();
         sbm.getSettingsModel().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
         sm = sbm.getStatsModel();
