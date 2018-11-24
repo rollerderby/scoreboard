@@ -5,68 +5,90 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
+
 public class ScoreBoardClock extends TimerTask {
     private ScoreBoardClock() {
-        offset = System.currentTimeMillis();
-        timer.scheduleAtFixedRate(this, CLOCK_UPDATE_INTERVAL / 4, CLOCK_UPDATE_INTERVAL / 4);
+	offset = System.currentTimeMillis();
+	timer.scheduleAtFixedRate(this, CLOCK_UPDATE_INTERVAL / 4, CLOCK_UPDATE_INTERVAL / 4);
     }
 
     public static ScoreBoardClock getInstance() {
-        return instance;
+	return instance;
     }
 
-    public synchronized long getCurrentTime() {
-        updateTime();
-        return currentTime;
-    }
-    public synchronized void rewindTo(long time) {
-        lastRewind = currentTime - time;
-        // changing offset instead of currentTime has two reasons:
-        // 1. The change only becomes visible to clients after the clock has restarted.
-        // 2. Repeating values for currentTime would cause UpdateClockTimerTask to just
-        //    idle until it has caught up, instead of advancing the clocks by the desired amount.
-        offset -= lastRewind;
-    }
-    public synchronized long getLastRewind() {
-        return lastRewind;
-    }
-    public synchronized void advance(long ms) {
-        currentTime += ms;
-        updateClients();
+    public long getCurrentTime() {
+	synchronized (coreLock) {
+	    updateTime();
+	    return currentTime;
+	}
     }
 
-    public synchronized void stop() {
-        updateTime();
-        stopCounter++;
-    }
-    public synchronized void start(boolean doCatchUp) {
-        if (!doCatchUp) {
-            offset = System.currentTimeMillis() - currentTime;
-        }
-        stopCounter--;
+    public void rewindTo(long time) {
+	synchronized (coreLock) {
+	    lastRewind = currentTime - time;
+	    // changing offset instead of currentTime has two reasons:
+	    // 1. The change only becomes visible to clients after the clock has restarted.
+	    // 2. Repeating values for currentTime would cause UpdateClockTimerTask to just
+	    //    idle until it has caught up, instead of advancing the clocks by the desired amount.
+	    offset -= lastRewind;
+	}
     }
 
-    public synchronized void registerClient(ScoreBoardClockClient client) {
-        clients.add(client);
+    public long getLastRewind() {
+	synchronized (coreLock) {
+	    return lastRewind;
+	}
+    }
+
+    public void advance(long ms) {
+	synchronized(coreLock) {
+	    currentTime += ms;
+	    updateClients();
+	}
+    }
+
+    public void stop() {
+	synchronized (coreLock) {
+	    updateTime();
+	    stopCounter++;
+	}
+    }
+
+    public void start(boolean doCatchUp) {
+	synchronized (coreLock) {
+	    if (!doCatchUp) {
+		offset = System.currentTimeMillis() - currentTime;
+	    }
+	    stopCounter--;
+	}
+    }
+
+    public void registerClient(ScoreBoardClockClient client) {
+	synchronized (coreLock) {
+	    clients.add(client);
+	}
     }
 
     private void updateTime() {
-        if (stopCounter == 0) {
-            currentTime = System.currentTimeMillis() - offset;
-        }
+	if (stopCounter == 0) {
+	    currentTime = System.currentTimeMillis() - offset;
+	}
     }
 
     private void updateClients() {
-        for (ScoreBoardClockClient client: clients) {
-            client.updateTime(currentTime);
-        }
+	for (ScoreBoardClockClient client: clients) {
+	    client.updateTime(currentTime);
+	}
     }
 
-    public synchronized void run() {
-        if (stopCounter == 0) {
-            updateTime();
-            updateClients();
-        }
+    public void run() {
+	synchronized (coreLock) {
+	    if (stopCounter == 0) {
+		updateTime();
+		updateClients();
+	    }
+	}
     }
 
     private long offset;
@@ -78,15 +100,17 @@ public class ScoreBoardClock extends TimerTask {
 
     private static final ScoreBoardClock instance = new ScoreBoardClock();
 
+    private Object coreLock = DefaultScoreBoardModel.getCoreLock();
+
     private List<ScoreBoardClockClient> clients = new ArrayList<ScoreBoardClockClient>();
 
     public static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
 
     public interface ScoreBoardClockClient {
-        /*
-         * Callback that notifies the client of the current time.
-         * Parameter is the time elapsed since scoreboard startup.
-         */
-        void updateTime(long ms);
+	/*
+	 * Callback that notifies the client of the current time.
+	 * Parameter is the time elapsed since scoreboard startup.
+	 */
+	void updateTime(long ms);
     }
 }
