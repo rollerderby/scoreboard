@@ -16,7 +16,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
 public class FormatSpecifiersServlet extends DefaultScoreBoardControllerServlet {
@@ -24,9 +24,9 @@ public class FormatSpecifiersServlet extends DefaultScoreBoardControllerServlet 
 
     public String getPath() { return "/FormatSpecifiers"; }
 
-    public void setScoreBoardModel(ScoreBoardModel model) {
-        super.setScoreBoardModel(model);
-        formatSpecifierViewer = new FormatSpecifierViewer(model);
+    public void setScoreBoard(ScoreBoard scoreBoard) {
+        super.setScoreBoard(scoreBoard);
+        formatSpecifierViewer = new FormatSpecifierViewer(scoreBoard);
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {

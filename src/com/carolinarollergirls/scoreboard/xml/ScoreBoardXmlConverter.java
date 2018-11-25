@@ -16,25 +16,16 @@ import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
-import com.carolinarollergirls.scoreboard.model.ClockModel;
-import com.carolinarollergirls.scoreboard.model.MediaModel;
-import com.carolinarollergirls.scoreboard.model.SettingsModel;
-import com.carolinarollergirls.scoreboard.model.PositionModel;
-import com.carolinarollergirls.scoreboard.model.RulesetsModel;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.model.SkaterModel;
-import com.carolinarollergirls.scoreboard.model.StatsModel;
-import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.Media;
-import com.carolinarollergirls.scoreboard.view.Settings;
-import com.carolinarollergirls.scoreboard.view.Position;
-import com.carolinarollergirls.scoreboard.view.Rulesets;
-import com.carolinarollergirls.scoreboard.view.ScoreBoard;
-import com.carolinarollergirls.scoreboard.view.Skater;
-import com.carolinarollergirls.scoreboard.view.SkaterNotFoundException;
-import com.carolinarollergirls.scoreboard.view.Stats;
-import com.carolinarollergirls.scoreboard.view.Team;
+import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.Media;
+import com.carolinarollergirls.scoreboard.core.Position;
+import com.carolinarollergirls.scoreboard.core.Rulesets;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Settings;
+import com.carolinarollergirls.scoreboard.core.Skater;
+import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
+import com.carolinarollergirls.scoreboard.core.Stats;
+import com.carolinarollergirls.scoreboard.core.Team;
 
 public class ScoreBoardXmlConverter {
     /*****************************/
@@ -322,68 +313,68 @@ public class ScoreBoardXmlConverter {
     /*****************************/
     /* XML to ScoreBoard methods */
 
-    public void processDocument(ScoreBoardModel scoreBoardModel, Document document) {
+    public void processDocument(ScoreBoard scoreBoard, Document document) {
         Iterator<?> children = document.getRootElement().getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
-            if (element.getName().equals("ScoreBoard")) {
-                processScoreBoard(scoreBoardModel, element);
+            Element child = (Element)children.next();
+            if (child.getName().equals("ScoreBoard")) {
+                processScoreBoard(scoreBoard, child);
             }
         }
     }
 
-    public void processScoreBoard(ScoreBoardModel scoreBoardModel, Element scoreBoard) {
-        Iterator<?> children = scoreBoard.getChildren().iterator();
+    public void processScoreBoard(ScoreBoard scoreBoard, Element element) {
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
                 boolean bVal = Boolean.parseBoolean(value);
 
                 if (name.equals("Clock")) {
-                    processClock(scoreBoardModel, element);
+                    processClock(scoreBoard, child);
                 } else if (name.equals("Team")) {
-                    processTeam(scoreBoardModel, element);
+                    processTeam(scoreBoard, child);
                 } else if (name.equals("Settings")) {
-                    processSettings(scoreBoardModel, element);
+                    processSettings(scoreBoard, child);
                 } else if (name.equals("Rules")) {
-                    processRules(scoreBoardModel, element);
+                    processRules(scoreBoard, child);
                 } else if (name.equals("KnownRulesets")) {
-                    processRulesets(scoreBoardModel, element);
+                    processRulesets(scoreBoard, child);
                 } else if (name.equals("Media")) {
-                    processMedia(scoreBoardModel.getMediaModel(), element);
+                    processMedia(scoreBoard.getMedia(), child);
                 } else if (name.equals("Stats")) {
-                    processStats(scoreBoardModel.getStatsModel(), element);
+                    processStats(scoreBoard.getStats(), child);
                 } else if (null == value) {
                     continue;
                 } else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER)) {
-                    scoreBoardModel.setTimeoutOwner(value);
+                    scoreBoard.setTimeoutOwner(value);
                 } else if (name.equals(ScoreBoard.EVENT_OFFICIAL_REVIEW)) {
-                    scoreBoardModel.setOfficialReview(bVal);
+                    scoreBoard.setOfficialReview(bVal);
                 } else if (name.equals(ScoreBoard.EVENT_IN_OVERTIME)) {
-                    scoreBoardModel.setInOvertime(bVal);
+                    scoreBoard.setInOvertime(bVal);
                 } else if (name.equals(ScoreBoard.EVENT_IN_PERIOD)) {
-                    scoreBoardModel.setInPeriod(bVal);
+                    scoreBoard.setInPeriod(bVal);
                 } else if (name.equals(ScoreBoard.EVENT_OFFICIAL_SCORE)) {
-                    scoreBoardModel.setOfficialScore(bVal);
+                    scoreBoard.setOfficialScore(bVal);
                 } else if (bVal) {
                     if (name.equals("Reset")) {
-                        scoreBoardModel.reset();
+                        scoreBoard.reset();
                     } else if (name.equals("StartJam")) {
-                        scoreBoardModel.startJam();
+                        scoreBoard.startJam();
                     } else if (name.equals("StopJam")) {
-                        scoreBoardModel.stopJamTO();
+                        scoreBoard.stopJamTO();
                     } else if (name.equals("Timeout")) {
-                        scoreBoardModel.timeout();
+                        scoreBoard.timeout();
                     } else if (name.equals("ClockUndo")) {
-                        scoreBoardModel.clockUndo(false);
+                        scoreBoard.clockUndo(false);
                     } else if (name.equals("ClockReplace")) {
-                        scoreBoardModel.clockUndo(true);
+                        scoreBoard.clockUndo(true);
                     } else if (name.equals("StartOvertime")) {
-                        scoreBoardModel.startOvertime();
+                        scoreBoard.startOvertime();
                     } else if (name.equals("OfficialTimeout")) {
-                        scoreBoardModel.setTimeoutType("O", false);
+                        scoreBoard.setTimeoutType("O", false);
                     }
                 }
             } catch ( Exception e ) {
@@ -391,14 +382,14 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processSettings(ScoreBoardModel scoreBoardModel, Element settings) {
-        SettingsModel sm = scoreBoardModel.getSettingsModel();
-        Iterator<?> children = settings.getChildren().iterator();
+    public void processSettings(ScoreBoard scoreBoard, Element element) {
+        Settings sm = scoreBoard.getSettings();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String k = element.getAttributeValue("Id");
-                String v = editor.getText(element);
+                String k = child.getAttributeValue("Id");
+                String v = editor.getText(child);
                 if (v == null) {
                     v = "";
                 }
@@ -408,15 +399,15 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processRules(ScoreBoardModel scoreBoardModel, Element rules) {
-        RulesetsModel rs = scoreBoardModel.getRulesetsModel();
-        Iterator<?> children = rules.getChildren().iterator();
+    public void processRules(ScoreBoard scoreBoard, Element element) {
+        Rulesets rs = scoreBoard.getRulesets();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String k = element.getAttributeValue("Id");
-                String v = editor.getText(element);
+                String name = child.getName();
+                String k = child.getAttributeValue("Id");
+                String v = editor.getText(child);
                 if (v == null) {
                     v = "";
                 }
@@ -432,35 +423,35 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processRulesets(ScoreBoardModel scoreBoardModel, Element rulesets) {
-        RulesetsModel rs = scoreBoardModel.getRulesetsModel();
-        Iterator<?> children = rulesets.getChildren().iterator();
+    public void processRulesets(ScoreBoard scoreBoard, Element element) {
+        Rulesets rs = scoreBoard.getRulesets();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
+                String name = child.getName();
                 if (name.equals(Rulesets.EVENT_CURRENT_RULESET)) {
-                    processRuleset(rs, element);
+                    processRuleset(rs, child);
                 }
             } catch ( Exception e ) {
             }
         }
     }
 
-    public void processRuleset(RulesetsModel rulesetsModel, Element ruleset) {
+    public void processRuleset(Rulesets rulesets, Element element) {
         String name = "";
         String parentId = "";
-        String id = ruleset.getAttributeValue("Id");
+        String id = element.getAttributeValue("Id");
         Map<String, String> rules = new HashMap<String, String>();
 
 
-        Iterator<?> children = ruleset.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String n = element.getName();
-                String k = element.getAttributeValue("Id");
-                String v = editor.getText(element);
+                String n = child.getName();
+                String k = child.getAttributeValue("Id");
+                String v = editor.getText(child);
                 if (v == null) {
                     v = "";
                 }
@@ -474,22 +465,22 @@ public class ScoreBoardXmlConverter {
             } catch ( Exception e ) {
             }
         }
-        RulesetsModel.RulesetModel r = rulesetsModel.addRuleset(name, parentId, id);
+        Rulesets.Ruleset r = rulesets.addRuleset(name, parentId, id);
         r.setAll(rules);
     }
 
-    public void processMedia(MediaModel mm, Element media) {
-        for (Object f: media.getChildren()) {
+    public void processMedia(Media media, Element element) {
+        for (Object f: element.getChildren()) {
             Element format = (Element)f;
             for (Object t: format.getChildren()) {
                 Element type = (Element)t;
-                Map<String, MediaModel.MediaFileModel> tm = mm.getMediaFileModels(format.getName(), type.getName());
+                Map<String, Media.MediaFile> tm = media.getMediaFiles(format.getName(), type.getName());
                 if (tm == null) {
                     continue;  // Invalid type.
                 }
                 for (Object fi: type.getChildren()) {
                     Element file = (Element)fi;
-                    MediaModel.MediaFileModel mf = tm.get(file.getAttributeValue("Id"));
+                    Media.MediaFile mf = tm.get(file.getAttributeValue("Id"));
                     if (mf == null) {
                         continue;  // The file has been deleted.
                     }
@@ -505,21 +496,21 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processClock(ScoreBoardModel scoreBoardModel, Element clock) {
-        String id = clock.getAttributeValue("Id");
-        ClockModel clockModel = scoreBoardModel.getClockModel(id);
+    public void processClock(ScoreBoard scoreBoard, Element element) {
+        String id = element.getAttributeValue("Id");
+        Clock clockModel = scoreBoard.getClock(id);
         boolean requestStart = false;
         boolean requestStop = false;
 
-        Iterator<?> children = clock.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
-                boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
-                boolean isReset = Boolean.parseBoolean(element.getAttributeValue("reset"));
+                boolean isChange = Boolean.parseBoolean(child.getAttributeValue("change"));
+                boolean isReset = Boolean.parseBoolean(child.getAttributeValue("reset"));
 
 //FIXME - might be better way to handle changes/resets than an attribute...
                 if ((null == value) && !isReset) {
@@ -569,27 +560,27 @@ public class ScoreBoardXmlConverter {
         if (requestStop) { clockModel.stop(); }
     }
 
-    public void processTeam(ScoreBoardModel scoreBoardModel, Element team) {
-        String id = team.getAttributeValue("Id");
-        TeamModel teamModel = scoreBoardModel.getTeamModel(id);
+    public void processTeam(ScoreBoard scoreBoard, Element element) {
+        String id = element.getAttributeValue("Id");
+        Team teamModel = scoreBoard.getTeam(id);
 
-        Iterator<?> children = team.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
-                boolean isChange = Boolean.parseBoolean(element.getAttributeValue("change"));
+                boolean isChange = Boolean.parseBoolean(child.getAttributeValue("change"));
 
                 if (name.equals("AlternateName")) {
-                    processAlternateName(teamModel, element);
+                    processAlternateName(teamModel, child);
                 } else if (name.equals("Color")) {
-                    processColor(teamModel, element);
+                    processColor(teamModel, child);
                 } else if (name.equals("Skater")) {
-                    processSkater(teamModel, element);
+                    processSkater(teamModel, child);
                 } else if (name.equals("Position")) {
-                    processPosition(teamModel, element);
+                    processPosition(teamModel, child);
                 } else if (null == value) {
                     continue;
                 } else if (name.equals("Timeout") && Boolean.parseBoolean(value)) {
@@ -632,26 +623,26 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processAlternateName(TeamModel teamModel, Element alternateName) {
-        String id = alternateName.getAttributeValue("Id");
-        TeamModel.AlternateNameModel alternateNameModel = teamModel.getAlternateNameModel(id);
+    public void processAlternateName(Team team, Element element) {
+        String id = element.getAttributeValue("Id");
+        Team.AlternateName alternateNameModel = team.getAlternateName(id);
 
-        if (editor.hasRemovePI(alternateName)) {
-            teamModel.removeAlternateNameModel(id);
+        if (editor.hasRemovePI(element)) {
+            team.removeAlternateName(id);
             return;
         }
 
         if (null == alternateNameModel) {
-            teamModel.setAlternateNameModel(id, "");
-            alternateNameModel = teamModel.getAlternateNameModel(id);
+            team.setAlternateName(id, "");
+            alternateNameModel = team.getAlternateName(id);
         }
 
-        Iterator<?> children = alternateName.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (null == value) {
                     continue;
@@ -663,26 +654,26 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processColor(TeamModel teamModel, Element color) {
-        String id = color.getAttributeValue("Id");
-        TeamModel.ColorModel colorModel = teamModel.getColorModel(id);
+    public void processColor(Team team, Element element) {
+        String id = element.getAttributeValue("Id");
+        Team.Color colorModel = team.getColor(id);
 
-        if (editor.hasRemovePI(color)) {
-            teamModel.removeColorModel(id);
+        if (editor.hasRemovePI(element)) {
+            team.removeColor(id);
             return;
         }
 
         if (null == colorModel) {
-            teamModel.setColorModel(id, "");
-            colorModel = teamModel.getColorModel(id);
+            team.setColor(id, "");
+            colorModel = team.getColor(id);
         }
 
-        Iterator<?> children = color.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (null == value) {
                     continue;
@@ -694,23 +685,23 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processPosition(TeamModel teamModel, Element position) {
-        String id = position.getAttributeValue("Id");
-        PositionModel positionModel = teamModel.getPositionModel(id);
+    public void processPosition(Team team, Element element) {
+        String id = element.getAttributeValue("Id");
+        Position positionModel = team.getPosition(id);
 
-        Iterator<?> children = position.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (null == value) {
                     continue;
                 } else if (name.equals("Clear") && Boolean.parseBoolean(value)) {
                     positionModel.clear();
                 } else if (name.equals("Id")) {
-                    positionModel.setSkaterModel(value);
+                    positionModel.setSkater(value);
                 } else if (name.equals(Position.EVENT_PENALTY_BOX)) {
                     positionModel.setPenaltyBox(Boolean.parseBoolean(value));
                 }
@@ -719,39 +710,39 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processSkater(TeamModel teamModel, Element skater) {
-        String id = skater.getAttributeValue("Id");
-        SkaterModel skaterModel;
+    public void processSkater(Team team, Element element) {
+        String id = element.getAttributeValue("Id");
+        Skater skaterModel;
 
-        if (editor.hasRemovePI(skater)) {
-            teamModel.removeSkaterModel(id);
+        if (editor.hasRemovePI(element)) {
+            team.removeSkater(id);
             return;
         }
 
         try {
-            skaterModel = teamModel.getSkaterModel(id);
+            skaterModel = team.getSkater(id);
         } catch ( SkaterNotFoundException snfE ) {
-            Element nameE = skater.getChild(Skater.EVENT_NAME);
+            Element nameE = element.getChild(Skater.EVENT_NAME);
             String name = (nameE == null ? "" : editor.getText(nameE));
-            Element numberE = skater.getChild(Skater.EVENT_NUMBER);
+            Element numberE = element.getChild(Skater.EVENT_NUMBER);
             String number = (numberE == null ? "" : editor.getText(numberE));
-            Element flagsE = skater.getChild(Skater.EVENT_FLAGS);
+            Element flagsE = element.getChild(Skater.EVENT_FLAGS);
             String flags = (flagsE == null ? "" : editor.getText(flagsE));
-            teamModel.addSkaterModel(id, name, number, flags);
-            skaterModel = teamModel.getSkaterModel(id);
+            team.addSkater(id, name, number, flags);
+            skaterModel = team.getSkater(id);
         }
 
-        Iterator<?> children = skater.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (name.equals(Skater.EVENT_PENALTY)) {
-                    processPenalty(skaterModel, element, false);
+                    processPenalty(skaterModel, child, false);
                 } else if (name.equals(Skater.EVENT_PENALTY_FOEXP)) {
-                    processPenalty(skaterModel, element.getChild(Skater.EVENT_PENALTY), true);
+                    processPenalty(skaterModel, child.getChild(Skater.EVENT_PENALTY), true);
                 } else if (null == value) {
                     continue;
                 } else if (name.equals(Skater.EVENT_NAME)) {
@@ -770,18 +761,18 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processPenalty(SkaterModel skaterModel, Element penalty, boolean foulout_exp) {
-        String id = penalty.getAttributeValue("Id");
+    public void processPenalty(Skater skater, Element element, boolean foulout_exp) {
+        String id = element.getAttributeValue("Id");
         int period = 0;
         int jam = 0;
         String code = "";
 
-        Iterator<?> children = penalty.getChildren().iterator();
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (null == value) {
                     continue;
@@ -795,120 +786,120 @@ public class ScoreBoardXmlConverter {
             } catch ( Exception e ) {
             }
         }
-        skaterModel.AddPenaltyModel(id, foulout_exp, period, jam, code);
+        skater.AddPenalty(id, foulout_exp, period, jam, code);
     }
 
-    public void processStats(StatsModel statsModel, Element stats) {
-        Iterator<?> children = stats.getChildren().iterator();
+    public void processStats(Stats stats, Element element) {
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String id = element.getAttributeValue("Id");
-                String name = element.getName();
+                String id = child.getAttributeValue("Id");
+                String name = child.getName();
 
                 if (name.equals("Period")) {
                     int p = Integer.parseInt(id);
-                    statsModel.ensureAtLeastNPeriods(p);
-                    processPeriodStats(statsModel.getPeriodStatsModel(p), element);
+                    stats.ensureAtLeastNPeriods(p);
+                    processPeriodStats(stats.getPeriodStats(p), child);
                 }
             } catch ( Exception e ) {
             }
         }
     }
 
-    public void processPeriodStats(StatsModel.PeriodStatsModel periodStatsModel, Element periodStats) {
-        Iterator<?> children = periodStats.getChildren().iterator();
+    public void processPeriodStats(Stats.PeriodStats periodStats, Element element) {
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String id = element.getAttributeValue("Id");
-                String name = element.getName();
+                String id = child.getAttributeValue("Id");
+                String name = child.getName();
 
                 if (name.equals("Jam")) {
                     int j = Integer.parseInt(id);
-                    periodStatsModel.ensureAtLeastNJams(j);
-                    processJamStats(periodStatsModel.getJamStatsModel(j), element);
+                    periodStats.ensureAtLeastNJams(j);
+                    processJamStats(periodStats.getJamStats(j), child);
                 }
             } catch ( Exception e ) {
             }
         }
     }
 
-    public void processJamStats(StatsModel.JamStatsModel jamStatsModel, Element jamStats) {
-        Iterator<?> children = jamStats.getChildren().iterator();
+    public void processJamStats(Stats.JamStats jamStats, Element element) {
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String id = element.getAttributeValue("Id");
-                String name = element.getName();
-                String value = editor.getText(element);
+                String id = child.getAttributeValue("Id");
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (name.equals("Team")) {
-                    processTeamStats(jamStatsModel.getTeamStatsModel(id), element);
+                    processTeamStats(jamStats.getTeamStats(id), child);
                 } else if (null == value) {
                     continue;
                 } else if (name.equals("JamClockElapsedEnd")) {
-                    jamStatsModel.setJamClockElapsedEnd(Long.parseLong(value));
+                    jamStats.setJamClockElapsedEnd(Long.parseLong(value));
                 } else if (name.equals("PeriodClockElapsedStart")) {
-                    jamStatsModel.setPeriodClockElapsedStart(Long.parseLong(value));
+                    jamStats.setPeriodClockElapsedStart(Long.parseLong(value));
                 } else if (name.equals("PeriodClockElapsedEnd")) {
-                    jamStatsModel.setPeriodClockElapsedEnd(Long.parseLong(value));
+                    jamStats.setPeriodClockElapsedEnd(Long.parseLong(value));
                 } else if (name.equals("PeriodClockWalltimeStart")) {
-                    jamStatsModel.setPeriodClockWalltimeStart(Long.parseLong(value));
+                    jamStats.setPeriodClockWalltimeStart(Long.parseLong(value));
                 } else if (name.equals("PeriodClockWalltimeEnd")) {
-                    jamStatsModel.setPeriodClockWalltimeEnd(Long.parseLong(value));
+                    jamStats.setPeriodClockWalltimeEnd(Long.parseLong(value));
                 }
             } catch ( Exception e ) {
             }
         }
     }
 
-    public void processTeamStats(StatsModel.TeamStatsModel teamStatsModel, Element teamStats) {
-        Iterator<?> children = teamStats.getChildren().iterator();
+    public void processTeamStats(Stats.TeamStats teamStats, Element element) {
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String id = element.getAttributeValue("Id");
-                String name = element.getName();
-                String value = editor.getText(element);
+                String id = child.getAttributeValue("Id");
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (name.equals("Skater")) {
-                    teamStatsModel.addSkaterStatsModel(id);
-                    processSkaterStats(teamStatsModel.getSkaterStatsModel(id), element);
+                    teamStats.addSkaterStats(id);
+                    processSkaterStats(teamStats.getSkaterStats(id), child);
                 } else if (null == value) {
                     continue;
                 } else if (name.equals("JamScore")) {
-                    teamStatsModel.setJamScore(Integer.parseInt(value));
+                    teamStats.setJamScore(Integer.parseInt(value));
                 } else if (name.equals("TotalScore")) {
-                    teamStatsModel.setTotalScore(Integer.parseInt(value));
+                    teamStats.setTotalScore(Integer.parseInt(value));
                 } else if (name.equals("LeadJammer")) {
-                    teamStatsModel.setLeadJammer(value);
+                    teamStats.setLeadJammer(value);
                 } else if (name.equals("StarPass")) {
-                    teamStatsModel.setStarPass(Boolean.parseBoolean(value));
+                    teamStats.setStarPass(Boolean.parseBoolean(value));
                 } else if (name.equals("Timeouts")) {
-                    teamStatsModel.setTimeouts(Integer.parseInt(value));
+                    teamStats.setTimeouts(Integer.parseInt(value));
                 } else if (name.equals("OfficialReviews")) {
-                    teamStatsModel.setOfficialReviews(Integer.parseInt(value));
+                    teamStats.setOfficialReviews(Integer.parseInt(value));
                 }
             } catch ( Exception e ) {
             }
         }
     }
 
-    public void processSkaterStats(StatsModel.SkaterStatsModel skaterStatsModel, Element skaterStats) {
-        Iterator<?> children = skaterStats.getChildren().iterator();
+    public void processSkaterStats(Stats.SkaterStats skaterStats, Element element) {
+        Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
-            Element element = (Element)children.next();
+            Element child = (Element)children.next();
             try {
-                String name = element.getName();
-                String value = editor.getText(element);
+                String name = child.getName();
+                String value = editor.getText(child);
 
                 if (null == value) {
                     continue;
                 } else if (name.equals("PenaltyBox")) {
-                    skaterStatsModel.setPenaltyBox(Boolean.parseBoolean(value));
+                    skaterStats.setPenaltyBox(Boolean.parseBoolean(value));
                 } else if (name.equals("Position")) {
-                    skaterStatsModel.setPosition(value);
+                    skaterStats.setPosition(value);
                 }
             } catch ( Exception e ) {
             }

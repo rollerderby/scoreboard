@@ -16,9 +16,8 @@ import org.jdom.Element;
 import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.model.TeamModel;
-import com.carolinarollergirls.scoreboard.view.Skater;
-import com.carolinarollergirls.scoreboard.view.Team;
+import com.carolinarollergirls.scoreboard.core.Skater;
+import com.carolinarollergirls.scoreboard.core.Team;
 
 /**
  * This allows storing team info, e.g. name, logo, roster, etc., separate from the actual teams
@@ -206,7 +205,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         if (null == newTeam) {
             return;    /* Ignore if no team info exists for given Id */
         }
-        TeamModel team = xmlScoreBoard.getScoreBoardModel().getTeamModel(sbTeamId);
+        Team team = xmlScoreBoard.getScoreBoard().getTeam(sbTeamId);
         if (reset) {
             team.reset();
         }
@@ -227,7 +226,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
             }
             String aName = "";
             aName = editor.getText(alternateName.getChild("Name"));
-            team.setAlternateNameModel(aId, aName);
+            team.setAlternateName(aId, aName);
         }
         Iterator<?> colors = newTeam.getChildren("Color").iterator();
         while (colors.hasNext()) {
@@ -238,7 +237,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
             }
             String cColor = "";
             cColor = editor.getText(color.getChild("Color"));
-            team.setColorModel(cId, cColor);
+            team.setColor(cId, cColor);
         }
         Iterator<?> skaters = newTeam.getChildren("Skater").iterator();
         while (skaters.hasNext()) {
@@ -253,12 +252,12 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
             sName = editor.getText(skater.getChild("Name"));
             sNumber = editor.getText(skater.getChild("Number"));
             sFlags = editor.getText(skater.getChild("Flags"));
-            team.addSkaterModel(sId, sName, sNumber, sFlags);
+            team.addSkater(sId, sName, sNumber, sFlags);
         }
     }
 
     protected void fromScoreBoard(String sbTeamId, String id, boolean clear) throws JDOMException {
-        Team team = xmlScoreBoard.getScoreBoardModel().getTeam(sbTeamId);
+        Team team = xmlScoreBoard.getScoreBoard().getTeam(sbTeamId);
         Element newTeam = (Element)editor.getElement(getXPathElement(), "Team", id).clone();
         if (clear) {
             Element clearTeam = (Element)newTeam.clone();

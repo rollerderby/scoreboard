@@ -17,13 +17,13 @@ import org.jdom.Document;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.xml.SleepingQueueXmlScoreBoardListener;
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public abstract class AbstractXmlServlet extends AbstractRegisterServlet {
     protected void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        XmlListener listener = createXmlListener(scoreBoardModel);
+        XmlListener listener = createXmlListener(scoreBoard);
         String key = addRegisteredListener(listener);
         response.setContentType("text/xml");
         rawXmlOutputter.output(editor.createDocument("Key", null, key), response.getOutputStream());

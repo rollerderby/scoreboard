@@ -13,6 +13,15 @@ import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.Media;
+import com.carolinarollergirls.scoreboard.core.Position;
+import com.carolinarollergirls.scoreboard.core.Rulesets;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Settings;
+import com.carolinarollergirls.scoreboard.core.Skater;
+import com.carolinarollergirls.scoreboard.core.Stats;
+import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -21,15 +30,6 @@ import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.BooleanRule;
-import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.Media;
-import com.carolinarollergirls.scoreboard.view.Position;
-import com.carolinarollergirls.scoreboard.view.Rulesets;
-import com.carolinarollergirls.scoreboard.view.ScoreBoard;
-import com.carolinarollergirls.scoreboard.view.Settings;
-import com.carolinarollergirls.scoreboard.view.Skater;
-import com.carolinarollergirls.scoreboard.view.Stats;
-import com.carolinarollergirls.scoreboard.view.Team;
 
 /**
  * Converts a ScoreBoardEvent into a representative JSON Update

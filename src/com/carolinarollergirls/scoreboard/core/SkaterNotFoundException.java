@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard;
+package com.carolinarollergirls.scoreboard.core;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -8,8 +8,13 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+public class SkaterNotFoundException extends RuntimeException {
+    public SkaterNotFoundException(String s) {
+        super("Skater '"+s+"' not found");
+        skater = s;
+    }
 
-public interface ScoreBoardController {
-    public void setScoreBoard(ScoreBoard scoreBoard);
+    public String getSkater() { return skater; }
+
+    protected String skater = "";
 }

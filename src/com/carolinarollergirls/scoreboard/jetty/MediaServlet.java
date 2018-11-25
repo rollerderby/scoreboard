@@ -81,7 +81,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
                     }
                 } else if (item.getName().matches(zipExtRegex)) {
                     processZipFileItem(fiF, item, fileItems);
-                } else if (scoreBoardModel.getMediaModel().validFileName(item.getName())) {
+                } else if (scoreBoard.getMedia().validFileName(item.getName())) {
                     fileItems.add(item);
                 }
             }
@@ -109,7 +109,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         String type = request.getParameter("type");
         String filename = request.getParameter("filename");
 
-        boolean success = scoreBoardModel.getMediaModel().removeMediaFile(media, type, filename);
+        boolean success = scoreBoard.getMedia().removeMediaFile(media, type, filename);
         if (!success) {
             setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, "Failed to remove file");
         } else {
@@ -132,7 +132,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
     }
 
     protected File getTypeDir(String media, String type) throws FileNotFoundException,IllegalArgumentException {
-        if (scoreBoardModel.getMedia().getMediaFiles(media, type) == null) {
+        if (scoreBoard.getMedia().getMediaFiles(media, type) == null) {
             throw new IllegalArgumentException("Invalid media '"+media+"' or type '"+type+"'");
         }
 
@@ -163,7 +163,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         ZipEntry zE;
         try {
             while (null != (zE = ziS.getNextEntry())) {
-                if (zE.isDirectory() || !scoreBoardModel.getMediaModel().validFileName(zE.getName())) {
+                if (zE.isDirectory() || !scoreBoard.getMedia().validFileName(zE.getName())) {
                     continue;
                 }
                 FileItem item = factory.createItem(null, null, false, zE.getName());

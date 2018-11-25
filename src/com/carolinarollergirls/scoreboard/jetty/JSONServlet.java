@@ -22,17 +22,16 @@ import org.eclipse.jetty.server.Server;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.model.ClockModel;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.view.Clock;
-import com.carolinarollergirls.scoreboard.view.Team;
+import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.xml.TeamsXmlDocumentManager;
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentManager;
 
 public class JSONServlet extends HttpServlet {
-    public JSONServlet(Server s, ScoreBoardModel m) {
+    public JSONServlet(Server s, ScoreBoard m) {
         server = s;
-        scoreBoardModel = m;
+        scoreBoard = m;
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
@@ -53,9 +52,9 @@ public class JSONServlet extends HttpServlet {
                 if (t1 == null || t2 == null || rs == null) {
                     error(response, "Error creating game");
                 }
-                scoreBoardModel.reset();
-                scoreBoardModel.getRulesetsModel().setCurrentRuleset(rs);
-                List<XmlDocumentManager> l = scoreBoardModel.getXmlScoreBoard().findXmlDocumentManagers(TeamsXmlDocumentManager.class);
+                scoreBoard.reset();
+                scoreBoard.getRulesets().setCurrentRuleset(rs);
+                List<XmlDocumentManager> l = scoreBoard.getXmlScoreBoard().findXmlDocumentManagers(TeamsXmlDocumentManager.class);
                 for (XmlDocumentManager xdM : l) {
                     TeamsXmlDocumentManager txdM = (TeamsXmlDocumentManager)xdM;
                     txdM.toScoreBoard(Team.ID_1, t1, false);
@@ -66,7 +65,7 @@ public class JSONServlet extends HttpServlet {
                 if (intermissionClock != null) {
                     Long ic_time = new Long(intermissionClock);
                     ic_time = ic_time - (ic_time % 1000);
-                    ClockModel c = scoreBoardModel.getClockModel(Clock.ID_INTERMISSION);
+                    Clock c = scoreBoard.getClock(Clock.ID_INTERMISSION);
                     c.reset();
                     c.setNumber(0);
                     if (c.getMaximumTime() < ic_time) {
@@ -110,5 +109,5 @@ public class JSONServlet extends HttpServlet {
     }
 
     protected Server server;
-    protected ScoreBoardModel scoreBoardModel;
+    protected ScoreBoard scoreBoard;
 }

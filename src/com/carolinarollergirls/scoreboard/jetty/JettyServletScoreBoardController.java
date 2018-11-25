@@ -29,14 +29,13 @@ import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-// import org.eclipse.jetty.util.resource.Resource;
 
 
 public class JettyServletScoreBoardController {
-    public JettyServletScoreBoardController(ScoreBoardModel model, JSONStateManager jsm) {
-        scoreBoardModel = model;
+    public JettyServletScoreBoardController(ScoreBoard model, JSONStateManager jsm) {
+        scoreBoard = model;
         this.jsm = jsm;
 
         init();
@@ -107,10 +106,10 @@ public class JettyServletScoreBoardController {
         urlsServlet = new UrlsServlet(server);
         sch.addServlet(new ServletHolder(urlsServlet), "/urls/*");
 
-        jsonServlet = new JSONServlet(server, scoreBoardModel);
+        jsonServlet = new JSONServlet(server, scoreBoard);
         sch.addServlet(new ServletHolder(jsonServlet), "/JSON/*");
 
-        ws = new WS(scoreBoardModel, jsm);
+        ws = new WS(scoreBoard, jsm);
         sch.addServlet(new ServletHolder(ws), "/WS/*");
 
         DefaultExports.initialize();
@@ -137,7 +136,7 @@ public class JettyServletScoreBoardController {
 
             try {
                 ScoreBoardControllerServlet sbcS = (ScoreBoardControllerServlet)Class.forName(servlet).newInstance();
-                sbcS.setScoreBoardModel(scoreBoardModel);
+                sbcS.setScoreBoard(scoreBoard);
                 c = new ServletContextHandler(contexts, sbcS.getPath());
                 c.addFilter(mf, "/*", 1);
                 c.addServlet(new ServletHolder(sbcS), "/*");
@@ -154,7 +153,7 @@ public class JettyServletScoreBoardController {
         }
     }
 
-    protected ScoreBoardModel scoreBoardModel;
+    protected ScoreBoard scoreBoard;
     protected JSONStateManager jsm;
     protected int port;
     protected UrlsServlet urlsServlet;

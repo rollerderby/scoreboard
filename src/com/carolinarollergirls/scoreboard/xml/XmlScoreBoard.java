@@ -23,19 +23,19 @@ import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class XmlScoreBoard {
-    public XmlScoreBoard(ScoreBoardModel sbM) {
-        scoreBoardModel = sbM;
-        scoreBoardXmlListener = new ScoreBoardXmlListener(sbM) {
+    public XmlScoreBoard(ScoreBoard sb) {
+        scoreBoard = sb;
+        scoreBoardXmlListener = new ScoreBoardXmlListener(sb) {
             public void scoreBoardChange(ScoreBoardEvent sbE) {
                 super.scoreBoardChange(sbE);
                 XmlScoreBoard.this.xmlChange(resetDocument());
             }
         };
-        xmlChange(converter.toDocument(scoreBoardModel));
+        xmlChange(converter.toDocument(scoreBoard));
         loadXmlDocumentManagers();
     }
 
@@ -47,7 +47,7 @@ public class XmlScoreBoard {
         startAutoSave();
     }
 
-    public ScoreBoardModel getScoreBoardModel() { return scoreBoardModel; }
+    public ScoreBoard getScoreBoard() { return scoreBoard; }
 
     public void addXmlScoreBoardListener(XmlScoreBoardListener xsbL) {
         synchronized (documentLock) {
@@ -71,7 +71,7 @@ public class XmlScoreBoard {
     public void reset() {
         synchronized (managerLock) {
             if (null == exclusiveDocumentManager) {
-                scoreBoardModel.reset();
+                scoreBoard.reset();
                 managers.reset();
             } else {
 //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
@@ -108,7 +108,7 @@ public class XmlScoreBoard {
         synchronized (managerLock) {
             if (null == exclusiveDocumentManager) {
 //FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
-                converter.processDocument(scoreBoardModel, doc);
+                converter.processDocument(scoreBoard, doc);
                 managers.processDocument(doc);
             } else {
 //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
@@ -265,7 +265,7 @@ public class XmlScoreBoard {
         autoSave.start();
     }
 
-    protected ScoreBoardModel scoreBoardModel;
+    protected ScoreBoard scoreBoard;
     protected ScoreBoardXmlConverter converter = new ScoreBoardXmlConverter();
     protected XmlDocumentEditor editor = new XmlDocumentEditor();
     protected ScoreBoardXmlListener scoreBoardXmlListener;
