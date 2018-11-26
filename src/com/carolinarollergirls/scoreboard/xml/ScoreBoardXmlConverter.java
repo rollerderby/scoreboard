@@ -498,7 +498,7 @@ public class ScoreBoardXmlConverter {
 
     public void processClock(ScoreBoard scoreBoard, Element element) {
         String id = element.getAttributeValue("Id");
-        Clock clockModel = scoreBoard.getClock(id);
+        Clock clock = scoreBoard.getClock(id);
         boolean requestStart = false;
         boolean requestStop = false;
 
@@ -520,49 +520,49 @@ public class ScoreBoardXmlConverter {
                 } else if (name.equals("Stop") && Boolean.parseBoolean(value)) {
                     requestStop = true;
                 } else if (name.equals("ResetTime") && Boolean.parseBoolean(value)) {
-                    clockModel.resetTime();
+                    clock.resetTime();
                 } else if (name.equals(Clock.EVENT_NAME)) {
-                    clockModel.setName(value);
+                    clock.setName(value);
                 } else if (name.equals(Clock.EVENT_NUMBER) && isChange) {
-                    clockModel.changeNumber(Integer.parseInt(value));
+                    clock.changeNumber(Integer.parseInt(value));
                 } else if (name.equals(Clock.EVENT_NUMBER) && !isChange) {
-                    clockModel.setNumber(Integer.parseInt(value));
+                    clock.setNumber(Integer.parseInt(value));
                 } else if (name.equals(Clock.EVENT_MINIMUM_NUMBER)) {
-                    clockModel.setMinimumNumber(Integer.parseInt(value));
+                    clock.setMinimumNumber(Integer.parseInt(value));
                 } else if (name.equals(Clock.EVENT_MAXIMUM_NUMBER)) {
-                    clockModel.setMaximumNumber(Integer.parseInt(value));
+                    clock.setMaximumNumber(Integer.parseInt(value));
                 } else if (name.equals(Clock.EVENT_TIME) && isChange) {
-                    clockModel.changeTime(Long.parseLong(value));
+                    clock.changeTime(Long.parseLong(value));
                 } else if (name.equals(Clock.EVENT_TIME) && isReset) {
-                    clockModel.resetTime();
+                    clock.resetTime();
                 } else if (name.equals(Clock.EVENT_TIME) && !isChange && !isReset) {
-                    clockModel.setTime(Long.parseLong(value));
+                    clock.setTime(Long.parseLong(value));
                 } else if (name.equals(Clock.EVENT_MINIMUM_TIME) && isChange) {
-                    clockModel.changeMinimumTime(Long.parseLong(value));
+                    clock.changeMinimumTime(Long.parseLong(value));
                 } else if (name.equals(Clock.EVENT_MINIMUM_TIME)) {
-                    clockModel.setMinimumTime(Long.parseLong(value));
+                    clock.setMinimumTime(Long.parseLong(value));
                 } else if (name.equals(Clock.EVENT_MAXIMUM_TIME) && isChange) {
-                    clockModel.changeMaximumTime(Long.parseLong(value));
+                    clock.changeMaximumTime(Long.parseLong(value));
                 } else if (name.equals(Clock.EVENT_MAXIMUM_TIME)) {
-                    clockModel.setMaximumTime(Long.parseLong(value));
+                    clock.setMaximumTime(Long.parseLong(value));
                 } else if (name.equals(Clock.EVENT_RUNNING) && Boolean.parseBoolean(value)) {
                     requestStart = true;
                 } else if (name.equals(Clock.EVENT_RUNNING) && !Boolean.parseBoolean(value)) {
                     requestStop = true;
                 } else if (name.equals(Clock.EVENT_DIRECTION)) {
-                    clockModel.setCountDirectionDown(Boolean.parseBoolean(value));
+                    clock.setCountDirectionDown(Boolean.parseBoolean(value));
                 }
             } catch ( Exception e ) {
             }
         }
         // Process start/stops at the end to allow setting of options (direction/min/max/etc) on load
-        if (requestStart) { clockModel.start(); }
-        if (requestStop) { clockModel.stop(); }
+        if (requestStart) { clock.start(); }
+        if (requestStop) { clock.stop(); }
     }
 
     public void processTeam(ScoreBoard scoreBoard, Element element) {
         String id = element.getAttributeValue("Id");
-        Team teamModel = scoreBoard.getTeam(id);
+        Team team = scoreBoard.getTeam(id);
 
         Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
@@ -574,49 +574,49 @@ public class ScoreBoardXmlConverter {
                 boolean isChange = Boolean.parseBoolean(child.getAttributeValue("change"));
 
                 if (name.equals("AlternateName")) {
-                    processAlternateName(teamModel, child);
+                    processAlternateName(team, child);
                 } else if (name.equals("Color")) {
-                    processColor(teamModel, child);
+                    processColor(team, child);
                 } else if (name.equals("Skater")) {
-                    processSkater(teamModel, child);
+                    processSkater(team, child);
                 } else if (name.equals("Position")) {
-                    processPosition(teamModel, child);
+                    processPosition(team, child);
                 } else if (null == value) {
                     continue;
                 } else if (name.equals("Timeout") && Boolean.parseBoolean(value)) {
-                    teamModel.timeout();
+                    team.timeout();
                 } else if (name.equals("OfficialReview") && Boolean.parseBoolean(value)) {
-                    teamModel.officialReview();
+                    team.officialReview();
                 } else if (name.equals(Team.EVENT_NAME)) {
-                    teamModel.setName(value);
+                    team.setName(value);
                 } else if (name.equals(Team.EVENT_LOGO)) {
-                    teamModel.setLogo(value);
+                    team.setLogo(value);
                 } else if (name.equals(Team.EVENT_SCORE) && isChange) {
-                    teamModel.changeScore(Integer.parseInt(value));
+                    team.changeScore(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_LAST_SCORE) && isChange) {
-                    teamModel.changeLastScore(Integer.parseInt(value));
+                    team.changeLastScore(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_SCORE) && !isChange) {
-                    teamModel.setScore(Integer.parseInt(value));
+                    team.setScore(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_LAST_SCORE) && !isChange) {
-                    teamModel.setLastScore(Integer.parseInt(value));
+                    team.setLastScore(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_TIMEOUTS) && isChange) {
-                    teamModel.changeTimeouts(Integer.parseInt(value));
+                    team.changeTimeouts(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_TIMEOUTS) && !isChange) {
-                    teamModel.setTimeouts(Integer.parseInt(value));
+                    team.setTimeouts(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && isChange) {
-                    teamModel.changeOfficialReviews(Integer.parseInt(value));
+                    team.changeOfficialReviews(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && !isChange) {
-                    teamModel.setOfficialReviews(Integer.parseInt(value));
+                    team.setOfficialReviews(Integer.parseInt(value));
                 } else if (name.equals(Team.EVENT_IN_TIMEOUT)) {
-                    teamModel.setInTimeout(Boolean.parseBoolean(value));
+                    team.setInTimeout(Boolean.parseBoolean(value));
                 } else if (name.equals(Team.EVENT_IN_OFFICIAL_REVIEW)) {
-                    teamModel.setInOfficialReview(Boolean.parseBoolean(value));
+                    team.setInOfficialReview(Boolean.parseBoolean(value));
                 } else if (name.equals(Team.EVENT_RETAINED_OFFICIAL_REVIEW)) {
-                    teamModel.setRetainedOfficialReview(Boolean.parseBoolean(value));
+                    team.setRetainedOfficialReview(Boolean.parseBoolean(value));
                 } else if (name.equals(Team.EVENT_LEAD_JAMMER)) {
-                    teamModel.setLeadJammer(value);
+                    team.setLeadJammer(value);
                 } else if (name.equals(Team.EVENT_STAR_PASS)) {
-                    teamModel.setStarPass(Boolean.parseBoolean(value));
+                    team.setStarPass(Boolean.parseBoolean(value));
                 }
             } catch ( Exception e ) {
             }
@@ -625,16 +625,16 @@ public class ScoreBoardXmlConverter {
 
     public void processAlternateName(Team team, Element element) {
         String id = element.getAttributeValue("Id");
-        Team.AlternateName alternateNameModel = team.getAlternateName(id);
+        Team.AlternateName alternateName = team.getAlternateName(id);
 
         if (editor.hasRemovePI(element)) {
             team.removeAlternateName(id);
             return;
         }
 
-        if (null == alternateNameModel) {
+        if (null == alternateName) {
             team.setAlternateName(id, "");
-            alternateNameModel = team.getAlternateName(id);
+            alternateName = team.getAlternateName(id);
         }
 
         Iterator<?> children = element.getChildren().iterator();
@@ -647,7 +647,7 @@ public class ScoreBoardXmlConverter {
                 if (null == value) {
                     continue;
                 } else if (name.equals(Team.AlternateName.EVENT_NAME)) {
-                    alternateNameModel.setName(value);
+                    alternateName.setName(value);
                 }
             } catch ( Exception e ) {
             }
@@ -656,16 +656,16 @@ public class ScoreBoardXmlConverter {
 
     public void processColor(Team team, Element element) {
         String id = element.getAttributeValue("Id");
-        Team.Color colorModel = team.getColor(id);
+        Team.Color color = team.getColor(id);
 
         if (editor.hasRemovePI(element)) {
             team.removeColor(id);
             return;
         }
 
-        if (null == colorModel) {
+        if (null == color) {
             team.setColor(id, "");
-            colorModel = team.getColor(id);
+            color = team.getColor(id);
         }
 
         Iterator<?> children = element.getChildren().iterator();
@@ -678,7 +678,7 @@ public class ScoreBoardXmlConverter {
                 if (null == value) {
                     continue;
                 } else if (name.equals(Team.Color.EVENT_COLOR)) {
-                    colorModel.setColor(value);
+                    color.setColor(value);
                 }
             } catch ( Exception e ) {
             }
@@ -687,7 +687,7 @@ public class ScoreBoardXmlConverter {
 
     public void processPosition(Team team, Element element) {
         String id = element.getAttributeValue("Id");
-        Position positionModel = team.getPosition(id);
+        Position position = team.getPosition(id);
 
         Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
@@ -699,11 +699,11 @@ public class ScoreBoardXmlConverter {
                 if (null == value) {
                     continue;
                 } else if (name.equals("Clear") && Boolean.parseBoolean(value)) {
-                    positionModel.clear();
+                    position.clear();
                 } else if (name.equals("Id")) {
-                    positionModel.setSkater(value);
+                    position.setSkater(value);
                 } else if (name.equals(Position.EVENT_PENALTY_BOX)) {
-                    positionModel.setPenaltyBox(Boolean.parseBoolean(value));
+                    position.setPenaltyBox(Boolean.parseBoolean(value));
                 }
             } catch ( Exception e ) {
             }
@@ -712,7 +712,7 @@ public class ScoreBoardXmlConverter {
 
     public void processSkater(Team team, Element element) {
         String id = element.getAttributeValue("Id");
-        Skater skaterModel;
+        Skater skater;
 
         if (editor.hasRemovePI(element)) {
             team.removeSkater(id);
@@ -720,7 +720,7 @@ public class ScoreBoardXmlConverter {
         }
 
         try {
-            skaterModel = team.getSkater(id);
+            skater = team.getSkater(id);
         } catch ( SkaterNotFoundException snfE ) {
             Element nameE = element.getChild(Skater.EVENT_NAME);
             String name = (nameE == null ? "" : editor.getText(nameE));
@@ -729,7 +729,7 @@ public class ScoreBoardXmlConverter {
             Element flagsE = element.getChild(Skater.EVENT_FLAGS);
             String flags = (flagsE == null ? "" : editor.getText(flagsE));
             team.addSkater(id, name, number, flags);
-            skaterModel = team.getSkater(id);
+            skater = team.getSkater(id);
         }
 
         Iterator<?> children = element.getChildren().iterator();
@@ -740,21 +740,21 @@ public class ScoreBoardXmlConverter {
                 String value = editor.getText(child);
 
                 if (name.equals(Skater.EVENT_PENALTY)) {
-                    processPenalty(skaterModel, child, false);
+                    processPenalty(skater, child, false);
                 } else if (name.equals(Skater.EVENT_PENALTY_FOEXP)) {
-                    processPenalty(skaterModel, child.getChild(Skater.EVENT_PENALTY), true);
+                    processPenalty(skater, child.getChild(Skater.EVENT_PENALTY), true);
                 } else if (null == value) {
                     continue;
                 } else if (name.equals(Skater.EVENT_NAME)) {
-                    skaterModel.setName(value);
+                    skater.setName(value);
                 } else if (name.equals(Skater.EVENT_NUMBER)) {
-                    skaterModel.setNumber(value);
+                    skater.setNumber(value);
                 } else if (name.equals(Skater.EVENT_POSITION)) {
-                    skaterModel.setPosition(value);
+                    skater.setPosition(value);
                 } else if (name.equals(Skater.EVENT_PENALTY_BOX)) {
-                    skaterModel.setPenaltyBox(Boolean.parseBoolean(value));
+                    skater.setPenaltyBox(Boolean.parseBoolean(value));
                 } else if (name.equals(Skater.EVENT_FLAGS)) {
-                    skaterModel.setFlags(value);
+                    skater.setFlags(value);
                 }
             } catch ( Exception e ) {
             }

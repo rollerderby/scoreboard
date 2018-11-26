@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.carolinarollergirls.scoreboard.core.implementation.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 
 public class ScoreBoardClock extends TimerTask {
     private ScoreBoardClock() {

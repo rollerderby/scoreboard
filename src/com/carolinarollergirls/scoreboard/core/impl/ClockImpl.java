@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -82,7 +82,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
 
     public ClockSnapshot snapshot() {
         synchronized (coreLock) {
-            return new DefaultClockSnapshotModel(this);
+            return new ClockSnapshotImpl(this);
         }
     }
     public void restoreSnapshot(ClockSnapshot s) {
@@ -401,8 +401,8 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
     public static final long DEFAULT_MAXIMUM_TIME = 24 * 60 * 60 * 1000; // 1 day for long time to derby
     public static final boolean DEFAULT_DIRECTION = false;   // up
 
-    public static class DefaultClockSnapshotModel implements ClockSnapshot {
-        private DefaultClockSnapshotModel(Clock clock) {
+    public static class ClockSnapshotImpl implements ClockSnapshot {
+        private ClockSnapshotImpl(Clock clock) {
             id = clock.getId();
             number = clock.getNumber();
             time = clock.getTime();

@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -27,16 +27,16 @@ import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 
 public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
-    public TeamImpl(ScoreBoard sbm, String i) {
+    public TeamImpl(ScoreBoard sb, String i) {
         Iterator<String> posIds = Position.FLOOR_POSITIONS.iterator();
         while (posIds.hasNext()) {
             String id = posIds.next();
-            Position pM = new PositionImpl(this, id);
-            positions.put(id, pM);
-            pM.addScoreBoardListener(this);
+            Position p = new PositionImpl(this, id);
+            positions.put(id, p);
+            p.addScoreBoardListener(this);
         }
 
-        scoreBoardModel = sbm;
+        scoreBoard = sb;
         id = i;
 
         reset();
@@ -46,7 +46,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public Class<Team> getProviderClass() { return Team.class; }
     public String getProviderId() { return getId(); }
 
-    public ScoreBoard getScoreBoard() { return scoreBoardModel; }
+    public ScoreBoard getScoreBoard() { return scoreBoard; }
 
     public void reset() {
         synchronized (coreLock) {
@@ -61,7 +61,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
             removeAlternateNames();
             removeColors();
-            Iterator<Position> p = getPositionModels().iterator();
+            Iterator<Position> p = getPositions().iterator();
             Iterator<Skater> s = getSkaters().iterator();
             while (s.hasNext()) {
                 try { removeSkater(s.next().getId()); }
@@ -139,13 +139,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
         }
     }
-    public List<AlternateName> getAlternateNameModels() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
-        }
-    }
-    public AlternateName getAlternateName(String i) { return getAlternateNameModel(i); }
-    public AlternateName getAlternateNameModel(String i) { return alternateNames.get(i); }
+    public AlternateName getAlternateName(String i) { return alternateNames.get(i); }
     public void setAlternateName(String i, String n) {
         synchronized (coreLock) {
             if (alternateNames.containsKey(i)) {
@@ -167,7 +161,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     }
     public void removeAlternateNames() {
         synchronized (coreLock) {
-            Iterator<AlternateName> i = getAlternateNameModels().iterator();
+            Iterator<AlternateName> i = getAlternateNames().iterator();
             while (i.hasNext()) {
                 removeAlternateName(i.next().getId());
             }
@@ -179,13 +173,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             return Collections.unmodifiableList(new ArrayList<Color>(colors.values()));
         }
     }
-    public List<Color> getColorModels() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableList(new ArrayList<Color>(colors.values()));
-        }
-    }
-    public Color getColor(String i) { return getColorModel(i); }
-    public Color getColorModel(String i) { return colors.get(i); }
+    public Color getColor(String i) { return colors.get(i); }
     public void setColor(String i, String c) {
         synchronized (coreLock) {
             if (colors.containsKey(i)) {
@@ -208,7 +196,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     }
     public void removeColors() {
         synchronized (coreLock) {
-            Iterator<Color> i = getColorModels().iterator();
+            Iterator<Color> i = getColors().iterator();
             while (i.hasNext()) {
                 removeColor(i.next().getId());
             }
@@ -328,8 +316,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             if (0 > t) {
                 t = 0;
             }
-            if (scoreBoardModel.getRulesets().getInt(RULE_NUMBER_TIMEOUTS) < t) {
-                t = scoreBoardModel.getRulesets().getInt(RULE_NUMBER_TIMEOUTS);
+            if (scoreBoard.getRulesets().getInt(RULE_NUMBER_TIMEOUTS) < t) {
+                t = scoreBoard.getRulesets().getInt(RULE_NUMBER_TIMEOUTS);
             }
             Integer last = new Integer(timeouts);
             timeouts = t;
@@ -347,8 +335,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             if (0 > r) {
                 r = 0;
             }
-            if (scoreBoardModel.getRulesets().getInt(RULE_NUMBER_REVIEWS) < r) {
-                r = scoreBoardModel.getRulesets().getInt(RULE_NUMBER_REVIEWS);
+            if (scoreBoard.getRulesets().getInt(RULE_NUMBER_REVIEWS) < r) {
+                r = scoreBoard.getRulesets().getInt(RULE_NUMBER_REVIEWS);
             }
             Integer last = new Integer(officialReviews);
             officialReviews = r;
@@ -364,11 +352,11 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             setInTimeout(false);
             setInOfficialReview(false);
-            if (gameStart || scoreBoardModel.getRulesets().getBoolean(RULE_TIMEOUTS_PER_PERIOD)) {
-                setTimeouts(scoreBoardModel.getRulesets().getInt(RULE_NUMBER_TIMEOUTS));
+            if (gameStart || scoreBoard.getRulesets().getBoolean(RULE_TIMEOUTS_PER_PERIOD)) {
+                setTimeouts(scoreBoard.getRulesets().getInt(RULE_NUMBER_TIMEOUTS));
             }
-            if (gameStart || scoreBoardModel.getRulesets().getBoolean(RULE_REVIEWS_PER_PERIOD)) {
-                setOfficialReviews(scoreBoardModel.getRulesets().getInt(RULE_NUMBER_REVIEWS));
+            if (gameStart || scoreBoard.getRulesets().getBoolean(RULE_REVIEWS_PER_PERIOD)) {
+                setOfficialReviews(scoreBoard.getRulesets().getInt(RULE_NUMBER_REVIEWS));
                 setRetainedOfficialReview(false);
             }
         }
@@ -426,7 +414,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public void removeSkater(String id) throws SkaterNotFoundException {
         synchronized (coreLock) {
             Skater sm = getSkater(id);
-            try { getPositionModel(sm.getPosition()).clear(); }
+            try { getPosition(sm.getPosition()).clear(); }
             catch ( PositionNotFoundException pnfE ) { /* was on BENCH */ }
             sm.removeScoreBoardListener(this);
             skaters.remove(id);
@@ -434,8 +422,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         }
     }
 
-    public Position getPosition(String id) throws PositionNotFoundException { return getPositionModel(id); }
-    public Position getPositionModel(String id) throws PositionNotFoundException {
+    public Position getPosition(String id) throws PositionNotFoundException {
         synchronized (coreLock) {
             if (positions.containsKey(id)) {
                 return positions.get(id);
@@ -445,7 +432,6 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         }
     }
     public List<Position> getPositions() { return Collections.unmodifiableList(new ArrayList<Position>(positions.values())); }
-    public List<Position> getPositionModels() { return Collections.unmodifiableList(new ArrayList<Position>(positions.values())); }
 
     public String getLeadJammer() { return leadJammer; }
     public void setLeadJammer(String lead) {
@@ -506,7 +492,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
 
 
-    protected ScoreBoard scoreBoardModel;
+    protected ScoreBoard scoreBoard;
 
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 
@@ -541,7 +527,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
     public class AlternateNameImpl extends DefaultScoreBoardEventProvider implements AlternateName {
         public AlternateNameImpl(Team t, String i, String n) {
-            teamModel = t;
+            team = t;
             id = i;
             name = n;
         }
@@ -555,21 +541,20 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
         }
 
-        public Team getTeam() { return getTeamModel(); }
-        public Team getTeamModel() { return teamModel; }
+        public Team getTeam() { return team; }
 
         public String getProviderName() { return "AlternateName"; }
         public Class<AlternateName> getProviderClass() { return AlternateName.class; }
         public String getProviderId() { return getId(); }
 
-        protected Team teamModel;
+        protected Team team;
         protected String id;
         protected String name;
     }
 
     public class ColorImpl extends DefaultScoreBoardEventProvider implements Color {
         public ColorImpl(Team t, String i, String c) {
-            teamModel = t;
+            team = t;
             id = i;
             color = c;
         }
@@ -583,14 +568,13 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
         }
 
-        public Team getTeam() { return getTeamModel(); }
-        public Team getTeamModel() { return teamModel; }
+        public Team getTeam() { return team; }
 
         public String getProviderName() { return "Color"; }
         public Class<Color> getProviderClass() { return Color.class; }
         public String getProviderId() { return getId(); }
 
-        protected Team teamModel;
+        protected Team team;
         protected String id;
         protected String color;
     }

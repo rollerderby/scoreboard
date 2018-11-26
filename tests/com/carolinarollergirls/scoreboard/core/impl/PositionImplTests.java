@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
@@ -15,9 +15,9 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.implementation.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.implementation.SkaterImpl;
-import com.carolinarollergirls.scoreboard.core.implementation.TeamImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
+import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
 
 public class PositionImplTests {
     private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";
@@ -26,7 +26,7 @@ public class PositionImplTests {
 
     private ScoreBoard sbMock;
     private Rulesets rulesetsMock;
-    private Team teamModel;
+    private Team team;
     private Skater first;
     private Skater second;
     private Skater third;
@@ -55,31 +55,31 @@ public class PositionImplTests {
         .when(rulesetsMock.getBoolean(Team.RULE_REVIEWS_PER_PERIOD))
         .thenReturn(true);
 
-        teamModel = new TeamImpl(sbMock, "A");
+        team = new TeamImpl(sbMock, "A");
 
-        first = new SkaterImpl(teamModel, firstId, "First","123", "");
-        second = new SkaterImpl(teamModel, secondId, "Second","456", "");
-        third = new SkaterImpl(teamModel, thirdId, "Third","789","");
+        first = new SkaterImpl(team, firstId, "First","123", "");
+        second = new SkaterImpl(team, secondId, "Second","456", "");
+        third = new SkaterImpl(team, thirdId, "Third","789","");
 
-        teamModel.addSkater(first);
-        teamModel.addSkater(second);
-        teamModel.addSkater(third);
+        team.addSkater(first);
+        team.addSkater(second);
+        team.addSkater(third);
     }
 
     @Test
     public void key_values_populated() {
-        Position blocker = teamModel.getPosition(Position.ID_BLOCKER1);
+        Position blocker = team.getPosition(Position.ID_BLOCKER1);
 
         assertSame(blocker.getId(),Position.ID_BLOCKER1);
         assertSame(blocker.getProviderName(), "Position");
         assertSame(blocker.getProviderId(), Position.ID_BLOCKER1);
         assertSame(blocker.getProviderClass(), Position.class);
-        assertSame(blocker.getTeam(), teamModel);
+        assertSame(blocker.getTeam(), team);
     }
 
     @Test
     public void make_skater_jammer_via_position() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
         jammer.setSkater(firstId);
 
         assertSame(jammer.getSkater(), first);
@@ -89,7 +89,7 @@ public class PositionImplTests {
     @Test
     public void make_skater_jammer_via_skater() {
         first.setPosition(Position.ID_JAMMER);
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
 
         assertSame(jammer.getSkater(), first);
         assertSame(first.getPosition(), Position.ID_JAMMER);
@@ -97,7 +97,7 @@ public class PositionImplTests {
 
     @Test
     public void position_knows_skater_penalty() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
         jammer.setSkater(firstId);
         first.setPenaltyBox(true);
 
@@ -106,7 +106,7 @@ public class PositionImplTests {
 
     @Test
     public void skater_knows_position_penalty() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
         jammer.setSkater(firstId);
         jammer.setPenaltyBox(true);
 
@@ -115,7 +115,7 @@ public class PositionImplTests {
 
     @Test
     public void doesnt_set_penalty_with_no_skater() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
         jammer.setPenaltyBox(true);
 
         assertFalse(jammer.getPenaltyBox());
@@ -123,8 +123,8 @@ public class PositionImplTests {
 
     @Test
     public void sp_works() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
-        Position pivot = teamModel.getPosition(Position.ID_PIVOT);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
+        Position pivot = team.getPosition(Position.ID_PIVOT);
         jammer.setSkater(firstId);
         pivot.setSkater(firstId);
 
@@ -133,8 +133,8 @@ public class PositionImplTests {
     }
 
     @Test
-    public void clears_with_empty_model_id() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+    public void clears_with_empty_skater_id() {
+        Position jammer = team.getPosition(Position.ID_JAMMER);
         jammer.setSkater(firstId);
         jammer.setSkater("");
 
@@ -142,8 +142,8 @@ public class PositionImplTests {
     }
 
     @Test
-    public void clears_with_null_model_id() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+    public void clears_with_null_skater_id() {
+        Position jammer = team.getPosition(Position.ID_JAMMER);
         jammer.setSkater(firstId);
         jammer.setSkater(null);
 
@@ -153,14 +153,14 @@ public class PositionImplTests {
 
     @Test(expected = SkaterNotFoundException.class)
     public void throws_with_bogus_skater_id() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
         jammer.setSkater("bogus");
     }
 
     @Test
     public void position_knows_penalty_after_sp() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
-        Position pivot = teamModel.getPosition(Position.ID_PIVOT);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
+        Position pivot = team.getPosition(Position.ID_PIVOT);
         pivot.setSkater(firstId);
         pivot.setPenaltyBox(true);
         first.setPosition(Position.ID_JAMMER);
@@ -172,8 +172,8 @@ public class PositionImplTests {
 
     @Test
     public void position_knows_penalty_after_sp_position() {
-        Position jammer = teamModel.getPosition(Position.ID_JAMMER);
-        Position pivot = teamModel.getPosition(Position.ID_PIVOT);
+        Position jammer = team.getPosition(Position.ID_JAMMER);
+        Position pivot = team.getPosition(Position.ID_PIVOT);
         pivot.setSkater(firstId);
         pivot.setPenaltyBox(true);
         jammer.setSkater(firstId);

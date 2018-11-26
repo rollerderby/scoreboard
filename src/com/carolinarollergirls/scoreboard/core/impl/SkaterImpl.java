@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -23,8 +23,8 @@ import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 
 public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater {
-    public SkaterImpl(Team tm, String i, String n, String num, String flags) {
-        teamModel = tm;
+    public SkaterImpl(Team t, String i, String n, String num, String flags) {
+        team = t;
         setId(i);
         setName(n);
         setNumber(num);
@@ -35,7 +35,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     public Class<Skater> getProviderClass() { return Skater.class; }
     public String getProviderId() { return getId(); }
 
-    public Team getTeam() { return teamModel; }
+    public Team getTeam() { return team; }
 
     public String getId() { return id; }
     public void setId(String i) {
@@ -77,10 +77,10 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 return;
             }
 
-            try { teamModel.getPosition(position)._clear(); }
+            try { team.getPosition(position)._clear(); }
             catch ( PositionNotFoundException pnfE ) { /* I was on the Bench. */ }
 
-            try { teamModel.getPosition(p)._setSkater(this.getId()); }
+            try { team.getPosition(p)._setSkater(this.getId()); }
             catch ( PositionNotFoundException pnfE ) { /* I'm being put on the Bench. */ }
 
             String last = position;
@@ -103,13 +103,13 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
             penaltyBox = box;
             scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
 
-            if (box && position.equals(Position.ID_JAMMER) && teamModel.getLeadJammer().equals(Team.LEAD_LEAD)) {
-                teamModel.setLeadJammer(Team.LEAD_LOST_LEAD);
+            if (box && position.equals(Position.ID_JAMMER) && team.getLeadJammer().equals(Team.LEAD_LEAD)) {
+                team.setLeadJammer(Team.LEAD_LOST_LEAD);
             }
 
             if (position.equals(Position.ID_JAMMER) || position.equals(Position.ID_PIVOT)) {
-                // Update Position Model if Jammer or Pivot
-                try { teamModel.getPosition(position)._setPenaltyBox(box); }
+                // Update Position if Jammer or Pivot
+                try { team.getPosition(position)._setPenaltyBox(box); }
                 catch ( PositionNotFoundException pnfE ) { }
             }
 
@@ -206,14 +206,14 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
             if (!penaltyBox) {
                 setPosition(Position.ID_BENCH);
-            } else if (position.equals(Position.ID_PIVOT) && teamModel.isStarPass()) {
+            } else if (position.equals(Position.ID_PIVOT) && team.isStarPass()) {
                 setPosition(Position.ID_JAMMER);
             }
         }
     }
     public SkaterSnapshot snapshot() {
         synchronized (coreLock) {
-            return new DefaultSkaterSnapshotModel(this);
+            return new SkaterSnapshotImpl(this);
         }
     }
     public void restoreSnapshot(SkaterSnapshot s) {
@@ -224,7 +224,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         }
     }
 
-    protected Team teamModel;
+    protected Team team;
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 
     protected String id;
@@ -260,8 +260,8 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         protected String code;
     }
 
-    public static class DefaultSkaterSnapshotModel implements SkaterSnapshot {
-        private DefaultSkaterSnapshotModel(Skater skater) {
+    public static class SkaterSnapshotImpl implements SkaterSnapshot {
+        private SkaterSnapshotImpl(Skater skater) {
             id = skater.getId();
             position = skater.getPosition();
             box = skater.isPenaltyBox();

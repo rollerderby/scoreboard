@@ -34,8 +34,8 @@ import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 
 
 public class JettyServletScoreBoardController {
-    public JettyServletScoreBoardController(ScoreBoard model, JSONStateManager jsm) {
-        scoreBoard = model;
+    public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm) {
+        scoreBoard = sb;
         this.jsm = jsm;
 
         init();

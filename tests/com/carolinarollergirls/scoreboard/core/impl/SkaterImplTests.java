@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,7 +12,7 @@ import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.implementation.SkaterImpl;
+import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
 
 public class SkaterImplTests {
 

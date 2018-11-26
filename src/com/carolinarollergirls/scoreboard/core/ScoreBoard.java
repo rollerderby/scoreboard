@@ -14,7 +14,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public interface ScoreBoard extends ScoreBoardEventProvider {
-    /** Reset the entire ScoreBoard. */
+    /** Reset the ScoreBoard. */
     public void reset();
 
     /**

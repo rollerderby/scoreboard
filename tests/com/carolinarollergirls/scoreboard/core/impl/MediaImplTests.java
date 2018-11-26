@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -17,7 +17,7 @@ import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
 
 import com.carolinarollergirls.scoreboard.core.Media;
-import com.carolinarollergirls.scoreboard.core.implementation.MediaImpl;
+import com.carolinarollergirls.scoreboard.core.impl.MediaImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 

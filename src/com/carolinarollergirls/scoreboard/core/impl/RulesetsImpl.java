@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -184,9 +184,6 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     }
 
     public Ruleset getRuleset(String id) {
-        return getRulesetModel(id);
-    }
-    public Ruleset getRulesetModel(String id) {
         synchronized (coreLock) {
             Ruleset r = rulesets.get(id);
             if (r == null) {

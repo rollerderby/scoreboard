@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.*;
 
@@ -16,8 +16,8 @@ import org.mockito.stubbing.Answer;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.implementation.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.implementation.TeamImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -25,7 +25,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class TeamImplTests {
 
-    private ScoreBoard sbModelMock;
+    private ScoreBoard sbMock;
     private Rulesets rulesetsMock;
     private Team otherTeamMock;
 
@@ -53,17 +53,17 @@ public class TeamImplTests {
     public void setUp() throws Exception {
         collectedEvents = new LinkedList<ScoreBoardEvent>();
 
-        sbModelMock = Mockito.mock(ScoreBoardImpl.class);
+        sbMock = Mockito.mock(ScoreBoardImpl.class);
 
         rulesetsMock = Mockito.mock(Rulesets.class);
         otherTeamMock = Mockito.mock(TeamImpl.class);
 
         Mockito
-        .when(sbModelMock.getRulesets())
+        .when(sbMock.getRulesets())
         .thenReturn(rulesetsMock);
 
         Mockito
-        .when(sbModelMock.getTeam(Mockito.anyString()))
+        .when(sbMock.getTeam(Mockito.anyString()))
         .thenReturn(otherTeamMock);
 
         Mockito
@@ -97,7 +97,7 @@ public class TeamImplTests {
             }
         });
 
-        team = new TeamImpl(sbModelMock, ID);
+        team = new TeamImpl(sbMock, ID);
         ScoreBoardClock.getInstance().stop();
     }
 
@@ -185,20 +185,20 @@ public class TeamImplTests {
 
         team.timeout();
         assertEquals(0, team.getTimeouts());
-        Mockito.verify(sbModelMock).setTimeoutType("TEST", false);
+        Mockito.verify(sbMock).setTimeoutType("TEST", false);
 
         team.timeout();
-        Mockito.verify(sbModelMock, Mockito.times(1)).setTimeoutType("TEST", false);
+        Mockito.verify(sbMock, Mockito.times(1)).setTimeoutType("TEST", false);
     }
 
     @Test
     public void testOfficialReview() {
         team.officialReview();
         assertEquals(0, team.getOfficialReviews());
-        Mockito.verify(sbModelMock).setTimeoutType("TEST", true);
+        Mockito.verify(sbMock).setTimeoutType("TEST", true);
 
         team.officialReview();
-        Mockito.verify(sbModelMock, Mockito.times(1)).setTimeoutType("TEST", true);
+        Mockito.verify(sbMock, Mockito.times(1)).setTimeoutType("TEST", true);
     }
 
     @Test

@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -131,7 +131,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
                 // URL paths always use forward slashes.
                 String p = "/" + format + "/" + type + "/" + id;
                 // Name is the filename without the extension.
-                MediaFile mf = new DefaultMediaFileModel(format, type, id, id.replaceFirst("\\.[^.]*$", ""), p);
+                MediaFile mf = new MediaFileImpl(format, type, id, id.replaceFirst("\\.[^.]*$", ""), p);
                 mf.addScoreBoardListener(this);
                 map.put(id, mf);
                 scoreBoardChange(new ScoreBoardEvent(mf, MediaFile.EVENT_FILE, mf, null));
@@ -163,10 +163,6 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
     }
 
     public Map<String, MediaFile> getMediaFiles(String format, String type) {
-        return Collections.unmodifiableMap(new HashMap<String, MediaFile>(getMediaFileModels(format, type)));
-    }
-
-    public Map<String, MediaFile> getMediaFileModels(String format, String type) {
         Map<String, Map<String, MediaFile>> fm = files.get(format);
         if (fm == null) {
             return null;
@@ -199,8 +195,8 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 
     private static Object coreLock = ScoreBoardImpl.getCoreLock();
 
-    public class DefaultMediaFileModel extends DefaultScoreBoardEventProvider implements MediaFile {
-        DefaultMediaFileModel(String format, String type, String id, String name, String src) {
+    public class MediaFileImpl extends DefaultScoreBoardEventProvider implements MediaFile {
+        MediaFileImpl(String format, String type, String id, String name, String src) {
             this.format = format;
             this.type = type;
             this.id = id;

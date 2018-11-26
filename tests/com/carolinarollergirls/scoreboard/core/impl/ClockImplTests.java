@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -18,8 +18,8 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
-import com.carolinarollergirls.scoreboard.core.implementation.ClockImpl;
-import com.carolinarollergirls.scoreboard.core.implementation.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ClockImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -79,7 +79,7 @@ public class ClockImplTests {
         .when(sbMock.getRulesets())
         .thenReturn(rulesetsMock);
 
-        // makes it easier to test both sync and non-sync paths through clock model
+        // makes it easier to test both sync and non-sync paths through clock
         Mockito
         .when(settingsMock.get(Clock.SETTING_SYNC))
         .thenAnswer(new Answer<String>() {

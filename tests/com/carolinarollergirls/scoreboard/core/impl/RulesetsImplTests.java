@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
 
@@ -8,8 +8,8 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
-import com.carolinarollergirls.scoreboard.core.implementation.RulesetsImpl;
-import com.carolinarollergirls.scoreboard.core.implementation.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 
 import java.util.HashMap;
 import java.util.Map;

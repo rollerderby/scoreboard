@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.implementation;
+package com.carolinarollergirls.scoreboard.core.impl;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -16,8 +16,8 @@ import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 
 public class PositionImpl extends DefaultScoreBoardEventProvider implements Position {
-    public PositionImpl(Team tm, String i) {
-        teamModel = tm;
+    public PositionImpl(Team t, String i) {
+        team = t;
         id = i;
         reset();
     }
@@ -26,7 +26,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     public Class<Position> getProviderClass() { return Position.class; }
     public String getProviderId() { return getId(); }
 
-    public Team getTeam() { return teamModel; }
+    public Team getTeam() { return team; }
 
     public String getId() { return id; }
 
@@ -38,7 +38,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
         }
     }
 
-    public Skater getSkater() { return skaterModel; }
+    public Skater getSkater() { return skater; }
     public void setSkater(String skaterId) throws SkaterNotFoundException {
         synchronized (coreLock) {
             if (skaterId == null || skaterId.equals("")) {
@@ -50,26 +50,26 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     }
     public void _setSkater(String skaterId) throws SkaterNotFoundException {
         synchronized (coreLock) {
-            Skater newSkaterModel = getTeam().getSkater(skaterId);
+            Skater newSkater = getTeam().getSkater(skaterId);
             clear();
-            Skater last = skaterModel;
-            skaterModel = newSkaterModel;
-            _setPenaltyBox(newSkaterModel.isPenaltyBox());
-            scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
+            Skater last = skater;
+            skater = newSkater;
+            _setPenaltyBox(newSkater.isPenaltyBox());
+            scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skater, last));
         }
     }
     public void clear() {
         synchronized (coreLock) {
-            try { skaterModel.setPosition(ID_BENCH); }
+            try { skater.setPosition(ID_BENCH); }
             catch ( NullPointerException npE ) { /* Was no skater in this position */ }
         }
     }
     public void _clear() {
         synchronized (coreLock) {
-            if (null != skaterModel) {
-                Skater last = skaterModel;
-                skaterModel = null;
-                scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skaterModel, last));
+            if (null != skater) {
+                Skater last = skater;
+                skater = null;
+                scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skater, last));
             }
             _setPenaltyBox(false);
         }
@@ -79,7 +79,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     }
     public void setPenaltyBox(boolean box) {
         synchronized (coreLock) {
-            try { skaterModel.setPenaltyBox(box); }
+            try { skater.setPenaltyBox(box); }
             catch ( NullPointerException npE ) { /* Was no skater in this position */ }
         }
     }
@@ -93,13 +93,13 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
         }
     }
 
-    protected Team teamModel;
+    protected Team team;
 
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 
     protected String id;
 
-    protected Skater skaterModel = null;
+    protected Skater skater = null;
     protected boolean penaltyBox = false;
     protected boolean settingSkaterPosition = false;
 }
