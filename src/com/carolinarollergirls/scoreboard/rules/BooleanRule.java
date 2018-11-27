@@ -1,8 +1,8 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-public class BooleanRule extends Rule {
+public class BooleanRule extends AbstractRule {
     public BooleanRule(String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
-        super("Boolean", fullname, description, new Boolean(defaultValue));
+        super(Type.BOOLEAN, fullname, description, new Boolean(defaultValue));
 
         this.trueValue = trueValue;
         this.falseValue = falseValue;

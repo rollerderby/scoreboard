@@ -28,6 +28,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
+import com.carolinarollergirls.scoreboard.rules.AbstractRule;
+import com.carolinarollergirls.scoreboard.rules.AbstractRule.Type;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.BooleanRule;
 
@@ -282,8 +284,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
     }
 
     private void processCurrentRuleset(String path, Rulesets r) {
-        for (Map.Entry<String,String> e : r.getAll().entrySet()) {
-            updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULES + "(" + e.getKey() + ")", e.getValue()));
+        for (Map.Entry<Rule,String> e : r.getAll().entrySet()) {
+            updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULES + "(" + e.getKey().toString() + ")", e.getValue()));
         }
         updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULESET + ".Id", r.getId()));
         updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULESET + ".Name", r.getName()));
@@ -297,7 +299,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             return;
         }
 
-        for (Map.Entry<String,String> e : r.getAll().entrySet()) {
+        for (Map.Entry<Rule,String> e : r.getAll().entrySet()) {
             updates.add(new WSUpdate(path + ".Rule(" + e.getKey() + ")", e.getValue()));
         }
         updates.add(new WSUpdate(path + ".Id", r.getId()));
@@ -367,7 +369,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
     private void processPenaltyCodes(Rulesets r) {
         updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
-        String file = r.get(PenaltyCodesManager.RULE_PENALTIES_FILE);
+        String file = r.get(Rule.PENALTIES_FILE);
         if(file != null && !file.isEmpty()) {
             PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
             for(PenaltyCode p : penalties.getPenalties()) {
@@ -386,18 +388,19 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview()));
 
         // Process Rules
-        int rule = 0;
-        for (Rule r : sb.getRulesets().getRules().values()) {
+        int index = 0;
+        for (Rule rule : Rule.values()) {
+            AbstractRule r = rule.getRule();
             String prefix = "ScoreBoard." + Rulesets.EVENT_RULE_DEFINITIONS + "(" + r.getFullName() + ")";
             updates.add(new WSUpdate(prefix + ".Name", r.getFullName()));
             updates.add(new WSUpdate(prefix + ".Description", r.getDescription()));
-            updates.add(new WSUpdate(prefix + ".Type", r.getType()));
-            updates.add(new WSUpdate(prefix + ".Index", rule)); // Used to preserve order of rules.
-            if (r.getType() == "Boolean") {
+            updates.add(new WSUpdate(prefix + ".Type", r.getType().toString()));
+            updates.add(new WSUpdate(prefix + ".Index", index)); // Used to preserve order of rules.
+            if (r.getType() == Type.BOOLEAN) {
                 updates.add(new WSUpdate(prefix + ".TrueValue", ((BooleanRule)r).getTrueValue()));
                 updates.add(new WSUpdate(prefix + ".FalseValue", ((BooleanRule)r).getFalseValue()));
             }
-            rule++;
+            index++;
         }
         processCurrentRuleset("ScoreBoard", sb.getRulesets());
         for (Rulesets.Ruleset r : sb.getRulesets().getRulesets().values()) {

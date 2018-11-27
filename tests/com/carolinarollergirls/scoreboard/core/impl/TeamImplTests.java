@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class TeamImplTests {
@@ -67,7 +68,7 @@ public class TeamImplTests {
         .thenReturn(otherTeamMock);
 
         Mockito
-        .when(rulesetsMock.getInt(Team.RULE_NUMBER_TIMEOUTS))
+        .when(rulesetsMock.getInt(Rule.NUMBER_TIMEOUTS))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return maxNumberTimeouts;
@@ -75,14 +76,14 @@ public class TeamImplTests {
         });
 
         Mockito
-        .when(rulesetsMock.getBoolean(Team.RULE_TIMEOUTS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Rule.TIMEOUTS_PER_PERIOD))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return timeoutsPerPeriod;
             }
         });
         Mockito
-        .when(rulesetsMock.getInt(Team.RULE_NUMBER_REVIEWS))
+        .when(rulesetsMock.getInt(Rule.NUMBER_REVIEWS))
         .thenAnswer(new Answer<Integer>() {
             public Integer answer(InvocationOnMock invocation) throws Throwable {
                 return maxNumberReviews;
@@ -90,7 +91,7 @@ public class TeamImplTests {
         });
 
         Mockito
-        .when(rulesetsMock.getBoolean(Team.RULE_REVIEWS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Rule.REVIEWS_PER_PERIOD))
         .thenAnswer(new Answer<Boolean>() {
             public Boolean answer(InvocationOnMock invocation) throws Throwable {
                 return reviewsPerPeriod;

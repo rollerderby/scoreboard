@@ -30,6 +30,4 @@ public class PenaltyCodesManager {
             throw new RuntimeException("Failed writing Penalty Definition as JSON", e);
         }
     }
-
-    public static final String RULE_PENALTIES_FILE = "Penalties.DefinitionFile";
 }

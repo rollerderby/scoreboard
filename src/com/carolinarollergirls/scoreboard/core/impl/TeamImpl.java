@@ -25,6 +25,7 @@ import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
@@ -316,8 +317,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             if (0 > t) {
                 t = 0;
             }
-            if (scoreBoard.getRulesets().getInt(RULE_NUMBER_TIMEOUTS) < t) {
-                t = scoreBoard.getRulesets().getInt(RULE_NUMBER_TIMEOUTS);
+            if (scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS) < t) {
+                t = scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS);
             }
             Integer last = new Integer(timeouts);
             timeouts = t;
@@ -335,8 +336,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             if (0 > r) {
                 r = 0;
             }
-            if (scoreBoard.getRulesets().getInt(RULE_NUMBER_REVIEWS) < r) {
-                r = scoreBoard.getRulesets().getInt(RULE_NUMBER_REVIEWS);
+            if (scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS) < r) {
+                r = scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
             }
             Integer last = new Integer(officialReviews);
             officialReviews = r;
@@ -352,11 +353,11 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             setInTimeout(false);
             setInOfficialReview(false);
-            if (gameStart || scoreBoard.getRulesets().getBoolean(RULE_TIMEOUTS_PER_PERIOD)) {
-                setTimeouts(scoreBoard.getRulesets().getInt(RULE_NUMBER_TIMEOUTS));
+            if (gameStart || scoreBoard.getRulesets().getBoolean(Rule.TIMEOUTS_PER_PERIOD)) {
+                setTimeouts(scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS));
             }
-            if (gameStart || scoreBoard.getRulesets().getBoolean(RULE_REVIEWS_PER_PERIOD)) {
-                setOfficialReviews(scoreBoard.getRulesets().getInt(RULE_NUMBER_REVIEWS));
+            if (gameStart || scoreBoard.getRulesets().getBoolean(Rule.REVIEWS_PER_PERIOD)) {
+                setOfficialReviews(scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS));
                 setRetainedOfficialReview(false);
             }
         }

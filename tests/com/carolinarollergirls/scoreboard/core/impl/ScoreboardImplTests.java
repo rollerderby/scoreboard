@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -116,7 +117,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testSetInOvertime() {
-        (sb.getRulesets()).set("Clock." + Clock.ID_LINEUP + ".Time", "30000");
+        (sb.getRulesets()).set(Rule.LINEUP_DURATION, "30000");
         lc.setMaximumTime(999999999);
 
         assertFalse(lc.isCountDirectionDown());
@@ -214,7 +215,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testStartOvertime_default() {
-        (sb.getRulesets()).set("Clock." + Clock.ID_LINEUP + ".OvertimeTime", "60000");
+        (sb.getRulesets()).set(Rule.OVERTIME_LINEUP_DURATION, "60000");
 
         assertFalse(pc.isRunning());
         pc.setTime(0);
@@ -543,7 +544,7 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertTrue(ic.isRunning());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(ScoreBoard.RULE_INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getMaximumTime());
         assertTrue(ic.isTimeAtStart());
         assertFalse(sb.isInPeriod());
@@ -982,7 +983,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testPeriodClockEnd_duringLineup() {
-        sb.getRulesets().set(ScoreBoard.RULE_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
+        sb.getRulesets().set(Rule.INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
         String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
 
         pc.start();
@@ -1006,14 +1007,14 @@ public class ScoreboardImplTests {
         assertTrue(ic.isRunning());
         assertTrue(ic.isTimeAtStart());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(ScoreBoard.RULE_INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getTimeRemaining());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
     }
 
     @Test
     public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
-        sb.getRulesets().set(ScoreBoard.RULE_PERIOD_END_BETWEEN_JAMS, "false");
+        sb.getRulesets().set(Rule.PERIOD_END_BETWEEN_JAMS, "false");
         String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
         sb.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
 
@@ -1093,7 +1094,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testJamClockEnd_autoEndDisabled() {
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_END_JAM, "false");
+        sb.getRulesets().set(Rule.AUTO_END_JAM, "false");
         String prevStartLabel = sb.getSettings().get(ScoreBoard.BUTTON_START);
         String prevStopLabel = sb.getSettings().get(ScoreBoard.BUTTON_STOP);
         String prevTimeoutLabel = sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
@@ -1152,7 +1153,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testIntermissionClockEnd_notLastPeriodContinueCountingJams() {
-        sb.getRulesets().set(ScoreBoard.RULE_JAM_NUMBER_PER_PERIOD, "false");
+        sb.getRulesets().set(Rule.JAM_NUMBER_PER_PERIOD, "false");
 
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
@@ -1244,11 +1245,11 @@ public class ScoreboardImplTests {
 
     @Test
     public void testTimeoutsThatDontAlwaysStopPc() {
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_TO, "false");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_OTO, "false");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_TTO, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_OR, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_AFTER_TO_DURATION, "120000");
+        sb.getRulesets().set(Rule.STOP_PC_ON_TO, "false");
+        sb.getRulesets().set(Rule.STOP_PC_ON_OTO, "false");
+        sb.getRulesets().set(Rule.STOP_PC_ON_TTO, "true");
+        sb.getRulesets().set(Rule.STOP_PC_ON_OR, "true");
+        sb.getRulesets().set(Rule.STOP_PC_AFTER_TO_DURATION, "120000");
 
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(1200000);
@@ -1292,8 +1293,8 @@ public class ScoreboardImplTests {
 
     @Test
     public void testAutoStartJam() {
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START_JAM, "true");
+        sb.getRulesets().set(Rule.AUTO_START, "true");
+        sb.getRulesets().set(Rule.AUTO_START_JAM, "true");
 
         pc.start();
         assertFalse(jc.isRunning());
@@ -1319,11 +1320,11 @@ public class ScoreboardImplTests {
 
     @Test
     public void testAutoStartAndEndTimeout() {
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START_JAM, "false");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START_BUFFER, "0");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_END_TTO, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_TTO_DURATION, "25000");
+        sb.getRulesets().set(Rule.AUTO_START, "true");
+        sb.getRulesets().set(Rule.AUTO_START_JAM, "false");
+        sb.getRulesets().set(Rule.AUTO_START_BUFFER, "0");
+        sb.getRulesets().set(Rule.AUTO_END_TTO, "true");
+        sb.getRulesets().set(Rule.TTO_DURATION, "25000");
 
         pc.start();
         assertFalse(jc.isRunning());

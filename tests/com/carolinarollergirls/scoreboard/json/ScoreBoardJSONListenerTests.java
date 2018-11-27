@@ -10,7 +10,6 @@ import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
@@ -18,10 +17,10 @@ import org.junit.rules.TemporaryFolder;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Position;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ScoreBoardJSONListenerTests {
@@ -29,7 +28,7 @@ public class ScoreBoardJSONListenerTests {
     private ScoreBoardImpl sb;
     private JSONStateManager jsm;
 
-    @Rule
+    @org.junit.Rule
     public TemporaryFolder dir = new TemporaryFolder();
     private File oldDir;
 
@@ -320,8 +319,8 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(rootId, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).ParentId"));
         assertEquals("child", state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Name"));
         assertEquals(null, state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Period.Number)"));
-        Map<String,String> s = new HashMap<String,String>();
-        s.put(ScoreBoard.RULE_NUMBER_PERIODS, "3");
+        Map<Rule,String> s = new HashMap<Rule,String>();
+        s.put(Rule.NUMBER_PERIODS, "3");
         sb.getRulesets().getRuleset(cid).setAll(s);
         advance(0);
         assertEquals("3", state.get("ScoreBoard.KnownRulesets(11111111-1111-1111-1111-111111111111).Rule(Period.Number)"));

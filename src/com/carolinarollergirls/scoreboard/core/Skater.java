@@ -53,8 +53,6 @@ public interface Skater extends ScoreBoardEventProvider {
         public int getPeriod();
         public int getJam();
         public String getCode();
-
-        public static final String RULE_FO_LIMIT = "Penalties.NumberToFoulout";
     }
 
     public static interface SkaterSnapshot	{

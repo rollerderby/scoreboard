@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
 import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class PositionImplTests {
     private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";
@@ -42,17 +43,17 @@ public class PositionImplTests {
         .thenReturn(rulesetsMock);
 
         Mockito
-        .when(rulesetsMock.getInt(Team.RULE_NUMBER_TIMEOUTS))
+        .when(rulesetsMock.getInt(Rule.NUMBER_TIMEOUTS))
         .thenReturn(3);
         Mockito
-        .when(rulesetsMock.getBoolean(Team.RULE_TIMEOUTS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Rule.TIMEOUTS_PER_PERIOD))
         .thenReturn(false);
         Mockito
-        .when(rulesetsMock.getInt(Team.RULE_NUMBER_REVIEWS))
+        .when(rulesetsMock.getInt(Rule.NUMBER_REVIEWS))
         .thenReturn(1);
 
         Mockito
-        .when(rulesetsMock.getBoolean(Team.RULE_REVIEWS_PER_PERIOD))
+        .when(rulesetsMock.getBoolean(Rule.REVIEWS_PER_PERIOD))
         .thenReturn(true);
 
         team = new TeamImpl(sbMock, "A");

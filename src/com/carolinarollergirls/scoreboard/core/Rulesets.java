@@ -19,20 +19,20 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public void setCurrentRuleset(String id);
 
     // Get information from current ruleset.
-    public Map<String, String> getAll();
-    public String get(String k);
-    public boolean getBoolean(String k);
-    public int getInt(String k);
-    public long getLong(String k);
-    public void set(String k, String v);
+    public Map<Rule, String> getAll();
+    public String get(Rule r);
+    public boolean getBoolean(Rule r);
+    public int getInt(Rule r);
+    public long getLong(Rule r);
+    public void set(Rule r, String v);
 
     // The last loaded ruleset.
     public String getId();
     public void setId(String id);
     public String getName();
     public void setName(String n);
-
-    public Map<String, Rule> getRules();
+    
+    public Rule getRule(String k);
 
     public Map<String, Ruleset> getRulesets();
     public Ruleset getRuleset(String id);
@@ -42,8 +42,8 @@ public interface Rulesets extends ScoreBoardEventProvider {
 
 
     public static interface Ruleset extends ScoreBoardEventProvider {
-        public Map<String, String> getAll();
-        public String get(String k);
+        public Map<Rule, String> getAll();
+        public String get(Rule k);
 
         public String getId();
         public String getName();
@@ -52,7 +52,7 @@ public interface Rulesets extends ScoreBoardEventProvider {
         public void setParentRulesetId(String id);
 
         // A missing entry means no override for that rule.
-        public void setAll(Map<String, String> s);
+        public void setAll(Map<Rule, String> s);
     }
 
     public ScoreBoardEventProvider getParent();
