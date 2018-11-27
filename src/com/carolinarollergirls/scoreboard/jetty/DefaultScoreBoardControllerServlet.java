@@ -15,13 +15,13 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 
 public abstract class DefaultScoreBoardControllerServlet extends HttpServlet implements ScoreBoardControllerServlet {
     public abstract String getPath();
 
-    public void setScoreBoardModel(ScoreBoardModel model) {
-        scoreBoardModel = model;
+    public void setScoreBoard(ScoreBoard sb) {
+        scoreBoard = sb;
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
@@ -42,5 +42,5 @@ public abstract class DefaultScoreBoardControllerServlet extends HttpServlet imp
         response.setStatus(code);
     }
 
-    protected ScoreBoardModel scoreBoardModel;
+    protected ScoreBoard scoreBoard;
 }

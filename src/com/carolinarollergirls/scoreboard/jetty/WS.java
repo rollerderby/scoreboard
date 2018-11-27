@@ -31,14 +31,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
 
 public class WS extends WebSocketServlet {
 
-    public WS(ScoreBoardModel s, JSONStateManager j) {
-        sbm = s;
+    public WS(ScoreBoard s, JSONStateManager j) {
+        sb = s;
         jsm = j;
     }
 
@@ -52,7 +52,7 @@ public class WS extends WebSocketServlet {
     }
 
 
-    private ScoreBoardModel sbm;
+    private ScoreBoard sb;
     private JSONStateManager jsm;
 
 
@@ -111,7 +111,7 @@ public class WS extends WebSocketServlet {
                     if (period == -1 || jam == -1) {
                         return;
                     }
-                    sbm.penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
+                    sb.penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
                 } else if (action.equals("Set")) {
                     String key = json.getString("key");
                     Object value = json.get("value");
@@ -125,17 +125,17 @@ public class WS extends WebSocketServlet {
                     ScoreBoardManager.printMessage("Setting " + key + " to " + v);
 
                     if (key.startsWith("ScoreBoard.Settings.")) {
-                        sbm.getSettingsModel().set(key.substring(20), v);
+                        sb.getSettings().set(key.substring(20), v);
                     }
                 } else if (action.equals("AddRuleset")) {
                     JSONObject data = json.getJSONObject("data");
                     String n = data.getString("name");
                     String p = data.getString("parent");
-                    sbm.getRulesetsModel().addRuleset(n, p);
+                    sb.getRulesets().addRuleset(n, p);
                 } else if (action.equals("RemoveRuleset")) {
                     JSONObject data = json.getJSONObject("data");
                     String i = data.getString("id");
-                    sbm.getRulesetsModel().removeRuleset(i);
+                    sb.getRulesets().removeRuleset(i);
                 } else if (action.equals("UpdateRuleset")) {
                     JSONObject data = json.getJSONObject("data");
                     String i = data.getString("id");
@@ -145,8 +145,8 @@ public class WS extends WebSocketServlet {
                     for (String k : rules.keySet()) {
                         s.put(k, rules.getString(k));
                     }
-                    sbm.getRulesetsModel().getRulesetModel(i).setAll(s);
-                    sbm.getRulesetsModel().getRulesetModel(i).setName(n);
+                    sb.getRulesets().getRuleset(i).setAll(s);
+                    sb.getRulesets().getRuleset(i).setName(n);
                 } else if (action.equals("Ping")) {
                     send(new JSONObject().put("Pong", ""));
                 } else {

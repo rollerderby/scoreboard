@@ -125,7 +125,7 @@ public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet {
         return node.getDocument();
     }
 
-    protected XmlScoreBoard getXmlScoreBoard() { return scoreBoardModel.getXmlScoreBoard(); }
+    protected XmlScoreBoard getXmlScoreBoard() { return scoreBoard.getXmlScoreBoard(); }
 
     protected XmlDocumentEditor editor = new XmlDocumentEditor();
     protected XMLOutputter prettyXmlOutputter = XmlDocumentEditor.getPrettyXmlOutputter();

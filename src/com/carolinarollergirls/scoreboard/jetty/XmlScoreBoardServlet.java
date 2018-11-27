@@ -19,14 +19,14 @@ import org.jdom.JDOMException;
 import org.jdom.xpath.XPath;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-import com.carolinarollergirls.scoreboard.view.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 
 public class XmlScoreBoardServlet extends AbstractXmlServlet {
     public String getPath() { return "/XmlScoreBoard"; }
 
     protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
         response.setContentType("text/xml");
-        prettyXmlOutputter.output(scoreBoardModel.getXmlScoreBoard().getDocument(), response.getOutputStream());
+        prettyXmlOutputter.output(scoreBoard.getXmlScoreBoard().getDocument(), response.getOutputStream());
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
@@ -70,7 +70,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet {
             ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+rawXmlOutputter.outputString(requestDocument));
         }
 
-        scoreBoardModel.getXmlScoreBoard().mergeDocument(requestDocument);
+        scoreBoard.getXmlScoreBoard().mergeDocument(requestDocument);
 
         response.setContentType("text/plain");
         response.setStatus(HttpServletResponse.SC_OK);

@@ -18,13 +18,12 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.carolinarollergirls.scoreboard.defaults.DefaultScoreBoardModel;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
-import com.carolinarollergirls.scoreboard.model.ScoreBoardModel;
-import com.carolinarollergirls.scoreboard.view.ScoreBoard;
 import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
 import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 
@@ -38,22 +37,22 @@ public class ScoreBoardManager {
         loadVersion();
         loadProperties();
 
-        scoreBoardModel = new DefaultScoreBoardModel();
+        scoreBoard = new ScoreBoardImpl();
 
         // JSON updates.
         JSONStateManager jsm = new JSONStateManager();
-        new ScoreBoardJSONListener(scoreBoardModel, jsm);
+        new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
-        registerScoreBoardController(new JettyServletScoreBoardController(scoreBoardModel, jsm));
+        registerScoreBoardController(new JettyServletScoreBoardController(scoreBoard, jsm));
 
         // Viewers.
-        registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoardModel));
-        registerScoreBoardViewer(new ScoreBoardMetricsCollector((ScoreBoard)scoreBoardModel).register());
+        registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoard));
+        registerScoreBoardViewer(new ScoreBoardMetricsCollector((ScoreBoard)scoreBoard).register());
         registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
 
         //FIXME - not the best way to load autosave doc.
-        scoreBoardModel.getXmlScoreBoard().load();
+        scoreBoard.getXmlScoreBoard().load();
     }
 
     public static void stop() {
@@ -170,7 +169,7 @@ public class ScoreBoardManager {
     private static Map<String,Object> controllers = new ConcurrentHashMap<String,Object>();
     private static Map<String,Object> viewers = new ConcurrentHashMap<String,Object>();
 
-    private static ScoreBoardModel scoreBoardModel;
+    private static ScoreBoard scoreBoard;
     private static Logger logger = null;
 
     private static String versionRelease = "";

@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard;
+package com.carolinarollergirls.scoreboard.core;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -8,8 +8,13 @@ package com.carolinarollergirls.scoreboard;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+public class PositionNotFoundException extends RuntimeException {
+    public PositionNotFoundException(String p) {
+        super("Position '"+p+"' not found");
+        position = p;
+    }
 
-public interface ScoreBoardController {
-    public void setScoreBoard(ScoreBoard scoreBoard);
+    public String getPosition() { return position; }
+
+    protected String position = "";
 }

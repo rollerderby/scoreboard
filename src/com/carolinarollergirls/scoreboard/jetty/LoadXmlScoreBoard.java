@@ -75,7 +75,7 @@ public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    protected XmlScoreBoard getXmlScoreBoard() { return scoreBoardModel.getXmlScoreBoard(); }
+    protected XmlScoreBoard getXmlScoreBoard() { return scoreBoard.getXmlScoreBoard(); }
 
     protected XmlDocumentEditor editor = new XmlDocumentEditor();
 }
