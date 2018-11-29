@@ -17,8 +17,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
-import com.carolinarollergirls.scoreboard.core.PositionNotFoundException;
+import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
@@ -29,14 +30,12 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
-        Iterator<String> posIds = Position.FLOOR_POSITIONS.iterator();
-        while (posIds.hasNext()) {
-            String id = posIds.next();
-            Position p = new PositionImpl(this, id);
-            positions.put(id, p);
+	for (FloorPosition fp : FloorPosition.values()) {
+            Position p = new PositionImpl(this, fp);
+            positions.put(fp, p);
             p.addScoreBoardListener(this);
         }
-
+	
         scoreBoard = sb;
         id = i;
 
@@ -55,8 +54,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             setLogo(DEFAULT_LOGO);
             setScore(DEFAULT_SCORE);
             setLastScore(DEFAULT_SCORE);
-            _setLeadJammer(DEFAULT_LEADJAMMER);
-            _setStarPass(DEFAULT_STARPASS);
+            setLeadJammer(DEFAULT_LEADJAMMER);
+            setStarPass(DEFAULT_STARPASS);
 
             resetTimeouts(true);
 
@@ -97,19 +96,24 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             requestBatchStart();
 
-            benchSkaters();
-            _setLeadJammer(Team.LEAD_NO_LEAD);
-            _setStarPass(false);
-
-            requestBatchEnd();
-        }
-    }
-
-    public void benchSkaters() {
-        synchronized (coreLock) {
-            for (Skater sM : skaters.values()) {
-                sM.bench();
+            Map<Skater, Role> boxedSkaters = new HashMap<Skater, Role>();
+            for (FloorPosition fp : FloorPosition.values()) {
+        	Skater s = getPosition(fp).getSkater();
+        	if (s != null) {
+        	    if (s.isPenaltyBox()) {
+        		boxedSkaters.put(s, s.getRole());
+        	    } else {
+        		field(s, (Position)null);
+        	    }
+        	}
+            }            
+            setLeadJammer(Team.LEAD_NO_LEAD);
+            setStarPass(false);
+            nextReplacedBlocker = FloorPosition.PIVOT;
+            for (Skater s : boxedSkaters.keySet()) {
+        	field(s, boxedSkaters.get(s));
             }
+            requestBatchEnd();
         }
     }
 
@@ -414,33 +418,143 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     }
     public void removeSkater(String id) throws SkaterNotFoundException {
         synchronized (coreLock) {
-            Skater sm = getSkater(id);
-            try { getPosition(sm.getPosition()).clear(); }
-            catch ( PositionNotFoundException pnfE ) { /* was on BENCH */ }
-            sm.removeScoreBoardListener(this);
+            Skater s = getSkater(id);
+            Position p = s.getPosition();
+            if (p != null) {
+        	p.setSkater(null);
+            }
+            s.removeScoreBoardListener(this);
             skaters.remove(id);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_SKATER, sm, null));
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_SKATER, s, null));
         }
     }
 
-    public Position getPosition(String id) throws PositionNotFoundException {
+    public Position getPosition(FloorPosition fp) {
         synchronized (coreLock) {
-            if (positions.containsKey(id)) {
-                return positions.get(id);
-            } else {
-                throw new PositionNotFoundException(id);
-            }
+            return positions.get(fp);
         }
     }
     public List<Position> getPositions() { return Collections.unmodifiableList(new ArrayList<Position>(positions.values())); }
 
+    public void field(Skater s, Position p) {
+	synchronized (coreLock) {
+	    requestBatchStart();
+	    if (s == null) {
+		if (p != null) {
+		    if (p.getSkater() != null) {
+			p.getSkater().setRoleToBase();
+			p.getSkater().setPosition(null);
+		    }
+		    p.setSkater(null);
+		}
+	    } else if (p == null) {
+		if (s.getPosition() != null) {
+		    s.getPosition().setSkater(null);
+		}
+		s.setRoleToBase();
+		s.setPosition(null);
+	    } else if (s.getPosition() != p) {
+		if (s.getPosition() != null) {
+		    s.getPosition().setSkater(null);
+		}
+		if (p.getSkater() != null) {
+		    p.getSkater().setPosition(null);
+		    p.getSkater().setRoleToBase();
+		}
+		s.setPosition(p);
+		s.setRole(p.getFloorPosition().getRole(this));
+		p.setSkater(s);
+	    }
+	    requestBatchEnd();
+	}
+    }
+    public void field(Skater s, Role r) {
+	synchronized (coreLock) {
+	    if (s == null) { return; }
+	    requestBatchStart();
+	    if (s.getPosition() == getPosition(FloorPosition.PIVOT)) {
+		setNoPivot(r != Role.PIVOT);
+		if (r == Role.BLOCKER || r == Role.PIVOT) {
+		    s.setRole(r);
+		}
+	    }
+	    if (s.getRole() != r) {
+		Position p = getAvailablePosition(r);
+		if (r == Role.PIVOT) {
+		    if (p.getSkater() != null && (hasNoPivot() || s.getRole() == Role.BLOCKER)) {
+			// If we are moving a blocker to pivot, move the previous pivot to blocker
+			// If we are replacing a blocker from the pivot spot,
+			//  see if we have a blocker spot available for them instead
+			Position p2;
+			if (s.getRole() == Role.BLOCKER) {
+			    p2 = s.getPosition();
+			} else {
+			    p2 = getAvailablePosition(Role.BLOCKER);
+			}
+			field(p.getSkater(), p2);
+		    }
+		    setNoPivot(false);
+		}
+		field (s, p);
+	    }
+	    requestBatchEnd();
+	}
+    }
+    private Position getAvailablePosition(Role r) {
+	switch (r) {
+	case JAMMER:
+	    if (isStarPass()) {
+		return getPosition(FloorPosition.PIVOT);
+	    } else {
+		return getPosition(FloorPosition.JAMMER);
+	    }
+	case PIVOT:
+	    if (isStarPass()) {
+		return null; 
+	    } else {
+		return getPosition(FloorPosition.PIVOT);
+	    }
+	case BLOCKER:
+	    Position[] ps = {getPosition(FloorPosition.BLOCKER1),
+		    getPosition(FloorPosition.BLOCKER2),
+		    getPosition(FloorPosition.BLOCKER3)};
+	    for (Position p : ps) {
+		if (p.getSkater() == null) { 
+		    return p; 
+		}
+	    }
+	    Position fourth = getPosition(isStarPass() ? FloorPosition.JAMMER : FloorPosition.PIVOT);
+	    if (fourth.getSkater() == null) {
+		return fourth;
+	    }
+	    int tries = 0;
+	    do {
+		if (++tries > 4) { return null; }
+		switch (nextReplacedBlocker) {
+		case BLOCKER1:
+		    nextReplacedBlocker = FloorPosition.BLOCKER2;
+		    break;
+		case BLOCKER2:
+		    nextReplacedBlocker = FloorPosition.BLOCKER3;
+		    break;
+		case BLOCKER3:
+		    nextReplacedBlocker = (hasNoPivot() && !isStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
+		    break;
+		case PIVOT:
+		    nextReplacedBlocker = FloorPosition.BLOCKER1;
+		    break;
+		default:
+		    break;
+		}
+	    } while(getPosition(nextReplacedBlocker).isPenaltyBox());
+	    return getPosition(nextReplacedBlocker);
+	default:
+	    return null;
+	}
+    }
+    
     public String getLeadJammer() { return leadJammer; }
     public void setLeadJammer(String lead) {
-        synchronized (coreLock) {
-            _setLeadJammer(lead);
-        }
-    }
-    private void _setLeadJammer(String lead) {
         if ("false".equals(lead.toLowerCase())) {
             lead = Team.LEAD_NO_LEAD;
         } else if ("true".equals(lead.toLowerCase())) {
@@ -464,23 +578,38 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     }
 
     public boolean isStarPass() { return starPass; }
-    public void setStarPass(boolean starPass) {
+    public void setStarPass(boolean sp) {
         synchronized (coreLock) {
-            _setStarPass(starPass);
-        }
-    }
-    private void _setStarPass(boolean starPass) {
-        synchronized (coreLock) {
+            if (sp == starPass) { return; }
             requestBatchStart();
 
-            Boolean last = new Boolean(this.starPass);
-            this.starPass = starPass;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(starPass), last));
+            Boolean last = new Boolean(starPass);
+            starPass = sp;
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(sp), last));
 
-            if (starPass && Team.LEAD_LEAD.equals(leadJammer)) {
-                _setLeadJammer(Team.LEAD_LOST_LEAD);
+            if (sp && Team.LEAD_LEAD.equals(leadJammer)) {
+                setLeadJammer(Team.LEAD_LOST_LEAD);
+            }
+            
+            if (getPosition(FloorPosition.JAMMER).getSkater() != null) {
+        	getPosition(FloorPosition.JAMMER).getSkater().setRole(FloorPosition.JAMMER.getRole(this));
+            }
+            if (getPosition(FloorPosition.PIVOT).getSkater() != null) {
+        	getPosition(FloorPosition.PIVOT).getSkater().setRole(FloorPosition.PIVOT.getRole(this));
             }
 
+            requestBatchEnd();
+        }
+    }
+
+    public boolean hasNoPivot() { return hasNoPivot; }
+    private void setNoPivot(boolean noPivot) {
+        synchronized (coreLock) {
+            if (noPivot == hasNoPivot) { return; }
+            requestBatchStart();
+            Boolean last = new Boolean(hasNoPivot);
+            hasNoPivot = noPivot;
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NO_PIVOT, new Boolean(noPivot), last));
             requestBatchEnd();
         }
     }
@@ -506,6 +635,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     protected int officialReviews = DEFAULT_OFFICIAL_REVIEWS;
     protected String leadJammer = DEFAULT_LEADJAMMER;
     protected boolean starPass = DEFAULT_STARPASS;
+    protected boolean hasNoPivot = true;
     protected boolean in_jam = false;
     protected boolean in_timeout = false;
     protected boolean in_official_review = false;
@@ -516,8 +646,10 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     protected Map<String,Color> colors = new ConcurrentHashMap<String,Color>();
 
     protected Map<String,Skater> skaters = new ConcurrentHashMap<String,Skater>();
-    protected Map<String,Position> positions = new ConcurrentHashMap<String,Position>();
+    protected Map<FloorPosition,Position> positions = new ConcurrentHashMap<FloorPosition,Position>();
 
+    FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
+    
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";
     public static final int DEFAULT_SCORE = 0;
@@ -589,8 +721,9 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             officialReviews = team.getOfficialReviews();
             leadJammer = team.getLeadJammer();
             starPass = team.isStarPass();
-            in_timeout = team.inTimeout();
-            in_official_review = team.inOfficialReview();
+            inTimeout = team.inTimeout();
+            inOfficialReview = team.inOfficialReview();
+            hasNoPivot = team.hasNoPivot();
             skaterSnapshots = new HashMap<String, Skater.SkaterSnapshot>();
             for (Skater skater : team.getSkaters()) {
                 skaterSnapshots.put(skater.getId(), skater.snapshot());
@@ -604,8 +737,9 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         public int getOfficialReviews() { return officialReviews; }
         public String getLeadJammer() { return leadJammer; }
         public boolean getStarPass() { return starPass; }
-        public boolean inTimeout() { return in_timeout; }
-        public boolean inOfficialReview() { return in_official_review; }
+        public boolean inTimeout() { return inTimeout; }
+        public boolean inOfficialReview() { return inOfficialReview; }
+        public boolean hasNoPivot() { return hasNoPivot; }
         public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots() { return skaterSnapshots; }
         public Skater.SkaterSnapshot getSkaterSnapshot(String skater) { return skaterSnapshots.get(skater); }
 
@@ -616,8 +750,9 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         protected int officialReviews;
         protected String leadJammer;
         protected boolean starPass;
-        protected boolean in_timeout;
-        protected boolean in_official_review;
+        protected boolean inTimeout;
+        protected boolean inOfficialReview;
+        protected boolean hasNoPivot;
         protected Map<String, Skater.SkaterSnapshot> skaterSnapshots;
     }
 

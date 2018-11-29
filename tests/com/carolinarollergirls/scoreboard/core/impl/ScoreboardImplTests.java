@@ -64,6 +64,11 @@ public class ScoreboardImplTests {
         lc = sb.getClock(Clock.ID_LINEUP);
         tc = sb.getClock(Clock.ID_TIMEOUT);
         ic = sb.getClock(Clock.ID_INTERMISSION);
+        assertTrue(pc.isTimeAtStart());
+        assertTrue(jc.isTimeAtStart());
+        assertTrue(lc.isTimeAtStart());
+        assertTrue(tc.isTimeAtStart());
+        assertTrue(ic.isTimeAtStart());
         collectedEvents = new LinkedList<ScoreBoardEvent>();
         sb.addScoreBoardListener(batchCounter);
         //Clock Sync can cause clocks to be changed when started, breaking tests.

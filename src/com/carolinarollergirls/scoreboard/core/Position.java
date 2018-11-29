@@ -8,9 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Position extends ScoreBoardEventProvider {
@@ -18,25 +15,11 @@ public interface Position extends ScoreBoardEventProvider {
 
     public Team getTeam();
     public String getId();
+    public FloorPosition getFloorPosition();
     public Skater getSkater();
-    public void setSkater(String skaterId) throws SkaterNotFoundException;
-    public boolean getPenaltyBox();
+    public void setSkater(Skater s);
+    public boolean isPenaltyBox();
     public void setPenaltyBox(boolean box);
-    public void clear();
-
-    /* These methods are for internal use by Skater to coordinate Position */
-    public void _setSkater(String skaterId) throws SkaterNotFoundException;
-    public void _setPenaltyBox(boolean box);
-    public void _clear();
-
-    public static final String ID_BENCH = "Bench";
-    public static final String ID_JAMMER = "Jammer";
-    public static final String ID_PIVOT = "Pivot";
-    public static final String ID_BLOCKER1 = "Blocker1";
-    public static final String ID_BLOCKER2 = "Blocker2";
-    public static final String ID_BLOCKER3 = "Blocker3";
-    public static final List<String> POSITIONS = Arrays.asList(new String[] { ID_BENCH, ID_JAMMER, ID_PIVOT, ID_BLOCKER1, ID_BLOCKER2, ID_BLOCKER3 });
-    public static final List<String> FLOOR_POSITIONS = Arrays.asList(new String[] { ID_JAMMER, ID_PIVOT, ID_BLOCKER1, ID_BLOCKER2, ID_BLOCKER3 });
 
     public static final String EVENT_SKATER = "Skater";
     public static final String EVENT_PENALTY_BOX = "PenaltyBox";

@@ -8,17 +8,18 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 
 public class PositionImpl extends DefaultScoreBoardEventProvider implements Position {
-    public PositionImpl(Team t, String i) {
+    public PositionImpl(Team t, FloorPosition fp) {
         team = t;
-        id = i;
+        floorPosition = fp;
+        id = fp.toString();
         reset();
     }
 
@@ -30,65 +31,37 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
 
     public String getId() { return id; }
 
-    public Position getPosition() { return this; }
+    public FloorPosition getFloorPosition() { return floorPosition; }
 
     public void reset() {
         synchronized (coreLock) {
-            clear();
+            setSkater(null);
         }
     }
 
     public Skater getSkater() { return skater; }
-    public void setSkater(String skaterId) throws SkaterNotFoundException {
+    public void setSkater(Skater s) {
         synchronized (coreLock) {
-            if (skaterId == null || skaterId.equals("")) {
-                clear();
-            } else {
-                getTeam().getSkater(skaterId).setPosition(getId());
-            }
-        }
-    }
-    public void _setSkater(String skaterId) throws SkaterNotFoundException {
-        synchronized (coreLock) {
-            Skater newSkater = getTeam().getSkater(skaterId);
-            clear();
+            if (s == skater) { return; }
             Skater last = skater;
-            skater = newSkater;
-            _setPenaltyBox(newSkater.isPenaltyBox());
-            scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skater, last));
+            skater = s;
+            setPenaltyBox(s == null ? false : s.isPenaltyBox());
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_SKATER, skater, last));
         }
     }
-    public void clear() {
-        synchronized (coreLock) {
-            try { skater.setPosition(ID_BENCH); }
-            catch ( NullPointerException npE ) { /* Was no skater in this position */ }
-        }
-    }
-    public void _clear() {
-        synchronized (coreLock) {
-            if (null != skater) {
-                Skater last = skater;
-                skater = null;
-                scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_SKATER, skater, last));
-            }
-            _setPenaltyBox(false);
-        }
-    }
-    public boolean getPenaltyBox() {
+
+    public boolean isPenaltyBox() {
         return penaltyBox;
     }
     public void setPenaltyBox(boolean box) {
         synchronized (coreLock) {
-            try { skater.setPenaltyBox(box); }
-            catch ( NullPointerException npE ) { /* Was no skater in this position */ }
-        }
-    }
-    public void _setPenaltyBox(boolean box) {
-        synchronized (coreLock) {
-            if (box != penaltyBox) {
+            if (box != penaltyBox && (skater != null || !box)) {
                 Boolean last = new Boolean(penaltyBox);
                 penaltyBox = box;
-                scoreBoardChange(new ScoreBoardEvent(getPosition(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+                if (skater != null) {
+                    skater.setPenaltyBox(box);
+                }
             }
         }
     }
@@ -98,6 +71,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 
     protected String id;
+    protected FloorPosition floorPosition;
 
     protected Skater skater = null;
     protected boolean penaltyBox = false;

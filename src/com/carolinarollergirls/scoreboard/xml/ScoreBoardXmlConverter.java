@@ -17,8 +17,10 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.Position;
+import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
@@ -172,6 +174,7 @@ public class ScoreBoardXmlConverter {
         editor.setElement(e, Team.EVENT_RETAINED_OFFICIAL_REVIEW, null, String.valueOf(t.retainedOfficialReview()));
         editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, t.getLeadJammer());
         editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
+        editor.setElement(e, Team.EVENT_NO_PIVOT, null, String.valueOf(t.hasNoPivot()));
 
         Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
         while (alternateNames.hasNext()) {
@@ -231,7 +234,9 @@ public class ScoreBoardXmlConverter {
         Element e = editor.setElement(t, "Skater", s.getId());
         editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
         editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
-        editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
+        editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition() == null ? "" : 
+            s.getPosition().getFloorPosition().toString());
+        editor.setElement(e, Skater.EVENT_ROLE, null, s.getRole().toString());
         editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
         editor.setElement(e, Skater.EVENT_FLAGS, null, s.getFlags());
 
@@ -682,7 +687,7 @@ public class ScoreBoardXmlConverter {
 
     public void processPosition(Team team, Element element) {
         String id = element.getAttributeValue("Id");
-        Position position = team.getPosition(id);
+        Position position = team.getPosition(FloorPosition.fromString(id));
 
         Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
@@ -694,9 +699,9 @@ public class ScoreBoardXmlConverter {
                 if (null == value) {
                     continue;
                 } else if (name.equals("Clear") && Boolean.parseBoolean(value)) {
-                    position.clear();
+                    team.field(null, position);
                 } else if (name.equals("Id")) {
-                    position.setSkater(value);
+                    team.field(team.getSkater(value), position);
                 } else if (name.equals(Position.EVENT_PENALTY_BOX)) {
                     position.setPenaltyBox(Boolean.parseBoolean(value));
                 }
@@ -745,7 +750,9 @@ public class ScoreBoardXmlConverter {
                 } else if (name.equals(Skater.EVENT_NUMBER)) {
                     skater.setNumber(value);
                 } else if (name.equals(Skater.EVENT_POSITION)) {
-                    skater.setPosition(value);
+                    team.field(skater, team.getPosition(FloorPosition.fromString(value)));
+                } else if (name.equals(Skater.EVENT_ROLE)) {
+                    team.field(skater, Role.fromString(value));
                 } else if (name.equals(Skater.EVENT_PENALTY_BOX)) {
                     skater.setPenaltyBox(Boolean.parseBoolean(value));
                 } else if (name.equals(Skater.EVENT_FLAGS)) {

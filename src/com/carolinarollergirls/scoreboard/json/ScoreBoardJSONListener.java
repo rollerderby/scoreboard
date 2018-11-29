@@ -195,7 +195,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
         updates.add(new WSUpdate(path + "." + Skater.EVENT_NAME, s.getName()));
         updates.add(new WSUpdate(path + "." + Skater.EVENT_NUMBER, s.getNumber()));
-        updates.add(new WSUpdate(path + "." + Skater.EVENT_POSITION, s.getPosition()));
+        updates.add(new WSUpdate(path + "." + Skater.EVENT_POSITION, s.getPosition() == null ? "" :
+            s.getPosition().getFloorPosition().toString()));
+        updates.add(new WSUpdate(path + "." + Skater.EVENT_ROLE, s.getRole().toString()));
         updates.add(new WSUpdate(path + "." + Skater.EVENT_FLAGS, s.getFlags()));
         updates.add(new WSUpdate(path + "." + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox()));
 
@@ -242,6 +244,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path + "." + Team.EVENT_RETAINED_OFFICIAL_REVIEW, t.retainedOfficialReview()));
         updates.add(new WSUpdate(path + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer()));
         updates.add(new WSUpdate(path + "." + Team.EVENT_STAR_PASS, t.isStarPass()));
+        updates.add(new WSUpdate(path + "." + Team.EVENT_NO_PIVOT, t.hasNoPivot()));
 
         // Skaters
         for (Skater s : t.getSkaters()) {
@@ -335,7 +338,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         }
 
         updates.add(new WSUpdate(path + "." + Position.EVENT_SKATER, p.getSkater() == null ? null : p.getSkater().getId()));
-        updates.add(new WSUpdate(path + "." + Position.EVENT_PENALTY_BOX, p.getPenaltyBox()));
+        updates.add(new WSUpdate(path + "." + Position.EVENT_PENALTY_BOX, p.isPenaltyBox()));
     }
 
     private void processJamStats(String path, Stats.JamStats js) {
@@ -351,6 +354,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path + ".JamScore", ts.getJamScore()));
         updates.add(new WSUpdate(path + ".LeadJammer", ts.getLeadJammer()));
         updates.add(new WSUpdate(path + ".StarPass", ts.getStarPass()));
+        updates.add(new WSUpdate(path + ".NoPivot", ts.getNoPivot()));
         updates.add(new WSUpdate(path + ".Timeouts", ts.getTimeouts()));
         updates.add(new WSUpdate(path + ".OfficialReviews", ts.getOfficialReviews()));
     }

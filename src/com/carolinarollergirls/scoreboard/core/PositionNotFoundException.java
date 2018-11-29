@@ -9,12 +9,12 @@ package com.carolinarollergirls.scoreboard.core;
  */
 
 public class PositionNotFoundException extends RuntimeException {
-    public PositionNotFoundException(String p) {
-        super("Position '"+p+"' not found");
+    public PositionNotFoundException(FloorPosition p) {
+        super("Position '"+p.toString()+"' not found");
         position = p;
     }
 
-    public String getPosition() { return position; }
+    public FloorPosition getPosition() { return position; }
 
-    protected String position = "";
+    protected FloorPosition position;
 }
