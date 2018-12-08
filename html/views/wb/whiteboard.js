@@ -19,8 +19,8 @@ function initialize() {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
 		WS.Register(['ScoreBoard.Team(' + t + ').Color'], function (k, v) {
-				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_bg)']);
-				$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_fg)']);
+				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']);
+				$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);
 			});
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
