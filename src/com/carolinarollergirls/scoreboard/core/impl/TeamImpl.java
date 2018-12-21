@@ -75,7 +75,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
     public String getId() { return id; }
 
-    public Team getTeam() { return this; }
+    public String toString() { return id; }
 
     public String getName() { return name; }
     public void setName(String n) {
@@ -220,7 +220,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public void timeout() {
         synchronized (coreLock) {
             if (getTimeouts() > 0) {
-                getScoreBoard().setTimeoutType(getId(), false);
+                getScoreBoard().setTimeoutType(this, false);
                 changeTimeouts(-1);
             }
         }
@@ -228,7 +228,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public void officialReview() {
         synchronized (coreLock) {
             if (getOfficialReviews() > 0) {
-                getScoreBoard().setTimeoutType(getId(), true);
+                getScoreBoard().setTimeoutType(this, true);
                 changeOfficialReviews(-1);
             }
         }

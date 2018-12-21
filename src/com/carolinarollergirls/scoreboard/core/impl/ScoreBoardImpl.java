@@ -30,6 +30,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 
 public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements ScoreBoard {
     public ScoreBoardImpl() {
@@ -80,7 +81,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
                 t.next().reset();
             }
 
-            setTimeoutOwner(DEFAULT_TIMEOUT_OWNER);
+            setTimeoutOwner(TimeoutOwners.NONE);
             setOfficialReview(false);
             setInPeriod(false);
             setInOvertime(false);
@@ -216,7 +217,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             finishReplace();
         }
     }
-    public void setTimeoutType(String owner, boolean review) {
+    public void setTimeoutType(TimeoutOwner owner, boolean review) {
         synchronized (coreLock) {
             Clock tc = getClock(Clock.ID_TIMEOUT);
             Clock pc = getClock(Clock.ID_PERIOD);
@@ -226,32 +227,34 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
                 timeout();
             }
             //if overridden TO type is Team TO or OR, credit it back
-            for (Team tm : getTeams()) {
-                if (tm.getId().equals(getTimeoutOwner())) {
-                    if (isOfficialReview()) {
-                        tm.changeOfficialReviews(1);
-                    } else {
-                        tm.changeTimeouts(1);
-                    }
-                }
+            if (getTimeoutOwner() instanceof Team) {
+        	Team t = (Team)getTimeoutOwner();
+        	if (isOfficialReview()) {
+        	    t.changeOfficialReviews(1);
+        	    t.setInOfficialReview(false);
+        	} else {
+        	    t.changeTimeouts(1);
+        	    t.setInTimeout(false);
+        	}
             }
             setTimeoutOwner(owner);
             setOfficialReview(review);
+            if (review) {
+        	owner.setInOfficialReview(true);
+            } else {
+        	owner.setInTimeout(true);
+            }
             if (!rulesets.getBoolean(Rule.STOP_PC_ON_TO)) {
                 boolean stopPc = false;
-                if (!owner.equals(TIMEOUT_OWNER_NONE)) {
-                    if (owner.equals(TIMEOUT_OWNER_OTO) ) {
-                        if (rulesets.getBoolean(Rule.STOP_PC_ON_OTO)) {
-                            stopPc = true;
-                        }
-                    } else {
-                        if (review && rulesets.getBoolean(Rule.STOP_PC_ON_OR)) {
-                            stopPc = true;
-                        }
-                        if (!review && rulesets.getBoolean(Rule.STOP_PC_ON_TTO)) {
-                            stopPc = true;
-                        }
+                if (owner instanceof Team) {
+                    if (review && rulesets.getBoolean(Rule.STOP_PC_ON_OR)) {
+                        stopPc = true;
                     }
+                    if (!review && rulesets.getBoolean(Rule.STOP_PC_ON_TTO)) {
+                        stopPc = true;
+                    }
+                } else if (owner == TimeoutOwners.OTO && rulesets.getBoolean(Rule.STOP_PC_ON_OTO)) {
+                    stopPc = true;
                 }
                 if (stopPc && pc.isRunning()) {
                     pc.stop();
@@ -383,10 +386,12 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         if (!settings.get(SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) {
             tc.stop();
         }
-        if (getTimeoutOwner() != TIMEOUT_OWNER_NONE && getTimeoutOwner() != TIMEOUT_OWNER_OTO) {
+        if (getTimeoutOwner() instanceof Team) {
             restartPcAfterTimeout = false;
         }
-        setTimeoutOwner(TIMEOUT_OWNER_NONE);
+        getTimeoutOwner().setInTimeout(false);
+        getTimeoutOwner().setInOfficialReview(false);
+        setTimeoutOwner(TimeoutOwners.NONE);
         setOfficialReview(false);
         if (!timeoutFollows) {
             if (pc.isTimeAtEnd()) {
@@ -557,14 +562,18 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         }
     }
 
-    public String getTimeoutOwner() { return timeoutOwner; }
-    public void setTimeoutOwner(String owner) {
+    public TimeoutOwner getTimeoutOwner(String id) {
+	for (TimeoutOwners o : TimeoutOwners.values()) {
+	    if (o.getId() == id) { return o; }
+	}
+	return getTeam(id);
+    }
+
+    public TimeoutOwner getTimeoutOwner() { return timeoutOwner; }
+    public void setTimeoutOwner(TimeoutOwner owner) {
         synchronized (coreLock) {
-            String last = timeoutOwner;
+            TimeoutOwner last = timeoutOwner;
             timeoutOwner = owner;
-            for (Team tm : getTeams()) {
-                tm.setInTimeout(tm.getId() == owner);
-            }
             scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUT_OWNER, timeoutOwner, last));
         }
     }
@@ -573,9 +582,6 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         synchronized (coreLock) {
             boolean last = officialReview;
             officialReview = official;
-            for (Team t : getTeams()) {
-                t.setInOfficialReview(t.getId() == getTimeoutOwner() && official);
-            }
             scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEW, new Boolean(officialReview), last));
         }
     }
@@ -610,7 +616,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
     protected static Object coreLock = new Object();
 
-    protected String timeoutOwner;
+    protected TimeoutOwner timeoutOwner;
     protected boolean officialReview;
     protected boolean restartPcAfterTimeout;
 
@@ -664,8 +670,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     protected ScoreBoardListener timeoutClockListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
             if (rulesets.getBoolean(Rule.AUTO_END_TTO) &&
-                    !getTimeoutOwner().equals(TIMEOUT_OWNER_NONE) &&
-                    !getTimeoutOwner().equals(TIMEOUT_OWNER_OTO) &&
+                    (getTimeoutOwner() instanceof Team) &&
                     (long)event.getValue() == rulesets.getLong(Rule.TTO_DURATION)) {
                 stopJamTO();
             }
@@ -700,7 +705,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
         public String getType() { return type; }
         public long getSnapshotTime() { return snapshotTime; }
-        public String getTimeoutOwner() { return timeoutOwner; }
+        public TimeoutOwner getTimeoutOwner() { return timeoutOwner; }
         public boolean isOfficialReview() { return isOfficialReview; }
         public boolean inOvertime() { return inOvertime; }
         public boolean inPeriod() { return inPeriod; }
@@ -715,7 +720,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
         protected String type;
         protected long snapshotTime;
-        protected String timeoutOwner;
+        protected TimeoutOwner timeoutOwner;
         protected boolean isOfficialReview;
         protected boolean inOvertime;
         protected boolean inPeriod;
@@ -727,6 +732,21 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         protected Map<String, Team.TeamSnapshot> teamSnapshots;
     }
 
-    public static final String DEFAULT_TIMEOUT_OWNER = TIMEOUT_OWNER_NONE;
+    public enum TimeoutOwners implements TimeoutOwner {
+	NONE(""),
+	OTO("O");
+	
+	TimeoutOwners(String id) {
+	    this.id = id;
+	}
+	
+	public String getId() { return id; }
+	public String toString() { return id; }
+
+	public void setInTimeout(boolean in_timeout) { /*noop*/ }
+	public void setInOfficialReview(boolean in_official_review) { /*noop*/ }
+
+	private String id;
+    }
 }
 

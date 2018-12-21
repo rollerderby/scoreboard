@@ -22,8 +22,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
      *
      * The Id is as returned from Team.getId().	 For Offical Timeouts, this returns an empty string.
      */
-    public String getTimeoutOwner();
-    public void setTimeoutOwner(String owner);
+    public TimeoutOwner getTimeoutOwner();
+    public void setTimeoutOwner(TimeoutOwner owner);
 
     /**
      * If this Timeout is an Official Review.
@@ -65,7 +65,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public void stopJamTO();
 
     public void timeout();
-    public void setTimeoutType(String team, boolean review);
+    public void setTimeoutType(TimeoutOwner owner, boolean review);
 
     public void clockUndo(boolean replace);
 
@@ -77,6 +77,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public List<Team> getTeams();
     public Team getTeam(String id);
+
+    public TimeoutOwner getTimeoutOwner(String id);
 
     public Settings getSettings();
 
@@ -102,9 +104,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public static final String EVENT_ADD_TEAM = "AddTeam";
     public static final String EVENT_REMOVE_TEAM = "RemoveTeam";
     public static final String EVENT_SETTING = "Setting";
-
-    public static final String TIMEOUT_OWNER_OTO = "O";
-    public static final String TIMEOUT_OWNER_NONE = "";
 
     public static final String BUTTON_START = "ScoreBoard.Button.StartLabel";
     public static final String BUTTON_STOP = "ScoreBoard.Button.StopLabel";

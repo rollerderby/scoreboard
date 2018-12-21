@@ -22,6 +22,7 @@ import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -179,6 +180,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             updates.add(new WSUpdate(prefix + "." + prop, v));
         } else if (v instanceof Boolean) {
             updates.add(new WSUpdate(prefix + "." + prop, v));
+        } else if (v instanceof TimeoutOwner) {
+            updates.add(new WSUpdate(prefix + "." + prop, ((TimeoutOwner) v).getId()));
         } else if (v instanceof Skater) {
             update(prefix, prop, (Skater)v);
         } else {

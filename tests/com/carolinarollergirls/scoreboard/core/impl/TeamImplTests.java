@@ -189,20 +189,20 @@ public class TeamImplTests {
 
         team.timeout();
         assertEquals(0, team.getTimeouts());
-        Mockito.verify(sbMock).setTimeoutType("TEST", false);
+        Mockito.verify(sbMock).setTimeoutType(team, false);
 
         team.timeout();
-        Mockito.verify(sbMock, Mockito.times(1)).setTimeoutType("TEST", false);
+        Mockito.verify(sbMock, Mockito.times(1)).setTimeoutType(team, false);
     }
 
     @Test
     public void testOfficialReview() {
         team.officialReview();
         assertEquals(0, team.getOfficialReviews());
-        Mockito.verify(sbMock).setTimeoutType("TEST", true);
+        Mockito.verify(sbMock).setTimeoutType(team, true);
 
         team.officialReview();
-        Mockito.verify(sbMock, Mockito.times(1)).setTimeoutType("TEST", true);
+        Mockito.verify(sbMock, Mockito.times(1)).setTimeoutType(team, true);
     }
 
     @Test

@@ -28,6 +28,7 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class ScoreBoardXmlConverter {
@@ -51,7 +52,7 @@ public class ScoreBoardXmlConverter {
         editor.setElement(sb, "StartOvertime", null, "");
         editor.setElement(sb, "OfficialTimeout", null, "");
 
-        editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner());
+        editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner().getId());
         editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_REVIEW, null, String.valueOf(scoreBoard.isOfficialReview()));
         editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
         editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
@@ -349,7 +350,7 @@ public class ScoreBoardXmlConverter {
                 } else if (null == value) {
                     continue;
                 } else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER)) {
-                    scoreBoard.setTimeoutOwner(value);
+                    scoreBoard.setTimeoutOwner(scoreBoard.getTimeoutOwner(value));
                 } else if (name.equals(ScoreBoard.EVENT_OFFICIAL_REVIEW)) {
                     scoreBoard.setOfficialReview(bVal);
                 } else if (name.equals(ScoreBoard.EVENT_IN_OVERTIME)) {
@@ -374,7 +375,7 @@ public class ScoreBoardXmlConverter {
                     } else if (name.equals("StartOvertime")) {
                         scoreBoard.startOvertime();
                     } else if (name.equals("OfficialTimeout")) {
-                        scoreBoard.setTimeoutType("O", false);
+                        scoreBoard.setTimeoutType(TimeoutOwners.OTO, false);
                     }
                 }
             } catch ( Exception e ) {

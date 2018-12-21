@@ -13,7 +13,7 @@ import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
-public interface Team extends ScoreBoardEventProvider {
+public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public ScoreBoard getScoreBoard();
 
     public void reset();
@@ -62,9 +62,7 @@ public interface Team extends ScoreBoardEventProvider {
     public void resetTimeouts(boolean gameStart);
 
     public boolean inTimeout();
-    public void setInTimeout(boolean in_timeouts);
     public boolean inOfficialReview();
-    public void setInOfficialReview(boolean in_official_review);
     public boolean retainedOfficialReview();
     public void setRetainedOfficialReview(boolean retained_official_review);
 

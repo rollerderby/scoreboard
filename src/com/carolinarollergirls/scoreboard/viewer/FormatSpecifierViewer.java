@@ -167,7 +167,7 @@ public class FormatSpecifierViewer {
 
     protected void setupScoreBoardValues() {
         new ScoreBoardValue("%sbto", "ScoreBoard Timeout Owner", getScoreBoard(), ScoreBoard.EVENT_TIMEOUT_OWNER) {
-            public String getValue() { return getScoreBoard().getTimeoutOwner(); }
+            public String getValue() { return getScoreBoard().getTimeoutOwner().getId(); }
         };
         new ScoreBoardValue("%sbip", "ScoreBoard Is In Period", getScoreBoard(), ScoreBoard.EVENT_IN_PERIOD) {
             public String getValue() { return String.valueOf(getScoreBoard().isInPeriod()); }
