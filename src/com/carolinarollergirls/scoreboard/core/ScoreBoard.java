@@ -89,7 +89,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public Media getMedia();
 
     public XmlScoreBoard getXmlScoreBoard();
-
+    
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 
     public static final String EVENT_IN_PERIOD = "InPeriod";
@@ -104,12 +104,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public static final String EVENT_ADD_TEAM = "AddTeam";
     public static final String EVENT_REMOVE_TEAM = "RemoveTeam";
     public static final String EVENT_SETTING = "Setting";
-
-    public static final String BUTTON_START = "ScoreBoard.Button.StartLabel";
-    public static final String BUTTON_STOP = "ScoreBoard.Button.StopLabel";
-    public static final String BUTTON_TIMEOUT = "ScoreBoard.Button.TimeoutLabel";
-    public static final String BUTTON_UNDO = "ScoreBoard.Button.UndoLabel";
-    public static final String BUTTON_REPLACED = "ScoreBoard.Button.ReplacedLabel";
 
     public static final String ACTION_NONE = "---";
     public static final String ACTION_NO_REPLACE = "No Action";

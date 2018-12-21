@@ -38,6 +38,9 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     }
 
     protected void setupScoreBoard() {
+	for (Button b : Button.values()) {
+	    b.setScoreBoard(this);
+	}
         stats = new StatsImpl(this);
         stats.addScoreBoardListener(this);
         settings = new SettingsImpl(this);
@@ -57,7 +60,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         addInPeriodListeners();
         xmlScoreBoard = new XmlScoreBoard(this);
         //Button may have a label from autosave but undo will not work after restart
-        setLabel(BUTTON_UNDO, ACTION_NONE);
+        Button.UNDO.setLabel(ACTION_NONE);
     }
 
     public String getProviderName() { return "ScoreBoard"; }
@@ -95,10 +98,10 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             // Custom settings are not reset, as broadcast overlays settings etc.
             // shouldn't be lost just because the next game is starting.
 
-            setLabel(BUTTON_START, ACTION_START_JAM);
-            setLabel(BUTTON_STOP, ACTION_LINEUP);
-            setLabel(BUTTON_TIMEOUT, ACTION_TIMEOUT);
-            setLabel(BUTTON_UNDO, ACTION_NONE);
+            Button.START.setLabel(ACTION_START_JAM);
+            Button.STOP.setLabel(ACTION_LINEUP);
+            Button.TIMEOUT.setLabel(ACTION_TIMEOUT);
+            Button.UNDO.setLabel(ACTION_NONE);
         }
     }
 
@@ -467,7 +470,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
     protected void createSnapshot(String type) {
         snapshot = new ScoreBoardSnapshot(this, type);
-        setLabel(BUTTON_UNDO, UNDO_PREFIX + type);
+        Button.UNDO.setLabel(UNDO_PREFIX + type);
     }
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
@@ -482,9 +485,11 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         setInOvertime(snapshot.inOvertime());
         setInPeriod(snapshot.inPeriod());
         restartPcAfterTimeout = snapshot.restartPcAfterTo();
-        setLabels(snapshot.getStartLabel(), snapshot.getStopLabel(), snapshot.getTimeoutLabel());
-        setLabel(BUTTON_UNDO, ACTION_NONE);
-        setLabel(BUTTON_REPLACED, snapshot.getType());
+        for (Button button : Button.values()) {
+            button.setLabel(snapshot.getLabels().get(button));
+        }
+        Button.UNDO.setLabel(ACTION_NONE);
+        Button.REPLACED.setLabel(snapshot.getType());
         snapshot = null;
     }
     protected void finishReplace() {
@@ -505,7 +510,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
                 restoreSnapshot();
                 if (replace) {
                     replacePending = true;
-                    setLabel(BUTTON_UNDO, ACTION_NO_REPLACE);
+                    Button.UNDO.setLabel(ACTION_NO_REPLACE);
                 } else {
                     ScoreBoardClock.getInstance().start(true);
                 }
@@ -514,13 +519,10 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         }
     }
 
-    protected void setLabel(String id, String value) {
-        settings.set(id, value);
-    }
     protected void setLabels(String startLabel, String stopLabel, String timeoutLabel) {
-        setLabel(BUTTON_START, startLabel);
-        setLabel(BUTTON_STOP, stopLabel);
-        setLabel(BUTTON_TIMEOUT, timeoutLabel);
+        Button.START.setLabel(startLabel);
+        Button.STOP.setLabel(stopLabel);
+        Button.TIMEOUT.setLabel(timeoutLabel);
     }
 
     public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
@@ -690,9 +692,10 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             inOvertime = sbm.isInOvertime();
             inPeriod = sbm.isInPeriod();
             restartPcAfterTo = sbm.restartPcAfterTimeout;
-            startLabel = sbm.getSettings().get(BUTTON_START);
-            stopLabel = sbm.getSettings().get(BUTTON_STOP);
-            timeoutLabel = sbm.getSettings().get(BUTTON_TIMEOUT);
+            labels = new HashMap<Button, String>();
+            for (Button button : Button.values()) {
+        	labels.put(button, button.getLabel());
+            }
             clockSnapshots = new HashMap<String, ClockImpl.ClockSnapshot>();
             for (Clock clock : sbm.getClocks()) {
                 clockSnapshots.put(clock.getId(), clock.snapshot());
@@ -710,9 +713,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         public boolean inOvertime() { return inOvertime; }
         public boolean inPeriod() { return inPeriod; }
         public boolean restartPcAfterTo() { return restartPcAfterTo; }
-        public String getStartLabel() { return startLabel; }
-        public String getStopLabel() { return stopLabel; }
-        public String getTimeoutLabel() { return timeoutLabel; }
+        public Map<Button, String> getLabels() { return labels; }
         public Map<String, Clock.ClockSnapshot> getClockSnapshots() { return clockSnapshots; }
         public Map<String, Team.TeamSnapshot> getTeamSnapshots() { return teamSnapshots; }
         public ClockImpl.ClockSnapshot getClockSnapshot(String clock) { return clockSnapshots.get(clock); }
@@ -725,11 +726,29 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         protected boolean inOvertime;
         protected boolean inPeriod;
         protected boolean restartPcAfterTo;
-        protected String startLabel;
-        protected String stopLabel;
-        protected String timeoutLabel;
+        protected Map<Button, String> labels;
         protected Map<String, Clock.ClockSnapshot> clockSnapshots;
         protected Map<String, Team.TeamSnapshot> teamSnapshots;
+    }
+
+    public enum Button {
+	START("ScoreBoard.Button.StartLabel"),
+	STOP("ScoreBoard.Button.StopLabel"),
+	TIMEOUT("ScoreBoard.Button.TimeoutLabel"),
+	UNDO("ScoreBoard.Button.UndoLabel"),
+	REPLACED("ScoreBoard.Button.ReplacedLabel");
+	
+	private Button(String s) {
+	    setting = s;
+	}
+	
+	public void setScoreBoard(ScoreBoard sb) { scoreBoard = sb; }
+
+	public String getLabel() { return scoreBoard.getSettings().get(setting); }
+	public void setLabel(String label) { scoreBoard.getSettings().set(setting, label); }
+	
+	private ScoreBoard scoreBoard;
+	private String setting;
     }
 
     public enum TimeoutOwners implements TimeoutOwner {

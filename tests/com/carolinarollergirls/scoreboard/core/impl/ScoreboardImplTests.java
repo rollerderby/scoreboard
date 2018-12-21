@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.Button;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -89,15 +90,15 @@ public class ScoreboardImplTests {
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel) {
-        assertEquals(startLabel, sb.getSettings().get(ScoreBoard.BUTTON_START));
-        assertEquals(stopLabel, sb.getSettings().get(ScoreBoard.BUTTON_STOP));
-        assertEquals(timeoutLabel, sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT));
-        assertEquals(undoLabel, sb.getSettings().get(ScoreBoard.BUTTON_UNDO));
+        assertEquals(startLabel, Button.START.getLabel());
+        assertEquals(stopLabel, Button.STOP.getLabel());
+        assertEquals(timeoutLabel, Button.TIMEOUT.getLabel());
+        assertEquals(undoLabel, Button.UNDO.getLabel());
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel, String replaceLabel) {
         checkLabels(startLabel, stopLabel, timeoutLabel, undoLabel);
-        assertEquals(replaceLabel, sb.getSettings().get(ScoreBoard.BUTTON_REPLACED));
+        assertEquals(replaceLabel, Button.REPLACED.getLabel());
     }
 
     @Test
@@ -488,7 +489,7 @@ public class ScoreboardImplTests {
         jc.setNumber(9);
         jc.start();
         sb.setLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT);
-        sb.setLabel(ScoreBoard.BUTTON_UNDO, ScoreBoard.ACTION_NONE);
+        Button.UNDO.setLabel(ScoreBoard.ACTION_NONE);
 
         sb.startJam();
 
@@ -697,7 +698,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testStopJam_lineupRunning() {
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
         sb.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
         lc.setTime(14000);
         lc.setNumber(9);
@@ -862,11 +863,11 @@ public class ScoreboardImplTests {
         assertFalse(sb.isInOvertime());
         assertTrue(sb.isInPeriod());
         sb.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT);
-        sb.setLabel(ScoreBoard.BUTTON_UNDO, ScoreBoard.ACTION_NONE);
+        Button.UNDO.setLabel(ScoreBoard.ACTION_NONE);
 
         sb.createSnapshot("TEST");
         assertEquals("TEST", sb.snapshot.getType());
-        assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", sb.getSettings().get(ScoreBoard.BUTTON_UNDO));
+        assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", Button.UNDO.getLabel());
 
         pc.stop();
         jc.stop();
@@ -990,7 +991,7 @@ public class ScoreboardImplTests {
     @Test
     public void testPeriodClockEnd_duringLineup() {
         sb.getRulesets().set(Rule.INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
 
         pc.start();
         assertTrue(pc.isCountDirectionDown());
@@ -1021,7 +1022,7 @@ public class ScoreboardImplTests {
     @Test
     public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
         sb.getRulesets().set(Rule.PERIOD_END_BETWEEN_JAMS, "false");
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
         sb.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
 
         pc.start();
@@ -1048,10 +1049,10 @@ public class ScoreboardImplTests {
 
     @Test
     public void testPeriodClockEnd_duringJam() {
-        String prevStartLabel = sb.getSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sb.getSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = Button.START.getLabel();
+        String prevStopLabel = Button.STOP.getLabel();
+        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
+        String prevUndoLabel = Button.UNDO.getLabel();
         pc.start();
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(2000);
@@ -1077,7 +1078,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testJamClockEnd_pcRemaining() {
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
         pc.start();
         jc.start();
         assertTrue(jc.isCountDirectionDown());
@@ -1101,10 +1102,10 @@ public class ScoreboardImplTests {
     @Test
     public void testJamClockEnd_autoEndDisabled() {
         sb.getRulesets().set(Rule.AUTO_END_JAM, "false");
-        String prevStartLabel = sb.getSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sb.getSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = Button.START.getLabel();
+        String prevStopLabel = Button.STOP.getLabel();
+        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
+        String prevUndoLabel = Button.UNDO.getLabel();
 
         pc.start();
         jc.start();
@@ -1126,7 +1127,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testIntermissionClockEnd_notLastPeriod() {
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(0);
@@ -1182,10 +1183,10 @@ public class ScoreboardImplTests {
 
     @Test
     public void testIntermissionClockEnd_lastPeriod() {
-        String prevStartLabel = sb.getSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sb.getSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = Button.START.getLabel();
+        String prevStopLabel = Button.STOP.getLabel();
+        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
+        String prevUndoLabel = Button.UNDO.getLabel();
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(0);
