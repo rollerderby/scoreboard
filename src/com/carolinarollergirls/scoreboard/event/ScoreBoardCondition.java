@@ -10,8 +10,6 @@ package com.carolinarollergirls.scoreboard.event;
 
 import java.util.Objects;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-
 public class ScoreBoardCondition implements Cloneable {
     public ScoreBoardCondition(ScoreBoardEvent e) {
         this(e.getProvider(), e.getProperty(), e.getValue());
@@ -45,32 +43,32 @@ public class ScoreBoardCondition implements Cloneable {
     }
     public boolean equals(ScoreBoardEvent e) {
         Class<? extends ScoreBoardEventProvider> pc = (null == e.getProvider() ? null : e.getProvider().getProviderClass());
-        if (!ScoreBoardManager.ObjectsEquals(getProviderClass(), pc)) {
+        if (!Objects.equals(getProviderClass(), pc)) {
             return false;
         }
         String pi = (null == e.getProvider() ? null : e.getProvider().getProviderId());
-        if (!ScoreBoardManager.ObjectsEquals(getProviderId(), pi) && (getProviderId() != ANY_ID)) {
+        if (!Objects.equals(getProviderId(), pi) && (getProviderId() != ANY_ID)) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getProperty(), e.getProperty())) {
+        if (!Objects.equals(getProperty(), e.getProperty())) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getValue(), e.getValue()) && (getValue() != ANY_VALUE)) {
+        if (!Objects.equals(getValue(), e.getValue()) && (getValue() != ANY_VALUE)) {
             return false;
         }
         return true;
     }
     public boolean equals(ScoreBoardCondition c) {
-        if (!ScoreBoardManager.ObjectsEquals(getProviderClass(), c.getProviderClass())) {
+        if (!Objects.equals(getProviderClass(), c.getProviderClass())) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getProviderId(), c.getProviderId())) {
+        if (!Objects.equals(getProviderId(), c.getProviderId())) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getProperty(), c.getProperty())) {
+        if (!Objects.equals(getProperty(), c.getProperty())) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getValue(), c.getValue())) {
+        if (!Objects.equals(getValue(), c.getValue())) {
             return false;
         }
         return true;

@@ -11,8 +11,6 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.EventObject;
 import java.util.Objects;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
-
 public class ScoreBoardEvent extends EventObject implements Cloneable {
     public ScoreBoardEvent(ScoreBoardEventProvider sbeP, String p, Object v, Object prev) {
         super(sbeP);
@@ -40,16 +38,16 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
         return false;
     }
     public boolean equals(ScoreBoardEvent e) {
-        if (!ScoreBoardManager.ObjectsEquals(getProvider(), e.getProvider())) {
+        if (!Objects.equals(getProvider(), e.getProvider())) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getProperty(), e.getProperty())) {
+        if (!Objects.equals(getProperty(), e.getProperty())) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getValue(), e.getValue())) {
+        if (!Objects.equals(getValue(), e.getValue())) {
             return false;
         }
-        if (!ScoreBoardManager.ObjectsEquals(getPreviousValue(), e.getPreviousValue())) {
+        if (!Objects.equals(getPreviousValue(), e.getPreviousValue())) {
             return false;
         }
         return true;

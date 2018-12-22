@@ -145,17 +145,6 @@ public class ScoreBoardManager {
         catch ( IOException ioE ) { }
     }
 
-    /* FIXME - replace with java 1.7 Objects.equals once we move to 1.7 */
-    public static boolean ObjectsEquals(Object a, Object b) {
-        if ((null == a) != (null == b)) {
-            return false;
-        }
-        if ((null != a) && !a.equals(b)) {
-            return false;
-        }
-        return true;
-    }
-
     public static void setLogger(Logger l) { logger = l; }
     public static File getDefaultPath() { return defaultPath; }
     public static void setDefaultPath(File f) { defaultPath = f; }
