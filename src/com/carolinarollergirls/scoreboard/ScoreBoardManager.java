@@ -47,8 +47,8 @@ public class ScoreBoardManager {
         registerScoreBoardController(new JettyServletScoreBoardController(scoreBoard, jsm));
 
         // Viewers.
-        registerScoreBoardViewer(new TwitterViewer((ScoreBoard)scoreBoard));
-        registerScoreBoardViewer(new ScoreBoardMetricsCollector((ScoreBoard)scoreBoard).register());
+        registerScoreBoardViewer(new TwitterViewer(scoreBoard));
+        registerScoreBoardViewer(new ScoreBoardMetricsCollector(scoreBoard).register());
         registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
 
         //FIXME - not the best way to load autosave doc.

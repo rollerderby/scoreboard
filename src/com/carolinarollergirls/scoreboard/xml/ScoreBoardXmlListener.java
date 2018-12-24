@@ -27,6 +27,7 @@ import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 /**
  * Converts a ScoreBoardEvent into a representative XML Document or XML String.
@@ -99,11 +100,11 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
             // Look for overrides that have been removed.
             Element re = editor.setElement(e, "Ruleset", r.getId());
             if (event.getPreviousValue() != null) {
-                Set<String> newKeys = r.getAll().keySet();
+                Set<Rule> newKeys = r.getAll().keySet();
                 for (Object o : (Set<?>)event.getPreviousValue()) {
-                    String k = (String)o;
+                    Rule k = (Rule)o;
                     if (!newKeys.contains(k)) {
-                        editor.setRemovePI(editor.setElement(re, "Rule", k));
+                        editor.setRemovePI(editor.setElement(re, "Rule", k.toString()));
                     }
                 }
             }

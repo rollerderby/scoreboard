@@ -73,6 +73,7 @@ public class ScoreBoardClock extends TimerTask {
     private void updateTime() {
 	if (stopCounter == 0) {
 	    currentTime = System.currentTimeMillis() - offset;
+	    updateClients();
 	}
     }
 
@@ -86,7 +87,6 @@ public class ScoreBoardClock extends TimerTask {
 	synchronized (coreLock) {
 	    if (stopCounter == 0) {
 		updateTime();
-		updateClients();
 	    }
 	}
     }

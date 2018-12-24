@@ -17,8 +17,10 @@ import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.Position;
+import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
@@ -26,6 +28,8 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class ScoreBoardXmlConverter {
     /*****************************/
@@ -48,7 +52,7 @@ public class ScoreBoardXmlConverter {
         editor.setElement(sb, "StartOvertime", null, "");
         editor.setElement(sb, "OfficialTimeout", null, "");
 
-        editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner());
+        editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner().getId());
         editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_REVIEW, null, String.valueOf(scoreBoard.isOfficialReview()));
         editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
         editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
@@ -88,11 +92,8 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element p, Rulesets rs) {
         Element e = editor.setElement(p, "Rules");
-        Iterator<String> keys = rs.getAll().keySet().iterator();
-        while (keys.hasNext()) {
-            String k = keys.next();
-            String v = rs.get(k);
-            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, k, v);
+        for (Rule r : Rule.values()) {
+            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, r.toString(), rs.get(r));
         }
         editor.setElement(e, "Id", null, rs.getId());
         editor.setElement(e, "Name", null, rs.getName());
@@ -106,11 +107,8 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element p, Rulesets.Ruleset r) {
         Element e = editor.setElement(p, "Ruleset", r.getId());
-        Iterator<String> keys = r.getAll().keySet().iterator();
-        while (keys.hasNext()) {
-            String k = keys.next();
-            String v = r.get(k);
-            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, k, v);
+        for (Rule k : r.getAll().keySet()) {
+            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, k.toString(), r.get(k));
         }
         editor.setElement(e, "Name", null, r.getName());
         editor.setElement(e, "ParentId", null, r.getParentRulesetId());
@@ -177,6 +175,7 @@ public class ScoreBoardXmlConverter {
         editor.setElement(e, Team.EVENT_RETAINED_OFFICIAL_REVIEW, null, String.valueOf(t.retainedOfficialReview()));
         editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, t.getLeadJammer());
         editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
+        editor.setElement(e, Team.EVENT_NO_PIVOT, null, String.valueOf(t.hasNoPivot()));
 
         Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
         while (alternateNames.hasNext()) {
@@ -236,7 +235,9 @@ public class ScoreBoardXmlConverter {
         Element e = editor.setElement(t, "Skater", s.getId());
         editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
         editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
-        editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition());
+        editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition() == null ? "" : 
+            s.getPosition().getFloorPosition().toString());
+        editor.setElement(e, Skater.EVENT_ROLE, null, s.getRole().toString());
         editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
         editor.setElement(e, Skater.EVENT_FLAGS, null, s.getFlags());
 
@@ -349,7 +350,7 @@ public class ScoreBoardXmlConverter {
                 } else if (null == value) {
                     continue;
                 } else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER)) {
-                    scoreBoard.setTimeoutOwner(value);
+                    scoreBoard.setTimeoutOwner(scoreBoard.getTimeoutOwner(value));
                 } else if (name.equals(ScoreBoard.EVENT_OFFICIAL_REVIEW)) {
                     scoreBoard.setOfficialReview(bVal);
                 } else if (name.equals(ScoreBoard.EVENT_IN_OVERTIME)) {
@@ -374,7 +375,7 @@ public class ScoreBoardXmlConverter {
                     } else if (name.equals("StartOvertime")) {
                         scoreBoard.startOvertime();
                     } else if (name.equals("OfficialTimeout")) {
-                        scoreBoard.setTimeoutType("O", false);
+                        scoreBoard.setTimeoutType(TimeoutOwners.OTO, false);
                     }
                 }
             } catch ( Exception e ) {
@@ -406,7 +407,7 @@ public class ScoreBoardXmlConverter {
             Element child = (Element)children.next();
             try {
                 String name = child.getName();
-                String k = child.getAttributeValue("Id");
+                Rule k = rs.getRule(child.getAttributeValue("Id"));
                 String v = editor.getText(child);
                 if (v == null) {
                     v = "";
@@ -442,7 +443,7 @@ public class ScoreBoardXmlConverter {
         String name = "";
         String parentId = "";
         String id = element.getAttributeValue("Id");
-        Map<String, String> rules = new HashMap<String, String>();
+        Map<Rule, String> rules = new HashMap<Rule, String>();
 
 
         Iterator<?> children = element.getChildren().iterator();
@@ -450,7 +451,7 @@ public class ScoreBoardXmlConverter {
             Element child = (Element)children.next();
             try {
                 String n = child.getName();
-                String k = child.getAttributeValue("Id");
+                Rule k = rulesets.getRule(child.getAttributeValue("Id"));
                 String v = editor.getText(child);
                 if (v == null) {
                     v = "";
@@ -687,7 +688,7 @@ public class ScoreBoardXmlConverter {
 
     public void processPosition(Team team, Element element) {
         String id = element.getAttributeValue("Id");
-        Position position = team.getPosition(id);
+        Position position = team.getPosition(FloorPosition.fromString(id));
 
         Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {
@@ -699,9 +700,9 @@ public class ScoreBoardXmlConverter {
                 if (null == value) {
                     continue;
                 } else if (name.equals("Clear") && Boolean.parseBoolean(value)) {
-                    position.clear();
+                    team.field(null, position);
                 } else if (name.equals("Id")) {
-                    position.setSkater(value);
+                    team.field(team.getSkater(value), position);
                 } else if (name.equals(Position.EVENT_PENALTY_BOX)) {
                     position.setPenaltyBox(Boolean.parseBoolean(value));
                 }
@@ -750,7 +751,9 @@ public class ScoreBoardXmlConverter {
                 } else if (name.equals(Skater.EVENT_NUMBER)) {
                     skater.setNumber(value);
                 } else if (name.equals(Skater.EVENT_POSITION)) {
-                    skater.setPosition(value);
+                    team.field(skater, team.getPosition(FloorPosition.fromString(value)));
+                } else if (name.equals(Skater.EVENT_ROLE)) {
+                    team.field(skater, Role.fromString(value));
                 } else if (name.equals(Skater.EVENT_PENALTY_BOX)) {
                     skater.setPenaltyBox(Boolean.parseBoolean(value));
                 } else if (name.equals(Skater.EVENT_FLAGS)) {

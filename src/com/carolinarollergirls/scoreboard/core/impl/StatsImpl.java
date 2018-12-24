@@ -39,11 +39,12 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_LAST_SCORE, teamEventListener));
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_LEAD_JAMMER, teamEventListener));
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_STAR_PASS, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_NO_PIVOT, teamEventListener));
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_TIMEOUTS, teamEventListener));
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_OFFICIAL_REVIEWS, teamEventListener));
 
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Skater.class, Skater.EVENT_POSITION, skaterEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Skater.class, Skater.EVENT_PENALTY_BOX, skaterEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Position.class, Position.EVENT_SKATER, positionEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Position.class, Position.EVENT_PENALTY_BOX, positionEventListener));
 
         reset();
     }
@@ -96,21 +97,19 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 Team t = scoreBoard.getTeam(tid);
                 ts.removeSkaterStats();
                 for (Position p : t.getPositions()) {
-                    String pos = p.getId();
-                    if (Position.FLOOR_POSITIONS.contains(pos)) {
-                        Skater s = p.getSkater();
-                        if (s != null) {
-                            ts.addSkaterStats(s.getId());
-                            SkaterStats ssm = ts.getSkaterStats(s.getId());
-                            ssm.setPosition(s.getPosition());
-                            ssm.setPenaltyBox(s.isPenaltyBox());
-                        }
+                    Skater s = p.getSkater();
+                    if (s != null) {
+                	ts.addSkaterStats(s.getId());
+                	SkaterStats ssm = ts.getSkaterStats(s.getId());
+                	ssm.setPosition(p.getFloorPosition().toString());
+                	ssm.setPenaltyBox(s.isPenaltyBox());
                     }
                 }
                 ts.setTotalScore(t.getScore());
                 ts.setJamScore(t.getScore() - t.getLastScore());
                 ts.setLeadJammer(t.getLeadJammer());
                 ts.setStarPass(t.isStarPass());
+                ts.setNoPivot(t.hasNoPivot());
                 ts.setTimeouts(t.getTimeouts());
                 ts.setOfficialReviews(t.getOfficialReviews());
             }
@@ -153,6 +152,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 // resetting it at the end of a jam.
                 ts.setLeadJammer(t.getLeadJammer());
                 ts.setStarPass(t.isStarPass());
+                ts.setNoPivot(t.hasNoPivot());
             }
             ts.setTimeouts(t.getTimeouts());
             ts.setOfficialReviews(t.getOfficialReviews());
@@ -160,28 +160,37 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         }
     };
 
-    protected ScoreBoardListener skaterEventListener = new ScoreBoardListener() {
+    protected ScoreBoardListener positionEventListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
             Clock jc = scoreBoard.getClock(Clock.ID_JAM);
-            Skater s = (Skater)event.getProvider();
+            Position p = (Position)event.getProvider();
             String prop = event.getProperty();
             JamStats js = getCurentJam();
             if (js == null) {
                 return;
             }
-            TeamStats ts = js.getTeamStats(s.getTeam().getId());
+            TeamStats ts = js.getTeamStats(p.getTeam().getId());
             requestBatchStart();
             if (jc.isRunning()) {
                 // If the jam is over, any skater changes are for the next jam.
                 // We'll catch them when the jam starts.
-                if (s.getPosition().equals(Position.ID_BENCH)
-                        || prop.equals(Team.EVENT_REMOVE_SKATER)) {
-                    ts.removeSkaterStats(s.getId());
-                } else {
-                    ts.addSkaterStats(s.getId());
-                    SkaterStats ssm = ts.getSkaterStats(s.getId());
-                    ssm.setPosition(s.getPosition());
-                    ssm.setPenaltyBox(s.isPenaltyBox());
+                if (p.getSkater() != null && prop == Position.EVENT_PENALTY_BOX) {
+                    SkaterStats ss = ts.getSkaterStats(p.getSkater().getId());
+                    if (ss != null) {
+                	ss.setPenaltyBox((Boolean)event.getValue());
+                    }
+                } else if (prop == Position.EVENT_SKATER) {
+                    Skater s = (Skater)event.getValue();
+                    Skater last = (Skater)event.getPreviousValue();
+                    if (last != null) {
+                	ts.removeSkaterStats(last.getId());
+                    } 
+                    if (s != null) {
+                	ts.addSkaterStats(s.getId());
+                	SkaterStats ss = ts.getSkaterStats(s.getId());
+                	ss.setPosition(s.getPosition().getFloorPosition().toString());
+                	ss.setPenaltyBox(s.isPenaltyBox());
+                    }
                 }
             }
             requestBatchEnd();
@@ -424,6 +433,14 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
             }
         }
 
+        public boolean getNoPivot() { return noPivot; }
+        public void setNoPivot(boolean np) {
+            synchronized (coreLock) {
+                noPivot = np;
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+            }
+        }
+
         public int getTimeouts() { return timeouts; }
         public void setTimeouts(int t) {
             synchronized (coreLock) {
@@ -453,28 +470,28 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void addSkaterStats(String sid) {
             synchronized (coreLock) {
                 if (skaters.get(sid) == null) {
-                    SkaterStats ssm = new SkaterStatsImpl(sid, id, period, jam);
-                    ssm.addScoreBoardListener(this);
-                    skaters.put(sid, ssm);
+                    SkaterStats ss = new SkaterStatsImpl(sid, id, period, jam);
+                    ss.addScoreBoardListener(this);
+                    skaters.put(sid, ss);
                 }
             }
         }
         public void removeSkaterStats(String sid) {
             synchronized (coreLock) {
-                SkaterStats ssm = skaters.get(sid);
-                if (ssm != null) {
-                    ssm.removeScoreBoardListener(this);
+                SkaterStats ss = skaters.get(sid);
+                if (ss != null) {
+                    ss.removeScoreBoardListener(this);
                     skaters.remove(sid);
-                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ssm, null));
+                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ss, null));
                 }
             }
         }
         public void removeSkaterStats() {
             synchronized (coreLock) {
-                for (SkaterStats ssm : skaters.values()) {
-                    ssm.removeScoreBoardListener(this);
-                    skaters.remove(ssm.getSkaterId());
-                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ssm, null));
+                for (SkaterStats ss : skaters.values()) {
+                    ss.removeScoreBoardListener(this);
+                    skaters.remove(ss.getSkaterId());
+                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ss, null));
                 }
             }
         }
@@ -487,6 +504,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         private int totalScore;
         private String leadStatus;
         private boolean starPass;
+        private boolean noPivot;
         private int timeouts;
         private int officialReviews;
         private Map<String, SkaterStats>skaters = new ConcurrentHashMap<String, SkaterStats>();

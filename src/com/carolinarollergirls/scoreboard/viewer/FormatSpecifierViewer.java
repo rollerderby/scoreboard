@@ -15,6 +15,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
@@ -166,7 +167,7 @@ public class FormatSpecifierViewer {
 
     protected void setupScoreBoardValues() {
         new ScoreBoardValue("%sbto", "ScoreBoard Timeout Owner", getScoreBoard(), ScoreBoard.EVENT_TIMEOUT_OWNER) {
-            public String getValue() { return getScoreBoard().getTimeoutOwner(); }
+            public String getValue() { return getScoreBoard().getTimeoutOwner().getId(); }
         };
         new ScoreBoardValue("%sbip", "ScoreBoard Is In Period", getScoreBoard(), ScoreBoard.EVENT_IN_PERIOD) {
             public String getValue() { return String.valueOf(getScoreBoard().isInPeriod()); }
@@ -223,60 +224,60 @@ public class FormatSpecifierViewer {
             public String getValue() { return getTeam(id).getLeadJammer(); }
         };
         new ScoreBoardValue("%t"+t+"jn", "Team "+t+" Jammer Name",
-                            getTeam(id).getPosition(Position.ID_JAMMER), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterName(getPositionSkater(id, Position.ID_JAMMER)); }
+                            getTeam(id).getPosition(FloorPosition.JAMMER), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.JAMMER)); }
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"jN", "Team "+t+" Jammer Number",
-                            getTeam(id).getPosition(Position.ID_JAMMER), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, Position.ID_JAMMER)); }
+                            getTeam(id).getPosition(FloorPosition.JAMMER), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.JAMMER)); }
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"pn", "Team "+t+" Pivot Name",
-                            getTeam(id).getPosition(Position.ID_PIVOT), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterName(getPositionSkater(id, Position.ID_PIVOT)); }
+                            getTeam(id).getPosition(FloorPosition.PIVOT), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.PIVOT)); }
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"pN", "Team "+t+" Pivot Number",
-                            getTeam(id).getPosition(Position.ID_PIVOT), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, Position.ID_PIVOT)); }
+                            getTeam(id).getPosition(FloorPosition.PIVOT), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.PIVOT)); }
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b1n", "Team "+t+" Blocker1 Name",
-                            getTeam(id).getPosition(Position.ID_BLOCKER1), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterName(getPositionSkater(id, Position.ID_BLOCKER1)); }
+                            getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER1)); }
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b1N", "Team "+t+" Blocker1 Number",
-                            getTeam(id).getPosition(Position.ID_BLOCKER1), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, Position.ID_BLOCKER1)); }
+                            getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER1)); }
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b2n", "Team "+t+" Blocker2 Name",
-                            getTeam(id).getPosition(Position.ID_BLOCKER2), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterName(getPositionSkater(id, Position.ID_BLOCKER2)); }
+                            getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER2)); }
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b2N", "Team "+t+" Blocker2 Number",
-                            getTeam(id).getPosition(Position.ID_BLOCKER2), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, Position.ID_BLOCKER2)); }
+                            getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER2)); }
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b3n", "Team "+t+" Blocker3 Name",
-                            getTeam(id).getPosition(Position.ID_BLOCKER3), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterName(getPositionSkater(id, Position.ID_BLOCKER3)); }
+                            getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER3)); }
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b3N", "Team "+t+" Blocker3 Number",
-                            getTeam(id).getPosition(Position.ID_BLOCKER3), Position.EVENT_SKATER) {
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, Position.ID_BLOCKER3)); }
+                            getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.EVENT_SKATER) {
+            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER3)); }
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
     }
 
     protected Team getTeam(String id) { return getScoreBoard().getTeam(id); }
 
-    protected Skater getPositionSkater(String id, String position) {
+    protected Skater getPositionSkater(String id, FloorPosition position) {
         return getTeam(id).getPosition(position).getSkater();
     }
 

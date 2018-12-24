@@ -33,6 +33,7 @@ import org.json.JSONObject;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 
 public class WS extends WebSocketServlet {
@@ -141,9 +142,9 @@ public class WS extends WebSocketServlet {
                     String i = data.getString("id");
                     String n = data.getString("name");
                     JSONObject rules = data.getJSONObject("rules");
-                    Map<String, String> s = new HashMap<String, String>();
+                    Map<Rule, String> s = new HashMap<Rule, String>();
                     for (String k : rules.keySet()) {
-                        s.put(k, rules.getString(k));
+                	s.put(sb.getRulesets().getRule(k), rules.getString(k));
                     }
                     sb.getRulesets().getRuleset(i).setAll(s);
                     sb.getRulesets().getRuleset(i).setName(n);

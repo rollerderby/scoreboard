@@ -69,6 +69,8 @@ public interface Stats extends ScoreBoardEventProvider {
         public void setLeadJammer(String ls);
         public boolean getStarPass();
         public void setStarPass(boolean sp);
+        public boolean getNoPivot();
+        public void setNoPivot(boolean np);
         public int getTimeouts();
         public void setTimeouts(int t);
         public int getOfficialReviews();

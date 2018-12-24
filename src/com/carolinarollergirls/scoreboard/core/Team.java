@@ -13,7 +13,7 @@ import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
-public interface Team extends ScoreBoardEventProvider {
+public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public ScoreBoard getScoreBoard();
 
     public void reset();
@@ -25,7 +25,6 @@ public interface Team extends ScoreBoardEventProvider {
 
     public void startJam();
     public void stopJam();
-    public void benchSkaters();
     public TeamSnapshot snapshot();
     public void restoreSnapshot(TeamSnapshot s);
 
@@ -63,9 +62,7 @@ public interface Team extends ScoreBoardEventProvider {
     public void resetTimeouts(boolean gameStart);
 
     public boolean inTimeout();
-    public void setInTimeout(boolean in_timeouts);
     public boolean inOfficialReview();
-    public void setInOfficialReview(boolean in_official_review);
     public boolean retainedOfficialReview();
     public void setRetainedOfficialReview(boolean retained_official_review);
 
@@ -77,12 +74,17 @@ public interface Team extends ScoreBoardEventProvider {
     public void removeSkater(String id) throws SkaterNotFoundException;
 
     public List<Position> getPositions();
-    public Position getPosition(String id) throws PositionNotFoundException;
+    public Position getPosition(FloorPosition fp);
 
+    public void field(Skater s, Position p);
+    public void field(Skater s, Role r);
+    
     public String getLeadJammer();
     public void setLeadJammer(String lead);
     public boolean isStarPass();
     public void setStarPass(boolean starPass);
+    public boolean hasNoPivot();
+    
 
     public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
 
@@ -93,11 +95,6 @@ public interface Team extends ScoreBoardEventProvider {
     public static final String LEAD_NO_LEAD = "NoLead";
     public static final String LEAD_LOST_LEAD = "LostLead";
 
-    public static final String RULE_NUMBER_TIMEOUTS = "Team.Timeouts";
-    public static final String RULE_TIMEOUTS_PER_PERIOD = "Team.TimeoutsPer";
-    public static final String RULE_NUMBER_REVIEWS = "Team.OfficialReviews";
-    public static final String RULE_REVIEWS_PER_PERIOD = "Team.OfficialReviewsPer";
-
     public static final String EVENT_NAME = "Name";
     public static final String EVENT_LOGO = "Logo";
     public static final String EVENT_SCORE = "Score";
@@ -106,6 +103,7 @@ public interface Team extends ScoreBoardEventProvider {
     public static final String EVENT_OFFICIAL_REVIEWS = "OfficialReviews";
     public static final String EVENT_IN_TIMEOUT = "InTimeout";
     public static final String EVENT_IN_OFFICIAL_REVIEW = "InOfficialReview";
+    public static final String EVENT_NO_PIVOT = "NoPivot";
     public static final String EVENT_RETAINED_OFFICIAL_REVIEW = "RetainedOfficialReview";
     public static final String EVENT_ADD_SKATER = "AddSkater";
     public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
@@ -151,6 +149,7 @@ public interface Team extends ScoreBoardEventProvider {
         public boolean getStarPass();
         public boolean inTimeout();
         public boolean inOfficialReview();
+        public boolean hasNoPivot();
         public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots();
         public Skater.SkaterSnapshot getSkaterSnapshot(String skater);
     }

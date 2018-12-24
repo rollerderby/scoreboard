@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
@@ -60,20 +61,20 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         public void scoreBoardChange(ScoreBoardEvent event) {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
-            setCountDirectionDown(r.getBoolean(id + ".Direction"));
+            setCountDirectionDown(r.getBoolean(r.getRule(id + ".ClockDirection")));
             if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION)) {
                 setMinimumNumber(0);
             } else {
                 setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
             }
             if (id.equals(ID_PERIOD) || id.equals(ID_INTERMISSION)) {
-                setMaximumNumber(r.getInt(ScoreBoard.RULE_NUMBER_PERIODS));
+                setMaximumNumber(r.getInt(Rule.NUMBER_PERIODS));
             } else {
                 setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
             }
             setMinimumTime(DEFAULT_MINIMUM_TIME);
             if (id.equals(ID_PERIOD) || id.equals(ID_JAM)) {
-                setMaximumTime(r.getLong(id + ".Duration"));
+                setMaximumTime(r.getLong(r.getRule(id + ".Duration")));
             } else {
                 setMaximumTime(DEFAULT_MAXIMUM_TIME);
             }

@@ -16,9 +16,12 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.Button;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -63,6 +66,11 @@ public class ScoreboardImplTests {
         lc = sb.getClock(Clock.ID_LINEUP);
         tc = sb.getClock(Clock.ID_TIMEOUT);
         ic = sb.getClock(Clock.ID_INTERMISSION);
+        assertTrue(pc.isTimeAtStart());
+        assertTrue(jc.isTimeAtStart());
+        assertTrue(lc.isTimeAtStart());
+        assertTrue(tc.isTimeAtStart());
+        assertTrue(ic.isTimeAtStart());
         collectedEvents = new LinkedList<ScoreBoardEvent>();
         sb.addScoreBoardListener(batchCounter);
         //Clock Sync can cause clocks to be changed when started, breaking tests.
@@ -82,15 +90,15 @@ public class ScoreboardImplTests {
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel) {
-        assertEquals(startLabel, sb.getSettings().get(ScoreBoard.BUTTON_START));
-        assertEquals(stopLabel, sb.getSettings().get(ScoreBoard.BUTTON_STOP));
-        assertEquals(timeoutLabel, sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT));
-        assertEquals(undoLabel, sb.getSettings().get(ScoreBoard.BUTTON_UNDO));
+        assertEquals(startLabel, Button.START.getLabel());
+        assertEquals(stopLabel, Button.STOP.getLabel());
+        assertEquals(timeoutLabel, Button.TIMEOUT.getLabel());
+        assertEquals(undoLabel, Button.UNDO.getLabel());
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel, String replaceLabel) {
         checkLabels(startLabel, stopLabel, timeoutLabel, undoLabel);
-        assertEquals(replaceLabel, sb.getSettings().get(ScoreBoard.BUTTON_REPLACED));
+        assertEquals(replaceLabel, Button.REPLACED.getLabel());
     }
 
     @Test
@@ -116,7 +124,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testSetInOvertime() {
-        (sb.getRulesets()).set("Clock." + Clock.ID_LINEUP + ".Time", "30000");
+        (sb.getRulesets()).set(Rule.LINEUP_DURATION, "30000");
         lc.setMaximumTime(999999999);
 
         assertFalse(lc.isCountDirectionDown());
@@ -194,27 +202,27 @@ public class ScoreboardImplTests {
 
     @Test
     public void testSetTimeoutOwner() {
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, listener));
 
-        sb.setTimeoutOwner("testOwner");
-        assertEquals("testOwner", sb.getTimeoutOwner());
+        sb.setTimeoutOwner(TimeoutOwners.OTO);
+        assertEquals(TimeoutOwners.OTO, sb.getTimeoutOwner());
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals("testOwner", event.getValue());
-        assertEquals("", event.getPreviousValue());
+        assertEquals(TimeoutOwners.OTO, event.getValue());
+        assertEquals(TimeoutOwners.NONE, event.getPreviousValue());
 
-        sb.setTimeoutOwner("");
-        assertEquals("", sb.getTimeoutOwner());
+        sb.setTimeoutOwner(TimeoutOwners.NONE);
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
-        assertEquals("", event.getValue());
-        assertEquals("testOwner", event.getPreviousValue());
+        assertEquals(TimeoutOwners.NONE, event.getValue());
+        assertEquals(TimeoutOwners.OTO, event.getPreviousValue());
     }
 
     @Test
     public void testStartOvertime_default() {
-        (sb.getRulesets()).set("Clock." + Clock.ID_LINEUP + ".OvertimeTime", "60000");
+        (sb.getRulesets()).set(Rule.OVERTIME_LINEUP_DURATION, "60000");
 
         assertFalse(pc.isRunning());
         pc.setTime(0);
@@ -332,12 +340,12 @@ public class ScoreboardImplTests {
         jc.setNumber(17);
         assertFalse(lc.isRunning());
         tc.setNumber(3);
-        sb.setTimeoutOwner("2");
+        sb.setTimeoutOwner(sb.getTeam("2"));
         sb.setOfficialReview(true);
         tc.start();
         assertFalse(ic.isRunning());
-        sb.getTeam("2").setInTimeout(true);
-        sb.getTeam("2").setInOfficialReview(true);
+        sb.getTeam(Team.ID_2).setInTimeout(true);
+        sb.getTeam(Team.ID_2).setInOfficialReview(true);
 
         sb.startJam();
 
@@ -350,11 +358,11 @@ public class ScoreboardImplTests {
         assertFalse(lc.isRunning());
         assertFalse(tc.isRunning());
         assertEquals(3, tc.getNumber());
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         assertFalse(ic.isRunning());
-        assertFalse(sb.getTeam("2").inTimeout());
-        assertFalse(sb.getTeam("2").inOfficialReview());
+        assertFalse(sb.getTeam(Team.ID_2).inTimeout());
+        assertFalse(sb.getTeam(Team.ID_2).inOfficialReview());
         checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
     }
 
@@ -481,7 +489,7 @@ public class ScoreboardImplTests {
         jc.setNumber(9);
         jc.start();
         sb.setLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT);
-        sb.setLabel(ScoreBoard.BUTTON_UNDO, ScoreBoard.ACTION_NONE);
+        Button.UNDO.setLabel(ScoreBoard.ACTION_NONE);
 
         sb.startJam();
 
@@ -500,8 +508,8 @@ public class ScoreboardImplTests {
         lc.setTime(50000);
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
-        sb.getTeam("1").setStarPass(true);
-        sb.getTeam("2").setLeadJammer(Team.LEAD_NO_LEAD);
+        sb.getTeam(Team.ID_1).setStarPass(true);
+        sb.getTeam(Team.ID_2).setLeadJammer(Team.LEAD_NO_LEAD);
 
         sb.stopJamTO();
 
@@ -512,8 +520,8 @@ public class ScoreboardImplTests {
         assertTrue(lc.isTimeAtStart());
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
-        assertFalse(sb.getTeam("1").isStarPass());
-        assertEquals(Team.LEAD_NO_LEAD, sb.getTeam("2").getLeadJammer());
+        assertFalse(sb.getTeam(Team.ID_1).isStarPass());
+        assertEquals(Team.LEAD_NO_LEAD, sb.getTeam(Team.ID_2).getLeadJammer());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_JAM);
     }
 
@@ -543,7 +551,7 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertTrue(ic.isRunning());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(ScoreBoard.RULE_INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getMaximumTime());
         assertTrue(ic.isTimeAtStart());
         assertFalse(sb.isInPeriod());
@@ -561,7 +569,7 @@ public class ScoreboardImplTests {
         tc.start();
         tc.setNumber(4);
         assertFalse(ic.isRunning());
-        sb.setTimeoutOwner("O");
+        sb.setTimeoutOwner(TimeoutOwners.OTO);
         sb.setOfficialReview(true);
 
         sb.stopJamTO();
@@ -574,7 +582,7 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertEquals(4, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
     }
@@ -614,7 +622,7 @@ public class ScoreboardImplTests {
         tc.start();
         tc.setNumber(8);
         assertFalse(ic.isRunning());
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
 
         sb.stopJamTO();
@@ -626,7 +634,7 @@ public class ScoreboardImplTests {
         assertEquals(32000, tc.getTimeElapsed());
         assertEquals(8, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
     }
@@ -690,7 +698,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testStopJam_lineupRunning() {
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
         sb.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
         lc.setTime(14000);
         lc.setNumber(9);
@@ -725,7 +733,7 @@ public class ScoreboardImplTests {
         assertTrue(tc.isTimeAtStart());
         assertEquals(3, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
     }
@@ -799,7 +807,7 @@ public class ScoreboardImplTests {
         tc.setTime(24000);
         tc.setNumber(7);
         assertFalse(ic.isRunning());
-        sb.setTimeoutOwner(ScoreBoard.TIMEOUT_OWNER_NONE);
+        sb.setTimeoutOwner(TimeoutOwners.NONE);
 
         sb.timeout();
 
@@ -811,20 +819,20 @@ public class ScoreboardImplTests {
         assertTrue(tc.isTimeAtStart());
         assertEquals(8, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals(ScoreBoard.TIMEOUT_OWNER_NONE, sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_RE_TIMEOUT);
 
         sb.timeout();
 
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
     }
 
     @Test
     public void testSetTimeoutType() {
-        sb.setTimeoutOwner("");
+        sb.setTimeoutOwner(TimeoutOwners.NONE);
 
-        sb.setTimeoutType("2", false);
-        sb.getTeam("2").setTimeouts(2);
+        sb.setTimeoutType(sb.getTeam(Team.ID_2), false);
+        sb.getTeam(Team.ID_2).setTimeouts(2);
 
         assertEquals(ScoreBoard.ACTION_TIMEOUT, sb.snapshot.getType());
         assertFalse(pc.isRunning());
@@ -832,14 +840,14 @@ public class ScoreboardImplTests {
         assertFalse(lc.isRunning());
         assertTrue(tc.isRunning());
         assertFalse(ic.isRunning());
-        assertEquals("2", sb.getTimeoutOwner());
+        assertEquals(sb.getTeam(Team.ID_2), sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
-        assertEquals(2, sb.getTeam("2").getTimeouts());
+        assertEquals(2, sb.getTeam(Team.ID_2).getTimeouts());
 
-        sb.setTimeoutType("1", true);
-        assertEquals("1", sb.getTimeoutOwner());
+        sb.setTimeoutType(sb.getTeam(Team.ID_1), true);
+        assertEquals(sb.getTeam(Team.ID_1), sb.getTimeoutOwner());
         assertTrue(sb.isOfficialReview());
-        assertEquals(3, sb.getTeam("2").getTimeouts());
+        assertEquals(3, sb.getTeam(Team.ID_2).getTimeouts());
     }
 
     @Test
@@ -850,23 +858,23 @@ public class ScoreboardImplTests {
         assertFalse(lc.isRunning());
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         assertFalse(sb.isInOvertime());
         assertTrue(sb.isInPeriod());
         sb.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT);
-        sb.setLabel(ScoreBoard.BUTTON_UNDO, ScoreBoard.ACTION_NONE);
+        Button.UNDO.setLabel(ScoreBoard.ACTION_NONE);
 
         sb.createSnapshot("TEST");
         assertEquals("TEST", sb.snapshot.getType());
-        assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", sb.getSettings().get(ScoreBoard.BUTTON_UNDO));
+        assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", Button.UNDO.getLabel());
 
         pc.stop();
         jc.stop();
         lc.start();
         tc.start();
         ic.start();
-        sb.setTimeoutOwner("TestOwner");
+        sb.setTimeoutOwner(TimeoutOwners.OTO);
         sb.setOfficialReview(true);
         sb.setInOvertime(true);
         sb.setInPeriod(false);
@@ -886,7 +894,7 @@ public class ScoreboardImplTests {
         assertTrue(tc.isTimeAtStart());
         assertFalse(ic.isRunning());
         assertTrue(ic.isTimeAtStart());
-        assertEquals("", sb.getTimeoutOwner());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         assertFalse(sb.isInOvertime());
         assertTrue(sb.isInPeriod());
@@ -965,25 +973,25 @@ public class ScoreboardImplTests {
 
     @Test
     public void testTimeoutCountOnUndo() {
-        assertEquals(3, sb.getTeam("1").getTimeouts());
-        assertEquals(1, sb.getTeam("2").getOfficialReviews());
+        assertEquals(3, sb.getTeam(Team.ID_1).getTimeouts());
+        assertEquals(1, sb.getTeam(Team.ID_2).getOfficialReviews());
         pc.start();
         lc.start();
         sb.timeout();
-        sb.getTeam("1").timeout();
-        assertEquals(2, sb.getTeam("1").getTimeouts());
+        sb.getTeam(Team.ID_1).timeout();
+        assertEquals(2, sb.getTeam(Team.ID_1).getTimeouts());
         sb.clockUndo(false);
-        assertEquals(3, sb.getTeam("1").getTimeouts());
-        sb.getTeam("2").officialReview();
-        assertEquals(0, sb.getTeam("2").getOfficialReviews());
+        assertEquals(3, sb.getTeam(Team.ID_1).getTimeouts());
+        sb.getTeam(Team.ID_2).officialReview();
+        assertEquals(0, sb.getTeam(Team.ID_2).getOfficialReviews());
         sb.clockUndo(false);
-        assertEquals(1, sb.getTeam("2").getOfficialReviews());
+        assertEquals(1, sb.getTeam(Team.ID_2).getOfficialReviews());
     }
 
     @Test
     public void testPeriodClockEnd_duringLineup() {
-        sb.getRulesets().set(ScoreBoard.RULE_INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        sb.getRulesets().set(Rule.INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
+        String prevUndoLabel = Button.UNDO.getLabel();
 
         pc.start();
         assertTrue(pc.isCountDirectionDown());
@@ -1006,15 +1014,15 @@ public class ScoreboardImplTests {
         assertTrue(ic.isRunning());
         assertTrue(ic.isTimeAtStart());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(ScoreBoard.RULE_INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getTimeRemaining());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_LINEUP, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
     }
 
     @Test
     public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
-        sb.getRulesets().set(ScoreBoard.RULE_PERIOD_END_BETWEEN_JAMS, "false");
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        sb.getRulesets().set(Rule.PERIOD_END_BETWEEN_JAMS, "false");
+        String prevUndoLabel = Button.UNDO.getLabel();
         sb.setLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT);
 
         pc.start();
@@ -1041,10 +1049,10 @@ public class ScoreboardImplTests {
 
     @Test
     public void testPeriodClockEnd_duringJam() {
-        String prevStartLabel = sb.getSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sb.getSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = Button.START.getLabel();
+        String prevStopLabel = Button.STOP.getLabel();
+        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
+        String prevUndoLabel = Button.UNDO.getLabel();
         pc.start();
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(2000);
@@ -1070,7 +1078,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testJamClockEnd_pcRemaining() {
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
         pc.start();
         jc.start();
         assertTrue(jc.isCountDirectionDown());
@@ -1093,11 +1101,11 @@ public class ScoreboardImplTests {
 
     @Test
     public void testJamClockEnd_autoEndDisabled() {
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_END_JAM, "false");
-        String prevStartLabel = sb.getSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sb.getSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        sb.getRulesets().set(Rule.AUTO_END_JAM, "false");
+        String prevStartLabel = Button.START.getLabel();
+        String prevStopLabel = Button.STOP.getLabel();
+        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
+        String prevUndoLabel = Button.UNDO.getLabel();
 
         pc.start();
         jc.start();
@@ -1119,7 +1127,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testIntermissionClockEnd_notLastPeriod() {
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevUndoLabel = Button.UNDO.getLabel();
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(0);
@@ -1152,7 +1160,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testIntermissionClockEnd_notLastPeriodContinueCountingJams() {
-        sb.getRulesets().set(ScoreBoard.RULE_JAM_NUMBER_PER_PERIOD, "false");
+        sb.getRulesets().set(Rule.JAM_NUMBER_PER_PERIOD, "false");
 
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
@@ -1175,10 +1183,10 @@ public class ScoreboardImplTests {
 
     @Test
     public void testIntermissionClockEnd_lastPeriod() {
-        String prevStartLabel = sb.getSettings().get(ScoreBoard.BUTTON_START);
-        String prevStopLabel = sb.getSettings().get(ScoreBoard.BUTTON_STOP);
-        String prevTimeoutLabel = sb.getSettings().get(ScoreBoard.BUTTON_TIMEOUT);
-        String prevUndoLabel = sb.getSettings().get(ScoreBoard.BUTTON_UNDO);
+        String prevStartLabel = Button.START.getLabel();
+        String prevStopLabel = Button.STOP.getLabel();
+        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
+        String prevUndoLabel = Button.UNDO.getLabel();
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(0);
@@ -1235,7 +1243,7 @@ public class ScoreboardImplTests {
 
         //follow up with team timeout
         advance(2000);
-        sb.setTimeoutType("1", false);
+        sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
         advance(60000);
         sb.stopJamTO();
         assertFalse(pc.isRunning());
@@ -1244,11 +1252,11 @@ public class ScoreboardImplTests {
 
     @Test
     public void testTimeoutsThatDontAlwaysStopPc() {
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_TO, "false");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_OTO, "false");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_TTO, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_ON_OR, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_STOP_PC_AFTER_TO_DURATION, "120000");
+        sb.getRulesets().set(Rule.STOP_PC_ON_TO, "false");
+        sb.getRulesets().set(Rule.STOP_PC_ON_OTO, "false");
+        sb.getRulesets().set(Rule.STOP_PC_ON_TTO, "true");
+        sb.getRulesets().set(Rule.STOP_PC_ON_OR, "true");
+        sb.getRulesets().set(Rule.STOP_PC_AFTER_TO_DURATION, "120000");
 
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(1200000);
@@ -1268,7 +1276,7 @@ public class ScoreboardImplTests {
         advance(2000);
         assertEquals(602000, pc.getTimeElapsed());
 
-        sb.setTimeoutType("1", false);
+        sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
 
         assertFalse(pc.isRunning());
         assertEquals(600000, pc.getTimeElapsed());
@@ -1277,7 +1285,7 @@ public class ScoreboardImplTests {
         advance(3000);
         assertEquals(600000, pc.getTimeElapsed());
 
-        sb.setTimeoutType("O", false);
+        sb.setTimeoutType(TimeoutOwners.OTO, false);
 
         assertTrue(pc.isRunning());
         assertEquals(605000, pc.getTimeElapsed());
@@ -1292,8 +1300,8 @@ public class ScoreboardImplTests {
 
     @Test
     public void testAutoStartJam() {
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START_JAM, "true");
+        sb.getRulesets().set(Rule.AUTO_START, "true");
+        sb.getRulesets().set(Rule.AUTO_START_JAM, "true");
 
         pc.start();
         assertFalse(jc.isRunning());
@@ -1319,11 +1327,11 @@ public class ScoreboardImplTests {
 
     @Test
     public void testAutoStartAndEndTimeout() {
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START_JAM, "false");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_START_BUFFER, "0");
-        sb.getRulesets().set(ScoreBoard.RULE_AUTO_END_TTO, "true");
-        sb.getRulesets().set(ScoreBoard.RULE_TTO_DURATION, "25000");
+        sb.getRulesets().set(Rule.AUTO_START, "true");
+        sb.getRulesets().set(Rule.AUTO_START_JAM, "false");
+        sb.getRulesets().set(Rule.AUTO_START_BUFFER, "0");
+        sb.getRulesets().set(Rule.AUTO_END_TTO, "true");
+        sb.getRulesets().set(Rule.TTO_DURATION, "25000");
 
         pc.start();
         assertFalse(jc.isRunning());
@@ -1343,7 +1351,7 @@ public class ScoreboardImplTests {
         assertFalse(ic.isRunning());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
 
-        sb.setTimeoutType("2", true);
+        sb.setTimeoutType(sb.getTeam(Team.ID_2), true);
 
         advance(25000);
 

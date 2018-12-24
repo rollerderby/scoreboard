@@ -19,11 +19,9 @@ function createTeamTables() {
 	});
 }
 
-var BLOCKER_REGEX = /^(Blocker[0-9])$/;
-var BLOCKER_REPLACE = "Blocker";
-var POSITIONS = "Bench Jammer Blocker Pivot";
+var POSITIONS = "Bench Jammer Blocker Pivot Ineligible";
 var POSITIONS_ARRAY = [ "Bench", "Jammer", "Blocker", "Pivot" ];
-var POSITIONS_REGEX = /^(Bench|Jammer|Blocker|Pivot)$/;
+var POSITIONS_REGEX = /^(Bench|Jammer|Blocker|Pivot|Ineligible)$/;
 
 function createTeamTable(t) {
 	var team = $sb("ScoreBoard.Team("+t+")");
@@ -36,8 +34,7 @@ function createTeamTable(t) {
 		var row = table.find("tr.Template").clone().removeClass("Template").attr("data-id", skater.$sbId);
 		skater.$sb("Name").$sbElement(row.find("td>a.Name"));
 		skater.$sb("Number").$sbElement(row.find("td>a.Number"));
-		skater.$sb("Position").$sbBindAndRun("sbchange", function(event, value) {
-			value = value.replace(BLOCKER_REGEX, BLOCKER_REPLACE);
+		skater.$sb("Role").$sbBindAndRun("sbchange", function(event, value) {
 			if (POSITIONS_REGEX.test(value))
 				row.removeClass(POSITIONS).addClass(value);
 		});
@@ -51,15 +48,7 @@ function createTeamTable(t) {
 				if (td.hasClass(e)) {
 					if (td.parent().hasClass(e)) // already set to this position
 						return false;
-					if (e == "Blocker") {
-						$.each( [ "1", "2", "3" ], function(i,n) {
-							if ($sb(skater.parent()).$sb("Position("+e+n+").Id").$sbIs("")) {
-								e += n;
-								return false;
-							}
-						});
-					}
-					skater.$sb("Position").$sbSet(e);
+					skater.$sb("Role").$sbSet(e);
 					return false;
 				}
 			});

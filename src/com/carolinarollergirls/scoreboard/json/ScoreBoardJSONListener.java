@@ -22,12 +22,15 @@ import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
+import com.carolinarollergirls.scoreboard.rules.AbstractRule;
+import com.carolinarollergirls.scoreboard.rules.AbstractRule.Type;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.BooleanRule;
 
@@ -177,6 +180,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             updates.add(new WSUpdate(prefix + "." + prop, v));
         } else if (v instanceof Boolean) {
             updates.add(new WSUpdate(prefix + "." + prop, v));
+        } else if (v instanceof TimeoutOwner) {
+            updates.add(new WSUpdate(prefix + "." + prop, ((TimeoutOwner) v).getId()));
         } else if (v instanceof Skater) {
             update(prefix, prop, (Skater)v);
         } else {
@@ -193,7 +198,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
         updates.add(new WSUpdate(path + "." + Skater.EVENT_NAME, s.getName()));
         updates.add(new WSUpdate(path + "." + Skater.EVENT_NUMBER, s.getNumber()));
-        updates.add(new WSUpdate(path + "." + Skater.EVENT_POSITION, s.getPosition()));
+        updates.add(new WSUpdate(path + "." + Skater.EVENT_POSITION, s.getPosition() == null ? "" :
+            s.getPosition().getFloorPosition().toString()));
+        updates.add(new WSUpdate(path + "." + Skater.EVENT_ROLE, s.getRole().toString()));
         updates.add(new WSUpdate(path + "." + Skater.EVENT_FLAGS, s.getFlags()));
         updates.add(new WSUpdate(path + "." + Skater.EVENT_PENALTY_BOX, s.isPenaltyBox()));
 
@@ -240,6 +247,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path + "." + Team.EVENT_RETAINED_OFFICIAL_REVIEW, t.retainedOfficialReview()));
         updates.add(new WSUpdate(path + "." + Team.EVENT_LEAD_JAMMER, t.getLeadJammer()));
         updates.add(new WSUpdate(path + "." + Team.EVENT_STAR_PASS, t.isStarPass()));
+        updates.add(new WSUpdate(path + "." + Team.EVENT_NO_PIVOT, t.hasNoPivot()));
 
         // Skaters
         for (Skater s : t.getSkaters()) {
@@ -282,8 +290,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
     }
 
     private void processCurrentRuleset(String path, Rulesets r) {
-        for (Map.Entry<String,String> e : r.getAll().entrySet()) {
-            updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULES + "(" + e.getKey() + ")", e.getValue()));
+        for (Map.Entry<Rule,String> e : r.getAll().entrySet()) {
+            updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULES + "(" + e.getKey().toString() + ")", e.getValue()));
         }
         updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULESET + ".Id", r.getId()));
         updates.add(new WSUpdate(path + "." + Rulesets.EVENT_CURRENT_RULESET + ".Name", r.getName()));
@@ -297,7 +305,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             return;
         }
 
-        for (Map.Entry<String,String> e : r.getAll().entrySet()) {
+        for (Map.Entry<Rule,String> e : r.getAll().entrySet()) {
             updates.add(new WSUpdate(path + ".Rule(" + e.getKey() + ")", e.getValue()));
         }
         updates.add(new WSUpdate(path + ".Id", r.getId()));
@@ -333,7 +341,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         }
 
         updates.add(new WSUpdate(path + "." + Position.EVENT_SKATER, p.getSkater() == null ? null : p.getSkater().getId()));
-        updates.add(new WSUpdate(path + "." + Position.EVENT_PENALTY_BOX, p.getPenaltyBox()));
+        updates.add(new WSUpdate(path + "." + Position.EVENT_PENALTY_BOX, p.isPenaltyBox()));
     }
 
     private void processJamStats(String path, Stats.JamStats js) {
@@ -349,6 +357,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path + ".JamScore", ts.getJamScore()));
         updates.add(new WSUpdate(path + ".LeadJammer", ts.getLeadJammer()));
         updates.add(new WSUpdate(path + ".StarPass", ts.getStarPass()));
+        updates.add(new WSUpdate(path + ".NoPivot", ts.getNoPivot()));
         updates.add(new WSUpdate(path + ".Timeouts", ts.getTimeouts()));
         updates.add(new WSUpdate(path + ".OfficialReviews", ts.getOfficialReviews()));
     }
@@ -367,7 +376,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
     private void processPenaltyCodes(Rulesets r) {
         updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
-        String file = r.get(PenaltyCodesManager.RULE_PENALTIES_FILE);
+        String file = r.get(Rule.PENALTIES_FILE);
         if(file != null && !file.isEmpty()) {
             PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
             for(PenaltyCode p : penalties.getPenalties()) {
@@ -386,18 +395,19 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate("ScoreBoard." + ScoreBoard.EVENT_OFFICIAL_REVIEW, sb.isOfficialReview()));
 
         // Process Rules
-        int rule = 0;
-        for (Rule r : sb.getRulesets().getRules().values()) {
+        int index = 0;
+        for (Rule rule : Rule.values()) {
+            AbstractRule r = rule.getRule();
             String prefix = "ScoreBoard." + Rulesets.EVENT_RULE_DEFINITIONS + "(" + r.getFullName() + ")";
             updates.add(new WSUpdate(prefix + ".Name", r.getFullName()));
             updates.add(new WSUpdate(prefix + ".Description", r.getDescription()));
-            updates.add(new WSUpdate(prefix + ".Type", r.getType()));
-            updates.add(new WSUpdate(prefix + ".Index", rule)); // Used to preserve order of rules.
-            if (r.getType() == "Boolean") {
+            updates.add(new WSUpdate(prefix + ".Type", r.getType().toString()));
+            updates.add(new WSUpdate(prefix + ".Index", index)); // Used to preserve order of rules.
+            if (r.getType() == Type.BOOLEAN) {
                 updates.add(new WSUpdate(prefix + ".TrueValue", ((BooleanRule)r).getTrueValue()));
                 updates.add(new WSUpdate(prefix + ".FalseValue", ((BooleanRule)r).getFalseValue()));
             }
-            rule++;
+            index++;
         }
         processCurrentRuleset("ScoreBoard", sb.getRulesets());
         for (Rulesets.Ruleset r : sb.getRulesets().getRulesets().values()) {

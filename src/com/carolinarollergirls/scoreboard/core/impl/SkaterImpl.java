@@ -15,8 +15,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
-import com.carolinarollergirls.scoreboard.core.PositionNotFoundException;
+import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
@@ -50,14 +51,12 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         }
     }
 
-    public Skater getSkater() { return this; }
-
     public String getName() { return name; }
     public void setName(String n) {
         synchronized (coreLock) {
             String last = name;
             name = n;
-            scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NAME, name, last));
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
         }
     }
 
@@ -66,26 +65,44 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         synchronized (coreLock) {
             String last = number;
             number = n;
-            scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_NUMBER, number, last));
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NUMBER, number, last));
         }
     }
 
-    public String getPosition() { return position; }
-    public void setPosition(String p) throws PositionNotFoundException {
+    public Position getPosition() { return position; }
+    public void setPosition(Position p) {
         synchronized (coreLock) {
-            if (position.equals(p)) {
+            if (p == position) {
                 return;
             }
 
-            try { team.getPosition(position)._clear(); }
-            catch ( PositionNotFoundException pnfE ) { /* I was on the Bench. */ }
-
-            try { team.getPosition(p)._setSkater(this.getId()); }
-            catch ( PositionNotFoundException pnfE ) { /* I'm being put on the Bench. */ }
-
-            String last = position;
+            Position last = position;
             position = p;
-            scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_POSITION, position, last));
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_POSITION, position, last));
+        }
+    }
+
+    public Role getRole() { return role; }
+    public void setRole(Role r) {
+        synchronized (coreLock) {
+            if (r == role) { return; }
+
+            Role last = role;
+            role = r;
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_ROLE, role, last));
+        }
+    }
+    public void setRoleToBase() { setRole(getBaseRole()); }
+
+
+    public Role getBaseRole() { return baseRole; }
+    public void setBaseRole(Role b) {
+        synchronized (coreLock) {
+            if (b == baseRole) { return; }
+
+            Role last = baseRole;
+            baseRole = b;
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_BASE_ROLE, baseRole, last));
         }
     }
 
@@ -101,16 +118,15 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
             Boolean last = new Boolean(penaltyBox);
             penaltyBox = box;
-            scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
 
-            if (box && position.equals(Position.ID_JAMMER) && team.getLeadJammer().equals(Team.LEAD_LEAD)) {
+            if (box && position.getFloorPosition() == FloorPosition.JAMMER && team.getLeadJammer().equals(Team.LEAD_LEAD)) {
                 team.setLeadJammer(Team.LEAD_LOST_LEAD);
             }
 
-            if (position.equals(Position.ID_JAMMER) || position.equals(Position.ID_PIVOT)) {
-                // Update Position if Jammer or Pivot
-                try { team.getPosition(position)._setPenaltyBox(box); }
-                catch ( PositionNotFoundException pnfE ) { }
+            // Update Position
+            if (position != null) {
+        	position.setPenaltyBox(box);
             }
 
             requestBatchEnd();
@@ -123,7 +139,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         synchronized (coreLock) {
             String last = flags;
             flags = f;
-            scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_FLAGS, flags, last));
+            scoreBoardChange(new ScoreBoardEvent(this, EVENT_FLAGS, flags, last));
         }
     }
 
@@ -136,6 +152,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
     public void AddPenalty(String id, boolean foulout_explusion, int period, int jam, String code) {
         synchronized (coreLock) {
+            requestBatchStart();
             if (foulout_explusion && code != null) {
                 Penalty prev = foexp_penalty;
                 id = UUID.randomUUID().toString();
@@ -143,11 +160,15 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                     id = prev.getId();
                 }
                 foexp_penalty = new PenaltyImpl(id, period, jam, code);
-                scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_FOEXP, foexp_penalty, null));
+                if (getBaseRole() == Role.BENCH) {
+                    setBaseRole(Role.INELIGIBLE);
+                }
+                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_FOEXP, foexp_penalty, null));
             } else if (foulout_explusion && code == null) {
                 Penalty prev = foexp_penalty;
                 foexp_penalty = null;
-                scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY_REMOVE_FOEXP, null, prev));
+                setBaseRole(Role.BENCH);
+                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_REMOVE_FOEXP, null, prev));
             } else if (id == null ) {
                 id = UUID.randomUUID().toString();
                 // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
@@ -155,7 +176,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                     PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
                     penalties.add(dpm);
                     sortPenalties();
-                    scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
+                    scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
                 }
             } else {
                 // Updating/Deleting existing Penalty.	Find it and process
@@ -166,11 +187,12 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                             p2.jam = jam;
                             p2.code = code;
                             sortPenalties();
-                            scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
+                            scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
                         } else {
                             penalties.remove(p2);
-                            scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_REMOVE_PENALTY, null, p2));
+                            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_PENALTY, null, p2));
                         }
+                        requestBatchEnd();
                         return;
                     }
                 }
@@ -178,8 +200,9 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
                 penalties.add(dpm);
                 sortPenalties();
-                scoreBoardChange(new ScoreBoardEvent(getSkater(), EVENT_PENALTY, getPenalties(), null));
+                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
             }
+            requestBatchEnd();
         }
     }
 
@@ -200,17 +223,6 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         });
     }
 
-
-    public void bench() {
-        synchronized (coreLock) {
-
-            if (!penaltyBox) {
-                setPosition(Position.ID_BENCH);
-            } else if (position.equals(Position.ID_PIVOT) && team.isStarPass()) {
-                setPosition(Position.ID_JAMMER);
-            }
-        }
-    }
     public SkaterSnapshot snapshot() {
         synchronized (coreLock) {
             return new SkaterSnapshotImpl(this);
@@ -220,6 +232,8 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
             setPosition(s.getPosition());
+            setRole(s.getRole());
+            setBaseRole(s.getBaseRole());
             setPenaltyBox(s.isPenaltyBox());
         }
     }
@@ -230,7 +244,9 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     protected String id;
     protected String name;
     protected String number;
-    protected String position = Position.ID_BENCH;
+    protected Position position = null;
+    protected Role role = Role.BENCH;
+    protected Role baseRole = Role.BENCH;
     protected boolean penaltyBox = false;
     protected String flags;
     protected List<PenaltyImpl> penalties = new LinkedList<PenaltyImpl>();
@@ -264,15 +280,21 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         private SkaterSnapshotImpl(Skater skater) {
             id = skater.getId();
             position = skater.getPosition();
+            role = skater.getRole();
+            baseRole = skater.getBaseRole();
             box = skater.isPenaltyBox();
         }
 
         public String getId( ) { return id; }
-        public String getPosition() { return position; }
+        public Position getPosition() { return position; }
+        public Role getRole() { return role; }
+        public Role getBaseRole() { return baseRole; }
         public boolean isPenaltyBox() { return box; }
 
         protected String id;
-        protected String position;
+        protected Position position;
+        protected Role role;
+        protected Role baseRole;
         protected boolean box;
 
     }

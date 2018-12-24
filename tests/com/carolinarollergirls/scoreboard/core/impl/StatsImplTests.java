@@ -8,7 +8,8 @@ import org.junit.Test;
 import java.util.Arrays;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.Position;
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
@@ -94,8 +95,8 @@ public class StatsImplTests {
 
     @Test
     public void testJamStartListener() {
-        team1.getSkater(ID_PREFIX + "100").setPosition(Position.ID_JAMMER);
-        team1.getSkater(ID_PREFIX + "101").setPosition(Position.ID_PIVOT);
+        team1.field(team1.getSkater(ID_PREFIX + "100"), Role.JAMMER);
+        team1.field(team1.getSkater(ID_PREFIX + "101"), Role.PIVOT);
 
         sb.startJam();
         advance(1000);
@@ -111,8 +112,8 @@ public class StatsImplTests {
         assertEquals(false, tsm1.getStarPass());
         assertEquals(3, tsm1.getTimeouts());
         assertEquals(1, tsm1.getOfficialReviews());
-        assertEquals(Position.ID_JAMMER, tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
-        assertEquals(Position.ID_PIVOT, tsm1.getSkaterStats(ID_PREFIX + "101").getPosition());
+        assertEquals(FloorPosition.JAMMER.toString(), tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
+        assertEquals(FloorPosition.PIVOT.toString(), tsm1.getSkaterStats(ID_PREFIX + "101").getPosition());
         assertEquals(null, tsm1.getSkaterStats(ID_PREFIX + "114"));
 
         // Team 1 gets lead and scores.
@@ -221,8 +222,8 @@ public class StatsImplTests {
     @Test
     public void testSkaterEventListener() {
         // Some skater positions set before jam.
-        team1.getSkater(ID_PREFIX + "100").setPosition(Position.ID_JAMMER);
-        team1.getSkater(ID_PREFIX + "101").setPosition(Position.ID_PIVOT);
+        team1.field(team1.getSkater(ID_PREFIX + "100"), Role.JAMMER);
+        team1.field(team1.getSkater(ID_PREFIX + "101"), Role.PIVOT);
 
         sb.startJam();
         advance(1000);
@@ -231,14 +232,14 @@ public class StatsImplTests {
         Stats.JamStats jsm = psm.getJamStats(1);
         Stats.TeamStats tsm1 = jsm.getTeamStats(Team.ID_1);
 
-        // Blocker is added after the jam stats. All positions in place.
-        team1.getSkater(ID_PREFIX + "102").setPosition(Position.ID_BLOCKER1);
-        assertEquals(Position.ID_JAMMER, tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
-        assertEquals(Position.ID_PIVOT, tsm1.getSkaterStats(ID_PREFIX + "101").getPosition());
-        assertEquals(Position.ID_BLOCKER1, tsm1.getSkaterStats(ID_PREFIX + "102").getPosition());
+        // Blocker is added after the jam starts. All positions in place.
+        team1.field(team1.getSkater(ID_PREFIX + "102"), team1.getPosition(FloorPosition.BLOCKER1));
+        assertEquals(FloorPosition.JAMMER.toString(), tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
+        assertEquals(FloorPosition.PIVOT.toString(), tsm1.getSkaterStats(ID_PREFIX + "101").getPosition());
+        assertEquals(FloorPosition.BLOCKER1.toString(), tsm1.getSkaterStats(ID_PREFIX + "102").getPosition());
 
         // Skater was actually on bench.
-        team1.getSkater(ID_PREFIX + "102").setPosition(Position.ID_BENCH);
+        team1.field(team1.getSkater(ID_PREFIX + "102"), Role.BENCH);
         assertEquals(null, tsm1.getSkaterStats(ID_PREFIX + "102"));
 
         // Skater goes to the box.
@@ -253,8 +254,8 @@ public class StatsImplTests {
         sb.stopJamTO();
         advance(1000);
         // New jammer does not replace jammer from previous jam.
-        team1.getSkater(ID_PREFIX + "103").setPosition(Position.ID_JAMMER);
-        assertEquals(Position.ID_JAMMER, tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
+        team1.field(team1.getSkater(ID_PREFIX + "103"), Role.JAMMER);
+        assertEquals(FloorPosition.JAMMER.toString(), tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
     }
 
 }
