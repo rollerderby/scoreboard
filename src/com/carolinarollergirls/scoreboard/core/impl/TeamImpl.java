@@ -26,6 +26,7 @@ import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
@@ -45,6 +46,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public String getProviderName() { return "Team"; }
     public Class<Team> getProviderClass() { return Team.class; }
     public String getProviderId() { return getId(); }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public ScoreBoard getScoreBoard() { return scoreBoard; }
 
@@ -82,7 +84,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             String last = name;
             name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.NAME, name, last));
         }
     }
 
@@ -150,18 +152,18 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             if (alternateNames.containsKey(i)) {
                 alternateNames.get(i).setName(n);
             } else {
-                AlternateName anm = new AlternateNameImpl(this, i, n);
-                alternateNames.put(i, anm);
-                anm.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_ALTERNATE_NAME, anm, null));
+                AlternateName an = new AlternateNameImpl(this, i, n);
+                alternateNames.put(i, an);
+                an.addScoreBoardListener(this);
+                scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, an, null));
             }
         }
     }
     public void removeAlternateName(String i) {
         synchronized (coreLock) {
-            AlternateName anm = alternateNames.remove(i);
-            anm.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_ALTERNATE_NAME, anm, null));
+            AlternateName an = alternateNames.remove(i);
+            an.removeScoreBoardListener(this);
+            scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, null, an));
         }
     }
     public void removeAlternateNames() {
@@ -188,7 +190,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
                 Color cm = new ColorImpl(this, i, c);
                 colors.put(i, cm);
                 cm.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_COLOR, cm, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, cm, null));
             }
         }
     }
@@ -196,7 +198,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             Color cm = colors.remove(i);
             cm.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_COLOR, cm, null));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, null, cm));
         }
     }
     public void removeColors() {
@@ -213,7 +215,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             String last = logo;
             logo = l;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_LOGO, logo, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.LOGO, logo, last));
         }
     }
 
@@ -245,7 +247,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             if (s < getLastScore()) {
                 setLastScore(s);
             }
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_SCORE, new Integer(score), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.SCORE, new Integer(score), last));
         }
     }
     public void changeScore(int c) {
@@ -265,7 +267,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
             Integer last = new Integer(lastscore);
             lastscore = s;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_LAST_SCORE, new Integer(lastscore), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.LAST_SCORE, new Integer(lastscore), last));
         }
     }
     public void changeLastScore(int c) {
@@ -282,7 +284,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
             Boolean last = new Boolean(in_timeout);
             in_timeout = b;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_TIMEOUT, new Boolean(b), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_TIMEOUT, new Boolean(b), last));
         }
     }
 
@@ -294,7 +296,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
             Boolean last = new Boolean(in_official_review);
             in_official_review = b;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_OFFICIAL_REVIEW, new Boolean(b), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_OFFICIAL_REVIEW, new Boolean(b), last));
         }
     }
 
@@ -311,7 +313,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
             Boolean last = new Boolean(retained_official_review);
             retained_official_review = b;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_RETAINED_OFFICIAL_REVIEW, new Boolean(b), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.RETAINED_OFFICIAL_REVIEW, new Boolean(b), last));
         }
     }
 
@@ -326,7 +328,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
             Integer last = new Integer(timeouts);
             timeouts = t;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUTS, new Integer(timeouts), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.TIMEOUTS, new Integer(timeouts), last));
         }
     }
     public void changeTimeouts(int c) {
@@ -345,7 +347,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
             Integer last = new Integer(officialReviews);
             officialReviews = r;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEWS, new Integer(officialReviews), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.OFFICIAL_REVIEWS, new Integer(officialReviews), last));
         }
     }
     public void changeOfficialReviews(int c) {
@@ -413,7 +415,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
             skaters.put(skater.getId(), skater);
             skater.addScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_SKATER, skater, null));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, skater, null));
         }
     }
     public void removeSkater(String id) throws SkaterNotFoundException {
@@ -425,7 +427,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
             s.removeScoreBoardListener(this);
             skaters.remove(id);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_SKATER, s, null));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, null, s));
         }
     }
 
@@ -564,7 +566,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
         String last = leadJammer;
         leadJammer = lead;
-        scoreBoardChange(new ScoreBoardEvent(this, EVENT_LEAD_JAMMER, leadJammer, last));
+        scoreBoardChange(new ScoreBoardEvent(this, Value.LEAD_JAMMER, leadJammer, last));
 
         if (Team.LEAD_LEAD.equals(lead)) {
             String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
@@ -585,7 +587,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
             Boolean last = new Boolean(starPass);
             starPass = sp;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_STAR_PASS, new Boolean(sp), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.STAR_PASS, new Boolean(sp), last));
 
             if (sp && Team.LEAD_LEAD.equals(leadJammer)) {
                 setLeadJammer(Team.LEAD_LOST_LEAD);
@@ -609,7 +611,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             requestBatchStart();
             Boolean last = new Boolean(hasNoPivot);
             hasNoPivot = noPivot;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NO_PIVOT, new Boolean(noPivot), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.NO_PIVOT, new Boolean(noPivot), last));
             requestBatchEnd();
         }
     }
@@ -623,6 +625,11 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
 
     protected ScoreBoard scoreBoard;
+
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Value.class);
+        add(Child.class);
+    }};
 
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 
@@ -670,7 +677,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             synchronized (coreLock) {
                 String last = name;
                 name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, AlternateName.EVENT_NAME, name, last));
+                scoreBoardChange(new ScoreBoardEvent(this, AlternateName.Value.NAME, name, last));
             }
         }
 
@@ -679,6 +686,11 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         public String getProviderName() { return "AlternateName"; }
         public Class<AlternateName> getProviderClass() { return AlternateName.class; }
         public String getProviderId() { return getId(); }
+        public List<Class<? extends Property>> getProperties() { return properties; }
+
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Value.class);
+        }};
 
         protected Team team;
         protected String id;
@@ -697,7 +709,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             synchronized (coreLock) {
                 String last = color;
                 color = c;
-                scoreBoardChange(new ScoreBoardEvent(this, Color.EVENT_COLOR, color, last));
+                scoreBoardChange(new ScoreBoardEvent(this, Color.Value.COLOR, color, last));
             }
         }
 
@@ -706,6 +718,11 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         public String getProviderName() { return "Color"; }
         public Class<Color> getProviderClass() { return Color.class; }
         public String getProviderId() { return getId(); }
+        public List<Class<? extends Property>> getProperties() { return properties; }
+
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Value.class);
+        }};
 
         protected Team team;
         protected String id;

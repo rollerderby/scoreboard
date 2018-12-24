@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.core;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
 
 public interface Settings extends ScoreBoardEventProvider {
     public void reset();
@@ -19,6 +20,8 @@ public interface Settings extends ScoreBoardEventProvider {
     public String get(String k);
     // Setting to null deletes a setting.
     public void set(String k, String v);
-
-    public static final String EVENT_SETTING = "Setting";
+    
+    public enum Child implements MultiProperty {
+	SETTING;
+    }
 }

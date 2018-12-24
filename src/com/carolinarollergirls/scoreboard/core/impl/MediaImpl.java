@@ -16,8 +16,10 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,6 +30,7 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
     public MediaImpl(File path) {
@@ -37,6 +40,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
     public String getProviderName() { return "Media"; }
     public Class<Media> getProviderClass() { return Media.class; }
     public String getProviderId() { return ""; }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     private void setup(Path path) {
         this.path = path;
@@ -134,7 +138,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
                 MediaFile mf = new MediaFileImpl(format, type, id, id.replaceFirst("\\.[^.]*$", ""), p);
                 mf.addScoreBoardListener(this);
                 map.put(id, mf);
-                scoreBoardChange(new ScoreBoardEvent(mf, MediaFile.EVENT_FILE, mf, null));
+                scoreBoardChange(new ScoreBoardEvent(mf, Child.FILE, mf, null));
             }
         }
     }
@@ -145,7 +149,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
             MediaFile mf = map.get(id);
             if (mf != null) {
                 map.remove(id);
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_FILE, mf, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, null, mf));
             }
         }
     }
@@ -193,6 +197,10 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
     private Path path;
     private WatchService watchService;
 
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Child.class);
+    }};
+
     private static Object coreLock = ScoreBoardImpl.getCoreLock();
 
     public class MediaFileImpl extends DefaultScoreBoardEventProvider implements MediaFile {
@@ -207,6 +215,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         public String getProviderName() { return "MediaFile"; }
         public Class<MediaFile> getProviderClass() { return MediaFile.class; }
         public String getProviderId() { return getId(); }
+        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public String getFormat() { synchronized (coreLock) { return format ;} }
         public String getType() { synchronized (coreLock) { return type ;} }
@@ -215,7 +224,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         public void setName(String n) {
             synchronized (coreLock) {
                 name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_FILE, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, this, null));
             };
         }
         public String getSrc() { synchronized (coreLock) { return src ;} }
@@ -225,5 +234,8 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         private String id;
         private String name;
         private String src;
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Child.class);
+        }};
     }
 }

@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
@@ -17,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -26,7 +28,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         scoreBoard = sb;
         id = i;
 
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.EVENT_CURRENT_RULESET, rulesetChangeListener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.RULESET, rulesetChangeListener));
 
         reset();
     }
@@ -34,6 +36,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
     public String getProviderName() { return "Clock"; }
     public Class<Clock> getProviderClass() { return Clock.class; }
     public String getProviderId() { return getId(); }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public ScoreBoard getScoreBoard() { return scoreBoard; }
 
@@ -104,7 +107,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         synchronized (coreLock) {
             String last = name;
             name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.NAME, name, last));
         }
     }
 
@@ -113,14 +116,14 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         synchronized (coreLock) {
             Integer last = new Integer(number);
             number = checkNewNumber(n);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NUMBER, new Integer(number), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.NUMBER, new Integer(number), last));
         }
     }
     public void changeNumber(int change) {
         synchronized (coreLock) {
             Integer last = new Integer(number);
             number = checkNewNumber(number + change);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NUMBER, new Integer(number), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.NUMBER, new Integer(number), last));
         }
     }
     protected int checkNewNumber(int n) {
@@ -144,7 +147,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             if (getNumber() != checkNewNumber(getNumber())) {
                 setNumber(getNumber());
             }
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_MINIMUM_NUMBER, new Integer(minimumNumber), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.MINIMUM_NUMBER, new Integer(minimumNumber), last));
         }
     }
     public void changeMinimumNumber(int change) {
@@ -164,7 +167,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             if (getNumber() != checkNewNumber(getNumber())) {
                 setNumber(getNumber());
             }
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_MAXIMUM_NUMBER, new Integer(maximumNumber), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.MAXIMUM_NUMBER, new Integer(maximumNumber), last));
         }
     }
     public void changeMaximumNumber(int change) {
@@ -197,8 +200,8 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             }
             time = checkNewTime(ms);
             if (isDisplayChange(time, last)) {
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
+                scoreBoardChange(new ScoreBoardEvent(this, Value.TIME, new Long(time), last));
+                scoreBoardChange(new ScoreBoardEvent(this, Value.INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
             }
             if (isTimeAtEnd()) {
                 stop();
@@ -214,8 +217,8 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             }
             time = checkNewTime(time + change);
             if (isDisplayChange(time, last)) {
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIME, new Long(time), last));
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
+                scoreBoardChange(new ScoreBoardEvent(this, Value.TIME, new Long(time), last));
+                scoreBoardChange(new ScoreBoardEvent(this, Value.INVERTED_TIME, new Long(maximumTime) - new Long(time), maximumTime - last));
             }
             if(isTimeAtEnd()) {
                 stop();
@@ -266,7 +269,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             if (getTime() != checkNewTime(getTime())) {
                 setTime(getTime());
             }
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_MINIMUM_TIME, new Long(minimumTime), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.MINIMUM_TIME, new Long(minimumTime), last));
         }
     }
     public void changeMinimumTime(long change) {
@@ -288,7 +291,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             if (getTime() != checkNewTime(getTime())) {
                 setTime(getTime());
             }
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_MAXIMUM_TIME, new Long(maximumTime), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.MAXIMUM_TIME, new Long(maximumTime), last));
         }
     }
     public void changeMaximumTime(long change) {
@@ -322,7 +325,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         synchronized (coreLock) {
             Boolean last = new Boolean(countDown);
             countDown = down;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_DIRECTION, new Boolean(countDown), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.DIRECTION, new Boolean(countDown), last));
             if (last != down) {
                 setTime(getInvertedTime());
             }
@@ -340,7 +343,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         synchronized (coreLock) {
             if (isRunning()) { return; }
             isRunning = true;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.TRUE, Boolean.FALSE));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.RUNNING, Boolean.TRUE, Boolean.FALSE));
             updateClockTimerTask.addClock(this, quickAdd);
         }
     }
@@ -349,7 +352,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             if (!isRunning()) { return; }
             isRunning = false;
             updateClockTimerTask.removeClock(this);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_RUNNING, Boolean.FALSE, Boolean.TRUE));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.RUNNING, Boolean.FALSE, Boolean.TRUE));
         }
     }
 
@@ -391,6 +394,10 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
 
     protected long lastTime;
     protected boolean isRunning = false;
+    
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Value.class);
+    }};
 
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 

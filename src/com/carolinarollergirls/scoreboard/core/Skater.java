@@ -10,6 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
@@ -38,27 +40,31 @@ public interface Skater extends ScoreBoardEventProvider {
     // A null code removes the penalty.
     public void AddPenalty(String id, boolean foulout_explusion, int period, int jam, String code);
 
-    public static final String EVENT_NAME = "Name";
-    public static final String EVENT_NUMBER = "Number";
-    public static final String EVENT_POSITION = "Position";
-    public static final String EVENT_ROLE = "Role";
-    public static final String EVENT_BASE_ROLE = "BaseRole";
-    public static final String EVENT_PENALTY_BOX = "PenaltyBox";
-    public static final String EVENT_FLAGS = "Flags";
-
-    public static final String EVENT_PENALTY = "Penalty";
-    public static final String EVENT_REMOVE_PENALTY = "RemovePenalty";
-    public static final String EVENT_PENALTY_FOEXP = "PenaltyFOEXP";
-    public static final String EVENT_PENALTY_REMOVE_FOEXP = "RemovePenaltyFOEXP";
-    public static final String EVENT_PENALTY_PERIOD = "Period";
-    public static final String EVENT_PENALTY_JAM = "Jam";
-    public static final String EVENT_PENALTY_CODE = "Code";
+    public enum Value implements SingleProperty {
+	NAME,
+	NUMBER,
+	POSITION,
+	ROLE,
+	BASE_ROLE,
+	PENALTY_BOX,
+	FLAGS,
+	PENALTY_FOEXP;
+    }
+    public enum Child implements MultiProperty {
+	PENALTY;
+    }
 
     public static interface Penalty extends ScoreBoardEventProvider {
         public String getId();
         public int getPeriod();
         public int getJam();
         public String getCode();
+
+        public enum Value implements SingleProperty {
+            PERIOD,
+            JAM,
+            CODE;
+        }
     }
 
     public static interface SkaterSnapshot	{

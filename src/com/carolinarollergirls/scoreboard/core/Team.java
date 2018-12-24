@@ -11,6 +11,8 @@ package com.carolinarollergirls.scoreboard.core;
 import java.util.List;
 import java.util.Map;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
@@ -95,24 +97,26 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final String LEAD_NO_LEAD = "NoLead";
     public static final String LEAD_LOST_LEAD = "LostLead";
 
-    public static final String EVENT_NAME = "Name";
-    public static final String EVENT_LOGO = "Logo";
-    public static final String EVENT_SCORE = "Score";
-    public static final String EVENT_LAST_SCORE = "LastScore";
-    public static final String EVENT_TIMEOUTS = "Timeouts";
-    public static final String EVENT_OFFICIAL_REVIEWS = "OfficialReviews";
-    public static final String EVENT_IN_TIMEOUT = "InTimeout";
-    public static final String EVENT_IN_OFFICIAL_REVIEW = "InOfficialReview";
-    public static final String EVENT_NO_PIVOT = "NoPivot";
-    public static final String EVENT_RETAINED_OFFICIAL_REVIEW = "RetainedOfficialReview";
-    public static final String EVENT_ADD_SKATER = "AddSkater";
-    public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
-    public static final String EVENT_LEAD_JAMMER = "LeadJammer";
-    public static final String EVENT_STAR_PASS = "StarPass";
-    public static final String EVENT_ADD_ALTERNATE_NAME = "AddAlternateName";
-    public static final String EVENT_REMOVE_ALTERNATE_NAME = "RemoveAlternateName";
-    public static final String EVENT_ADD_COLOR = "AddColor";
-    public static final String EVENT_REMOVE_COLOR = "RemoveColor";
+    public enum Value implements SingleProperty {
+	NAME,
+	LOGO,
+	SCORE,
+	LAST_SCORE,
+	TIMEOUTS,
+	OFFICIAL_REVIEWS,
+	IN_TIMEOUT,
+	IN_OFFICIAL_REVIEW,
+	NO_PIVOT,
+	RETAINED_OFFICIAL_REVIEW,
+	LEAD_JAMMER,
+	STAR_PASS,
+    }
+    public enum Child implements MultiProperty {
+	SKATER,
+	POSITION,
+	ALTERNATE_NAME,
+	COLOR;
+    }
 
     public static interface AlternateName extends ScoreBoardEventProvider {
         public String getId();
@@ -121,7 +125,9 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
         public Team getTeam();
 
-        public static final String EVENT_NAME = "Name";
+        public enum Value implements SingleProperty {
+            NAME;
+        }
 
         public static final String ID_OPERATOR = "operator";
         public static final String ID_MOBILE = "mobile";
@@ -136,7 +142,9 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
         public Team getTeam();
 
-        public static final String EVENT_COLOR = "Color";
+        public enum Value implements SingleProperty {
+            COLOR;
+        }
     }
 
     public static interface TeamSnapshot {

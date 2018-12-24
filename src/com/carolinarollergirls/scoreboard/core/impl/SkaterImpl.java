@@ -22,6 +22,7 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
@@ -35,6 +36,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     public String getProviderName() { return "Skater"; }
     public Class<Skater> getProviderClass() { return Skater.class; }
     public String getProviderId() { return getId(); }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Team getTeam() { return team; }
 
@@ -56,7 +58,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         synchronized (coreLock) {
             String last = name;
             name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.NAME, name, last));
         }
     }
 
@@ -65,7 +67,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         synchronized (coreLock) {
             String last = number;
             number = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NUMBER, number, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.NUMBER, number, last));
         }
     }
 
@@ -78,7 +80,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
             Position last = position;
             position = p;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_POSITION, position, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.POSITION, position, last));
         }
     }
 
@@ -89,7 +91,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
             Role last = role;
             role = r;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_ROLE, role, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.ROLE, role, last));
         }
     }
     public void setRoleToBase() { setRole(getBaseRole()); }
@@ -102,7 +104,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
             Role last = baseRole;
             baseRole = b;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_BASE_ROLE, baseRole, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.BASE_ROLE, baseRole, last));
         }
     }
 
@@ -118,7 +120,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
             Boolean last = new Boolean(penaltyBox);
             penaltyBox = box;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.PENALTY_BOX, new Boolean(penaltyBox), last));
 
             if (box && position.getFloorPosition() == FloorPosition.JAMMER && team.getLeadJammer().equals(Team.LEAD_LEAD)) {
                 team.setLeadJammer(Team.LEAD_LOST_LEAD);
@@ -139,7 +141,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         synchronized (coreLock) {
             String last = flags;
             flags = f;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_FLAGS, flags, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.FLAGS, flags, last));
         }
     }
 
@@ -163,12 +165,12 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 if (getBaseRole() == Role.BENCH) {
                     setBaseRole(Role.INELIGIBLE);
                 }
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_FOEXP, foexp_penalty, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Value.PENALTY_FOEXP, foexp_penalty, null));
             } else if (foulout_explusion && code == null) {
                 Penalty prev = foexp_penalty;
                 foexp_penalty = null;
                 setBaseRole(Role.BENCH);
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_REMOVE_FOEXP, null, prev));
+                scoreBoardChange(new ScoreBoardEvent(this, Value.PENALTY_FOEXP, null, prev));
             } else if (id == null ) {
                 id = UUID.randomUUID().toString();
                 // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
@@ -176,7 +178,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                     PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
                     penalties.add(dpm);
                     sortPenalties();
-                    scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, getPenalties(), null));
                 }
             } else {
                 // Updating/Deleting existing Penalty.	Find it and process
@@ -187,10 +189,10 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                             p2.jam = jam;
                             p2.code = code;
                             sortPenalties();
-                            scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
+                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, getPenalties(), null));
                         } else {
                             penalties.remove(p2);
-                            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_PENALTY, null, p2));
+                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, null, p2));
                         }
                         requestBatchEnd();
                         return;
@@ -200,7 +202,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
                 penalties.add(dpm);
                 sortPenalties();
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, getPenalties(), null));
             }
             requestBatchEnd();
         }
@@ -239,6 +241,12 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     }
 
     protected Team team;
+
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Value.class);
+	add(Child.class);
+    }};
+
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 
     protected String id;
@@ -269,11 +277,16 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         public String getProviderName() { return "Penalty"; }
         public Class<Penalty> getProviderClass() { return Penalty.class; }
         public String getProviderId() { return getId(); }
+        public List<Class<? extends Property>> getProperties() { return properties; }
 
         protected String id;
         protected int period;
         protected int jam;
         protected String code;
+
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Value.class);
+        }};
     }
 
     public static class SkaterSnapshotImpl implements SkaterSnapshot {

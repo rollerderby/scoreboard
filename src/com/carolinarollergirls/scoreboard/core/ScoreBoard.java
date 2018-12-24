@@ -10,6 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
@@ -90,20 +92,19 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public XmlScoreBoard getXmlScoreBoard();
     
-    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
+    public enum Value implements SingleProperty {
+	IN_PERIOD,
+	IN_OVERTIME,
+	OFFICIAL_SCORE,
+	TIMEOUT_OWNER,
+	OFFICIAL_REVIEW;
+    }
+    public enum Child implements MultiProperty {
+	CLOCK,
+	TEAM;
+    }
 
-    public static final String EVENT_IN_PERIOD = "InPeriod";
-    public static final String EVENT_IN_OVERTIME = "InOvertime";
-    public static final String EVENT_OFFICIAL_SCORE = "OfficialScore";
-    public static final String EVENT_ADD_POLICY = "AddPolicy";
-    public static final String EVENT_REMOVE_POLICY = "RemovePolicy";
-    public static final String EVENT_TIMEOUT_OWNER = "TimeoutOwner";
-    public static final String EVENT_OFFICIAL_REVIEW = "OfficialReview";
-    public static final String EVENT_ADD_CLOCK = "AddClock";
-    public static final String EVENT_REMOVE_CLOCK = "RemoveClock";
-    public static final String EVENT_ADD_TEAM = "AddTeam";
-    public static final String EVENT_REMOVE_TEAM = "RemoveTeam";
-    public static final String EVENT_SETTING = "Setting";
+    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 
     public static final String ACTION_NONE = "---";
     public static final String ACTION_NO_REPLACE = "No Action";

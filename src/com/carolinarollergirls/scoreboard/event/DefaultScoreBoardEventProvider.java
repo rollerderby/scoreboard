@@ -30,11 +30,11 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     }
 
     protected void requestBatchStart() {
-        scoreBoardChange(new ScoreBoardEvent(this, ScoreBoardEvent.BATCH_START, Boolean.TRUE, Boolean.TRUE));
+        scoreBoardChange(new ScoreBoardEvent(this, BatchEvent.START, Boolean.TRUE, Boolean.TRUE));
     }
 
     protected void requestBatchEnd() {
-        scoreBoardChange(new ScoreBoardEvent(this, ScoreBoardEvent.BATCH_END, Boolean.TRUE, Boolean.TRUE));
+        scoreBoardChange(new ScoreBoardEvent(this, BatchEvent.END, Boolean.TRUE, Boolean.TRUE));
     }
 
     public void addScoreBoardListener(ScoreBoardListener listener) {
@@ -49,4 +49,19 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     }
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
+
+    public enum BatchEvent implements ScoreBoardEvent.Property {
+	START("Start"),
+	END("End");
+
+        private BatchEvent(String st) {
+            string = st;
+        }
+
+        public String toFrontend() { return string; }
+        public boolean isSingleton() { return true; }
+        public boolean isChild() { return false; }
+
+        private final String string;
+    }
 }

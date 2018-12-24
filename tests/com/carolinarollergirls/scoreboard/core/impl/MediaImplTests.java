@@ -63,7 +63,8 @@ public class MediaImplTests {
         init.delete();
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(Media.EVENT_REMOVE_FILE, e.getProperty());
+        assertEquals(Media.Child.FILE, e.getProperty());
+        assertNull(e.getValue());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNull(tm.get("init.png"));
     }
@@ -73,7 +74,8 @@ public class MediaImplTests {
         assertTrue(media.removeMediaFile("images", "teamlogo", "init.png"));
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(Media.EVENT_REMOVE_FILE, e.getProperty());
+        assertEquals(Media.Child.FILE, e.getProperty());
+        assertNull(e.getValue());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNull(tm.get("init.png"));
     }
@@ -83,7 +85,7 @@ public class MediaImplTests {
         dir.newFile("html/images/teamlogo/new.png");
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(Media.MediaFile.EVENT_FILE, e.getProperty());
+        assertEquals(Media.Child.FILE, e.getProperty());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNotNull(tm.get("new.png"));
     }

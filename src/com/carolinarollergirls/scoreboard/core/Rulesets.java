@@ -10,6 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.Map;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
@@ -57,9 +59,12 @@ public interface Rulesets extends ScoreBoardEventProvider {
 
     public ScoreBoardEventProvider getParent();
 
-    public static final String EVENT_RULE_DEFINITIONS = "RuleDefinitions";
-    public static final String EVENT_CURRENT_RULES = "Rule";
-    public static final String EVENT_CURRENT_RULESET = "Ruleset";
-    public static final String EVENT_RULESET = "KnownRulesets";
-    public static final String EVENT_REMOVE_RULESET = "RemoveKnownRuleset";
+    public enum Value implements SingleProperty {
+	RULE_DEFINITIONS,
+	RULE,
+	RULESET;
+    }
+    public enum Child implements MultiProperty {
+	KNOWN_RULESETS;
+    }
 }

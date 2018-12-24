@@ -8,6 +8,7 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Clock extends ScoreBoardEventProvider {
@@ -93,6 +94,19 @@ public interface Clock extends ScoreBoardEventProvider {
         public boolean isRunning();
     }
 
+    public enum Value implements SingleProperty {
+	NAME,
+	NUMBER,
+	MINIMUM_NUMBER,
+	MAXIMUM_NUMBER,
+	TIME,
+	INVERTED_TIME,
+	MINIMUM_TIME,
+	MAXIMUM_TIME,
+	DIRECTION,
+	RUNNING;
+    }
+    
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";
 
     public static final String ID_PERIOD = "Period";
@@ -100,15 +114,4 @@ public interface Clock extends ScoreBoardEventProvider {
     public static final String ID_LINEUP = "Lineup";
     public static final String ID_TIMEOUT = "Timeout";
     public static final String ID_INTERMISSION = "Intermission";
-
-    public static final String EVENT_NAME = "Name";
-    public static final String EVENT_NUMBER = "Number";
-    public static final String EVENT_MINIMUM_NUMBER = "MinimumNumber";
-    public static final String EVENT_MAXIMUM_NUMBER = "MaximumNumber";
-    public static final String EVENT_TIME = "Time";
-    public static final String EVENT_INVERTED_TIME = "InvertedTime";
-    public static final String EVENT_MINIMUM_TIME = "MinimumTime";
-    public static final String EVENT_MAXIMUM_TIME = "MaximumTime";
-    public static final String EVENT_DIRECTION = "Direction";
-    public static final String EVENT_RUNNING = "Running";
 }

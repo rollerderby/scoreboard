@@ -10,14 +10,16 @@ package com.carolinarollergirls.scoreboard.event;
 
 import java.util.Objects;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+
 public class ScoreBoardCondition implements Cloneable {
     public ScoreBoardCondition(ScoreBoardEvent e) {
         this(e.getProvider(), e.getProperty(), e.getValue());
     }
-    public ScoreBoardCondition(ScoreBoardEventProvider sbeP, String p, Object v) {
+    public ScoreBoardCondition(ScoreBoardEventProvider sbeP, Property p, Object v) {
         this(sbeP.getProviderClass(), sbeP.getProviderId(), p, v);
     }
-    public ScoreBoardCondition(Class<? extends ScoreBoardEventProvider> c, String id, String p, Object v) {
+    public ScoreBoardCondition(Class<? extends ScoreBoardEventProvider> c, String id, Property p, Object v) {
         providerClass = c;
         providerId = id;
         property = p;
@@ -26,7 +28,7 @@ public class ScoreBoardCondition implements Cloneable {
 
     public Class<? extends ScoreBoardEventProvider> getProviderClass() { return providerClass; }
     public String getProviderId() { return providerId; }
-    public String getProperty() { return property; }
+    public Property getProperty() { return property; }
     public Object getValue() { return value; }
 
     public Object clone() { return new ScoreBoardCondition(getProviderClass(), getProviderId(), getProperty(), getValue()); }
@@ -79,7 +81,7 @@ public class ScoreBoardCondition implements Cloneable {
 
     protected Class<? extends ScoreBoardEventProvider> providerClass;
     protected String providerId;
-    protected String property;
+    protected Property property;
     protected Object value;
 
     public static final String ANY_ID = new String(ScoreBoardCondition.class.getName()+".ANY_ID");

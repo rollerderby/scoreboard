@@ -1,4 +1,9 @@
 package com.carolinarollergirls.scoreboard.event;
+
+import java.util.List;
+
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -12,6 +17,7 @@ public interface ScoreBoardEventProvider {
     public String getProviderName();
     public Class<? extends ScoreBoardEventProvider> getProviderClass();
     public String getProviderId();
+    public List<Class<? extends Property>> getProperties();
 
     public void addScoreBoardListener(ScoreBoardListener listener);
     public void removeScoreBoardListener(ScoreBoardListener listener);

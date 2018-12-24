@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.core;
 import java.util.Set;
 import java.util.Map;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Media extends ScoreBoardEventProvider {
@@ -23,8 +24,6 @@ public interface Media extends ScoreBoardEventProvider {
 
     public boolean validFileName(String fn);
 
-    public static final String EVENT_REMOVE_FILE = "RemoveFile";
-
     public static interface MediaFile extends ScoreBoardEventProvider {
         public String getFormat();
         public String getType();
@@ -32,7 +31,9 @@ public interface Media extends ScoreBoardEventProvider {
         public String getName();
         public void setName(String s);
         public String getSrc();
-        public static final String EVENT_FILE = "File";
     }
 
+    public enum Child implements MultiProperty {
+	FILE;
+    }
 }

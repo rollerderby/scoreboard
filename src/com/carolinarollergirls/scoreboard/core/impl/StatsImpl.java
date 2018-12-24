@@ -24,27 +24,28 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public StatsImpl(ScoreBoard sb) {
         scoreBoard = sb;
 
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.EVENT_NUMBER, periodNumberListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.EVENT_NUMBER, jamNumberListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.EVENT_RUNNING, true, jamStartListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.EVENT_RUNNING, false, jamStopListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.Value.NUMBER, periodNumberListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.NUMBER, jamNumberListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.RUNNING, true, jamStartListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.RUNNING, false, jamStopListener));
 
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_SCORE, teamEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_LAST_SCORE, teamEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_LEAD_JAMMER, teamEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_STAR_PASS, teamEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_NO_PIVOT, teamEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_TIMEOUTS, teamEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.EVENT_OFFICIAL_REVIEWS, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.Value.SCORE, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.Value.LAST_SCORE, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.Value.LEAD_JAMMER, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.Value.STAR_PASS, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.Value.NO_PIVOT, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.Value.TIMEOUTS, teamEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Team.class, Team.Value.OFFICIAL_REVIEWS, teamEventListener));
 
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Position.class, Position.EVENT_SKATER, positionEventListener));
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Position.class, Position.EVENT_PENALTY_BOX, positionEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Position.class, Position.Value.SKATER, positionEventListener));
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Position.class, Position.Value.PENALTY_BOX, positionEventListener));
 
         reset();
     }
@@ -53,6 +54,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public String getProviderName() { return "Stats"; }
     public Class<Stats> getProviderClass() { return Stats.class; }
     public String getProviderId() { return "Stats"; }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public void reset() {
         synchronized (coreLock) {
@@ -164,7 +166,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void scoreBoardChange(ScoreBoardEvent event) {
             Clock jc = scoreBoard.getClock(Clock.ID_JAM);
             Position p = (Position)event.getProvider();
-            String prop = event.getProperty();
+            Property prop = event.getProperty();
             JamStats js = getCurentJam();
             if (js == null) {
                 return;
@@ -174,12 +176,12 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
             if (jc.isRunning()) {
                 // If the jam is over, any skater changes are for the next jam.
                 // We'll catch them when the jam starts.
-                if (p.getSkater() != null && prop == Position.EVENT_PENALTY_BOX) {
+                if (p.getSkater() != null && prop == Position.Value.PENALTY_BOX) {
                     SkaterStats ss = ts.getSkaterStats(p.getSkater().getId());
                     if (ss != null) {
                 	ss.setPenaltyBox((Boolean)event.getValue());
                     }
-                } else if (prop == Position.EVENT_SKATER) {
+                } else if (prop == Position.Value.SKATER) {
                     Skater s = (Skater)event.getValue();
                     Skater last = (Skater)event.getPreviousValue();
                     if (last != null) {
@@ -212,10 +214,10 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public void ensureAtLeastNPeriods(int n) {
         synchronized (coreLock) {
             while (periods.size() < n) {
-                PeriodStats psm = new PeriodStatsImpl(periods.size() + 1);
-                psm.addScoreBoardListener(this);
-                periods.add(psm);
-                scoreBoardChange(new ScoreBoardEvent(this, Stats.EVENT_ADD_PERIOD, psm, null));
+                PeriodStats ps = new PeriodStatsImpl(periods.size() + 1);
+                ps.addScoreBoardListener(this);
+                periods.add(ps);
+                scoreBoardChange(new ScoreBoardEvent(this, Stats.Child.PERIOD, ps, null));
             }
         }
     }
@@ -224,10 +226,10 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         synchronized (coreLock) {
             requestBatchStart();
             while (periods.size() > n) {
-                PeriodStats psm = periods.get(periods.size() - 1);
-                psm.removeScoreBoardListener(this);
-                periods.remove(psm);
-                scoreBoardChange(new ScoreBoardEvent(this, Stats.EVENT_REMOVE_PERIOD, psm, null));
+                PeriodStats ps = periods.get(periods.size() - 1);
+                ps.removeScoreBoardListener(this);
+                periods.remove(ps);
+                scoreBoardChange(new ScoreBoardEvent(this, Stats.Child.PERIOD, null, ps));
             }
             requestBatchEnd();
         }
@@ -246,6 +248,10 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
     protected ScoreBoard scoreBoard;
 
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Child.class);
+    }};
+
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 
     protected List<PeriodStats> periods = new ArrayList<PeriodStats>();
@@ -259,16 +265,17 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public String getProviderName() { return "PeriodStats"; }
         public Class<PeriodStats> getProviderClass() { return PeriodStats.class; }
         public String getProviderId() { return "PeriodStats"; }
+        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public int getPeriodNumber() { return period; }
 
         public void ensureAtLeastNJams(int n) {
             synchronized (coreLock) {
                 while (jams.size() < n) {
-                    JamStats jsm = new JamStatsImpl(getPeriodNumber(), jams.size() + 1);
-                    jsm.addScoreBoardListener(this);
-                    jams.add(jsm);
-                    scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_JAM, jsm, null));
+                    JamStats js = new JamStatsImpl(getPeriodNumber(), jams.size() + 1);
+                    js.addScoreBoardListener(this);
+                    jams.add(js);
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.JAM, js, null));
                 }
             }
         }
@@ -277,10 +284,10 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
             synchronized (coreLock) {
                 requestBatchStart();
                 while (jams.size() > n) {
-                    JamStats jsm = jams.get(jams.size() - 1);
-                    jsm.removeScoreBoardListener(this);
+                    JamStats js = jams.get(jams.size() - 1);
+                    js.removeScoreBoardListener(this);
                     jams.remove(jams.size() - 1);
-                    scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_JAM, jsm, null));
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.JAM, null, js));
                 }
                 requestBatchEnd();
             }
@@ -299,6 +306,10 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         private int period;
         protected List<JamStats> jams = new ArrayList<JamStats>();
+
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Child.class);
+        }};
     }
 
 
@@ -316,6 +327,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public String getProviderName() { return "JamStats"; }
         public Class<JamStats> getProviderClass() { return JamStats.class; }
         public String getProviderId() { return "JamStats"; }
+        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public int getPeriodNumber() { return period; }
         public int getJamNumber() { return jam; }
@@ -324,7 +336,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setJamClockElapsedEnd(long t) {
             synchronized (coreLock) {
                 jamClockElapsedEnd = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
             }
         }
 
@@ -332,7 +344,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setPeriodClockElapsedStart(long t) {
             synchronized (coreLock) {
                 periodClockElapsedStart = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
             }
         }
 
@@ -340,7 +352,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setPeriodClockElapsedEnd(long t) {
             synchronized (coreLock) {
                 periodClockElapsedEnd = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
             }
         }
 
@@ -348,7 +360,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setPeriodClockWalltimeStart(long t) {
             synchronized (coreLock) {
                 periodClockWalltimeStart = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
             }
         }
 
@@ -356,7 +368,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setPeriodClockWalltimeEnd(long t) {
             synchronized (coreLock) {
                 periodClockWalltimeEnd = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
             }
         }
 
@@ -384,6 +396,10 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         private long periodClockWalltimeStart;
         private long periodClockWalltimeEnd;
         protected TeamStats teams[];
+
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Value.class);
+        }};
     }
 
     public class TeamStatsImpl extends DefaultScoreBoardEventProvider implements TeamStats {
@@ -396,6 +412,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public String getProviderName() { return "TeamStats"; }
         public Class<TeamStats> getProviderClass() { return TeamStats.class; }
         public String getProviderId() { return "TeamStats"; }
+        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public String getTeamId() { return id; }
         public int getPeriodNumber() { return period; }
@@ -405,7 +422,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setJamScore(int s) {
             synchronized (coreLock) {
                 jamScore = s;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
             }
         }
 
@@ -413,7 +430,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setTotalScore(int s) {
             synchronized (coreLock) {
                 totalScore = s;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
             }
         }
 
@@ -421,7 +438,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setLeadJammer(String ls) {
             synchronized (coreLock) {
                 leadStatus = ls;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
             }
         }
 
@@ -429,7 +446,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setStarPass(boolean sp) {
             synchronized (coreLock) {
                 starPass = sp;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
             }
         }
 
@@ -437,7 +454,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setNoPivot(boolean np) {
             synchronized (coreLock) {
                 noPivot = np;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
             }
         }
 
@@ -445,7 +462,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setTimeouts(int t) {
             synchronized (coreLock) {
                 timeouts = t;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
             }
         }
 
@@ -453,7 +470,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setOfficialReviews(int o) {
             synchronized (coreLock) {
                 officialReviews = o;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
             }
         }
 
@@ -482,7 +499,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 if (ss != null) {
                     ss.removeScoreBoardListener(this);
                     skaters.remove(sid);
-                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ss, null));
+                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Child.SKATER, null, ss));
                 }
             }
         }
@@ -491,7 +508,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 for (SkaterStats ss : skaters.values()) {
                     ss.removeScoreBoardListener(this);
                     skaters.remove(ss.getSkaterId());
-                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.EVENT_REMOVE_SKATER, ss, null));
+                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Child.SKATER, null, ss));
                 }
             }
         }
@@ -508,6 +525,11 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         private int timeouts;
         private int officialReviews;
         private Map<String, SkaterStats>skaters = new ConcurrentHashMap<String, SkaterStats>();
+
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Value.class);
+            add(Child.class);
+        }};
     }
 
     public class SkaterStatsImpl extends DefaultScoreBoardEventProvider implements SkaterStats {
@@ -521,6 +543,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public String getProviderName() { return "SkaterStats"; }
         public Class<SkaterStats> getProviderClass() { return SkaterStats.class; }
         public String getProviderId() { return "SkaterStats"; }
+        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public String getSkaterId() { return id; }
         public String getTeamId() { return tid; }
@@ -531,7 +554,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setPosition(String p) {
             synchronized (coreLock) {
                 position = p;
-                scoreBoardChange(new ScoreBoardEvent(this, SkaterStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, SkaterStats.Value.STATS, this, null));
             }
         }
 
@@ -539,7 +562,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void setPenaltyBox(boolean p) {
             synchronized (coreLock) {
                 penaltyBox = p;
-                scoreBoardChange(new ScoreBoardEvent(this, SkaterStats.EVENT_STATS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, SkaterStats.Value.STATS, this, null));
             }
         }
         private String id;
@@ -549,6 +572,9 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         private boolean penaltyBox;
         private String position;
-    }
 
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Value.class);
+        }};
+    }
 }

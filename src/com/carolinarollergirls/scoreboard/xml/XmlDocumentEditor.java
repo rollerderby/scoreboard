@@ -33,6 +33,8 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class XmlDocumentEditor {
     public XmlDocumentEditor() { }
@@ -92,6 +94,18 @@ public class XmlDocumentEditor {
         return false;
     }
 
+    public Element addElement(Element parent, Property prop) {
+        return addElement(parent, prop, null, null);
+    }
+
+    public Element addElement(Element parent, Property prop, String id) {
+        return addElement(parent, prop, id, null);
+    }
+
+    public Element addElement(Element parent, Property prop, String id, String text) {
+	return addElement(parent, PropertyConversion.toFrontend(prop), id, text);
+    }
+    
     public Element addElement(Element parent, String name) {
         return addElement(parent, name, null, null);
     }
@@ -111,6 +125,18 @@ public class XmlDocumentEditor {
             parent.addContent(setText(element, text));
         }
         return element;
+    }
+
+    public Element setElement(Element parent, Property prop) {
+        return setElement(parent, prop, null, null);
+    }
+
+    public Element setElement(Element parent, Property prop, String id) {
+        return setElement(parent, prop, id, null);
+    }
+
+    public Element setElement(Element parent, Property prop, String id, String text) {
+        return setElement(parent, PropertyConversion.toFrontend(prop), id, text);
     }
 
     public Element setElement(Element parent, String name) {

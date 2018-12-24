@@ -29,7 +29,9 @@ import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class ScoreBoardXmlConverter {
     /*****************************/
@@ -52,11 +54,11 @@ public class ScoreBoardXmlConverter {
         editor.setElement(sb, "StartOvertime", null, "");
         editor.setElement(sb, "OfficialTimeout", null, "");
 
-        editor.setElement(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner().getId());
-        editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_REVIEW, null, String.valueOf(scoreBoard.isOfficialReview()));
-        editor.setElement(sb, ScoreBoard.EVENT_IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
-        editor.setElement(sb, ScoreBoard.EVENT_IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
-        editor.setElement(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
+        editor.setElement(sb, ScoreBoard.Value.TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner().getId());
+        editor.setElement(sb, ScoreBoard.Value.OFFICIAL_REVIEW, null, String.valueOf(scoreBoard.isOfficialReview()));
+        editor.setElement(sb, ScoreBoard.Value.IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
+        editor.setElement(sb, ScoreBoard.Value.IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
+        editor.setElement(sb, ScoreBoard.Value.OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
 
         toElement(sb, scoreBoard.getSettings());
         toElement(sb, scoreBoard.getRulesets());
@@ -84,7 +86,7 @@ public class ScoreBoardXmlConverter {
             String k = keys.next();
             String v = s.get(k);
             if (v != null) {
-                editor.setElement(e, Settings.EVENT_SETTING, k, v);
+                editor.setElement(e, Settings.Child.SETTING, k, v);
             }
         }
         return e;
@@ -93,12 +95,12 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element p, Rulesets rs) {
         Element e = editor.setElement(p, "Rules");
         for (Rule r : Rule.values()) {
-            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, r.toString(), rs.get(r));
+            editor.setElement(e, Rulesets.Value.RULE, r.toString(), rs.get(r));
         }
         editor.setElement(e, "Id", null, rs.getId());
         editor.setElement(e, "Name", null, rs.getName());
 
-        e = editor.setElement(p, Rulesets.EVENT_RULESET);
+        e = editor.setElement(p, Rulesets.Child.KNOWN_RULESETS);
         for (Rulesets.Ruleset r :  rs.getRulesets().values()) {
             toElement(e, r);
         }
@@ -108,7 +110,7 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element p, Rulesets.Ruleset r) {
         Element e = editor.setElement(p, "Ruleset", r.getId());
         for (Rule k : r.getAll().keySet()) {
-            editor.setElement(e, Rulesets.EVENT_CURRENT_RULES, k.toString(), r.get(k));
+            editor.setElement(e, Rulesets.Value.RULE, k.toString(), r.get(k));
         }
         editor.setElement(e, "Name", null, r.getName());
         editor.setElement(e, "ParentId", null, r.getParentRulesetId());
@@ -145,16 +147,16 @@ public class ScoreBoardXmlConverter {
         editor.setElement(e, "UnStop", null, "");
         editor.setElement(e, "ResetTime", null, "");
 
-        editor.setElement(e, Clock.EVENT_NAME, null, c.getName());
-        editor.setElement(e, Clock.EVENT_NUMBER, null, String.valueOf(c.getNumber()));
-        editor.setElement(e, Clock.EVENT_MINIMUM_NUMBER, null, String.valueOf(c.getMinimumNumber()));
-        editor.setElement(e, Clock.EVENT_MAXIMUM_NUMBER, null, String.valueOf(c.getMaximumNumber()));
-        editor.setElement(e, Clock.EVENT_TIME, null, String.valueOf(c.getTime()));
-        editor.setElement(e, Clock.EVENT_INVERTED_TIME, null, String.valueOf(c.getInvertedTime()));
-        editor.setElement(e, Clock.EVENT_MINIMUM_TIME, null, String.valueOf(c.getMinimumTime()));
-        editor.setElement(e, Clock.EVENT_MAXIMUM_TIME, null, String.valueOf(c.getMaximumTime()));
-        editor.setElement(e, Clock.EVENT_RUNNING, null, String.valueOf(c.isRunning()));
-        editor.setElement(e, Clock.EVENT_DIRECTION, null, String.valueOf(c.isCountDirectionDown()));
+        editor.setElement(e, Clock.Value.NAME, null, c.getName());
+        editor.setElement(e, Clock.Value.NUMBER, null, String.valueOf(c.getNumber()));
+        editor.setElement(e, Clock.Value.MINIMUM_NUMBER, null, String.valueOf(c.getMinimumNumber()));
+        editor.setElement(e, Clock.Value.MAXIMUM_NUMBER, null, String.valueOf(c.getMaximumNumber()));
+        editor.setElement(e, Clock.Value.TIME, null, String.valueOf(c.getTime()));
+        editor.setElement(e, Clock.Value.INVERTED_TIME, null, String.valueOf(c.getInvertedTime()));
+        editor.setElement(e, Clock.Value.MINIMUM_TIME, null, String.valueOf(c.getMinimumTime()));
+        editor.setElement(e, Clock.Value.MAXIMUM_TIME, null, String.valueOf(c.getMaximumTime()));
+        editor.setElement(e, Clock.Value.RUNNING, null, String.valueOf(c.isRunning()));
+        editor.setElement(e, Clock.Value.DIRECTION, null, String.valueOf(c.isCountDirectionDown()));
         return e;
     }
 
@@ -164,18 +166,18 @@ public class ScoreBoardXmlConverter {
         editor.setElement(e, "Timeout", null, "");
         editor.setElement(e, "OfficialReview", null, "");
 
-        editor.setElement(e, Team.EVENT_NAME, null, t.getName());
-        editor.setElement(e, Team.EVENT_LOGO, null, t.getLogo());
-        editor.setElement(e, Team.EVENT_SCORE, null, String.valueOf(t.getScore()));
-        editor.setElement(e, Team.EVENT_LAST_SCORE, null, String.valueOf(t.getLastScore()));
-        editor.setElement(e, Team.EVENT_TIMEOUTS, null, String.valueOf(t.getTimeouts()));
-        editor.setElement(e, Team.EVENT_OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
-        editor.setElement(e, Team.EVENT_IN_TIMEOUT, null, String.valueOf(t.inTimeout()));
-        editor.setElement(e, Team.EVENT_IN_OFFICIAL_REVIEW, null, String.valueOf(t.inOfficialReview()));
-        editor.setElement(e, Team.EVENT_RETAINED_OFFICIAL_REVIEW, null, String.valueOf(t.retainedOfficialReview()));
-        editor.setElement(e, Team.EVENT_LEAD_JAMMER, null, t.getLeadJammer());
-        editor.setElement(e, Team.EVENT_STAR_PASS, null, String.valueOf(t.isStarPass()));
-        editor.setElement(e, Team.EVENT_NO_PIVOT, null, String.valueOf(t.hasNoPivot()));
+        editor.setElement(e, Team.Value.NAME, null, t.getName());
+        editor.setElement(e, Team.Value.LOGO, null, t.getLogo());
+        editor.setElement(e, Team.Value.SCORE, null, String.valueOf(t.getScore()));
+        editor.setElement(e, Team.Value.LAST_SCORE, null, String.valueOf(t.getLastScore()));
+        editor.setElement(e, Team.Value.TIMEOUTS, null, String.valueOf(t.getTimeouts()));
+        editor.setElement(e, Team.Value.OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
+        editor.setElement(e, Team.Value.IN_TIMEOUT, null, String.valueOf(t.inTimeout()));
+        editor.setElement(e, Team.Value.IN_OFFICIAL_REVIEW, null, String.valueOf(t.inOfficialReview()));
+        editor.setElement(e, Team.Value.RETAINED_OFFICIAL_REVIEW, null, String.valueOf(t.retainedOfficialReview()));
+        editor.setElement(e, Team.Value.LEAD_JAMMER, null, t.getLeadJammer());
+        editor.setElement(e, Team.Value.STAR_PASS, null, String.valueOf(t.isStarPass()));
+        editor.setElement(e, Team.Value.NO_PIVOT, null, String.valueOf(t.hasNoPivot()));
 
         Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
         while (alternateNames.hasNext()) {
@@ -203,7 +205,7 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element team, Team.AlternateName n) {
         Element e = editor.setElement(team, "AlternateName", n.getId());
 
-        editor.setElement(e, Team.AlternateName.EVENT_NAME, null, n.getName());
+        editor.setElement(e, Team.AlternateName.Value.NAME, null, n.getName());
 
         return e;
     }
@@ -211,7 +213,7 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element team, Team.Color c) {
         Element e = editor.setElement(team, "Color", c.getId());
 
-        editor.setElement(e, Team.Color.EVENT_COLOR, null, c.getColor());
+        editor.setElement(e, Team.Color.Value.COLOR, null, c.getColor());
 
         return e;
     }
@@ -223,30 +225,30 @@ public class ScoreBoardXmlConverter {
 
         Skater s = p.getSkater();
         editor.setElement(e, "Id", null, (s==null?"":s.getId()));
-        editor.setElement(e, Skater.EVENT_NAME, null, (s==null?"":s.getName()));
-        editor.setElement(e, Skater.EVENT_NUMBER, null, (s==null?"":s.getNumber()));
-        editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
-        editor.setElement(e, Skater.EVENT_FLAGS, null, (s==null?"":s.getFlags()));
+        editor.setElement(e, Skater.Value.NAME, null, (s==null?"":s.getName()));
+        editor.setElement(e, Skater.Value.NUMBER, null, (s==null?"":s.getNumber()));
+        editor.setElement(e, Skater.Value.PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
+        editor.setElement(e, Skater.Value.FLAGS, null, (s==null?"":s.getFlags()));
 
         return e;
     }
 
     public Element toElement(Element t, Skater s) {
         Element e = editor.setElement(t, "Skater", s.getId());
-        editor.setElement(e, Skater.EVENT_NAME, null, s.getName());
-        editor.setElement(e, Skater.EVENT_NUMBER, null, s.getNumber());
-        editor.setElement(e, Skater.EVENT_POSITION, null, s.getPosition() == null ? "" : 
+        editor.setElement(e, Skater.Value.NAME, null, s.getName());
+        editor.setElement(e, Skater.Value.NUMBER, null, s.getNumber());
+        editor.setElement(e, Skater.Value.POSITION, null, s.getPosition() == null ? "" : 
             s.getPosition().getFloorPosition().toString());
-        editor.setElement(e, Skater.EVENT_ROLE, null, s.getRole().toString());
-        editor.setElement(e, Skater.EVENT_PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
-        editor.setElement(e, Skater.EVENT_FLAGS, null, s.getFlags());
+        editor.setElement(e, Skater.Value.ROLE, null, s.getRole().toString());
+        editor.setElement(e, Skater.Value.PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
+        editor.setElement(e, Skater.Value.FLAGS, null, s.getFlags());
 
         for (Skater.Penalty p: s.getPenalties()) {
             toElement(e, p);
         }
 
         if (s.getFOEXPPenalty() != null) {
-            Element fe = editor.setElement(e, Skater.EVENT_PENALTY_FOEXP, s.getFOEXPPenalty().getId());
+            Element fe = editor.setElement(e, Skater.Value.PENALTY_FOEXP, s.getFOEXPPenalty().getId());
             toElement(fe, s.getFOEXPPenalty());
         }
 
@@ -255,9 +257,9 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element s, Skater.Penalty p) {
         Element e = editor.setElement(s, "Penalty", p.getId());
-        editor.setElement(e, Skater.EVENT_PENALTY_PERIOD, null, String.valueOf(p.getPeriod()));
-        editor.setElement(e, Skater.EVENT_PENALTY_JAM, null, String.valueOf(p.getJam()));
-        editor.setElement(e, Skater.EVENT_PENALTY_CODE, null, p.getCode());
+        editor.setElement(e, Skater.Penalty.Value.PERIOD, null, String.valueOf(p.getPeriod()));
+        editor.setElement(e, Skater.Penalty.Value.JAM, null, String.valueOf(p.getJam()));
+        editor.setElement(e, Skater.Penalty.Value.CODE, null, p.getCode());
         return e;
     }
 
@@ -331,6 +333,7 @@ public class ScoreBoardXmlConverter {
             try {
                 String name = child.getName();
                 String value = editor.getText(child);
+                Property prop = PropertyConversion.fromFrontend(name, scoreBoard.getProperties());
                 boolean bVal = Boolean.parseBoolean(value);
 
                 if (name.equals("Clock")) {
@@ -349,16 +352,24 @@ public class ScoreBoardXmlConverter {
                     processStats(scoreBoard.getStats(), child);
                 } else if (null == value) {
                     continue;
-                } else if (name.equals(ScoreBoard.EVENT_TIMEOUT_OWNER)) {
-                    scoreBoard.setTimeoutOwner(scoreBoard.getTimeoutOwner(value));
-                } else if (name.equals(ScoreBoard.EVENT_OFFICIAL_REVIEW)) {
-                    scoreBoard.setOfficialReview(bVal);
-                } else if (name.equals(ScoreBoard.EVENT_IN_OVERTIME)) {
-                    scoreBoard.setInOvertime(bVal);
-                } else if (name.equals(ScoreBoard.EVENT_IN_PERIOD)) {
-                    scoreBoard.setInPeriod(bVal);
-                } else if (name.equals(ScoreBoard.EVENT_OFFICIAL_SCORE)) {
-                    scoreBoard.setOfficialScore(bVal);
+                } else if (prop instanceof ScoreBoard.Value) {
+                    switch ((ScoreBoard.Value)prop) {
+		    case TIMEOUT_OWNER:
+			scoreBoard.setTimeoutOwner(scoreBoard.getTimeoutOwner(value));
+			break;
+		    case OFFICIAL_REVIEW:
+			scoreBoard.setOfficialReview(bVal);
+			break;
+		    case IN_OVERTIME:
+			scoreBoard.setInOvertime(bVal);
+			break;
+		    case IN_PERIOD:
+			scoreBoard.setInPeriod(bVal);
+			break;
+		    case OFFICIAL_SCORE:
+			scoreBoard.setOfficialScore(bVal);
+			break;
+                    }
                 } else if (bVal) {
                     if (name.equals("Reset")) {
                         scoreBoard.reset();
@@ -412,7 +423,7 @@ public class ScoreBoardXmlConverter {
                 if (v == null) {
                     v = "";
                 }
-                if (name.equals(Rulesets.EVENT_CURRENT_RULES)) {
+                if (name.equals(PropertyConversion.toFrontend(Rulesets.Value.RULE))) {
                     rs.set(k, v);
                 } else if (name.equals("Id")) {
                     rs.setId(v);
@@ -430,8 +441,8 @@ public class ScoreBoardXmlConverter {
         while (children.hasNext()) {
             Element child = (Element)children.next();
             try {
-                String name = child.getName();
-                if (name.equals(Rulesets.EVENT_CURRENT_RULESET)) {
+                Property prop = PropertyConversion.fromFrontend(child.getName(), rs.getProperties());
+                if (prop == Rulesets.Value.RULESET) {
                     processRuleset(rs, child);
                 }
             } catch ( Exception e ) {
@@ -456,7 +467,7 @@ public class ScoreBoardXmlConverter {
                 if (v == null) {
                     v = "";
                 }
-                if (n.equals(Rulesets.EVENT_CURRENT_RULES)) {
+                if (n.equals(PropertyConversion.toFrontend(Rulesets.Value.RULE))) {
                     rules.put(k, v);
                 } else if (n.equals("ParentId")) {
                     parentId = v;
@@ -509,6 +520,7 @@ public class ScoreBoardXmlConverter {
             try {
                 String name = child.getName();
                 String value = editor.getText(child);
+                Property prop = PropertyConversion.fromFrontend(name, clock.getProperties());
 
                 boolean isChange = Boolean.parseBoolean(child.getAttributeValue("change"));
                 boolean isReset = Boolean.parseBoolean(child.getAttributeValue("reset"));
@@ -522,36 +534,61 @@ public class ScoreBoardXmlConverter {
                     requestStop = true;
                 } else if (name.equals("ResetTime") && Boolean.parseBoolean(value)) {
                     clock.resetTime();
-                } else if (name.equals(Clock.EVENT_NAME)) {
-                    clock.setName(value);
-                } else if (name.equals(Clock.EVENT_NUMBER) && isChange) {
-                    clock.changeNumber(Integer.parseInt(value));
-                } else if (name.equals(Clock.EVENT_NUMBER) && !isChange) {
-                    clock.setNumber(Integer.parseInt(value));
-                } else if (name.equals(Clock.EVENT_MINIMUM_NUMBER)) {
-                    clock.setMinimumNumber(Integer.parseInt(value));
-                } else if (name.equals(Clock.EVENT_MAXIMUM_NUMBER)) {
-                    clock.setMaximumNumber(Integer.parseInt(value));
-                } else if (name.equals(Clock.EVENT_TIME) && isChange) {
-                    clock.changeTime(Long.parseLong(value));
-                } else if (name.equals(Clock.EVENT_TIME) && isReset) {
-                    clock.resetTime();
-                } else if (name.equals(Clock.EVENT_TIME) && !isChange && !isReset) {
-                    clock.setTime(Long.parseLong(value));
-                } else if (name.equals(Clock.EVENT_MINIMUM_TIME) && isChange) {
-                    clock.changeMinimumTime(Long.parseLong(value));
-                } else if (name.equals(Clock.EVENT_MINIMUM_TIME)) {
-                    clock.setMinimumTime(Long.parseLong(value));
-                } else if (name.equals(Clock.EVENT_MAXIMUM_TIME) && isChange) {
-                    clock.changeMaximumTime(Long.parseLong(value));
-                } else if (name.equals(Clock.EVENT_MAXIMUM_TIME)) {
-                    clock.setMaximumTime(Long.parseLong(value));
-                } else if (name.equals(Clock.EVENT_RUNNING) && Boolean.parseBoolean(value)) {
-                    requestStart = true;
-                } else if (name.equals(Clock.EVENT_RUNNING) && !Boolean.parseBoolean(value)) {
-                    requestStop = true;
-                } else if (name.equals(Clock.EVENT_DIRECTION)) {
-                    clock.setCountDirectionDown(Boolean.parseBoolean(value));
+                } else if (prop instanceof Clock.Value) {
+                    switch ((Clock.Value)prop) {
+		    case NAME:
+			clock.setName(value);
+			break;
+		    case NUMBER:
+			if (isChange) {
+	                    clock.changeNumber(Integer.parseInt(value));
+			} else {
+	                    clock.setNumber(Integer.parseInt(value));
+			}
+			break;
+		    case MINIMUM_NUMBER:
+			clock.setMinimumNumber(Integer.parseInt(value));
+			break;
+		    case MAXIMUM_NUMBER:
+			clock.setMaximumNumber(Integer.parseInt(value));
+			break;
+		    case TIME:
+			if (isChange) {
+	                    clock.changeTime(Long.parseLong(value));
+			} else if (isReset) {
+	                    clock.resetTime();
+			} else {
+	                    clock.setTime(Long.parseLong(value));
+			}
+			break;
+		    case MINIMUM_TIME:
+			if (isChange) {
+	                    clock.changeMinimumTime(Long.parseLong(value));
+			} else {
+	                    clock.setMinimumTime(Long.parseLong(value));
+			}
+			break;
+		    case MAXIMUM_TIME:
+			if (isChange) {
+	                    clock.changeMaximumTime(Long.parseLong(value));
+			} else {
+	                    clock.setMaximumTime(Long.parseLong(value));
+			}
+			break;
+		    case RUNNING:
+			if (Boolean.parseBoolean(value)) {
+			    requestStart = true;
+			} else {
+			    requestStop = true;
+			}
+			break;
+		    case DIRECTION:
+			clock.setCountDirectionDown(Boolean.parseBoolean(value));
+			break;
+		    case INVERTED_TIME:
+			//read only value
+			break;
+                    }
                 }
             } catch ( Exception e ) {
             }
@@ -571,53 +608,85 @@ public class ScoreBoardXmlConverter {
             try {
                 String name = child.getName();
                 String value = editor.getText(child);
+                Property prop = PropertyConversion.fromFrontend(name, team.getProperties());
 
                 boolean isChange = Boolean.parseBoolean(child.getAttributeValue("change"));
 
-                if (name.equals("AlternateName")) {
-                    processAlternateName(team, child);
-                } else if (name.equals("Color")) {
-                    processColor(team, child);
-                } else if (name.equals("Skater")) {
-                    processSkater(team, child);
-                } else if (name.equals("Position")) {
-                    processPosition(team, child);
+                if (prop instanceof Team.Child) {
+                    switch ((Team.Child)prop) {
+		    case ALTERNATE_NAME:
+			processAlternateName(team, child);
+			break;
+		    case COLOR:
+			processColor(team, child);
+			break;
+		    case SKATER:
+			processSkater(team, child);
+			break;
+		    case POSITION:
+			processPosition(team, child);
+			break;
+                    }
                 } else if (null == value) {
                     continue;
                 } else if (name.equals("Timeout") && Boolean.parseBoolean(value)) {
                     team.timeout();
                 } else if (name.equals("OfficialReview") && Boolean.parseBoolean(value)) {
                     team.officialReview();
-                } else if (name.equals(Team.EVENT_NAME)) {
-                    team.setName(value);
-                } else if (name.equals(Team.EVENT_LOGO)) {
-                    team.setLogo(value);
-                } else if (name.equals(Team.EVENT_SCORE) && isChange) {
-                    team.changeScore(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_LAST_SCORE) && isChange) {
-                    team.changeLastScore(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_SCORE) && !isChange) {
-                    team.setScore(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_LAST_SCORE) && !isChange) {
-                    team.setLastScore(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_TIMEOUTS) && isChange) {
-                    team.changeTimeouts(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_TIMEOUTS) && !isChange) {
-                    team.setTimeouts(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && isChange) {
-                    team.changeOfficialReviews(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_OFFICIAL_REVIEWS) && !isChange) {
-                    team.setOfficialReviews(Integer.parseInt(value));
-                } else if (name.equals(Team.EVENT_IN_TIMEOUT)) {
-                    team.setInTimeout(Boolean.parseBoolean(value));
-                } else if (name.equals(Team.EVENT_IN_OFFICIAL_REVIEW)) {
-                    team.setInOfficialReview(Boolean.parseBoolean(value));
-                } else if (name.equals(Team.EVENT_RETAINED_OFFICIAL_REVIEW)) {
-                    team.setRetainedOfficialReview(Boolean.parseBoolean(value));
-                } else if (name.equals(Team.EVENT_LEAD_JAMMER)) {
-                    team.setLeadJammer(value);
-                } else if (name.equals(Team.EVENT_STAR_PASS)) {
-                    team.setStarPass(Boolean.parseBoolean(value));
+                } else if (prop instanceof Team.Value) {
+                    switch ((Team.Value)prop) {
+		    case NAME:
+			team.setName(value);
+			break;
+		    case LOGO:
+			team.setLogo(value);
+			break;
+		    case SCORE:
+			if (isChange) {
+	                    team.changeScore(Integer.parseInt(value));
+			} else {
+	                    team.setScore(Integer.parseInt(value));
+			}
+			break;
+		    case LAST_SCORE:
+			if (isChange) {
+	                    team.changeLastScore(Integer.parseInt(value));
+			} else {
+	                    team.setLastScore(Integer.parseInt(value));
+			}
+			break;
+		    case NO_PIVOT:
+			break;
+		    case TIMEOUTS:
+			if (isChange) {
+	                    team.changeTimeouts(Integer.parseInt(value));
+			} else {
+	                    team.setTimeouts(Integer.parseInt(value));
+			}
+			break;
+		    case OFFICIAL_REVIEWS:
+			if (isChange) {
+	                    team.changeOfficialReviews(Integer.parseInt(value));
+			} else {
+			    team.setOfficialReviews(Integer.parseInt(value));
+			}
+			break;
+		    case IN_TIMEOUT:
+			team.setInTimeout(Boolean.parseBoolean(value));
+			break;
+		    case IN_OFFICIAL_REVIEW:
+			team.setInOfficialReview(Boolean.parseBoolean(value));
+			break;
+		    case RETAINED_OFFICIAL_REVIEW:
+			team.setRetainedOfficialReview(Boolean.parseBoolean(value));
+			break;
+		    case LEAD_JAMMER:
+			team.setLeadJammer(value);
+			break;
+		    case STAR_PASS:
+			team.setStarPass(Boolean.parseBoolean(value));
+			break;
+                    }
                 }
             } catch ( Exception e ) {
             }
@@ -644,10 +713,11 @@ public class ScoreBoardXmlConverter {
             try {
                 String name = child.getName();
                 String value = editor.getText(child);
+                Property prop = PropertyConversion.fromFrontend(name, alternateName.getProperties());
 
                 if (null == value) {
                     continue;
-                } else if (name.equals(Team.AlternateName.EVENT_NAME)) {
+                } else if (prop == Team.AlternateName.Value.NAME) {
                     alternateName.setName(value);
                 }
             } catch ( Exception e ) {
@@ -675,10 +745,11 @@ public class ScoreBoardXmlConverter {
             try {
                 String name = child.getName();
                 String value = editor.getText(child);
+                Property prop = PropertyConversion.fromFrontend(name, color.getProperties());
 
                 if (null == value) {
                     continue;
-                } else if (name.equals(Team.Color.EVENT_COLOR)) {
+                } else if (prop == Team.Color.Value.COLOR) {
                     color.setColor(value);
                 }
             } catch ( Exception e ) {
@@ -696,6 +767,7 @@ public class ScoreBoardXmlConverter {
             try {
                 String name = child.getName();
                 String value = editor.getText(child);
+                Property prop = PropertyConversion.fromFrontend(name, position.getProperties());
 
                 if (null == value) {
                     continue;
@@ -703,7 +775,7 @@ public class ScoreBoardXmlConverter {
                     team.field(null, position);
                 } else if (name.equals("Id")) {
                     team.field(team.getSkater(value), position);
-                } else if (name.equals(Position.EVENT_PENALTY_BOX)) {
+                } else if (prop == Position.Value.PENALTY_BOX) {
                     position.setPenaltyBox(Boolean.parseBoolean(value));
                 }
             } catch ( Exception e ) {
@@ -723,11 +795,11 @@ public class ScoreBoardXmlConverter {
         try {
             skater = team.getSkater(id);
         } catch ( SkaterNotFoundException snfE ) {
-            Element nameE = element.getChild(Skater.EVENT_NAME);
+            Element nameE = element.getChild(PropertyConversion.toFrontend(Skater.Value.NAME));
             String name = (nameE == null ? "" : editor.getText(nameE));
-            Element numberE = element.getChild(Skater.EVENT_NUMBER);
+            Element numberE = element.getChild(PropertyConversion.toFrontend(Skater.Value.NUMBER));
             String number = (numberE == null ? "" : editor.getText(numberE));
-            Element flagsE = element.getChild(Skater.EVENT_FLAGS);
+            Element flagsE = element.getChild(PropertyConversion.toFrontend(Skater.Value.FLAGS));
             String flags = (flagsE == null ? "" : editor.getText(flagsE));
             team.addSkater(id, name, number, flags);
             skater = team.getSkater(id);
@@ -739,25 +811,42 @@ public class ScoreBoardXmlConverter {
             try {
                 String name = child.getName();
                 String value = editor.getText(child);
+                Property prop = PropertyConversion.fromFrontend(name, skater.getProperties());
 
-                if (name.equals(Skater.EVENT_PENALTY)) {
+                if (prop == Skater.Child.PENALTY) {
                     processPenalty(skater, child, false);
-                } else if (name.equals(Skater.EVENT_PENALTY_FOEXP)) {
-                    processPenalty(skater, child.getChild(Skater.EVENT_PENALTY), true);
+                } else if (prop == Skater.Value.PENALTY_FOEXP) {
+                    processPenalty(skater, child.getChild(
+                	    PropertyConversion.toFrontend(Skater.Child.PENALTY)), true);
                 } else if (null == value) {
                     continue;
-                } else if (name.equals(Skater.EVENT_NAME)) {
-                    skater.setName(value);
-                } else if (name.equals(Skater.EVENT_NUMBER)) {
-                    skater.setNumber(value);
-                } else if (name.equals(Skater.EVENT_POSITION)) {
-                    team.field(skater, team.getPosition(FloorPosition.fromString(value)));
-                } else if (name.equals(Skater.EVENT_ROLE)) {
-                    team.field(skater, Role.fromString(value));
-                } else if (name.equals(Skater.EVENT_PENALTY_BOX)) {
-                    skater.setPenaltyBox(Boolean.parseBoolean(value));
-                } else if (name.equals(Skater.EVENT_FLAGS)) {
-                    skater.setFlags(value);
+                } else if (prop instanceof Skater.Value) {
+                    switch ((Skater.Value)prop) {
+		    case NAME:
+			skater.setName(value);
+			break;
+		    case NUMBER:
+			skater.setNumber(value);
+			break;
+		    case POSITION:
+			team.field(skater, team.getPosition(FloorPosition.fromString(value)));
+			break;
+		    case ROLE:
+			team.field(skater, Role.fromString(value));
+			break;
+		    case BASE_ROLE:
+			//read only
+			break;
+		    case PENALTY_BOX:
+			skater.setPenaltyBox(Boolean.parseBoolean(value));
+			break;
+		    case PENALTY_FOEXP:
+			//already handled
+			break;
+		    case FLAGS:
+			skater.setFlags(value);
+			break;
+                    }
                 }
             } catch ( Exception e ) {
             }
@@ -779,11 +868,11 @@ public class ScoreBoardXmlConverter {
 
                 if (null == value) {
                     continue;
-                } else if (name.equals(Skater.EVENT_PENALTY_PERIOD)) {
+                } else if (name.equals(PropertyConversion.toFrontend(Skater.Penalty.Value.PERIOD))) {
                     period = Integer.parseInt(value);
-                } else if (name.equals(Skater.EVENT_PENALTY_JAM)) {
+                } else if (name.equals(PropertyConversion.toFrontend(Skater.Penalty.Value.JAM))) {
                     jam = Integer.parseInt(value);
-                } else if (name.equals(Skater.EVENT_PENALTY_CODE)) {
+                } else if (name.equals(PropertyConversion.toFrontend(Skater.Penalty.Value.CODE))) {
                     code = value;
                 }
             } catch ( Exception e ) {

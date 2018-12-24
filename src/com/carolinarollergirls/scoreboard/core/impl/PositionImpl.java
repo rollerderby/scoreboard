@@ -8,12 +8,16 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.List;
+
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class PositionImpl extends DefaultScoreBoardEventProvider implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
@@ -26,6 +30,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     public String getProviderName() { return "Position"; }
     public Class<Position> getProviderClass() { return Position.class; }
     public String getProviderId() { return getId(); }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Team getTeam() { return team; }
 
@@ -46,7 +51,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
             Skater last = skater;
             skater = s;
             setPenaltyBox(s == null ? false : s.isPenaltyBox());
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_SKATER, skater, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.SKATER, skater, last));
         }
     }
 
@@ -58,7 +63,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
             if (box != penaltyBox && (skater != null || !box)) {
                 Boolean last = new Boolean(penaltyBox);
                 penaltyBox = box;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
+                scoreBoardChange(new ScoreBoardEvent(this, Value.PENALTY_BOX, new Boolean(penaltyBox), last));
                 if (skater != null) {
                     skater.setPenaltyBox(box);
                 }
@@ -67,6 +72,10 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     }
 
     protected Team team;
+
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Value.class);
+    }};
 
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 

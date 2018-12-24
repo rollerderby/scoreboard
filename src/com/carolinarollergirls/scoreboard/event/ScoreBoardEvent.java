@@ -12,7 +12,7 @@ import java.util.EventObject;
 import java.util.Objects;
 
 public class ScoreBoardEvent extends EventObject implements Cloneable {
-    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, String p, Object v, Object prev) {
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property p, Object v, Object prev) {
         super(sbeP);
         provider = sbeP;
         property = p;
@@ -21,7 +21,7 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     }
 
     public ScoreBoardEventProvider getProvider() { return provider; }
-    public String getProperty() { return property; }
+    public Property getProperty() { return property; }
     public Object getValue() { return value; }
     public Object getPreviousValue() { return previousValue; }
 
@@ -64,10 +64,11 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     }
 
     protected ScoreBoardEventProvider provider;
-    protected String property;
+    protected Property property;
     protected Object value;
     protected Object previousValue;
 
-    public static final String BATCH_START = "Batch Start";
-    public static final String BATCH_END = "Batch End";
+    public interface Property {}
+    public interface SingleProperty extends Property {}
+    public interface MultiProperty extends Property {}
 }

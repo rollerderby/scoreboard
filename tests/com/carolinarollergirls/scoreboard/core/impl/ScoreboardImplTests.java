@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.Button;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -48,9 +49,9 @@ public class ScoreboardImplTests {
         @Override
         public void scoreBoardChange(ScoreBoardEvent event) {
             synchronized(batchCounter) {
-                if (event.getProperty().equals(ScoreBoardEvent.BATCH_START)) {
+                if (event.getProperty().equals(BatchEvent.START)) {
                     batchLevel++;
-                } else if (event.getProperty().equals(ScoreBoardEvent.BATCH_END)) {
+                } else if (event.getProperty().equals(BatchEvent.END)) {
                     batchLevel--;
                 }
             }
@@ -104,7 +105,7 @@ public class ScoreboardImplTests {
     @Test
     public void testSetInPeriod() {
         assertFalse(sb.isInPeriod());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.EVENT_IN_PERIOD, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.IN_PERIOD, listener));
 
         sb.setInPeriod(true);
         assertTrue(sb.isInPeriod());
@@ -129,7 +130,7 @@ public class ScoreboardImplTests {
 
         assertFalse(lc.isCountDirectionDown());
         assertFalse(sb.isInOvertime());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.EVENT_IN_OVERTIME, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.IN_OVERTIME, listener));
 
         sb.setInOvertime(true);
         assertTrue(sb.isInOvertime());
@@ -161,7 +162,7 @@ public class ScoreboardImplTests {
     @Test
     public void testSetOfficialScore() {
         assertFalse(sb.isOfficialScore());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.EVENT_OFFICIAL_SCORE, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.OFFICIAL_SCORE, listener));
 
         sb.setOfficialScore(true);
         assertTrue(sb.isOfficialScore());
@@ -182,7 +183,7 @@ public class ScoreboardImplTests {
     @Test
     public void testSetOfficialReview() {
         assertFalse(sb.isOfficialReview());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.EVENT_OFFICIAL_REVIEW, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.OFFICIAL_REVIEW, listener));
 
         sb.setOfficialReview(true);
         assertTrue(sb.isOfficialReview());
@@ -203,7 +204,7 @@ public class ScoreboardImplTests {
     @Test
     public void testSetTimeoutOwner() {
         assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.EVENT_TIMEOUT_OWNER, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.TIMEOUT_OWNER, listener));
 
         sb.setTimeoutOwner(TimeoutOwners.OTO);
         assertEquals(TimeoutOwners.OTO, sb.getTimeoutOwner());

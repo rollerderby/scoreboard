@@ -8,10 +8,12 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
@@ -21,6 +23,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.rules.AbstractRule;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
@@ -35,6 +38,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     public String getProviderName() { return "Rulesets"; }
     public Class<Rulesets> getProviderClass() { return Rulesets.class; }
     public String getProviderId() { return ""; }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public ScoreBoardEventProvider getParent() { return parent; }
 
@@ -65,7 +69,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     public void setId(String i) {
         synchronized (coreLock) {
             id = i;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
         }
     }
     public String getName() {
@@ -76,14 +80,14 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     public void setName(String n) {
         synchronized (coreLock) {
             name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
         }
     }
     public void setCurrentRuleset(String id) {
         synchronized (coreLock) {
             current.clear();
             setCurrentRulesetRecurse(id);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
         }
     }
 
@@ -140,7 +144,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                 return;
             }
             current.put(k, v);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
         }
     }
 
@@ -166,7 +170,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
             Ruleset r = new RulesetImpl(name, parentId, id);
             rulesets.put(id, r);
             r.addScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(r, EVENT_RULESET, r, null));
+            scoreBoardChange(new ScoreBoardEvent(r, Child.KNOWN_RULESETS, r, null));
             return r;
         }
     }
@@ -191,7 +195,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
 
             rulesets.remove(id);
             r.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_RULESET, r, ""));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, null, r));
             requestBatchEnd();
         }
     }
@@ -203,6 +207,11 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     // Ordering is preserved for the UI.
     private Map<String, Rule> rules = new LinkedHashMap<String, Rule>();
     private ScoreBoardEventProvider parent = null;
+
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Value.class);
+    }};
+
     private static Object coreLock = ScoreBoardImpl.getCoreLock();
     public static final String rootId = "00000000-0000-0000-0000-000000000000";
 
@@ -245,7 +254,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     return;
                 }
                 name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, this, null));
             }
         }
         public void setParentRulesetId(String pi) {
@@ -254,7 +263,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     return;
                 }
                 parentId = pi;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, this, null));
             }
         }
 
@@ -275,17 +284,23 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     }
                 }
                 settings = s;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, this, oldKeys));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, this, oldKeys));
             }
         }
 
         public String getProviderName() { return "Ruleset"; }
         public Class<Ruleset> getProviderClass() { return Ruleset.class; }
         public String getProviderId() { return getId(); }
+        public List<Class<? extends Property>> getProperties() { return properties; }
 
         private String id;
         private String name;
         private String parentId;
         private Map<Rule, String> settings = new HashMap<Rule, String>();
+
+        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+            add(Value.class);
+            add(Child.class);
+        }};
     }
 }

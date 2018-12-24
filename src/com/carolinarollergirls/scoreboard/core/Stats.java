@@ -10,6 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Stats extends ScoreBoardEventProvider {
@@ -31,8 +33,9 @@ public interface Stats extends ScoreBoardEventProvider {
         public List<JamStats> getJamStats();
         public JamStats getJamStats(int j);
 
-        public static final String EVENT_ADD_JAM = "AddJam";
-        public static final String EVENT_REMOVE_JAM = "RemoveJam";
+        public enum Child implements MultiProperty {
+            JAM;
+        }
     }
 
     public static interface JamStats extends ScoreBoardEventProvider {
@@ -53,7 +56,9 @@ public interface Stats extends ScoreBoardEventProvider {
         public List<TeamStats> getTeamStats();
         public TeamStats getTeamStats(String id);
 
-        public static final String EVENT_STATS = "Stats";
+        public enum Value implements SingleProperty {
+            STATS;
+        }
     }
 
     public static interface TeamStats extends ScoreBoardEventProvider {
@@ -82,8 +87,12 @@ public interface Stats extends ScoreBoardEventProvider {
         public void removeSkaterStats(String sid);
         public void removeSkaterStats();
 
-        public static final String EVENT_STATS = "Stats";
-        public static final String EVENT_REMOVE_SKATER = "RemoveSkater";
+        public enum Value implements SingleProperty {
+            STATS;
+        }
+        public enum Child implements MultiProperty {
+            SKATER;
+        }
     }
 
     public static interface SkaterStats extends ScoreBoardEventProvider {
@@ -97,9 +106,12 @@ public interface Stats extends ScoreBoardEventProvider {
         public String getPosition();
         public void setPosition(String p);
 
-        public static final String EVENT_STATS = "Stats";
+        public enum Value implements SingleProperty {
+            STATS;
+        }
     }
 
-    public static final String EVENT_ADD_PERIOD = "AddPeriod";
-    public static final String EVENT_REMOVE_PERIOD = "RemovePeriod";
+    public enum Child implements MultiProperty {
+        PERIOD;
+    }
 }

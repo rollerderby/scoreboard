@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -66,6 +67,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     public String getProviderName() { return "ScoreBoard"; }
     public Class<ScoreBoard> getProviderClass() { return ScoreBoard.class; }
     public String getProviderId() { return ""; }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
@@ -111,15 +113,15 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             if (p == inPeriod) { return; }
             Boolean last = new Boolean(inPeriod);
             inPeriod = p;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_PERIOD, new Boolean(inPeriod), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_PERIOD, new Boolean(inPeriod), last));
         }
     }
     protected void addInPeriodListeners() {
-        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, "Running", Boolean.FALSE, periodEndListener));
-        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, "Running", Boolean.FALSE, jamEndListener));
-        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_INTERMISSION, "Running", Boolean.FALSE, intermissionEndListener));
-        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_LINEUP, "Time", lineupClockListener));
-        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, "Time", timeoutClockListener));
+        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.Value.RUNNING, Boolean.FALSE, periodEndListener));
+        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.RUNNING, Boolean.FALSE, jamEndListener));
+        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_INTERMISSION, Clock.Value.RUNNING, Boolean.FALSE, intermissionEndListener));
+        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_LINEUP, Clock.Value.TIME, lineupClockListener));
+        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, Clock.Value.TIME, timeoutClockListener));
     }
 
     public boolean isInOvertime() { return inOvertime; }
@@ -128,7 +130,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             if (o == inOvertime) { return; }
             Boolean last = new Boolean(inOvertime);
             inOvertime = o;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_IN_OVERTIME, new Boolean(inOvertime), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_OVERTIME, new Boolean(inOvertime), last));
             Clock lc = getClock(Clock.ID_LINEUP);
             if (!o && lc.isCountDirectionDown()) {
                 lc.setMaximumTime(rulesets.getLong(Rule.LINEUP_DURATION));
@@ -170,7 +172,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         synchronized (coreLock) {
             Boolean last = new Boolean(officialScore);
             officialScore = o;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_SCORE, new Boolean(officialScore), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.OFFICIAL_SCORE, new Boolean(officialScore), last));
         }
     }
 
@@ -576,7 +578,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         synchronized (coreLock) {
             TimeoutOwner last = timeoutOwner;
             timeoutOwner = owner;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_TIMEOUT_OWNER, timeoutOwner, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.TIMEOUT_OWNER, timeoutOwner, last));
         }
     }
     public boolean isOfficialReview() { return officialReview; }
@@ -584,7 +586,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         synchronized (coreLock) {
             boolean last = officialReview;
             officialReview = official;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_OFFICIAL_REVIEW, new Boolean(officialReview), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.OFFICIAL_REVIEW, new Boolean(officialReview), last));
         }
     }
 
@@ -596,7 +598,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         Clock clock = new ClockImpl(this, id);
         clock.addScoreBoardListener(this);
         clocks.put(id, clock);
-        scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_CLOCK, clock, null));
+        scoreBoardChange(new ScoreBoardEvent(this, Child.CLOCK, clock, null));
     }
 
     protected void createTeam(String id) {
@@ -607,7 +609,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         Team team = new TeamImpl(this, id);
         team.addScoreBoardListener(this);
         teams.put(id, team);
-        scoreBoardChange(new ScoreBoardEvent(this, EVENT_ADD_TEAM, team, null));
+        scoreBoardChange(new ScoreBoardEvent(this, Child.TEAM, team, null));
     }
 
     protected HashMap<String,Clock> clocks = new HashMap<String,Clock>();
@@ -615,6 +617,11 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
     protected ScoreBoardSnapshot snapshot = null;
     protected boolean replacePending = false;
+
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Value.class);
+	add(Child.class);
+    }};
 
     protected static Object coreLock = new Object();
 

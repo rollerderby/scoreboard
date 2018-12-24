@@ -8,14 +8,17 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class SettingsImpl extends DefaultScoreBoardEventProvider implements Settings {
     public SettingsImpl(ScoreBoard s) {
@@ -25,13 +28,14 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
     public String getProviderName() { return "Settings"; }
     public Class<Settings> getProviderClass() { return Settings.class; }
     public String getProviderId() { return ""; }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public void reset() {
         synchronized (coreLock) {
             Map<String, String> old = new HashMap<String, String>(settings);
             settings.clear();
             for (String k : old.keySet()) {
-                scoreBoardChange(new ScoreBoardEvent(this, k, null, old.get(k)));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new Setting(k, null), old.get(k)));
             }
         }
     }
@@ -54,12 +58,30 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
             } else {
                 settings.put(k, v);
             }
-            scoreBoardChange(new ScoreBoardEvent(this, k, v, last));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new Setting(k, v), last));
         }
     }
 
     protected ScoreBoard sbm = null;
     protected Map<String, String> settings = new HashMap<String, String>();
 
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
+	add(Child.class);
+    }};
+
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
+    
+    public class Setting {
+
+	public Setting(String k, String v) {
+	    key = k;
+	    value = v;
+	}
+
+	public String getId() { return key; }
+	public String getValue() { return value; }
+	
+	private String key;
+	private String value;
+    }
 }
