@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.core;
 
 public enum FloorPosition {
     JAMMER(Role.JAMMER, "Jammer"),
-    PIVOT(Role.PIVOT, "Pivot"),
+    PIVOT(Role.PIVOT, "Pivot"), // used as Blocker4, if no Pivot fielded
     BLOCKER1(Role.BLOCKER, "Blocker1"),
     BLOCKER2(Role.BLOCKER, "Blocker2"),
     BLOCKER3(Role.BLOCKER, "Blocker3");
