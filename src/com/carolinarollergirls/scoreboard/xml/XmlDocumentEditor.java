@@ -52,7 +52,9 @@ public class XmlDocumentEditor {
         if (id == null) {
             return null;
         } else {
-            return id.replaceAll("['\"()]", "");
+            String i = id.replaceAll("['\"()]", "");
+            if ("".equals(i)) { i = null; }
+            return i; 
         }
     }
 
@@ -118,7 +120,7 @@ public class XmlDocumentEditor {
         Document d = parent.getDocument();
         Element element = new Element(name);
         id = checkId(id);
-        if (null != id && !"".equals(id)) {
+        if (null != id) {
             element.setAttribute("Id", id);
         }
         synchronized (d) {

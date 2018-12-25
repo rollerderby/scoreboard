@@ -26,8 +26,10 @@ import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
@@ -43,9 +45,10 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         reset();
     }
 
-    public String getProviderName() { return "Team"; }
+    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.TEAM); }
     public Class<Team> getProviderClass() { return Team.class; }
     public String getProviderId() { return getId(); }
+    public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
     public ScoreBoard getScoreBoard() { return scoreBoard; }
@@ -683,9 +686,10 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
         public Team getTeam() { return team; }
 
-        public String getProviderName() { return "AlternateName"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(Team.Child.ALTERNATE_NAME); }
         public Class<AlternateName> getProviderClass() { return AlternateName.class; }
         public String getProviderId() { return getId(); }
+        public ScoreBoardEventProvider getParent() { return team; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
@@ -715,9 +719,10 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
         public Team getTeam() { return team; }
 
-        public String getProviderName() { return "Color"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(Team.Child.COLOR); }
         public Class<Color> getProviderClass() { return Color.class; }
         public String getProviderId() { return getId(); }
+        public ScoreBoardEventProvider getParent() { return team; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{

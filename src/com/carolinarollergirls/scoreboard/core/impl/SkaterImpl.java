@@ -22,7 +22,9 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
@@ -33,9 +35,10 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         setFlags(flags);
     }
 
-    public String getProviderName() { return "Skater"; }
+    public String getProviderName() { return PropertyConversion.toFrontend(Team.Child.SKATER); }
     public Class<Skater> getProviderClass() { return Skater.class; }
     public String getProviderId() { return getId(); }
+    public ScoreBoardEventProvider getParent() { return team; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Team getTeam() { return team; }
@@ -161,7 +164,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 if (prev != null) {
                     id = prev.getId();
                 }
-                foexp_penalty = new PenaltyImpl(id, period, jam, code);
+                foexp_penalty = new PenaltyImpl(this, id, period, jam, code);
                 if (getBaseRole() == Role.BENCH) {
                     setBaseRole(Role.INELIGIBLE);
                 }
@@ -175,7 +178,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 id = UUID.randomUUID().toString();
                 // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
                 if (penalties.size() < 9) {
-                    PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
+                    PenaltyImpl dpm = new PenaltyImpl(this, id, period, jam, code);
                     penalties.add(dpm);
                     sortPenalties();
                     scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, getPenalties(), null));
@@ -199,7 +202,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                     }
                 }
                 // Penalty has an ID we don't have likely from the autosave, add it.
-                PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
+                PenaltyImpl dpm = new PenaltyImpl(this, id, period, jam, code);
                 penalties.add(dpm);
                 sortPenalties();
                 scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, getPenalties(), null));
@@ -263,7 +266,8 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     protected boolean settingPositionSkater = false;
 
     public class PenaltyImpl extends DefaultScoreBoardEventProvider implements Penalty {
-        public PenaltyImpl(String i, int p, int j, String c) {
+        public PenaltyImpl(Skater s, String i, int p, int j, String c) {
+            skater = s;
             id = i;
             period = p;
             jam = j;
@@ -274,11 +278,13 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         public int getJam() { return jam; }
         public String getCode() { return code; }
 
-        public String getProviderName() { return "Penalty"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(Skater.Child.PENALTY); }
         public Class<Penalty> getProviderClass() { return Penalty.class; }
         public String getProviderId() { return getId(); }
+        public ScoreBoardEventProvider getParent() { return skater; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
+        protected Skater skater;
         protected String id;
         protected int period;
         protected int jam;

@@ -17,6 +17,7 @@ public interface ScoreBoardEventProvider {
     public String getProviderName();
     public Class<? extends ScoreBoardEventProvider> getProviderClass();
     public String getProviderId();
+    public ScoreBoardEventProvider getParent();
     public List<Class<? extends Property>> getProperties();
 
     public void addScoreBoardListener(ScoreBoardListener listener);

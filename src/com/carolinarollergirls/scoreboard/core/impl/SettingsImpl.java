@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class SettingsImpl extends DefaultScoreBoardEventProvider implements Settings {
@@ -28,6 +29,7 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
     public String getProviderName() { return "Settings"; }
     public Class<Settings> getProviderClass() { return Settings.class; }
     public String getProviderId() { return ""; }
+    public ScoreBoardEventProvider getParent() { return sbm; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
     public void reset() {

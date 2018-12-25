@@ -15,8 +15,11 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
+import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.core.Media;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.impl.MediaImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -27,6 +30,7 @@ public class MediaImplTests {
     private File init;
 
     private BlockingQueue<ScoreBoardEvent> collectedEvents;
+    private ScoreBoard sbMock;
     public ScoreBoardListener listener = new ScoreBoardListener() {
 
         @Override
@@ -44,10 +48,12 @@ public class MediaImplTests {
     public void setUp() throws Exception {
         collectedEvents = new LinkedBlockingQueue<ScoreBoardEvent>();
 
+        sbMock = Mockito.mock(ScoreBoardImpl.class);
+
         dir.newFolder("html", "images", "teamlogo");
         init = dir.newFile("html/images/teamlogo/init.png");
 
-        media = new MediaImpl(dir.getRoot());
+        media = new MediaImpl(sbMock, dir.getRoot());
         media.addScoreBoardListener(listener);
     }
 
@@ -63,7 +69,7 @@ public class MediaImplTests {
         init.delete();
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(Media.Child.FILE, e.getProperty());
+        assertEquals(MediaType.Child.FILE, e.getProperty());
         assertNull(e.getValue());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNull(tm.get("init.png"));
@@ -74,7 +80,7 @@ public class MediaImplTests {
         assertTrue(media.removeMediaFile("images", "teamlogo", "init.png"));
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(Media.Child.FILE, e.getProperty());
+        assertEquals(MediaType.Child.FILE, e.getProperty());
         assertNull(e.getValue());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNull(tm.get("init.png"));
@@ -85,7 +91,7 @@ public class MediaImplTests {
         dir.newFile("html/images/teamlogo/new.png");
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(Media.Child.FILE, e.getProperty());
+        assertEquals(MediaType.Child.FILE, e.getProperty());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNotNull(tm.get("new.png"));
     }

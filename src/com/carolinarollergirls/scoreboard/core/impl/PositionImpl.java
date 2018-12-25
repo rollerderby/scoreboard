@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class PositionImpl extends DefaultScoreBoardEventProvider implements Position {
@@ -30,6 +31,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     public String getProviderName() { return "Position"; }
     public Class<Position> getProviderClass() { return Position.class; }
     public String getProviderId() { return getId(); }
+    public ScoreBoardEventProvider getParent() { return team; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Team getTeam() { return team; }

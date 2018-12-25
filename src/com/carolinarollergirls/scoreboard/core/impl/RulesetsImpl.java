@@ -35,12 +35,11 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
         reset();
     }
 
-    public String getProviderName() { return "Rulesets"; }
+    public String getProviderName() { return "KnownRulesets"; }
     public Class<Rulesets> getProviderClass() { return Rulesets.class; }
     public String getProviderId() { return ""; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
-
     public ScoreBoardEventProvider getParent() { return parent; }
+    public List<Class<? extends Property>> getProperties() { return properties; }
 
     private void initialize() {
         Map<Rule, String> rootSettings = new HashMap<Rule, String>();
@@ -167,7 +166,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     }
     public Ruleset addRuleset(String name, String parentId, String id) {
         synchronized (coreLock) {
-            Ruleset r = new RulesetImpl(name, parentId, id);
+            Ruleset r = new RulesetImpl(this, name, parentId, id);
             rulesets.put(id, r);
             r.addScoreBoardListener(this);
             scoreBoardChange(new ScoreBoardEvent(r, Child.KNOWN_RULESETS, r, null));
@@ -216,7 +215,8 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     public static final String rootId = "00000000-0000-0000-0000-000000000000";
 
     public class RulesetImpl extends DefaultScoreBoardEventProvider implements Ruleset {
-        private RulesetImpl(String name, String parentId, String id) {
+        private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
+            this.rulesets = rulesets;
             this.id = id;
             this.name = name;
             this.parentId = parentId;
@@ -291,6 +291,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
         public String getProviderName() { return "Ruleset"; }
         public Class<Ruleset> getProviderClass() { return Ruleset.class; }
         public String getProviderId() { return getId(); }
+        public ScoreBoardEventProvider getParent() { return rulesets; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         private String id;
@@ -298,6 +299,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
         private String parentId;
         private Map<Rule, String> settings = new HashMap<Rule, String>();
 
+        private Rulesets rulesets;
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
             add(Value.class);
             add(Child.class);

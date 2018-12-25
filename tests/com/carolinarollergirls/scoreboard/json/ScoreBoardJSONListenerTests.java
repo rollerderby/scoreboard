@@ -346,21 +346,21 @@ public class ScoreBoardJSONListenerTests {
     public void testMediaEvents() throws Exception {
         assertEquals("", state.get("ScoreBoard.Media.images.fullscreen"));
         assertEquals("", state.get("ScoreBoard.Media.images.teamlogo"));
-        assertEquals("init.png", state.get("ScoreBoard.Media.images.teamlogo(init.png).Id"));
-        assertEquals("init", state.get("ScoreBoard.Media.images.teamlogo(init.png).Name"));
-        assertEquals("/images/teamlogo/init.png", state.get("ScoreBoard.Media.images.teamlogo(init.png).Src"));
+        assertEquals("init.png", state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Id"));
+        assertEquals("init", state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Name"));
+        assertEquals("/images/teamlogo/init.png", state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Src"));
 
         sb.getMedia().removeMediaFile("images", "teamlogo", "init.png");
         dir.newFile("html/images/fullscreen/new.png");
 
         Thread.sleep(100);
-        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo(init.png).Id"));
-        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo(init.png).Name"));
-        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo(init.png).Src"));
+        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Id"));
+        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Name"));
+        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Src"));
         assertEquals("", state.get("ScoreBoard.Media.images.teamlogo"));
-        assertEquals("new.png", state.get("ScoreBoard.Media.images.fullscreen(new.png).Id"));
-        assertEquals("new", state.get("ScoreBoard.Media.images.fullscreen(new.png).Name"));
-        assertEquals("/images/fullscreen/new.png", state.get("ScoreBoard.Media.images.fullscreen(new.png).Src"));
+        assertEquals("new.png", state.get("ScoreBoard.Media.images.fullscreen.File(new.png).Id"));
+        assertEquals("new", state.get("ScoreBoard.Media.images.fullscreen.File(new.png).Name"));
+        assertEquals("/images/fullscreen/new.png", state.get("ScoreBoard.Media.images.fullscreen.File(new.png).Src"));
 
     }
 

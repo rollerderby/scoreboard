@@ -15,6 +15,7 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Media;
+import com.carolinarollergirls.scoreboard.core.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -155,12 +156,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ").Skater(" + ts.getSkaterId() + ")", ts);
                 } else if (p instanceof Settings) {
                     updates.add(new WSUpdate("ScoreBoard.Settings." + ((Setting)v).getId(), ((Setting)v).getValue()));
-                } else if (p instanceof Media && prop == Media.Child.FILE && v == null) {
+                } else if (p instanceof MediaType && prop == MediaType.Child.FILE && v == null) {
                     Media.MediaFile mf = (Media.MediaFile)pv;
-                    updates.add(new WSUpdate("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + "(" + mf.getId() + ")", null));
-                } else if (p instanceof Media.MediaFile) {
-                    Media.MediaFile mf = (Media.MediaFile)p;
-                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + "(" + mf.getId() + ")", mf);
+                    updates.add(new WSUpdate("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + ".File(" + mf.getId() + ")", null));
+                } else if (p instanceof MediaType) {
+                    Media.MediaFile mf = (Media.MediaFile)v;
+                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + ".File(" + mf.getId() + ")", mf);
                 } else {
                     ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + PropertyConversion.toFrontend(prop) + ", v: " + v);
                 }
@@ -448,7 +449,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 updates.add(new WSUpdate("ScoreBoard.Media." + format + "." + type, ""));
                 Map<String, Media.MediaFile> h = m.getMediaFiles(format, type);
                 for (Media.MediaFile mf: h.values()) {
-                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + "(" + mf.getId() + ")", mf);
+                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + ".File(" + mf.getId() + ")", mf);
                 }
             }
         }

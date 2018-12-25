@@ -16,6 +16,7 @@ import org.jdom.Element;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Media;
+import com.carolinarollergirls.scoreboard.core.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -75,6 +76,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
 
     public void scoreBoardChange(ScoreBoardEvent event) {
         ScoreBoardEventProvider p = event.getProvider();
+        Element e = getElement(p);
         Property prop = event.getProperty();
         String v = (event.getValue()==null?null:event.getValue().toString());
         if (prop == BatchEvent.START) {
@@ -82,22 +84,20 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         } else if (prop == BatchEvent.END) {
             batchEnd();
         } else if (p.getProviderName().equals("Settings")) {
-            Element e = editor.setElement(getScoreBoardElement(), "Settings");
             Setting s = (Setting)event.getValue();
-            if (v == null) {
+            if (s.getValue() == null) {
                 editor.setRemovePI(editor.setElement(e, prop, s.getId()));
             } else {
                 editor.setElement(e, prop, s.getId(), s.getValue());
             }
         } else if (p.getProviderName().equals("Rulesets")) {
             if (prop == Rulesets.Child.KNOWN_RULESETS && v == null) {
-                Element e = editor.setElement(getScoreBoardElement(), "KnownRulesets");
                 editor.setRemovePI(converter.toElement(e, (Rulesets.Ruleset)event.getPreviousValue()));
             } else {
-                converter.toElement(getScoreBoardElement(), (Rulesets)p);
+                converter.toElement(getElement(p.getParent()), (Rulesets)p);
             }
         } else if (p.getProviderName().equals("Ruleset")) {
-            Element e = editor.setElement(getScoreBoardElement(), "KnownRulesets");
+            e = getElement(p.getParent());
             Rulesets.Ruleset r = (Rulesets.Ruleset)p;
             converter.toElement(e, r);
             // Look for overrides that have been removed.
@@ -114,43 +114,42 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         } else if (p.getProviderName().equals("ScoreBoard")) {
             if (prop == ScoreBoard.Child.CLOCK) {
         	if (v != null) {
-        	    converter.toElement(getScoreBoardElement(), (Clock)event.getValue());
+        	    converter.toElement(e, (Clock)event.getValue());
         	} else {
-        	    editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Clock)event.getPreviousValue()));
+        	    editor.setRemovePI(converter.toElement(e, (Clock)event.getPreviousValue()));
         	}
             } else if (prop == ScoreBoard.Child.TEAM) {
         	if (v != null) {
-        	    converter.toElement(getScoreBoardElement(), (Team)event.getValue());
+        	    converter.toElement(e, (Team)event.getValue());
         	} else {
-        	    editor.setRemovePI(converter.toElement(getScoreBoardElement(), (Team)event.getPreviousValue()));
+        	    editor.setRemovePI(converter.toElement(e, (Team)event.getPreviousValue()));
         	}
             } else {
-                editor.setElement(getScoreBoardElement(), prop, null, v);
+                editor.setElement(e, prop, null, v);
             }
         } else if (p.getProviderName().equals("Team")) {
             if (prop == Team.Child.ALTERNATE_NAME) {
         	if (v != null) {
-        	    converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getValue());
+        	    converter.toElement(e, (Team.AlternateName)event.getValue());
         	} else {
-        	    editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.AlternateName)event.getPreviousValue()));
+        	    editor.setRemovePI(converter.toElement(e, (Team.AlternateName)event.getPreviousValue()));
         	}
             } else if (prop == Team.Child.COLOR) {
         	if (v != null) {
-        	    converter.toElement(getTeamElement((Team)p), (Team.Color)event.getValue());
+        	    converter.toElement(e, (Team.Color)event.getValue());
         	} else {
-        	    editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Team.Color)event.getPreviousValue()));
+        	    editor.setRemovePI(converter.toElement(e, (Team.Color)event.getPreviousValue()));
         	}
             } else if (prop == Team.Child.SKATER) {
         	if (v != null) {
-        	    converter.toElement(getTeamElement((Team)p), (Skater)event.getValue());
+        	    converter.toElement(e, (Skater)event.getValue());
         	} else {
-        	    editor.setRemovePI(converter.toElement(getTeamElement((Team)p), (Skater)event.getPreviousValue()));
+        	    editor.setRemovePI(converter.toElement(e, (Skater)event.getPreviousValue()));
         	}
             } else {
-                editor.setElement(getTeamElement((Team)p), prop, null, v);
+                editor.setElement(e, prop, null, v);
             }
         } else if (p.getProviderName().equals("Position")) {
-            Element e = getPositionElement((Position)p);
             if (prop == Position.Value.SKATER) {
                 Skater s = (Skater)event.getValue();
                 editor.setElement(e, "Id", null, (s==null?"":s.getId()));
@@ -159,58 +158,53 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
                 editor.setElement(e, "PenaltyBox", null, String.valueOf(s==null?false:s.isPenaltyBox()));
                 editor.setElement(e, "Flags", null, (s==null?"":s.getFlags()));
             } else if (prop == Position.Value.PENALTY_BOX) {
-                editor.setElement(e, "PenaltyBox", null, String.valueOf(event.getValue()));
+                editor.setElement(e, prop, null, String.valueOf(event.getValue()));
             }
         } else if (p.getProviderName().equals("AlternateName")) {
-            editor.setElement(getAlternateNameElement((Team.AlternateName)p), prop, null, v);
+            editor.setElement(e, prop, null, v);
         } else if (p.getProviderName().equals("Color")) {
-            editor.setElement(getColorElement((Team.Color)p), prop, null, v);
+            editor.setElement(e, prop, null, v);
         } else if (p.getProviderName().equals("Skater")) {
             if ((prop == Skater.Child.PENALTY || prop == Skater.Value.PENALTY_FOEXP)
         	    && v != null) {
                 // Replace whole skater.
-                converter.toElement(getTeamElement(((Skater)p).getTeam()), (Skater)p);
+                converter.toElement(getElement(p.getParent()), (Skater)p);
             } else if (prop == Skater.Child.PENALTY) {
                 Skater.Penalty prev = (Skater.Penalty)(event.getPreviousValue());
                 if (prev != null) {
-                    editor.setRemovePI(editor.addElement(getSkaterElement((Skater)p), prop, prev.getId()));
+                    editor.setRemovePI(editor.addElement(e, prop, prev.getId()));
                 }
             } else if (prop.equals(Skater.Value.PENALTY_FOEXP)) {
                 Skater.Penalty prev = (Skater.Penalty)(event.getPreviousValue());
                 if (prev != null) {
-                    editor.setRemovePI(editor.addElement(getSkaterElement((Skater)p), prop, prev.getId()));
+                    editor.setRemovePI(editor.addElement(e, prop, prev.getId()));
                 }
             } else {
-                editor.setElement(getSkaterElement((Skater)p), prop, null, v);
+                editor.setElement(e, prop, null, v);
             }
-        } else if (p.getProviderName().equals("Media")) {
-            Media.MediaFile mf = (Media.MediaFile)(event.getPreviousValue());
-            Element e = getMediaFileElement(mf);
-            if (prop == Media.Child.FILE && v == null) {
-                editor.setRemovePI(converter.toElement(e, mf));
-            }
-        } else if (p.getProviderName().equals("MediaFile")) {
-            Media.MediaFile mf = (Media.MediaFile)(event.getValue());
-            Element e = getMediaFileElement(mf);
-            if (prop.equals(Media.Child.FILE)) {
-                converter.toElement(e, mf);
+        } else if (p.getProviderName().equals("MediaType")) {
+            if (prop == MediaType.Child.FILE) {
+        	if (v == null) {
+                    Media.MediaFile mf = (Media.MediaFile)(event.getPreviousValue());
+                    editor.setRemovePI(converter.toElement(e, mf));
+        	} else {
+                    Media.MediaFile mf = (Media.MediaFile)(event.getValue());
+                    converter.toElement(e, mf);
+        	}
             }
         } else if (p.getProviderName().equals("Stats")) {
-            Element e = getStatsElement();
             if (prop == Stats.Child.PERIOD && v == null) {
                 editor.setRemovePI(converter.toElement(e, (Stats.PeriodStats)(event.getPreviousValue())));
             } else if (prop == Stats.Child.PERIOD) {
-                getPeriodStatsElement((Stats.PeriodStats)(event.getValue()));
+                getElement((Stats.PeriodStats)(event.getValue()));
             }
         } else if (p.getProviderName().equals("PeriodStats")) {
-            Element e = getPeriodStatsElement((Stats.PeriodStats)p);
             if (prop == Stats.PeriodStats.Child.JAM && v == null) {
                 editor.setRemovePI(converter.toElement(e, (Stats.JamStats)(event.getPreviousValue())));
             } else if (prop == Stats.PeriodStats.Child.JAM) {
-                getJamStatsElement((Stats.JamStats)(event.getValue()));
+                getElement((Stats.JamStats)(event.getValue()));
             }
         } else if (p.getProviderName().equals("JamStats")) {
-            Element e = getJamStatsElement((Stats.JamStats)p);
             if (prop == Stats.JamStats.Value.STATS) {
                 Stats.JamStats js = (Stats.JamStats)event.getValue();
                 editor.setElement(e, "JamClockElapsedEnd", null, String.valueOf(js.getJamClockElapsedEnd()));
@@ -220,7 +214,6 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
                 editor.setElement(e, "PeriodClockWalltimeEnd", null, String.valueOf(js.getPeriodClockWalltimeEnd()));
             }
         } else if (p.getProviderName().equals("TeamStats")) {
-            Element e = getTeamStatsElement((Stats.TeamStats)p);
             if (prop == Stats.TeamStats.Value.STATS) {
                 Stats.TeamStats ts = (Stats.TeamStats)event.getValue();
                 editor.setElement(e, "JamScore", null, String.valueOf(ts.getJamScore()));
@@ -234,14 +227,13 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
                 editor.setRemovePI(converter.toElement(e, ss));
             }
         } else if (p.getProviderName().equals("SkaterStats")) {
-            Element e = getSkaterStatsElement((Stats.SkaterStats)p);
             if (prop == Stats.SkaterStats.Value.STATS) {
                 Stats.SkaterStats ss = (Stats.SkaterStats)event.getValue();
                 editor.setElement(e, "Position", null, ss.getPosition());
                 editor.setElement(e, "PenaltyBox", null, String.valueOf(ss.getPenaltyBox()));
             }
         } else if (p.getProviderName().equals("Clock")) {
-            Element e = editor.setElement(getClockElement((Clock)p), prop, null, v);
+            e = editor.setElement(e, prop, null, v);
             if (prop == Clock.Value.TIME) {
                 try {
                     long time = ((Long)event.getValue()).longValue();
@@ -258,79 +250,13 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         }
         empty = false;
     }
-
-    protected Element getScoreBoardElement() {
-        return editor.getElement(document.getRootElement(), "ScoreBoard");
-    }
-
-    protected Element getClockElement(Clock clock) {
-        return editor.getElement(getScoreBoardElement(), "Clock", clock.getId());
-    }
-
-    protected Element getTeamElement(Team team) {
-        return editor.getElement(getScoreBoardElement(), "Team", team.getId());
-    }
-
-    protected Element getPositionElement(Position position) {
-        return editor.getElement(getTeamElement(position.getTeam()), "Position", position.getId());
-    }
-
-    protected Element getSkaterElement(Skater skater) {
-        return editor.getElement(getTeamElement(skater.getTeam()), "Skater", skater.getId());
-    }
-
-    protected Element getAlternateNameElement(Team.AlternateName alternateName) {
-        return editor.getElement(getTeamElement(alternateName.getTeam()), "AlternateName", alternateName.getId());
-    }
-
-    protected Element getColorElement(Team.Color color) {
-        return editor.getElement(getTeamElement(color.getTeam()), "Color", color.getId());
-    }
-
-    protected Element getStatsElement() {
-        return editor.getElement(getScoreBoardElement(), "Stats");
-    }
-
-    protected Element getPeriodStatsElement(Stats.PeriodStats ps) {
-        return editor.getElement(getStatsElement(), "Period", String.valueOf(ps.getPeriodNumber()));
-    }
-
-    protected Element getJamStatsElement(Stats.JamStats js) {
-        return editor.getElement(
-                   editor.getElement(
-                       getStatsElement(), "Period", String.valueOf(js.getPeriodNumber())),
-                   "Jam", String.valueOf(js.getJamNumber()));
-    }
-
-    protected Element getTeamStatsElement(Stats.TeamStats ts) {
-        return editor.getElement(
-                   editor.getElement(
-                       editor.getElement(
-                           getStatsElement(), "Period", String.valueOf(ts.getPeriodNumber())),
-                       "Jam", String.valueOf(ts.getJamNumber())),
-                   "Team", ts.getTeamId());
-    }
-
-    protected Element getSkaterStatsElement(Stats.SkaterStats ss) {
-        return editor.getElement(
-                   editor.getElement(
-                       editor.getElement(
-                           editor.getElement(
-                               getStatsElement(), "Period", String.valueOf(ss.getPeriodNumber())),
-                           "Jam", String.valueOf(ss.getJamNumber())),
-                       "Team", ss.getTeamId()),
-                   "Skater", ss.getSkaterId());
-    }
-
-    protected Element getMediaFileElement(Media.MediaFile mf) {
-        return editor.getElement(
-                   editor.getElement(
-                       editor.getElement(
-                           editor.getElement(
-                               getScoreBoardElement(), "Media"),
-                           mf.getFormat()),
-                       mf.getType()),
-                   "File", mf.getId());
+    
+    protected Element getElement(ScoreBoardEventProvider p) {
+	if (p.getParent() == null) {
+	    return editor.getElement(document.getRootElement(), p.getProviderName());
+	} else {
+	    return editor.getElement(getElement(p.getParent()), p.getProviderName(), p.getProviderId());
+	}
     }
 
     protected XmlDocumentEditor editor = new XmlDocumentEditor();

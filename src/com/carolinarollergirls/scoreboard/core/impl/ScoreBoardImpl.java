@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -48,7 +49,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         settings.addScoreBoardListener(this);
         rulesets = new RulesetsImpl(this);
         rulesets.addScoreBoardListener(this);
-        media = new MediaImpl(ScoreBoardManager.getDefaultPath());
+        media = new MediaImpl(this, ScoreBoardManager.getDefaultPath());
         media.addScoreBoardListener(this);
         reset();
         createTeam(Team.ID_1);
@@ -67,6 +68,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     public String getProviderName() { return "ScoreBoard"; }
     public Class<ScoreBoard> getProviderClass() { return ScoreBoard.class; }
     public String getProviderId() { return ""; }
+    public ScoreBoardEventProvider getParent() { return null; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
     public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }

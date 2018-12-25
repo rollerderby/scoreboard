@@ -129,12 +129,12 @@
 			for (var i = 1; i <= 9; i++)
 				displayPenalty(t, id, i);
 			displayPenalty(t, id, 'FO_EXP');
-		} else if (field === 'Position') {
+		} else if (field === 'Role') {
 			var numberCell = $('.Team' + t + ' .Skater.Penalty[id=' + id + '] .Number');
-			if(v === null || v === 'Bench') {
-				numberCell.removeClass('onTrack');
-			} else {
+			if(v === 'Jammer' || v === 'Pivot' || v === 'Blocker') {
 				numberCell.addClass('onTrack');
+			} else {
+				numberCell.removeClass('onTrack');
 			}
 		} else {
 			// Look for penalty
@@ -217,9 +217,9 @@
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
 		var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id); });
-		var position = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Position'];
+		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
 		
-		if(position !== null && position !== 'Bench') {
+		if(role === 'Jammer' || role === 'Pivot' || role === 'Blocker') {
 			numberCell.addClass('onTrack');
 		}
 		

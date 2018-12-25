@@ -19,8 +19,10 @@ import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
@@ -33,9 +35,10 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         reset();
     }
 
-    public String getProviderName() { return "Clock"; }
+    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.CLOCK); }
     public Class<Clock> getProviderClass() { return Clock.class; }
     public String getProviderId() { return getId(); }
+    public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
     public ScoreBoard getScoreBoard() { return scoreBoard; }

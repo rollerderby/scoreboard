@@ -108,7 +108,7 @@ public class ScoreBoardXmlConverter {
     }
 
     public Element toElement(Element p, Rulesets.Ruleset r) {
-        Element e = editor.setElement(p, "Ruleset", r.getId());
+        Element e = editor.setElement(p, r.getProviderName(), r.getProviderId());
         for (Rule k : r.getAll().keySet()) {
             editor.setElement(e, Rulesets.Value.RULE, k.toString(), r.get(k));
         }
@@ -118,28 +118,28 @@ public class ScoreBoardXmlConverter {
     }
 
     public Element toElement(Element sb, Media m) {
-        Element e = editor.setElement(sb, "Media");
+        Element e = editor.setElement(sb, m.getProviderName());
         for (String format : m.getFormats()) {
             Element f = editor.setElement(e, format);
             for (String type : m.getTypes(format)) {
                 Element t = editor.setElement(f, type);
                 for (Media.MediaFile mf: m.getMediaFiles(format, type).values()) {
-                    Element fi = editor.setElement(t, "File", mf.getId());
-                    toElement(fi, mf);
+                    toElement(t, mf);
                 }
             }
         }
         return e;
     }
 
-    public Element toElement(Element e, Media.MediaFile mf) {
+    public Element toElement(Element p, Media.MediaFile mf) {
+        Element e = editor.setElement(p, mf.getProviderName(), mf.getProviderId());
         editor.setElement(e, "Name", null, mf.getName());
         editor.setElement(e, "Src", null, mf.getSrc());
         return e;
     }
 
     public Element toElement(Element sb, Clock c) {
-        Element e = editor.setElement(sb, "Clock", c.getId());
+        Element e = editor.setElement(sb, c.getProviderName(), c.getProviderId());
 
         editor.setElement(e, "Start", null, "");
         editor.setElement(e, "UnStart", null, "");
@@ -161,7 +161,7 @@ public class ScoreBoardXmlConverter {
     }
 
     public Element toElement(Element sb, Team t) {
-        Element e = editor.setElement(sb, "Team", t.getId());
+        Element e = editor.setElement(sb, t.getProviderName(), t.getProviderId());
 
         editor.setElement(e, "Timeout", null, "");
         editor.setElement(e, "OfficialReview", null, "");

@@ -24,6 +24,31 @@ public interface Media extends ScoreBoardEventProvider {
 
     public boolean validFileName(String fn);
 
+    public static interface MediaFormat extends ScoreBoardEventProvider {
+        public String getFormat();
+	public Set<String> getTypes();
+	public MediaType getType(String type);
+	public void addType(String type);
+	
+	public enum Child implements MultiProperty {
+	    TYPE;
+	}
+    }
+    
+    public static interface MediaType extends ScoreBoardEventProvider {
+        public String getFormat();
+        public String getType();
+	public Map<String, MediaFile> getFiles();
+	
+	public MediaFile getFile(String id);
+	public void addFile(MediaFile file);
+	public void removeFile(String id);
+	
+	public enum Child implements MultiProperty {
+	    FILE;
+	}
+    }
+    
     public static interface MediaFile extends ScoreBoardEventProvider {
         public String getFormat();
         public String getType();
@@ -34,6 +59,6 @@ public interface Media extends ScoreBoardEventProvider {
     }
 
     public enum Child implements MultiProperty {
-	FILE;
+	FORMAT;
     }
 }

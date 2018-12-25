@@ -59,6 +59,9 @@ public interface Stats extends ScoreBoardEventProvider {
         public enum Value implements SingleProperty {
             STATS;
         }
+        public enum Child implements MultiProperty {
+            TEAM;
+        }
     }
 
     public static interface TeamStats extends ScoreBoardEventProvider {

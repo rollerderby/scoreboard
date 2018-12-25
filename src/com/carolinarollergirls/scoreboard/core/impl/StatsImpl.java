@@ -25,6 +25,8 @@ import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
@@ -53,7 +55,8 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public ScoreBoard getScoreBoard() { return scoreBoard; }
     public String getProviderName() { return "Stats"; }
     public Class<Stats> getProviderClass() { return Stats.class; }
-    public String getProviderId() { return "Stats"; }
+    public String getProviderId() { return ""; }
+    public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
     public void reset() {
@@ -214,7 +217,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public void ensureAtLeastNPeriods(int n) {
         synchronized (coreLock) {
             while (periods.size() < n) {
-                PeriodStats ps = new PeriodStatsImpl(periods.size() + 1);
+                PeriodStats ps = new PeriodStatsImpl(this, periods.size() + 1);
                 ps.addScoreBoardListener(this);
                 periods.add(ps);
                 scoreBoardChange(new ScoreBoardEvent(this, Stats.Child.PERIOD, ps, null));
@@ -258,13 +261,15 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
 
     public class PeriodStatsImpl extends DefaultScoreBoardEventProvider implements PeriodStats {
-        public PeriodStatsImpl(int p) {
+        public PeriodStatsImpl(Stats s, int p) {
+            stats = s;
             period = p;
         }
 
-        public String getProviderName() { return "PeriodStats"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(Stats.Child.PERIOD); }
         public Class<PeriodStats> getProviderClass() { return PeriodStats.class; }
-        public String getProviderId() { return "PeriodStats"; }
+        public String getProviderId() { return String.valueOf(period); }
+        public ScoreBoardEventProvider getParent() { return stats; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         public int getPeriodNumber() { return period; }
@@ -272,7 +277,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void ensureAtLeastNJams(int n) {
             synchronized (coreLock) {
                 while (jams.size() < n) {
-                    JamStats js = new JamStatsImpl(getPeriodNumber(), jams.size() + 1);
+                    JamStats js = new JamStatsImpl(this, jams.size() + 1);
                     js.addScoreBoardListener(this);
                     jams.add(js);
                     scoreBoardChange(new ScoreBoardEvent(this, Child.JAM, js, null));
@@ -304,6 +309,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
             }
         }
 
+        private Stats stats;
         private int period;
         protected List<JamStats> jams = new ArrayList<JamStats>();
 
@@ -314,22 +320,23 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
 
     public class JamStatsImpl extends DefaultScoreBoardEventProvider implements JamStats {
-        public JamStatsImpl(int p, int j) {
+        public JamStatsImpl(PeriodStats p, int j) {
             period = p;
             jam = j;
             teams = new TeamStatsImpl[2];
-            teams[0] = new TeamStatsImpl(Team.ID_1, period, jam);
-            teams[1] = new TeamStatsImpl(Team.ID_2, period, jam);
+            teams[0] = new TeamStatsImpl(Team.ID_1, this);
+            teams[1] = new TeamStatsImpl(Team.ID_2, this);
             teams[0].addScoreBoardListener(this);
             teams[1].addScoreBoardListener(this);
         }
 
-        public String getProviderName() { return "JamStats"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(PeriodStats.Child.JAM); }
         public Class<JamStats> getProviderClass() { return JamStats.class; }
-        public String getProviderId() { return "JamStats"; }
+        public String getProviderId() { return String.valueOf(jam); }
+        public ScoreBoardEventProvider getParent() { return period; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
-        public int getPeriodNumber() { return period; }
+        public int getPeriodNumber() { return period.getPeriodNumber(); }
         public int getJamNumber() { return jam; }
 
         public long getJamClockElapsedEnd() { return jamClockElapsedEnd; }
@@ -388,7 +395,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
             }
         }
 
-        private int period;
+        private PeriodStats period;
         private int jam;
         private long jamClockElapsedEnd;
         private long periodClockElapsedStart;
@@ -399,24 +406,25 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
             add(Value.class);
+            add(Child.class);
         }};
     }
 
     public class TeamStatsImpl extends DefaultScoreBoardEventProvider implements TeamStats {
-        public TeamStatsImpl(String team_id, int p, int j) {
+        public TeamStatsImpl(String team_id, JamStats j) {
             id = team_id;
-            period = p;
             jam = j;
         }
 
-        public String getProviderName() { return "TeamStats"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(JamStats.Child.TEAM); }
         public Class<TeamStats> getProviderClass() { return TeamStats.class; }
-        public String getProviderId() { return "TeamStats"; }
+        public String getProviderId() { return id; }
+        public ScoreBoardEventProvider getParent() { return jam; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         public String getTeamId() { return id; }
-        public int getPeriodNumber() { return period; }
-        public int getJamNumber() { return jam; }
+        public int getPeriodNumber() { return jam.getPeriodNumber(); }
+        public int getJamNumber() { return jam.getJamNumber(); }
 
         public int getJamScore() { return jamScore; }
         public void setJamScore(int s) {
@@ -487,7 +495,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public void addSkaterStats(String sid) {
             synchronized (coreLock) {
                 if (skaters.get(sid) == null) {
-                    SkaterStats ss = new SkaterStatsImpl(sid, id, period, jam);
+                    SkaterStats ss = new SkaterStatsImpl(sid, this);
                     ss.addScoreBoardListener(this);
                     skaters.put(sid, ss);
                 }
@@ -515,8 +523,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
 
         private String id;
-        private int period;
-        private int jam;
+        private JamStats jam;
         private int jamScore;
         private int totalScore;
         private String leadStatus;
@@ -533,22 +540,21 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     }
 
     public class SkaterStatsImpl extends DefaultScoreBoardEventProvider implements SkaterStats {
-        public SkaterStatsImpl(String skater_id, String team_id, int p, int j) {
+        public SkaterStatsImpl(String skater_id, TeamStats team) {
             id = skater_id;
-            tid = team_id;
-            period = p;
-            jam = j;
+            this.team = team;
         }
 
-        public String getProviderName() { return "SkaterStats"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(TeamStats.Child.SKATER); }
         public Class<SkaterStats> getProviderClass() { return SkaterStats.class; }
-        public String getProviderId() { return "SkaterStats"; }
+        public String getProviderId() { return id; }
+        public ScoreBoardEventProvider getParent() { return team; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         public String getSkaterId() { return id; }
-        public String getTeamId() { return tid; }
-        public int getPeriodNumber() { return period; }
-        public int getJamNumber() { return jam; }
+        public String getTeamId() { return team.getTeamId(); }
+        public int getPeriodNumber() { return team.getPeriodNumber(); }
+        public int getJamNumber() { return team.getJamNumber(); }
 
         public String getPosition() { return position; }
         public void setPosition(String p) {
@@ -566,9 +572,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
             }
         }
         private String id;
-        private String tid;
-        private int period;
-        private int jam;
+        private TeamStats team;
 
         private boolean penaltyBox;
         private String position;
