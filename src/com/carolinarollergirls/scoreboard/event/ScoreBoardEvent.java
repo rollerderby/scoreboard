@@ -12,14 +12,22 @@ import java.util.EventObject;
 import java.util.Objects;
 
 public class ScoreBoardEvent extends EventObject implements Cloneable {
-    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property p, Object v, Object prev) {
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, PermanentProperty p, Object v, Object prev) {
+        this(sbeP, (Property)p, v, prev);
+    }
+
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, AddRemoveProperty p, ValueWithId v, ValueWithId prev) {
+        this(sbeP, (Property)p, v, prev);
+    }
+
+    private ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property p, Object v, Object prev) {
         super(sbeP);
         provider = sbeP;
         property = p;
         value = v;
         previousValue = prev;
-    }
-
+    } 
+    
     public ScoreBoardEventProvider getProvider() { return provider; }
     public Property getProperty() { return property; }
     public Object getValue() { return value; }
@@ -69,6 +77,12 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     protected Object previousValue;
 
     public interface Property {}
-    public interface SingleProperty extends Property {}
-    public interface MultiProperty extends Property {}
+    public interface PermanentProperty extends Property {}
+    public interface AddRemoveProperty extends Property {}
+    public interface CommandProperty extends Property {}
+    
+    public interface ValueWithId {
+	public String getId();
+	public String getValue();
+    }
 }

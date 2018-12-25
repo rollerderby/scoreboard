@@ -11,8 +11,9 @@ package com.carolinarollergirls.scoreboard.core;
 import java.util.List;
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
@@ -97,10 +98,11 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final String LEAD_NO_LEAD = "NoLead";
     public static final String LEAD_LOST_LEAD = "LostLead";
 
-    public enum Value implements SingleProperty {
+    public enum Value implements PermanentProperty {
 	NAME,
 	LOGO,
 	SCORE,
+	JAM_SCORE,
 	LAST_SCORE,
 	TIMEOUTS,
 	OFFICIAL_REVIEWS,
@@ -111,11 +113,15 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 	LEAD_JAMMER,
 	STAR_PASS,
     }
-    public enum Child implements MultiProperty {
+    public enum Child implements AddRemoveProperty {
 	SKATER,
 	POSITION,
 	ALTERNATE_NAME,
 	COLOR;
+    }
+    public enum Command implements CommandProperty {
+	TIMEOUT,
+	OFFICIAL_REVIEW;
     }
 
     public static interface AlternateName extends ScoreBoardEventProvider {
@@ -125,7 +131,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
         public Team getTeam();
 
-        public enum Value implements SingleProperty {
+        public enum Value implements PermanentProperty {
             NAME;
         }
 
@@ -142,7 +148,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
         public Team getTeam();
 
-        public enum Value implements SingleProperty {
+        public enum Value implements PermanentProperty {
             COLOR;
         }
     }

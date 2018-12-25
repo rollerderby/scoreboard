@@ -11,7 +11,8 @@ package com.carolinarollergirls.scoreboard.core;
 import java.util.Set;
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Media extends ScoreBoardEventProvider {
@@ -24,13 +25,17 @@ public interface Media extends ScoreBoardEventProvider {
 
     public boolean validFileName(String fn);
 
+    public enum Child implements AddRemoveProperty {
+	FORMAT;
+    }
+
     public static interface MediaFormat extends ScoreBoardEventProvider {
         public String getFormat();
 	public Set<String> getTypes();
 	public MediaType getType(String type);
 	public void addType(String type);
 	
-	public enum Child implements MultiProperty {
+	public enum Child implements AddRemoveProperty {
 	    TYPE;
 	}
     }
@@ -44,7 +49,7 @@ public interface Media extends ScoreBoardEventProvider {
 	public void addFile(MediaFile file);
 	public void removeFile(String id);
 	
-	public enum Child implements MultiProperty {
+	public enum Child implements AddRemoveProperty {
 	    FILE;
 	}
     }
@@ -56,9 +61,11 @@ public interface Media extends ScoreBoardEventProvider {
         public String getName();
         public void setName(String s);
         public String getSrc();
-    }
-
-    public enum Child implements MultiProperty {
-	FORMAT;
+        
+        public enum Value implements PermanentProperty {
+            ID,
+            SRC,
+            NAME;
+        }
     }
 }

@@ -8,7 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Clock extends ScoreBoardEventProvider {
@@ -94,7 +95,7 @@ public interface Clock extends ScoreBoardEventProvider {
         public boolean isRunning();
     }
 
-    public enum Value implements SingleProperty {
+    public enum Value implements PermanentProperty {
 	NAME,
 	NUMBER,
 	MINIMUM_NUMBER,
@@ -105,6 +106,11 @@ public interface Clock extends ScoreBoardEventProvider {
 	MAXIMUM_TIME,
 	DIRECTION,
 	RUNNING;
+    }
+    public enum Command implements CommandProperty {
+	START,
+	STOP,
+	RESET_TIME;
     }
     
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";

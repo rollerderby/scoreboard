@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
@@ -13,7 +14,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
  * See the file COPYING for details.
  */
 
-public interface ScoreBoardEventProvider {
+public interface ScoreBoardEventProvider extends ValueWithId{
     public String getProviderName();
     public Class<? extends ScoreBoardEventProvider> getProviderClass();
     public String getProviderId();

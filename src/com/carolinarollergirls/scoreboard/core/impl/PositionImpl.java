@@ -77,6 +77,7 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
 
     protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
 	add(Value.class);
+	add(Command.class);
     }};
 
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();

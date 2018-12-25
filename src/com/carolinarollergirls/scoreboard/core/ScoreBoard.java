@@ -10,8 +10,9 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
@@ -92,16 +93,26 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public XmlScoreBoard getXmlScoreBoard();
     
-    public enum Value implements SingleProperty {
+    public enum Value implements PermanentProperty {
 	IN_PERIOD,
 	IN_OVERTIME,
 	OFFICIAL_SCORE,
 	TIMEOUT_OWNER,
 	OFFICIAL_REVIEW;
     }
-    public enum Child implements MultiProperty {
+    public enum Child implements AddRemoveProperty {
 	CLOCK,
 	TEAM;
+    }
+    public enum Command implements CommandProperty {
+	RESET,
+	START_JAM,
+	STOP_JAM,
+	TIMEOUT,
+	CLOCK_UNDO,
+	CLOCK_REPLACE,
+	START_OVERTIME,
+	OFFICIAL_TIMEOUT;
     }
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";

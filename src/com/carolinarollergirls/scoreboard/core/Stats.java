@@ -10,8 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Stats extends ScoreBoardEventProvider {
@@ -24,6 +24,10 @@ public interface Stats extends ScoreBoardEventProvider {
     public List<PeriodStats> getPeriodStats();
     public PeriodStats getPeriodStats(int p);
 
+    public enum Child implements AddRemoveProperty {
+        PERIOD;
+    }
+
     public static interface PeriodStats extends ScoreBoardEventProvider {
         public void ensureAtLeastNJams(int n);
         public void truncateAfterNJams(int n);
@@ -33,7 +37,7 @@ public interface Stats extends ScoreBoardEventProvider {
         public List<JamStats> getJamStats();
         public JamStats getJamStats(int j);
 
-        public enum Child implements MultiProperty {
+        public enum Child implements AddRemoveProperty {
             JAM;
         }
     }
@@ -56,10 +60,15 @@ public interface Stats extends ScoreBoardEventProvider {
         public List<TeamStats> getTeamStats();
         public TeamStats getTeamStats(String id);
 
-        public enum Value implements SingleProperty {
+        public enum Value implements PermanentProperty {
+            JAM_CLOCK_ELAPSED_END,
+            PERIOD_CLOCK_ELAPSED_START,
+            PERIOD_CLOCK_ELAPSED_END,
+            PERIOD_CLOCK_WALLTIME_START,
+            PERIOD_CLOCK_WALLTIME_END,
             STATS;
         }
-        public enum Child implements MultiProperty {
+        public enum Child implements AddRemoveProperty {
             TEAM;
         }
     }
@@ -90,10 +99,18 @@ public interface Stats extends ScoreBoardEventProvider {
         public void removeSkaterStats(String sid);
         public void removeSkaterStats();
 
-        public enum Value implements SingleProperty {
+        public enum Value implements PermanentProperty {
+            ID,
+            JAM_SCORE,
+            TOTAL_SCORE,
+            LEAD_JAMMER,
+            STAR_PASS,
+            NO_PIVOT,
+            TIMEOUTS,
+            OFFICIAL_REVIEWS,
             STATS;
         }
-        public enum Child implements MultiProperty {
+        public enum Child implements AddRemoveProperty {
             SKATER;
         }
     }
@@ -109,12 +126,11 @@ public interface Stats extends ScoreBoardEventProvider {
         public String getPosition();
         public void setPosition(String p);
 
-        public enum Value implements SingleProperty {
+        public enum Value implements PermanentProperty {
+            ID,
+            POSITION,
+            PENALTY_BOX,
             STATS;
         }
-    }
-
-    public enum Child implements MultiProperty {
-        PERIOD;
     }
 }

@@ -24,10 +24,10 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
-import com.carolinarollergirls.scoreboard.core.impl.SettingsImpl.Setting;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
@@ -155,7 +155,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     Stats.SkaterStats ts = (Stats.SkaterStats)p;
                     processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ").Skater(" + ts.getSkaterId() + ")", ts);
                 } else if (p instanceof Settings) {
-                    updates.add(new WSUpdate("ScoreBoard.Settings." + ((Setting)v).getId(), ((Setting)v).getValue()));
+                    updates.add(new WSUpdate("ScoreBoard.Settings." + ((ValueWithId)v).getId(), ((ValueWithId)v).getValue()));
                 } else if (p instanceof MediaType && prop == MediaType.Child.FILE && v == null) {
                     Media.MediaFile mf = (Media.MediaFile)pv;
                     updates.add(new WSUpdate("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + ".File(" + mf.getId() + ")", null));
@@ -189,8 +189,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
     private void update(String prefix, Property prop, Object v) {
 	String path = prefix + "." + PropertyConversion.toFrontend(prop);
-	if (prop instanceof Setting) {
-	    updates.add(new WSUpdate(prefix + "." + ((Setting)prop).getId(), v));
+	if (prop == Settings.Child.SETTING) {
+	    updates.add(new WSUpdate(prefix + "." + ((ValueWithId)prop).getId(), v));
     	} else if (v instanceof ScoreBoardEventProvider) {
             updates.add(new WSUpdate(path, ((ScoreBoardEventProvider) v).getProviderId()));
         } else if (v instanceof TimeoutOwner) {
@@ -233,10 +233,10 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             updates.add(new WSUpdate(path, null));
             return;
         }
-        updates.add(new WSUpdate(path + ".Id", p.getId()));
-        updates.add(new WSUpdate(path + ".Period", p.getPeriod()));
-        updates.add(new WSUpdate(path + ".Jam", p.getJam()));
-        updates.add(new WSUpdate(path + ".Code", p.getCode()));
+        update(path, Skater.Penalty.Value.ID, p.getId());
+        update(path, Skater.Penalty.Value.PERIOD, p.getPeriod());
+        update(path, Skater.Penalty.Value.JAM, p.getJam());
+        update(path, Skater.Penalty.Value.CODE, p.getCode());
     }
 
     private void processTeam(String path, Team t, boolean remove) {
@@ -250,7 +250,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         update(path, Team.Value.LOGO, t.getLogo());
         update(path, Team.Value.SCORE, t.getScore());
         update(path, Team.Value.LAST_SCORE, t.getLastScore());
-        updates.add(new WSUpdate(path + ".JamScore", t.getScore() - t.getLastScore()));
+        update(path, Team.Value.JAM_SCORE, t.getScore() - t.getLastScore());
         update(path, Team.Value.TIMEOUTS, t.getTimeouts());
         update(path, Team.Value.OFFICIAL_REVIEWS, t.getOfficialReviews());
         update(path, Team.Value.IN_TIMEOUT, t.inTimeout());
@@ -306,10 +306,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         	    + PropertyConversion.toFrontend(Rulesets.Value.RULE)
         	    + "(" + e.getKey().toString() + ")", e.getValue()));
         }
-        updates.add(new WSUpdate(path + "." +
-        	PropertyConversion.toFrontend(Rulesets.Value.RULESET) + ".Id", r.getId()));
-        updates.add(new WSUpdate(path + "." +
-        	PropertyConversion.toFrontend(Rulesets.Value.RULESET) + ".Name", r.getName()));
+        path = path + "." + PropertyConversion.toFrontend(Rulesets.Value.RULESET);
+        update(path, Rulesets.Value.ID, r.getId());
+        update(path, Rulesets.Value.NAME, r.getName());
         processPenaltyCodes(r);
     }
 
@@ -323,9 +322,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         for (Map.Entry<Rule,String> e : r.getAll().entrySet()) {
             updates.add(new WSUpdate(path + ".Rule(" + e.getKey() + ")", e.getValue()));
         }
-        updates.add(new WSUpdate(path + ".Id", r.getId()));
-        updates.add(new WSUpdate(path + ".Name", r.getName()));
-        updates.add(new WSUpdate(path + ".ParentId", r.getParentRulesetId()));
+        update(path, Rulesets.Ruleset.Value.ID, r.getId());
+        update(path, Rulesets.Ruleset.Value.NAME, r.getName());
+        update(path, Rulesets.Ruleset.Value.PARENT_ID, r.getParentRulesetId());
     }
 
     private void processAlternateName(String path, Team.AlternateName an, boolean remove) {
@@ -360,33 +359,33 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
     }
 
     private void processJamStats(String path, Stats.JamStats js) {
-        updates.add(new WSUpdate(path + ".JamClockElapsedEnd", js.getJamClockElapsedEnd()));
-        updates.add(new WSUpdate(path + ".PeriodClockElapsedStart", js.getPeriodClockElapsedStart()));
-        updates.add(new WSUpdate(path + ".PeriodClockElapsedEnd", js.getPeriodClockElapsedEnd()));
-        updates.add(new WSUpdate(path + ".PeriodClockWalltimeStart", js.getPeriodClockWalltimeStart()));
-        updates.add(new WSUpdate(path + ".PeriodClockWalltimeEnd", js.getPeriodClockWalltimeEnd()));
+        update(path, Stats.JamStats.Value.JAM_CLOCK_ELAPSED_END, js.getJamClockElapsedEnd());
+        update(path, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_START, js.getPeriodClockElapsedStart());
+        update(path, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_END, js.getPeriodClockElapsedEnd());
+        update(path, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_START, js.getPeriodClockWalltimeStart());
+        update(path, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_END, js.getPeriodClockWalltimeEnd());
     }
 
     private void processTeamStats(String path, Stats.TeamStats ts) {
-        updates.add(new WSUpdate(path + ".TotalScore", ts.getTotalScore()));
-        updates.add(new WSUpdate(path + ".JamScore", ts.getJamScore()));
-        updates.add(new WSUpdate(path + ".LeadJammer", ts.getLeadJammer()));
-        updates.add(new WSUpdate(path + ".StarPass", ts.getStarPass()));
-        updates.add(new WSUpdate(path + ".NoPivot", ts.getNoPivot()));
-        updates.add(new WSUpdate(path + ".Timeouts", ts.getTimeouts()));
-        updates.add(new WSUpdate(path + ".OfficialReviews", ts.getOfficialReviews()));
+        update(path, Stats.TeamStats.Value.TOTAL_SCORE, ts.getTotalScore());
+        update(path, Stats.TeamStats.Value.JAM_SCORE, ts.getJamScore());
+        update(path, Stats.TeamStats.Value.LEAD_JAMMER, ts.getLeadJammer());
+        update(path, Stats.TeamStats.Value.STAR_PASS, ts.getStarPass());
+        update(path, Stats.TeamStats.Value.NO_PIVOT, ts.getNoPivot());
+        update(path, Stats.TeamStats.Value.TIMEOUTS, ts.getTimeouts());
+        update(path, Stats.TeamStats.Value.OFFICIAL_REVIEWS, ts.getOfficialReviews());
     }
 
     private void processSkaterStats(String path, Stats.SkaterStats ss) {
-        updates.add(new WSUpdate(path + ".Id", ss.getSkaterId()));
-        updates.add(new WSUpdate(path + ".Position", ss.getPosition()));
-        updates.add(new WSUpdate(path + ".PenaltyBox", ss.getPenaltyBox()));
+        update(path, Stats.SkaterStats.Value.ID, ss.getSkaterId());
+        update(path, Stats.SkaterStats.Value.POSITION, ss.getPosition());
+        update(path, Stats.SkaterStats.Value.PENALTY_BOX, ss.getPenaltyBox());
     }
 
     private void processMediaFile(String path, Media.MediaFile mf) {
-        updates.add(new WSUpdate(path + ".Id", mf.getId()));
-        updates.add(new WSUpdate(path + ".Name", mf.getName()));
-        updates.add(new WSUpdate(path + ".Src", mf.getSrc()));
+        update(path, Media.MediaFile.Value.ID, mf.getId());
+        update(path, Media.MediaFile.Value.NAME, mf.getName());
+        update(path, Media.MediaFile.Value.SRC, mf.getSrc());
     }
 
     private void processPenaltyCodes(Rulesets r) {

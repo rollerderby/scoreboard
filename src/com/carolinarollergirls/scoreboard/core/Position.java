@@ -8,7 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Position extends ScoreBoardEventProvider {
@@ -22,8 +23,15 @@ public interface Position extends ScoreBoardEventProvider {
     public boolean isPenaltyBox();
     public void setPenaltyBox(boolean box);
 
-    public enum Value implements SingleProperty {
+    public enum Value implements PermanentProperty {
+	ID,
 	SKATER,
+	NAME,
+	NUMBER,
+	FLAGS,
 	PENALTY_BOX;
+    }
+    public enum Command implements CommandProperty {
+	CLEAR;
     }
 }

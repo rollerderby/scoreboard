@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class SettingsImpl extends DefaultScoreBoardEventProvider implements Settings {
@@ -37,7 +38,7 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
             Map<String, String> old = new HashMap<String, String>(settings);
             settings.clear();
             for (String k : old.keySet()) {
-                scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new Setting(k, null), old.get(k)));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, null), new ValWithId(k, old.get(k))));
             }
         }
     }
@@ -54,13 +55,13 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
     }
     public void set(String k, String v) {
         synchronized (coreLock) {
-            String last = settings.get(k);
+            ValWithId last = new ValWithId(k, settings.get(k));
             if (v == null) {
                 settings.remove(k);
             } else {
                 settings.put(k, v);
             }
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new Setting(k, v), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, v), last));
         }
     }
 
@@ -72,18 +73,4 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
     }};
 
     protected static Object coreLock = ScoreBoardImpl.getCoreLock();
-    
-    public class Setting {
-
-	public Setting(String k, String v) {
-	    key = k;
-	    value = v;
-	}
-
-	public String getId() { return key; }
-	public String getValue() { return value; }
-	
-	private String key;
-	private String value;
-    }
 }

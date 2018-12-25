@@ -10,8 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.Map;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
@@ -42,6 +42,16 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public Ruleset addRuleset(String name, String parentId);
     public Ruleset addRuleset(String name, String parentId, String id);
 
+    public enum Value implements PermanentProperty {
+	ID,
+	NAME,
+	RULE_DEFINITIONS,
+	RULE,
+	RULESET;
+    }
+    public enum Child implements AddRemoveProperty {
+	KNOWN_RULESETS;
+    }
 
     public static interface Ruleset extends ScoreBoardEventProvider {
         public Map<Rule, String> getAll();
@@ -55,16 +65,14 @@ public interface Rulesets extends ScoreBoardEventProvider {
 
         // A missing entry means no override for that rule.
         public void setAll(Map<Rule, String> s);
-    }
 
-    public ScoreBoardEventProvider getParent();
-
-    public enum Value implements SingleProperty {
-	RULE_DEFINITIONS,
-	RULE,
-	RULESET;
-    }
-    public enum Child implements MultiProperty {
-	KNOWN_RULESETS;
+        public enum Value implements PermanentProperty {
+            ID,
+            PARENT_ID,
+            NAME;
+        }
+        public enum Child implements AddRemoveProperty {
+            RULE;
+        }
     }
 }

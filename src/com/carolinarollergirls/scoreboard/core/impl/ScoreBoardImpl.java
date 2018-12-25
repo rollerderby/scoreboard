@@ -623,6 +623,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
 	add(Value.class);
 	add(Child.class);
+	add(Command.class);
     }};
 
     protected static Object coreLock = new Object();

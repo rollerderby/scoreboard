@@ -10,8 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.MultiProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.SingleProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
@@ -40,7 +40,7 @@ public interface Skater extends ScoreBoardEventProvider {
     // A null code removes the penalty.
     public void AddPenalty(String id, boolean foulout_explusion, int period, int jam, String code);
 
-    public enum Value implements SingleProperty {
+    public enum Value implements PermanentProperty {
 	NAME,
 	NUMBER,
 	POSITION,
@@ -50,7 +50,7 @@ public interface Skater extends ScoreBoardEventProvider {
 	FLAGS,
 	PENALTY_FOEXP;
     }
-    public enum Child implements MultiProperty {
+    public enum Child implements AddRemoveProperty {
 	PENALTY;
     }
 
@@ -60,7 +60,8 @@ public interface Skater extends ScoreBoardEventProvider {
         public int getJam();
         public String getCode();
 
-        public enum Value implements SingleProperty {
+        public enum Value implements PermanentProperty {
+            ID,
             PERIOD,
             JAM,
             CODE;

@@ -235,7 +235,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 		MediaType mt = new MediaTypeImpl(this, type);
 		types.put(type, mt);
 		mt.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.TYPE, type, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.TYPE, mt, null));
 	    }
 	}
 	
@@ -328,7 +328,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         private String name;
         private String src;
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-            add(Child.class);
+            add(Value.class);
         }};
     }
 }

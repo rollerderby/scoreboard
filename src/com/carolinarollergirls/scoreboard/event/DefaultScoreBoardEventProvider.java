@@ -15,6 +15,8 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     public abstract String getProviderName();
     public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
     public abstract String getProviderId();
+    public String getId() { return getProviderId(); }
+    public String getValue() {return getId(); }
 
     public void scoreBoardChange(ScoreBoardEvent event) {
         dispatch(event);
@@ -50,7 +52,7 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
 
-    public enum BatchEvent implements ScoreBoardEvent.Property {
+    public enum BatchEvent implements ScoreBoardEvent.PermanentProperty {
 	START("Start"),
 	END("End");
 

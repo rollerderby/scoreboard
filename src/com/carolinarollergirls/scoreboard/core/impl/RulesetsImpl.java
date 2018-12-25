@@ -254,7 +254,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     return;
                 }
                 name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, null));
             }
         }
         public void setParentRulesetId(String pi) {
@@ -263,7 +263,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     return;
                 }
                 parentId = pi;
-                scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, null));
             }
         }
 
@@ -284,7 +284,8 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     }
                 }
                 settings = s;
-                scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, this, oldKeys));
+                //TODO: use proper events
+                scoreBoardChange(new ScoreBoardEvent(this, Value.ID, this, oldKeys));
             }
         }
 
