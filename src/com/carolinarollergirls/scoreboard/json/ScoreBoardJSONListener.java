@@ -75,49 +75,49 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     // these properties are required for the XML listener, but are not used in the WS listener
                     // so they are ignored here
                     if(prop != ScoreBoard.Child.CLOCK && prop != ScoreBoard.Child.TEAM) {
-                        update("ScoreBoard", prop, v);
+                        update(getPath(p), prop, v);
                     }
                 } else if (p instanceof Team) {
                     Team t = (Team)p;
-                    String childPath = "ScoreBoard.Team(" + t.getId() + ")";
+                    String childPath = getPath(t);
                     if (prop == Team.Child.SKATER) {
                 	if (v != null) {
-                	    processSkater(childPath, (Skater)v, false);
+                	    processSkater((Skater)v, false);
                 	} else {
-                	    processSkater(childPath, (Skater)pv, true);
+                	    processSkater((Skater)pv, true);
                 	}
                     } else if (prop == Team.Child.ALTERNATE_NAME) {
                 	if (v != null) {
-                	    processAlternateName(childPath, (Team.AlternateName)v, false);
+                	    processAlternateName((Team.AlternateName)v, false);
                 	} else {
-                	    processAlternateName(childPath, (Team.AlternateName)pv, true);
+                	    processAlternateName((Team.AlternateName)pv, true);
                 	}
                     } else if (prop == Team.Child.COLOR) {
                 	if (v != null) {
-                	    processColor(childPath, (Team.Color)v, false);
+                	    processColor((Team.Color)v, false);
                 	} else {
-                	    processColor(childPath, (Team.Color)pv, true);
+                	    processColor((Team.Color)pv, true);
                 	}
                     }
                     // Fast path for jam start/end to avoid sending the entire team.
                     else if (prop == Team.Value.LAST_SCORE) {
                         update(childPath, prop, t.getLastScore());
-                        updates.add(new WSUpdate(childPath + ".JamScore", t.getScore() - t.getLastScore()));
+                        update(childPath, Team.Value.JAM_SCORE, t.getScore() - t.getLastScore());
                     } else if (prop == Team.Value.LEAD_JAMMER) {
                         update(childPath, prop, t.getLeadJammer());
                     } else if (prop == Team.Value.STAR_PASS) {
                         update(childPath, prop, t.isStarPass());
                     } else {
-                        processTeam("ScoreBoard", t, false);
+                        processTeam(t, false);
                     }
                 } else if (p instanceof Skater) {
                     Skater s = (Skater)p;
-                    processSkater("ScoreBoard.Team(" + s.getTeam().getId() + ")", s, false);
+                    processSkater(s, false);
                 } else if (p instanceof Position) {
                     Position pos = (Position)p;
-                    processPosition("ScoreBoard.Team(" + pos.getTeam().getId() + ")", pos, false);
+                    processPosition(pos, false);
                 } else if (p instanceof Clock) {
-                    processClock("ScoreBoard", (Clock)p, false);
+                    processClock((Clock)p, false);
                 } else if (p instanceof Rulesets) {
                     if (prop == Rulesets.Value.RULESET) {
                         processCurrentRuleset("ScoreBoard", (Rulesets)p);
@@ -128,40 +128,40 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     processRuleset("ScoreBoard", (Rulesets.Ruleset)p, false);
                 } else if (p instanceof Team.AlternateName) {
                     Team.AlternateName an = (Team.AlternateName)p;
-                    updates.add(new WSUpdate("ScoreBoard.Team(" + an.getTeam().getId() + ").AlternateName(" + an.getId() + ")", v));
+                    update(getPath(an), prop, v);
                 } else if (p instanceof Team.Color) {
                     Team.Color c = (Team.Color)p;
-                    updates.add(new WSUpdate("ScoreBoard.Team(" + c.getTeam().getId() + ").Color(" + c.getId() + ")", v));
+                    update(getPath(c), prop, v);
                 } else if (p instanceof Stats) {
                     if (prop == Stats.Child.PERIOD && v == null) {
                         Stats.PeriodStats ps = (Stats.PeriodStats)pv;
-                        updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ps.getPeriodNumber() + ")", null));
+                        updates.add(new WSUpdate(getPath(ps), null));
                     }
                 } else if (p instanceof Stats.PeriodStats) {
                     if (prop == Stats.PeriodStats.Child.JAM && v == null) {
                         Stats.JamStats js = (Stats.JamStats)pv;
-                        updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", null));
+                        updates.add(new WSUpdate(getPath(js), null));
                     }
                 } else if (p instanceof Stats.TeamStats && prop == Stats.TeamStats.Child.SKATER && v == null) {
                     Stats.SkaterStats ss = (Stats.SkaterStats)pv;
-                    updates.add(new WSUpdate("ScoreBoard.Stats.Period(" + ss.getPeriodNumber() + ").Jam(" + ss.getJamNumber() + ").Team(" + ss.getTeamId() + ").Skater(" + ss.getSkaterId() + ")", null));
+                    updates.add(new WSUpdate(getPath(ss), null));
                 } else if (p instanceof Stats.JamStats) {
                     Stats.JamStats js = (Stats.JamStats)p;
-                    processJamStats("ScoreBoard.Stats.Period(" + js.getPeriodNumber() + ").Jam(" + js.getJamNumber() + ")", js);
+                    processJamStats(js);
                 } else if (p instanceof Stats.TeamStats) {
                     Stats.TeamStats ts = (Stats.TeamStats)p;
-                    processTeamStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ")", ts);
+                    processTeamStats(ts);
                 } else if (p instanceof Stats.SkaterStats) {
-                    Stats.SkaterStats ts = (Stats.SkaterStats)p;
-                    processSkaterStats("ScoreBoard.Stats.Period(" + ts.getPeriodNumber() + ").Jam(" + ts.getJamNumber() + ").Team(" + ts.getTeamId() + ").Skater(" + ts.getSkaterId() + ")", ts);
+                    Stats.SkaterStats ss = (Stats.SkaterStats)p;
+                    processSkaterStats(ss);
                 } else if (p instanceof Settings) {
                     updates.add(new WSUpdate("ScoreBoard.Settings." + ((ValueWithId)v).getId(), ((ValueWithId)v).getValue()));
                 } else if (p instanceof MediaType && prop == MediaType.Child.FILE && v == null) {
                     Media.MediaFile mf = (Media.MediaFile)pv;
-                    updates.add(new WSUpdate("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + ".File(" + mf.getId() + ")", null));
+                    updates.add(new WSUpdate(getPath(mf), null));
                 } else if (p instanceof MediaType) {
                     Media.MediaFile mf = (Media.MediaFile)v;
-                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + ".File(" + mf.getId() + ")", mf);
+                    processMediaFile(mf);
                 } else {
                     ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + PropertyConversion.toFrontend(prop) + ", v: " + v);
                 }
@@ -200,8 +200,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         }
     }
 
-    private void processSkater(String path, Skater s, boolean remove) {
-        path = path + ".Skater(" + s.getId() + ")";
+    private void processSkater(Skater s, boolean remove) {
+	String path = getPath(s);
         if (remove) {
             updates.add(new WSUpdate(path, null));
             return;
@@ -239,8 +239,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         update(path, Skater.Penalty.Value.CODE, p.getCode());
     }
 
-    private void processTeam(String path, Team t, boolean remove) {
-        path = path + ".Team(" + t.getId() + ")";
+    private void processTeam(Team t, boolean remove) {
+	String path = getPath(t);
         if (remove) {
             updates.add(new WSUpdate(path, null));
             return;
@@ -262,27 +262,27 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
         // Skaters
         for (Skater s : t.getSkaters()) {
-            processSkater(path, s, false);
+            processSkater(s, false);
         }
 
         // Positions
         for (Position p : t.getPositions()) {
-            processPosition(path, p, false);
+            processPosition(p, false);
         }
 
         // Alternate Names
         for (Team.AlternateName an : t.getAlternateNames()) {
-            processAlternateName(path, an, false);
+            processAlternateName(an, false);
         }
 
         // Colors
         for (Team.Color c : t.getColors()) {
-            processColor(path, c, false);
+            processColor(c, false);
         }
     }
 
-    private void processClock(String path, Clock c, boolean remove) {
-        path = path + ".Clock(" + c.getId() + ")";
+    private void processClock(Clock c, boolean remove) {
+	String path = getPath(c);
         if (remove) {
             updates.add(new WSUpdate(path, null));
             return;
@@ -327,8 +327,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         update(path, Rulesets.Ruleset.Value.PARENT_ID, r.getParentRulesetId());
     }
 
-    private void processAlternateName(String path, Team.AlternateName an, boolean remove) {
-        path = path + ".AlternateName(" + an.getId() + ")";
+    private void processAlternateName(Team.AlternateName an, boolean remove) {
+	String path = getPath(an);
         if (remove) {
             updates.add(new WSUpdate(path, null));
             return;
@@ -337,8 +337,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path, an.getName()));
     }
 
-    private void processColor(String path, Team.Color c, boolean remove) {
-        path = path + ".Color(" + c.getId() + ")";
+    private void processColor(Team.Color c, boolean remove) {
+	String path = getPath(c);
         if (remove) {
             updates.add(new WSUpdate(path, null));
             return;
@@ -347,8 +347,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         updates.add(new WSUpdate(path, c.getColor()));
     }
 
-    private void processPosition(String path, Position p, boolean remove) {
-        path = path + ".Position(" + p.getId() + ")";
+    private void processPosition(Position p, boolean remove) {
+	String path = getPath(p);
         if (remove) {
             updates.add(new WSUpdate(path, null));
             return;
@@ -358,7 +358,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         update(path, Position.Value.PENALTY_BOX, p.isPenaltyBox());
     }
 
-    private void processJamStats(String path, Stats.JamStats js) {
+    private void processJamStats(Stats.JamStats js) {
+	String path = getPath(js);
         update(path, Stats.JamStats.Value.JAM_CLOCK_ELAPSED_END, js.getJamClockElapsedEnd());
         update(path, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_START, js.getPeriodClockElapsedStart());
         update(path, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_END, js.getPeriodClockElapsedEnd());
@@ -366,7 +367,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         update(path, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_END, js.getPeriodClockWalltimeEnd());
     }
 
-    private void processTeamStats(String path, Stats.TeamStats ts) {
+    private void processTeamStats(Stats.TeamStats ts) {
+	String path = getPath(ts);
         update(path, Stats.TeamStats.Value.TOTAL_SCORE, ts.getTotalScore());
         update(path, Stats.TeamStats.Value.JAM_SCORE, ts.getJamScore());
         update(path, Stats.TeamStats.Value.LEAD_JAMMER, ts.getLeadJammer());
@@ -376,13 +378,15 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         update(path, Stats.TeamStats.Value.OFFICIAL_REVIEWS, ts.getOfficialReviews());
     }
 
-    private void processSkaterStats(String path, Stats.SkaterStats ss) {
+    private void processSkaterStats(Stats.SkaterStats ss) {
+	String path = getPath(ss);
         update(path, Stats.SkaterStats.Value.ID, ss.getSkaterId());
         update(path, Stats.SkaterStats.Value.POSITION, ss.getPosition());
         update(path, Stats.SkaterStats.Value.PENALTY_BOX, ss.getPenaltyBox());
     }
 
-    private void processMediaFile(String path, Media.MediaFile mf) {
+    private void processMediaFile(Media.MediaFile mf) {
+	String path = getPath(mf);
         update(path, Media.MediaFile.Value.ID, mf.getId());
         update(path, Media.MediaFile.Value.NAME, mf.getName());
         update(path, Media.MediaFile.Value.SRC, mf.getSrc());
@@ -433,12 +437,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
         // Process Teams
         for (Team t : sb.getTeams()) {
-            processTeam("ScoreBoard", t, false);
+            processTeam(t, false);
         }
 
         // Process Clocks
         for (Clock c : sb.getClocks()) {
-            processClock("ScoreBoard", c, false);
+            processClock(c, false);
         }
 
         // Process Media
@@ -448,13 +452,25 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 updates.add(new WSUpdate("ScoreBoard.Media." + format + "." + type, ""));
                 Map<String, Media.MediaFile> h = m.getMediaFiles(format, type);
                 for (Media.MediaFile mf: h.values()) {
-                    processMediaFile("ScoreBoard.Media." + mf.getFormat() + "." + mf.getType() + ".File(" + mf.getId() + ")", mf);
+                    processMediaFile(mf);
                 }
             }
         }
 
 
         updateState();
+    }
+    
+    String getPath(ScoreBoardEventProvider p) {
+	String path = "";
+	if (p.getParent() != null) {
+	    path = getPath(p.getParent()) + ".";
+	}
+	path = path + p.getProviderName();
+	if (!"".equals(p.getProviderId()) && p.getProviderId() != null) {
+	    path = path + "(" + p.getProviderId() + ")";
+	}
+	return path;
     }
 
 
