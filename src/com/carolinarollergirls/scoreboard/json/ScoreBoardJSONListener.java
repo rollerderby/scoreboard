@@ -55,6 +55,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 ScoreBoardEventProvider p = event.getProvider();
                 String provider = p.getProviderName();
                 Property prop = event.getProperty();
+                boolean rem = event.isRemove();
                 if (prop == BatchEvent.START) {
                     batch++;
                     return;
@@ -70,7 +71,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 }
 
                 Object v = event.getValue();
-                Object pv = event.getPreviousValue();
                 if (p instanceof ScoreBoard) {
                     // these properties are required for the XML listener, but are not used in the WS listener
                     // so they are ignored here
@@ -81,23 +81,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     Team t = (Team)p;
                     String childPath = getPath(t);
                     if (prop == Team.Child.SKATER) {
-                	if (v != null) {
-                	    processSkater((Skater)v, false);
-                	} else {
-                	    processSkater((Skater)pv, true);
-                	}
+                	processSkater((Skater)v, rem);
                     } else if (prop == Team.Child.ALTERNATE_NAME) {
-                	if (v != null) {
-                	    processAlternateName((Team.AlternateName)v, false);
-                	} else {
-                	    processAlternateName((Team.AlternateName)pv, true);
-                	}
+                	processAlternateName((Team.AlternateName)v, rem);
                     } else if (prop == Team.Child.COLOR) {
-                	if (v != null) {
-                	    processColor((Team.Color)v, false);
-                	} else {
-                	    processColor((Team.Color)pv, true);
-                	}
+                	processColor((Team.Color)v, rem);
                     }
                     // Fast path for jam start/end to avoid sending the entire team.
                     else if (prop == Team.Value.LAST_SCORE) {
@@ -122,7 +110,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     if (prop == Rulesets.Value.RULESET) {
                         processCurrentRuleset("ScoreBoard", (Rulesets)p);
                     } else {
-                        processRuleset("ScoreBoard", (Rulesets.Ruleset)pv, true);
+                        processRuleset("ScoreBoard", (Rulesets.Ruleset)v, true);
                     }
                 } else if (p instanceof Rulesets.Ruleset) {
                     processRuleset("ScoreBoard", (Rulesets.Ruleset)p, false);
@@ -133,17 +121,17 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     Team.Color c = (Team.Color)p;
                     update(getPath(c), prop, v);
                 } else if (p instanceof Stats) {
-                    if (prop == Stats.Child.PERIOD && v == null) {
-                        Stats.PeriodStats ps = (Stats.PeriodStats)pv;
+                    if (prop == Stats.Child.PERIOD && rem) {
+                        Stats.PeriodStats ps = (Stats.PeriodStats)v;
                         updates.add(new WSUpdate(getPath(ps), null));
                     }
                 } else if (p instanceof Stats.PeriodStats) {
-                    if (prop == Stats.PeriodStats.Child.JAM && v == null) {
-                        Stats.JamStats js = (Stats.JamStats)pv;
+                    if (prop == Stats.PeriodStats.Child.JAM && rem) {
+                        Stats.JamStats js = (Stats.JamStats)v;
                         updates.add(new WSUpdate(getPath(js), null));
                     }
-                } else if (p instanceof Stats.TeamStats && prop == Stats.TeamStats.Child.SKATER && v == null) {
-                    Stats.SkaterStats ss = (Stats.SkaterStats)pv;
+                } else if (p instanceof Stats.TeamStats && prop == Stats.TeamStats.Child.SKATER && rem) {
+                    Stats.SkaterStats ss = (Stats.SkaterStats)v;
                     updates.add(new WSUpdate(getPath(ss), null));
                 } else if (p instanceof Stats.JamStats) {
                     Stats.JamStats js = (Stats.JamStats)p;
@@ -156,8 +144,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     processSkaterStats(ss);
                 } else if (p instanceof Settings) {
                     updates.add(new WSUpdate("ScoreBoard.Settings." + ((ValueWithId)v).getId(), ((ValueWithId)v).getValue()));
-                } else if (p instanceof MediaType && prop == MediaType.Child.FILE && v == null) {
-                    Media.MediaFile mf = (Media.MediaFile)pv;
+                } else if (p instanceof MediaType && prop == MediaType.Child.FILE && rem) {
+                    Media.MediaFile mf = (Media.MediaFile)v;
                     updates.add(new WSUpdate(getPath(mf), null));
                 } else if (p instanceof MediaType) {
                     Media.MediaFile mf = (Media.MediaFile)v;

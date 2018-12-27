@@ -169,7 +169,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
             Ruleset r = new RulesetImpl(this, name, parentId, id);
             rulesets.put(id, r);
             r.addScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(r, Child.KNOWN_RULESETS, r, null));
+            scoreBoardChange(new ScoreBoardEvent(r, Child.KNOWN_RULESETS, r, false));
             return r;
         }
     }
@@ -194,7 +194,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
 
             rulesets.remove(id);
             r.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, null, r));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, r, false));
             requestBatchEnd();
         }
     }
@@ -254,7 +254,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     return;
                 }
                 name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, false));
             }
         }
         public void setParentRulesetId(String pi) {
@@ -263,7 +263,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
                     return;
                 }
                 parentId = pi;
-                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, false));
             }
         }
 

@@ -158,7 +158,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
                 AlternateName an = new AlternateNameImpl(this, i, n);
                 alternateNames.put(i, an);
                 an.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, an, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, an, false));
             }
         }
     }
@@ -166,7 +166,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             AlternateName an = alternateNames.remove(i);
             an.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, null, an));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, an, true));
         }
     }
     public void removeAlternateNames() {
@@ -193,7 +193,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
                 Color cm = new ColorImpl(this, i, c);
                 colors.put(i, cm);
                 cm.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, cm, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, cm, false));
             }
         }
     }
@@ -201,7 +201,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         synchronized (coreLock) {
             Color cm = colors.remove(i);
             cm.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, null, cm));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, cm, true));
         }
     }
     public void removeColors() {
@@ -418,7 +418,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
             skaters.put(skater.getId(), skater);
             skater.addScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, skater, null));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, skater, false));
         }
     }
     public void removeSkater(String id) throws SkaterNotFoundException {
@@ -430,7 +430,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             }
             s.removeScoreBoardListener(this);
             skaters.remove(id);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, null, s));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, s, true));
         }
     }
 

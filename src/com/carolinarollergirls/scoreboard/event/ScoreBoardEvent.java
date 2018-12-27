@@ -16,8 +16,9 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
         this(sbeP, (Property)p, v, prev);
     }
 
-    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, AddRemoveProperty p, ValueWithId v, ValueWithId prev) {
-        this(sbeP, (Property)p, v, prev);
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, AddRemoveProperty p, ValueWithId v, boolean r) {
+        this(sbeP, (Property)p, v, null);
+        remove = r;
     }
 
     private ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property p, Object v, Object prev) {
@@ -26,12 +27,14 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
         property = p;
         value = v;
         previousValue = prev;
+        remove = false;
     } 
     
     public ScoreBoardEventProvider getProvider() { return provider; }
     public Property getProperty() { return property; }
     public Object getValue() { return value; }
     public Object getPreviousValue() { return previousValue; }
+    public boolean isRemove() { return remove; }
 
     public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue(), getPreviousValue()); }
 
@@ -75,6 +78,7 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     protected Property property;
     protected Object value;
     protected Object previousValue;
+    protected boolean remove;
 
     public interface Property {}
     public interface PermanentProperty extends Property {}

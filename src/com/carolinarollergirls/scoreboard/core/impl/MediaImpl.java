@@ -235,7 +235,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 		MediaType mt = new MediaTypeImpl(this, type);
 		types.put(type, mt);
 		mt.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.TYPE, mt, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.TYPE, mt, false));
 	    }
 	}
 	
@@ -277,7 +277,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	    if (!files.containsKey(file.getId())) {
 		files.put(file.getId(), file);
 		file.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, file, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, file, false));
 	    }
 	}
 	
@@ -285,7 +285,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	    MediaFile file = files.get(id);
 	    if (file != null) {
 		files.remove(id);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, null, file));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, file, true));
 	    }
 	}
 	
@@ -318,7 +318,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         public void setName(String n) {
             synchronized (coreLock) {
                 name = n;
-                scoreBoardChange(new ScoreBoardEvent(parent, MediaType.Child.FILE, this, null));
+                scoreBoardChange(new ScoreBoardEvent(parent, MediaType.Child.FILE, this, false));
             };
         }
         public String getSrc() { synchronized (coreLock) { return src ;} }

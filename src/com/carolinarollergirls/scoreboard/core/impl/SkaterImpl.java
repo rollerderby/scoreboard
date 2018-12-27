@@ -181,7 +181,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                     PenaltyImpl dpm = new PenaltyImpl(this, id, period, jam, code);
                     penalties.add(dpm);
                     sortPenalties();
-                    scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, dpm, null));
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, dpm, false));
                 }
             } else {
                 // Updating/Deleting existing Penalty.	Find it and process
@@ -192,10 +192,10 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                             p2.jam = jam;
                             p2.code = code;
                             sortPenalties();
-                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, p2, null));
+                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, p2, false));
                         } else {
                             penalties.remove(p2);
-                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, null, p2));
+                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, p2, true));
                         }
                         requestBatchEnd();
                         return;
@@ -205,7 +205,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 PenaltyImpl dpm = new PenaltyImpl(this, id, period, jam, code);
                 penalties.add(dpm);
                 sortPenalties();
-                scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, dpm, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, dpm, false));
             }
             requestBatchEnd();
         }

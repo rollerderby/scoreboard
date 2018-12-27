@@ -220,7 +220,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 PeriodStats ps = new PeriodStatsImpl(this, periods.size() + 1);
                 ps.addScoreBoardListener(this);
                 periods.add(ps);
-                scoreBoardChange(new ScoreBoardEvent(this, Stats.Child.PERIOD, ps, null));
+                scoreBoardChange(new ScoreBoardEvent(this, Stats.Child.PERIOD, ps, false));
             }
         }
     }
@@ -232,7 +232,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 PeriodStats ps = periods.get(periods.size() - 1);
                 ps.removeScoreBoardListener(this);
                 periods.remove(ps);
-                scoreBoardChange(new ScoreBoardEvent(this, Stats.Child.PERIOD, null, ps));
+                scoreBoardChange(new ScoreBoardEvent(this, Stats.Child.PERIOD, ps, true));
             }
             requestBatchEnd();
         }
@@ -280,7 +280,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                     JamStats js = new JamStatsImpl(this, jams.size() + 1);
                     js.addScoreBoardListener(this);
                     jams.add(js);
-                    scoreBoardChange(new ScoreBoardEvent(this, Child.JAM, js, null));
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.JAM, js, false));
                 }
             }
         }
@@ -292,7 +292,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                     JamStats js = jams.get(jams.size() - 1);
                     js.removeScoreBoardListener(this);
                     jams.remove(jams.size() - 1);
-                    scoreBoardChange(new ScoreBoardEvent(this, Child.JAM, null, js));
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.JAM, js, true));
                 }
                 requestBatchEnd();
             }
@@ -507,7 +507,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 if (ss != null) {
                     ss.removeScoreBoardListener(this);
                     skaters.remove(sid);
-                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Child.SKATER, null, ss));
+                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Child.SKATER, ss, true));
                 }
             }
         }
@@ -516,7 +516,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
                 for (SkaterStats ss : skaters.values()) {
                     ss.removeScoreBoardListener(this);
                     skaters.remove(ss.getSkaterId());
-                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Child.SKATER, null, ss));
+                    scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Child.SKATER, ss, false));
                 }
             }
         }

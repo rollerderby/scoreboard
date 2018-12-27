@@ -600,7 +600,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         Clock clock = new ClockImpl(this, id);
         clock.addScoreBoardListener(this);
         clocks.put(id, clock);
-        scoreBoardChange(new ScoreBoardEvent(this, Child.CLOCK, clock, null));
+        scoreBoardChange(new ScoreBoardEvent(this, Child.CLOCK, clock, false));
     }
 
     protected void createTeam(String id) {
@@ -611,7 +611,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         Team team = new TeamImpl(this, id);
         team.addScoreBoardListener(this);
         teams.put(id, team);
-        scoreBoardChange(new ScoreBoardEvent(this, Child.TEAM, team, null));
+        scoreBoardChange(new ScoreBoardEvent(this, Child.TEAM, team, false));
     }
 
     protected HashMap<String,Clock> clocks = new HashMap<String,Clock>();

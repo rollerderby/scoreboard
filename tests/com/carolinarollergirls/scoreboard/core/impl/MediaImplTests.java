@@ -70,7 +70,7 @@ public class MediaImplTests {
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
-        assertNull(e.getValue());
+        assertTrue(e.isRemove());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNull(tm.get("init.png"));
     }
@@ -81,7 +81,7 @@ public class MediaImplTests {
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
-        assertNull(e.getValue());
+        assertTrue(e.isRemove());
         Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
         assertNull(tm.get("init.png"));
     }

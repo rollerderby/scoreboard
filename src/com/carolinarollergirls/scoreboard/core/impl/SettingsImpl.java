@@ -38,7 +38,7 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
             Map<String, String> old = new HashMap<String, String>(settings);
             settings.clear();
             for (String k : old.keySet()) {
-                scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, null), new ValWithId(k, old.get(k))));
+                scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, null), true));
             }
         }
     }
@@ -55,13 +55,12 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
     }
     public void set(String k, String v) {
         synchronized (coreLock) {
-            ValWithId last = new ValWithId(k, settings.get(k));
             if (v == null) {
                 settings.remove(k);
             } else {
                 settings.put(k, v);
             }
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, v), last));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, v), false));
         }
     }
 

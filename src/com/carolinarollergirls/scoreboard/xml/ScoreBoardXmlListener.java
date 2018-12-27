@@ -82,20 +82,20 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         Element e = getElement(p);
         Property prop = event.getProperty();
         String v = (event.getValue()==null?null:event.getValue().toString());
+        Boolean rem = event.isRemove();
         if (prop == BatchEvent.START) {
             batchStart();
         } else if (prop == BatchEvent.END) {
             batchEnd();
         } else if (p instanceof Settings) {
             ValueWithId s = (ValueWithId)event.getValue();
-            if (s.getValue() == null) {
-                editor.setRemovePI(editor.setElement(e, prop, s.getId()));
-            } else {
-                editor.setElement(e, prop, s.getId(), s.getValue());
+            Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
+            if (rem) {
+                editor.setRemovePI(ne);
             }
         } else if (p instanceof Rulesets) {
-            if (prop == Rulesets.Child.KNOWN_RULESETS && v == null) {
-                editor.setRemovePI(converter.toElement(e, (Rulesets.Ruleset)event.getPreviousValue()));
+            if (prop == Rulesets.Child.KNOWN_RULESETS && rem) {
+                editor.setRemovePI(converter.toElement(e, (Rulesets.Ruleset)event.getValue()));
             } else {
                 converter.toElement(getElement(p.getParent()), (Rulesets)p);
             }
@@ -116,38 +116,33 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
             }
         } else if (p instanceof ScoreBoard) {
             if (prop == ScoreBoard.Child.CLOCK) {
-        	if (v != null) {
-        	    converter.toElement(e, (Clock)event.getValue());
-        	} else {
-        	    editor.setRemovePI(converter.toElement(e, (Clock)event.getPreviousValue()));
+        	Element ne = converter.toElement(e, (Clock)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
         	}
             } else if (prop == ScoreBoard.Child.TEAM) {
-        	if (v != null) {
-        	    converter.toElement(e, (Team)event.getValue());
-        	} else {
-        	    editor.setRemovePI(converter.toElement(e, (Team)event.getPreviousValue()));
+        	Element ne = converter.toElement(e, (Team)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
         	}
             } else {
                 editor.setElement(e, prop, null, v);
             }
         } else if (p instanceof Team) {
             if (prop == Team.Child.ALTERNATE_NAME) {
-        	if (v != null) {
-        	    converter.toElement(e, (Team.AlternateName)event.getValue());
-        	} else {
-        	    editor.setRemovePI(converter.toElement(e, (Team.AlternateName)event.getPreviousValue()));
+        	Element ne = converter.toElement(e, (Team.AlternateName)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
         	}
             } else if (prop == Team.Child.COLOR) {
-        	if (v != null) {
-        	    converter.toElement(e, (Team.Color)event.getValue());
-        	} else {
-        	    editor.setRemovePI(converter.toElement(e, (Team.Color)event.getPreviousValue()));
+        	Element ne = converter.toElement(e, (Team.Color)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
         	}
             } else if (prop == Team.Child.SKATER) {
-        	if (v != null) {
-        	    converter.toElement(e, (Skater)event.getValue());
-        	} else {
-        	    editor.setRemovePI(converter.toElement(e, (Skater)event.getPreviousValue()));
+        	Element ne = converter.toElement(e, (Skater)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
         	}
             } else {
                 editor.setElement(e, prop, null, v);
@@ -169,16 +164,16 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
             editor.setElement(e, prop, null, v);
         } else if (p instanceof Skater) {
             if ((prop == Skater.Child.PENALTY || prop == Skater.Value.PENALTY_FOEXP)
-        	    && v != null) {
+        	    && !rem) {
                 // Replace whole skater.
                 converter.toElement(getElement(p.getParent()), (Skater)p);
             } else if (prop == Skater.Child.PENALTY) {
-                Skater.Penalty prev = (Skater.Penalty)(event.getPreviousValue());
+                Skater.Penalty prev = (Skater.Penalty)(event.getValue());
                 if (prev != null) {
                     editor.setRemovePI(editor.addElement(e, prop, prev.getId()));
                 }
             } else if (prop.equals(Skater.Value.PENALTY_FOEXP)) {
-                Skater.Penalty prev = (Skater.Penalty)(event.getPreviousValue());
+                Skater.Penalty prev = (Skater.Penalty)(event.getValue());
                 if (prev != null) {
                     editor.setRemovePI(editor.addElement(e, prop, prev.getId()));
                 }
@@ -187,25 +182,24 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
             }
         } else if (p instanceof MediaType) {
             if (prop == MediaType.Child.FILE) {
-        	if (v == null) {
-                    Media.MediaFile mf = (Media.MediaFile)(event.getPreviousValue());
-                    editor.setRemovePI(converter.toElement(e, mf));
-        	} else {
-                    Media.MediaFile mf = (Media.MediaFile)(event.getValue());
-                    converter.toElement(e, mf);
+        	Element ne = converter.toElement(e, (Media.MediaFile)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
         	}
             }
         } else if (p instanceof Stats) {
-            if (prop == Stats.Child.PERIOD && v == null) {
-                editor.setRemovePI(converter.toElement(e, (Stats.PeriodStats)(event.getPreviousValue())));
-            } else if (prop == Stats.Child.PERIOD) {
-                getElement((Stats.PeriodStats)(event.getValue()));
+            if (prop == Stats.Child.PERIOD) {
+        	Element ne = converter.toElement(e, (Stats.PeriodStats)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
             }
         } else if (p instanceof Stats.PeriodStats) {
-            if (prop == Stats.PeriodStats.Child.JAM && v == null) {
-                editor.setRemovePI(converter.toElement(e, (Stats.JamStats)(event.getPreviousValue())));
-            } else if (prop == Stats.PeriodStats.Child.JAM) {
-                getElement((Stats.JamStats)(event.getValue()));
+            if (prop == Stats.PeriodStats.Child.JAM) {
+        	Element ne = converter.toElement(e, (Stats.JamStats)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
             }
         } else if (p instanceof Stats.JamStats) {
             if (prop == Stats.JamStats.Value.STATS) {
@@ -225,9 +219,11 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
                 editor.setElement(e, Stats.TeamStats.Value.STAR_PASS, null, String.valueOf(ts.getStarPass()));
                 editor.setElement(e, Stats.TeamStats.Value.TIMEOUTS, null, String.valueOf(ts.getTimeouts()));
                 editor.setElement(e, Stats.TeamStats.Value.OFFICIAL_REVIEWS, null, String.valueOf(ts.getOfficialReviews()));
-            } else if (prop == Stats.TeamStats.Child.SKATER && v == null) {
-                Stats.SkaterStats ss = (Stats.SkaterStats)(event.getPreviousValue());
-                editor.setRemovePI(converter.toElement(e, ss));
+            } else if (prop == Stats.TeamStats.Child.SKATER) {
+        	Element ne = converter.toElement(e, (Stats.SkaterStats)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
             }
         } else if (p instanceof Stats.SkaterStats) {
             if (prop == Stats.SkaterStats.Value.STATS) {
