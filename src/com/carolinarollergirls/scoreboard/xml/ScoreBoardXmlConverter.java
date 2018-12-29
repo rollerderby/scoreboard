@@ -20,7 +20,6 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.Position;
-import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
@@ -30,7 +29,9 @@ import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Stats.JamStats;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
@@ -49,12 +50,10 @@ public class ScoreBoardXmlConverter {
         for (ScoreBoard.Command c : ScoreBoard.Command.values()) {
             editor.setElement(sb, c, null, "");
         }
-
-        editor.setElement(sb, ScoreBoard.Value.TIMEOUT_OWNER, null, scoreBoard.getTimeoutOwner().getId());
-        editor.setElement(sb, ScoreBoard.Value.OFFICIAL_REVIEW, null, String.valueOf(scoreBoard.isOfficialReview()));
-        editor.setElement(sb, ScoreBoard.Value.IN_OVERTIME, null, String.valueOf(scoreBoard.isInOvertime()));
-        editor.setElement(sb, ScoreBoard.Value.IN_PERIOD, null, String.valueOf(scoreBoard.isInPeriod()));
-        editor.setElement(sb, ScoreBoard.Value.OFFICIAL_SCORE, null, String.valueOf(scoreBoard.isOfficialScore()));
+        
+        for (ScoreBoard.Value v : ScoreBoard.Value.values()) {
+            editor.setElement(sb, v, null, String.valueOf(scoreBoard.get(v)));
+        }
 
         toElement(sb, scoreBoard.getSettings());
         toElement(sb, scoreBoard.getRulesets());
@@ -129,49 +128,35 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element p, Media.MediaFile mf) {
         Element e = editor.setElement(p, mf.getProviderName(), mf.getProviderId());
-        editor.setElement(e, Media.MediaFile.Value.NAME, null, mf.getName());
-        editor.setElement(e, Media.MediaFile.Value.SRC, null, mf.getSrc());
+        for(Media.MediaFile.Value v : Media.MediaFile.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(mf.get(v)));
+        }
         return e;
     }
 
     public Element toElement(Element sb, Clock c) {
         Element e = editor.setElement(sb, c.getProviderName(), c.getProviderId());
 
-        editor.setElement(e, Clock.Command.START, null, "");
-        editor.setElement(e, Clock.Command.STOP, null, "");
-        editor.setElement(e, Clock.Command.RESET_TIME, null, "");
+        for (Clock.Command co : Clock.Command.values()) {
+            editor.setElement(e, co, null, "");
+        }
 
-        editor.setElement(e, Clock.Value.NAME, null, c.getName());
-        editor.setElement(e, Clock.Value.NUMBER, null, String.valueOf(c.getNumber()));
-        editor.setElement(e, Clock.Value.MINIMUM_NUMBER, null, String.valueOf(c.getMinimumNumber()));
-        editor.setElement(e, Clock.Value.MAXIMUM_NUMBER, null, String.valueOf(c.getMaximumNumber()));
-        editor.setElement(e, Clock.Value.TIME, null, String.valueOf(c.getTime()));
-        editor.setElement(e, Clock.Value.INVERTED_TIME, null, String.valueOf(c.getInvertedTime()));
-        editor.setElement(e, Clock.Value.MINIMUM_TIME, null, String.valueOf(c.getMinimumTime()));
-        editor.setElement(e, Clock.Value.MAXIMUM_TIME, null, String.valueOf(c.getMaximumTime()));
-        editor.setElement(e, Clock.Value.RUNNING, null, String.valueOf(c.isRunning()));
-        editor.setElement(e, Clock.Value.DIRECTION, null, String.valueOf(c.isCountDirectionDown()));
+        for(Clock.Value v : Clock.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(c.get(v)));
+        }
         return e;
     }
 
     public Element toElement(Element sb, Team t) {
         Element e = editor.setElement(sb, t.getProviderName(), t.getProviderId());
 
-        editor.setElement(e, Team.Command.TIMEOUT, null, "");
-        editor.setElement(e, Team.Command.OFFICIAL_REVIEW, null, "");
+        for (Team.Command c : Team.Command.values()) {
+            editor.setElement(e, c, null, "");
+        }
 
-        editor.setElement(e, Team.Value.NAME, null, t.getName());
-        editor.setElement(e, Team.Value.LOGO, null, t.getLogo());
-        editor.setElement(e, Team.Value.SCORE, null, String.valueOf(t.getScore()));
-        editor.setElement(e, Team.Value.LAST_SCORE, null, String.valueOf(t.getLastScore()));
-        editor.setElement(e, Team.Value.TIMEOUTS, null, String.valueOf(t.getTimeouts()));
-        editor.setElement(e, Team.Value.OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
-        editor.setElement(e, Team.Value.IN_TIMEOUT, null, String.valueOf(t.inTimeout()));
-        editor.setElement(e, Team.Value.IN_OFFICIAL_REVIEW, null, String.valueOf(t.inOfficialReview()));
-        editor.setElement(e, Team.Value.RETAINED_OFFICIAL_REVIEW, null, String.valueOf(t.retainedOfficialReview()));
-        editor.setElement(e, Team.Value.LEAD_JAMMER, null, t.getLeadJammer());
-        editor.setElement(e, Team.Value.STAR_PASS, null, String.valueOf(t.isStarPass()));
-        editor.setElement(e, Team.Value.NO_PIVOT, null, String.valueOf(t.hasNoPivot()));
+        for(Team.Value v : Team.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(t.get(v)));
+        }
 
         Iterator<Team.AlternateName> alternateNames = t.getAlternateNames().iterator();
         while (alternateNames.hasNext()) {
@@ -199,7 +184,9 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element team, Team.AlternateName n) {
         Element e = editor.setElement(team, n.getProviderName(), n.getId());
 
-        editor.setElement(e, Team.AlternateName.Value.NAME, null, n.getName());
+        for(Team.AlternateName.Value v : Team.AlternateName.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(n.get(v)));
+        }
 
         return e;
     }
@@ -207,7 +194,9 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element team, Team.Color c) {
         Element e = editor.setElement(team, c.getProviderName(), c.getId());
 
-        editor.setElement(e, Team.Color.Value.COLOR, null, c.getColor());
+        for(Team.Color.Value v : Team.Color.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(c.get(v)));
+        }
 
         return e;
     }
@@ -215,27 +204,23 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element team, Position p) {
         Element e = editor.setElement(team, p.getProviderName(), p.getId());
 
-        editor.setElement(e, Position.Command.CLEAR, null, "");
-
-        Skater s = p.getSkater();
-        editor.setElement(e, Position.Value.ID, null, (s==null?"":s.getId()));
-        editor.setElement(e, Position.Value.NAME, null, (s==null?"":s.getName()));
-        editor.setElement(e, Position.Value.NUMBER, null, (s==null?"":s.getNumber()));
-        editor.setElement(e, Position.Value.PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
-        editor.setElement(e, Position.Value.FLAGS, null, (s==null?"":s.getFlags()));
+        for (Position.Command c : Position.Command.values()) {
+            editor.setElement(e, c, null, "");
+        }
+        
+        for(Position.Value v : Position.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(p.get(v)));
+        }
 
         return e;
     }
 
     public Element toElement(Element t, Skater s) {
         Element e = editor.setElement(t, s.getProviderName(), s.getId());
-        editor.setElement(e, Skater.Value.NAME, null, s.getName());
-        editor.setElement(e, Skater.Value.NUMBER, null, s.getNumber());
-        editor.setElement(e, Skater.Value.POSITION, null, s.getPosition() == null ? "" : 
-            s.getPosition().getFloorPosition().toString());
-        editor.setElement(e, Skater.Value.ROLE, null, s.getRole().toString());
-        editor.setElement(e, Skater.Value.PENALTY_BOX, null, String.valueOf(s.isPenaltyBox()));
-        editor.setElement(e, Skater.Value.FLAGS, null, s.getFlags());
+
+        for(Skater.Value v : Skater.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(s.get(v)));
+        }
 
         for (Skater.Penalty p: s.getPenalties()) {
             toElement(e, p);
@@ -251,9 +236,9 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element s, Skater.Penalty p) {
         Element e = editor.setElement(s, p.getProviderName(), p.getId());
-        editor.setElement(e, Skater.Penalty.Value.PERIOD, null, String.valueOf(p.getPeriod()));
-        editor.setElement(e, Skater.Penalty.Value.JAM, null, String.valueOf(p.getJam()));
-        editor.setElement(e, Skater.Penalty.Value.CODE, null, p.getCode());
+        for(Skater.Penalty.Value v : Skater.Penalty.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(p.get(v)));
+        }
         return e;
     }
 
@@ -275,11 +260,9 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element p, Stats.JamStats j) {
         Element e = editor.setElement(p, j.getProviderName(), String.valueOf(j.getJamNumber()));
-        editor.setElement(e, Stats.JamStats.Value.JAM_CLOCK_ELAPSED_END, null, String.valueOf(j.getJamClockElapsedEnd()));
-        editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_START, null, String.valueOf(j.getPeriodClockElapsedStart()));
-        editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_END, null, String.valueOf(j.getPeriodClockElapsedEnd()));
-        editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_START, null, String.valueOf(j.getPeriodClockWalltimeStart()));
-        editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_END, null, String.valueOf(j.getPeriodClockWalltimeEnd()));
+        for(Stats.JamStats.Value v : Stats.JamStats.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(j.get(v)));
+        }
         for (Stats.TeamStats t: j.getTeamStats()) {
             toElement(e, t);
         }
@@ -288,12 +271,9 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element j, Stats.TeamStats t) {
         Element e = editor.setElement(j, t.getProviderName(), t.getTeamId());
-        editor.setElement(e, Stats.TeamStats.Value.JAM_SCORE, null, String.valueOf(t.getJamScore()));
-        editor.setElement(e, Stats.TeamStats.Value.TOTAL_SCORE, null, String.valueOf(t.getTotalScore()));
-        editor.setElement(e, Stats.TeamStats.Value.LEAD_JAMMER, null, t.getLeadJammer());
-        editor.setElement(e, Stats.TeamStats.Value.STAR_PASS, null, String.valueOf(t.getStarPass()));
-        editor.setElement(e, Stats.TeamStats.Value.TIMEOUTS, null, String.valueOf(t.getTimeouts()));
-        editor.setElement(e, Stats.TeamStats.Value.OFFICIAL_REVIEWS, null, String.valueOf(t.getOfficialReviews()));
+        for(Stats.TeamStats.Value v : Stats.TeamStats.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(t.get(v)));
+        }
         for (Stats.SkaterStats s: t.getSkaterStats()) {
             toElement(e, s);
         }
@@ -302,8 +282,9 @@ public class ScoreBoardXmlConverter {
 
     public Element toElement(Element t, Stats.SkaterStats s) {
         Element e = editor.setElement(t, s.getProviderName(), s.getSkaterId());
-        editor.setElement(e, Stats.SkaterStats.Value.POSITION, null, s.getPosition());
-        editor.setElement(e, Stats.SkaterStats.Value.PENALTY_BOX, null, String.valueOf(s.getPenaltyBox()));
+        for(Stats.SkaterStats.Value v : Stats.SkaterStats.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(s.get(v)));
+        }
         return e;
     }
 
@@ -352,23 +333,7 @@ public class ScoreBoardXmlConverter {
                 } else if (null == value) {
                     continue;
                 } else if (prop instanceof ScoreBoard.Value) {
-                    switch ((ScoreBoard.Value)prop) {
-		    case TIMEOUT_OWNER:
-			scoreBoard.setTimeoutOwner(scoreBoard.getTimeoutOwner(value));
-			break;
-		    case OFFICIAL_REVIEW:
-			scoreBoard.setOfficialReview(bVal);
-			break;
-		    case IN_OVERTIME:
-			scoreBoard.setInOvertime(bVal);
-			break;
-		    case IN_PERIOD:
-			scoreBoard.setInPeriod(bVal);
-			break;
-		    case OFFICIAL_SCORE:
-			scoreBoard.setOfficialScore(bVal);
-			break;
-                    }
+                    scoreBoard.set((ScoreBoard.Value)prop, scoreBoard.valueFromString((PermanentProperty)prop, value));
                 } else if (bVal && prop instanceof ScoreBoard.Command) {
                     switch((ScoreBoard.Command)prop) {
                     case RESET:
@@ -530,12 +495,12 @@ public class ScoreBoardXmlConverter {
                 String name = child.getName();
                 String value = editor.getText(child);
                 Property prop = PropertyConversion.fromFrontend(name, clock.getProperties());
-
-                boolean isChange = Boolean.parseBoolean(child.getAttributeValue("change"));
-                boolean isReset = Boolean.parseBoolean(child.getAttributeValue("reset"));
+                Flag flag = null;
+                if (Boolean.parseBoolean(child.getAttributeValue("change"))) { flag = Flag.CHANGE; }
+                if (Boolean.parseBoolean(child.getAttributeValue("reset"))) { flag = Flag.RESET; }
 
 //FIXME - might be better way to handle changes/resets than an attribute...
-                if ((null == value) && !isReset) {
+                if ((null == value) && flag != Flag.RESET) {
                     continue;
                 } else if (prop instanceof Clock.Command) {
                     switch ((Clock.Command)prop) {
@@ -550,59 +515,14 @@ public class ScoreBoardXmlConverter {
 			break;
                     }
                 } else if (prop instanceof Clock.Value) {
-                    switch ((Clock.Value)prop) {
-		    case NAME:
-			clock.setName(value);
-			break;
-		    case NUMBER:
-			if (isChange) {
-	                    clock.changeNumber(Integer.parseInt(value));
-			} else {
-	                    clock.setNumber(Integer.parseInt(value));
-			}
-			break;
-		    case MINIMUM_NUMBER:
-			clock.setMinimumNumber(Integer.parseInt(value));
-			break;
-		    case MAXIMUM_NUMBER:
-			clock.setMaximumNumber(Integer.parseInt(value));
-			break;
-		    case TIME:
-			if (isChange) {
-	                    clock.changeTime(Long.parseLong(value));
-			} else if (isReset) {
-	                    clock.resetTime();
-			} else {
-	                    clock.setTime(Long.parseLong(value));
-			}
-			break;
-		    case MINIMUM_TIME:
-			if (isChange) {
-	                    clock.changeMinimumTime(Long.parseLong(value));
-			} else {
-	                    clock.setMinimumTime(Long.parseLong(value));
-			}
-			break;
-		    case MAXIMUM_TIME:
-			if (isChange) {
-	                    clock.changeMaximumTime(Long.parseLong(value));
-			} else {
-	                    clock.setMaximumTime(Long.parseLong(value));
-			}
-			break;
-		    case RUNNING:
+                    if (prop == Clock.Value.RUNNING) {
 			if (Boolean.parseBoolean(value)) {
 			    requestStart = true;
 			} else {
 			    requestStop = true;
 			}
-			break;
-		    case DIRECTION:
-			clock.setCountDirectionDown(Boolean.parseBoolean(value));
-			break;
-		    case INVERTED_TIME:
-			//read only value
-			break;
+                    } else {
+                	clock.set((PermanentProperty)prop, clock.valueFromString((PermanentProperty)prop, value), flag);
                     }
                 }
             } catch ( Exception e ) {
@@ -624,8 +544,9 @@ public class ScoreBoardXmlConverter {
                 String name = child.getName();
                 String value = editor.getText(child);
                 Property prop = PropertyConversion.fromFrontend(name, team.getProperties());
+                Flag flag = null;
+                if (Boolean.parseBoolean(child.getAttributeValue("change"))) { flag = Flag.CHANGE; }
 
-                boolean isChange = Boolean.parseBoolean(child.getAttributeValue("change"));
 
                 if (prop instanceof Team.Child) {
                     switch ((Team.Child)prop) {
@@ -654,62 +575,7 @@ public class ScoreBoardXmlConverter {
                 	break;
                     }
                 } else if (prop instanceof Team.Value) {
-                    switch ((Team.Value)prop) {
-		    case NAME:
-			team.setName(value);
-			break;
-		    case LOGO:
-			team.setLogo(value);
-			break;
-		    case SCORE:
-			if (isChange) {
-	                    team.changeScore(Integer.parseInt(value));
-			} else {
-	                    team.setScore(Integer.parseInt(value));
-			}
-			break;
-		    case LAST_SCORE:
-			if (isChange) {
-	                    team.changeLastScore(Integer.parseInt(value));
-			} else {
-	                    team.setLastScore(Integer.parseInt(value));
-			}
-			break;
-		    case JAM_SCORE:
-			//read only
-			break;
-		    case NO_PIVOT:
-			break;
-		    case TIMEOUTS:
-			if (isChange) {
-	                    team.changeTimeouts(Integer.parseInt(value));
-			} else {
-	                    team.setTimeouts(Integer.parseInt(value));
-			}
-			break;
-		    case OFFICIAL_REVIEWS:
-			if (isChange) {
-	                    team.changeOfficialReviews(Integer.parseInt(value));
-			} else {
-			    team.setOfficialReviews(Integer.parseInt(value));
-			}
-			break;
-		    case IN_TIMEOUT:
-			team.setInTimeout(Boolean.parseBoolean(value));
-			break;
-		    case IN_OFFICIAL_REVIEW:
-			team.setInOfficialReview(Boolean.parseBoolean(value));
-			break;
-		    case RETAINED_OFFICIAL_REVIEW:
-			team.setRetainedOfficialReview(Boolean.parseBoolean(value));
-			break;
-		    case LEAD_JAMMER:
-			team.setLeadJammer(value);
-			break;
-		    case STAR_PASS:
-			team.setStarPass(Boolean.parseBoolean(value));
-			break;
-                    }
+                    team.set((PermanentProperty)prop, team.valueFromString((PermanentProperty)prop, value), flag);
                 }
             } catch ( Exception e ) {
             }
@@ -844,32 +710,7 @@ public class ScoreBoardXmlConverter {
                 } else if (null == value) {
                     continue;
                 } else if (prop instanceof Skater.Value) {
-                    switch ((Skater.Value)prop) {
-		    case NAME:
-			skater.setName(value);
-			break;
-		    case NUMBER:
-			skater.setNumber(value);
-			break;
-		    case POSITION:
-			team.field(skater, team.getPosition(FloorPosition.fromString(value)));
-			break;
-		    case ROLE:
-			team.field(skater, Role.fromString(value));
-			break;
-		    case BASE_ROLE:
-			//read only
-			break;
-		    case PENALTY_BOX:
-			skater.setPenaltyBox(Boolean.parseBoolean(value));
-			break;
-		    case PENALTY_FOEXP:
-			//already handled
-			break;
-		    case FLAGS:
-			skater.setFlags(value);
-			break;
-                    }
+                    skater.set((PermanentProperty)prop, skater.valueFromString((PermanentProperty)prop, value));
                 }
             } catch ( Exception e ) {
             }
@@ -955,25 +796,7 @@ public class ScoreBoardXmlConverter {
                 } else if (null == value) {
                     continue;
                 } else if (prop instanceof JamStats.Value) {
-                    switch ((JamStats.Value)prop) {
-                    case JAM_CLOCK_ELAPSED_END:
-                	jamStats.setJamClockElapsedEnd(Long.parseLong(value));
-                	break;
-                    case PERIOD_CLOCK_ELAPSED_START:
-                	jamStats.setPeriodClockElapsedStart(Long.parseLong(value));
-                	break;
-                    case PERIOD_CLOCK_ELAPSED_END:
-                	jamStats.setPeriodClockElapsedEnd(Long.parseLong(value));
-                	break;
-                    case PERIOD_CLOCK_WALLTIME_START:
-                	jamStats.setPeriodClockWalltimeStart(Long.parseLong(value));
-                	break;
-                    case PERIOD_CLOCK_WALLTIME_END:
-                	jamStats.setPeriodClockWalltimeEnd(Long.parseLong(value));
-                	break;
-                    case STATS:
-                	break;
-                    }
+                    jamStats.set((PermanentProperty)prop, jamStats.valueFromString((PermanentProperty)prop, value));
                 }
             } catch ( Exception e ) {
             }
@@ -996,35 +819,7 @@ public class ScoreBoardXmlConverter {
                 } else if (null == value) {
                     continue;
                 } else if (prop instanceof Stats.TeamStats.Value) {
-                    switch ((Stats.TeamStats.Value)prop) {
-                    case JAM_SCORE:
-                	teamStats.setJamScore(Integer.parseInt(value));
-                	break;
-                    case TOTAL_SCORE:
-                	teamStats.setTotalScore(Integer.parseInt(value));
-                	break;
-                    case LEAD_JAMMER:
-                	teamStats.setLeadJammer(value);
-                	break;
-                    case STAR_PASS:
-                	teamStats.setStarPass(Boolean.parseBoolean(value));
-                	break;
-		    case NO_PIVOT:
-			teamStats.setNoPivot(Boolean.parseBoolean(value));
-			break;
-                    case TIMEOUTS:
-                	teamStats.setTimeouts(Integer.parseInt(value));
-                	break;
-                    case OFFICIAL_REVIEWS:
-                	teamStats.setOfficialReviews(Integer.parseInt(value));
-                	break;
-                    case STATS:
-                	// no value
-                	break;
-		    case ID:
-			// read only
-			break;
-                    }
+                    teamStats.set((PermanentProperty)prop, teamStats.valueFromString((PermanentProperty)prop, value));
                 }
             } catch ( Exception e ) {
             }
@@ -1043,20 +838,7 @@ public class ScoreBoardXmlConverter {
                 if (null == value) {
                     continue;
                 } else if (prop instanceof Stats.SkaterStats.Value) {
-                    switch ((Stats.SkaterStats.Value)prop) {
-                    case PENALTY_BOX:
-                	skaterStats.setPenaltyBox(Boolean.parseBoolean(value));
-                	break;
-                    case POSITION:
-                	skaterStats.setPosition(value);
-			break;
-		    case STATS:
-			//no value
-			break;
-		    case ID:
-			//read only
-			break;
-                    }
+                    skaterStats.set((PermanentProperty)prop, skaterStats.valueFromString((PermanentProperty)prop, value));
                 }
             } catch ( Exception e ) {
             }

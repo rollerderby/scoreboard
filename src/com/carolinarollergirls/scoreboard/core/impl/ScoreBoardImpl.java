@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -75,8 +76,23 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
     public static Object getCoreLock() { return coreLock; }
 
-    public ScoreBoard getScoreBoard() { return this; }
-
+    public Object valueFromString(PermanentProperty prop, String sValue) {
+	if (prop == Value.TIMEOUT_OWNER) { return getTimeoutOwner(sValue); }
+	return Boolean.parseBoolean(sValue);
+    }
+    public boolean set(PermanentProperty prop, Object value, Flag flag) {
+	synchronized (coreLock) {
+	    boolean result = super.set(prop, value, flag);
+	    if (result && prop == Value.IN_OVERTIME && !(Boolean)value) {
+		Clock lc = getClock(Clock.ID_LINEUP);
+		if (lc.isCountDirectionDown()) {
+		    lc.setMaximumTime(rulesets.getLong(Rule.LINEUP_DURATION));
+		}
+	    }
+	    return result;
+	}
+    }
+    
     public void reset() {
         synchronized (coreLock) {
             Iterator<Clock> c = getClocks().iterator();
@@ -109,15 +125,8 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         }
     }
 
-    public boolean isInPeriod() { return inPeriod; }
-    public void setInPeriod(boolean p) {
-        synchronized (coreLock) {
-            if (p == inPeriod) { return; }
-            Boolean last = new Boolean(inPeriod);
-            inPeriod = p;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_PERIOD, new Boolean(inPeriod), last));
-        }
-    }
+    public boolean isInPeriod() { return (Boolean)get(Value.IN_PERIOD); }
+    public void setInPeriod(boolean p) { set(Value.IN_PERIOD, p); }
     protected void addInPeriodListeners() {
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.Value.RUNNING, Boolean.FALSE, periodEndListener));
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.RUNNING, Boolean.FALSE, jamEndListener));
@@ -126,19 +135,8 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, Clock.Value.TIME, timeoutClockListener));
     }
 
-    public boolean isInOvertime() { return inOvertime; }
-    public void setInOvertime(boolean o) {
-        synchronized (coreLock) {
-            if (o == inOvertime) { return; }
-            Boolean last = new Boolean(inOvertime);
-            inOvertime = o;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_OVERTIME, new Boolean(inOvertime), last));
-            Clock lc = getClock(Clock.ID_LINEUP);
-            if (!o && lc.isCountDirectionDown()) {
-                lc.setMaximumTime(rulesets.getLong(Rule.LINEUP_DURATION));
-            }
-        }
-    }
+    public boolean isInOvertime() { return (Boolean)get(Value.IN_OVERTIME); }
+    public void setInOvertime(boolean o) { set(Value.IN_OVERTIME, o); }
     public void startOvertime() {
         synchronized (coreLock) {
             Clock pc = getClock(Clock.ID_PERIOD);
@@ -169,14 +167,8 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         }
     }
 
-    public boolean isOfficialScore() { return officialScore; }
-    public void setOfficialScore(boolean o) {
-        synchronized (coreLock) {
-            Boolean last = new Boolean(officialScore);
-            officialScore = o;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.OFFICIAL_SCORE, new Boolean(officialScore), last));
-        }
-    }
+    public boolean isOfficialScore() { return (Boolean)get(Value.OFFICIAL_SCORE); }
+    public void setOfficialScore(boolean o) { set(Value.OFFICIAL_SCORE, o); }
 
     public void startJam() {
         synchronized (coreLock) {
@@ -575,22 +567,10 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 	return getTeam(id);
     }
 
-    public TimeoutOwner getTimeoutOwner() { return timeoutOwner; }
-    public void setTimeoutOwner(TimeoutOwner owner) {
-        synchronized (coreLock) {
-            TimeoutOwner last = timeoutOwner;
-            timeoutOwner = owner;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.TIMEOUT_OWNER, timeoutOwner, last));
-        }
-    }
-    public boolean isOfficialReview() { return officialReview; }
-    public void setOfficialReview(boolean official) {
-        synchronized (coreLock) {
-            boolean last = officialReview;
-            officialReview = official;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.OFFICIAL_REVIEW, new Boolean(officialReview), last));
-        }
-    }
+    public TimeoutOwner getTimeoutOwner() { return (TimeoutOwner)get(Value.TIMEOUT_OWNER); }
+    public void setTimeoutOwner(TimeoutOwner owner) { set(Value.TIMEOUT_OWNER, owner); }
+    public boolean isOfficialReview() { return (Boolean)get(Value.OFFICIAL_REVIEW); }
+    public void setOfficialReview(boolean official) { set(Value.OFFICIAL_REVIEW, official); }
 
     protected void createClock(String id) {
         if ((id == null) || (id.equals(""))) {
@@ -626,17 +606,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 	add(Command.class);
     }};
 
-    protected static Object coreLock = new Object();
-
-    protected TimeoutOwner timeoutOwner;
-    protected boolean officialReview;
     protected boolean restartPcAfterTimeout;
-
-    protected boolean inPeriod = false;
-
-    protected boolean inOvertime = false;
-
-    protected boolean officialScore = false;
 
     protected RulesetsImpl rulesets = null;
     protected SettingsImpl settings = null;

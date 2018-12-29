@@ -8,8 +8,13 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
+import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener {
     public abstract String getProviderName();
@@ -50,20 +55,64 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
         }
     }
 
+    public Object valueFromString(PermanentProperty prop, String sValue) {
+	Object value = sValue;
+	Object old = get(prop);
+	if (old instanceof Boolean) { 
+	    value = Boolean.valueOf(sValue); 
+	}
+	if (old instanceof Integer) {
+	    value = Integer.valueOf(sValue);
+	}
+	if (old instanceof Long) {
+	    value = Long.valueOf(sValue);
+	}
+	return value;
+    }
+    
+    public Object get(PermanentProperty prop) {
+	synchronized (coreLock) {
+	    return values.get(prop);
+	}
+    }
+    public boolean set(PermanentProperty prop, Object value) { return set(prop, value, null); }
+    public boolean set(PermanentProperty prop, Object value, Flag flag) { return set(prop, value, flag, null, null, 0); }
+    public boolean set(PermanentProperty prop, Object value, Flag flag, Number min, Number max, long tolerance) {
+	synchronized (coreLock) {
+	    Object last = values.get(prop);
+	    if (flag == Flag.CHANGE) {
+		if (last instanceof Integer) {
+		    value = (Integer)last + (Integer)value;
+		} else if (last instanceof Long) {
+		    value = (Long)last + (Long)value;
+		}
+	    }
+	    if (min instanceof Integer && (Integer)value < (Integer)min) {
+		value = min;
+	    }
+	    if (min instanceof Long && (Long)value < (Long)min - tolerance) {
+		value = min;
+	    }
+	    if (max instanceof Integer && (Integer)value > (Integer)max) {
+		value = max;
+	    }
+	    if (max instanceof Long && (Long)value > (Long)max + tolerance) {
+		value = max;
+	    }
+	    if (Objects.equals(value, last)) { return false; }
+	    values.put(prop, value);
+	    scoreBoardChange(new ScoreBoardEvent(this, prop, value, last));
+	    return true;
+	}
+    }
+
+    protected static Object coreLock = new Object();
+
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
+    protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();
 
     public enum BatchEvent implements ScoreBoardEvent.PermanentProperty {
-	START("Start"),
-	END("End");
-
-        private BatchEvent(String st) {
-            string = st;
-        }
-
-        public String toFrontend() { return string; }
-        public boolean isSingleton() { return true; }
-        public boolean isChild() { return false; }
-
-        private final String string;
+	START,
+	END;
     }
 }

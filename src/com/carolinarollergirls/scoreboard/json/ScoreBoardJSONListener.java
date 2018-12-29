@@ -23,9 +23,9 @@ import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -79,7 +79,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     }
                 } else if (p instanceof Team) {
                     Team t = (Team)p;
-                    String childPath = getPath(t);
                     if (prop == Team.Child.SKATER) {
                 	processSkater((Skater)v, rem);
                     } else if (prop == Team.Child.ALTERNATE_NAME) {
@@ -88,13 +87,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 	processColor((Team.Color)v, rem);
                     }
                     // Fast path for jam start/end to avoid sending the entire team.
-                    else if (prop == Team.Value.LAST_SCORE) {
-                        update(childPath, prop, t.getLastScore());
-                        update(childPath, Team.Value.JAM_SCORE, t.getScore() - t.getLastScore());
-                    } else if (prop == Team.Value.LEAD_JAMMER) {
-                        update(childPath, prop, t.getLeadJammer());
-                    } else if (prop == Team.Value.STAR_PASS) {
-                        update(childPath, prop, t.isStarPass());
+                    else if (prop instanceof Team.Value) {
+                        update(getPath(t), prop, t.get((PermanentProperty)prop));
                     } else {
                         processTeam(t, false);
                     }
@@ -181,9 +175,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	    updates.add(new WSUpdate(prefix + "." + ((ValueWithId)prop).getId(), v));
     	} else if (v instanceof ScoreBoardEventProvider) {
             updates.add(new WSUpdate(path, ((ScoreBoardEventProvider) v).getProviderId()));
-        } else if (v instanceof TimeoutOwner) {
-            updates.add(new WSUpdate(path, ((TimeoutOwner) v).getId()));
-	} else {
+	} else if (v != null){
+            updates.add(new WSUpdate(path, v.toString()));
+        } else {
             updates.add(new WSUpdate(path, v));
         }
     }
@@ -195,13 +189,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             return;
         }
 
-        update(path, Skater.Value.NAME, s.getName());
-        update(path, Skater.Value.NUMBER, s.getNumber());
-        update(path, Skater.Value.POSITION, s.getPosition() == null ? "" :
-            s.getPosition().getFloorPosition().toString());
-        update(path, Skater.Value.ROLE, s.getRole().toString());
-        update(path, Skater.Value.FLAGS, s.getFlags());
-        update(path, Skater.Value.PENALTY_BOX, s.isPenaltyBox());
+        for (PermanentProperty prop : Skater.Value.values()) {
+            Object v = s.get(prop);
+            if (v == null) { v = ""; }
+            update(path, prop, v);
+        }
 
         List<Skater.Penalty> penalties = s.getPenalties();
         for (int i = 0; i < 9; i++) {
@@ -221,10 +213,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             updates.add(new WSUpdate(path, null));
             return;
         }
-        update(path, Skater.Penalty.Value.ID, p.getId());
-        update(path, Skater.Penalty.Value.PERIOD, p.getPeriod());
-        update(path, Skater.Penalty.Value.JAM, p.getJam());
-        update(path, Skater.Penalty.Value.CODE, p.getCode());
+        for (PermanentProperty prop : Skater.Penalty.Value.values()) {
+            update(path, prop, p.get(prop));
+        }
     }
 
     private void processTeam(Team t, boolean remove) {
@@ -234,19 +225,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             return;
         }
 
-        update(path, Team.Value.NAME, t.getName());
-        update(path, Team.Value.LOGO, t.getLogo());
-        update(path, Team.Value.SCORE, t.getScore());
-        update(path, Team.Value.LAST_SCORE, t.getLastScore());
-        update(path, Team.Value.JAM_SCORE, t.getScore() - t.getLastScore());
-        update(path, Team.Value.TIMEOUTS, t.getTimeouts());
-        update(path, Team.Value.OFFICIAL_REVIEWS, t.getOfficialReviews());
-        update(path, Team.Value.IN_TIMEOUT, t.inTimeout());
-        update(path, Team.Value.IN_OFFICIAL_REVIEW, t.inOfficialReview());
-        update(path, Team.Value.RETAINED_OFFICIAL_REVIEW, t.retainedOfficialReview());
-        update(path, Team.Value.LEAD_JAMMER, t.getLeadJammer());
-        update(path, Team.Value.STAR_PASS, t.isStarPass());
-        update(path, Team.Value.NO_PIVOT, t.hasNoPivot());
+        for (PermanentProperty prop : Team.Value.values()) {
+            update(path, prop, t.get(prop));
+        }
 
         // Skaters
         for (Skater s : t.getSkaters()) {
@@ -276,16 +257,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             return;
         }
 
-        update(path, Clock.Value.NAME, c.getName());
-        update(path, Clock.Value.NUMBER, c.getNumber());
-        update(path, Clock.Value.MINIMUM_NUMBER, c.getMinimumNumber());
-        update(path, Clock.Value.MAXIMUM_NUMBER, c.getMaximumNumber());
-        update(path, Clock.Value.TIME, c.getTime());
-        update(path, Clock.Value.INVERTED_TIME, c.getInvertedTime());
-        update(path, Clock.Value.MINIMUM_TIME, c.getMinimumTime());
-        update(path, Clock.Value.MAXIMUM_TIME, c.getMaximumTime());
-        update(path, Clock.Value.DIRECTION, c.isCountDirectionDown());
-        update(path, Clock.Value.RUNNING, c.isRunning());
+        for (PermanentProperty prop : Clock.Value.values()) {
+            update(path, prop, c.get(prop));
+        }
     }
 
     private void processCurrentRuleset(String path, Rulesets r) {
@@ -342,42 +316,33 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             return;
         }
 
-        update(path, Position.Value.SKATER, p.getSkater() == null ? null : p.getSkater().getId());
-        update(path, Position.Value.PENALTY_BOX, p.isPenaltyBox());
+	for (Position.Value prop : Position.Value.values()) {
+	    update(path, prop, p.get(prop));
+	}
     }
 
     private void processJamStats(Stats.JamStats js) {
-	String path = getPath(js);
-        update(path, Stats.JamStats.Value.JAM_CLOCK_ELAPSED_END, js.getJamClockElapsedEnd());
-        update(path, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_START, js.getPeriodClockElapsedStart());
-        update(path, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_END, js.getPeriodClockElapsedEnd());
-        update(path, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_START, js.getPeriodClockWalltimeStart());
-        update(path, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_END, js.getPeriodClockWalltimeEnd());
+	for (Stats.JamStats.Value prop : Stats.JamStats.Value.values()) {
+	    update(getPath(js), prop, js.get(prop));
+	}
     }
 
     private void processTeamStats(Stats.TeamStats ts) {
-	String path = getPath(ts);
-        update(path, Stats.TeamStats.Value.TOTAL_SCORE, ts.getTotalScore());
-        update(path, Stats.TeamStats.Value.JAM_SCORE, ts.getJamScore());
-        update(path, Stats.TeamStats.Value.LEAD_JAMMER, ts.getLeadJammer());
-        update(path, Stats.TeamStats.Value.STAR_PASS, ts.getStarPass());
-        update(path, Stats.TeamStats.Value.NO_PIVOT, ts.getNoPivot());
-        update(path, Stats.TeamStats.Value.TIMEOUTS, ts.getTimeouts());
-        update(path, Stats.TeamStats.Value.OFFICIAL_REVIEWS, ts.getOfficialReviews());
+	for (Stats.TeamStats.Value prop : Stats.TeamStats.Value.values()) {
+	    update(getPath(ts), prop, ts.get(prop));
+	}
     }
 
     private void processSkaterStats(Stats.SkaterStats ss) {
-	String path = getPath(ss);
-        update(path, Stats.SkaterStats.Value.ID, ss.getSkaterId());
-        update(path, Stats.SkaterStats.Value.POSITION, ss.getPosition());
-        update(path, Stats.SkaterStats.Value.PENALTY_BOX, ss.getPenaltyBox());
+	for (Stats.SkaterStats.Value prop : Stats.SkaterStats.Value.values()) {
+	    update(getPath(ss), prop, ss.get(prop));
+	}
     }
 
     private void processMediaFile(Media.MediaFile mf) {
-	String path = getPath(mf);
-        update(path, Media.MediaFile.Value.ID, mf.getId());
-        update(path, Media.MediaFile.Value.NAME, mf.getName());
-        update(path, Media.MediaFile.Value.SRC, mf.getSrc());
+	for (Media.MediaFile.Value prop : Media.MediaFile.Value.values()) {
+	    update(getPath(mf), prop, mf.get(prop));
+	}
     }
 
     private void processPenaltyCodes(Rulesets r) {
@@ -394,11 +359,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
     }
 
     private void initialize(ScoreBoard sb) {
-        update("ScoreBoard", ScoreBoard.Value.IN_PERIOD, sb.isInPeriod());
-        update("ScoreBoard", ScoreBoard.Value.IN_OVERTIME, sb.isInOvertime());
-        update("ScoreBoard", ScoreBoard.Value.OFFICIAL_SCORE, sb.isOfficialScore());
-        update("ScoreBoard", ScoreBoard.Value.TIMEOUT_OWNER, sb.getTimeoutOwner());
-        update("ScoreBoard", ScoreBoard.Value.OFFICIAL_REVIEW, sb.isOfficialReview());
+	for (ScoreBoard.Value prop : ScoreBoard.Value.values()) {
+	    update(getPath(sb), prop, sb.get(prop));
+	}
 
         // Process Rules
         int index = 0;

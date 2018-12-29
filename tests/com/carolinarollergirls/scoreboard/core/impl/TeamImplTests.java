@@ -510,7 +510,7 @@ public class TeamImplTests {
         //check idempotency
         team.setLeadJammer(Team.LEAD_LEAD);
         assertEquals(Team.LEAD_LEAD, team.getLeadJammer());
-        assertEquals(1, collectedEvents.size());
+        assertEquals(0, collectedEvents.size());
 
         team.setLeadJammer(Team.LEAD_LOST_LEAD);
         assertEquals(Team.LEAD_LOST_LEAD, team.getLeadJammer());

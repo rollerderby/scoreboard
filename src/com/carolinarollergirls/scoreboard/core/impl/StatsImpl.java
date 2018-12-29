@@ -24,6 +24,7 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -255,8 +256,6 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 	add(Child.class);
     }};
 
-    protected static Object coreLock = ScoreBoardImpl.getCoreLock();
-
     protected List<PeriodStats> periods = new ArrayList<PeriodStats>();
 
 
@@ -336,48 +335,27 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         public ScoreBoardEventProvider getParent() { return period; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
+        public Object valueFromString(PermanentProperty prop, String sValue) {
+            return Long.parseLong(sValue);
+        }
+        
         public int getPeriodNumber() { return period.getPeriodNumber(); }
         public int getJamNumber() { return jam; }
 
-        public long getJamClockElapsedEnd() { return jamClockElapsedEnd; }
-        public void setJamClockElapsedEnd(long t) {
-            synchronized (coreLock) {
-                jamClockElapsedEnd = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
-            }
-        }
+        public long getJamClockElapsedEnd() { return (Long)get(Value.JAM_CLOCK_ELAPSED_END); }
+        public void setJamClockElapsedEnd(long t) { set(Value.JAM_CLOCK_ELAPSED_END, t); }
 
-        public long getPeriodClockElapsedStart() { return periodClockElapsedStart; }
-        public void setPeriodClockElapsedStart(long t) {
-            synchronized (coreLock) {
-                periodClockElapsedStart = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
-            }
-        }
+        public long getPeriodClockElapsedStart() { return (Long)get(Value.PERIOD_CLOCK_ELAPSED_START); }
+        public void setPeriodClockElapsedStart(long t) { set(Value.PERIOD_CLOCK_ELAPSED_START, t); }
 
-        public long getPeriodClockElapsedEnd() { return periodClockElapsedEnd; }
-        public void setPeriodClockElapsedEnd(long t) {
-            synchronized (coreLock) {
-                periodClockElapsedEnd = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
-            }
-        }
+        public long getPeriodClockElapsedEnd() { return (Long)get(Value.PERIOD_CLOCK_ELAPSED_END); }
+        public void setPeriodClockElapsedEnd(long t) { set(Value.PERIOD_CLOCK_ELAPSED_END, t); }
 
-        public long getPeriodClockWalltimeStart() { return periodClockWalltimeStart; }
-        public void setPeriodClockWalltimeStart(long t) {
-            synchronized (coreLock) {
-                periodClockWalltimeStart = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
-            }
-        }
+        public long getPeriodClockWalltimeStart() { return (Long)get(Value.PERIOD_CLOCK_WALLTIME_START); }
+        public void setPeriodClockWalltimeStart(long t) { set(Value.PERIOD_CLOCK_WALLTIME_START, t); }
 
-        public long getPeriodClockWalltimeEnd() { return periodClockWalltimeEnd; }
-        public void setPeriodClockWalltimeEnd(long t) {
-            synchronized (coreLock) {
-                periodClockWalltimeEnd = t;
-                scoreBoardChange(new ScoreBoardEvent(this, JamStats.Value.STATS, this, null));
-            }
-        }
+        public long getPeriodClockWalltimeEnd() { return (Long)get(Value.PERIOD_CLOCK_WALLTIME_END); }
+        public void setPeriodClockWalltimeEnd(long t) { set(Value.PERIOD_CLOCK_WALLTIME_END, t); }
 
         public List<TeamStats> getTeamStats() {
             synchronized (coreLock) {
@@ -397,11 +375,6 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         private PeriodStats period;
         private int jam;
-        private long jamClockElapsedEnd;
-        private long periodClockElapsedStart;
-        private long periodClockElapsedEnd;
-        private long periodClockWalltimeStart;
-        private long periodClockWalltimeEnd;
         protected TeamStats teams[];
 
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
@@ -412,75 +385,52 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
     public class TeamStatsImpl extends DefaultScoreBoardEventProvider implements TeamStats {
         public TeamStatsImpl(String team_id, JamStats j) {
-            id = team_id;
+            values.put(Value.ID, team_id);
             jam = j;
         }
 
         public String getProviderName() { return PropertyConversion.toFrontend(JamStats.Child.TEAM); }
         public Class<TeamStats> getProviderClass() { return TeamStats.class; }
-        public String getProviderId() { return id; }
+        public String getProviderId() { return getTeamId(); }
         public ScoreBoardEventProvider getParent() { return jam; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
-        public String getTeamId() { return id; }
+        public Object valueFromString(PermanentProperty prop, String sValue) {
+            if (prop == Value.STAR_PASS) { return Boolean.parseBoolean(sValue); }
+            if (prop == Value.JAM_SCORE || prop == Value.TOTAL_SCORE || prop == Value.TIMEOUTS
+        	    || prop == Value.OFFICIAL_REVIEWS) { return Integer.parseInt(sValue); }
+            return sValue;
+        }
+        
+        public boolean set(PermanentProperty prop, Object value, Flag flag) {
+            if (!(prop instanceof Value) || prop == Value.ID) { return false; }
+            return super.set(prop, value, flag);
+        }
+
+        public String getTeamId() { return (String)get(Value.ID); }
         public int getPeriodNumber() { return jam.getPeriodNumber(); }
         public int getJamNumber() { return jam.getJamNumber(); }
 
-        public int getJamScore() { return jamScore; }
-        public void setJamScore(int s) {
-            synchronized (coreLock) {
-                jamScore = s;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
-            }
-        }
+        public int getJamScore() { return (Integer)get(Value.JAM_SCORE); }
+        public void setJamScore(int s) { set(Value.JAM_SCORE, s); }
 
-        public int getTotalScore() { return totalScore; }
-        public void setTotalScore(int s) {
-            synchronized (coreLock) {
-                totalScore = s;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
-            }
-        }
+        public int getTotalScore() { return (Integer)get(Value.TOTAL_SCORE); }
+        public void setTotalScore(int s) { set(Value.TOTAL_SCORE, s); }
 
-        public String getLeadJammer() { return leadStatus; }
-        public void setLeadJammer(String ls) {
-            synchronized (coreLock) {
-                leadStatus = ls;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
-            }
-        }
+        public String getLeadJammer() { return (String)get(Value.LEAD_JAMMER); }
+        public void setLeadJammer(String ls) { set(Value.LEAD_JAMMER, ls); }
 
-        public boolean getStarPass() { return starPass; }
-        public void setStarPass(boolean sp) {
-            synchronized (coreLock) {
-                starPass = sp;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
-            }
-        }
+        public boolean getStarPass() { return (Boolean)get(Value.STAR_PASS); }
+        public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
 
-        public boolean getNoPivot() { return noPivot; }
-        public void setNoPivot(boolean np) {
-            synchronized (coreLock) {
-                noPivot = np;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
-            }
-        }
+        public boolean getNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
+        public void setNoPivot(boolean np) { set(Value.NO_PIVOT, np); }
 
-        public int getTimeouts() { return timeouts; }
-        public void setTimeouts(int t) {
-            synchronized (coreLock) {
-                timeouts = t;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
-            }
-        }
+        public int getTimeouts() { return (Integer)get(Value.TIMEOUTS); }
+        public void setTimeouts(int t) { set(Value.TIMEOUTS, t); }
 
-        public int getOfficialReviews() { return officialReviews; }
-        public void setOfficialReviews(int o) {
-            synchronized (coreLock) {
-                officialReviews = o;
-                scoreBoardChange(new ScoreBoardEvent(this, TeamStats.Value.STATS, this, null));
-            }
-        }
+        public int getOfficialReviews() { return (Integer)get(Value.OFFICIAL_REVIEWS); }
+        public void setOfficialReviews(int o) { set(Value.OFFICIAL_REVIEWS, o); }
 
         public List<SkaterStats> getSkaterStats() {
             synchronized (coreLock) {
@@ -521,16 +471,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
             }
         }
 
-
-        private String id;
         private JamStats jam;
-        private int jamScore;
-        private int totalScore;
-        private String leadStatus;
-        private boolean starPass;
-        private boolean noPivot;
-        private int timeouts;
-        private int officialReviews;
         private Map<String, SkaterStats>skaters = new ConcurrentHashMap<String, SkaterStats>();
 
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
@@ -541,41 +482,39 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
     public class SkaterStatsImpl extends DefaultScoreBoardEventProvider implements SkaterStats {
         public SkaterStatsImpl(String skater_id, TeamStats team) {
-            id = skater_id;
+            values.put(Value.ID, skater_id);
             this.team = team;
+            setPenaltyBox(false);
         }
 
         public String getProviderName() { return PropertyConversion.toFrontend(TeamStats.Child.SKATER); }
         public Class<SkaterStats> getProviderClass() { return SkaterStats.class; }
-        public String getProviderId() { return id; }
+        public String getProviderId() { return getSkaterId(); }
         public ScoreBoardEventProvider getParent() { return team; }
         public List<Class<? extends Property>> getProperties() { return properties; }
+        
+        public Object valueFromString(PermanentProperty prop, String sValue) {
+            if (prop == Value.PENALTY_BOX) { return Boolean.parseBoolean(sValue); }
+            return sValue;
+        }
+        
+        public boolean set(PermanentProperty prop, Object value, Flag flag) {
+            if (!(prop instanceof Value) || prop == Value.ID) { return false; }
+            return super.set(prop, value, flag);
+        }
 
-        public String getSkaterId() { return id; }
+        public String getSkaterId() { return (String)get(Value.ID); }
         public String getTeamId() { return team.getTeamId(); }
         public int getPeriodNumber() { return team.getPeriodNumber(); }
         public int getJamNumber() { return team.getJamNumber(); }
 
-        public String getPosition() { return position; }
-        public void setPosition(String p) {
-            synchronized (coreLock) {
-                position = p;
-                scoreBoardChange(new ScoreBoardEvent(this, SkaterStats.Value.STATS, this, null));
-            }
-        }
+        public String getPosition() { return (String)get(Value.POSITION); }
+        public void setPosition(String p) { set(Value.POSITION, p); }
 
-        public boolean getPenaltyBox() { return penaltyBox; }
-        public void setPenaltyBox(boolean p) {
-            synchronized (coreLock) {
-                penaltyBox = p;
-                scoreBoardChange(new ScoreBoardEvent(this, SkaterStats.Value.STATS, this, null));
-            }
-        }
-        private String id;
+        public boolean getPenaltyBox() { return (Boolean)get(Value.PENALTY_BOX); }
+        public void setPenaltyBox(boolean p) { set(Value.PENALTY_BOX, p); }
+
         private TeamStats team;
-
-        private boolean penaltyBox;
-        private String position;
 
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
             add(Value.class);

@@ -27,6 +27,7 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
@@ -41,6 +42,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 	
         scoreBoard = sb;
         id = i;
+        values.put(Value.LAST_SCORE, 0);
 
         reset();
     }
@@ -50,7 +52,63 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public String getProviderId() { return getId(); }
     public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
+    
+    public Object get(PermanentProperty prop) {
+	if (prop == Value.JAM_SCORE) { return getScore() - getLastScore(); }
+	return super.get(prop);
+    }
 
+    public boolean set(PermanentProperty prop, Object value, Flag flag) {
+	synchronized (coreLock) {
+	    if (!(prop instanceof Value) || prop == Value.JAM_SCORE) { return false; }
+	    requestBatchStart();
+	    if (prop == Value.LEAD_JAMMER) {
+	        if ("false".equals(((String)value).toLowerCase())) {
+	            value = Team.LEAD_NO_LEAD;
+	        } else if ("true".equals(((String)value).toLowerCase())) {
+	            value = Team.LEAD_LEAD;
+	        }
+	    }
+	    Number min = (value instanceof Integer) ? 0 : null;
+	    Number max = null;
+	    if (prop == Value.LAST_SCORE) { max = getScore(); }
+	    if (prop == Value.TIMEOUTS) { max =  scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS); }
+	    if (prop == Value.OFFICIAL_REVIEWS) { max = scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS); }
+	    boolean result = super.set(prop, value, flag, min, max, 0);
+	    if (result) {
+		if (prop == Value.SCORE) {
+		    setLastScore(getLastScore()); //check boundary
+		}
+		if (prop == Value.SCORE || prop == Value.LAST_SCORE) {
+	            scoreBoardChange(new ScoreBoardEvent(this, Value.JAM_SCORE, getScore() - getLastScore(), null));
+		}
+		if (prop == Value.RETAINED_OFFICIAL_REVIEW && (Boolean)value && getOfficialReviews() == 0) {
+		    setOfficialReviews(1);
+		}
+		if (prop == Value.LEAD_JAMMER && Team.LEAD_LEAD.equals((String)value)) {
+		    String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
+		    Team otherTeam = getScoreBoard().getTeam(otherId);
+		    if (Team.LEAD_LEAD.equals(otherTeam.getLeadJammer())) {
+			otherTeam.setLeadJammer(Team.LEAD_NO_LEAD);
+		    }
+		}
+		if (prop == Value.STAR_PASS) {
+	            if ((Boolean)value && Team.LEAD_LEAD.equals(getLeadJammer())) {
+	                setLeadJammer(Team.LEAD_LOST_LEAD);
+	            }
+	            if (getPosition(FloorPosition.JAMMER).getSkater() != null) {
+	        	getPosition(FloorPosition.JAMMER).getSkater().setRole(FloorPosition.JAMMER.getRole(this));
+	            }
+	            if (getPosition(FloorPosition.PIVOT).getSkater() != null) {
+	        	getPosition(FloorPosition.PIVOT).getSkater().setRole(FloorPosition.PIVOT.getRole(this));
+	            }
+		}
+	    }
+	    requestBatchEnd();
+	    return result;
+	}
+    }
+    
     public ScoreBoard getScoreBoard() { return scoreBoard; }
 
     public void reset() {
@@ -61,6 +119,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             setLastScore(DEFAULT_SCORE);
             setLeadJammer(DEFAULT_LEADJAMMER);
             setStarPass(DEFAULT_STARPASS);
+            setNoPivot(true);
 
             resetTimeouts(true);
 
@@ -82,14 +141,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
     public String toString() { return id; }
 
-    public String getName() { return name; }
-    public void setName(String n) {
-        synchronized (coreLock) {
-            String last = name;
-            name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.NAME, name, last));
-        }
-    }
+    public String getName() { return (String)get(Value.NAME); }
+    public void setName(String n) { set(Value.NAME, n); }
 
     public void startJam() {
         synchronized (coreLock) {
@@ -213,14 +266,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         }
     }
 
-    public String getLogo() { return logo; }
-    public void setLogo(String l) {
-        synchronized (coreLock) {
-            String last = logo;
-            logo = l;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.LOGO, logo, last));
-        }
-    }
+    public String getLogo() { return (String)get(Value.LOGO); }
+    public void setLogo(String l) { set(Value.LOGO, l); }
 
     public void timeout() {
         synchronized (coreLock) {
@@ -239,125 +286,29 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         }
     }
 
-    public int getScore() { return score; }
-    public void setScore(int s) {
-        synchronized (coreLock) {
-            if (0 > s) {
-                s = 0;
-            }
-            Integer last = new Integer(score);
-            score = s;
-            if (s < getLastScore()) {
-                setLastScore(s);
-            }
-            scoreBoardChange(new ScoreBoardEvent(this, Value.SCORE, new Integer(score), last));
-        }
-    }
-    public void changeScore(int c) {
-        synchronized (coreLock) {
-            setScore(getScore() + c);
-        }
-    }
+    public int getScore() { return (Integer)get(Value.SCORE); }
+    public void setScore(int s) { set(Value.SCORE, s); }
+    public void changeScore(int c) { set(Value.SCORE, c, Flag.CHANGE); }
 
-    public int getLastScore() { return lastscore; }
-    public void setLastScore(int s) {
-        synchronized (coreLock) {
-            if (0 > s) {
-                s = 0;
-            }
-            if (getScore() < s) {
-                s = getScore();
-            }
-            Integer last = new Integer(lastscore);
-            lastscore = s;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.LAST_SCORE, new Integer(lastscore), last));
-        }
-    }
-    public void changeLastScore(int c) {
-        synchronized (coreLock) {
-            setLastScore(getLastScore() + c);
-        }
-    }
+    public int getLastScore() { return (Integer)get(Value.LAST_SCORE); }
+    public void setLastScore(int s) { set(Value.LAST_SCORE, s); }
+    public void changeLastScore(int c) { set(Value.LAST_SCORE, c, Flag.CHANGE); }
 
-    public boolean inTimeout() { return in_timeout; }
-    public void setInTimeout(boolean b) {
-        synchronized (coreLock) {
-            if (b==in_timeout) {
-                return;
-            }
-            Boolean last = new Boolean(in_timeout);
-            in_timeout = b;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_TIMEOUT, new Boolean(b), last));
-        }
-    }
+    public boolean inTimeout() { return (Boolean)get(Value.IN_TIMEOUT); }
+    public void setInTimeout(boolean b) { set(Value.IN_TIMEOUT, b); }
 
-    public boolean inOfficialReview() { return in_official_review; }
-    public void setInOfficialReview(boolean b) {
-        synchronized (coreLock) {
-            if (b==in_official_review) {
-                return;
-            }
-            Boolean last = new Boolean(in_official_review);
-            in_official_review = b;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.IN_OFFICIAL_REVIEW, new Boolean(b), last));
-        }
-    }
+    public boolean inOfficialReview() { return (Boolean)get(Value.IN_OFFICIAL_REVIEW); }
+    public void setInOfficialReview(boolean b) { set(Value.IN_OFFICIAL_REVIEW, b); }
 
-    public boolean retainedOfficialReview() { return retained_official_review; }
-    public void setRetainedOfficialReview(boolean b) {
-        synchronized (coreLock) {
-            if (b==retained_official_review) {
-                return;
-            }
+    public boolean retainedOfficialReview() { return (Boolean)get(Value.RETAINED_OFFICIAL_REVIEW); }
+    public void setRetainedOfficialReview(boolean b) { set(Value.RETAINED_OFFICIAL_REVIEW, b); }
 
-            if (b && officialReviews == 0) {
-                setOfficialReviews(1);
-            }
-
-            Boolean last = new Boolean(retained_official_review);
-            retained_official_review = b;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.RETAINED_OFFICIAL_REVIEW, new Boolean(b), last));
-        }
-    }
-
-    public int getTimeouts() { return timeouts; }
-    public void setTimeouts(int t) {
-        synchronized (coreLock) {
-            if (0 > t) {
-                t = 0;
-            }
-            if (scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS) < t) {
-                t = scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS);
-            }
-            Integer last = new Integer(timeouts);
-            timeouts = t;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.TIMEOUTS, new Integer(timeouts), last));
-        }
-    }
-    public void changeTimeouts(int c) {
-        synchronized (coreLock) {
-            setTimeouts(getTimeouts() + c);
-        }
-    }
-    public int getOfficialReviews() { return officialReviews; }
-    public void setOfficialReviews(int r) {
-        synchronized (coreLock) {
-            if (0 > r) {
-                r = 0;
-            }
-            if (scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS) < r) {
-                r = scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
-            }
-            Integer last = new Integer(officialReviews);
-            officialReviews = r;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.OFFICIAL_REVIEWS, new Integer(officialReviews), last));
-        }
-    }
-    public void changeOfficialReviews(int c) {
-        synchronized (coreLock) {
-            setOfficialReviews(getOfficialReviews() + c);
-        }
-    }
+    public int getTimeouts() { return (Integer)get(Value.TIMEOUTS); }
+    public void setTimeouts(int t) { set(Value.TIMEOUTS, t); }
+    public void changeTimeouts(int c) { set(Value.TIMEOUTS, c, Flag.CHANGE); } 
+    public int getOfficialReviews() { return (Integer)get(Value.OFFICIAL_REVIEWS); }
+    public void setOfficialReviews(int r) { set(Value.OFFICIAL_REVIEWS, r); }
+    public void changeOfficialReviews(int c) { set(Value.OFFICIAL_REVIEWS, c, Flag.CHANGE); }
     public void resetTimeouts(boolean gameStart) {
         synchronized (coreLock) {
             setInTimeout(false);
@@ -558,66 +509,14 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 	}
     }
     
-    public String getLeadJammer() { return leadJammer; }
-    public void setLeadJammer(String lead) {
-        if ("false".equals(lead.toLowerCase())) {
-            lead = Team.LEAD_NO_LEAD;
-        } else if ("true".equals(lead.toLowerCase())) {
-            lead = Team.LEAD_LEAD;
-        }
-        requestBatchStart();
+    public String getLeadJammer() { return (String)get(Value.LEAD_JAMMER); }
+    public void setLeadJammer(String lead) { set(Value.LEAD_JAMMER, lead); }
 
-        String last = leadJammer;
-        leadJammer = lead;
-        scoreBoardChange(new ScoreBoardEvent(this, Value.LEAD_JAMMER, leadJammer, last));
+    public boolean isStarPass() { return (Boolean)get(Value.STAR_PASS); }
+    public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
 
-        if (Team.LEAD_LEAD.equals(lead)) {
-            String otherId = id.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
-            Team otherTeam = getScoreBoard().getTeam(otherId);
-            if (Team.LEAD_LEAD.equals(otherTeam.getLeadJammer())) {
-                otherTeam.setLeadJammer(Team.LEAD_NO_LEAD);
-            }
-        }
-
-        requestBatchEnd();
-    }
-
-    public boolean isStarPass() { return starPass; }
-    public void setStarPass(boolean sp) {
-        synchronized (coreLock) {
-            if (sp == starPass) { return; }
-            requestBatchStart();
-
-            Boolean last = new Boolean(starPass);
-            starPass = sp;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.STAR_PASS, new Boolean(sp), last));
-
-            if (sp && Team.LEAD_LEAD.equals(leadJammer)) {
-                setLeadJammer(Team.LEAD_LOST_LEAD);
-            }
-            
-            if (getPosition(FloorPosition.JAMMER).getSkater() != null) {
-        	getPosition(FloorPosition.JAMMER).getSkater().setRole(FloorPosition.JAMMER.getRole(this));
-            }
-            if (getPosition(FloorPosition.PIVOT).getSkater() != null) {
-        	getPosition(FloorPosition.PIVOT).getSkater().setRole(FloorPosition.PIVOT.getRole(this));
-            }
-
-            requestBatchEnd();
-        }
-    }
-
-    public boolean hasNoPivot() { return hasNoPivot; }
-    private void setNoPivot(boolean noPivot) {
-        synchronized (coreLock) {
-            if (noPivot == hasNoPivot) { return; }
-            requestBatchStart();
-            Boolean last = new Boolean(hasNoPivot);
-            hasNoPivot = noPivot;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.NO_PIVOT, new Boolean(noPivot), last));
-            requestBatchEnd();
-        }
-    }
+    public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
+    private void setNoPivot(boolean noPivot) { set(Value.NO_PIVOT, noPivot); }
 
     public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
         synchronized(coreLock) {
@@ -635,22 +534,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         add(Command.class);
     }};
 
-    protected static Object coreLock = ScoreBoardImpl.getCoreLock();
-
     protected String id;
-    protected String name;
-    protected String logo = DEFAULT_LOGO;
-    protected int score = DEFAULT_SCORE;
-    protected int lastscore = DEFAULT_SCORE;
-    protected int timeouts = DEFAULT_TIMEOUTS;
-    protected int officialReviews = DEFAULT_OFFICIAL_REVIEWS;
-    protected String leadJammer = DEFAULT_LEADJAMMER;
-    protected boolean starPass = DEFAULT_STARPASS;
-    protected boolean hasNoPivot = true;
-    protected boolean in_jam = false;
-    protected boolean in_timeout = false;
-    protected boolean in_official_review = false;
-    protected boolean retained_official_review = false;
 
     protected Map<String,AlternateName> alternateNames = new ConcurrentHashMap<String,AlternateName>();
 
@@ -673,17 +557,11 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         public AlternateNameImpl(Team t, String i, String n) {
             team = t;
             id = i;
-            name = n;
+            setName(n);
         }
         public String getId() { return id; }
-        public String getName() { return name; }
-        public void setName(String n) {
-            synchronized (coreLock) {
-                String last = name;
-                name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, AlternateName.Value.NAME, name, last));
-            }
-        }
+        public String getName() { return (String)get(Value.NAME); }
+        public void setName(String n) { set(Value.NAME, n); }
 
         public Team getTeam() { return team; }
 
@@ -699,24 +577,17 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
         protected Team team;
         protected String id;
-        protected String name;
     }
 
     public class ColorImpl extends DefaultScoreBoardEventProvider implements Color {
         public ColorImpl(Team t, String i, String c) {
             team = t;
             id = i;
-            color = c;
+            setColor(c);
         }
         public String getId() { return id; }
-        public String getColor() { return color; }
-        public void setColor(String c) {
-            synchronized (coreLock) {
-                String last = color;
-                color = c;
-                scoreBoardChange(new ScoreBoardEvent(this, Color.Value.COLOR, color, last));
-            }
-        }
+        public String getColor() { return (String)get(Value.COLOR); }
+        public void setColor(String c) { set(Value.COLOR, c); }
 
         public Team getTeam() { return team; }
 
@@ -778,5 +649,4 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         protected boolean hasNoPivot;
         protected Map<String, Skater.SkaterSnapshot> skaterSnapshots;
     }
-
 }

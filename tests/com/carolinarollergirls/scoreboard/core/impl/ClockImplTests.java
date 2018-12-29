@@ -116,7 +116,6 @@ public class ClockImplTests {
         assertFalse(clock.isCountDirectionDown());
         assertFalse(clock.isRunning());
 
-        assertEquals(clock, clock.getClock());
         assertEquals(sbMock, clock.getScoreBoard());
         assertEquals(sbMock, clock.getScoreBoard());
 
@@ -399,7 +398,7 @@ public class ClockImplTests {
         // ...and check that constraint is not a >0 type constraint
         clock.setNumber(1);
         assertEquals(3, clock.getNumber());
-        assertEquals(1, collectedEvents.size());
+        assertEquals(0, collectedEvents.size());
         collectedEvents.clear();
 
         clock.changeNumber(6);
@@ -587,20 +586,21 @@ public class ClockImplTests {
         assertEquals(1000, clock.getTime());
         assertEquals(4000, clock.getInvertedTime());
         assertEquals(1, collectedEvents.size());
+        clock.start();
         collectedEvents.clear();
 
-        clock.setTime(1200);
+        clock.timerTick(200);
         assertEquals(1200, clock.getTime());
         assertEquals(3800, clock.getInvertedTime());
         assertEquals(0, collectedEvents.size());
 
-        clock.changeTime(-201);
+        clock.timerTick(-201);
         assertEquals(999, clock.getTime());
         assertEquals(1, collectedEvents.size());
 
         clock.setCountDirectionDown(true);
         collectedEvents.clear();
-        clock.changeTime(1);
+        clock.timerTick(-1);
         assertEquals(0, collectedEvents.size());
 
         clock.setTime(2000);

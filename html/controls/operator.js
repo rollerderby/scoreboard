@@ -789,7 +789,7 @@ function createTeamTable() {
 		var makeSkaterDropdown = function(pos, elem, sort) {
 			var sortFunc = _windowFunctions.alphaCompareByProp;
 			if (sort == "Num") sortFunc = _windowFunctions.numCompareByProp;
-			return sbTeam.$sb("Position("+pos+").Id").$sbControl("<select>", { sbelement: {
+			return sbTeam.$sb("Position("+pos+").Skater").$sbControl("<select>", { sbelement: {
 					optionParent: sbTeam,
 					optionChildName: "Skater",
 					optionNameElement: elem,

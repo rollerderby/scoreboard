@@ -174,7 +174,7 @@ public class ScoreboardImplTests {
         //check idempotency
         sb.setOfficialScore(true);
         assertTrue(sb.isOfficialScore());
-        assertEquals(1, collectedEvents.size());
+        assertEquals(0, collectedEvents.size());
 
         sb.setOfficialScore(false);
         assertFalse(sb.isOfficialScore());
@@ -195,7 +195,7 @@ public class ScoreboardImplTests {
         //check idempotency
         sb.setOfficialReview(true);
         assertTrue(sb.isOfficialReview());
-        assertEquals(1, collectedEvents.size());
+        assertEquals(0, collectedEvents.size());
 
         sb.setOfficialReview(false);
         assertFalse(sb.isOfficialReview());

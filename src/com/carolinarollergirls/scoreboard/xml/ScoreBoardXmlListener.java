@@ -148,15 +148,8 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
                 editor.setElement(e, prop, null, v);
             }
         } else if (p instanceof Position) {
-            if (prop == Position.Value.SKATER) {
-                Skater s = (Skater)event.getValue();
-                editor.setElement(e, Position.Value.ID, null, (s==null?"":s.getId()));
-                editor.setElement(e, Position.Value.NAME, null, (s==null?"":s.getName()));
-                editor.setElement(e, Position.Value.NUMBER, null, (s==null?"":s.getNumber()));
-                editor.setElement(e, Position.Value.PENALTY_BOX, null, String.valueOf(s==null?false:s.isPenaltyBox()));
-                editor.setElement(e, Position.Value.FLAGS, null, (s==null?"":s.getFlags()));
-            } else if (prop == Position.Value.PENALTY_BOX) {
-                editor.setElement(e, prop, null, String.valueOf(event.getValue()));
+            if (prop instanceof Position.Value) {
+                editor.setElement(e, prop, null, v);
             }
         } else if (p instanceof AlternateName) {
             editor.setElement(e, prop, null, v);
@@ -187,6 +180,10 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         	    editor.setRemovePI(ne);
         	}
             }
+        } else if (p instanceof Media.MediaFile) {
+            if (prop instanceof Media.MediaFile.Value) {
+        	editor.setElement(e, prop, null, v);
+            }
         } else if (p instanceof Stats) {
             if (prop == Stats.Child.PERIOD) {
         	Element ne = converter.toElement(e, (Stats.PeriodStats)event.getValue());
@@ -202,23 +199,12 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         	}
             }
         } else if (p instanceof Stats.JamStats) {
-            if (prop == Stats.JamStats.Value.STATS) {
-                Stats.JamStats js = (Stats.JamStats)event.getValue();
-                editor.setElement(e, Stats.JamStats.Value.JAM_CLOCK_ELAPSED_END, null, String.valueOf(js.getJamClockElapsedEnd()));
-                editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_START, null, String.valueOf(js.getPeriodClockElapsedStart()));
-                editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_ELAPSED_END, null, String.valueOf(js.getPeriodClockElapsedEnd()));
-                editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_START, null, String.valueOf(js.getPeriodClockWalltimeStart()));
-                editor.setElement(e, Stats.JamStats.Value.PERIOD_CLOCK_WALLTIME_END, null, String.valueOf(js.getPeriodClockWalltimeEnd()));
+            if (prop instanceof Stats.JamStats.Value) {
+        	editor.setElement(e, prop, null, v);
             }
         } else if (p instanceof Stats.TeamStats) {
-            if (prop == Stats.TeamStats.Value.STATS) {
-                Stats.TeamStats ts = (Stats.TeamStats)event.getValue();
-                editor.setElement(e, Stats.TeamStats.Value.JAM_SCORE, null, String.valueOf(ts.getJamScore()));
-                editor.setElement(e, Stats.TeamStats.Value.TOTAL_SCORE, null, String.valueOf(ts.getTotalScore()));
-                editor.setElement(e, Stats.TeamStats.Value.LEAD_JAMMER, null, ts.getLeadJammer());
-                editor.setElement(e, Stats.TeamStats.Value.STAR_PASS, null, String.valueOf(ts.getStarPass()));
-                editor.setElement(e, Stats.TeamStats.Value.TIMEOUTS, null, String.valueOf(ts.getTimeouts()));
-                editor.setElement(e, Stats.TeamStats.Value.OFFICIAL_REVIEWS, null, String.valueOf(ts.getOfficialReviews()));
+            if (prop instanceof Stats.TeamStats.Value) {
+                editor.setElement(e, prop, null, v);
             } else if (prop == Stats.TeamStats.Child.SKATER) {
         	Element ne = converter.toElement(e, (Stats.SkaterStats)event.getValue());
         	if (rem) {
@@ -226,24 +212,11 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         	}
             }
         } else if (p instanceof Stats.SkaterStats) {
-            if (prop == Stats.SkaterStats.Value.STATS) {
-                Stats.SkaterStats ss = (Stats.SkaterStats)event.getValue();
-                editor.setElement(e, Stats.SkaterStats.Value.POSITION, null, ss.getPosition());
-                editor.setElement(e, Stats.SkaterStats.Value.PENALTY_BOX, null, String.valueOf(ss.getPenaltyBox()));
+            if (prop instanceof Stats.SkaterStats.Value) {
+                editor.setElement(e, prop, null, v);
             }
         } else if (p instanceof Clock) {
             e = editor.setElement(e, prop, null, v);
-            if (prop == Clock.Value.TIME) {
-                try {
-                    long time = ((Long)event.getValue()).longValue();
-                    long prevTime = ((Long)event.getPreviousValue()).longValue();
-                    if (time % 1000 == 0 || Math.abs(prevTime - time) >= 1000) {
-                        editor.setPI(e, "TimeUpdate", "sec");
-                    } else {
-                        editor.setPI(e, "TimeUpdate", "ms");
-                    }
-                } catch (Exception ee) { }
-            }
         } else {
             return;
         }

@@ -32,6 +32,7 @@ import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
@@ -171,15 +172,17 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
     }
 
     public Map<String, MediaFile> getMediaFiles(String format, String type) {
-        MediaFormat f = formats.get(format);
-        if (f == null) {
-            return null;
-        }
-        MediaType t = f.getType(type);
-        if (t == null) {
-            return null;
-        }
-        return t.getFiles();
+	synchronized (coreLock) {
+	    MediaFormat f = formats.get(format);
+	    if (f == null) {
+		return null;
+	    }
+	    MediaType t = f.getType(type);
+	    if (t == null) {
+		return null;
+	    }
+	    return t.getFiles();
+	}
     }
 
     public boolean removeMediaFile(String format, String type, String id) {
@@ -206,8 +209,6 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	add(Child.class);
     }};
 
-    private static Object coreLock = ScoreBoardImpl.getCoreLock();
-
     public class MediaFormatImpl extends DefaultScoreBoardEventProvider implements MediaFormat {
 	MediaFormatImpl(Media parent, String format) {
 	    this.parent = parent;
@@ -220,22 +221,18 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         public ScoreBoardEventProvider getParent() { return parent; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
-        public String getFormat() {
-            return format;
-        }
+        public String getFormat() { return format; }
         
-	public Set<String> getTypes() {
-	    return Collections.unmodifiableSet(types.keySet());
-	}
-        public MediaType getType(String type) {
-            return types.get(type);
-        }
+	public Set<String> getTypes() { return Collections.unmodifiableSet(types.keySet()); }
+        public MediaType getType(String type) { return types.get(type); }
 	public void addType(String type) {
-	    if (!types.containsKey(type)) {
-		MediaType mt = new MediaTypeImpl(this, type);
-		types.put(type, mt);
-		mt.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.TYPE, mt, false));
+	    synchronized (coreLock) {
+		if (!types.containsKey(type)) {
+		    MediaType mt = new MediaTypeImpl(this, type);
+		    types.put(type, mt);
+		    mt.addScoreBoardListener(this);
+		    scoreBoardChange(new ScoreBoardEvent(this, Child.TYPE, mt, false));
+		}
 	    }
 	}
 	
@@ -259,33 +256,29 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         public ScoreBoardEventProvider getParent() { return parent; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
-        public String getFormat() {
-            return parent.getFormat();
-        }
+        public String getFormat() { return parent.getFormat(); }
         
-        public String getType() {
-            return type;
-        }
+        public String getType() { return type; }
         
-	public Map<String, MediaFile> getFiles() {
-	    return Collections.unmodifiableMap(files);
-	}
-        public MediaFile getFile(String file) {
-            return files.get(file);
-        }
+	public Map<String, MediaFile> getFiles() { return Collections.unmodifiableMap(files); }
+        public MediaFile getFile(String file) { return files.get(file); }
 	public void addFile(MediaFile file) {
-	    if (!files.containsKey(file.getId())) {
-		files.put(file.getId(), file);
-		file.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, file, false));
+	    synchronized (coreLock) {
+		if (!files.containsKey(file.getId())) {
+		    files.put(file.getId(), file);
+		    file.addScoreBoardListener(this);
+		    scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, file, false));
+		}
 	    }
 	}
 	
 	public void removeFile(String id) {
-	    MediaFile file = files.get(id);
-	    if (file != null) {
-		files.remove(id);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, file, true));
+	    synchronized (coreLock) {
+		MediaFile file = files.get(id);
+		if (file != null) {
+		    files.remove(id);
+		    scoreBoardChange(new ScoreBoardEvent(this, Child.FILE, file, true));
+		}
 	    }
 	}
 	
@@ -300,9 +293,9 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
     public class MediaFileImpl extends DefaultScoreBoardEventProvider implements MediaFile {
         MediaFileImpl(MediaType type, String id, String name, String src) {
             this.type = type;
-            this.id = id;
-            this.name = name;
-            this.src = src;
+            values.put(Value.ID, id);
+            values.put(Value.NAME, name);
+            values.put(Value.SRC, src);
         }
 
         public String getProviderName() { return PropertyConversion.toFrontend(MediaType.Child.FILE); }
@@ -310,23 +303,20 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
         public String getProviderId() { return getId(); }
         public ScoreBoardEventProvider getParent() { return type; }
         public List<Class<? extends Property>> getProperties() { return properties; }
+        
+        public boolean set(PermanentProperty prop, Object value, Flag flag) {
+            if (prop == Value.NAME) { return super.set(prop, value, flag); }
+            return false;
+        }
 
         public String getFormat() { synchronized (coreLock) { return type.getFormat() ;} }
         public String getType() { synchronized (coreLock) { return type.getType() ;} }
-        public String getId() { synchronized (coreLock) { return id ;} }
-        public String getName() { synchronized (coreLock) { return name ;} }
-        public void setName(String n) {
-            synchronized (coreLock) {
-                name = n;
-                scoreBoardChange(new ScoreBoardEvent(parent, MediaType.Child.FILE, this, false));
-            };
-        }
-        public String getSrc() { synchronized (coreLock) { return src ;} }
+        public String getId() { synchronized (coreLock) { return (String)get(Value.ID) ;} }
+        public String getName() { synchronized (coreLock) { return (String)get(Value.NAME) ;} }
+        public void setName(String n) { synchronized (coreLock) { set(Value.NAME, n) ;} }
+        public String getSrc() { synchronized (coreLock) { return (String)get(Value.SRC); } }
 
         private MediaType type;
-        private String id;
-        private String name;
-        private String src;
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
             add(Value.class);
         }};

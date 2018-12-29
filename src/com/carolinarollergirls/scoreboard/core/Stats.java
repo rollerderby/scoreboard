@@ -65,8 +65,7 @@ public interface Stats extends ScoreBoardEventProvider {
             PERIOD_CLOCK_ELAPSED_START,
             PERIOD_CLOCK_ELAPSED_END,
             PERIOD_CLOCK_WALLTIME_START,
-            PERIOD_CLOCK_WALLTIME_END,
-            STATS;
+            PERIOD_CLOCK_WALLTIME_END;
         }
         public enum Child implements AddRemoveProperty {
             TEAM;
@@ -107,8 +106,7 @@ public interface Stats extends ScoreBoardEventProvider {
             STAR_PASS,
             NO_PIVOT,
             TIMEOUTS,
-            OFFICIAL_REVIEWS,
-            STATS;
+            OFFICIAL_REVIEWS;
         }
         public enum Child implements AddRemoveProperty {
             SKATER;
@@ -129,8 +127,7 @@ public interface Stats extends ScoreBoardEventProvider {
         public enum Value implements PermanentProperty {
             ID,
             POSITION,
-            PENALTY_BOX,
-            STATS;
+            PENALTY_BOX;
         }
     }
 }
