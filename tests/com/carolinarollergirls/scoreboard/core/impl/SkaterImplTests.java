@@ -30,7 +30,7 @@ public class SkaterImplTests {
 
     @Test
     public void add_penalty() {
-        skater.AddPenalty(null, false, 1, 3, "C");
+        skater.penalty(null, "0", 1, 3, "C");
 
         assertEquals(1, skater.getPenalties().size());
         assertNull(skater.getFOEXPPenalty());
@@ -45,7 +45,7 @@ public class SkaterImplTests {
 
     @Test
     public void add_penalty_with_id() {
-        skater.AddPenalty("f03d5e2e-e581-4fcb-99c7-7fbd49101a36", false, 1, 3, "C");
+        skater.penalty("f03d5e2e-e581-4fcb-99c7-7fbd49101a36", "0", 1, 3, "C");
 
         assertEquals(1, skater.getPenalties().size());
         assertNull(skater.getFOEXPPenalty());
@@ -60,8 +60,8 @@ public class SkaterImplTests {
 
     @Test
     public void add_ooo_penalty() {
-        skater.AddPenalty(null, false, 1, 3, "C");
-        skater.AddPenalty(null, false, 1, 2, "P");
+        skater.penalty(null, "0", 1, 3, "C");
+        skater.penalty(null, "0", 1, 2, "P");
 
         assertEquals(2, skater.getPenalties().size());
 
@@ -79,8 +79,8 @@ public class SkaterImplTests {
 
     @Test
     public void add_ooo_penalty_diff_period() {
-        skater.AddPenalty(null, false, 2, 3, "C");
-        skater.AddPenalty(null, false, 1, 3, "P");
+        skater.penalty(null, "0", 2, 3, "C");
+        skater.penalty(null, "0", 1, 3, "P");
 
         assertEquals(2, skater.getPenalties().size());
 
@@ -100,10 +100,10 @@ public class SkaterImplTests {
 
     @Test
     public void remove_penalty() {
-        skater.AddPenalty(null, false, 2, 3, "C");
+        skater.penalty(null, "0", 2, 3, "C");
         Skater.Penalty penalty = skater.getPenalties().get(0);
 
-        skater.AddPenalty(penalty.getId(), false, 0, 0, null);
+        skater.penalty(penalty.getUuid(), "0", 0, 0, null);
 
 
         assertEquals(0, skater.getPenalties().size());
@@ -111,12 +111,12 @@ public class SkaterImplTests {
 
     @Test
     public void update_penalty() {
-        skater.AddPenalty(null, false, 1, 3, "C");
-        skater.AddPenalty(null, false, 1, 2, "P");
+        skater.penalty(null, "0", 1, 3, "C");
+        skater.penalty(null, "0", 1, 2, "P");
 
         Skater.Penalty penalty = skater.getPenalties().get(0);
 
-        skater.AddPenalty(penalty.getId(), false, 1, 4, "X");
+        skater.penalty(penalty.getUuid(), "0", 1, 4, "X");
 
         assertEquals(2, skater.getPenalties().size());
 
@@ -136,7 +136,7 @@ public class SkaterImplTests {
 
     @Test
     public void add_fo_exp() {
-        skater.AddPenalty(null, true, 1, 3, "C");
+        skater.penalty(null, "FO_EXP", 1, 3, "C");
 
         assertEquals(0, skater.getPenalties().size());
         assertNotNull(skater.getFOEXPPenalty());

@@ -106,13 +106,14 @@ public class WS extends WebSocketServlet {
                     String skaterId = data.optString("skaterId");
                     String penaltyId = data.optString("penaltyId", null);
                     boolean fo_exp = data.optBoolean("fo_exp", false);
+                    String num = fo_exp ? "FO_EXP" : "0";
                     int period = data.optInt("period", -1);
                     int jam = data.optInt("jam", -1);
                     String code = data.optString("code", null);
                     if (period == -1 || jam == -1) {
                         return;
                     }
-                    sb.penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
+                    sb.getTeam(teamId).getSkater(skaterId).penalty(penaltyId, num, period, jam, code);
                 } else if (action.equals("Set")) {
                     String key = json.getString("key");
                     Object value = json.get("value");

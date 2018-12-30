@@ -72,8 +72,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public void clockUndo(boolean replace);
 
-    public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
-
 // FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
     public List<Clock> getClocks();
     public Clock getClock(String id);

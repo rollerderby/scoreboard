@@ -17,6 +17,7 @@ import org.junit.rules.TemporaryFolder;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Role;
+import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
@@ -205,27 +206,28 @@ public class ScoreBoardJSONListenerTests {
         String pid = "00000000-0000-0000-0000-000000000002";
 
         sb.getTeam("1").addSkater(sid, "Uno", "01", "");
-        sb.penalty("1", sid, pid, false, 1, 2, "X");
+        Skater s = sb.getTeam("1").getSkater(sid);
+        s.penalty(pid, "0", 1, 2, "X");
         advance(0);
         assertEquals(pid, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Id"));
         assertEquals("1", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Period"));
         assertEquals("2", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Jam"));
         assertEquals("X", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Code"));
 
-        sb.penalty("1", sid, pid, false, 1, 2, null);
+        s.penalty(pid, "0", 1, 2, null);
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Id"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Period"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Jam"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Code"));
 
-        sb.penalty("1", sid, null, true, 1, 2, "B");
+        s.penalty(null, "FO_EXP", 1, 2, "B");
         advance(0);
         assertEquals("1", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
         assertEquals("2", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Jam"));
         assertEquals("B", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Code"));
 
-        sb.penalty("1", sid, null, true, 1, 2, null);
+        s.penalty(null, "FO_EXP", 1, 2, null);
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));

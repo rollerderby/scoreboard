@@ -227,8 +227,7 @@ public class ScoreBoardXmlConverter {
         }
 
         if (s.getFOEXPPenalty() != null) {
-            Element fe = editor.setElement(e, Skater.Value.PENALTY_FOEXP, s.getFOEXPPenalty().getId());
-            toElement(fe, s.getFOEXPPenalty());
+            toElement(e, s.getFOEXPPenalty());
         }
 
         return e;
@@ -703,10 +702,7 @@ public class ScoreBoardXmlConverter {
                 Property prop = PropertyConversion.fromFrontend(name, skater.getProperties());
 
                 if (prop == Skater.Child.PENALTY) {
-                    processPenalty(skater, child, false);
-                } else if (prop == Skater.Value.PENALTY_FOEXP) {
-                    processPenalty(skater, child.getChild(
-                	    PropertyConversion.toFrontend(Skater.Child.PENALTY)), true);
+                    processPenalty(skater, child);
                 } else if (null == value) {
                     continue;
                 } else if (prop instanceof Skater.Value) {
@@ -717,8 +713,9 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processPenalty(Skater skater, Element element, boolean foulout_exp) {
-        String id = element.getAttributeValue("Id");
+    public void processPenalty(Skater skater, Element element) {
+        String num = element.getAttributeValue("Id");
+        String id = null;
         int period = 0;
         int jam = 0;
         String code = "";
@@ -732,6 +729,8 @@ public class ScoreBoardXmlConverter {
 
                 if (null == value) {
                     continue;
+                } else if (name.equals(PropertyConversion.toFrontend(Skater.Penalty.Value.ID))) {
+                    id = value;
                 } else if (name.equals(PropertyConversion.toFrontend(Skater.Penalty.Value.PERIOD))) {
                     period = Integer.parseInt(value);
                 } else if (name.equals(PropertyConversion.toFrontend(Skater.Penalty.Value.JAM))) {
@@ -742,7 +741,7 @@ public class ScoreBoardXmlConverter {
             } catch ( Exception e ) {
             }
         }
-        skater.AddPenalty(id, foulout_exp, period, jam, code);
+        skater.penalty(id, num, period, jam, code);
     }
 
     public void processStats(Stats stats, Element element) {

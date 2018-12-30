@@ -120,46 +120,54 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
             return Collections.unmodifiableList(new ArrayList<Penalty>(penalties));
         }
     }
-    public Penalty getFOEXPPenalty() { return (Penalty)get(Value.PENALTY_FOEXP); }
+    public Penalty getFOEXPPenalty() { return foexpPenalty; }
 
-    public void AddPenalty(String id, boolean foulout_explusion, int period, int jam, String code) {
+    public void penalty(String id, String number, int period, int jam, String code) {
         synchronized (coreLock) {
             requestBatchStart();
-            if (foulout_explusion && code != null) {
+            boolean foexp = (number == "FO_EXP");
+            if (foexp && code != null) {
                 Penalty prev = getFOEXPPenalty();
-                id = UUID.randomUUID().toString();
                 if (prev != null) {
-                    id = prev.getId();
+                    prev.set(Penalty.Value.PERIOD, period);
+                    prev.set(Penalty.Value.JAM, jam);
+                    prev.set(Penalty.Value.CODE, code);
+                } else {
+                    Penalty p = new PenaltyImpl(this, UUID.randomUUID().toString(), period, jam, code);
+                    p.addScoreBoardListener(this);
+                    foexpPenalty = p;
+                    p.set(Penalty.Value.NUMBER, number);
                 }
-                set(Value.PENALTY_FOEXP, new PenaltyImpl(this, id, period, jam, code));
                 if (getBaseRole() == Role.BENCH) {
                     setBaseRole(Role.INELIGIBLE);
                 }
-            } else if (foulout_explusion && code == null) {
-        	set(Value.PENALTY_FOEXP, null);
-                setBaseRole(Role.BENCH);
+            } else if (foexp && code == null) {
+        	foexpPenalty.set(Penalty.Value.NUMBER, number, Flag.CUSTOM);
+        	foexpPenalty = null;
+        	if (getBaseRole() == Role.INELIGIBLE) {
+        	    setBaseRole(Role.BENCH);
+        	}
             } else if (id == null ) {
-                id = UUID.randomUUID().toString();
                 // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
                 if (penalties.size() < 9) {
-                    PenaltyImpl dpm = new PenaltyImpl(this, id, period, jam, code);
+                    PenaltyImpl dpm = new PenaltyImpl(this, UUID.randomUUID().toString(), period, jam, code);
+                    dpm.addScoreBoardListener(this);
                     penalties.add(dpm);
                     sortPenalties();
-                    scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, dpm, false));
                 }
             } else {
                 // Updating/Deleting existing Penalty.	Find it and process
                 for (PenaltyImpl p2 : penalties) {
-                    if (p2.getId().equals(id)) {
+                    if (p2.getUuid().equals(id)) {
                         if (code != null) {
                             p2.set(Penalty.Value.PERIOD, period);
                             p2.set(Penalty.Value.JAM, jam);
                             p2.set(Penalty.Value.CODE, code);
                             sortPenalties();
-                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, p2, false));
                         } else {
                             penalties.remove(p2);
-                            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, p2, true));
+                            sortPenalties();
+                            p2.set(Penalty.Value.NUMBER, penalties.size()+1, Flag.CUSTOM);
                         }
                         requestBatchEnd();
                         return;
@@ -167,9 +175,9 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
                 }
                 // Penalty has an ID we don't have likely from the autosave, add it.
                 PenaltyImpl dpm = new PenaltyImpl(this, id, period, jam, code);
+                dpm.addScoreBoardListener(this);
                 penalties.add(dpm);
                 sortPenalties();
-                scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, dpm, false));
             }
             requestBatchEnd();
         }
@@ -190,6 +198,12 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
             }
 
         });
+        
+        int num = 1;
+        for (Penalty p : penalties) {
+            p.set(Penalty.Value.NUMBER, num);
+            num++;
+        }
     }
 
     public SkaterSnapshot snapshot() {
@@ -210,6 +224,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     protected String id;
     protected Team team;
     protected List<PenaltyImpl> penalties = new LinkedList<PenaltyImpl>();
+    protected Penalty foexpPenalty;
 
     protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
 	add(Value.class);
@@ -223,9 +238,11 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
             values.put(Value.ID, i);
             values.put(Value.PERIOD, p);
             values.put(Value.JAM, j);
+            values.put(Value.NUMBER, 0);
             values.put(Value.CODE, c);
         }
-        public String getId() { return (String)get(Value.ID); }
+        public String getId() { return get(Value.NUMBER).toString(); }
+        public String getUuid() { return (String)get(Value.ID); }
         public int getPeriod() { return (Integer)get(Value.PERIOD); }
         public int getJam() { return (Integer)get(Value.JAM); }
         public String getCode() { return (String)get(Value.CODE); }
@@ -236,6 +253,19 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         public ScoreBoardEventProvider getParent() { return skater; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
+        public boolean set(PermanentProperty prop, Object value, Flag flag) {
+            synchronized (coreLock) {
+                if (!(prop instanceof Value) || prop == Value.ID) { return false; }
+                requestBatchStart();
+                boolean result = super.set(prop, value, flag);
+                if (prop == Value.NUMBER && (result || flag == Flag.CUSTOM)) {
+                    scoreBoardChange(new ScoreBoardEvent(skater, Skater.Child.PENALTY, this, flag == Flag.CUSTOM));
+                }
+                requestBatchEnd();
+                return result;
+	    }
+        }
+        
         protected Skater skater;
 
         protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{

@@ -518,13 +518,6 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
     private void setNoPivot(boolean noPivot) { set(Value.NO_PIVOT, noPivot); }
 
-    public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
-        synchronized(coreLock) {
-            getSkater(skaterId).AddPenalty(penaltyId, fo_exp, period, jam, code);
-        }
-    }
-
-
 
     protected ScoreBoard scoreBoard;
 

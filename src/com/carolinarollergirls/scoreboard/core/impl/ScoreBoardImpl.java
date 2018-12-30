@@ -521,12 +521,6 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
         Button.TIMEOUT.setLabel(timeoutLabel);
     }
 
-    public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code) {
-        synchronized (coreLock) {
-            getTeam(teamId).penalty(skaterId, penaltyId, fo_exp, period, jam, code);
-        }
-    }
-
     public Settings getSettings() { return settings; }
 
     public Rulesets getRulesets() { return rulesets; }

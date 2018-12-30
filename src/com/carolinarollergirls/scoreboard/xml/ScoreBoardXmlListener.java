@@ -156,23 +156,16 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         } else if (p instanceof Color) {
             editor.setElement(e, prop, null, v);
         } else if (p instanceof Skater) {
-            if ((prop == Skater.Child.PENALTY || prop == Skater.Value.PENALTY_FOEXP)
-        	    && !rem) {
-                // Replace whole skater.
-                converter.toElement(getElement(p.getParent()), (Skater)p);
-            } else if (prop == Skater.Child.PENALTY) {
-                Skater.Penalty prev = (Skater.Penalty)(event.getValue());
-                if (prev != null) {
-                    editor.setRemovePI(editor.addElement(e, prop, prev.getId()));
-                }
-            } else if (prop.equals(Skater.Value.PENALTY_FOEXP)) {
-                Skater.Penalty prev = (Skater.Penalty)(event.getValue());
-                if (prev != null) {
-                    editor.setRemovePI(editor.addElement(e, prop, prev.getId()));
-                }
+            if (prop == Skater.Child.PENALTY) {
+        	Element ne = converter.toElement(e, (Skater.Penalty)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
             } else {
                 editor.setElement(e, prop, null, v);
             }
+        } else if (p instanceof Skater.Penalty) {
+            editor.setElement(e, prop, null, v);
         } else if (p instanceof MediaType) {
             if (prop == MediaType.Child.FILE) {
         	Element ne = converter.toElement(e, (Media.MediaFile)event.getValue());

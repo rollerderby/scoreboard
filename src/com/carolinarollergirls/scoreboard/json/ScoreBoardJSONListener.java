@@ -94,7 +94,18 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     }
                 } else if (p instanceof Skater) {
                     Skater s = (Skater)p;
-                    processSkater(s, false);
+                    if (prop == Skater.Child.PENALTY) {
+                	processPenalty((Skater.Penalty)v, rem);
+                    } else if (prop instanceof Skater.Value) {
+                        update(getPath(s), prop, s.get((PermanentProperty)prop));
+                    } else {
+                	processSkater(s, false);
+                    }
+                } else if (p instanceof Skater.Penalty) {
+                    Skater.Penalty pen = (Skater.Penalty)p;
+                    if (prop instanceof Skater.Penalty.Value) {
+                	update(getPath(pen), prop, pen.get((PermanentProperty)prop));
+                    }
                 } else if (p instanceof Position) {
                     Position pos = (Position)p;
                     processPosition(pos, false);
@@ -195,20 +206,17 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
             update(path, prop, v);
         }
 
-        List<Skater.Penalty> penalties = s.getPenalties();
-        for (int i = 0; i < 9; i++) {
-            String base = path + ".Penalty(" + (i + 1) + ")";
-            if (i < penalties.size()) {
-                processPenalty(base, penalties.get(i), false);
-            } else {
-                processPenalty(base, null, true);
-            }
+        for (Skater.Penalty p : s.getPenalties()) {
+            processPenalty(p, false);
         }
-
-        processPenalty(path + ".Penalty(FO_EXP)", s.getFOEXPPenalty(), s.getFOEXPPenalty() == null);
+        
+        if (s.getFOEXPPenalty() != null) {
+            processPenalty(s.getFOEXPPenalty(), false);
+        }
     }
 
-    private void processPenalty(String path, Skater.Penalty p, boolean remove) {
+    private void processPenalty(Skater.Penalty p, boolean remove) {
+	String path = getPath(p);
         if (remove) {
             updates.add(new WSUpdate(path, null));
             return;

@@ -89,8 +89,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public boolean hasNoPivot();
     
 
-    public void penalty(String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
-
     public static final String ID_1 = "1";
     public static final String ID_2 = "2";
 

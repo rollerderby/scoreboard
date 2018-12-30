@@ -38,7 +38,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public List<Penalty> getPenalties();
     public Penalty getFOEXPPenalty();
     // A null code removes the penalty.
-    public void AddPenalty(String id, boolean foulout_explusion, int period, int jam, String code);
+    public void penalty(String id, String number, int period, int jam, String code);
 
     public enum Value implements PermanentProperty {
 	NAME,
@@ -47,8 +47,7 @@ public interface Skater extends ScoreBoardEventProvider {
 	ROLE,
 	BASE_ROLE,
 	PENALTY_BOX,
-	FLAGS,
-	PENALTY_FOEXP;
+	FLAGS;
     }
     public enum Child implements AddRemoveProperty {
 	PENALTY;
@@ -56,6 +55,7 @@ public interface Skater extends ScoreBoardEventProvider {
 
     public static interface Penalty extends ScoreBoardEventProvider {
         public String getId();
+        public String getUuid();
         public int getPeriod();
         public int getJam();
         public String getCode();
@@ -64,6 +64,7 @@ public interface Skater extends ScoreBoardEventProvider {
             ID,
             PERIOD,
             JAM,
+            NUMBER,
             CODE;
         }
     }
