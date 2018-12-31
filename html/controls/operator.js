@@ -363,11 +363,11 @@ function createGameControlDialog() {
 
 
 	_crgUtils.setupSelect(adhocGame.find("select.Ruleset"), {
-		optionParent: "ScoreBoard.KnownRulesets",
+		optionParent: "ScoreBoard.Rulesets",
 		optionChildName: "Ruleset",
 		optionNameElement: "Name",
 	});
-	adhocGame.find("select.Ruleset").val($sb("ScoreBoard.Rules.Id").$sbGet());
+	adhocGame.find("select.Ruleset").val($sb("ScoreBoard.Rulesets.CurrentRulesetId").$sbGet());
 
 	dialog.dialog({
 		title: title,

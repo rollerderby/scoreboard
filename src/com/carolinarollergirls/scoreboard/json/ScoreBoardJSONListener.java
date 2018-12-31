@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
+import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Skater;
@@ -31,13 +32,10 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
-import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
-import com.carolinarollergirls.scoreboard.rules.AbstractRule;
-import com.carolinarollergirls.scoreboard.rules.AbstractRule.Type;
+import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
-import com.carolinarollergirls.scoreboard.rules.BooleanRule;
 
 /**
  * Converts a ScoreBoardEvent into a representative JSON Update
@@ -112,13 +110,29 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                 } else if (p instanceof Clock) {
                     processClock((Clock)p, false);
                 } else if (p instanceof Rulesets) {
-                    if (prop == Rulesets.Value.RULESET) {
-                        processCurrentRuleset("ScoreBoard", (Rulesets)p);
+                    if (prop == Rulesets.Child.RULESET) {
+                        processRuleset((Rulesets.Ruleset)v, rem);
+                    } else if (prop == Rulesets.Child.CURRENT_RULE) {
+                	updates.add(new WSUpdate(getPath(p) + "." + PropertyConversion.toFrontend(prop) +
+                		"(" + ((ValueWithId)event.getValue()).getId() + ")" ,
+                		rem ? null : ((ValueWithId)event.getValue()).getValue()));
                     } else {
-                        processRuleset("ScoreBoard", (Rulesets.Ruleset)v, true);
+                        update(getPath(p), prop, v);
                     }
                 } else if (p instanceof Rulesets.Ruleset) {
-                    processRuleset("ScoreBoard", (Rulesets.Ruleset)p, false);
+                    if (prop == Rulesets.Ruleset.Child.RULE) {
+                	updates.add(new WSUpdate(getPath(p) + "." + PropertyConversion.toFrontend(prop) +
+                		"(" + ((ValueWithId)event.getValue()).getId() + ")" ,
+                		rem ? null : ((ValueWithId)event.getValue()).getValue()));
+                    } else {
+                        update(getPath(p), prop, v);
+                    }
+                } else if (p instanceof PenaltyCodesManager) {
+                    if (prop == PenaltyCodesManager.Child.CODE) {
+                	updates.add(new WSUpdate(getPath(p) + "." + PropertyConversion.toFrontend(prop) +
+                		"(" + ((ValueWithId)event.getValue()).getId() + ")" ,
+                		rem ? null : ((ValueWithId)event.getValue()).getValue()));
+                    }                    
                 } else if (p instanceof Team.AlternateName) {
                     Team.AlternateName an = (Team.AlternateName)p;
                     update(getPath(an), prop, v);
@@ -186,10 +200,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	    updates.add(new WSUpdate(prefix + "." + ((ValueWithId)prop).getId(), v));
     	} else if (v instanceof ScoreBoardEventProvider) {
             updates.add(new WSUpdate(path, ((ScoreBoardEventProvider) v).getProviderId()));
-	} else if (v != null){
-            updates.add(new WSUpdate(path, v.toString()));
-        } else {
+	} else if (v == null || v instanceof Boolean || v instanceof Integer
+		|| v instanceof Long){
             updates.add(new WSUpdate(path, v));
+        } else {
+            updates.add(new WSUpdate(path, v.toString()));
         }
     }
 
@@ -270,31 +285,46 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         }
     }
 
-    private void processCurrentRuleset(String path, Rulesets r) {
-        for (Map.Entry<Rule,String> e : r.getAll().entrySet()) {
+    private void processRulesets(Rulesets rs) {
+	String path = getPath(rs);
+	for (RuleDefinition r : rs.getRuleDefinitions()) {
+	    processRuleDefinition(r);
+	}
+        for (Map.Entry<Rule,String> e : rs.getAll().entrySet()) {
             updates.add(new WSUpdate(path + "."
-        	    + PropertyConversion.toFrontend(Rulesets.Value.RULE)
+        	    + PropertyConversion.toFrontend(Rulesets.Child.CURRENT_RULE)
         	    + "(" + e.getKey().toString() + ")", e.getValue()));
         }
-        path = path + "." + PropertyConversion.toFrontend(Rulesets.Value.RULESET);
-        update(path, Rulesets.Value.ID, r.getId());
-        update(path, Rulesets.Value.NAME, r.getName());
-        processPenaltyCodes(r);
+        for (PermanentProperty prop : Rulesets.Value.values()) {
+            update(path, prop, rs.get(prop));
+        }
+        for (Rulesets.Ruleset r : rs.getRulesets().values()) {
+            processRuleset(r, false);
+        }
     }
 
-    private void processRuleset(String path, Rulesets.Ruleset r, boolean remove) {
-        path = path + "." + PropertyConversion.toFrontend(Rulesets.Child.KNOWN_RULESETS) + "(" + r.getId() + ")";
+    private void processRuleset(Rulesets.Ruleset r, boolean remove) {
+        String path = getPath(r);
         updates.add(new WSUpdate(path, null));
         if (remove) {
             return;
         }
 
         for (Map.Entry<Rule,String> e : r.getAll().entrySet()) {
-            updates.add(new WSUpdate(path + ".Rule(" + e.getKey() + ")", e.getValue()));
+            updates.add(new WSUpdate(path + "." + PropertyConversion.toFrontend(Ruleset.Child.RULE) +
+        	    "(" + e.getKey() + ")", e.getValue()));
         }
-        update(path, Rulesets.Ruleset.Value.ID, r.getId());
-        update(path, Rulesets.Ruleset.Value.NAME, r.getName());
-        update(path, Rulesets.Ruleset.Value.PARENT_ID, r.getParentRulesetId());
+        for (PermanentProperty prop : Rulesets.Ruleset.Value.values()) {
+            Object v = r.get(prop) == null ? "" : r.get(prop);
+            update(path, prop, v);
+        }
+    }
+    
+    private void processRuleDefinition(RuleDefinition r) {
+	String path = getPath(r);
+        for (PermanentProperty prop : RuleDefinition.Value.values()) {
+            update(path, prop, r.get(prop));
+        }
     }
 
     private void processAlternateName(Team.AlternateName an, boolean remove) {
@@ -353,17 +383,15 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	}
     }
 
-    private void processPenaltyCodes(Rulesets r) {
-        updates.add(new WSUpdate("ScoreBoard.PenaltyCode", null));
-        String file = r.get(Rule.PENALTIES_FILE);
-        if(file != null && !file.isEmpty()) {
-            PenaltyCodesDefinition penalties = pm.loadFromJSON(file);
-            for(PenaltyCode p : penalties.getPenalties()) {
-                updates.add(new WSUpdate("ScoreBoard.PenaltyCode."+p.getCode(), p.CuesForWS(p)));
-            }
-            updates.add(new WSUpdate("ScoreBoard.PenaltyCode.?","Unknown"));
+    private void processPenaltyCodes(PenaltyCodesManager pcm) {
+	String path = getPath(pcm);
+        updates.add(new WSUpdate(path, null));
+        
+        String prefix = path + "." + PropertyConversion.toFrontend(PenaltyCodesManager.Child.CODE) + "(";
+        for(PenaltyCode p : pcm.getDefinitions()) {
+            updates.add(new WSUpdate(prefix + p.getId() + ")", p.getValue()));
         }
-
+        updates.add(new WSUpdate(prefix + "?)","Unknown"));
     }
 
     private void initialize(ScoreBoard sb) {
@@ -371,28 +399,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	    update(getPath(sb), prop, sb.get(prop));
 	}
 
-        // Process Rules
-        int index = 0;
-        for (Rule rule : Rule.values()) {
-            AbstractRule r = rule.getRule();
-            String prefix = "ScoreBoard." + PropertyConversion.toFrontend(Rulesets.Value.RULE_DEFINITIONS)
-            	+ "(" + r.getFullName() + ")";
-            updates.add(new WSUpdate(prefix + ".Name", r.getFullName()));
-            updates.add(new WSUpdate(prefix + ".Description", r.getDescription()));
-            updates.add(new WSUpdate(prefix + ".Type", r.getType().toString()));
-            updates.add(new WSUpdate(prefix + ".Index", index)); // Used to preserve order of rules.
-            if (r.getType() == Type.BOOLEAN) {
-                updates.add(new WSUpdate(prefix + ".TrueValue", ((BooleanRule)r).getTrueValue()));
-                updates.add(new WSUpdate(prefix + ".FalseValue", ((BooleanRule)r).getFalseValue()));
-            }
-            index++;
-        }
-        processCurrentRuleset("ScoreBoard", sb.getRulesets());
-        for (Rulesets.Ruleset r : sb.getRulesets().getRulesets().values()) {
-            processRuleset("ScoreBoard", r, false);
-        }
-
-        processPenaltyCodes(sb.getRulesets());
+        processRulesets(sb.getRulesets());
+        
+        processPenaltyCodes(sb.getPenaltyCodesManager());
 
         // Process Teams
         for (Team t : sb.getTeams()) {
@@ -434,7 +443,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
 
     private JSONStateManager jsm;
-    private PenaltyCodesManager pm = new PenaltyCodesManager();
     private List<WSUpdate> updates = new LinkedList<WSUpdate>();
     private long batch = 0;
 }

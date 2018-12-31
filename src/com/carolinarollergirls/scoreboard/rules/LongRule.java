@@ -1,7 +1,7 @@
 package com.carolinarollergirls.scoreboard.rules;
 
 
-public class LongRule extends AbstractRule {
+public class LongRule extends RuleDefinition {
     public LongRule(String fullname, String description, int defaultValue) {
         super(Type.LONG, fullname, description, new Long(defaultValue));
     }

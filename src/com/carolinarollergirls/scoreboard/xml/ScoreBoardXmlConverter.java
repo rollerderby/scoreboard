@@ -33,6 +33,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class ScoreBoardXmlConverter {
@@ -88,14 +89,17 @@ public class ScoreBoardXmlConverter {
     }
 
     public Element toElement(Element p, Rulesets rs) {
-        Element e = editor.setElement(p, "Rules");
-        for (Rule r : Rule.values()) {
-            editor.setElement(e, Rulesets.Value.RULE, r.toString(), rs.get(r));
+        Element e = editor.setElement(p, rs.getProviderName());
+        for (RuleDefinition r : rs.getRuleDefinitions()) {
+            toElement(p, r);
         }
-        editor.setElement(e, Rulesets.Value.ID, null, rs.getId());
-        editor.setElement(e, Rulesets.Value.NAME, null, rs.getName());
+        
+        for (Rule r : Rule.values()) {
+            editor.setElement(e, Rulesets.Child.CURRENT_RULE, r.toString(), rs.get(r));
+        }
+        editor.setElement(e, Rulesets.Value.CURRENT_RULESET_ID, null, rs.getId());
+        editor.setElement(e, Rulesets.Value.CURRENT_RULESET_NAME, null, rs.getName());
 
-        e = editor.setElement(p, Rulesets.Child.KNOWN_RULESETS);
         for (Rulesets.Ruleset r :  rs.getRulesets().values()) {
             toElement(e, r);
         }
@@ -105,13 +109,22 @@ public class ScoreBoardXmlConverter {
     public Element toElement(Element p, Rulesets.Ruleset r) {
         Element e = editor.setElement(p, r.getProviderName(), r.getProviderId());
         for (Rule k : r.getAll().keySet()) {
-            editor.setElement(e, Rulesets.Value.RULE, k.toString(), r.get(k));
+            editor.setElement(e, Rulesets.Ruleset.Child.RULE, k.toString(), r.get(k));
         }
-        editor.setElement(e, Rulesets.Ruleset.Value.NAME, null, r.getName());
-        editor.setElement(e, Rulesets.Ruleset.Value.PARENT_ID, null, r.getParentRulesetId());
+        for (Rulesets.Ruleset.Value v : Rulesets.Ruleset.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(r.get(v)));
+        }
         return e;
     }
 
+    public Element toElement(Element p, RuleDefinition r) {
+        Element e = editor.setElement(p, r.getProviderName(), r.getProviderId());
+        for (RuleDefinition.Value v : RuleDefinition.Value.values()) {
+            editor.setElement(e, v, null, String.valueOf(r.get(v)));
+        }
+        return e;
+    }
+    
     public Element toElement(Element sb, Media m) {
         Element e = editor.setElement(sb, m.getProviderName());
         for (String format : m.getFormats()) {
@@ -312,9 +325,7 @@ public class ScoreBoardXmlConverter {
 
                 if (name.equals("Settings")) {
                     processSettings(scoreBoard, child);
-                } else if (name.equals("Rules")) {
-                    processRules(scoreBoard, child);
-                } else if (name.equals("KnownRulesets")) {
+                } else if (name.equals("Rulesets")) {
                     processRulesets(scoreBoard, child);
                 } else if (name.equals("Media")) {
                     processMedia(scoreBoard.getMedia(), child);
@@ -383,31 +394,6 @@ public class ScoreBoardXmlConverter {
         }
     }
 
-    public void processRules(ScoreBoard scoreBoard, Element element) {
-        Rulesets rs = scoreBoard.getRulesets();
-        Iterator<?> children = element.getChildren().iterator();
-        while (children.hasNext()) {
-            Element child = (Element)children.next();
-            try {
-                String name = child.getName();
-                Rule k = rs.getRule(child.getAttributeValue("Id"));
-                String v = editor.getText(child);
-                if (v == null) {
-                    v = "";
-                }
-                Property prop = PropertyConversion.fromFrontend(name, rs.getProperties());
-                if (prop == Rulesets.Value.RULE) {
-                    rs.set(k, v);
-                } else if (prop == Rulesets.Value.ID) {
-                    rs.setId(v);
-                } else if (prop == Rulesets.Value.NAME) {
-                    rs.setName(v);
-                }
-            } catch ( Exception e ) {
-            }
-        }
-    }
-
     public void processRulesets(ScoreBoard scoreBoard, Element element) {
         Rulesets rs = scoreBoard.getRulesets();
         Iterator<?> children = element.getChildren().iterator();
@@ -415,8 +401,17 @@ public class ScoreBoardXmlConverter {
             Element child = (Element)children.next();
             try {
                 Property prop = PropertyConversion.fromFrontend(child.getName(), rs.getProperties());
-                if (prop == Rulesets.Value.RULESET) {
+                String id = child.getAttributeValue("Id");
+                String v = editor.getText(child);
+                if (v == null) {
+                    v = "";
+                }
+                if (prop == Rulesets.Child.RULESET) {
                     processRuleset(rs, child);
+                } else if (prop == Rulesets.Child.CURRENT_RULE) {
+                    rs.set(rs.getRule(id), v);
+                } else if (prop instanceof Rulesets.Value) {
+                    rs.set((Rulesets.Value)prop, v);
                 }
             } catch ( Exception e ) {
             }
@@ -425,7 +420,7 @@ public class ScoreBoardXmlConverter {
 
     public void processRuleset(Rulesets rulesets, Element element) {
         String name = "";
-        String parentId = "";
+        String parent = null;
         String id = element.getAttributeValue("Id");
         Map<Rule, String> rules = new HashMap<Rule, String>();
 
@@ -443,14 +438,14 @@ public class ScoreBoardXmlConverter {
                 if (n.equals(PropertyConversion.toFrontend(Rulesets.Ruleset.Child.RULE))) {
                     rules.put(k, v);
                 } else if (n.equals(PropertyConversion.toFrontend(Rulesets.Ruleset.Value.PARENT_ID))) {
-                    parentId = v;
+                    parent = v;
                 } else if (n.equals(PropertyConversion.toFrontend(Rulesets.Ruleset.Value.NAME))) {
                     name = v;
                 }
             } catch ( Exception e ) {
             }
         }
-        Rulesets.Ruleset r = rulesets.addRuleset(name, parentId, id);
+        Rulesets.Ruleset r = rulesets.addRuleset(name, parent, id);
         r.setAll(rules);
     }
 
@@ -719,6 +714,10 @@ public class ScoreBoardXmlConverter {
         int period = 0;
         int jam = 0;
         String code = "";
+
+        if (editor.hasRemovePI(element)) {
+            return;
+        }
 
         Iterator<?> children = element.getChildren().iterator();
         while (children.hasNext()) {

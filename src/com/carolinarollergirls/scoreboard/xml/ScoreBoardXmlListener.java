@@ -9,8 +9,6 @@ package com.carolinarollergirls.scoreboard.xml;
  */
 
 
-import java.util.Set;
-
 import org.jdom.Document;
 import org.jdom.Element;
 
@@ -33,7 +31,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 
 /**
  * Converts a ScoreBoardEvent into a representative XML Document or XML String.
@@ -94,25 +92,37 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
                 editor.setRemovePI(ne);
             }
         } else if (p instanceof Rulesets) {
-            if (prop == Rulesets.Child.KNOWN_RULESETS && rem) {
-                editor.setRemovePI(converter.toElement(e, (Rulesets.Ruleset)event.getValue()));
+            if (prop == Rulesets.Child.RULESET) {
+        	Element ne = converter.toElement(e, (Rulesets.Ruleset)event.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
+            } else if (prop == Rulesets.Child.CURRENT_RULE) {
+                ValueWithId s = (ValueWithId)event.getValue();
+                Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
             } else {
-                converter.toElement(getElement(p.getParent()), (Rulesets)p);
+                editor.setElement(e, prop, null, v);
             }
         } else if (p instanceof Rulesets.Ruleset) {
-            e = getElement(p.getParent());
-            Rulesets.Ruleset r = (Rulesets.Ruleset)p;
-            converter.toElement(e, r);
-            // Look for overrides that have been removed.
-            Element re = editor.setElement(e, "Ruleset", r.getId());
-            if (event.getPreviousValue() != null) {
-                Set<Rule> newKeys = r.getAll().keySet();
-                for (Object o : (Set<?>)event.getPreviousValue()) {
-                    Rule k = (Rule)o;
-                    if (!newKeys.contains(k)) {
-                        editor.setRemovePI(editor.setElement(re, "Rule", k.toString()));
-                    }
-                }
+            if (prop == Rulesets.Ruleset.Child.RULE) {
+                ValueWithId s = (ValueWithId)event.getValue();
+                Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
+            } else {
+                editor.setElement(e, prop, null, v);
+            }
+        } else if (p instanceof PenaltyCodesManager) {
+            if (prop == PenaltyCodesManager.Child.CODE) {
+                ValueWithId s = (ValueWithId)event.getValue();
+                Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
+        	if (rem) {
+        	    editor.setRemovePI(ne);
+        	}
             }
         } else if (p instanceof ScoreBoard) {
             if (prop == ScoreBoard.Child.CLOCK) {

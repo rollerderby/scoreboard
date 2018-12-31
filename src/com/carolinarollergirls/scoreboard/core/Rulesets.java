@@ -8,11 +8,13 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
+import java.util.Collection;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public interface Rulesets extends ScoreBoardEventProvider {
@@ -30,11 +32,10 @@ public interface Rulesets extends ScoreBoardEventProvider {
 
     // The last loaded ruleset.
     public String getId();
-    public void setId(String id);
     public String getName();
-    public void setName(String n);
     
     public Rule getRule(String k);
+    public Collection<RuleDefinition> getRuleDefinitions();
 
     public Map<String, Ruleset> getRulesets();
     public Ruleset getRuleset(String id);
@@ -43,14 +44,13 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public Ruleset addRuleset(String name, String parentId, String id);
 
     public enum Value implements PermanentProperty {
-	ID,
-	NAME,
-	RULE_DEFINITIONS,
-	RULE,
-	RULESET;
+	CURRENT_RULESET_ID,
+	CURRENT_RULESET_NAME;
     }
     public enum Child implements AddRemoveProperty {
-	KNOWN_RULESETS;
+	CURRENT_RULE,
+	RULE_DEFINITION,
+	RULESET;
     }
 
     public static interface Ruleset extends ScoreBoardEventProvider {

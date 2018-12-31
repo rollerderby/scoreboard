@@ -14,6 +14,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public interface ScoreBoard extends ScoreBoardEventProvider {
@@ -85,6 +86,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Rulesets getRulesets();
 
+    public PenaltyCodesManager getPenaltyCodesManager();
+    
     public Stats getStats();
 
     public Media getMedia();

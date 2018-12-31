@@ -39,10 +39,10 @@ public enum Rule {
     PENALTIES_FILE(new StringRule("Penalties.DefinitionFile", "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json")),
     FO_LIMIT(new IntegerRule("Penalties.NumberToFoulout", "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.", 7));
 
-    private Rule(AbstractRule r) { rule = r; }
+    private Rule(RuleDefinition r) { rule = r; }
     
-    public AbstractRule getRule() { return rule; }
-    public String toString() {return rule.getFullName(); }
+    public RuleDefinition getRuleDefinition() { return rule; }
+    public String toString() {return rule.getName(); }
     
-    AbstractRule rule;
+    RuleDefinition rule;
 }

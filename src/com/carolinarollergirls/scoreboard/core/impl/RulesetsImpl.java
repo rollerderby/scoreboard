@@ -9,8 +9,10 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -23,10 +25,13 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.rules.AbstractRule;
+import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
@@ -35,7 +40,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
         reset();
     }
 
-    public String getProviderName() { return "KnownRulesets"; }
+    public String getProviderName() { return "Rulesets"; }
     public Class<Rulesets> getProviderClass() { return Rulesets.class; }
     public String getProviderId() { return ""; }
     public ScoreBoardEventProvider getParent() { return parent; }
@@ -44,60 +49,45 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     private void initialize() {
         Map<Rule, String> rootSettings = new HashMap<Rule, String>();
         for (Rule r : Rule.values()) {
+            r.getRuleDefinition().setParent(this);
+            r.getRuleDefinition().setIndex(r.ordinal());
             rules.put(r.toString(), r);
-            rootSettings.put(r, r.getRule().getDefaultValue());
+            rootSettings.put(r, r.getRuleDefinition().getDefaultValue());
         }
         // The root ruleset is always created from the above list,
         // so that as rules are added over time there will always
         // be a value for them.
-        Ruleset root = addRuleset("WFTDA Sanctioned", "", rootId);
+        Ruleset root = addRuleset("WFTDA Sanctioned", null, ROOT_ID);
         root.setAll(rootSettings);
     }
 
     public void reset() {
         synchronized (coreLock) {
-            setCurrentRuleset(rootId);
+            setCurrentRuleset(ROOT_ID);
         }
     }
 
-    public String getId() {
-        synchronized (coreLock) {
-            return id;
-        }
-    }
-    public void setId(String i) {
-        synchronized (coreLock) {
-            id = i;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
-        }
-    }
-    public String getName() {
-        synchronized (coreLock) {
-            return name;
-        }
-    }
-    public void setName(String n) {
-        synchronized (coreLock) {
-            name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
-        }
-    }
+    public String getId() { return (String)get(Value.CURRENT_RULESET_ID); }
+    public String getName() { return (String)get(Value.CURRENT_RULESET_NAME); }
     public void setCurrentRuleset(String id) {
         synchronized (coreLock) {
             current.clear();
+            Ruleset rs = getRuleset(id);
             setCurrentRulesetRecurse(id);
-            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
+            set(Value.CURRENT_RULESET_ID, rs.getId());
+            set(Value.CURRENT_RULESET_NAME, rs.getName());
+            for (Rule k : current.keySet()) {
+        	scoreBoardChange(new ScoreBoardEvent(this, Child.CURRENT_RULE, new ValWithId(k.toString(), current.get(k)), false));
+            }
         }
     }
 
-    private void setCurrentRulesetRecurse(String i) {
-        Ruleset rs = getRuleset(i);
-        if (!rs.getId().equals(rootId)) {
+    private void setCurrentRulesetRecurse(String id) {
+	Ruleset rs = getRuleset(id);
+        if (!rs.getId().equals(ROOT_ID)) {
             setCurrentRulesetRecurse(rs.getParentRulesetId());
         }
         current.putAll(rs.getAll());
-        name = rs.getName();
-        id = rs.getId();
     }
     
     public Rule getRule(String k) {
@@ -105,6 +95,14 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
             return rules.get(k);
         }
     }
+    public Collection<RuleDefinition> getRuleDefinitions() {
+	Collection<RuleDefinition> defs = new HashSet<RuleDefinition>();
+	for (Rule r : Rule.values()) {
+	    defs.add(r.getRuleDefinition());
+	}
+	return defs;
+    }
+
 
     public Map<Rule, String> getAll() {
         synchronized (coreLock) {
@@ -128,7 +126,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     }
     public long getLong(Rule k) {
         synchronized (coreLock) {
-            switch (k.getRule().getType()) {
+            switch (k.getRuleDefinition().getType()) {
             case TIME:
         	return ClockConversion.fromHumanReadable(get(k));
             default:
@@ -138,12 +136,12 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     }
     public void set(Rule k, String v) {
         synchronized (coreLock) {
-            AbstractRule r = k.getRule();
+            RuleDefinition r = k.getRuleDefinition();
             if (r == null || !r.isValueValid(v)) {
                 return;
             }
             current.put(k, v);
-            scoreBoardChange(new ScoreBoardEvent(this, Value.RULESET, "", ""));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.CURRENT_RULE, new ValWithId(k.toString(), v), false));
         }
     }
 
@@ -151,7 +149,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
         synchronized (coreLock) {
             Ruleset r = rulesets.get(id);
             if (r == null) {
-                r = rulesets.get(rootId);
+                r = rulesets.get(ROOT_ID);
             }
             return r;
         }
@@ -169,40 +167,35 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
             Ruleset r = new RulesetImpl(this, name, parentId, id);
             rulesets.put(id, r);
             r.addScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(r, Child.KNOWN_RULESETS, r, false));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.RULESET, r, false));
             return r;
         }
     }
     public void removeRuleset(String id) {
         synchronized (coreLock) {
-            if (id.equals(rootId)) {
-                return;
-            }
-            Ruleset r = rulesets.get(id);
-            if (r == null) {
+            Ruleset r = getRuleset(id);
+            if (r.getId().equals(ROOT_ID)) {
                 return;
             }
             requestBatchStart();
             // Point any rulesets with the deleted one as their parent
             // to their grandparent.
-            String parent = r.getParentRulesetId();
+            String parentId = r.getParentRulesetId();
             for (Ruleset rm : rulesets.values()) {
                 if (id.equals(rm.getParentRulesetId())) {
-                    rm.setParentRulesetId(parent);
+                    rm.setParentRulesetId(parentId);
                 }
             }
 
             rulesets.remove(id);
             r.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.KNOWN_RULESETS, r, false));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.RULESET, r, true));
             requestBatchEnd();
         }
     }
 
     private Map<Rule, String> current = new HashMap<Rule, String>();
     private Map<String, Ruleset> rulesets = new HashMap<String, Ruleset>();
-    private String id = null;
-    private String name = null;
     // Ordering is preserved for the UI.
     private Map<String, Rule> rules = new LinkedHashMap<String, Rule>();
     private ScoreBoardEventProvider parent = null;
@@ -211,15 +204,14 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
 	add(Value.class);
     }};
 
-    private static Object coreLock = ScoreBoardImpl.getCoreLock();
-    public static final String rootId = "00000000-0000-0000-0000-000000000000";
+    public static final String ROOT_ID = "00000000-0000-0000-0000-000000000000";
 
     public class RulesetImpl extends DefaultScoreBoardEventProvider implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
             this.rulesets = rulesets;
-            this.id = id;
-            this.name = name;
-            this.parentId = parentId;
+            values.put(Value.ID, id);
+            values.put(Value.NAME, name);
+            values.put(Value.PARENT_ID, parentId);
         }
 
         public Map<Rule, String> getAll() {
@@ -233,71 +225,52 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
             }
         }
 
-        public String getId() {
-            synchronized (coreLock) {
-                return id;
-            }
-        }
-        public String getName() {
-            synchronized (coreLock) {
-                return name;
-            }
-        }
-        public String getParentRulesetId() {
-            synchronized (coreLock) {
-                return parentId;
-            }
-        }
-        public void setName(String n) {
-            synchronized (coreLock) {
-                if (id.equals(rootId)) {
-                    return;
-                }
-                name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, false));
-            }
-        }
-        public void setParentRulesetId(String pi) {
-            synchronized (coreLock) {
-                if (id.equals(rootId)) {
-                    return;
-                }
-                parentId = pi;
-                scoreBoardChange(new ScoreBoardEvent(this, Rulesets.Child.KNOWN_RULESETS, this, false));
-            }
-        }
-
+        public String getId() { return (String)get(Value.ID); }
+        public String getName() { return (String)get(Value.NAME); }
+        public void setName(String n) { set(Value.NAME, n); }
+        public String getParentRulesetId() { return (String)get(Value.PARENT_ID); }
+        public void setParentRulesetId(String p) { set(Value.PARENT_ID, p); }
 
         public void setAll(Map<Rule, String> s) {
             synchronized (coreLock) {
-                if (id.equals(rootId) && !settings.isEmpty()) {
+                if (getId().equals(ROOT_ID) && !settings.isEmpty()) {
                     return;  // Don't allow changing root after initial setup.
                 }
                 Set<Rule> oldKeys = settings.keySet();
                 // Check all values are valid.
                 for (Iterator<Rule> it = s.keySet().iterator(); it.hasNext();) {
                     Rule k = it.next();
-                    AbstractRule r = k.getRule();
+                    RuleDefinition r = k.getRuleDefinition();
                     if (r == null || !r.isValueValid(s.get(k))) {
                         it.remove();
                         oldKeys.add(k);  // Allow the XML to remove this.
+                    } else {
+                	oldKeys.remove(k);
                     }
                 }
+                for (Rule k : oldKeys) {
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.RULE, new ValWithId(k.toString(), settings.get(k)), true));
+                }
                 settings = s;
-                //TODO: use proper events
-                scoreBoardChange(new ScoreBoardEvent(this, Value.ID, this, oldKeys));
+                for (Rule k : settings.keySet()) {
+                    scoreBoardChange(new ScoreBoardEvent(this, Child.RULE, new ValWithId(k.toString(), settings.get(k)), false));
+                }
             }
         }
 
-        public String getProviderName() { return "Ruleset"; }
+        public String getProviderName() { return PropertyConversion.toFrontend(Rulesets.Child.RULESET); }
         public Class<Ruleset> getProviderClass() { return Ruleset.class; }
         public String getProviderId() { return getId(); }
         public ScoreBoardEventProvider getParent() { return rulesets; }
         public List<Class<? extends Property>> getProperties() { return properties; }
+        
+        public boolean set(PermanentProperty prop, Object value, Flag flag) {
+            synchronized (coreLock) {
+        	if (!(prop instanceof Value) || getId().equals(ROOT_ID)) { return false; }
+        	return super.set(prop, value, flag);
+	    }
+        }
 
-        private String id;
-        private String name;
-        private String parentId;
         private Map<Rule, String> settings = new HashMap<Rule, String>();
 
         private Rulesets rulesets;

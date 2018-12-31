@@ -20,7 +20,7 @@ public class RulesetsImplTests {
     private ScoreBoard sb;
     private Rulesets rulesets;
 
-    private final String rootId = RulesetsImpl.rootId;
+    private final String rootId = RulesetsImpl.ROOT_ID;
     private final String id1 = "11111111-1111-1111-1111-111111111";
     private final String id2 = "22222222-2222-2222-2222-222222222";
 
@@ -62,6 +62,7 @@ public class RulesetsImplTests {
         assertEquals(6, rulesets.getInt(Rule.NUMBER_PERIODS));
     }
 
+    @Test
     public void testTimeRule() {
         Ruleset child = rulesets.addRuleset("child", rootId, id1);
         assertEquals(rootId, child.getParentRulesetId());

@@ -40,7 +40,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         values.put(Value.DIRECTION, Boolean.FALSE);
         values.put(Value.RUNNING, Boolean.FALSE);
 
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.RULESET, rulesetChangeListener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET_ID, rulesetChangeListener));
 
         reset();
     }

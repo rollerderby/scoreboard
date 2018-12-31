@@ -60,7 +60,7 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
             } else {
                 settings.put(k, v);
             }
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, v), false));
+            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, v), v == null));
         }
     }
 

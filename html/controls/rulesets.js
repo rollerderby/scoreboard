@@ -119,13 +119,13 @@ function initialize() {
 	WS.Connect();
 	WS.AutoRegister();
 
-	WS.Register(['ScoreBoard.RuleDefinitions'], {triggerBatchFunc: function() {
+	WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {triggerBatchFunc: function() {
 		definitions = {};
 		for (var prop in WS.state) {
 			if (WS.state[prop] == null) {
 				continue;
 			}
-			var re = /ScoreBoard.RuleDefinitions\(((\w+)\.(\w+))\).(\w+)/;
+			var re = /ScoreBoard.Rulesets.RuleDefinition\(((\w+)\.(\w+))\).(\w+)/;
 			var m = prop.match(re);
 			if (m != null) {
 				var key = m[4];
@@ -140,13 +140,13 @@ function initialize() {
 	}});
 
 	// If the definitions change, we'll have to redraw the rulesets too.
-	WS.Register(['ScoreBoard.RuleDefinitions', 'ScoreBoard.KnownRulesets'], {triggerBatchFunc: function() {
+	WS.Register(['ScoreBoard.Rulesets.RuleDefinition', 'ScoreBoard.Rulesets.Ruleset'], {triggerBatchFunc: function() {
 		rulesets = {};
 		for (var prop in WS.state) {
 			if (WS.state[prop] == null) {
 				continue;
 			}
-			re = /ScoreBoard.KnownRulesets\(([^)]+)\)\.(\w+)(?:\(([^)]+)\))?/;
+			re = /ScoreBoard.Rulesets.Ruleset\(([^)]+)\)\.(\w+)(?:\(([^)]+)\))?/;
 			m = prop.match(re);
 			if (m != null) {
 				rulesets[m[1]] = rulesets[m[1]] || {Rules: {}};
