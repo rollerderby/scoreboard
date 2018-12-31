@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.event;
 
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
@@ -30,6 +31,8 @@ public interface ScoreBoardEventProvider extends ValueWithId{
     //return value indicates if value was changed
     public boolean set(PermanentProperty prop, Object value);
     public boolean set(PermanentProperty prop, Object value, Flag flag);
+    
+    public void execute(CommandProperty prop);
     
     public enum Flag {
 	CHANGE,

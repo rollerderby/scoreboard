@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -118,6 +119,20 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
 	    }
 	    requestBatchEnd();
 	    return result;
+	}
+    }
+    
+    public void execute(CommandProperty prop) {
+	switch((Command)prop) {
+	case RESET_TIME:
+	    resetTime();
+	    break;
+	case START:
+	    start();
+	    break;
+	case STOP:
+	    stop();
+	    break;
 	}
     }
     

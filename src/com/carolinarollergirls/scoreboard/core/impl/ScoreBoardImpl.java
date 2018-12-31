@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -93,6 +94,35 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 		}
 	    }
 	    return result;
+	}
+    }
+    
+    public void execute(CommandProperty prop) {
+	switch ((Command)prop) {
+	case RESET:
+	    reset();
+	    break;
+	case START_JAM:
+	    startJam();
+	    break;
+	case STOP_JAM:
+	    stopJamTO();
+	    break;
+	case TIMEOUT:
+	    timeout();
+	    break;
+	case CLOCK_UNDO:
+	    clockUndo(false);
+	    break;
+	case CLOCK_REPLACE:
+	    clockUndo(true);
+	    break;
+	case START_OVERTIME:
+	    startOvertime();
+	    break;
+	case OFFICIAL_TIMEOUT:
+	    setTimeoutType(TimeoutOwners.OTO, false);
+	    break;
 	}
     }
     

@@ -28,7 +28,7 @@ import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Stats.JamStats;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
@@ -345,32 +345,7 @@ public class ScoreBoardXmlConverter {
                 } else if (prop instanceof ScoreBoard.Value) {
                     scoreBoard.set((ScoreBoard.Value)prop, scoreBoard.valueFromString((PermanentProperty)prop, value));
                 } else if (bVal && prop instanceof ScoreBoard.Command) {
-                    switch((ScoreBoard.Command)prop) {
-                    case RESET:
-                        scoreBoard.reset();
-                	break;
-		    case START_JAM:
-                        scoreBoard.startJam();
-			break;
-		    case STOP_JAM:
-                        scoreBoard.stopJamTO();
-			break;
-		    case TIMEOUT:
-                        scoreBoard.timeout();
-			break;
-		    case CLOCK_UNDO:
-                        scoreBoard.clockUndo(false);
-			break;
-		    case CLOCK_REPLACE:
-                        scoreBoard.clockUndo(true);
-			break;
-		    case START_OVERTIME:
-                        scoreBoard.startOvertime();
-			break;
-		    case OFFICIAL_TIMEOUT:
-                        scoreBoard.setTimeoutType(TimeoutOwners.OTO, false);
-			break;
-                    }
+                    scoreBoard.execute((CommandProperty)prop);
                 }
             } catch ( Exception e ) {
             }
@@ -497,17 +472,7 @@ public class ScoreBoardXmlConverter {
                 if ((null == value) && flag != Flag.RESET) {
                     continue;
                 } else if (prop instanceof Clock.Command) {
-                    switch ((Clock.Command)prop) {
-		    case START:
-			requestStart = true;
-			break;
-		    case STOP:
-			requestStop = true;
-			break;
-		    case RESET_TIME:
-			clock.resetTime();
-			break;
-                    }
+                    clock.execute((Clock.Command)prop);
                 } else if (prop instanceof Clock.Value) {
                     if (prop == Clock.Value.RUNNING) {
 			if (Boolean.parseBoolean(value)) {
@@ -560,14 +525,7 @@ public class ScoreBoardXmlConverter {
                 } else if (null == value) {
                     continue;
                 } else if (prop instanceof Team.Command) {
-                    switch ((Team.Command)prop) {
-                    case TIMEOUT:
-                	team.timeout();
-                	break;
-                    case OFFICIAL_REVIEW:
-                	team.officialReview();
-                	break;
-                    }
+                    team.execute((Team.Command)prop);
                 } else if (prop instanceof Team.Value) {
                     team.set((PermanentProperty)prop, team.valueFromString((PermanentProperty)prop, value), flag);
                 }
@@ -655,7 +613,7 @@ public class ScoreBoardXmlConverter {
                 if (null == value) {
                     continue;
                 } else if (prop == Position.Command.CLEAR && Boolean.parseBoolean(value)) {
-                    team.field(null, position);
+                    position.execute((CommandProperty)prop);
                 } else if (prop == Position.Value.ID) {
                     team.field(team.getSkater(value), position);
                 } else if (prop == Position.Value.PENALTY_BOX) {

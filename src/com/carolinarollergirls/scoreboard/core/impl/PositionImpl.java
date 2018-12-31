@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
@@ -70,6 +71,12 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
 		requestBatchEnd();
 	    }
 	    return result;
+	}
+    }
+    
+    public void execute(CommandProperty prop) {
+	if (prop == Command.CLEAR) {
+	    team.field(null, this);
 	}
     }
     

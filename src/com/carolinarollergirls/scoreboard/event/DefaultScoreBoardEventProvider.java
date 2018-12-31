@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener {
@@ -104,6 +105,10 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 	    scoreBoardChange(new ScoreBoardEvent(this, prop, value, last));
 	    return true;
 	}
+    }
+    
+    public void execute(CommandProperty prop) {
+	
     }
 
     protected static Object coreLock = new Object();
