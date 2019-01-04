@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
@@ -15,6 +16,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
@@ -28,11 +30,21 @@ public class PenaltyCodesManager extends DefaultScoreBoardEventProvider {
         parent.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Child.CURRENT_RULE, rulesetChangeListener));
     }
 
-    public String getProviderName() { return "PenaltyCodes"; }
+    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.PENALTY_CODES); }
     public Class<PenaltyCodesManager> getProviderClass() { return PenaltyCodesManager.class; }
     public String getProviderId() { return ""; }
     public ScoreBoardEventProvider getParent() { return parent; }
     public List<Class<? extends Property>> getProperties() { return properties; }
+    
+    public ValueWithId get(AddRemoveProperty prop, String id, boolean add) {
+	for (PenaltyCode c : getDefinitions()) {
+	    if (c.getId().equals(id)) { return c; }
+	}
+	return null;
+    }
+    public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) { return getDefinitions(); }
+    public boolean add(AddRemoveProperty prop, ValueWithId item) { return false; }
+    public boolean remove(AddRemoveProperty prop, ValueWithId item) { return false; }
 
     public List<PenaltyCode> getDefinitions() {
 	return definitions.getPenalties();

@@ -49,9 +49,9 @@ public class ScoreboardImplTests {
         @Override
         public void scoreBoardChange(ScoreBoardEvent event) {
             synchronized(batchCounter) {
-                if (event.getProperty().equals(BatchEvent.START)) {
+                if (event.getProperty() == BatchEvent.START) {
                     batchLevel++;
-                } else if (event.getProperty().equals(BatchEvent.END)) {
+                } else if (event.getProperty() == BatchEvent.END) {
                     batchLevel--;
                 }
             }

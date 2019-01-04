@@ -9,63 +9,48 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SettingsImpl extends DefaultScoreBoardEventProvider implements Settings {
     public SettingsImpl(ScoreBoard s) {
         sbm = s;
+        children.put(Child.SETTING, new HashMap<String, ValueWithId>());
     }
 
-    public String getProviderName() { return "Settings"; }
+    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.SETTINGS); }
     public Class<Settings> getProviderClass() { return Settings.class; }
     public String getProviderId() { return ""; }
     public ScoreBoardEventProvider getParent() { return sbm; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
-    public void reset() {
-        synchronized (coreLock) {
-            Map<String, String> old = new HashMap<String, String>(settings);
-            settings.clear();
-            for (String k : old.keySet()) {
-                scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, null), true));
-            }
-        }
-    }
+    public void reset() { removeAll(Child.SETTING); }
 
-    public Map<String, String> getAll() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableMap(new HashMap<String, String>(settings));
-        }
-    }
     public String get(String k) {
-        synchronized (coreLock) {
-            return settings.get(k);
-        }
+	synchronized(coreLock) {
+	    if (get(Child.SETTING, k) == null) { return null; }
+	    return get(Child.SETTING, k).getValue();
+	}
     }
     public void set(String k, String v) {
         synchronized (coreLock) {
             if (v == null) {
-                settings.remove(k);
+        	remove(Child.SETTING, k);
             } else {
-                settings.put(k, v);
+        	add(Child.SETTING, new ValWithId(k, v));
             }
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SETTING, new ValWithId(k, v), v == null));
         }
     }
 
     protected ScoreBoard sbm = null;
-    protected Map<String, String> settings = new HashMap<String, String>();
 
     protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
 	add(Child.class);

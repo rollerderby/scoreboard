@@ -12,6 +12,7 @@ import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Stats;
+import com.carolinarollergirls.scoreboard.core.Stats.PeriodStats;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -56,21 +57,21 @@ public class StatsImplTests {
     @Test
     public void testJamsAndPeriodsCreated() {
         // Start with no periods.
-        assertEquals(0, stats.getPeriodStats().size());
+        assertEquals(0, stats.getAll(Stats.Child.PERIOD).size());
 
         // Starting a jam creates a period and a jam.
         sb.startJam();
         advance(1000);
-        assertEquals(1, stats.getPeriodStats().size());
+        assertEquals(1, stats.getAll(Stats.Child.PERIOD).size());
         Stats.PeriodStats psm = stats.getPeriodStats(1);
-        assertEquals(1, psm.getJamStats().size());
+        assertEquals(1, psm.getAll(PeriodStats.Child.JAM).size());
 
 
         // Start the second jam and confirm it's there.
         sb.stopJamTO();
         sb.startJam();
         advance(1000);
-        assertEquals(2, psm.getJamStats().size());
+        assertEquals(2, psm.getAll(PeriodStats.Child.JAM).size());
     }
 
     @Test
@@ -84,13 +85,13 @@ public class StatsImplTests {
             advance(1000);
             sb.stopJamTO();
         }
-        assertEquals(2, stats.getPeriodStats().size());
+        assertEquals(2, stats.getAll(Stats.Child.PERIOD).size());
         Stats.PeriodStats psm = stats.getPeriodStats(2);
-        assertEquals(3, psm.getJamStats().size());
+        assertEquals(3, psm.getAll(PeriodStats.Child.JAM).size());
 
         // Truncate jams.
         jc.setNumber(1);
-        assertEquals(1, psm.getJamStats().size());
+        assertEquals(1, psm.getAll(PeriodStats.Child.JAM).size());
     }
 
     @Test

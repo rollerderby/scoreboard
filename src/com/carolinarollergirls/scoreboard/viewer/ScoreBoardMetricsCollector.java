@@ -18,6 +18,7 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 
 public class ScoreBoardMetricsCollector extends Collector {
@@ -40,7 +41,8 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily clockNumber = new GaugeMetricFamily("crg_scoreboard_clock_number",
                 "Number on scoreboard clock.", Arrays.asList("clock"));
         mfs.add(clockNumber);
-        for (Clock c : sb.getClocks()) {
+        for (ValueWithId v : sb.getAll(ScoreBoard.Child.CLOCK)) {
+            Clock c = (Clock)v;
             clockTime.addMetric(Arrays.asList(c.getName()), (float)c.getTime() / 1000);
             clockInvertedTime.addMetric(Arrays.asList(c.getName()), (float)c.getInvertedTime() / 1000);
             clockRunning.addMetric(Arrays.asList(c.getName()), c.isRunning() ? 1 : 0);
@@ -50,7 +52,8 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily score = new GaugeMetricFamily("crg_scoreboard_team_score",
                 "Score on scoreboard.", Arrays.asList("team", "name"));
         mfs.add(score);
-        for (Team t : sb.getTeams()) {
+        for (ValueWithId v : sb.getAll(ScoreBoard.Child.TEAM)) {
+            Team t = (Team)v;
             score.addMetric(Arrays.asList(t.getId(), t.getName()), t.getScore());
         }
 

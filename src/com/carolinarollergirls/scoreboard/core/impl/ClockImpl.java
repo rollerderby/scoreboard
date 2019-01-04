@@ -24,6 +24,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -160,7 +161,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
         public void scoreBoardChange(ScoreBoardEvent event) {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
-            setCountDirectionDown(r.getBoolean(r.getRule(id + ".ClockDirection")));
+            setCountDirectionDown(Boolean.parseBoolean(r.get(Rulesets.Child.CURRENT_RULE, id + ".ClockDirection").getValue()));
             if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION)) {
                 setMinimumNumber(0);
             } else {
@@ -173,7 +174,7 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
             }
             setMinimumTime(DEFAULT_MINIMUM_TIME);
             if (id.equals(ID_PERIOD) || id.equals(ID_JAM)) {
-                setMaximumTime(r.getLong(r.getRule(id + ".Duration")));
+                setMaximumTime(ClockConversion.fromHumanReadable(r.get(Rulesets.Child.CURRENT_RULE, id + ".Duration").getValue()));
             } else {
                 setMaximumTime(DEFAULT_MAXIMUM_TIME);
             }

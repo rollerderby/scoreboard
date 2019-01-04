@@ -132,7 +132,8 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
     }
 
     protected File getTypeDir(String media, String type) throws FileNotFoundException,IllegalArgumentException {
-        if (scoreBoard.getMedia().getMediaFiles(media, type) == null) {
+        if (scoreBoard.getMedia().getFormat(media) == null ||
+        	scoreBoard.getMedia().getFormat(media).getType(type) == null) {
             throw new IllegalArgumentException("Invalid media '"+media+"' or type '"+type+"'");
         }
 

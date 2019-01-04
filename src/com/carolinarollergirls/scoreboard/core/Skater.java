@@ -8,8 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -35,10 +33,9 @@ public interface Skater extends ScoreBoardEventProvider {
     public void setPenaltyBox(boolean box);
     public String getFlags();
     public void setFlags(String flags);
-    public List<Penalty> getPenalties();
-    public Penalty getFOEXPPenalty();
     // A null code removes the penalty.
     public void penalty(String id, String number, int period, int jam, String code);
+    public void sortPenalties();
 
     public enum Value implements PermanentProperty {
 	NAME,
@@ -52,6 +49,8 @@ public interface Skater extends ScoreBoardEventProvider {
     public enum Child implements AddRemoveProperty {
 	PENALTY;
     }
+    
+    public static final String FO_EXP_ID = "FO_EXP";
 
     public static interface Penalty extends ScoreBoardEventProvider {
         public String getId();

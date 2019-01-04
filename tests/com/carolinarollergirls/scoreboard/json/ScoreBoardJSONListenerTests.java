@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -21,8 +21,10 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class ScoreBoardJSONListenerTests {
 
@@ -146,21 +148,21 @@ public class ScoreBoardJSONListenerTests {
 
         sb.getTeam("1").setAlternateName("overlay", "AT");
         advance(0);
-        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay)"));
+        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay).Name"));
 
         sb.getTeam("1").setAlternateName("overlay", "AT");
         advance(0);
-        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay)"));
+        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay).Name"));
         sb.getTeam("1").removeAlternateName("overlay");
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Team(1).AlternateName(overlay)"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).AlternateName(overlay).Name"));
 
         sb.getTeam("1").setColor("overlay", "red");
         advance(0);
-        assertEquals("red", state.get("ScoreBoard.Team(1).Color(overlay)"));
+        assertEquals("red", state.get("ScoreBoard.Team(1).Color(overlay).Color"));
         sb.getTeam("1").removeColor("overlay");
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Team(1).Color(overlay)"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).Color(overlay).Color"));
     }
 
     @Test
@@ -324,8 +326,8 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(rootId, state.get("ScoreBoard.Rulesets.Ruleset(11111111-1111-1111-1111-111111111111).ParentId"));
         assertEquals("child", state.get("ScoreBoard.Rulesets.Ruleset(11111111-1111-1111-1111-111111111111).Name"));
         assertEquals(null, state.get("ScoreBoard.Rulesets.Ruleset(11111111-1111-1111-1111-111111111111).Rule(Period.Number)"));
-        Map<Rule,String> s = new HashMap<Rule,String>();
-        s.put(Rule.NUMBER_PERIODS, "3");
+        Set<ValueWithId> s = new HashSet<ValueWithId>();
+        s.add(new ValWithId(Rule.NUMBER_PERIODS.toString(), "3"));
         sb.getRulesets().getRuleset(cid).setAll(s);
         advance(0);
         assertEquals("3", state.get("ScoreBoard.Rulesets.Ruleset(11111111-1111-1111-1111-111111111111).Rule(Period.Number)"));
@@ -346,23 +348,23 @@ public class ScoreBoardJSONListenerTests {
 
     @Test
     public void testMediaEvents() throws Exception {
-        assertEquals("", state.get("ScoreBoard.Media.images.fullscreen"));
-        assertEquals("", state.get("ScoreBoard.Media.images.teamlogo"));
-        assertEquals("init.png", state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Id"));
-        assertEquals("init", state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Name"));
-        assertEquals("/images/teamlogo/init.png", state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Src"));
+        assertEquals("", state.get("ScoreBoard.Media.Format(images).Type(fullscreen)"));
+        assertEquals("", state.get("ScoreBoard.Media.Format(images).Type(teamlogo)"));
+        assertEquals("init.png", state.get("ScoreBoard.Media.Format(images).Type(teamlogo).File(init.png).Id"));
+        assertEquals("init", state.get("ScoreBoard.Media.Format(images).Type(teamlogo).File(init.png).Name"));
+        assertEquals("/images/teamlogo/init.png", state.get("ScoreBoard.Media.Format(images).Type(teamlogo).File(init.png).Src"));
 
         sb.getMedia().removeMediaFile("images", "teamlogo", "init.png");
         dir.newFile("html/images/fullscreen/new.png");
 
         Thread.sleep(100);
-        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Id"));
-        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Name"));
-        assertEquals(null, state.get("ScoreBoard.Media.images.teamlogo.File(init.png).Src"));
-        assertEquals("", state.get("ScoreBoard.Media.images.teamlogo"));
-        assertEquals("new.png", state.get("ScoreBoard.Media.images.fullscreen.File(new.png).Id"));
-        assertEquals("new", state.get("ScoreBoard.Media.images.fullscreen.File(new.png).Name"));
-        assertEquals("/images/fullscreen/new.png", state.get("ScoreBoard.Media.images.fullscreen.File(new.png).Src"));
+        assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo.File(init.png).Id"));
+        assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo.File(init.png).Name"));
+        assertEquals(null, state.get("ScoreBoard.Media.Format(images).Type(teamlogo.File(init.png).Src"));
+        assertEquals("", state.get("ScoreBoard.Media.Format(images).Type(teamlogo)"));
+        assertEquals("new.png", state.get("ScoreBoard.Media.Format(images).Type(fullscreen).File(new.png).Id"));
+        assertEquals("new", state.get("ScoreBoard.Media.Format(images).Type(fullscreen).File(new.png).Name"));
+        assertEquals("/images/fullscreen/new.png", state.get("ScoreBoard.Media.Format(images).Type(fullscreen).File(new.png).Src"));
 
     }
 

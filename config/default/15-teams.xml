@@ -7,7 +7,6 @@
       <Score><![CDATA[0]]></Score>
       <Timeouts><![CDATA[3]]></Timeouts>
       <LeadJammer><![CDATA[false]]></LeadJammer>
-      <Pass><![CDATA[0]]></Pass>
       <Position Id="Blocker2">
         <Id empty="true"><![CDATA[]]></Id>
         <Name empty="true"><![CDATA[]]></Name>
@@ -40,7 +39,6 @@
       <Score><![CDATA[0]]></Score>
       <Timeouts><![CDATA[3]]></Timeouts>
       <LeadJammer><![CDATA[false]]></LeadJammer>
-      <Pass><![CDATA[0]]></Pass>
       <Position Id="Blocker2">
         <Id empty="true"><![CDATA[]]></Id>
         <Name empty="true"><![CDATA[]]></Name>

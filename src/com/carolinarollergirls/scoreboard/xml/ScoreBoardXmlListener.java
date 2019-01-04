@@ -12,26 +12,16 @@ package com.carolinarollergirls.scoreboard.xml;
 import org.jdom.Document;
 import org.jdom.Element;
 
-import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.Media;
-import com.carolinarollergirls.scoreboard.core.Media.MediaType;
-import com.carolinarollergirls.scoreboard.core.Position;
-import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Settings;
-import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.core.Stats;
-import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.Team.AlternateName;
-import com.carolinarollergirls.scoreboard.core.Team.Color;
 import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 
 /**
  * Converts a ScoreBoardEvent into a representative XML Document or XML String.
@@ -58,9 +48,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
     private void batchStart() {
         Element root = document.getRootElement();
         String b = root.getAttributeValue("BATCH_START");
-        if (b == null) {
-            b = "";
-        }
+        if (b == null) { b = ""; }
         b = b + "X";
         root.setAttribute("BATCH_START", b);
     }
@@ -68,9 +56,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
     private void batchEnd() {
         Element root = document.getRootElement();
         String b = root.getAttributeValue("BATCH_END");
-        if (b == null) {
-            b = "";
-        }
+        if (b == null) { b = ""; }
         b = b + "X";
         root.setAttribute("BATCH_END", b);
     }
@@ -79,147 +65,25 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         ScoreBoardEventProvider p = event.getProvider();
         Element e = getElement(p);
         Property prop = event.getProperty();
-        String v = (event.getValue()==null?null:event.getValue().toString());
+        Object value = event.getValue();
+        String v = (value == null ? null : value.toString());
         Boolean rem = event.isRemove();
         if (prop == BatchEvent.START) {
             batchStart();
         } else if (prop == BatchEvent.END) {
             batchEnd();
-        } else if (p instanceof Settings) {
-            ValueWithId s = (ValueWithId)event.getValue();
-            Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
+        } else if (prop instanceof PermanentProperty) {
+            editor.setElement(e, prop, null, v);
+        } else if (prop instanceof AddRemoveProperty) {
+            Element ne;
+            if (value instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)value).getParent() == p) {
+        	ne = converter.toElement(e, (ScoreBoardEventProvider)value);
+            } else {
+                ne = editor.setElement(e, prop, ((ValueWithId)value).getId(), ((ValueWithId)value).getValue());
+            }
             if (rem) {
                 editor.setRemovePI(ne);
             }
-        } else if (p instanceof Rulesets) {
-            if (prop == Rulesets.Child.RULESET) {
-        	Element ne = converter.toElement(e, (Rulesets.Ruleset)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else if (prop == Rulesets.Child.CURRENT_RULE) {
-                ValueWithId s = (ValueWithId)event.getValue();
-                Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else {
-                editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof Rulesets.Ruleset) {
-            if (prop == Rulesets.Ruleset.Child.RULE) {
-                ValueWithId s = (ValueWithId)event.getValue();
-                Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else {
-                editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof PenaltyCodesManager) {
-            if (prop == PenaltyCodesManager.Child.CODE) {
-                ValueWithId s = (ValueWithId)event.getValue();
-                Element ne = editor.setElement(e, prop, s.getId(), s.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            }
-        } else if (p instanceof ScoreBoard) {
-            if (prop == ScoreBoard.Child.CLOCK) {
-        	Element ne = converter.toElement(e, (Clock)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else if (prop == ScoreBoard.Child.TEAM) {
-        	Element ne = converter.toElement(e, (Team)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else {
-                editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof Team) {
-            if (prop == Team.Child.ALTERNATE_NAME) {
-        	Element ne = converter.toElement(e, (Team.AlternateName)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else if (prop == Team.Child.COLOR) {
-        	Element ne = converter.toElement(e, (Team.Color)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else if (prop == Team.Child.SKATER) {
-        	Element ne = converter.toElement(e, (Skater)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else {
-                editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof Position) {
-            if (prop instanceof Position.Value) {
-                editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof AlternateName) {
-            editor.setElement(e, prop, null, v);
-        } else if (p instanceof Color) {
-            editor.setElement(e, prop, null, v);
-        } else if (p instanceof Skater) {
-            if (prop == Skater.Child.PENALTY) {
-        	Element ne = converter.toElement(e, (Skater.Penalty)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            } else {
-                editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof Skater.Penalty) {
-            editor.setElement(e, prop, null, v);
-        } else if (p instanceof MediaType) {
-            if (prop == MediaType.Child.FILE) {
-        	Element ne = converter.toElement(e, (Media.MediaFile)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            }
-        } else if (p instanceof Media.MediaFile) {
-            if (prop instanceof Media.MediaFile.Value) {
-        	editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof Stats) {
-            if (prop == Stats.Child.PERIOD) {
-        	Element ne = converter.toElement(e, (Stats.PeriodStats)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            }
-        } else if (p instanceof Stats.PeriodStats) {
-            if (prop == Stats.PeriodStats.Child.JAM) {
-        	Element ne = converter.toElement(e, (Stats.JamStats)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            }
-        } else if (p instanceof Stats.JamStats) {
-            if (prop instanceof Stats.JamStats.Value) {
-        	editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof Stats.TeamStats) {
-            if (prop instanceof Stats.TeamStats.Value) {
-                editor.setElement(e, prop, null, v);
-            } else if (prop == Stats.TeamStats.Child.SKATER) {
-        	Element ne = converter.toElement(e, (Stats.SkaterStats)event.getValue());
-        	if (rem) {
-        	    editor.setRemovePI(ne);
-        	}
-            }
-        } else if (p instanceof Stats.SkaterStats) {
-            if (prop instanceof Stats.SkaterStats.Value) {
-                editor.setElement(e, prop, null, v);
-            }
-        } else if (p instanceof Clock) {
-            e = editor.setElement(e, prop, null, v);
         } else {
             return;
         }

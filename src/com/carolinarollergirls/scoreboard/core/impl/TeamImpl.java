@@ -9,7 +9,6 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
@@ -22,27 +21,29 @@ import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.core.SkaterNotFoundException;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
-	for (FloorPosition fp : FloorPosition.values()) {
-            Position p = new PositionImpl(this, fp);
-            positions.put(fp, p);
-            p.addScoreBoardListener(this);
-        }
-	
         scoreBoard = sb;
         id = i;
+        for (Child c : Child.values()) {
+            children.put(c, new HashMap<String, ValueWithId>());
+        }
+	for (FloorPosition fp : FloorPosition.values()) {
+            Position p = new PositionImpl(this, fp);
+            add(Child.POSITION, p);
+        }
         values.put(Value.LAST_SCORE, 0);
 
         reset();
@@ -121,6 +122,32 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 	}
     }
     
+    public ValueWithId create(AddRemoveProperty prop, String id) {
+	synchronized (coreLock) {
+	    switch((Child)prop) {
+	    case ALTERNATE_NAME:
+		return new AlternateNameImpl(this, id, "");
+	    case COLOR:
+		return new ColorImpl(this, id, "");
+	    case SKATER:
+		return new SkaterImpl(this, id, "", "", "");
+	    case POSITION:
+		return null;
+	    }
+	    return null;
+	}
+    }
+    
+    public boolean remove(AddRemoveProperty prop, ValueWithId item) {
+	synchronized (coreLock) {
+	    boolean result = super.remove(prop, item);
+	    if (result && prop == Child.SKATER && ((Skater)item).getPosition() != null) {
+		((Skater)item).getPosition().setSkater(null);
+	    }
+	    return result;
+	}
+    }
+    
     public ScoreBoard getScoreBoard() { return scoreBoard; }
 
     public void reset() {
@@ -135,16 +162,12 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
 
             resetTimeouts(true);
 
-            removeAlternateNames();
-            removeColors();
-            Iterator<Position> p = getPositions().iterator();
-            Iterator<Skater> s = getSkaters().iterator();
-            while (s.hasNext()) {
-                try { removeSkater(s.next().getId()); }
-                catch ( SkaterNotFoundException snfE ) { }
-            }
+            removeAll(Child.ALTERNATE_NAME);
+            removeAll(Child.COLOR);
+            removeAll(Child.SKATER);
+            Iterator<?> p = getAll(Child.POSITION).iterator();
             while (p.hasNext()) {
-                p.next().reset();
+                ((Position)p.next()).reset();
             }
         }
     }
@@ -203,80 +226,31 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             setStarPass(s.getStarPass());
             setInTimeout(s.inTimeout());
             setInOfficialReview(s.inOfficialReview());
-            for (Skater skater : getSkaters()) {
-                skater.restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
+            for (ValueWithId skater : getAll(Child.SKATER)) {
+                ((Skater)skater).restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
             }
         }
     }
 
-    public List<AlternateName> getAlternateNames() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableList(new ArrayList<AlternateName>(alternateNames.values()));
-        }
-    }
-    public AlternateName getAlternateName(String i) { return alternateNames.get(i); }
+    public AlternateName getAlternateName(String i) { return (AlternateName)get(Child.ALTERNATE_NAME, i); }
     public void setAlternateName(String i, String n) {
         synchronized (coreLock) {
-            if (alternateNames.containsKey(i)) {
-                alternateNames.get(i).setName(n);
-            } else {
-                AlternateName an = new AlternateNameImpl(this, i, n);
-                alternateNames.put(i, an);
-                an.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, an, false));
-            }
+            requestBatchStart();
+            ((AlternateName)get(Child.ALTERNATE_NAME, i, true)).setName(n);
+            requestBatchEnd();
         }
     }
-    public void removeAlternateName(String i) {
-        synchronized (coreLock) {
-            AlternateName an = alternateNames.remove(i);
-            an.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.ALTERNATE_NAME, an, true));
-        }
-    }
-    public void removeAlternateNames() {
-        synchronized (coreLock) {
-            Iterator<AlternateName> i = getAlternateNames().iterator();
-            while (i.hasNext()) {
-                removeAlternateName(i.next().getId());
-            }
-        }
-    }
+    public void removeAlternateName(String i) { remove(Child.ALTERNATE_NAME, getAlternateName(i)); }
 
-    public List<Color> getColors() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableList(new ArrayList<Color>(colors.values()));
-        }
-    }
-    public Color getColor(String i) { return colors.get(i); }
+    public Color getColor(String i) { return (Color)get(Child.COLOR, i); }
     public void setColor(String i, String c) {
         synchronized (coreLock) {
-            if (colors.containsKey(i)) {
-                Color cm = colors.get(i);
-                cm.setColor(c);
-            } else {
-                Color cm = new ColorImpl(this, i, c);
-                colors.put(i, cm);
-                cm.addScoreBoardListener(this);
-                scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, cm, false));
-            }
+            requestBatchStart();
+            ((Color)get(Child.COLOR, i, true)).setColor(c);
+            requestBatchEnd();
         }
     }
-    public void removeColor(String i) {
-        synchronized (coreLock) {
-            Color cm = colors.remove(i);
-            cm.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.COLOR, cm, true));
-        }
-    }
-    public void removeColors() {
-        synchronized (coreLock) {
-            Iterator<Color> i = getColors().iterator();
-            while (i.hasNext()) {
-                removeColor(i.next().getId());
-            }
-        }
-    }
+    public void removeColor(String i) { remove(Child.COLOR, getColor(i)); }
 
     public String getLogo() { return (String)get(Value.LOGO); }
     public void setLogo(String l) { set(Value.LOGO, l); }
@@ -349,60 +323,19 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         }
     };
 
-    public List<Skater> getSkaters() {
-        synchronized (coreLock) {
-            ArrayList<Skater> s = new ArrayList<Skater>(skaters.values());
-            Collections.sort(s, SkaterComparator);
-            return Collections.unmodifiableList(s);
-        }
-    }
-    public Skater getSkater(String id) throws SkaterNotFoundException {
-        synchronized (coreLock) {
-            if (skaters.containsKey(id)) {
-                return skaters.get(id);
-            } else {
-                throw new SkaterNotFoundException(id);
-            }
-        }
-    }
-    public Skater addSkater(String id) { return addSkater(id, "", "", ""); }
+    public Skater getSkater(String id) { return (Skater)get(Child.SKATER, id); }
+    public Skater addSkater(String id) { return (Skater)get(Child.SKATER, id, true); }
     public Skater addSkater(String id, String n, String num, String flags) {
         synchronized (coreLock) {
-            Skater sM = new SkaterImpl(this, id, n, num, flags);
-            addSkater(sM);
-            return sM;
+            Skater s = new SkaterImpl(this, id, n, num, flags);
+            addSkater(s);
+            return s;
         }
     }
-    public void addSkater(Skater skater) {
-        synchronized (coreLock) {
-            if (null == skater.getId() || "".equals(skater.getId()) || skaters.containsKey(skater.getId())) {
-                return;
-            }
+    public void addSkater(Skater skater) { add(Child.SKATER, skater); }
+    public void removeSkater(String id) { remove(Child.SKATER, id); }
 
-            skaters.put(skater.getId(), skater);
-            skater.addScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, skater, false));
-        }
-    }
-    public void removeSkater(String id) throws SkaterNotFoundException {
-        synchronized (coreLock) {
-            Skater s = getSkater(id);
-            Position p = s.getPosition();
-            if (p != null) {
-        	p.setSkater(null);
-            }
-            s.removeScoreBoardListener(this);
-            skaters.remove(id);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.SKATER, s, true));
-        }
-    }
-
-    public Position getPosition(FloorPosition fp) {
-        synchronized (coreLock) {
-            return positions.get(fp);
-        }
-    }
-    public List<Position> getPositions() { return Collections.unmodifiableList(new ArrayList<Position>(positions.values())); }
+    public Position getPosition(FloorPosition fp) { return fp == null ? null : (Position)get(Child.POSITION, fp.toString()); }
 
     public void field(Skater s, Position p) {
 	synchronized (coreLock) {
@@ -624,8 +557,8 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
             inOfficialReview = team.inOfficialReview();
             hasNoPivot = team.hasNoPivot();
             skaterSnapshots = new HashMap<String, Skater.SkaterSnapshot>();
-            for (Skater skater : team.getSkaters()) {
-                skaterSnapshots.put(skater.getId(), skater.snapshot());
+            for (ValueWithId skater : team.getAll(Child.SKATER)) {
+                skaterSnapshots.put(skater.getId(), ((Skater)skater).snapshot());
             }
         }
 

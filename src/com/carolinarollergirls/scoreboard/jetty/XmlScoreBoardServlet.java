@@ -70,7 +70,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet {
             ScoreBoardManager.printMessage("SET from "+listener.getKey()+"\n"+rawXmlOutputter.outputString(requestDocument));
         }
 
-        scoreBoard.getXmlScoreBoard().mergeDocument(requestDocument);
+        scoreBoard.getXmlScoreBoard().mergeDocument(requestDocument, false);
 
         response.setContentType("text/plain");
         response.setStatus(HttpServletResponse.SC_OK);

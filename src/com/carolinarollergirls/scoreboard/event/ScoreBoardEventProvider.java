@@ -1,7 +1,9 @@
 package com.carolinarollergirls.scoreboard.event;
 
+import java.util.Collection;
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
@@ -32,11 +34,22 @@ public interface ScoreBoardEventProvider extends ValueWithId{
     public boolean set(PermanentProperty prop, Object value);
     public boolean set(PermanentProperty prop, Object value, Flag flag);
     
+    public ValueWithId childFromString(AddRemoveProperty prop, String id, String sValue);
+    public ValueWithId get(AddRemoveProperty prop, String id);
+    public ValueWithId get(AddRemoveProperty prop, String id, boolean add);
+    public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
+    public boolean add(AddRemoveProperty prop, ValueWithId item);
+    public boolean remove(AddRemoveProperty prop, String id);
+    public boolean remove(AddRemoveProperty prop, ValueWithId item);
+    public void removeAll(AddRemoveProperty prop);
+    public ValueWithId create(AddRemoveProperty prop, String id);
+    
     public void execute(CommandProperty prop);
     
     public enum Flag {
 	CHANGE,
 	RESET,
+	FORCE,
 	CUSTOM;
     }
 }

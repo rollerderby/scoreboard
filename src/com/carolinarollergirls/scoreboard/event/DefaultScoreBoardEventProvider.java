@@ -8,21 +8,27 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener {
     public abstract String getProviderName();
     public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
     public abstract String getProviderId();
     public String getId() { return getProviderId(); }
-    public String getValue() {return getId(); }
+    public String getValue() {return getProviderId(); }
+    public String toString() { return getProviderId(); }
 
     public void scoreBoardChange(ScoreBoardEvent event) {
         dispatch(event);
@@ -107,6 +113,64 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 	}
     }
     
+    public ValueWithId childFromString(AddRemoveProperty prop, String id, String sValue) {
+	synchronized (coreLock) {
+	    ValueWithId v = create(prop, id);
+	    if ( v != null) { return v; }
+	    return new ValWithId(id, sValue);
+	}
+    }
+    public ValueWithId get(AddRemoveProperty prop, String id) { return get(prop, id, false); }
+    public ValueWithId get(AddRemoveProperty prop, String id, boolean add) {
+	synchronized (coreLock) {
+	    Map<String, ValueWithId> map = children.get(prop);
+	    ValueWithId result = map.get(id);
+	    if (result == null && add) {
+		result = create(prop, id);
+		add(prop, result);
+	    }
+	    return result;
+	}
+    }
+    public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) {
+	synchronized (coreLock) {
+	    return new HashSet<ValueWithId>(children.get(prop).values());
+	}
+    }
+    public boolean add(AddRemoveProperty prop, ValueWithId item) {
+	synchronized (coreLock) {
+	    Map<String, ValueWithId> map = children.get(prop);
+	    if (map.containsKey(item.getId()) && map.get(item.getId()).equals(item)) { return false; }
+	    map.put(item.getId(), item);
+	    if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
+		((ScoreBoardEventProvider)item).addScoreBoardListener(this);
+	    }
+	    scoreBoardChange(new ScoreBoardEvent(this, prop, item, false));
+	    return true;
+	}
+    }
+    public ValueWithId create(AddRemoveProperty prop, String id) { return null; }
+    public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id)); }
+    public boolean remove(AddRemoveProperty prop, ValueWithId item) {
+	synchronized (coreLock) {
+	    Map<String, ValueWithId> map = children.get(prop);
+	    if (item == null || !map.containsKey(item.getId())) { return false; }
+	    map.remove(item.getId());
+	    if (item instanceof ScoreBoardEventProvider) {
+		((ScoreBoardEventProvider)item).removeScoreBoardListener(this);
+	    }
+	    scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
+	    return true;
+	}
+    }
+    public void removeAll(AddRemoveProperty prop) {
+	synchronized (coreLock) {
+	    for (ValueWithId item : getAll(prop)) {
+		remove(prop, item);
+	    }
+	}
+    }
+    
     public void execute(CommandProperty prop) {
 	
     }
@@ -115,6 +179,7 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
     protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();
+    protected Map<AddRemoveProperty, Map<String, ValueWithId>> children = new HashMap<AddRemoveProperty, Map<String, ValueWithId>>();
 
     public enum BatchEvent implements ScoreBoardEvent.PermanentProperty {
 	START,

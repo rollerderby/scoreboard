@@ -36,6 +36,13 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
     public ScoreBoardEventProvider getParent() { return team; }
     public List<Class<? extends Property>> getProperties() { return properties; }
     
+    public Object valueFromString(PermanentProperty prop, String sValue) {
+	synchronized (coreLock) {
+	    if (prop == Value.SKATER) { return team.getSkater(sValue); }
+	    return super.valueFromString(prop, sValue);
+	}
+    }
+    
     public Object get(PermanentProperty prop) {
 	synchronized (coreLock) {
 	    if (prop == Value.ID || prop == Value.SKATER || prop == Value.PENALTY_BOX) {

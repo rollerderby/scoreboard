@@ -5,7 +5,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -59,9 +58,9 @@ public class MediaImplTests {
 
     @Test
     public void testFilesAddedAtStartup() {
-        Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
-        assertNotNull(tm);
-        assertNotNull(tm.get("init.png"));
+        Media.MediaType mt = media.getFormat("images").getType("teamlogo");
+        assertNotNull(mt);
+        assertNotNull(mt.getFile("init.png"));
     }
 
     @Test
@@ -71,8 +70,7 @@ public class MediaImplTests {
         assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
         assertTrue(e.isRemove());
-        Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
-        assertNull(tm.get("init.png"));
+        assertNull(media.getFormat("images").getType("teamlogo").getFile("init.png"));
     }
 
     @Test
@@ -82,8 +80,7 @@ public class MediaImplTests {
         assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
         assertTrue(e.isRemove());
-        Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
-        assertNull(tm.get("init.png"));
+        assertNull(media.getFormat("images").getType("teamlogo").getFile("init.png"));
     }
 
     @Test
@@ -92,8 +89,7 @@ public class MediaImplTests {
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
-        Map<String, Media.MediaFile> tm = media.getMediaFiles("images", "teamlogo");
-        assertNotNull(tm.get("new.png"));
+        assertNotNull(media.getFormat("images").getType("teamlogo").getFile("new.png"));
     }
 
 }

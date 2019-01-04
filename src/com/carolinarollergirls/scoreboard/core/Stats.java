@@ -8,8 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -21,7 +19,6 @@ public interface Stats extends ScoreBoardEventProvider {
     public void ensureAtLeastNPeriods(int n);
     public void truncateAfterNPeriods(int n);
 
-    public List<PeriodStats> getPeriodStats();
     public PeriodStats getPeriodStats(int p);
 
     public enum Child implements AddRemoveProperty {
@@ -34,7 +31,6 @@ public interface Stats extends ScoreBoardEventProvider {
 
         public int getPeriodNumber();
 
-        public List<JamStats> getJamStats();
         public JamStats getJamStats(int j);
 
         public enum Child implements AddRemoveProperty {
@@ -57,7 +53,6 @@ public interface Stats extends ScoreBoardEventProvider {
         public long getPeriodClockWalltimeEnd();
         public void setPeriodClockWalltimeEnd(long t);
 
-        public List<TeamStats> getTeamStats();
         public TeamStats getTeamStats(String id);
 
         public enum Value implements PermanentProperty {
@@ -92,7 +87,6 @@ public interface Stats extends ScoreBoardEventProvider {
         public int getOfficialReviews();
         public void setOfficialReviews(int o);
 
-        public List<SkaterStats> getSkaterStats();
         public SkaterStats getSkaterStats(String sid);
         public void addSkaterStats(String sid);
         public void removeSkaterStats(String sid);

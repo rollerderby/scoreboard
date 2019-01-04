@@ -8,8 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -74,10 +72,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public void clockUndo(boolean replace);
 
 // FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
-    public List<Clock> getClocks();
     public Clock getClock(String id);
 
-    public List<Team> getTeams();
     public Team getTeam(String id);
 
     public TimeoutOwner getTimeoutOwner(String id);
@@ -102,6 +98,11 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 	OFFICIAL_REVIEW;
     }
     public enum Child implements AddRemoveProperty {
+	STATS,
+	SETTINGS,
+	RULESETS,
+	PENALTY_CODES,
+	MEDIA,
 	CLOCK,
 	TEAM;
     }

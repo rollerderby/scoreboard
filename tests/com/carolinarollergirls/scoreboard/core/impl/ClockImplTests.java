@@ -14,6 +14,7 @@ import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
@@ -23,9 +24,10 @@ import com.carolinarollergirls.scoreboard.core.impl.ClockImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class ClockImplTests {
 
@@ -82,13 +84,10 @@ public class ClockImplTests {
             }
         });
         Mockito
-        .when(rulesetsMock.getBoolean(any(Rule.class)))
-        .thenReturn(false);
-        Mockito
-        .when(rulesetsMock.getRule(any(String.class)))
-        .thenAnswer(new Answer<Rule>() {
-            public Rule answer(InvocationOnMock invocation) throws Throwable {
-                return Rule.TIMEOUT_DIRECTION;
+        .when(rulesetsMock.get(eq(Rulesets.Child.CURRENT_RULE), any(String.class)))
+        .thenAnswer(new Answer<ValueWithId>() {
+            public ValueWithId answer(InvocationOnMock invocation) throws Throwable {
+                return new ValWithId("", String.valueOf(false));
             }
         });
 
@@ -811,8 +810,12 @@ public class ClockImplTests {
         assertEquals(0, clock.getTime());
 
         Mockito
-        .when(rulesetsMock.getBoolean(any(Rule.class)))
-        .thenReturn(true);
+        .when(rulesetsMock.get(eq(Rulesets.Child.CURRENT_RULE), any(String.class)))
+        .thenAnswer(new Answer<ValueWithId>() {
+            public ValueWithId answer(InvocationOnMock invocation) throws Throwable {
+                return new ValWithId("", String.valueOf(true));
+            }
+        });
         clock.rulesetChangeListener.scoreBoardChange(null);
         assertTrue(clock.isCountDirectionDown());
         assertEquals(86400000, clock.getTime());

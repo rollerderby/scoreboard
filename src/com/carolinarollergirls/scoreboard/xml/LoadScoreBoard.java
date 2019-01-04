@@ -36,7 +36,7 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager {
         if (e.getName().equals("LoadFile")) {
             xmlScoreBoard.loadDocument(d);
         } else if (e.getName().equals("MergeFile")) {
-            xmlScoreBoard.mergeDocument(d);
+            xmlScoreBoard.mergeDocument(d, false);
         }
     }
 

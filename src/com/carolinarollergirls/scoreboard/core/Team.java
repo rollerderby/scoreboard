@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
@@ -31,17 +30,13 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public TeamSnapshot snapshot();
     public void restoreSnapshot(TeamSnapshot s);
 
-    public List<AlternateName> getAlternateNames();
     public AlternateName getAlternateName(String id);
     public void setAlternateName(String id, String name);
     public void removeAlternateName(String id);
-    public void removeAlternateNames();
 
-    public List<Color> getColors();
     public Color getColor(String id);
     public void setColor(String id, String color);
     public void removeColor(String id);
-    public void removeColors();
 
     public String getLogo();
     public void setLogo(String logo);
@@ -69,14 +64,11 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public boolean retainedOfficialReview();
     public void setRetainedOfficialReview(boolean retained_official_review);
 
-    public List<Skater> getSkaters();
-    public Skater getSkater(String id) throws SkaterNotFoundException;
+    public Skater getSkater(String id);
     public void addSkater(Skater skater);
-    public Skater addSkater(String id);
     public Skater addSkater(String id, String name, String number, String flag);
-    public void removeSkater(String id) throws SkaterNotFoundException;
+    public void removeSkater(String id);
 
-    public List<Position> getPositions();
     public Position getPosition(FloorPosition fp);
 
     public void field(Skater s, Position p);

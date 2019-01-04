@@ -93,7 +93,7 @@ public class XmlScoreBoard {
 
     public void loadDocument(Document d) {
         reset();
-        mergeDocument(d);
+        mergeDocument(d, true);
         reloadViewers();
     }
 
@@ -104,11 +104,11 @@ public class XmlScoreBoard {
      * external source, i.e. not the main ScoreBoard
      * nor any XmlDocumentManager.
      */
-    public void mergeDocument(Document doc) {
+    public void mergeDocument(Document doc, boolean load) {
         synchronized (managerLock) {
             if (null == exclusiveDocumentManager) {
 //FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
-                converter.processDocument(scoreBoard, doc);
+                converter.processDocument(scoreBoard, doc, load);
                 managers.processDocument(doc);
             } else {
 //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
@@ -122,7 +122,7 @@ public class XmlScoreBoard {
     /**
      * This is a convenience method for mergeDocument(Document).
      */
-    public void mergeDocument(Element e) { mergeDocument(e.getDocument()); }
+    public void mergeDocument(Element e) { mergeDocument(e.getDocument(), false); }
 
     /**
      * This is similar to mergeDocument(Element), but it
@@ -239,7 +239,7 @@ public class XmlScoreBoard {
         while (xmlFiles.hasNext()) {
             File f = xmlFiles.next();
             try {
-                mergeDocument(saxBuilder.build(f));
+                mergeDocument(saxBuilder.build(f), false);
                 ScoreBoardManager.printMessage("Loaded settings from "+f.getName());
             } catch ( Exception e ) {
                 ScoreBoardManager.printMessage("Could not load initial XML document "+f.getName()+" : "+e.getMessage());

@@ -13,6 +13,7 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -32,8 +33,9 @@ import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
-import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 
 public class WS extends WebSocketServlet {
@@ -143,9 +145,9 @@ public class WS extends WebSocketServlet {
                     String i = data.getString("id");
                     String n = data.getString("name");
                     JSONObject rules = data.getJSONObject("rules");
-                    Map<Rule, String> s = new HashMap<Rule, String>();
+                    Collection<ValueWithId> s = new HashSet<ValueWithId>();
                     for (String k : rules.keySet()) {
-                	s.put(sb.getRulesets().getRule(k), rules.getString(k));
+                	s.add(new ValWithId(k, rules.getString(k)));
                     }
                     sb.getRulesets().getRuleset(i).setAll(s);
                     sb.getRulesets().getRuleset(i).setName(n);

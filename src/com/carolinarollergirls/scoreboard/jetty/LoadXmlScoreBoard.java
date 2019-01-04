@@ -67,7 +67,7 @@ public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet {
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
             getXmlScoreBoard().loadDocument(doc);
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
-            getXmlScoreBoard().mergeDocument(doc);
+            getXmlScoreBoard().mergeDocument(doc, false);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge document");
         }
