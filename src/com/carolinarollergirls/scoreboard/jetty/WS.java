@@ -19,6 +19,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,8 +35,14 @@ import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 
@@ -57,7 +65,7 @@ public class WS extends WebSocketServlet {
 
     private ScoreBoard sb;
     private JSONStateManager jsm;
-
+    private static final Pattern pathElementPattern = Pattern.compile("^(?<name>\\w+)(\\((?<id>[\\w|\\.]*)\\))?(\\.(?<remainder>.*))?$");
 
     private boolean hasPermission(String action) {
         return true;
@@ -127,9 +135,12 @@ public class WS extends WebSocketServlet {
                         v = value.toString();
                     }
                     ScoreBoardManager.printMessage("Setting " + key + " to " + v);
-
-                    if (key.startsWith("ScoreBoard.Settings.")) {
-                        sb.getSettings().set(key.substring(20), v);
+                    Matcher m = pathElementPattern.matcher(key);
+                    if (m.matches() && m.group("name").equals("ScoreBoard") &&
+                	    m.group("id") == null && m.group("remainder") != null) {
+                       	set(sb, m.group("remainder"), v);
+                    } else {
+                	ScoreBoardManager.printMessage("Illegal path: " + key);
                     }
                 } else if (action.equals("AddRuleset")) {
                     JSONObject data = json.getJSONObject("data");
@@ -159,6 +170,39 @@ public class WS extends WebSocketServlet {
             } catch (JSONException je) {
                 ScoreBoardManager.printMessage("Error parsing JSON message: " + je);
                 je.printStackTrace();
+            }
+        }
+        
+        private void set(ScoreBoardEventProvider p, String path, String value) {
+            Matcher m = pathElementPattern.matcher(path);
+            if (m.matches()) {
+        	String name = m.group("name");
+        	String id = m.group("id");
+        	String remainder = m.group("remainder");
+        	if (id == null) { id = ""; }
+        	try {
+        	    Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
+
+        	    if (prop instanceof PermanentProperty && value != null) {
+        		p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value));
+        	    } else if (prop instanceof CommandProperty) { 
+        		if (Boolean.parseBoolean(value)) {
+        		    p.execute((CommandProperty)prop);
+        		}
+        	    } else if (remainder != null) {
+        		set((ScoreBoardEventProvider)p.get((AddRemoveProperty)prop, id, true), remainder, value);
+        	    } else if (value == null) {
+        		p.remove((AddRemoveProperty)prop, id);
+        	    } else {
+        		p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, id, value));
+        	    }
+        	} catch (Exception e) {
+        	    ScoreBoardManager.printMessage("Exception parsing JSON for " + p.getProviderName() +
+        		    "(" + p.getProviderId() + ")." + name + "(" + id + ") - " + value + ": " + e.toString());
+        	    e.printStackTrace();
+        	}
+            } else {
+        	ScoreBoardManager.printMessage("Illegal path element: " + path);
             }
         }
 

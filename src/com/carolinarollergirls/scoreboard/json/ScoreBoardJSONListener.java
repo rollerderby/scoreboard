@@ -13,7 +13,6 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
@@ -82,9 +81,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
     private void update(String prefix, Property prop, Object v) {
 	String path = prefix + "." + PropertyConversion.toFrontend(prop);
-	if (prop == Settings.Child.SETTING) {
-	    updates.add(new WSUpdate(prefix + "." + ((ValueWithId)v).getId(), ((ValueWithId)v).getValue()));
-	} else if (prop instanceof AddRemoveProperty) {
+	if (prop instanceof AddRemoveProperty) {
 	    updates.add(new WSUpdate(path + "(" + ((ValueWithId)v).getId() + ")", ((ValueWithId)v).getValue()));
     	} else if (v instanceof ScoreBoardEventProvider) {
             updates.add(new WSUpdate(path, ((ScoreBoardEventProvider) v).getProviderId()));
@@ -148,7 +145,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	}
 	return path;
     }
-
 
     private JSONStateManager jsm;
     private List<WSUpdate> updates = new LinkedList<WSUpdate>();

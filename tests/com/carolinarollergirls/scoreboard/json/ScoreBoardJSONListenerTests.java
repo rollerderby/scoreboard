@@ -67,7 +67,7 @@ public class ScoreBoardJSONListenerTests {
         // Make sure events are still flowing through the ScoreBoardJSONListener.
         sb.getSettings().set("teardownTest", "foo");
         advance(0);
-        assertEquals("foo", state.get("ScoreBoard.Settings.teardownTest"));
+        assertEquals("foo", state.get("ScoreBoard.Settings.Setting(teardownTest)"));
         ScoreBoardClock.getInstance().start(false);
         ScoreBoardManager.setDefaultPath(oldDir);
     }

@@ -97,7 +97,7 @@ public class ScoreBoardXmlConverter {
                 } else if (editor.hasRemovePI(child)) {
                     p.remove((AddRemoveProperty)prop, id);
                 } else if (child.getChildren().size() > 0) {
-                    process((ScoreBoardEventProvider)p.get((AddRemoveProperty)prop, id, true), child, true);
+                    process((ScoreBoardEventProvider)p.get((AddRemoveProperty)prop, id, true), child, restore);
                 } else {
                     p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, id, value));
                 }
