@@ -220,7 +220,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
             synchronized (coreLock) {
 		requestBatchStart();
 		if (prop == Child.RULE && getId().equals(ROOT_ID)) { return false; }
-		boolean result = super.add(prop, item);
+		boolean result = super.remove(prop, item);
 		requestBatchEnd();
 		return result;
 	    }

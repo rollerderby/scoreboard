@@ -153,7 +153,7 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     public boolean remove(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
 	    boolean result = removeSilent(prop, item);
-	    scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
+	    if (result) { scoreBoardChange(new ScoreBoardEvent(this, prop, item, true)); }
 	    return result;
 	}
     }

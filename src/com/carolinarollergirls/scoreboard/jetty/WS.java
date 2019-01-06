@@ -13,7 +13,6 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 
 import java.io.IOException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,11 +38,9 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
-import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 
 public class WS extends WebSocketServlet {
@@ -65,7 +62,7 @@ public class WS extends WebSocketServlet {
 
     private ScoreBoard sb;
     private JSONStateManager jsm;
-    private static final Pattern pathElementPattern = Pattern.compile("^(?<name>\\w+)(\\((?<id>[\\w|\\.]*)\\))?(\\.(?<remainder>.*))?$");
+    private static final Pattern pathElementPattern = Pattern.compile("^(?<name>\\w+)(\\((?<id>[^\\)]*)\\))?(\\.(?<remainder>.*))?$");
 
     private boolean hasPermission(String action) {
         return true;
@@ -142,26 +139,6 @@ public class WS extends WebSocketServlet {
                     } else {
                 	ScoreBoardManager.printMessage("Illegal path: " + key);
                     }
-                } else if (action.equals("AddRuleset")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String n = data.getString("name");
-                    String p = data.getString("parent");
-                    sb.getRulesets().addRuleset(n, p);
-                } else if (action.equals("RemoveRuleset")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String i = data.getString("id");
-                    sb.getRulesets().removeRuleset(i);
-                } else if (action.equals("UpdateRuleset")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String i = data.getString("id");
-                    String n = data.getString("name");
-                    JSONObject rules = data.getJSONObject("rules");
-                    Collection<ValueWithId> s = new HashSet<ValueWithId>();
-                    for (String k : rules.keySet()) {
-                	s.add(new ValWithId(k, rules.getString(k)));
-                    }
-                    sb.getRulesets().getRuleset(i).setAll(s);
-                    sb.getRulesets().getRuleset(i).setName(n);
                 } else if (action.equals("Ping")) {
                     send(new JSONObject().put("Pong", ""));
                 } else {

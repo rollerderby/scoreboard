@@ -235,50 +235,45 @@ function displayRuleset(id) {
 }
 
 function New() {
-	var o = {
-		parent: $("#new_parent").val(),
-		name: $("#new_name").val()
-	};
 	// Note what rulesets we know about so we can determine
 	// the id of the new one when we get an update.
 	knownRulesets = {};
 	$.each(rulesets, function(id) {
 		knownRulesets[id] = true;
 	});
+	var uuid;
+	do {
+		uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
+	} while (knownRulesets[uuid]);
+	WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", $("#new_name").val());
+	WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").ParentId", $("#new_parent").val());
 	$("#new_name").val("");
-	WS.Command("AddRuleset", o);
 }
 
 function Update() {
 	$(".definitions").hide();
 	if (!activeRuleset.immutable) {
-		var o = {
-			name: $("#name").val(),
-			id: activeRuleset.Id,
-			rules: {},
-		};
+		WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Name", $("#name").val());
 		$.each(definitions, function(idx, val) {
 			var def = $(".definition[fullname='" + val.Fullname + "']");
+			var value = null;
 			if (def.find(".name input").prop("checked")) {
 				var input = def.find(".value>input").prop("value");
 				var select = def.find(".value>select").val();
 				if (input != null)
-					o.rules[val.Fullname] = input;
+					value = input;
 				if (select != null)
-					o.rules[val.Fullname] = select;
+					value = select;
 			}
+			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
 		});
-		WS.Command("UpdateRuleset", o);
 	}
 }
 
 function Delete() {
 	$(".definitions").hide();
 	if (!activeRuleset.immutable) {
-		var o = {
-			id: activeRuleset.Id,
-		};
-		WS.Command("RemoveRuleset", o);
+		WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ")", null);
 	}
 }
 
