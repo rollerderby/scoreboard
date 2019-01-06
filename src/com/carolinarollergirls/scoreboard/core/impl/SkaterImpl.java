@@ -88,7 +88,15 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     }
     
     public ValueWithId create(AddRemoveProperty prop, String id) {
-	return new PenaltyImpl(this, id);
+	synchronized (coreLock) {
+	    if (prop == Child.PENALTY) {
+		if (!FO_EXP_ID.equals(id)) {
+		    id = getNextPenaltyId();
+		}
+		return new PenaltyImpl(this, id);
+	    }
+	    return null;
+	}	
     }
     public boolean add(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
@@ -110,15 +118,19 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     public boolean remove(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
 	    requestBatchStart();
-	    boolean result = super.remove(prop, item);
+	    boolean result = super.removeSilent(prop, item);
 	    if (result) {
-		if (FO_EXP_ID.equals(item.getId())) {
-		    if (getBaseRole() == Role.INELIGIBLE) {
-			setBaseRole(Role.BENCH);
+		if (prop == Child.PENALTY) {
+		    if (FO_EXP_ID.equals(item.getId())) {
+			if (getBaseRole() == Role.INELIGIBLE) {
+			    setBaseRole(Role.BENCH);
+			}
+		    } else {
+			sortPenalties();
+			((Penalty)item).set(Penalty.Value.NUMBER, getNextPenaltyId());
 		    }
-		} else {
-		    sortPenalties();
 		}
+		scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
 	    }
 	    requestBatchEnd();
 	    return result;
@@ -176,7 +188,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
         	}
             }
             if (p == null) {
-        	p = (Penalty)get(Child.PENALTY, String.valueOf(getAll(Child.PENALTY).size()+1), true);
+        	p = (Penalty)get(Child.PENALTY, getNextPenaltyId(), true);
             }
             if (code != null) {
         	if (id != null) { p.set(Penalty.Value.ID, id, Flag.FORCE); }
@@ -217,6 +229,12 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
             p.set(Penalty.Value.NUMBER, n);
             num++;
         }
+    }
+    
+    public String getNextPenaltyId() {
+	int num = getAll(Child.PENALTY).size();
+	if (get(Child.PENALTY, FO_EXP_ID) == null) { num++; }
+	return String.valueOf(num);
     }
 
     public SkaterSnapshot snapshot() {
@@ -259,7 +277,7 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
 
         public String getProviderName() { return PropertyConversion.toFrontend(Skater.Child.PENALTY); }
         public Class<Penalty> getProviderClass() { return Penalty.class; }
-        public String getProviderId() { return getId(); }
+        public String getProviderId() { return getUuid(); }
         public ScoreBoardEventProvider getParent() { return skater; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 

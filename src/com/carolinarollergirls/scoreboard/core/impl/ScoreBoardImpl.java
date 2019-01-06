@@ -75,7 +75,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
     public String getProviderName() { return "ScoreBoard"; }
     public Class<ScoreBoard> getProviderClass() { return ScoreBoard.class; }
-    public String getProviderId() { return ""; }
+    public String getId() { return ""; }
     public ScoreBoardEventProvider getParent() { return null; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 

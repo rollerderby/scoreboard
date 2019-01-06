@@ -28,7 +28,7 @@ public class SettingsImpl extends DefaultScoreBoardEventProvider implements Sett
 
     public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.SETTINGS); }
     public Class<Settings> getProviderClass() { return Settings.class; }
-    public String getProviderId() { return ""; }
+    public String getId() { return ""; }
     public ScoreBoardEventProvider getParent() { return sbm; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 

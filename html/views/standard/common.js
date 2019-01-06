@@ -32,8 +32,8 @@ function nameUpdate(k, v) {
 	id = getTeamId(k);
 	var prefix = "ScoreBoard.Team(" + id + ").";
 	var name = WS.state[prefix + "Name"];
-	var altName1 = WS.state[prefix + "AlternateName(overlay)"];
-	var altName2 = WS.state[prefix + "AlternateName(scoreboard)"];
+	var altName1 = WS.state[prefix + "AlternateName(overlay).Name"];
+	var altName2 = WS.state[prefix + "AlternateName(scoreboard).Name"];
 
 	if (altName1 != null && altName1 != "")
 		name = altName1;

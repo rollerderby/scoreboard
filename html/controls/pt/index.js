@@ -19,7 +19,7 @@
 
 		$.each([1, 2], function (idx, t) {
 			WS.Register(['ScoreBoard.Team(' + t + ').Name'], function () { teamNameUpdate(t); });
-			WS.Register(['ScoreBoard.Team(' + t + ').AlternateName(operator)'], function () { teamNameUpdate(t); });
+			WS.Register(['ScoreBoard.Team(' + t + ').AlternateName(operator).Name'], function () { teamNameUpdate(t); });
 
 			WS.Register(['ScoreBoard.Team(' + t + ').Color'], function (k, v) {
 				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_bg)']);
@@ -206,8 +206,8 @@
 		var head = document.getElementById('head' + t);
 		var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
 
-		if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator)'] != null) {
-			teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator)']
+		if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator).Name'] != null) {
+			teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator).Name']
 		}
 
 		head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';
@@ -266,9 +266,9 @@
 
 	function openPenaltyEditor(t, id, which) {
 		var prefix = 'ScoreBoard.Team(' + t + ')';
-		var teamColor = WS.state[prefix + '.AlternateName(team)'];
+		var teamColor = WS.state[prefix + '.AlternateName(team).Name'];
 		if (teamColor == null)
-			teamColor = WS.state[prefix + '.AlternateName(operator)'];
+			teamColor = WS.state[prefix + '.AlternateName(operator).Name'];
 		if (teamColor == null)
 			teamColor = WS.state[prefix + '.Name'];
 

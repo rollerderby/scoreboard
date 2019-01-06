@@ -41,7 +41,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
 
     public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.RULESETS); }
     public Class<Rulesets> getProviderClass() { return Rulesets.class; }
-    public String getProviderId() { return ""; }
+    public String getId() { return ""; }
     public ScoreBoardEventProvider getParent() { return parent; }
     public List<Class<? extends Property>> getProperties() { return properties; }
     
@@ -196,7 +196,6 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
 
         public String getProviderName() { return PropertyConversion.toFrontend(Rulesets.Child.RULESET); }
         public Class<Ruleset> getProviderClass() { return Ruleset.class; }
-        public String getProviderId() { return getId(); }
         public ScoreBoardEventProvider getParent() { return rulesets; }
         public List<Class<? extends Property>> getProperties() { return properties; }
         

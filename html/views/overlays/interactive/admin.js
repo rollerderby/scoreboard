@@ -106,7 +106,7 @@ $('select#Skaters').change(function(e) {
 	v = $t.val();
 	team = $( 'option[value=' + v + ']', $t ).attr('data-team');
 	name = $( 'option[value=' + v + ']', $t ).attr('data-name');
-	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
+	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay).Name'];
 	tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
 	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').change();
 	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(name).change();

@@ -57,7 +57,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public ScoreBoard getScoreBoard() { return scoreBoard; }
     public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.STATS); }
     public Class<Stats> getProviderClass() { return Stats.class; }
-    public String getProviderId() { return ""; }
+    public String getId() { return ""; }
     public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
     
@@ -258,7 +258,7 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         public String getProviderName() { return PropertyConversion.toFrontend(Stats.Child.PERIOD); }
         public Class<PeriodStats> getProviderClass() { return PeriodStats.class; }
-        public String getProviderId() { return String.valueOf(period); }
+        public String getId() { return String.valueOf(period); }
         public ScoreBoardEventProvider getParent() { return stats; }
         public List<Class<? extends Property>> getProperties() { return properties; }
         
@@ -310,11 +310,12 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         public String getProviderName() { return PropertyConversion.toFrontend(PeriodStats.Child.JAM); }
         public Class<JamStats> getProviderClass() { return JamStats.class; }
-        public String getProviderId() { return String.valueOf(jam); }
+        public String getId() { return String.valueOf(jam); }
         public ScoreBoardEventProvider getParent() { return period; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         public Object valueFromString(PermanentProperty prop, String sValue) {
+            if (sValue == null) return null;
             return Long.parseLong(sValue);
         }
         
@@ -356,11 +357,12 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         public String getProviderName() { return PropertyConversion.toFrontend(JamStats.Child.TEAM); }
         public Class<TeamStats> getProviderClass() { return TeamStats.class; }
-        public String getProviderId() { return getTeamId(); }
+        public String getId() { return getTeamId(); }
         public ScoreBoardEventProvider getParent() { return jam; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
         public Object valueFromString(PermanentProperty prop, String sValue) {
+            if (sValue == null) return null;
             if (prop == Value.STAR_PASS) { return Boolean.parseBoolean(sValue); }
             if (prop == Value.JAM_SCORE || prop == Value.TOTAL_SCORE || prop == Value.TIMEOUTS
         	    || prop == Value.OFFICIAL_REVIEWS) { return Integer.parseInt(sValue); }
@@ -423,11 +425,12 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
 
         public String getProviderName() { return PropertyConversion.toFrontend(TeamStats.Child.SKATER); }
         public Class<SkaterStats> getProviderClass() { return SkaterStats.class; }
-        public String getProviderId() { return getSkaterId(); }
+        public String getId() { return getSkaterId(); }
         public ScoreBoardEventProvider getParent() { return team; }
         public List<Class<? extends Property>> getProperties() { return properties; }
         
         public Object valueFromString(PermanentProperty prop, String sValue) {
+            if (sValue == null) return null;
             if (prop == Value.PENALTY_BOX) { return Boolean.parseBoolean(sValue); }
             return sValue;
         }

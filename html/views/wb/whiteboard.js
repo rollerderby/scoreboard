@@ -19,8 +19,8 @@ function initialize() {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
 		WS.Register(['ScoreBoard.Team(' + t + ').Color'], function (k, v) {
-				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']);
-				$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);
+				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color']);
+				$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg).Color']);
 			});
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
@@ -117,11 +117,11 @@ function makeSkaterRows(t, id, number) { //team, id, number
 	var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 	var head = document.getElementById('head' + t);
 	var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
-	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)'];
-	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)'];
+	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg).Color'];
+	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color'];
 	
-	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)'] != null) {
-		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)']
+	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name'] != null) {
+		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name']
 	}
 
 	head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';

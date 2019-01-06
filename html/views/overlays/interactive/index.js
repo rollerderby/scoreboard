@@ -150,7 +150,7 @@ function teamData(team, k,v) {
 		}
 	}
 
-	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\)$/;
+	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\).Color$/;
 	var match = k.match(colourRegEx);
 	if(match) { 
 		var setting = match[2];

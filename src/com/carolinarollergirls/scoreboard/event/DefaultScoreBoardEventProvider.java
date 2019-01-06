@@ -25,8 +25,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener {
     public abstract String getProviderName();
     public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
-    public abstract String getProviderId();
-    public String getId() { return getProviderId(); }
+    public String getProviderId() { return getId(); }
     public String getValue() {return getProviderId(); }
     public String toString() { return getProviderId(); }
 
@@ -153,13 +152,19 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id)); }
     public boolean remove(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
+	    boolean result = removeSilent(prop, item);
+	    scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
+	    return result;
+	}
+    }
+    public boolean removeSilent(AddRemoveProperty prop, ValueWithId item) {
+	synchronized (coreLock) {
 	    Map<String, ValueWithId> map = children.get(prop);
 	    if (item == null || !map.containsKey(item.getId())) { return false; }
 	    map.remove(item.getId());
 	    if (item instanceof ScoreBoardEventProvider) {
 		((ScoreBoardEventProvider)item).removeScoreBoardListener(this);
 	    }
-	    scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
 	    return true;
 	}
     }
@@ -171,9 +176,7 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 	}
     }
     
-    public void execute(CommandProperty prop) {
-	
-    }
+    public void execute(CommandProperty prop) {  }
 
     protected static Object coreLock = new Object();
 

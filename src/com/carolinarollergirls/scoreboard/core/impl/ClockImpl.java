@@ -49,7 +49,6 @@ public class ClockImpl extends DefaultScoreBoardEventProvider implements Clock {
 
     public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.CLOCK); }
     public Class<Clock> getProviderClass() { return Clock.class; }
-    public String getProviderId() { return getId(); }
     public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 

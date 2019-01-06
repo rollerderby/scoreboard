@@ -20,7 +20,7 @@ public abstract class RuleDefinition extends DefaultScoreBoardEventProvider {
 
     public String getProviderName() { return PropertyConversion.toFrontend(Rulesets.Child.RULE_DEFINITION); }
     public Class<Rulesets> getProviderClass() { return Rulesets.class; }
-    public String getProviderId() { return getName(); }
+    public String getId() { return getName(); }
     public ScoreBoardEventProvider getParent() { return parent; }
     public List<Class<? extends Property>> getProperties() { return properties; }
     

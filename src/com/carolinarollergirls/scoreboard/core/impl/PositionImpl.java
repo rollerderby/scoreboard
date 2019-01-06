@@ -32,7 +32,6 @@ public class PositionImpl extends DefaultScoreBoardEventProvider implements Posi
 
     public String getProviderName() { return "Position"; }
     public Class<Position> getProviderClass() { return Position.class; }
-    public String getProviderId() { return getId(); }
     public ScoreBoardEventProvider getParent() { return team; }
     public List<Class<? extends Property>> getProperties() { return properties; }
     

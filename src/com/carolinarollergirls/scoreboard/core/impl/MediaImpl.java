@@ -42,7 +42,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 
     public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.MEDIA); }
     public Class<Media> getProviderClass() { return Media.class; }
-    public String getProviderId() { return ""; }
+    public String getId() { return ""; }
     public ScoreBoardEventProvider getParent() { return parent; }
     public List<Class<? extends Property>> getProperties() { return properties; }
 
@@ -191,7 +191,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	
         public String getProviderName() { return PropertyConversion.toFrontend(Media.Child.FORMAT); }
         public Class<MediaFormat> getProviderClass() { return MediaFormat.class; }
-        public String getProviderId() { return format; }
+        public String getId() { return format; }
         public ScoreBoardEventProvider getParent() { return parent; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 
@@ -223,7 +223,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	
         public String getProviderName() { return PropertyConversion.toFrontend(MediaFormat.Child.TYPE); }
         public Class<MediaFormat> getProviderClass() { return MediaFormat.class; }
-        public String getProviderId() { return type; }
+        public String getId() { return type; }
         public ScoreBoardEventProvider getParent() { return parent; }
         public List<Class<? extends Property>> getProperties() { return properties; }
 

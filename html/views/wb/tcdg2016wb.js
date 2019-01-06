@@ -34,9 +34,9 @@ function initialize() {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { 
-			$('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']); 
-			$('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); 
-			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
+			$('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg).Color']); 
+			$('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color']); 
+			$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color']); } );
 	});
         WS.Register( [ 'ScoreBoard.Team(1).Logo' ], function(k, v) { $('.Logo1').attr('src', v); } );
         WS.Register( [ 'ScoreBoard.Team(2).Logo' ], function(k, v) { $('.Logo2').attr('src', v); } );
@@ -113,11 +113,11 @@ function makeSkaterRows(t, id, number) { //team, id, number
 	var pd = $('<div class="tdivr">').addClass('Skater Penalty').attr('id', id).data('number', number);
 	var head = document.getElementById('head' + t);
 	var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
-	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)'];
-	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)'];
+	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg).Color'];
+	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color'];
 	
-	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)'] != null) {
-		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)']
+	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name'] != null) {
+		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name']
 	}
 //      Put this somewhere else
 //	head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';

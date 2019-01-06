@@ -32,7 +32,7 @@ public class PenaltyCodesManager extends DefaultScoreBoardEventProvider {
 
     public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.PENALTY_CODES); }
     public Class<PenaltyCodesManager> getProviderClass() { return PenaltyCodesManager.class; }
-    public String getProviderId() { return ""; }
+    public String getId() { return ""; }
     public ScoreBoardEventProvider getParent() { return parent; }
     public List<Class<? extends Property>> getProperties() { return properties; }
     
