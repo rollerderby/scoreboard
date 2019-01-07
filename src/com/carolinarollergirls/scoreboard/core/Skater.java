@@ -33,8 +33,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public void setPenaltyBox(boolean box);
     public String getFlags();
     public void setFlags(String flags);
-    // A null code removes the penalty.
-    public void penalty(String id, String number, int period, int jam, String code);
+    public Penalty getPenalty(String num);
     public void sortPenalties();
 
     public enum Value implements PermanentProperty {
@@ -44,7 +43,8 @@ public interface Skater extends ScoreBoardEventProvider {
 	ROLE,
 	BASE_ROLE,
 	PENALTY_BOX,
-	FLAGS;
+	FLAGS,
+	SORT_PENALTIES;
     }
     public enum Child implements AddRemoveProperty {
 	PENALTY;

@@ -107,20 +107,6 @@ public class WS extends WebSocketServlet {
                         sendWSUpdatesForPaths(newPaths, state.keySet());
                         this.paths.addAll(newPaths);
                     }
-                } else if (action.equals("Penalty")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String teamId = data.optString("teamId");
-                    String skaterId = data.optString("skaterId");
-                    String penaltyId = data.optString("penaltyId", null);
-                    boolean fo_exp = data.optBoolean("fo_exp", false);
-                    String num = fo_exp ? "FO_EXP" : "0";
-                    int period = data.optInt("period", -1);
-                    int jam = data.optInt("jam", -1);
-                    String code = data.optString("code", null);
-                    if (period == -1 || jam == -1) {
-                        return;
-                    }
-                    sb.getTeam(teamId).getSkater(skaterId).penalty(penaltyId, num, period, jam, code);
                 } else if (action.equals("Set")) {
                     String key = json.getString("key");
                     Object value = json.get("value");

@@ -94,7 +94,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
 	if (p.getParent() == null) {
 	    return editor.getElement(document.getRootElement(), p.getProviderName());
 	} else {
-	    return editor.getElement(getElement(p.getParent()), p.getProviderName(), p.getProviderId());
+	    return editor.getElement(getElement(p.getParent()), p.getProviderName(), p.getId());
 	}
     }
 

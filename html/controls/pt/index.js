@@ -10,7 +10,7 @@
 	var teamId = null;
 	var skaterId = null;
 	var penaltyId = null;
-	var penaltyType = null;
+	var penaltyNumber = null;
 
 	function initialize() {
 
@@ -101,8 +101,7 @@
 		if (penaltyId == null || skaterId == null) {
 			penaltyEditor.dialog("close");
 		} else {
-			var fo_exp = penaltyType === 'FO_EXP';
-			WS.Command("Penalty", { teamId: teamId, skaterId: skaterId, penaltyId: penaltyId, fo_exp: fo_exp, jam: 0, period: 0 });
+			WS.Set("ScoreBoard.Team(" + teamId + ").Skater(" + skaterId + ").Penalty(" + penaltyNumber + ")", null);
 			penaltyEditor.dialog('close');
 		}
 	}
@@ -277,7 +276,7 @@
 		var skaterNumber = WS.state[prefix + '.Number'];
 		teamId = t;
 		skaterId = id;
-		penaltyType = which;
+		penaltyNumber = which;
 
 		$('.PenaltyEditor .Codes>div').removeClass('Active');
 
@@ -309,12 +308,13 @@
 	}
 
 	function submitPenalty() {
-		var p = $('.PenaltyEditor .Period').val();
-		var j = $('.PenaltyEditor .Jam').val();
-		var c = $('.PenaltyEditor .Codes .Active').attr('code');
-		var fo_exp = penaltyType === 'FO_EXP';
-
-		WS.Command("Penalty", { teamId: teamId, skaterId: skaterId, penaltyId: penaltyId, period: p, jam: j, code: c, fo_exp: fo_exp });
+		var sortKey = 'ScoreBoard.Team(' + teamId + ').Skater(' + skaterId + ').SortPenalties';
+		var prefix = 'ScoreBoard.Team(' + teamId + ').Skater(' + skaterId + ').Penalty(' + penaltyNumber + ')';
+		WS.Set(sortKey, false);
+		WS.Set(prefix + '.Period', $('.PenaltyEditor .Period').val());
+		WS.Set(prefix + '.Jam', $('.PenaltyEditor .Jam').val());
+		WS.Set(prefix + '.Code', $('.PenaltyEditor .Codes .Active').attr('code'));
+		WS.Set(sortKey, true);
 
 		penaltyEditor.dialog('close');
 	}

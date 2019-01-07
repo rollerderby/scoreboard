@@ -19,9 +19,13 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.Skater.Child;
+import com.carolinarollergirls.scoreboard.core.Skater.Penalty;
+import com.carolinarollergirls.scoreboard.core.Skater.Value;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -209,27 +213,39 @@ public class ScoreBoardJSONListenerTests {
 
         sb.getTeam("1").addSkater(sid, "Uno", "01", "");
         Skater s = sb.getTeam("1").getSkater(sid);
-        s.penalty(pid, "0", 1, 2, "X");
+	s.set(Value.SORT_PENALTIES, false);
+	Penalty p = (Penalty)s.get(Child.PENALTY, "0", true);
+	p.set(Penalty.Value.ID, pid, Flag.FORCE);
+	p.set(Penalty.Value.PERIOD, 1);
+	p.set(Penalty.Value.JAM, 2);
+	p.set(Penalty.Value.CODE, "X");
+	s.set(Value.SORT_PENALTIES, true);
         advance(0);
         assertEquals(pid, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Id"));
         assertEquals(1, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Period"));
         assertEquals(2, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Jam"));
         assertEquals("X", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Code"));
 
-        s.penalty(pid, "0", 1, 2, null);
+        s.remove(Child.PENALTY, "1");
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Id"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Period"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Jam"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Code"));
 
-        s.penalty(null, "FO_EXP", 1, 2, "B");
+	s.set(Value.SORT_PENALTIES, false);
+	p = (Penalty)s.get(Child.PENALTY, "FO_EXP", true);
+	p.set(Penalty.Value.ID, pid, Flag.FORCE);
+	p.set(Penalty.Value.PERIOD, 1);
+	p.set(Penalty.Value.JAM, 2);
+	p.set(Penalty.Value.CODE, "B");
+	s.set(Value.SORT_PENALTIES, true);
         advance(0);
         assertEquals(1, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
         assertEquals(2, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Jam"));
         assertEquals("B", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Code"));
 
-        s.penalty(null, "FO_EXP", 1, 2, null);
+        s.remove(Child.PENALTY, "FO_EXP");
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
