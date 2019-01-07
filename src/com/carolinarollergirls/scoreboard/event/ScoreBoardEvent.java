@@ -86,7 +86,15 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     public interface CommandProperty extends Property {}
     
     public interface ValueWithId {
+	/**
+	 * Id to be used in order to identify this element amongst its siblings in XML and JSON.
+	 *  (Could e.g. be a Period/Jam/etc number or a UUID.)
+	 */
 	public String getId();
+	/**
+	 * Value of the element. For subclasses of DefaultScoreBoardEventProvider this should be
+	 * left the same as getProviderId().
+	 */
 	public String getValue();
     }
 }

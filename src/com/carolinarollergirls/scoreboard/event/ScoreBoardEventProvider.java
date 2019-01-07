@@ -18,32 +18,85 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
  * See the file COPYING for details.
  */
 
-public interface ScoreBoardEventProvider extends ValueWithId{
+public interface ScoreBoardEventProvider extends ValueWithId {
+    /**
+     * This should be the frontend string for the Child enum value corresponding to this type 
+     * in its parent element
+     */
     public String getProviderName();
+    /**
+     * This should return the class or interface that this type will be accessed through
+     * by event receivers
+     */
     public Class<? extends ScoreBoardEventProvider> getProviderClass();
+    /**
+     * Id to be used in order to identify this element amongst all elements of its type.
+     * Used when the element is referenced by elements other than its parent.
+     *  (Typically a UUID.)
+     */
     public String getProviderId();
+    /**
+     * The parent element in the XML and JSON representation
+     */
     public ScoreBoardEventProvider getParent();
+    /**
+     * This should return all the enums that contain values, children, or commands
+     * that can be accessed from the frintend
+     */
     public List<Class<? extends Property>> getProperties();
 
     public void addScoreBoardListener(ScoreBoardListener listener);
     public void removeScoreBoardListener(ScoreBoardListener listener);
     
+    /**
+     * Will automagically work for Boolean, Integer, and Long if there is a previous
+     * value of the correct type. For all other cases this must be implemented in
+     * derived classes.
+     */
     public Object valueFromString(PermanentProperty prop, String sValue);
     public Object get(PermanentProperty prop);
     //return value indicates if value was changed
     public boolean set(PermanentProperty prop, Object value);
+    /*
+     * return value indicates if value was changed
+     * Change flag for Integer and Long values is implemented to add the given 
+     * value to the previous one. Other flags need to be implemented in overrides.
+     */
     public boolean set(PermanentProperty prop, Object value, Flag flag);
-    
+
+    /**
+     * If create is implemented for the respective type, this function will resort to that,
+     * ignoring sValue.
+     * Otherwise it will create a ValWithId from id and sValue.
+     */
     public ValueWithId childFromString(AddRemoveProperty prop, String id, String sValue);
+    /*
+     * Will return null if no such child is found
+     */
     public ValueWithId get(AddRemoveProperty prop, String id);
+    /*
+     * If no such child is found and add is true, call create(prop, id) to create one.
+     * If creation is not implemented for this type of child or add is false, null is returned.
+     */
     public ValueWithId get(AddRemoveProperty prop, String id, boolean add);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
+    //returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
+    //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, String id);
+    //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, ValueWithId item);
     public void removeAll(AddRemoveProperty prop);
+    /**
+     * Must call an appropriate constructor for all children that are themselves a
+     * ScoreBoardEventProvider and can be created from the frontend or autosave 
+     */
     public ValueWithId create(AddRemoveProperty prop, String id);
     
+    /**
+     * Defaults to doing nothing. Should be overridden in classes that have
+     * frontend commands.
+     */
     public void execute(CommandProperty prop);
     
     public enum Flag {

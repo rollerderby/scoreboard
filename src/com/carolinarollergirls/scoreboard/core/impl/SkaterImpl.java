@@ -62,6 +62,12 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
 	    boolean result = false;
+	    /*
+	     * String values are coming from the frontend (or autosave) -> Run field() 
+	     * in order to set all values.
+	     * (Non-String values are coming from field() - calling field again would cause
+	     * an infinite loop.)
+	     */
 	    if (prop == Value.POSITION && value instanceof String) {
 		team.field(this, team.getPosition(FloorPosition.fromString((String)value)));
 	    } else if (prop == Value.ROLE && value instanceof String) {
