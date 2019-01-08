@@ -31,6 +31,7 @@ import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Media;
+import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
@@ -49,6 +50,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 	}
 	children.put(Child.CLOCK, new HashMap<String, ValueWithId>());
 	children.put(Child.TEAM, new HashMap<String, ValueWithId>());
+        children.put(Child.PERIOD, new HashMap<String, ValueWithId>());
 	children.put(Child.STATS, new HashMap<String, ValueWithId>());
         add(Child.STATS, new StatsImpl(this));
 	children.put(Child.SETTINGS, new HashMap<String, ValueWithId>());
@@ -89,6 +91,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     }
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
+	    if (prop == Value.IN_PERIOD) { return false; }
 	    boolean result = super.set(prop, value, flag);
 	    if (result && prop == Value.IN_OVERTIME && !(Boolean)value) {
 		Clock lc = getClock(Clock.ID_LINEUP);
@@ -97,6 +100,12 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 		}
 	    }
 	    return result;
+	}
+    }
+    public Object get(PermanentProperty prop) {
+	synchronized (coreLock) {
+	    if (prop == Value.IN_PERIOD) { return currentPeriod.get(Period.Value.RUNNING); }
+	    return super.get(prop);
 	}
     }
     
@@ -133,6 +142,12 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 	synchronized (coreLock) {
 	    if (prop == Child.CLOCK) { return new ClockImpl(this, id); }
 	    if (prop == Child.TEAM) { return new TeamImpl(this, id); }
+	    if (prop == Child.PERIOD) {
+		int num = Integer.parseInt(id);
+		if (num <= getRulesets().getInt(Rule.NUMBER_PERIODS)) {
+		    return new PeriodImpl(this, num);
+		}
+	    }
 	    return null;
 	}
     }
@@ -146,6 +161,8 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             for (ValueWithId t : getAll(Child.TEAM)) {
                 ((Team)t).reset();
             }
+            removeAll(Child.PERIOD);
+            currentPeriod = getPeriod(1);
 
             setTimeoutOwner(TimeoutOwners.NONE);
             setOfficialReview(false);
@@ -157,7 +174,6 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             replacePending = false;
 
             getRulesets().reset();
-            getStats().reset();
             // Custom settings are not reset, as broadcast overlays settings etc.
             // shouldn't be lost just because the next game is starting.
 
@@ -169,9 +185,12 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     }
 
     public boolean isInPeriod() { return (Boolean)get(Value.IN_PERIOD); }
-    public void setInPeriod(boolean p) { set(Value.IN_PERIOD, p); }
+    public void setInPeriod(boolean p) { currentPeriod.set(Period.Value.RUNNING, p); }
+    public Period getPeriod(int p) { return (Period)get(Child.PERIOD, String.valueOf(p), true); }
+    public Period getCurrentPeriod() { return currentPeriod; }
     protected void addInPeriodListeners() {
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.Value.RUNNING, Boolean.FALSE, periodEndListener));
+        addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.Value.NUMBER, periodNumberListener));
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.RUNNING, Boolean.FALSE, jamEndListener));
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_INTERMISSION, Clock.Value.RUNNING, Boolean.FALSE, intermissionEndListener));
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_LINEUP, Clock.Value.TIME, lineupClockListener));
@@ -580,7 +599,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
     public TimeoutOwner getTimeoutOwner(String id) {
 	for (TimeoutOwners o : TimeoutOwners.values()) {
-	    if (o.getId() == id) { return o; }
+	    if (o.getId().equals(id)) { return o; }
 	}
 	return getTeam(id);
     }
@@ -590,6 +609,8 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     public boolean isOfficialReview() { return (Boolean)get(Value.OFFICIAL_REVIEW); }
     public void setOfficialReview(boolean official) { set(Value.OFFICIAL_REVIEW, official); }
 
+    protected Period currentPeriod;
+    
     protected ScoreBoardSnapshot snapshot = null;
     protected boolean replacePending = false;
 
@@ -608,6 +629,11 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             if (getRulesets().getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) {
                 _possiblyEndPeriod();
             }
+        }
+    };
+    protected ScoreBoardListener periodNumberListener = new ScoreBoardListener() {
+        public void scoreBoardChange(ScoreBoardEvent event) {
+            currentPeriod = getPeriod((Integer)event.getValue());
         }
     };
     protected ScoreBoardListener jamEndListener = new ScoreBoardListener() {

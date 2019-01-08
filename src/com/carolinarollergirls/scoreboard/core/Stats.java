@@ -8,19 +8,11 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Stats extends ScoreBoardEventProvider {
     public ScoreBoard getScoreBoard();
     public void reset();
 
-    public void ensureAtLeastNPeriods(int n);
-    public void truncateAfterNPeriods(int n);
-
     public Period getPeriod(int p);
-
-    public enum Child implements AddRemoveProperty {
-        PERIOD;
-    }
 }

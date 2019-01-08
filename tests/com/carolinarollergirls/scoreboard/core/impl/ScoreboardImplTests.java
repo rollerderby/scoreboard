@@ -434,6 +434,8 @@ public class ScoreboardImplTests {
         ic.setTime(55000);
         ic.start();
         assertFalse(sb.isInPeriod());
+        assertEquals(1, sb.getAll(ScoreBoard.Child.PERIOD).size());
+        assertEquals(sb.getPeriod(1), sb.currentPeriod);
 
         sb.startJam();
 
@@ -447,6 +449,8 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
         assertTrue(sb.isInPeriod());
+        assertEquals(2, sb.getAll(ScoreBoard.Child.PERIOD).size());
+        assertEquals(sb.getPeriod(2), sb.currentPeriod);
         checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
     }
 

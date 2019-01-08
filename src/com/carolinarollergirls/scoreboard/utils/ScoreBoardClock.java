@@ -23,6 +23,13 @@ public class ScoreBoardClock extends TimerTask {
 	    return currentTime;
 	}
     }
+    
+    public long getCurrentWalltime() {
+	synchronized (coreLock) {
+	    updateTime();
+	    return currentTime + offset;
+	}
+    }
 
     public void rewindTo(long time) {
 	synchronized (coreLock) {

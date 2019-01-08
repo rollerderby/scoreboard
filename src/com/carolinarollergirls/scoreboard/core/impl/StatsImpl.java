@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Fielding;
@@ -26,9 +25,7 @@ import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -36,9 +33,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public StatsImpl(ScoreBoard sb) {
         scoreBoard = sb;
-        children.put(Child.PERIOD, new HashMap<String, ValueWithId>());
 
-        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.Value.NUMBER, periodNumberListener));
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.NUMBER, jamNumberListener));
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.RUNNING, true, jamStartListener));
         scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_JAM, Clock.Value.RUNNING, false, jamStopListener));
@@ -64,30 +59,14 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
     public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
     
-    public ValueWithId create(AddRemoveProperty prop, String id) {
-	return new PeriodImpl(this, Integer.valueOf(id));
-    }
-
     public void reset() {
-        synchronized (coreLock) {
-            truncateAfterNPeriods(0);
-        }
     }
-
-    protected ScoreBoardListener periodNumberListener = new ScoreBoardListener() {
-        public void scoreBoardChange(ScoreBoardEvent event) {
-            // If the period number has dropped, we need to delete periods.
-            Clock pc = scoreBoard.getClock(Clock.ID_PERIOD);
-            truncateAfterNPeriods(pc.getNumber());
-        }
-    };
 
     protected ScoreBoardListener jamNumberListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
             // If the jam number has dropped, we need to delete jams.
             int p = scoreBoard.getClock(Clock.ID_PERIOD).getNumber();
             int j = scoreBoard.getClock(Clock.ID_JAM).getNumber();
-            ensureAtLeastNPeriods(p);
             Period period = getPeriod(p);
             period.truncateAfterNJams(j);
         }
@@ -217,37 +196,13 @@ public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
         if (j == 0) {
             return null;
         }
-        ensureAtLeastNPeriods(p);
-        Period period = getPeriod(p);
-        period.ensureAtLeastNJams(j);
-        return period.getJam(j);
+        getPeriod(p).ensureAtLeastNJams(j);
+        return getPeriod(p).getJam(j);
     }
 
-    public void ensureAtLeastNPeriods(int n) {
-        synchronized (coreLock) {
-            requestBatchStart();
-            for (int i = getAll(Child.PERIOD).size(); i < n; i++) {
-        	get(Child.PERIOD, String.valueOf(i+1), true);
-            }
-            requestBatchEnd();
-        }
-    }
-
-    public void truncateAfterNPeriods(int n) {
-        synchronized (coreLock) {
-            requestBatchStart();
-            for (int i = getAll(Child.PERIOD).size(); i > n; i--) {
-        	remove(Child.PERIOD, getPeriod(i));
-            }
-            requestBatchEnd();
-        }
-    }
-
-    public Period getPeriod(int p) { return (Period)get(Child.PERIOD, String.valueOf(p)); }
+    public Period getPeriod(int p) { return scoreBoard.getPeriod(p); }
 
     protected ScoreBoard scoreBoard;
 
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Child.class);
-    }};
+    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>();
 }

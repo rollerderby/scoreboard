@@ -49,6 +49,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
      */
     public boolean isInPeriod();
     public void setInPeriod(boolean inPeriod);
+    public Period getPeriod(int p);
+    public Period getCurrentPeriod();
 
     /**
      * If this bout is in Overtime.
@@ -104,7 +106,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 	PENALTY_CODES,
 	MEDIA,
 	CLOCK,
-	TEAM;
+	TEAM,
+	PERIOD;
     }
     public enum Command implements CommandProperty {
 	RESET,

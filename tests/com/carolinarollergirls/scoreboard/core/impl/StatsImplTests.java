@@ -58,14 +58,10 @@ public class StatsImplTests {
 
     @Test
     public void testJamsAndPeriodsCreated() {
-        // Start with no periods.
-        assertEquals(0, stats.getAll(Stats.Child.PERIOD).size());
-
-        // Starting a jam creates a period and a jam.
+        // Starting a jam creates a jam.
         sb.startJam();
         advance(1000);
-        assertEquals(1, stats.getAll(Stats.Child.PERIOD).size());
-        Period p = stats.getPeriod(1);
+        Period p = sb.getPeriod(1);
         assertEquals(1, p.getAll(Period.Child.JAM).size());
 
 
@@ -87,8 +83,8 @@ public class StatsImplTests {
             advance(1000);
             sb.stopJamTO();
         }
-        assertEquals(2, stats.getAll(Stats.Child.PERIOD).size());
-        Period p = stats.getPeriod(2);
+        assertEquals(2, sb.getAll(ScoreBoard.Child.PERIOD).size());
+        Period p = sb.getPeriod(2);
         assertEquals(3, p.getAll(Period.Child.JAM).size());
 
         // Truncate jams.
