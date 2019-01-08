@@ -9,11 +9,13 @@ import java.util.Arrays;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Jam;
+import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Stats;
-import com.carolinarollergirls.scoreboard.core.Stats.PeriodStats;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -36,10 +38,10 @@ public class StatsImplTests {
         // Add a full roster for each team.
         // Skater numbers are 100..114 and 200..214.
         for(String tid : Arrays.asList(Team.ID_1, Team.ID_2)) {
-            Team tm = sb.getTeam(tid);
+            Team t = sb.getTeam(tid);
             for (int i = 0; i <= 15; i++) {
                 String number = String.format("%s%02d", tid, i);
-                tm.addSkater(ID_PREFIX + number, "name-" + number, number, "");
+                t.addSkater(ID_PREFIX + number, "name-" + number, number, "");
             }
         }
         team1 = sb.getTeam(Team.ID_1);
@@ -63,15 +65,15 @@ public class StatsImplTests {
         sb.startJam();
         advance(1000);
         assertEquals(1, stats.getAll(Stats.Child.PERIOD).size());
-        Stats.PeriodStats psm = stats.getPeriodStats(1);
-        assertEquals(1, psm.getAll(PeriodStats.Child.JAM).size());
+        Period p = stats.getPeriod(1);
+        assertEquals(1, p.getAll(Period.Child.JAM).size());
 
 
         // Start the second jam and confirm it's there.
         sb.stopJamTO();
         sb.startJam();
         advance(1000);
-        assertEquals(2, psm.getAll(PeriodStats.Child.JAM).size());
+        assertEquals(2, p.getAll(Period.Child.JAM).size());
     }
 
     @Test
@@ -86,12 +88,12 @@ public class StatsImplTests {
             sb.stopJamTO();
         }
         assertEquals(2, stats.getAll(Stats.Child.PERIOD).size());
-        Stats.PeriodStats psm = stats.getPeriodStats(2);
-        assertEquals(3, psm.getAll(PeriodStats.Child.JAM).size());
+        Period p = stats.getPeriod(2);
+        assertEquals(3, p.getAll(Period.Child.JAM).size());
 
         // Truncate jams.
         jc.setNumber(1);
-        assertEquals(1, psm.getAll(PeriodStats.Child.JAM).size());
+        assertEquals(1, p.getAll(Period.Child.JAM).size());
     }
 
     @Test
@@ -103,19 +105,19 @@ public class StatsImplTests {
         advance(1000);
 
         // Confirm stats are as expected at start of first jam.
-        Stats.PeriodStats psm = stats.getPeriodStats(1);
-        Stats.JamStats jsm = psm.getJamStats(1);
-        Stats.TeamStats tsm1 = jsm.getTeamStats(Team.ID_1);
-        assertEquals(0, jsm.getPeriodClockElapsedStart());
-        assertEquals(0, tsm1.getTotalScore());
-        assertEquals(0, tsm1.getJamScore());
-        assertEquals(Team.LEAD_NO_LEAD, tsm1.getLeadJammer());
-        assertEquals(false, tsm1.getStarPass());
-        assertEquals(3, tsm1.getTimeouts());
-        assertEquals(1, tsm1.getOfficialReviews());
-        assertEquals(FloorPosition.JAMMER.toString(), tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
-        assertEquals(FloorPosition.PIVOT.toString(), tsm1.getSkaterStats(ID_PREFIX + "101").getPosition());
-        assertEquals(null, tsm1.getSkaterStats(ID_PREFIX + "114"));
+        Period p = stats.getPeriod(1);
+        Jam j = p.getJam(1);
+        TeamJam tj = j.getTeamJam(Team.ID_1);
+        assertEquals(0, j.getPeriodClockElapsedStart());
+        assertEquals(0, tj.getTotalScore());
+        assertEquals(0, tj.getJamScore());
+        assertEquals(Team.LEAD_NO_LEAD, tj.getLeadJammer());
+        assertEquals(false, tj.getStarPass());
+        assertEquals(3, tj.getTimeouts());
+        assertEquals(1, tj.getOfficialReviews());
+        assertEquals(FloorPosition.JAMMER.toString(), tj.getFielding(ID_PREFIX + "100").getPosition());
+        assertEquals(FloorPosition.PIVOT.toString(), tj.getFielding(ID_PREFIX + "101").getPosition());
+        assertEquals(null, tj.getFielding(ID_PREFIX + "114"));
 
         // Team 1 gets lead and scores.
         team1.setLeadJammer(Team.LEAD_LEAD);
@@ -127,18 +129,18 @@ public class StatsImplTests {
         advance(1000);
 
         // Confirm stats at start of second jam.
-        jsm = psm.getJamStats(2);
-        tsm1 = jsm.getTeamStats(Team.ID_1);
-        assertEquals(2000, jsm.getPeriodClockElapsedStart());
-        assertEquals(5, tsm1.getTotalScore());
-        assertEquals(0, tsm1.getJamScore());
-        assertEquals(Team.LEAD_NO_LEAD, tsm1.getLeadJammer());
-        assertEquals(false, tsm1.getStarPass());
-        assertEquals(3, tsm1.getTimeouts());
-        assertEquals(1, tsm1.getOfficialReviews());
+        j = p.getJam(2);
+        tj = j.getTeamJam(Team.ID_1);
+        assertEquals(2000, j.getPeriodClockElapsedStart());
+        assertEquals(5, tj.getTotalScore());
+        assertEquals(0, tj.getJamScore());
+        assertEquals(Team.LEAD_NO_LEAD, tj.getLeadJammer());
+        assertEquals(false, tj.getStarPass());
+        assertEquals(3, tj.getTimeouts());
+        assertEquals(1, tj.getOfficialReviews());
         // No skaters have been entered for this jam yet.
-        assertEquals(null, tsm1.getSkaterStats(ID_PREFIX + "100"));
-        assertEquals(null, tsm1.getSkaterStats(ID_PREFIX + "101"));
+        assertEquals(null, tj.getFielding(ID_PREFIX + "100"));
+        assertEquals(null, tj.getFielding(ID_PREFIX + "101"));
     }
 
     @Test
@@ -149,18 +151,18 @@ public class StatsImplTests {
         advance(1000);
 
         // Confirm stats are as expected at end of first jam.
-        Stats.PeriodStats psm = stats.getPeriodStats(1);
-        Stats.JamStats jsm = psm.getJamStats(1);
-        assertEquals(1000, jsm.getJamClockElapsedEnd());
-        assertEquals(1000, jsm.getPeriodClockElapsedEnd());
+        Period p = stats.getPeriod(1);
+        Jam j = p.getJam(1);
+        assertEquals(1000, j.getJamClockElapsedEnd());
+        assertEquals(1000, j.getPeriodClockElapsedEnd());
 
         sb.startJam();
         advance(1000);
         sb.stopJamTO();
         advance(1000);
-        jsm = psm.getJamStats(2);
-        assertEquals(1000, jsm.getJamClockElapsedEnd());
-        assertEquals(3000, jsm.getPeriodClockElapsedEnd());
+        j = p.getJam(2);
+        assertEquals(1000, j.getJamClockElapsedEnd());
+        assertEquals(3000, j.getPeriodClockElapsedEnd());
     }
 
     @Test
@@ -168,56 +170,56 @@ public class StatsImplTests {
         sb.startJam();
         advance(1000);
 
-        Stats.PeriodStats psm = stats.getPeriodStats(1);
-        Stats.JamStats jsm = psm.getJamStats(1);
-        Stats.TeamStats tsm1 = jsm.getTeamStats(Team.ID_1);
+        Period p = stats.getPeriod(1);
+        Jam j = p.getJam(1);
+        TeamJam tj = j.getTeamJam(Team.ID_1);
 
         // Change the score during the jam.
         team1.changeScore(5);
-        assertEquals(5, tsm1.getTotalScore());
-        assertEquals(5, tsm1.getJamScore());
+        assertEquals(5, tj.getTotalScore());
+        assertEquals(5, tj.getJamScore());
 
         // Star pass during the jam.
         team1.setStarPass(true);
-        assertEquals(true, tsm1.getStarPass());
+        assertEquals(true, tj.getStarPass());
 
         // Lead during the jam.
         team1.setLeadJammer(Team.LEAD_LEAD);
-        assertEquals(Team.LEAD_LEAD, tsm1.getLeadJammer());
+        assertEquals(Team.LEAD_LEAD, tj.getLeadJammer());
 
         sb.stopJamTO();
         advance(1000);
         // Star pass and lead still correct after jam end.
-        assertEquals(true, tsm1.getStarPass());
-        assertEquals(Team.LEAD_LEAD, tsm1.getLeadJammer());
+        assertEquals(true, tj.getStarPass());
+        assertEquals(Team.LEAD_LEAD, tj.getLeadJammer());
 
         // Some points arrive after end of jam.
         team1.changeScore(4);
-        assertEquals(9, tsm1.getTotalScore());
-        assertEquals(9, tsm1.getJamScore());
+        assertEquals(9, tj.getTotalScore());
+        assertEquals(9, tj.getJamScore());
 
         // Timeout at end of jam.
         team1.timeout();
         advance(1000);
-        assertEquals(2, tsm1.getTimeouts());
+        assertEquals(2, tj.getTimeouts());
 
         // Official review at end of jam.
         team1.officialReview();
         advance(1000);
-        assertEquals(0, tsm1.getOfficialReviews());
+        assertEquals(0, tj.getOfficialReviews());
 
         // Start jam 2, confirm score.
         sb.startJam();
         advance(1000);
-        jsm = psm.getJamStats(2);
-        tsm1 = jsm.getTeamStats(Team.ID_1);
-        assertEquals(9, tsm1.getTotalScore());
-        assertEquals(0, tsm1.getJamScore());
+        j = p.getJam(2);
+        tj = j.getTeamJam(Team.ID_1);
+        assertEquals(9, tj.getTotalScore());
+        assertEquals(0, tj.getJamScore());
 
         // Add points during the jam, jam score is correct.
         team1.changeScore(3);
-        assertEquals(12, tsm1.getTotalScore());
-        assertEquals(3, tsm1.getJamScore());
+        assertEquals(12, tj.getTotalScore());
+        assertEquals(3, tj.getJamScore());
     }
 
     @Test
@@ -229,34 +231,34 @@ public class StatsImplTests {
         sb.startJam();
         advance(1000);
 
-        Stats.PeriodStats psm = stats.getPeriodStats(1);
-        Stats.JamStats jsm = psm.getJamStats(1);
-        Stats.TeamStats tsm1 = jsm.getTeamStats(Team.ID_1);
+        Period p = stats.getPeriod(1);
+        Jam j = p.getJam(1);
+        TeamJam tj = j.getTeamJam(Team.ID_1);
 
         // Blocker is added after the jam starts. All positions in place.
         team1.field(team1.getSkater(ID_PREFIX + "102"), team1.getPosition(FloorPosition.BLOCKER1));
-        assertEquals(FloorPosition.JAMMER.toString(), tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
-        assertEquals(FloorPosition.PIVOT.toString(), tsm1.getSkaterStats(ID_PREFIX + "101").getPosition());
-        assertEquals(FloorPosition.BLOCKER1.toString(), tsm1.getSkaterStats(ID_PREFIX + "102").getPosition());
+        assertEquals(FloorPosition.JAMMER.toString(), tj.getFielding(ID_PREFIX + "100").getPosition());
+        assertEquals(FloorPosition.PIVOT.toString(), tj.getFielding(ID_PREFIX + "101").getPosition());
+        assertEquals(FloorPosition.BLOCKER1.toString(), tj.getFielding(ID_PREFIX + "102").getPosition());
 
         // Skater was actually on bench.
         team1.field(team1.getSkater(ID_PREFIX + "102"), Role.BENCH);
-        assertEquals(null, tsm1.getSkaterStats(ID_PREFIX + "102"));
+        assertEquals(null, tj.getFielding(ID_PREFIX + "102"));
 
         // Skater goes to the box.
         team1.getSkater(ID_PREFIX + "100").setPenaltyBox(true);
-        assertEquals(true, tsm1.getSkaterStats(ID_PREFIX + "100").getPenaltyBox());
+        assertEquals(true, tj.getFielding(ID_PREFIX + "100").getPenaltyBox());
 
         // Skater exits the box.
         team1.getSkater(ID_PREFIX + "100").setPenaltyBox(false);
-        assertEquals(false, tsm1.getSkaterStats(ID_PREFIX + "100").getPenaltyBox());
+        assertEquals(false, tj.getFielding(ID_PREFIX + "100").getPenaltyBox());
 
         // Jam ends.
         sb.stopJamTO();
         advance(1000);
         // New jammer does not replace jammer from previous jam.
         team1.field(team1.getSkater(ID_PREFIX + "103"), Role.JAMMER);
-        assertEquals(FloorPosition.JAMMER.toString(), tsm1.getSkaterStats(ID_PREFIX + "100").getPosition());
+        assertEquals(FloorPosition.JAMMER.toString(), tj.getFielding(ID_PREFIX + "100").getPosition());
     }
 
 }
