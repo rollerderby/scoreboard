@@ -18,11 +18,12 @@ import java.util.Set;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventProvider,ScoreBoardListener {
+public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProvider,ScoreBoardListener {
     public abstract String getProviderName();
     public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
     public String getProviderId() { return getId(); }
@@ -131,6 +132,16 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 	    return result;
 	}
     }
+    public NumberedScoreBoardEventProvider<?> getFirst(NumberedProperty prop) {
+	synchronized (coreLock) {
+	    return (NumberedScoreBoardEventProvider<?>)get(prop, String.valueOf(minIds.get(prop)));
+	}
+    }
+    public NumberedScoreBoardEventProvider<?> getLast(NumberedProperty prop) {
+	synchronized (coreLock) {
+	    return (NumberedScoreBoardEventProvider<?>)get(prop, String.valueOf(maxIds.get(prop)));
+	}
+    }
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) {
 	synchronized (coreLock) {
 	    return new HashSet<ValueWithId>(children.get(prop).values());
@@ -139,12 +150,47 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     public boolean add(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
 	    Map<String, ValueWithId> map = children.get(prop);
-	    if (map.containsKey(item.getId()) && map.get(item.getId()).equals(item)) { return false; }
-	    map.put(item.getId(), item);
+	    String id = item.getId();
+	    if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
+		id = ((ScoreBoardEventProvider)item).getProviderId();
+	    }
+	    if (map.containsKey(id) && map.get(id).equals(item)) { return false; }
+	    map.put(id, item);
 	    if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
 		((ScoreBoardEventProvider)item).addScoreBoardListener(this);
 	    }
+	    if (prop instanceof NumberedProperty) {
+		int num = Integer.parseInt(id);
+		if (minIds.get(prop) == null || minIds.get(prop) > num) {
+		    minIds.put((NumberedProperty)prop,  num);
+		}
+		if (maxIds.get(prop) == null || maxIds.get(prop) < num) {
+		    maxIds.put((NumberedProperty)prop,  num);
+		}
+	    }
 	    scoreBoardChange(new ScoreBoardEvent(this, prop, item, false));
+	    return true;
+	}
+    }
+    public boolean insert(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item) {
+	synchronized (coreLock) {
+	    if (item == null) { return false; }
+	    if (get(prop, item.getProviderId()) == null) { return add(prop, item); }
+	    requestBatchStart();
+	    int newNum = Integer.parseInt(item.getProviderId());
+	    NumberedScoreBoardEventProvider<?> curItem = 
+		    (NumberedScoreBoardEventProvider<?>)get(prop, item.getProviderId());
+	    while (curItem.hasNext(false)) {
+		curItem = curItem.getNext(false, false);
+	    }
+	    int curNum = Integer.parseInt(curItem.getProviderId()) + 1;
+	    while (curNum > newNum) {
+		curItem.setNumber(curNum, true);
+		curNum--;
+		curItem = curItem.getPrevious(false, true);
+	    }
+	    add(prop, item);
+	    requestBatchEnd();
 	    return true;
 	}
     }
@@ -157,19 +203,63 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
 	    return result;
 	}
     }
+    public boolean remove(NumberedProperty prop, String id, boolean renumber) {
+	return remove(prop, (NumberedScoreBoardEventProvider<?>)get(prop, id), renumber);
+    }
+    public boolean remove(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item, boolean renumber) {
+	synchronized (coreLock) {
+	    if (!renumber || !item.hasNext(false)) {
+		return remove(prop, item);
+	    }
+	    requestBatchStart();
+	    boolean result = removeSilent(prop, item);
+	    if (result) {
+		NumberedScoreBoardEventProvider<?> curItem = item.getNext(false, false);
+		int curNumber = Integer.valueOf(item.getProviderId());
+		while (curItem.hasNext(false)) {
+		    curItem.setNumber(curNumber, true);
+		    curNumber++;
+		    curItem = curItem.getNext(false, false);
+		}
+		curItem.setNumber(curNumber, false);
+	    }
+	    requestBatchEnd();
+	    return result;
+	}
+    }
     public boolean removeSilent(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
 	    Map<String, ValueWithId> map = children.get(prop);
-	    if (item == null || !map.containsKey(item.getId())) { return false; }
-	    map.remove(item.getId());
+	    if (item == null) { return false; }
+	    String id = item.getId();
+	    if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
+		id = ((ScoreBoardEventProvider)item).getProviderId();
+	    }
+	    if (!map.containsKey(id)) { return false; }
+	    map.remove(id);
 	    if (item instanceof ScoreBoardEventProvider) {
 		((ScoreBoardEventProvider)item).removeScoreBoardListener(this);
+	    }
+	    if (prop instanceof NumberedProperty) {
+		int num = Integer.parseInt(id);
+		if (minIds.get(prop) != null && num == minIds.get(prop)) {
+		    NumberedScoreBoardEventProvider<?> next = ((NumberedScoreBoardEventProvider<?>)item).getNext(false, true);
+		    minIds.put((NumberedProperty)prop,  next == null ? null : Integer.parseInt(next.getProviderId()));
+		}
+		if (maxIds.get(prop) != null && maxIds.get(prop) == num) {
+		    NumberedScoreBoardEventProvider<?> prev = ((NumberedScoreBoardEventProvider<?>)item).getPrevious(false, true);
+		    maxIds.put((NumberedProperty)prop,  prev == null ? null : Integer.parseInt(prev.getProviderId()));
+		}
 	    }
 	    return true;
 	}
     }
     public void removeAll(AddRemoveProperty prop) {
 	synchronized (coreLock) {
+	    if (prop instanceof NumberedProperty) {
+		minIds.remove(prop);
+		maxIds.remove(prop);
+	    }
 	    for (ValueWithId item : getAll(prop)) {
 		remove(prop, item);
 	    }
@@ -183,6 +273,8 @@ public abstract class DefaultScoreBoardEventProvider implements ScoreBoardEventP
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
     protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();
     protected Map<AddRemoveProperty, Map<String, ValueWithId>> children = new HashMap<AddRemoveProperty, Map<String, ValueWithId>>();
+    protected Map<NumberedProperty, Integer> minIds = new HashMap<NumberedProperty, Integer>();
+    protected Map<NumberedProperty, Integer> maxIds = new HashMap<NumberedProperty, Integer>();
 
     public enum BatchEvent implements ScoreBoardEvent.PermanentProperty {
 	START,

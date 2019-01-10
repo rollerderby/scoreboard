@@ -42,7 +42,7 @@ public class ScoreBoardXmlConverter {
     }
 	
     public Element toElement(Element parent, ScoreBoardEventProvider p) {
-        Element e = editor.setElement(parent, p.getProviderName(), p.getId());
+        Element e = editor.setElement(parent, p.getProviderName(), p.getProviderId());
 
         for (Class<? extends Property> type : p.getProperties()) {
 	    for (Property prop : type.getEnumConstants()) {

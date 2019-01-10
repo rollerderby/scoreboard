@@ -7,31 +7,27 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
-public class PeriodImpl extends DefaultScoreBoardEventProvider implements Period {
-    public PeriodImpl(ScoreBoard s, int p) {
+public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
+    public PeriodImpl(ScoreBoard s, String p) {
+	super(ScoreBoard.NChild.PERIOD, s, p, 1);
         children.put(Child.JAM, new HashMap<String, ValueWithId>());
         scoreBoard = s;
-        period = p;
         values.put(Value.RUNNING, false);
         values.put(Value.WALLTIME_START, 0L);
         values.put(Value.WALLTIME_END, 0L);
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.PERIOD); }
     public Class<Period> getProviderClass() { return Period.class; }
-    public String getId() { return String.valueOf(period); }
-    public ScoreBoardEventProvider getParent() { return scoreBoard; }
     public List<Class<? extends Property>> getProperties() { return properties; }
+    public String getId() { return getProviderId(); }
     
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {

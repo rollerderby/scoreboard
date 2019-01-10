@@ -19,7 +19,7 @@ import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.Button;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -434,7 +434,7 @@ public class ScoreboardImplTests {
         ic.setTime(55000);
         ic.start();
         assertFalse(sb.isInPeriod());
-        assertEquals(1, sb.getAll(ScoreBoard.Child.PERIOD).size());
+        assertEquals(1, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         assertEquals(sb.getPeriod(1), sb.currentPeriod);
 
         sb.startJam();
@@ -449,7 +449,7 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
         assertTrue(sb.isInPeriod());
-        assertEquals(2, sb.getAll(ScoreBoard.Child.PERIOD).size());
+        assertEquals(2, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         assertEquals(sb.getPeriod(2), sb.currentPeriod);
         checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
     }

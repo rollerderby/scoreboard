@@ -16,7 +16,7 @@ import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
@@ -29,7 +29,7 @@ import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rulesets {
+public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
         parent = s;
         children.put(Child.RULESET, new HashMap<String, ValueWithId>());
@@ -185,7 +185,7 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
 
     public static final String ROOT_ID = "00000000-0000-0000-0000-000000000000";
 
-    public class RulesetImpl extends DefaultScoreBoardEventProvider implements Ruleset {
+    public class RulesetImpl extends ScoreBoardEventProviderImpl implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
             this.rulesets = rulesets;
             children.put(Child.RULE, new HashMap<String, ValueWithId>());

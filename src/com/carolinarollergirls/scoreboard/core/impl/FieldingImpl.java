@@ -5,13 +5,13 @@ import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
-public class FieldingImpl extends DefaultScoreBoardEventProvider implements Fielding {
+public class FieldingImpl extends ScoreBoardEventProviderImpl implements Fielding {
     public FieldingImpl(String skater_id, TeamJam teamJam) {
 	values.put(Value.ID, skater_id);
 	this.team = teamJam;

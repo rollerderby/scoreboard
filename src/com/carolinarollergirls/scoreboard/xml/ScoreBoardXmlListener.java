@@ -14,7 +14,7 @@ import org.jdom.Element;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -94,7 +94,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
 	if (p.getParent() == null) {
 	    return editor.getElement(document.getRootElement(), p.getProviderName());
 	} else {
-	    return editor.getElement(getElement(p.getParent()), p.getProviderName(), p.getId());
+	    return editor.getElement(getElement(p.getParent()), p.getProviderName(), p.getProviderId());
 	}
     }
 

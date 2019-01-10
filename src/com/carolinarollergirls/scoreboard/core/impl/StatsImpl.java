@@ -23,14 +23,14 @@ import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
-public class StatsImpl extends DefaultScoreBoardEventProvider implements Stats {
+public class StatsImpl extends ScoreBoardEventProviderImpl implements Stats {
     public StatsImpl(ScoreBoard sb) {
         scoreBoard = sb;
 

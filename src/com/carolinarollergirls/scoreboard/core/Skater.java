@@ -53,7 +53,6 @@ public interface Skater extends ScoreBoardEventProvider {
     public static final String FO_EXP_ID = "FO_EXP";
 
     public static interface Penalty extends ScoreBoardEventProvider {
-        public String getUuid();
         public int getPeriod();
         public int getJam();
         public String getCode();

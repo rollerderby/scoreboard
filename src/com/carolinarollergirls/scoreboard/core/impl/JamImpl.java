@@ -8,14 +8,14 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
-public class JamImpl extends DefaultScoreBoardEventProvider implements Jam {
+public class JamImpl extends ScoreBoardEventProviderImpl implements Jam {
     public JamImpl(Period p, int j) {
         period = p;
         jam = j;
@@ -35,7 +35,7 @@ public class JamImpl extends DefaultScoreBoardEventProvider implements Jam {
         return Long.parseLong(sValue);
     }
     
-    public int getPeriodNumber() { return period.getPeriodNumber(); }
+    public int getPeriodNumber() { return period.getNumber(); }
     public int getJamNumber() { return jam; }
 
     public long getJamClockElapsedEnd() { return (Long)get(Value.JAM_CLOCK_ELAPSED_END); }

@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.core;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
@@ -106,7 +107,9 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 	PENALTY_CODES,
 	MEDIA,
 	CLOCK,
-	TEAM,
+	TEAM;
+    }
+    public enum NChild implements NumberedProperty {
 	PERIOD;
     }
     public enum Command implements CommandProperty {

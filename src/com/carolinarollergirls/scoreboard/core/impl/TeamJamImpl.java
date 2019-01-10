@@ -7,7 +7,7 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -15,7 +15,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
-public class TeamJamImpl extends DefaultScoreBoardEventProvider implements TeamJam {
+public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam {
     public TeamJamImpl(String team_id, Jam j) {
         children.put(Child.FIELDING, new HashMap<String, ValueWithId>());
         values.put(Value.ID, team_id);

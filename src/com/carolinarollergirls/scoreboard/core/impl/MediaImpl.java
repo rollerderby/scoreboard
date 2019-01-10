@@ -25,7 +25,7 @@ import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -33,7 +33,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
-public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
+public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     public MediaImpl(ScoreBoardEventProvider parent, File path) {
 	this.parent = parent;
 	children.put(Child.FORMAT, new HashMap<String, ValueWithId>());
@@ -182,7 +182,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	add(Child.class);
     }};
 
-    public class MediaFormatImpl extends DefaultScoreBoardEventProvider implements MediaFormat {
+    public class MediaFormatImpl extends ScoreBoardEventProviderImpl implements MediaFormat {
 	MediaFormatImpl(Media parent, String format) {
 	    this.parent = parent;
 	    this.format = format;
@@ -214,7 +214,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	}};
     }
     
-    public class MediaTypeImpl extends DefaultScoreBoardEventProvider implements MediaType {
+    public class MediaTypeImpl extends ScoreBoardEventProviderImpl implements MediaType {
 	MediaTypeImpl(MediaFormat parent, String type) {
 	    this.parent = parent;
 	    this.type = type;
@@ -242,7 +242,7 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 	}};
     }
     
-    public class MediaFileImpl extends DefaultScoreBoardEventProvider implements MediaFile {
+    public class MediaFileImpl extends ScoreBoardEventProviderImpl implements MediaFile {
         MediaFileImpl(MediaType type, String id, String name, String src) {
             this.type = type;
             values.put(Value.ID, id);

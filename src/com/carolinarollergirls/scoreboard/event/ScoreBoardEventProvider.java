@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
@@ -30,9 +31,8 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      */
     public Class<? extends ScoreBoardEventProvider> getProviderClass();
     /**
-     * Id to be used in order to identify this element amongst all elements of its type.
-     * Used when the element is referenced by elements other than its parent.
-     *  (Typically a UUID.)
+     * Id to be used in order to identify this element amongst its siblings in XML and JSON.
+     *  (Could e.g. be a Period/Jam/etc number or a UUID.)
      */
     public String getProviderId();
     /**
@@ -80,12 +80,22 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      */
     public ValueWithId get(AddRemoveProperty prop, String id, boolean add);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
+    public ValueWithId getFirst(NumberedProperty prop);
+    public ValueWithId getLast(NumberedProperty prop);
     //returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
+    //returns true, if a value was added
+    public boolean insert(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item);
     //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, String id);
     //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, ValueWithId item);
+    //returns true, if a value was removed
+    public boolean remove(NumberedProperty prop, String id, boolean renumber);
+    //returns true, if a value was removed
+    public boolean remove(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item, boolean renumber);
+    //returns true, if a value was removed
+    public boolean removeSilent(AddRemoveProperty prop, ValueWithId item);
     public void removeAll(AddRemoveProperty prop);
     /**
      * Must call an appropriate constructor for all children that are themselves a

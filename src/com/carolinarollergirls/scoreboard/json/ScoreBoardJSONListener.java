@@ -13,7 +13,7 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider.BatchEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -47,11 +47,11 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     if (batch > 0) { batch--; }
                 } else if (prop instanceof PermanentProperty) {
                     update(getPath(p), prop, v);
-                } else if (prop instanceof AddRemoveProperty && rem) {
-                    remove(getPath(p), prop, ((ValueWithId)v).getId());
                 } else if (prop instanceof AddRemoveProperty) {
                     if (v instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)v).getParent() == p) {
-                	process((ScoreBoardEventProvider)v);
+                	process((ScoreBoardEventProvider)v, rem);
+                    } else if (rem) {
+                        remove(getPath(p), prop, ((ValueWithId)v).getId());
                     } else {
                 	update(getPath(p), prop, v);
                     }
@@ -84,7 +84,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	if (prop instanceof AddRemoveProperty) {
 	    updates.add(new WSUpdate(path + "(" + ((ValueWithId)v).getId() + ")", ((ValueWithId)v).getValue()));
     	} else if (v instanceof ScoreBoardEventProvider) {
-            updates.add(new WSUpdate(path, ((ScoreBoardEventProvider) v).getProviderId()));
+            updates.add(new WSUpdate(path, ((ScoreBoardEventProvider) v).getId()));
 	} else if (v == null || v instanceof Boolean || v instanceof Integer
 		|| v instanceof Long){
             updates.add(new WSUpdate(path, v));
@@ -98,9 +98,10 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	updates.add(new WSUpdate(path, null));
     }
     
-    private void process(ScoreBoardEventProvider p) {
+    private void process(ScoreBoardEventProvider p, boolean remove) {
 	String path = getPath(p);
         updates.add(new WSUpdate(path, null));
+        if (remove) { return; }
 
         for (Class<? extends Property> type : p.getProperties()) {
 	    for (Property prop : type.getEnumConstants()) {
@@ -111,7 +112,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 		} else if (prop instanceof AddRemoveProperty) {
 		    for (ValueWithId c : p.getAll((AddRemoveProperty)prop)) {
 			if (c instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)c).getParent() == p) {
-			    process((ScoreBoardEventProvider)c);
+			    process((ScoreBoardEventProvider)c, false);
 			} else {
 			    update(getPath(p), prop, c);
 			}
@@ -122,7 +123,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
     }
 
     private void initialize(ScoreBoard sb) {
-	process(sb);
+	process(sb, false);
 
 	//announce empty directories to the frontend
 	for (ValueWithId mf : sb.getMedia().getAll(Media.Child.FORMAT)) {
@@ -140,8 +141,8 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 	    path = getPath(p.getParent()) + ".";
 	}
 	path = path + p.getProviderName();
-	if (!"".equals(p.getId()) && p.getId() != null) {
-	    path = path + "(" + p.getId() + ")";
+	if (!"".equals(p.getProviderId()) && p.getProviderId() != null) {
+	    path = path + "(" + p.getProviderId() + ")";
 	}
 	return path;
     }

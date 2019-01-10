@@ -83,7 +83,7 @@ public class StatsImplTests {
             advance(1000);
             sb.stopJamTO();
         }
-        assertEquals(2, sb.getAll(ScoreBoard.Child.PERIOD).size());
+        assertEquals(2, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         Period p = sb.getPeriod(2);
         assertEquals(3, p.getAll(Period.Child.JAM).size());
 

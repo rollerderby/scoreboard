@@ -22,7 +22,7 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
@@ -33,7 +33,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
-public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
+public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
         scoreBoard = sb;
         id = i;
@@ -491,7 +491,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
     public static final String DEFAULT_LEADJAMMER = Team.LEAD_NO_LEAD;
     public static final boolean DEFAULT_STARPASS = false;
 
-    public class AlternateNameImpl extends DefaultScoreBoardEventProvider implements AlternateName {
+    public class AlternateNameImpl extends ScoreBoardEventProviderImpl implements AlternateName {
         public AlternateNameImpl(Team t, String i, String n) {
             team = t;
             id = i;
@@ -517,7 +517,7 @@ public class TeamImpl extends DefaultScoreBoardEventProvider implements Team {
         protected String id;
     }
 
-    public class ColorImpl extends DefaultScoreBoardEventProvider implements Color {
+    public class ColorImpl extends ScoreBoardEventProviderImpl implements Color {
         public ColorImpl(Team t, String i, String c) {
             team = t;
             id = i;

@@ -13,14 +13,14 @@ import java.util.HashMap;
 import java.util.List;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
-public class SettingsImpl extends DefaultScoreBoardEventProvider implements Settings {
+public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
     public SettingsImpl(ScoreBoard s) {
         sbm = s;
         children.put(Child.SETTING, new HashMap<String, ValueWithId>());

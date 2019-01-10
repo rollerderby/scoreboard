@@ -6,11 +6,11 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
-public abstract class RuleDefinition extends DefaultScoreBoardEventProvider {
+public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
     public RuleDefinition(Type type, String name, String description, Object defaultValue) {
 	values.put(Value.TYPE, type);
 	values.put(Value.NAME, name);

@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
@@ -39,7 +39,7 @@ import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 
-public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements ScoreBoard {
+public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements ScoreBoard {
     public ScoreBoardImpl() {
         setupScoreBoard();
     }
@@ -50,7 +50,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 	}
 	children.put(Child.CLOCK, new HashMap<String, ValueWithId>());
 	children.put(Child.TEAM, new HashMap<String, ValueWithId>());
-        children.put(Child.PERIOD, new HashMap<String, ValueWithId>());
+        children.put(NChild.PERIOD, new HashMap<String, ValueWithId>());
 	children.put(Child.STATS, new HashMap<String, ValueWithId>());
         add(Child.STATS, new StatsImpl(this));
 	children.put(Child.SETTINGS, new HashMap<String, ValueWithId>());
@@ -142,10 +142,9 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 	synchronized (coreLock) {
 	    if (prop == Child.CLOCK) { return new ClockImpl(this, id); }
 	    if (prop == Child.TEAM) { return new TeamImpl(this, id); }
-	    if (prop == Child.PERIOD) {
-		int num = Integer.parseInt(id);
-		if (num <= getRulesets().getInt(Rule.NUMBER_PERIODS)) {
-		    return new PeriodImpl(this, num);
+	    if (prop == NChild.PERIOD) {
+		if (Integer.parseInt(id) <= getRulesets().getInt(Rule.NUMBER_PERIODS)) {
+		    return new PeriodImpl(this, id);
 		}
 	    }
 	    return null;
@@ -161,7 +160,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
             for (ValueWithId t : getAll(Child.TEAM)) {
                 ((Team)t).reset();
             }
-            removeAll(Child.PERIOD);
+            removeAll(NChild.PERIOD);
             currentPeriod = getPeriod(1);
 
             setTimeoutOwner(TimeoutOwners.NONE);
@@ -186,7 +185,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
 
     public boolean isInPeriod() { return (Boolean)get(Value.IN_PERIOD); }
     public void setInPeriod(boolean p) { currentPeriod.set(Period.Value.RUNNING, p); }
-    public Period getPeriod(int p) { return (Period)get(Child.PERIOD, String.valueOf(p), true); }
+    public Period getPeriod(int p) { return (Period)get(NChild.PERIOD, String.valueOf(p), true); }
     public Period getCurrentPeriod() { return currentPeriod; }
     protected void addInPeriodListeners() {
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_PERIOD, Clock.Value.RUNNING, Boolean.FALSE, periodEndListener));
@@ -617,6 +616,7 @@ public class ScoreBoardImpl extends DefaultScoreBoardEventProvider implements Sc
     protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
 	add(Value.class);
 	add(Child.class);
+	add(NChild.class);
 	add(Command.class);
     }};
 
