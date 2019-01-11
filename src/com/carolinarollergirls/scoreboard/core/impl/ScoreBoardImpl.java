@@ -8,9 +8,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -21,9 +19,7 @@ import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -41,6 +37,7 @@ import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements ScoreBoard {
     public ScoreBoardImpl() {
+	super(null, null, ScoreBoard.class, Value.class, Child.class, NChild.class, Command.class);
         setupScoreBoard();
     }
 
@@ -75,11 +72,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         Button.UNDO.setLabel(ACTION_NONE);
     }
 
-    public String getProviderName() { return "ScoreBoard"; }
-    public Class<ScoreBoard> getProviderClass() { return ScoreBoard.class; }
     public String getId() { return ""; }
-    public ScoreBoardEventProvider getParent() { return null; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
@@ -93,10 +86,15 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 	synchronized (coreLock) {
 	    if (prop == Value.IN_PERIOD) { return false; }
 	    boolean result = super.set(prop, value, flag);
-	    if (result && prop == Value.IN_OVERTIME && !(Boolean)value) {
-		Clock lc = getClock(Clock.ID_LINEUP);
-		if (lc.isCountDirectionDown()) {
-		    lc.setMaximumTime(getRulesets().getLong(Rule.LINEUP_DURATION));
+	    if (result) {
+		if (prop == Value.IN_OVERTIME && !(Boolean)value) {
+		    Clock lc = getClock(Clock.ID_LINEUP);
+		    if (lc.isCountDirectionDown()) {
+			lc.setMaximumTime(getRulesets().getLong(Rule.LINEUP_DURATION));
+		    }
+		}
+		if (prop == Value.OFFICIAL_SCORE && (Boolean)value) {
+		    getCurrentPeriod().truncateAfterCurrentJam();
 		}
 	    }
 	    return result;
@@ -334,6 +332,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         Clock ic = getClock(Clock.ID_INTERMISSION);
 
         requestBatchStart();
+        getCurrentPeriod().truncateAfterCurrentJam();
         pc.setNumber(ic.getNumber()+1);
         pc.resetTime();
         restartPcAfterTimeout = false;
@@ -369,9 +368,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         _endIntermission(false);
         _endTimeout(false);
         _endLineup();
-        setInPeriod(true);
         pc.start();
         jc.startNext();
+        currentPeriod.startJam();
 
         getTeam(Team.ID_1).startJam();
         getTeam(Team.ID_2).startJam();
@@ -385,6 +384,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         requestBatchStart();
         jc.stop();
+        getCurrentPeriod().stopJam();
         getTeam(Team.ID_1).stopJam();
         getTeam(Team.ID_2).stopJam();
         setInOvertime(false);
@@ -612,13 +612,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     
     protected ScoreBoardSnapshot snapshot = null;
     protected boolean replacePending = false;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-	add(Child.class);
-	add(NChild.class);
-	add(Command.class);
-    }};
 
     protected boolean restartPcAfterTimeout;
 

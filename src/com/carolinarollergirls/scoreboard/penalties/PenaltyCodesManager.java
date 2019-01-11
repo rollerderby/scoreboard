@@ -3,7 +3,6 @@ package com.carolinarollergirls.scoreboard.penalties;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -13,28 +12,22 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
     
     public PenaltyCodesManager(ScoreBoard parent) {
+	super(parent, ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
 	this.parent = parent;
 	definitions = loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE));
         parent.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Child.CURRENT_RULE, rulesetChangeListener));
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.PENALTY_CODES); }
-    public Class<PenaltyCodesManager> getProviderClass() { return PenaltyCodesManager.class; }
     public String getId() { return ""; }
-    public ScoreBoardEventProvider getParent() { return parent; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
     
     public ValueWithId get(AddRemoveProperty prop, String id, boolean add) {
 	for (PenaltyCode c : getDefinitions()) {
@@ -67,12 +60,7 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
         }
     }
     
-    private ScoreBoard parent;
     private PenaltyCodesDefinition definitions;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Child.class);
-    }};
 
     protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {

@@ -1,28 +1,19 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.core.Rulesets;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
     public RuleDefinition(Type type, String name, String description, Object defaultValue) {
+	super(null, Rulesets.Child.RULE_DEFINITION, RuleDefinition.class, Value.class);
 	values.put(Value.TYPE, type);
 	values.put(Value.NAME, name);
 	values.put(Value.DEFAULT_VALUE, defaultValue.toString());
 	values.put(Value.DESCRIPTION, description);
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(Rulesets.Child.RULE_DEFINITION); }
-    public Class<Rulesets> getProviderClass() { return Rulesets.class; }
     public String getId() { return getName(); }
-    public ScoreBoardEventProvider getParent() { return parent; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
     
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	return false;
@@ -37,14 +28,11 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
 
     public abstract boolean isValueValid(String v);
 
-    public void setParent(Rulesets p) { parent = p; }
+    public void setParent(Rulesets p) {
+	parent = p;
+	scoreBoard = parent.getScoreBoard();
+    }
     
-    protected Rulesets parent;
-    
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-    }};
-
     public enum Type {
 	BOOLEAN("Boolean"),
 	INTEGER("Integer"),

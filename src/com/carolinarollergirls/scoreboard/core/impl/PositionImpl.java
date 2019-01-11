@@ -8,33 +8,24 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public class PositionImpl extends ScoreBoardEventProviderImpl implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
+	super(t, Team.Child.POSITION, Position.class);
         team = t;
         floorPosition = fp;
         values.put(Value.ID, fp.toString());
         reset();
     }
 
-    public String getProviderName() { return "Position"; }
-    public Class<Position> getProviderClass() { return Position.class; }
-    public ScoreBoardEventProvider getParent() { return team; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
-    
     public Object valueFromString(PermanentProperty prop, String sValue) {
 	synchronized (coreLock) {
 	    if (prop == Value.SKATER) { return team.getSkater(sValue); }
@@ -107,9 +98,4 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
 
     protected Team team;
     protected FloorPosition floorPosition;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-	add(Command.class);
-    }};
 }

@@ -62,14 +62,14 @@ public class StatsImplTests {
         sb.startJam();
         advance(1000);
         Period p = sb.getPeriod(1);
-        assertEquals(1, p.getAll(Period.Child.JAM).size());
+        assertEquals(1, p.getAll(Period.NChild.JAM).size());
 
 
         // Start the second jam and confirm it's there.
         sb.stopJamTO();
         sb.startJam();
         advance(1000);
-        assertEquals(2, p.getAll(Period.Child.JAM).size());
+        assertEquals(2, p.getAll(Period.NChild.JAM).size());
     }
 
     @Test
@@ -85,11 +85,12 @@ public class StatsImplTests {
         }
         assertEquals(2, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         Period p = sb.getPeriod(2);
-        assertEquals(3, p.getAll(Period.Child.JAM).size());
+        assertEquals(3, p.getAll(Period.NChild.JAM).size());
 
         // Truncate jams.
         jc.setNumber(1);
-        assertEquals(1, p.getAll(Period.Child.JAM).size());
+        p.truncateAfterCurrentJam();
+        assertEquals(1, p.getAll(Period.NChild.JAM).size());
     }
 
     @Test
@@ -149,7 +150,7 @@ public class StatsImplTests {
         // Confirm stats are as expected at end of first jam.
         Period p = stats.getPeriod(1);
         Jam j = p.getJam(1);
-        assertEquals(1000, j.getJamClockElapsedEnd());
+        assertEquals(1000, j.getDuration());
         assertEquals(1000, j.getPeriodClockElapsedEnd());
 
         sb.startJam();
@@ -157,7 +158,7 @@ public class StatsImplTests {
         sb.stopJamTO();
         advance(1000);
         j = p.getJam(2);
-        assertEquals(1000, j.getJamClockElapsedEnd());
+        assertEquals(1000, j.getDuration());
         assertEquals(3000, j.getPeriodClockElapsedEnd());
     }
 

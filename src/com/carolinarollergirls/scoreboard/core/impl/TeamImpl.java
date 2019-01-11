@@ -8,14 +8,10 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
@@ -24,18 +20,15 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
-        scoreBoard = sb;
+	super(sb, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class);
         id = i;
         for (Child c : Child.values()) {
             children.put(c, new HashMap<String, ValueWithId>());
@@ -49,12 +42,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         reset();
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.TEAM); }
-    public Class<Team> getProviderClass() { return Team.class; }
-    public String getProviderId() { return getId(); }
-    public ScoreBoardEventProvider getParent() { return scoreBoard; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
-    
     public Object get(PermanentProperty prop) {
 	if (prop == Value.JAM_SCORE) { return getScore() - getLastScore(); }
 	return super.get(prop);
@@ -173,8 +160,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     public String getId() { return id; }
-
-    public String toString() { return id; }
 
     public String getName() { return (String)get(Value.NAME); }
     public void setName(String n) { set(Value.NAME, n); }
@@ -463,23 +448,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
     private void setNoPivot(boolean noPivot) { set(Value.NO_PIVOT, noPivot); }
 
-
-    protected ScoreBoard scoreBoard;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-        add(Child.class);
-        add(Command.class);
-    }};
-
     protected String id;
-
-    protected Map<String,AlternateName> alternateNames = new ConcurrentHashMap<String,AlternateName>();
-
-    protected Map<String,Color> colors = new ConcurrentHashMap<String,Color>();
-
-    protected Map<String,Skater> skaters = new ConcurrentHashMap<String,Skater>();
-    protected Map<FloorPosition,Position> positions = new ConcurrentHashMap<FloorPosition,Position>();
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
     
@@ -493,6 +462,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     public class AlternateNameImpl extends ScoreBoardEventProviderImpl implements AlternateName {
         public AlternateNameImpl(Team t, String i, String n) {
+            super(t, Team.Child.ALTERNATE_NAME, AlternateName.class, Value.class);
             team = t;
             id = i;
             setName(n);
@@ -503,22 +473,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
         public Team getTeam() { return team; }
 
-        public String getProviderName() { return PropertyConversion.toFrontend(Team.Child.ALTERNATE_NAME); }
-        public Class<AlternateName> getProviderClass() { return AlternateName.class; }
-        public String getProviderId() { return getId(); }
-        public ScoreBoardEventProvider getParent() { return team; }
-        public List<Class<? extends Property>> getProperties() { return properties; }
-
-        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-            add(Value.class);
-        }};
-
         protected Team team;
         protected String id;
     }
 
     public class ColorImpl extends ScoreBoardEventProviderImpl implements Color {
         public ColorImpl(Team t, String i, String c) {
+            super(t, Team.Child.COLOR, Color.class, Value.class);
             team = t;
             id = i;
             setColor(c);
@@ -528,16 +489,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         public void setColor(String c) { set(Value.COLOR, c); }
 
         public Team getTeam() { return team; }
-
-        public String getProviderName() { return PropertyConversion.toFrontend(Team.Child.COLOR); }
-        public Class<Color> getProviderClass() { return Color.class; }
-        public String getProviderId() { return getId(); }
-        public ScoreBoardEventProvider getParent() { return team; }
-        public List<Class<? extends Property>> getProperties() { return properties; }
-
-        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-            add(Value.class);
-        }};
 
         protected Team team;
         protected String id;

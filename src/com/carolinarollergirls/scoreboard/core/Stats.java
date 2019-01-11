@@ -11,7 +11,6 @@ package com.carolinarollergirls.scoreboard.core;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Stats extends ScoreBoardEventProvider {
-    public ScoreBoard getScoreBoard();
     public void reset();
 
     public Period getPeriod(int p);

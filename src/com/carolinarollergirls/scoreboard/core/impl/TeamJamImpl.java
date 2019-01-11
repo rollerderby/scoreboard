@@ -1,32 +1,23 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam {
     public TeamJamImpl(String team_id, Jam j) {
+	super(j, Jam.Child.TEAM_JAM, TeamJam.class, Value.class, Child.class);
         children.put(Child.FIELDING, new HashMap<String, ValueWithId>());
         values.put(Value.ID, team_id);
         jam = j;
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(Jam.Child.TEAM_JAM); }
-    public Class<TeamJam> getProviderClass() { return TeamJam.class; }
     public String getId() { return getTeamId(); }
-    public ScoreBoardEventProvider getParent() { return jam; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Object valueFromString(PermanentProperty prop, String sValue) {
         if (sValue == null) return null;
@@ -47,7 +38,7 @@ public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam 
 
     public String getTeamId() { return (String)get(Value.ID); }
     public int getPeriodNumber() { return jam.getPeriodNumber(); }
-    public int getJamNumber() { return jam.getJamNumber(); }
+    public int getJamNumber() { return jam.getNumber(); }
 
     public int getJamScore() { return (Integer)get(Value.JAM_SCORE); }
     public void setJamScore(int s) { set(Value.JAM_SCORE, s); }
@@ -76,9 +67,4 @@ public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam 
     public void removeFielding() { removeAll(Child.FIELDING); }
 
     private Jam jam;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-        add(Value.class);
-        add(Child.class);
-    }};
 }

@@ -1,9 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
+import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -11,22 +9,18 @@ import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderI
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
     public PeriodImpl(ScoreBoard s, String p) {
-	super(ScoreBoard.NChild.PERIOD, s, p, 1);
-        children.put(Child.JAM, new HashMap<String, ValueWithId>());
-        scoreBoard = s;
+	super(s, ScoreBoard.NChild.PERIOD, Period.class, p, 1, Value.class, NChild.class);
+        children.put(NChild.JAM, new HashMap<String, ValueWithId>());
         values.put(Value.RUNNING, false);
         values.put(Value.WALLTIME_START, 0L);
         values.put(Value.WALLTIME_END, 0L);
     }
 
-    public Class<Period> getProviderClass() { return Period.class; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
     public String getId() { return getProviderId(); }
     
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
@@ -65,26 +59,16 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
     
     public ValueWithId create(AddRemoveProperty prop, String id) {
-        return new JamImpl(this, Integer.valueOf(id));
+        return new JamImpl(this, id);
     }
 
-    public int getPeriodNumber() { return period; }
-
-    public void ensureAtLeastNJams(int n) {
-        synchronized (coreLock) {
-    	requestBatchStart();
-    	for (int i = getAll(Child.JAM).size(); i < n; i++) {
-    	    get(Child.JAM, String.valueOf(i+1), true);
-    	}
-    	requestBatchEnd();
-        }
-    }
-
-    public void truncateAfterNJams(int n) {
+    public void truncateAfterCurrentJam() {
         synchronized (coreLock) {
             requestBatchStart();
-            for (int i = getAll(Child.JAM).size(); i > n; i--) {
-                remove(Child.JAM, getJam(i));
+            Jam j = getCurrentJam().getNext(false, true);
+            while (j != null) {
+        	remove(NChild.JAM, j);
+        	j = j.getNext(false, true);
             }
             requestBatchEnd();
         }
@@ -92,19 +76,22 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     
     public boolean isRunning() { return (Boolean)get(Value.RUNNING); }
 
-    public Jam getJam(int j) { return (Jam)get(Child.JAM, String.valueOf(j)); }
+    public Jam getJam(int j) { return (Jam)get(NChild.JAM, String.valueOf(j), true); }
+    public Jam getCurrentJam() { return getJam(scoreBoard.getClock(Clock.ID_JAM).getNumber()); }
 
-    public void start() {
-	set(Value.RUNNING, true);
+    public void startJam() {
+	synchronized (coreLock) {
+	    requestBatchStart();
+	    set(Value.RUNNING, true);
+	    getCurrentJam().start();
+	    requestBatchEnd();
+	}
     }
-    public void stop() {
-	set(Value.RUNNING, false);
+    public void stopJam() {
+	synchronized (coreLock) {
+	    requestBatchStart();
+	    getCurrentJam().stop();
+	    requestBatchEnd();
+	}
     }
-
-    private ScoreBoard scoreBoard;
-    private int period;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-        add(Child.class);
-    }};
 }

@@ -8,30 +8,25 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
-        parent = s;
+	super(s, ScoreBoard.Child.RULESETS, Rulesets.class, Value.class, Child.class);
         children.put(Child.RULESET, new HashMap<String, ValueWithId>());
         children.put(Child.RULE_DEFINITION, new HashMap<String, ValueWithId>());
         children.put(Child.CURRENT_RULE, new HashMap<String, ValueWithId>());
@@ -39,11 +34,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         reset();
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.RULESETS); }
-    public Class<Rulesets> getProviderClass() { return Rulesets.class; }
     public String getId() { return ""; }
-    public ScoreBoardEventProvider getParent() { return parent; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
     
     public ValueWithId create(AddRemoveProperty prop, String id) {
 	synchronized (coreLock) {
@@ -176,29 +167,17 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     }
     public void removeRuleset(String id) { remove(Child.RULESET, id); }
 
-    private ScoreBoardEventProvider parent = null;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-	add(Child.class);
-    }};
-
     public static final String ROOT_ID = "00000000-0000-0000-0000-000000000000";
 
     public class RulesetImpl extends ScoreBoardEventProviderImpl implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
-            this.rulesets = rulesets;
+            super(rulesets, Rulesets.Child.RULESET, Ruleset.class, Value.class, Child.class);
             children.put(Child.RULE, new HashMap<String, ValueWithId>());
             values.put(Value.ID, id);
             values.put(Value.NAME, name);
             values.put(Value.PARENT_ID, parentId);
         }
 
-        public String getProviderName() { return PropertyConversion.toFrontend(Rulesets.Child.RULESET); }
-        public Class<Ruleset> getProviderClass() { return Ruleset.class; }
-        public ScoreBoardEventProvider getParent() { return rulesets; }
-        public List<Class<? extends Property>> getProperties() { return properties; }
-        
         public boolean set(PermanentProperty prop, Object value, Flag flag) {
             synchronized (coreLock) {
         	if (!(prop instanceof Value) || getId().equals(ROOT_ID)) { return false; }
@@ -244,11 +223,5 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         	requestBatchEnd();
             }
         }
-
-        private Rulesets rulesets;
-        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-            add(Value.class);
-            add(Child.class);
-        }};
     }
 }

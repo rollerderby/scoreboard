@@ -68,6 +68,10 @@ public class TeamImplTests {
         .thenReturn(rulesetsMock);
 
         Mockito
+        .when(sbMock.getScoreBoard())
+        .thenReturn(sbMock);
+
+        Mockito
         .when(sbMock.getTeam(Mockito.anyString()))
         .thenReturn(otherTeamMock);
 

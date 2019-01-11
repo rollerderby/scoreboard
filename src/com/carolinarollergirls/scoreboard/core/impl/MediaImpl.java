@@ -15,10 +15,8 @@ import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
@@ -27,24 +25,17 @@ import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
-    public MediaImpl(ScoreBoardEventProvider parent, File path) {
-	this.parent = parent;
+    public MediaImpl(ScoreBoard parent, File path) {
+	super(parent, ScoreBoard.Child.MEDIA, Media.class, Child.class);
 	children.put(Child.FORMAT, new HashMap<String, ValueWithId>());
         setup(path.toPath().resolve("html"));
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.MEDIA); }
-    public Class<Media> getProviderClass() { return Media.class; }
     public String getId() { return ""; }
-    public ScoreBoardEventProvider getParent() { return parent; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
 
     private void setup(Path path) {
         this.path = path;
@@ -177,23 +168,14 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     private Path path;
     private WatchService watchService;
 
-    protected ScoreBoardEventProvider parent;
-    protected static List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Child.class);
-    }};
-
     public class MediaFormatImpl extends ScoreBoardEventProviderImpl implements MediaFormat {
 	MediaFormatImpl(Media parent, String format) {
-	    this.parent = parent;
+	    super(parent, Media.Child.FORMAT, MediaFormat.class, Child.class);
 	    this.format = format;
 	    children.put(Child.TYPE, new HashMap<String, ValueWithId>());
 	}
 	
-        public String getProviderName() { return PropertyConversion.toFrontend(Media.Child.FORMAT); }
-        public Class<MediaFormat> getProviderClass() { return MediaFormat.class; }
         public String getId() { return format; }
-        public ScoreBoardEventProvider getParent() { return parent; }
-        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public String getFormat() { return format; }
         
@@ -207,25 +189,18 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 	    }
 	}
 	
-	private Media parent;
 	private String format;
-	private List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	    add(Child.class);
-	}};
     }
     
     public class MediaTypeImpl extends ScoreBoardEventProviderImpl implements MediaType {
 	MediaTypeImpl(MediaFormat parent, String type) {
+	    super(parent, MediaFormat.Child.TYPE, MediaType.class, Child.class);
 	    this.parent = parent;
 	    this.type = type;
 	    children.put(Child.FILE, new HashMap<String, ValueWithId>());
 	}
 	
-        public String getProviderName() { return PropertyConversion.toFrontend(MediaFormat.Child.TYPE); }
-        public Class<MediaFormat> getProviderClass() { return MediaFormat.class; }
         public String getId() { return type; }
-        public ScoreBoardEventProvider getParent() { return parent; }
-        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public String getFormat() { return parent.getFormat(); }
         
@@ -237,25 +212,17 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 	
 	private MediaFormat parent;
 	private String type;
-	private List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	    add(Child.class);
-	}};
     }
     
     public class MediaFileImpl extends ScoreBoardEventProviderImpl implements MediaFile {
         MediaFileImpl(MediaType type, String id, String name, String src) {
+            super(type, MediaType.Child.FILE, MediaFile.class, Value.class);
             this.type = type;
             values.put(Value.ID, id);
             values.put(Value.NAME, name);
             values.put(Value.SRC, src);
         }
 
-        public String getProviderName() { return PropertyConversion.toFrontend(MediaType.Child.FILE); }
-        public Class<MediaFile> getProviderClass() { return MediaFile.class; }
-        public String getProviderId() { return getId(); }
-        public ScoreBoardEventProvider getParent() { return type; }
-        public List<Class<? extends Property>> getProperties() { return properties; }
-        
         public boolean set(PermanentProperty prop, Object value, Flag flag) {
             if (prop == Value.NAME) { return super.set(prop, value, flag); }
             return false;
@@ -269,8 +236,5 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         public String getSrc() { synchronized (coreLock) { return (String)get(Value.SRC); } }
 
         private MediaType type;
-        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-            add(Value.class);
-        }};
     }
 }

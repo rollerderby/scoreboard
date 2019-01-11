@@ -290,7 +290,7 @@ public class ScoreBoardJSONListenerTests {
 
         sb.stopJamTO();
         advance(1000);
-        assertEquals(2000L, state.get("ScoreBoard.Period(1).Jam(1).JamClockElapsedEnd"));
+        assertEquals(2000L, state.get("ScoreBoard.Period(1).Jam(1).Duration"));
         assertEquals(2000L, state.get("ScoreBoard.Period(1).Jam(1).PeriodClockElapsedEnd"));
 
         sb.getClock(Clock.ID_PERIOD).setNumber(2);
@@ -307,6 +307,7 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(5000L, state.get("ScoreBoard.Period(2).Jam(5).PeriodClockElapsedStart"));
         // Remove a jam.
         sb.getClock(Clock.ID_JAM).setNumber(4);
+        sb.getCurrentPeriod().truncateAfterCurrentJam();
         advance(0);
         assertEquals(3000L, state.get("ScoreBoard.Period(2).Jam(4).PeriodClockElapsedStart"));
         assertEquals(null, state.get("ScoreBoard.Period(2).Jam(5).PeriodClockElapsedStart"));

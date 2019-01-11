@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -43,6 +44,10 @@ public class PositionImplTests {
         .thenReturn(rulesetsMock);
 
         Mockito
+        .when(sbMock.getScoreBoard())
+        .thenReturn(sbMock);
+
+        Mockito
         .when(rulesetsMock.getInt(Rule.NUMBER_TIMEOUTS))
         .thenReturn(3);
         Mockito
@@ -71,11 +76,11 @@ public class PositionImplTests {
     public void key_values_populated() {
         Position blocker = team.getPosition(FloorPosition.BLOCKER1);
 
-        assertSame(blocker.getId(), FloorPosition.BLOCKER1.toString());
-        assertSame(blocker.getProviderName(), "Position");
-        assertSame(blocker.getProviderId(), FloorPosition.BLOCKER1.toString());
-        assertSame(blocker.getProviderClass(), Position.class);
-        assertSame(blocker.getTeam(), team);
+        assertEquals(blocker.getId(), FloorPosition.BLOCKER1.toString());
+        assertEquals(blocker.getProviderName(), "Position");
+        assertEquals(blocker.getProviderId(), FloorPosition.BLOCKER1.toString());
+        assertEquals(blocker.getProviderClass(), Position.class);
+        assertEquals(blocker.getTeam(), team);
     }
 
     @Test

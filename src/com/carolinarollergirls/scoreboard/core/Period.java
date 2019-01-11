@@ -1,17 +1,20 @@
 package com.carolinarollergirls.scoreboard.core;
 
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public interface Period extends NumberedScoreBoardEventProvider<Period> {
-    public void ensureAtLeastNJams(int n);
-    public void truncateAfterNJams(int n);
+    public void truncateAfterCurrentJam();
 
     public boolean isRunning();
     public int getNumber();
 
     public Jam getJam(int j);
+    public Jam getCurrentJam();
+    
+    public void startJam();
+    public void stopJam();
     
     public enum Value implements PermanentProperty {
 	RUNNING,
@@ -19,7 +22,7 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
 	WALLTIME_START,
 	WALLTIME_END;
     }
-    public enum Child implements AddRemoveProperty {
+    public enum NChild implements NumberedProperty {
         JAM;
     }
 }

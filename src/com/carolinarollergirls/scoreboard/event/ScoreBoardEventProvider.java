@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.Collection;
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
@@ -80,8 +81,8 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      */
     public ValueWithId get(AddRemoveProperty prop, String id, boolean add);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
-    public ValueWithId getFirst(NumberedProperty prop);
-    public ValueWithId getLast(NumberedProperty prop);
+    public NumberedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
+    public NumberedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
     //returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
     //returns true, if a value was added
@@ -102,12 +103,16 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      * ScoreBoardEventProvider and can be created from the frontend or autosave 
      */
     public ValueWithId create(AddRemoveProperty prop, String id);
+    public int getMinNumber(NumberedProperty prop);
+    public int getMaxNumber(NumberedProperty prop);
     
     /**
      * Defaults to doing nothing. Should be overridden in classes that have
      * frontend commands.
      */
     public void execute(CommandProperty prop);
+    
+    public ScoreBoard getScoreBoard();
     
     public enum Flag {
 	CHANGE,

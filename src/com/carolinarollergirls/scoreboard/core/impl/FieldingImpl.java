@@ -1,28 +1,19 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class FieldingImpl extends ScoreBoardEventProviderImpl implements Fielding {
     public FieldingImpl(String skater_id, TeamJam teamJam) {
+	super(teamJam, TeamJam.Child.FIELDING, Fielding.class, Value.class);
 	values.put(Value.ID, skater_id);
 	this.team = teamJam;
 	setPenaltyBox(false);
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(TeamJam.Child.FIELDING); }
-    public Class<Fielding> getProviderClass() { return Fielding.class; }
     public String getId() { return getSkaterId(); }
-    public ScoreBoardEventProvider getParent() { return team; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Object valueFromString(PermanentProperty prop, String sValue) {
 	if (sValue == null) return null;
@@ -47,8 +38,4 @@ public class FieldingImpl extends ScoreBoardEventProviderImpl implements Fieldin
     public void setPenaltyBox(boolean p) { set(Value.PENALTY_BOX, p); }
 
     private TeamJam team;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-    }};
 }

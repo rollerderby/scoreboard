@@ -24,15 +24,13 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
+	super(t, Team.Child.SKATER, Skater.class, Value.class, Child.class);
         team = t;
         children.put(Child.PENALTY, new HashMap<String, ValueWithId>());
         setId(i);
@@ -44,12 +42,6 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         setPenaltyBox(false);
         set(Value.SORT_PENALTIES, true);
     }
-
-    public String getProviderName() { return PropertyConversion.toFrontend(Team.Child.SKATER); }
-    public Class<Skater> getProviderClass() { return Skater.class; }
-    public String getProviderId() { return getId(); }
-    public ScoreBoardEventProvider getParent() { return team; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Object valueFromString(PermanentProperty prop, String sValue) {
 	if (prop == Value.PENALTY_BOX) { return Boolean.parseBoolean(sValue); }
@@ -254,14 +246,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     protected String nextPenaltyNumber = "1";
     protected Team team;
 
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-	add(Child.class);
-    }};
-
 
     public class PenaltyImpl extends ScoreBoardEventProviderImpl implements Penalty {
         public PenaltyImpl(Skater s, String n) {
+            super(s, Skater.Child.PENALTY, Penalty.class, Value.class);
             skater = s;
             values.put(Value.NUMBER, n);
             values.put(Value.ID, UUID.randomUUID().toString());
@@ -273,11 +261,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         public int getJam() { return (Integer)get(Value.JAM); }
         public String getCode() { return (String)get(Value.CODE); }
 
-        public String getProviderName() { return PropertyConversion.toFrontend(Skater.Child.PENALTY); }
-        public Class<Penalty> getProviderClass() { return Penalty.class; }
         public String getProviderId() { return (String)get(Value.NUMBER); }
-        public ScoreBoardEventProvider getParent() { return skater; }
-        public List<Class<? extends Property>> getProperties() { return properties; }
 
         public boolean set(PermanentProperty prop, Object value, Flag flag) {
             synchronized (coreLock) {
@@ -297,10 +281,6 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
         
         protected Skater skater;
-
-        protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-            add(Value.class);
-        }};
     }
 
     public static class SkaterSnapshotImpl implements SkaterSnapshot {

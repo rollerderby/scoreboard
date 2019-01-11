@@ -8,29 +8,20 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
     public SettingsImpl(ScoreBoard s) {
-        sbm = s;
+	super (s, ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
         children.put(Child.SETTING, new HashMap<String, ValueWithId>());
     }
 
-    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.SETTINGS); }
-    public Class<Settings> getProviderClass() { return Settings.class; }
     public String getId() { return ""; }
-    public ScoreBoardEventProvider getParent() { return sbm; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public void reset() { removeAll(Child.SETTING); }
 
@@ -49,12 +40,4 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl implements Setting
             }
         }
     }
-
-    protected ScoreBoard sbm = null;
-
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Child.class);
-    }};
-
-    protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 }

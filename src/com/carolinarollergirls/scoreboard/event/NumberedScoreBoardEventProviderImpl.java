@@ -1,19 +1,19 @@
 package com.carolinarollergirls.scoreboard.event;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScoreBoardEventProvider<T>> extends ScoreBoardEventProviderImpl implements NumberedScoreBoardEventProvider<T> {
-    protected NumberedScoreBoardEventProviderImpl(NumberedProperty type, ScoreBoardEventProvider parent, String id, int minNum) {
+    @SafeVarargs
+    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, NumberedProperty type,
+	    Class<? extends ScoreBoardEventProvider> ownClass, String id, int minNum, Class<? extends Property>... props) {
+	super(parent, type, ownClass, props);
 	ownType = type;
-	this.parent = parent;
 	number = Integer.parseInt(id);
 	minimumNumber = minNum; 
     }
     
-    public String getProviderName() { return PropertyConversion.toFrontend(ownType); }
     public String getProviderId() { return String.valueOf(getNumber()); }
-    public ScoreBoardEventProvider getParent() { return parent; }
     
     public T getPrevious() { return getPrevious(false, false); }
     public T getPrevious(boolean create) { return getPrevious(create, false); }
@@ -23,7 +23,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
 	    if (getNumber() == minimumNumber) { return null; }
 	    int num = getNumber()-1;
 	    T prev = (T)parent.get(ownType, String.valueOf(num), create);
-	    int min = Integer.parseInt(parent.getFirst(ownType).getId());
+	    int min = parent.getMinNumber(ownType);
 	    while (prev == null && skipEmpty && num > min) {
 		num--;
 		prev = (T)parent.get(ownType, String.valueOf(num));
@@ -38,7 +38,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
 	synchronized (coreLock) {
 	    int num = getNumber()+1;
 	    T next = (T)parent.get(ownType, String.valueOf(num), create);
-	    int max = Integer.parseInt(parent.getLast(ownType).getId());
+	    int max = parent.getMaxNumber(ownType);
 	    while (next == null && skipEmpty && num <= max) {
 		num++;
 		next = (T)parent.get(ownType, String.valueOf(num));
@@ -64,7 +64,6 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
 	}
     }
     
-    protected ScoreBoardEventProvider parent;
     protected NumberedProperty ownType;
     protected int number;
     protected int minimumNumber;

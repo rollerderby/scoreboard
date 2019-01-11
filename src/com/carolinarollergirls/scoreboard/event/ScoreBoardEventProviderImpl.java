@@ -8,27 +8,52 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProvider,ScoreBoardListener {
-    public abstract String getProviderName();
-    public abstract Class<? extends ScoreBoardEventProvider> getProviderClass();
+    @SafeVarargs
+    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, AddRemoveProperty type,
+	    Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
+	this.parent = parent;
+	if (parent != null) {
+	    scoreBoard = parent.getScoreBoard();
+	} else if (this instanceof ScoreBoard) {
+	    scoreBoard = (ScoreBoard)this;
+	}
+	if (type == null) {
+	    providerName = "ScoreBoard";
+	} else {
+	    providerName = PropertyConversion.toFrontend(type);
+	}
+	this.providerClass = ownClass;
+	properties = Arrays.asList(props);
+    }
+    
+    public String getProviderName() { return providerName; }
+    public Class<? extends ScoreBoardEventProvider> getProviderClass() { return providerClass; }
     public String getProviderId() { return getId(); }
-    public String getValue() {return getProviderId(); }
+    public String getValue() { return getProviderId(); }
     public String toString() { return getProviderId(); }
+    public List<Class<? extends Property>> getProperties() { return properties; }
+    public ScoreBoardEventProvider getParent() { return parent; }
 
     public void scoreBoardChange(ScoreBoardEvent event) {
         dispatch(event);
@@ -265,10 +290,21 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 	    }
 	}
     }
+    public int getMinNumber(NumberedProperty prop) { return minIds.get(prop); }
+    public int getMaxNumber(NumberedProperty prop) { return maxIds.get(prop); }
     
     public void execute(CommandProperty prop) {  }
+    
+    public ScoreBoard getScoreBoard() { return scoreBoard; }
 
     protected static Object coreLock = new Object();
+    
+    protected ScoreBoard scoreBoard;
+    protected ScoreBoardEventProvider parent;
+    protected String providerName;
+    protected Class<? extends ScoreBoardEventProvider> providerClass;
+    
+    protected List<Class<? extends Property>> properties;
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
     protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();

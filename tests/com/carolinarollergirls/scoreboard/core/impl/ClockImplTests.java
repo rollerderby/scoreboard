@@ -75,6 +75,10 @@ public class ClockImplTests {
         .when(sbMock.getRulesets())
         .thenReturn(rulesetsMock);
 
+        Mockito
+        .when(sbMock.getScoreBoard())
+        .thenReturn(sbMock);
+
         // makes it easier to test both sync and non-sync paths through clock
         Mockito
         .when(settingsMock.get(Clock.SETTING_SYNC))

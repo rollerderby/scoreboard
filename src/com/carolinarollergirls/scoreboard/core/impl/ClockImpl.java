@@ -10,8 +10,6 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -20,17 +18,14 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public ClockImpl(ScoreBoard sb, String i) {
-        scoreBoard = sb;
+	super (sb, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
         id = i;
         //initialize types
         values.put(Value.MINIMUM_TIME, 0L);
@@ -46,11 +41,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 
         reset();
     }
-
-    public String getProviderName() { return PropertyConversion.toFrontend(ScoreBoard.Child.CLOCK); }
-    public Class<Clock> getProviderClass() { return Clock.class; }
-    public ScoreBoardEventProvider getParent() { return scoreBoard; }
-    public List<Class<? extends Property>> getProperties() { return properties; }
 
     public Object get(PermanentProperty prop) {
 	synchronized (coreLock) {
@@ -136,8 +126,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 	}
     }
     
-    public ScoreBoard getScoreBoard() { return scoreBoard; }
-
     public String getId() { return id; }
 
     public void reset() {
@@ -320,17 +308,10 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         return id == ID_PERIOD || id == ID_TIMEOUT || id == ID_INTERMISSION;
     }
 
-    protected ScoreBoard scoreBoard;
-
     protected String id;
 
     protected long lastTime;
     protected boolean isRunning = false;
-    
-    protected List<Class<? extends Property>> properties = new ArrayList<Class<? extends Property>>() {{
-	add(Value.class);
-	add(Command.class);
-    }};
 
     public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 

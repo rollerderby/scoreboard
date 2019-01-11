@@ -1,32 +1,31 @@
 package com.carolinarollergirls.scoreboard.core;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
-public interface Jam extends ScoreBoardEventProvider {
+public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
+    public Period getPeriod();
     public int getPeriodNumber();
-    public int getJamNumber();
 
-    public long getJamClockElapsedEnd();
-    public void setJamClockElapsedEnd(long t);
+    public long getDuration();
     public long getPeriodClockElapsedStart();
-    public void setPeriodClockElapsedStart(long t);
     public long getPeriodClockElapsedEnd();
-    public void setPeriodClockElapsedEnd(long t);
-    public long getPeriodClockWalltimeStart();
-    public void setPeriodClockWalltimeStart(long t);
-    public long getPeriodClockWalltimeEnd();
-    public void setPeriodClockWalltimeEnd(long t);
+    public long getWalltimeStart();
+    public long getWalltimeEnd();
 
     public TeamJam getTeamJam(String id);
+    
+    public void start();
+    public void stop();
 
     public enum Value implements PermanentProperty {
-        JAM_CLOCK_ELAPSED_END,
+	ID,
+        DURATION,
         PERIOD_CLOCK_ELAPSED_START,
         PERIOD_CLOCK_ELAPSED_END,
-        PERIOD_CLOCK_WALLTIME_START,
-        PERIOD_CLOCK_WALLTIME_END;
+        WALLTIME_START,
+        WALLTIME_END;
     }
     public enum Child implements AddRemoveProperty {
         TEAM_JAM;
