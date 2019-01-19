@@ -8,26 +8,20 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
-import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
-import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
-import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class PositionImplTests {
     private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";
     private final String secondId = "91a6c3f5-8258-46c7-a845-62c21b6e37ca";
     private final String thirdId = "5df0a35b-aaa6-4c30-93ef-07ba4f174cdc";
 
-    private ScoreBoard sbMock;
-    private Rulesets rulesetsMock;
+    private ScoreBoard sb;
     private Team team;
     private Skater first;
     private Skater second;
@@ -35,33 +29,9 @@ public class PositionImplTests {
 
     @Before
     public void setup() {
-        sbMock = Mockito.mock(ScoreBoardImpl.class);
+        sb = new ScoreBoardImpl();
 
-        rulesetsMock = Mockito.mock(Rulesets.class);
-
-        Mockito
-        .when(sbMock.getRulesets())
-        .thenReturn(rulesetsMock);
-
-        Mockito
-        .when(sbMock.getScoreBoard())
-        .thenReturn(sbMock);
-
-        Mockito
-        .when(rulesetsMock.getInt(Rule.NUMBER_TIMEOUTS))
-        .thenReturn(3);
-        Mockito
-        .when(rulesetsMock.getBoolean(Rule.TIMEOUTS_PER_PERIOD))
-        .thenReturn(false);
-        Mockito
-        .when(rulesetsMock.getInt(Rule.NUMBER_REVIEWS))
-        .thenReturn(1);
-
-        Mockito
-        .when(rulesetsMock.getBoolean(Rule.REVIEWS_PER_PERIOD))
-        .thenReturn(true);
-
-        team = new TeamImpl(sbMock, "A");
+        team = sb.getTeam(Team.ID_1);
 
         first = new SkaterImpl(team, firstId, "First","123", "");
         second = new SkaterImpl(team, secondId, "Second","456", "");

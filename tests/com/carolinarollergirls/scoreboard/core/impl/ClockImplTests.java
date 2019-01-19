@@ -10,30 +10,19 @@ import java.util.Queue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.eq;
-
 import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.impl.ClockImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
-import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class ClockImplTests {
 
-    private ScoreBoard sbMock;
-    private Rulesets rulesetsMock;
-    private Settings settingsMock;
+    private ScoreBoard sb;
 
     private Queue<ScoreBoardEvent> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
@@ -48,9 +37,7 @@ public class ClockImplTests {
 
 
     private ClockImpl clock;
-    private static String ID = "TEST";
-
-    private String syncStatus = "false";
+    private static String ID = Clock.ID_LINEUP;
 
     private void advance(long time_ms) {
         ScoreBoardClock.getInstance().advance(time_ms);
@@ -59,43 +46,12 @@ public class ClockImplTests {
     @Before
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
-        syncStatus = "false";
         collectedEvents = new LinkedList<ScoreBoardEvent>();
 
-        sbMock = Mockito.mock(ScoreBoardImpl.class);
+        sb = new ScoreBoardImpl();
+        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
-        rulesetsMock = Mockito.mock(Rulesets.class);
-        settingsMock = Mockito.mock(Settings.class);
-
-        Mockito
-        .when(sbMock.getSettings())
-        .thenReturn(settingsMock);
-
-        Mockito
-        .when(sbMock.getRulesets())
-        .thenReturn(rulesetsMock);
-
-        Mockito
-        .when(sbMock.getScoreBoard())
-        .thenReturn(sbMock);
-
-        // makes it easier to test both sync and non-sync paths through clock
-        Mockito
-        .when(settingsMock.get(Clock.SETTING_SYNC))
-        .thenAnswer(new Answer<String>() {
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                return syncStatus;
-            }
-        });
-        Mockito
-        .when(rulesetsMock.get(eq(Rulesets.Child.CURRENT_RULE), any(String.class)))
-        .thenAnswer(new Answer<ValueWithId>() {
-            public ValueWithId answer(InvocationOnMock invocation) throws Throwable {
-                return new ValWithId("", String.valueOf(false));
-            }
-        });
-
-        clock = new ClockImpl(sbMock, ID);
+        clock = new ClockImpl(sb, ID);
     }
 
     @After
@@ -119,8 +75,7 @@ public class ClockImplTests {
         assertFalse(clock.isCountDirectionDown());
         assertFalse(clock.isRunning());
 
-        assertEquals(sbMock, clock.getScoreBoard());
-        assertEquals(sbMock, clock.getScoreBoard());
+        assertEquals(sb, clock.getScoreBoard());
 
         assertEquals("Clock", clock.getProviderName());
         assertEquals(ID, clock.getProviderId());
@@ -168,7 +123,7 @@ public class ClockImplTests {
         assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
 
-        clock.id = "TEST";
+        clock.id = ID;
         clock.restoreSnapshot(snapshot);
         assertTrue(clock.isRunning());
         assertEquals(4, clock.getNumber());
@@ -178,8 +133,8 @@ public class ClockImplTests {
     @Test
     public void testSetting_ClockSync() {
         //add a master clock
-        ClockImpl clock2 = new ClockImpl(sbMock, Clock.ID_TIMEOUT);
-        syncStatus = "true";
+        ClockImpl clock2 = new ClockImpl(sb, Clock.ID_TIMEOUT);
+        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(true));
         clock.setMaximumTime(10000);
         clock2.setMaximumTime(10000);
         clock2.setTime(3400);
@@ -813,13 +768,7 @@ public class ClockImplTests {
         assertFalse(clock.isCountDirectionDown());
         assertEquals(0, clock.getTime());
 
-        Mockito
-        .when(rulesetsMock.get(eq(Rulesets.Child.CURRENT_RULE), any(String.class)))
-        .thenAnswer(new Answer<ValueWithId>() {
-            public ValueWithId answer(InvocationOnMock invocation) throws Throwable {
-                return new ValWithId("", String.valueOf(true));
-            }
-        });
+        sb.getRulesets().set(Rule.LINEUP_DIRECTION, String.valueOf(true));
         clock.rulesetChangeListener.scoreBoardChange(null);
         assertTrue(clock.isCountDirectionDown());
         assertEquals(86400000, clock.getTime());
