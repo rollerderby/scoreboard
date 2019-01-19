@@ -6,11 +6,10 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScoreBoardEventProvider<T>> extends ScoreBoardEventProviderImpl implements NumberedScoreBoardEventProvider<T> {
     @SafeVarargs
     protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, NumberedProperty type,
-	    Class<? extends ScoreBoardEventProvider> ownClass, String id, int minNum, Class<? extends Property>... props) {
+	    Class<? extends ScoreBoardEventProvider> ownClass, String id, Class<? extends Property>... props) {
 	super(parent, type, ownClass, props);
 	ownType = type;
 	number = Integer.parseInt(id);
-	minimumNumber = minNum; 
     }
     
     public String getProviderId() { return String.valueOf(getNumber()); }
@@ -20,7 +19,6 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
     @SuppressWarnings("unchecked")
     public T getPrevious(boolean create, boolean skipEmpty) {
 	synchronized (coreLock) {
-	    if (getNumber() == minimumNumber) { return null; }
 	    int num = getNumber()-1;
 	    T prev = (T)parent.get(ownType, String.valueOf(num), create);
 	    int min = parent.getMinNumber(ownType);
@@ -66,5 +64,4 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
     
     protected NumberedProperty ownType;
     protected int number;
-    protected int minimumNumber;
 }

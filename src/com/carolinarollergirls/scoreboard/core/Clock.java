@@ -22,7 +22,7 @@ public interface Clock extends ScoreBoardEventProvider {
 
     public void start();
     public void stop();
-    public void startNext();
+    public void restart();
 
     public String getId();
 

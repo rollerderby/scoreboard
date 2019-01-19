@@ -11,6 +11,7 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
+import com.carolinarollergirls.scoreboard.core.Period.Value;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Stats;
@@ -58,37 +59,40 @@ public class StatsImplTests {
 
     @Test
     public void testJamsAndPeriodsCreated() {
-        // Starting a jam creates a jam.
+        // Starting a jam creates a jam and its successor.
         sb.startJam();
         advance(1000);
         Period p = sb.getPeriod(1);
-        assertEquals(1, p.getAll(Period.NChild.JAM).size());
+        assertEquals(2, p.getAll(Period.NChild.JAM).size());
 
 
         // Start the second jam and confirm it's there.
         sb.stopJamTO();
         sb.startJam();
         advance(1000);
-        assertEquals(2, p.getAll(Period.NChild.JAM).size());
+        assertEquals(3, p.getAll(Period.NChild.JAM).size());
     }
 
     @Test
     public void testJamsAndPeriodsTruncated() {
         // Put us in period 2 with 3 jams;
         Clock pc = sb.getClock(Clock.ID_PERIOD);
-        Clock jc = sb.getClock(Clock.ID_JAM);
-        pc.setNumber(2);
+        Clock ic = sb.getClock(Clock.ID_INTERMISSION);
+        sb.startJam();
+        pc.setTime(0);
+        sb.stopJamTO();
+        ic.setTime(0);
         for (int i = 0; i < 3; i++) {
             sb.startJam();
             advance(1000);
             sb.stopJamTO();
         }
-        assertEquals(2, sb.getAll(ScoreBoard.NChild.PERIOD).size());
+        assertEquals(3, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         Period p = sb.getPeriod(2);
-        assertEquals(3, p.getAll(Period.NChild.JAM).size());
+        assertEquals(4, p.getAll(Period.NChild.JAM).size());
 
         // Truncate jams.
-        jc.setNumber(1);
+        p.set(Value.CURRENT_JAM_NUMBER, 1);
         p.truncateAfterCurrentJam();
         assertEquals(1, p.getAll(Period.NChild.JAM).size());
     }

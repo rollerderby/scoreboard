@@ -15,11 +15,13 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements Jam {
     public JamImpl(Period p, String j) {
-	super(p, Period.NChild.JAM, Jam.class, j, 0, Value.class, Child.class);
+	super(p, Period.NChild.JAM, Jam.class, j, Value.class, Child.class);
+	period = p;
 	values.put(Value.ID, UUID.randomUUID().toString());
         children.put(Child.TEAM_JAM, new HashMap<String, ValueWithId>());
         add(Child.TEAM_JAM, new TeamJamImpl(Team.ID_1, this));
@@ -41,8 +43,59 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
 	}
     }
     
+    public Jam getPrevious(boolean create, boolean skipEmpty) {
+	synchronized (coreLock) {
+	    Jam prev = super.getPrevious(create, skipEmpty);
+	    if (prev == null && getPeriod().hasPrevious(skipEmpty)) {
+		prev = (Jam)getPeriod().getPrevious(false, skipEmpty).getLast(ownType);
+	    }
+	    return prev;
+	}
+    }
+    public Jam getNext(boolean create, boolean skipEmpty) {
+	synchronized (coreLock) {
+	    Jam next = super.getNext(create, skipEmpty);
+	    if (next == null && skipEmpty && getPeriod().hasNext(skipEmpty)) {
+		next = (Jam)getPeriod().getNext(false, skipEmpty).getFirst(ownType);
+	    }
+	    return next;
+	}
+    }
+    
     public Period getPeriod() { return period; }
-    public int getPeriodNumber() { return period.getNumber(); }
+    public int getPeriodNumber() { return getPeriod().getNumber(); }
+    public void moveToNextPeriod(int newNumber) {
+	synchronized (coreLock) {
+	    requestBatchStart();
+	    Jam successor = super.getNext(false, true);
+	    period.remove(ownType, this);
+	    period = period.getNext(true, false);
+	    parent = period;
+	    if (scoreBoard.getRulesets().getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
+		number = newNumber;
+	    }
+	    period.insert(ownType, this);
+	    if (successor != null) {
+		successor.moveToNextPeriod(newNumber + 1);
+	    }
+	    requestBatchEnd();
+	}
+    }
+    public void moveToPreviousPeriod() {
+	synchronized (coreLock) {
+	    requestBatchStart();
+	    Jam predecessor = super.getPrevious(false, true);
+	    if (predecessor != null) {
+		predecessor.moveToPreviousPeriod();
+	    }
+	    int newNumber = getPrevious(false, true).getNumber();
+	    period.remove(ownType, this);
+	    period = period.getNext(true, false);
+	    number = newNumber;
+	    period.insert(ownType, this);
+	    requestBatchEnd();
+	}
+    }
 
     public long getDuration() { return (Long)get(Value.DURATION); }
     public void setDuration(long t) { set(Value.DURATION, t); }

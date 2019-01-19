@@ -66,13 +66,8 @@ public class JSONServlet extends HttpServlet {
                     Long ic_time = new Long(intermissionClock);
                     ic_time = ic_time - (ic_time % 1000);
                     Clock c = scoreBoard.getClock(Clock.ID_INTERMISSION);
-                    c.reset();
-                    c.setNumber(0);
-                    if (c.getMaximumTime() < ic_time) {
-                        c.setMaximumTime(ic_time);
-                    }
-                    c.setTime(ic_time);
-                    c.start();
+                    c.setMaximumTime(ic_time);
+                    c.restart();
                 }
 
             } else {

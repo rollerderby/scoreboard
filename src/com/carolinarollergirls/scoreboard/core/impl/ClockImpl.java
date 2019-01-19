@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import java.util.ArrayList;
 import java.util.Iterator;
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -47,6 +48,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 	    if (prop == Value.INVERTED_TIME) {
 		return getMaximumTime() - getTime();
 	    }
+	    if (prop == Value.NUMBER) {
+		if (id == ID_PERIOD || id == ID_INTERMISSION) {
+		    return scoreBoard.getCurrentPeriodNumber();
+		} else if (id == ID_JAM) {
+		    return scoreBoard.getCurrentPeriod().getCurrentJamNumber();
+		}
+	    }
 	    return super.get(prop);
 	}
     }
@@ -54,6 +62,15 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
 	    if (!(prop instanceof Value) || prop == Value.INVERTED_TIME) { return false; }
+	    if (prop == Value.NUMBER) {
+		if (id == ID_PERIOD) {
+		    return scoreBoard.set(ScoreBoard.Value.CURRENT_PERIOD_NUMBER, value, flag);
+		} else if (id == ID_JAM) {
+		    return scoreBoard.getCurrentPeriod().set(Period.Value.CURRENT_JAM_NUMBER, value, flag);
+		} else if (id == ID_INTERMISSION) { 
+		    return false; 
+		}
+	    }
 	    if (flag == Flag.RESET && prop == Value.TIME) { return resetTime(); }
 	    requestBatchStart();
 	    Object last = get(prop);
@@ -149,7 +166,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
             setCountDirectionDown(Boolean.parseBoolean(r.get(Rulesets.Child.CURRENT_RULE, id + ".ClockDirection").getValue()));
-            if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION)) {
+            if (id.equals(ID_JAM) || id.equals(ID_INTERMISSION) || id.equals(ID_PERIOD)) {
                 setMinimumNumber(0);
             } else {
                 setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
@@ -279,10 +296,9 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public void start(boolean quickAdd) { set(Value.RUNNING, Boolean.TRUE, quickAdd ? Flag.CUSTOM : null); }
     public void stop() { set(Value.RUNNING, Boolean.FALSE); }
 
-    public void startNext() {
+    public void restart() {
         synchronized (coreLock) {
             requestBatchStart();
-            changeNumber(1);
             resetTime();
             start();
             requestBatchEnd();

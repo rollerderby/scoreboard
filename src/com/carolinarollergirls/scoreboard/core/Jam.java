@@ -7,6 +7,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public Period getPeriod();
     public int getPeriodNumber();
+    public void moveToNextPeriod(int newNumber);
+    public void moveToPreviousPeriod();
 
     public long getDuration();
     public long getPeriodClockElapsedStart();

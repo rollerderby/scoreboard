@@ -16,6 +16,7 @@ import org.junit.rules.TemporaryFolder;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
@@ -293,20 +294,29 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(2000L, state.get("ScoreBoard.Period(1).Jam(1).Duration"));
         assertEquals(2000L, state.get("ScoreBoard.Period(1).Jam(1).PeriodClockElapsedEnd"));
 
-        sb.getClock(Clock.ID_PERIOD).setNumber(2);
-        sb.getClock(Clock.ID_JAM).setNumber(3);
-        sb.startJam();
+        sb.getClock(Clock.ID_PERIOD).setTime(0);
+        sb.getClock(Clock.ID_INTERMISSION).setTime(0);
+        sb.startJam(); //1
+        advance(1000);
+        sb.stopJamTO();
+        sb.startJam(); //2
+        advance(1000);
+        sb.stopJamTO();
+        sb.startJam(); //3
+        advance(1000);
+        sb.stopJamTO();
+        sb.startJam(); //4
         advance(1000);
         sb.stopJamTO();
         advance(1000);
-        sb.startJam();
+        sb.startJam(); //5
         advance(1000);
         sb.stopJamTO();
         advance(1000);
         assertEquals(3000L, state.get("ScoreBoard.Period(2).Jam(4).PeriodClockElapsedStart"));
         assertEquals(5000L, state.get("ScoreBoard.Period(2).Jam(5).PeriodClockElapsedStart"));
         // Remove a jam.
-        sb.getClock(Clock.ID_JAM).setNumber(4);
+        sb.getCurrentPeriod().set(Period.Value.CURRENT_JAM_NUMBER, 4);
         sb.getCurrentPeriod().truncateAfterCurrentJam();
         advance(0);
         assertEquals(3000L, state.get("ScoreBoard.Period(2).Jam(4).PeriodClockElapsedStart"));

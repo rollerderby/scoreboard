@@ -52,6 +52,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public void setInPeriod(boolean inPeriod);
     public Period getPeriod(int p);
     public Period getCurrentPeriod();
+    public int getCurrentPeriodNumber();
 
     /**
      * If this bout is in Overtime.
@@ -94,6 +95,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public XmlScoreBoard getXmlScoreBoard();
     
     public enum Value implements PermanentProperty {
+	CURRENT_PERIOD_NUMBER,
 	IN_PERIOD,
 	IN_OVERTIME,
 	OFFICIAL_SCORE,

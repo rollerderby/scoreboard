@@ -750,16 +750,16 @@ public class ClockImplTests {
     }
 
     @Test
-    public void testStartNext() {
+    public void testRestart() {
         clock.setMaximumNumber(5);
         clock.setNumber(2);
         clock.setMaximumTime(60000);
         clock.setTime(45000);
         assertFalse(clock.isRunning());
 
-        clock.startNext();
+        clock.restart();
         assertTrue(clock.isRunning());
-        assertEquals(3, clock.getNumber());
+        assertEquals(2, clock.getNumber());
         assertTrue(clock.isTimeAtStart());
     }
 
