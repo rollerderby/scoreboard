@@ -166,8 +166,8 @@ public class TwitterViewer {
         return new ConfigurationBuilder()
                .setDebugEnabled(false)
                .setUserStreamRepliesAllEnabled(false)
-               .setOAuthConsumerKey("898735219-TJSnz0ffkHZHiUv4iC3UIpyAmlFtr4E7KFUFtjRw")
-               .setOAuthConsumerSecret("kksoQ7WOrBqM5Cf2Obif68DBvD60NTnRyPN4OwD9dlSbj");
+               .setOAuthConsumerKey("qOzry57P6rp6PBnj2BfpuvzK6")
+               .setOAuthConsumerSecret("Yx0bI3M5SinRYDGX1tfxQiP6a1oCVmfu5FXE4o27sNmvYeCY1W");
     }
 
     protected TwitterFactory twitterFactory = new TwitterFactory(getConfigurationBuilder().build());
