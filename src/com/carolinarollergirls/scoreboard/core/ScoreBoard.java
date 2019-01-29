@@ -54,6 +54,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public Period getCurrentPeriod();
     public int getCurrentPeriodNumber();
 
+    public boolean isInJam();
+    
     /**
      * If this bout is in Overtime.
      */
@@ -87,8 +89,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public Rulesets getRulesets();
 
     public PenaltyCodesManager getPenaltyCodesManager();
-    
-    public Stats getStats();
 
     public Media getMedia();
 
@@ -96,14 +96,15 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     
     public enum Value implements PermanentProperty {
 	CURRENT_PERIOD_NUMBER,
+	CURRENT_PERIOD,
 	IN_PERIOD,
+	IN_JAM,
 	IN_OVERTIME,
 	OFFICIAL_SCORE,
 	TIMEOUT_OWNER,
 	OFFICIAL_REVIEW;
     }
     public enum Child implements AddRemoveProperty {
-	STATS,
 	SETTINGS,
 	RULESETS,
 	PENALTY_CODES,

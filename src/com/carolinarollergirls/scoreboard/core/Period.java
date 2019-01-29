@@ -21,6 +21,7 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     public void stopJam();
     
     public enum Value implements PermanentProperty {
+	NUMBER,
 	CURRENT_JAM_NUMBER,
 	RUNNING,
 	DURATION,

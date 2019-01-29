@@ -97,13 +97,20 @@ public class ScoreBoardJSONListenerTests {
         advance(0);
         assertEquals(true, state.get("ScoreBoard.InOvertime"));
 
-        sb.setOfficialScore(true);
-        advance(0);
-        assertEquals(true, state.get("ScoreBoard.OfficialScore"));
-
         sb.setOfficialReview(true);
         advance(0);
         assertEquals(true, state.get("ScoreBoard.OfficialReview"));
+
+        sb.startJam();
+        sb.getClock(Clock.ID_PERIOD).setTime(0);
+        sb.stopJamTO();
+        sb.getClock(Clock.ID_INTERMISSION).setTime(0);
+        sb.startJam();
+        sb.getClock(Clock.ID_PERIOD).setTime(0);
+        sb.stopJamTO();
+        sb.setOfficialScore(true);
+        advance(0);
+        assertEquals(true, state.get("ScoreBoard.OfficialScore"));
     }
 
     @Test
@@ -268,26 +275,24 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(0, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).TotalScore"));
         assertEquals("NoLead", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).LeadJammer"));
         assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).StarPass"));
-        assertEquals(1, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).OfficialReviews"));
-        assertEquals(3, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Timeouts"));
-        assertEquals("00000000-0000-0000-0000-000000000001", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).Id"));
-        assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).PenaltyBox"));
-        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).Position"));
+        assertEquals("00000000-0000-0000-0000-000000000001", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
+        assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
+        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         sb.getTeam("1").field(sb.getTeam("1").getSkater(id), Role.BENCH);
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).Id"));
-        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).PenaltyBox"));
-        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).Position"));
+        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
+        assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
+        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         sb.getTeam("1").field(sb.getTeam("1").getSkater(id), Role.JAMMER);
         advance(0);
-        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).Position"));
+        assertEquals("00000000-0000-0000-0000-000000000001", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
         sb.getTeam("1").removeSkater(id);
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).Id"));
-        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).PenaltyBox"));
-        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(00000000-0000-0000-0000-000000000001).Position"));
+        assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
+        assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
+        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         sb.stopJamTO();
         advance(1000);

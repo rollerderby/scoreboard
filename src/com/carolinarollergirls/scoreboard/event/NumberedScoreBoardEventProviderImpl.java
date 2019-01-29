@@ -1,15 +1,17 @@
 package com.carolinarollergirls.scoreboard.event;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScoreBoardEventProvider<T>> extends ScoreBoardEventProviderImpl implements NumberedScoreBoardEventProvider<T> {
     @SafeVarargs
     protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, NumberedProperty type,
-	    Class<? extends ScoreBoardEventProvider> ownClass, String id, Class<? extends Property>... props) {
+	    PermanentProperty numProp, Class<? extends ScoreBoardEventProvider> ownClass, String id, Class<? extends Property>... props) {
 	super(parent, type, ownClass, props);
 	ownType = type;
-	number = Integer.parseInt(id);
+	numberProperty = numProp;
+	set(numProp, Integer.parseInt(id));
     }
     
     public String getProviderId() { return String.valueOf(getNumber()); }
@@ -46,7 +48,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
     }
     public boolean hasNext(boolean skipEmpty) { return getNext(false, skipEmpty) != null; }
     
-    public int getNumber() { return number; }
+    public int getNumber() { return (Integer)get(numberProperty); }
     public void setNumber(int num) { setNumber(num, false); }
     public void setNumber(int num, boolean removeSilent) {
 	synchronized (coreLock) {
@@ -56,12 +58,12 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
 	    } else {
 		parent.remove(ownType, this);
 	    }
-	    number = num;
+	    set(numberProperty, num);
 	    parent.insert(ownType, this);
 	    requestBatchEnd();
 	}
     }
     
     protected NumberedProperty ownType;
-    protected int number;
+    protected PermanentProperty numberProperty;
 }

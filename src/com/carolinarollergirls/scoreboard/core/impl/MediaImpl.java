@@ -16,7 +16,6 @@ import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.util.Collection;
-import java.util.HashMap;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
@@ -25,13 +24,11 @@ import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     public MediaImpl(ScoreBoard parent, File path) {
 	super(parent, ScoreBoard.Child.MEDIA, Media.class, Child.class);
-	children.put(Child.FORMAT, new HashMap<String, ValueWithId>());
         setup(path.toPath().resolve("html"));
     }
 
@@ -172,7 +169,6 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 	MediaFormatImpl(Media parent, String format) {
 	    super(parent, Media.Child.FORMAT, MediaFormat.class, Child.class);
 	    this.format = format;
-	    children.put(Child.TYPE, new HashMap<String, ValueWithId>());
 	}
 	
         public String getId() { return format; }
@@ -197,7 +193,6 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 	    super(parent, MediaFormat.Child.TYPE, MediaType.class, Child.class);
 	    this.parent = parent;
 	    this.type = type;
-	    children.put(Child.FILE, new HashMap<String, ValueWithId>());
 	}
 	
         public String getId() { return type; }
@@ -219,13 +214,10 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
             super(type, MediaType.Child.FILE, MediaFile.class, Value.class);
             this.type = type;
             values.put(Value.ID, id);
+            writeProtectionOverride.put(Value.ID, false);
             values.put(Value.NAME, name);
             values.put(Value.SRC, src);
-        }
-
-        public boolean set(PermanentProperty prop, Object value, Flag flag) {
-            if (prop == Value.NAME) { return super.set(prop, value, flag); }
-            return false;
+            writeProtectionOverride.put(Value.SRC, false);
         }
 
         public String getFormat() { synchronized (coreLock) { return type.getFormat() ;} }

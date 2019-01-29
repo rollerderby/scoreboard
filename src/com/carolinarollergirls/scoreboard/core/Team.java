@@ -43,6 +43,11 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public void timeout();
     public void officialReview();
+    
+    public TeamJam getRunningOrUpcomingTeamJam();
+    public TeamJam getRunningOrEndedTeamJam();
+    public TeamJam getLastEndedTeamJam();
+    public void updateTeamJams();
 
     public int getScore();
     public void setScore(int score);
@@ -71,7 +76,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public Position getPosition(FloorPosition fp);
 
-    public void field(Skater s, Position p);
     public void field(Skater s, Role r);
     
     public String getLeadJammer();
@@ -91,6 +95,9 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public enum Value implements PermanentProperty {
 	NAME,
 	LOGO,
+	RUNNING_OR_UPCOMING_TEAM_JAM,
+	RUNNING_OR_ENDED_TEAM_JAM,
+	LAST_ENDED_TEAM_JAM,
 	SCORE,
 	JAM_SCORE,
 	LAST_SCORE,
@@ -145,15 +152,10 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public static interface TeamSnapshot {
         public String getId();
-        public int getScore();
-        public int getLastScore();
         public int getTimeouts();
         public int getOfficialReviews();
-        public String getLeadJammer();
-        public boolean getStarPass();
         public boolean inTimeout();
         public boolean inOfficialReview();
-        public boolean hasNoPivot();
         public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots();
         public Skater.SkaterSnapshot getSkaterSnapshot(String skater);
     }

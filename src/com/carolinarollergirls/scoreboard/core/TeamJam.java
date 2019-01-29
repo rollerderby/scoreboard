@@ -7,37 +7,46 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 public interface TeamJam extends ScoreBoardEventProvider {
     public int getPeriodNumber();
     public int getJamNumber();
-    public String getTeamId();
+    public Team getTeam();
 
+    public boolean isRunningOrEnded();
+    public boolean isRunningOrUpcoming();
+    
+    public TeamJam getNext();
+    public TeamJam getPrevious();
+    
+    public int getLastScore();
+    public void setLastScore(int l);
+
+    public int getOsOffset();
+    public void setOsOffset(int o);
+    public void changeOsOffset(int c);
+    
     public int getJamScore();
     public void setJamScore(int s);
+    public void changeJamScore(int c);
+    
     public int getTotalScore();
-    public void setTotalScore(int s);
+
     public String getLeadJammer();
     public void setLeadJammer(String ls);
-    public boolean getStarPass();
+    
+    public boolean isStarPass();
     public void setStarPass(boolean sp);
-    public boolean getNoPivot();
+    
+    public boolean hasNoPivot();
     public void setNoPivot(boolean np);
-    public int getTimeouts();
-    public void setTimeouts(int t);
-    public int getOfficialReviews();
-    public void setOfficialReviews(int o);
 
-    public Fielding getFielding(String sid);
-    public void addFielding(String sid);
-    public void removeFielding(String sid);
-    public void removeFielding();
+    public Fielding getFielding(FloorPosition fp);
 
     public enum Value implements PermanentProperty {
-        ID,
+        LAST_SCORE,
+        OS_OFFSET,
         JAM_SCORE,
         TOTAL_SCORE,
         LEAD_JAMMER,
         STAR_PASS,
-        NO_PIVOT,
-        TIMEOUTS,
-        OFFICIAL_REVIEWS;
+        NO_PIVOT;
     }
     public enum Child implements AddRemoveProperty {
         FIELDING;

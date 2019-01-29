@@ -23,6 +23,7 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
 
     public enum Value implements PermanentProperty {
 	ID,
+	NUMBER,
         DURATION,
         PERIOD_CLOCK_ELAPSED_START,
         PERIOD_CLOCK_ELAPSED_END,

@@ -11,12 +11,12 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
@@ -32,63 +32,54 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
 	super(t, Team.Child.SKATER, Skater.class, Value.class, Child.class);
         team = t;
-        children.put(Child.PENALTY, new HashMap<String, ValueWithId>());
         setId(i);
         setName(n);
         setNumber(num);
         setFlags(flags);
         setRole(Role.BENCH);
         setBaseRole(Role.BENCH);
-        setPenaltyBox(false);
-        set(Value.SORT_PENALTIES, true);
+        addReference(new IndirectPropertyReference(this, Value.POSITION, this, 
+        	Value.CURRENT_FIELDING, Fielding.Value.POSITION, false, null));
+        addReference(new IndirectPropertyReference(this, Value.PENALTY_BOX, this, 
+        	Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false, false));
+        values.put(Value.SORT_PENALTIES, true);
     }
 
     public Object valueFromString(PermanentProperty prop, String sValue) {
-	if (prop == Value.PENALTY_BOX) { return Boolean.parseBoolean(sValue); }
-	// Position and Role are not converted in order to distinguish source
-	if (prop == Value.BASE_ROLE) { return Role.fromString(sValue); }
-	if (prop == Value.POSITION || prop == Value.ROLE) { return sValue; }
+	if (prop == Value.BASE_ROLE || prop == Value.ROLE) { return Role.fromString(sValue); }
+	if (prop == Value.POSITION) { return team.getPosition(FloorPosition.fromString(sValue)); }
 	return super.valueFromString(prop, sValue);
     }
-
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
-	    boolean result = false;
-	    /*
-	     * String values are coming from the frontend (or autosave) -> Run field() 
-	     * in order to set all values.
-	     * (Non-String values are coming from field() - calling field again would cause
-	     * an infinite loop.)
-	     */
-	    if (prop == Value.POSITION && value instanceof String) {
-		team.field(this, team.getPosition(FloorPosition.fromString((String)value)));
-	    } else if (prop == Value.ROLE && value instanceof String) {
-		team.field(this, Role.fromString((String)value));
+	    if (prop == Value.ROLE && flag != Flag.CUSTOM) {
+		team.field(this, (Role)value);
+		return true;
 	    } else {
-		requestBatchStart();
-		Object last = get(prop);
-		result = super.set(prop, value, flag);
-		if(result) { 
-		    if (prop == Value.PENALTY_BOX && getPosition() != null) {
-			if ((Boolean)value && getPosition().getFloorPosition() == FloorPosition.JAMMER
-				&& team.getLeadJammer().equals(Team.LEAD_LEAD)) {
-			    team.setLeadJammer(Team.LEAD_LOST_LEAD);
-			}
-			getPosition().set(Position.Value.PENALTY_BOX, value);
-		    }
-		    if (getPosition() != null && (prop == Value.NAME || prop == Value.NUMBER || prop == Value.FLAGS)) {
-			scoreBoardChange(new ScoreBoardEvent(getPosition(), Position.Value.valueOf(((Value)prop).name()), value, last));
-		    }
-		    if (prop == Value.BASE_ROLE && get(Value.ROLE) == last) {
-			set(Value.ROLE, value);
-		    }
-		    if (prop == Value.SORT_PENALTIES && (Boolean)value) {
-			sortPenalties();
-		    }
-		}
-		requestBatchEnd();
+		return super.set(prop, value, flag);
 	    }
-	    return result;
+	}
+    }
+    protected void valueChanged(PermanentProperty prop, Object value, Object last) {
+	if (prop == Value.CURRENT_FIELDING) {
+	    Fielding f = (Fielding)value;
+	    Fielding lf = (Fielding)last;
+	    setRole(value == null ? getBaseRole() : f.getCurrentRole());
+	    if (lf != null && lf.getSkater() == this) {
+		if (f != null && (lf.getTeamJam().getNext() == f.getTeamJam() || lf.isCurrent())) {
+		    f.setPenaltyBox(lf.getPenaltyBox());
+		} 
+		if (lf.isCurrent()) {
+		    lf.setSkater(null);
+		    lf.setPenaltyBox(false);
+		}
+	    }
+	}
+	if (prop == Value.BASE_ROLE && get(Value.ROLE) == last) {
+	    set(Value.ROLE, value, Flag.CUSTOM);
+	}
+	if (prop == Value.SORT_PENALTIES && (Boolean)value) {
+	    sortPenalties();
 	}
     }
     
@@ -111,6 +102,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 		    } else {
 			sortPenalties();
 		    }
+		} else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
+		    set(Value.CURRENT_FIELDING, item);
 		}
 	    }
 	    requestBatchEnd();
@@ -120,13 +113,12 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public boolean remove(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
 	    requestBatchStart();
-	    Set<String> oldIds = null;
+	    boolean result;
 	    if (prop == Child.PENALTY) {
+		Set<String> oldIds = null;
 		oldIds = new HashSet<String>(children.get(prop).keySet());
-	    }
-	    boolean result = super.removeSilent(prop, item);
-	    if (result) {
-		if (prop == Child.PENALTY) {
+		result = super.removeSilent(prop, item);
+		if (result) {
 		    if (FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
 			scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
 			if (getBaseRole() == Role.INELIGIBLE) {
@@ -134,6 +126,13 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 			}
 		    } else {
 			sortPenalties(oldIds);
+		    }
+		}
+	    } else {
+		result = super.remove(prop,  item);
+		if (result && prop == Child.FIELDING) {
+		    if (getCurrentFielding() == item) {
+			set(Value.CURRENT_FIELDING, null);
 		    }
 		}
 	    }
@@ -160,12 +159,19 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 
     public String getNumber() { return (String)get(Value.NUMBER); }
     public void setNumber(String n) { set(Value.NUMBER, n); }
+    
+    public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
+    public void removeCurrentFielding() {
+	if (getCurrentFielding() != null) {
+	    remove(Child.FIELDING, getCurrentFielding());
+	}
+    }
 
     public Position getPosition() { return (Position)get(Value.POSITION); }
     public void setPosition(Position p) { set(Value.POSITION, p); }
 
     public Role getRole() { return (Role)get(Value.ROLE); }
-    public void setRole(Role r) { set(Value.ROLE, r); }
+    public void setRole(Role r) { set(Value.ROLE, r, Flag.CUSTOM); }
     public void setRoleToBase() { setRole(getBaseRole()); }
 
     public Role getBaseRole() { return (Role)get(Value.BASE_ROLE); }
@@ -205,7 +211,6 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
                 }
             }
         });
-        nextPenaltyNumber = String.valueOf(penalties.size()+1);
         
         int num = 1;
         for (Penalty p : penalties) {
@@ -223,10 +228,6 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         requestBatchEnd();
     }
     
-    public String getNextPenaltyId() {
-	return String.valueOf(nextPenaltyNumber);
-    }
-
     public SkaterSnapshot snapshot() {
         synchronized (coreLock) {
             return new SkaterSnapshotImpl(this);
@@ -238,12 +239,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             setPosition(s.getPosition());
             setRole(s.getRole());
             setBaseRole(s.getBaseRole());
-            setPenaltyBox(s.isPenaltyBox());
         }
     }
 
     protected String id;
-    protected String nextPenaltyNumber = "1";
     protected Team team;
 
 
@@ -289,21 +288,16 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             position = skater.getPosition();
             role = skater.getRole();
             baseRole = skater.getBaseRole();
-            box = skater.isPenaltyBox();
         }
 
         public String getId( ) { return id; }
         public Position getPosition() { return position; }
         public Role getRole() { return role; }
         public Role getBaseRole() { return baseRole; }
-        public boolean isPenaltyBox() { return box; }
 
         protected String id;
         protected Position position;
         protected Role role;
         protected Role baseRole;
-        protected boolean box;
-
     }
-
 }

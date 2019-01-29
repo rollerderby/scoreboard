@@ -8,17 +8,14 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.HashMap;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
     public SettingsImpl(ScoreBoard s) {
 	super (s, ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
-        children.put(Child.SETTING, new HashMap<String, ValueWithId>());
     }
 
     public String getId() { return ""; }

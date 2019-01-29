@@ -55,52 +55,38 @@ public class TeamImplTests {
     @Test
     public void testStartJam() {
         team.setScore(34);
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
+        team.setLeadJammer(Team.LEAD_LOST_LEAD);
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LEAD_JAMMER, listener));
 
-        team.startJam();
+        sb.startJam();
 
         assertEquals(34, team.getLastScore());
-        assertEquals(1, collectedEvents.size());
+        assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
+        assertEquals(2, collectedEvents.size());
     }
 
     @Test
     public void testStopJam() {
-        team.setLeadJammer(Team.LEAD_LOST_LEAD);
+	sb.startJam();
         team.setStarPass(true);
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LEAD_JAMMER, listener));
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.STAR_PASS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.STAR_PASS, listener));
 
-        team.stopJam();
+        sb.stopJamTO();
 
-        assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
         assertEquals(false, team.isStarPass());
-        assertEquals(2, collectedEvents.size());
-        boolean leadJammerSeen = false;
-        boolean starPassSeen = false;
-        while (!collectedEvents.isEmpty()) {
-            Property event = collectedEvents.poll().getProperty();
-            if (event == Team.Value.LEAD_JAMMER) { leadJammerSeen = true; }
-            if (event == Team.Value.STAR_PASS) { starPassSeen = true; }
-        }
-        assertTrue(leadJammerSeen && starPassSeen);
+        assertEquals(1, collectedEvents.size());
     }
 
     @Test
     public void testRestoreSnapshot() {
-        assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
-        assertFalse(team.isStarPass());
-        assertEquals(0, team.getScore());
-        assertEquals(0, team.getLastScore());
+	sb.startJam();
         assertFalse(team.inTimeout());
         assertFalse(team.inOfficialReview());
         assertEquals(3, team.getTimeouts());
         assertEquals(1, team.getOfficialReviews());
         Team.TeamSnapshot snapshot = team.snapshot();
 
-        team.setLeadJammer(Team.LEAD_LOST_LEAD);
-        team.setStarPass(true);
-        team.setScore(5);
-        team.setLastScore(3);
         team.setInTimeout(true);
         team.setInOfficialReview(true);
         team.setTimeouts(1);
@@ -109,10 +95,6 @@ public class TeamImplTests {
         //snapshot should not be applied when id doesn't match
         team.id = "OTHER";
         team.restoreSnapshot(snapshot);
-        assertEquals(Team.LEAD_LOST_LEAD, team.getLeadJammer());
-        assertTrue(team.isStarPass());
-        assertEquals(5, team.getScore());
-        assertEquals(3, team.getLastScore());
         assertTrue(team.inTimeout());
         assertTrue(team.inOfficialReview());
         assertEquals(1, team.getTimeouts());
@@ -120,10 +102,6 @@ public class TeamImplTests {
 
         team.id = ID;
         team.restoreSnapshot(snapshot);
-        assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
-        assertFalse(team.isStarPass());
-        assertEquals(5, team.getScore()); //score is not reset
-        assertEquals(0, team.getLastScore());
         assertFalse(team.inTimeout());
         assertFalse(team.inOfficialReview());
         assertEquals(3, team.getTimeouts());
@@ -156,8 +134,9 @@ public class TeamImplTests {
 
     @Test
     public void testSetScore() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.SCORE, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.SCORE, listener));
 
+        sb.startJam();
         team.setScore(5);
         assertEquals(5, team.getScore());
         assertEquals(1, collectedEvents.size());
@@ -181,8 +160,9 @@ public class TeamImplTests {
 
     @Test
     public void testChangeScore() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.SCORE, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.SCORE, listener));
 
+        sb.startJam();
         team.setScore(5);
         team.changeScore(3);
         assertEquals(8, team.getScore());
@@ -194,7 +174,8 @@ public class TeamImplTests {
 
     @Test
     public void testSetLastScore() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
+        sb.startJam();
         team.setScore(10);
 
         team.setLastScore(5);
@@ -217,7 +198,8 @@ public class TeamImplTests {
 
     @Test
     public void testChangeLastScore() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
+        sb.startJam();
 
         team.setScore(10);
         team.setLastScore(5);
@@ -232,7 +214,7 @@ public class TeamImplTests {
     @Test
     public void testSetInTimeout() {
         assertFalse(team.inTimeout());
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_TIMEOUT, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_TIMEOUT, listener));
 
         team.setInTimeout(true);
         assertTrue(team.inTimeout());
@@ -253,7 +235,7 @@ public class TeamImplTests {
     @Test
     public void testSetInOfficialReview() {
         assertFalse(team.inOfficialReview());
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_OFFICIAL_REVIEW, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_OFFICIAL_REVIEW, listener));
 
         team.setInOfficialReview(true);
         assertTrue(team.inOfficialReview());
@@ -275,8 +257,8 @@ public class TeamImplTests {
     public void testSetRetainedOfficialReview() {
         assertFalse(team.retainedOfficialReview());
         assertEquals(1, team.getOfficialReviews());
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.RETAINED_OFFICIAL_REVIEW, listener));
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.RETAINED_OFFICIAL_REVIEW, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
 
         team.setRetainedOfficialReview(true);
         assertTrue(team.retainedOfficialReview());
@@ -303,7 +285,7 @@ public class TeamImplTests {
 
     @Test
     public void testSetTimeouts() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
         sb.getRulesets().set(Rule.NUMBER_TIMEOUTS, String.valueOf(5));
 
         team.setTimeouts(4);
@@ -326,7 +308,7 @@ public class TeamImplTests {
 
     @Test
     public void testChangeTimeouts() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
         assertEquals(3, team.getTimeouts());
 
         team.changeTimeouts(-2);
@@ -339,7 +321,7 @@ public class TeamImplTests {
 
     @Test
     public void testSetOfficialReviews() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
         sb.getRulesets().set(Rule.NUMBER_REVIEWS, String.valueOf(5));
 
         team.setOfficialReviews(4);
@@ -362,7 +344,7 @@ public class TeamImplTests {
 
     @Test
     public void testChangeOfficialReviews() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
         sb.getRulesets().set(Rule.NUMBER_REVIEWS, String.valueOf(3));
         assertEquals(1, team.getOfficialReviews());
 
@@ -376,11 +358,11 @@ public class TeamImplTests {
 
     @Test
     public void testResetTimeouts() {
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_TIMEOUT, listener));
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_OFFICIAL_REVIEW, listener));
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.RETAINED_OFFICIAL_REVIEW, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_TIMEOUT, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_OFFICIAL_REVIEW, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.RETAINED_OFFICIAL_REVIEW, listener));
         team.setInTimeout(true);
         team.setInOfficialReview(true);
         team.setRetainedOfficialReview(true);
@@ -446,7 +428,7 @@ public class TeamImplTests {
     @Test
     public void testSetLeadJammer() {
         assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LEAD_JAMMER, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LEAD_JAMMER, listener));
 
         team.setLeadJammer(Team.LEAD_LEAD);
         assertEquals(Team.LEAD_LEAD, team.getLeadJammer());
@@ -470,7 +452,7 @@ public class TeamImplTests {
     @Test
     public void testSetStarPass() {
         assertFalse(team.isStarPass());
-        team.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.STAR_PASS, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.STAR_PASS, listener));
 
         team.setStarPass(true);
         assertTrue(team.isStarPass());
@@ -576,7 +558,8 @@ public class TeamImplTests {
 	skater6.setPenaltyBox(true);
 	skater5.setPenaltyBox(true);
 	skater4.setPenaltyBox(true);
-	team.stopJam();
+	sb.startJam();
+	sb.stopJamTO();
 	
 	assertNull(skater1.getPosition());
 	assertNull(skater2.getPosition());
@@ -599,7 +582,8 @@ public class TeamImplTests {
 	team.field(skater1, Role.PIVOT);
 	team.field(skater2, Role.BLOCKER);	
 	skater6.setPenaltyBox(false);
-	team.stopJam();
+	sb.startJam();
+	sb.stopJamTO();
 	
 	assertNull(skater1.getPosition());
 	assertNull(skater2.getPosition());

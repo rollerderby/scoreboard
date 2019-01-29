@@ -20,11 +20,14 @@ public interface Position extends ScoreBoardEventProvider {
     public FloorPosition getFloorPosition();
     public Skater getSkater();
     public void setSkater(Skater s);
+    public Fielding getCurrentFielding();
+    public void setCurrentFielding(Fielding f);
     public boolean isPenaltyBox();
     public void setPenaltyBox(boolean box);
 
     public enum Value implements PermanentProperty {
 	ID,
+	CURRENT_FIELDING,
 	SKATER,
 	NAME,
 	NUMBER,

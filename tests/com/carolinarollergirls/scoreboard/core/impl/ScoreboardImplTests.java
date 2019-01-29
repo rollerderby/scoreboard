@@ -178,6 +178,8 @@ public class ScoreboardImplTests {
     public void testSetOfficialScore() {
         assertFalse(sb.isOfficialScore());
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.OFFICIAL_SCORE, listener));
+        fastForwardPeriod();
+        fastForwardPeriod();
 
         sb.setOfficialScore(true);
         assertTrue(sb.isOfficialScore());
@@ -1047,6 +1049,7 @@ public class ScoreboardImplTests {
         fastForwardPeriod();
         ic.setTime(0);
         fastForwardJams(1);
+        advance(0);
         String prevUndoLabel = Button.UNDO.getLabel();
 
         assertTrue(pc.isRunning());
@@ -1396,6 +1399,17 @@ public class ScoreboardImplTests {
         checkLabels(ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_START_JAM);
     }
 
+    @Test
+    public void testNoAutoEndJam() {
+	sb.getRulesets().set(Rule.AUTO_END_JAM, "false");
+	
+	sb.startJam();
+	advance(jc.getMaximumTime());
+	
+	assertFalse(jc.isRunning());
+	assertTrue(sb.isInJam());
+    }
+    
     @Test
     public void testAutoStartAndEndTimeout() {
         sb.getRulesets().set(Rule.AUTO_START, "true");

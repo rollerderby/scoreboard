@@ -29,18 +29,24 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 	super (sb, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
         id = i;
         //initialize types
+        if (id == ID_PERIOD || id == ID_INTERMISSION) {
+            addReference(new PropertyReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD_NUMBER, false, 0));
+        } else if (id == ID_JAM) {
+            addReference(new IndirectPropertyReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD,
+        	    Period.Value.CURRENT_JAM_NUMBER, false, 0));
+        } else {
+            values.put(Value.NUMBER, 0);
+        }
         values.put(Value.MINIMUM_TIME, 0L);
         values.put(Value.MAXIMUM_TIME, 0L);
         values.put(Value.TIME, 0L);
-        values.put(Value.NUMBER, 0);
+        writeProtectionOverride.put(Value.INVERTED_TIME, false);
         values.put(Value.MINIMUM_NUMBER, 0);
         values.put(Value.MAXIMUM_NUMBER, 0);
         values.put(Value.DIRECTION, Boolean.FALSE);
         values.put(Value.RUNNING, Boolean.FALSE);
 
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET_ID, rulesetChangeListener));
-
-        reset();
     }
 
     public Object get(PermanentProperty prop) {
@@ -48,32 +54,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 	    if (prop == Value.INVERTED_TIME) {
 		return getMaximumTime() - getTime();
 	    }
-	    if (prop == Value.NUMBER) {
-		if (id == ID_PERIOD || id == ID_INTERMISSION) {
-		    return scoreBoard.getCurrentPeriodNumber();
-		} else if (id == ID_JAM) {
-		    return scoreBoard.getCurrentPeriod().getCurrentJamNumber();
-		}
-	    }
 	    return super.get(prop);
 	}
     }
     
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
-	    if (!(prop instanceof Value) || prop == Value.INVERTED_TIME) { return false; }
-	    if (prop == Value.NUMBER) {
-		if (id == ID_PERIOD) {
-		    return scoreBoard.set(ScoreBoard.Value.CURRENT_PERIOD_NUMBER, value, flag);
-		} else if (id == ID_JAM) {
-		    return scoreBoard.getCurrentPeriod().set(Period.Value.CURRENT_JAM_NUMBER, value, flag);
-		} else if (id == ID_INTERMISSION) { 
-		    return false; 
-		}
-	    }
 	    if (flag == Flag.RESET && prop == Value.TIME) { return resetTime(); }
-	    requestBatchStart();
-	    Object last = get(prop);
 	    if (prop == Value.TIME && isRunning() && isSyncTime() && flag != Flag.CUSTOM) {
 		value = (((Long)value / 1000L) * 1000L) + (flag == Flag.CHANGE ? 0L : (getTime() % 1000L));
 	    }
@@ -85,49 +72,49 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 	    if (prop == Value.TIME) { max =  getMaximumTime(); }
 	    long tolerance = (prop == Value.TIME)? 500 : 0;
 	    boolean result = set(prop, value, flag, min, max, tolerance);
-	    if (result) {
-		switch ((Value)prop) {
-		case MINIMUM_NUMBER:
-		    setMaximumNumber(getMaximumNumber()); //will check for max < min
-		    //$FALL-THROUGH$
-		case MAXIMUM_NUMBER:
-		    setNumber(getNumber()); //will check range
-		    break;
-		case TIME:
-	            scoreBoardChange(new ScoreBoardEvent(this, Value.INVERTED_TIME, getMaximumTime() - getTime(), getMaximumTime() - (Long)last));
-	            if(isTimeAtEnd()) {
-	                stop();
-	            }
-		    break;
-		case MINIMUM_TIME:
-		    setMaximumTime(getMaximumTime()); // will check for max < min
-		    setTime(getTime()); // will check range
-		    break;
-		case MAXIMUM_TIME:
-		    if (isCountDirectionDown()) {
-			changeTime((Long)value - (Long)last);
-		    } else {
-			setTime(getTime()); // will check range
-		    }
-		    break;
-		case DIRECTION:
-		    setTime(getInvertedTime());
-		    break;
-		case RUNNING:
-		    if ((Boolean)value) {
-			updateClockTimerTask.addClock(this, flag == Flag.CUSTOM);
-		    } else {
-			updateClockTimerTask.removeClock(this);
-		    }
-		    break;
-		default:
-		    break;
+	    if (result && prop == Value.RUNNING) {
+		if ((Boolean)value) {
+		    updateClockTimerTask.addClock(this, flag == Flag.CUSTOM);
+		} else {
+		    updateClockTimerTask.removeClock(this);
 		}
 	    }
-	    requestBatchEnd();
 	    return result;
 	}
     }
+    protected void valueChanged(PermanentProperty prop, Object value, Object last) {
+	switch ((Value)prop) {
+	case MINIMUM_NUMBER:
+	    setMaximumNumber(getMaximumNumber()); //will check for max < min
+	    //$FALL-THROUGH$
+	case MAXIMUM_NUMBER:
+	    setNumber(getNumber()); //will check range
+	    break;
+	case TIME:
+            scoreBoardChange(new ScoreBoardEvent(this, Value.INVERTED_TIME, getMaximumTime() - getTime(), getMaximumTime() - (Long)last));
+            if(isTimeAtEnd()) {
+                stop();
+            }
+	    break;
+	case MINIMUM_TIME:
+	    setMaximumTime(getMaximumTime()); // will check for max < min
+	    setTime(getTime()); // will check range
+	    break;
+	case MAXIMUM_TIME:
+	    if (isCountDirectionDown()) {
+		changeTime((Long)value - (Long)last);
+	    } else {
+		setTime(getTime()); // will check range
+	    }
+	    break;
+	case DIRECTION:
+	    setTime(getInvertedTime());
+	    break;
+	default:
+	    break;
+	}
+    }
+    
     
     public void execute(CommandProperty prop) {
 	switch((Command)prop) {
@@ -219,11 +206,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public void changeMaximumNumber(int change) { set(Value.MAXIMUM_NUMBER, change, Flag.CHANGE); }
 
     public long getTime() { return (Long)get(Value.TIME); }
-    public long getInvertedTime() { 
-	synchronized (coreLock) {
-	    return getMaximumTime() - getTime();
-	}
-    }
+    public long getInvertedTime() { return (Long)get(Value.INVERTED_TIME); }
     public long getTimeElapsed() {
         synchronized (coreLock) {
             return isCountDirectionDown()?getInvertedTime():getTime();

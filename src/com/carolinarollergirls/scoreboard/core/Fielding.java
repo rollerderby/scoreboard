@@ -4,18 +4,20 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public interface Fielding extends ScoreBoardEventProvider {
-    public int getPeriodNumber();
-    public int getJamNumber();
-    public String getTeamId();
-    public String getSkaterId();
+    public TeamJam getTeamJam();
+    public Position getPosition();
+    
+    public boolean isCurrent();
+    public Role getCurrentRole();
+
+    public Skater getSkater();
+    public void setSkater(Skater s);
 
     public boolean getPenaltyBox();
     public void setPenaltyBox(boolean p);
-    public String getPosition();
-    public void setPosition(String p);
 
     public enum Value implements PermanentProperty {
-        ID,
+        SKATER,
         POSITION,
         PENALTY_BOX;
     }

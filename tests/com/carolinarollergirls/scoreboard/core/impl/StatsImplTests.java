@@ -14,7 +14,7 @@ import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Period.Value;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Stats;
+import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
@@ -23,7 +23,6 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 public class StatsImplTests {
 
     private ScoreBoard sb;
-    private Stats stats;
     private Team team1;
 
     private final String ID_PREFIX = "00000000-0000-0000-0000-000000000";
@@ -34,7 +33,6 @@ public class StatsImplTests {
 
         sb = new ScoreBoardImpl();
         sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
-        stats = sb.getStats();
 
         // Add a full roster for each team.
         // Skater numbers are 100..114 and 200..214.
@@ -99,26 +97,26 @@ public class StatsImplTests {
 
     @Test
     public void testJamStartListener() {
-        team1.field(team1.getSkater(ID_PREFIX + "100"), Role.JAMMER);
-        team1.field(team1.getSkater(ID_PREFIX + "101"), Role.PIVOT);
+	Skater skater1 = team1.getSkater(ID_PREFIX + "100"); 
+	Skater skater2 = team1.getSkater(ID_PREFIX + "101"); 
+        team1.field(skater1, Role.JAMMER);
+        team1.field(skater2, Role.PIVOT);
 
         sb.startJam();
         advance(1000);
 
         // Confirm stats are as expected at start of first jam.
-        Period p = stats.getPeriod(1);
+        Period p = sb.getPeriod(1);
         Jam j = p.getJam(1);
         TeamJam tj = j.getTeamJam(Team.ID_1);
         assertEquals(0, j.getPeriodClockElapsedStart());
         assertEquals(0, tj.getTotalScore());
         assertEquals(0, tj.getJamScore());
         assertEquals(Team.LEAD_NO_LEAD, tj.getLeadJammer());
-        assertEquals(false, tj.getStarPass());
-        assertEquals(3, tj.getTimeouts());
-        assertEquals(1, tj.getOfficialReviews());
-        assertEquals(FloorPosition.JAMMER.toString(), tj.getFielding(ID_PREFIX + "100").getPosition());
-        assertEquals(FloorPosition.PIVOT.toString(), tj.getFielding(ID_PREFIX + "101").getPosition());
-        assertEquals(null, tj.getFielding(ID_PREFIX + "114"));
+        assertEquals(false, tj.isStarPass());
+        assertEquals(skater1, tj.getFielding(FloorPosition.JAMMER).getSkater());
+        assertEquals(skater2, tj.getFielding(FloorPosition.PIVOT).getSkater());
+        assertEquals(null, tj.getFielding(FloorPosition.BLOCKER1).getSkater());
 
         // Team 1 gets lead and scores.
         team1.setLeadJammer(Team.LEAD_LEAD);
@@ -136,12 +134,10 @@ public class StatsImplTests {
         assertEquals(5, tj.getTotalScore());
         assertEquals(0, tj.getJamScore());
         assertEquals(Team.LEAD_NO_LEAD, tj.getLeadJammer());
-        assertEquals(false, tj.getStarPass());
-        assertEquals(3, tj.getTimeouts());
-        assertEquals(1, tj.getOfficialReviews());
+        assertEquals(false, tj.isStarPass());
         // No skaters have been entered for this jam yet.
-        assertEquals(null, tj.getFielding(ID_PREFIX + "100"));
-        assertEquals(null, tj.getFielding(ID_PREFIX + "101"));
+        assertEquals(null, tj.getFielding(FloorPosition.JAMMER).getSkater());
+        assertEquals(null, tj.getFielding(FloorPosition.PIVOT).getSkater());
     }
 
     @Test
@@ -152,7 +148,7 @@ public class StatsImplTests {
         advance(1000);
 
         // Confirm stats are as expected at end of first jam.
-        Period p = stats.getPeriod(1);
+        Period p = sb.getPeriod(1);
         Jam j = p.getJam(1);
         assertEquals(1000, j.getDuration());
         assertEquals(1000, j.getPeriodClockElapsedEnd());
@@ -171,7 +167,7 @@ public class StatsImplTests {
         sb.startJam();
         advance(1000);
 
-        Period p = stats.getPeriod(1);
+        Period p = sb.getPeriod(1);
         Jam j = p.getJam(1);
         TeamJam tj = j.getTeamJam(Team.ID_1);
 
@@ -182,7 +178,7 @@ public class StatsImplTests {
 
         // Star pass during the jam.
         team1.setStarPass(true);
-        assertEquals(true, tj.getStarPass());
+        assertEquals(true, tj.isStarPass());
 
         // Lead during the jam.
         team1.setLeadJammer(Team.LEAD_LEAD);
@@ -191,7 +187,7 @@ public class StatsImplTests {
         sb.stopJamTO();
         advance(1000);
         // Star pass and lead still correct after jam end.
-        assertEquals(true, tj.getStarPass());
+        assertEquals(true, tj.isStarPass());
         assertEquals(Team.LEAD_LEAD, tj.getLeadJammer());
 
         // Some points arrive after end of jam.
@@ -202,12 +198,12 @@ public class StatsImplTests {
         // Timeout at end of jam.
         team1.timeout();
         advance(1000);
-        assertEquals(2, tj.getTimeouts());
+        assertEquals(2, tj.getTeam().getTimeouts());
 
         // Official review at end of jam.
         team1.officialReview();
         advance(1000);
-        assertEquals(0, tj.getOfficialReviews());
+        assertEquals(0, tj.getTeam().getOfficialReviews());
 
         // Start jam 2, confirm score.
         sb.startJam();
@@ -226,40 +222,44 @@ public class StatsImplTests {
     @Test
     public void testSkaterEventListener() {
         // Some skater positions set before jam.
-        team1.field(team1.getSkater(ID_PREFIX + "100"), Role.JAMMER);
-        team1.field(team1.getSkater(ID_PREFIX + "101"), Role.PIVOT);
+	Skater skater1 = team1.getSkater(ID_PREFIX + "100");
+	Skater skater2 = team1.getSkater(ID_PREFIX + "101");
+	Skater skater3 = team1.getSkater(ID_PREFIX + "102");
+	Skater skater4 = team1.getSkater(ID_PREFIX + "103");
+        team1.field(skater1, Role.JAMMER);
+        team1.field(skater2, Role.PIVOT);
 
         sb.startJam();
         advance(1000);
 
-        Period p = stats.getPeriod(1);
+        Period p = sb.getPeriod(1);
         Jam j = p.getJam(1);
         TeamJam tj = j.getTeamJam(Team.ID_1);
 
         // Blocker is added after the jam starts. All positions in place.
-        team1.field(team1.getSkater(ID_PREFIX + "102"), team1.getPosition(FloorPosition.BLOCKER1));
-        assertEquals(FloorPosition.JAMMER.toString(), tj.getFielding(ID_PREFIX + "100").getPosition());
-        assertEquals(FloorPosition.PIVOT.toString(), tj.getFielding(ID_PREFIX + "101").getPosition());
-        assertEquals(FloorPosition.BLOCKER1.toString(), tj.getFielding(ID_PREFIX + "102").getPosition());
+        team1.getPosition(FloorPosition.BLOCKER1).setSkater(skater3);
+        assertEquals(skater1, tj.getFielding(FloorPosition.JAMMER).getSkater());
+        assertEquals(skater2, tj.getFielding(FloorPosition.PIVOT).getSkater());
+        assertEquals(skater3, tj.getFielding(FloorPosition.BLOCKER1).getSkater());
 
         // Skater was actually on bench.
-        team1.field(team1.getSkater(ID_PREFIX + "102"), Role.BENCH);
-        assertEquals(null, tj.getFielding(ID_PREFIX + "102"));
+        team1.field(skater3, Role.BENCH);
+        assertEquals(null, tj.getFielding(FloorPosition.BLOCKER1).getSkater());
 
         // Skater goes to the box.
-        team1.getSkater(ID_PREFIX + "100").setPenaltyBox(true);
-        assertEquals(true, tj.getFielding(ID_PREFIX + "100").getPenaltyBox());
+        skater1.setPenaltyBox(true);
+        assertEquals(true, tj.getFielding(FloorPosition.JAMMER).getPenaltyBox());
 
         // Skater exits the box.
-        team1.getSkater(ID_PREFIX + "100").setPenaltyBox(false);
-        assertEquals(false, tj.getFielding(ID_PREFIX + "100").getPenaltyBox());
+        skater1.setPenaltyBox(false);
+        assertEquals(false, tj.getFielding(FloorPosition.JAMMER).getPenaltyBox());
 
         // Jam ends.
         sb.stopJamTO();
         advance(1000);
         // New jammer does not replace jammer from previous jam.
-        team1.field(team1.getSkater(ID_PREFIX + "103"), Role.JAMMER);
-        assertEquals(FloorPosition.JAMMER.toString(), tj.getFielding(ID_PREFIX + "100").getPosition());
+        team1.field(skater4, Role.JAMMER);
+        assertEquals(skater1, tj.getFielding(FloorPosition.JAMMER).getSkater());
     }
 
 }

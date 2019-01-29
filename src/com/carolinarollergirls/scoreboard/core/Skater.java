@@ -22,6 +22,8 @@ public interface Skater extends ScoreBoardEventProvider {
     public void setName(String id);
     public String getNumber();
     public void setNumber(String number);
+    public Fielding getCurrentFielding();
+    public void removeCurrentFielding();
     public Position getPosition();
     public void setPosition(Position position);
     public Role getRole();
@@ -39,6 +41,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public enum Value implements PermanentProperty {
 	NAME,
 	NUMBER,
+	CURRENT_FIELDING,
 	POSITION,
 	ROLE,
 	BASE_ROLE,
@@ -47,6 +50,7 @@ public interface Skater extends ScoreBoardEventProvider {
 	SORT_PENALTIES;
     }
     public enum Child implements AddRemoveProperty {
+	FIELDING,
 	PENALTY;
     }
     
@@ -71,6 +75,5 @@ public interface Skater extends ScoreBoardEventProvider {
         public Position getPosition();
         public Role getRole();
         public Role getBaseRole();
-        public boolean isPenaltyBox();
     }
 }

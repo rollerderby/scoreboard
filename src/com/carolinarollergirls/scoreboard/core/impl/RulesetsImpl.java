@@ -9,7 +9,6 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
@@ -27,9 +26,6 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
 	super(s, ScoreBoard.Child.RULESETS, Rulesets.class, Value.class, Child.class);
-        children.put(Child.RULESET, new HashMap<String, ValueWithId>());
-        children.put(Child.RULE_DEFINITION, new HashMap<String, ValueWithId>());
-        children.put(Child.CURRENT_RULE, new HashMap<String, ValueWithId>());
         initialize();
         reset();
     }
@@ -172,7 +168,6 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     public class RulesetImpl extends ScoreBoardEventProviderImpl implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
             super(rulesets, Rulesets.Child.RULESET, Ruleset.class, Value.class, Child.class);
-            children.put(Child.RULE, new HashMap<String, ValueWithId>());
             values.put(Value.ID, id);
             values.put(Value.NAME, name);
             values.put(Value.PARENT_ID, parentId);

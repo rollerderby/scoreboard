@@ -64,7 +64,7 @@ public class PositionImplTests {
     @Test
     public void field_skater_as_jammer() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
-        team.field(first, jammer);
+        jammer.setSkater(first);
 
         assertSame(jammer.getSkater(), first);
         assertSame(first.getPosition(), jammer);
@@ -73,7 +73,7 @@ public class PositionImplTests {
     @Test
     public void position_knows_skater_penalty() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
-        team.field(first, jammer);
+        jammer.setSkater(first);
         first.setPenaltyBox(true);
 
         assertTrue(jammer.isPenaltyBox());
@@ -82,7 +82,7 @@ public class PositionImplTests {
     @Test
     public void skater_knows_position_penalty() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
-        team.field(first, jammer);
+        jammer.setSkater(first);
         jammer.setPenaltyBox(true);
 
         assertTrue(first.isPenaltyBox());
@@ -100,8 +100,8 @@ public class PositionImplTests {
     public void sp_works() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
         Position pivot = team.getPosition(FloorPosition.PIVOT);
-        team.field(first, jammer);
-        team.field(first, pivot);
+        jammer.setSkater(first);
+        pivot.setSkater(first);
 
         assertSame(pivot.getSkater(), first);
         assertNull(jammer.getSkater());
@@ -121,9 +121,9 @@ public class PositionImplTests {
     public void position_knows_penalty_after_sp() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
         Position pivot = team.getPosition(FloorPosition.PIVOT);
-        team.field(first, pivot);
+        pivot.setSkater(first);
         pivot.setPenaltyBox(true);
-        team.field(first, jammer);
+        jammer.setSkater(first);
 
         assertTrue(jammer.isPenaltyBox());
         assertFalse(pivot.isPenaltyBox());

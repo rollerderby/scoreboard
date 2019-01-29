@@ -51,7 +51,7 @@ public class ClockImplTests {
         sb = new ScoreBoardImpl();
         sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
-        clock = new ClockImpl(sb, ID);
+        clock = (ClockImpl) sb.getClock(ID);
     }
 
     @After

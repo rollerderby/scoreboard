@@ -13,11 +13,11 @@ public enum FloorPosition {
     }
     
     public Role getRole() { return role; }
-    public Role getRole(Team team) {
-	if (role == Role.PIVOT && team.isStarPass()) {
+    public Role getRole(TeamJam teamJam) {
+	if (role == Role.PIVOT && teamJam.isStarPass()) {
 	    return Role.JAMMER;
-	} else if (role == Role.JAMMER && team.isStarPass() ||
-		role == Role.PIVOT && team.hasNoPivot()) {
+	} else if (role == Role.JAMMER && teamJam.isStarPass() ||
+		role == Role.PIVOT && teamJam.hasNoPivot()) {
 	    return Role.BLOCKER;
 	} else {
 	    return role; 

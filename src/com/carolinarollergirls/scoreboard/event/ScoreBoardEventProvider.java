@@ -64,7 +64,7 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      * value to the previous one. Other flags need to be implemented in overrides.
      */
     public boolean set(PermanentProperty prop, Object value, Flag flag);
-
+    
     /**
      * If create is implemented for the respective type, this function will resort to that,
      * ignoring sValue.
@@ -119,5 +119,51 @@ public interface ScoreBoardEventProvider extends ValueWithId {
 	RESET,
 	FORCE,
 	CUSTOM;
+    }
+    
+    public class PropertyReference {
+	public PropertyReference(ScoreBoardEventProvider sourceElement, PermanentProperty sourceProperty,
+		ScoreBoardEventProvider targetElement, PermanentProperty targetProperty, boolean readonly,
+		Object defaultValue) {
+	    this.sourceElement = sourceElement;
+	    this.sourceProperty = sourceProperty;
+	    this.targetElement = targetElement;
+	    this.targetProperty = targetProperty;
+	    this.readonly = readonly;
+	    this.defaultValue = defaultValue;
+	}
+	
+	public ScoreBoardEventProvider getSourceElement() { return sourceElement; }
+	public PermanentProperty getSourceProperty() { return sourceProperty; }
+	public ScoreBoardEventProvider getTargetElement() { return targetElement; }
+	public PermanentProperty getTargetProperty() { return targetProperty; }
+	public boolean isReadOnly() { return readonly; }
+	public Object getDefaultValue() { return defaultValue; }
+	
+	private ScoreBoardEventProvider sourceElement;
+	private PermanentProperty sourceProperty;
+	private ScoreBoardEventProvider targetElement;
+	private PermanentProperty targetProperty;
+	private boolean readonly;
+	private Object defaultValue;
+    }
+    
+    public class IndirectPropertyReference extends PropertyReference {
+	public IndirectPropertyReference(ScoreBoardEventProvider sourceElement, PermanentProperty sourceProperty,
+		ScoreBoardEventProvider referenceElement, PermanentProperty referenceProperty,
+		PermanentProperty targetProperty, boolean readonly, Object defaultValue) {
+	    super(sourceElement, sourceProperty, null, targetProperty, readonly, defaultValue);
+	    this.referenceElement = referenceElement;
+	    this.referenceProperty = referenceProperty;
+	}
+	
+	public ScoreBoardEventProvider getTargetElement() {
+	    return (ScoreBoardEventProvider)referenceElement.get(referenceProperty);
+	}
+	public ScoreBoardEventProvider getReferenceElement() { return referenceElement; }
+	public PermanentProperty getReferenceProperty() { return referenceProperty; }
+	
+	private ScoreBoardEventProvider referenceElement;
+	private PermanentProperty referenceProperty;
     }
 }

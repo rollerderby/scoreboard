@@ -35,7 +35,6 @@ import com.carolinarollergirls.scoreboard.core.Period.PeriodSnapshot;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
-import com.carolinarollergirls.scoreboard.core.Stats;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 
@@ -46,23 +45,16 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     protected void setupScoreBoard() {
+	writeProtectionOverride.put(Value.CURRENT_PERIOD, true);
+	addReference(new IndirectPropertyReference(this, Value.IN_PERIOD, this, Value.CURRENT_PERIOD,
+		Period.Value.RUNNING, false, false));
 	for (Button b : Button.values()) {
 	    b.setScoreBoard(this);
 	}
-	children.put(Child.CLOCK, new HashMap<String, ValueWithId>());
-	children.put(Child.TEAM, new HashMap<String, ValueWithId>());
-        children.put(NChild.PERIOD, new HashMap<String, ValueWithId>());
-	children.put(Child.STATS, new HashMap<String, ValueWithId>());
-        add(Child.STATS, new StatsImpl(this));
-	children.put(Child.SETTINGS, new HashMap<String, ValueWithId>());
         add(Child.SETTINGS, new SettingsImpl(this));
-	children.put(Child.RULESETS, new HashMap<String, ValueWithId>());
 	add(Child.RULESETS, new RulesetsImpl(this));
-	children.put(Child.PENALTY_CODES, new HashMap<String, ValueWithId>());
         add(Child.PENALTY_CODES, new PenaltyCodesManager(this));
-	children.put(Child.MEDIA, new HashMap<String, ValueWithId>());
         add(Child.MEDIA, new MediaImpl(this, ScoreBoardManager.getDefaultPath()));
-        reset();
         getTeam(Team.ID_1);
         getTeam(Team.ID_2);
         getClock(Clock.ID_PERIOD);
@@ -70,6 +62,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         getClock(Clock.ID_LINEUP);
         getClock(Clock.ID_TIMEOUT);
         getClock(Clock.ID_INTERMISSION);
+        reset();
         addInPeriodListeners();
         xmlScoreBoard = new XmlScoreBoard(this);
         //Button may have a label from autosave but undo will not work after restart
@@ -88,31 +81,24 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
-	    if (prop == Value.IN_PERIOD) { return false; }
-	    requestBatchStart();
-	    Object last = get(prop);
-	    boolean result = super.set(prop, value, flag);
-	    if (result) {
-		if (prop == Value.IN_OVERTIME && !(Boolean)value) {
-		    Clock lc = getClock(Clock.ID_LINEUP);
-		    if (lc.isCountDirectionDown()) {
-			lc.setMaximumTime(getRulesets().getLong(Rule.LINEUP_DURATION));
-		    }
-		} else if (prop == Value.OFFICIAL_SCORE && (Boolean)value) {
-		    getCurrentPeriod().truncateAfterCurrentJam();
-		} else if (prop == Value.CURRENT_PERIOD_NUMBER) {
-		    scoreBoardChange(new ScoreBoardEvent(getClock(Clock.ID_PERIOD), Clock.Value.NUMBER, value, last));
-		    scoreBoardChange(new ScoreBoardEvent(getClock(Clock.ID_INTERMISSION), Clock.Value.NUMBER, value, last));
-		}
+	    if (prop == Value.OFFICIAL_SCORE && (Boolean)value && (isInPeriod() ||
+		    getCurrentPeriodNumber() != getRulesets().getInt(Rule.NUMBER_PERIODS) ||
+		    !getClock(Clock.ID_PERIOD).isTimeAtEnd())) {
+		return false;
 	    }
-	    requestBatchEnd();
-	    return result;
+	    return super.set(prop, value, flag);
 	}
     }
-    public Object get(PermanentProperty prop) {
-	synchronized (coreLock) {
-	    if (prop == Value.IN_PERIOD) { return getCurrentPeriod().get(Period.Value.RUNNING); }
-	    return super.get(prop);
+    protected void valueChanged(PermanentProperty prop, Object value, Object last) {
+	if (prop == Value.IN_OVERTIME && !(Boolean)value) {
+	    Clock lc = getClock(Clock.ID_LINEUP);
+	    if (lc.isCountDirectionDown()) {
+		lc.setMaximumTime(getRulesets().getLong(Rule.LINEUP_DURATION));
+	    }
+	} else if (prop == Value.OFFICIAL_SCORE && (Boolean)value) {
+	    getCurrentPeriod().truncateAfterCurrentJam();
+	} else if (prop == Value.CURRENT_PERIOD_NUMBER) {
+	    set(Value.CURRENT_PERIOD, getCurrentPeriod());
 	}
     }
     
@@ -184,16 +170,17 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     
     public void reset() {
         synchronized (coreLock) {
+            set(Value.IN_JAM, false);
+            removeAll(NChild.PERIOD);
+            set(Value.CURRENT_PERIOD_NUMBER, 0);
+            getCurrentPeriod().getJam(0);
+            getCurrentPeriod().getJam(1);
             for (ValueWithId c : getAll(Child.CLOCK)) {
                 ((Clock)c).reset();
             }
             for (ValueWithId t : getAll(Child.TEAM)) {
                 ((Team)t).reset();
             }
-            removeAll(NChild.PERIOD);
-            set(Value.CURRENT_PERIOD_NUMBER, 0);
-            getCurrentPeriod().getJam(0);
-            getCurrentPeriod().getJam(1);
 
             setTimeoutOwner(TimeoutOwners.NONE);
             setOfficialReview(false);
@@ -216,7 +203,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     public boolean isInPeriod() { return (Boolean)get(Value.IN_PERIOD); }
-    public void setInPeriod(boolean p) { getCurrentPeriod().set(Period.Value.RUNNING, p); }
+    public void setInPeriod(boolean p) { set(Value.IN_PERIOD, p); }
     public Period getPeriod(int p) { return (Period)get(NChild.PERIOD, String.valueOf(p), true); }
     public Period getCurrentPeriod() { 	return getPeriod(getCurrentPeriodNumber()); }
     public int getCurrentPeriodNumber() { return (Integer)get(Value.CURRENT_PERIOD_NUMBER); }
@@ -228,15 +215,16 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         addScoreBoardListener(new ConditionalScoreBoardListener(Clock.class, Clock.ID_TIMEOUT, Clock.Value.TIME, timeoutClockListener));
     }
 
+    public boolean isInJam() { return (Boolean)get(Value.IN_JAM); }
+    
     public boolean isInOvertime() { return (Boolean)get(Value.IN_OVERTIME); }
     public void setInOvertime(boolean o) { set(Value.IN_OVERTIME, o); }
     public void startOvertime() {
         synchronized (coreLock) {
             Clock pc = getClock(Clock.ID_PERIOD);
-            Clock jc = getClock(Clock.ID_JAM);
             Clock lc = getClock(Clock.ID_LINEUP);
 
-            if (pc.isRunning() || jc.isRunning()) {
+            if (pc.isRunning() || isInJam()) {
                 return;
             }
             if (pc.getNumber() < pc.getMaximumNumber()) {
@@ -265,7 +253,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
     public void startJam() {
         synchronized (coreLock) {
-            if (!getClock(Clock.ID_JAM).isRunning()) {
+            if (!isInJam()) {
                 createSnapshot(ACTION_START_JAM);
                 setLabels(ACTION_NONE, ACTION_STOP_JAM, ACTION_TIMEOUT);
                 _startJam();
@@ -282,7 +270,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             if (jc.isRunning()) {
                 createSnapshot(ACTION_STOP_JAM);
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-                _endJam(false);
+                _endJam();
                 finishReplace();
             } else if (tc.isRunning()) {
                 createSnapshot(ACTION_STOP_TO);
@@ -377,10 +365,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
     private void _possiblyEndPeriod() {
         Clock pc = getClock(Clock.ID_PERIOD);
-        Clock jc = getClock(Clock.ID_JAM);
         Clock tc = getClock(Clock.ID_TIMEOUT);
 
-        if (pc.isTimeAtEnd() && !pc.isRunning() && !jc.isRunning() && !tc.isRunning()) {
+        if (pc.isTimeAtEnd() && !pc.isRunning() && !isInJam() && !tc.isRunning()) {
             requestBatchStart();
             setLabels(ACTION_START_JAM, ACTION_LINEUP, ACTION_TIMEOUT);
             setInPeriod(false);
@@ -400,20 +387,22 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         _endLineup();
         pc.start();
         getCurrentPeriod().startJam();
+        set(Value.IN_JAM, true);
         jc.restart();
 
         getTeam(Team.ID_1).startJam();
         getTeam(Team.ID_2).startJam();
         requestBatchEnd();
     }
-    private void _endJam(boolean force) {
+    private void _endJam() {
         Clock pc = getClock(Clock.ID_PERIOD);
         Clock jc = getClock(Clock.ID_JAM);
 
-        if (!jc.isRunning() && !force) { return; }
+        if (!isInJam()) { return; }
 
         requestBatchStart();
         jc.stop();
+        set(Value.IN_JAM, false);
         getCurrentPeriod().stopJam();
         getTeam(Team.ID_1).stopJam();
         getTeam(Team.ID_2).stopJam();
@@ -461,7 +450,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             pc.stop();
         }
         _endLineup();
-        _endJam(false);
+        _endJam();
         _endIntermission(false);
         setInPeriod(true);
         tc.changeNumber(1);
@@ -563,20 +552,21 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
+        Jam possiblyMovedJam = (Jam)getCurrentPeriod().getFirst(Period.NChild.JAM);
+        if (set(Value.CURRENT_PERIOD_NUMBER, snapshot.getCurrentPeriodNumber())) {
+            possiblyMovedJam.moveToPreviousPeriod();
+        }
+        getCurrentPeriod().restoreSnapshot(snapshot.getPeriodSnapshot());
         for (ValueWithId clock : getAll(Child.CLOCK)) {
             ((Clock)clock).restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
         }
         for (ValueWithId team : getAll(Child.TEAM)) {
             ((Team)team).restoreSnapshot(snapshot.getTeamSnapshot(team.getId()));
         }
-        Jam possiblyMovedJam = (Jam)getCurrentPeriod().getFirst(Period.NChild.JAM);
-        if (set(Value.CURRENT_PERIOD_NUMBER, snapshot.getCurrentPeriodNumber())) {
-            possiblyMovedJam.moveToPreviousPeriod();
-        }
-        getCurrentPeriod().restoreSnapshot(snapshot.getPeriodSnapshot());
         setTimeoutOwner(snapshot.getTimeoutOwner());
         setOfficialReview(snapshot.isOfficialReview());
         setInOvertime(snapshot.inOvertime());
+        set(Value.IN_JAM, snapshot.inJam());
         setInPeriod(snapshot.inPeriod());
         restartPcAfterTimeout = snapshot.restartPcAfterTo();
         for (Button button : Button.values()) {
@@ -625,8 +615,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     
     public PenaltyCodesManager getPenaltyCodesManager() { return (PenaltyCodesManager)get(Child.PENALTY_CODES, ""); }
 
-    public Stats getStats() { return (Stats)get(Child.STATS, ""); }
-
     public Media getMedia() { return (Media)get(Child.MEDIA, ""); }
 
     public Clock getClock(String id) { return (Clock)get(Child.CLOCK, id, true); }
@@ -666,7 +654,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 //clock has run down naturally
                 requestBatchStart();
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-                _endJam(true);
+                _endJam();
                 requestBatchEnd();
             }
         }
@@ -707,6 +695,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             timeoutOwner = sbm.getTimeoutOwner();
             isOfficialReview = sbm.isOfficialReview();
             inOvertime = sbm.isInOvertime();
+            inJam = sbm.isInJam();
             inPeriod = sbm.isInPeriod();
             restartPcAfterTo = sbm.restartPcAfterTimeout;
             currentPeriodNumber = sbm.getCurrentPeriodNumber();
@@ -730,6 +719,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         public TimeoutOwner getTimeoutOwner() { return timeoutOwner; }
         public boolean isOfficialReview() { return isOfficialReview; }
         public boolean inOvertime() { return inOvertime; }
+        public boolean inJam() { return inJam; }
         public boolean inPeriod() { return inPeriod; }
         public boolean restartPcAfterTo() { return restartPcAfterTo; }
         public int getCurrentPeriodNumber() { return currentPeriodNumber; }
@@ -745,6 +735,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         protected TimeoutOwner timeoutOwner;
         protected boolean isOfficialReview;
         protected boolean inOvertime;
+        protected boolean inJam;
         protected boolean inPeriod;
         protected boolean restartPcAfterTo;
         protected int currentPeriodNumber;
