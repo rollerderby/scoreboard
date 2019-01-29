@@ -166,6 +166,7 @@ public class TwitterViewer {
         return new ConfigurationBuilder()
                .setDebugEnabled(false)
                .setUserStreamRepliesAllEnabled(false)
+               /* Twitter Account for this - derbyscores */
                .setOAuthConsumerKey("qOzry57P6rp6PBnj2BfpuvzK6")
                .setOAuthConsumerSecret("Yx0bI3M5SinRYDGX1tfxQiP6a1oCVmfu5FXE4o27sNmvYeCY1W");
     }
