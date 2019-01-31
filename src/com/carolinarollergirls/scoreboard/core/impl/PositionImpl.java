@@ -18,17 +18,19 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 
 public class PositionImpl extends ScoreBoardEventProviderImpl implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
-	super(t, Team.Child.POSITION, Position.class, Value.class, Command.class);
+	super(t, Value.ID, Team.Child.POSITION, Position.class, Value.class, Command.class);
         team = t;
         floorPosition = fp;
-        values.put(Value.ID, fp.toString());
-        writeProtectionOverride.put(Value.ID, false);
+        set(Value.ID, team.getId() + "_" + fp.toString());
+        writeProtectionOverride.put(Value.CURRENT_FIELDING, Flag.INTERNAL);
         addReference(new IndirectPropertyReference(this, Value.NAME, this, Value.SKATER, Skater.Value.NAME, true, ""));
         addReference(new IndirectPropertyReference(this, Value.NUMBER, this, Value.SKATER, Skater.Value.NUMBER, true, ""));
         addReference(new IndirectPropertyReference(this, Value.FLAGS, this, Value.SKATER, Skater.Value.FLAGS, true, ""));
         addReference(new IndirectPropertyReference(this, Value.SKATER, this, Value.CURRENT_FIELDING, Fielding.Value.SKATER, false, null));
         addReference(new IndirectPropertyReference(this, Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false, false));
     }
+
+    public String getProviderId() { return floorPosition.toString(); }
 
     public void execute(CommandProperty prop) {
 	if (prop == Command.CLEAR) {
@@ -38,13 +40,12 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
     
     public Team getTeam() { return team; }
 
-    public String getId() { return (String)get(Value.ID); }
-
     public FloorPosition getFloorPosition() { return floorPosition; }
 
-    public void reset() {
+    public void updateCurrentFielding() {
         synchronized (coreLock) {
             setCurrentFielding(team.getRunningOrUpcomingTeamJam().getFielding(floorPosition));
+            if (getSkater() != null) { getSkater().set(Value.CURRENT_FIELDING, getCurrentFielding(), Flag.INTERNAL); }
         }
     }
 
@@ -52,7 +53,7 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
     public void setSkater(Skater s) { set(Value.SKATER, s); }
 
     public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
-    public void setCurrentFielding(Fielding f) { set(Value.CURRENT_FIELDING, f); }
+    public void setCurrentFielding(Fielding f) { set(Value.CURRENT_FIELDING, f, Flag.INTERNAL); }
 
     public boolean isPenaltyBox() { return (Boolean)get(Value.PENALTY_BOX); }
     public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }

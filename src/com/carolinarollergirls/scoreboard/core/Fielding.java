@@ -17,6 +17,7 @@ public interface Fielding extends ScoreBoardEventProvider {
     public void setPenaltyBox(boolean p);
 
     public enum Value implements PermanentProperty {
+	ID,
         SKATER,
         POSITION,
         PENALTY_BOX;

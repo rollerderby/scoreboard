@@ -24,8 +24,6 @@ public interface Clock extends ScoreBoardEventProvider {
     public void stop();
     public void restart();
 
-    public String getId();
-
     public String getName();
 //    public void setName(String name);
 
@@ -96,6 +94,7 @@ public interface Clock extends ScoreBoardEventProvider {
     }
 
     public enum Value implements PermanentProperty {
+	ID,
 	NAME,
 	NUMBER,
 	MINIMUM_NUMBER,

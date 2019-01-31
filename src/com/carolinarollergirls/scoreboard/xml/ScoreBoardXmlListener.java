@@ -9,11 +9,12 @@ package com.carolinarollergirls.scoreboard.xml;
  */
 
 
+import java.util.Objects;
+
 import org.jdom.Document;
 import org.jdom.Element;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.AsyncScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
@@ -31,7 +32,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 public class ScoreBoardXmlListener implements ScoreBoardListener {
     public ScoreBoardXmlListener() { }
     public ScoreBoardXmlListener(ScoreBoard sb) {
-        sb.addScoreBoardListener(new AsyncScoreBoardListener(this));
+        sb.addScoreBoardListener(this);
     }
 
     public boolean isEmpty() { return empty; }
@@ -39,10 +40,15 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
     public Document getDocument() { return document; }
 
     public Document resetDocument() {
-        Document oldDoc = document;
-        empty = true;
-        document = editor.createDocument("ScoreBoard");
-        return oldDoc;
+        Element root = document.getRootElement();
+	if (Objects.equals(root.getAttributeValue("BATCH_START"), root.getAttributeValue("BATCH_END"))) {
+            Document oldDoc = document;
+            empty = true;
+            document = editor.createDocument("ScoreBoard");
+            return oldDoc;
+	} else {
+	    return null;
+	}
     }
 
     private void batchStart() {

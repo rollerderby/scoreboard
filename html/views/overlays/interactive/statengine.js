@@ -33,15 +33,15 @@
 		}
 
 		var _getKeyObject = function(k) {
-			var reSK = /^ScoreBoard.Stats.Period\(([0-9])\)\.Jam\((.+)\)\.Team\(([0-9])\)\.Skater\((.+)\)\.(.+)$/;
+			var reSK = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.Fielding\((.+)\)\.(.+)$/;
 			m = k.match(reSK);
 			if(m) return { Type: 'JamSkater', FullKey: k, 'Period': m[1], Jam: m[2], Team: m[3], Position: m[4], Key: m[5] };
 
-			var reJD = /^ScoreBoard.Stats.Period\(([0-9])\)\.Jam\((.+)\)\.Team\(([0-9])\)\.(.+)$/;
+			var reJD = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.(.+)$/;
 			m = k.match(reJD);	
 			if(m) return { Type: 'JamTeam', FullKey: k, Period: m[1], Jam: m[2], Team: m[3], Key: m[4] };
 
-			var reJD = /^ScoreBoard.Stats.Period\(([0-9])\)\.Jam\((.+)\)\.(.+)$/;
+			var reJD = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.(.+)$/;
 			m = k.match(reJD); 
 			if(m) return { Type: 'Jam', FullKey: k, Period: m[1], Jam: m[2], Key: m[3] };
 
@@ -89,7 +89,7 @@
 		}
 
 		StatsFunction.JamSkater = { 
-			Id: function(kd,v) {
+			Skater: function(kd,v) {
 				Data['JamSkater'].Upsert( { Position: kd.Position }, { Period: kd.Period, Jam: kd.Jam, Skater: v} );
 			},
 		}
@@ -143,7 +143,7 @@
 			if(options.debug) console.debug('Initialize');
 
 			if(!WS.socket) WS.Connect();
-			WS.Register( [ 'ScoreBoard.Clock', 'ScoreBoard.Stats.Period', 'ScoreBoard.Team' ], function(k,v) { _handleJamData(k,v); } );
+			WS.Register( [ 'ScoreBoard.Clock', 'ScoreBoard.Period', 'ScoreBoard.Team' ], function(k,v) { _handleJamData(k,v); } );
 			return this;
 		}
 

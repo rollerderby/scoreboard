@@ -114,11 +114,13 @@ public interface ScoreBoardEventProvider extends ValueWithId {
     
     public ScoreBoard getScoreBoard();
     
+    public <T extends ScoreBoardEventProvider> T getElement(Class<T> type, String id);
+    
     public enum Flag {
 	CHANGE,
 	RESET,
-	FORCE,
-	CUSTOM;
+	FROM_AUTOSAVE,
+	INTERNAL;
     }
     
     public class PropertyReference {
@@ -165,5 +167,22 @@ public interface ScoreBoardEventProvider extends ValueWithId {
 	
 	private ScoreBoardEventProvider referenceElement;
 	private PermanentProperty referenceProperty;
+    }
+    
+    public class ElementReference {
+	public ElementReference(Property localProperty, Class<? extends ScoreBoardEventProvider> remoteClass,
+		Property remoteProperty) {
+	    this.localProperty = localProperty;
+	    this.remoteClass = remoteClass;
+	    this.remoteProperty = remoteProperty;
+	}
+	
+	public Property getLocalProperty() { return localProperty; }
+	public Class<? extends ScoreBoardEventProvider> getRemoteClass() { return remoteClass; }
+	public Property getRemoteProperty() { return remoteProperty; }
+	    
+	private Property localProperty;
+	private Class<? extends ScoreBoardEventProvider> remoteClass;
+	private Property remoteProperty;
     }
 }

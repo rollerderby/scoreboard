@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
+import com.carolinarollergirls.scoreboard.core.impl.TeamImpl.TeamSnapshotImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
@@ -85,7 +86,7 @@ public class TeamImplTests {
         assertFalse(team.inOfficialReview());
         assertEquals(3, team.getTimeouts());
         assertEquals(1, team.getOfficialReviews());
-        Team.TeamSnapshot snapshot = team.snapshot();
+        TeamImpl.TeamSnapshotImpl snapshot = (TeamSnapshotImpl) team.snapshot();
 
         team.setInTimeout(true);
         team.setInOfficialReview(true);
@@ -93,14 +94,14 @@ public class TeamImplTests {
         team.setOfficialReviews(0);
 
         //snapshot should not be applied when id doesn't match
-        team.id = "OTHER";
+        snapshot.id = "OTHER";
         team.restoreSnapshot(snapshot);
         assertTrue(team.inTimeout());
         assertTrue(team.inOfficialReview());
         assertEquals(1, team.getTimeouts());
         assertEquals(0, team.getOfficialReviews());
 
-        team.id = ID;
+        snapshot.id = ID;
         team.restoreSnapshot(snapshot);
         assertFalse(team.inTimeout());
         assertFalse(team.inOfficialReview());

@@ -18,7 +18,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
@@ -30,20 +33,22 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProvider,ScoreBoardListener {
     @SafeVarargs
-    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, AddRemoveProperty type,
-	    Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
+    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, PermanentProperty idProp,
+	    AddRemoveProperty type, Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
 	this.parent = parent;
 	if (parent != null) {
 	    scoreBoard = parent.getScoreBoard();
 	} else if (this instanceof ScoreBoard) {
 	    scoreBoard = (ScoreBoard)this;
 	}
+	idProperty = idProp;
 	if (type == null) {
 	    providerName = "ScoreBoard";
 	} else {
 	    providerName = PropertyConversion.toFrontend(type);
 	}
 	this.providerClass = ownClass;
+	if (elements.get(ownClass) == null) { elements.put(ownClass, new HashMap<String, ScoreBoardEventProvider>()); }
 	properties = Arrays.asList(props);
 	for (Class<? extends Property> propertySet : properties) {
 	    for (Property prop : propertySet.getEnumConstants()) {
@@ -57,11 +62,17 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 	}
     }
     
+    public String getId() { 
+	if (idProperty == null) {
+	    return "";
+	} else {
+	    return String.valueOf(get(idProperty)); }
+	}
     public String getProviderName() { return providerName; }
     public Class<? extends ScoreBoardEventProvider> getProviderClass() { return providerClass; }
     public String getProviderId() { return getId(); }
-    public String getValue() { return getProviderId(); }
-    public String toString() { return getProviderId(); }
+    public String getValue() { return getId(); }
+    public String toString() { return getId(); }
     public List<Class<? extends Property>> getProperties() { return properties; }
     public ScoreBoardEventProvider getParent() { return parent; }
 
@@ -97,6 +108,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
     }
 
+    protected void addReference(ElementReference reference) {
+	elementReference.put(reference.getLocalProperty(), reference);
+    }
     protected void addReference(PropertyReference reference) {
 	if (reference instanceof IndirectPropertyReference) {
 	    IndirectPropertyReference ref = (IndirectPropertyReference)reference;
@@ -104,7 +118,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 	}
 	ScoreBoardEventProviderImpl source = (ScoreBoardEventProviderImpl)reference.getSourceElement();
 	if (reference.isReadOnly()) {
-	    source.writeProtectionOverride.put(reference.getSourceProperty(), false);
+	    source.writeProtectionOverride.put(reference.getSourceProperty(), null);
 	}
 	source.referenceTo.put(reference.getSourceProperty(), reference);
 	if (reference.getTargetElement() != null) {
@@ -119,8 +133,12 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     public Object valueFromString(PermanentProperty prop, String sValue) {
 	synchronized (coreLock) {
-	    PropertyReference reference = referenceTo.get(prop);
 	    Object old;
+	    ElementReference ref = elementReference.get(prop);
+	    if (ref != null) {
+		return getElement(ref.getRemoteClass(), sValue);
+	    }
+	    PropertyReference reference = referenceTo.get(prop);
 	    if (reference != null) {
 		if (reference.getTargetElement() != null) {
 		    return reference.getTargetElement().valueFromString(reference.getTargetProperty(), sValue);
@@ -131,6 +149,15 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 		old = get(prop);
 	    }
 	    Object value = sValue;
+	    if (old instanceof Role) {
+		value = Role.fromString(sValue);
+	    }
+	    if (old instanceof FloorPosition) {
+		value = FloorPosition.fromString(sValue);
+	    }
+	    if (old instanceof TimeoutOwner) {
+		value = scoreBoard.getTimeoutOwner(sValue);
+	    }
 	    if (old instanceof Boolean) { 
 		value = Boolean.valueOf(sValue); 
 	    }
@@ -139,6 +166,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 	    }
 	    if (old instanceof Long) {
 		value = Long.valueOf(sValue);
+	    }
+	    if ("".equals(sValue) && !(old instanceof String)) {
+		value = null;
 	    }
 	    return value;
 	}
@@ -164,14 +194,14 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 	    if (foreign) { return false; }
 	    PropertyReference reference = referenceTo.get(prop);
 	    if (reference != null) {
-		if (reference.isReadOnly() || reference.getTargetElement() == null || flag == Flag.FORCE) {
+		if (reference.isReadOnly() || reference.getTargetElement() == null || flag == Flag.FROM_AUTOSAVE) {
 		    return false;
 		} else {
 		    return reference.getTargetElement().set(reference.getTargetProperty(), value, flag);
 		}
 	    }
-	    if (writeProtectionOverride.get(prop) != null && (writeProtectionOverride.get(prop) == false ||
-		    (writeProtectionOverride.get(prop) == true && flag == Flag.FORCE))) {
+	    if (writeProtectionOverride.containsKey(prop) && (writeProtectionOverride.get(prop) == null ||
+		    writeProtectionOverride.get(prop) != flag)) {
 		return false;
 	    }
 	    Object last = values.get(prop);
@@ -196,6 +226,11 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 	    }
 	    if (Objects.equals(value, last)) { return false; }
 	    values.put(prop, value);
+	    if (prop == idProperty) {
+		elements.get(providerClass).remove(String.valueOf(last));
+		elements.get(providerClass).put(String.valueOf(value), this);
+		writeProtectionOverride.put(prop, null);
+	    }
 	    _valueChanged(prop, value, last);
 	    return true;
 	}
@@ -204,6 +239,26 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 	synchronized (coreLock) {
 	    requestBatchStart();
 	    scoreBoardChange(new ScoreBoardEvent(this, prop, value, last));
+	    ElementReference reference = elementReference.get(prop);
+	    if (reference != null) {
+		ScoreBoardEventProvider lastRemote = (ScoreBoardEventProvider)last;
+		ScoreBoardEventProvider newRemote = (ScoreBoardEventProvider)value;
+		if (reference.getRemoteProperty() instanceof PermanentProperty) {
+		    if (lastRemote != null && lastRemote.get((PermanentProperty)reference.getRemoteProperty()) == this) {
+			lastRemote.set((PermanentProperty)reference.getRemoteProperty(), null);
+		    }
+		    if (newRemote != null) {
+			newRemote.set((PermanentProperty)reference.getRemoteProperty(), this);
+		    }
+		} else if (reference.getRemoteProperty() instanceof AddRemoveProperty) {
+		    if (lastRemote != null) {
+			lastRemote.remove((AddRemoveProperty)reference.getRemoteProperty(), this);
+		    }
+		    if (newRemote != null) {
+			newRemote.add((AddRemoveProperty)reference.getRemoteProperty(), this);
+		    }
+		}
+	    }
 	    for (PropertyReference ref : referencesFrom.get(prop)) {
 		((ScoreBoardEventProviderImpl)ref.getSourceElement())._valueChanged(ref.getSourceProperty(), value, last);
 	    }
@@ -231,6 +286,8 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     
     public ValueWithId childFromString(AddRemoveProperty prop, String id, String sValue) {
 	synchronized (coreLock) {
+	    ElementReference ref = elementReference.get(prop);
+	    if (ref != null) { return getElement(ref.getRemoteClass(), sValue); }
 	    ValueWithId v = create(prop, id);
 	    if ( v != null) { return v; }
 	    return new ValWithId(id, sValue);
@@ -265,6 +322,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     public boolean add(AddRemoveProperty prop, ValueWithId item) {
 	synchronized (coreLock) {
+	    if (item == null) { return false; }
 	    Map<String, ValueWithId> map = children.get(prop);
 	    String id = item.getId();
 	    if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
@@ -285,6 +343,15 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 		}
 	    }
 	    scoreBoardChange(new ScoreBoardEvent(this, prop, item, false));
+	    ElementReference reference = elementReference.get(prop);
+	    if (reference != null) {
+		ScoreBoardEventProvider remote = (ScoreBoardEventProvider)item;
+		if (reference.getRemoteProperty() instanceof PermanentProperty) {
+		    remote.set((PermanentProperty)reference.getRemoteProperty(), this);
+		} else if (reference.getRemoteProperty() instanceof AddRemoveProperty) {
+		    remote.add((AddRemoveProperty)reference.getRemoteProperty(), this);
+		}
+	    }
 	    return true;
 	}
     }
@@ -367,6 +434,19 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 		    maxIds.put((NumberedProperty)prop,  prev == null ? null : Integer.parseInt(prev.getProviderId()));
 		}
 	    }
+	    ElementReference reference = elementReference.get(prop);
+	    if (reference != null) {
+		ScoreBoardEventProvider remote = (ScoreBoardEventProvider)item;
+		if (reference.getRemoteProperty() instanceof PermanentProperty) {
+		    if (remote != null && remote.get((PermanentProperty)reference.getRemoteProperty()) == this) {
+			remote.set((PermanentProperty)reference.getRemoteProperty(), null);
+		    }
+		} else if (reference.getRemoteProperty() instanceof AddRemoveProperty) {
+		    if (remote != null) {
+			remote.remove((AddRemoveProperty)reference.getRemoteProperty(), this);
+		    }
+		}
+	    }
 	    return true;
 	}
     }
@@ -388,24 +468,38 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     
     public ScoreBoard getScoreBoard() { return scoreBoard; }
 
+    public static Object getCoreLock() { return coreLock; }
+
+    @SuppressWarnings("unchecked")
+    public <T extends ScoreBoardEventProvider> T getElement(Class<T> type, String id) {
+	try {
+	    return (T) elements.get(type).get(id);
+	} catch (NullPointerException e) { return null; }
+    }
+    
     protected static Object coreLock = new Object();
     
     protected ScoreBoard scoreBoard;
     protected ScoreBoardEventProvider parent;
     protected String providerName;
     protected Class<? extends ScoreBoardEventProvider> providerClass;
+    protected PermanentProperty idProperty;
     
     protected List<Class<? extends Property>> properties;
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
     protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();
-    protected Map<PermanentProperty, Boolean> writeProtectionOverride = new HashMap<PermanentProperty, Boolean>(); 
+    protected Map<PermanentProperty, Flag> writeProtectionOverride = new HashMap<PermanentProperty, Flag>(); 
     protected Map<PermanentProperty, PropertyReference> referenceTo = new HashMap<PermanentProperty, PropertyReference>();
     protected Map<PermanentProperty, Set<PropertyReference>> referencesFrom = new HashMap<PermanentProperty, Set<PropertyReference>>();
     protected Map<PermanentProperty, Set<PropertyReference>> referenceRelays = new HashMap<PermanentProperty, Set<PropertyReference>>();
+    protected Map<Property, ElementReference> elementReference = new HashMap<Property, ElementReference>();
     protected Map<AddRemoveProperty, Map<String, ValueWithId>> children = new HashMap<AddRemoveProperty, Map<String, ValueWithId>>();
     protected Map<NumberedProperty, Integer> minIds = new HashMap<NumberedProperty, Integer>();
     protected Map<NumberedProperty, Integer> maxIds = new HashMap<NumberedProperty, Integer>();
+    
+    protected static Map<Class<? extends ScoreBoardEventProvider>, Map<String, ScoreBoardEventProvider>> elements =
+	    new HashMap<Class<? extends ScoreBoardEventProvider>, Map<String, ScoreBoardEventProvider>>();
 
     public enum BatchEvent implements ScoreBoardEvent.PermanentProperty {
 	START,

@@ -146,7 +146,7 @@ public class WS extends WebSocketServlet {
         	try {
         	    Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
 
-        	    if (prop instanceof PermanentProperty && value != null) {
+        	    if (prop instanceof PermanentProperty) {
         		p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value));
         	    } else if (prop instanceof CommandProperty) { 
         		if (Boolean.parseBoolean(value)) {

@@ -16,7 +16,6 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -25,13 +24,11 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
-	super(s, ScoreBoard.Child.RULESETS, Rulesets.class, Value.class, Child.class);
+	super(s, null, ScoreBoard.Child.RULESETS, Rulesets.class, Value.class, Child.class);
         initialize();
         reset();
     }
 
-    public String getId() { return ""; }
-    
     public ValueWithId create(AddRemoveProperty prop, String id) {
 	synchronized (coreLock) {
 	    if (prop == Child.RULESET) {
@@ -167,42 +164,33 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
 
     public class RulesetImpl extends ScoreBoardEventProviderImpl implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
-            super(rulesets, Rulesets.Child.RULESET, Ruleset.class, Value.class, Child.class);
-            values.put(Value.ID, id);
-            values.put(Value.NAME, name);
-            values.put(Value.PARENT_ID, parentId);
+            super(rulesets, Value.ID, Rulesets.Child.RULESET, Ruleset.class, Value.class, Child.class);
+            set(Value.ID, id);
+            set(Value.NAME, name);
+            set(Value.PARENT_ID, parentId);
+            if (ROOT_ID.equals(id)) {
+        	for (Value prop : Value.values()) {
+        	    writeProtectionOverride.put(prop, null);
+        	}
+            }
         }
 
-        public boolean set(PermanentProperty prop, Object value, Flag flag) {
-            synchronized (coreLock) {
-        	if (!(prop instanceof Value) || getId().equals(ROOT_ID)) { return false; }
-        	return super.set(prop, value, flag);
-	    }
-        }
-        
         public boolean add(AddRemoveProperty prop, ValueWithId item) {
             synchronized (coreLock) {
-		requestBatchStart();
 		if (prop == Child.RULE && getId().equals(ROOT_ID) && get(Child.RULE, item.getId()) != null) { return false; }
-		boolean result = super.add(prop, item);
-		requestBatchEnd();
-		return result;
+		return super.add(prop, item);
 	    }
         }
         
         public boolean remove(AddRemoveProperty prop, ValueWithId item) {
             synchronized (coreLock) {
-		requestBatchStart();
 		if (prop == Child.RULE && getId().equals(ROOT_ID)) { return false; }
-		boolean result = super.remove(prop, item);
-		requestBatchEnd();
-		return result;
+		return super.remove(prop, item);
 	    }
         }
 
         public String get(Rule r) { return get(Child.RULE, r.toString()).getValue(); }
 
-        public String getId() { return (String)get(Value.ID); }
         public String getName() { return (String)get(Value.NAME); }
         public void setName(String n) { set(Value.NAME, n); }
         public String getParentRulesetId() { return (String)get(Value.PARENT_ID); }

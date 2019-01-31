@@ -21,7 +21,7 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Skater.Child;
-import com.carolinarollergirls.scoreboard.core.Skater.Penalty;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater.Value;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
@@ -196,7 +196,7 @@ public class ScoreBoardJSONListenerTests {
         sb.getTeam("1").field(sb.getTeam("1").getSkater(id), Role.JAMMER);
         sb.getTeam("1").getSkater(id).setPenaltyBox(true);
         advance(0);
-        assertEquals("Jammer", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Position"));
+        assertEquals("1_Jammer", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Position"));
         assertEquals("Jammer", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Role"));
         assertEquals(true, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).PenaltyBox"));
         assertEquals("00000000-0000-0000-0000-000000000001", state.get("ScoreBoard.Team(1).Position(Jammer).Skater"));
@@ -211,7 +211,7 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Role"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).PenaltyBox"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Position(Jammer).Skater"));
-        assertEquals(false, state.get("ScoreBoard.Team(1).Position(Jammer).PenaltyBox"));
+        assertEquals(true, state.get("ScoreBoard.Team(1).Position(Jammer).PenaltyBox"));
     }
 
     @Test
@@ -223,41 +223,38 @@ public class ScoreBoardJSONListenerTests {
         Skater s = sb.getTeam("1").getSkater(sid);
 	s.set(Value.SORT_PENALTIES, false);
 	Penalty p = (Penalty)s.get(Child.PENALTY, "0", true);
-	p.set(Penalty.Value.ID, pid, Flag.FORCE);
-	p.set(Penalty.Value.PERIOD, 1);
-	p.set(Penalty.Value.JAM, 2);
+	p.set(Penalty.Value.ID, pid, Flag.FROM_AUTOSAVE);
+	p.set(Penalty.Value.JAM, sb.getPeriod(1).getJam(2));
 	p.set(Penalty.Value.CODE, "X");
 	s.set(Value.SORT_PENALTIES, true);
         advance(0);
         assertEquals(pid, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Id"));
-        assertEquals(1, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Period"));
-        assertEquals(2, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Jam"));
+        assertEquals(1, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).PeriodNumber"));
+        assertEquals(2, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).JamNumber"));
         assertEquals("X", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Code"));
 
         s.remove(Child.PENALTY, "1");
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Id"));
-        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Period"));
-        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Jam"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).PeriodNumber"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).JamNumber"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Code"));
 
 	s.set(Value.SORT_PENALTIES, false);
 	p = (Penalty)s.get(Child.PENALTY, "FO_EXP", true);
-	p.set(Penalty.Value.ID, pid, Flag.FORCE);
-	p.set(Penalty.Value.PERIOD, 1);
-	p.set(Penalty.Value.JAM, 2);
+	p.set(Penalty.Value.ID, pid, Flag.FROM_AUTOSAVE);
+	p.set(Penalty.Value.JAM, sb.getPeriod(1).getJam(2));
 	p.set(Penalty.Value.CODE, "B");
 	s.set(Value.SORT_PENALTIES, true);
         advance(0);
-        assertEquals(1, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
-        assertEquals(2, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Jam"));
+        assertEquals(1, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).PeriodNumber"));
+        assertEquals(2, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).JamNumber"));
         assertEquals("B", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Code"));
 
         s.remove(Child.PENALTY, "FO_EXP");
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
-        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Period"));
-        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Jam"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).PeriodNumber"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).JamNumber"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(FO_EXP).Code"));
     }
 
@@ -277,13 +274,13 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).StarPass"));
         assertEquals("00000000-0000-0000-0000-000000000001", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
         assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
-        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
+        assertEquals("1_Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         sb.getTeam("1").field(sb.getTeam("1").getSkater(id), Role.BENCH);
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
         assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
-        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
+        assertEquals("1_Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         sb.getTeam("1").field(sb.getTeam("1").getSkater(id), Role.JAMMER);
         advance(0);
@@ -292,7 +289,7 @@ public class ScoreBoardJSONListenerTests {
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
         assertEquals(false, state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
-        assertEquals("Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
+        assertEquals("1_Jammer", state.get("ScoreBoard.Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         sb.stopJamTO();
         advance(1000);

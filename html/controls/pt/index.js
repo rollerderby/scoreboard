@@ -4,8 +4,8 @@
 	$(initialize);
 	var penaltyEditor = null;
 
-	var period = null;
-	var jam = null;
+	var periodNumber = null;
+	var jamNumber = null;
 
 	var teamId = null;
 	var skaterId = null;
@@ -32,11 +32,11 @@
 		WS.Register(['ScoreBoard.Team(1).Skater'], function (k, v) { skaterUpdate(1, k, v); });
 		WS.Register(['ScoreBoard.Team(2).Skater'], function (k, v) { skaterUpdate(2, k, v); });
 		WS.Register(['ScoreBoard.PenaltyCodes.Code'], penaltyCode);
-		WS.Register(['ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber'], function (k, v) { setupSelect('Period'); });
-		WS.Register(['ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber'], function (k, v) { setupSelect('Jam'); });
 
 		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)']);
+		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Period.Number)'], function (k, v) { setupPeriodSelect(v); });
 		
+		WS.Register(['ScoreBoard.Period']);
 
 		if (_windowFunctions.checkParam("autoFit", "true")) {
 			$('.Team').addClass('auto-fit');
@@ -52,47 +52,48 @@
 
 		addFOCode();
 
-		$(".PenaltyEditor .period_minus").click(function () { adjust("Period", -1); });
-		$(".PenaltyEditor .period_plus").click(function () { adjust("Period", 1); });
-		$(".PenaltyEditor .jam_minus").click(function () { adjust("Jam", -1); });
-		$(".PenaltyEditor .jam_plus").click(function () { adjust("Jam", 1); });
+		$(".PenaltyEditor .period_minus").click(function () { adjust("Period", 'prev'); });
+		$(".PenaltyEditor .period_plus").click(function () { adjust("Period", 'next'); });
+		$(".PenaltyEditor .jam_minus").click(function () { adjust("Jam", 'prev'); });
+		$(".PenaltyEditor .jam_plus").click(function () { adjust("Jam", 'next'); });
 		$(".PenaltyEditor .clear").click(function () { clear(); });
+		$(".PenaltyEditor .Period").change(function() { setupJamSelect(); })
 	}
 
 	function adjust(which, inc) {
-		var elem = $(".PenaltyEditor ." + which);
-		elem.val(parseInt(elem.val()) + inc);
+		$(".PenaltyEditor ." + which + " :selected")[inc]().prop("selected", true);
+		if (which == "Period") { setupJamSelect(); }
 	}
 
 	function updatePeriod(k, v) {
-		period = v;
+		periodNumber = v;
 		updateCurrentPeriodStyle();
 		updateCurrentJamPeriodStyle();
 	}
 
 	function updateJam(k, v) {
-		jam = v;
+		jamNumber = v;
 		updateCurrentJamPeriodStyle();
 	}
 	
 	function updateCurrentPeriodStyle() {
-		if(period === null) {
+		if(periodNumber === null) {
 			return;
 		}
 		
 		$('#current-period-style').remove();
-		$('<style> .Box.period-' + period +' { font-weight: bold; color: #000; }</style>')
+		$('<style> .Box.period-' + periodNumber +' { font-weight: bold; color: #000; }</style>')
 			.attr('id','current-period-style')
 			.appendTo('head');
 	}
 
 	function updateCurrentJamPeriodStyle() {
-		if (jam === null || period === null) {
+		if (jamNumber === null || periodNumber === null) {
 			return;
 		}
 
 		$('#current-jam-style').remove();
-		$("<style> .Box.period-" + period + ".jam-" + jam + " { text-decoration: underline; } </style>")
+		$("<style> .Box.period-" + periodNumber + ".jam-" + jamNumber + " { text-decoration: underline; } </style>")
 			.attr('id', 'current-jam-style')
 			.appendTo('head');
 	}
@@ -169,8 +170,8 @@
 		}
 
 		if (code != null) {
-			penaltyPeriod = WS.state[prefix + ".Period"];
-			penaltyJam = WS.state[prefix + ".Jam"];
+			penaltyPeriod = WS.state[prefix + ".PeriodNumber"];
+			penaltyJam = WS.state[prefix + ".JamNumber"];
 
 			penaltyBox.data("id", WS.state[prefix + ".Id"]);
 			jamBox.data("id", WS.state[prefix + ".Id"]);
@@ -248,19 +249,27 @@
 		if (!inserted)
 			team.append(p).append(j);
 	}
-
-	function setupSelect(which) {
-		var prefix = 'ScoreBoard.Clock(' + which + ')';
-		var min = WS.state[prefix + '.MinimumNumber'];
-		var max = WS.state[prefix + '.MaximumNumber'];
-		if (min == null || max == null)
-			return;
-
-		var select = $('.PenaltyEditor .' + which);
+	
+	function setupPeriodSelect(num) {
+		var select = $('.PenaltyEditor .Period');
 		select.empty();
-		for (var i = min; i <= max; i++) {
+		for (var i = 1; i <= num; i++) {
 			$('<option>').attr('value', i).text(i).appendTo(select);
 		}
+	}
+	
+	function setupJamSelect() {
+		var p = $('.PenaltyEditor .Period').val();
+		var prefix = 'ScoreBoard.Period('+p+').';
+		var min = WS.state[prefix + 'CurrentJamNumber'];
+		while (WS.state[prefix + 'Jam('+ (min-1) +').Id'] != null) { min--; }
+		var max = WS.state[prefix + 'CurrentJamNumber'];
+		while (WS.state[prefix + 'Jam('+ (max+1) +').Id'] != null) { max++; }
+		var select = $('.PenaltyEditor .Jam');
+		select.empty();
+		for (var i = min; i <= max; i++) {
+			$('<option>').attr('value', WS.state[prefix + 'Jam('+i+').Id']).text(i).appendTo(select);
+		}		
 	}
 
 	function openPenaltyEditor(t, id, which) {
@@ -281,8 +290,9 @@
 		$('.PenaltyEditor .Codes>div').removeClass('Active');
 
 		penaltyEditor.dialog('option', 'title', teamColor + ' ' + skaterNumber + ' (' + skaterName + ')');
-		$('.PenaltyEditor .Period').val(period);
-		$('.PenaltyEditor .Jam').val(jam);
+		$('.PenaltyEditor .Period').val(periodNumber);
+		setupJamSelect();
+		$('.PenaltyEditor .Jam').val(WS.state["ScoreBoard.Period("+periodNumber+").Jam("+jamNumber+").Id"]);
 
 		$('.Codes>.Penalty').toggle(which != 'FO_EXP');
 		$('.Codes>.FO_EXP').toggle(which == 'FO_EXP');
@@ -290,7 +300,7 @@
 		if (which != null) {
 			var penaltyBox = $('.Team' + t + ' .Skater.Penalty[id=' + id + '] .Box' + which);
 			var c = WS.state[prefix + '.Penalty(' + which + ').Code'];
-			var p = WS.state[prefix + '.Penalty(' + which + ').Period'];
+			var p = WS.state[prefix + '.Penalty(' + which + ').PeriodNumber'];
 			var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
 			penaltyId = penaltyBox.data("id");
 			if (penaltyId != null) {
@@ -299,8 +309,13 @@
 				} else {
 					$('.PenaltyEditor .Codes>div.' + (which == 'FO_EXP' ? 'FO_EXP' : 'Penalty') + '[code="' + c + '"]').addClass('Active');
 					$('.PenaltyEditor .Period').val(p);
+					setupJamSelect();
 					$('.PenaltyEditor .Jam').val(j);
 				}
+			}
+			while (!isNaN(penaltyNumber) && penaltyNumber > 1 &&
+					WS.state[prefix + '.Penalty(' + (penaltyNumber-1) + ').Code'] == null) {
+				penaltyNumber--;
 			}
 		}
 
@@ -311,9 +326,8 @@
 		var sortKey = 'ScoreBoard.Team(' + teamId + ').Skater(' + skaterId + ').SortPenalties';
 		var prefix = 'ScoreBoard.Team(' + teamId + ').Skater(' + skaterId + ').Penalty(' + penaltyNumber + ')';
 		WS.Set(sortKey, false);
-		WS.Set(prefix + '.Period', $('.PenaltyEditor .Period').val());
-		WS.Set(prefix + '.Jam', $('.PenaltyEditor .Jam').val());
 		WS.Set(prefix + '.Code', $('.PenaltyEditor .Codes .Active').attr('code'));
+		WS.Set(prefix + '.Jam', $('.PenaltyEditor .Jam').val());
 		WS.Set(sortKey, true);
 
 		penaltyEditor.dialog('close');

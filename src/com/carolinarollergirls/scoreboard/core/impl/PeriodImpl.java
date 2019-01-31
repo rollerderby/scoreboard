@@ -5,7 +5,6 @@ import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -15,22 +14,17 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
     public PeriodImpl(ScoreBoard s, String p) {
-	super(s, ScoreBoard.NChild.PERIOD, Value.NUMBER, Period.class, p, Value.class, NChild.class);
-        values.put(Value.CURRENT_JAM_NUMBER, 0);
+	super(s, Value.NUMBER, Value.NUMBER, ScoreBoard.NChild.PERIOD, Period.class, p, Value.class, NChild.class);
+	values.put(Value.CURRENT_JAM_NUMBER, 0);
         values.put(Value.RUNNING, false);
-        writeProtectionOverride.put(Value.DURATION, true);
+        values.put(Value.DURATION, 0L);
+        writeProtectionOverride.put(Value.DURATION, Flag.INTERNAL);
         values.put(Value.WALLTIME_START, 0L);
         values.put(Value.WALLTIME_END, 0L);
     }
 
-    public String getId() { return getProviderId(); }
-    
     public Object get(PermanentProperty prop) {
 	synchronized (coreLock) {
-	    if (prop == Value.DURATION) {
-		if (isRunning() || (Long)get(Value.WALLTIME_END) == 0) { return 0; }
-		return (Long)get(Value.WALLTIME_END) - (Long)get(Value.WALLTIME_START);
-	    }
 	    Object result = super.get(prop);
 	    if (prop == Value.CURRENT_JAM_NUMBER && (Integer)result == 0 &&
 		    getNumber() > 0 && !scoreBoard.getRulesets().getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
@@ -45,10 +39,12 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
 		set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
 	    } else if ((Long)get(Value.WALLTIME_START) == 0L) {
 		set(Value.WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
+	    } else {
+		set(Value.DURATION, 0L, Flag.INTERNAL);
 	    }
 	} else if (prop == Value.WALLTIME_END ||
 		(prop == Value.WALLTIME_START && (Long)get(Value.WALLTIME_END) != 0L)) {
-	    scoreBoardChange(new ScoreBoardEvent(this, Value.DURATION, get(Value.DURATION), 0L));
+	    set(Value.DURATION, (Long)get(Value.WALLTIME_END) - (Long)get(Value.WALLTIME_START), Flag.INTERNAL);
 	}
     }
    

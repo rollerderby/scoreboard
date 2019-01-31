@@ -24,6 +24,7 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public enum Value implements PermanentProperty {
 	ID,
 	NUMBER,
+	PERIOD_NUMBER,
         DURATION,
         PERIOD_CLOCK_ELAPSED_START,
         PERIOD_CLOCK_ELAPSED_END,
@@ -31,6 +32,7 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
         WALLTIME_END;
     }
     public enum Child implements AddRemoveProperty {
-        TEAM_JAM;
+        TEAM_JAM,
+        PENALTY;
     }
 }

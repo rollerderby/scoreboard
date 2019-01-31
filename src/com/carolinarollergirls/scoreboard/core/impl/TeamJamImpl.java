@@ -12,9 +12,10 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam {
     public TeamJamImpl(Jam j, String team_id) {
-	super(j, Jam.Child.TEAM_JAM, TeamJam.class, Value.class, Child.class);
+	super(j, Value.ID, Jam.Child.TEAM_JAM, TeamJam.class, Value.class, Child.class);
         jam = j;
         team = scoreBoard.getTeam(team_id);
+        set(Value.ID, jam.getId() + "_" + team_id);
         values.put(Value.LAST_SCORE, 0);
         values.put(Value.OS_OFFSET, 0);
         values.put(Value.JAM_SCORE, 0);
@@ -27,12 +28,11 @@ public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam 
         }
     }
 
-    public String getId() { return jam.getId() + "_" + team.getId(); }
     public String getProviderId() { return team.getId(); }
 
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
-	    if (prop == Value.TOTAL_SCORE && flag != Flag.CUSTOM) { return false; }
+	    if (prop == Value.TOTAL_SCORE && flag != Flag.INTERNAL) { return false; }
 	    Number min = (value instanceof Integer && prop != Value.OS_OFFSET) ? 0 : null;
 	    return super.set(prop, value, flag, min, null, 0);
 	}
@@ -43,7 +43,7 @@ public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam 
 		getNext().set(Value.LAST_SCORE, value);
 	    }
 	} else if (prop == Value.JAM_SCORE || prop == Value.OS_OFFSET || prop == Value.LAST_SCORE) {
-	    set(Value.TOTAL_SCORE, getLastScore() + getJamScore() + getOsOffset(), Flag.CUSTOM);
+	    set(Value.TOTAL_SCORE, getLastScore() + getJamScore() + getOsOffset(), Flag.INTERNAL);
 	}
     }
     
@@ -60,6 +60,7 @@ public class TeamJamImpl extends ScoreBoardEventProviderImpl implements TeamJam 
 	return null;
     }
 
+    public Jam getJam() { return jam; }
     public Team getTeam() { return team; }
     public int getPeriodNumber() { return jam.getPeriodNumber(); }
     public int getJamNumber() { return jam.getNumber(); }

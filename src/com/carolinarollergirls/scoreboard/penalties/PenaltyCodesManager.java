@@ -21,14 +21,12 @@ import com.fasterxml.jackson.jr.ob.JSON;
 public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
     
     public PenaltyCodesManager(ScoreBoard parent) {
-	super(parent, ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
+	super(parent, null, ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
 	this.parent = parent;
 	definitions = loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE));
         parent.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Child.CURRENT_RULE, rulesetChangeListener));
     }
 
-    public String getId() { return ""; }
-    
     public ValueWithId get(AddRemoveProperty prop, String id, boolean add) {
 	for (PenaltyCode c : getDefinitions()) {
 	    if (c.getId().equals(id)) { return c; }

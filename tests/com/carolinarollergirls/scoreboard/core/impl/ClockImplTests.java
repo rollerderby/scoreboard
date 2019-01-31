@@ -13,6 +13,7 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.impl.ClockImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ClockImpl.ClockSnapshotImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -109,7 +110,7 @@ public class ClockImplTests {
         clock.setMaximumTime(1200000);
         clock.setTime(5000);
         clock.start();
-        Clock.ClockSnapshot snapshot = clock.snapshot();
+        ClockImpl.ClockSnapshotImpl snapshot = (ClockSnapshotImpl) clock.snapshot();
 
         clock.reset();
         assertFalse(clock.isRunning());
@@ -117,13 +118,13 @@ public class ClockImplTests {
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
 
         //if IDs don't match no restore should be done
-        clock.id = "OTHER";
+        snapshot.id = "OTHER";
         clock.restoreSnapshot(snapshot);
         assertFalse(clock.isRunning());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
 
-        clock.id = ID;
+        snapshot.id = ID;
         clock.restoreSnapshot(snapshot);
         assertTrue(clock.isRunning());
         assertEquals(4, clock.getNumber());

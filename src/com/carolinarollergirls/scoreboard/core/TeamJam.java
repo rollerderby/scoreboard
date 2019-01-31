@@ -7,6 +7,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 public interface TeamJam extends ScoreBoardEventProvider {
     public int getPeriodNumber();
     public int getJamNumber();
+    public Jam getJam();
     public Team getTeam();
 
     public boolean isRunningOrEnded();
@@ -40,6 +41,7 @@ public interface TeamJam extends ScoreBoardEventProvider {
     public Fielding getFielding(FloorPosition fp);
 
     public enum Value implements PermanentProperty {
+	ID,
         LAST_SCORE,
         OS_OFFSET,
         JAM_SCORE,

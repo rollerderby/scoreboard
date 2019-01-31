@@ -32,7 +32,11 @@ public class XmlScoreBoard {
         scoreBoardXmlListener = new ScoreBoardXmlListener(sb) {
             public void scoreBoardChange(ScoreBoardEvent sbE) {
                 super.scoreBoardChange(sbE);
-                XmlScoreBoard.this.xmlChange(resetDocument());
+                mergeSbExecutor.submit(new Runnable() {
+                    public void run() {
+                	XmlScoreBoard.this.xmlChange(resetDocument());
+                    }
+                });
             }
         };
         xmlChange(converter.toDocument(scoreBoard));
@@ -138,6 +142,7 @@ public class XmlScoreBoard {
      * from a XmlDocumentManager.
      */
     public void xmlChange(Document d) {
+	if (d == null) { return; }
         synchronized (managerLock) {
             if (null != exclusiveDocumentManager) {
                 /* Ignore updates not from the "exclusive" document manager */
@@ -271,6 +276,7 @@ public class XmlScoreBoard {
     protected ScoreBoardXmlListener scoreBoardXmlListener;
     protected AutoSaveScoreBoard autoSave;
     protected Document document = editor.createDocument();
+    protected ExecutorService mergeSbExecutor = Executors.newSingleThreadExecutor();
 
     protected Object documentLock = new Object();
     protected Object managerLock = new Object();

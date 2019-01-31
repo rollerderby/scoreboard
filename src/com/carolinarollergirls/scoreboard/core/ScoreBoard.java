@@ -19,6 +19,9 @@ import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 public interface ScoreBoard extends ScoreBoardEventProvider {
     /** Reset the ScoreBoard. */
     public void reset();
+    
+    /** Update state after restoring from autosave */
+    public void postAutosaveUpdate();
 
     /**
      * Id of Team who called Timeout.

@@ -58,7 +58,7 @@ function initialize() {
 			'ScoreBoard.Team(1).RetainedOfficialReview',
 			'ScoreBoard.Team(2).RetainedOfficialReview' ], function(k,v) { smallDescriptionUpdate(k,v); } );
 
-	WS.Register( 'ScoreBoard.Stats.Period', function(k,v) { jamData(k,v); } );
+	WS.Register( 'ScoreBoard.Period', function(k,v) { jamData(k,v); } );
 
 	WS.Register( 'ScoreBoard.Team(1)', function(k,v) { teamData(1, k,v); } );
 	WS.Register( 'ScoreBoard.Team(2)', function(k,v) { teamData(2, k,v); } );
@@ -249,7 +249,7 @@ function createPenalty(mb, pnum, v) {
 	$(mb).sortDivs();
 }
 
-var jamScoreRegEx = /^ScoreBoard.Stats.Period\((.+)\)\.Jam\((.+)\)\.Team\((.+)\)\.(.+)$/;
+var jamScoreRegEx = /^ScoreBoard.Period\((.+)\)\.Jam\((.+)\)\.TeamJam\((.+)\)\.(.+)$/;
 
 function jamData(k,v) {
         match = k.match(jamScoreRegEx);

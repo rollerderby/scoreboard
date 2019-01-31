@@ -47,10 +47,11 @@ public class TwitterViewer {
                 throw new TooManyListenersException("Conditional tweet with given parameters already exists");
             }
             ScoreBoardListener tweetListener = new TweetScoreBoardListener(tweet, exceptionListener);
+            ScoreBoardListener asyncListener = new AsyncScoreBoardListener(tweetListener);
             ScoreBoardListener conditionalListener =
-                new FormatSpecifierScoreBoardListener(formatSpecifier, conditionFormat, tweetListener);
+                new FormatSpecifierScoreBoardListener(formatSpecifier, conditionFormat, asyncListener);
             conditionalListeners.put(key, conditionalListener);
-            scoreBoard.addScoreBoardListener(new AsyncScoreBoardListener(conditionalListener));
+            scoreBoard.addScoreBoardListener(conditionalListener);
         }
     }
     public void removeConditionalTweet(String conditionFormat, String tweet) {

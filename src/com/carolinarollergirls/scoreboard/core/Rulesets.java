@@ -52,7 +52,6 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public static interface Ruleset extends ScoreBoardEventProvider {
         public String get(Rule k);
 
-        public String getId();
         public String getName();
         public void setName(String n);
         public String getParentRulesetId();

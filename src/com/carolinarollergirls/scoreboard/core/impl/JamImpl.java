@@ -7,6 +7,7 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -15,19 +16,18 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements Jam {
     public JamImpl(Period p, String j) {
-	super(p, Period.NChild.JAM, Value.NUMBER, Jam.class, j, Value.class, Child.class);
-	period = p;
-	values.put(Value.ID, UUID.randomUUID().toString());
-	writeProtectionOverride.put(Value.ID, true);
+	super(p, Value.NUMBER, Value.ID, Period.NChild.JAM, Jam.class, j, Value.class, Child.class);
+	set(Value.ID, UUID.randomUUID().toString());
+	writeProtectionOverride.put(Value.ID, Flag.FROM_AUTOSAVE);
 	for (PermanentProperty prop : Arrays.asList(Value.DURATION, Value.PERIOD_CLOCK_ELAPSED_START,
 		Value.PERIOD_CLOCK_ELAPSED_END, Value.WALLTIME_START, Value.WALLTIME_END)) {
-	    values.put(prop, 0L);
+	    set(prop, 0L);
 	}
+	addReference(new ElementReference(Child.PENALTY, Penalty.class, Penalty.Value.JAM));
+	addReference(new PropertyReference(this, Value.PERIOD_NUMBER, parent, Period.Value.NUMBER, true, 0));
         add(Child.TEAM_JAM, new TeamJamImpl(this, Team.ID_1));
         add(Child.TEAM_JAM, new TeamJamImpl(this, Team.ID_2));
     }
-
-    public String getId() { return (String)get(Value.ID); }
 
     public Jam getPrevious(boolean create, boolean skipEmpty) {
 	synchronized (coreLock) {
@@ -48,19 +48,18 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
 	}
     }
     
-    public Period getPeriod() { return period; }
+    public Period getPeriod() { return (Period)parent; }
     public int getPeriodNumber() { return getPeriod().getNumber(); }
     public void moveToNextPeriod(int newNumber) {
 	synchronized (coreLock) {
 	    requestBatchStart();
 	    Jam successor = super.getNext(false, true);
-	    period.remove(ownType, this);
-	    period = period.getNext(true, false);
-	    parent = period;
+	    parent.remove(ownType, this);
+	    parent = ((Period)parent).getNext(true, false);
 	    if (scoreBoard.getRulesets().getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
 		set(Value.NUMBER, newNumber);
 	    }
-	    period.insert(ownType, this);
+	    parent.insert(ownType, this);
 	    if (successor != null) {
 		successor.moveToNextPeriod(newNumber + 1);
 	    }
@@ -74,11 +73,11 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
 	    if (predecessor != null) {
 		predecessor.moveToPreviousPeriod();
 	    }
-	    int newNumber = getPrevious(false, true).getNumber();
-	    period.remove(ownType, this);
-	    period = period.getNext(true, false);
+	    int newNumber = getPrevious(false, true).getNumber() + 1;
+	    parent.remove(ownType, this);
+	    parent = ((Period)parent).getPrevious(true, false);
 	    set(Value.NUMBER, newNumber);
-	    period.insert(ownType, this);
+	    parent.insert(ownType, this);
 	    requestBatchEnd();
 	}
     }
@@ -117,6 +116,4 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
 	    requestBatchEnd();
 	}
     }
-
-    private Period period;
 }

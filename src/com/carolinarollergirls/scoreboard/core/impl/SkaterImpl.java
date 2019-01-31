@@ -10,19 +10,19 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Fielding;
-import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.utils.Comparators;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -30,7 +30,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
-	super(t, Team.Child.SKATER, Skater.class, Value.class, Child.class);
+	super(t, Value.ID, Team.Child.SKATER, Skater.class, Value.class, Child.class);
         team = t;
         setId(i);
         setName(n);
@@ -38,21 +38,18 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         setFlags(flags);
         setRole(Role.BENCH);
         setBaseRole(Role.BENCH);
+        writeProtectionOverride.put(Value.CURRENT_FIELDING, Flag.INTERNAL);
+        addReference(new ElementReference(Child.FIELDING, Fielding.class, Fielding.Value.SKATER));
         addReference(new IndirectPropertyReference(this, Value.POSITION, this, 
-        	Value.CURRENT_FIELDING, Fielding.Value.POSITION, false, null));
+        	Value.CURRENT_FIELDING, Fielding.Value.POSITION, true, null));
         addReference(new IndirectPropertyReference(this, Value.PENALTY_BOX, this, 
         	Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false, false));
         values.put(Value.SORT_PENALTIES, true);
     }
 
-    public Object valueFromString(PermanentProperty prop, String sValue) {
-	if (prop == Value.BASE_ROLE || prop == Value.ROLE) { return Role.fromString(sValue); }
-	if (prop == Value.POSITION) { return team.getPosition(FloorPosition.fromString(sValue)); }
-	return super.valueFromString(prop, sValue);
-    }
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
-	    if (prop == Value.ROLE && flag != Flag.CUSTOM) {
+	    if (prop == Value.ROLE && flag != Flag.INTERNAL) {
 		team.field(this, (Role)value);
 		return true;
 	    } else {
@@ -76,7 +73,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 	    }
 	}
 	if (prop == Value.BASE_ROLE && get(Value.ROLE) == last) {
-	    set(Value.ROLE, value, Flag.CUSTOM);
+	    set(Value.ROLE, value, Flag.INTERNAL);
 	}
 	if (prop == Value.SORT_PENALTIES && (Boolean)value) {
 	    sortPenalties();
@@ -103,7 +100,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 			sortPenalties();
 		    }
 		} else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
-		    set(Value.CURRENT_FIELDING, item);
+		    set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
 		}
 	    }
 	    requestBatchEnd();
@@ -132,7 +129,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 		result = super.remove(prop,  item);
 		if (result && prop == Child.FIELDING) {
 		    if (getCurrentFielding() == item) {
-			set(Value.CURRENT_FIELDING, null);
+			set(Value.CURRENT_FIELDING, null, Flag.INTERNAL);
 		    }
 		}
 	    }
@@ -143,7 +140,6 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     
     public Team getTeam() { return team; }
 
-    public String getId() { return id; }
     private void setId(String i) {
 	UUID uuid;
 	try {
@@ -151,7 +147,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 	} catch (IllegalArgumentException iae) {
 	    uuid = UUID.randomUUID();
 	}
-	id = uuid.toString();
+	set(Value.ID, uuid.toString());
     }
 
     public String getName() { return (String)get(Value.NAME); }
@@ -171,7 +167,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public void setPosition(Position p) { set(Value.POSITION, p); }
 
     public Role getRole() { return (Role)get(Value.ROLE); }
-    public void setRole(Role r) { set(Value.ROLE, r, Flag.CUSTOM); }
+    public void setRole(Role r) { set(Value.ROLE, r, Flag.INTERNAL); }
     public void setRoleToBase() { setRole(getBaseRole()); }
 
     public Role getBaseRole() { return (Role)get(Value.BASE_ROLE); }
@@ -199,18 +195,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 		oldIds.remove(FO_EXP_ID);
 	    }
 	}
-        Collections.sort(penalties, new Comparator<Penalty>() {
-            @Override
-            public int compare(Penalty a, Penalty b) {
-                int periodSort = Integer.valueOf(a.getPeriod()).compareTo(b.getPeriod());
-
-                if(periodSort != 0) {
-                    return periodSort;
-                } else {
-                    return Integer.valueOf(a.getJam()).compareTo(b.getJam());
-                }
-            }
-        });
+        Collections.sort(penalties, Comparators.PenaltyComparator);
         
         int num = 1;
         for (Penalty p : penalties) {
@@ -242,45 +227,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
     }
 
-    protected String id;
     protected Team team;
-
-
-    public class PenaltyImpl extends ScoreBoardEventProviderImpl implements Penalty {
-        public PenaltyImpl(Skater s, String n) {
-            super(s, Skater.Child.PENALTY, Penalty.class, Value.class);
-            skater = s;
-            values.put(Value.NUMBER, n);
-            values.put(Value.ID, UUID.randomUUID().toString());
-            values.put(Value.PERIOD, 0);
-            values.put(Value.JAM, 0);
-        }
-        public String getId() { return (String)get(Value.ID); }
-        public int getPeriod() { return (Integer)get(Value.PERIOD); }
-        public int getJam() { return (Integer)get(Value.JAM); }
-        public String getCode() { return (String)get(Value.CODE); }
-
-        public String getProviderId() { return (String)get(Value.NUMBER); }
-
-        public boolean set(PermanentProperty prop, Object value, Flag flag) {
-            synchronized (coreLock) {
-                if (!(prop instanceof Value) || (prop == Value.ID && flag != Flag.FORCE)) { return false; }
-                requestBatchStart();
-                boolean result = super.set(prop, value, flag);
-                if (result) { 
-                    if (prop == Value.NUMBER) {
-                	scoreBoardChange(new ScoreBoardEvent(skater, Skater.Child.PENALTY, this, false));
-                    } else if (prop == Value.PERIOD || prop == Value.JAM) {
-                	skater.sortPenalties();
-                    }
-                }
-                requestBatchEnd();
-                return result;
-	    }
-        }
-        
-        protected Skater skater;
-    }
 
     public static class SkaterSnapshotImpl implements SkaterSnapshot {
         private SkaterSnapshotImpl(Skater skater) {

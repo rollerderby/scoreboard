@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.Comparator;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -28,11 +27,14 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
-	super(sb, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class);
-        id = i;
+	super(sb, Value.ID, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class, Command.class);
+        set(Value.ID, i);
 	for (FloorPosition fp : FloorPosition.values()) {
             add(Child.POSITION, new PositionImpl(this, fp));
         }
+	writeProtectionOverride.put(Value.RUNNING_OR_ENDED_TEAM_JAM, Flag.INTERNAL);
+	writeProtectionOverride.put(Value.RUNNING_OR_UPCOMING_TEAM_JAM, Flag.INTERNAL);
+	writeProtectionOverride.put(Value.LAST_ENDED_TEAM_JAM, Flag.INTERNAL);
 	addReference(new IndirectPropertyReference(this, Value.SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
 		TeamJam.Value.TOTAL_SCORE, true, 0));
 	addReference(new IndirectPropertyReference(this, Value.JAM_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
@@ -169,7 +171,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     public void reset() {
         synchronized (coreLock) {
-            setName(DEFAULT_NAME_PREFIX + id);
+            setName(DEFAULT_NAME_PREFIX + getId());
             setLogo(DEFAULT_LOGO);
             updateTeamJams();
             resetTimeouts(true);
@@ -177,13 +179,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             removeAll(Child.ALTERNATE_NAME);
             removeAll(Child.COLOR);
             removeAll(Child.SKATER);
-            for (ValueWithId p : getAll(Child.POSITION)) {
-                ((Position)p).reset();
-            }
         }
     }
-
-    public String getId() { return id; }
 
     public String getName() { return (String)get(Value.NAME); }
     public void setName(String n) { set(Value.NAME, n); }
@@ -203,7 +200,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
             TeamJam endedTJ = getRunningOrEndedTeamJam();
             for (FloorPosition fp : FloorPosition.values()) {
-        	getPosition(fp).reset();
         	Skater s = endedTJ.getFielding(fp).getSkater();
         	if (s != null && endedTJ.getFielding(fp).getPenaltyBox()) {
         	    if (fp.getRole(endedTJ) != fp.getRole(upcomingTJ)) {
@@ -212,7 +208,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         		upcomingTJ.getFielding(fp).setSkater(s);
         	    }
         	} else if (s != null) {
-        	    s.set(Skater.Value.CURRENT_FIELDING, null);
+        	    s.set(Skater.Value.CURRENT_FIELDING, null, Flag.INTERNAL);
         	}
             }            
             nextReplacedBlocker = FloorPosition.PIVOT;
@@ -288,9 +284,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void updateTeamJams() {
 	synchronized (coreLock) {
 	    requestBatchStart();
-	    set(Value.RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(id));
-	    set(Value.RUNNING_OR_UPCOMING_TEAM_JAM, scoreBoard.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext());
-	    set(Value.LAST_ENDED_TEAM_JAM, getRunningOrUpcomingTeamJam().getPrevious());
+	    set(Value.RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(getId()), Flag.INTERNAL);
+	    set(Value.RUNNING_OR_UPCOMING_TEAM_JAM,
+		    scoreBoard.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext(), Flag.INTERNAL);
+	    set(Value.LAST_ENDED_TEAM_JAM, getRunningOrUpcomingTeamJam().getPrevious(), Flag.INTERNAL);
+            for (ValueWithId p : getAll(Child.POSITION)) {
+                ((Position)p).updateCurrentFielding();
+            }
 	    requestBatchEnd();
 	}
     }
@@ -332,20 +332,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
         }
     }
-
-    public static Comparator<Skater> SkaterComparator = new Comparator<Skater>() {
-        public int compare(Skater s1, Skater s2) {
-            if (s2 == null) {
-                return 1;
-            }
-            String n1 = s1.getNumber();
-            String n2 = s2.getNumber();
-            if (n1 == null) { return -1; }
-            if (n2 == null) { return 1; }
-
-            return n1.compareTo(n2);
-        }
-    };
 
     public Skater getSkater(String id) { return (Skater)get(Child.SKATER, id); }
     public Skater addSkater(String id) { return (Skater)get(Child.SKATER, id, true); }
@@ -456,8 +442,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
     private void setNoPivot(boolean noPivot) { set(Value.NO_PIVOT, noPivot); }
 
-    protected String id;
-
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
     
     public static final String DEFAULT_NAME_PREFIX = "Team ";
@@ -470,37 +454,32 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     public class AlternateNameImpl extends ScoreBoardEventProviderImpl implements AlternateName {
         public AlternateNameImpl(Team t, String i, String n) {
-            super(t, Team.Child.ALTERNATE_NAME, AlternateName.class, Value.class);
+            super(t, Value.ID, Team.Child.ALTERNATE_NAME, AlternateName.class, Value.class);
             team = t;
-            id = i;
+            set(Value.ID, i);
             setName(n);
         }
-        public String getId() { return id; }
         public String getName() { return (String)get(Value.NAME); }
         public void setName(String n) { set(Value.NAME, n); }
 
         public Team getTeam() { return team; }
 
         protected Team team;
-        protected String id;
     }
 
     public class ColorImpl extends ScoreBoardEventProviderImpl implements Color {
         public ColorImpl(Team t, String i, String c) {
-            super(t, Team.Child.COLOR, Color.class, Value.class);
+            super(t, Value.ID, Team.Child.COLOR, Color.class, Value.class);
             team = t;
-            id = i;
+            set(Value.ID, i);
             setColor(c);
         }
-        public String getId() { return id; }
         public String getColor() { return (String)get(Value.COLOR); }
         public void setColor(String c) { set(Value.COLOR, c); }
 
         public Team getTeam() { return team; }
 
         protected Team team;
-        protected String id;
-        protected String color;
     }
 
     public static class TeamSnapshotImpl implements TeamSnapshot {

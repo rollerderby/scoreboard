@@ -48,7 +48,8 @@ public class ScoreBoardXmlConverter {
 	    for (Property prop : type.getEnumConstants()) {
 		String name = PropertyConversion.toFrontend(prop);
 		if (prop instanceof PermanentProperty) {
-	            editor.setElement(e, name, null, String.valueOf(p.get((PermanentProperty)prop)));
+		    Object v = p.get((PermanentProperty)prop);
+	            editor.setElement(e, name, null, v == null ? "" : String.valueOf(v));
 		} else if (prop instanceof CommandProperty) {
 		    editor.setElement(e, name, null, "");
 		} else if (prop instanceof AddRemoveProperty) {
@@ -88,8 +89,8 @@ public class ScoreBoardXmlConverter {
 	    try {
                 Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
 
-                if (prop instanceof PermanentProperty && value != null) {
-                    p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value), restore ? Flag.FORCE : null);
+                if (prop instanceof PermanentProperty) {
+                    p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value), restore ? Flag.FROM_AUTOSAVE : null);
                 } else if (prop instanceof CommandProperty) { 
                     if (Boolean.parseBoolean(value)) {
                         p.execute((CommandProperty)prop);

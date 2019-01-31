@@ -6,9 +6,9 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScoreBoardEventProvider<T>> extends ScoreBoardEventProviderImpl implements NumberedScoreBoardEventProvider<T> {
     @SafeVarargs
-    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, NumberedProperty type,
-	    PermanentProperty numProp, Class<? extends ScoreBoardEventProvider> ownClass, String id, Class<? extends Property>... props) {
-	super(parent, type, ownClass, props);
+    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, PermanentProperty numProp, PermanentProperty idProp,
+	    NumberedProperty type, Class<? extends ScoreBoardEventProvider> ownClass, String id, Class<? extends Property>... props) {
+	super(parent, idProp, type, ownClass, props);
 	ownType = type;
 	numberProperty = numProp;
 	set(numProp, Integer.parseInt(id));

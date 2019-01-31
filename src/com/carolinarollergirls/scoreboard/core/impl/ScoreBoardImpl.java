@@ -40,12 +40,12 @@ import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements ScoreBoard {
     public ScoreBoardImpl() {
-	super(null, null, ScoreBoard.class, Value.class, Child.class, NChild.class, Command.class);
+	super(null, null, null, ScoreBoard.class, Value.class, Child.class, NChild.class, Command.class);
         setupScoreBoard();
     }
 
     protected void setupScoreBoard() {
-	writeProtectionOverride.put(Value.CURRENT_PERIOD, true);
+	writeProtectionOverride.put(Value.CURRENT_PERIOD, Flag.INTERNAL);
 	addReference(new IndirectPropertyReference(this, Value.IN_PERIOD, this, Value.CURRENT_PERIOD,
 		Period.Value.RUNNING, false, false));
 	for (Button b : Button.values()) {
@@ -65,20 +65,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         reset();
         addInPeriodListeners();
         xmlScoreBoard = new XmlScoreBoard(this);
-        //Button may have a label from autosave but undo will not work after restart
-        Button.UNDO.setLabel(ACTION_NONE);
     }
-
-    public String getId() { return ""; }
 
     public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
-    public static Object getCoreLock() { return coreLock; }
-
-    public Object valueFromString(PermanentProperty prop, String sValue) {
-	if (prop == Value.TIMEOUT_OWNER) { return getTimeoutOwner(sValue); }
-	return Boolean.parseBoolean(sValue);
-    }
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
 	    if (prop == Value.OFFICIAL_SCORE && (Boolean)value && (isInPeriod() ||
@@ -98,7 +88,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 	} else if (prop == Value.OFFICIAL_SCORE && (Boolean)value) {
 	    getCurrentPeriod().truncateAfterCurrentJam();
 	} else if (prop == Value.CURRENT_PERIOD_NUMBER) {
-	    set(Value.CURRENT_PERIOD, getCurrentPeriod());
+	    set(Value.CURRENT_PERIOD, getCurrentPeriod(), Flag.INTERNAL);
 	}
     }
     
@@ -201,6 +191,14 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             Button.UNDO.setLabel(ACTION_NONE);
         }
     }
+    public void postAutosaveUpdate() {
+        for (ValueWithId t : getAll(Child.TEAM)) {
+            ((Team)t).updateTeamJams();
+        }
+        //Button may have a label from autosave but undo will not work after restart
+        Button.UNDO.setLabel(ACTION_NONE);
+    }
+
 
     public boolean isInPeriod() { return (Boolean)get(Value.IN_PERIOD); }
     public void setInPeriod(boolean p) { set(Value.IN_PERIOD, p); }

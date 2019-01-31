@@ -13,10 +13,9 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Position extends ScoreBoardEventProvider {
-    public void reset();
+    public void updateCurrentFielding();
 
     public Team getTeam();
-    public String getId();
     public FloorPosition getFloorPosition();
     public Skater getSkater();
     public void setSkater(Skater s);

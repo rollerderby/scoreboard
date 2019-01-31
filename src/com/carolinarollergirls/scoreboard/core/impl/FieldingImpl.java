@@ -12,20 +12,17 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 
 public class FieldingImpl extends ScoreBoardEventProviderImpl implements Fielding {
     public FieldingImpl(TeamJam teamJam, Position position) {
-	super(teamJam, TeamJam.Child.FIELDING, Fielding.class, Value.class);
+	super(teamJam, Value.ID, TeamJam.Child.FIELDING, Fielding.class, Value.class);
 	this.teamJam = teamJam;
-	values.put(Value.POSITION, position);
-	writeProtectionOverride.put(Value.POSITION, false);
+	set(Value.POSITION, position);
+	writeProtectionOverride.put(Value.POSITION, null);
+	set(Value.ID, teamJam.getId() + "_" + getPosition().toString());
+	addReference(new ElementReference(Value.SKATER, Skater.class, Skater.Child.FIELDING));
 	setPenaltyBox(false);
     }
 
-    public String getId() { return teamJam.getId() + "_" + getPosition().toString(); }
     public String getProviderId() { return getPosition().getProviderId(); }
 
-    public Object valueFromString(PermanentProperty prop, String sValue) {
-	if (prop == Value.SKATER) { return teamJam.getTeam().getSkater(sValue); }
-	return super.valueFromString(prop, sValue);
-    }
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
 	synchronized (coreLock) {
 	    if (prop == Value.PENALTY_BOX && getSkater() == null && (Boolean)value) { return false; }
@@ -33,14 +30,7 @@ public class FieldingImpl extends ScoreBoardEventProviderImpl implements Fieldin
 	}
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last) {
-	if (prop == Value.SKATER) {
-	    if (last != null) {
-		((Skater)last).remove(Skater.Child.FIELDING, this);
-	    }
-	    if(value != null) {
-		((Skater)value).add(Skater.Child.FIELDING, this);
-	    }
-	} else if (prop == Value.PENALTY_BOX && isCurrent() && (Boolean)value &&
+	if (prop == Value.PENALTY_BOX && isCurrent() && (Boolean)value &&
 		getPosition().getFloorPosition() == FloorPosition.JAMMER &&
 		scoreBoard.isInJam() && teamJam.getLeadJammer().equals(Team.LEAD_LEAD)) {
 	    teamJam.setLeadJammer(Team.LEAD_LOST_LEAD);

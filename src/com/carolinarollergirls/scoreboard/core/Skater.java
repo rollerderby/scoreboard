@@ -17,7 +17,6 @@ public interface Skater extends ScoreBoardEventProvider {
     public void restoreSnapshot(SkaterSnapshot s);
 
     public Team getTeam();
-    public String getId();
     public String getName();
     public void setName(String id);
     public String getNumber();
@@ -39,6 +38,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public void sortPenalties();
 
     public enum Value implements PermanentProperty {
+	ID,
 	NAME,
 	NUMBER,
 	CURRENT_FIELDING,
@@ -55,20 +55,6 @@ public interface Skater extends ScoreBoardEventProvider {
     }
     
     public static final String FO_EXP_ID = "FO_EXP";
-
-    public static interface Penalty extends ScoreBoardEventProvider {
-        public int getPeriod();
-        public int getJam();
-        public String getCode();
-
-        public enum Value implements PermanentProperty {
-            ID,
-            PERIOD,
-            JAM,
-            NUMBER,
-            CODE;
-        }
-    }
 
     public static interface SkaterSnapshot	{
         public String getId();

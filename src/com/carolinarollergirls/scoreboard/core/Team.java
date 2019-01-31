@@ -20,8 +20,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public void reset();
 
-    public String getId();
-
     public String getName();
     public void setName(String name);
 
@@ -93,6 +91,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final String LEAD_LOST_LEAD = "LostLead";
 
     public enum Value implements PermanentProperty {
+	ID,
 	NAME,
 	LOGO,
 	RUNNING_OR_UPCOMING_TEAM_JAM,
@@ -122,13 +121,13 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     }
 
     public static interface AlternateName extends ScoreBoardEventProvider {
-        public String getId();
         public String getName();
         public void setName(String n);
 
         public Team getTeam();
 
         public enum Value implements PermanentProperty {
+            ID,
             NAME;
         }
 
@@ -139,13 +138,13 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     };
 
     public static interface Color extends ScoreBoardEventProvider {
-        public String getId();
         public String getColor();
         public void setColor(String c);
 
         public Team getTeam();
 
         public enum Value implements PermanentProperty {
+            ID,
             COLOR;
         }
     }

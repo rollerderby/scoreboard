@@ -28,11 +28,9 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     public MediaImpl(ScoreBoard parent, File path) {
-	super(parent, ScoreBoard.Child.MEDIA, Media.class, Child.class);
+	super(parent, null, ScoreBoard.Child.MEDIA, Media.class, Child.class);
         setup(path.toPath().resolve("html"));
     }
-
-    public String getId() { return ""; }
 
     private void setup(Path path) {
         this.path = path;
@@ -167,7 +165,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 
     public class MediaFormatImpl extends ScoreBoardEventProviderImpl implements MediaFormat {
 	MediaFormatImpl(Media parent, String format) {
-	    super(parent, Media.Child.FORMAT, MediaFormat.class, Child.class);
+	    super(parent, null, Media.Child.FORMAT, MediaFormat.class, Child.class);
 	    this.format = format;
 	}
 	
@@ -190,7 +188,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     
     public class MediaTypeImpl extends ScoreBoardEventProviderImpl implements MediaType {
 	MediaTypeImpl(MediaFormat parent, String type) {
-	    super(parent, MediaFormat.Child.TYPE, MediaType.class, Child.class);
+	    super(parent, null, MediaFormat.Child.TYPE, MediaType.class, Child.class);
 	    this.parent = parent;
 	    this.type = type;
 	}
@@ -211,18 +209,16 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     
     public class MediaFileImpl extends ScoreBoardEventProviderImpl implements MediaFile {
         MediaFileImpl(MediaType type, String id, String name, String src) {
-            super(type, MediaType.Child.FILE, MediaFile.class, Value.class);
+            super(type, Value.ID, MediaType.Child.FILE, MediaFile.class, Value.class);
             this.type = type;
-            values.put(Value.ID, id);
-            writeProtectionOverride.put(Value.ID, false);
+            set(Value.ID, id);
             values.put(Value.NAME, name);
             values.put(Value.SRC, src);
-            writeProtectionOverride.put(Value.SRC, false);
+            writeProtectionOverride.put(Value.SRC, null);
         }
 
         public String getFormat() { synchronized (coreLock) { return type.getFormat() ;} }
         public String getType() { synchronized (coreLock) { return type.getType() ;} }
-        public String getId() { synchronized (coreLock) { return (String)get(Value.ID) ;} }
         public String getName() { synchronized (coreLock) { return (String)get(Value.NAME) ;} }
         public void setName(String n) { synchronized (coreLock) { set(Value.NAME, n) ;} }
         public String getSrc() { synchronized (coreLock) { return (String)get(Value.SRC); } }
