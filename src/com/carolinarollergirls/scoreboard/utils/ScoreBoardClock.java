@@ -9,93 +9,93 @@ import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 
 public class ScoreBoardClock extends TimerTask {
     private ScoreBoardClock() {
-	offset = System.currentTimeMillis();
-	timer.scheduleAtFixedRate(this, CLOCK_UPDATE_INTERVAL / 4, CLOCK_UPDATE_INTERVAL / 4);
+        offset = System.currentTimeMillis();
+        timer.scheduleAtFixedRate(this, CLOCK_UPDATE_INTERVAL / 4, CLOCK_UPDATE_INTERVAL / 4);
     }
 
     public static ScoreBoardClock getInstance() {
-	return instance;
+        return instance;
     }
 
     public long getCurrentTime() {
-	synchronized (coreLock) {
-	    updateTime();
-	    return currentTime;
-	}
+        synchronized (coreLock) {
+            updateTime();
+            return currentTime;
+        }
     }
-    
+
     public long getCurrentWalltime() {
-	synchronized (coreLock) {
-	    updateTime();
-	    return currentTime + offset;
-	}
+        synchronized (coreLock) {
+            updateTime();
+            return currentTime + offset;
+        }
     }
 
     public void rewindTo(long time) {
-	synchronized (coreLock) {
-	    lastRewind = currentTime - time;
-	    // changing offset instead of currentTime has two reasons:
-	    // 1. The change only becomes visible to clients after the clock has restarted.
-	    // 2. Repeating values for currentTime would cause UpdateClockTimerTask to just
-	    //    idle until it has caught up, instead of advancing the clocks by the desired amount.
-	    offset -= lastRewind;
-	}
+        synchronized (coreLock) {
+            lastRewind = currentTime - time;
+            // changing offset instead of currentTime has two reasons:
+            // 1. The change only becomes visible to clients after the clock has restarted.
+            // 2. Repeating values for currentTime would cause UpdateClockTimerTask to just
+            //    idle until it has caught up, instead of advancing the clocks by the desired amount.
+            offset -= lastRewind;
+        }
     }
 
     public long getLastRewind() {
-	synchronized (coreLock) {
-	    return lastRewind;
-	}
+        synchronized (coreLock) {
+            return lastRewind;
+        }
     }
 
     public void advance(long ms) {
-	synchronized(coreLock) {
-	    currentTime += ms;
-	    updateClients();
-	}
+        synchronized(coreLock) {
+            currentTime += ms;
+            updateClients();
+        }
     }
 
     public void stop() {
-	synchronized (coreLock) {
-	    updateTime();
-	    stopCounter++;
-	}
+        synchronized (coreLock) {
+            updateTime();
+            stopCounter++;
+        }
     }
 
     public void start(boolean doCatchUp) {
-	synchronized (coreLock) {
-	    if (!doCatchUp) {
-		offset = System.currentTimeMillis() - currentTime;
-	    }
-	    stopCounter--;
-	}
+        synchronized (coreLock) {
+            if (!doCatchUp) {
+                offset = System.currentTimeMillis() - currentTime;
+            }
+            stopCounter--;
+        }
     }
 
     public void registerClient(ScoreBoardClockClient client) {
-	synchronized (coreLock) {
-	    clients.add(client);
-	}
+        synchronized (coreLock) {
+            clients.add(client);
+        }
     }
 
     private void updateTime() {
-	if (stopCounter == 0) {
-	    currentTime = System.currentTimeMillis() - offset;
-	    updateClients();
-	}
+        if (stopCounter == 0) {
+            currentTime = System.currentTimeMillis() - offset;
+            updateClients();
+        }
     }
 
     private void updateClients() {
-	for (ScoreBoardClockClient client: clients) {
-	    client.updateTime(currentTime);
-	}
+        for (ScoreBoardClockClient client: clients) {
+            client.updateTime(currentTime);
+        }
     }
 
     public void run() {
-	synchronized (coreLock) {
-	    if (stopCounter == 0) {
-		updateTime();
-	    }
-	}
+        synchronized (coreLock) {
+            if (stopCounter == 0) {
+                updateTime();
+            }
+        }
     }
 
     private long offset;
@@ -114,10 +114,10 @@ public class ScoreBoardClock extends TimerTask {
     public static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
 
     public interface ScoreBoardClockClient {
-	/*
-	 * Callback that notifies the client of the current time.
-	 * Parameter is the time elapsed since scoreboard startup.
-	 */
-	void updateTime(long ms);
+        /*
+         * Callback that notifies the client of the current time.
+         * Parameter is the time elapsed since scoreboard startup.
+         */
+        void updateTime(long ms);
     }
 }

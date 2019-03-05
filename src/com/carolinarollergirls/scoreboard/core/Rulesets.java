@@ -31,22 +31,22 @@ public interface Rulesets extends ScoreBoardEventProvider {
     // The last loaded ruleset.
     public String getCurrentRulesetId();
     public String getCurrentRulesetName();
-    
+
     public RuleDefinition getRuleDefinition(String id);
-    
+
     public Ruleset getRuleset(String id);
     public void removeRuleset(String id);
     public Ruleset addRuleset(String name, String parentId);
     public Ruleset addRuleset(String name, String parentId, String id);
 
     public enum Value implements PermanentProperty {
-	CURRENT_RULESET_ID,
-	CURRENT_RULESET_NAME;
+        CURRENT_RULESET_ID,
+        CURRENT_RULESET_NAME;
     }
     public enum Child implements AddRemoveProperty {
-	CURRENT_RULE,
-	RULE_DEFINITION,
-	RULESET;
+        CURRENT_RULE,
+        RULE_DEFINITION,
+        RULESET;
     }
 
     public static interface Ruleset extends ScoreBoardEventProvider {

@@ -1,12 +1,12 @@
 package com.carolinarollergirls.scoreboard.core;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
-public interface Fielding extends ScoreBoardEventProvider {
+public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding> {
     public TeamJam getTeamJam();
     public Position getPosition();
-    
+
     public boolean isCurrent();
     public Role getCurrentRole();
 
@@ -17,7 +17,7 @@ public interface Fielding extends ScoreBoardEventProvider {
     public void setPenaltyBox(boolean p);
 
     public enum Value implements PermanentProperty {
-	ID,
+        ID,
         SKATER,
         POSITION,
         PENALTY_BOX;

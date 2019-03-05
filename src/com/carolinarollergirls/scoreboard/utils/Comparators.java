@@ -13,20 +13,20 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public class Comparators {
     public static class SbepComparator<T extends ScoreBoardEventProvider> implements Comparator<T> {
-	public int compare(ScoreBoardEventProvider p1, ScoreBoardEventProvider p2) {
-            if (p2 == null) { return 1; }
-            if (p1 == null) { return -1; }
-	    if (p1 instanceof NumberedScoreBoardEventProvider<?> && p2 instanceof NumberedScoreBoardEventProvider<?> &&
-		    p1.getParent() == p2.getParent()) {
+        public int compare(ScoreBoardEventProvider p1, ScoreBoardEventProvider p2) {
+            if (p2 == null) { return -1; }
+            if (p1 == null) { return 1; }
+            if (p1 instanceof NumberedScoreBoardEventProvider<?> && p2 instanceof NumberedScoreBoardEventProvider<?> &&
+                    p1.getParent() == p2.getParent()) {
                 int n1 = ((NumberedScoreBoardEventProvider<?>)p1).getNumber();
                 int n2 = ((NumberedScoreBoardEventProvider<?>)p2).getNumber();
                 return n1 - n2;
-	    } else {
-		return compare(p1.getParent(), p2.getParent());
-	    }
-	}
+            } else {
+                return compare(p1.getParent(), p2.getParent());
+            }
+        }
     }
-    
+
     public static Comparator<Period> PeriodComparator = new SbepComparator<Period>();
     public static Comparator<Jam> JamComparator = new SbepComparator<Jam>();
     public static Comparator<TeamJam> TeamJamComparator = new SbepComparator<TeamJam>();
@@ -50,7 +50,7 @@ public class Comparators {
             if (p1 == null) { return 1; }
             int res = JamComparator.compare(p1.getJam(), p2.getJam());
             if (res == 0) {
-        	return (int) ((Long)p1.get(Penalty.Value.TIME) - (Long)p2.get(Penalty.Value.TIME));
+                return (int) ((Long)p1.get(Penalty.Value.TIME) - (Long)p2.get(Penalty.Value.TIME));
             } else { return res; }
         }
     };

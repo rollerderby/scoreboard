@@ -41,7 +41,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public void timeout();
     public void officialReview();
-    
+
     public TeamJam getRunningOrUpcomingTeamJam();
     public TeamJam getRunningOrEndedTeamJam();
     public TeamJam getLastEndedTeamJam();
@@ -75,13 +75,13 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public Position getPosition(FloorPosition fp);
 
     public void field(Skater s, Role r);
-    
+
     public String getLeadJammer();
     public void setLeadJammer(String lead);
     public boolean isStarPass();
     public void setStarPass(boolean starPass);
     public boolean hasNoPivot();
-    
+
 
     public static final String ID_1 = "1";
     public static final String ID_2 = "2";
@@ -91,33 +91,33 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final String LEAD_LOST_LEAD = "LostLead";
 
     public enum Value implements PermanentProperty {
-	ID,
-	NAME,
-	LOGO,
-	RUNNING_OR_UPCOMING_TEAM_JAM,
-	RUNNING_OR_ENDED_TEAM_JAM,
-	LAST_ENDED_TEAM_JAM,
-	SCORE,
-	JAM_SCORE,
-	LAST_SCORE,
-	TIMEOUTS,
-	OFFICIAL_REVIEWS,
-	IN_TIMEOUT,
-	IN_OFFICIAL_REVIEW,
-	NO_PIVOT,
-	RETAINED_OFFICIAL_REVIEW,
-	LEAD_JAMMER,
-	STAR_PASS,
+        ID,
+        NAME,
+        LOGO,
+        RUNNING_OR_UPCOMING_TEAM_JAM,
+        RUNNING_OR_ENDED_TEAM_JAM,
+        LAST_ENDED_TEAM_JAM,
+        SCORE,
+        JAM_SCORE,
+        LAST_SCORE,
+        TIMEOUTS,
+        OFFICIAL_REVIEWS,
+        IN_TIMEOUT,
+        IN_OFFICIAL_REVIEW,
+        NO_PIVOT,
+        RETAINED_OFFICIAL_REVIEW,
+        LEAD_JAMMER,
+        STAR_PASS,
     }
     public enum Child implements AddRemoveProperty {
-	SKATER,
-	POSITION,
-	ALTERNATE_NAME,
-	COLOR;
+        SKATER,
+        POSITION,
+        ALTERNATE_NAME,
+        COLOR;
     }
     public enum Command implements CommandProperty {
-	TIMEOUT,
-	OFFICIAL_REVIEW;
+        TIMEOUT,
+        OFFICIAL_REVIEW;
     }
 
     public static interface AlternateName extends ScoreBoardEventProvider {

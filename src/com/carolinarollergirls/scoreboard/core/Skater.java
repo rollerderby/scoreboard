@@ -9,6 +9,7 @@ package com.carolinarollergirls.scoreboard.core;
  */
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
@@ -35,26 +36,26 @@ public interface Skater extends ScoreBoardEventProvider {
     public String getFlags();
     public void setFlags(String flags);
     public Penalty getPenalty(String num);
-    public void sortPenalties();
 
     public enum Value implements PermanentProperty {
-	ID,
-	NAME,
-	NUMBER,
-	CURRENT_FIELDING,
-	POSITION,
-	ROLE,
-	BASE_ROLE,
-	PENALTY_BOX,
-	FLAGS,
-	SORT_PENALTIES;
+        ID,
+        NAME,
+        NUMBER,
+        CURRENT_FIELDING,
+        POSITION,
+        ROLE,
+        BASE_ROLE,
+        PENALTY_BOX,
+        FLAGS;
     }
     public enum Child implements AddRemoveProperty {
-	FIELDING,
-	PENALTY;
+        FIELDING;
     }
-    
-    public static final String FO_EXP_ID = "FO_EXP";
+    public enum NChild implements NumberedProperty {
+        PENALTY;
+    }
+
+    public static final String FO_EXP_ID = "0";
 
     public static interface SkaterSnapshot	{
         public String getId();

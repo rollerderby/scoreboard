@@ -1,9 +1,9 @@
 package com.carolinarollergirls.scoreboard.core;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
-public interface Penalty extends ScoreBoardEventProvider {
+public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int getPeriodNumber();
     public int getJamNumber();
     public Jam getJam();
@@ -15,7 +15,6 @@ public interface Penalty extends ScoreBoardEventProvider {
         JAM,
         PERIOD_NUMBER,
         JAM_NUMBER,
-        NUMBER,
         CODE;
     }
 }

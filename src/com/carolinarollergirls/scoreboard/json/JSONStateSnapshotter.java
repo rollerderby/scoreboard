@@ -42,9 +42,9 @@ public class JSONStateSnapshotter implements JSONStateListener {
         }
 
         String name = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss").format(startTime)
-        + " - " + state.get("ScoreBoard.Team(1).Name")
-        + " vs " + state.get("ScoreBoard.Team(2).Name")
-        + ".json";
+                + " - " + state.get("ScoreBoard.Team(1).Name")
+                + " vs " + state.get("ScoreBoard.Team(2).Name")
+                + ".json";
         name = name.replaceAll("[^a-zA-Z0-9\\.\\- ]", "_");
         File file = new File(new File(directory, "game-data"), name);
         file.getParentFile().mkdirs();
@@ -54,12 +54,12 @@ public class JSONStateSnapshotter implements JSONStateListener {
             // Put inside a "state" entry to match the WS.
             // Use a TreeMap so output is sorted.
             String json = JSON.std
-                          .with(JSON.Feature.PRETTY_PRINT_OUTPUT)
-                          .composeString()
-                          .startObject()
-                          .putObject("state", new TreeMap<String, Object>(state))
-                          .end()
-                          .finish();
+                    .with(JSON.Feature.PRETTY_PRINT_OUTPUT)
+                    .composeString()
+                    .startObject()
+                    .putObject("state", new TreeMap<String, Object>(state))
+                    .end()
+                    .finish();
 
             out = new FileWriter(file);
             out.write(json);

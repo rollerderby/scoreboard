@@ -17,8 +17,8 @@ public interface Settings extends ScoreBoardEventProvider {
     public String get(String k);
     // Setting to null deletes a setting.
     public void set(String k, String v);
-    
+
     public enum Child implements AddRemoveProperty {
-	SETTING;
+        SETTING;
     }
 }

@@ -83,13 +83,13 @@ public class JSONStateManager {
                 final JSONStateListener localSource = source;
                 pending.incrementAndGet();
                 sources.get(source).execute(
-                new Runnable() {
-                    public void run() {
-                        localSource.sendUpdates(localState, immutableChanged);
-                        pending.decrementAndGet();
-                    }
-                }
-                );
+                        new Runnable() {
+                            public void run() {
+                                localSource.sendUpdates(localState, immutableChanged);
+                                pending.decrementAndGet();
+                            }
+                        }
+                        );
             }
         }
         timer.observeDuration();

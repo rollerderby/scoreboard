@@ -8,11 +8,6 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Fielding;
@@ -22,15 +17,13 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.utils.Comparators;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
-	super(t, Value.ID, Team.Child.SKATER, Skater.class, Value.class, Child.class);
+        super(t, Value.ID, Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
         team = t;
         setId(i);
         setName(n);
@@ -38,116 +31,72 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         setFlags(flags);
         setRole(Role.BENCH);
         setBaseRole(Role.BENCH);
-        writeProtectionOverride.put(Value.CURRENT_FIELDING, Flag.INTERNAL);
+        addWriteProtectionOverride(Value.CURRENT_FIELDING, Flag.INTERNAL);
         addReference(new ElementReference(Child.FIELDING, Fielding.class, Fielding.Value.SKATER));
-        addReference(new IndirectPropertyReference(this, Value.POSITION, this, 
-        	Value.CURRENT_FIELDING, Fielding.Value.POSITION, true, null));
-        addReference(new IndirectPropertyReference(this, Value.PENALTY_BOX, this, 
-        	Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false, false));
-        values.put(Value.SORT_PENALTIES, true);
+        addReference(new IndirectValueReference(this, Value.POSITION, this, 
+                Value.CURRENT_FIELDING, Fielding.Value.POSITION, true, null));
+        addReference(new IndirectValueReference(this, Value.PENALTY_BOX, this, 
+                Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false, false));
     }
 
-    public boolean set(PermanentProperty prop, Object value, Flag flag) {
-	synchronized (coreLock) {
-	    if (prop == Value.ROLE && flag != Flag.INTERNAL) {
-		team.field(this, (Role)value);
-		return true;
-	    } else {
-		return super.set(prop, value, flag);
-	    }
-	}
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.ROLE && flag != Flag.INTERNAL) {
+            team.field(this, (Role)value);
+            return last;
+        }
+        return value;
     }
-    protected void valueChanged(PermanentProperty prop, Object value, Object last) {
-	if (prop == Value.CURRENT_FIELDING) {
-	    Fielding f = (Fielding)value;
-	    Fielding lf = (Fielding)last;
-	    setRole(value == null ? getBaseRole() : f.getCurrentRole());
-	    if (lf != null && lf.getSkater() == this) {
-		if (f != null && (lf.getTeamJam().getNext() == f.getTeamJam() || lf.isCurrent())) {
-		    f.setPenaltyBox(lf.getPenaltyBox());
-		} 
-		if (lf.isCurrent()) {
-		    lf.setSkater(null);
-		    lf.setPenaltyBox(false);
-		}
-	    }
-	}
-	if (prop == Value.BASE_ROLE && get(Value.ROLE) == last) {
-	    set(Value.ROLE, value, Flag.INTERNAL);
-	}
-	if (prop == Value.SORT_PENALTIES && (Boolean)value) {
-	    sortPenalties();
-	}
+    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.CURRENT_FIELDING) {
+            Fielding f = (Fielding)value;
+            Fielding lf = (Fielding)last;
+            setRole(value == null ? getBaseRole() : f.getCurrentRole());
+            if (lf != null && lf.getSkater() == this) {
+                if (f != null && (lf.getTeamJam().getNext() == f.getTeamJam() || lf.isCurrent())) {
+                    f.setPenaltyBox(lf.getPenaltyBox());
+                } 
+                if (lf.isCurrent()) {
+                    lf.setSkater(null);
+                    lf.setPenaltyBox(false);
+                }
+            }
+        }
+        if (prop == Value.BASE_ROLE && get(Value.ROLE) == last) {
+            set(Value.ROLE, value, Flag.INTERNAL);
+        }
     }
-    
+
     public ValueWithId create(AddRemoveProperty prop, String id) {
-	synchronized (coreLock) {
-	    if (prop == Child.PENALTY) { return new PenaltyImpl(this, id); }
-	    return null;
-	}	
+        synchronized (coreLock) {
+            if (prop == NChild.PENALTY) { return new PenaltyImpl(this, id); }
+            return null;
+        }	
     }
-    public boolean add(AddRemoveProperty prop, ValueWithId item) {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    boolean result = super.add(prop, item);
-	    if (result) {
-		if (prop == Child.PENALTY) {
-		    if (FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
-			if (getBaseRole() == Role.BENCH) {
-			    setBaseRole(Role.INELIGIBLE);
-			}
-		    } else {
-			sortPenalties();
-		    }
-		} else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
-		    set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
-		}
-	    }
-	    requestBatchEnd();
-	    return result;
-	}
+    protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId()) && getBaseRole() == Role.BENCH) {
+            setBaseRole(Role.INELIGIBLE);
+        } else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
+            set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
+        }
     }
-    public boolean remove(AddRemoveProperty prop, ValueWithId item) {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    boolean result;
-	    if (prop == Child.PENALTY) {
-		Set<String> oldIds = null;
-		oldIds = new HashSet<String>(children.get(prop).keySet());
-		result = super.removeSilent(prop, item);
-		if (result) {
-		    if (FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
-			scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
-			if (getBaseRole() == Role.INELIGIBLE) {
-			    setBaseRole(Role.BENCH);
-			}
-		    } else {
-			sortPenalties(oldIds);
-		    }
-		}
-	    } else {
-		result = super.remove(prop,  item);
-		if (result && prop == Child.FIELDING) {
-		    if (getCurrentFielding() == item) {
-			set(Value.CURRENT_FIELDING, null, Flag.INTERNAL);
-		    }
-		}
-	    }
-	    requestBatchEnd();
-	    return result;
-	}
+    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId()) && getBaseRole() == Role.INELIGIBLE) {
+            setBaseRole(Role.BENCH);
+        } else if (prop == Child.FIELDING && getCurrentFielding() == item) {
+            set(Value.CURRENT_FIELDING, null, Flag.INTERNAL);
+        }
     }
-    
+
     public Team getTeam() { return team; }
 
     private void setId(String i) {
-	UUID uuid;
-	try {
-	    uuid = UUID.fromString(i);
-	} catch (IllegalArgumentException iae) {
-	    uuid = UUID.randomUUID();
-	}
-	set(Value.ID, uuid.toString());
+        UUID uuid;
+        try {
+            uuid = UUID.fromString(i);
+        } catch (IllegalArgumentException iae) {
+            uuid = UUID.randomUUID();
+        }
+        set(Value.ID, uuid.toString());
     }
 
     public String getName() { return (String)get(Value.NAME); }
@@ -155,12 +104,12 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 
     public String getNumber() { return (String)get(Value.NUMBER); }
     public void setNumber(String n) { set(Value.NUMBER, n); }
-    
+
     public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
     public void removeCurrentFielding() {
-	if (getCurrentFielding() != null) {
-	    remove(Child.FIELDING, getCurrentFielding());
-	}
+        if (getCurrentFielding() != null) {
+            remove(Child.FIELDING, getCurrentFielding());
+        }
     }
 
     public Position getPosition() { return (Position)get(Value.POSITION); }
@@ -179,40 +128,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public String getFlags() { return (String)get(Value.FLAGS); }
     public void setFlags(String f) { set(Value.FLAGS, f); }
 
-    public Penalty getPenalty(String id) { return (Penalty)get(Child.PENALTY, id); }
+    public Penalty getPenalty(String id) { return (Penalty)get(NChild.PENALTY, id); }
 
-    public void sortPenalties() {
-	sortPenalties(new HashSet<String>(children.get(Child.PENALTY).keySet()));
-    }
-    private void sortPenalties(Set<String> oldIds) {
-	if (!(Boolean)get(Value.SORT_PENALTIES)) { return; }
-	requestBatchStart();
-	List<Penalty> penalties = new ArrayList<Penalty>();
-	for (ValueWithId p : getAll(Child.PENALTY)) {
-	    if (!FO_EXP_ID.equals(((Penalty)p).getProviderId())) {
-		penalties.add((Penalty)p);
-	    } else {
-		oldIds.remove(FO_EXP_ID);
-	    }
-	}
-        Collections.sort(penalties, Comparators.PenaltyComparator);
-        
-        int num = 1;
-        for (Penalty p : penalties) {
-            String n = String.valueOf(num);
-            children.get(Child.PENALTY).put(n, p);
-            p.set(Penalty.Value.NUMBER, n);
-            oldIds.remove(n);
-            num++;
-        }
-        for (String i : oldIds) {
-            //old entry has not been overwritten - remove it
-            children.get(Child.PENALTY).remove(i);
-            scoreBoardChange(new ScoreBoardEvent(this, Child.PENALTY, new PenaltyImpl(this, i), true));
-        }
-        requestBatchEnd();
-    }
-    
     public SkaterSnapshot snapshot() {
         synchronized (coreLock) {
             return new SkaterSnapshotImpl(this);

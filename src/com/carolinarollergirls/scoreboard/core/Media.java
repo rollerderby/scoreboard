@@ -21,31 +21,31 @@ public interface Media extends ScoreBoardEventProvider {
     public boolean validFileName(String fn);
 
     public enum Child implements AddRemoveProperty {
-	FORMAT;
+        FORMAT;
     }
 
     public static interface MediaFormat extends ScoreBoardEventProvider {
         public String getFormat();
-	public MediaType getType(String type);
-	
-	public enum Child implements AddRemoveProperty {
-	    TYPE;
-	}
+        public MediaType getType(String type);
+
+        public enum Child implements AddRemoveProperty {
+            TYPE;
+        }
     }
-    
+
     public static interface MediaType extends ScoreBoardEventProvider {
         public String getFormat();
         public String getType();
-	
-	public MediaFile getFile(String id);
-	public void addFile(MediaFile file);
-	public void removeFile(MediaFile file);
-	
-	public enum Child implements AddRemoveProperty {
-	    FILE;
-	}
+
+        public MediaFile getFile(String id);
+        public void addFile(MediaFile file);
+        public void removeFile(MediaFile file);
+
+        public enum Child implements AddRemoveProperty {
+            FILE;
+        }
     }
-    
+
     public static interface MediaFile extends ScoreBoardEventProvider {
         public String getFormat();
         public String getType();
@@ -53,7 +53,7 @@ public interface Media extends ScoreBoardEventProvider {
         public String getName();
         public void setName(String s);
         public String getSrc();
-        
+
         public enum Value implements PermanentProperty {
             ID,
             SRC,

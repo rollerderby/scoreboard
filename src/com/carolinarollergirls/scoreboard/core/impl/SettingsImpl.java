@@ -15,23 +15,23 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
     public SettingsImpl(ScoreBoard s) {
-	super (s, null, ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
+        super (s, null, ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
     }
 
     public void reset() { removeAll(Child.SETTING); }
 
     public String get(String k) {
-	synchronized(coreLock) {
-	    if (get(Child.SETTING, k) == null) { return null; }
-	    return get(Child.SETTING, k).getValue();
-	}
+        synchronized(coreLock) {
+            if (get(Child.SETTING, k) == null) { return null; }
+            return get(Child.SETTING, k).getValue();
+        }
     }
     public void set(String k, String v) {
         synchronized (coreLock) {
             if (v == null) {
-        	remove(Child.SETTING, k);
+                remove(Child.SETTING, k);
             } else {
-        	add(Child.SETTING, new ValWithId(k, v));
+                add(Child.SETTING, new ValWithId(k, v));
             }
         }
     }

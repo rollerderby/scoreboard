@@ -25,7 +25,7 @@ public interface Clock extends ScoreBoardEventProvider {
     public void restart();
 
     public String getName();
-//    public void setName(String name);
+    //    public void setName(String name);
 
     public int getNumber();
     public void setNumber(int n);
@@ -94,24 +94,24 @@ public interface Clock extends ScoreBoardEventProvider {
     }
 
     public enum Value implements PermanentProperty {
-	ID,
-	NAME,
-	NUMBER,
-	MINIMUM_NUMBER,
-	MAXIMUM_NUMBER,
-	TIME,
-	INVERTED_TIME,
-	MINIMUM_TIME,
-	MAXIMUM_TIME,
-	DIRECTION,
-	RUNNING;
+        ID,
+        NAME,
+        NUMBER,
+        MINIMUM_NUMBER,
+        MAXIMUM_NUMBER,
+        TIME,
+        INVERTED_TIME,
+        MINIMUM_TIME,
+        MAXIMUM_TIME,
+        DIRECTION,
+        RUNNING;
     }
     public enum Command implements CommandProperty {
-	START,
-	STOP,
-	RESET_TIME;
+        START,
+        STOP,
+        RESET_TIME;
     }
-    
+
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";
 
     public static final String ID_PERIOD = "Period";

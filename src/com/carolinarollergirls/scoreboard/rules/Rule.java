@@ -40,9 +40,9 @@ public enum Rule {
     FO_LIMIT(new IntegerRule("Penalties.NumberToFoulout", "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.", 7));
 
     private Rule(RuleDefinition r) { rule = r; }
-    
+
     public RuleDefinition getRuleDefinition() { return rule; }
     public String toString() {return rule.getName(); }
-    
+
     RuleDefinition rule;
 }

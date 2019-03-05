@@ -5,38 +5,51 @@ import java.util.UUID;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.utils.Comparators;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
-public class PenaltyImpl extends ScoreBoardEventProviderImpl implements Penalty {
+public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> implements Penalty {
     public PenaltyImpl(Skater s, String n) {
-        super(s, Value.ID, Skater.Child.PENALTY, Penalty.class, Value.class);
-        skater = s;
-        set(Value.NUMBER, n);
+        super(s, n, Value.ID, Skater.NChild.PENALTY, Penalty.class, Value.class);
         set(Value.ID, UUID.randomUUID().toString());
-        writeProtectionOverride.put(Value.ID, Flag.FROM_AUTOSAVE);
         set(Value.TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
-        writeProtectionOverride.put(Value.TIME, Flag.FROM_AUTOSAVE);
+        addWriteProtectionOverride(Value.TIME, Flag.FROM_AUTOSAVE);
         addReference(new ElementReference(Value.JAM, Jam.class, Jam.Child.PENALTY));
-        addReference(new IndirectPropertyReference(this, Value.JAM_NUMBER, this, Value.JAM, Jam.Value.NUMBER, true, 0));
-        addReference(new IndirectPropertyReference(this, Value.PERIOD_NUMBER, this, Value.JAM, Jam.Value.PERIOD_NUMBER, true, 0));
+        addReference(new IndirectValueReference(this, Value.JAM_NUMBER, this, Value.JAM, IValue.NUMBER, true, 0));
+        addReference(new IndirectValueReference(this, Value.PERIOD_NUMBER, this, Value.JAM, Jam.Value.PERIOD_NUMBER, true, 0));
     }
     public int getPeriodNumber() { return (Integer)get(Value.PERIOD_NUMBER); }
     public int getJamNumber() { return (Integer)get(Value.JAM_NUMBER); }
     public Jam getJam() { return (Jam)get(Value.JAM); }
     public String getCode() { return (String)get(Value.CODE); }
 
-    public String getProviderId() { return (String)get(Value.NUMBER); }
-
-    protected void valueChanged(PermanentProperty prop, Object value, Object last) {
-        if (prop == Value.NUMBER) {
-            scoreBoardChange(new ScoreBoardEvent(skater, Skater.Child.PENALTY, this, false));
-        } else if (prop == Value.JAM) {
-            skater.sortPenalties();
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == IValue.NEXT && getNumber() == 0) { return null; }
+        if (prop == IValue.PREVIOUS && getNumber() == 1) { return null; }
+        return value;
+    }
+    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.JAM && !Skater.FO_EXP_ID.equals(getProviderId())) {
+            int newPos = getNumber();
+            if (Comparators.JamComparator.compare((Jam)value, (Jam)last) > 0) {
+                Penalty comp = getNext(); 
+                while (Comparators.PenaltyComparator.compare(this, comp) > 0) { // will be false if comp == null
+                    newPos = comp.getNumber();
+                    comp = comp.getNext();
+                }
+            } else {
+                Penalty comp = getPrevious(); 
+                while (comp != null && Comparators.PenaltyComparator.compare(this, comp) < 0) {
+                    newPos = comp.getNumber();
+                    comp = comp.getPrevious();
+                }
+            }
+            moveToNumber(newPos);
+        }
+        if (prop == Value.CODE && value == null) {
+            unlink();
         }
     }
-    
-    protected Skater skater;
 }

@@ -10,7 +10,10 @@
 
 
 $.fx.interval = 33;
-_include("/json", [ "Game.js" ]);
+_include("/json", [ "Game.js", "WS.js" ]);
+
+WS.Connect();
+WS.AutoRegister();
 
 $sb(function() {
 	createScoreTimeTab();
@@ -855,18 +858,15 @@ function createTimeTable() {
 			nameTd.toggleClass("Running", isTrue(value));
 		});
 
-		sbClock.$sb("Number").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("-1").val("-1")
-			.attr("id", "Clock"+clock+"NumberDown").addClass("KeyControl").button()
-			.appendTo(numberTr.children("td:eq(0)").addClass("Down").css("width", "40%"));
-		sbClock.$sb("Number").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: numberTr.children("td:eq(1)")
-			} }).appendTo(numberTr.children("td:eq(1)").addClass("Number").css("width", "20%"));
-		sbClock.$sb("Number").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("+1").val("1")
-			.attr("id", "Clock"+clock+"NumberUp").addClass("KeyControl").button()
-			.appendTo(numberTr.children("td:eq(2)").addClass("Up").css("width", "40%"));
+		sbClock.$sb("Number").$sbControl("<a>").appendTo(numberTr.children("td:eq(1)")
+				.addClass("Number").css("width", "20%"));
+		if (clock == "Period") {
+			var periodDialog = createPeriodDialog();
+			numberTr.children("td:eq(1)").click(function() { periodDialog.dialog("open"); });
+		} else if (clock == "Jam") {
+			var jamDialog = createJamDialog();
+			numberTr.children("td:eq(1)").click(function() { jamDialog.dialog("open"); });			
+		}
 
 		sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
 			.attr("id", "Clock"+clock+"Start").addClass("KeyControl").button()
@@ -890,6 +890,160 @@ function createTimeTable() {
 	});
 
 	return table;
+}
+
+function createPeriodDialog() {
+	var dialog = $("<div>").addClass("NumberDialog");
+	var table = $("<table>").appendTo(dialog);
+	var headers = $("<tr><td/><td/><td/><td/><td/></tr>").appendTo(table);
+	$("<a>").text("Nr").addClass("Title")
+		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+	$("<a>").text("Jams").addClass("Title")
+		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+	$("<a>").text("Duration").addClass("Title")
+		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+
+	var periodRegex = /Period\(([^\)]+)\)\.([^\.]+)/;
+	WS.Register(['ScoreBoard.Period'], function (k, v) {
+		var match = (k || "").match(periodRegex);
+		if (match == null || match.length == 0) { return; }
+		var nr = match[1];
+		if (nr == 0) { return; }
+		var prefix = "ScoreBoard.Period(" + nr + ")";
+		var key = match[2];
+		if (k != prefix + "." + key) { return; }
+		if (!(["CurrentJamNumber", "Duration", "Number", "Running"].includes(key))) { return; }
+
+		var row = table.find("tr.Period[nr="+nr+"]");
+		if (row.length == 0 && v != null) {
+			row = $("<tr>").addClass("Period").attr("nr", nr)
+				.append($('<td>').addClass('Number').text(nr))
+				.append($('<td>').addClass('Jams').text(0))
+				.append($('<td>').addClass('Duration'))
+				.append($('<td>').append($("<button>").text("Delete")
+						.button().click(function () {
+							//TODO: confirmation popup
+							WS.Set(prefix + ".Delete", true);
+						})))
+				.append($('<td>').append($("<button>").text("Insert Before")
+						.button().click(function () {
+							WS.Set(prefix + ".InsertBefore", true); 
+						})));
+			var inserted = false;
+			table.find("tr.Period").each(function (i, r) {
+				r = $(r);
+				if (r.attr("nr") > nr) {
+					r.before(row);
+					inserted = true;
+					return false;
+				}});
+			if (!inserted) {
+				row.appendTo(table);
+			}
+		} else if (key == "Number" && v == null && row.length > 0) {
+			row.remove();
+			return;
+		}
+		if (v != null) {
+			if (key == "CurrentJamNumber") { row.find("td.Jams").text(v); }
+			if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.find("td.Duration").text(_timeConversions.msToMinSec(v)); }
+			if (key == "Running" && isTrue(v)) { row.find("td.Duration").text("running"); }
+			if (key == "Running" && !isTrue(v)) { row.find("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'])); }
+		}
+	});
+
+	return dialog.dialog({
+		title: "Periods",
+		autoOpen: false,
+		modal: true,
+		width: 500,
+		buttons: { Close: function() { $(this).dialog("close"); } }
+	});
+}
+
+function createJamDialog() {
+	var dialog = $("<div>").addClass("NumberDialog");
+	var tableTemplate = $("<table>").addClass("Period");
+	var headers = $("<tr><td/><td/><td/><td/><td/></tr>").appendTo(tableTemplate);
+	$("<a>").text("Nr").addClass("Title")
+		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+	$("<a>").text("Points").addClass("Title")
+		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+	$("<a>").text("Duration").addClass("Title")
+		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+
+	var jamRegex = /Period\(([^\)]+)\)\.Jam\(([^\)]+)\)\.([^\.]+)/;
+	WS.Register(['ScoreBoard.Period'], function (k, v) {
+		var match = (k || "").match(jamRegex);
+		if (match == null || match.length == 0) { return; }
+		var per = match[1];
+		if (per == 0) { return; }
+		var nr = match[2];
+		var prefix = "ScoreBoard.Period(" + per + ").Jam(" + nr + ")";
+		var key = match[3];
+		if (k != prefix + "." + key) { return; }
+		if (!(["JamScore", "Duration", "Number"].includes(key))) { return; }
+		
+		var table = dialog.find("table.Period[nr="+per+"]");
+		if (table.length == 0 && v != null) {
+			table = tableTemplate.clone().attr("nr", per).appendTo(dialog);
+		}
+		if (table.length == 0) { return; }
+
+		var row = table.find("tr.Jam[nr="+nr+"]");
+		if (row.length == 0 && v != null) {
+			row = $("<tr>").addClass("Jam").attr("nr", nr)
+				.append($('<td>').addClass('Number').text(nr))
+				.append($('<td>').addClass('Points').text("-"))
+				.append($('<td>').addClass('Duration'))
+				.append($('<td>').append($("<button>").text("Delete")
+						.button().click(function () {
+							//TODO: confirmation popup
+							WS.Set(prefix + ".Delete", true);
+						})))
+				.append($('<td>').append($("<button>").text("Insert Before")
+						.button().click(function () {
+							WS.Set(prefix + ".InsertBefore", true); 
+						})));
+			var inserted = false;
+			table.find("tr.Jam").each(function (i, r) {
+				r = $(r);
+				if (r.attr("nr") > nr) {
+					r.before(row);
+					inserted = true;
+					return false;
+				}});
+			if (!inserted) {
+				row.appendTo(table);
+			}
+		} else if (key == "Number" && v == null && row.length > 0) {
+			row.remove();
+			return;
+		}
+		if (v != null) {
+			if (key == "JamScore") { row.find("td.Jams").text(v); }
+			if (key == "Duration") {
+				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
+					row.find("td.Duration").text("running");
+				} else {
+					row.find("td.Duration").text(_timeConversions.msToMinSec(v));
+				}
+			}
+		}
+	});
+	
+	WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
+		dialog.find("table.Period.Show").removeClass(".Show");
+		dialog.find("table.Period[nr="+v+"]").addClass(".Show");
+	})
+
+	return dialog.dialog({
+		title: "Jams",
+		autoOpen: false,
+		modal: true,
+		width: 500,
+		buttons: { Close: function() { $(this).dialog("close"); } }
+	});
 }
 
 function createTimeDialog(clock) {

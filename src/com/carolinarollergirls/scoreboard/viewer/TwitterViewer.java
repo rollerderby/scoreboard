@@ -49,7 +49,7 @@ public class TwitterViewer {
             ScoreBoardListener tweetListener = new TweetScoreBoardListener(tweet, exceptionListener);
             ScoreBoardListener asyncListener = new AsyncScoreBoardListener(tweetListener);
             ScoreBoardListener conditionalListener =
-                new FormatSpecifierScoreBoardListener(formatSpecifier, conditionFormat, asyncListener);
+                    new FormatSpecifierScoreBoardListener(formatSpecifier, conditionFormat, asyncListener);
             conditionalListeners.put(key, conditionalListener);
             scoreBoard.addScoreBoardListener(conditionalListener);
         }
@@ -165,10 +165,10 @@ public class TwitterViewer {
 
     private ConfigurationBuilder getConfigurationBuilder() {
         return new ConfigurationBuilder()
-               .setDebugEnabled(false)
-               .setUserStreamRepliesAllEnabled(false)
-               .setOAuthConsumerKey("LcSklLv7gic519YE5ylK1g")
-               .setOAuthConsumerSecret("BXjvuTrbl6rTIgybxqCTIfZS7obv2OdUYiM1n8V3Q");
+                .setDebugEnabled(false)
+                .setUserStreamRepliesAllEnabled(false)
+                .setOAuthConsumerKey("LcSklLv7gic519YE5ylK1g")
+                .setOAuthConsumerSecret("BXjvuTrbl6rTIgybxqCTIfZS7obv2OdUYiM1n8V3Q");
     }
 
     protected TwitterFactory twitterFactory = new TwitterFactory(getConfigurationBuilder().build());

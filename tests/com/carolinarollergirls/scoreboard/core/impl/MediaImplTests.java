@@ -66,7 +66,8 @@ public class MediaImplTests {
     @Test
     public void testFileDeletionManual() throws Exception {
         init.delete();
-        ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
+        ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS); //batch start
+        e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
         assertTrue(e.isRemove());
@@ -76,7 +77,8 @@ public class MediaImplTests {
     @Test
     public void testFileDeletion() throws Exception {
         assertTrue(media.removeMediaFile("images", "teamlogo", "init.png"));
-        ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
+        ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS); //batch start
+        e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
         assertTrue(e.isRemove());

@@ -41,14 +41,14 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
 
     public Document resetDocument() {
         Element root = document.getRootElement();
-	if (Objects.equals(root.getAttributeValue("BATCH_START"), root.getAttributeValue("BATCH_END"))) {
+        if (Objects.equals(root.getAttributeValue("BATCH_START"), root.getAttributeValue("BATCH_END"))) {
             Document oldDoc = document;
             empty = true;
             document = editor.createDocument("ScoreBoard");
             return oldDoc;
-	} else {
-	    return null;
-	}
+        } else {
+            return null;
+        }
     }
 
     private void batchStart() {
@@ -83,27 +83,25 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         } else if (prop instanceof AddRemoveProperty) {
             Element ne;
             if (value instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)value).getParent() == p) {
-        	ne = converter.toElement(e, (ScoreBoardEventProvider)value);
+                ne = converter.toElement(e, (ScoreBoardEventProvider)value, rem);
             } else {
                 ne = editor.setElement(e, prop, ((ValueWithId)value).getId(), ((ValueWithId)value).getValue());
             }
-            if (rem) {
-                editor.setRemovePI(ne);
-            }
+            editor.setRemovePI(ne, rem);
         } else {
             return;
         }
         empty = false;
     }
-    
-    protected Element getElement(ScoreBoardEventProvider p) {
-	if (p.getParent() == null) {
-	    return editor.getElement(document.getRootElement(), p.getProviderName());
-	} else {
-	    return editor.getElement(getElement(p.getParent()), p.getProviderName(), p.getProviderId());
-	}
-    }
 
+    protected Element getElement(ScoreBoardEventProvider p) {
+        if (p.getParent() == null) {
+            return editor.getElement(document.getRootElement(), p.getProviderName());
+        } else {
+            return editor.getElement(getElement(p.getParent()), p.getProviderName(), p.getProviderId());
+        }
+    }
+    
     protected XmlDocumentEditor editor = new XmlDocumentEditor();
     protected ScoreBoardXmlConverter converter = new ScoreBoardXmlConverter();
 

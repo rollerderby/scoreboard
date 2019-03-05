@@ -294,10 +294,10 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
     }
 
     protected List<XPath> transferXPaths = Arrays.asList(new XPath[] {
-                                               editor.createXPath("Transfer/To/*"),
-                                               editor.createXPath("Merge/To/*"),
-                                               editor.createXPath("Transfer/From/*"),
-                                               editor.createXPath("Merge/From/*")
-                                           });
+            editor.createXPath("Transfer/To/*"),
+            editor.createXPath("Merge/To/*"),
+            editor.createXPath("Transfer/From/*"),
+            editor.createXPath("Merge/From/*")
+    });
 }
 

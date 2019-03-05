@@ -88,6 +88,8 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
 
 	#TeamTime tr.Control:not(.Show) { display: none; }
+
+	#TeamTime div.NumberDialog table.Period:not(.Show) { display: none; }
 	
 	#TeamTime .Faded { opacity: 0.2; }
 /* End Team/Time Tab */

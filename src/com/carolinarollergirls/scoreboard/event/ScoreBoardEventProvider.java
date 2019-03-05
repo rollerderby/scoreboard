@@ -41,6 +41,10 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      */
     public ScoreBoardEventProvider getParent();
     /**
+     * remove all references to this element
+     */
+    public void unlink();
+    /**
      * This should return all the enums that contain values, children, or commands
      * that can be accessed from the frintend
      */
@@ -48,13 +52,13 @@ public interface ScoreBoardEventProvider extends ValueWithId {
 
     public void addScoreBoardListener(ScoreBoardListener listener);
     public void removeScoreBoardListener(ScoreBoardListener listener);
-    
+
     /**
      * Will automagically work for Boolean, Integer, and Long if there is a previous
      * value of the correct type. For all other cases this must be implemented in
      * derived classes.
      */
-    public Object valueFromString(PermanentProperty prop, String sValue);
+    public Object valueFromString(PermanentProperty prop, String sValue, Flag flag);
     public Object get(PermanentProperty prop);
     //return value indicates if value was changed
     public boolean set(PermanentProperty prop, Object value);
@@ -64,7 +68,7 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      * value to the previous one. Other flags need to be implemented in overrides.
      */
     public boolean set(PermanentProperty prop, Object value, Flag flag);
-    
+
     /**
      * If create is implemented for the respective type, this function will resort to that,
      * ignoring sValue.
@@ -75,114 +79,41 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      * Will return null if no such child is found
      */
     public ValueWithId get(AddRemoveProperty prop, String id);
-    /*
-     * If no such child is found and add is true, call create(prop, id) to create one.
-     * If creation is not implemented for this type of child or add is false, null is returned.
-     */
-    public ValueWithId get(AddRemoveProperty prop, String id, boolean add);
+    public ValueWithId get(NumberedProperty prop, int num);
+    public ValueWithId getOrCreate(AddRemoveProperty prop, String id);
+    public ValueWithId getOrCreate(NumberedProperty prop, int num);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
     public NumberedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
     public NumberedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
     //returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
-    //returns true, if a value was added
-    public boolean insert(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item);
     //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, String id);
     //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, ValueWithId item);
-    //returns true, if a value was removed
-    public boolean remove(NumberedProperty prop, String id, boolean renumber);
-    //returns true, if a value was removed
-    public boolean remove(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item, boolean renumber);
-    //returns true, if a value was removed
-    public boolean removeSilent(AddRemoveProperty prop, ValueWithId item);
     public void removeAll(AddRemoveProperty prop);
     /**
      * Must call an appropriate constructor for all children that are themselves a
      * ScoreBoardEventProvider and can be created from the frontend or autosave 
      */
     public ValueWithId create(AddRemoveProperty prop, String id);
-    public int getMinNumber(NumberedProperty prop);
-    public int getMaxNumber(NumberedProperty prop);
-    
+    public Integer getMinNumber(NumberedProperty prop);
+    public Integer getMaxNumber(NumberedProperty prop);
+
     /**
      * Defaults to doing nothing. Should be overridden in classes that have
      * frontend commands.
      */
     public void execute(CommandProperty prop);
-    
+
     public ScoreBoard getScoreBoard();
-    
+
     public <T extends ScoreBoardEventProvider> T getElement(Class<T> type, String id);
-    
+
     public enum Flag {
-	CHANGE,
-	RESET,
-	FROM_AUTOSAVE,
-	INTERNAL;
-    }
-    
-    public class PropertyReference {
-	public PropertyReference(ScoreBoardEventProvider sourceElement, PermanentProperty sourceProperty,
-		ScoreBoardEventProvider targetElement, PermanentProperty targetProperty, boolean readonly,
-		Object defaultValue) {
-	    this.sourceElement = sourceElement;
-	    this.sourceProperty = sourceProperty;
-	    this.targetElement = targetElement;
-	    this.targetProperty = targetProperty;
-	    this.readonly = readonly;
-	    this.defaultValue = defaultValue;
-	}
-	
-	public ScoreBoardEventProvider getSourceElement() { return sourceElement; }
-	public PermanentProperty getSourceProperty() { return sourceProperty; }
-	public ScoreBoardEventProvider getTargetElement() { return targetElement; }
-	public PermanentProperty getTargetProperty() { return targetProperty; }
-	public boolean isReadOnly() { return readonly; }
-	public Object getDefaultValue() { return defaultValue; }
-	
-	private ScoreBoardEventProvider sourceElement;
-	private PermanentProperty sourceProperty;
-	private ScoreBoardEventProvider targetElement;
-	private PermanentProperty targetProperty;
-	private boolean readonly;
-	private Object defaultValue;
-    }
-    
-    public class IndirectPropertyReference extends PropertyReference {
-	public IndirectPropertyReference(ScoreBoardEventProvider sourceElement, PermanentProperty sourceProperty,
-		ScoreBoardEventProvider referenceElement, PermanentProperty referenceProperty,
-		PermanentProperty targetProperty, boolean readonly, Object defaultValue) {
-	    super(sourceElement, sourceProperty, null, targetProperty, readonly, defaultValue);
-	    this.referenceElement = referenceElement;
-	    this.referenceProperty = referenceProperty;
-	}
-	
-	public ScoreBoardEventProvider getTargetElement() {
-	    return (ScoreBoardEventProvider)referenceElement.get(referenceProperty);
-	}
-	public ScoreBoardEventProvider getReferenceElement() { return referenceElement; }
-	public PermanentProperty getReferenceProperty() { return referenceProperty; }
-	
-	private ScoreBoardEventProvider referenceElement;
-	private PermanentProperty referenceProperty;
-    }
-    
-    public class ElementReference {
-	public ElementReference(Property localProperty, Class<? extends ScoreBoardEventProvider> remoteClass,
-		Property remoteProperty) {
-	    this.localProperty = localProperty;
-	    this.remoteClass = remoteClass;
-	    this.remoteProperty = remoteProperty;
-	}
-	
-	public Property getLocalProperty() { return localProperty; }
-	public Class<? extends ScoreBoardEventProvider> getRemoteClass() { return remoteClass; }
-	public Property getRemoteProperty() { return remoteProperty; }
-	    
-	private Property localProperty;
-	private Class<? extends ScoreBoardEventProvider> remoteClass;
-	private Property remoteProperty;
+        CHANGE,
+        RESET,
+        FROM_AUTOSAVE,
+        INTERNAL;
     }
 }

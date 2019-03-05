@@ -39,6 +39,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
@@ -117,13 +118,18 @@ public class WS extends WebSocketServlet {
                     } else {
                         v = value.toString();
                     }
-                    ScoreBoardManager.printMessage("Setting " + key + " to " + v);
+                    Flag flag = null;
+                    String f = json.getString("flag");
+                    if ("reset".equals(f)) { flag = Flag.RESET; }
+                    if ("change".equals(f)) { flag = Flag.CHANGE; }
+                    //TODO: remove for release
+                    ScoreBoardManager.printMessage("Setting " + key + " to " + v + (flag == null ? "" : (", Flag: " + flag.name())));
                     Matcher m = pathElementPattern.matcher(key);
                     if (m.matches() && m.group("name").equals("ScoreBoard") &&
-                	    m.group("id") == null && m.group("remainder") != null) {
-                       	set(sb, m.group("remainder"), v);
+                            m.group("id") == null && m.group("remainder") != null) {
+                        set(sb, m.group("remainder"), v, flag);
                     } else {
-                	ScoreBoardManager.printMessage("Illegal path: " + key);
+                        ScoreBoardManager.printMessage("Illegal path: " + key);
                     }
                 } else if (action.equals("Ping")) {
                     send(new JSONObject().put("Pong", ""));
@@ -135,37 +141,38 @@ public class WS extends WebSocketServlet {
                 je.printStackTrace();
             }
         }
-        
-        private void set(ScoreBoardEventProvider p, String path, String value) {
+
+        private void set(ScoreBoardEventProvider p, String path, String value, Flag flag) {
             Matcher m = pathElementPattern.matcher(path);
             if (m.matches()) {
-        	String name = m.group("name");
-        	String id = m.group("id");
-        	String remainder = m.group("remainder");
-        	if (id == null) { id = ""; }
-        	try {
-        	    Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
+                String name = m.group("name");
+                String id = m.group("id");
+                String remainder = m.group("remainder");
+                if (id == null) { id = ""; }
+                try {
+                    Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
+                    if (prop == null) { throw new IllegalArgumentException("Unknown property"); }
 
-        	    if (prop instanceof PermanentProperty) {
-        		p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value));
-        	    } else if (prop instanceof CommandProperty) { 
-        		if (Boolean.parseBoolean(value)) {
-        		    p.execute((CommandProperty)prop);
-        		}
-        	    } else if (remainder != null) {
-        		set((ScoreBoardEventProvider)p.get((AddRemoveProperty)prop, id, true), remainder, value);
-        	    } else if (value == null) {
-        		p.remove((AddRemoveProperty)prop, id);
-        	    } else {
-        		p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, id, value));
-        	    }
-        	} catch (Exception e) {
-        	    ScoreBoardManager.printMessage("Exception parsing JSON for " + p.getProviderName() +
-        		    "(" + p.getProviderId() + ")." + name + "(" + id + ") - " + value + ": " + e.toString());
-        	    e.printStackTrace();
-        	}
+                    if (prop instanceof PermanentProperty) {
+                        p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value, flag), flag);
+                    } else if (prop instanceof CommandProperty) { 
+                        if (Boolean.parseBoolean(value)) {
+                            p.execute((CommandProperty)prop);
+                        }
+                    } else if (remainder != null) {
+                        set((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, id), remainder, value, flag);
+                    } else if (value == null) {
+                        p.remove((AddRemoveProperty)prop, id);
+                    } else {
+                        p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, id, value));
+                    }
+                } catch (Exception e) {
+                    ScoreBoardManager.printMessage("Exception parsing JSON for " + p.getProviderName() +
+                            "(" + p.getProviderId() + ")." + name + "(" + id + ") - " + value + ": " + e.toString());
+                    e.printStackTrace();
+                }
             } else {
-        	ScoreBoardManager.printMessage("Illegal path element: " + path);
+                ScoreBoardManager.printMessage("Illegal path element: " + path);
             }
         }
 

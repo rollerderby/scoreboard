@@ -105,9 +105,9 @@ public class XmlDocumentEditor {
     }
 
     public Element addElement(Element parent, Property prop, String id, String text) {
-	return addElement(parent, PropertyConversion.toFrontend(prop), id, text);
+        return addElement(parent, PropertyConversion.toFrontend(prop), id, text);
     }
-    
+
     public Element addElement(Element parent, String name) {
         return addElement(parent, name, null, null);
     }
@@ -376,6 +376,7 @@ public class XmlDocumentEditor {
      */
     public Element setRemovePI(Element e) { return setPI(e, "Remove"); }
     public boolean hasRemovePI(Element e) { return hasPI(e, "Remove"); }
+    public Element setRemovePI(Element e, boolean status) { return status ? setPI(e, "Remove") : removePI(e, "Remove"); }
     public Element setOncePI(Element e) { return setPI(e, "Once"); }
     public boolean hasOncePI(Element e) { return hasPI(e, "Once"); }
     public Element setNoSavePI(Element e) { return setPI(e, "NoSave"); }

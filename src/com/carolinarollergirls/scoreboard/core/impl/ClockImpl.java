@@ -26,14 +26,14 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public ClockImpl(ScoreBoard sb, String i) {
-	super (sb, Value.ID, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
+        super (sb, Value.ID, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
         set(Value.ID, i);
         //initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
-            addReference(new PropertyReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD_NUMBER, false, 0));
+            addReference(new ValueReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD_NUMBER, true, 0));
         } else if (i == ID_JAM) {
-            addReference(new IndirectPropertyReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD,
-        	    Period.Value.CURRENT_JAM_NUMBER, false, 0));
+            addReference(new IndirectValueReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD,
+                    Period.Value.CURRENT_JAM_NUMBER, true, 0));
         } else {
             values.put(Value.NUMBER, 0);
         }
@@ -41,88 +41,87 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         values.put(Value.MAXIMUM_TIME, 0L);
         values.put(Value.TIME, 0L);
         values.put(Value.INVERTED_TIME, 0L);
-        writeProtectionOverride.put(Value.INVERTED_TIME, Flag.INTERNAL);
         values.put(Value.MINIMUM_NUMBER, 0);
         values.put(Value.MAXIMUM_NUMBER, 0);
-        values.put(Value.DIRECTION, Boolean.FALSE);
-        values.put(Value.RUNNING, Boolean.FALSE);
+        values.put(Value.DIRECTION, false);
+        values.put(Value.RUNNING, false);
+        addReference(new UpdateReference(this, Value.NUMBER, this, Value.MAXIMUM_NUMBER));
+        addReference(new UpdateReference(this, Value.NUMBER, this, Value.MINIMUM_NUMBER));
+        addReference(new UpdateReference(this, Value.MAXIMUM_NUMBER, this, Value.MINIMUM_NUMBER));
+        addReference(new UpdateReference(this, Value.TIME, this, Value.MAXIMUM_TIME));
+        addReference(new UpdateReference(this, Value.TIME, this, Value.MINIMUM_TIME));
+        addReference(new UpdateReference(this, Value.MAXIMUM_TIME, this, Value.MINIMUM_TIME));
+        addReference(new UpdateReference(this, Value.INVERTED_TIME, this, Value.MAXIMUM_TIME));
+        addReference(new UpdateReference(this, Value.INVERTED_TIME, this, Value.TIME));
+        addWriteProtectionOverride(Value.INVERTED_TIME, Flag.INTERNAL);
 
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET_ID, rulesetChangeListener));
     }
 
-    public boolean set(PermanentProperty prop, Object value, Flag flag) {
-	synchronized (coreLock) {
-	    if (flag == Flag.RESET && prop == Value.TIME) { return resetTime(); }
-	    if (prop == Value.TIME && isRunning() && isSyncTime() && flag != Flag.INTERNAL) {
-		value = (((Long)value / 1000L) * 1000L) + (flag == Flag.CHANGE ? 0L : (getTime() % 1000L));
-	    }
-	    Number min = null;
-	    if (prop == Value.MAXIMUM_NUMBER || prop == Value.NUMBER) { min = getMinimumNumber(); }
-	    if (prop == Value.MAXIMUM_TIME || prop == Value.TIME) { min = getMinimumTime(); }
-	    Number max = null;
-	    if (prop == Value.NUMBER) { max = getMaximumNumber(); }
-	    if (prop == Value.TIME) { max =  getMaximumTime(); }
-	    long tolerance = (prop == Value.TIME)? 500 : 0;
-	    boolean result = set(prop, value, flag, min, max, tolerance);
-	    if (result && prop == Value.RUNNING) {
-		if ((Boolean)value) {
-		    updateClockTimerTask.addClock(this, flag == Flag.INTERNAL);
-		} else {
-		    updateClockTimerTask.removeClock(this);
-		}
-	    }
-	    return result;
-	}
-    }
-    protected void valueChanged(PermanentProperty prop, Object value, Object last) {
-	switch ((Value)prop) {
-	case MINIMUM_NUMBER:
-	    setMaximumNumber(getMaximumNumber()); //will check for max < min
-	    //$FALL-THROUGH$
-	case MAXIMUM_NUMBER:
-	    setNumber(getNumber()); //will check range
-	    break;
-	case TIME:
-            set(Value.INVERTED_TIME, getMaximumTime() - getTime(), Flag.INTERNAL);
-            if(isTimeAtEnd()) {
-                stop();
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.TIME) {
+            if (isRunning() && isSyncTime()) {
+                if (flag == Flag.CHANGE) {
+                    value = (Long)last + ((((Long)value - (Long)last) / 1000L) * 1000L);
+                }
+                else if (flag != Flag.INTERNAL) {
+                    value = (((Long)value / 1000L) * 1000L) + (Long)last % 1000L;
+                }
             }
-	    break;
-	case MINIMUM_TIME:
-	    setMaximumTime(getMaximumTime()); // will check for max < min
-	    setTime(getTime()); // will check range
-	    break;
-	case MAXIMUM_TIME:
-	    if (isCountDirectionDown()) {
-		changeTime((Long)value - (Long)last);
-	    } else {
-		setTime(getTime()); // will check range
-	    }
-	    set(Value.INVERTED_TIME, getMaximumTime() - getTime(), Flag.INTERNAL);
-	    break;
-	case DIRECTION:
-	    setTime(getInvertedTime());
-	    break;
-	default:
-	    break;
-	}
+            if ((flag == Flag.RESET && isCountDirectionDown()) || (Long)value > getMaximumTime() + 500) {
+                return getMaximumTime();
+            }
+            if ((flag == Flag.RESET && !isCountDirectionDown()) || (Long)value < getMinimumTime() - 500) {
+                return getMinimumTime();
+            }
+        }
+        if (prop == Value.INVERTED_TIME) {
+            return getMaximumTime() - getTime();
+        }
+        if (prop == Value.MAXIMUM_TIME && (Long)value < getMinimumTime()) {
+            return getMinimumTime();
+        }
+        if ((prop == Value.MAXIMUM_NUMBER || prop == Value.NUMBER) && (Integer)value < getMinimumNumber()) {
+            return getMinimumNumber();
+        }
+        if (prop == Value.NUMBER && (Integer)value > getMaximumNumber()) {
+            return getMaximumNumber();
+        }
+        return value;
     }
-    
-    
+    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.TIME && isTimeAtEnd()) {
+            stop();
+        }
+        if (prop == Value.MAXIMUM_TIME && isCountDirectionDown()) {
+            changeTime((Long)value - (Long)last);
+        }
+        if (prop == Value.DIRECTION) {
+            setTime(getInvertedTime());
+        }
+        if (prop == Value.RUNNING) {
+            if ((Boolean)value) {
+                updateClockTimerTask.addClock(this, flag == Flag.INTERNAL);
+            } else {
+                updateClockTimerTask.removeClock(this);
+            }
+        }
+    }
+
     public void execute(CommandProperty prop) {
-	switch((Command)prop) {
-	case RESET_TIME:
-	    resetTime();
-	    break;
-	case START:
-	    start();
-	    break;
-	case STOP:
-	    stop();
-	    break;
-	}
+        switch((Command)prop) {
+        case RESET_TIME:
+            resetTime();
+            break;
+        case START:
+            start();
+            break;
+        case STOP:
+            stop();
+            break;
+        }
     }
-    
+
     public void reset() {
         synchronized (coreLock) {
             stop();
@@ -215,15 +214,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             changeTime(isCountDirectionDown()?-change:change);
         }
     }
-    public boolean resetTime() {
-        synchronized (coreLock) {
-            if (isCountDirectionDown()) {
-                return set(Value.TIME, getMaximumTime());
-            } else {
-                return set(Value.TIME, getMinimumTime());
-            }
-        }
-    }
+    public boolean resetTime() { return set(Value.TIME, getTime(), Flag.RESET); }
     protected boolean isDisplayChange(long current, long last) {
         //the frontend rounds values that are not full seconds to the earlier second
         //i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count down clock.

@@ -25,13 +25,13 @@ public class PenaltyCode implements ValueWithId {
     }
 
     public String getId() {
-	return code;
+        return code;
     }
-    
+
     public String getValue() {
-	return cuesForWS();
+        return cuesForWS();
     }
-    
+
     public String getCode() {
         return code;
     }

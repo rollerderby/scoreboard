@@ -14,7 +14,6 @@ import java.util.UUID;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
@@ -24,64 +23,54 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
-	super(s, null, ScoreBoard.Child.RULESETS, Rulesets.class, Value.class, Child.class);
+        super(s, null, ScoreBoard.Child.RULESETS, Rulesets.class, Value.class, Child.class);
         initialize();
+        addWriteProtection(Child.RULE_DEFINITION);
         reset();
     }
 
     public ValueWithId create(AddRemoveProperty prop, String id) {
-	synchronized (coreLock) {
-	    if (prop == Child.RULESET) {
-		return new RulesetImpl(this, "", "", id);
-	    }
-	    return null;
-	}
+        if (prop == Child.RULESET) {
+            return new RulesetImpl(this, "", "", id);
+        }
+        return null;
     }
     public boolean add(AddRemoveProperty prop, ValueWithId item) {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    if (!(prop instanceof Child) || prop == Child.RULE_DEFINITION) { return false; }
-	    if (prop == Child.RULESET && item.getId().equals(ROOT_ID)) { return false; }
-	    if (prop == Child.CURRENT_RULE && 
-		    !getRuleDefinition(item.getId()).isValueValid(item.getValue())) {
-		return false;
-	    }
-	    boolean result = super.add(prop, item);
-	    requestBatchEnd();
-	    return result;
-	}
+        if (prop == Child.RULESET && item.getId().equals(ROOT_ID)) { return false; }
+        if (prop == Child.CURRENT_RULE && 
+                !getRuleDefinition(item.getId()).isValueValid(item.getValue())) {
+            return false;
+        }
+        return super.add(prop, item);
     }
     public boolean remove(AddRemoveProperty prop, ValueWithId item) {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    if (!(prop instanceof Child) || prop == Child.RULE_DEFINITION) { return false; }
-	    if (prop == Child.RULESET && item.getId().equals(ROOT_ID)) { return false; }
-	    ValueWithId last = get(prop, item.getId());
-	    boolean result = super.remove(prop, item);
-	    if (result && prop == Child.RULESET) {
-		// Point any rulesets with the deleted one as their parent
-		// to their grandparent.
-                String parentId = ((Ruleset)last).getParentRulesetId();
-                for (ValueWithId rm : getAll(Child.RULESET)) {
-                    if (last.getId().equals(((Ruleset)rm).getParentRulesetId())) {
-                        ((Ruleset)rm).setParentRulesetId(parentId);
-                    }
+        if (prop == Child.RULESET && item.getId().equals(ROOT_ID)) { return false; }
+        if (prop == Child.CURRENT_RULE) { return false; }
+        return super.remove(prop, item);
+    }
+    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == Child.RULESET) {
+            // Point any rulesets with the deleted one as their parent
+            // to their grandparent.
+            String parentId = ((Ruleset)item).getParentRulesetId();
+            for (ValueWithId rm : getAll(Child.RULESET)) {
+                if (item.getId().equals(((Ruleset)rm).getParentRulesetId())) {
+                    ((Ruleset)rm).setParentRulesetId(parentId);
                 }
             }
-	    requestBatchEnd();
-	    return result;
-	}
+        }
     }
 
     private void initialize() {
-	Ruleset root = new RulesetImpl(this, "WFTDA Sanctioned", null, ROOT_ID);
-	children.get(Child.RULESET).put(ROOT_ID, root);
+        RulesetImpl root = new RulesetImpl(this, "WFTDA Sanctioned", null, ROOT_ID);
         for (Rule r : Rule.values()) {
             r.getRuleDefinition().setParent(this);
             r.getRuleDefinition().setIndex(r.ordinal());
-            children.get(Child.RULE_DEFINITION).put(r.toString(), r.getRuleDefinition());
+            add(Child.RULE_DEFINITION, r.getRuleDefinition());
             root.add(Ruleset.Child.RULE, new ValWithId(r.toString(), r.getRuleDefinition().getDefaultValue()));
         }
+        root.addWriteProtection(Ruleset.Child.RULE);
+        super.add(Child.RULESET, root);
     }
 
     public void reset() {
@@ -94,26 +83,25 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     public String getCurrentRulesetName() { return (String)get(Value.CURRENT_RULESET_NAME); }
     public void setCurrentRuleset(String id) {
         synchronized (coreLock) {
+            requestBatchStart();
             Ruleset rs = getRuleset(id);
             setCurrentRulesetRecurse(id);
             set(Value.CURRENT_RULESET_ID, rs.getId());
             set(Value.CURRENT_RULESET_NAME, rs.getName());
-            for (ValueWithId r : getAll(Child.CURRENT_RULE)) {
-        	scoreBoardChange(new ScoreBoardEvent(this, Child.CURRENT_RULE, r, false));
-            }
+            requestBatchEnd();
         }
     }
 
     private void setCurrentRulesetRecurse(String id) {
-	Ruleset rs = getRuleset(id);
+        Ruleset rs = getRuleset(id);
         if (!rs.getId().equals(ROOT_ID)) {
             setCurrentRulesetRecurse(rs.getParentRulesetId());
         }
         for (ValueWithId r : rs.getAll(Ruleset.Child.RULE)) {
-            children.get(Child.CURRENT_RULE).put(r.getId(), r);
+            add(Child.CURRENT_RULE, r);
         }
     }
-    
+
     public String get(Rule k) { return get(Child.CURRENT_RULE, k.toString()).getValue(); }
     public boolean getBoolean(Rule k) { return Boolean.parseBoolean(get(k)); }
     public int getInt(Rule k) { return Integer.parseInt(get(k)); }
@@ -121,9 +109,9 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         synchronized (coreLock) {
             switch (k.getRuleDefinition().getType()) {
             case TIME:
-        	return ClockConversion.fromHumanReadable(get(k));
+                return ClockConversion.fromHumanReadable(get(k));
             default:
-        	return Long.parseLong(get(k));
+                return Long.parseLong(get(k));
             }
         }
     }
@@ -136,7 +124,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
             add(Child.CURRENT_RULE, new ValWithId(k.toString(), v));
         }
     }
-    
+
     public RuleDefinition getRuleDefinition(String k) { return (RuleDefinition)get(Child.RULE_DEFINITION, k); }
 
     public Ruleset getRuleset(String id) {
@@ -169,24 +157,10 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
             set(Value.NAME, name);
             set(Value.PARENT_ID, parentId);
             if (ROOT_ID.equals(id)) {
-        	for (Value prop : Value.values()) {
-        	    writeProtectionOverride.put(prop, null);
-        	}
+                for (Value prop : Value.values()) {
+                    addWriteProtection(prop);
+                }
             }
-        }
-
-        public boolean add(AddRemoveProperty prop, ValueWithId item) {
-            synchronized (coreLock) {
-		if (prop == Child.RULE && getId().equals(ROOT_ID) && get(Child.RULE, item.getId()) != null) { return false; }
-		return super.add(prop, item);
-	    }
-        }
-        
-        public boolean remove(AddRemoveProperty prop, ValueWithId item) {
-            synchronized (coreLock) {
-		if (prop == Child.RULE && getId().equals(ROOT_ID)) { return false; }
-		return super.remove(prop, item);
-	    }
         }
 
         public String get(Rule r) { return get(Child.RULE, r.toString()).getValue(); }
@@ -198,12 +172,12 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
 
         public void setAll(Collection<ValueWithId> s) {
             synchronized (coreLock) {
-        	requestBatchStart();
-        	removeAll(Child.RULE);
-        	for (ValueWithId r : s) {
-        	    add(Child.RULE, r);
-        	}
-        	requestBatchEnd();
+                requestBatchStart();
+                removeAll(Child.RULE);
+                for (ValueWithId r : s) {
+                    add(Child.RULE, r);
+                }
+                requestBatchEnd();
             }
         }
     }

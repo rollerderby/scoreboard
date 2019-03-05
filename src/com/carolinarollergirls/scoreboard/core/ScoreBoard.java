@@ -19,7 +19,7 @@ import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 public interface ScoreBoard extends ScoreBoardEventProvider {
     /** Reset the ScoreBoard. */
     public void reset();
-    
+
     /** Update state after restoring from autosave */
     public void postAutosaveUpdate();
 
@@ -53,12 +53,15 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
      */
     public boolean isInPeriod();
     public void setInPeriod(boolean inPeriod);
-    public Period getPeriod(int p);
+    public Period getOrCreatePeriod(int p);
     public Period getCurrentPeriod();
     public int getCurrentPeriodNumber();
 
     public boolean isInJam();
+    public Jam getUpcomingJam();
     
+    public void updateTeamJams();
+
     /**
      * If this bout is in Overtime.
      */
@@ -80,7 +83,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public void clockUndo(boolean replace);
 
-// FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
+    // FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
     public Clock getClock(String id);
 
     public Team getTeam(String id);
@@ -96,37 +99,38 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public Media getMedia();
 
     public XmlScoreBoard getXmlScoreBoard();
-    
+
     public enum Value implements PermanentProperty {
-	CURRENT_PERIOD_NUMBER,
-	CURRENT_PERIOD,
-	IN_PERIOD,
-	IN_JAM,
-	IN_OVERTIME,
-	OFFICIAL_SCORE,
-	TIMEOUT_OWNER,
-	OFFICIAL_REVIEW;
+        CURRENT_PERIOD_NUMBER,
+        CURRENT_PERIOD,
+        UPCOMING_JAM,
+        IN_PERIOD,
+        IN_JAM,
+        IN_OVERTIME,
+        OFFICIAL_SCORE,
+        TIMEOUT_OWNER,
+        OFFICIAL_REVIEW;
     }
     public enum Child implements AddRemoveProperty {
-	SETTINGS,
-	RULESETS,
-	PENALTY_CODES,
-	MEDIA,
-	CLOCK,
-	TEAM;
+        SETTINGS,
+        RULESETS,
+        PENALTY_CODES,
+        MEDIA,
+        CLOCK,
+        TEAM,
     }
     public enum NChild implements NumberedProperty {
-	PERIOD;
+        PERIOD;
     }
     public enum Command implements CommandProperty {
-	RESET,
-	START_JAM,
-	STOP_JAM,
-	TIMEOUT,
-	CLOCK_UNDO,
-	CLOCK_REPLACE,
-	START_OVERTIME,
-	OFFICIAL_TIMEOUT;
+        RESET,
+        START_JAM,
+        STOP_JAM,
+        TIMEOUT,
+        CLOCK_UNDO,
+        CLOCK_REPLACE,
+        START_OVERTIME,
+        OFFICIAL_TIMEOUT;
     }
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";

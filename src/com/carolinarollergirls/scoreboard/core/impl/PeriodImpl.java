@@ -3,10 +3,9 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -14,136 +13,121 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
     public PeriodImpl(ScoreBoard s, String p) {
-	super(s, Value.NUMBER, Value.NUMBER, ScoreBoard.NChild.PERIOD, Period.class, p, Value.class, NChild.class);
-	values.put(Value.CURRENT_JAM_NUMBER, 0);
-        values.put(Value.RUNNING, false);
-        values.put(Value.DURATION, 0L);
-        writeProtectionOverride.put(Value.DURATION, Flag.INTERNAL);
-        values.put(Value.WALLTIME_START, 0L);
-        values.put(Value.WALLTIME_END, 0L);
+        super(s, p, IValue.NUMBER, ScoreBoard.NChild.PERIOD, Period.class, Value.class, NChild.class, Command.class);
+        addReference(new IndirectValueReference(this, Value.CURRENT_JAM_NUMBER, this, Value.CURRENT_JAM, IValue.NUMBER, true, 0));
+        if (hasPrevious()) {
+            set(Value.CURRENT_JAM, getPrevious().get(Value.CURRENT_JAM));
+        } else {
+            set(Value.CURRENT_JAM, getOrCreate(NChild.JAM, "0"));
+        }
+        addReference(new ElementReference(Value.CURRENT_JAM, Jam.class, null));
+        set(Value.WALLTIME_END, 0L);
+        set(Value.WALLTIME_START, 0L);
+        set(Value.RUNNING, false, Flag.FROM_AUTOSAVE);
+        addReference(new UpdateReference(this, Value.DURATION, this, Value.WALLTIME_END));
+        addReference(new UpdateReference(this, Value.DURATION, this, Value.WALLTIME_START));
     }
 
-    public Object get(PermanentProperty prop) {
-	synchronized (coreLock) {
-	    Object result = super.get(prop);
-	    if (prop == Value.CURRENT_JAM_NUMBER && (Integer)result == 0 &&
-		    getNumber() > 0 && !scoreBoard.getRulesets().getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
-		result = getPrevious().getLast(NChild.JAM).getNumber();
-	    }
-	    return result;
-	}
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.DURATION) {
+            if (getWalltimeEnd() == 0L) { return 0L; }
+            else { return getWalltimeEnd() - getWalltimeStart(); }
+        }
+        return value;
     }
-    protected void valueChanged(PermanentProperty prop, Object value, Object last) {
-	if (prop == Value.RUNNING) {
-	    if (!(Boolean)value) {
-		set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
-	    } else if ((Long)get(Value.WALLTIME_START) == 0L) {
-		set(Value.WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
-	    } else {
-		set(Value.DURATION, 0L, Flag.INTERNAL);
-	    }
-	} else if (prop == Value.WALLTIME_END ||
-		(prop == Value.WALLTIME_START && (Long)get(Value.WALLTIME_END) != 0L)) {
-	    set(Value.DURATION, (Long)get(Value.WALLTIME_END) - (Long)get(Value.WALLTIME_START), Flag.INTERNAL);
-	}
-    }
-   
-    public boolean insert(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item) {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    boolean result = super.add(prop, item);
-	    if (result && prop == NChild.JAM && item.getNumber() <= getCurrentJamNumber()) {
-		set(Value.CURRENT_JAM_NUMBER, 1, Flag.CHANGE);
-	    }
-	    requestBatchEnd();
-	    return result;
-	}
-    }
-    public boolean remove(NumberedProperty prop, NumberedScoreBoardEventProvider<?> item, boolean renumber) {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    boolean result = super.remove(prop, item, renumber);
-	    if (result && prop == NChild.JAM && renumber && item.getNumber() < getCurrentJamNumber()) {
-		set(Value.CURRENT_JAM_NUMBER, -1, Flag.CHANGE);
-	    }
-	    requestBatchEnd();
-	    return result;
-	}
-    }
-    public ValueWithId create(AddRemoveProperty prop, String id) {
-	synchronized (coreLock) {
-	    int num = Integer.parseInt(id);
-	    if (prop == NChild.JAM && (num > 0 || (num == 0 && getNumber() == 0))) {
-		return new JamImpl(this, id);
-	    }
-	    return null;
-	}
-    }
-    
-    public PeriodSnapshot snapshot() {
-	synchronized (coreLock) {
-	    return new PeriodSnapshotImpl(this);
-	}
-    }
-    public void restoreSnapshot(PeriodSnapshot s) {
-	synchronized (coreLock) {
-            if (s.getId() != getId()) {	return; }
-            set(Value.CURRENT_JAM_NUMBER, s.getCurrentJamNumber());
-	}
-    }
-    
-    public void truncateAfterCurrentJam() {
-        synchronized (coreLock) {
-            requestBatchStart();
-            Jam j = getCurrentJam().getNext(false, true);
-            while (j != null) {
-        	remove(NChild.JAM, j);
-        	j = j.getNext(false, true);
+    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.RUNNING && flag != Flag.FROM_AUTOSAVE) {
+            if (!(Boolean)value) {
+                set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
+            } else {
+                set(Value.WALLTIME_END, 0L);
+                if ((Long)get(Value.WALLTIME_START) == 0L) {
+                    set(Value.WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
+                }
             }
-            requestBatchEnd();
+        } else if (prop == Value.CURRENT_JAM && hasNext() && getNext().get(Value.CURRENT_JAM) == last) {
+            getNext().set(Value.CURRENT_JAM, value);
+        } else if (prop == IValue.NUMBER) {
+            writeProtectionOverride.remove(prop);
+        }
+    }
+
+    public ValueWithId create(AddRemoveProperty prop, String id) {
+        synchronized (coreLock) {
+            int num = Integer.parseInt(id);
+            if (prop == NChild.JAM && (num > 0 || (num == 0 && getNumber() == 0))) {
+                return new JamImpl(this, id);
+            }
+            return null;
         }
     }
     
+    public void execute(CommandProperty prop) {
+        synchronized (coreLock) {
+            switch((Command)prop) {
+            case DELETE:
+                if (!isRunning()) {
+                    unlink();
+                }
+                break;
+            case INSERT_BEFORE:
+                if (scoreBoard.getCurrentPeriodNumber() < scoreBoard.getRulesets().getInt(Rule.NUMBER_PERIODS))
+                    scoreBoard.add(ownType, new PeriodImpl(scoreBoard, getProviderId()));
+                break;
+            }
+        }
+    }
+
+    public PeriodSnapshot snapshot() {
+        synchronized (coreLock) {
+            return new PeriodSnapshotImpl(this);
+        }
+    }
+    public void restoreSnapshot(PeriodSnapshot s) {
+        synchronized (coreLock) {
+            if (s.getId() != getId()) {	return; }
+            set(Value.CURRENT_JAM, s.getCurrentJam());
+        }
+    }
+
     public boolean isRunning() { return (Boolean)get(Value.RUNNING); }
 
-    public Jam getJam(int j) { return (Jam)get(NChild.JAM, String.valueOf(j), true); }
-    public Jam getCurrentJam() {
-	if (getNumber() > 0 && (Integer)super.get(Value.CURRENT_JAM_NUMBER) == 0) {
-	    return (Jam)getPrevious().getLast(NChild.JAM);
-	} else {
-	    return getJam(getCurrentJamNumber());
-	}	    
-    }
+    public Jam getJam(int j) { return (Jam)get(NChild.JAM, j); }
+    public Jam getCurrentJam() { return (Jam)get(Value.CURRENT_JAM); }
     public int getCurrentJamNumber() { return (Integer)get(Value.CURRENT_JAM_NUMBER); }
+    
 
     public void startJam() {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    set(Value.RUNNING, true);
-	    set(Value.CURRENT_JAM_NUMBER, 1, Flag.CHANGE);
-	    getCurrentJam().start();
-	    getCurrentJam().getNext(true, false);
-	    requestBatchEnd();
-	}
+        synchronized (coreLock) {
+            requestBatchStart();
+            set(Value.RUNNING, true);
+            set(Value.CURRENT_JAM, getCurrentJam().getNext());
+            getCurrentJam().start();
+            requestBatchEnd();
+        }
     }
     public void stopJam() {
-	synchronized (coreLock) {
-	    requestBatchStart();
-	    getCurrentJam().stop();
-	    requestBatchEnd();
-	}
+        synchronized (coreLock) {
+            requestBatchStart();
+            getCurrentJam().stop();
+            requestBatchEnd();
+        }
     }
+
+    public long getDuration() { return (Long)get(Value.DURATION); }
+    public long getWalltimeStart() { return (Long)get(Value.WALLTIME_START); }
+    public long getWalltimeEnd() { return (Long)get(Value.WALLTIME_END); }
 
     public static class PeriodSnapshotImpl implements PeriodSnapshot {
         private PeriodSnapshotImpl(Period period) {
             id = period.getId();
-            currentJamNumber = period.getCurrentJamNumber();
+            currentJam = period.getCurrentJam();
         }
-        
+
         public String getId() { return id; }
-        public int getCurrentJamNumber() { return currentJamNumber; }
-        
+        public Jam getCurrentJam() { return currentJam; }
+
         private String id;
-        private int currentJamNumber;
+        private Jam currentJam;
     }
 }

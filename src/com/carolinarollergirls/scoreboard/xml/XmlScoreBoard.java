@@ -32,11 +32,14 @@ public class XmlScoreBoard {
         scoreBoardXmlListener = new ScoreBoardXmlListener(sb) {
             public void scoreBoardChange(ScoreBoardEvent sbE) {
                 super.scoreBoardChange(sbE);
-                mergeSbExecutor.submit(new Runnable() {
-                    public void run() {
-                	XmlScoreBoard.this.xmlChange(resetDocument());
-                    }
-                });
+                final Document d = resetDocument();
+                if (d != null) {
+                    mergeSbExecutor.submit(new Runnable() {
+                        public void run() {
+                            XmlScoreBoard.this.xmlChange(d);
+                        }
+                    });
+                }
             }
         };
         xmlChange(converter.toDocument(scoreBoard));
@@ -78,7 +81,7 @@ public class XmlScoreBoard {
                 scoreBoard.reset();
                 managers.reset();
             } else {
-//FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
+                //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
                 final XmlDocumentManager xdM = exclusiveDocumentManager;
                 exclusiveExecutor.submit(new Runnable() { public void run() { xdM.reset(); } });
             }
@@ -111,11 +114,11 @@ public class XmlScoreBoard {
     public void mergeDocument(Document doc, boolean load) {
         synchronized (managerLock) {
             if (null == exclusiveDocumentManager) {
-//FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
+                //FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
                 converter.processDocument(scoreBoard, doc, load);
                 managers.processDocument(doc);
             } else {
-//FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
+                //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
                 final XmlDocumentManager xdM = exclusiveDocumentManager;
                 final Document d = doc;
                 exclusiveExecutor.submit(new Runnable() { public void run() { xdM.processDocument(d); } });
@@ -142,7 +145,7 @@ public class XmlScoreBoard {
      * from a XmlDocumentManager.
      */
     public void xmlChange(Document d) {
-	if (d == null) { return; }
+        if (d == null) { return; }
         synchronized (managerLock) {
             if (null != exclusiveDocumentManager) {
                 /* Ignore updates not from the "exclusive" document manager */
@@ -253,7 +256,7 @@ public class XmlScoreBoard {
     }
 
     protected void loadXmlDocumentManagers() {
-//FIXME - this isn't the right way to do this!	use properties file, or xml maybe?
+        //FIXME - this isn't the right way to do this!	use properties file, or xml maybe?
         new LoadScoreBoard().setXmlScoreBoard(this);
         new SaveScoreBoardStream().setXmlScoreBoard(this);
         new LoadScoreBoardStream().setXmlScoreBoard(this);

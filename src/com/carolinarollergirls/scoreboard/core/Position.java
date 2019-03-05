@@ -13,6 +13,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Position extends ScoreBoardEventProvider {
+    public void reset();
     public void updateCurrentFielding();
 
     public Team getTeam();
@@ -25,15 +26,15 @@ public interface Position extends ScoreBoardEventProvider {
     public void setPenaltyBox(boolean box);
 
     public enum Value implements PermanentProperty {
-	ID,
-	CURRENT_FIELDING,
-	SKATER,
-	NAME,
-	NUMBER,
-	FLAGS,
-	PENALTY_BOX;
+        ID,
+        CURRENT_FIELDING,
+        SKATER,
+        NAME,
+        NUMBER,
+        FLAGS,
+        PENALTY_BOX;
     }
     public enum Command implements CommandProperty {
-	CLEAR;
+        CLEAR;
     }
 }

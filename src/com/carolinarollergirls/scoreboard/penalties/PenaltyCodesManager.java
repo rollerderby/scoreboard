@@ -19,35 +19,35 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
-    
+
     public PenaltyCodesManager(ScoreBoard parent) {
-	super(parent, null, ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
-	this.parent = parent;
-	definitions = loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE));
+        super(parent, null, ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
+        this.parent = parent;
+        definitions = loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE));
         parent.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Child.CURRENT_RULE, rulesetChangeListener));
     }
 
-    public ValueWithId get(AddRemoveProperty prop, String id, boolean add) {
-	for (PenaltyCode c : getDefinitions()) {
-	    if (c.getId().equals(id)) { return c; }
-	}
-	return null;
+    public ValueWithId _get(AddRemoveProperty prop, String id, boolean add) {
+        for (PenaltyCode c : getDefinitions()) {
+            if (c.getId().equals(id)) { return c; }
+        }
+        return null;
     }
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) { return getDefinitions(); }
     public boolean add(AddRemoveProperty prop, ValueWithId item) { return false; }
     public boolean remove(AddRemoveProperty prop, ValueWithId item) { return false; }
 
     public List<PenaltyCode> getDefinitions() {
-	return definitions.getPenalties();
+        return definitions.getPenalties();
     }
     public void setDefinitions(PenaltyCodesDefinition def) {
-	definitions = def;
-	definitions.add(new PenaltyCode("?", "Unknown"));
+        definitions = def;
+        definitions.add(new PenaltyCode("?", "Unknown"));
         for (PenaltyCode p : getDefinitions()) {
             scoreBoardChange(new ScoreBoardEvent(this, Child.CODE, p, false));
         }
     }
-    
+
     public PenaltyCodesDefinition loadFromJSON(String file) {
         File folder = ScoreBoardManager.getDefaultPath();
         File penaltyFile = new File(folder,file);
@@ -57,14 +57,14 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
             throw new RuntimeException("Failed to load Penalty Data from file", e);
         }
     }
-    
+
     private PenaltyCodesDefinition definitions;
 
     protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
         public void scoreBoardChange(ScoreBoardEvent event) {
             ValueWithId v = (ValueWithId)event.getValue();
             if (v.getId() == Rule.PENALTIES_FILE.toString()) {
-        	setDefinitions(loadFromJSON(v.getValue()));
+                setDefinitions(loadFromJSON(v.getValue()));
             }
         }
     };
