@@ -48,11 +48,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public void updateTeamJams();
 
     public int getScore();
-    public void setScore(int score);
-    public void changeScore(int change);
-    public int getLastScore();
-    public void setLastScore(int score);
-    public void changeLastScore(int change);
+
+    public ScoringTrip getCurrentTrip();
 
     public int getTimeouts();
     public void setTimeouts(int timeouts);
@@ -76,19 +73,17 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public void field(Skater s, Role r);
 
-    public String getLeadJammer();
-    public void setLeadJammer(String lead);
+    public boolean isLost();
+    public boolean isLead();
+    public boolean isCalloff();
+    public boolean isInjury();
+    public boolean isDisplayLead();
     public boolean isStarPass();
-    public void setStarPass(boolean starPass);
     public boolean hasNoPivot();
 
 
     public static final String ID_1 = "1";
     public static final String ID_2 = "2";
-
-    public static final String LEAD_LEAD = "Lead";
-    public static final String LEAD_NO_LEAD = "NoLead";
-    public static final String LEAD_LOST_LEAD = "LostLead";
 
     public enum Value implements PermanentProperty {
         ID,
@@ -97,8 +92,10 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         RUNNING_OR_UPCOMING_TEAM_JAM,
         RUNNING_OR_ENDED_TEAM_JAM,
         LAST_ENDED_TEAM_JAM,
+        CURRENT_TRIP,
         SCORE,
         JAM_SCORE,
+        TRIP_SCORE,
         LAST_SCORE,
         TIMEOUTS,
         OFFICIAL_REVIEWS,
@@ -106,18 +103,26 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         IN_OFFICIAL_REVIEW,
         NO_PIVOT,
         RETAINED_OFFICIAL_REVIEW,
-        LEAD_JAMMER,
+        LOST,
+        LEAD,
+        CALLOFF,
+        INJURY,
+        NO_INITIAL,
+        DISPLAY_LEAD,
         STAR_PASS,
+        STAR_PASS_TRIP
     }
     public enum Child implements AddRemoveProperty {
         SKATER,
         POSITION,
         ALTERNATE_NAME,
-        COLOR;
+        COLOR
     }
     public enum Command implements CommandProperty {
+        ADD_TRIP,
+        REMOVE_TRIP,
         TIMEOUT,
-        OFFICIAL_REVIEW;
+        OFFICIAL_REVIEW
     }
 
     public static interface AlternateName extends ScoreBoardEventProvider {

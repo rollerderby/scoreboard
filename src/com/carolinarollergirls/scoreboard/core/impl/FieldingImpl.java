@@ -5,14 +5,13 @@ import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Fielding> implements Fielding {
     public FieldingImpl(TeamJam teamJam, Position position) {
-        super(teamJam, Value.ID, position.getId(), TeamJam.Child.FIELDING, Fielding.class, Value.class);
+        super(teamJam, position.getProviderId(), TeamJam.Child.FIELDING, Fielding.class, Value.class);
         this.teamJam = teamJam;
         set(Value.POSITION, position);
         addWriteProtection(Value.POSITION);
@@ -29,8 +28,8 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.PENALTY_BOX && isCurrent() && (Boolean)value &&
                 getPosition().getFloorPosition() == FloorPosition.JAMMER &&
-                scoreBoard.isInJam() && teamJam.getLeadJammer().equals(Team.LEAD_LEAD)) {
-            teamJam.setLeadJammer(Team.LEAD_LOST_LEAD);
+                scoreBoard.isInJam() && !teamJam.getOtherTeam().isLead()) {
+            teamJam.set(TeamJam.Value.LOST, true);
         }
     }
 

@@ -115,27 +115,26 @@
 		}
 
 		StatsFunction.JamTeam = { 
-			LeadJammer: function(kd,v) {
-				if(v == 'NoLead') { return; }
+			Lead: function(kd,v) {
+				if(!isTrue(v)) { return; }
 
-				t = 0;
-				if(v == 'Lead') { t = kd.Team }
-				if(v == 'LostLead') { t = 0-kd.Team }
-			
-				jam = Data['Jams'].Upsert( { 'Lead': t }, { Period: kd.Period, Jam: kd.Jam } );
+				jam = Data['Jams'].Upsert( { 'Lead': kd.Team }, { Period: kd.Period, Jam: kd.Jam } );
 
-				if(v == 'LostLead') {
-					lj = Data['Jams'].Filter( { 'Lead': 0-kd.Team });
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostCount'] = lj.length;
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostPercent'] = lj.length / Data.Team[kd.Team-1].LeadJammerCount * 100;
-				}
-				if(v == 'Lead') {
-					lj = Data['Jams'].Filter( { 'Lead': kd.Team });
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerCount'] = lj.length;
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerPercent'] = lj.length / Data.Summary.JamCount * 100;
-				}
+				lj = Data['Jams'].Filter( { 'Lead': kd.Team });
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerCount'] = lj.length;
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerPercent'] = lj.length / Data.Summary.JamCount * 100;
 
-			},	
+			},
+			Lost: function(kd,v) {
+				if(!isTrue(v)) { return; }
+
+				jam = Data['Jams'].Upsert( { 'Lead': 0-kd.Team }, { Period: kd.Period, Jam: kd.Jam } );
+
+				lj = Data['Jams'].Filter( { 'Lead': 0-kd.Team });
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostCount'] = lj.length;
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostPercent'] = lj.length / Data.Team[kd.Team-1].LeadJammerCount * 100;
+
+			}
 		}
 
 		S.Initialize = function(opt) {

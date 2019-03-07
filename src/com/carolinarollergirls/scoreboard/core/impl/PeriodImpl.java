@@ -13,7 +13,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
     public PeriodImpl(ScoreBoard s, String p) {
-        super(s, p, IValue.NUMBER, ScoreBoard.NChild.PERIOD, Period.class, Value.class, NChild.class, Command.class);
+        super(s, p, ScoreBoard.NChild.PERIOD, Period.class, Value.class, NChild.class, Command.class);
         addReference(new IndirectValueReference(this, Value.CURRENT_JAM_NUMBER, this, Value.CURRENT_JAM, IValue.NUMBER, true, 0));
         if (hasPrevious()) {
             set(Value.CURRENT_JAM, getPrevious().get(Value.CURRENT_JAM));
@@ -47,8 +47,8 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             }
         } else if (prop == Value.CURRENT_JAM && hasNext() && getNext().get(Value.CURRENT_JAM) == last) {
             getNext().set(Value.CURRENT_JAM, value);
-        } else if (prop == IValue.NUMBER) {
-            writeProtectionOverride.remove(prop);
+        } else if (prop == IValue.PREVIOUS && value != null && getAll(NChild.JAM).size() > 0) {
+            getFirst(NChild.JAM).set(IValue.PREVIOUS, getPrevious().getCurrentJam());
         }
     }
 

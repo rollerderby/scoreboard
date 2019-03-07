@@ -1,8 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import java.util.Arrays;
-import java.util.UUID;
-
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Clock;
@@ -23,8 +21,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         setPrevious(prev);
     }
     public JamImpl(ScoreBoardEventProvider p, String j) {
-        super(p, j, Value.ID, Period.NChild.JAM, Jam.class, Value.class, Child.class, Command.class);
-        set(Value.ID, UUID.randomUUID().toString());
+        super(p, j, Period.NChild.JAM, Jam.class, Value.class, Child.class, Command.class);
         for (PermanentProperty prop : Arrays.asList(Value.DURATION, Value.PERIOD_CLOCK_ELAPSED_START,
                 Value.PERIOD_CLOCK_ELAPSED_END, Value.WALLTIME_START, Value.WALLTIME_END)) {
             set(prop, 0L);

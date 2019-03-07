@@ -44,7 +44,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     protected void setupScoreBoard() {
-        addWriteProtectionOverride(Value.UPCOMING_JAM, Flag.INTERNAL);
         addReference(new ElementReference(Value.UPCOMING_JAM, Jam.class, null));
         addReference(new IndirectValueReference(this, Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD,
                 IValue.NUMBER, true, 0));
@@ -139,7 +138,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             removeAll(Period.NChild.JAM);
             removeAll(NChild.PERIOD);
             set(Value.CURRENT_PERIOD, getOrCreate(NChild.PERIOD, "0"));
-            set(Value.UPCOMING_JAM, new JamImpl(this, getCurrentPeriod().getCurrentJam()), Flag.INTERNAL);
+            set(Value.UPCOMING_JAM, new JamImpl(this, getCurrentPeriod().getCurrentJam()));
             for (ValueWithId c : getAll(Child.CLOCK)) {
                 ((Clock)c).reset();
             }
@@ -166,36 +165,18 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
     public void postAutosaveUpdate() {
         synchronized(coreLock) {
-            // resolve current period, current jam, upcoming jam
-            // where referred element had not been created before the property was read from autosave
-            if (get(Value.CURRENT_PERIOD) instanceof String) {
-                Period cp = getElement(Period.class, (String)get(Value.CURRENT_PERIOD));
-                set(Value.CURRENT_PERIOD, cp == null ? getLast(NChild.PERIOD) : cp);
-            }
-            for (ValueWithId v : getAll(NChild.PERIOD)) {
-                Period p = (Period)v;
-                if (p.get(Period.Value.CURRENT_JAM) instanceof String) {
-                    Jam cj = getElement(Jam.class, (String)p.get(Period.Value.CURRENT_JAM));
-                    p.set(Period.Value.CURRENT_JAM, cj == null ? p.getLast(Period.NChild.JAM) : cj);
-                }
-                Jam j = (Jam)p.getFirst(Period.NChild.JAM);
-                Period pr = p.getPrevious();
-                if (j != null && pr != null) {
-                    while (pr.getLast(Period.NChild.JAM) == null && pr.hasPrevious()) {
-                        pr = pr.getPrevious();
-                    }
-                    j.setPrevious((Jam)pr.getLast(Period.NChild.JAM));
-                }
-            }
-            set(Value.UPCOMING_JAM, getLast(Period.NChild.JAM), Flag.INTERNAL);
-            getUpcomingJam().setPrevious(getCurrentPeriod().getCurrentJam());
-            getUpcomingJam().set(IValue.NUMBER, getCurrentPeriod().getCurrentJamNumber() + 1);
-            getUpcomingJam().setParent(this); // update reference to current period number
-
-            updateTeamJams();
-
+            requestBatchStart();
+            //update reference to current period number
+            getUpcomingJam().setParent(this);
             //Button may have a label from autosave but undo will not work after restart
             Button.UNDO.setLabel(ACTION_NONE);
+            //some references may list IDs in the XML and JSON that changed during restore. Update
+            scoreBoardChange(new ScoreBoardEvent(this, NChild.PERIOD, getOrCreatePeriod(0), false));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.CURRENT_PERIOD, getCurrentPeriod(), getCurrentPeriod()));
+            scoreBoardChange(new ScoreBoardEvent(this, Value.UPCOMING_JAM, getUpcomingJam(), getUpcomingJam()));
+            scoreBoardChange(new ScoreBoardEvent(this, NChild.PERIOD, getOrCreatePeriod(0), false));
+            scoreBoardChange(new ScoreBoardEvent(this, Period.NChild.JAM, getUpcomingJam(), false));
+            requestBatchEnd();
         }
     }
 

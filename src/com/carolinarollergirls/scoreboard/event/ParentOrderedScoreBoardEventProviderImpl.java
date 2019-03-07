@@ -4,15 +4,16 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
-public abstract class ParentOrderedScoreBoardEventProviderImpl<T extends OrderedScoreBoardEventProvider<T>>
-extends OrderedScoreBoardEventProviderImpl<T> implements OrderedScoreBoardEventProvider<T> {
+public abstract class ParentOrderedScoreBoardEventProviderImpl<T extends ParentOrderedScoreBoardEventProvider<T>>
+extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoardEventProvider<T> {
     @SafeVarargs
-    protected ParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, PermanentProperty idProp,
-            String subId, AddRemoveProperty type, Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
-        super(parent, idProp, type, ownClass, props);
+    protected ParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, String subId,
+            AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
+        super(parent, type, ownClass, props);
         ownType = type;
         this.subId = subId;
-        set(idProp, parent.getId() + "_" + subId);
+        set(IValue.ID, parent.getId() + "_" + subId);
+        addReference(new UpdateReference(this, IValue.ID, parent, IValue.ID));
         addReference(new UpdateReference(this, IValue.PREVIOUS, parent, IValue.PREVIOUS));
         addReference(new UpdateReference(this, IValue.NEXT, parent, IValue.NEXT));
         addReference(new ValueReference(this, IValue.NUMBER, parent, IValue.NUMBER, true, 0));
@@ -21,6 +22,9 @@ extends OrderedScoreBoardEventProviderImpl<T> implements OrderedScoreBoardEventP
     public String getProviderId() { return subId; }
 
     protected Object _computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == IValue.ID) {
+            return parent.getId() + "_" + subId;
+        }
         if (prop == IValue.PREVIOUS) {
             if (((OrderedScoreBoardEventProvider<?>) parent).hasPrevious()) {
                 return ((OrderedScoreBoardEventProvider<?>) getParent()).getPrevious().get(ownType, subId);

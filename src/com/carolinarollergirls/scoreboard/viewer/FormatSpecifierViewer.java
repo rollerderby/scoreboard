@@ -221,8 +221,8 @@ public class FormatSpecifierViewer {
         new ScoreBoardValue("%t"+t+"or", "Team "+t+" Official Reviews", getTeam(id), Team.Value.OFFICIAL_REVIEWS) {
             public String getValue() { return String.valueOf(getTeam(id).getOfficialReviews()); }
         };
-        new ScoreBoardValue("%t"+t+"l", "Team "+t+" is Lead Jammer", getTeam(id), Team.Value.LEAD_JAMMER) {
-            public String getValue() { return getTeam(id).getLeadJammer(); }
+        new ScoreBoardValue("%t"+t+"l", "Team "+t+" is Lead Jammer", getTeam(id), Team.Value.DISPLAY_LEAD) {
+            public String getValue() { return String.valueOf(getTeam(id).isDisplayLead()); }
         };
         new ScoreBoardValue("%t"+t+"jn", "Team "+t+" Jammer Name",
                 getTeam(id).getPosition(FloorPosition.JAMMER), Position.Value.SKATER) {

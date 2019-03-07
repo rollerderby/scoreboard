@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,8 +16,10 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.Team.Value;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class StatsImplTests {
@@ -106,15 +109,21 @@ public class StatsImplTests {
         assertEquals(0, j.getPeriodClockElapsedStart());
         assertEquals(0, tj.getTotalScore());
         assertEquals(0, tj.getJamScore());
-        assertEquals(Team.LEAD_NO_LEAD, tj.getLeadJammer());
+        assertEquals(false, tj.isLost());
+        assertEquals(false, tj.isLead());
+        assertEquals(false, tj.isLead());
+        assertEquals(false, tj.isCalloff());
+        assertEquals(false, tj.isInjury());
         assertEquals(false, tj.isStarPass());
+        assertEquals(null, tj.getStarPassTrip());
         assertEquals(skater1, tj.getFielding(FloorPosition.JAMMER).getSkater());
         assertEquals(skater2, tj.getFielding(FloorPosition.PIVOT).getSkater());
         assertEquals(null, tj.getFielding(FloorPosition.BLOCKER1).getSkater());
 
         // Team 1 gets lead and scores.
-        team1.setLeadJammer(Team.LEAD_LEAD);
-        team1.changeScore(5);
+        team1.set(Value.LEAD, true);
+        team1.set(Value.TRIP_SCORE, 5, Flag.CHANGE);
+        assertEquals(5, tj.getTotalScore());
 
         sb.stopJamTO();
         advance(1000);
@@ -125,9 +134,9 @@ public class StatsImplTests {
         j = p.getJam(2);
         tj = j.getTeamJam(Team.ID_1);
         assertEquals(2000, j.getPeriodClockElapsedStart());
-        /*        assertEquals(5, tj.getTotalScore());
-        assertEquals(0, tj.getJamScore());*/
-        assertEquals(Team.LEAD_NO_LEAD, tj.getLeadJammer());
+        assertEquals(5, tj.getTotalScore());
+        assertEquals(0, tj.getJamScore());
+        assertEquals(false, tj.isLead());
         assertEquals(false, tj.isStarPass());
         // No skaters have been entered for this jam yet.
         assertEquals(null, tj.getFielding(FloorPosition.JAMMER).getSkater());
@@ -166,28 +175,28 @@ public class StatsImplTests {
         TeamJam tj = j.getTeamJam(Team.ID_1);
 
         // Change the score during the jam.
-        /*        team1.changeScore(5);
+        team1.set(Value.TRIP_SCORE, 5, Flag.CHANGE);
         assertEquals(5, tj.getTotalScore());
-        assertEquals(5, tj.getJamScore());*/
+        assertEquals(5, tj.getJamScore());
 
         // Star pass during the jam.
-        team1.setStarPass(true);
+        team1.set(Value.STAR_PASS_TRIP, team1.get(Value.CURRENT_TRIP));
         assertEquals(true, tj.isStarPass());
 
         // Lead during the jam.
-        team1.setLeadJammer(Team.LEAD_LEAD);
-        assertEquals(Team.LEAD_LEAD, tj.getLeadJammer());
+        team1.set(Value.LEAD, true);
+        assertTrue(tj.isDisplayLead());
 
         sb.stopJamTO();
         advance(1000);
         // Star pass and lead still correct after jam end.
         assertEquals(true, tj.isStarPass());
-        assertEquals(Team.LEAD_LEAD, tj.getLeadJammer());
+        assertTrue(tj.isDisplayLead());
 
         // Some points arrive after end of jam.
-        /*        team1.changeScore(4);
+        team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
         assertEquals(9, tj.getTotalScore());
-        assertEquals(9, tj.getJamScore());*/
+        assertEquals(9, tj.getJamScore());
 
         // Timeout at end of jam.
         team1.timeout();
@@ -204,13 +213,13 @@ public class StatsImplTests {
         advance(1000);
         j = p.getJam(2);
         tj = j.getTeamJam(Team.ID_1);
-        /*        assertEquals(9, tj.getTotalScore());
-        assertEquals(0, tj.getJamScore());*/
+        assertEquals(9, tj.getTotalScore());
+        assertEquals(0, tj.getJamScore());
 
         // Add points during the jam, jam score is correct.
-        /*        team1.changeScore(3);
+        team1.set(Value.TRIP_SCORE, 3, Flag.CHANGE);
         assertEquals(12, tj.getTotalScore());
-        assertEquals(3, tj.getJamScore());*/
+        assertEquals(3, tj.getJamScore());
     }
 
     @Test

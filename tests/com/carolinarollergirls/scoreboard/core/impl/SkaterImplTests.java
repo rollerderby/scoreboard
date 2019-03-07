@@ -57,7 +57,7 @@ public class SkaterImplTests {
     @Test
     public void add_penalty_with_id() {
         Penalty p = (Penalty)skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.ID, "f03d5e2e-e581-4fcb-99c7-7fbd49101a36", Flag.FROM_AUTOSAVE);
+        p.set(Penalty.IValue.ID, "f03d5e2e-e581-4fcb-99c7-7fbd49101a36", Flag.FROM_AUTOSAVE);
         p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
         p.set(Penalty.Value.CODE, "C");
 

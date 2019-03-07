@@ -110,13 +110,13 @@ $sb(function() {
 		team.$sb("OfficialReviews").$sbBindAndRun("sbchange", function() { manageTimeoutImages(t); });
 
 		// Lead Changes
-		team.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
+		team.$sb("DisplayLead").$sbBindAndRun("sbchange", function(event, val) {
 			s = "#MainBar>div.Team"+t+">div.Lead";
 			$v = $(s);
 			console.log('lead change ' + t + '/' + val);
 			console.log(s);
 			console.log($v);
-			$v.toggleClass("IsLead", val == "Lead", 1000);
+		    $v.toggleClass("IsLead", isTrue(val), 1000);
 		});
 	});
 

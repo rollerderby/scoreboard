@@ -640,83 +640,71 @@ function createTeamTable() {
 		logoTd.click(function() { if (!logoSelect.is(":visible")) logoShowSelect(true); });
 
 		var scoreTd = scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down");
-		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+		sbTeam.$sb("TripScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score -1").val("-1")
 			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
-		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Jam Score -1").val("1")
-			.attr("id", "Team"+team+"JamScoreDown").addClass("KeyControl JamScoreButton").button()
+		sbTeam.$sb("RemoveTrip").$sbControl("<button>").text("Trip -1").val("true")
+			.attr("id", "Team"+team+"RemoveTrip").addClass("KeyControl TripButton").button()
 			.appendTo(scoreTd);
 
 		var scoreSubTr = createRowTable(3).appendTo(scoreTr.children("td:eq(1)")).find("tr");
-		sbTeam.$sb("Score").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: scoreTr.children("td:eq(1)")
-			} }).appendTo(scoreSubTr.children("td:eq(1)").addClass("Score"));
+		sbTeam.$sb("Score").$sbControl("<a/>").appendTo(scoreSubTr.children("td:eq(1)").addClass("Score"));
 
 		var scoreTd = scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up");
-		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+		sbTeam.$sb("TripScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score +1").val("1")
 			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
-		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Jam Score +1").val("-1")
-			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl JamScoreButton").button()
+		sbTeam.$sb("AddTrip").$sbControl("<button>").text("Trip +1").val("true")
+			.attr("id", "Team"+team+"AddTrip").addClass("KeyControl TripButton").button()
 			.appendTo(scoreTd);
 
 		for (var i = 2; i <= 5; i++) {
 			var pos = (i - 2);
 			if (!first)
 				pos = 3 - pos;
-			sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-				.text("+" + i).val(i)
-				.attr("id", "Team"+team+"ScoreUp"+i).addClass("KeyControl").button()
+			sbTeam.$sb("TripScore").$sbControl("<button>").text(i).val(i)
+				.attr("id", "Team"+team+"TripScore"+i).addClass("KeyControl").button()
 				.appendTo(speedScoreTr.find("td:eq("+pos+")"));
 		}
 
 
 		// Note instantaneous score change is always towards the center.	Jam score total is on the outside.
-		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
+		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("TripScore");
 		var jamScore = $("<a>").appendTo(scoreSubTr.children("td:eq("+(first?"0":"2")+")")).addClass("JamScore");
 
-		var lastScore = sbTeam.$sb("Score").$sbGet();
 		var scoreChangeTimeout;
-		sbTeam.$sb("Score").bind("sbchange", function(event,value) {
-			var s = (value - lastScore);
+		sbTeam.$sb("TripScore").bind("sbchange", function(event,s) {
 			var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
-			scoreChange.stop(true).text(s<0?s:"+"+s).last().css({ opacity: "1", color: c });
+			scoreChange.stop(true).text(s).last().css({ opacity: "1", color: c });
 			if (scoreChangeTimeout)
 				clearTimeout(scoreChangeTimeout);
 			scoreChangeTimeout = setTimeout(function() {
 				scoreChange.last()
-					.animate({ color: "#000" }, 2000)
-					.animate({ opacity: "0" }, 6000, "easeInExpo", function() { lastScore = value; });
+					.animate({ color: "#000" }, 1000)
+					.animate({ opacity: "0" }, 1000, "easeInExpo", function() {
+						if (s > 0 && $sb("ScoreBoard.InJam").$sbIsTrue()) {
+							sbTeam.$sb("AddTrip").$sbSet("true");
+						}});
 				scoreChangeTimeout = null;
 			}, 2000);
 		});
 
 		jamScore.stop(true).text("0").last().css({ opacity: "1", color: "#008" });
-		var lastJamScore = sbTeam.$sb("Score").$sbGet();
 		var jamScoreTimeout;
-		var jamScoreUpdate = function(event, value) {
-			var score = sbTeam.$sb("Score").$sbGet();
-			var lastscore = sbTeam.$sb("LastScore").$sbGet();
-			var s = score - lastscore;
-
+		sbTeam.$sb("JamScore").$sbBindAndRun("sbchange", function(event, s) {
 			var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
-			jamScore.stop(true).text(+s).last().css({ opacity: "1", color: c });
+			jamScore.stop(true).text(s).last().css({ opacity: "1", color: c });
 			if (jamScoreTimeout)
 				clearTimeout(jamScoreTimeout);
 			jamScoreTimeout = setTimeout(function() {
 				jamScore.last()
 					.animate({ color: "#008" }, 2000)
 			}, 2000);
-		};
-		sbTeam.$sb("Score").$sbBindAndRun("sbchange", jamScoreUpdate);
-		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
+		});
 
 		var timeout = sbTeam.$sb("Timeout");
 		var timeoutButton = timeout.$sbControl("<button>").text("Team TO").val("true")
@@ -768,22 +756,62 @@ function createTeamTable() {
 			otoButton.appendTo(timeoutTr.children("td:eq(5)").addClass("OfficialTimeout"));
 			otoButton.wrap("<div></div>");
 		}
-		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")")
-			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='Lead'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No</label><input type='radio' value='NoLead'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"LostLead' class='LostLead'>Lost</label><input type='radio' value='LostLead'/>");
-		sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
-			.addClass("KeyControl");
+		
+		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")");
+		var lost = sbTeam.$sb("Lost");
+		var lostButton = lost.$sbControl("<button>").text("Lost").val("true")
+			.attr("id", "Team"+team+"Lost").addClass("KeyControl").button();
+		lost.$sbBindAndRun("sbchange", function(event, value) {
+			lostButton.val(!isTrue(value));
+			lostButton.toggleClass("Active", isTrue(value));
+		});
+		lostButton.appendTo(leadJammerTd);
+		var lead = sbTeam.$sb("Lead");
+		var leadButton = lead.$sbControl("<button>").text("Lead").val("true")
+			.attr("id", "Team"+team+"Lead").addClass("KeyControl").button();
+		lead.$sbBindAndRun("sbchange", function(event, value) {
+			leadButton.val(!isTrue(value));
+			leadButton.toggleClass("Active", isTrue(value));
+		});
+		leadButton.appendTo(leadJammerTd);
+		var calloff = sbTeam.$sb("Calloff");
+		var calloffButton = calloff.$sbControl("<button>").text("Call").val("true")
+			.attr("id", "Team"+team+"Call").addClass("KeyControl").button();
+		calloff.$sbBindAndRun("sbchange", function(event, value) {
+			calloffButton.val(!isTrue(value));
+			calloffButton.toggleClass("Active", isTrue(value));
+		});
+		calloffButton.appendTo(leadJammerTd);
+		var inj = sbTeam.$sb("Injury");
+		var injButton = inj.$sbControl("<button>").text("Inj").val("true")
+			.attr("id", "Team"+team+"Inj").addClass("KeyControl").button();
+		inj.$sbBindAndRun("sbchange", function(event, value) {
+			injButton.val(!isTrue(value));
+			injButton.toggleClass("Active", isTrue(value));
+		});
+		injButton.appendTo(leadJammerTd);
+		var ni = sbTeam.$sb("NoInitial");
+		var niButton = ni.$sbControl("<button>").text("NI").val("true")
+			.attr("id", "Team"+team+"NI").addClass("KeyControl").button();
+		ni.$sbBindAndRun("sbchange", function(event, value) {
+			niButton.val(!isTrue(value));
+			niButton.toggleClass("Active", isTrue(value));
+		});
+		niButton.appendTo(leadJammerTd);
 		/* some strange bug, css direction is unset for leadJammerTd
 		 * so need to explicitly specify to style the buttonset as ltr
 		 */
 		leadJammerTd.css("direction", "ltr").buttonset();
 
-		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")")
-			.append("<label id='Team"+team+"StarPass' class='StarPass'>Star Pass</label><input type='radio' value='true'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"NoStarPass' class='NoStarPass'>No</label><input type='radio' value='false'/>");
-		sbTeam.$sb("StarPass").$sbControl(starPassTd.children())
-			.addClass("KeyControl");
+		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")");
+		var starPass = sbTeam.$sb("StarPass");
+		var starPassButton = starPass.$sbControl("<button>").text("Star Pass").val("true")
+			.attr("id", "Team"+team+"StarPass").addClass("KeyControl").button();
+		starPass.$sbBindAndRun("sbchange", function(event, value) {
+			starPassButton.val(!isTrue(value));
+			starPassButton.toggleClass("Active", isTrue(value));
+		});
+		starPassButton.appendTo(starPassTd);
 		/* some strange bug, css direction is unset for starPassTd
 		 * so need to explicitly specify to style the buttonset as ltr
 		 */

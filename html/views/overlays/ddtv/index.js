@@ -413,7 +413,7 @@ function jammer(k, v) {
 	var jammerName = WS.state[prefix + "Skater(" + jammerId + ").Name"];
 	var pivotId = WS.state[prefix + "Position(Pivot).Skater"];
 	var pivotName = WS.state[prefix + "Skater(" + pivotId + ").Name"];
-	var leadJammer = (WS.state[prefix + "LeadJammer"] === "Lead");
+	var leadJammer = isTrue(WS.state[prefix + "DisplayLead"]);
 	var starPass = isTrue(WS.state[prefix + "StarPass"]);
 
 	if (jammerName == null)

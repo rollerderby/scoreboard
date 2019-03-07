@@ -8,13 +8,17 @@ package com.carolinarollergirls.scoreboard.xml;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.output.XMLOutputter;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -78,12 +82,16 @@ public class ScoreBoardXmlConverter {
         while (children.hasNext()) {
             Element child = (Element)children.next();
             if (child.getName().equals(scoreBoard.getProviderName())) {
-                process(scoreBoard, child, restore);
+                List<ValueUpdate> postponedUpdates = new ArrayList<ValueUpdate>();
+                process(scoreBoard, child, restore, postponedUpdates);
+                for (ValueUpdate update : postponedUpdates) {
+                    update.process();
+                }
             }
         }
     }
 
-    public void process(ScoreBoardEventProvider p, Element element, boolean restore) {
+    public void process(ScoreBoardEventProvider p, Element element, boolean restore, List<ValueUpdate> postponedUpdates) {
         for (Object c : element.getChildren()) {
             Element child = (Element)c;
             String name = child.getName();
@@ -91,15 +99,19 @@ public class ScoreBoardXmlConverter {
             if (id == null) { id = ""; }
             String value = editor.getText(child);
             Flag flag = null;
-            if (Boolean.parseBoolean(element.getAttributeValue("reset"))) { flag = Flag.RESET; }
-            if (Boolean.parseBoolean(element.getAttributeValue("change"))) { flag = Flag.CHANGE; }
+            if (Boolean.parseBoolean(child.getAttributeValue("reset"))) { flag = Flag.RESET; }
+            if (Boolean.parseBoolean(child.getAttributeValue("change"))) { flag = Flag.CHANGE; }
             if (restore) { flag = Flag.FROM_AUTOSAVE; }
             try {
                 Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
                 if (prop == null) { throw new IllegalArgumentException("Unknown property"); }
 
-                if (prop instanceof PermanentProperty) {
-                    p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value, flag), flag);
+                if (prop == IValue.ID) {
+                    p.set((PermanentProperty) prop, p.valueFromString((PermanentProperty) prop, value, flag), flag);
+                } else if (prop instanceof PermanentProperty) {
+                    // postpone setting PermanentProperties except ID, as they may reference
+                    //  elements not yet created when restoring from autosave
+                    postponedUpdates.add(new ValueUpdate(p, (PermanentProperty) prop, value, flag));
                 } else if (prop instanceof CommandProperty) { 
                     if (Boolean.parseBoolean(value)) {
                         p.execute((CommandProperty)prop);
@@ -107,7 +119,7 @@ public class ScoreBoardXmlConverter {
                 } else if (editor.hasRemovePI(child)) {
                     p.remove((AddRemoveProperty)prop, id);
                 } else if (child.getChildren().size() > 0) {
-                    process((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, id), child, restore);
+                    process((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, id), child, restore, postponedUpdates);
                 } else {
                     p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, id, value));
                 }
@@ -125,4 +137,20 @@ public class ScoreBoardXmlConverter {
     protected XMLOutputter rawXmlOutputter = XmlDocumentEditor.getRawXmlOutputter();
 
     private static ScoreBoardXmlConverter scoreBoardXmlConverter = new ScoreBoardXmlConverter();
+    
+    public static class ValueUpdate {
+        public ValueUpdate(ScoreBoardEventProvider sbe, PermanentProperty prop, String value, Flag flag) {
+            this.sbe = sbe;
+            this.prop = prop;
+            this.value = value;
+            this.flag = flag;
+        }
+        
+        public void process() { sbe.set(prop, sbe.valueFromString(prop, value, flag), flag); }
+        
+        private ScoreBoardEventProvider sbe;
+        private PermanentProperty prop;
+        private String value;
+        private Flag flag;
+    }
 }

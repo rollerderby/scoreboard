@@ -189,17 +189,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     public Object valueFromString(PermanentProperty prop, String sValue, Flag flag) {
         synchronized (coreLock) {
-            Object value = sValue;
             ElementReference ref = elementReference.get(prop);
             if (ref != null) {
-                value = getElement(ref.getRemoteClass(), sValue);
-                if (value != null || ref.getRemoteProperty() != null || flag != Flag.FROM_AUTOSAVE) {
-                    return value;
-                } else {
-                    // we're restoring from autosave, the referred element doesn't exist yet and there
-                    // is no inverse reference. Store the id and resolve it after restoring is finished.
-                    return sValue;
-                }
+                return getElement(ref.getRemoteClass(), sValue);
             }
             Object old;
             ValueReference reference = valueSources.get(prop);
@@ -212,6 +204,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             } else {
                 old = get(prop);
             }
+            Object value = sValue;
             if (old instanceof Role) {
                 value = Role.fromString(sValue);
             }
@@ -347,7 +340,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         if(children.get(prop) == null) { return null; }
         return children.get(prop).get(id);
     }
-    public ValueWithId get(NumberedProperty prop, int num) { return get(prop, String.valueOf(num)); }
+    public ValueWithId get(NumberedProperty prop, Integer num) { return get(prop, String.valueOf(num)); }
     public ValueWithId getOrCreate(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             ValueWithId result = get(prop, id);
@@ -358,7 +351,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             return result;
         }
     }
-    public ValueWithId getOrCreate(NumberedProperty prop, int num) { return getOrCreate(prop, String.valueOf(num)); }
+    public ValueWithId getOrCreate(NumberedProperty prop, Integer num) { return getOrCreate(prop, String.valueOf(num)); }
     public NumberedScoreBoardEventProvider<?> getFirst(NumberedProperty prop) {
         synchronized (coreLock) {
             return (NumberedScoreBoardEventProvider<?>)get(prop, minIds.get(prop));

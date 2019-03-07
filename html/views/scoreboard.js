@@ -138,11 +138,10 @@ function setupTeams() {
 		var teamJamPointsA = $(".JamPoints>div.Team.Team"+team+".Number.TextContainer>a");
 		_autoFit.enableAutoFitText(teamJamPoints);
 		var teamJamPointsUpdate = function() {
-			jamTotal = sbTeam.$sb("Score").$sbGet() - sbTeam.$sb("LastScore").$sbGet();
+			jamTotal = sbTeam.$sb("JamScore").$sbGet();
 			teamJamPointsA.text(jamTotal);
 		}
-		sbTeam.$sb("Score").$sbBindAndRun("sbchange", teamJamPointsUpdate);
-		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", teamJamPointsUpdate);
+		sbTeam.$sb("JamScore").$sbBindAndRun("sbchange", teamJamPointsUpdate);
 
 		var teamTimeouts = $(".Timeouts>div.Team"+team+".Number.TextContainer");
 		sbTeam.$sb("Timeouts").$sbElement(teamTimeouts.children("a"), { sbelement: {
@@ -204,8 +203,8 @@ function setupTeams() {
 		sbTeam.$sb("Position(Pivot).Name").$sbBindAndRun("sbchange", function(event, value) {
 			jammerDiv.toggleClass("HavePivot", !!value);
 		});
-		sbTeam.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, value) {
-			jammerDiv.toggleClass("LeadJammer", value == "Lead");
+		sbTeam.$sb("DisplayLead").$sbBindAndRun("sbchange", function(event, value) {
+			jammerDiv.toggleClass("LeadJammer", isTrue(value));
 		});
 		sbTeam.$sb("StarPass").$sbBindAndRun("sbchange", function(event, value) {
 			jammerDiv.toggleClass("StarPass", isTrue(value));

@@ -11,10 +11,12 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
@@ -33,69 +35,40 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             add(Child.POSITION, new PositionImpl(this, fp));
         }
         addWriteProtection(Child.POSITION);
-        addWriteProtectionOverride(Value.RUNNING_OR_ENDED_TEAM_JAM, Flag.INTERNAL);
-        addWriteProtectionOverride(Value.RUNNING_OR_UPCOMING_TEAM_JAM, Flag.INTERNAL);
-        addWriteProtectionOverride(Value.LAST_ENDED_TEAM_JAM, Flag.INTERNAL);
+        addReference(new ElementReference(Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.class, null));
+        addReference(new ElementReference(Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.class, null));
+        addReference(new ElementReference(Value.LAST_ENDED_TEAM_JAM, TeamJam.class, null));
+        addReference(new IndirectValueReference(this, Value.CURRENT_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
+                TeamJam.Value.CURRENT_TRIP, true, null));
         addReference(new IndirectValueReference(this, Value.SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.TOTAL_SCORE, false, 0));
+                TeamJam.Value.TOTAL_SCORE, true, 0));
         addReference(new IndirectValueReference(this, Value.JAM_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.JAM_SCORE, false, 0));
+                TeamJam.Value.JAM_SCORE, true, 0));
         addReference(new IndirectValueReference(this, Value.LAST_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
                 TeamJam.Value.LAST_SCORE, true, 0));
-        addReference(new IndirectValueReference(this, Value.LEAD_JAMMER, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.LEAD_JAMMER, false, LEAD_NO_LEAD));
+        addReference(new IndirectValueReference(this, Value.TRIP_SCORE, this, Value.CURRENT_TRIP,
+                ScoringTrip.Value.SCORE, false, 0));
+        addReference(new IndirectValueReference(this, Value.LOST, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
+                TeamJam.Value.LOST, false, false));
+        addReference(new IndirectValueReference(this, Value.LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
+                TeamJam.Value.LEAD, false, false));
+        addReference(new IndirectValueReference(this, Value.CALLOFF, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
+                TeamJam.Value.CALLOFF, false, false));
+        addReference(new IndirectValueReference(this, Value.INJURY, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
+                TeamJam.Value.INJURY, false, false));
+        addReference(new IndirectValueReference(this, Value.NO_INITIAL, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
+                TeamJam.Value.NO_INITIAL, false, false));
+        addReference(new IndirectValueReference(this, Value.DISPLAY_LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
+                TeamJam.Value.DISPLAY_LEAD, false, false));
         addReference(new IndirectValueReference(this, Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM,
                 TeamJam.Value.NO_PIVOT, false, true));
         addReference(new IndirectValueReference(this, Value.STAR_PASS, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM,
                 TeamJam.Value.STAR_PASS, false, false));
+        addReference(new IndirectValueReference(this, Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM,
+                TeamJam.Value.STAR_PASS_TRIP, false, false));
     }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.LAST_SCORE) {
-            TeamJam cur = getRunningOrEndedTeamJam();
-            TeamJam prev = cur.getPrevious();
-            if (prev == null) { return 0; }
-            int change = (Integer)value;
-            if (flag != Flag.CHANGE) {
-                change -= getLastScore();
-            }
-            change = Math.min(Math.max(-prev.getJamScore(), change), cur.getJamScore());
-            if (change != 0) {
-                requestBatchStart();
-                prev.changeJamScore(change);
-                cur.changeJamScore(-change);
-                requestBatchEnd();
-            }
-            return last;
-        } else if (prop == Value.SCORE) {
-            TeamJam cur = getRunningOrEndedTeamJam();
-            TeamJam prev = getLastEndedTeamJam();
-            int change = (Integer)value;
-            if (flag != Flag.CHANGE) {
-                change -= getScore();
-            }
-            if (-change > getScore()) {
-                change = -getScore();
-            }
-            if (-change <= cur.getJamScore()) {
-                cur.changeJamScore(change);
-            } else if (prev != null && -change <= cur.getJamScore() + prev.getJamScore()) {
-                requestBatchStart();
-                prev.changeJamScore(change + cur.getJamScore()); // change < 0
-                cur.setJamScore(0);
-                requestBatchEnd();
-            } else {
-                cur.changeOsOffset(change);
-            }
-            return last;
-        }
-        if (prop == Value.LEAD_JAMMER) {
-            if ("false".equals(((String)value).toLowerCase())) {
-                value = Team.LEAD_NO_LEAD;
-            } else if ("true".equals(((String)value).toLowerCase())) {
-                value = Team.LEAD_LEAD;
-            }
-        }
         if(value instanceof Integer && (Integer)value < 0) { return 0; }
         if (prop == Value.TIMEOUTS && (Integer)value > scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS)) {
             return scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS);
@@ -108,12 +81,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.RETAINED_OFFICIAL_REVIEW && (Boolean)value && getOfficialReviews() == 0) {
             setOfficialReviews(1);
-        } else if (prop == Value.LEAD_JAMMER && Team.LEAD_LEAD.equals((String)value) &&
-                scoreBoard.isInJam()) {
+        } else if (prop == Value.LEAD && (Boolean)value && scoreBoard.isInJam()) {
+            if (getCurrentTrip().getNumber() == 1) {
+                getRunningOrEndedTeamJam().addScoringTrip();
+            }
             String otherId = getId().equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
             Team otherTeam = getScoreBoard().getTeam(otherId);
-            if (Team.LEAD_LEAD.equals(otherTeam.getLeadJammer())) {
-                otherTeam.setLeadJammer(Team.LEAD_NO_LEAD);
+            if (otherTeam.isLead()) {
+                otherTeam.set(Value.LEAD, false);
             }
         } else if (prop == Value.STAR_PASS) {
             if (getPosition(FloorPosition.JAMMER).getSkater() != null) {
@@ -122,14 +97,22 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             if (getPosition(FloorPosition.PIVOT).getSkater() != null) {
                 getPosition(FloorPosition.PIVOT).getSkater().setRole(FloorPosition.PIVOT.getRole(getRunningOrUpcomingTeamJam()));
             }
-            if ((Boolean)value && Team.LEAD_LEAD.equals(getLeadJammer())) {
-                setLeadJammer(Team.LEAD_LOST_LEAD);
+            if ((Boolean)value && isLead()) {
+                set(Value.LOST, true);
             }
+        } else if ((prop == Value.CALLOFF || prop == Value.INJURY) && scoreBoard.isInJam() && (Boolean)value) {
+            scoreBoard.stopJamTO();
         }
     }
 
     public void execute(CommandProperty prop) {
         switch((Command)prop) {
+        case ADD_TRIP:
+            getRunningOrEndedTeamJam().addScoringTrip();
+            break;
+        case REMOVE_TRIP:
+            getRunningOrEndedTeamJam().removeScoringTrip();
+            break;
         case OFFICIAL_REVIEW:
             officialReview();
             break;
@@ -193,6 +176,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void stopJam() {
         synchronized (coreLock) {
             requestBatchStart();
+            if (isDisplayLead() && !scoreBoard.getClock(Clock.ID_JAM).isTimeAtEnd()) {
+                set(Value.CALLOFF, true);
+            }
+            
             updateTeamJams();
 
             Map<Skater, Role> toField = new HashMap<Skater, Role>();
@@ -296,12 +283,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
 
     public int getScore() { return (Integer)get(Value.SCORE); }
-    public void setScore(int s) { set(Value.SCORE, s); }
-    public void changeScore(int c) { set(Value.SCORE, c, Flag.CHANGE); }
 
-    public int getLastScore() { return (Integer)get(Value.LAST_SCORE); }
-    public void setLastScore(int s) { set(Value.LAST_SCORE, s); }
-    public void changeLastScore(int c) { set(Value.LAST_SCORE, c, Flag.CHANGE); }
+    public ScoringTrip getCurrentTrip() { return (ScoringTrip)get(Value.CURRENT_TRIP); }
 
     public boolean inTimeout() { return (Boolean)get(Value.IN_TIMEOUT); }
     public void setInTimeout(boolean b) { set(Value.IN_TIMEOUT, b); }
@@ -432,8 +415,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
-    public String getLeadJammer() { return (String)get(Value.LEAD_JAMMER); }
-    public void setLeadJammer(String lead) { set(Value.LEAD_JAMMER, lead); }
+    public boolean isLost() { return (Boolean)get(Value.LOST); }
+    public boolean isLead() { return (Boolean)get(Value.LEAD); }
+    public boolean isCalloff() { return (Boolean)get(Value.CALLOFF); }
+    public boolean isInjury() { return (Boolean)get(Value.INJURY); }
+    public boolean isDisplayLead() { return (Boolean)get(Value.DISPLAY_LEAD); }
 
     public boolean isStarPass() { return (Boolean)get(Value.STAR_PASS); }
     public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
@@ -445,11 +431,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";
-    public static final int DEFAULT_SCORE = 0;
-    public static final int DEFAULT_TIMEOUTS = 3;
-    public static final int DEFAULT_OFFICIAL_REVIEWS = 1;
-    public static final String DEFAULT_LEADJAMMER = Team.LEAD_NO_LEAD;
-    public static final boolean DEFAULT_STARPASS = false;
 
     public class AlternateNameImpl extends ScoreBoardEventProviderImpl implements AlternateName {
         public AlternateNameImpl(Team t, String i, String n) {

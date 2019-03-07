@@ -9,6 +9,7 @@ public interface OrderedScoreBoardEventProvider<T extends OrderedScoreBoardEvent
     public boolean hasNext();
 
     public enum IValue implements PermanentProperty {
+        ID,
         NUMBER,
         PREVIOUS,
         NEXT

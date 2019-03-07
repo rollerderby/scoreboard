@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.Team.Value;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.Button;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.ScoreBoardSnapshot;
@@ -561,8 +562,8 @@ public class ScoreboardImplTests {
         lc.setTime(50000);
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
-        sb.getTeam(Team.ID_1).setStarPass(true);
-        sb.getTeam(Team.ID_2).setLeadJammer(Team.LEAD_NO_LEAD);
+        sb.getTeam(Team.ID_1).set(Value.STAR_PASS, true);
+        sb.getTeam(Team.ID_2).set(Value.LEAD, true);
 
         sb.stopJamTO();
 
@@ -574,7 +575,7 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
         assertFalse(sb.getTeam(Team.ID_1).isStarPass());
-        assertEquals(Team.LEAD_NO_LEAD, sb.getTeam(Team.ID_2).getLeadJammer());
+        assertTrue(sb.getTeam(Team.ID_2).isLead());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_JAM);
     }
 

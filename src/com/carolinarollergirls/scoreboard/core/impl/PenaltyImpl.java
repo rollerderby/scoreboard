@@ -1,7 +1,5 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import java.util.UUID;
-
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater;
@@ -12,8 +10,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> implements Penalty {
     public PenaltyImpl(Skater s, String n) {
-        super(s, n, Value.ID, Skater.NChild.PENALTY, Penalty.class, Value.class);
-        set(Value.ID, UUID.randomUUID().toString());
+        super(s, n, Skater.NChild.PENALTY, Penalty.class, Value.class);
         set(Value.TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
         addWriteProtectionOverride(Value.TIME, Flag.FROM_AUTOSAVE);
         addReference(new ElementReference(Value.JAM, Jam.class, Jam.Child.PENALTY));

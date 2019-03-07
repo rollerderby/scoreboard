@@ -2,11 +2,14 @@ package com.carolinarollergirls.scoreboard.core;
 
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public Jam getJam();
     public Team getTeam();
+    
+    public TeamJam getOtherTeam();
 
     public boolean isRunningOrEnded();
     public boolean isRunningOrUpcoming();
@@ -19,16 +22,20 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public void changeOsOffset(int c);
 
     public int getJamScore();
-    public void setJamScore(int s);
-    public void changeJamScore(int c);
-
     public int getTotalScore();
 
-    public String getLeadJammer();
-    public void setLeadJammer(String ls);
+    public ScoringTrip getCurrentScoringTrip();
+    public void addScoringTrip();
+    public void removeScoringTrip();
+    
+    public boolean isLost();
+    public boolean isLead();
+    public boolean isCalloff();
+    public boolean isInjury();
+    public boolean isDisplayLead();
 
     public boolean isStarPass();
-    public void setStarPass(boolean sp);
+    public ScoringTrip getStarPassTrip();
 
     public boolean hasNoPivot();
     public void setNoPivot(boolean np);
@@ -36,16 +43,26 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public Fielding getFielding(FloorPosition fp);
 
     public enum Value implements PermanentProperty {
-        ID,
+        CURRENT_TRIP,
+        CURRENT_TRIP_NUMBER,
         LAST_SCORE,
         OS_OFFSET,
         JAM_SCORE,
         TOTAL_SCORE,
-        LEAD_JAMMER,
+        LOST,
+        LEAD,
+        CALLOFF,
+        NO_INITIAL,
+        INJURY,
+        DISPLAY_LEAD,
         STAR_PASS,
-        NO_PIVOT;
+        STAR_PASS_TRIP,
+        NO_PIVOT
     }
     public enum Child implements AddRemoveProperty {
-        FIELDING;
+        FIELDING
+    }
+    public enum NChild implements NumberedProperty {
+        SCORING_TRIP
     }
 }

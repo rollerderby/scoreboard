@@ -79,9 +79,9 @@ public interface ScoreBoardEventProvider extends ValueWithId {
      * Will return null if no such child is found
      */
     public ValueWithId get(AddRemoveProperty prop, String id);
-    public ValueWithId get(NumberedProperty prop, int num);
+    public ValueWithId get(NumberedProperty prop, Integer num);
     public ValueWithId getOrCreate(AddRemoveProperty prop, String id);
-    public ValueWithId getOrCreate(NumberedProperty prop, int num);
+    public ValueWithId getOrCreate(NumberedProperty prop, Integer num);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
     public NumberedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
     public NumberedScoreBoardEventProvider<?> getLast(NumberedProperty prop);

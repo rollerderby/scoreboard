@@ -260,7 +260,7 @@ function jamData(k,v) {
         var team = match[3];
 	var key = match[4];
 
-	if (key != 'JamScore' && key != 'LeadJammer') return;
+	if (key != 'JamScore' && key != 'DisplayLead') return;
 
 	pa = '.PPJBox .Team'+ team + ' .Period'+period;
 	me = pa + ' .Jam'+jam;
@@ -281,7 +281,7 @@ function jamData(k,v) {
 		$pId.sortDivs();
 	}
 
-	if(key == 'LeadJammer') {
+	if(key == 'DisplayLead') {
 		$(me).attr('lead', v);
 	}
 

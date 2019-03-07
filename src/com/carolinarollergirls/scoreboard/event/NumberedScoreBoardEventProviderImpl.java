@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.event;
 
 import java.util.Objects;
+import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -10,11 +11,12 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         extends OrderedScoreBoardEventProviderImpl<T> implements NumberedScoreBoardEventProvider<T> {
 
     @SafeVarargs
-    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, PermanentProperty idProp,
-            NumberedProperty type, Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
-        super(parent, idProp, type, ownClass, props);
+    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, NumberedProperty type,
+            Class<T> ownClass, Class<? extends Property>... props) {
+        super(parent, type, ownClass, props);
         ownType = type;
         values.put(IValue.NUMBER, Integer.parseInt(id));
+        set(IValue.ID, UUID.randomUUID().toString());
         setNeighbors(getNumber());
     }
 
@@ -54,7 +56,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         super._valueChanged(prop, value, last, flag);
     }
 
-    public  void setPrevious(T p) { set(IValue.PREVIOUS, p); }
+    public void setPrevious(T p) { set(IValue.PREVIOUS, p); }
     public void setNext(T n) { set(IValue.NEXT, n); }
 
     public int getNumber() { return (Integer)get(IValue.NUMBER); }

@@ -55,16 +55,16 @@ public class TeamImplTests {
 
     @Test
     public void testStartJam() {
-        team.setScore(34);
-        team.setLeadJammer(Team.LEAD_LOST_LEAD);
+        team.set(Team.Value.TRIP_SCORE, 34);
+        team.set(Team.Value.LEAD, false);
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LEAD_JAMMER, listener));
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LEAD, listener));
 
         sb.startJam();
 
-        //        assertEquals(34, team.getLastScore());
-        assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
-        //        assertEquals(2, collectedEvents.size());
+        assertEquals(0, team.get(Team.Value.TRIP_SCORE));
+        assertFalse(team.isLead());
+        assertEquals(1, collectedEvents.size());
     }
 
     @Test
@@ -133,85 +133,6 @@ public class TeamImplTests {
         assertEquals(0, team.getOfficialReviews());
     }
 
-    /*    @Test
-    public void testSetScore() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.SCORE, listener));
-
-        sb.startJam();
-        team.setScore(5);
-        assertEquals(5, team.getScore());
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(5, event.getValue());
-        assertEquals(0, event.getPreviousValue());
-        assertEquals(0, team.getLastScore());
-
-        //setting a value below lastScore changes lastScore
-        team.setLastScore(4);
-        team.setScore(3);
-        assertEquals(3, team.getLastScore());
-
-        //negative values are clamped
-        collectedEvents.clear();
-        team.setScore(-1);
-        assertEquals(0,team.getScore());
-        assertEquals(1, collectedEvents.size());
-        assertEquals(0, collectedEvents.poll().getValue());
-    }
-
-    @Test
-    public void testChangeScore() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.SCORE, listener));
-
-        sb.startJam();
-        team.setScore(5);
-        team.changeScore(3);
-        assertEquals(8, team.getScore());
-        assertEquals(2, collectedEvents.size());
-
-        team.changeScore(-5);
-        assertEquals(3, team.getScore());
-    }
-
-    @Test
-    public void testSetLastScore() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
-        sb.startJam();
-        team.setScore(10);
-
-        team.setLastScore(5);
-        assertEquals(5, team.getLastScore());
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(5, event.getValue());
-        assertEquals(0, event.getPreviousValue());
-
-        //values higher than score are clamped
-        team.setLastScore(12);
-        assertEquals(10, team.getLastScore());
-        assertEquals(1, collectedEvents.size());
-        assertEquals(10, collectedEvents.poll().getValue());
-
-        //negative values are clamped
-        team.setLastScore(-2);
-        assertEquals(0, team.getLastScore());
-    }
-
-    @Test
-    public void testChangeLastScore() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LAST_SCORE, listener));
-        sb.startJam();
-
-        team.setScore(10);
-        team.setLastScore(5);
-        team.changeLastScore(3);
-        assertEquals(8, team.getLastScore());
-        assertEquals(2, collectedEvents.size());
-
-        team.changeLastScore(-5);
-        assertEquals(3, team.getLastScore());
-    }
-     */
     @Test
     public void testSetInTimeout() {
         assertFalse(team.inTimeout());
@@ -427,27 +348,28 @@ public class TeamImplTests {
     }
 
     @Test
-    public void testSetLeadJammer() {
-        assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.LEAD_JAMMER, listener));
+    public void testDisplayLead() {
+        assertFalse(team.isLost());
+        assertFalse(team.isLead());
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.DISPLAY_LEAD, listener));
 
-        team.setLeadJammer(Team.LEAD_LEAD);
-        assertEquals(Team.LEAD_LEAD, team.getLeadJammer());
+        team.set(Team.Value.LEAD, true);
+        assertTrue(team.isDisplayLead());
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(Team.LEAD_LEAD, event.getValue());
-        assertEquals(Team.LEAD_NO_LEAD, event.getPreviousValue());
+        assertEquals(true, event.getValue());
+        assertEquals(false, event.getPreviousValue());
 
         //check idempotency
-        team.setLeadJammer(Team.LEAD_LEAD);
-        assertEquals(Team.LEAD_LEAD, team.getLeadJammer());
+        team.set(Team.Value.LEAD, true);
+        assertTrue(team.isDisplayLead());
         assertEquals(0, collectedEvents.size());
 
-        team.setLeadJammer(Team.LEAD_LOST_LEAD);
-        assertEquals(Team.LEAD_LOST_LEAD, team.getLeadJammer());
+        team.set(Team.Value.LOST, true);
+        assertFalse(team.isDisplayLead());
 
-        team.setLeadJammer(Team.LEAD_NO_LEAD);
-        assertEquals(Team.LEAD_NO_LEAD, team.getLeadJammer());
+        team.set(Team.Value.LOST, false);
+        assertTrue(team.isDisplayLead());
     }
 
     @Test
