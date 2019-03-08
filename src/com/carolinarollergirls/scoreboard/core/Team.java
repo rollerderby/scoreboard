@@ -116,7 +116,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         SKATER,
         POSITION,
         ALTERNATE_NAME,
-        COLOR
+        COLOR,
+        BOX_TRIP
     }
     public enum Command implements CommandProperty {
         ADD_TRIP,

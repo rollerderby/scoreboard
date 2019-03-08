@@ -251,11 +251,11 @@ public class StatsImplTests {
 
         // Skater goes to the box.
         skater1.setPenaltyBox(true);
-        assertEquals(true, tj.getFielding(FloorPosition.JAMMER).getPenaltyBox());
+        assertEquals(true, tj.getFielding(FloorPosition.JAMMER).isInBox());
 
         // Skater exits the box.
         skater1.setPenaltyBox(false);
-        assertEquals(false, tj.getFielding(FloorPosition.JAMMER).getPenaltyBox());
+        assertEquals(false, tj.getFielding(FloorPosition.JAMMER).isInBox());
 
         // Jam ends.
         sb.stopJamTO();

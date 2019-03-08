@@ -32,7 +32,7 @@ function createTeamTable(t) {
 
 	team.$sbBindAddRemoveEach("Skater", function(event, skater) {
 		var row = table.find("tr.Template").clone().removeClass("Template").attr("data-id", skater.$sbId);
-		skater.$sb("Name").$sbElement(row.find("td>a.Name"));
+		skater.$sb("CurrentBoxSymbols").$sbElement(row.find("td>a.Trips"));
 		skater.$sb("Number").$sbElement(row.find("td>a.Number"));
 		skater.$sb("Role").$sbBindAndRun("sbchange", function(event, value) {
 			if (POSITIONS_REGEX.test(value))

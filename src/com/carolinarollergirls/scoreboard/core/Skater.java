@@ -11,6 +11,9 @@ package com.carolinarollergirls.scoreboard.core;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+
+import java.util.List;
+
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
@@ -22,6 +25,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public void setName(String id);
     public String getNumber();
     public void setNumber(String number);
+    public Fielding getFielding(TeamJam teamJam);
     public Fielding getCurrentFielding();
     public void removeCurrentFielding();
     public Position getPosition();
@@ -36,12 +40,15 @@ public interface Skater extends ScoreBoardEventProvider {
     public String getFlags();
     public void setFlags(String flags);
     public Penalty getPenalty(String num);
+    public List<Penalty> getUnservedPenalties();
+    public boolean hasUnservedPenalties();
 
     public enum Value implements PermanentProperty {
         ID,
         NAME,
         NUMBER,
         CURRENT_FIELDING,
+        CURRENT_BOX_SYMBOLS,
         POSITION,
         ROLE,
         BASE_ROLE,

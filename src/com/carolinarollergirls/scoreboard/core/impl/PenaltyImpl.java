@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
+import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater;
@@ -14,17 +15,20 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         set(Value.TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
         addWriteProtectionOverride(Value.TIME, Flag.FROM_AUTOSAVE);
         addReference(new ElementReference(Value.JAM, Jam.class, Jam.Child.PENALTY));
+        addReference(new ElementReference(Value.BOX_TRIP, BoxTrip.class, BoxTrip.Child.PENALTY));
+        addReference(new UpdateReference(this, Value.SERVED, this, Value.BOX_TRIP));
+        addReference(new IndirectValueReference(this, Value.SERVING, this, Value.BOX_TRIP,
+                BoxTrip.Value.IS_CURRENT, true, false));
         addReference(new IndirectValueReference(this, Value.JAM_NUMBER, this, Value.JAM, IValue.NUMBER, true, 0));
         addReference(new IndirectValueReference(this, Value.PERIOD_NUMBER, this, Value.JAM, Jam.Value.PERIOD_NUMBER, true, 0));
+        if (s.isPenaltyBox()) { set(Value.BOX_TRIP, s.getCurrentFielding().getCurrentBoxTrip()); }
+        set(Value.SERVED, get(Value.BOX_TRIP) != null);
     }
-    public int getPeriodNumber() { return (Integer)get(Value.PERIOD_NUMBER); }
-    public int getJamNumber() { return (Integer)get(Value.JAM_NUMBER); }
-    public Jam getJam() { return (Jam)get(Value.JAM); }
-    public String getCode() { return (String)get(Value.CODE); }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == IValue.NEXT && getNumber() == 0) { return null; }
         if (prop == IValue.PREVIOUS && getNumber() == 1) { return null; }
+        if (prop == Value.SERVED) { return (get(Value.BOX_TRIP) != null); }
         return value;
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -49,4 +53,10 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
             unlink();
         }
     }
+
+    public int getPeriodNumber() { return (Integer)get(Value.PERIOD_NUMBER); }
+    public int getJamNumber() { return (Integer)get(Value.JAM_NUMBER); }
+    public Jam getJam() { return (Jam)get(Value.JAM); }
+    public String getCode() { return (String)get(Value.CODE); }
+    public boolean isServed() { return (Boolean)get(Value.SERVED); }
 }

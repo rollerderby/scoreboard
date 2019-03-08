@@ -219,7 +219,7 @@ public class XmlScoreBoard {
                 ScoreBoardManager.printMessage("Loaded auto-saved scoreboard XML from "+f.getPath());
                 return true;
             } catch ( Exception e ) {
-                ScoreBoardManager.printMessage("Could not load auto-saved scoreboard XML file "+f.getPath()+" : "+e.getMessage());
+                ScoreBoardManager.printMessage("Could not load auto-saved scoreboard XML file "+f.getPath()+" : "+e.getMessage()+" "+e.getStackTrace());
             }
         }
 

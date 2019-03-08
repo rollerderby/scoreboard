@@ -2,10 +2,12 @@ package com.carolinarollergirls.scoreboard.utils;
 
 import java.util.Comparator;
 
+import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
+import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
@@ -14,6 +16,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 public class Comparators {
     public static class SbepComparator<T extends ScoreBoardEventProvider> implements Comparator<T> {
         public int compare(ScoreBoardEventProvider p1, ScoreBoardEventProvider p2) {
+            if (p1 == null && p2 == null) { return 0; }
             if (p2 == null) { return -1; }
             if (p1 == null) { return 1; }
             if (p1 instanceof NumberedScoreBoardEventProvider<?> && p2 instanceof NumberedScoreBoardEventProvider<?> &&
@@ -30,9 +33,19 @@ public class Comparators {
     public static Comparator<Period> PeriodComparator = new SbepComparator<Period>();
     public static Comparator<Jam> JamComparator = new SbepComparator<Jam>();
     public static Comparator<TeamJam> TeamJamComparator = new SbepComparator<TeamJam>();
+    public static Comparator<ScoringTrip> ScoringTripComparator = new SbepComparator<ScoringTrip>();
     public static Comparator<Fielding> FieldingComparator = new SbepComparator<Fielding>();
+    public static Comparator<BoxTrip> BoxTripComparator = new Comparator<BoxTrip>() {
+        public int compare(BoxTrip b1, BoxTrip b2) {
+            if (b1 == null && b2 == null) { return 0; }
+            if (b2 == null) { return 1; }
+            if (b1 == null) { return -1; }
+            return (int) ((Long)b1.get(BoxTrip.Value.WALLTIME_START) - (Long)b2.get(BoxTrip.Value.WALLTIME_START));            
+        }
+    };
     public static Comparator<Skater> SkaterComparator = new Comparator<Skater>() {
         public int compare(Skater s1, Skater s2) {
+            if (s1 == null && s2 == null) { return 0; }
             if (s2 == null) { return 1; }
             if (s1 == null) { return -1; }
             String n1 = s1.getNumber();
@@ -46,6 +59,7 @@ public class Comparators {
 
     public static Comparator<Penalty> PenaltyComparator = new Comparator<Penalty>() {
         public int compare(Penalty p1, Penalty p2) {
+            if (p1 == null && p2 == null) { return 0; }
             if (p2 == null) { return -1; }
             if (p1 == null) { return 1; }
             int res = JamComparator.compare(p1.getJam(), p2.getJam());

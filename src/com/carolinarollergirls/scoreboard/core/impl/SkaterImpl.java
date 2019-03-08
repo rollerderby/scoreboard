@@ -8,14 +8,18 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Fielding;
+import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -37,6 +41,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
                 Value.CURRENT_FIELDING, Fielding.Value.POSITION, true, null));
         addReference(new IndirectValueReference(this, Value.PENALTY_BOX, this, 
                 Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false, false));
+        addReference(new IndirectValueReference(this, Value.CURRENT_BOX_SYMBOLS, this, 
+                Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true, ""));
     }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -52,12 +58,17 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             Fielding lf = (Fielding)last;
             setRole(value == null ? getBaseRole() : f.getCurrentRole());
             if (lf != null && lf.getSkater() == this) {
-                if (f != null && (lf.getTeamJam().getNext() == f.getTeamJam() || lf.isCurrent())) {
-                    f.setPenaltyBox(lf.getPenaltyBox());
+                if (f != null && lf.getTeamJam().getNext() == f.getTeamJam() && lf.isInBox()) {
+                    f.add(Fielding.Child.BOX_TRIP, lf.getCurrentBoxTrip());
                 } 
                 if (lf.isCurrent()) {
+                    if (f != null) {
+                        for (ValueWithId v : lf.getAll(Fielding.Child.BOX_TRIP)) {
+                            f.add(Fielding.Child.BOX_TRIP, v);
+                        }
+                        lf.removeAll(Fielding.Child.BOX_TRIP);
+                    }
                     lf.setSkater(null);
-                    lf.setPenaltyBox(false);
                 }
             }
         }
@@ -105,6 +116,13 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public String getNumber() { return (String)get(Value.NUMBER); }
     public void setNumber(String n) { set(Value.NUMBER, n); }
 
+    public Fielding getFielding(TeamJam teamJam) {
+        for (FloorPosition fp : FloorPosition.values()) {
+            Fielding f = (Fielding) get(Child.FIELDING, teamJam.getId() + "_" + fp.toString());
+            if (f != null) { return f; }
+        }
+        return null;
+    }
     public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
     public void removeCurrentFielding() {
         if (getCurrentFielding() != null) {
@@ -129,6 +147,16 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public void setFlags(String f) { set(Value.FLAGS, f); }
 
     public Penalty getPenalty(String id) { return (Penalty)get(NChild.PENALTY, id); }
+    public List<Penalty> getUnservedPenalties() {
+        List<Penalty> usp = new ArrayList<Penalty>();
+        for (ValueWithId p : getAll(NChild.PENALTY)) {
+            if (!((Penalty)p).isServed()) {
+                usp.add((Penalty)p);
+            }
+        }
+        return usp;
+    }
+    public boolean hasUnservedPenalties() { return getUnservedPenalties().size() > 0; }
 
     public SkaterSnapshot snapshot() {
         synchronized (coreLock) {

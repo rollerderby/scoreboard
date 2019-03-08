@@ -30,6 +30,8 @@ public abstract class OrderedScoreBoardEventProviderImpl<T extends OrderedScoreB
         requestBatchEnd();
     }
 
+    public int getNumber() { return (Integer)get(IValue.NUMBER); }
+
     @SuppressWarnings("unchecked")
     public T getPrevious() { return (T)get(IValue.PREVIOUS); }
     public boolean hasPrevious() { return getPrevious() != null; }

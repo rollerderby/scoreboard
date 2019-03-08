@@ -83,8 +83,8 @@ public interface ScoreBoardEventProvider extends ValueWithId {
     public ValueWithId getOrCreate(AddRemoveProperty prop, String id);
     public ValueWithId getOrCreate(NumberedProperty prop, Integer num);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
-    public NumberedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
-    public NumberedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
+    public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
+    public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
     //returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
     //returns true, if a value was removed

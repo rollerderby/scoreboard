@@ -59,7 +59,6 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
     public void setPrevious(T p) { set(IValue.PREVIOUS, p); }
     public void setNext(T n) { set(IValue.NEXT, n); }
 
-    public int getNumber() { return (Integer)get(IValue.NUMBER); }
     public void moveToNumber(int num)  {
         synchronized (coreLock) {
             if (num == getNumber()) { return; }

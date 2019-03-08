@@ -133,6 +133,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 return new SkaterImpl(this, id, "", "", "");
             case POSITION:
                 return null;
+            case BOX_TRIP:
+                return new BoxTripImpl(this, id);
             }
             return null;
         }
@@ -158,6 +160,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             for (ValueWithId p : getAll(Child.POSITION)) {
                 ((Position)p).reset();
             }
+            removeAll(Child.BOX_TRIP);
             removeAll(Child.ALTERNATE_NAME);
             removeAll(Child.COLOR);
             removeAll(Child.SKATER);
@@ -187,7 +190,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             TeamJam endedTJ = getRunningOrEndedTeamJam();
             for (FloorPosition fp : FloorPosition.values()) {
                 Skater s = endedTJ.getFielding(fp).getSkater();
-                if (s != null && endedTJ.getFielding(fp).getPenaltyBox()) {
+                if (s != null && (endedTJ.getFielding(fp).isInBox() || s.hasUnservedPenalties())) {
                     if (fp.getRole(endedTJ) != fp.getRole(upcomingTJ)) {
                         toField.put(s, fp.getRole(endedTJ));
                     } else {

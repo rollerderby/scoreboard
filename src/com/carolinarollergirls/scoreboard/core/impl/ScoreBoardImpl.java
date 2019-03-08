@@ -176,6 +176,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             scoreBoardChange(new ScoreBoardEvent(this, Value.UPCOMING_JAM, getUpcomingJam(), getUpcomingJam()));
             scoreBoardChange(new ScoreBoardEvent(this, NChild.PERIOD, getOrCreatePeriod(0), false));
             scoreBoardChange(new ScoreBoardEvent(this, Period.NChild.JAM, getUpcomingJam(), false));
+            updateTeamJams();
             requestBatchEnd();
         }
     }

@@ -185,12 +185,19 @@
 
 			jamBox.addClass("period-" + penaltyPeriod).addClass("jam-" + penaltyJam);
 			penaltyBox.addClass("period-" + penaltyPeriod).addClass("jam-" + penaltyJam);
+			
+			jamBox.toggleClass("Unserved", !isTrue(WS.state[prefix + ".Served"]))
+				.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
+			penaltyBox.toggleClass("Unserved", !isTrue(WS.state[prefix + ".Served"]))
+				.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
 
 		} else {
 			penaltyBox.data("id", null);
 			jamBox.data("id", null);
 			penaltyBox.html("&nbsp;");
 			jamBox.html("&nbsp;");
+			penaltyBox.removeClass("Serving Unserved");
+			jamBox.removeClass("Serving Unserved");
 		}
 
 		var cnt = 0; // Change row colors for skaters on 5 or more penalties, or expulsion.

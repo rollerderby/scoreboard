@@ -8,12 +8,17 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int getJamNumber();
     public Jam getJam();
     public String getCode();
+    
+    public boolean isServed();
 
     public enum Value implements PermanentProperty {
         TIME,
         JAM,
         PERIOD_NUMBER,
         JAM_NUMBER,
-        CODE;
+        CODE,
+        SERVING,
+        SERVED,
+        BOX_TRIP
     }
 }

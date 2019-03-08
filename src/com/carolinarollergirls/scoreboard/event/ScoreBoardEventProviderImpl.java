@@ -112,18 +112,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     public void unlink() { unlink(false); }
     protected void unlink(boolean neighborsRemoved) {
-        for (Class<? extends Property> propertySet : properties) {
-            for (Property prop : propertySet.getEnumConstants()) {
-                if (prop instanceof AddRemoveProperty) {
-                    for (ValueWithId v : getAll((AddRemoveProperty) prop)) {
-                        ScoreBoardEventProviderImpl item = (ScoreBoardEventProviderImpl) v;
-                        if (item.getParent() == this) {
-                            item.unlink(neighborsRemoved || item instanceof NumberedScoreBoardEventProvider<?>);
-                        }
-                    }
-                }
-            }
-        }
         for (ElementReference ref : elementReference.values()) {
             if (ref.getLocalProperty() instanceof PermanentProperty && get((PermanentProperty) ref.getLocalProperty()) != null) {
                 ScoreBoardEventProvider remote = (ScoreBoardEventProvider)get((PermanentProperty) ref.getLocalProperty());
@@ -150,6 +138,18 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             if (ref instanceof IndirectValueReference) {
                 ((ScoreBoardEventProviderImpl)((IndirectValueReference)ref).getIndirectionElement()).referenceRelays.get(
                         ((IndirectValueReference)ref).getIndirectionProperty()).remove(ref);
+            }
+        }
+        for (Class<? extends Property> propertySet : properties) {
+            for (Property prop : propertySet.getEnumConstants()) {
+                if (prop instanceof AddRemoveProperty) {
+                    for (ValueWithId v : getAll((AddRemoveProperty) prop)) {
+                        ScoreBoardEventProviderImpl item = (ScoreBoardEventProviderImpl) v;
+                        if (item.getParent() == this) {
+                            item.unlink(neighborsRemoved || item instanceof NumberedScoreBoardEventProvider<?>);
+                        }
+                    }
+                }
             }
         }
         getParent().remove(ownType, this);
@@ -314,7 +314,8 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             if (ref instanceof ValueReference) {
                 ((ScoreBoardEventProviderImpl)ref.getUpdatedElement())._valueChanged(ref.getUpdatedProperty(), value, last, flag);
             } else {
-                ref.getUpdatedElement().set(ref.getUpdatedProperty(), ref.getUpdatedElement().get(ref.getUpdatedProperty()), Flag.INTERNAL);
+                ref.getUpdatedElement().set(ref.getUpdatedProperty(), ref.getUpdatedElement().get(ref.getUpdatedProperty()),
+                        flag == Flag.FROM_AUTOSAVE ? Flag.FROM_AUTOSAVE : Flag.INTERNAL);
             }
         }
         for (ValueReference ref : referenceRelays.get(prop)) {
@@ -352,14 +353,14 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
     }
     public ValueWithId getOrCreate(NumberedProperty prop, Integer num) { return getOrCreate(prop, String.valueOf(num)); }
-    public NumberedScoreBoardEventProvider<?> getFirst(NumberedProperty prop) {
+    public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop) {
         synchronized (coreLock) {
-            return (NumberedScoreBoardEventProvider<?>)get(prop, minIds.get(prop));
+            return (OrderedScoreBoardEventProvider<?>)get(prop, minIds.get(prop));
         }
     }
-    public NumberedScoreBoardEventProvider<?> getLast(NumberedProperty prop) {
+    public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop) {
         synchronized (coreLock) {
-            return (NumberedScoreBoardEventProvider<?>)get(prop, maxIds.get(prop));
+            return (OrderedScoreBoardEventProvider<?>)get(prop, maxIds.get(prop));
         }
     }
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) {
@@ -386,7 +387,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             ((ScoreBoardEventProvider)item).addScoreBoardListener(this);
         }
         if (prop instanceof NumberedProperty) {
-            int num = ((NumberedScoreBoardEventProvider<?>)item).getNumber();
+            int num = ((OrderedScoreBoardEventProvider<?>)item).getNumber();
             if (minIds.get(prop) == null || num < minIds.get(prop)) { minIds.put((NumberedProperty)prop,  num); }
             if (maxIds.get(prop) == null || num > maxIds.get(prop)) { maxIds.put((NumberedProperty)prop,  num); }
         }
@@ -437,7 +438,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
                 minIds.remove(nprop);
                 maxIds.remove(nprop);
             } else {
-                int num = ((NumberedScoreBoardEventProvider<?>)item).getNumber();
+                int num = ((OrderedScoreBoardEventProvider<?>)item).getNumber();
                 if (num == getMaxNumber(nprop)) {
                     while (get(nprop, num) == null) { num --; }
                     maxIds.put(nprop, num);
