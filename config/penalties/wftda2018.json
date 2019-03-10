@@ -1,5 +1,6 @@
 {
 	"penalties": [
+		{ "code": "?", "verbalCues": ["Unknown"]},
 		{ "code": "B", "verbalCues": ["Back Block"]},
 		{ "code": "A", "verbalCues": ["High Block"]},
 		{ "code": "L", "verbalCues": ["Low Block"]},

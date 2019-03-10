@@ -31,7 +31,7 @@ tr {
 .Team .Warn3 { background-color: #ff8080; }
 .Team .Warn3:nth-child(4n+0), .Team .Warn3:nth-child(4n-1) { background-color: #cc2d2d; }
 
-.Team .Unserved { background-color: #FF0; }
+.Team .Unserved { background-color: #0FF; }
 .Team .Serving { background-color: #0F0; }
 
 .PenaltyEditor .Codes>div { float: left; width: 150px; height: 80px; margin: 10px; border: 1px solid black; font-weight: bold; }
