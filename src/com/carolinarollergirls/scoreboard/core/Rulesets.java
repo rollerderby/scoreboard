@@ -15,6 +15,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Rulesets extends ScoreBoardEventProvider {
     public void reset();
@@ -40,13 +41,23 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public Ruleset addRuleset(String name, String parentId, String id);
 
     public enum Value implements PermanentProperty {
-        CURRENT_RULESET_ID,
-        CURRENT_RULESET_NAME;
+        CURRENT_RULESET_ID(String.class, ""),
+        CURRENT_RULESET_NAME(String.class, "");
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
     public enum Child implements AddRemoveProperty {
-        CURRENT_RULE,
-        RULE_DEFINITION,
-        RULESET;
+        CURRENT_RULE(ValWithId.class),
+        RULE_DEFINITION(RuleDefinition.class),
+        RULESET(Ruleset.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
     }
 
     public static interface Ruleset extends ScoreBoardEventProvider {
@@ -61,12 +72,22 @@ public interface Rulesets extends ScoreBoardEventProvider {
         public void setAll(Collection<ValueWithId> s);
 
         public enum Value implements PermanentProperty {
-            ID,
-            PARENT_ID,
-            NAME;
+            ID(String.class, ""),
+            PARENT_ID(String.class, ""),
+            NAME(String.class, "");
+
+            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+            private final Class<?> type;
+            private final Object defaultValue;
+            public Class<?> getType() { return type; }
+            public Object getDefaultValue() { return defaultValue; }
         }
         public enum Child implements AddRemoveProperty {
-            RULE;
+            RULE(ValWithId.class);
+
+            private Child(Class<? extends ValueWithId> t) { type = t; }
+            private final Class<? extends ValueWithId> type;
+            public Class<? extends ValueWithId> getType() { return type; }
         }
     }
 }

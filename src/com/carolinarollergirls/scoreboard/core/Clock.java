@@ -94,22 +94,30 @@ public interface Clock extends ScoreBoardEventProvider {
     }
 
     public enum Value implements PermanentProperty {
-        ID,
-        NAME,
-        NUMBER,
-        MINIMUM_NUMBER,
-        MAXIMUM_NUMBER,
-        TIME,
-        INVERTED_TIME,
-        MINIMUM_TIME,
-        MAXIMUM_TIME,
-        DIRECTION,
-        RUNNING;
+        ID(String.class, ""),
+        NAME(String.class, ""),
+        NUMBER(Integer.class, 0),
+        MINIMUM_NUMBER(Integer.class, 0),
+        MAXIMUM_NUMBER(Integer.class, 0),
+        TIME(Long.class, 0L),
+        INVERTED_TIME(Long.class, 0L),
+        MINIMUM_TIME(Long.class, 0L),
+        MAXIMUM_TIME(Long.class, 0L),
+        DIRECTION(Boolean.class, false),
+        RUNNING(Boolean.class, false);
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
     public enum Command implements CommandProperty {
         START,
         STOP,
         RESET_TIME;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
     }
 
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";

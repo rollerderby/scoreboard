@@ -8,6 +8,7 @@ package com.carolinarollergirls.scoreboard.event;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProvider,ScoreBoardListener {
     @SafeVarargs
-    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, PermanentProperty idProp,
+    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, PermanentProperty idProp, String id,
             AddRemoveProperty type, Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
         this.parent = parent;
         if (parent != null) {
@@ -54,14 +55,13 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         properties = Arrays.asList(props);
         for (Class<? extends Property> propertySet : properties) {
             for (Property prop : propertySet.getEnumConstants()) {
-                updatedValues.put(prop, new HashSet<UpdateReference>());
                 if (prop instanceof AddRemoveProperty) {
                     children.put((AddRemoveProperty)prop, new HashMap<String, ValueWithId>());
-                } else if (prop instanceof PermanentProperty) {
-                    referenceRelays.put((PermanentProperty)prop, new HashSet<IndirectValueReference>());
                 }
             }
         }
+        set(idProperty, id);
+        addWriteProtection(idProp);
     }
 
     public String getId() { 
@@ -84,8 +84,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     protected void dispatch(ScoreBoardEvent event) {
         // Synchronously send events to listeners.
+        // need to copy the list as some listeners may add or remove listeners
         synchronized(scoreBoardEventListeners) {
-            for (ScoreBoardListener l : scoreBoardEventListeners) {
+            for (ScoreBoardListener l : new ArrayList<ScoreBoardListener>(scoreBoardEventListeners)) {
                 l.scoreBoardChange(event);
             }
         }
@@ -112,34 +113,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     public void unlink() { unlink(false); }
     protected void unlink(boolean neighborsRemoved) {
-        for (ElementReference ref : elementReference.values()) {
-            if (ref.getLocalProperty() instanceof PermanentProperty && get((PermanentProperty) ref.getLocalProperty()) != null) {
-                ScoreBoardEventProvider remote = (ScoreBoardEventProvider)get((PermanentProperty) ref.getLocalProperty());
-                if (ref.getRemoteProperty() instanceof PermanentProperty) {
-                    remote.set((PermanentProperty) ref.getRemoteProperty(), ref.getAlternateTarget(this, neighborsRemoved));
-                } else if (ref.getRemoteProperty() instanceof AddRemoveProperty) {
-                    remote.remove((AddRemoveProperty) ref.getRemoteProperty(), this);
-                }
-            } else if (ref.getLocalProperty() instanceof AddRemoveProperty) {
-                for (ValueWithId remote : getAll((AddRemoveProperty) ref.getLocalProperty())) {
-                    if (ref.getRemoteProperty() instanceof PermanentProperty) {
-                        ((ScoreBoardEventProvider)remote).set(
-                                (PermanentProperty) ref.getRemoteProperty(), ref.getAlternateTarget(this, neighborsRemoved));
-                    } else if (ref.getRemoteProperty() instanceof AddRemoveProperty) {
-                        ((ScoreBoardEventProvider)remote).remove((AddRemoveProperty) ref.getRemoteProperty(), this);
-                    }
-                }
-            }
-        }
-        for (UpdateReference ref : incomingUpdates) {
-            if (ref.getWatchedElement() != null) {
-                ((ScoreBoardEventProviderImpl) ref.getWatchedElement()).removeUpdateTarget(ref);
-            }
-            if (ref instanceof IndirectValueReference) {
-                ((ScoreBoardEventProviderImpl)((IndirectValueReference)ref).getIndirectionElement()).referenceRelays.get(
-                        ((IndirectValueReference)ref).getIndirectionProperty()).remove(ref);
-            }
-        }
         for (Class<? extends Property> propertySet : properties) {
             for (Property prop : propertySet.getEnumConstants()) {
                 if (prop instanceof AddRemoveProperty) {
@@ -147,9 +120,21 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
                         ScoreBoardEventProviderImpl item = (ScoreBoardEventProviderImpl) v;
                         if (item.getParent() == this) {
                             item.unlink(neighborsRemoved || item instanceof NumberedScoreBoardEventProvider<?>);
+                        } else {
+                            remove((AddRemoveProperty) prop, item);
                         }
                     }
+                } else if (prop instanceof PermanentProperty &&
+                        ScoreBoardEventProvider.class.isAssignableFrom(prop.getType())) {
+                    set((PermanentProperty) prop, null);
                 }
+            }
+        }
+        for (ScoreBoardListener l : providers.keySet()) {
+            if (l instanceof UnlinkableScoreBoardListener) {
+                ((UnlinkableScoreBoardListener) l).unlink();
+            } else {
+                providers.get(l).removeScoreBoardListener(l);
             }
         }
         getParent().remove(ownType, this);
@@ -159,71 +144,92 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     public void addWriteProtectionOverride(Property prop, Flag override) {
         writeProtectionOverride.put(prop, override);
     }
+    public boolean isWritable(Property prop, Flag flag) {
+        if (!writeProtectionOverride.containsKey(prop)) { return true; }
+        if (writeProtectionOverride.get(prop) == null) { return false; }
+        if (writeProtectionOverride.get(prop) == flag) { return true; }
+        return false;
+    }
+    
+    protected ScoreBoardListener setCopy(PermanentProperty targetProperty, ScoreBoardEventProvider sourceElement,
+            PermanentProperty sourceProperty, boolean readonly) {
+        ScoreBoardListener l = new ConditionalScoreBoardListener(sourceElement, sourceProperty,
+                new CopyScoreBoardListener(this, targetProperty));
+        sourceElement.addScoreBoardListener(l);
+        providers.put(l, sourceElement);
+        if (readonly) {
+            addWriteProtectionOverride(targetProperty, Flag.COPY);
+        } else {
+            reverseCopyListeners.put(targetProperty, 
+                    new CopyScoreBoardListener(sourceElement, sourceProperty, false));
+        }
+        set(targetProperty, sourceElement.get(sourceProperty), Flag.COPY);
+        return l;
+    }
+    protected ScoreBoardListener setCopy(final PermanentProperty targetProperty, ScoreBoardEventProvider indirectionElement,
+            PermanentProperty indirectionProperty, final PermanentProperty sourceProperty, boolean readonly) {
+        ScoreBoardListener l = new IndirectScoreBoardListener(indirectionElement, indirectionProperty, sourceProperty,
+                new CopyScoreBoardListener(this, targetProperty));
+        providers.put(l, null);
+        if (readonly) {
+            addWriteProtectionOverride(targetProperty, Flag.COPY);
+        } else {
+            ScoreBoardListener reverseListener = 
+            new ConditionalScoreBoardListener(indirectionElement, indirectionProperty,
+                    new ScoreBoardListener() {
+                        public void scoreBoardChange(ScoreBoardEvent event) {
+                            reverseCopyListeners.put(targetProperty,
+                                    new CopyScoreBoardListener((ScoreBoardEventProvider) event.getValue(),
+                                            sourceProperty, false));
+                        }
+                    });
+            indirectionElement.addScoreBoardListener(reverseListener);
+            reverseListener.scoreBoardChange(new ScoreBoardEvent(indirectionElement, indirectionProperty,
+                    indirectionElement.get(indirectionProperty), null));
+        }
+        return l;
+    }
+    protected RecalculateScoreBoardListener setRecalculated(PermanentProperty targetProperty) {
+        RecalculateScoreBoardListener l = new RecalculateScoreBoardListener(this, targetProperty);
+        providers.put(l, null);
+        return l;
+    }
+    protected InverseReferenceUpdateListener setInverseReference(Property localProperty, Property remoteProperty) {
+        InverseReferenceUpdateListener l = new InverseReferenceUpdateListener(this, localProperty, remoteProperty);
+        addScoreBoardListener(l);
+        return l;
+    }
 
-    protected void addReference(ElementReference reference) {
-        elementReference.put(reference.getLocalProperty(), reference);
-    }
-    protected void addReference(UpdateReference reference) {
-        if (reference instanceof IndirectValueReference) {
-            IndirectValueReference ref = (IndirectValueReference)reference;
-            ((ScoreBoardEventProviderImpl)ref.getIndirectionElement()).referenceRelays.get(ref.getIndirectionProperty()).add(ref);
-        }
-        if (reference instanceof ValueReference) {
-            ValueReference ref= (ValueReference)reference;
-            ScoreBoardEventProviderImpl updatedElement = (ScoreBoardEventProviderImpl)ref.getUpdatedElement();
-            if (ref.isReadOnly()) {
-                updatedElement.addWriteProtection(ref.getUpdatedProperty());
-            }
-            updatedElement.valueSources.put(ref.getUpdatedProperty(), ref);
-        }
-        if (reference.getWatchedElement() != null) {
-            ((ScoreBoardEventProviderImpl)reference.getWatchedElement()).addUpdateTarget(reference);
-        }
-        ((ScoreBoardEventProviderImpl)reference.getUpdatedElement()).incomingUpdates.add(reference);
-    }
-    protected void addUpdateTarget(UpdateReference reference) {
-        updatedValues.get(reference.getWatchedProperty()).add(reference);
-    }
-    protected void removeUpdateTarget(UpdateReference reference) {
-        updatedValues.get(reference.getWatchedProperty()).remove(reference);
-    }
     public Object valueFromString(PermanentProperty prop, String sValue, Flag flag) {
         synchronized (coreLock) {
-            ElementReference ref = elementReference.get(prop);
-            if (ref != null) {
-                return getElement(ref.getRemoteClass(), sValue);
+            if (prop == IValue.PREVIOUS || prop == IValue.NEXT) {
+                return getElement(providerClass, sValue);
             }
-            Object old;
-            ValueReference reference = valueSources.get(prop);
-            if (reference != null) {
-                if (reference.getWatchedElement() != null) {
-                    return reference.getWatchedElement().valueFromString(reference.getWatchedProperty(), sValue, flag);
-                } else {
-                    old = reference.getDefaultValue();
-                }
-            } else {
-                old = get(prop);
+            @SuppressWarnings("rawtypes")
+            Class type = prop.getType();
+            if (ScoreBoardEventProvider.class.isAssignableFrom(type)) {
+                return getElement(type, sValue);
             }
             Object value = sValue;
-            if (old instanceof Role) {
+            if (type == Role.class) {
                 value = Role.fromString(sValue);
             }
-            if (old instanceof FloorPosition) {
+            if (type == FloorPosition.class) {
                 value = FloorPosition.fromString(sValue);
             }
-            if (old instanceof TimeoutOwner) {
+            if (type == TimeoutOwner.class) {
                 value = scoreBoard.getTimeoutOwner(sValue);
             }
-            if (old instanceof Boolean) { 
+            if (type == Boolean.class) { 
                 value = Boolean.valueOf(sValue); 
             }
-            if (old instanceof Integer) {
+            if (type == Integer.class) {
                 value = Integer.valueOf(sValue);
             }
-            if (old instanceof Long) {
+            if (type == Long.class) {
                 value = Long.valueOf(sValue);
             }
-            if ("".equals(sValue) && !(old instanceof String)) {
+            if ("".equals(sValue) && !(type == String.class)) {
                 value = null;
             }
             return value;
@@ -231,35 +237,32 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     public Object get(PermanentProperty prop) {
         synchronized (coreLock) {
-            ValueReference reference = valueSources.get(prop);
-            if (reference != null) {
-                if (reference.getWatchedElement() == null) { return reference.getDefaultValue(); }
-                return reference.getWatchedElement().get(reference.getWatchedProperty());
-            }
+            if (!values.containsKey(prop)) return prop.getDefaultValue();
             return values.get(prop);
         }
     }
     public boolean set(PermanentProperty prop, Object value) { return set(prop, value, null); }
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
         synchronized (coreLock) {
+            if (prop == null) { return false; }
             boolean foreign = true;
             for (Class<? extends Property> pc : properties) {
                 if (pc.isAssignableFrom(prop.getClass())) { foreign = false; break; }
             }
             if (foreign) { return false; }
-            ValueReference reference = valueSources.get(prop);
-            if (reference != null) {
-                if (reference.isReadOnly() || reference.getWatchedElement() == null || flag == Flag.FROM_AUTOSAVE) {
-                    return false;
-                } else {
-                    return reference.getWatchedElement().set(reference.getWatchedProperty(), value, flag);
-                }
-            }
-            if (writeProtectionOverride.containsKey(prop) && (writeProtectionOverride.get(prop) == null ||
-                    writeProtectionOverride.get(prop) != flag)) {
+            if (value != null && !prop.getType().isAssignableFrom(value.getClass())) { return false; }
+            if (prop == idProperty && flag == Flag.FROM_AUTOSAVE) {
+                // register ID as an alias so other elements from autosave are properly redirected
+                elements.get(providerClass).put((String) value, this);
                 return false;
             }
-            Object last = values.get(prop);
+            if (!isWritable(prop, flag)) { return false; }
+            Object last = get(prop);
+            if (reverseCopyListeners.containsKey(prop) && flag != Flag.COPY) {
+                reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent(
+                        this, prop, value, last));
+                return false;
+            }
             value = _computeValue(prop, value, last, flag);
             if (Objects.equals(value, last)) { return false; }
             values.put(prop, value);
@@ -280,49 +283,10 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) { return value; }
     protected void _valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         requestBatchStart();
-        scoreBoardChange(new ScoreBoardEvent(this, prop, value, last));
         if (prop == idProperty) {
-            elements.get(providerClass).remove(String.valueOf(last));
-            elements.get(providerClass).put(String.valueOf(value), this);
-            if (! writeProtectionOverride.containsKey(prop)) {
-                addWriteProtectionOverride(prop, Flag.FROM_AUTOSAVE);
-            }
+            elements.get(providerClass).put((String)value, this);
         }
-        ElementReference reference = elementReference.get(prop);
-        if (reference != null) {
-            ScoreBoardEventProvider lastRemote = 
-                    last instanceof ScoreBoardEventProvider ? (ScoreBoardEventProvider)last : null;
-            ScoreBoardEventProvider newRemote = 
-                    value instanceof ScoreBoardEventProvider ? (ScoreBoardEventProvider)value : null;
-            if (reference.getRemoteProperty() instanceof PermanentProperty) {
-                if (lastRemote != null && lastRemote.get((PermanentProperty)reference.getRemoteProperty()) == this) {
-                    lastRemote.set((PermanentProperty)reference.getRemoteProperty(), null, Flag.INTERNAL);
-                }
-                if (newRemote != null) {
-                    newRemote.set((PermanentProperty)reference.getRemoteProperty(), this, Flag.INTERNAL);
-                }
-            } else if (reference.getRemoteProperty() instanceof AddRemoveProperty) {
-                if (lastRemote != null) {
-                    lastRemote.remove((AddRemoveProperty)reference.getRemoteProperty(), this);
-                }
-                if (newRemote != null) {
-                    newRemote.add((AddRemoveProperty)reference.getRemoteProperty(), this);
-                }
-            }
-        }
-        for (UpdateReference ref : updatedValues.get(prop)) {
-            if (ref instanceof ValueReference) {
-                ((ScoreBoardEventProviderImpl)ref.getUpdatedElement())._valueChanged(ref.getUpdatedProperty(), value, last, flag);
-            } else {
-                ref.getUpdatedElement().set(ref.getUpdatedProperty(), ref.getUpdatedElement().get(ref.getUpdatedProperty()),
-                        flag == Flag.FROM_AUTOSAVE ? Flag.FROM_AUTOSAVE : Flag.INTERNAL);
-            }
-        }
-        for (ValueReference ref : referenceRelays.get(prop)) {
-            if (value instanceof ScoreBoardEventProvider || value == null) {
-                ref.setWatchedElement((ScoreBoardEventProvider) value);
-            }
-        }
+        scoreBoardChange(new ScoreBoardEvent(this, prop, value, last));
         valueChanged(prop, value, last, flag);
         requestBatchEnd();
     }
@@ -330,11 +294,10 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     public ValueWithId childFromString(AddRemoveProperty prop, String id, String sValue) {
         synchronized (coreLock) {
-            ElementReference ref = elementReference.get(prop);
-            if (ref != null) { return getElement(ref.getRemoteClass(), sValue); }
-            ValueWithId v = create(prop, id);
-            if ( v != null) { return v; }
-            return new ValWithId(id, sValue);
+            if (prop.getType() == ValWithId.class) {
+                return new ValWithId(id, sValue);
+            }
+            return (ValueWithId) getElement(prop.getType(), sValue);
         }
     }
     public ValueWithId get(AddRemoveProperty prop, String id) {
@@ -370,7 +333,8 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     public boolean add(AddRemoveProperty prop, ValueWithId item) {
         synchronized (coreLock) {
-            if (item == null || writeProtectionOverride.containsKey(prop)) { return false; }
+            if (item == null || !isWritable(prop, null)) { return false; }
+            if (item != null && !prop.getType().isAssignableFrom(item.getClass())) { return false; }
             Map<String, ValueWithId> map = children.get(prop);
             String id = item.getId();
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
@@ -392,22 +356,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             if (maxIds.get(prop) == null || num > maxIds.get(prop)) { maxIds.put((NumberedProperty)prop,  num); }
         }
         scoreBoardChange(new ScoreBoardEvent(this, prop, item, false));
-        if (item instanceof ParentOrderedScoreBoardEventProvider<?> && ((ScoreBoardEventProvider) item).getParent() == this) {
-            ((ScoreBoardEventProvider) item).set(IValue.NEXT, null);
-            ((ScoreBoardEventProvider) item).set(IValue.PREVIOUS, null);
-        }
-        ElementReference reference = elementReference.get(prop);
-        if (reference != null) {
-            ScoreBoardEventProvider remote = (ScoreBoardEventProvider)item;
-            if (reference.getRemoteProperty() instanceof PermanentProperty) {
-                remote.set((PermanentProperty)reference.getRemoteProperty(), this);
-            } else if (reference.getRemoteProperty() instanceof AddRemoveProperty) {
-                remote.add((AddRemoveProperty)reference.getRemoteProperty(), this);
-            }
-        }
-        for (UpdateReference ref : updatedValues.get(prop)) {
-            ref.getUpdatedElement().set(ref.getUpdatedProperty(), ref.getUpdatedElement().get(ref.getUpdatedProperty()), Flag.INTERNAL);
-        }
         itemAdded(prop, item);
     }
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {}
@@ -415,7 +363,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id)); }
     public boolean remove(AddRemoveProperty prop, ValueWithId item) {
         synchronized (coreLock) {
-            if (item == null || writeProtectionOverride.containsKey(prop)) { return false; }
+            if (item == null || !isWritable(prop, null)) { return false; }
             String id = item.getId();
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
                 id = ((ScoreBoardEventProvider)item).getProviderId();
@@ -431,7 +379,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         if (item instanceof ScoreBoardEventProvider) {
             ((ScoreBoardEventProvider)item).removeScoreBoardListener(this);
         }
-        scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
         if (prop instanceof NumberedProperty) {
             NumberedProperty nprop = (NumberedProperty) prop;
             if (getAll(nprop).isEmpty()) {
@@ -449,22 +396,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
                 }
             }
         }
-        ElementReference reference = elementReference.get(prop);
-        if (reference != null) {
-            ScoreBoardEventProvider remote = (ScoreBoardEventProvider)item;
-            if (reference.getRemoteProperty() instanceof PermanentProperty) {
-                if (remote != null && remote.get((PermanentProperty)reference.getRemoteProperty()) == this) {
-                    remote.set((PermanentProperty)reference.getRemoteProperty(), null);
-                }
-            } else if (reference.getRemoteProperty() instanceof AddRemoveProperty) {
-                if (remote != null) {
-                    remote.remove((AddRemoveProperty)reference.getRemoteProperty(), this);
-                }
-            }
-        }
-        for (UpdateReference ref : updatedValues.get(prop)) {
-            ref.getUpdatedElement().set(ref.getUpdatedProperty(), ref.getUpdatedElement().get(ref.getUpdatedProperty()), Flag.INTERNAL);
-        }
+        scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
         itemRemoved(prop, item);
         requestBatchEnd();
     }
@@ -485,10 +417,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     public static Object getCoreLock() { return coreLock; }
 
-    @SuppressWarnings("unchecked")
-    public <T extends ScoreBoardEventProvider> T getElement(Class<T> type, String id) {
+    public ScoreBoardEventProvider getElement(Class<?> type, String id) {
         try {
-            return (T) elements.get(type).get(id);
+            return elements.get(type).get(id);
         } catch (NullPointerException e) { return null; }
     }
 
@@ -504,14 +435,12 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     protected List<Class<? extends Property>> properties;
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
-
+    protected Map<ScoreBoardListener, ScoreBoardEventProvider> providers = new HashMap<ScoreBoardListener, ScoreBoardEventProvider>();
+    
     protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();
     protected Map<Property, Flag> writeProtectionOverride = new HashMap<Property, Flag>();
-    protected Map<PermanentProperty, ValueReference> valueSources = new HashMap<PermanentProperty, ValueReference>();
-    protected Map<Property, Set<UpdateReference>> updatedValues = new HashMap<Property, Set<UpdateReference>>();
-    protected Map<PermanentProperty, Set<IndirectValueReference>> referenceRelays = new HashMap<PermanentProperty, Set<IndirectValueReference>>();
-    protected Set<UpdateReference> incomingUpdates = new HashSet<UpdateReference>();
-    protected Map<Property, ElementReference> elementReference = new HashMap<Property, ElementReference>();
+    protected Map<PermanentProperty, ScoreBoardListener> reverseCopyListeners = new HashMap<PermanentProperty, ScoreBoardListener>();
+
     protected Map<AddRemoveProperty, Map<String, ValueWithId>> children = new HashMap<AddRemoveProperty, Map<String, ValueWithId>>();
     protected Map<NumberedProperty, Integer> minIds = new HashMap<NumberedProperty, Integer>();
     protected Map<NumberedProperty, Integer> maxIds = new HashMap<NumberedProperty, Integer>();
@@ -520,129 +449,12 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             new HashMap<Class<? extends ScoreBoardEventProvider>, Map<String, ScoreBoardEventProvider>>();
 
     public enum BatchEvent implements ScoreBoardEvent.PermanentProperty {
-        START,
-        END;
-    }
-
-    public static class UpdateReference {
-        public UpdateReference(ScoreBoardEventProvider updatedElement, PermanentProperty updatedProperty,
-                ScoreBoardEventProvider watchedElement, Property watchedProperty) {
-            this.updatedElement = updatedElement;
-            this.updatedProperty = updatedProperty;
-            this.watchedElement = watchedElement;
-            this.watchedProperty = watchedProperty;
-        }
-
-        public ScoreBoardEventProvider getUpdatedElement() { return updatedElement; }
-        public PermanentProperty getUpdatedProperty() { return updatedProperty; }
-        public ScoreBoardEventProvider getWatchedElement() { return watchedElement; }
-        public Property getWatchedProperty() { return watchedProperty; }
-        public void setWatchedElement(ScoreBoardEventProvider we) {
-            if (watchedElement == we) { return; }
-            if (watchedElement != null) {
-                ((ScoreBoardEventProviderImpl)watchedElement).removeUpdateTarget(this);
-            }
-            watchedElement = we;
-            if (watchedElement != null) {
-                ((ScoreBoardEventProviderImpl)watchedElement).addUpdateTarget(this);
-            }
-            updatedElement.set(updatedProperty, updatedElement.get(updatedProperty), Flag.INTERNAL);
-        }
-
-        protected ScoreBoardEventProvider updatedElement;
-        protected PermanentProperty updatedProperty;
-        protected ScoreBoardEventProvider watchedElement;
-        protected Property watchedProperty;
-    }
-
-    public static class ValueReference extends UpdateReference {
-        public ValueReference(ScoreBoardEventProvider updatedElement, PermanentProperty updatedProperty,
-                ScoreBoardEventProvider watchedElement, PermanentProperty watchedProperty, boolean readonly,
-                Object defaultValue) {
-            super(updatedElement, updatedProperty, watchedElement, watchedProperty);
-            this.readonly = readonly;
-            this.defaultValue = defaultValue;
-        }
-
-        public PermanentProperty getWatchedProperty() { return (PermanentProperty) watchedProperty; }
-        public boolean isReadOnly() { return readonly; }
-        public Object getDefaultValue() { return defaultValue; }
-        public void setWatchedElement(ScoreBoardEventProvider we) {
-            if (watchedElement == we) { return; }
-            Object oldValue = getDefaultValue(); 
-            Object newValue = getDefaultValue();
-            if (watchedElement != null) {
-                oldValue = (watchedElement).get(getWatchedProperty());
-                ((ScoreBoardEventProviderImpl)watchedElement).removeUpdateTarget(this);
-            }
-            watchedElement = we;
-            if (watchedElement != null) {
-                newValue = (watchedElement).get(getWatchedProperty());
-                ((ScoreBoardEventProviderImpl)watchedElement).addUpdateTarget(this);
-            }
-            if (!Objects.equals(oldValue, newValue)) {
-                ((ScoreBoardEventProviderImpl)getUpdatedElement())._valueChanged(
-                        updatedProperty, newValue, oldValue, null);
-            }
-        }
-
-        protected boolean readonly;
-        protected Object defaultValue;
-    }
-
-    public static class IndirectValueReference extends ValueReference {
-        public IndirectValueReference(ScoreBoardEventProvider updatedElement, PermanentProperty updatedProperty,
-                ScoreBoardEventProvider indirectionElement, PermanentProperty indirectionProperty,
-                PermanentProperty watchedProperty, boolean readonly, Object defaultValue) {
-            super(updatedElement, updatedProperty, (ScoreBoardEventProvider) indirectionElement.get(indirectionProperty),
-                    watchedProperty, readonly, defaultValue);
-            this.indirectionElement = indirectionElement;
-            this.indirectionProperty = indirectionProperty;
-        }
-
-        public ScoreBoardEventProvider getIndirectionElement() { return indirectionElement; }
-        public PermanentProperty getIndirectionProperty() { return indirectionProperty; }
-
-        private ScoreBoardEventProvider indirectionElement;
-        private PermanentProperty indirectionProperty;
-    }
-
-    public static class ElementReference {
-        public ElementReference(Property localProperty, Class<? extends ScoreBoardEventProvider> remoteClass,
-                Property remoteProperty) {
-            this(localProperty, remoteClass, remoteProperty, AlternateTargetPolicy.NONE);
-        }
-        public ElementReference(Property localProperty, Class<? extends ScoreBoardEventProvider> remoteClass,
-                Property remoteProperty, AlternateTargetPolicy alternateTargetPolicy) {
-            this.localProperty = localProperty;
-            this.remoteClass = remoteClass;
-            this.remoteProperty = remoteProperty;
-            this.alternateTargetPolicy = alternateTargetPolicy;
-        }
-
-        public enum AlternateTargetPolicy {
-            NONE,
-            PREVIOUS,
-            NEXT
-        }
-
-        public Property getLocalProperty() { return localProperty; }
-        public Class<? extends ScoreBoardEventProvider> getRemoteClass() { return remoteClass; }
-        public Property getRemoteProperty() { return remoteProperty; }
-        public ScoreBoardEventProvider getAlternateTarget(ScoreBoardEventProvider current, boolean neighborsRemoved) {
-            if (!neighborsRemoved && current instanceof OrderedScoreBoardEventProvider<?>) {
-                if (alternateTargetPolicy == AlternateTargetPolicy.PREVIOUS) {
-                    return ((OrderedScoreBoardEventProvider<?>)current).getPrevious();
-                } else if (alternateTargetPolicy == AlternateTargetPolicy.NEXT) {
-                    return ((OrderedScoreBoardEventProvider<?>)current).getNext();
-                }
-            }
-            return null;
-        }
-
-        private Property localProperty;
-        private Class<? extends ScoreBoardEventProvider> remoteClass;
-        private Property remoteProperty;
-        private AlternateTargetPolicy alternateTargetPolicy;
+        START(true),
+        END(false);
+        
+        private BatchEvent(Boolean v) { defaultValue = v; }
+        private final Boolean defaultValue;        
+        public Class<Boolean> getType() { return Boolean.class; }
+        public Boolean getDefaultValue() { return defaultValue; }
     }
 }

@@ -1,7 +1,5 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import java.util.Arrays;
-
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Jam;
@@ -10,38 +8,23 @@ import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJam> implements TeamJam {
     public TeamJamImpl(Jam j, String teamId) {
         super(j, teamId, Jam.Child.TEAM_JAM, TeamJam.class, Value.class, Child.class, NChild.class);
         team = scoreBoard.getTeam(teamId);
-        values.put(Value.LAST_SCORE, 0);
-        values.put(Value.OS_OFFSET, 0);
-        values.put(Value.JAM_SCORE, 0);
-        values.put(Value.TOTAL_SCORE, 0);
-        values.put(Value.LOST, false);
-        values.put(Value.LEAD, false);
-        values.put(Value.CALLOFF, false);
-        values.put(Value.INJURY, false);
-        values.put(Value.NO_INITIAL, true);
-        values.put(Value.DISPLAY_LEAD, false);
-        values.put(Value.NO_PIVOT, true);
-        values.put(Value.STAR_PASS_TRIP, null);
-        values.put(Value.STAR_PASS, false);
-        addReference(new IndirectValueReference(this, Value.LAST_SCORE, this, IValue.PREVIOUS,
-                Value.TOTAL_SCORE, true, 0));
-        for (Value prop : Arrays.asList(Value.LAST_SCORE, Value.JAM_SCORE, Value.OS_OFFSET)) {
-            addReference(new UpdateReference(this, Value.TOTAL_SCORE, this, prop));
-        }
-        addReference(new ElementReference(Value.CURRENT_TRIP, ScoringTrip.class, null));
-        addReference(new UpdateReference(this, Value.NO_INITIAL, this, Value.CURRENT_TRIP));
-        addReference(new UpdateReference(this, Value.DISPLAY_LEAD, this, Value.LEAD));
-        addReference(new UpdateReference(this, Value.DISPLAY_LEAD, this, Value.LOST));
-        addReference(new ElementReference(Value.STAR_PASS_TRIP, ScoringTrip.class, null));
-        addReference(new UpdateReference(this, Value.STAR_PASS, this, Value.STAR_PASS_TRIP));
+        setCopy(Value.LAST_SCORE, this, IValue.PREVIOUS, Value.TOTAL_SCORE, true);
+        jamScoreListener = setRecalculated(Value.JAM_SCORE);
+        setRecalculated(Value.TOTAL_SCORE).addSource(this, Value.LAST_SCORE)
+            .addSource(this, Value.JAM_SCORE).addSource(this, Value.OS_OFFSET);
+        setRecalculated(Value.NO_INITIAL).addSource(this, Value.CURRENT_TRIP);
+        setRecalculated(Value.DISPLAY_LEAD).addSource(this, Value.LEAD).addSource(this, Value.LOST);
+        setRecalculated(Value.STAR_PASS).addSource(this, Value.STAR_PASS_TRIP);
         for (ValueWithId p : team.getAll(Team.Child.POSITION)) {
             add(Child.FIELDING, new FieldingImpl(this, (Position)p));
         }
@@ -69,7 +52,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             return isLead() && !isLost();
         }
         if (prop == Value.STAR_PASS) {
-            if (flag == Flag.INTERNAL || flag == Flag.FROM_AUTOSAVE) { 
+            if (flag == Flag.RECALCULATE || flag == Flag.FROM_AUTOSAVE) { 
                 return getStarPassTrip() != null;
             } else {
                 set(Value.STAR_PASS_TRIP, (Boolean)value ? getCurrentScoringTrip() : null);
@@ -95,6 +78,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
 
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == NChild.SCORING_TRIP) {
+            jamScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.SCORE);
             set(Value.CURRENT_TRIP, getLast(NChild.SCORING_TRIP), Flag.INTERNAL);
         }
     }
@@ -109,7 +93,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             if (prop == NChild.SCORING_TRIP) {
-                return new ScoringTripImpl(this, id);
+                return new ScoringTripImpl(this, Integer.parseInt(id));
             }
             return null;
         }
@@ -152,4 +136,5 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public Fielding getFielding (FloorPosition fp) { return (Fielding)get(Child.FIELDING, fp.toString()); }
 
     private Team team;
+    private RecalculateScoreBoardListener jamScoreListener;
 }

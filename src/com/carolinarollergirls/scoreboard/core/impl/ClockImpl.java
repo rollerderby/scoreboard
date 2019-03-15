@@ -26,34 +26,20 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public ClockImpl(ScoreBoard sb, String i) {
-        super (sb, Value.ID, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
-        set(Value.ID, i);
+        super (sb, Value.ID, i, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
         //initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
-            addReference(new ValueReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD_NUMBER, true, 0));
+            setCopy(Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD_NUMBER, true);
         } else if (i == ID_JAM) {
-            addReference(new IndirectValueReference(this, Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD,
-                    Period.Value.CURRENT_JAM_NUMBER, true, 0));
+            setCopy(Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD, Period.Value.CURRENT_JAM_NUMBER, true);
         } else {
             values.put(Value.NUMBER, 0);
         }
-        values.put(Value.MINIMUM_TIME, 0L);
-        values.put(Value.MAXIMUM_TIME, 0L);
-        values.put(Value.TIME, 0L);
-        values.put(Value.INVERTED_TIME, 0L);
-        values.put(Value.MINIMUM_NUMBER, 0);
-        values.put(Value.MAXIMUM_NUMBER, 0);
-        values.put(Value.DIRECTION, false);
-        values.put(Value.RUNNING, false);
-        addReference(new UpdateReference(this, Value.NUMBER, this, Value.MAXIMUM_NUMBER));
-        addReference(new UpdateReference(this, Value.NUMBER, this, Value.MINIMUM_NUMBER));
-        addReference(new UpdateReference(this, Value.MAXIMUM_NUMBER, this, Value.MINIMUM_NUMBER));
-        addReference(new UpdateReference(this, Value.TIME, this, Value.MAXIMUM_TIME));
-        addReference(new UpdateReference(this, Value.TIME, this, Value.MINIMUM_TIME));
-        addReference(new UpdateReference(this, Value.MAXIMUM_TIME, this, Value.MINIMUM_TIME));
-        addReference(new UpdateReference(this, Value.INVERTED_TIME, this, Value.MAXIMUM_TIME));
-        addReference(new UpdateReference(this, Value.INVERTED_TIME, this, Value.TIME));
-        addWriteProtectionOverride(Value.INVERTED_TIME, Flag.INTERNAL);
+        setRecalculated(Value.NUMBER).addSource(this, Value.MAXIMUM_NUMBER).addSource(this, Value.MINIMUM_NUMBER);
+        setRecalculated(Value.MAXIMUM_NUMBER).addSource(this, Value.MINIMUM_NUMBER);
+        setRecalculated(Value.TIME).addSource(this, Value.MAXIMUM_TIME).addSource(this, Value.MINIMUM_TIME);
+        setRecalculated(Value.MAXIMUM_TIME).addSource(this, Value.MINIMUM_TIME);
+        setRecalculated(Value.INVERTED_TIME).addSource(this, Value.MAXIMUM_TIME).addSource(this, Value.TIME);
 
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET_ID, rulesetChangeListener));
     }

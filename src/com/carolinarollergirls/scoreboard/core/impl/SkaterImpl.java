@@ -27,22 +27,16 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
-        super(t, Value.ID, Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
+        super(t, Value.ID, (i == null ? UUID.randomUUID().toString() : i),
+                Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
         team = t;
-        setId(i);
         setName(n);
         setNumber(num);
         setFlags(flags);
-        setRole(Role.BENCH);
-        setBaseRole(Role.BENCH);
-        addWriteProtectionOverride(Value.CURRENT_FIELDING, Flag.INTERNAL);
-        addReference(new ElementReference(Child.FIELDING, Fielding.class, Fielding.Value.SKATER));
-        addReference(new IndirectValueReference(this, Value.POSITION, this, 
-                Value.CURRENT_FIELDING, Fielding.Value.POSITION, true, null));
-        addReference(new IndirectValueReference(this, Value.PENALTY_BOX, this, 
-                Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false, false));
-        addReference(new IndirectValueReference(this, Value.CURRENT_BOX_SYMBOLS, this, 
-                Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true, ""));
+        setInverseReference(Child.FIELDING, Fielding.Value.SKATER);
+        setCopy(Value.POSITION, this, Value.CURRENT_FIELDING, Fielding.Value.POSITION, true);
+        setCopy(Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false);
+        setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
     }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -79,7 +73,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
-            if (prop == NChild.PENALTY) { return new PenaltyImpl(this, id); }
+            if (prop == NChild.PENALTY) { return new PenaltyImpl(this, Integer.valueOf(id)); }
             return null;
         }	
     }
@@ -99,16 +93,6 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     }
 
     public Team getTeam() { return team; }
-
-    private void setId(String i) {
-        UUID uuid;
-        try {
-            uuid = UUID.fromString(i);
-        } catch (IllegalArgumentException iae) {
-            uuid = UUID.randomUUID();
-        }
-        set(Value.ID, uuid.toString());
-    }
 
     public String getName() { return (String)get(Value.NAME); }
     public void setName(String n) { set(Value.NAME, n); }

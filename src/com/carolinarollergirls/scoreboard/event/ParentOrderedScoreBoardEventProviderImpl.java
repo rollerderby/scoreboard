@@ -9,30 +9,27 @@ extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoard
     @SafeVarargs
     protected ParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, String subId,
             AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
-        super(parent, type, ownClass, props);
+        super(parent, parent.getId() + "_" + subId, type, ownClass, props);
         ownType = type;
         this.subId = subId;
-        set(IValue.ID, parent.getId() + "_" + subId);
-        addReference(new UpdateReference(this, IValue.ID, parent, IValue.ID));
-        addReference(new UpdateReference(this, IValue.PREVIOUS, parent, IValue.PREVIOUS));
-        addReference(new UpdateReference(this, IValue.NEXT, parent, IValue.NEXT));
-        addReference(new ValueReference(this, IValue.NUMBER, parent, IValue.NUMBER, true, 0));
+        setRecalculated(IValue.PREVIOUS).addSource(parent, IValue.PREVIOUS);
+        setRecalculated(IValue.NEXT).addSource(parent, IValue.NEXT);
+        set(IValue.PREVIOUS, null); //recalculate
+        set(IValue.NEXT, null); //recalculate
+        setCopy(IValue.NUMBER, parent, IValue.NUMBER, true);
     }
 
     public String getProviderId() { return subId; }
 
     protected Object _computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == IValue.ID) {
-            return parent.getId() + "_" + subId;
-        }
-        if (prop == IValue.PREVIOUS) {
+        if (prop == IValue.PREVIOUS && flag != Flag.INVERSE_REFERENCE) {
             if (((OrderedScoreBoardEventProvider<?>) parent).hasPrevious()) {
                 return ((OrderedScoreBoardEventProvider<?>) getParent()).getPrevious().get(ownType, subId);
             } else {
                 return null;
             }
         }
-        if (prop == IValue.NEXT) {
+        if (prop == IValue.NEXT && flag != Flag.INVERSE_REFERENCE) {
             if (((OrderedScoreBoardEventProvider<?>) parent).hasNext()) {
                 return ((OrderedScoreBoardEventProvider<?>) getParent()).getNext().get(ownType, subId);
             } else {

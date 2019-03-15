@@ -21,7 +21,7 @@ import com.fasterxml.jackson.jr.ob.JSON;
 public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
 
     public PenaltyCodesManager(ScoreBoard parent) {
-        super(parent, null, ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
+        super(parent, null, "", ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
         this.parent = parent;
         definitions = loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE));
         parent.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Child.CURRENT_RULE, rulesetChangeListener));
@@ -70,6 +70,10 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
     };
 
     public enum Child implements AddRemoveProperty {
-        CODE;
+        CODE(PenaltyCode.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
     }
 }

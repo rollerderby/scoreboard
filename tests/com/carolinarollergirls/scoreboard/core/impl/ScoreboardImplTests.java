@@ -574,7 +574,7 @@ public class ScoreboardImplTests {
         assertTrue(lc.isTimeAtStart());
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
-        assertFalse(sb.getTeam(Team.ID_1).isStarPass());
+        assertTrue(sb.getTeam(Team.ID_1).isStarPass());
         assertTrue(sb.getTeam(Team.ID_2).isLead());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_JAM);
     }

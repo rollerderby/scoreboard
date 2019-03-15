@@ -8,10 +8,12 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
@@ -101,26 +103,40 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public XmlScoreBoard getXmlScoreBoard();
 
     public enum Value implements PermanentProperty {
-        CURRENT_PERIOD_NUMBER,
-        CURRENT_PERIOD,
-        UPCOMING_JAM,
-        IN_PERIOD,
-        IN_JAM,
-        IN_OVERTIME,
-        OFFICIAL_SCORE,
-        TIMEOUT_OWNER,
-        OFFICIAL_REVIEW;
+        CURRENT_PERIOD_NUMBER(Integer.class, 0),
+        CURRENT_PERIOD(Period.class, null),
+        UPCOMING_JAM(Jam.class, null),
+        IN_PERIOD(Boolean.class, false),
+        IN_JAM(Boolean.class, false),
+        IN_OVERTIME(Boolean.class, false),
+        OFFICIAL_SCORE(Boolean.class, false),
+        TIMEOUT_OWNER(TimeoutOwner.class, null),
+        OFFICIAL_REVIEW(Boolean.class, false);
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
     public enum Child implements AddRemoveProperty {
-        SETTINGS,
-        RULESETS,
-        PENALTY_CODES,
-        MEDIA,
-        CLOCK,
-        TEAM,
+        SETTINGS(Settings.class),
+        RULESETS(Rulesets.class),
+        PENALTY_CODES(PenaltyCodesManager.class),
+        MEDIA(Media.class),
+        CLOCK(Clock.class),
+        TEAM(Team.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
     }
     public enum NChild implements NumberedProperty {
-        PERIOD;
+        PERIOD(Period.class);
+
+        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
+        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
+        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
     }
     public enum Command implements CommandProperty {
         RESET,
@@ -131,6 +147,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         CLOCK_REPLACE,
         START_OVERTIME,
         OFFICIAL_TIMEOUT;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
     }
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";

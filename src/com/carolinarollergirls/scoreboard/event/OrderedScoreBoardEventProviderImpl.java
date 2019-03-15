@@ -1,33 +1,16 @@
 package com.carolinarollergirls.scoreboard.event;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public abstract class OrderedScoreBoardEventProviderImpl<T extends OrderedScoreBoardEventProvider<T>>
         extends ScoreBoardEventProviderImpl implements OrderedScoreBoardEventProvider<T> {
     @SafeVarargs
-    public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, AddRemoveProperty type,
-            Class<T> ownClass, Class<? extends Property>... props) {
-        super(parent, IValue.ID, type, ownClass, append(props, IValue.class));
-        addReference(new ElementReference(IValue.NEXT, ownClass, IValue.PREVIOUS));
-        addReference(new ElementReference(IValue.PREVIOUS, ownClass, IValue.NEXT));
-    }
-
-    protected void _valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        requestBatchStart();
-        if (prop == IValue.ID) {
-            // fix references in XML and JSON
-            // ID should only ever be changed when restoring from autosave
-            if (hasNext()) {
-                scoreBoardChange(new ScoreBoardEvent(getNext(), IValue.PREVIOUS, this, this));
-            }
-            if (hasPrevious()) {
-                scoreBoardChange(new ScoreBoardEvent(getPrevious(), IValue.NEXT, this, this));
-            }
-        }
-        super._valueChanged(prop, value, last, flag);
-        requestBatchEnd();
+    public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, 
+            AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
+        super(parent, IValue.ID, id, type, ownClass, append(props, IValue.class));
+        addScoreBoardListener(new InverseReferenceUpdateListener(this, IValue.PREVIOUS, IValue.NEXT));
+        addScoreBoardListener(new InverseReferenceUpdateListener(this, IValue.NEXT, IValue.PREVIOUS));
     }
 
     public int getNumber() { return (Integer)get(IValue.NUMBER); }

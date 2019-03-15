@@ -17,7 +17,7 @@ public class ScoreBoardCondition implements Cloneable {
         this(e.getProvider(), e.getProperty(), e.getValue());
     }
     public ScoreBoardCondition(ScoreBoardEventProvider sbeP, Property p, Object v) {
-        this(sbeP.getProviderClass(), sbeP.getProviderId(), p, v);
+        this(sbeP.getProviderClass(), sbeP.getId(), p, v);
     }
     public ScoreBoardCondition(Class<? extends ScoreBoardEventProvider> c, String id, Property p, Object v) {
         providerClass = c;
@@ -48,7 +48,7 @@ public class ScoreBoardCondition implements Cloneable {
         if (!Objects.equals(getProviderClass(), pc)) {
             return false;
         }
-        String pi = (null == e.getProvider() ? null : e.getProvider().getProviderId());
+        String pi = (null == e.getProvider() ? null : e.getProvider().getId());
         if (!Objects.equals(getProviderId(), pi) && (getProviderId() != ANY_ID)) {
             return false;
         }

@@ -80,11 +80,21 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     protected Object previousValue;
     protected boolean remove;
 
-    public interface Property {}
-    public interface PermanentProperty extends Property {}
-    public interface AddRemoveProperty extends Property {}
-    public interface NumberedProperty extends AddRemoveProperty {}
-    public interface CommandProperty extends Property {}
+    public interface Property {
+        public Class<?> getType();
+    }
+    public interface PermanentProperty extends Property {
+        public Object getDefaultValue();
+    }
+    public interface AddRemoveProperty extends Property {
+        public Class<? extends ValueWithId> getType();
+    }
+    public interface NumberedProperty extends AddRemoveProperty {
+        public Class<? extends OrderedScoreBoardEventProvider<?>> getType();
+    }
+    public interface CommandProperty extends Property {
+        public Class<Boolean> getType();
+    }
 
     public interface ValueWithId {
         /**

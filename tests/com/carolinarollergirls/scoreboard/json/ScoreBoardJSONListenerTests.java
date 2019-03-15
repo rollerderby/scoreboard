@@ -25,7 +25,6 @@ import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -216,12 +215,12 @@ public class ScoreBoardJSONListenerTests {
     @Test
     public void testPenaltyEvents() {
         String sid = "00000000-0000-0000-0000-000000000001";
-        String pid = "00000000-0000-0000-0000-000000000002";
+        String pid;
 
         sb.getTeam("1").addSkater(sid, "Uno", "01", "");
         Skater s = sb.getTeam("1").getSkater(sid);
         Penalty p = (Penalty)s.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.IValue.ID, pid, Flag.FROM_AUTOSAVE);
+        pid = p.getId();
         p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "2"));
         p.set(Penalty.Value.CODE, "X");
         advance(0);
@@ -238,7 +237,6 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Penalty(1).Code"));
 
         p = (Penalty)s.getOrCreate(NChild.PENALTY, "0");
-        p.set(Penalty.IValue.ID, pid, Flag.FROM_AUTOSAVE);
         p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(2));
         p.set(Penalty.Value.CODE, "B");
         advance(0);

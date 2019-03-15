@@ -26,15 +26,23 @@ public interface Position extends ScoreBoardEventProvider {
     public void setPenaltyBox(boolean box);
 
     public enum Value implements PermanentProperty {
-        ID,
-        CURRENT_FIELDING,
-        SKATER,
-        NAME,
-        NUMBER,
-        FLAGS,
-        PENALTY_BOX;
+        ID(String.class, ""),
+        CURRENT_FIELDING(Fielding.class, null),
+        SKATER(Skater.class, null),
+        NAME(String.class, ""),
+        NUMBER(String.class, ""),
+        FLAGS(String.class, ""),
+        PENALTY_BOX(Boolean.class, false);
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
     public enum Command implements CommandProperty {
         CLEAR;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
     }
 }

@@ -71,12 +71,11 @@ public class TeamImplTests {
     public void testStopJam() {
         sb.startJam();
         team.setStarPass(true);
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.STAR_PASS, listener));
 
         sb.stopJamTO();
 
-        assertEquals(false, team.isStarPass());
-        assertEquals(1, collectedEvents.size());
+        assertTrue(team.isStarPass());
+        assertFalse(team.isFieldingStarPass());
     }
 
     @Test
@@ -468,6 +467,13 @@ public class TeamImplTests {
         assertEquals(team.getPosition(FloorPosition.BLOCKER3), skater4.getPosition());
         assertEquals(Role.BLOCKER, skater4.getRole());
 
+        sb.startJam();
+        assertEquals(skater6, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(skater5, team.getPosition(FloorPosition.PIVOT).getSkater());
+        assertEquals(skater1, team.getPosition(FloorPosition.BLOCKER1).getSkater());
+        assertEquals(skater2, team.getPosition(FloorPosition.BLOCKER2).getSkater());
+        assertEquals(skater4, team.getPosition(FloorPosition.BLOCKER3).getSkater());
+        
         team.setStarPass(true);
 
         assertFalse(team.hasNoPivot());
@@ -481,7 +487,6 @@ public class TeamImplTests {
         skater6.setPenaltyBox(true);
         skater5.setPenaltyBox(true);
         skater4.setPenaltyBox(true);
-        sb.startJam();
         sb.stopJamTO();
 
         assertNull(skater1.getPosition());

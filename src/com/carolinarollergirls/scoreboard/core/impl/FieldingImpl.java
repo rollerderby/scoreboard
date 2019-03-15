@@ -11,6 +11,7 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
+import com.carolinarollergirls.scoreboard.event.InverseReferenceUpdateListener;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -23,10 +24,8 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         this.teamJam = teamJam;
         set(Value.POSITION, position);
         addWriteProtection(Value.POSITION);
-        addReference(new ElementReference(Value.SKATER, Skater.class, Skater.Child.FIELDING));
-        addReference(new ElementReference(Child.BOX_TRIP, BoxTrip.class, BoxTrip.Child.FIELDING));
-        addReference(new ElementReference(Value.CURRENT_BOX_TRIP, BoxTrip.class, null));
-        values.put(Value.PENALTY_BOX, false);
+        addScoreBoardListener(new InverseReferenceUpdateListener(this, Child.BOX_TRIP, BoxTrip.Child.FIELDING));
+        addScoreBoardListener(new InverseReferenceUpdateListener(this, Value.SKATER, Skater.Child.FIELDING));
     }
 
     public String getProviderId() { return getPosition().getProviderId(); }

@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.core;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Media extends ScoreBoardEventProvider {
@@ -21,7 +22,11 @@ public interface Media extends ScoreBoardEventProvider {
     public boolean validFileName(String fn);
 
     public enum Child implements AddRemoveProperty {
-        FORMAT;
+        FORMAT(MediaFormat.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
     }
 
     public static interface MediaFormat extends ScoreBoardEventProvider {
@@ -29,7 +34,11 @@ public interface Media extends ScoreBoardEventProvider {
         public MediaType getType(String type);
 
         public enum Child implements AddRemoveProperty {
-            TYPE;
+            TYPE(MediaType.class);
+
+            private Child(Class<? extends ValueWithId> t) { type = t; }
+            private final Class<? extends ValueWithId> type;
+            public Class<? extends ValueWithId> getType() { return type; }
         }
     }
 
@@ -42,7 +51,11 @@ public interface Media extends ScoreBoardEventProvider {
         public void removeFile(MediaFile file);
 
         public enum Child implements AddRemoveProperty {
-            FILE;
+            FILE(MediaFile.class);
+
+            private Child(Class<? extends ValueWithId> t) { type = t; }
+            private final Class<? extends ValueWithId> type;
+            public Class<? extends ValueWithId> getType() { return type; }
         }
     }
 
@@ -55,9 +68,15 @@ public interface Media extends ScoreBoardEventProvider {
         public String getSrc();
 
         public enum Value implements PermanentProperty {
-            ID,
-            SRC,
-            NAME;
+            ID(String.class, ""),
+            SRC(String.class, ""),
+            NAME(String.class, "");
+
+            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+            private final Class<?> type;
+            private final Object defaultValue;
+            public Class<?> getType() { return type; }
+            public Object getDefaultValue() { return defaultValue; }
         }
     }
 }

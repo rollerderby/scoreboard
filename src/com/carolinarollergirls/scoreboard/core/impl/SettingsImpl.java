@@ -15,7 +15,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
     public SettingsImpl(ScoreBoard s) {
-        super (s, null, ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
+        super (s, null, "", ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
     }
 
     public void reset() { removeAll(Child.SETTING); }

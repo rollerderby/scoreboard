@@ -12,20 +12,15 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
-    public PeriodImpl(ScoreBoard s, String p) {
+    public PeriodImpl(ScoreBoard s, int p) {
         super(s, p, ScoreBoard.NChild.PERIOD, Period.class, Value.class, NChild.class, Command.class);
-        addReference(new IndirectValueReference(this, Value.CURRENT_JAM_NUMBER, this, Value.CURRENT_JAM, IValue.NUMBER, true, 0));
+        setCopy(Value.CURRENT_JAM_NUMBER, this, Value.CURRENT_JAM, IValue.NUMBER, true);
         if (hasPrevious()) {
             set(Value.CURRENT_JAM, getPrevious().get(Value.CURRENT_JAM));
         } else {
             set(Value.CURRENT_JAM, getOrCreate(NChild.JAM, "0"));
         }
-        addReference(new ElementReference(Value.CURRENT_JAM, Jam.class, null));
-        set(Value.WALLTIME_END, 0L);
-        set(Value.WALLTIME_START, 0L);
-        set(Value.RUNNING, false, Flag.FROM_AUTOSAVE);
-        addReference(new UpdateReference(this, Value.DURATION, this, Value.WALLTIME_END));
-        addReference(new UpdateReference(this, Value.DURATION, this, Value.WALLTIME_START));
+        setRecalculated(Value.DURATION).addSource(this, Value.WALLTIME_END).addSource(this, Value.WALLTIME_START);
     }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -56,7 +51,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         synchronized (coreLock) {
             int num = Integer.parseInt(id);
             if (prop == NChild.JAM && (num > 0 || (num == 0 && getNumber() == 0))) {
-                return new JamImpl(this, id);
+                return new JamImpl(this, num);
             }
             return null;
         }
@@ -72,7 +67,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                 break;
             case INSERT_BEFORE:
                 if (scoreBoard.getCurrentPeriodNumber() < scoreBoard.getRulesets().getInt(Rule.NUMBER_PERIODS))
-                    scoreBoard.add(ownType, new PeriodImpl(scoreBoard, getProviderId()));
+                    scoreBoard.add(ownType, new PeriodImpl(scoreBoard, getNumber()));
                 break;
             }
         }

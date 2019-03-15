@@ -108,12 +108,15 @@ public interface ScoreBoardEventProvider extends ValueWithId {
 
     public ScoreBoard getScoreBoard();
 
-    public <T extends ScoreBoardEventProvider> T getElement(Class<T> type, String id);
+    public ScoreBoardEventProvider getElement(Class<?> type, String id);
 
     public enum Flag {
         CHANGE,
         RESET,
         FROM_AUTOSAVE,
+        INVERSE_REFERENCE,
+        COPY,
+        RECALCULATE,
         INTERNAL;
     }
 }

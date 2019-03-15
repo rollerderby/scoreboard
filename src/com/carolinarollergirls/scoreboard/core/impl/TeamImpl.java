@@ -29,43 +29,25 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
-        super(sb, Value.ID, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class, Command.class);
-        set(Value.ID, i);
+        super(sb, Value.ID, i, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class, Command.class);
         for (FloorPosition fp : FloorPosition.values()) {
             add(Child.POSITION, new PositionImpl(this, fp));
         }
         addWriteProtection(Child.POSITION);
-        addReference(new ElementReference(Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.class, null));
-        addReference(new ElementReference(Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.class, null));
-        addReference(new ElementReference(Value.LAST_ENDED_TEAM_JAM, TeamJam.class, null));
-        addReference(new IndirectValueReference(this, Value.CURRENT_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.CURRENT_TRIP, true, null));
-        addReference(new IndirectValueReference(this, Value.SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.TOTAL_SCORE, true, 0));
-        addReference(new IndirectValueReference(this, Value.JAM_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.JAM_SCORE, true, 0));
-        addReference(new IndirectValueReference(this, Value.LAST_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.LAST_SCORE, true, 0));
-        addReference(new IndirectValueReference(this, Value.TRIP_SCORE, this, Value.CURRENT_TRIP,
-                ScoringTrip.Value.SCORE, false, 0));
-        addReference(new IndirectValueReference(this, Value.LOST, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.LOST, false, false));
-        addReference(new IndirectValueReference(this, Value.LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.LEAD, false, false));
-        addReference(new IndirectValueReference(this, Value.CALLOFF, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.CALLOFF, false, false));
-        addReference(new IndirectValueReference(this, Value.INJURY, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.INJURY, false, false));
-        addReference(new IndirectValueReference(this, Value.NO_INITIAL, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.NO_INITIAL, false, false));
-        addReference(new IndirectValueReference(this, Value.DISPLAY_LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM,
-                TeamJam.Value.DISPLAY_LEAD, false, false));
-        addReference(new IndirectValueReference(this, Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM,
-                TeamJam.Value.NO_PIVOT, false, true));
-        addReference(new IndirectValueReference(this, Value.STAR_PASS, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM,
-                TeamJam.Value.STAR_PASS, false, false));
-        addReference(new IndirectValueReference(this, Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM,
-                TeamJam.Value.STAR_PASS_TRIP, false, false));
+        setCopy(Value.CURRENT_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.CURRENT_TRIP, true);
+        setCopy(Value.SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.TOTAL_SCORE, true);
+        setCopy(Value.JAM_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.JAM_SCORE, true);
+        setCopy(Value.LAST_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.LAST_SCORE, true);
+        setCopy(Value.TRIP_SCORE, this, Value.CURRENT_TRIP, ScoringTrip.Value.SCORE, false);
+        setCopy(Value.LOST, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.LOST, false);
+        setCopy(Value.LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.LEAD, false);
+        setCopy(Value.CALLOFF, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.CALLOFF, false);
+        setCopy(Value.INJURY, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.INJURY, false);
+        setCopy(Value.NO_INITIAL, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.NO_INITIAL, false);
+        setCopy(Value.DISPLAY_LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.DISPLAY_LEAD, false);
+        setCopy(Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_PIVOT, false);
+        setCopy(Value.STAR_PASS, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS, false);
+        setCopy(Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS_TRIP, false);
     }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -342,7 +324,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     s.setRole(r);
                 }
             }
-            if (s.getRole() != r) {
+            if (s.getRole() != r || s.getCurrentFielding() == null
+                    || s.getCurrentFielding().getTeamJam() != getRunningOrUpcomingTeamJam()) {
                 Position p = getAvailablePosition(r);
                 if (r == Role.PIVOT && p != null) {
                     if (p.getSkater() != null && (hasNoPivot() || s.getRole() == Role.BLOCKER)) {
@@ -368,13 +351,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     private Position getAvailablePosition(Role r) {
         switch (r) {
         case JAMMER:
-            if (isStarPass()) {
+            if (isFieldingStarPass()) {
                 return getPosition(FloorPosition.PIVOT);
             } else {
                 return getPosition(FloorPosition.JAMMER);
             }
         case PIVOT:
-            if (isStarPass()) {
+            if (isFieldingStarPass()) {
                 return null;
             } else {
                 return getPosition(FloorPosition.PIVOT);
@@ -388,7 +371,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     return p; 
                 }
             }
-            Position fourth = getPosition(isStarPass() ? FloorPosition.JAMMER : FloorPosition.PIVOT);
+            Position fourth = getPosition(isFieldingStarPass() ? FloorPosition.JAMMER : FloorPosition.PIVOT);
             if (fourth.getSkater() == null) {
                 return fourth;
             }
@@ -403,7 +386,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     nextReplacedBlocker = FloorPosition.BLOCKER3;
                     break;
                 case BLOCKER3:
-                    nextReplacedBlocker = (hasNoPivot() && !isStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
+                    nextReplacedBlocker = (hasNoPivot() && !isFieldingStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
                     break;
                 case PIVOT:
                     nextReplacedBlocker = FloorPosition.BLOCKER1;
@@ -424,6 +407,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public boolean isInjury() { return (Boolean)get(Value.INJURY); }
     public boolean isDisplayLead() { return (Boolean)get(Value.DISPLAY_LEAD); }
 
+    protected boolean isFieldingStarPass() { return getRunningOrUpcomingTeamJam().isStarPass(); }
     public boolean isStarPass() { return (Boolean)get(Value.STAR_PASS); }
     public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
 
@@ -437,9 +421,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     public class AlternateNameImpl extends ScoreBoardEventProviderImpl implements AlternateName {
         public AlternateNameImpl(Team t, String i, String n) {
-            super(t, Value.ID, Team.Child.ALTERNATE_NAME, AlternateName.class, Value.class);
+            super(t, Value.ID, i, Team.Child.ALTERNATE_NAME, AlternateName.class, Value.class);
             team = t;
-            set(Value.ID, i);
             setName(n);
         }
         public String getName() { return (String)get(Value.NAME); }
@@ -452,9 +435,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     public class ColorImpl extends ScoreBoardEventProviderImpl implements Color {
         public ColorImpl(Team t, String i, String c) {
-            super(t, Value.ID, Team.Child.COLOR, Color.class, Value.class);
+            super(t, Value.ID, i, Team.Child.COLOR, Color.class, Value.class);
             team = t;
-            set(Value.ID, i);
             setColor(c);
         }
         public String getColor() { return (String)get(Value.COLOR); }

@@ -11,12 +11,11 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         extends OrderedScoreBoardEventProviderImpl<T> implements NumberedScoreBoardEventProvider<T> {
 
     @SafeVarargs
-    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, NumberedProperty type,
-            Class<T> ownClass, Class<? extends Property>... props) {
-        super(parent, type, ownClass, props);
+    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number,
+            NumberedProperty type, Class<T> ownClass, Class<? extends Property>... props) {
+        super(parent, UUID.randomUUID().toString(), type, ownClass, props);
         ownType = type;
-        values.put(IValue.NUMBER, Integer.parseInt(id));
-        set(IValue.ID, UUID.randomUUID().toString());
+        values.put(IValue.NUMBER, number);
         setNeighbors(getNumber());
     }
 

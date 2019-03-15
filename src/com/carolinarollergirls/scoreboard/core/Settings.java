@@ -10,6 +10,8 @@ package com.carolinarollergirls.scoreboard.core;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Settings extends ScoreBoardEventProvider {
     public void reset();
@@ -19,6 +21,10 @@ public interface Settings extends ScoreBoardEventProvider {
     public void set(String k, String v);
 
     public enum Child implements AddRemoveProperty {
-        SETTING;
+        SETTING(ValWithId.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
     }
 }

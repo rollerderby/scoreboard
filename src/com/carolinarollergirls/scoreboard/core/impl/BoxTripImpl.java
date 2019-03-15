@@ -1,6 +1,5 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import java.util.Arrays;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
@@ -19,27 +18,16 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip {
     public BoxTripImpl(Team t, String id) {
-        super(t, Value.ID, Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class, Command.class);
-        set(Value.ID, id);
-        for (Value prop : Arrays.asList(Value.DURATION, Value.JAM_CLOCK_END, Value.JAM_CLOCK_START, Value.WALLTIME_END, Value.WALLTIME_START)) {
-            values.put(prop, 0L);
-        }
-        for (Value prop : Arrays.asList(Value.END_AFTER_S_P, Value.END_BETWEEN_JAMS, Value.IS_CURRENT, Value.START_AFTER_S_P, Value.START_BETWEEN_JAMS)) {
-            values.put(prop, false);
-        }
+        super(t, Value.ID, id, Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class, Command.class);
         initReferences();
     }
     public BoxTripImpl(Fielding f) {
-        super(f.getTeamJam().getTeam(), Value.ID, Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class);
-        set(Value.ID, UUID.randomUUID().toString());
-        set(Value.IS_CURRENT, true);
+        super(f.getTeamJam().getTeam(), Value.ID, UUID.randomUUID().toString(), Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class);
         set(Value.WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(Value.START_AFTER_S_P, f.getTeamJam().isStarPass());
         set(Value.START_BETWEEN_JAMS, !scoreBoard.isInJam());
         set(Value.JAM_CLOCK_START, startedBetweenJams() ? 0L : scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
-        set(Value.WALLTIME_END, 0L);
-        set(Value.JAM_CLOCK_END, 0L);
-        set(Value.DURATION, 0L);
+        set(Value.IS_CURRENT, true);
         initReferences();
         add(Child.FIELDING, f);
         f.updateBoxTripSymbols();
@@ -49,17 +37,11 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
     }
 
     private void initReferences() {
-        addReference(new ElementReference(Child.FIELDING, Fielding.class, Fielding.Child.BOX_TRIP));
-        addReference(new ElementReference(Child.PENALTY, Penalty.class, Penalty.Value.BOX_TRIP));
-        addReference(new ElementReference(Value.START_FIELDING, Fielding.class, null));
-        addReference(new ElementReference(Value.END_FIELDING, Fielding.class, null));
-        addReference(new ElementReference(Value.CURRENT_FIELDING, Fielding.class, null));
-        addReference(new UpdateReference(this, Value.DURATION, this, Value.JAM_CLOCK_START));
-        addReference(new UpdateReference(this, Value.DURATION, this, Value.JAM_CLOCK_END));
-        addReference(new IndirectValueReference(this, Value.START_JAM_NUMBER, this, Value.START_FIELDING,
-                IValue.NUMBER, true, 0));
-        addReference(new IndirectValueReference(this, Value.END_JAM_NUMBER, this, Value.END_FIELDING,
-                IValue.NUMBER, true, 0));
+        setInverseReference(Child.FIELDING, Fielding.Child.BOX_TRIP);
+        setInverseReference(Child.PENALTY, Penalty.Value.BOX_TRIP);
+        setRecalculated(Value.DURATION).addSource(this, Value.JAM_CLOCK_START).addSource(this, Value.JAM_CLOCK_END);
+        setCopy(Value.START_JAM_NUMBER, this, Value.START_FIELDING, IValue.NUMBER, true);
+        setCopy(Value.END_JAM_NUMBER, this, Value.END_FIELDING, IValue.NUMBER, true);
     }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {

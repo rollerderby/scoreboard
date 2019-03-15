@@ -10,17 +10,16 @@ import com.carolinarollergirls.scoreboard.utils.Comparators;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> implements Penalty {
-    public PenaltyImpl(Skater s, String n) {
+    public PenaltyImpl(Skater s, int n) {
         super(s, n, Skater.NChild.PENALTY, Penalty.class, Value.class);
         set(Value.TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
+        setInverseReference(Value.JAM, Jam.Child.PENALTY);
+        setInverseReference(Value.BOX_TRIP, BoxTrip.Child.PENALTY);
         addWriteProtectionOverride(Value.TIME, Flag.FROM_AUTOSAVE);
-        addReference(new ElementReference(Value.JAM, Jam.class, Jam.Child.PENALTY));
-        addReference(new ElementReference(Value.BOX_TRIP, BoxTrip.class, BoxTrip.Child.PENALTY));
-        addReference(new UpdateReference(this, Value.SERVED, this, Value.BOX_TRIP));
-        addReference(new IndirectValueReference(this, Value.SERVING, this, Value.BOX_TRIP,
-                BoxTrip.Value.IS_CURRENT, true, false));
-        addReference(new IndirectValueReference(this, Value.JAM_NUMBER, this, Value.JAM, IValue.NUMBER, true, 0));
-        addReference(new IndirectValueReference(this, Value.PERIOD_NUMBER, this, Value.JAM, Jam.Value.PERIOD_NUMBER, true, 0));
+        setRecalculated(Value.SERVED).addSource(this, Value.BOX_TRIP);
+        setCopy(Value.SERVING, this, Value.BOX_TRIP, BoxTrip.Value.IS_CURRENT, true);
+        setCopy(Value.JAM_NUMBER, this, Value.JAM, IValue.NUMBER, true);
+        setCopy(Value.PERIOD_NUMBER, this, Value.JAM, Jam.Value.PERIOD_NUMBER, true);
         if (s.isPenaltyBox()) { set(Value.BOX_TRIP, s.getCurrentFielding().getCurrentBoxTrip()); }
         set(Value.SERVED, get(Value.BOX_TRIP) != null);
     }

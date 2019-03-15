@@ -13,6 +13,7 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
@@ -86,44 +87,56 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final String ID_2 = "2";
 
     public enum Value implements PermanentProperty {
-        ID,
-        NAME,
-        LOGO,
-        RUNNING_OR_UPCOMING_TEAM_JAM,
-        RUNNING_OR_ENDED_TEAM_JAM,
-        LAST_ENDED_TEAM_JAM,
-        CURRENT_TRIP,
-        SCORE,
-        JAM_SCORE,
-        TRIP_SCORE,
-        LAST_SCORE,
-        TIMEOUTS,
-        OFFICIAL_REVIEWS,
-        IN_TIMEOUT,
-        IN_OFFICIAL_REVIEW,
-        NO_PIVOT,
-        RETAINED_OFFICIAL_REVIEW,
-        LOST,
-        LEAD,
-        CALLOFF,
-        INJURY,
-        NO_INITIAL,
-        DISPLAY_LEAD,
-        STAR_PASS,
-        STAR_PASS_TRIP
+        ID(String.class, ""),
+        NAME(String.class, ""),
+        LOGO(String.class, ""),
+        RUNNING_OR_UPCOMING_TEAM_JAM(TeamJam.class, null),
+        RUNNING_OR_ENDED_TEAM_JAM(TeamJam.class, null),
+        LAST_ENDED_TEAM_JAM(TeamJam.class, null),
+        CURRENT_TRIP(ScoringTrip.class, null),
+        SCORE(Integer.class, 0),
+        JAM_SCORE(Integer.class, 0),
+        TRIP_SCORE(Integer.class, 0),
+        LAST_SCORE(Integer.class, 0),
+        TIMEOUTS(Integer.class, 0),
+        OFFICIAL_REVIEWS(Integer.class, 0),
+        IN_TIMEOUT(Boolean.class, false),
+        IN_OFFICIAL_REVIEW(Boolean.class, false),
+        NO_PIVOT(Boolean.class, true),
+        RETAINED_OFFICIAL_REVIEW(Boolean.class, false),
+        LOST(Boolean.class, false),
+        LEAD(Boolean.class, false),
+        CALLOFF(Boolean.class, false),
+        INJURY(Boolean.class, false),
+        NO_INITIAL(Boolean.class, true),
+        DISPLAY_LEAD(Boolean.class, false),
+        STAR_PASS(Boolean.class, false),
+        STAR_PASS_TRIP(ScoringTrip.class, null);
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
     public enum Child implements AddRemoveProperty {
-        SKATER,
-        POSITION,
-        ALTERNATE_NAME,
-        COLOR,
-        BOX_TRIP
+        SKATER(Skater.class),
+        POSITION(Position.class),
+        ALTERNATE_NAME(AlternateName.class),
+        COLOR(Color.class),
+        BOX_TRIP(BoxTrip.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
     }
     public enum Command implements CommandProperty {
         ADD_TRIP,
         REMOVE_TRIP,
         TIMEOUT,
-        OFFICIAL_REVIEW
+        OFFICIAL_REVIEW;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
     }
 
     public static interface AlternateName extends ScoreBoardEventProvider {
@@ -133,9 +146,15 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         public Team getTeam();
 
         public enum Value implements PermanentProperty {
-            ID,
-            NAME;
-        }
+            ID(String.class, ""),
+            NAME(String.class, "");
+
+            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+            private final Class<?> type;
+            private final Object defaultValue;
+            public Class<?> getType() { return type; }
+            public Object getDefaultValue() { return defaultValue; }
+       }
 
         public static final String ID_OPERATOR = "operator";
         public static final String ID_MOBILE = "mobile";
@@ -150,8 +169,14 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         public Team getTeam();
 
         public enum Value implements PermanentProperty {
-            ID,
-            COLOR;
+            ID(String.class, ""),
+            COLOR(String.class, "");
+
+            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+            private final Class<?> type;
+            private final Object defaultValue;
+            public Class<?> getType() { return type; }
+            public Object getDefaultValue() { return defaultValue; }
         }
     }
 

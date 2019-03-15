@@ -39,31 +39,33 @@ import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements ScoreBoard {
     public ScoreBoardImpl() {
-        super(null, null, null, ScoreBoard.class, Value.class, Child.class, NChild.class, Period.NChild.class, Command.class);
+        super(null, null, "", null, ScoreBoard.class, Value.class, Child.class, NChild.class, Period.NChild.class, Command.class);
         setupScoreBoard();
     }
 
     protected void setupScoreBoard() {
-        addReference(new ElementReference(Value.UPCOMING_JAM, Jam.class, null));
-        addReference(new IndirectValueReference(this, Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD,
-                IValue.NUMBER, true, 0));
-        addReference(new IndirectValueReference(this, Value.IN_PERIOD, this, Value.CURRENT_PERIOD,
-                Period.Value.RUNNING, false, false));
-        addReference(new ElementReference(Value.CURRENT_PERIOD, Period.class, null));
+        setCopy(Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD, IValue.NUMBER, true);
+        setCopy(Value.IN_PERIOD, this, Value.CURRENT_PERIOD, Period.Value.RUNNING, false);
         for (Button b : Button.values()) {
             b.setScoreBoard(this);
         }
         add(Child.SETTINGS, new SettingsImpl(this));
+        addWriteProtection(Child.SETTINGS);
         add(Child.RULESETS, new RulesetsImpl(this));
+        addWriteProtection(Child.RULESETS);
         add(Child.PENALTY_CODES, new PenaltyCodesManager(this));
+        addWriteProtection(Child.PENALTY_CODES);
         add(Child.MEDIA, new MediaImpl(this, ScoreBoardManager.getDefaultPath()));
+        addWriteProtection(Child.MEDIA);
         getTeam(Team.ID_1);
         getTeam(Team.ID_2);
+        addWriteProtection(Child.TEAM);
         getClock(Clock.ID_PERIOD);
         getClock(Clock.ID_JAM);
         getClock(Clock.ID_LINEUP);
         getClock(Clock.ID_TIMEOUT);
         getClock(Clock.ID_INTERMISSION);
+        addWriteProtection(Child.CLOCK);
         reset();
         addInPeriodListeners();
         xmlScoreBoard = new XmlScoreBoard(this);
@@ -118,11 +120,11 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         synchronized (coreLock) {
             if (prop == Child.CLOCK) { return new ClockImpl(this, id); }
             if (prop == Child.TEAM) { return new TeamImpl(this, id); }
-            if (prop == Period.NChild.JAM) { return new JamImpl(this, id); }
+            if (prop == Period.NChild.JAM) { return new JamImpl(this, Integer.parseInt(id)); }
             if (prop == NChild.PERIOD) {
                 int num = Integer.parseInt(id);
                 if (0 <= num && num <= getRulesets().getInt(Rule.NUMBER_PERIODS)) {
-                    return new PeriodImpl(this, id);
+                    return new PeriodImpl(this, num);
                 }
             }
             return null;
@@ -166,17 +168,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     public void postAutosaveUpdate() {
         synchronized(coreLock) {
             requestBatchStart();
-            //update reference to current period number
-            getUpcomingJam().setParent(this);
             //Button may have a label from autosave but undo will not work after restart
             Button.UNDO.setLabel(ACTION_NONE);
-            //some references may list IDs in the XML and JSON that changed during restore. Update
-            scoreBoardChange(new ScoreBoardEvent(this, NChild.PERIOD, getOrCreatePeriod(0), false));
-            scoreBoardChange(new ScoreBoardEvent(this, Value.CURRENT_PERIOD, getCurrentPeriod(), getCurrentPeriod()));
-            scoreBoardChange(new ScoreBoardEvent(this, Value.UPCOMING_JAM, getUpcomingJam(), getUpcomingJam()));
-            scoreBoardChange(new ScoreBoardEvent(this, NChild.PERIOD, getOrCreatePeriod(0), false));
-            scoreBoardChange(new ScoreBoardEvent(this, Period.NChild.JAM, getUpcomingJam(), false));
-            updateTeamJams();
             requestBatchEnd();
         }
     }
@@ -347,7 +340,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         requestBatchStart();
         set(Value.CURRENT_PERIOD, getOrCreatePeriod(getCurrentPeriodNumber()+1));
-        getUpcomingJam().setParent(this); // updates period number
         if (getRulesets().getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
             getUpcomingJam().set(IValue.NUMBER, 1, Flag.INTERNAL);
             // show Jam 0 on the display for the upcoming period

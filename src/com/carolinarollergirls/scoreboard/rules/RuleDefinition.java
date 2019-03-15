@@ -6,9 +6,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 
 public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
     public RuleDefinition(Type type, String name, String description, Object defaultValue) {
-        super(null, Value.NAME, Rulesets.Child.RULE_DEFINITION, RuleDefinition.class, Value.class);
+        super(null, Value.NAME, name, Rulesets.Child.RULE_DEFINITION, RuleDefinition.class, Value.class);
         set(Value.TYPE, type);
-        set(Value.NAME, name);
         set(Value.DEFAULT_VALUE, defaultValue.toString());
         set(Value.DESCRIPTION, description);
         for (Value prop : Value.values()) {
@@ -45,12 +44,18 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
     }
 
     public enum Value implements PermanentProperty {
-        NAME,
-        TYPE,
-        DEFAULT_VALUE,
-        DESCRIPTION,
-        INDEX,
-        TRUE_VALUE,
-        FALSE_VALUE;
+        NAME(String.class, ""),
+        TYPE(Type.class, null),
+        DEFAULT_VALUE(String.class, ""),
+        DESCRIPTION(String.class, ""),
+        INDEX(Integer.class, 0),
+        TRUE_VALUE(String.class, ""),
+        FALSE_VALUE(String.class, "");
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
 }

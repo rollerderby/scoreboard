@@ -11,9 +11,11 @@ package com.carolinarollergirls.scoreboard.core;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
@@ -44,22 +46,36 @@ public interface Skater extends ScoreBoardEventProvider {
     public boolean hasUnservedPenalties();
 
     public enum Value implements PermanentProperty {
-        ID,
-        NAME,
-        NUMBER,
-        CURRENT_FIELDING,
-        CURRENT_BOX_SYMBOLS,
-        POSITION,
-        ROLE,
-        BASE_ROLE,
-        PENALTY_BOX,
-        FLAGS;
+        ID(String.class, ""),
+        NAME(String.class, ""),
+        NUMBER(String.class, ""),
+        CURRENT_FIELDING(Fielding.class, null),
+        CURRENT_BOX_SYMBOLS(String.class, ""),
+        POSITION(Position.class, null),
+        ROLE(Role.class, Role.BENCH),
+        BASE_ROLE(Role.class, Role.BENCH),
+        PENALTY_BOX(Boolean.class, false),
+        FLAGS(String.class, "");
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
     public enum Child implements AddRemoveProperty {
-        FIELDING;
+        FIELDING(Fielding.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
     }
     public enum NChild implements NumberedProperty {
-        PENALTY;
+        PENALTY(Penalty.class);
+
+        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
+        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
+        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
     }
 
     public static final String FO_EXP_ID = "0";

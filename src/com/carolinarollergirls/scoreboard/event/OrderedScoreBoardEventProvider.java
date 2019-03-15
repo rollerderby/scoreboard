@@ -11,9 +11,15 @@ public interface OrderedScoreBoardEventProvider<T extends OrderedScoreBoardEvent
     public boolean hasNext();
 
     public enum IValue implements PermanentProperty {
-        ID,
-        NUMBER,
-        PREVIOUS,
-        NEXT
+        ID(String.class, ""),
+        NUMBER(Integer.class, 0),
+        PREVIOUS(OrderedScoreBoardEventProvider.class, null),
+        NEXT(OrderedScoreBoardEventProvider.class, null);
+
+        private IValue(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
 }
