@@ -126,6 +126,8 @@ function createScoreTimeTab() {
 	$("<table>").attr("id", "TeamTime")
 		.appendTo(createTab("Team/Time", "TeamTimeTab"))
 		.data("loadContentFunction", createScoreTimeContent);
+	$("#TeamTimeTab").append($("<iframe src='/controls/sk/sk.html?team=1&operatorMode'/>").addClass("SKFrame"));
+	$("#TeamTimeTab").append($("<iframe src='/controls/sk/sk.html?team=2&operatorMode'/>").addClass("SKFrame"));
 }
 
 function createScoreTimeContent(table) {

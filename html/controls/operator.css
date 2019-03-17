@@ -89,6 +89,8 @@ table.RowTable { border-spacing: 0px; }
 	#TeamTime div.NumberDialog table.Period:not(.Show) { display: none; }
 	
 	#TeamTime .Faded { opacity: 0.2; }
+	
+	#TeamTimeTab .SKFrame { width: 50%; border-style: none; }
 /* End Team/Time Tab */
 
 /* ScoreBoard View */

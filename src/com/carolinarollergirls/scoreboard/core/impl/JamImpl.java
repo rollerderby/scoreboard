@@ -10,6 +10,7 @@ import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -29,6 +30,8 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         add(Child.TEAM_JAM, new TeamJamImpl(this, Team.ID_1));
         add(Child.TEAM_JAM, new TeamJamImpl(this, Team.ID_2));
         addWriteProtection(Child.TEAM_JAM);
+        setRecalculated(Value.STAR_PASS).addSource(getTeamJam(Team.ID_1), TeamJam.Value.STAR_PASS)
+            .addSource(getTeamJam(Team.ID_2), TeamJam.Value.STAR_PASS);
     }
 
     public void setParent(ScoreBoardEventProvider p) {
@@ -53,6 +56,13 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         super.unlink(neighborsRemoved);
     }
 
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.STAR_PASS) {
+            return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass();
+        }
+        return value;
+    }
+    
     public void execute(CommandProperty prop) {
         synchronized (coreLock) {
             switch ((Command)prop) {

@@ -15,6 +15,10 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
 
     public Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.SCORE && value == null) {
+            unlink();
+            return last;
+        }
         if (prop == Value.SCORE && (Integer)value < 0) { return 0; }
         if (prop == Value.DURATION) {
             if ((Long)get(Value.JAM_CLOCK_END) > 0L) {
@@ -35,6 +39,13 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
             }
             if (!(Boolean)value && hasPrevious()) {
                 getPrevious().set(Value.AFTER_S_P, false);
+            }
+            if (flag != Flag.INTERNAL) {
+                if ((Boolean)value && (!hasPrevious() || !(Boolean)getPrevious().get(Value.AFTER_S_P))) {
+                    parent.set(TeamJam.Value.STAR_PASS_TRIP, this);
+                } else if(!(Boolean)value && (!hasNext() || (Boolean)getNext().get(Value.AFTER_S_P))) {
+                    parent.set(TeamJam.Value.STAR_PASS_TRIP, getNext());
+                }
             }
         }
     }

@@ -33,6 +33,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         setName(n);
         setNumber(num);
         setFlags(flags);
+        set(Value.BASE_ROLE, Role.BENCH);
+        set(Value.ROLE, Role.BENCH);
         setInverseReference(Child.FIELDING, Fielding.Value.SKATER);
         setCopy(Value.POSITION, this, Value.CURRENT_FIELDING, Fielding.Value.POSITION, true);
         setCopy(Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false);

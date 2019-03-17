@@ -202,6 +202,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     public Object valueFromString(PermanentProperty prop, String sValue, Flag flag) {
         synchronized (coreLock) {
+            if (sValue == null) { return null; }
             if (prop == IValue.PREVIOUS || prop == IValue.NEXT) {
                 return getElement(providerClass, sValue);
             }

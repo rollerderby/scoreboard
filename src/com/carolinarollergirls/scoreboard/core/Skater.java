@@ -52,8 +52,8 @@ public interface Skater extends ScoreBoardEventProvider {
         CURRENT_FIELDING(Fielding.class, null),
         CURRENT_BOX_SYMBOLS(String.class, ""),
         POSITION(Position.class, null),
-        ROLE(Role.class, Role.BENCH),
-        BASE_ROLE(Role.class, Role.BENCH),
+        ROLE(Role.class, null),
+        BASE_ROLE(Role.class, null),
         PENALTY_BOX(Boolean.class, false),
         FLAGS(String.class, "");
 

@@ -7,7 +7,6 @@ table,tr,td {
 	border-collapse: collapse;
 	border-color:#777;
 }
-/*increase readability by making penalty codes bold */
 tr {
     color: #333;
 }

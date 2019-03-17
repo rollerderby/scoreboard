@@ -1,0 +1,27 @@
+body {	
+	font-size: 11pt;
+/*	background-color: #333;*/
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+}
+table,tr,td {
+	border-collapse: collapse;
+	border-color:#777;
+}
+tr {
+    color: #333;
+}
+.Hide { display: none; }
+.Period { width: 100%; table-layout:fixed; }
+.Period thead td { font-size: 95%; background-color: #222; color: #FFF; }
+.Period .SmallHead>div { font-size: 75%; transform: rotate(270deg); }
+.Period td { text-align: center; vertical-align: center; }
+.Period tr { background-color: #FFF; }
+.Period tr:nth-child(4n+0), .Period tr:nth-child(4n-1) { background-color: #e9f6da; }
+.Period .JamNumber { width: 30px; }
+.Period .Jammer { width: 50px; }
+.Period .Narrow, .Period .SmallHead { width: 14px; }
+.Period #head { font-size: 200%; }
+.Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; }
+
+
+.TripEditor input[type="number"] { width: 50px; }

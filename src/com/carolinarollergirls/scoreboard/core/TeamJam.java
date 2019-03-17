@@ -50,6 +50,7 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
         LAST_SCORE(Integer.class, 0),
         OS_OFFSET(Integer.class, 0),
         JAM_SCORE(Integer.class, 0),
+        AFTER_S_P_SCORE(Integer.class, 0),
         TOTAL_SCORE(Integer.class, 0),
         LOST(Boolean.class, false),
         LEAD(Boolean.class, false),
