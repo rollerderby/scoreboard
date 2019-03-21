@@ -14,6 +14,7 @@ public enum FloorPosition {
 
     public Role getRole() { return role; }
     public Role getRole(TeamJam teamJam) {
+        if (teamJam == null) { return role; }
         if (role == Role.PIVOT && teamJam.isStarPass()) {
             return Role.JAMMER;
         } else if (role == Role.JAMMER && teamJam.isStarPass() ||

@@ -17,11 +17,13 @@ tr {
 .Period td { text-align: center; vertical-align: center; }
 .Period tr { background-color: #FFF; }
 .Period tr:nth-child(4n+0), .Period tr:nth-child(4n-1) { background-color: #e9f6da; }
+.Period tr .Darker { background-color: #e9f6da; }
+.Period tr:nth-child(4n+0) .Darker, .Period tr:nth-child(4n-1) .Darker { background-color: #d3ecb6; }
 .Period .JamNumber { width: 30px; }
 .Period .Jammer { width: 50px; }
 .Period .Narrow, .Period .SmallHead { width: 14px; }
 .Period #head { font-size: 200%; }
 .Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; }
-
+.Period .GameTotal { background-color: #d3ecb6; }
 
 .TripEditor input[type="number"] { width: 50px; }

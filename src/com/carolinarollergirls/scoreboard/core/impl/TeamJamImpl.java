@@ -69,6 +69,9 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
                 return last;
             }
         }
+        if (prop == Value.NO_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() == null) {
+            return false;
+        }
         if (value instanceof Integer && prop != Value.OS_OFFSET && (Integer)value < 0) { return 0; }
         return value;
     }

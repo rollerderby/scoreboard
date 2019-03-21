@@ -9,7 +9,9 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Fielding;
@@ -80,15 +82,15 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }	
     }
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId()) && getBaseRole() == Role.BENCH) {
-            setBaseRole(Role.INELIGIBLE);
+        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
+            updateEligibility();
         } else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
             set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
         }
     }
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId()) && getBaseRole() == Role.INELIGIBLE) {
-            setBaseRole(Role.BENCH);
+        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
+            updateEligibility();
         } else if (prop == Child.FIELDING && getCurrentFielding() == item) {
             set(Value.CURRENT_FIELDING, null, Flag.INTERNAL);
         }
@@ -126,6 +128,40 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public Role getBaseRole() { return (Role)get(Value.BASE_ROLE); }
     public void setBaseRole(Role b) { set(Value.BASE_ROLE, b); }
 
+    public void updateEligibility() {
+        if (getBaseRole() != Role.BENCH && getBaseRole() != Role.INELIGIBLE) {
+            return;
+        }
+        if (get(NChild.PENALTY, FO_EXP_ID) != null) { 
+            setBaseRole(Role.INELIGIBLE);
+            return;
+        }
+        boolean satThisPeriod = false;
+        Set<TeamJam> last3 = new HashSet<TeamJam>();
+        TeamJam tj = getTeam().getRunningOrUpcomingTeamJam();
+        while(tj != null && last3.size() < 3) {
+            last3.add(tj);
+            tj = tj.getPrevious();
+        }
+        for (ValueWithId v : getAll(Child.FIELDING)) {
+            Fielding f = (Fielding)v;
+            if (f.isSitFor3()) {
+                if (last3.contains(f.getTeamJam())) {
+                    setBaseRole(Role.INELIGIBLE);
+                    return;
+                }
+                if (f.getTeamJam().getJam().getParent() == scoreBoard.getCurrentPeriod()) {
+                    if (satThisPeriod) {
+                        setBaseRole(Role.INELIGIBLE);
+                        return;
+                    } else {
+                        satThisPeriod = true;
+                    }
+                }
+            }
+        }
+    }
+    
     public boolean isPenaltyBox() { return (Boolean)get(Value.PENALTY_BOX); }
     public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }
 

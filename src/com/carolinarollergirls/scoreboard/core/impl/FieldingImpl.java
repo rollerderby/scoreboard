@@ -11,7 +11,6 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.InverseReferenceUpdateListener;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -24,8 +23,10 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         this.teamJam = teamJam;
         set(Value.POSITION, position);
         addWriteProtection(Value.POSITION);
-        addScoreBoardListener(new InverseReferenceUpdateListener(this, Child.BOX_TRIP, BoxTrip.Child.FIELDING));
-        addScoreBoardListener(new InverseReferenceUpdateListener(this, Value.SKATER, Skater.Child.FIELDING));
+        setCopy(Value.SKATER_NUMBER, this, Value.SKATER, Skater.Value.NUMBER, true);
+        setInverseReference(Child.BOX_TRIP, BoxTrip.Child.FIELDING);
+        setInverseReference(Value.SKATER, Skater.Child.FIELDING);
+        setRecalculated(Value.NOT_FIELDED).addSource(this, Value.SKATER);
     }
 
     public String getProviderId() { return getPosition().getProviderId(); }
@@ -42,6 +43,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 getCurrentBoxTrip().end();
             }
         }
+        if (prop == Value.NOT_FIELDED && getSkater() != null) { return false; }
         return value;
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -53,6 +55,10 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         if (prop == Value.CURRENT_BOX_TRIP) {
             set(Value.PENALTY_BOX, value != null && ((BoxTrip)value).isCurrent());
             updateBoxTripSymbols();
+        }
+        if (prop == Value.SIT_FOR_3) {
+            updateBoxTripSymbols();
+            getSkater().updateEligibility();
         }
     }
 
@@ -77,6 +83,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     public Skater getSkater() { return (Skater)get(Value.SKATER); }
     public void setSkater(Skater s) { set(Value.SKATER, s); }
 
+    public boolean isSitFor3() { return (Boolean)get(Value.SIT_FOR_3); }
     public boolean isInBox() { return (Boolean)get(Value.PENALTY_BOX); }
     public BoxTrip getCurrentBoxTrip() { return (BoxTrip)get(Value.CURRENT_BOX_TRIP); }
     public void updateBoxTripSymbols() {
@@ -132,6 +139,14 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             if (typeBeforeSP > 0) { beforeSP.append(" " + symbols[typeBeforeSP - 1]); }
             if (typeAfterSP > 0) { afterSP.append(" " + symbols[typeAfterSP - 1]); }
             if (typeJam > 0) { jam.append(" " + symbols[typeJam - 1]); }
+        }
+        if (isSitFor3()) {
+            jam.append(" 3");
+            if(getTeamJam().isStarPass()) {
+                afterSP.append(" 3");
+            } else {
+                beforeSP.append(" 3");
+            }
         }
         set(Value.BOX_TRIP_SYMBOLS_BEFORE_S_P, beforeSP.toString());
         set(Value.BOX_TRIP_SYMBOLS_AFTER_S_P, afterSP.toString());

@@ -15,13 +15,17 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
     public Skater getSkater();
     public void setSkater(Skater s);
 
+    public boolean isSitFor3();
     public boolean isInBox();
     public BoxTrip getCurrentBoxTrip();
     public void updateBoxTripSymbols();
 
     public enum Value implements PermanentProperty {
         SKATER(Skater.class, null),
+        SKATER_NUMBER(String.class, ""),
+        NOT_FIELDED(Boolean.class, false),
         POSITION(Position.class, null),
+        SIT_FOR_3(Boolean.class, false),
         PENALTY_BOX(Boolean.class, false),
         CURRENT_BOX_TRIP(BoxTrip.class, null),
         BOX_TRIP_SYMBOLS(String.class, ""),

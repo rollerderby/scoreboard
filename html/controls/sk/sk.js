@@ -24,7 +24,6 @@
 		}
 		
 		WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) { createPeriod(v); });
-		WS.Register(['ScoreBoard.Team('+teamId+').Skater']);
 
 		tripEditor = $('div.TripEditor').dialog({
 			modal: true,
@@ -86,13 +85,13 @@
 			var prefix = 'ScoreBoard.Period('+p+').Jam('+nr+').TeamJam('+teamId+').';
 
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
-			$('<td>').addClass('JamNumber').text(nr).appendTo(jamRow);
+			$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
 			$('<td>').addClass('Jammer').appendTo(jamRow);
-			$('<td>').addClass('Lost Narrow').click(function() { WS.Set(prefix+'Lost', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Lead Narrow').click(function() { WS.Set(prefix+'Lead', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Calloff Narrow').click(function() { WS.Set(prefix+'Calloff', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Injury Narrow').click(function() { WS.Set(prefix+'Injury', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('NoInitial Narrow').click(function() { setupTripEditor(p, nr, 1); }).appendTo(jamRow);
+			$('<td>').addClass('Lost Narrow Darker').click(function() { WS.Set(prefix+'Lost', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('Lead Narrow Darker').click(function() { WS.Set(prefix+'Lead', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('Calloff Narrow Darker').click(function() { WS.Set(prefix+'Calloff', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('Injury Narrow Darker').click(function() { WS.Set(prefix+'Injury', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('NoInitial Narrow Darker').click(function() { setupTripEditor(p, nr, 1); }).appendTo(jamRow);
 			$.each(new Array(9), function (idx) {
 				var t = idx + 2;
 				$('<td>').addClass('Trip Trip'+t).click(function() { setupTripEditor(p, nr, t); }).appendTo(jamRow);
@@ -104,12 +103,8 @@
 			WS.Register(['ScoreBoard.Period('+p+').Jam('+nr+').StarPass'], function(k, v) { spRow.toggleClass('Hide', !isTrue(v)); });
 
 			WS.Register([prefix+'StarPass'], function(k, v) { spRow.find('.JamNumber').text(isTrue(v)?'SP':'SP*'); });
-			WS.Register([prefix+'Fielding(Jammer).Skater'], function (k, v) {
-				jamRow.find('.Jammer').text(v == null?'':WS.state['ScoreBoard.Team('+teamId+').Skater('+v+').Number']);
-			});
-			WS.Register([prefix+'Fielding(Pivot).Skater'], function (k, v) {
-				spRow.find('.Jammer').text(v == null?'':WS.state['ScoreBoard.Team('+teamId+').Skater('+v+').Number']);
-			});
+			WS.Register([prefix+'Fielding(Jammer).SkaterNumber'], function (k, v) {	jamRow.find('.Jammer').text(v);	});
+			WS.Register([prefix+'Fielding(Pivot).SkaterNumber'], function (k, v) { spRow.find('.Jammer').text(v); });
 			WS.Register([prefix+'Lost'], function(k, v) { jamRow.find('.Lost').text(isTrue(v)?'X':'')});
 			WS.Register([prefix+'Lead'], function(k, v) { jamRow.find('.Lead').text(isTrue(v)?'X':'')});
 			WS.Register([prefix+'Calloff', prefix+'Injury', prefix+'NoInitial', prefix+'StarPass'], function(k, v) {
@@ -127,6 +122,7 @@
 				otherRow.find('.NoInitial').text('');
 				spRow.find('.JamNumber').text(isTrue(WS.state[prefix+'StarPass'])?'SP':'SP*');
 			});
+			WS.Register([prefix+'ScoringTrip(1).AfterSP'], function(k, v) { spRow.find('.NoInitial').text(isTrue(v)?'X':'')});
 			WS.Register([prefix+'ScoringTrip(1).Score', prefix+'ScoringTrip(2).Score',
 					prefix+'ScoringTrip(2).AfterSP'], function(k, v) {
 				var trip1Score = WS.state[prefix+'ScoringTrip(1).Score'];

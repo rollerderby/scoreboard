@@ -37,6 +37,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public void setRoleToBase();
     public Role getBaseRole();
     public void setBaseRole(Role base);
+    public void updateEligibility();
     public boolean isPenaltyBox();
     public void setPenaltyBox(boolean box);
     public String getFlags();

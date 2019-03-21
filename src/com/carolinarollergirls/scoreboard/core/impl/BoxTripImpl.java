@@ -199,10 +199,10 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         set(Value.END_AFTER_S_P, getEndFielding().getTeamJam().isStarPass());
         set(Value.JAM_CLOCK_END, endedBetweenJams() ? 0L : scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
         getCurrentFielding().updateBoxTripSymbols();
-//        if ((getStartFielding() == getEndFielding() && endedBetweenJams()) ||
-//            ((Long)get(Value.DURATION) < 5000L && getAll(Child.PENALTY).size() == 0)) {
-//            unlink();
-//        }
+        if (getStartFielding() == getEndFielding() && endedBetweenJams()) {
+//            || ((Long)get(Value.DURATION) < 5000L && getAll(Child.PENALTY).size() == 0)) {
+            unlink();
+        }
     }
 
     @Override

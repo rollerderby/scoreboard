@@ -58,7 +58,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         if (prop == Value.OFFICIAL_REVIEWS && (Integer)value > scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS)) {
             return scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
         }
-            return value;
+        return value;
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.RETAINED_OFFICIAL_REVIEW && (Boolean)value && getOfficialReviews() == 0) {
@@ -185,6 +185,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             nextReplacedBlocker = FloorPosition.PIVOT;
             for (Skater s : toField.keySet()) {
                 field(s, toField.get(s));
+            }
+            
+            for (ValueWithId s : getAll(Child.SKATER)) {
+                ((Skater)s).updateEligibility();
             }
             requestBatchEnd();
         }
