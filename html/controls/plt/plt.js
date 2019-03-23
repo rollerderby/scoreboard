@@ -49,6 +49,9 @@
 			width: '80%',
 		});
 
+		$('#lt').attr('src',"../lt/lt.html?team="+teamId+"&mode=plt");
+
+		
 		addFOCode();
 
 		$(".PenaltyEditor .period_minus").click(function () { adjust("Period", 'prev'); });
@@ -130,8 +133,12 @@
 					displayPenalty(t, id, i);
 				displayPenalty(t, id, 0);
 			} else if (field === 'Role') {
-				$('.Team .Skater.Penalty[id=' + id + '] .Role').removeClass('onTrack');
-				$('.Team .Skater.Penalty[id=' + id + '] .'+v).addClass('onTrack');
+				$('.Team .Skater.Penalty[id=' + id + '] .Role').removeClass('OnTrack');
+				$('.Team .Skater.Penalty[id=' + id + '] .'+v).addClass('OnTrack');
+			} else if (field === 'PenaltyBox') {
+				$('.Team .Skater.Penalty[id=' + id + '] .Sitting').toggleClass('inBox', isTrue(v));
+			} else if (field === 'CurrentBoxSymbols') {
+				$('.Team .Skater.Penalty[id=' + id + '] .Trips').text(v);
 			}
 		} else {
 			// Look for penalty
@@ -221,37 +228,48 @@
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
 		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
-		var benchCell = $('<td>').addClass('Role Bench').attr('rowspan', 2).text('Bench').click(function() {
+		var benchCell = $('<td>').addClass('Role Bench').attr('rowspan', 2).click(function() {
 			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Bench');
-		});
+		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('Bench'));
 		if (role == 'Bench') {
-			benchCell.addClass('onTrack');
+			benchCell.addClass('OnTrack');
 		}
 		p.append(benchCell);
-		var jammerCell = $('<td>').addClass('Role Jammer').attr('rowspan', 2).text(number + 'J').click(function() {
+		
+		var jammerCell = $('<td>').addClass('Role Jammer').attr('rowspan', 2).click(function() {
 			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Jammer');
-		});
+		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('J'));
 		if (role == 'Jammer') {
-			jammerCell.addClass('onTrack');
+			jammerCell.addClass('OnTrack');
 		}
 		p.append(jammerCell);
-		var pivotCell = $('<td>').addClass('Role Pivot').attr('rowspan', 2).text(number + 'P').click(function() {
+		
+		var pivotCell = $('<td>').addClass('Role Pivot').attr('rowspan', 2).click(function() {
 			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Pivot');
-		});
+		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('P'));
 		if (role == 'Pivot') {
-			pivotCell.addClass('onTrack');
+			pivotCell.addClass('OnTrack');
 		}
 		p.append(pivotCell);
-		var blockerCell = $('<td>').addClass('Role Blocker').attr('rowspan', 2).text(number + 'B').click(function() {
+		
+		var blockerCell = $('<td>').addClass('Role Blocker').attr('rowspan', 2).click(function() {
 			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Blocker');
-		});
+		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('B'));
 		if (role == 'Blocker') {
-			blockerCell.addClass('onTrack');
+			blockerCell.addClass('OnTrack');
 		}
 		p.append(blockerCell);
+		
 		var boxCell = $('<td>').addClass('Sitting').attr('rowspan', 2).text('Box').click(function() {
-			
+			WS.Set('ScoreBoard.Team('+t+').Skater('+id+').PenaltyBox', !$(this).hasClass('inBox'));
 		});
+		if (isTrue(WS.state['ScoreBoard.Team('+t+').Skater('+id+').PenaltyBox'])) {
+			boxCell.addClass('inBox');
+		}
+		p.append(boxCell);
+		var tripCell = $('<td>').addClass('Trips').attr('rowspan', 2)
+			.text(WS.state['ScoreBoard.Team('+t+').Skater('+id+').CurrentBoxSymbols']);
+		p.append(tripCell);
 
 		var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id, 10); });
 		p.append(numberCell);
@@ -262,8 +280,8 @@
 			j.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
 		});
 
-		p.append($('<td>').addClass('Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
-		j.append($('<td>').addClass('Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
+		p.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
+		j.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
 		p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
 
 		var inserted = false;

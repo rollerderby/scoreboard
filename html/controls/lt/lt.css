@@ -1,6 +1,5 @@
 body {	
 	font-size: 11pt;
-/*	background-color: #333;*/
 	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
 table,tr,td {
@@ -25,3 +24,7 @@ tr {
 .Period .Skater { width: 12%; }
 .Period .Box { width: 8%; }
 
+.FieldingEditor .tripHeader { text-align: center; font-size: 95%; background-color: #222; color: #FFF; }
+.FieldingEditor .Col3 { text-align: center; }
+
+.FieldingEditor .BoxTrip>td, .FieldingEditor .Skater>td { padding: 0.5em 0em; }
