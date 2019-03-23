@@ -18,11 +18,11 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public TeamJamImpl(Jam j, String teamId) {
         super(j, teamId, Jam.Child.TEAM_JAM, TeamJam.class, Value.class, Child.class, NChild.class);
         team = scoreBoard.getTeam(teamId);
+        setRecalculated(Value.TOTAL_SCORE).addSource(this, Value.LAST_SCORE)
+            .addSource(this, Value.JAM_SCORE).addSource(this, Value.OS_OFFSET);
         setCopy(Value.LAST_SCORE, this, IValue.PREVIOUS, Value.TOTAL_SCORE, true);
         jamScoreListener = setRecalculated(Value.JAM_SCORE);
         afterSPScoreListener = setRecalculated(Value.AFTER_S_P_SCORE);
-        setRecalculated(Value.TOTAL_SCORE).addSource(this, Value.LAST_SCORE)
-            .addSource(this, Value.JAM_SCORE).addSource(this, Value.OS_OFFSET);
         setRecalculated(Value.NO_INITIAL).addSource(this, Value.CURRENT_TRIP);
         setRecalculated(Value.DISPLAY_LEAD).addSource(this, Value.LEAD).addSource(this, Value.LOST);
         setRecalculated(Value.STAR_PASS).addSource(this, Value.STAR_PASS_TRIP);

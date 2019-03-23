@@ -122,7 +122,7 @@
 				otherRow.find('.NoInitial').text('');
 				spRow.find('.JamNumber').text(isTrue(WS.state[prefix+'StarPass'])?'SP':'SP*');
 			});
-			WS.Register([prefix+'ScoringTrip(1).AfterSP'], function(k, v) { spRow.find('.NoInitial').text(isTrue(v)?'X':'')});
+			WS.Register([prefix+'ScoringTrip(1).AfterSP'], function(k, v) { jamRow.find('.NoInitial').text(isTrue(v)?'X':'')});
 			WS.Register([prefix+'ScoringTrip(1).Score', prefix+'ScoringTrip(2).Score',
 					prefix+'ScoringTrip(2).AfterSP'], function(k, v) {
 				var trip1Score = WS.state[prefix+'ScoringTrip(1).Score'];
