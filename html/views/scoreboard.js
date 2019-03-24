@@ -417,7 +417,7 @@ function showClocks(clock) {
 function setupSponsorBanners() {
 	var div = $("#SponsorBox");
 	var setNextSrc = function() {
-		var banners = $.makeArray($sb("Images.Type(sponsor_banner)").find("Image"));
+		var banners = $.makeArray($sb("ScoreBoard.Media.Images.sponsor_banner)").find("File"));
 		banners.sort(function(a, b) {
 			var nameA = $sb(a).$sb("Name").$sbGet();
 			var nameB = $sb(b).$sb("Name").$sbGet();
