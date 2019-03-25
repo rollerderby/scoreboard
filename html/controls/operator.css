@@ -90,7 +90,7 @@ table.RowTable { border-spacing: 0px; }
 	
 	#TeamTime .Faded { opacity: 0.2; }
 	
-	#TeamTimeTab .SKFrame { width: 50%; border-style: none; }
+	#TeamTimeTab .SKSheet { float: left; width: 50%; }
 /* End Team/Time Tab */
 
 /* ScoreBoard View */

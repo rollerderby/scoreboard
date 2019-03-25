@@ -1,75 +1,52 @@
-body {	
+.PLT, #PenaltyEditor {	
 	font-size: 11pt;
-	background-color: #333;
-	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;";
+	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
-table,tr,td {
+table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr, #PenaltyEditor td {
 	border-collapse: collapse;
 	border-color:#777;
 }
-tr {
+.PLT tr {
     color: #333;
 }
-.Team {
-	position: absolute;
+.PLT.Team {
 	width: 99%;
 	top: 0%;
 }
-.Team thead td { font-size: 1em; font-weight: bold; background-color: #222; color: #FFF; }
-.Team td { text-align: center; vertical-align: center; }
-.Team .Number, .Team .Box, .Team .Total { width: 4.76%; }
-.Team .Role, .Team .Sitting, .Team .Trips { width: 7.14%; }
-.Team tr { background-color: #FFF; }
-.Team tr:nth-child(4n+0), .Team tr:nth-child(4n-1) { background-color: #FFE8FF; }
-.Team .Role { background-color: #FFF; }
-.Team tr:nth-child(4n+0) .Role:not(.OnTrack), .Team tr:nth-child(4n-1) .Role:not(.OnTrack) { background-color: #e7f3ff; }
-.Team .Sitting, .Team .Trips { background-color: #e7f3ff; }
-.Team tr:nth-child(4n+0) .Sitting:not(.inBox), .Team tr:nth-child(4n-1) .Sitting:not(.inBox),
-.Team tr:nth-child(4n+0) .Trips, .Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
-.Team .Number { font-weight: bold; background-color: #f4f4f4; }
-.Team tr:nth-child(4n+0) .Number, .Team tr:nth-child(4n-1) .Number { background-color: #E8E8E8; }
-.Team .Box0 { background-color: #ffd0ff; }
-.Team .Role:not(.OnTrack)>span.Num { display: none; }
-.Team .Role.OnTrack>span.Pos { display: none; }
+.PLT.Team thead td { font-size: 1em; font-weight: bold; background-color: #222; color: #FFF; }
+.PLT.Team td { text-align: center; vertical-align: middle; }
+.PLT.Team .Number, .Team .Box, .PLT.Team .Total { width: 4.76%; }
+.PLT.Team .Role, .Team .Sitting, .PLT.Team .Trips { width: 7.14%; }
+.PLT.Team tr { background-color: #FFF; }
+.PLT.Team tr:nth-child(4n+0), .PLT.Team tr:nth-child(4n-1) { background-color: #FFE8FF; }
+.PLT.Team .Role { background-color: #FFF; }
+.PLT.Team tr:nth-child(4n+0) .Role:not(.OnTrack), .PLT.Team tr:nth-child(4n-1) .Role:not(.OnTrack) { background-color: #e7f3ff; }
+.PLT.Team .Sitting, .PLT.Team .Trips { background-color: #e7f3ff; }
+.PLT.Team tr:nth-child(4n+0) .Sitting:not(.inBox), .PLT.Team tr:nth-child(4n-1) .Sitting:not(.inBox),
+.PLT.Team tr:nth-child(4n+0) .Trips, .PLT.Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
+.PLT.Team .Number { font-weight: bold; background-color: #f4f4f4; }
+.PLT.Team tr:nth-child(4n+0) .Number, .PLT.Team tr:nth-child(4n-1) .Number { background-color: #E8E8E8; }
+.PLT.Team .Box0 { background-color: #ffd0ff; }
+.PLT.Team .Role:not(.OnTrack)>span.Num { display: none; }
+.PLT.Team .Role.OnTrack>span.Pos { display: none; }
 
-.Team .Warn1, .Team .Warn1 .Box0 { background-color: #ffffa0; }
-.Team .Warn1:nth-child(4n+0), .Team .Warn1:nth-child(4n-1),
-.Team .Warn1:nth-child(4n+0) .Box0, .Team .Warn1:nth-child(4n-1) .Box0 { background-color: #ffff66; }
-.Team .Warn2, .Team .Warn2 .Box0 { background-color: #ffdc6d; }
-.Team .Warn2:nth-child(4n+0), .Team .Warn2:nth-child(4n-1),
-.Team .Warn2:nth-child(4n+0) .Box0, .Team .Warn2:nth-child(4n-1) .Box0 { background-color: #ffd000; }
-.Team .Warn3, .Team .Warn3 .Box0 { background-color: #ff6666; }
-.Team .Warn3:nth-child(4n+0), .Team .Warn3:nth-child(4n-1),
-.Team .Warn3:nth-child(4n+0) .Box0, .Team .Warn3:nth-child(4n-1) .Box0 { background-color: #ff4040; }
+.PLT.Team .Warn1, .PLT.Team .Warn1 .Box0 { background-color: #ffffa0; }
+.PLT.Team .Warn1:nth-child(4n+0), .PLT.Team .Warn1:nth-child(4n-1),
+.PLT.Team .Warn1:nth-child(4n+0) .Box0, .PLT.Team .Warn1:nth-child(4n-1) .Box0 { background-color: #ffff66; }
+.PLT.Team .Warn2, .PLT.Team .Warn2 .Box0 { background-color: #ffdc6d; }
+.PLT.Team .Warn2:nth-child(4n+0), .PLT.Team .Warn2:nth-child(4n-1),
+.PLT.Team .Warn2:nth-child(4n+0) .Box0, .PLT.Team .Warn2:nth-child(4n-1) .Box0 { background-color: #ffd000; }
+.PLT.Team .Warn3, .PLT.Team .Warn3 .Box0 { background-color: #ff6666; }
+.PLT.Team .Warn3:nth-child(4n+0), .PLT.Team .Warn3:nth-child(4n-1),
+.PLT.Team .Warn3:nth-child(4n+0) .Box0, .PLT.Team .Warn3:nth-child(4n-1) .Box0 { background-color: #ff4040; }
 
-.Team .Unserved { background-color: #0FF; }
-.Team .Serving { background-color: #70ff70; }
-.Team .OnTrack { background-color: #70ff70; }
-.Team .inBox { background-color: #ff4040; }
+.PLT.Team .Unserved { background-color: #0FF; }
+.PLT.Team .Serving { background-color: #70ff70; }
+.PLT.Team .OnTrack { background-color: #70ff70; }
+.PLT.Team .inBox { background-color: #ff4040; }
 
-.PenaltyEditor .Codes>div { float: left; width: 150px; height: 80px; margin: 10px; border: 1px solid black; font-weight: bold; }
-.PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }
-.PenaltyEditor .Codes>div div { text-align: center; }
-.PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; }
-.PenaltyEditor .Codes>div .Description { font-size: 0.75em; }
-
-/* responsive vertical layout on phones and tablet portrait */
-@media only screen and (min-width: 960px) {
-	.Team.auto-fit {
-		height: 100vh;
-	}
-}
-@media only screen and (max-width: 960px) { 
-   .Team{
-	position: relative;
-	float:left;
-	width: 99%;
-	margin-bottom:1em;
-	}
-	.Team1, .Team2 { 
-	position: relative; 
-	margin:2px;
-	left:auto;
-	right:auto;
-	}
-}
+#PenaltyEditor .Codes>div { float: left; width: 150px; height: 90px; margin: 10px; border: 1px solid black; font-weight: bold; }
+#PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }
+#PenaltyEditor .Codes>div div { text-align: center; }
+#PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; }
+#PenaltyEditor .Codes>div .Description { font-size: 0.75em; }

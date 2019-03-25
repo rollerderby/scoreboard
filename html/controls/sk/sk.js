@@ -1,37 +1,22 @@
-(function () {
+function prepareSkTable(element, teamId, mode) {
 
 	'use strict';
 	$(initialize);
 
-	var teamId = _windowFunctions.getParam("team");
-	var operatorMode = _windowFunctions.hasParam("operatorMode");
 	var teamName = "";
-	var tripEditor;
 
 	function initialize() {
-
-		WS.Connect();
-		WS.AutoRegister();
-
-		if (!operatorMode) {
+		if (mode != 'operator') {
 			WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
 			WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name'], function () { teamNameUpdate(); });
 	
 			WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-				$('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg)']);
-				$('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg)']);
+				element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg)']);
+				element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg)']);
 			});
 		}
 		
 		WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) { createPeriod(v); });
-
-		tripEditor = $('div.TripEditor').dialog({
-			modal: true,
-			closeOnEscape: false,
-			title: 'Trip Editor',
-			autoOpen: false,
-			width: '300px',
-		});
 	}
 	
 	function teamNameUpdate() {
@@ -41,20 +26,20 @@
 			teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name']
 		}
 
-		$('#head .Team').text(teamName);
+		element.find('#head .Team').text(teamName);
 	}
 	
 	function createPeriod(nr) {
-		if (nr > 0 && $('#table-div').find('table.Period[nr='+nr+']').length == 0) {
+		if (nr > 0 && element.find('table.Period[nr='+nr+']').length == 0) {
 			createPeriod(nr-1);
 			var table = $('<table cellpadding="0" cellspacing="0" border="1">')
-				.addClass('Period').attr('nr', nr);
-			if (operatorMode) {
-				table.prependTo($('#table-div'));
+				.addClass('SK Period').attr('nr', nr);
+			if (mode == 'operator') {
+				table.prependTo(element);
 			} else {
-				table.appendTo($('#table-div'));
+				table.appendTo(element);
 			}
-			if (!operatorMode) {
+			if (mode != 'operator') {
 				var header = $('<thead><tr>').appendTo(table);
 				$('<td>').addClass('JamNumber').text('JAM').appendTo(header);
 				$('<td>').addClass('Jammer').text('JAMMER').appendTo(header);
@@ -72,13 +57,11 @@
 			
 			WS.Register(['ScoreBoard.Period('+nr+').CurrentJamNumber'], function(k, v) { createJam(nr, v); });
 			WS.Register(['ScoreBoard.Period('+nr+').Duration'], function(k,v) { if (v > 0) finalizePeriod(nr); });
-			
-			$('#loading').addClass('Hide');
 		}
 	}
 	
 	function createJam(p, nr) {
-		var table = $('#table-div').find('table.Period[nr='+p+']').find('tbody');
+		var table = element.find('table.Period[nr='+p+']').find('tbody');
 		if (table.find('tr.Jam[nr='+nr+']').length == 0) {
 			if (nr > 1 && table.find('tr.SP[nr='+(nr-1)+']').length == 0) {	createJam(p, nr-1); }
 
@@ -91,10 +74,10 @@
 			$('<td>').addClass('Lead Narrow Darker').click(function() { WS.Set(prefix+'Lead', $(this).text() == ""); }).appendTo(jamRow);
 			$('<td>').addClass('Calloff Narrow Darker').click(function() { WS.Set(prefix+'Calloff', $(this).text() == ""); }).appendTo(jamRow);
 			$('<td>').addClass('Injury Narrow Darker').click(function() { WS.Set(prefix+'Injury', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('NoInitial Narrow Darker').click(function() { setupTripEditor(p, nr, 1); }).appendTo(jamRow);
+			$('<td>').addClass('NoInitial Narrow Darker').click(function() { setupTripEditor(p, nr, teamId, 1); }).appendTo(jamRow);
 			$.each(new Array(9), function (idx) {
 				var t = idx + 2;
-				$('<td>').addClass('Trip Trip'+t).click(function() { setupTripEditor(p, nr, t); }).appendTo(jamRow);
+				$('<td>').addClass('Trip Trip'+t).click(function() { setupTripEditor(p, nr, teamId, t); }).appendTo(jamRow);
 			});
 			$('<td>').addClass('JamTotal').appendTo(jamRow);
 			$('<td>').addClass('GameTotal').appendTo(jamRow);
@@ -188,7 +171,7 @@
 			});
 			WS.Register([prefix+'TotalScore'], function(k, v) { spRow.find('.GameTotal').text(v)});
 			
-			if (operatorMode) {
+			if (mode == 'operator') {
 				table.prepend(jamRow).prepend(spRow);
 			} else {
 				table.append(jamRow).append(spRow);
@@ -196,24 +179,53 @@
 		}
 	}
 	
-	function setupTripEditor(p, j, t) {
-		var prefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+t+').';
+	function finalizePeriod(nr) {} //TODO: implement
+}
 
-		tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t==1?'Initial':t));
-		var scoreField = tripEditor.find('#score').val(WS.state[prefix+'Score']);
-		var afterSPField = tripEditor.find('#afterSP').prop('checked', isTrue(WS.state[prefix+'AfterSP']));
-		tripEditor.find('#submit').click(function() {
-			WS.Set(prefix+'Score', scoreField.val());
-			WS.Set(prefix+'AfterSP', afterSPField.prop('checked'));
-			tripEditor.dialog('close');
-		});
-		tripEditor.find('#remove').click(function() {
-			WS.Set(prefix+'Score', null);
-			tripEditor.dialog('close');
+var tripEditor;
+
+function setupTripEditor(p, j, teamId, t) {
+	var prefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+t+').';
+
+	tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t==1?'Initial':t));
+	var scoreField = tripEditor.find('#score').val(WS.state[prefix+'Score']);
+	var afterSPField = tripEditor.find('#afterSP').prop('checked', isTrue(WS.state[prefix+'AfterSP']));
+	tripEditor.find('#submit').click(function() {
+		WS.Set(prefix+'Score', scoreField.val());
+		WS.Set(prefix+'AfterSP', afterSPField.prop('checked'));
+		tripEditor.dialog('close');
+	});
+	tripEditor.find('#remove').click(function() {
+		WS.Set(prefix+'Score', null);
+		tripEditor.dialog('close');
+	});
+	
+	tripEditor.dialog('open');
+}
+
+function prepareTripEditor() {
+	
+	'use strict';
+	$(initialize);
+
+	function initialize() {
+
+		tripEditor = $('#TripEditor').dialog({
+			modal: true,
+			closeOnEscape: false,
+			title: 'Trip Editor',
+			autoOpen: false,
+			width: '300px',
 		});
 		
-		tripEditor.dialog('open');
+		tripEditor.append($('<table>')
+				.append($('<tr>')
+						.append($('<td colspan="2">')
+								.append($('<input type="number" min="0">').attr('id', 'score'))
+								.append($('<input type="checkbox">').attr('id', 'afterSP'))
+								.append($('<span>').addClass('Infotext').text('SP in this or prior trip'))))
+				.append($('<tr>')
+						.append($('<td width="50%">').append($('<button>').attr('id','submit').text('Submit')))
+						.append($('<td width="50%">').append($('<button>').attr('id','remove').text('Remove')))));
 	}
-	
-	function finalizePeriod(nr) {} //TODO: implement
-})();
+}

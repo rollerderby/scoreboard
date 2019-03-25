@@ -11,6 +11,8 @@
 
 $.fx.interval = 33;
 _include("/json", [ "Game.js", "WS.js" ]);
+_include("sk", [ "sk.js" ]);
+$('head').append('<link rel="stylesheet" href="sk/sk.css" type="text/css" />');
 
 WS.Connect();
 WS.AutoRegister();
@@ -126,8 +128,12 @@ function createScoreTimeTab() {
 	$("<table>").attr("id", "TeamTime")
 		.appendTo(createTab("Team/Time", "TeamTimeTab"))
 		.data("loadContentFunction", createScoreTimeContent);
-	$("#TeamTimeTab").append($("<iframe src='/controls/sk/sk.html?team=1&operatorMode'/>").addClass("SKFrame"));
-	$("#TeamTimeTab").append($("<iframe src='/controls/sk/sk.html?team=2&operatorMode'/>").addClass("SKFrame"));
+	var sk1 = $('<div>').addClass('SKSheet').appendTo($('#TeamTimeTab'));
+	var sk2 = $('<div>').addClass('SKSheet').appendTo($('#TeamTimeTab'));
+	$('<div>').attr('id', 'TripEditor').appendTo($('#TeamTimeTab'));
+	prepareSkTable(sk1, 1, 'operator');
+	prepareSkTable(sk2, 2, 'operator');
+	prepareTripEditor();
 }
 
 function createScoreTimeContent(table) {
