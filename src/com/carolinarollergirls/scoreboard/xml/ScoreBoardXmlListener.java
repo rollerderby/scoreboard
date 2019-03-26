@@ -72,7 +72,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         Element e = getElement(p);
         Property prop = event.getProperty();
         Object value = event.getValue();
-        String v = (value == null ? null : value.toString());
+        String v = (value == null ? "" : value.toString());
         Boolean rem = event.isRemove();
         if (prop == BatchEvent.START) {
             batchStart();
