@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.core;
 
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
@@ -22,7 +23,7 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
 
     public enum Value implements PermanentProperty {
         SKATER(Skater.class, null),
-        SKATER_NUMBER(String.class, ""),
+        SKATER_NUMBER(String.class, "?"),
         NOT_FIELDED(Boolean.class, false),
         POSITION(Position.class, null),
         SIT_FOR_3(Boolean.class, false),
@@ -45,5 +46,10 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;
         public Class<? extends ValueWithId> getType() { return type; }
+    }
+    public enum Command implements CommandProperty {
+        ADD_BOX_TRIP;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
     }
 }

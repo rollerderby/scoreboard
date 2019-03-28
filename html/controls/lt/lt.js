@@ -61,7 +61,33 @@ function prepareLtTable(element, teamId, mode) {
 			
 			WS.Register(['ScoreBoard.Period('+nr+').CurrentJamNumber'], function(k, v) { createJam(nr, v); });
 			
-			$('#loading').addClass('Hide');
+			if (mode == 'plt') {
+				var jamRow = $('<tr>').addClass('Jam').attr('id', 'upcoming');
+				var jamBox = $('<td>').addClass('JamNumber Darker').appendTo(jamRow);
+				var npBox = $('<td>').addClass('NP Darker').appendTo(jamRow);
+				$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
+					var pos = String(this);
+					var numBox = $('<td>').addClass('Skater '+pos).click(function() { 
+						openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
+					}).appendTo(jamRow);
+					var boxBox = $('<td>').addClass('Box Box'+pos).click(function() {
+						openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
+					}).appendTo(jamRow);
+					
+					WS.Register(['ScoreBoard.Team('+teamId+').Position('+pos+').Number'], function (k, v) { numBox.text(v); });
+					WS.Register(['ScoreBoard.Team('+teamId+').Position('+pos+').CurrentBoxSymbols'], function (k, v) { boxBox.text(v); });
+				});
+				
+				WS.Register(['ScoreBoard.InJam', 'ScoreBoard.CurrentPeriodNumber'], function() {
+					jamRow.toggleClass('Hide', isTrue(WS.state['ScoreBoard.InJam']) || WS.state['ScoreBoard.CurrentPeriodNumber'] != nr);
+				});
+
+				WS.Register(['ScoreBoard.UpcomingJamNumber'], function (k, v) { jamBox.text(v); });
+				WS.Register(['ScoreBoard.Team('+teamId+').NoPivot'], function(k, v) { npBox.text(isTrue(v)?'X':''); });
+				
+				jamRow.prependTo(body);
+				$('<tr>').addClass('Hide').prependTo(body); // even number of rows needed for coloring to fit
+			}
 		}
 	}
 	
@@ -81,12 +107,14 @@ function prepareLtTable(element, teamId, mode) {
 				$('<td>').addClass('Box Box'+pos).click(function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
 			});
 
-			var spRow = jamRow.clone().removeClass('Jam').addClass('SP Hide');
+			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
 			spRow.find('.Jammer').insertAfter(spRow.find('.BoxPivot'));
 			spRow.find('.BoxJammer').insertAfter(spRow.find('.Jammer'));
 			WS.Register(['ScoreBoard.Period('+p+').Jam('+nr+').StarPass'], function(k, v) { spRow.toggleClass('Hide', !isTrue(v)); });
 
+			WS.Register([prefix+'NoPivot'], function(k, v) { jamRow.find('.NP').text(isTrue(v)?'X':''); });
 			WS.Register([prefix+'StarPass'], function(k, v) {
+				if (k != prefix+'StarPass') { return; } // StarPassTrip
 				spRow.find('.JamNumber').text(isTrue(v)?'SP':'SP*');
 				spRow.find('.NP').text(isTrue(v)?'X':'');
 				$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
@@ -113,7 +141,7 @@ function prepareLtTable(element, teamId, mode) {
 			});
 			
 			if (mode=='plt') {
-				table.prepend(jamRow).prepend(spRow);
+				table.find('#upcoming').after(jamRow).after(spRow);
 			} else {
 				table.append(jamRow).append(spRow);
 			}
@@ -123,28 +151,23 @@ function prepareLtTable(element, teamId, mode) {
 
 var fieldingEditor;
 
-function openFieldingEditor(p, j, t, pos) {
-	var prefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+t+').Fielding('+pos+').';
+function openFieldingEditor(p, j, t, pos, upcoming = false) {
+	var prefix = 'ScoreBoard.'+(upcoming?'':'Period('+p+').')+'Jam('+j+').TeamJam('+t+').Fielding('+pos+').';
 	
 	fieldingEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' ' + (pos));
-	fieldingEditor.find('#skater').val(WS.state[prefix+'Skater']).change(function() {
-		WS.Set(prefix+'Skater', $(this).val());
-		$(this).val(WS.state[prefix+'Skater']);
-	});
-	fieldingEditor.find('#notFielded').prop('checked', isTrue(WS.state[prefix+'NotFielded'])).click(function() {
-		WS.Set(prefix+'NotFielded', $(this).prop('checked'));
-		$(this).prop('checked', WS.state[prefix+'NotFielded']);
-	});
-	fieldingEditor.find('#sitFor3').prop('checked', isTrue(WS.state[prefix+'SitFor3'])).click(function() {
-		WS.Set(prefix+'SitFor3', $(this).prop('checked'));
-		$(this).prop('checked', WS.state[prefix+'SitFor3']);
-	});
+	var skaterField = fieldingEditor.find('#skater').val(WS.state[prefix+'Skater']);
+	var notFieldedField = fieldingEditor.find('#notFielded').prop('checked', isTrue(WS.state[prefix+'NotFielded']));
+	var sitFor3Field = fieldingEditor.find('#sitFor3').prop('checked', isTrue(WS.state[prefix+'SitFor3']));
 	fieldingEditor.find('.BoxTrip').addClass('Hide');
 	fieldingEditor.find('.'+WS.state[prefix+'Id']).removeClass('Hide');
+	fieldingEditor.find('#addTrip, #submit').unbind('click');
 	fieldingEditor.find('#addTrip').click(function() {
 		WS.Set(prefix+'AddBoxTrip', true);
 	});
-	fieldingEditor.find('#close').click(function() {
+	fieldingEditor.find('#submit').click(function() {
+		WS.Set(prefix+'Skater', skaterField.val());
+		WS.Set(prefix+'NotFielded', isTrue(notFieldedField.prop('checked')));
+		WS.Set(prefix+'SitFor3', isTrue(sitFor3Field.prop('checked')));
 		fieldingEditor.dialog('close');
 	});
 	
@@ -171,8 +194,10 @@ function prepareFieldingEditor(teamId) {
 		$('<td>').appendTo(row);
 		row = $('<tr>').attr('id', 'tripFooter').appendTo(table);
 		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip')).appendTo(row);
-		$('<td>').appendTo(row);
-		$('<td>').addClass('Col3').append($('<button>').attr('id', 'close').text('Close')).appendTo(row);
+		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'abort').text('Abort')).click(function() {
+			fieldingEditor.dialog('close');
+		}).appendTo(row);
+		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'submit').text('Submit')).appendTo(row);
 		
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function(k,v) { processSkater(k,v); })
 		WS.Register(['ScoreBoard.Team('+teamId+').BoxTrip'], function(k,v) { processBoxTrip(k,v); })

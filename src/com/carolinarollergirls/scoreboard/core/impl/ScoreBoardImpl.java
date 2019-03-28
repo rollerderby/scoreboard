@@ -46,6 +46,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     protected void setupScoreBoard() {
         setCopy(Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD, IValue.NUMBER, true);
         setCopy(Value.IN_PERIOD, this, Value.CURRENT_PERIOD, Period.Value.RUNNING, false);
+        setCopy(Value.UPCOMING_JAM_NUMBER, this, Value.UPCOMING_JAM, IValue.NUMBER, true);
         for (Button b : Button.values()) {
             b.setScoreBoard(this);
         }
@@ -615,6 +616,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     public Team getTeam(String id) { return (Team)getOrCreate(Child.TEAM, id); }
 
     public TimeoutOwner getTimeoutOwner(String id) {
+        if (id == null) { id = ""; }
         for (TimeoutOwners o : TimeoutOwners.values()) {
             if (o.getId().equals(id)) { return o; }
         }

@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core;
 
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
@@ -26,5 +27,10 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
         private final Object defaultValue;
         public Class<?> getType() { return type; }
         public Object getDefaultValue() { return defaultValue; }
+    }
+    public enum Command implements CommandProperty {
+        REMOVE;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
     }
 }

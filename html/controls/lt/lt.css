@@ -25,6 +25,6 @@ table.LT, .LT table,.LT tr, .LT td, #FieldingEditor table, #FieldingEditor tr, #
 .LT.Period .Box { width: 8%; }
 
 #FieldingEditor .tripHeader { text-align: center; font-size: 95%; background-color: #222; color: #FFF; }
-#FieldingEditor .Col3 { text-align: center; }
+#FieldingEditor .ButtonCell { text-align: center; }
 
 #FieldingEditor .BoxTrip>td, #FieldingEditor .Skater>td { padding: 0.5em 0em; }

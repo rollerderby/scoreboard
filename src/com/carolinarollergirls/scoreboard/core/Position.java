@@ -28,6 +28,7 @@ public interface Position extends ScoreBoardEventProvider {
     public enum Value implements PermanentProperty {
         ID(String.class, ""),
         CURRENT_FIELDING(Fielding.class, null),
+        CURRENT_BOX_SYMBOLS(String.class, ""),
         SKATER(Skater.class, null),
         NAME(String.class, ""),
         NUMBER(String.class, ""),

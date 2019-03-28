@@ -106,6 +106,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         CURRENT_PERIOD_NUMBER(Integer.class, 0),
         CURRENT_PERIOD(Period.class, null),
         UPCOMING_JAM(Jam.class, null),
+        UPCOMING_JAM_NUMBER(Integer.class, 0),
         IN_PERIOD(Boolean.class, false),
         IN_JAM(Boolean.class, false),
         IN_OVERTIME(Boolean.class, false),

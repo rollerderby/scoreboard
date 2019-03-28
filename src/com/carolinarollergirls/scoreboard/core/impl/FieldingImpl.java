@@ -13,17 +13,18 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.Comparators;
 
 public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Fielding> implements Fielding {
     public FieldingImpl(TeamJam teamJam, Position position) {
-        super(teamJam, position.getProviderId(), TeamJam.Child.FIELDING, Fielding.class, Value.class, Child.class);
+        super(teamJam, position.getProviderId(), TeamJam.Child.FIELDING, Fielding.class, Value.class, Child.class, Command.class);
         this.teamJam = teamJam;
         set(Value.POSITION, position);
         addWriteProtection(Value.POSITION);
-        setCopy(Value.SKATER_NUMBER, this, Value.SKATER, Skater.Value.NUMBER, true);
+        setRecalculated(Value.SKATER_NUMBER).addIndirectSource(this, Value.SKATER, Skater.Value.NUMBER).addSource(this, Value.NOT_FIELDED);
         setInverseReference(Child.BOX_TRIP, BoxTrip.Child.FIELDING);
         setInverseReference(Value.SKATER, Skater.Child.FIELDING);
         setRecalculated(Value.NOT_FIELDED).addSource(this, Value.SKATER);
@@ -44,6 +45,15 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             }
         }
         if (prop == Value.NOT_FIELDED && getSkater() != null) { return false; }
+        if (prop == Value.SKATER_NUMBER) {
+            if (getSkater() != null) {
+                return getSkater().getNumber();
+            } else if ((Boolean)get(Value.NOT_FIELDED)) {
+                return "n/a";
+            } else {
+                return "?";
+            }
+        }
         return value;
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -58,7 +68,9 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         }
         if (prop == Value.SIT_FOR_3) {
             updateBoxTripSymbols();
-            getSkater().updateEligibility();
+            if (getSkater() != null) {
+                getSkater().updateEligibility();
+            }
         }
     }
 
@@ -70,6 +82,16 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.BOX_TRIP && item == getCurrentBoxTrip()) {
             set(Value.CURRENT_BOX_TRIP, null);
+        }
+    }
+    
+    public void execute(CommandProperty prop) {
+        if (prop == Command.ADD_BOX_TRIP) {
+            BoxTrip bt = new BoxTripImpl(this);
+            if (!isCurrent()) {
+                bt.end();
+            }
+            add(Child.BOX_TRIP, bt);
         }
     }
 

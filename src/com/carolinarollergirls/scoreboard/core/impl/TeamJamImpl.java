@@ -95,18 +95,22 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.SCORE);
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.AFTER_S_P);
             set(Value.CURRENT_TRIP, getLast(NChild.SCORING_TRIP), Flag.INTERNAL);
+            set(Value.JAM_SCORE, getJamScore(), Flag.RECALCULATE);
         }
     }
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == NChild.SCORING_TRIP && item == get(Value.CURRENT_TRIP)) {
-            set(Value.CURRENT_TRIP, getLast(NChild.SCORING_TRIP), Flag.INTERNAL);
-        }
-        if (prop == NChild.SCORING_TRIP && item == get(Value.STAR_PASS_TRIP)) {
-            for (ScoringTrip trip = (ScoringTrip)getLast(NChild.SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
-                if (!(Boolean)trip.get(ScoringTrip.Value.AFTER_S_P)) {
-                    set(Value.STAR_PASS_TRIP, trip.getNext());
+        if (prop == NChild.SCORING_TRIP) {
+            if (item == get(Value.CURRENT_TRIP)) {
+                set(Value.CURRENT_TRIP, getLast(NChild.SCORING_TRIP), Flag.INTERNAL);
+            }
+            if (item == get(Value.STAR_PASS_TRIP)) {
+                for (ScoringTrip trip = (ScoringTrip)getLast(NChild.SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
+                    if (!(Boolean)trip.get(ScoringTrip.Value.AFTER_S_P)) {
+                        set(Value.STAR_PASS_TRIP, trip.getNext());
+                    }
                 }
             }
+            set(Value.JAM_SCORE, getJamScore(), Flag.RECALCULATE);
         }
     }
     public ValueWithId create(AddRemoveProperty prop, String id) {

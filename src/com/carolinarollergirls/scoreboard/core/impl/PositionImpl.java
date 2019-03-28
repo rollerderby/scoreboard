@@ -25,6 +25,7 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
         setCopy(Value.FLAGS, this, Value.SKATER, Skater.Value.FLAGS, true);
         setCopy(Value.SKATER, this, Value.CURRENT_FIELDING, Fielding.Value.SKATER, false);
         setCopy(Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false);
+        setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
     }
 
     public String getProviderId() { return floorPosition.toString(); }

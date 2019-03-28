@@ -5,13 +5,14 @@ import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.utils.Comparators;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> implements Penalty {
     public PenaltyImpl(Skater s, int n) {
-        super(s, n, Skater.NChild.PENALTY, Penalty.class, Value.class);
+        super(s, n, Skater.NChild.PENALTY, Penalty.class, Value.class, Command.class);
         set(Value.TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
         setInverseReference(Value.JAM, Jam.Child.PENALTY);
         setInverseReference(Value.BOX_TRIP, BoxTrip.Child.PENALTY);
@@ -51,6 +52,11 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         if (prop == Value.CODE && value == null) {
             unlink();
         }
+    }
+
+    
+    public void execute(CommandProperty prop) {
+        if (prop == Command.REMOVE) { unlink(); }
     }
 
     public int getPeriodNumber() { return (Integer)get(Value.PERIOD_NUMBER); }

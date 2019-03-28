@@ -202,38 +202,23 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     public Object valueFromString(PermanentProperty prop, String sValue, Flag flag) {
         synchronized (coreLock) {
-            if (sValue == null) { return null; }
+            @SuppressWarnings("rawtypes")
+            Class type = prop.getType();
+            if (type == TimeoutOwner.class) { return scoreBoard.getTimeoutOwner(sValue); }
+            if (sValue == null) { return prop.getDefaultValue(); }
+            if (type == Role.class) { return Role.fromString(sValue); }
+            if (type == FloorPosition.class) { return FloorPosition.fromString(sValue); }
+            if (type == Boolean.class) { return Boolean.valueOf(sValue); }
+            if (type == Integer.class) { return Integer.valueOf(sValue); }
+            if (type == Long.class) { return Long.valueOf(sValue); }
             if (prop == IValue.PREVIOUS || prop == IValue.NEXT) {
                 return getElement(providerClass, sValue);
             }
-            @SuppressWarnings("rawtypes")
-            Class type = prop.getType();
             if (ScoreBoardEventProvider.class.isAssignableFrom(type)) {
                 return getElement(type, sValue);
             }
-            Object value = sValue;
-            if (type == Role.class) {
-                value = Role.fromString(sValue);
-            }
-            if (type == FloorPosition.class) {
-                value = FloorPosition.fromString(sValue);
-            }
-            if (type == TimeoutOwner.class) {
-                value = scoreBoard.getTimeoutOwner(sValue);
-            }
-            if (type == Boolean.class) { 
-                value = Boolean.valueOf(sValue); 
-            }
-            if (type == Integer.class) {
-                value = Integer.valueOf(sValue);
-            }
-            if (type == Long.class) {
-                value = Long.valueOf(sValue);
-            }
-            if ("".equals(sValue) && !(type == String.class)) {
-                value = null;
-            }
-            return value;
+            if ("".equals(sValue) && !(type == String.class)) { return prop.getDefaultValue(); }
+            return sValue;
         }
     }
     public Object get(PermanentProperty prop) {

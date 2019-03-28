@@ -3,22 +3,19 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<ScoringTrip> implements ScoringTrip {
     ScoringTripImpl(TeamJam parent, int number) {
-        super(parent, number, TeamJam.NChild.SCORING_TRIP, ScoringTrip.class, Value.class);
+        super(parent, number, TeamJam.NChild.SCORING_TRIP, ScoringTrip.class, Value.class, Command.class);
         setCopy(Value.JAM_CLOCK_START, this, IValue.PREVIOUS, Value.JAM_CLOCK_END, true);
         setRecalculated(Value.DURATION).addSource(this, Value.JAM_CLOCK_END).addSource(this, Value.JAM_CLOCK_START);
         set(Value.AFTER_S_P, hasPrevious() ? getPrevious().get(Value.AFTER_S_P) : false);
     }
 
     public Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.SCORE && value == null) {
-            unlink();
-            return last;
-        }
         if (prop == Value.SCORE && (Integer)value < 0) { return 0; }
         if (prop == Value.DURATION) {
             if ((Long)get(Value.JAM_CLOCK_END) > 0L) {
@@ -48,6 +45,10 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
                 }
             }
         }
+    }
+    
+    public void execute(CommandProperty prop) {
+        if (prop == Command.REMOVE) { unlink(); }
     }
     
     public int getScore() { return (Integer)get(Value.SCORE); }

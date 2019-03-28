@@ -86,7 +86,9 @@ table.RowTable { border-spacing: 0px; }
 
 	#TeamTime tr.Control:not(.Show) { display: none; }
 
-	#TeamTime div.NumberDialog table.Period:not(.Show) { display: none; }
+	div.NumberDialog table.Period:not(.Show) { display: none; }
+	div.NumberDialog table tr:nth-child(2n+1) { background-color: #d8d8d8; }
+	div.NumberDialog table { text-align: center; }
 	
 	#TeamTime .Faded { opacity: 0.2; }
 	

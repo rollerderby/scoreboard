@@ -1008,7 +1008,7 @@ function createJamDialog() {
 	$("<a>").text("Duration").addClass("Title")
 		.appendTo(headers.find("td:eq(2)").addClass("Title"));
 
-	var jamRegex = /Period\(([^\)]+)\)\.Jam\(([^\)]+)\)\.([^\.]+)/;
+	var jamRegex = /Period\(([^\)]+)\)\.Jam\(([^\)]+)\)\.(?:TeamJam\(([^\)]+)\)\.)?([^\.\(]+)/;
 	WS.Register(['ScoreBoard.Period'], function (k, v) {
 		var match = (k || "").match(jamRegex);
 		if (match == null || match.length == 0) { return; }
@@ -1016,7 +1016,9 @@ function createJamDialog() {
 		if (per == 0) { return; }
 		var nr = match[2];
 		var prefix = "ScoreBoard.Period(" + per + ").Jam(" + nr + ")";
-		var key = match[3];
+		var tj = match[3];
+		if (tj != undefined) { prefix = prefix + ".TeamJam(" + tj + ")"; }
+		var key = match[4];
 		if (k != prefix + "." + key) { return; }
 		if (!(["JamScore", "Duration", "Number"].includes(key))) { return; }
 		
@@ -1030,7 +1032,8 @@ function createJamDialog() {
 		if (row.length == 0 && v != null) {
 			row = $("<tr>").addClass("Jam").attr("nr", nr)
 				.append($('<td>').addClass('Number').text(nr))
-				.append($('<td>').addClass('Points').text("-"))
+				.append($('<td>').addClass('Points').append($('<span>').addClass('1'))
+						.append($('<span>').text(" - ")).append($('<span>').addClass('2')))
 				.append($('<td>').addClass('Duration'))
 				.append($('<td>').append($("<button>").text("Delete")
 						.button().click(function () {
@@ -1057,7 +1060,7 @@ function createJamDialog() {
 			return;
 		}
 		if (v != null) {
-			if (key == "JamScore") { row.find("td.Jams").text(v); }
+			if (key == "JamScore") { row.find("td.Points ."+tj).text(v); }
 			if (key == "Duration") {
 				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
 					row.find("td.Duration").text("running");
@@ -1069,8 +1072,8 @@ function createJamDialog() {
 	});
 	
 	WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
-		dialog.find("table.Period.Show").removeClass(".Show");
-		dialog.find("table.Period[nr="+v+"]").addClass(".Show");
+		dialog.find("table.Period.Show").removeClass("Show");
+		dialog.find("table.Period[nr="+v+"]").addClass("Show");
 	})
 
 	return dialog.dialog({

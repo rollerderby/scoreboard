@@ -381,7 +381,7 @@ function preparePenaltyEditor() {
 		if (penaltyId == null || skaterId == null) {
 			penaltyEditor.dialog("close");
 		} else {
-			WS.Set("ScoreBoard.Team(" + teamId + ").Skater(" + skaterId + ").Penalty(" + penaltyNumber + ")", null);
+			WS.Set("ScoreBoard.Team(" + teamId + ").Skater(" + skaterId + ").Penalty(" + penaltyNumber + ").Remove", true);
 			penaltyEditor.dialog('close');
 		}
 	}

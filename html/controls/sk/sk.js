@@ -57,6 +57,7 @@ function prepareSkTable(element, teamId, mode) {
 			
 			WS.Register(['ScoreBoard.Period('+nr+').CurrentJamNumber'], function(k, v) { createJam(nr, v); });
 			WS.Register(['ScoreBoard.Period('+nr+').Duration'], function(k,v) { if (v > 0) finalizePeriod(nr); });
+			WS.Register(['ScoreBoard.Period('+nr+').Number'], function(k,v) { if (v == null) table.remove(); });
 		}
 	}
 	
@@ -82,15 +83,14 @@ function prepareSkTable(element, teamId, mode) {
 			$('<td>').addClass('JamTotal').appendTo(jamRow);
 			$('<td>').addClass('GameTotal').appendTo(jamRow);
 
-			var spRow = jamRow.clone().removeClass('Jam').addClass('SP Hide');
+			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
 			WS.Register(['ScoreBoard.Period('+p+').Jam('+nr+').StarPass'], function(k, v) { spRow.toggleClass('Hide', !isTrue(v)); });
 
-			WS.Register([prefix+'StarPass'], function(k, v) { spRow.find('.JamNumber').text(isTrue(v)?'SP':'SP*'); });
 			WS.Register([prefix+'Fielding(Jammer).SkaterNumber'], function (k, v) {	jamRow.find('.Jammer').text(v);	});
-			WS.Register([prefix+'Fielding(Pivot).SkaterNumber'], function (k, v) { spRow.find('.Jammer').text(v); });
 			WS.Register([prefix+'Lost'], function(k, v) { jamRow.find('.Lost').text(isTrue(v)?'X':'')});
 			WS.Register([prefix+'Lead'], function(k, v) { jamRow.find('.Lead').text(isTrue(v)?'X':'')});
-			WS.Register([prefix+'Calloff', prefix+'Injury', prefix+'NoInitial', prefix+'StarPass'], function(k, v) {
+			WS.Register([prefix+'Calloff', prefix+'Injury', prefix+'NoInitial', prefix+'StarPass',
+					prefix+'ScoringTrip(1).AfterSP', prefix+'Fielding(Pivot).SkaterNumber'], function(k, v) {
 				var row = jamRow;
 				var otherRow = spRow;
 				if (isTrue(WS.state[prefix+'StarPass'])) {
@@ -102,10 +102,10 @@ function prepareSkTable(element, teamId, mode) {
 				row.find('.NoInitial').text(isTrue(WS.state[prefix+'NoInitial'])?'X':'');
 				otherRow.find('.Calloff').text('');
 				otherRow.find('.Injury').text('');
-				otherRow.find('.NoInitial').text('');
+				otherRow.find('.NoInitial').text(isTrue(WS.state[prefix+'ScoringTrip(1).AfterSP'])?'X':'');
 				spRow.find('.JamNumber').text(isTrue(WS.state[prefix+'StarPass'])?'SP':'SP*');
+				spRow.find('.Jammer').text(isTrue(WS.state[prefix+'StarPass']) ? WS.state[prefix+'Fielding(Pivot).SkaterNumber'] : '');
 			});
-			WS.Register([prefix+'ScoringTrip(1).AfterSP'], function(k, v) { jamRow.find('.NoInitial').text(isTrue(v)?'X':'')});
 			WS.Register([prefix+'ScoringTrip(1).Score', prefix+'ScoringTrip(2).Score',
 					prefix+'ScoringTrip(2).AfterSP'], function(k, v) {
 				var trip1Score = WS.state[prefix+'ScoringTrip(1).Score'];
@@ -171,6 +171,8 @@ function prepareSkTable(element, teamId, mode) {
 			});
 			WS.Register([prefix+'TotalScore'], function(k, v) { spRow.find('.GameTotal').text(v)});
 			
+			WS.Register([prefix+'Number'], function(k, v) { if(v == null) { jamRow.remove(); spRow.remove(); }})
+			
 			if (mode == 'operator') {
 				table.prepend(jamRow).prepend(spRow);
 			} else {
@@ -190,13 +192,14 @@ function setupTripEditor(p, j, teamId, t) {
 	tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t==1?'Initial':t));
 	var scoreField = tripEditor.find('#score').val(WS.state[prefix+'Score']);
 	var afterSPField = tripEditor.find('#afterSP').prop('checked', isTrue(WS.state[prefix+'AfterSP']));
+	tripEditor.find('#submit, #remove').unbind('click');
 	tripEditor.find('#submit').click(function() {
 		WS.Set(prefix+'Score', scoreField.val());
 		WS.Set(prefix+'AfterSP', afterSPField.prop('checked'));
 		tripEditor.dialog('close');
 	});
 	tripEditor.find('#remove').click(function() {
-		WS.Set(prefix+'Score', null);
+		WS.Set(prefix+'Remove', true);
 		tripEditor.dialog('close');
 	});
 	

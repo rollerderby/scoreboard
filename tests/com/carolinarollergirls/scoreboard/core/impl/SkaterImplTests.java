@@ -34,6 +34,8 @@ public class SkaterImplTests {
         sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "2");
         sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "3");
         sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "4");
+        sb.getOrCreatePeriod(2).getOrCreate(Period.NChild.JAM, "1");
+        sb.getOrCreatePeriod(2).getOrCreate(Period.NChild.JAM, "2");
         sb.getOrCreatePeriod(2).getOrCreate(Period.NChild.JAM, "3");
     }
 
@@ -124,15 +126,36 @@ public class SkaterImplTests {
 
     @Test
     public void remove_penalty() {
-        Penalty p = (Penalty)skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(3));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p1 = (Penalty)skater.getOrCreate(NChild.PENALTY, "1");
+        p1.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(1));
+        p1.set(Penalty.Value.CODE, "C");
+        Penalty p2 = (Penalty)skater.getOrCreate(NChild.PENALTY, "2");
+        p2.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(2));
+        p2.set(Penalty.Value.CODE, "D");
+        Penalty p3 = (Penalty)skater.getOrCreate(NChild.PENALTY, "3");
+        p3.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(3));
+        p3.set(Penalty.Value.CODE, "E");
 
-        Penalty penalty = (Penalty)skater.get(Skater.NChild.PENALTY, "1");
+        assertEquals(3, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(1, p1.getNumber());
+        assertEquals(2, p2.getNumber());
+        assertEquals(3, p3.getNumber());
+        assertEquals(p1, skater.getFirst(NChild.PENALTY));
+        assertEquals(p2, p3.getPrevious());
+        assertEquals(p1, p2.getPrevious());
+        assertEquals(p3, p2.getNext());
+        assertEquals(p2, p1.getNext());
+        assertEquals(p3, skater.getLast(NChild.PENALTY));
 
-        skater.remove(NChild.PENALTY, penalty);
+        p2.unlink();
 
-        assertEquals(0, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(2, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(1, p1.getNumber());
+        assertEquals(2, p3.getNumber());
+        assertEquals(p1, skater.getFirst(NChild.PENALTY));
+        assertEquals(p1, p3.getPrevious());
+        assertEquals(p3, p1.getNext());
+        assertEquals(p3, skater.getLast(NChild.PENALTY));
     }
 
     @Test
