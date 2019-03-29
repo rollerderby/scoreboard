@@ -9,10 +9,12 @@ import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -74,7 +76,8 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                 requestBatchStart();
                 unlink();
                 scoreBoard.updateTeamJams();
-                requestBatchEnd();
+                ((ScoreBoardEventProviderImpl) parent).scoreBoardChange(
+                        new ScoreBoardEvent(this, BatchEvent.END, Boolean.TRUE, Boolean.TRUE));
                 break;
             case INSERT_BEFORE:
                 requestBatchStart();

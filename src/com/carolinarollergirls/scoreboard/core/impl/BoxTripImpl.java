@@ -12,6 +12,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.Comparators;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -117,6 +118,8 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             switch((Command)prop) {
             case DELETE:
                 unlink();
+                ((ScoreBoardEventProviderImpl) parent).scoreBoardChange(
+                        new ScoreBoardEvent(this, BatchEvent.END, Boolean.TRUE, Boolean.TRUE));
                 break;
             case START_EARLIER:
                 if (getStartFielding() == null) { break; }

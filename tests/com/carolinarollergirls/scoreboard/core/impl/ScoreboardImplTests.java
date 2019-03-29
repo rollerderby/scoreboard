@@ -1620,7 +1620,7 @@ public class ScoreboardImplTests {
         sb.startJam();
         
         Jam j2 = sb.getCurrentPeriod().getJam(2);
-        j2.unlink();
+        j2.execute(Jam.Command.DELETE);
         
         assertEquals(3, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
     }

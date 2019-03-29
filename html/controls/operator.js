@@ -1017,10 +1017,10 @@ function createJamDialog() {
 		var nr = match[2];
 		var prefix = "ScoreBoard.Period(" + per + ").Jam(" + nr + ")";
 		var tj = match[3];
-		if (tj != undefined) { prefix = prefix + ".TeamJam(" + tj + ")"; }
+		var tjPrefix = prefix + ".TeamJam(" + tj + ")";
 		var key = match[4];
-		if (k != prefix + "." + key) { return; }
-		if (!(["JamScore", "Duration", "Number"].includes(key))) { return; }
+		if (!((k == prefix + "." + key && ["Duration", "Number"].includes(key))
+				|| k == tjPrefix + ".JamScore")) { return; }
 		
 		var table = dialog.find("table.Period[nr="+per+"]");
 		if (table.length == 0 && v != null) {
