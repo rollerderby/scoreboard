@@ -107,7 +107,13 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
                 set(Value.CURRENT_FIELDING, last);
             }
             if (getEndFielding() == item) {
-                set(Value.END_FIELDING, null);
+                Fielding last = null;
+                for (ValueWithId f : getAll(Child.FIELDING)) {
+                    if (last == null || Comparators.FieldingComparator.compare(last, (Fielding) f) > 0) {
+                        last = (Fielding) f;
+                    }
+                }
+                set(Value.START_FIELDING, last);
             }
         }
     }
