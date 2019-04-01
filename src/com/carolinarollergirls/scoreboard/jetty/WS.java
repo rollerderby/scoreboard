@@ -192,6 +192,9 @@ public class WS extends WebSocketServlet {
         @Override
         public void onOpen(Connection connection) {
             connectionsActive.inc();
+            // Some messages can be bigger than the 16k default
+            // when there is broad registration.
+            connection.setMaxTextMessageSize(1024 * 1024);
             this.connection = connection;
             id = UUID.randomUUID();
             jsm.register(this);
