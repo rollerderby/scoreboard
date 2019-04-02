@@ -1,13 +1,13 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.Comparators;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.utils.Comparators;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> implements Penalty {

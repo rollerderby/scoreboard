@@ -194,8 +194,12 @@ function setupTripEditor(p, j, teamId, t) {
 	var afterSPField = tripEditor.find('#afterSP').prop('checked', isTrue(WS.state[prefix+'AfterSP']));
 	tripEditor.find('#submit, #remove').unbind('click');
 	tripEditor.find('#submit').click(function() {
-		WS.Set(prefix+'Score', scoreField.val());
-		WS.Set(prefix+'AfterSP', afterSPField.prop('checked'));
+		if (scoreField.val() == "") {
+			WS.Set(prefix+'Remove', true);
+		} else {
+			WS.Set(prefix+'Score', scoreField.val());
+			WS.Set(prefix+'AfterSP', afterSPField.prop('checked'));
+		}
 		tripEditor.dialog('close');
 	});
 	tripEditor.find('#remove').click(function() {

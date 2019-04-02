@@ -15,8 +15,12 @@ public class CopyScoreBoardListener implements ScoreBoardListener {
     }
 
     public void scoreBoardChange(ScoreBoardEvent event) {
+        scoreBoardChange(event, Flag.COPY);
+    }
+    // used when sending updates from the copy to the master value 
+    public void scoreBoardChange(ScoreBoardEvent event, Flag flag) {
         if (targetElement != null) {
-            targetElement.set(targetProperty, event.getValue(), Flag.COPY);
+            targetElement.set(targetProperty, event.getValue(), flag);
         }
     }
     

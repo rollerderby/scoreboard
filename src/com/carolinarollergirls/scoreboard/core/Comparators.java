@@ -1,15 +1,7 @@
-package com.carolinarollergirls.scoreboard.utils;
+package com.carolinarollergirls.scoreboard.core;
 
 import java.util.Comparator;
 
-import com.carolinarollergirls.scoreboard.core.BoxTrip;
-import com.carolinarollergirls.scoreboard.core.Fielding;
-import com.carolinarollergirls.scoreboard.core.Jam;
-import com.carolinarollergirls.scoreboard.core.Penalty;
-import com.carolinarollergirls.scoreboard.core.Period;
-import com.carolinarollergirls.scoreboard.core.ScoringTrip;
-import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 

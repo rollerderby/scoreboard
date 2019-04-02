@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.Comparators;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Team;
@@ -14,7 +15,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.utils.Comparators;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip {

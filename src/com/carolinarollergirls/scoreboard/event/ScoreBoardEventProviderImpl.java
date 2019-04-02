@@ -19,6 +19,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -30,6 +31,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -151,6 +153,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         return false;
     }
     
+    /**
+     * make targetProperty a copy of sourceProperty on sourceElement
+     */
     protected ScoreBoardListener setCopy(PermanentProperty targetProperty, ScoreBoardEventProvider sourceElement,
             PermanentProperty sourceProperty, boolean readonly) {
         ScoreBoardListener l = new ConditionalScoreBoardListener(sourceElement, sourceProperty,
@@ -166,6 +171,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         set(targetProperty, sourceElement.get(sourceProperty), Flag.COPY);
         return l;
     }
+    /**
+     * make targetProperty a copy of sourceProperty on the element referred to by indirectionProperty on indirectionElement
+     */
     protected ScoreBoardListener setCopy(final PermanentProperty targetProperty, ScoreBoardEventProvider indirectionElement,
             PermanentProperty indirectionProperty, final PermanentProperty sourceProperty, boolean readonly) {
         ScoreBoardListener l = new IndirectScoreBoardListener(indirectionElement, indirectionProperty, sourceProperty,
@@ -189,11 +197,17 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
         return l;
     }
+    /**
+     * recalculate targetProperty whenever one of the sources added to the listener is changed  
+     */
     protected RecalculateScoreBoardListener setRecalculated(PermanentProperty targetProperty) {
         RecalculateScoreBoardListener l = new RecalculateScoreBoardListener(this, targetProperty);
         providers.put(l, null);
         return l;
     }
+    /**
+     * Make sure remoteProperty on the Element(s) pointed to by localProperty points back to this element
+     */
     protected InverseReferenceUpdateListener setInverseReference(Property localProperty, Property remoteProperty) {
         InverseReferenceUpdateListener l = new InverseReferenceUpdateListener(this, localProperty, remoteProperty);
         addScoreBoardListener(l);
@@ -206,6 +220,8 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             Class type = prop.getType();
             if (type == TimeoutOwner.class) { return scoreBoard.getTimeoutOwner(sValue); }
             if (sValue == null) { return prop.getDefaultValue(); }
+            if ("".equals(sValue) && !(type == String.class)) { return prop.getDefaultValue(); }
+            if (type == RuleDefinition.Type.class) { return prop.getDefaultValue(); }
             if (type == Role.class) { return Role.fromString(sValue); }
             if (type == FloorPosition.class) { return FloorPosition.fromString(sValue); }
             if (type == Boolean.class) { return Boolean.valueOf(sValue); }
@@ -217,7 +233,12 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             if (ScoreBoardEventProvider.class.isAssignableFrom(type)) {
                 return getElement(type, sValue);
             }
-            if ("".equals(sValue) && !(type == String.class)) { return prop.getDefaultValue(); }
+            if (type != String.class) {
+                ScoreBoardManager.printMessage("Conversion to " + type.getSimpleName()
+                    + " used by " + PropertyConversion.toFrontend(prop)
+                    + " missing in ScoreBoardEventProvider.valueFromString()");
+                return prop.getDefaultValue();
+            }
             return sValue;
         }
     }
@@ -246,7 +267,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             Object last = get(prop);
             if (reverseCopyListeners.containsKey(prop) && flag != Flag.COPY) {
                 reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent(
-                        this, prop, value, last));
+                        this, prop, value, last), flag);
                 return false;
             }
             value = _computeValue(prop, value, last, flag);
@@ -425,7 +446,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     
     protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();
     protected Map<Property, Flag> writeProtectionOverride = new HashMap<Property, Flag>();
-    protected Map<PermanentProperty, ScoreBoardListener> reverseCopyListeners = new HashMap<PermanentProperty, ScoreBoardListener>();
+    protected Map<PermanentProperty, CopyScoreBoardListener> reverseCopyListeners = new HashMap<PermanentProperty, CopyScoreBoardListener>();
 
     protected Map<AddRemoveProperty, Map<String, ValueWithId>> children = new HashMap<AddRemoveProperty, Map<String, ValueWithId>>();
     protected Map<NumberedProperty, Integer> minIds = new HashMap<NumberedProperty, Integer>();

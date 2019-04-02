@@ -200,7 +200,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             changeTime(isCountDirectionDown()?-change:change);
         }
     }
-    public boolean resetTime() { return set(Value.TIME, getTime(), Flag.RESET); }
+    public void resetTime() { set(Value.TIME, getTime(), Flag.RESET); }
     protected boolean isDisplayChange(long current, long last) {
         //the frontend rounds values that are not full seconds to the earlier second
         //i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count down clock.

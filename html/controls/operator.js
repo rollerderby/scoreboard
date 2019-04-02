@@ -806,10 +806,8 @@ function createTeamTable() {
 			niButton.toggleClass("Active", isTrue(value));
 		});
 		niButton.appendTo(leadJammerTd);
-		/* some strange bug, css direction is unset for leadJammerTd
-		 * so need to explicitly specify to style the buttonset as ltr
-		 */
-		leadJammerTd.css("direction", "ltr").buttonset();
+		
+		leadJammerTd.buttonset();
 
 		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")");
 		var starPass = sbTeam.$sb("StarPass");
@@ -820,10 +818,8 @@ function createTeamTable() {
 			starPassButton.toggleClass("Active", isTrue(value));
 		});
 		starPassButton.appendTo(starPassTd);
-		/* some strange bug, css direction is unset for starPassTd
-		 * so need to explicitly specify to style the buttonset as ltr
-		 */
-		starPassTd.css("direction", "ltr").buttonset();
+
+		starPassTd.buttonset();
 
 		var makeSkaterDropdown = function(pos, elem, sort) {
 			var sortFunc = _windowFunctions.alphaCompareByProp;

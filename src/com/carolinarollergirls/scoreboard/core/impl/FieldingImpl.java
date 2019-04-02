@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.Comparators;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
@@ -16,7 +17,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.utils.Comparators;
 
 public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Fielding> implements Fielding {
     public FieldingImpl(TeamJam teamJam, Position position) {
@@ -86,7 +86,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     }
     
     public void execute(CommandProperty prop) {
-        if (prop == Command.ADD_BOX_TRIP) {
+        if (prop == Command.ADD_BOX_TRIP && getSkater() != null) {
             BoxTrip bt = new BoxTripImpl(this);
             if (!isCurrent()) {
                 bt.end();

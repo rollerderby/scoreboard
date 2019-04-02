@@ -25,7 +25,6 @@ public interface Clock extends ScoreBoardEventProvider {
     public void restart();
 
     public String getName();
-    //    public void setName(String name);
 
     public int getNumber();
     public void setNumber(int n);
@@ -64,7 +63,7 @@ public interface Clock extends ScoreBoardEventProvider {
      * @param ms The amount of change (can be negative)
      */
     public void elapseTime(long ms);
-    public boolean resetTime();
+    public void resetTime();
     /**
      *
      * @return The time until the clock reaches its maximum or zero (in ms). This is the inverse of getTimeElapsed.

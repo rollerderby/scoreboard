@@ -82,9 +82,8 @@ function preparePltTable(element, teamId, mode) {
 	function skaterUpdate(t, k, v) {
 		
 		var match = (k || "").match(skaterIdRegex);
-		if (match == null || match.length == 0)
-			return;
-
+		if (match == null || match.length == 0) { return; }
+		
 		var id = match[1];
 		var field = k.split('.').pop();
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
@@ -262,8 +261,7 @@ function preparePltTable(element, teamId, mode) {
 				return false;
 			}
 		});
-		if (!inserted)
-			team.append(p).append(j);
+		if (!inserted) { team.append(p).append(j); }
 	}
 }
 
@@ -389,8 +387,7 @@ function preparePenaltyEditor() {
 	var codeIdRegex = /Code\(([^\)]+)\)/;
 	function penaltyCode(k, v) {
 		var match = (k || "").match(codeIdRegex);
-		if (match == null || match.length == 0)
-			return;
+		if (match == null || match.length == 0) { return; }
 
 		var code = match[1];
 
