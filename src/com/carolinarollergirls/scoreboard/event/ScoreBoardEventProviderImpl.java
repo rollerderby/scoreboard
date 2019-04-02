@@ -375,7 +375,8 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
                 id = ((ScoreBoardEventProvider)item).getProviderId();
             }
-            if (children.get(prop).remove(id, item)) {
+            if (children.get(prop).get(id) == item) {
+                children.get(prop).remove(id);
                 _itemRemoved(prop, item);
             }
             return true;

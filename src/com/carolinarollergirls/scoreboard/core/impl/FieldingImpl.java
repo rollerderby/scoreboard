@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
@@ -113,7 +114,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         for (ValueWithId v : getAll(Child.BOX_TRIP)) {
             trips.add((BoxTrip) v);
         }
-        trips.sort(Comparators.BoxTripComparator);
+        Collections.sort(trips, Comparators.BoxTripComparator);
         StringBuilder beforeSP = new StringBuilder();
         StringBuilder afterSP = new StringBuilder();
         StringBuilder jam = new StringBuilder();
