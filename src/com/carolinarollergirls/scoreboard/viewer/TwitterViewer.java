@@ -165,10 +165,11 @@ public class TwitterViewer {
 
     private ConfigurationBuilder getConfigurationBuilder() {
         return new ConfigurationBuilder()
-                .setDebugEnabled(false)
-                .setUserStreamRepliesAllEnabled(false)
-                .setOAuthConsumerKey("LcSklLv7gic519YE5ylK1g")
-                .setOAuthConsumerSecret("BXjvuTrbl6rTIgybxqCTIfZS7obv2OdUYiM1n8V3Q");
+               .setDebugEnabled(false)
+               .setUserStreamRepliesAllEnabled(false)
+               /* Twitter Account for this - derbyscores */
+               .setOAuthConsumerKey("qOzry57P6rp6PBnj2BfpuvzK6")
+               .setOAuthConsumerSecret("Yx0bI3M5SinRYDGX1tfxQiP6a1oCVmfu5FXE4o27sNmvYeCY1W");
     }
 
     protected TwitterFactory twitterFactory = new TwitterFactory(getConfigurationBuilder().build());
