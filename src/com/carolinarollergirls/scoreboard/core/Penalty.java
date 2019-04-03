@@ -5,6 +5,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
+    public int compareTo(Penalty other);
+
     public int getPeriodNumber();
     public int getJamNumber();
     public Jam getJam();

@@ -43,6 +43,14 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
     }
 
+    public int compareTo(Skater other) {
+        if (other == null) { return -1; }
+        if (getNumber() == other.getNumber()) { return 0; }
+        if (getNumber() == null) { return 1; }
+        if (other.getNumber() == null) { return -1; }
+        return getNumber().compareTo(other.getNumber());
+    }
+    
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.ROLE && flag != Flag.INTERNAL) {
             team.field(this, (Role)value);

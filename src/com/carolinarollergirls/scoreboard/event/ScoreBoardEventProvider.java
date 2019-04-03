@@ -20,7 +20,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
  * See the file COPYING for details.
  */
 
-public interface ScoreBoardEventProvider extends ValueWithId {
+public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBoardEventProvider> {
     /**
      * This should be the frontend string for the Child enum value corresponding to this type 
      * in its parent element
@@ -46,18 +46,13 @@ public interface ScoreBoardEventProvider extends ValueWithId {
     public void unlink();
     /**
      * This should return all the enums that contain values, children, or commands
-     * that can be accessed from the frintend
+     * that can be accessed from the frontend
      */
     public List<Class<? extends Property>> getProperties();
 
     public void addScoreBoardListener(ScoreBoardListener listener);
     public void removeScoreBoardListener(ScoreBoardListener listener);
 
-    /**
-     * Will automagically work for Boolean, Integer, and Long if there is a previous
-     * value of the correct type. For all other cases this must be implemented in
-     * derived classes.
-     */
     public Object valueFromString(PermanentProperty prop, String sValue, Flag flag);
     public Object get(PermanentProperty prop);
     //return value indicates if value was changed

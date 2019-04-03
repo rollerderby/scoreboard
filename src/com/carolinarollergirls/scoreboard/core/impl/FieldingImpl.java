@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
-import com.carolinarollergirls.scoreboard.core.Comparators;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
@@ -114,7 +113,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         for (ValueWithId v : getAll(Child.BOX_TRIP)) {
             trips.add((BoxTrip) v);
         }
-        Collections.sort(trips, Comparators.BoxTripComparator);
+        Collections.sort(trips);
         StringBuilder beforeSP = new StringBuilder();
         StringBuilder afterSP = new StringBuilder();
         StringBuilder jam = new StringBuilder();

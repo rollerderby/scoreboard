@@ -21,6 +21,20 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
 
     public String getProviderId() { return String.valueOf(getNumber()); }
 
+    public int compareTo(NumberedScoreBoardEventProvider<?> other) {
+        if (other == null) { return -1; }
+        if (getParent() == other.getParent()) {
+            return getNumber() - other.getNumber();
+        }
+        if (getParent() == null) { return 1; }
+        if (getParent() instanceof NumberedScoreBoardEventProvider<?> &&
+                other.getParent() instanceof NumberedScoreBoardEventProvider<?>) {
+            return ((NumberedScoreBoardEventProvider<?>)getParent()).compareTo(
+                    (NumberedScoreBoardEventProvider<?>)other.getParent());
+        }
+        return getParent().compareTo(other.getParent());
+    }
+    
     protected void unlink(boolean neighborsRemoved) {
         T next = null;
         if (!neighborsRemoved) {

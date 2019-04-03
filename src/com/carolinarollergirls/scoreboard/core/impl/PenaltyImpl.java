@@ -1,7 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
-import com.carolinarollergirls.scoreboard.core.Comparators;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater;
@@ -24,6 +23,15 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         if (s.isPenaltyBox()) { set(Value.BOX_TRIP, s.getCurrentFielding().getCurrentBoxTrip()); }
         set(Value.SERVED, get(Value.BOX_TRIP) != null);
     }
+    
+    public int compareTo(Penalty other) {
+        if (other == null) { return -1; }
+        if (getJam() == other.getJam()) {
+            return (int) ((Long)get(Penalty.Value.TIME) - (Long)other.get(Penalty.Value.TIME));
+        }
+        if (getJam() == null) { return 1; }
+        return getJam().compareTo(other.getJam());
+    }
 
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == IValue.NEXT && getNumber() == 0) { return null; }
@@ -34,15 +42,15 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.JAM && !Skater.FO_EXP_ID.equals(getProviderId())) {
             int newPos = getNumber();
-            if (Comparators.JamComparator.compare((Jam)value, (Jam)last) > 0) {
+            if (value == null || ((Jam)value).compareTo((Jam)last) > 0) {
                 Penalty comp = getNext(); 
-                while (Comparators.PenaltyComparator.compare(this, comp) > 0) { // will be false if comp == null
+                while (compareTo(comp) > 0) { // will be false if comp == null
                     newPos = comp.getNumber();
                     comp = comp.getNext();
                 }
             } else {
                 Penalty comp = getPrevious(); 
-                while (comp != null && Comparators.PenaltyComparator.compare(this, comp) < 0) {
+                while (comp != null && compareTo(comp) < 0) {
                     newPos = comp.getNumber();
                     comp = comp.getPrevious();
                 }

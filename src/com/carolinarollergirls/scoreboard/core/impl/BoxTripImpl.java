@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.Comparators;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Team;
@@ -45,6 +44,20 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         setCopy(Value.END_JAM_NUMBER, this, Value.END_FIELDING, IValue.NUMBER, true);
     }
 
+    public int compareTo(BoxTrip other) {
+        if (other == null) { return -1; }
+        if (getStartFielding() == other.getStartFielding()) {
+            if (getEndFielding() == other.getEndFielding()) {
+                return (int) ((Long)get(BoxTrip.Value.WALLTIME_START) - (Long)other.get(BoxTrip.Value.WALLTIME_START));
+            }
+            if (getEndFielding() == null) { return 1; }
+            return getEndFielding().compareTo(other.getEndFielding());
+        }
+        if (getStartFielding() == null) { return 1; } 
+        return getStartFielding().compareTo(other.getStartFielding());
+        
+    }
+    
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.DURATION) {
             long time = 0;
@@ -74,13 +87,13 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
     
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.FIELDING) {
-            if (getStartFielding() == null || Comparators.FieldingComparator.compare((Fielding) item, getStartFielding()) < 0) {
+            if (getStartFielding() == null || ((Fielding) item).compareTo(getStartFielding()) < 0) {
                 set(Value.START_FIELDING, item);
             }
-            if (getCurrentFielding() == null || Comparators.FieldingComparator.compare((Fielding) item, getCurrentFielding()) > 0) {
+            if (getCurrentFielding() == null || ((Fielding) item).compareTo(getCurrentFielding()) > 0) {
                 set(Value.CURRENT_FIELDING, item);
             }
-            if (getEndFielding() != null && Comparators.FieldingComparator.compare((Fielding) item, getEndFielding()) > 0) {
+            if (getEndFielding() != null && ((Fielding) item).compareTo(getEndFielding()) > 0) {
                 set(Value.END_FIELDING, item);
             }
         }
@@ -91,7 +104,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             if (getStartFielding() == item) {
                 Fielding first = null;
                 for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (first == null || Comparators.FieldingComparator.compare(first, (Fielding) f) < 0) {
+                    if (first == null || first.compareTo((Fielding) f) < 0) {
                         first = (Fielding) f;
                     }
                 }
@@ -100,7 +113,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             if (getCurrentFielding() == item) {
                 Fielding last = null;
                 for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (Comparators.FieldingComparator.compare(last, (Fielding) f) > 0) {
+                    if (last == null || last.compareTo((Fielding) f) > 0) {
                         last = (Fielding) f;
                     }
                 }
@@ -109,7 +122,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             if (getEndFielding() == item) {
                 Fielding last = null;
                 for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (last == null || Comparators.FieldingComparator.compare(last, (Fielding) f) > 0) {
+                    if (last == null || last.compareTo((Fielding) f) > 0) {
                         last = (Fielding) f;
                     }
                 }

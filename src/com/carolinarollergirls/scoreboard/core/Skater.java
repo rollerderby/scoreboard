@@ -22,6 +22,8 @@ public interface Skater extends ScoreBoardEventProvider {
     public SkaterSnapshot snapshot();
     public void restoreSnapshot(SkaterSnapshot s);
 
+    public int compareTo(Skater other);
+
     public Team getTeam();
     public String getName();
     public void setName(String id);

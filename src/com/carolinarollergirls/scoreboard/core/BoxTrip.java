@@ -7,6 +7,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public interface BoxTrip extends ScoreBoardEventProvider {
+    public int compareTo(BoxTrip other);
+    
     public void end();
     
     public boolean isCurrent();

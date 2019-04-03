@@ -112,6 +112,18 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             scoreBoardEventListeners.remove(listener);
         }
     }
+    
+    public int compareTo(ScoreBoardEventProvider other) {
+        if (other == null) { return -1; }
+        if (getParent() == other.getParent()) { return 0; }
+        if (getParent() == null) { return 1; }
+        if (getParent() instanceof NumberedScoreBoardEventProvider<?> &&
+                other.getParent() instanceof NumberedScoreBoardEventProvider<?>) {
+            return ((NumberedScoreBoardEventProvider<?>)getParent()).compareTo(
+                    (NumberedScoreBoardEventProvider<?>)other.getParent());
+        }
+        return getParent().compareTo(other.getParent());
+    }
 
     public void unlink() { unlink(false); }
     protected void unlink(boolean neighborsRemoved) {
@@ -154,7 +166,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     
     /**
-     * make targetProperty a copy of sourceProperty on sourceElement
+     * Make targetProperty a copy of sourceProperty on sourceElement
      */
     protected ScoreBoardListener setCopy(PermanentProperty targetProperty, ScoreBoardEventProvider sourceElement,
             PermanentProperty sourceProperty, boolean readonly) {
@@ -172,7 +184,13 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         return l;
     }
     /**
-     * make targetProperty a copy of sourceProperty on the element referred to by indirectionProperty on indirectionElement
+     * Make targetProperty a copy of sourceProperty on the element that indirectionProperty on indirectionElement points to
+     * and update the reference if indirectionProperty changes.
+     * 
+     * Example: calling setCopy(Value.CURRENT_JAM_NUMBER, this, Value.CURRENT_JAM, IValue.NUMBER) in a Period object ensures
+     * that Value.CURRENT_PERIOD_NUMBER always contains the number of the current Jam, whereas calling the above method
+     * setCopy(Value.CURRENT_JAM_NUMBER, get(Value.CURRENT_JAM), IValue.NUMBER) would attach it to the number of the Jam that
+     * was current at the time of calling.
      */
     protected ScoreBoardListener setCopy(final PermanentProperty targetProperty, ScoreBoardEventProvider indirectionElement,
             PermanentProperty indirectionProperty, final PermanentProperty sourceProperty, boolean readonly) {
