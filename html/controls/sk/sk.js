@@ -50,8 +50,10 @@ function prepareSkTable(element, teamId, mode) {
 				$('<td>').addClass('SmallHead').append($('<div>').text('NI')).appendTo(header);
 				$('<td>').html('<span class ="Team">' + teamName + '</span> P' + nr)
 					.attr('colspan', 9).prop('id','head').appendTo(header);
-				$('<td>').addClass('JamTotal').text('JAM').appendTo(header);
-				$('<td>').addClass('GameTotal').text('TOTAL').appendTo(header);
+				if (mode != 'copyToStatsbook') {
+					$('<td>').addClass('JamTotal').text('JAM').appendTo(header);
+					$('<td>').addClass('GameTotal').text('TOTAL').appendTo(header);
+				}
 			}
 			var body = $('<tbody>').appendTo(table);
 			
@@ -80,9 +82,11 @@ function prepareSkTable(element, teamId, mode) {
 				var t = idx + 2;
 				$('<td>').addClass('Trip Trip'+t).click(function() { setupTripEditor(p, nr, teamId, t); }).appendTo(jamRow);
 			});
-			$('<td>').addClass('JamTotal').appendTo(jamRow);
-			$('<td>').addClass('GameTotal').appendTo(jamRow);
-
+			if (mode != 'copyToStatsbook') {
+				$('<td>').addClass('JamTotal').appendTo(jamRow);
+				$('<td>').addClass('GameTotal').appendTo(jamRow);
+			}
+			
 			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
 			WS.Register(['ScoreBoard.Period('+p+').Jam('+nr+').StarPass'], function(k, v) { spRow.toggleClass('Hide', !isTrue(v)); });
 
@@ -162,15 +166,16 @@ function prepareSkTable(element, teamId, mode) {
 				jamRow.find('Trip10').text(scoreBeforeSP);
 				spRow.find('Trip10').text(scoreAfterSP);
 			});
-			WS.Register([prefix+'JamScore', prefix+'AfterSPScore'], function(k, v) {
-				jamRow.find('.JamTotal').text(WS.state[prefix+'JamScore'] - WS.state[prefix+'AfterSPScore']);
-			});
-			WS.Register([prefix+'AfterSPScore'], function(k, v) { spRow.find('.JamTotal').text(v)});
-			WS.Register([prefix+'TotalScore', prefix+'AfterSPScore'], function(k, v) {
-				jamRow.find('.GameTotal').text(WS.state[prefix+'TotalScore'] - WS.state[prefix+'AfterSPScore']);
-			});
-			WS.Register([prefix+'TotalScore'], function(k, v) { spRow.find('.GameTotal').text(v)});
-			
+			if (mode != 'copyToStatsbook') {
+				WS.Register([prefix+'JamScore', prefix+'AfterSPScore'], function(k, v) {
+					jamRow.find('.JamTotal').text(WS.state[prefix+'JamScore'] - WS.state[prefix+'AfterSPScore']);
+				});
+				WS.Register([prefix+'AfterSPScore'], function(k, v) { spRow.find('.JamTotal').text(v)});
+				WS.Register([prefix+'TotalScore', prefix+'AfterSPScore'], function(k, v) {
+					jamRow.find('.GameTotal').text(WS.state[prefix+'TotalScore'] - WS.state[prefix+'AfterSPScore']);
+				});
+				WS.Register([prefix+'TotalScore'], function(k, v) { spRow.find('.GameTotal').text(v)});
+			}
 			WS.Register([prefix+'Number'], function(k, v) { if(v == null) { jamRow.remove(); spRow.remove(); }})
 			
 			if (mode == 'operator') {

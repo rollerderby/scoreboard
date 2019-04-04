@@ -1,4 +1,4 @@
-function preparePltTable(element, teamId, mode) {
+function preparePltTable(element, teamId, mode, statsbookPeriod) {
 
 	'use strict';
 	$(initialize);
@@ -10,15 +10,19 @@ function preparePltTable(element, teamId, mode) {
 		
 		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('PLT Team').appendTo(element);
 		var thead = $('<tr>').appendTo($('<thead>').appendTo(table));
-		$('<td>').text('Bench').appendTo(thead);
-		$('<td>').text('Jammer').appendTo(thead);
-		$('<td>').text('Pivot').appendTo(thead);
-		$('<td>').text('Blocker').appendTo(thead);
-		$('<td>').attr('colspan', '2').text('Box').appendTo(thead);
-		$('<td>').text('#').appendTo(thead);
+		if (mode != 'copyToStatsbook') {
+			$('<td>').text('Bench').appendTo(thead);
+			$('<td>').text('Jammer').appendTo(thead);
+			$('<td>').text('Pivot').appendTo(thead);
+			$('<td>').text('Blocker').appendTo(thead);
+			$('<td>').attr('colspan', '2').text('Box').appendTo(thead);
+			$('<td>').text('#').appendTo(thead);
+		}
 		$('<td>').attr('colspan', '9').attr('id', 'head').text('Penalty/Jam').appendTo(thead);
 		$('<td>').text('FO_Ex').appendTo(thead);
-		$('<td>').text('Total').appendTo(thead);
+		if (mode != 'copyToStatsbook') {
+			$('<td>').text('Total').appendTo(thead);
+		}
 		$('<tbody>').appendTo(table);
 
 		WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
@@ -144,8 +148,18 @@ function preparePltTable(element, teamId, mode) {
 
 			penaltyBox.data("id", WS.state[prefix + ".Id"]);
 			jamBox.data("id", WS.state[prefix + ".Id"]);
-			penaltyBox.text(WS.state[prefix + ".Code"]);
-			jamBox.text(penaltyPeriod + '-' + penaltyJam);
+			if (mode == 'copyToStatsbook') {
+				if (penaltyPeriod == statsbookPeriod) {
+					penaltyBox.text(WS.state[prefix + ".Code"]);
+					jamBox.text(penaltyJam);
+				} else {
+					penaltyBox.text('');
+					jamBox.text('');
+				}
+			} else {
+				penaltyBox.text(WS.state[prefix + ".Code"]);
+				jamBox.text(penaltyPeriod + '-' + penaltyJam);
+			}
 
 			penaltyBox.data("period", penaltyPeriod);
 			penaltyBox.data("jam", penaltyJam);
@@ -161,8 +175,13 @@ function preparePltTable(element, teamId, mode) {
 		} else {
 			penaltyBox.data("id", null);
 			jamBox.data("id", null);
-			penaltyBox.html("&nbsp;");
-			jamBox.html("&nbsp;");
+			if (mode == 'copyToStatsbook') {
+				penaltyBox.text('');
+				jamBox.text('');
+			} else {
+				penaltyBox.html("&nbsp;");
+				jamBox.html("&nbsp;");
+			}
 			penaltyBox.removeClass("Serving Unserved");
 			jamBox.removeClass("Serving Unserved");
 		}
@@ -173,7 +192,9 @@ function preparePltTable(element, teamId, mode) {
 
 		element.find('.Skater.Penalty[id=' + s + '] .Box').each(function (idx, elem) {
 			cnt += ($(elem).data("id") != null ? 1 : 0); });
-		totalBox.text(cnt);
+		if (mode != 'copyToStatsbook') {
+			totalBox.text(cnt);
+		}
 		element.find('.Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);
 		element.find('.Skater[id=' + s + ']').toggleClass("Warn2", cnt == limit-1 && !fo_exp);
 		element.find('.Skater[id=' + s + ']').toggleClass("Warn3", cnt >= limit || fo_exp);
@@ -195,53 +216,54 @@ function preparePltTable(element, teamId, mode) {
 		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
-		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
-		var benchCell = $('<td>').addClass('Role Bench').attr('rowspan', 2).click(function() {
-			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Bench');
-		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('Bench'));
-		if (role == 'Bench') {
-			benchCell.addClass('OnTrack');
+		if (mode != 'copyToStatsbook') {
+			var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
+			var benchCell = $('<td>').addClass('Role Bench').attr('rowspan', 2).click(function() {
+				WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Bench');
+			}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('Bench'));
+			if (role == 'Bench') {
+				benchCell.addClass('OnTrack');
+			}
+			p.append(benchCell);
+			
+			var jammerCell = $('<td>').addClass('Role Jammer').attr('rowspan', 2).click(function() {
+				WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Jammer');
+			}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('J'));
+			if (role == 'Jammer') {
+				jammerCell.addClass('OnTrack');
+			}
+			p.append(jammerCell);
+			
+			var pivotCell = $('<td>').addClass('Role Pivot').attr('rowspan', 2).click(function() {
+				WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Pivot');
+			}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('P'));
+			if (role == 'Pivot') {
+				pivotCell.addClass('OnTrack');
+			}
+			p.append(pivotCell);
+			
+			var blockerCell = $('<td>').addClass('Role Blocker').attr('rowspan', 2).click(function() {
+				WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Blocker');
+			}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('B'));
+			if (role == 'Blocker') {
+				blockerCell.addClass('OnTrack');
+			}
+			p.append(blockerCell);
+			
+			var boxCell = $('<td>').addClass('Sitting').attr('rowspan', 2).text('Box').click(function() {
+				WS.Set('ScoreBoard.Team('+t+').Skater('+id+').PenaltyBox', !$(this).hasClass('inBox'));
+			});
+			if (isTrue(WS.state['ScoreBoard.Team('+t+').Skater('+id+').PenaltyBox'])) {
+				boxCell.addClass('inBox');
+			}
+			p.append(boxCell);
+			var tripCell = $('<td>').addClass('Trips').attr('rowspan', 2)
+				.text(WS.state['ScoreBoard.Team('+t+').Skater('+id+').CurrentBoxSymbols']);
+			p.append(tripCell);
+	
+			var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id, 10); });
+			p.append(numberCell);
 		}
-		p.append(benchCell);
-		
-		var jammerCell = $('<td>').addClass('Role Jammer').attr('rowspan', 2).click(function() {
-			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Jammer');
-		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('J'));
-		if (role == 'Jammer') {
-			jammerCell.addClass('OnTrack');
-		}
-		p.append(jammerCell);
-		
-		var pivotCell = $('<td>').addClass('Role Pivot').attr('rowspan', 2).click(function() {
-			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Pivot');
-		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('P'));
-		if (role == 'Pivot') {
-			pivotCell.addClass('OnTrack');
-		}
-		p.append(pivotCell);
-		
-		var blockerCell = $('<td>').addClass('Role Blocker').attr('rowspan', 2).click(function() {
-			WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Blocker');
-		}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('B'));
-		if (role == 'Blocker') {
-			blockerCell.addClass('OnTrack');
-		}
-		p.append(blockerCell);
-		
-		var boxCell = $('<td>').addClass('Sitting').attr('rowspan', 2).text('Box').click(function() {
-			WS.Set('ScoreBoard.Team('+t+').Skater('+id+').PenaltyBox', !$(this).hasClass('inBox'));
-		});
-		if (isTrue(WS.state['ScoreBoard.Team('+t+').Skater('+id+').PenaltyBox'])) {
-			boxCell.addClass('inBox');
-		}
-		p.append(boxCell);
-		var tripCell = $('<td>').addClass('Trips').attr('rowspan', 2)
-			.text(WS.state['ScoreBoard.Team('+t+').Skater('+id+').CurrentBoxSymbols']);
-		p.append(tripCell);
-
-		var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id, 10); });
-		p.append(numberCell);
-
 		$.each(new Array(9), function (idx) {
 			var c = idx + 1;
 			p.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
@@ -250,7 +272,9 @@ function preparePltTable(element, teamId, mode) {
 
 		p.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
 		j.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
-		p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
+		if (mode != 'copyToStatsbook') {
+			p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
+		}
 
 		var inserted = false;
 		team.find('tr.Penalty').each(function (idx, row) {

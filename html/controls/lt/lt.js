@@ -44,18 +44,20 @@ function prepareLtTable(element, teamId, mode) {
 					.prop('id','head').insertBefore(table);
 				var header = $('<thead>').appendTo(table);
 				var row = $('<tr>').appendTo(header);
-				$('<td>').addClass('JamNumber').text('Jam').appendTo(row);
-				$('<td>').addClass('NP').text('NP').appendTo(row);
-				$('<td>').addClass('Skater').text('Jammer').appendTo(row);
-				$('<td>').addClass('Box').text('Box').appendTo(row);
+				if (mode != 'copyToStatsbook') {
+					$('<td>').addClass('JamNumber').text('Jam').appendTo(row);
+					$('<td>').addClass('NP').text('NP').appendTo(row);
+					$('<td>').addClass('Skater').text('Jammer').appendTo(row);
+				}
+				$('<td>').addClass('Box').attr('colspan', mode == 'copyToStatsbook' ? '3': '1').text('Box').appendTo(row);
 				$('<td>').addClass('Skater').text('Pivot').appendTo(row);
-				$('<td>').addClass('Box').text('Box').appendTo(row);
+				$('<td>').addClass('Box').attr('colspan', mode == 'copyToStatsbook' ? '3': '1').text('Box').appendTo(row);
 				$('<td>').addClass('Skater').text('Blocker').appendTo(row);
-				$('<td>').addClass('Box').text('Box').appendTo(row);
+				$('<td>').addClass('Box').attr('colspan', mode == 'copyToStatsbook' ? '3': '1').text('Box').appendTo(row);
 				$('<td>').addClass('Skater').text('Blocker').appendTo(row);
-				$('<td>').addClass('Box').text('Box').appendTo(row);
+				$('<td>').addClass('Box').attr('colspan', mode == 'copyToStatsbook' ? '3': '1').text('Box').appendTo(row);
 				$('<td>').addClass('Skater').text('Blocker').appendTo(row);
-				$('<td>').addClass('Box').text('Box').appendTo(row);
+				$('<td>').addClass('Box').attr('colspan', mode == 'copyToStatsbook' ? '3': '1').text('Box').appendTo(row);
 			}
 			var body = $('<tbody>').appendTo(table);
 			
@@ -99,12 +101,23 @@ function prepareLtTable(element, teamId, mode) {
 			var prefix = 'ScoreBoard.Period('+p+').Jam('+nr+').TeamJam('+teamId+').';
 
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
-			$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
-			$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
+			if (mode != 'copyToStatsbook') {
+				$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
+				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
+			}
 			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 				var pos = String(this);
-				$('<td>').addClass('Skater '+pos).click(function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
-				$('<td>').addClass('Box Box'+pos).click(function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
+				if (mode == 'copyToStatsbook') {
+					if (pos != 'Jammer') {
+						$('<td>').addClass('Skater '+pos).appendTo(jamRow);
+					}
+					$('<td>').addClass('Box Box'+pos+'_1').appendTo(jamRow);
+					$('<td>').addClass('Box Box'+pos+'_2').appendTo(jamRow);
+					$('<td>').addClass('Box Box'+pos+'_3').appendTo(jamRow);
+				} else {
+					$('<td>').addClass('Skater '+pos).click(function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
+					$('<td>').addClass('Box Box'+pos).click(function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
+				}
 			});
 
 			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
@@ -120,7 +133,7 @@ function prepareLtTable(element, teamId, mode) {
 				$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 					var pos = String(this);
 					spRow.find('.'+pos).text(isTrue(v)?WS.state[prefix+'Fielding('+pos+').SkaterNumber']:'');
-					spRow.find('.Box'+pos).text(isTrue(v)?WS.state[prefix+'Fielding('+pos+').BoxTripSymbolsAfterSP']:'');
+					setBoxTripSymbols(spRow, '.Box'+pos, isTrue(v)?WS.state[prefix+'Fielding('+pos+').BoxTripSymbolsAfterSP']:'')
 				});
 			});
 			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
@@ -130,10 +143,10 @@ function prepareLtTable(element, teamId, mode) {
 					if (isTrue(WS.state[prefix+'StarPass'])) { spRow.find('.'+pos).text(v); }
 				});
 				WS.Register([prefix+'Fielding('+pos+').BoxTripSymbolsBeforeSP'], function (k, v) {
-					jamRow.find('.Box'+pos).text(v);
+					setBoxTripSymbols(jamRow, '.Box'+pos, v);
 				});
 				WS.Register([prefix+'Fielding('+pos+').BoxTripSymbolsAfterSP'], function (k, v) {
-					if (isTrue(WS.state[prefix+'StarPass'])) { spRow.find('.Box'+pos).text(v); }
+					if (isTrue(WS.state[prefix+'StarPass'])) { setBoxTripSymbols(spRow, '.Box'+pos, v); }
 				});
 				WS.Register([prefix+'Fielding('+pos+').Skater', prefix+'Fielding('+pos+').NotFielded',
 					prefix+'Fielding('+pos+').SitFor3', prefix+'Fielding('+pos+').Id']);
@@ -145,6 +158,18 @@ function prepareLtTable(element, teamId, mode) {
 			} else {
 				table.append(jamRow).append(spRow);
 			}
+		}
+	}
+	
+	function setBoxTripSymbols(row, classPrefix, symbols) {
+		if (mode == 'copyToStatsbook') {
+			var syms = symbols.split(' ');
+			//console.log(symbols + ' split into ' + syms.length + ' parts: ' + syms[0] + ',' + syms[1] + ',' + syms.slice(2).join(''));
+			row.find(classPrefix+'_1').text(syms[1]);
+			row.find(classPrefix+'_2').text(syms[2]);
+			row.find(classPrefix+'_3').text(syms.slice(3).join(''));
+		} else {
+			row.find(classPrefix).text(symbols);
 		}
 	}
 }	
