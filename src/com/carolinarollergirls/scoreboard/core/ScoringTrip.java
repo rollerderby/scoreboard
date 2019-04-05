@@ -10,6 +10,7 @@ public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip
     public enum Value implements PermanentProperty {
         SCORE(Integer.class, 0),
         AFTER_S_P(Boolean.class, false),
+        CURRENT(Boolean.class, false),
         DURATION(Long.class, 0L),
         JAM_CLOCK_START(Long.class, 0L),
         JAM_CLOCK_END(Long.class, 0L);

@@ -164,6 +164,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             if (isDisplayLead() && !scoreBoard.getClock(Clock.ID_JAM).isTimeAtEnd()) {
                 set(Value.CALLOFF, true);
             }
+            getCurrentTrip().set(ScoringTrip.Value.CURRENT, false);
             
             updateTeamJams();
 

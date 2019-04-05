@@ -111,10 +111,14 @@ function prepareSkTable(element, teamId, mode) {
 				spRow.find('.Jammer').text(isTrue(WS.state[prefix+'StarPass']) ? WS.state[prefix+'Fielding(Pivot).SkaterNumber'] : '');
 			});
 			WS.Register([prefix+'ScoringTrip(1).Score', prefix+'ScoringTrip(2).Score',
-					prefix+'ScoringTrip(2).AfterSP'], function(k, v) {
+					prefix+'ScoringTrip(2).AfterSP', prefix+'ScoringTrip(2).Current'], function(k, v) {
 				var trip1Score = WS.state[prefix+'ScoringTrip(1).Score'];
 				var trip2Score = WS.state[prefix+'ScoringTrip(2).Score'];
+				var trip2Current = isTrue(WS.state[prefix+'ScoringTrip(2).Current']);
 				var scoreText = '';
+				if (trip2Score == 0 && trip2Current) {
+					trip2Score = '.';
+				}
 				if (trip1Score > 0) {
 					if (trip2Score == null) {
 						scoreText = trip1Score + ' + NI';
@@ -135,7 +139,8 @@ function prepareSkTable(element, teamId, mode) {
 			});
 			$.each(new Array(7), function (idx) {
 				var t = idx + 3;
-				WS.Register([prefix+'ScoringTrip('+t+').Score', prefix+'ScoringTrip('+t+').AfterSP'], function (k, v) {
+				WS.Register([prefix+'ScoringTrip('+t+').Score', prefix+'ScoringTrip('+t+').Current', 
+						prefix+'ScoringTrip('+t+').AfterSP'], function (k, v) {
 					var row = jamRow;
 					var otherRow = spRow;
 					if (isTrue(WS.state[prefix+'ScoringTrip('+t+').AfterSP'])) {
@@ -143,7 +148,8 @@ function prepareSkTable(element, teamId, mode) {
 						otherRow = jamRow;
 					}
 					var score = WS.state[prefix+'ScoringTrip('+t+').Score'];
-					row.find('.Trip'+t).text(score != null ? score : '');
+					var current = isTrue(WS.state[prefix+'ScoringTrip('+t+').Current']);
+					row.find('.Trip'+t).text(score == null ? '' : current && score == 0 ? '.' : score);
 					otherRow.find('.Trip'+t).text('');
 				})
 			});

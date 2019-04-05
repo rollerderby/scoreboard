@@ -164,7 +164,6 @@ function prepareLtTable(element, teamId, mode) {
 	function setBoxTripSymbols(row, classPrefix, symbols) {
 		if (mode == 'copyToStatsbook') {
 			var syms = symbols.split(' ');
-			//console.log(symbols + ' split into ' + syms.length + ' parts: ' + syms[0] + ',' + syms[1] + ',' + syms.slice(2).join(''));
 			row.find(classPrefix+'_1').text(syms[1]);
 			row.find(classPrefix+'_2').text(syms[2]);
 			row.find(classPrefix+'_3').text(syms.slice(3).join(''));

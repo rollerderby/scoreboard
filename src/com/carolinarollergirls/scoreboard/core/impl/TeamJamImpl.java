@@ -87,6 +87,14 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         if (prop == Value.INJURY) {
             getOtherTeam().set(prop, value);
         }
+        if (prop == Value.CURRENT_TRIP) {
+            if (value != null && value == team.getCurrentTrip() && scoreBoard.isInJam()) {
+                ((ScoringTrip)value).set(ScoringTrip.Value.CURRENT, true);
+            }
+            if (last != null) {
+                ((ScoringTrip)last).set(ScoringTrip.Value.CURRENT, false);
+            }
+        }
     }
 
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {

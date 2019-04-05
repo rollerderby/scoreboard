@@ -27,8 +27,12 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         return value;
     }
     public void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.SCORE && (Long)get(Value.JAM_CLOCK_END) == 0L) {
+        if ((prop == Value.SCORE || (prop == Value.CURRENT && !(Boolean)value)) &&
+                (Long)get(Value.JAM_CLOCK_END) == 0L) {
             set(Value.JAM_CLOCK_END, ScoreBoardClock.getInstance().getCurrentWalltime());
+        }
+        if (prop == Value.CURRENT && (Boolean)value && (Integer)get(Value.SCORE) == 0) {
+            set(Value.JAM_CLOCK_END, 0L);
         }
         if (prop == Value.AFTER_S_P) {
             if ((Boolean)value && hasNext()) {
