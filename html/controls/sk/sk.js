@@ -90,6 +90,9 @@ function prepareSkTable(element, teamId, mode) {
 			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
 			WS.Register(['ScoreBoard.Period('+p+').Jam('+nr+').StarPass'], function(k, v) { spRow.toggleClass('Hide', !isTrue(v)); });
 
+			WS.Register([prefix+'Id'], function (k, v) { if (v == null) { jamRow.remove(); spRow.remove(); }});
+			if (WS.state[prefix+'Id'] == null) { return; }
+
 			WS.Register([prefix+'Fielding(Jammer).SkaterNumber'], function (k, v) {	jamRow.find('.Jammer').text(v);	});
 			WS.Register([prefix+'Lost'], function(k, v) { jamRow.find('.Lost').text(isTrue(v)?'X':'')});
 			WS.Register([prefix+'Lead'], function(k, v) { jamRow.find('.Lead').text(isTrue(v)?'X':'')});

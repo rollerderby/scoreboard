@@ -65,9 +65,11 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		}
 		
 		$('#current-period-style').remove();
-		$('<style> .Box.period-' + periodNumber +' { font-weight: bold; color: #000; }</style>')
-			.attr('id','current-period-style')
-			.appendTo('head');
+		if (mode != 'copyToStatsbook') {
+			$('<style> .Box.period-' + periodNumber +' { font-weight: bold; color: #000; }</style>')
+				.attr('id','current-period-style')
+				.appendTo('head');
+		}
 	}
 
 	function updateCurrentJamPeriodStyle() {
@@ -76,9 +78,11 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		}
 
 		$('#current-jam-style').remove();
-		$("<style> .Box.period-" + periodNumber + ".jam-" + jamNumber + " { text-decoration: underline; } </style>")
-			.attr('id', 'current-jam-style')
-			.appendTo('head');
+		if (mode != 'copyToStatsbook') {
+			$("<style> .Box.period-" + periodNumber + ".jam-" + jamNumber + " { text-decoration: underline; } </style>")
+				.attr('id', 'current-jam-style')
+				.appendTo('head');
+		}
 	}
 
 	var skaterIdRegex = /Skater\(([^\)]+)\)/;
@@ -153,8 +157,8 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 					penaltyBox.text(WS.state[prefix + ".Code"]);
 					jamBox.text(penaltyJam);
 				} else {
-					penaltyBox.text('');
-					jamBox.text('');
+					penaltyBox.html('&nbsp;');
+					jamBox.html('&nbsp;');
 				}
 			} else {
 				penaltyBox.text(WS.state[prefix + ".Code"]);
@@ -175,13 +179,8 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		} else {
 			penaltyBox.data("id", null);
 			jamBox.data("id", null);
-			if (mode == 'copyToStatsbook') {
-				penaltyBox.text('');
-				jamBox.text('');
-			} else {
-				penaltyBox.html("&nbsp;");
-				jamBox.html("&nbsp;");
-			}
+			penaltyBox.html("&nbsp;");
+			jamBox.html("&nbsp;");
 			penaltyBox.removeClass("Serving Unserved");
 			jamBox.removeClass("Serving Unserved");
 		}

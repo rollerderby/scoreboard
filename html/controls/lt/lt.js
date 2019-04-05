@@ -84,6 +84,7 @@ function prepareLtTable(element, teamId, mode) {
 					jamRow.toggleClass('Hide', isTrue(WS.state['ScoreBoard.InJam']) || WS.state['ScoreBoard.CurrentPeriodNumber'] != nr);
 				});
 
+				WS.Register(['ScoreBoard.Jam']); // for fielding editor
 				WS.Register(['ScoreBoard.UpcomingJamNumber'], function (k, v) { jamBox.text(v); });
 				WS.Register(['ScoreBoard.Team('+teamId+').NoPivot'], function(k, v) { npBox.text(isTrue(v)?'X':''); });
 				
@@ -124,6 +125,9 @@ function prepareLtTable(element, teamId, mode) {
 			spRow.find('.Jammer').insertAfter(spRow.find('.BoxPivot'));
 			spRow.find('.BoxJammer').insertAfter(spRow.find('.Jammer'));
 			WS.Register(['ScoreBoard.Period('+p+').Jam('+nr+').StarPass'], function(k, v) { spRow.toggleClass('Hide', !isTrue(v)); });
+
+			WS.Register([prefix+'Id'], function (k, v) { if (v == null) { jamRow.remove(); spRow.remove(); }});
+			if (WS.state[prefix+'Id'] == null) { return; }
 
 			WS.Register([prefix+'NoPivot'], function(k, v) { jamRow.find('.NP').text(isTrue(v)?'X':''); });
 			WS.Register([prefix+'StarPass'], function(k, v) {
@@ -231,7 +235,7 @@ function prepareFieldingEditor(teamId) {
 			closeOnEscape: false,
 			title: 'Fielding Editor',
 			autoOpen: false,
-			width: '450px',
+			width: '500px',
 		});
 	}		
 	
@@ -297,8 +301,9 @@ function prepareFieldingEditor(teamId) {
 		if (['EndJamNumber', 'EndBetweenJams', 'EndAfterSP'].includes(key)) {
 			var between = isTrue(WS.state[prefix+'EndBetweenJams']);
 			var afterSP = isTrue(WS.state[prefix+'EndAfterSP']);
-			row.find('.tripEndText').text((between?'Before ':'') + 'Jam ' + WS.state[prefix+'EndJamNumber']
-					+ (afterSP?' after SP':''));
+			var jam = WS.state[prefix+'EndJamNumber'];
+			row.find('.tripEndText').text((between?' Before ':' ') + (jam == 0 ? 'ongoing' : 'Jam ' + jam) 
+					+ (afterSP?' after SP ':' '));
 		}
 		if (key == 'Fielding') {
 			row.addClass(v);

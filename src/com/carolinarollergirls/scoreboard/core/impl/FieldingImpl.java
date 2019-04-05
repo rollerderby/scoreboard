@@ -91,6 +91,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             if (!isCurrent()) {
                 bt.end();
             }
+            getTeamJam().getTeam().add(Team.Child.BOX_TRIP, bt);
             add(Child.BOX_TRIP, bt);
         }
     }
