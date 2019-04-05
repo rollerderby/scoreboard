@@ -670,8 +670,8 @@ function createTeamTable() {
 			.attr("id", "Team"+team+"AddTrip").addClass("KeyControl TripButton").button()
 			.appendTo(scoreTd);
 
-		for (var i = 2; i <= 5; i++) {
-			var pos = (i - 2);
+		for (var i = 1; i <= 4; i++) {
+			var pos = (i - 1);
 			if (!first)
 				pos = 3 - pos;
 			sbTeam.$sb("TripScore").$sbControl("<button>").text(i).val(i)
@@ -687,6 +687,7 @@ function createTeamTable() {
 		var scoreChangeTimeout;
 		sbTeam.$sb("TripScore").bind("sbchange", function(event,s) {
 			var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
+			var addTrip = $sb("ScoreBoard.InJam").$sbIsTrue();
 			scoreChange.stop(true).text(s).last().css({ opacity: "1", color: c });
 			if (scoreChangeTimeout)
 				clearTimeout(scoreChangeTimeout);
@@ -694,7 +695,7 @@ function createTeamTable() {
 				scoreChange.last()
 					.animate({ color: "#000" }, 1000)
 					.animate({ opacity: "0" }, 1000, "easeInExpo", function() {
-						if (s > 0 && $sb("ScoreBoard.InJam").$sbIsTrue()) {
+						if (s > 0 && addTrip) {
 							sbTeam.$sb("AddTrip").$sbSet("true");
 						}});
 				scoreChangeTimeout = null;
