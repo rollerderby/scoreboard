@@ -26,17 +26,15 @@ div#tableDiv table td.Position,div#tableDiv table td.Box {
 }
 
 div#tableDiv table th.Number { width: 10%; }
-div#tableDiv table th.Name { width: 15%; }
 div#tableDiv table th.Bench { width: 15%; }
 div#tableDiv table th.Jammer { width: 15%; }
 div#tableDiv table th.Pivot { width: 15%; }
 div#tableDiv table th.Blocker { width: 15%; }
 div#tableDiv table th.Box { width: 15%; }
+div#tableDiv table th.Trips { width: 15%; }
 
 div#tableDiv table.Template { display: none; }
 div#tableDiv table tr.Template { display: none; }
-
-div#tableDiv table tr>td>a.Name { font-weight: bold; }
 
 div#tableDiv table tr.Bench>td.Bench { background: #0f0; }
 div#tableDiv table tr.Bench>td.Bench>a.Bench { display: none; }
@@ -54,4 +52,6 @@ div#tableDiv table tr:not(.Blocker)>td.Blocker>a.Number { display: none; }
 div#tableDiv table tr>td.Box.InBox { background: #f00; }
 div#tableDiv table tr>td.Box:not(.InBox)>a.Number { display: none; }
 div#tableDiv table tr>td.Box.InBox>a.Box { display: none; }
+
+div#tableDiv table tr>td>a.Trips { font-weight: bold; }
 

@@ -9,51 +9,41 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.FileSystems;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
-
+import java.util.Collection;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import com.carolinarollergirls.scoreboard.core.Media;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
-public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
-    public MediaImpl(File path) {
+public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
+    public MediaImpl(ScoreBoard parent, File path) {
+        super(parent, null, "", ScoreBoard.Child.MEDIA, Media.class, Child.class);
         setup(path.toPath().resolve("html"));
     }
 
-    public String getProviderName() { return "Media"; }
-    public Class<Media> getProviderClass() { return Media.class; }
-    public String getProviderId() { return ""; }
-
     private void setup(Path path) {
         this.path = path;
-        files.put("images", new HashMap<String, Map<String, MediaFile>>());
-        files.get("images").put("fullscreen", new HashMap<String, MediaFile>());
-        files.get("images").put("sponsor_banner", new HashMap<String, MediaFile>());
-        files.get("images").put("teamlogo", new HashMap<String, MediaFile>());
-        files.put("videos", new HashMap<String, Map<String, MediaFile>>());
-        files.get("videos").put("fullscreen", new HashMap<String, MediaFile>());
-        files.put("customhtml", new HashMap<String, Map<String, MediaFile>>());
-        files.get("customhtml").put("fullscreen", new HashMap<String, MediaFile>());
+        addFormat("images", "fullscreen", "sponsor_banner", "teamlogo");
+        addFormat("videos", "fullscreen");
+        addFormat("customhtml", "fullscreen");
 
         // Create directories and register with inotify.
         try {
             watchService = FileSystems.getDefault().newWatchService();
-            for (String format : files.keySet()) {
-                for (String type : files.get(format).keySet()) {
+            for (ValueWithId mf : getAll(Child.FORMAT)) {
+                String format = ((MediaFormat)mf).getFormat();
+                for (ValueWithId mt : ((MediaFormat)mf).getAll(MediaFormat.Child.TYPE)) {
+                    String type = ((MediaType)mt).getType();
                     Path p = path.resolve(format).resolve(type);
                     p.toFile().mkdirs();
                     p.register(watchService, ENTRY_CREATE, ENTRY_DELETE, OVERFLOW);
@@ -104,11 +94,11 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
     private void mediaTypeRefresh(String format, String type) {
         synchronized (coreLock) {
             Path p = path.resolve(format).resolve(type);
-            Map<String, MediaFile> map = files.get(format).get(type);
+            Collection<? extends ValueWithId> files = getFormat(format).getType(type).getAll(MediaType.Child.FILE);
             // Remove any files that aren't there or aren't files any more.
-            for (String fn : map.keySet()) {
-                if (!p.resolve(fn).toFile().isFile()) {
-                    mediaFileDeleted(format, type, fn);
+            for (ValueWithId fn : files) {
+                if (!p.resolve(fn.getId()).toFile().isFile()) {
+                    mediaFileDeleted(format, type, fn.getId());
                 }
             }
             // Add any files that are there.
@@ -126,104 +116,102 @@ public class MediaImpl extends DefaultScoreBoardEventProvider implements Media {
 
     private void mediaFileCreated(String format, String type, String id) {
         synchronized (coreLock) {
-            Map<String, MediaFile> map = files.get(format).get(type);
-            if(!map.containsKey(id)) {
+            MediaType mt = getFormat(format).getType(type);
+            if(mt.getFile(id) == null) {
                 // URL paths always use forward slashes.
                 String p = "/" + format + "/" + type + "/" + id;
                 // Name is the filename without the extension.
-                MediaFile mf = new MediaFileImpl(format, type, id, id.replaceFirst("\\.[^.]*$", ""), p);
-                mf.addScoreBoardListener(this);
-                map.put(id, mf);
-                scoreBoardChange(new ScoreBoardEvent(mf, MediaFile.EVENT_FILE, mf, null));
+                mt.addFile(new MediaFileImpl(mt, id, id.replaceFirst("\\.[^.]*$", ""), p));
             }
         }
     }
 
     private void mediaFileDeleted(String format, String type, String id) {
         synchronized (coreLock) {
-            Map<String, MediaFile> map = files.get(format).get(type);
-            MediaFile mf = map.get(id);
-            if (mf != null) {
-                map.remove(id);
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_FILE, mf, null));
-            }
+            MediaType mt = getFormat(format).getType(type); 
+            mt.removeFile(mt.getFile(id));
         }
     }
 
-    public Set<String> getFormats() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableSet(files.keySet());
+    private void addFormat(String format, String... types) {
+        MediaFormatImpl child = new MediaFormatImpl(this, format);
+        add(Child.FORMAT, child);
+        for (String type : types) {
+            child.addType(type);
         }
     }
-
-    public Set<String> getTypes(String format) {
-        synchronized (coreLock) {
-            return Collections.unmodifiableSet(files.get(format).keySet());
-        }
-    }
-
-    public Map<String, MediaFile> getMediaFiles(String format, String type) {
-        Map<String, Map<String, MediaFile>> fm = files.get(format);
-        if (fm == null) {
-            return null;
-        }
-        Map<String, MediaFile> tm = fm.get(type);
-        if (tm == null) {
-            return null;
-        }
-        return Collections.unmodifiableMap(tm);
-    }
+    public MediaFormat getFormat(String format) { return (MediaFormat)get(Child.FORMAT, format); }
 
     public boolean removeMediaFile(String format, String type, String id) {
         synchronized (coreLock) {
-            // Check the directory is one the user is meant to be able to change.
-            if (files.containsKey(format) && files.get(format).containsKey(type)) {
-                // Delete the file, and let inotify take care of handling the change.
-                try {
+            try {
+                // Check the directory is one the user is meant to be able to change.
+                if (getFormat(format).getType(type) != null) {
+                    // Delete the file, and let inotify take care of handling the change.
                     return Files.deleteIfExists(path.resolve(format).resolve(type).resolve(id));
-                } catch (IOException e) {
-                    return false;
                 }
+                return false;
+            } catch (Exception e) {
+                return false;
             }
-            return false;
         }
     }
 
-    private Map<String, Map<String, Map<String, MediaFile>>> files = new HashMap<String, Map<String, Map<String, MediaFile>>>();
     private Path path;
     private WatchService watchService;
 
-    private static Object coreLock = ScoreBoardImpl.getCoreLock();
-
-    public class MediaFileImpl extends DefaultScoreBoardEventProvider implements MediaFile {
-        MediaFileImpl(String format, String type, String id, String name, String src) {
+    public class MediaFormatImpl extends ScoreBoardEventProviderImpl implements MediaFormat {
+        MediaFormatImpl(Media parent, String format) {
+            super(parent, null, "", Media.Child.FORMAT, MediaFormat.class, Child.class);
             this.format = format;
-            this.type = type;
-            this.id = id;
-            this.name = name;
-            this.src = src;
         }
 
-        public String getProviderName() { return "MediaFile"; }
-        public Class<MediaFile> getProviderClass() { return MediaFile.class; }
-        public String getProviderId() { return getId(); }
+        public String getId() { return format; }
 
-        public String getFormat() { synchronized (coreLock) { return format ;} }
-        public String getType() { synchronized (coreLock) { return type ;} }
-        public String getId() { synchronized (coreLock) { return id ;} }
-        public String getName() { synchronized (coreLock) { return name ;} }
-        public void setName(String n) {
-            synchronized (coreLock) {
-                name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_FILE, this, null));
-            };
-        }
-        public String getSrc() { synchronized (coreLock) { return src ;} }
+        public String getFormat() { return format; }
+
+        public MediaType getType(String type) { return (MediaType)get(Child.TYPE, type); }
+        protected void addType(String type) { add(Child.TYPE, new MediaTypeImpl(this, type)); }
 
         private String format;
+    }
+
+    public class MediaTypeImpl extends ScoreBoardEventProviderImpl implements MediaType {
+        MediaTypeImpl(MediaFormat parent, String type) {
+            super(parent, null, "", MediaFormat.Child.TYPE, MediaType.class, Child.class);
+            this.parent = parent;
+            this.type = type;
+        }
+
+        public String getId() { return type; }
+
+        public String getFormat() { return parent.getFormat(); }
+
+        public String getType() { return type; }
+
+        public MediaFile getFile(String file) { return (MediaFile)get(Child.FILE, file); }
+        public void addFile(MediaFile file) { add(Child.FILE, file); }
+        public void removeFile(MediaFile file) { remove(Child.FILE, file); }
+
+        private MediaFormat parent;
         private String type;
-        private String id;
-        private String name;
-        private String src;
+    }
+
+    public class MediaFileImpl extends ScoreBoardEventProviderImpl implements MediaFile {
+        MediaFileImpl(MediaType type, String id, String name, String src) {
+            super(type, Value.ID, id, MediaType.Child.FILE, MediaFile.class, Value.class);
+            this.type = type;
+            set(Value.NAME, name);
+            set(Value.SRC, src);
+            addWriteProtection(Value.SRC);
+        }
+
+        public String getFormat() { synchronized (coreLock) { return type.getFormat() ;} }
+        public String getType() { synchronized (coreLock) { return type.getType() ;} }
+        public String getName() { synchronized (coreLock) { return (String)get(Value.NAME) ;} }
+        public void setName(String n) { synchronized (coreLock) { set(Value.NAME, n) ;} }
+        public String getSrc() { synchronized (coreLock) { return (String)get(Value.SRC); } }
+
+        private MediaType type;
     }
 }

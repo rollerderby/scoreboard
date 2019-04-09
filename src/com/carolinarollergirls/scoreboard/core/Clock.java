@@ -8,6 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Clock extends ScoreBoardEventProvider {
@@ -20,12 +22,9 @@ public interface Clock extends ScoreBoardEventProvider {
 
     public void start();
     public void stop();
-    public void startNext();
-
-    public String getId();
+    public void restart();
 
     public String getName();
-    public void setName(String name);
 
     public int getNumber();
     public void setNumber(int n);
@@ -93,6 +92,33 @@ public interface Clock extends ScoreBoardEventProvider {
         public boolean isRunning();
     }
 
+    public enum Value implements PermanentProperty {
+        ID(String.class, ""),
+        NAME(String.class, ""),
+        NUMBER(Integer.class, 0),
+        MINIMUM_NUMBER(Integer.class, 0),
+        MAXIMUM_NUMBER(Integer.class, 0),
+        TIME(Long.class, 0L),
+        INVERTED_TIME(Long.class, 0L),
+        MINIMUM_TIME(Long.class, 0L),
+        MAXIMUM_TIME(Long.class, 0L),
+        DIRECTION(Boolean.class, false),
+        RUNNING(Boolean.class, false);
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
+    }
+    public enum Command implements CommandProperty {
+        START,
+        STOP,
+        RESET_TIME;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
+    }
+
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";
 
     public static final String ID_PERIOD = "Period";
@@ -100,15 +126,4 @@ public interface Clock extends ScoreBoardEventProvider {
     public static final String ID_LINEUP = "Lineup";
     public static final String ID_TIMEOUT = "Timeout";
     public static final String ID_INTERMISSION = "Intermission";
-
-    public static final String EVENT_NAME = "Name";
-    public static final String EVENT_NUMBER = "Number";
-    public static final String EVENT_MINIMUM_NUMBER = "MinimumNumber";
-    public static final String EVENT_MAXIMUM_NUMBER = "MaximumNumber";
-    public static final String EVENT_TIME = "Time";
-    public static final String EVENT_INVERTED_TIME = "InvertedTime";
-    public static final String EVENT_MINIMUM_TIME = "MinimumTime";
-    public static final String EVENT_MAXIMUM_TIME = "MaximumTime";
-    public static final String EVENT_DIRECTION = "Direction";
-    public static final String EVENT_RUNNING = "Running";
 }

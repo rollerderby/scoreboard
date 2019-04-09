@@ -10,16 +10,10 @@ import java.util.Queue;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-import org.mockito.invocation.InvocationOnMock;
-import org.mockito.stubbing.Answer;
-import static org.mockito.Matchers.any;
-
 import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.impl.ClockImpl;
+import com.carolinarollergirls.scoreboard.core.impl.ClockImpl.ClockSnapshotImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -29,9 +23,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImplTests {
 
-    private ScoreBoard sbMock;
-    private Rulesets rulesetsMock;
-    private Settings settingsMock;
+    private ScoreBoard sb;
 
     private Queue<ScoreBoardEvent> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
@@ -46,9 +38,7 @@ public class ClockImplTests {
 
 
     private ClockImpl clock;
-    private static String ID = "TEST";
-
-    private String syncStatus = "false";
+    private static String ID = Clock.ID_LINEUP;
 
     private void advance(long time_ms) {
         ScoreBoardClock.getInstance().advance(time_ms);
@@ -57,42 +47,12 @@ public class ClockImplTests {
     @Before
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
-        syncStatus = "false";
         collectedEvents = new LinkedList<ScoreBoardEvent>();
 
-        sbMock = Mockito.mock(ScoreBoardImpl.class);
+        sb = new ScoreBoardImpl();
+        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
-        rulesetsMock = Mockito.mock(Rulesets.class);
-        settingsMock = Mockito.mock(Settings.class);
-
-        Mockito
-        .when(sbMock.getSettings())
-        .thenReturn(settingsMock);
-
-        Mockito
-        .when(sbMock.getRulesets())
-        .thenReturn(rulesetsMock);
-
-        // makes it easier to test both sync and non-sync paths through clock
-        Mockito
-        .when(settingsMock.get(Clock.SETTING_SYNC))
-        .thenAnswer(new Answer<String>() {
-            public String answer(InvocationOnMock invocation) throws Throwable {
-                return syncStatus;
-            }
-        });
-        Mockito
-        .when(rulesetsMock.getBoolean(any(Rule.class)))
-        .thenReturn(false);
-        Mockito
-        .when(rulesetsMock.getRule(any(String.class)))
-        .thenAnswer(new Answer<Rule>() {
-            public Rule answer(InvocationOnMock invocation) throws Throwable {
-                return Rule.TIMEOUT_DIRECTION;
-            }
-        });
-
-        clock = new ClockImpl(sbMock, ID);
+        clock = (ClockImpl) sb.getClock(ID);
     }
 
     @After
@@ -116,9 +76,7 @@ public class ClockImplTests {
         assertFalse(clock.isCountDirectionDown());
         assertFalse(clock.isRunning());
 
-        assertEquals(clock, clock.getClock());
-        assertEquals(sbMock, clock.getScoreBoard());
-        assertEquals(sbMock, clock.getScoreBoard());
+        assertEquals(sb, clock.getScoreBoard());
 
         assertEquals("Clock", clock.getProviderName());
         assertEquals(ID, clock.getProviderId());
@@ -152,7 +110,7 @@ public class ClockImplTests {
         clock.setMaximumTime(1200000);
         clock.setTime(5000);
         clock.start();
-        Clock.ClockSnapshot snapshot = clock.snapshot();
+        ClockImpl.ClockSnapshotImpl snapshot = (ClockSnapshotImpl) clock.snapshot();
 
         clock.reset();
         assertFalse(clock.isRunning());
@@ -160,13 +118,13 @@ public class ClockImplTests {
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
 
         //if IDs don't match no restore should be done
-        clock.id = "OTHER";
+        snapshot.id = "OTHER";
         clock.restoreSnapshot(snapshot);
         assertFalse(clock.isRunning());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
 
-        clock.id = "TEST";
+        snapshot.id = ID;
         clock.restoreSnapshot(snapshot);
         assertTrue(clock.isRunning());
         assertEquals(4, clock.getNumber());
@@ -176,8 +134,8 @@ public class ClockImplTests {
     @Test
     public void testSetting_ClockSync() {
         //add a master clock
-        ClockImpl clock2 = new ClockImpl(sbMock, Clock.ID_TIMEOUT);
-        syncStatus = "true";
+        ClockImpl clock2 = new ClockImpl(sb, Clock.ID_TIMEOUT);
+        sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(true));
         clock.setMaximumTime(10000);
         clock2.setMaximumTime(10000);
         clock2.setTime(3400);
@@ -216,7 +174,7 @@ public class ClockImplTests {
 
     @Test
     public void testSetName() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NAME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.NAME, listener));
 
         clock.setName("Test Clock");
 
@@ -229,7 +187,7 @@ public class ClockImplTests {
 
     public void testSetCountDirectionDown() {
         assertFalse(clock.isCountDirectionDown());
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_DIRECTION, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.DIRECTION, listener));
 
         clock.setCountDirectionDown(true);
         assertTrue(clock.isCountDirectionDown());
@@ -249,7 +207,7 @@ public class ClockImplTests {
 
     @Test
     public void testSetMinimumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
 
         clock.setMinimumNumber(1000);
 
@@ -266,9 +224,9 @@ public class ClockImplTests {
 
     @Test
     public void testSetMinimumNumber2() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.NUMBER, listener));
 
 
         clock.setMaximumNumber(10);
@@ -287,7 +245,7 @@ public class ClockImplTests {
 
     @Test
     public void testSetMaximumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
 
         clock.setMaximumNumber(ClockImpl.DEFAULT_MINIMUM_NUMBER);
         advance(0);
@@ -307,9 +265,9 @@ public class ClockImplTests {
 
     @Test
     public void testSetMaximumNumber2() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.NUMBER, listener));
 
 
         clock.setMinimumNumber(10);
@@ -327,7 +285,7 @@ public class ClockImplTests {
 
     @Test
     public void testChangeMaximumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
 
         clock.setMaximumNumber(5);
         collectedEvents.clear();
@@ -346,7 +304,7 @@ public class ClockImplTests {
 
     @Test
     public void testChangeMinimumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
 
         clock.setMaximumNumber(5);
         clock.setMinimumNumber(5);
@@ -366,7 +324,7 @@ public class ClockImplTests {
 
     @Test
     public void testChangeNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_NUMBER, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.NUMBER, listener));
 
         clock.setMaximumNumber(12);
         clock.setMinimumNumber(3);
@@ -399,7 +357,7 @@ public class ClockImplTests {
         // ...and check that constraint is not a >0 type constraint
         clock.setNumber(1);
         assertEquals(3, clock.getNumber());
-        assertEquals(1, collectedEvents.size());
+        assertEquals(0, collectedEvents.size());
         collectedEvents.clear();
 
         clock.changeNumber(6);
@@ -428,9 +386,9 @@ public class ClockImplTests {
 
     @Test
     public void testSetMinimumTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_TIME, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_TIME, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
 
         clock.setMaximumTime(ClockImpl.DEFAULT_MINIMUM_TIME);
         collectedEvents.clear();
@@ -452,7 +410,7 @@ public class ClockImplTests {
 
     @Test
     public void testSetMinimumTime2() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_TIME, listener));
 
         clock.setMaximumTime(2000);
         clock.setMinimumTime(2000);
@@ -478,7 +436,7 @@ public class ClockImplTests {
 
     @Test
     public void testSetMaximumTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_TIME, listener));
 
         clock.setMaximumTime(0);
         collectedEvents.clear();
@@ -525,7 +483,7 @@ public class ClockImplTests {
 
     @Test
     public void testChangeMaximumTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MAXIMUM_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_TIME, listener));
 
         clock.setMaximumTime(1000);
         collectedEvents.clear();
@@ -543,7 +501,7 @@ public class ClockImplTests {
 
     @Test
     public void testChangeMinimumTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_MINIMUM_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_TIME, listener));
 
         clock.setMaximumTime(5000);
         clock.setMinimumTime(5000);
@@ -563,7 +521,7 @@ public class ClockImplTests {
 
     @Test
     public void testChangeTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
 
         clock.setMaximumTime(5000);
         clock.setMinimumTime(1000);
@@ -587,20 +545,21 @@ public class ClockImplTests {
         assertEquals(1000, clock.getTime());
         assertEquals(4000, clock.getInvertedTime());
         assertEquals(1, collectedEvents.size());
+        clock.start();
         collectedEvents.clear();
 
-        clock.setTime(1200);
+        clock.timerTick(200);
         assertEquals(1200, clock.getTime());
         assertEquals(3800, clock.getInvertedTime());
         assertEquals(0, collectedEvents.size());
 
-        clock.changeTime(-201);
+        clock.timerTick(-201);
         assertEquals(999, clock.getTime());
         assertEquals(1, collectedEvents.size());
 
         clock.setCountDirectionDown(true);
         collectedEvents.clear();
-        clock.changeTime(1);
+        clock.timerTick(-1);
         assertEquals(0, collectedEvents.size());
 
         clock.setTime(2000);
@@ -610,14 +569,14 @@ public class ClockImplTests {
         assertEquals(2, collectedEvents.size());
         collectedEvents.clear();
 
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_INVERTED_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.INVERTED_TIME, listener));
         clock.changeTime(-5000);
         assertEquals(1000, clock.getTime());
         assertEquals(4000, clock.getInvertedTime());
         assertEquals(2, collectedEvents.size());
         Boolean firstEventInverted;
         event = collectedEvents.poll();
-        if (event.getProperty() == Clock.EVENT_TIME) {
+        if (event.getProperty() == Clock.Value.TIME) {
             firstEventInverted = false;
             assertEquals(1000, (long)event.getValue());
             assertEquals(3200, (long)event.getPreviousValue());
@@ -642,7 +601,7 @@ public class ClockImplTests {
 
     @Test
     public void testElapseTime_countUp() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
         clock.setMaximumTime(5000);
 
         clock.setTime(2000);
@@ -711,7 +670,7 @@ public class ClockImplTests {
 
     @Test
     public void testResetTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
         clock.setMaximumTime(5000);
         clock.setMinimumTime(1000);
 
@@ -731,8 +690,8 @@ public class ClockImplTests {
     }
 
     public void testRunning() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_RUNNING, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.RUNNING, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
         clock.setMaximumTime(30000);
         assertFalse(clock.isCountDirectionDown());
         assertTrue(clock.isTimeAtStart());
@@ -740,7 +699,7 @@ public class ClockImplTests {
         clock.start();
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(Clock.EVENT_RUNNING, event.getProperty());
+        assertEquals(Clock.Value.RUNNING, event.getProperty());
         assertTrue((Boolean)event.getValue());
         assertFalse((Boolean)event.getPreviousValue());
 
@@ -749,18 +708,18 @@ public class ClockImplTests {
         advance(500);
         assertEquals(2000, clock.getTimeElapsed());
         assertEquals(2, collectedEvents.size());
-        assertEquals(Clock.EVENT_TIME, collectedEvents.poll().getProperty());
-        assertEquals(Clock.EVENT_TIME, collectedEvents.poll().getProperty());
+        assertEquals(Clock.Value.TIME, collectedEvents.poll().getProperty());
+        assertEquals(Clock.Value.TIME, collectedEvents.poll().getProperty());
 
         advance(2000);
         assertEquals(4000, clock.getTimeElapsed());
         assertEquals(1, collectedEvents.size());
-        assertEquals(Clock.EVENT_TIME, collectedEvents.poll().getProperty());
+        assertEquals(Clock.Value.TIME, collectedEvents.poll().getProperty());
 
         clock.stop();
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
-        assertEquals(Clock.EVENT_RUNNING, event.getProperty());
+        assertEquals(Clock.Value.RUNNING, event.getProperty());
         assertFalse((Boolean)event.getValue());
         assertTrue((Boolean)event.getPreviousValue());
 
@@ -779,7 +738,7 @@ public class ClockImplTests {
         clock.setMaximumTime(1000);
         clock.setTime(1000);
 
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.EVENT_TIME, listener));
+        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
         clock.start();
         advance(200);
         advance(200);
@@ -792,16 +751,16 @@ public class ClockImplTests {
     }
 
     @Test
-    public void testStartNext() {
+    public void testRestart() {
         clock.setMaximumNumber(5);
         clock.setNumber(2);
         clock.setMaximumTime(60000);
         clock.setTime(45000);
         assertFalse(clock.isRunning());
 
-        clock.startNext();
+        clock.restart();
         assertTrue(clock.isRunning());
-        assertEquals(3, clock.getNumber());
+        assertEquals(2, clock.getNumber());
         assertTrue(clock.isTimeAtStart());
     }
 
@@ -810,9 +769,7 @@ public class ClockImplTests {
         assertFalse(clock.isCountDirectionDown());
         assertEquals(0, clock.getTime());
 
-        Mockito
-        .when(rulesetsMock.getBoolean(any(Rule.class)))
-        .thenReturn(true);
+        sb.getRulesets().set(Rule.LINEUP_DIRECTION, String.valueOf(true));
         clock.rulesetChangeListener.scoreBoardChange(null);
         assertTrue(clock.isCountDirectionDown());
         assertEquals(86400000, clock.getTime());

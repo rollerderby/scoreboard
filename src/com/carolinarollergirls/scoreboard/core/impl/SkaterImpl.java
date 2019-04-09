@@ -9,219 +9,184 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.LinkedList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
+import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.core.TeamJam;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
-public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater {
+public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i, String n, String num, String flags) {
+        super(t, Value.ID, (i == null ? UUID.randomUUID().toString() : i),
+                Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
         team = t;
-        setId(i);
         setName(n);
         setNumber(num);
         setFlags(flags);
+        set(Value.BASE_ROLE, Role.BENCH);
+        set(Value.ROLE, Role.BENCH);
+        setInverseReference(Child.FIELDING, Fielding.Value.SKATER);
+        setCopy(Value.POSITION, this, Value.CURRENT_FIELDING, Fielding.Value.POSITION, true);
+        setCopy(Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false);
+        setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
     }
 
-    public String getProviderName() { return "Skater"; }
-    public Class<Skater> getProviderClass() { return Skater.class; }
-    public String getProviderId() { return getId(); }
+    public int compareTo(Skater other) {
+        if (other == null) { return -1; }
+        if (getNumber() == other.getNumber()) { return 0; }
+        if (getNumber() == null) { return 1; }
+        if (other.getNumber() == null) { return -1; }
+        return getNumber().compareTo(other.getNumber());
+    }
+    
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.ROLE && flag != Flag.INTERNAL) {
+            team.field(this, (Role)value);
+            return last;
+        }
+        return value;
+    }
+    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.CURRENT_FIELDING) {
+            Fielding f = (Fielding)value;
+            Fielding lf = (Fielding)last;
+            setRole(value == null ? getBaseRole() : f.getCurrentRole());
+            if (lf != null && lf.getSkater() == this) {
+                if (f != null && lf.getTeamJam().getNext() == f.getTeamJam() && lf.isInBox()) {
+                    f.add(Fielding.Child.BOX_TRIP, lf.getCurrentBoxTrip());
+                } 
+                if (lf.isCurrent()) {
+                    if (f != null) {
+                        for (ValueWithId v : lf.getAll(Fielding.Child.BOX_TRIP)) {
+                            f.add(Fielding.Child.BOX_TRIP, v);
+                        }
+                        lf.removeAll(Fielding.Child.BOX_TRIP);
+                    }
+                    lf.setSkater(null);
+                }
+            }
+        }
+        if (prop == Value.BASE_ROLE && get(Value.ROLE) == last) {
+            set(Value.ROLE, value, Flag.INTERNAL);
+        }
+    }
+
+    public ValueWithId create(AddRemoveProperty prop, String id) {
+        synchronized (coreLock) {
+            if (prop == NChild.PENALTY) { return new PenaltyImpl(this, Integer.valueOf(id)); }
+            return null;
+        }	
+    }
+    protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
+            updateEligibility();
+        } else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
+            set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
+        }
+    }
+    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
+            updateEligibility();
+        } else if (prop == Child.FIELDING && getCurrentFielding() == item) {
+            set(Value.CURRENT_FIELDING, null, Flag.INTERNAL);
+        }
+    }
 
     public Team getTeam() { return team; }
 
-    public String getId() { return id; }
-    public void setId(String i) {
-        synchronized (coreLock) {
-            UUID uuid;
-            try {
-                uuid = UUID.fromString(i);
-            } catch (IllegalArgumentException iae) {
-                uuid = UUID.randomUUID();
-            }
-            id = uuid.toString();
+    public String getName() { return (String)get(Value.NAME); }
+    public void setName(String n) { set(Value.NAME, n); }
+
+    public String getNumber() { return (String)get(Value.NUMBER); }
+    public void setNumber(String n) { set(Value.NUMBER, n); }
+
+    public Fielding getFielding(TeamJam teamJam) {
+        for (FloorPosition fp : FloorPosition.values()) {
+            Fielding f = (Fielding) get(Child.FIELDING, teamJam.getId() + "_" + fp.toString());
+            if (f != null) { return f; }
+        }
+        return null;
+    }
+    public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
+    public void removeCurrentFielding() {
+        if (getCurrentFielding() != null) {
+            remove(Child.FIELDING, getCurrentFielding());
         }
     }
 
-    public String getName() { return name; }
-    public void setName(String n) {
-        synchronized (coreLock) {
-            String last = name;
-            name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NAME, name, last));
-        }
-    }
+    public Position getPosition() { return (Position)get(Value.POSITION); }
+    public void setPosition(Position p) { set(Value.POSITION, p); }
 
-    public String getNumber() { return number; }
-    public void setNumber(String n) {
-        synchronized (coreLock) {
-            String last = number;
-            number = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_NUMBER, number, last));
-        }
-    }
-
-    public Position getPosition() { return position; }
-    public void setPosition(Position p) {
-        synchronized (coreLock) {
-            if (p == position) {
-                return;
-            }
-
-            Position last = position;
-            position = p;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_POSITION, position, last));
-        }
-    }
-
-    public Role getRole() { return role; }
-    public void setRole(Role r) {
-        synchronized (coreLock) {
-            if (r == role) { return; }
-
-            Role last = role;
-            role = r;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_ROLE, role, last));
-        }
-    }
+    public Role getRole() { return (Role)get(Value.ROLE); }
+    public void setRole(Role r) { set(Value.ROLE, r, Flag.INTERNAL); }
     public void setRoleToBase() { setRole(getBaseRole()); }
 
+    public Role getBaseRole() { return (Role)get(Value.BASE_ROLE); }
+    public void setBaseRole(Role b) { set(Value.BASE_ROLE, b); }
 
-    public Role getBaseRole() { return baseRole; }
-    public void setBaseRole(Role b) {
-        synchronized (coreLock) {
-            if (b == baseRole) { return; }
-
-            Role last = baseRole;
-            baseRole = b;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_BASE_ROLE, baseRole, last));
+    public void updateEligibility() {
+        if (getBaseRole() != Role.BENCH && getBaseRole() != Role.INELIGIBLE) {
+            return;
         }
-    }
-
-    public boolean isPenaltyBox() { return penaltyBox; }
-
-    public void setPenaltyBox(boolean box) {
-        synchronized (coreLock) {
-            if (box == penaltyBox) {
-                return;
-            }
-
-            requestBatchStart();
-
-            Boolean last = new Boolean(penaltyBox);
-            penaltyBox = box;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
-
-            if (box && position.getFloorPosition() == FloorPosition.JAMMER && team.getLeadJammer().equals(Team.LEAD_LEAD)) {
-                team.setLeadJammer(Team.LEAD_LOST_LEAD);
-            }
-
-            // Update Position
-            if (position != null) {
-        	position.setPenaltyBox(box);
-            }
-
-            requestBatchEnd();
+        if (get(NChild.PENALTY, FO_EXP_ID) != null) { 
+            setBaseRole(Role.INELIGIBLE);
+            return;
         }
-    }
-
-    public String getFlags() { return flags; }
-
-    public void setFlags(String f) {
-        synchronized (coreLock) {
-            String last = flags;
-            flags = f;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_FLAGS, flags, last));
+        boolean satThisPeriod = false;
+        Set<TeamJam> last3 = new HashSet<TeamJam>();
+        TeamJam tj = getTeam().getRunningOrUpcomingTeamJam();
+        while(tj != null && last3.size() < 3) {
+            last3.add(tj);
+            tj = tj.getPrevious();
         }
-    }
-
-    public List<Penalty> getPenalties() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableList(new ArrayList<Penalty>(penalties));
-        }
-    }
-    public Penalty getFOEXPPenalty() { return foexp_penalty; }
-
-    public void AddPenalty(String id, boolean foulout_explusion, int period, int jam, String code) {
-        synchronized (coreLock) {
-            requestBatchStart();
-            if (foulout_explusion && code != null) {
-                Penalty prev = foexp_penalty;
-                id = UUID.randomUUID().toString();
-                if (prev != null) {
-                    id = prev.getId();
-                }
-                foexp_penalty = new PenaltyImpl(id, period, jam, code);
-                if (getBaseRole() == Role.BENCH) {
+        for (ValueWithId v : getAll(Child.FIELDING)) {
+            Fielding f = (Fielding)v;
+            if (f.isSitFor3()) {
+                if (last3.contains(f.getTeamJam())) {
                     setBaseRole(Role.INELIGIBLE);
+                    return;
                 }
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_FOEXP, foexp_penalty, null));
-            } else if (foulout_explusion && code == null) {
-                Penalty prev = foexp_penalty;
-                foexp_penalty = null;
-                setBaseRole(Role.BENCH);
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_REMOVE_FOEXP, null, prev));
-            } else if (id == null ) {
-                id = UUID.randomUUID().toString();
-                // Non FO/Exp, make sure skater has 9 or less regular penalties before adding another
-                if (penalties.size() < 9) {
-                    PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
-                    penalties.add(dpm);
-                    sortPenalties();
-                    scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
-                }
-            } else {
-                // Updating/Deleting existing Penalty.	Find it and process
-                for (PenaltyImpl p2 : penalties) {
-                    if (p2.getId().equals(id)) {
-                        if (code != null) {
-                            p2.period = period;
-                            p2.jam = jam;
-                            p2.code = code;
-                            sortPenalties();
-                            scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
-                        } else {
-                            penalties.remove(p2);
-                            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_PENALTY, null, p2));
-                        }
-                        requestBatchEnd();
+                if (f.getTeamJam().getJam().getParent() == scoreBoard.getCurrentPeriod()) {
+                    if (satThisPeriod) {
+                        setBaseRole(Role.INELIGIBLE);
                         return;
+                    } else {
+                        satThisPeriod = true;
                     }
                 }
-                // Penalty has an ID we don't have likely from the autosave, add it.
-                PenaltyImpl dpm = new PenaltyImpl(id, period, jam, code);
-                penalties.add(dpm);
-                sortPenalties();
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY, getPenalties(), null));
             }
-            requestBatchEnd();
         }
     }
+    
+    public boolean isPenaltyBox() { return (Boolean)get(Value.PENALTY_BOX); }
+    public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }
 
-    private void sortPenalties() {
-        Collections.sort(penalties, new Comparator<PenaltyImpl>() {
+    public String getFlags() { return (String)get(Value.FLAGS); }
+    public void setFlags(String f) { set(Value.FLAGS, f); }
 
-            @Override
-            public int compare(PenaltyImpl a, PenaltyImpl b) {
-                int periodSort = Integer.valueOf(a.period).compareTo(b.period);
-
-                if(periodSort != 0) {
-                    return periodSort;
-                } else {
-                    return Integer.valueOf(a.jam).compareTo(b.jam);
-                }
+    public Penalty getPenalty(String id) { return (Penalty)get(NChild.PENALTY, id); }
+    public List<Penalty> getUnservedPenalties() {
+        List<Penalty> usp = new ArrayList<Penalty>();
+        for (ValueWithId p : getAll(NChild.PENALTY)) {
+            if (!((Penalty)p).isServed()) {
+                usp.add((Penalty)p);
             }
-
-        });
+        }
+        return usp;
     }
+    public boolean hasUnservedPenalties() { return getUnservedPenalties().size() > 0; }
 
     public SkaterSnapshot snapshot() {
         synchronized (coreLock) {
@@ -234,47 +199,10 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
             setPosition(s.getPosition());
             setRole(s.getRole());
             setBaseRole(s.getBaseRole());
-            setPenaltyBox(s.isPenaltyBox());
         }
     }
 
     protected Team team;
-    protected static Object coreLock = ScoreBoardImpl.getCoreLock();
-
-    protected String id;
-    protected String name;
-    protected String number;
-    protected Position position = null;
-    protected Role role = Role.BENCH;
-    protected Role baseRole = Role.BENCH;
-    protected boolean penaltyBox = false;
-    protected String flags;
-    protected List<PenaltyImpl> penalties = new LinkedList<PenaltyImpl>();
-    protected Penalty foexp_penalty;
-
-    protected boolean settingPositionSkater = false;
-
-    public class PenaltyImpl extends DefaultScoreBoardEventProvider implements Penalty {
-        public PenaltyImpl(String i, int p, int j, String c) {
-            id = i;
-            period = p;
-            jam = j;
-            code = c;
-        }
-        public String getId() { return id; }
-        public int getPeriod() { return period; }
-        public int getJam() { return jam; }
-        public String getCode() { return code; }
-
-        public String getProviderName() { return "Penalty"; }
-        public Class<Penalty> getProviderClass() { return Penalty.class; }
-        public String getProviderId() { return getId(); }
-
-        protected String id;
-        protected int period;
-        protected int jam;
-        protected String code;
-    }
 
     public static class SkaterSnapshotImpl implements SkaterSnapshot {
         private SkaterSnapshotImpl(Skater skater) {
@@ -282,21 +210,16 @@ public class SkaterImpl extends DefaultScoreBoardEventProvider implements Skater
             position = skater.getPosition();
             role = skater.getRole();
             baseRole = skater.getBaseRole();
-            box = skater.isPenaltyBox();
         }
 
         public String getId( ) { return id; }
         public Position getPosition() { return position; }
         public Role getRole() { return role; }
         public Role getBaseRole() { return baseRole; }
-        public boolean isPenaltyBox() { return box; }
 
         protected String id;
         protected Position position;
         protected Role role;
         protected Role baseRole;
-        protected boolean box;
-
     }
-
 }

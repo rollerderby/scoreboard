@@ -18,8 +18,8 @@ Skaters.AddTrigger('DELETE', '*', { }, function(n,o,k) {
 });
 
 $(initialize)
-if(WS.state['ScoreBoard.Settings.Overlay.DDTV.Resolution'] == undefined) {
-	WS.Set('ScoreBoard.Settings.Overlay.DDTV.Resolution', 'HD');
+if(WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Resolution)'] == undefined) {
+	WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Resolution)', 'HD');
 }
 
 
@@ -27,15 +27,15 @@ function initialize() {
 
 	WS.Connect();
 
-	WS.Register(['ScoreBoard.Settings.Overlay.DDTV.Clock', 
-		     'ScoreBoard.Settings.Overlay.DDTV.Score', 
-		     'ScoreBoard.Settings.Overlay.DDTV.Top', 
-		     'ScoreBoard.Settings.Overlay.DDTV.ShowJammers',
-		     'ScoreBoard.Settings.Overlay.DDTV.Alert',
-		     'ScoreBoard.Settings.Overlay.DDTV.Mode',
-		     'ScoreBoard.Settings.Overlay.DDTV.Resolution',
-		     'ScoreBoard.Settings.Overlay.DDTV.Font.Clock',
-		     'ScoreBoard.Settings.Overlay.DDTV.Panel'], function(k,v) { 
+	WS.Register(['ScoreBoard.Settings.Setting(Overlay.DDTV.Clock)', 
+		     'ScoreBoard.Settings.Setting(Overlay.DDTV.Score)', 
+		     'ScoreBoard.Settings.Setting(Overlay.DDTV.Top)', 
+		     'ScoreBoard.Settings.Setting(Overlay.DDTV.ShowJammers)',
+		     'ScoreBoard.Settings.Setting(.DDTV.Alert)',
+		     'ScoreBoard.Settings.Setting(Overlay.DDTV.Mode)',
+		     'ScoreBoard.Settings.Setting(Overlay.DDTV.Resolution)',
+		     'ScoreBoard.Settings.Setting(Overlay.DDTV.Font.Clock)',
+		     'ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)'], function(k,v) { 
 		console.log(k,v);
 		$('[data-setting="' + k +'"]').each(function(i) {
 			$t = $(this);
@@ -73,8 +73,8 @@ function initialize() {
 		}	
 	});
 
-	WS.Register('ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line', function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
-	WS.Register('ScoreBoard.Settings.Overlay.DDTV.LowerThird.Style', function(k,v) { $('#LowerThirdStyle option[value="'+v+'"]').attr('selected', 'selected'); });
+	WS.Register('ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line)', function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
+	WS.Register('ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Style)', function(k,v) { $('#LowerThirdStyle option[value="'+v+'"]').attr('selected', 'selected'); });
 
 }
 
@@ -119,11 +119,11 @@ $('select#Skaters').change(function(e) {
 	v = $t.val();
 	team = $( 'option[value=' + v + ']', $t ).attr('data-team');
 	name = $( 'option[value=' + v + ']', $t ).attr('data-name');
-	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
+	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay).Name'];
 	tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
 	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').change();
-	$('input[data-setting="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line1"]').val(name).change();
-	$('input[data-setting="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line2"]').val(tnam).change();
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line1)"]').val(name).change();
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line2)"]').val(tnam).change();
 });
 
 $('select#Keepers').change(function(e) {
@@ -136,14 +136,14 @@ $('select#Keepers').change(function(e) {
 	var style = $d.attr('data-style');
 
 	$('#LowerThirdStyle option[value=' + style + ']').attr('selected', 'selected').change();
-	$('input[data-setting="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line1"]').val(line1).change();
-	$('input[data-setting="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line2"]').val(line2).change();
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line1)"]').val(line1).change();
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line2)"]').val(line2).change();
 });
 
 $('#KeeperAdd').click(function() {
 	$('#LowerThirdStyle').change();
-	var line1 = $('input[data-setting="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line1"]').val();
-	var line2 = $('input[data-setting="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line2"]').val();
+	var line1 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line1)"]').val();
+	var line2 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line2)"]').val();
 	var style = $('#LowerStyle').val();
 
 	$('<option>').attr('data-line1', line1)

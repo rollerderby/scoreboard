@@ -8,14 +8,22 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.List;
-
+import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public interface ScoreBoard extends ScoreBoardEventProvider {
     /** Reset the ScoreBoard. */
     public void reset();
+
+    /** Update state after restoring from autosave */
+    public void postAutosaveUpdate();
 
     /**
      * Id of Team who called Timeout.
@@ -47,6 +55,15 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
      */
     public boolean isInPeriod();
     public void setInPeriod(boolean inPeriod);
+    public Period getOrCreatePeriod(int p);
+    public Period getCurrentPeriod();
+    public int getCurrentPeriodNumber();
+
+    public boolean isInJam();
+    public Jam getUpcomingJam();
+    
+    // update the references to current/upcoming/just ended TeamJams
+    public void updateTeamJams();
 
     /**
      * If this bout is in Overtime.
@@ -69,13 +86,9 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public void clockUndo(boolean replace);
 
-    public void penalty(String teamId, String skaterId, String penaltyId, boolean fo_exp, int period, int jam, String code);
-
-// FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
-    public List<Clock> getClocks();
+    // FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
     public Clock getClock(String id);
 
-    public List<Team> getTeams();
     public Team getTeam(String id);
 
     public TimeoutOwner getTimeoutOwner(String id);
@@ -84,26 +97,63 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Rulesets getRulesets();
 
-    public Stats getStats();
+    public PenaltyCodesManager getPenaltyCodesManager();
 
     public Media getMedia();
 
     public XmlScoreBoard getXmlScoreBoard();
-    
-    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 
-    public static final String EVENT_IN_PERIOD = "InPeriod";
-    public static final String EVENT_IN_OVERTIME = "InOvertime";
-    public static final String EVENT_OFFICIAL_SCORE = "OfficialScore";
-    public static final String EVENT_ADD_POLICY = "AddPolicy";
-    public static final String EVENT_REMOVE_POLICY = "RemovePolicy";
-    public static final String EVENT_TIMEOUT_OWNER = "TimeoutOwner";
-    public static final String EVENT_OFFICIAL_REVIEW = "OfficialReview";
-    public static final String EVENT_ADD_CLOCK = "AddClock";
-    public static final String EVENT_REMOVE_CLOCK = "RemoveClock";
-    public static final String EVENT_ADD_TEAM = "AddTeam";
-    public static final String EVENT_REMOVE_TEAM = "RemoveTeam";
-    public static final String EVENT_SETTING = "Setting";
+    public enum Value implements PermanentProperty {
+        CURRENT_PERIOD_NUMBER(Integer.class, 0),
+        CURRENT_PERIOD(Period.class, null),
+        UPCOMING_JAM(Jam.class, null),
+        UPCOMING_JAM_NUMBER(Integer.class, 0),
+        IN_PERIOD(Boolean.class, false),
+        IN_JAM(Boolean.class, false),
+        IN_OVERTIME(Boolean.class, false),
+        OFFICIAL_SCORE(Boolean.class, false),
+        TIMEOUT_OWNER(TimeoutOwner.class, null),
+        OFFICIAL_REVIEW(Boolean.class, false);
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
+    }
+    public enum Child implements AddRemoveProperty {
+        SETTINGS(Settings.class),
+        RULESETS(Rulesets.class),
+        PENALTY_CODES(PenaltyCodesManager.class),
+        MEDIA(Media.class),
+        CLOCK(Clock.class),
+        TEAM(Team.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
+    }
+    public enum NChild implements NumberedProperty {
+        PERIOD(Period.class);
+
+        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
+        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
+        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
+    }
+    public enum Command implements CommandProperty {
+        RESET,
+        START_JAM,
+        STOP_JAM,
+        TIMEOUT,
+        CLOCK_UNDO,
+        CLOCK_REPLACE,
+        START_OVERTIME,
+        OFFICIAL_TIMEOUT;
+        
+        public Class<Boolean> getType() { return Boolean.class; }
+    }
+
+    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 
     public static final String ACTION_NONE = "---";
     public static final String ACTION_NO_REPLACE = "No Action";

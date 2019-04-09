@@ -11,10 +11,10 @@
 
     <div id="logo"></div>
 
-		<div id="sb" sbContext="ScoreBoard" class="JamScore StyleTraditional" data-setting="ScoreBoard.Settings.Overlay.DDTV.ShowJammers">
+		<div id="sb" sbContext="ScoreBoard" class="JamScore StyleTraditional" data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.ShowJammers)">
 
 			<div class="PanelWrapperTop">
-				<div data-setting="ScoreBoard.Settings.Overlay.DDTV.Top" class="Top AnimatedPanel PanelHideTop Wrapper">	
+				<div data-setting="ScoreBoard.Settings.Setting(Overlay.DDTV.Top)" class="Top AnimatedPanel PanelHideTop Wrapper">	
 
           <div class="TopUpper">
             <div class="Team1 LeftHandSide" sbContext="Team(1)">	
@@ -29,7 +29,7 @@
             </div>
 
             <div class="Skew Middle SlideUp ShowInIntermission ShowInTimeout ClockDescription">
-              <div class="DeSkew" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Settings.ScoreBoard.Intermission.PreGame, Settings.ScoreBoard.Intermission.Intermission, SettingsScoreBoard.Intermission.Unofficial, Settings.ScoreBoard.Intermission.Official, OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="clockType"></div>
+              <div class="DeSkew" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="clockType"></div>
             </div>
           </div>
 
@@ -90,7 +90,7 @@
 					</div>
 					<div class="JammerWrapper">
 						<div class="JammerBox ShowInJam Clock ColourTeam1">
-							<div class="JammerName VerticalCenter Box" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
+							<div class="JammerName VerticalCenter Box" sbDisplay="DisplayLead,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
 						</div>
 					</div>
 					</div>
@@ -103,7 +103,7 @@
 							<div class="DotTimeouts Box"><div class="Dot Timeout1"></div><div class="Dot Timeout2"></div><div class="Dot Timeout3"></div><div class="Dot OfficialReview1"></div></div>
 						</div>
 						<div class="JammerWrapper">
-							<div class="JammerBox ShowInJam Clock ColourTeam2"><div class="JammerName" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
+							<div class="JammerBox ShowInJam Clock ColourTeam2"><div class="JammerName" sbDisplay="DisplayLead,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div></div>
 						</div>
 					</div>
 
@@ -113,7 +113,7 @@
       <div class="PanelWrapperCenter">
         <!-- TEAM ROSTERS -->
         <div class="RosterTeam1 TeamList PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel AnimationDelay" sbContext="Team(1)" >
-          <div class="Skew TeamHeading ColourTeam1"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay),Name"></h1></div>
+          <div class="Skew TeamHeading ColourTeam1"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay).Name,Name"></h1></div>
           <div class="Skew PenaltyTag"><div class="DeSkew">TEAM ROSTER</div></div>
         </div>
 
@@ -124,7 +124,7 @@
 
 
         <div class="RosterTeam2 TeamList PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel AnimationDelay" sbContext="Team(2)" >
-          <div class="Skew TeamHeading ColourTeam2"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay),Name"></h1></div>
+          <div class="Skew TeamHeading ColourTeam2"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay).Name,Name"></h1></div>
           <div class="Skew PenaltyTag"><div class="DeSkew">TEAM ROSTER</div></div>
         </div>
 
@@ -136,7 +136,7 @@
         <!-- Penalty Boards -->
 
         <div class="PenaltyTeam1 TeamList PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel AnimationDelay" sbContext="Team(1)" >
-          <div class="Skew TeamHeading ColourTeam1"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay),Name"></h1></div>
+          <div class="Skew TeamHeading ColourTeam1"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay).Name,Name"></h1></div>
           <div class="Skew PenaltyTag"><div class="DeSkew">PENALTY BOARD</div></div>
         </div>
 
@@ -146,7 +146,7 @@
         </div>
 
         <div class="PenaltyTeam2 TeamList PanelHideRight Wrapper OverlayPanel LargePanel AnimatedPanel AnimationDelay" sbContext="Team(2)" >
-          <div class="Skew TeamHeading ColourTeam2"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay),Name"></h1></div>
+          <div class="Skew TeamHeading ColourTeam2"><h1 class="LongName DeSkew" sbDisplay="AlternateName(overlay).Name,Name"></h1></div>
           <div class="Skew PenaltyTag"><div class="DeSkew">PENALTY BOARD</div></div>
         </div>
 
@@ -158,12 +158,12 @@
 				<div class="Upcoming PanelHideLeft Wrapper OverlayPanel LargePanel AnimatedPanel">
 					<div>
 						<img class="TeamLogo TeamLogo1" src="" style="float: left;" />
-						<h1 class="ColourTeam1" sbDisplay="AlternateName(overlay),Name" sbContext="Team(1)" style="margin-top: 2em; margin-left: 4em; margin-right: 0;"></h1>	
+						<h1 class="ColourTeam1" sbDisplay="AlternateName(overlay).Name,Name" sbContext="Team(1)" style="margin-top: 2em; margin-left: 4em; margin-right: 0;"></h1>	
 					</div>
 					<div class="UpcomingVS">VS</div>
 					<div>
 						<img class="TeamLogo TeamLogo2" src="" style="float: right;" />
-						<h1 class="ColourTeam2" sbDisplay="AlternateName(overlay),Name" sbContext="Team(2)" style="margin-top: 2em; margin-left: 0; margin-right: 4em;"></h1>	
+						<h1 class="ColourTeam2" sbDisplay="AlternateName(overlay).Name,Name" sbContext="Team(2)" style="margin-top: 2em; margin-left: 0; margin-right: 4em;"></h1>	
 					</div>
 				</div>
 
@@ -171,7 +171,7 @@
 
 			<div class="PanelWrapperLeft">
 				<div class="LowerThird Wrapper OverlayPanel AnimatedPanel PanelHideLeft">
-					<h4 class="Line1" sbDisplay="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line1" /> <h5 class="Line2" sbDisplay="ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line2" />
+					<h4 class="Line1" sbDisplay="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line1)" /> <h5 class="Line2" sbDisplay="ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line2)" />
 				</div>
 			</div>
 

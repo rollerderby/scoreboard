@@ -18,6 +18,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -32,8 +34,14 @@ import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
-import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 
 public class WS extends WebSocketServlet {
@@ -55,7 +63,7 @@ public class WS extends WebSocketServlet {
 
     private ScoreBoard sb;
     private JSONStateManager jsm;
-
+    private static final Pattern pathElementPattern = Pattern.compile("^(?<name>\\w+)(\\((?<id>[^\\)]*)\\))?(\\.(?<remainder>.*))?$");
 
     private boolean hasPermission(String action) {
         return true;
@@ -100,19 +108,6 @@ public class WS extends WebSocketServlet {
                         sendWSUpdatesForPaths(newPaths, state.keySet());
                         this.paths.addAll(newPaths);
                     }
-                } else if (action.equals("Penalty")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String teamId = data.optString("teamId");
-                    String skaterId = data.optString("skaterId");
-                    String penaltyId = data.optString("penaltyId", null);
-                    boolean fo_exp = data.optBoolean("fo_exp", false);
-                    int period = data.optInt("period", -1);
-                    int jam = data.optInt("jam", -1);
-                    String code = data.optString("code", null);
-                    if (period == -1 || jam == -1) {
-                        return;
-                    }
-                    sb.penalty(teamId, skaterId, penaltyId, fo_exp, period, jam, code);
                 } else if (action.equals("Set")) {
                     String key = json.getString("key");
                     Object value = json.get("value");
@@ -123,31 +118,19 @@ public class WS extends WebSocketServlet {
                     } else {
                         v = value.toString();
                     }
-                    ScoreBoardManager.printMessage("Setting " + key + " to " + v);
-
-                    if (key.startsWith("ScoreBoard.Settings.")) {
-                        sb.getSettings().set(key.substring(20), v);
+                    Flag flag = null;
+                    String f = json.getString("flag");
+                    if ("reset".equals(f)) { flag = Flag.RESET; }
+                    if ("change".equals(f)) { flag = Flag.CHANGE; }
+                    //TODO: remove for release
+                    ScoreBoardManager.printMessage("Setting " + key + " to " + v + (flag == null ? "" : (", Flag: " + flag.name())));
+                    Matcher m = pathElementPattern.matcher(key);
+                    if (m.matches() && m.group("name").equals("ScoreBoard") &&
+                            m.group("id") == null && m.group("remainder") != null) {
+                        set(sb, m.group("remainder"), v, flag);
+                    } else {
+                        ScoreBoardManager.printMessage("Illegal path: " + key);
                     }
-                } else if (action.equals("AddRuleset")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String n = data.getString("name");
-                    String p = data.getString("parent");
-                    sb.getRulesets().addRuleset(n, p);
-                } else if (action.equals("RemoveRuleset")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String i = data.getString("id");
-                    sb.getRulesets().removeRuleset(i);
-                } else if (action.equals("UpdateRuleset")) {
-                    JSONObject data = json.getJSONObject("data");
-                    String i = data.getString("id");
-                    String n = data.getString("name");
-                    JSONObject rules = data.getJSONObject("rules");
-                    Map<Rule, String> s = new HashMap<Rule, String>();
-                    for (String k : rules.keySet()) {
-                	s.put(sb.getRulesets().getRule(k), rules.getString(k));
-                    }
-                    sb.getRulesets().getRuleset(i).setAll(s);
-                    sb.getRulesets().getRuleset(i).setName(n);
                 } else if (action.equals("Ping")) {
                     send(new JSONObject().put("Pong", ""));
                 } else {
@@ -156,6 +139,40 @@ public class WS extends WebSocketServlet {
             } catch (JSONException je) {
                 ScoreBoardManager.printMessage("Error parsing JSON message: " + je);
                 je.printStackTrace();
+            }
+        }
+
+        private void set(ScoreBoardEventProvider p, String path, String value, Flag flag) {
+            Matcher m = pathElementPattern.matcher(path);
+            if (m.matches()) {
+                String name = m.group("name");
+                String id = m.group("id");
+                String remainder = m.group("remainder");
+                if (id == null) { id = ""; }
+                try {
+                    Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
+                    if (prop == null) { throw new IllegalArgumentException("Unknown property"); }
+
+                    if (prop instanceof PermanentProperty) {
+                        p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value, flag), flag);
+                    } else if (prop instanceof CommandProperty) { 
+                        if (Boolean.parseBoolean(value)) {
+                            p.execute((CommandProperty)prop);
+                        }
+                    } else if (remainder != null) {
+                        set((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, id), remainder, value, flag);
+                    } else if (value == null) {
+                        p.remove((AddRemoveProperty)prop, id);
+                    } else {
+                        p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, id, value));
+                    }
+                } catch (Exception e) {
+                    ScoreBoardManager.printMessage("Exception parsing JSON for " + p.getProviderName() +
+                            "(" + p.getProviderId() + ")." + name + "(" + id + ") - " + value + ": " + e.toString());
+                    e.printStackTrace();
+                }
+            } else {
+                ScoreBoardManager.printMessage("Illegal path element: " + path);
             }
         }
 
@@ -175,6 +192,9 @@ public class WS extends WebSocketServlet {
         @Override
         public void onOpen(Connection connection) {
             connectionsActive.inc();
+            // Some messages can be bigger than the 16k default
+            // when there is broad registration.
+            connection.setMaxTextMessageSize(1024 * 1024);
             this.connection = connection;
             id = UUID.randomUUID();
             jsm.register(this);

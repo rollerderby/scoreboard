@@ -13,7 +13,7 @@
 		<div class="DisplayPane" id="whiteboard"><iframe class="object" src="../wb/tcdg2016wb.html"></iframe></div>
 		<div class="DisplayPane Show" id="scoreboard" sbContext="ScoreBoard" class="JamScore">
 			<div class="Team Team1 Left" sbContext="Team(1)">
-				<div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard)"></div>
+				<div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard).Name"></div>
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
 				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
@@ -25,11 +25,11 @@
 				<div class="DotOfficialReviews Box">
 					<div class="Dot OfficialReview1"></div>
 				</div>
-				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
+				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="DisplayLead,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
 			</div>
 
 			<div class="Team Team2 Right" sbContext="Team(2)">
-				<div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard)"></div>
+				<div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="Name,AlternateName(scoreboard).Name"></div>
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
 				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
@@ -41,7 +41,7 @@
 				<div class="DotOfficialReviews Box">
 					<div class="Dot OfficialReview1"></div>
 				</div>
-				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="LeadJammer,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
+				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="DisplayLead,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
 			</div>
 
 			<!-- Jam In Progress -->
@@ -70,7 +70,7 @@
 
 			<!-- Intermission -->
 			<div class="ShowInIntermission Clock Intermission">
-				<div class="Message Box AutoFit" sbDisplay="Settings.ScoreBoard.Intermission.PreGame, Settings.ScoreBoard.Intermission.Intermission, Settings.ScoreBoard.Intermission.Unofficial, Settings.ScoreBoard.Intermission.Official, OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
+				<div class="Message Box AutoFit" sbDisplay="Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rulesets.CurrentRule(Period.Number)" sbModify="intermissionDisplay"></div>
 				<div class="Time Box AutoFit" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 			</div>
 		</div>

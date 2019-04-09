@@ -270,21 +270,21 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         createXPathElement().addContent(newTeam);
         editor.addElement(newTeam, "Name", null, team.getName());
         editor.addElement(newTeam, "Logo", null, team.getLogo());
-        Iterator<Team.AlternateName> alternateNames = team.getAlternateNames().iterator();
+        Iterator<?> alternateNames = team.getAll(Team.Child.ALTERNATE_NAME).iterator();
         while (alternateNames.hasNext()) {
-            Team.AlternateName alternateName = alternateNames.next();
+            Team.AlternateName alternateName = (Team.AlternateName)alternateNames.next();
             Element newAlternateName = editor.addElement(newTeam, "AlternateName", alternateName.getId());
             editor.addElement(newAlternateName, "Name", null, alternateName.getName());
         }
-        Iterator<Team.Color> colors = team.getColors().iterator();
+        Iterator<?> colors = team.getAll(Team.Child.COLOR).iterator();
         while (colors.hasNext()) {
-            Team.Color color = colors.next();
+            Team.Color color = (Team.Color)colors.next();
             Element newColor = editor.addElement(newTeam, "Color", color.getId());
             editor.addElement(newColor, "Color", null, color.getColor());
         }
-        Iterator<Skater> skaters = team.getSkaters().iterator();
+        Iterator<?> skaters = team.getAll(Team.Child.SKATER).iterator();
         while (skaters.hasNext()) {
-            Skater skater = skaters.next();
+            Skater skater = (Skater)skaters.next();
             Element newSkater = editor.addElement(newTeam, "Skater", skater.getId());
             editor.addElement(newSkater, "Name", null, skater.getName());
             editor.addElement(newSkater, "Number", null, skater.getNumber());
@@ -294,10 +294,10 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
     }
 
     protected List<XPath> transferXPaths = Arrays.asList(new XPath[] {
-                                               editor.createXPath("Transfer/To/*"),
-                                               editor.createXPath("Merge/To/*"),
-                                               editor.createXPath("Transfer/From/*"),
-                                               editor.createXPath("Merge/From/*")
-                                           });
+            editor.createXPath("Transfer/To/*"),
+            editor.createXPath("Merge/To/*"),
+            editor.createXPath("Transfer/From/*"),
+            editor.createXPath("Merge/From/*")
+    });
 }
 

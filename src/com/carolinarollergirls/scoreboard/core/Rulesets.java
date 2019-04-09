@@ -8,10 +8,14 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.Map;
-
+import java.util.Collection;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Rulesets extends ScoreBoardEventProvider {
     public void reset();
@@ -19,7 +23,6 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public void setCurrentRuleset(String id);
 
     // Get information from current ruleset.
-    public Map<Rule, String> getAll();
     public String get(Rule r);
     public boolean getBoolean(Rule r);
     public int getInt(Rule r);
@@ -27,39 +30,64 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public void set(Rule r, String v);
 
     // The last loaded ruleset.
-    public String getId();
-    public void setId(String id);
-    public String getName();
-    public void setName(String n);
-    
-    public Rule getRule(String k);
+    public String getCurrentRulesetId();
+    public String getCurrentRulesetName();
 
-    public Map<String, Ruleset> getRulesets();
+    public RuleDefinition getRuleDefinition(String id);
+
     public Ruleset getRuleset(String id);
     public void removeRuleset(String id);
     public Ruleset addRuleset(String name, String parentId);
     public Ruleset addRuleset(String name, String parentId, String id);
 
+    public enum Value implements PermanentProperty {
+        CURRENT_RULESET_ID(String.class, ""),
+        CURRENT_RULESET_NAME(String.class, "");
+
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
+    }
+    public enum Child implements AddRemoveProperty {
+        CURRENT_RULE(ValWithId.class),
+        RULE_DEFINITION(RuleDefinition.class),
+        RULESET(Ruleset.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
+    }
 
     public static interface Ruleset extends ScoreBoardEventProvider {
-        public Map<Rule, String> getAll();
         public String get(Rule k);
 
-        public String getId();
         public String getName();
         public void setName(String n);
         public String getParentRulesetId();
         public void setParentRulesetId(String id);
 
         // A missing entry means no override for that rule.
-        public void setAll(Map<Rule, String> s);
+        public void setAll(Collection<ValueWithId> s);
+
+        public enum Value implements PermanentProperty {
+            ID(String.class, ""),
+            PARENT_ID(String.class, ""),
+            NAME(String.class, "");
+
+            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+            private final Class<?> type;
+            private final Object defaultValue;
+            public Class<?> getType() { return type; }
+            public Object getDefaultValue() { return defaultValue; }
+        }
+        public enum Child implements AddRemoveProperty {
+            RULE(ValWithId.class);
+
+            private Child(Class<? extends ValueWithId> t) { type = t; }
+            private final Class<? extends ValueWithId> type;
+            public Class<? extends ValueWithId> getType() { return type; }
+        }
     }
-
-    public ScoreBoardEventProvider getParent();
-
-    public static final String EVENT_RULE_DEFINITIONS = "RuleDefinitions";
-    public static final String EVENT_CURRENT_RULES = "Rule";
-    public static final String EVENT_CURRENT_RULESET = "Ruleset";
-    public static final String EVENT_RULESET = "KnownRulesets";
-    public static final String EVENT_REMOVE_RULESET = "RemoveKnownRuleset";
 }

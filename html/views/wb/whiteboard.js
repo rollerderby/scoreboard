@@ -19,8 +19,8 @@ function initialize() {
 		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]);
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
 		WS.Register(['ScoreBoard.Team(' + t + ').Color'], function (k, v) {
-				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']);
-				$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']);
+				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color']);
+				$('#head' + t).css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg).Color']);
 			});
 	});
 	WS.Register( [ 'ScoreBoard.Clock(Period).Number' ], function(k, v) { period = v; });
@@ -29,7 +29,7 @@ function initialize() {
 	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); 
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); 
 
-	WS.Register( [ 'ScoreBoard.Rule(Penalties.NumberToFoulout)' ]);
+	WS.Register( [ 'ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)' ]);
 }
 
 function adjust(which, inc) {
@@ -103,7 +103,7 @@ function displayPenalty(t, s, p) {
 	}
 	// Change row colors for skaters on 5 or more penalties, or explusion.			  
 	var cnt = 0; 
-	var limit = WS.state['ScoreBoard.Rule(Penalties.NumberToFoulout)'];
+	var limit = WS.state['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)'];
 	var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
 	$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function(idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 	totalBox.text(cnt);
@@ -117,11 +117,11 @@ function makeSkaterRows(t, id, number) { //team, id, number
 	var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 	var head = document.getElementById('head' + t);
 	var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
-	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)'];
-	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)'];
+	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg).Color'];
+	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color'];
 	
-	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)'] != null) {
-		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)']
+	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name'] != null) {
+		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name']
 	}
 
 	head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';

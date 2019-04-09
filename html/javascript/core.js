@@ -551,8 +551,10 @@ _crgScoreBoard = {
 			triggerArray = [];
 			fireEvents = true;
 		}
-		triggerArray.push(triggerObj);
-		$element.children().each(function() { _crgScoreBoard.processScoreBoardElement(e, this, triggerArray); });
+		if (e) {
+			triggerArray.push(triggerObj);
+			$element.children().each(function() { _crgScoreBoard.processScoreBoardElement(e, this, triggerArray); });
+		}
 		if (fireEvents) {
 			$.each(triggerArray, function(i,obj) {
 				if (!_crgScoreBoard.addEventTriggered[obj.node.$sbPath]) {

@@ -4,13 +4,13 @@
 	$(initialize);
 	var penaltyEditor = null;
 
-	var period = null;
-	var jam = null;
+	var periodNumber = null;
+	var jamNumber = null;
 
 	var teamId = null;
 	var skaterId = null;
 	var penaltyId = null;
-	var penaltyType = null;
+	var penaltyNumber = null;
 
 	function initialize() {
 
@@ -19,7 +19,7 @@
 
 		$.each([1, 2], function (idx, t) {
 			WS.Register(['ScoreBoard.Team(' + t + ').Name'], function () { teamNameUpdate(t); });
-			WS.Register(['ScoreBoard.Team(' + t + ').AlternateName(operator)'], function () { teamNameUpdate(t); });
+			WS.Register(['ScoreBoard.Team(' + t + ').AlternateName(operator).Name'], function () { teamNameUpdate(t); });
 
 			WS.Register(['ScoreBoard.Team(' + t + ').Color'], function (k, v) {
 				$('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(operator_bg)']);
@@ -31,12 +31,14 @@
 
 		WS.Register(['ScoreBoard.Team(1).Skater'], function (k, v) { skaterUpdate(1, k, v); });
 		WS.Register(['ScoreBoard.Team(2).Skater'], function (k, v) { skaterUpdate(2, k, v); });
-		WS.Register(['ScoreBoard.PenaltyCode'], penaltyCode);
-		WS.Register(['ScoreBoard.Clock(Period).MinimumNumber', 'ScoreBoard.Clock(Period).MaximumNumber'], function (k, v) { setupSelect('Period'); });
-		WS.Register(['ScoreBoard.Clock(Jam).MinimumNumber', 'ScoreBoard.Clock(Jam).MaximumNumber'], function (k, v) { setupSelect('Jam'); });
+		WS.Register(['ScoreBoard.PenaltyCodes.Code'], penaltyCode);
 
-		WS.Register(['ScoreBoard.Rule(Penalties.NumberToFoulout)']);
+		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)']);
+		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Period.Number)'], function (k, v) { setupPeriodSelect(v); });
 		
+		WS.Register(['ScoreBoard.Period']);
+		WS.Register(['ScoreBoard.CurrentPeriodNumber']);
+		WS.Register(['ScoreBoard.UpcomingJam']);
 
 		if (_windowFunctions.checkParam("autoFit", "true")) {
 			$('.Team').addClass('auto-fit');
@@ -52,47 +54,48 @@
 
 		addFOCode();
 
-		$(".PenaltyEditor .period_minus").click(function () { adjust("Period", -1); });
-		$(".PenaltyEditor .period_plus").click(function () { adjust("Period", 1); });
-		$(".PenaltyEditor .jam_minus").click(function () { adjust("Jam", -1); });
-		$(".PenaltyEditor .jam_plus").click(function () { adjust("Jam", 1); });
+		$(".PenaltyEditor .period_minus").click(function () { adjust("Period", 'prev'); });
+		$(".PenaltyEditor .period_plus").click(function () { adjust("Period", 'next'); });
+		$(".PenaltyEditor .jam_minus").click(function () { adjust("Jam", 'prev'); });
+		$(".PenaltyEditor .jam_plus").click(function () { adjust("Jam", 'next'); });
 		$(".PenaltyEditor .clear").click(function () { clear(); });
+		$(".PenaltyEditor .Period").change(function() { setupJamSelect(); })
 	}
 
 	function adjust(which, inc) {
-		var elem = $(".PenaltyEditor ." + which);
-		elem.val(parseInt(elem.val()) + inc);
+		$(".PenaltyEditor ." + which + " :selected")[inc]().prop("selected", true);
+		if (which == "Period") { setupJamSelect(); }
 	}
 
 	function updatePeriod(k, v) {
-		period = v;
+		periodNumber = v;
 		updateCurrentPeriodStyle();
 		updateCurrentJamPeriodStyle();
 	}
 
 	function updateJam(k, v) {
-		jam = v;
+		jamNumber = v;
 		updateCurrentJamPeriodStyle();
 	}
 	
 	function updateCurrentPeriodStyle() {
-		if(period === null) {
+		if(periodNumber === null) {
 			return;
 		}
 		
 		$('#current-period-style').remove();
-		$('<style> .Box.period-' + period +' { font-weight: bold; color: #000; }</style>')
+		$('<style> .Box.period-' + periodNumber +' { font-weight: bold; color: #000; }</style>')
 			.attr('id','current-period-style')
 			.appendTo('head');
 	}
 
 	function updateCurrentJamPeriodStyle() {
-		if (jam === null || period === null) {
+		if (jamNumber === null || periodNumber === null) {
 			return;
 		}
 
 		$('#current-jam-style').remove();
-		$("<style> .Box.period-" + period + ".jam-" + jam + " { text-decoration: underline; } </style>")
+		$("<style> .Box.period-" + periodNumber + ".jam-" + jamNumber + " { text-decoration: underline; } </style>")
 			.attr('id', 'current-jam-style')
 			.appendTo('head');
 	}
@@ -101,8 +104,7 @@
 		if (penaltyId == null || skaterId == null) {
 			penaltyEditor.dialog("close");
 		} else {
-			var fo_exp = penaltyType === 'FO_EXP';
-			WS.Command("Penalty", { teamId: teamId, skaterId: skaterId, penaltyId: penaltyId, fo_exp: fo_exp, jam: 0, period: 0 });
+			WS.Set("ScoreBoard.Team(" + teamId + ").Skater(" + skaterId + ").Penalty(" + penaltyNumber + ")", null);
 			penaltyEditor.dialog('close');
 		}
 	}
@@ -118,23 +120,25 @@
 		var id = match[1];
 		var field = k.split('.').pop();
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
-		if (field === 'Number') {
-			$('.Team' + t + ' .Skater[id=' + id + ']').remove();
-			if (v == null) {
-				return;
-			}
-
-			// New skater, or number has been updated.
-			makeSkaterRows(t, id, v);
-			for (var i = 1; i <= 9; i++)
-				displayPenalty(t, id, i);
-			displayPenalty(t, id, 'FO_EXP');
-		} else if (field === 'Position') {
-			var numberCell = $('.Team' + t + ' .Skater.Penalty[id=' + id + '] .Number');
-			if(v === null || v === 'Bench') {
-				numberCell.removeClass('onTrack');
-			} else {
-				numberCell.addClass('onTrack');
+		if (k == prefix + "." + field) {
+			if (field === 'Number') {
+				$('.Team' + t + ' .Skater[id=' + id + ']').remove();
+				if (v == null) {
+					return;
+				}
+	
+				// New skater, or number has been updated.
+				makeSkaterRows(t, id, v);
+				for (var i = 1; i <= 9; i++)
+					displayPenalty(t, id, i);
+				displayPenalty(t, id, 0);
+			} else if (field === 'Role') {
+				var numberCell = $('.Team' + t + ' .Skater.Penalty[id=' + id + '] .Number');
+				if(v === 'Jammer' || v === 'Pivot' || v === 'Blocker') {
+					numberCell.addClass('onTrack');
+				} else {
+					numberCell.removeClass('onTrack');
+				}
 			}
 		} else {
 			// Look for penalty
@@ -168,8 +172,8 @@
 		}
 
 		if (code != null) {
-			penaltyPeriod = WS.state[prefix + ".Period"];
-			penaltyJam = WS.state[prefix + ".Jam"];
+			penaltyPeriod = WS.state[prefix + ".PeriodNumber"];
+			penaltyJam = WS.state[prefix + ".JamNumber"];
 
 			penaltyBox.data("id", WS.state[prefix + ".Id"]);
 			jamBox.data("id", WS.state[prefix + ".Id"]);
@@ -181,17 +185,24 @@
 
 			jamBox.addClass("period-" + penaltyPeriod).addClass("jam-" + penaltyJam);
 			penaltyBox.addClass("period-" + penaltyPeriod).addClass("jam-" + penaltyJam);
+			
+			jamBox.toggleClass("Unserved", !isTrue(WS.state[prefix + ".Served"]))
+				.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
+			penaltyBox.toggleClass("Unserved", !isTrue(WS.state[prefix + ".Served"]))
+				.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
 
 		} else {
 			penaltyBox.data("id", null);
 			jamBox.data("id", null);
 			penaltyBox.html("&nbsp;");
 			jamBox.html("&nbsp;");
+			penaltyBox.removeClass("Serving Unserved");
+			jamBox.removeClass("Serving Unserved");
 		}
 
 		var cnt = 0; // Change row colors for skaters on 5 or more penalties, or expulsion.
-		var limit = WS.state["ScoreBoard.Rule(Penalties.NumberToFoulout)"];
-		var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .BoxFO_EXP')[0]).data("id") != null);
+		var limit = WS.state["ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)"];
+		var fo_exp = ($($('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box0')[0]).data("id") != null);
 
 		$('.Team' + t + ' .Skater.Penalty[id=' + s + '] .Box').each(function (idx, elem) { cnt += ($(elem).data("id") != null ? 1 : 0); });
 		totalBox.text(cnt);
@@ -204,8 +215,8 @@
 		var head = document.getElementById('head' + t);
 		var teamName = WS.state['ScoreBoard.Team(' + t + ').Name'];
 
-		if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator)'] != null) {
-			teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator)']
+		if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator).Name'] != null) {
+			teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(operator).Name']
 		}
 
 		head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';
@@ -216,10 +227,10 @@
 		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
-		var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id); });
-		var position = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Position'];
+		var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id, 10); });
+		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
 		
-		if(position !== null && position !== 'Bench') {
+		if(role === 'Jammer' || role === 'Pivot' || role === 'Blocker') {
 			numberCell.addClass('onTrack');
 		}
 		
@@ -231,8 +242,8 @@
 			j.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
 		});
 
-		p.append($('<td>').addClass('BoxFO_EXP').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 'FO_EXP'); }));
-		j.append($('<td>').addClass('BoxFO_EXP').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 'FO_EXP'); }));
+		p.append($('<td>').addClass('Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
+		j.append($('<td>').addClass('Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
 		p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
 
 		var inserted = false;
@@ -247,26 +258,39 @@
 		if (!inserted)
 			team.append(p).append(j);
 	}
-
-	function setupSelect(which) {
-		var prefix = 'ScoreBoard.Clock(' + which + ')';
-		var min = WS.state[prefix + '.MinimumNumber'];
-		var max = WS.state[prefix + '.MaximumNumber'];
-		if (min == null || max == null)
-			return;
-
-		var select = $('.PenaltyEditor .' + which);
+	
+	function setupPeriodSelect(num) {
+		var select = $('.PenaltyEditor .Period');
+		select.empty();
+		for (var i = 1; i <= num; i++) {
+			$('<option>').attr('value', i).text(i).appendTo(select);
+		}
+	}
+	
+	function setupJamSelect() {
+		var p = $('.PenaltyEditor .Period').val();
+		var prefix = 'ScoreBoard.Period('+p+').';
+		var min = WS.state[prefix + 'CurrentJamNumber'];
+		if (isNaN(min)) { min = 1; }
+		while (WS.state[prefix + 'Jam('+ (min-1) +').Id'] != null) { min--; }
+		var max = WS.state[prefix + 'CurrentJamNumber'];
+		if (isNaN(max)) { max = 0; }
+		while (WS.state[prefix + 'Jam('+ (max+1) +').Id'] != null) { max++; }
+		var select = $('.PenaltyEditor .Jam');
 		select.empty();
 		for (var i = min; i <= max; i++) {
-			$('<option>').attr('value', i).text(i).appendTo(select);
+			$('<option>').attr('value', WS.state[prefix + 'Jam('+i+').Id']).text(i).appendTo(select);
+		}
+		if (p >= WS.state['ScoreBoard.CurrentPeriodNumber']) {
+			$('<option>').attr('value', WS.state['ScoreBoard.UpcomingJam']).text(max+1).appendTo(select);
 		}
 	}
 
 	function openPenaltyEditor(t, id, which) {
 		var prefix = 'ScoreBoard.Team(' + t + ')';
-		var teamColor = WS.state[prefix + '.AlternateName(team)'];
+		var teamColor = WS.state[prefix + '.AlternateName(team).Name'];
 		if (teamColor == null)
-			teamColor = WS.state[prefix + '.AlternateName(operator)'];
+			teamColor = WS.state[prefix + '.AlternateName(operator).Name'];
 		if (teamColor == null)
 			teamColor = WS.state[prefix + '.Name'];
 
@@ -275,31 +299,37 @@
 		var skaterNumber = WS.state[prefix + '.Number'];
 		teamId = t;
 		skaterId = id;
-		penaltyType = which;
+		penaltyNumber = which;
 
 		$('.PenaltyEditor .Codes>div').removeClass('Active');
 
 		penaltyEditor.dialog('option', 'title', teamColor + ' ' + skaterNumber + ' (' + skaterName + ')');
-		$('.PenaltyEditor .Period').val(period);
-		$('.PenaltyEditor .Jam').val(jam);
+		$('.PenaltyEditor .Period').val(periodNumber);
+		setupJamSelect();
+		$('.PenaltyEditor .Jam').val(WS.state["ScoreBoard.Period("+periodNumber+").Jam("+jamNumber+").Id"]);
 
-		$('.Codes>.Penalty').toggle(which != 'FO_EXP');
-		$('.Codes>.FO_EXP').toggle(which == 'FO_EXP');
+		$('.Codes>.Penalty').toggle(which != 0);
+		$('.Codes>.FO_EXP').toggle(which == 0);
 
 		if (which != null) {
 			var penaltyBox = $('.Team' + t + ' .Skater.Penalty[id=' + id + '] .Box' + which);
 			var c = WS.state[prefix + '.Penalty(' + which + ').Code'];
-			var p = WS.state[prefix + '.Penalty(' + which + ').Period'];
+			var p = WS.state[prefix + '.Penalty(' + which + ').PeriodNumber'];
 			var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
 			penaltyId = penaltyBox.data("id");
 			if (penaltyId != null) {
 				if (c == null || j == null || p == null) {
 					penaltyId = null;
 				} else {
-					$('.PenaltyEditor .Codes>div.' + (which == 'FO_EXP' ? 'FO_EXP' : 'Penalty') + '[code="' + c + '"]').addClass('Active');
+					$('.PenaltyEditor .Codes>div.' + (which == 0 ? 'FO_EXP' : 'Penalty') + '[code="' + c + '"]').addClass('Active');
 					$('.PenaltyEditor .Period').val(p);
+					setupJamSelect();
 					$('.PenaltyEditor .Jam').val(j);
 				}
+			}
+			while (!isNaN(penaltyNumber) && penaltyNumber > 1 &&
+					WS.state[prefix + '.Penalty(' + (penaltyNumber-1) + ').Code'] == null) {
+				penaltyNumber--;
 			}
 		}
 
@@ -307,18 +337,20 @@
 	}
 
 	function submitPenalty() {
-		var p = $('.PenaltyEditor .Period').val();
-		var j = $('.PenaltyEditor .Jam').val();
-		var c = $('.PenaltyEditor .Codes .Active').attr('code');
-		var fo_exp = penaltyType === 'FO_EXP';
-
-		WS.Command("Penalty", { teamId: teamId, skaterId: skaterId, penaltyId: penaltyId, period: p, jam: j, code: c, fo_exp: fo_exp });
+		var prefix = 'ScoreBoard.Team(' + teamId + ').Skater(' + skaterId + ').Penalty(' + penaltyNumber + ')';
+		WS.Set(prefix + '.Code', $('.PenaltyEditor .Codes .Active').attr('code'));
+		WS.Set(prefix + '.Jam', $('.PenaltyEditor .Jam').val());
 
 		penaltyEditor.dialog('close');
 	}
 
+	var codeIdRegex = /Code\(([^\)]+)\)/;
 	function penaltyCode(k, v) {
-		var code = k.split('.').pop();
+		var match = (k || "").match(codeIdRegex);
+		if (match == null || match.length == 0)
+			return;
+
+		var code = match[1];
 
 		addPenaltyCode('Penalty', code, v);
 		addPenaltyCode('FO_EXP', code, v);

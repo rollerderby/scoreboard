@@ -9,13 +9,13 @@ function initialize() {
 	var view = "View";
 	if (_windowFunctions.checkParam("preview", "true"))
 		view = "Preview";
-	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_SwapTeams", function (k, v) {
+	WS.Register( "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SwapTeams)", function (k, v) {
 		$(".Team1").toggleClass("Left", !isTrue(v)).toggleClass("Right", isTrue(v));
 		$(".Team2").toggleClass("Left", isTrue(v)).toggleClass("Right", !isTrue(v));
 		$(".Team").toggleClass("Swapped", isTrue(v));
 	});
 
-	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_CurrentView", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CurrentView)", function(k, v) {
 		$("div#video>video").each(function() { this.pause(); });
 		$(".DisplayPane.Show").addClass("Hide");
 		$(".DisplayPane").removeClass("Show");
@@ -23,20 +23,20 @@ function initialize() {
 		$("div#" + v + ".DisplayPane>video").each(function() { this.currentTime = 0; this.play(); });
 	});
 
-	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_Image", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_Image)", function(k, v) {
 		$("div#image>img").attr("src", v);
 	});
-	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_Video", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_Video)", function(k, v) {
 		$("div#video>video").attr("src", v);
 	});
-	WS.Register( "ScoreBoard.Settings.ScoreBoard." + view + "_CustomHtml", function(k, v) {
+	WS.Register( "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CustomHtml)", function(k, v) {
 		$("div#html>iframe").attr("src", v);
 	});
 
-	WS.Register( [ "ScoreBoard.Settings.ScoreBoard." + view + "_BoxStyle",
-		"ScoreBoard.Settings.ScoreBoard." + view + "_SidePadding" ], function(k, v) {
-			var boxStyle = WS.state["ScoreBoard.Settings.ScoreBoard." + view + "_BoxStyle"];
-			var sidePadding = WS.state["ScoreBoard.Settings.ScoreBoard." + view + "_SidePadding"];
+	WS.Register( [ "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BoxStyle)",
+		"ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SidePadding)" ], function(k, v) {
+			var boxStyle = WS.state["ScoreBoard.Settings.Setting(ScoreBoard." + view + "_BoxStyle)"];
+			var sidePadding = WS.state["ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SidePadding)"];
 
 			// change box_flat_bright to two separate classes in order to reuse much of the css
 			if (boxStyle == 'box_flat_bright')
@@ -63,13 +63,13 @@ function initialize() {
 				v = '';
 			}
 			switch (k){
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_fg)':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_fg).Color':
 					$('.Team' + t + ' .Name').css('color', v);
 					break;
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_bg)':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_bg).Color':
 					$('.Team' + t + ' .Name').css('background-color', v);
 					break;
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_glow)':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_glow).Color':
 					var shadow = '0px 0px 0.2em ' + v;
 					var shadowCSS = shadow + ', ' + shadow + ', ' + shadow;
 					if (v === '') {
@@ -77,7 +77,7 @@ function initialize() {
 					}
 					$('.Team' + t + ' .Name').css('text-shadow',shadowCSS);
 					break;
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_dots_fg)':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_dots_fg).Color':
 					var dotColor = v;
 					if (dotColor == null) {dotColor = '#000000';}
 					$('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);

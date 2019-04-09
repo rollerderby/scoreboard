@@ -8,17 +8,23 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.Map;
-
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Settings extends ScoreBoardEventProvider {
     public void reset();
 
-    public Map<String, String> getAll();
     public String get(String k);
     // Setting to null deletes a setting.
     public void set(String k, String v);
 
-    public static final String EVENT_SETTING = "Setting";
+    public enum Child implements AddRemoveProperty {
+        SETTING(ValWithId.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
+    }
 }

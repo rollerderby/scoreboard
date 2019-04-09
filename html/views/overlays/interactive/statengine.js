@@ -33,15 +33,15 @@
 		}
 
 		var _getKeyObject = function(k) {
-			var reSK = /^ScoreBoard.Stats.Period\(([0-9])\)\.Jam\((.+)\)\.Team\(([0-9])\)\.Skater\((.+)\)\.(.+)$/;
+			var reSK = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.Fielding\((.+)\)\.(.+)$/;
 			m = k.match(reSK);
 			if(m) return { Type: 'JamSkater', FullKey: k, 'Period': m[1], Jam: m[2], Team: m[3], Position: m[4], Key: m[5] };
 
-			var reJD = /^ScoreBoard.Stats.Period\(([0-9])\)\.Jam\((.+)\)\.Team\(([0-9])\)\.(.+)$/;
+			var reJD = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.(.+)$/;
 			m = k.match(reJD);	
 			if(m) return { Type: 'JamTeam', FullKey: k, Period: m[1], Jam: m[2], Team: m[3], Key: m[4] };
 
-			var reJD = /^ScoreBoard.Stats.Period\(([0-9])\)\.Jam\((.+)\)\.(.+)$/;
+			var reJD = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.(.+)$/;
 			m = k.match(reJD); 
 			if(m) return { Type: 'Jam', FullKey: k, Period: m[1], Jam: m[2], Key: m[3] };
 
@@ -89,7 +89,7 @@
 		}
 
 		StatsFunction.JamSkater = { 
-			Id: function(kd,v) {
+			Skater: function(kd,v) {
 				Data['JamSkater'].Upsert( { Position: kd.Position }, { Period: kd.Period, Jam: kd.Jam, Skater: v} );
 			},
 		}
@@ -115,27 +115,26 @@
 		}
 
 		StatsFunction.JamTeam = { 
-			LeadJammer: function(kd,v) {
-				if(v == 'NoLead') { return; }
+			Lead: function(kd,v) {
+				if(!isTrue(v)) { return; }
 
-				t = 0;
-				if(v == 'Lead') { t = kd.Team }
-				if(v == 'LostLead') { t = 0-kd.Team }
-			
-				jam = Data['Jams'].Upsert( { 'Lead': t }, { Period: kd.Period, Jam: kd.Jam } );
+				jam = Data['Jams'].Upsert( { 'Lead': kd.Team }, { Period: kd.Period, Jam: kd.Jam } );
 
-				if(v == 'LostLead') {
-					lj = Data['Jams'].Filter( { 'Lead': 0-kd.Team });
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostCount'] = lj.length;
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostPercent'] = lj.length / Data.Team[kd.Team-1].LeadJammerCount * 100;
-				}
-				if(v == 'Lead') {
-					lj = Data['Jams'].Filter( { 'Lead': kd.Team });
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerCount'] = lj.length;
-					Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerPercent'] = lj.length / Data.Summary.JamCount * 100;
-				}
+				lj = Data['Jams'].Filter( { 'Lead': kd.Team });
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerCount'] = lj.length;
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadJammerPercent'] = lj.length / Data.Summary.JamCount * 100;
 
-			},	
+			},
+			Lost: function(kd,v) {
+				if(!isTrue(v)) { return; }
+
+				jam = Data['Jams'].Upsert( { 'Lead': 0-kd.Team }, { Period: kd.Period, Jam: kd.Jam } );
+
+				lj = Data['Jams'].Filter( { 'Lead': 0-kd.Team });
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostCount'] = lj.length;
+				Data.Team[ parseInt(kd.Team) - 1 ]['LeadLostPercent'] = lj.length / Data.Team[kd.Team-1].LeadJammerCount * 100;
+
+			}
 		}
 
 		S.Initialize = function(opt) {
@@ -143,7 +142,7 @@
 			if(options.debug) console.debug('Initialize');
 
 			if(!WS.socket) WS.Connect();
-			WS.Register( [ 'ScoreBoard.Clock', 'ScoreBoard.Stats.Period', 'ScoreBoard.Team' ], function(k,v) { _handleJamData(k,v); } );
+			WS.Register( [ 'ScoreBoard.Clock', 'ScoreBoard.Period', 'ScoreBoard.Team' ], function(k,v) { _handleJamData(k,v); } );
 			return this;
 		}
 

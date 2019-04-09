@@ -102,8 +102,8 @@ $sb(function() {
 		team.$sb("OfficialReviews").$sbBindAndRun("sbchange", function() { manageTimeoutImages(t); });
 
 		// Lead Changes
-		team.$sb("LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
-			$("#IndicatorBar>div.Team"+t+".Lead").toggleClass("IsLead", val == "Lead", 1000);
+		team.$sb("DisplayLead").$sbBindAndRun("sbchange", function(event, val) {
+		    $("#IndicatorBar>div.Team"+t+".Lead").toggleClass("IsLead", isTrue(val), 1000);
 		});
 	});
 

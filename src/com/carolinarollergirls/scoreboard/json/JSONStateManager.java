@@ -9,6 +9,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -42,7 +43,7 @@ public class JSONStateManager {
 
         for (WSUpdate update : updates) {
             if (update.getValue() == null) {
-                for (String stateKey: state.keySet()) {
+                for (String stateKey: newState.keySet()) {
                     if (stateKey.equals(update.getKey()) || stateKey.startsWith(update.getKey()+".")) {
                         toRemove.add(stateKey);
                         changed.add(stateKey);
@@ -66,8 +67,7 @@ public class JSONStateManager {
             String key = it.next();
             Object old = state.get(key);
             Object cur = newState.get(key);
-            if ((old == null && cur == null)
-                    || (old != null && old.equals(cur))) {
+            if (Objects.equals(cur, old)) {
                 it.remove();
             }
         }
@@ -83,13 +83,13 @@ public class JSONStateManager {
                 final JSONStateListener localSource = source;
                 pending.incrementAndGet();
                 sources.get(source).execute(
-                new Runnable() {
-                    public void run() {
-                        localSource.sendUpdates(localState, immutableChanged);
-                        pending.decrementAndGet();
-                    }
-                }
-                );
+                        new Runnable() {
+                            public void run() {
+                                localSource.sendUpdates(localState, immutableChanged);
+                                pending.decrementAndGet();
+                            }
+                        }
+                        );
             }
         }
         timer.observeDuration();

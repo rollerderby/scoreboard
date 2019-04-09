@@ -93,11 +93,12 @@ var WS = {
 		WS.send(JSON.stringify(req));
 	},
 
-	Set: function(key, value) {
+	Set: function(key, value, flag) {
 		req = {
 			action: 'Set',
 			key: key,
-			value: value
+			value: value,
+			flag: typeof flag !== 'undefined' ? flag : ''
 		};
 		WS.send(JSON.stringify(req));
 	},

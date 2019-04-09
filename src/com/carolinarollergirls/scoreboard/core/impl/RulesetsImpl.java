@@ -8,154 +8,132 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.Collection;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.rules.AbstractRule;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rulesets {
+public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
-        parent = s;
+        super(s, null, "", ScoreBoard.Child.RULESETS, Rulesets.class, Value.class, Child.class);
         initialize();
+        addWriteProtection(Child.RULE_DEFINITION);
         reset();
     }
 
-    public String getProviderName() { return "Rulesets"; }
-    public Class<Rulesets> getProviderClass() { return Rulesets.class; }
-    public String getProviderId() { return ""; }
-
-    public ScoreBoardEventProvider getParent() { return parent; }
+    public ValueWithId create(AddRemoveProperty prop, String id) {
+        if (prop == Child.RULESET) {
+            return new RulesetImpl(this, "", "", id);
+        }
+        return null;
+    }
+    public boolean add(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == Child.RULESET && item.getId().equals(ROOT_ID)) { return false; }
+        if (prop == Child.CURRENT_RULE && 
+                !getRuleDefinition(item.getId()).isValueValid(item.getValue())) {
+            return false;
+        }
+        return super.add(prop, item);
+    }
+    public boolean remove(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == Child.RULESET && item.getId().equals(ROOT_ID)) { return false; }
+        if (prop == Child.CURRENT_RULE) { return false; }
+        return super.remove(prop, item);
+    }
+    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == Child.RULESET) {
+            // Point any rulesets with the deleted one as their parent
+            // to their grandparent.
+            String parentId = ((Ruleset)item).getParentRulesetId();
+            for (ValueWithId rm : getAll(Child.RULESET)) {
+                if (item.getId().equals(((Ruleset)rm).getParentRulesetId())) {
+                    ((Ruleset)rm).setParentRulesetId(parentId);
+                }
+            }
+        }
+    }
 
     private void initialize() {
-        Map<Rule, String> rootSettings = new HashMap<Rule, String>();
+        RulesetImpl root = new RulesetImpl(this, "WFTDA Sanctioned", null, ROOT_ID);
         for (Rule r : Rule.values()) {
-            rules.put(r.toString(), r);
-            rootSettings.put(r, r.getRule().getDefaultValue());
+            r.getRuleDefinition().setParent(this);
+            r.getRuleDefinition().setIndex(r.ordinal());
+            add(Child.RULE_DEFINITION, r.getRuleDefinition());
+            root.add(Ruleset.Child.RULE, new ValWithId(r.toString(), r.getRuleDefinition().getDefaultValue()));
         }
-        // The root ruleset is always created from the above list,
-        // so that as rules are added over time there will always
-        // be a value for them.
-        Ruleset root = addRuleset("WFTDA Sanctioned", "", rootId);
-        root.setAll(rootSettings);
+        root.addWriteProtection(Ruleset.Child.RULE);
+        super.add(Child.RULESET, root);
     }
 
     public void reset() {
         synchronized (coreLock) {
-            setCurrentRuleset(rootId);
+            setCurrentRuleset(ROOT_ID);
         }
     }
 
-    public String getId() {
-        synchronized (coreLock) {
-            return id;
-        }
-    }
-    public void setId(String i) {
-        synchronized (coreLock) {
-            id = i;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
-        }
-    }
-    public String getName() {
-        synchronized (coreLock) {
-            return name;
-        }
-    }
-    public void setName(String n) {
-        synchronized (coreLock) {
-            name = n;
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
-        }
-    }
+    public String getCurrentRulesetId() { return (String)get(Value.CURRENT_RULESET_ID); }
+    public String getCurrentRulesetName() { return (String)get(Value.CURRENT_RULESET_NAME); }
     public void setCurrentRuleset(String id) {
         synchronized (coreLock) {
-            current.clear();
+            requestBatchStart();
+            Ruleset rs = getRuleset(id);
             setCurrentRulesetRecurse(id);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
+            set(Value.CURRENT_RULESET_ID, rs.getId());
+            set(Value.CURRENT_RULESET_NAME, rs.getName());
+            requestBatchEnd();
         }
     }
 
-    private void setCurrentRulesetRecurse(String i) {
-        Ruleset rs = getRuleset(i);
-        if (!rs.getId().equals(rootId)) {
+    private void setCurrentRulesetRecurse(String id) {
+        Ruleset rs = getRuleset(id);
+        if (!rs.getId().equals(ROOT_ID)) {
             setCurrentRulesetRecurse(rs.getParentRulesetId());
         }
-        current.putAll(rs.getAll());
-        name = rs.getName();
-        id = rs.getId();
-    }
-    
-    public Rule getRule(String k) {
-        synchronized (coreLock) {
-            return rules.get(k);
+        for (ValueWithId r : rs.getAll(Ruleset.Child.RULE)) {
+            add(Child.CURRENT_RULE, r);
         }
     }
 
-    public Map<Rule, String> getAll() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableMap(current);
-        }
-    }
-    public String get(Rule k) {
-        synchronized (coreLock) {
-            return current.get(k);
-        }
-    }
-    public boolean getBoolean(Rule k) {
-        synchronized (coreLock) {
-            return Boolean.parseBoolean(get(k));
-        }
-    }
-    public int getInt(Rule k) {
-        synchronized (coreLock) {
-            return Integer.parseInt(get(k));
-        }
-    }
+    public String get(Rule k) { return get(Child.CURRENT_RULE, k.toString()).getValue(); }
+    public boolean getBoolean(Rule k) { return Boolean.parseBoolean(get(k)); }
+    public int getInt(Rule k) { return Integer.parseInt(get(k)); }
     public long getLong(Rule k) {
         synchronized (coreLock) {
-            switch (k.getRule().getType()) {
+            switch (k.getRuleDefinition().getType()) {
             case TIME:
-        	return ClockConversion.fromHumanReadable(get(k));
+                return ClockConversion.fromHumanReadable(get(k));
             default:
-        	return Long.parseLong(get(k));
+                return Long.parseLong(get(k));
             }
         }
     }
     public void set(Rule k, String v) {
         synchronized (coreLock) {
-            AbstractRule r = k.getRule();
+            RuleDefinition r = k.getRuleDefinition();
             if (r == null || !r.isValueValid(v)) {
                 return;
             }
-            current.put(k, v);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_CURRENT_RULESET, "", ""));
+            add(Child.CURRENT_RULE, new ValWithId(k.toString(), v));
         }
     }
 
+    public RuleDefinition getRuleDefinition(String k) { return (RuleDefinition)get(Child.RULE_DEFINITION, k); }
+
     public Ruleset getRuleset(String id) {
         synchronized (coreLock) {
-            Ruleset r = rulesets.get(id);
+            Ruleset r = (Ruleset)get(Child.RULESET, id);
             if (r == null) {
-                r = rulesets.get(rootId);
+                r = (Ruleset)get(Child.RULESET, ROOT_ID);
             }
             return r;
-        }
-    }
-    public Map<String, Ruleset> getRulesets() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableMap(new HashMap<String, Ruleset>(rulesets));
         }
     }
     public Ruleset addRuleset(String name, String parentId) {
@@ -163,129 +141,43 @@ public class RulesetsImpl extends DefaultScoreBoardEventProvider implements Rule
     }
     public Ruleset addRuleset(String name, String parentId, String id) {
         synchronized (coreLock) {
-            Ruleset r = new RulesetImpl(name, parentId, id);
-            rulesets.put(id, r);
-            r.addScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(r, EVENT_RULESET, r, null));
+            Ruleset r = new RulesetImpl(this, name, parentId, id);
+            add(Child.RULESET, r);
             return r;
         }
     }
-    public void removeRuleset(String id) {
-        synchronized (coreLock) {
-            if (id.equals(rootId)) {
-                return;
-            }
-            Ruleset r = rulesets.get(id);
-            if (r == null) {
-                return;
-            }
-            requestBatchStart();
-            // Point any rulesets with the deleted one as their parent
-            // to their grandparent.
-            String parent = r.getParentRulesetId();
-            for (Ruleset rm : rulesets.values()) {
-                if (id.equals(rm.getParentRulesetId())) {
-                    rm.setParentRulesetId(parent);
+    public void removeRuleset(String id) { remove(Child.RULESET, id); }
+
+    public static final String ROOT_ID = "00000000-0000-0000-0000-000000000000";
+
+    public class RulesetImpl extends ScoreBoardEventProviderImpl implements Ruleset {
+        private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
+            super(rulesets, Value.ID, id, Rulesets.Child.RULESET, Ruleset.class, Value.class, Child.class);
+            set(Value.NAME, name);
+            set(Value.PARENT_ID, parentId);
+            if (ROOT_ID.equals(id)) {
+                for (Value prop : Value.values()) {
+                    addWriteProtection(prop);
                 }
             }
-
-            rulesets.remove(id);
-            r.removeScoreBoardListener(this);
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_REMOVE_RULESET, r, ""));
-            requestBatchEnd();
-        }
-    }
-
-    private Map<Rule, String> current = new HashMap<Rule, String>();
-    private Map<String, Ruleset> rulesets = new HashMap<String, Ruleset>();
-    private String id = null;
-    private String name = null;
-    // Ordering is preserved for the UI.
-    private Map<String, Rule> rules = new LinkedHashMap<String, Rule>();
-    private ScoreBoardEventProvider parent = null;
-    private static Object coreLock = ScoreBoardImpl.getCoreLock();
-    public static final String rootId = "00000000-0000-0000-0000-000000000000";
-
-    public class RulesetImpl extends DefaultScoreBoardEventProvider implements Ruleset {
-        private RulesetImpl(String name, String parentId, String id) {
-            this.id = id;
-            this.name = name;
-            this.parentId = parentId;
         }
 
-        public Map<Rule, String> getAll() {
-            synchronized (coreLock) {
-                return Collections.unmodifiableMap(settings);
-            }
-        }
-        public String get(Rule r) {
-            synchronized (coreLock) {
-                return settings.get(r);
-            }
-        }
+        public String get(Rule r) { return get(Child.RULE, r.toString()).getValue(); }
 
-        public String getId() {
+        public String getName() { return (String)get(Value.NAME); }
+        public void setName(String n) { set(Value.NAME, n); }
+        public String getParentRulesetId() { return (String)get(Value.PARENT_ID); }
+        public void setParentRulesetId(String p) { set(Value.PARENT_ID, p); }
+
+        public void setAll(Collection<ValueWithId> s) {
             synchronized (coreLock) {
-                return id;
-            }
-        }
-        public String getName() {
-            synchronized (coreLock) {
-                return name;
-            }
-        }
-        public String getParentRulesetId() {
-            synchronized (coreLock) {
-                return parentId;
-            }
-        }
-        public void setName(String n) {
-            synchronized (coreLock) {
-                if (id.equals(rootId)) {
-                    return;
+                requestBatchStart();
+                removeAll(Child.RULE);
+                for (ValueWithId r : s) {
+                    add(Child.RULE, r);
                 }
-                name = n;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, this, null));
+                requestBatchEnd();
             }
         }
-        public void setParentRulesetId(String pi) {
-            synchronized (coreLock) {
-                if (id.equals(rootId)) {
-                    return;
-                }
-                parentId = pi;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, this, null));
-            }
-        }
-
-
-        public void setAll(Map<Rule, String> s) {
-            synchronized (coreLock) {
-                if (id.equals(rootId) && !settings.isEmpty()) {
-                    return;  // Don't allow changing root after initial setup.
-                }
-                Set<Rule> oldKeys = settings.keySet();
-                // Check all values are valid.
-                for (Iterator<Rule> it = s.keySet().iterator(); it.hasNext();) {
-                    Rule k = it.next();
-                    AbstractRule r = k.getRule();
-                    if (r == null || !r.isValueValid(s.get(k))) {
-                        it.remove();
-                        oldKeys.add(k);  // Allow the XML to remove this.
-                    }
-                }
-                settings = s;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_RULESET, this, oldKeys));
-            }
-        }
-
-        public String getProviderName() { return "Ruleset"; }
-        public Class<Ruleset> getProviderClass() { return Ruleset.class; }
-        public String getProviderId() { return getId(); }
-
-        private String id;
-        private String name;
-        private String parentId;
-        private Map<Rule, String> settings = new HashMap<Rule, String>();
     }
 }

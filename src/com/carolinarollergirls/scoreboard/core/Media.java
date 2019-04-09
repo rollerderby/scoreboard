@@ -8,22 +8,56 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.Set;
-import java.util.Map;
-
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Media extends ScoreBoardEventProvider {
-    public Set<String> getFormats();
-    public Set<String> getTypes(String format);
-    public Map<String, MediaFile> getMediaFiles(String format, String type);
+    public MediaFormat getFormat(String format);
 
     // Deletes a file off disk. True if successful.
     public boolean removeMediaFile(String format, String type, String id);
 
     public boolean validFileName(String fn);
 
-    public static final String EVENT_REMOVE_FILE = "RemoveFile";
+    public enum Child implements AddRemoveProperty {
+        FORMAT(MediaFormat.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
+    }
+
+    public static interface MediaFormat extends ScoreBoardEventProvider {
+        public String getFormat();
+        public MediaType getType(String type);
+
+        public enum Child implements AddRemoveProperty {
+            TYPE(MediaType.class);
+
+            private Child(Class<? extends ValueWithId> t) { type = t; }
+            private final Class<? extends ValueWithId> type;
+            public Class<? extends ValueWithId> getType() { return type; }
+        }
+    }
+
+    public static interface MediaType extends ScoreBoardEventProvider {
+        public String getFormat();
+        public String getType();
+
+        public MediaFile getFile(String id);
+        public void addFile(MediaFile file);
+        public void removeFile(MediaFile file);
+
+        public enum Child implements AddRemoveProperty {
+            FILE(MediaFile.class);
+
+            private Child(Class<? extends ValueWithId> t) { type = t; }
+            private final Class<? extends ValueWithId> type;
+            public Class<? extends ValueWithId> getType() { return type; }
+        }
+    }
 
     public static interface MediaFile extends ScoreBoardEventProvider {
         public String getFormat();
@@ -32,7 +66,17 @@ public interface Media extends ScoreBoardEventProvider {
         public String getName();
         public void setName(String s);
         public String getSrc();
-        public static final String EVENT_FILE = "File";
-    }
 
+        public enum Value implements PermanentProperty {
+            ID(String.class, ""),
+            SRC(String.class, ""),
+            NAME(String.class, "");
+
+            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+            private final Class<?> type;
+            private final Object defaultValue;
+            public Class<?> getType() { return type; }
+            public Object getDefaultValue() { return defaultValue; }
+        }
+    }
 }

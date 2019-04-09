@@ -58,16 +58,6 @@ $sb(function() {
 
   $.each( [ "1", "2" ], function(i, team) {
 
-                var teamJamPoints = $("#Team"+team+"JamPoints");
-                var teamJamPointsA = $("#Team"+team+"JamPoints>a");
-//                _autoFit.enableAutoFitText(teamJamPoints);
-                var teamJamPointsUpdate = function() {
-                        jamTotal = $sb("ScoreBoard.Team("+team+").Score").$sbGet() - $sb("ScoreBoard.Team("+team+").LastScore").$sbGet();
-                        teamJamPointsA.text(jamTotal);
-                }
-                $sb("ScoreBoard.Team("+team+").Score").$sbBindAndRun("sbchange", teamJamPointsUpdate);
-                $sb("ScoreBoard.Team("+team+").LastScore").$sbBindAndRun("sbchange", teamJamPointsUpdate);
-
     $sb("ScoreBoard.Team("+team+").AlternateName(overlay).Name").$sbElement("#Team"+team+"Name>a.AlternateName");
     $sb("ScoreBoard.Team("+team+").Name").$sbElement("#Team"+team+"Name>a.Name");
 /*    $sb("ScoreBoard.Team("+team+").Color(overlay)").$sbBindColors($("#Team"+team+"Name")); */
@@ -77,6 +67,7 @@ $sb(function() {
 
 
     $sb("ScoreBoard.Team("+team+").Score").$sbElement("#Team"+team+"Score>a");
+    $sb("ScoreBoard.Team("+team+").JamScore").$sbElement("#Team"+team+"JamPoints>a");
     $sb("ScoreBoard.Team("+team+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
       if ($sb(node).$sbId == "overlay")
         $sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event, val) {
@@ -161,9 +152,8 @@ $sb(function() {
   
   // Lead Changes
   $.each([ 1, 2 ], function(i, t) {
-    $sb("ScoreBoard.Team("+t+").LeadJammer").$sbBindAndRun("sbchange", function(event, val) {
-      $("#WftdaT"+t+"LD").toggleClass("Show", val == "Lead", 1000);
-//      $("#WftdaT"+t+"LD").toggleClass("Show", isTrue(val), 1000);
+    $sb("ScoreBoard.Team("+t+").DisplayLead").$sbBindAndRun("sbchange", function(event, val) {
+      $("#WftdaT"+t+"LD").toggleClass("Show", isTrue(val), 1000);
     });
   });
 });

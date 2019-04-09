@@ -32,7 +32,14 @@ public class XmlScoreBoard {
         scoreBoardXmlListener = new ScoreBoardXmlListener(sb) {
             public void scoreBoardChange(ScoreBoardEvent sbE) {
                 super.scoreBoardChange(sbE);
-                XmlScoreBoard.this.xmlChange(resetDocument());
+                final Document d = resetDocument();
+                if (d != null) {
+                    mergeSbExecutor.submit(new Runnable() {
+                        public void run() {
+                            XmlScoreBoard.this.xmlChange(d);
+                        }
+                    });
+                }
             }
         };
         xmlChange(converter.toDocument(scoreBoard));
@@ -74,7 +81,7 @@ public class XmlScoreBoard {
                 scoreBoard.reset();
                 managers.reset();
             } else {
-//FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
+                //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
                 final XmlDocumentManager xdM = exclusiveDocumentManager;
                 exclusiveExecutor.submit(new Runnable() { public void run() { xdM.reset(); } });
             }
@@ -93,7 +100,7 @@ public class XmlScoreBoard {
 
     public void loadDocument(Document d) {
         reset();
-        mergeDocument(d);
+        mergeDocument(d, true);
         reloadViewers();
     }
 
@@ -104,14 +111,14 @@ public class XmlScoreBoard {
      * external source, i.e. not the main ScoreBoard
      * nor any XmlDocumentManager.
      */
-    public void mergeDocument(Document doc) {
+    public void mergeDocument(Document doc, boolean load) {
         synchronized (managerLock) {
             if (null == exclusiveDocumentManager) {
-//FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
-                converter.processDocument(scoreBoard, doc);
+                //FIXME - change ScoreBoardXmlConverter into XmlDocumentManager?
+                converter.processDocument(scoreBoard, doc, load);
                 managers.processDocument(doc);
             } else {
-//FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
+                //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
                 final XmlDocumentManager xdM = exclusiveDocumentManager;
                 final Document d = doc;
                 exclusiveExecutor.submit(new Runnable() { public void run() { xdM.processDocument(d); } });
@@ -122,7 +129,7 @@ public class XmlScoreBoard {
     /**
      * This is a convenience method for mergeDocument(Document).
      */
-    public void mergeDocument(Element e) { mergeDocument(e.getDocument()); }
+    public void mergeDocument(Element e) { mergeDocument(e.getDocument(), false); }
 
     /**
      * This is similar to mergeDocument(Element), but it
@@ -138,6 +145,7 @@ public class XmlScoreBoard {
      * from a XmlDocumentManager.
      */
     public void xmlChange(Document d) {
+        if (d == null) { return; }
         synchronized (managerLock) {
             if (null != exclusiveDocumentManager) {
                 /* Ignore updates not from the "exclusive" document manager */
@@ -212,6 +220,7 @@ public class XmlScoreBoard {
                 return true;
             } catch ( Exception e ) {
                 ScoreBoardManager.printMessage("Could not load auto-saved scoreboard XML file "+f.getPath()+" : "+e.getMessage());
+                e.printStackTrace();
             }
         }
 
@@ -239,7 +248,7 @@ public class XmlScoreBoard {
         while (xmlFiles.hasNext()) {
             File f = xmlFiles.next();
             try {
-                mergeDocument(saxBuilder.build(f));
+                mergeDocument(saxBuilder.build(f), false);
                 ScoreBoardManager.printMessage("Loaded settings from "+f.getName());
             } catch ( Exception e ) {
                 ScoreBoardManager.printMessage("Could not load initial XML document "+f.getName()+" : "+e.getMessage());
@@ -248,7 +257,7 @@ public class XmlScoreBoard {
     }
 
     protected void loadXmlDocumentManagers() {
-//FIXME - this isn't the right way to do this!	use properties file, or xml maybe?
+        //FIXME - this isn't the right way to do this!	use properties file, or xml maybe?
         new LoadScoreBoard().setXmlScoreBoard(this);
         new SaveScoreBoardStream().setXmlScoreBoard(this);
         new LoadScoreBoardStream().setXmlScoreBoard(this);
@@ -271,6 +280,7 @@ public class XmlScoreBoard {
     protected ScoreBoardXmlListener scoreBoardXmlListener;
     protected AutoSaveScoreBoard autoSave;
     protected Document document = editor.createDocument();
+    protected ExecutorService mergeSbExecutor = Executors.newSingleThreadExecutor();
 
     protected Object documentLock = new Object();
     protected Object managerLock = new Object();

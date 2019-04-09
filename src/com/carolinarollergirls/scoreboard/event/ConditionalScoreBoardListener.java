@@ -1,4 +1,7 @@
 package com.carolinarollergirls.scoreboard.event;
+
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -10,34 +13,34 @@ package com.carolinarollergirls.scoreboard.event;
 
 
 public class ConditionalScoreBoardListener implements ScoreBoardListener {
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop, Object v, ScoreBoardListener l) {
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop, Object v, ScoreBoardListener l) {
         this(new ScoreBoardCondition(c, id, prop, v), l);
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop, Object v) {
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop, Object v) {
         this(new ScoreBoardCondition(c, id, prop, v));
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop, ScoreBoardListener l) {
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop, ScoreBoardListener l) {
         this(c, id, prop, ScoreBoardCondition.ANY_VALUE, l);
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, String prop) {
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop) {
         this(c, id, prop, ScoreBoardCondition.ANY_VALUE);
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String prop, ScoreBoardListener l) {
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, Property prop, ScoreBoardListener l) {
         this(c, ScoreBoardCondition.ANY_ID, prop, ScoreBoardCondition.ANY_VALUE, l);
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String prop) {
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, Property prop) {
         this(c, ScoreBoardCondition.ANY_ID, prop, ScoreBoardCondition.ANY_VALUE);
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop, Object v, ScoreBoardListener l) {
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop, Object v, ScoreBoardListener l) {
         this(new ScoreBoardCondition(p, prop, v), l);
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop, Object v) {
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop, Object v) {
         this(new ScoreBoardCondition(p, prop, v));
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop, ScoreBoardListener l) {
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop, ScoreBoardListener l) {
         this(p, prop, ScoreBoardCondition.ANY_VALUE, l);
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, String prop) {
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop) {
         this(p, prop, ScoreBoardCondition.ANY_VALUE);
     }
     public ConditionalScoreBoardListener(ScoreBoardEvent e, ScoreBoardListener l) {

@@ -1,5 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
@@ -7,26 +8,20 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
-import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
-import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
-import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class PositionImplTests {
     private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";
     private final String secondId = "91a6c3f5-8258-46c7-a845-62c21b6e37ca";
     private final String thirdId = "5df0a35b-aaa6-4c30-93ef-07ba4f174cdc";
 
-    private ScoreBoard sbMock;
-    private Rulesets rulesetsMock;
+    private ScoreBoard sb;
     private Team team;
     private Skater first;
     private Skater second;
@@ -34,29 +29,9 @@ public class PositionImplTests {
 
     @Before
     public void setup() {
-        sbMock = Mockito.mock(ScoreBoardImpl.class);
+        sb = new ScoreBoardImpl();
 
-        rulesetsMock = Mockito.mock(Rulesets.class);
-
-        Mockito
-        .when(sbMock.getRulesets())
-        .thenReturn(rulesetsMock);
-
-        Mockito
-        .when(rulesetsMock.getInt(Rule.NUMBER_TIMEOUTS))
-        .thenReturn(3);
-        Mockito
-        .when(rulesetsMock.getBoolean(Rule.TIMEOUTS_PER_PERIOD))
-        .thenReturn(false);
-        Mockito
-        .when(rulesetsMock.getInt(Rule.NUMBER_REVIEWS))
-        .thenReturn(1);
-
-        Mockito
-        .when(rulesetsMock.getBoolean(Rule.REVIEWS_PER_PERIOD))
-        .thenReturn(true);
-
-        team = new TeamImpl(sbMock, "A");
+        team = sb.getTeam(Team.ID_1);
 
         first = new SkaterImpl(team, firstId, "First","123", "");
         second = new SkaterImpl(team, secondId, "Second","456", "");
@@ -71,11 +46,11 @@ public class PositionImplTests {
     public void key_values_populated() {
         Position blocker = team.getPosition(FloorPosition.BLOCKER1);
 
-        assertSame(blocker.getId(), FloorPosition.BLOCKER1.toString());
-        assertSame(blocker.getProviderName(), "Position");
-        assertSame(blocker.getProviderId(), FloorPosition.BLOCKER1.toString());
-        assertSame(blocker.getProviderClass(), Position.class);
-        assertSame(blocker.getTeam(), team);
+        assertEquals(blocker.getId(), Team.ID_1 + "_" + FloorPosition.BLOCKER1.toString());
+        assertEquals(blocker.getProviderName(), "Position");
+        assertEquals(blocker.getProviderId(), FloorPosition.BLOCKER1.toString());
+        assertEquals(blocker.getProviderClass(), Position.class);
+        assertEquals(blocker.getTeam(), team);
     }
 
     @Test
@@ -89,7 +64,7 @@ public class PositionImplTests {
     @Test
     public void field_skater_as_jammer() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
-        team.field(first, jammer);
+        jammer.setSkater(first);
 
         assertSame(jammer.getSkater(), first);
         assertSame(first.getPosition(), jammer);
@@ -98,7 +73,7 @@ public class PositionImplTests {
     @Test
     public void position_knows_skater_penalty() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
-        team.field(first, jammer);
+        jammer.setSkater(first);
         first.setPenaltyBox(true);
 
         assertTrue(jammer.isPenaltyBox());
@@ -107,7 +82,7 @@ public class PositionImplTests {
     @Test
     public void skater_knows_position_penalty() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
-        team.field(first, jammer);
+        jammer.setSkater(first);
         jammer.setPenaltyBox(true);
 
         assertTrue(first.isPenaltyBox());
@@ -125,8 +100,8 @@ public class PositionImplTests {
     public void sp_works() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
         Position pivot = team.getPosition(FloorPosition.PIVOT);
-        team.field(first, jammer);
-        team.field(first, pivot);
+        jammer.setSkater(first);
+        pivot.setSkater(first);
 
         assertSame(pivot.getSkater(), first);
         assertNull(jammer.getSkater());
@@ -146,9 +121,9 @@ public class PositionImplTests {
     public void position_knows_penalty_after_sp() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
         Position pivot = team.getPosition(FloorPosition.PIVOT);
-        team.field(first, pivot);
+        pivot.setSkater(first);
         pivot.setPenaltyBox(true);
-        team.field(first, jammer);
+        jammer.setSkater(first);
 
         assertTrue(jammer.isPenaltyBox());
         assertFalse(pivot.isPenaltyBox());

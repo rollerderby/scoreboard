@@ -13,4 +13,8 @@ public class PenaltyCodesDefinition {
     public void setPenalties(List<PenaltyCode> penalties) {
         this.penalties = penalties;
     }
+
+    public void add(PenaltyCode code) {
+        penalties.add(code);
+    }
 }

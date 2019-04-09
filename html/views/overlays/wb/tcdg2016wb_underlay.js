@@ -33,15 +33,15 @@ function initialize() {
 	setupMainDiv($("#mainDiv"));
 
 	$.each([1, 2], function(idx, t) {
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]); //called when team name changes?
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Name' ]); //called when team name changes
 		WS.Register([ 'ScoreBoard.Team(' + t + ').AlternateName' ]);
-		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)']); $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)']); } );
+		WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) { $('.Team' + t + 'custColor').css('color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg).Color']); $('.Team' + t + 'custColor').css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color']); $('#head' + t).css('background-color', WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg).Color']); } );
 	});
 
         WS.Register( [ 'ScoreBoard.Team(1).Logo' ], function(k, v) { $('.Logo1').attr('src', v); } );
         WS.Register( [ 'ScoreBoard.Team(2).Logo' ], function(k, v) { $('.Logo2').attr('src', v); } );
 
-	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes?
+	WS.Register( [ 'ScoreBoard.Team(1).Skater' ], function(k, v) { skaterUpdate(1, k, v); } ); //called when skater info changes
 	WS.Register( [ 'ScoreBoard.Team(2).Skater' ], function(k, v) { skaterUpdate(2, k, v); } ); //arguments: team number, skater id, jam number
 
 }
@@ -112,8 +112,8 @@ function makeSkaterRows(t, id, number) { //team, id, number
 	var teamFColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_fg)'];
 	var teamBColor = WS.state['ScoreBoard.Team(' + t + ').Color(overlay_bg)'];
 	
-	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)'] != null) {
-		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard)']
+	if (WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name'] != null) {
+		teamName = WS.state['ScoreBoard.Team(' + t + ').AlternateName(whiteboard).Name']
 	}
 //      Put this somewhere else
 //	head.innerHTML = '<span class="Team' + t + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';

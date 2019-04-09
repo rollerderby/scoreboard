@@ -8,58 +8,31 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-public class SettingsImpl extends DefaultScoreBoardEventProvider implements Settings {
+public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
     public SettingsImpl(ScoreBoard s) {
-        sbm = s;
+        super (s, null, "", ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
     }
 
-    public String getProviderName() { return "Settings"; }
-    public Class<Settings> getProviderClass() { return Settings.class; }
-    public String getProviderId() { return ""; }
+    public void reset() { removeAll(Child.SETTING); }
 
-    public void reset() {
-        synchronized (coreLock) {
-            Map<String, String> old = new HashMap<String, String>(settings);
-            settings.clear();
-            for (String k : old.keySet()) {
-                scoreBoardChange(new ScoreBoardEvent(this, k, null, old.get(k)));
-            }
-        }
-    }
-
-    public Map<String, String> getAll() {
-        synchronized (coreLock) {
-            return Collections.unmodifiableMap(new HashMap<String, String>(settings));
-        }
-    }
     public String get(String k) {
-        synchronized (coreLock) {
-            return settings.get(k);
+        synchronized(coreLock) {
+            if (get(Child.SETTING, k) == null) { return null; }
+            return get(Child.SETTING, k).getValue();
         }
     }
     public void set(String k, String v) {
         synchronized (coreLock) {
-            String last = settings.get(k);
             if (v == null) {
-                settings.remove(k);
+                remove(Child.SETTING, k);
             } else {
-                settings.put(k, v);
+                add(Child.SETTING, new ValWithId(k, v));
             }
-            scoreBoardChange(new ScoreBoardEvent(this, k, v, last));
         }
     }
-
-    protected ScoreBoard sbm = null;
-    protected Map<String, String> settings = new HashMap<String, String>();
-
-    protected static Object coreLock = ScoreBoardImpl.getCoreLock();
 }

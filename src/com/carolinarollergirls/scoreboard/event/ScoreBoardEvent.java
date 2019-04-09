@@ -12,18 +12,29 @@ import java.util.EventObject;
 import java.util.Objects;
 
 public class ScoreBoardEvent extends EventObject implements Cloneable {
-    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, String p, Object v, Object prev) {
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, PermanentProperty p, Object v, Object prev) {
+        this(sbeP, (Property)p, v, prev);
+    }
+
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, AddRemoveProperty p, ValueWithId v, boolean r) {
+        this(sbeP, (Property)p, v, null);
+        remove = r;
+    }
+
+    private ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property p, Object v, Object prev) {
         super(sbeP);
         provider = sbeP;
         property = p;
         value = v;
         previousValue = prev;
-    }
+        remove = false;
+    } 
 
     public ScoreBoardEventProvider getProvider() { return provider; }
-    public String getProperty() { return property; }
+    public Property getProperty() { return property; }
     public Object getValue() { return value; }
     public Object getPreviousValue() { return previousValue; }
+    public boolean isRemove() { return remove; }
 
     public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue(), getPreviousValue()); }
 
@@ -64,10 +75,38 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     }
 
     protected ScoreBoardEventProvider provider;
-    protected String property;
+    protected Property property;
     protected Object value;
     protected Object previousValue;
+    protected boolean remove;
 
-    public static final String BATCH_START = "Batch Start";
-    public static final String BATCH_END = "Batch End";
+    public interface Property {
+        public Class<?> getType();
+    }
+    public interface PermanentProperty extends Property {
+        public Object getDefaultValue();
+    }
+    public interface AddRemoveProperty extends Property {
+        public Class<? extends ValueWithId> getType();
+    }
+    public interface NumberedProperty extends AddRemoveProperty {
+        public Class<? extends OrderedScoreBoardEventProvider<?>> getType();
+    }
+    public interface CommandProperty extends Property {
+        public Class<Boolean> getType();
+    }
+
+    public interface ValueWithId {
+        /**
+         * Id to be used in order to identify this element amongst all elements of its type.
+         * Used when the element is referenced by elements other than its parent.
+         *  (Typically a UUID.)
+         */
+        public String getId();
+        /**
+         * Value of the element. For implementations of ScoreBoardEventProvider this should
+         * usually be the same as getId().
+         */
+        public String getValue();
+    }
 }

@@ -8,72 +8,55 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.DefaultScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 
-public class PositionImpl extends DefaultScoreBoardEventProvider implements Position {
+public class PositionImpl extends ScoreBoardEventProviderImpl implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
-        team = t;
+        super(t, Value.ID, t.getId() + "_" + fp.toString(), Team.Child.POSITION, Position.class, Value.class, Command.class);
         floorPosition = fp;
-        id = fp.toString();
-        reset();
+        setCopy(Value.NAME, this, Value.SKATER, Skater.Value.NAME, true);
+        setCopy(Value.NUMBER, this, Value.SKATER, Skater.Value.NUMBER, true);
+        setCopy(Value.FLAGS, this, Value.SKATER, Skater.Value.FLAGS, true);
+        setCopy(Value.SKATER, this, Value.CURRENT_FIELDING, Fielding.Value.SKATER, false);
+        setCopy(Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false);
+        setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
     }
 
-    public String getProviderName() { return "Position"; }
-    public Class<Position> getProviderClass() { return Position.class; }
-    public String getProviderId() { return getId(); }
+    public String getProviderId() { return floorPosition.toString(); }
 
-    public Team getTeam() { return team; }
+    public void execute(CommandProperty prop) {
+        if (prop == Command.CLEAR) {
+            set(Value.SKATER, null);
+        }
+    }
 
-    public String getId() { return id; }
+    public Team getTeam() { return (Team)parent; }
 
     public FloorPosition getFloorPosition() { return floorPosition; }
 
-    public void reset() {
+    public void reset() { setCurrentFielding(null); }
+    
+    public void updateCurrentFielding() {
         synchronized (coreLock) {
-            setSkater(null);
+            setCurrentFielding(getTeam().getRunningOrUpcomingTeamJam().getFielding(floorPosition));
+            if (getSkater() != null) { getSkater().set(Value.CURRENT_FIELDING, getCurrentFielding()); }
         }
     }
 
-    public Skater getSkater() { return skater; }
-    public void setSkater(Skater s) {
-        synchronized (coreLock) {
-            if (s == skater) { return; }
-            Skater last = skater;
-            skater = s;
-            setPenaltyBox(s == null ? false : s.isPenaltyBox());
-            scoreBoardChange(new ScoreBoardEvent(this, EVENT_SKATER, skater, last));
-        }
-    }
+    public Skater getSkater() { return (Skater)get(Value.SKATER); }
+    public void setSkater(Skater s) { set(Value.SKATER, s); }
 
-    public boolean isPenaltyBox() {
-        return penaltyBox;
-    }
-    public void setPenaltyBox(boolean box) {
-        synchronized (coreLock) {
-            if (box != penaltyBox && (skater != null || !box)) {
-                Boolean last = new Boolean(penaltyBox);
-                penaltyBox = box;
-                scoreBoardChange(new ScoreBoardEvent(this, EVENT_PENALTY_BOX, new Boolean(penaltyBox), last));
-                if (skater != null) {
-                    skater.setPenaltyBox(box);
-                }
-            }
-        }
-    }
+    public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
+    public void setCurrentFielding(Fielding f) { set(Value.CURRENT_FIELDING, f); }
 
-    protected Team team;
+    public boolean isPenaltyBox() { return (Boolean)get(Value.PENALTY_BOX); }
+    public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }
 
-    protected static Object coreLock = ScoreBoardImpl.getCoreLock();
-
-    protected String id;
     protected FloorPosition floorPosition;
-
-    protected Skater skater = null;
-    protected boolean penaltyBox = false;
-    protected boolean settingSkaterPosition = false;
 }

@@ -10,7 +10,12 @@
 
 
 $.fx.interval = 33;
-_include("/json", [ "Game.js" ]);
+_include("/json", [ "Game.js", "WS.js" ]);
+_include("sk", [ "sk.js" ]);
+$('head').append('<link rel="stylesheet" href="sk/sk.css" type="text/css" />');
+
+WS.Connect();
+WS.AutoRegister();
 
 $sb(function() {
 	createScoreTimeTab();
@@ -123,6 +128,12 @@ function createScoreTimeTab() {
 	$("<table>").attr("id", "TeamTime")
 		.appendTo(createTab("Team/Time", "TeamTimeTab"))
 		.data("loadContentFunction", createScoreTimeContent);
+	var sk1 = $('<div>').addClass('SKSheet').appendTo($('#TeamTimeTab'));
+	var sk2 = $('<div>').addClass('SKSheet').appendTo($('#TeamTimeTab'));
+	$('<div>').attr('id', 'TripEditor').appendTo($('#TeamTimeTab'));
+	prepareSkTable(sk1, 1, 'operator');
+	prepareSkTable(sk2, 2, 'operator');
+	prepareTripEditor();
 }
 
 function createScoreTimeContent(table) {
@@ -363,11 +374,11 @@ function createGameControlDialog() {
 
 
 	_crgUtils.setupSelect(adhocGame.find("select.Ruleset"), {
-		optionParent: "ScoreBoard.KnownRulesets",
+		optionParent: "ScoreBoard.Rulesets",
 		optionChildName: "Ruleset",
 		optionNameElement: "Name",
 	});
-	adhocGame.find("select.Ruleset").val($sb("ScoreBoard.Rules.Id").$sbGet());
+	adhocGame.find("select.Ruleset").val($sb("ScoreBoard.Rulesets.CurrentRulesetId").$sbGet());
 
 	dialog.dialog({
 		title: title,
@@ -612,7 +623,7 @@ function createTeamTable() {
 		var logoTd = nameTr.children("td:eq("+(first?0:1)+")").addClass("Logo");
 		var logoNone = $("<a>").html("No Logo").addClass("NoLogo").appendTo(logoTd);
 		var logoSelect = sbTeam.$sb("Logo").$sbControl("<select>", { sbelement: {
-				optionParent: "ScoreBoard.Media.images.teamlogo",
+				optionParent: "ScoreBoard.Media.Format(images).Type(teamlogo)",
 				optionChildName: "File",
 				optionNameElement: "Name",
 				optionValueElement: "Src",
@@ -637,83 +648,72 @@ function createTeamTable() {
 		logoTd.click(function() { if (!logoSelect.is(":visible")) logoShowSelect(true); });
 
 		var scoreTd = scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down");
-		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+		sbTeam.$sb("TripScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score -1").val("-1")
 			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
-		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Jam Score -1").val("1")
-			.attr("id", "Team"+team+"JamScoreDown").addClass("KeyControl JamScoreButton").button()
+		sbTeam.$sb("RemoveTrip").$sbControl("<button>").text("Trip -1").val("true")
+			.attr("id", "Team"+team+"RemoveTrip").addClass("KeyControl TripButton").button()
 			.appendTo(scoreTd);
 
 		var scoreSubTr = createRowTable(3).appendTo(scoreTr.children("td:eq(1)")).find("tr");
-		sbTeam.$sb("Score").$sbControl("<a/><input type='text' size='4'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: scoreTr.children("td:eq(1)")
-			} }).appendTo(scoreSubTr.children("td:eq(1)").addClass("Score"));
+		sbTeam.$sb("Score").$sbControl("<a/>").appendTo(scoreSubTr.children("td:eq(1)").addClass("Score"));
 
 		var scoreTd = scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up");
-		sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
+		sbTeam.$sb("TripScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
 			.text("Score +1").val("1")
 			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl BigButton").button()
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
-		sbTeam.$sb("LastScore").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("Jam Score +1").val("-1")
-			.attr("id", "Team"+team+"JamScoreUp").addClass("KeyControl JamScoreButton").button()
+		sbTeam.$sb("AddTrip").$sbControl("<button>").text("Trip +1").val("true")
+			.attr("id", "Team"+team+"AddTrip").addClass("KeyControl TripButton").button()
 			.appendTo(scoreTd);
 
-		for (var i = 2; i <= 5; i++) {
-			var pos = (i - 2);
+		for (var i = 1; i <= 4; i++) {
+			var pos = (i - 1);
 			if (!first)
 				pos = 3 - pos;
-			sbTeam.$sb("Score").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-				.text("+" + i).val(i)
-				.attr("id", "Team"+team+"ScoreUp"+i).addClass("KeyControl").button()
+			sbTeam.$sb("TripScore").$sbControl("<button>").text(i).val(i)
+				.attr("id", "Team"+team+"TripScore"+i).addClass("KeyControl").button()
 				.appendTo(speedScoreTr.find("td:eq("+pos+")"));
 		}
 
 
 		// Note instantaneous score change is always towards the center.	Jam score total is on the outside.
-		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("Change");
+		var scoreChange = $("<a>").css({ opacity: "0" }).appendTo(scoreSubTr.children("td:eq("+(first?"2":"0")+")")).addClass("TripScore");
 		var jamScore = $("<a>").appendTo(scoreSubTr.children("td:eq("+(first?"0":"2")+")")).addClass("JamScore");
 
-		var lastScore = sbTeam.$sb("Score").$sbGet();
 		var scoreChangeTimeout;
-		sbTeam.$sb("Score").bind("sbchange", function(event,value) {
-			var s = (value - lastScore);
+		sbTeam.$sb("TripScore").bind("sbchange", function(event,s) {
 			var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
-			scoreChange.stop(true).text(s<0?s:"+"+s).last().css({ opacity: "1", color: c });
+			var addTrip = $sb("ScoreBoard.InJam").$sbIsTrue();
+			scoreChange.stop(true).text(s).last().css({ opacity: "1", color: c });
 			if (scoreChangeTimeout)
 				clearTimeout(scoreChangeTimeout);
 			scoreChangeTimeout = setTimeout(function() {
 				scoreChange.last()
-					.animate({ color: "#000" }, 2000)
-					.animate({ opacity: "0" }, 6000, "easeInExpo", function() { lastScore = value; });
+					.animate({ color: "#000" }, 1000)
+					.animate({ opacity: "0" }, 1000, "easeInExpo", function() {
+						if (s > 0 && addTrip) {
+							sbTeam.$sb("AddTrip").$sbSet("true");
+						}});
 				scoreChangeTimeout = null;
 			}, 2000);
 		});
 
 		jamScore.stop(true).text("0").last().css({ opacity: "1", color: "#008" });
-		var lastJamScore = sbTeam.$sb("Score").$sbGet();
 		var jamScoreTimeout;
-		var jamScoreUpdate = function(event, value) {
-			var score = sbTeam.$sb("Score").$sbGet();
-			var lastscore = sbTeam.$sb("LastScore").$sbGet();
-			var s = score - lastscore;
-
+		sbTeam.$sb("JamScore").$sbBindAndRun("sbchange", function(event, s) {
 			var c = (s<0 ? "#800" : s>0 ? "#080" : "#008");
-			jamScore.stop(true).text(+s).last().css({ opacity: "1", color: c });
+			jamScore.stop(true).text(s).last().css({ opacity: "1", color: c });
 			if (jamScoreTimeout)
 				clearTimeout(jamScoreTimeout);
 			jamScoreTimeout = setTimeout(function() {
 				jamScore.last()
 					.animate({ color: "#008" }, 2000)
 			}, 2000);
-		};
-		sbTeam.$sb("Score").$sbBindAndRun("sbchange", jamScoreUpdate);
-		sbTeam.$sb("LastScore").$sbBindAndRun("sbchange", jamScoreUpdate);
+		});
 
 		var timeout = sbTeam.$sb("Timeout");
 		var timeoutButton = timeout.$sbControl("<button>").text("Team TO").val("true")
@@ -765,31 +765,67 @@ function createTeamTable() {
 			otoButton.appendTo(timeoutTr.children("td:eq(5)").addClass("OfficialTimeout"));
 			otoButton.wrap("<div></div>");
 		}
-		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")")
-			.append("<label id='Team"+team+"Lead' class='Lead'>Lead</label><input type='radio' value='Lead'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"NoLead' class='NoLead'>No</label><input type='radio' value='NoLead'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"LostLead' class='LostLead'>Lost</label><input type='radio' value='LostLead'/>");
-		sbTeam.$sb("LeadJammer").$sbControl(leadJammerTd.children())
-			.addClass("KeyControl");
-		/* some strange bug, css direction is unset for leadJammerTd
-		 * so need to explicitly specify to style the buttonset as ltr
-		 */
-		leadJammerTd.css("direction", "ltr").buttonset();
+		
+		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")");
+		var lost = sbTeam.$sb("Lost");
+		var lostButton = lost.$sbControl("<button>").text("Lost").val("true")
+			.attr("id", "Team"+team+"Lost").addClass("KeyControl").button();
+		lost.$sbBindAndRun("sbchange", function(event, value) {
+			lostButton.val(!isTrue(value));
+			lostButton.toggleClass("Active", isTrue(value));
+		});
+		lostButton.appendTo(leadJammerTd);
+		var lead = sbTeam.$sb("Lead");
+		var leadButton = lead.$sbControl("<button>").text("Lead").val("true")
+			.attr("id", "Team"+team+"Lead").addClass("KeyControl").button();
+		lead.$sbBindAndRun("sbchange", function(event, value) {
+			leadButton.val(!isTrue(value));
+			leadButton.toggleClass("Active", isTrue(value));
+		});
+		leadButton.appendTo(leadJammerTd);
+		var calloff = sbTeam.$sb("Calloff");
+		var calloffButton = calloff.$sbControl("<button>").text("Call").val("true")
+			.attr("id", "Team"+team+"Call").addClass("KeyControl").button();
+		calloff.$sbBindAndRun("sbchange", function(event, value) {
+			calloffButton.val(!isTrue(value));
+			calloffButton.toggleClass("Active", isTrue(value));
+		});
+		calloffButton.appendTo(leadJammerTd);
+		var inj = sbTeam.$sb("Injury");
+		var injButton = inj.$sbControl("<button>").text("Inj").val("true")
+			.attr("id", "Team"+team+"Inj").addClass("KeyControl").button();
+		inj.$sbBindAndRun("sbchange", function(event, value) {
+			injButton.val(!isTrue(value));
+			injButton.toggleClass("Active", isTrue(value));
+		});
+		injButton.appendTo(leadJammerTd);
+		var ni = sbTeam.$sb("NoInitial");
+		var niButton = ni.$sbControl("<button>").text("NI").val("true")
+			.attr("id", "Team"+team+"NI").addClass("KeyControl").button();
+		ni.$sbBindAndRun("sbchange", function(event, value) {
+			niButton.val(!isTrue(value));
+			niButton.toggleClass("Active", isTrue(value));
+		});
+		niButton.appendTo(leadJammerTd);
+		
+		leadJammerTd.buttonset();
 
-		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")")
-			.append("<label id='Team"+team+"StarPass' class='StarPass'>Star Pass</label><input type='radio' value='true'/>")
-			[first?"append":"prepend"]("<label id='Team"+team+"NoStarPass' class='NoStarPass'>No</label><input type='radio' value='false'/>");
-		sbTeam.$sb("StarPass").$sbControl(starPassTd.children())
-			.addClass("KeyControl");
-		/* some strange bug, css direction is unset for starPassTd
-		 * so need to explicitly specify to style the buttonset as ltr
-		 */
-		starPassTd.css("direction", "ltr").buttonset();
+		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")");
+		var starPass = sbTeam.$sb("StarPass");
+		var starPassButton = starPass.$sbControl("<button>").text("Star Pass").val("true")
+			.attr("id", "Team"+team+"StarPass").addClass("KeyControl").button();
+		starPass.$sbBindAndRun("sbchange", function(event, value) {
+			starPassButton.val(!isTrue(value));
+			starPassButton.toggleClass("Active", isTrue(value));
+		});
+		starPassButton.appendTo(starPassTd);
+
+		starPassTd.buttonset();
 
 		var makeSkaterDropdown = function(pos, elem, sort) {
 			var sortFunc = _windowFunctions.alphaCompareByProp;
 			if (sort == "Num") sortFunc = _windowFunctions.numCompareByProp;
-			return sbTeam.$sb("Position("+pos+").Id").$sbControl("<select>", { sbelement: {
+			return sbTeam.$sb("Position("+pos+").Skater").$sbControl("<select>", { sbelement: {
 					optionParent: sbTeam,
 					optionChildName: "Skater",
 					optionNameElement: elem,
@@ -855,18 +891,15 @@ function createTimeTable() {
 			nameTd.toggleClass("Running", isTrue(value));
 		});
 
-		sbClock.$sb("Number").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("-1").val("-1")
-			.attr("id", "Clock"+clock+"NumberDown").addClass("KeyControl").button()
-			.appendTo(numberTr.children("td:eq(0)").addClass("Down").css("width", "40%"));
-		sbClock.$sb("Number").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: numberTr.children("td:eq(1)")
-			} }).appendTo(numberTr.children("td:eq(1)").addClass("Number").css("width", "20%"));
-		sbClock.$sb("Number").$sbControl("<button>", { sbcontrol: { sbSetAttrs: { change: "true" } } })
-			.text("+1").val("1")
-			.attr("id", "Clock"+clock+"NumberUp").addClass("KeyControl").button()
-			.appendTo(numberTr.children("td:eq(2)").addClass("Up").css("width", "40%"));
+		sbClock.$sb("Number").$sbControl("<a>").appendTo(numberTr.children("td:eq(1)")
+				.addClass("Number").css("width", "20%"));
+		if (clock == "Period") {
+			var periodDialog = createPeriodDialog();
+			numberTr.children("td:eq(1)").click(function() { periodDialog.dialog("open"); });
+		} else if (clock == "Jam") {
+			var jamDialog = createJamDialog();
+			numberTr.children("td:eq(1)").click(function() { jamDialog.dialog("open"); });			
+		}
 
 		sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
 			.attr("id", "Clock"+clock+"Start").addClass("KeyControl").button()
@@ -890,6 +923,163 @@ function createTimeTable() {
 	});
 
 	return table;
+}
+
+function createPeriodDialog() {
+	var dialog = $("<div>").addClass("NumberDialog");
+	var table = $("<table>").appendTo(dialog);
+	var headers = $("<tr><td/><td/><td/><td/><td/></tr>").appendTo(table);
+	$("<a>").text("Nr").addClass("Title")
+		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+	$("<a>").text("Jams").addClass("Title")
+		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+	$("<a>").text("Duration").addClass("Title")
+		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+
+	var periodRegex = /Period\(([^\)]+)\)\.([^\.]+)/;
+	WS.Register(['ScoreBoard.Period'], function (k, v) {
+		var match = (k || "").match(periodRegex);
+		if (match == null || match.length == 0) { return; }
+		var nr = match[1];
+		if (nr == 0) { return; }
+		var prefix = "ScoreBoard.Period(" + nr + ")";
+		var key = match[2];
+		if (k != prefix + "." + key) { return; }
+		if (!(["CurrentJamNumber", "Duration", "Number", "Running"].includes(key))) { return; }
+
+		var row = table.find("tr.Period[nr="+nr+"]");
+		if (row.length == 0 && v != null) {
+			row = $("<tr>").addClass("Period").attr("nr", nr)
+				.append($('<td>').addClass('Number').text(nr))
+				.append($('<td>').addClass('Jams').text(0))
+				.append($('<td>').addClass('Duration'))
+				.append($('<td>').append($("<button>").text("Delete")
+						.button().click(function () {
+							//TODO: confirmation popup
+							WS.Set(prefix + ".Delete", true);
+						})))
+				.append($('<td>').append($("<button>").text("Insert Before")
+						.button().click(function () {
+							WS.Set(prefix + ".InsertBefore", true); 
+						})));
+			var inserted = false;
+			table.find("tr.Period").each(function (i, r) {
+				r = $(r);
+				if (r.attr("nr") > nr) {
+					r.before(row);
+					inserted = true;
+					return false;
+				}});
+			if (!inserted) {
+				row.appendTo(table);
+			}
+		} else if (key == "Number" && v == null && row.length > 0) {
+			row.remove();
+			return;
+		}
+		if (v != null) {
+			if (key == "CurrentJamNumber") { row.find("td.Jams").text(v); }
+			if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.find("td.Duration").text(_timeConversions.msToMinSec(v)); }
+			if (key == "Running" && isTrue(v)) { row.find("td.Duration").text("running"); }
+			if (key == "Running" && !isTrue(v)) { row.find("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'])); }
+		}
+	});
+
+	return dialog.dialog({
+		title: "Periods",
+		autoOpen: false,
+		modal: true,
+		width: 500,
+		buttons: { Close: function() { $(this).dialog("close"); } }
+	});
+}
+
+function createJamDialog() {
+	var dialog = $("<div>").addClass("NumberDialog");
+	var tableTemplate = $("<table>").addClass("Period");
+	var headers = $("<tr><td/><td/><td/><td/><td/></tr>").appendTo(tableTemplate);
+	$("<a>").text("Nr").addClass("Title")
+		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+	$("<a>").text("Points").addClass("Title")
+		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+	$("<a>").text("Duration").addClass("Title")
+		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+
+	var jamRegex = /Period\(([^\)]+)\)\.Jam\(([^\)]+)\)\.(?:TeamJam\(([^\)]+)\)\.)?([^\.\(]+)/;
+	WS.Register(['ScoreBoard.Period'], function (k, v) {
+		var match = (k || "").match(jamRegex);
+		if (match == null || match.length == 0) { return; }
+		var per = match[1];
+		if (per == 0) { return; }
+		var nr = match[2];
+		var prefix = "ScoreBoard.Period(" + per + ").Jam(" + nr + ")";
+		var tj = match[3];
+		var tjPrefix = prefix + ".TeamJam(" + tj + ")";
+		var key = match[4];
+		if (!((k == prefix + "." + key && ["Duration", "Number"].includes(key))
+				|| k == tjPrefix + ".JamScore")) { return; }
+		
+		var table = dialog.find("table.Period[nr="+per+"]");
+		if (table.length == 0 && v != null) {
+			table = tableTemplate.clone().attr("nr", per).appendTo(dialog);
+		}
+		if (table.length == 0) { return; }
+
+		var row = table.find("tr.Jam[nr="+nr+"]");
+		if (row.length == 0 && v != null) {
+			row = $("<tr>").addClass("Jam").attr("nr", nr)
+				.append($('<td>').addClass('Number').text(nr))
+				.append($('<td>').addClass('Points').append($('<span>').addClass('1'))
+						.append($('<span>').text(" - ")).append($('<span>').addClass('2')))
+				.append($('<td>').addClass('Duration'))
+				.append($('<td>').append($("<button>").text("Delete")
+						.button().click(function () {
+							//TODO: confirmation popup
+							WS.Set(prefix + ".Delete", true);
+						})))
+				.append($('<td>').append($("<button>").text("Insert Before")
+						.button().click(function () {
+							WS.Set(prefix + ".InsertBefore", true); 
+						})));
+			var inserted = false;
+			table.find("tr.Jam").each(function (i, r) {
+				r = $(r);
+				if (r.attr("nr") > nr) {
+					r.before(row);
+					inserted = true;
+					return false;
+				}});
+			if (!inserted) {
+				row.appendTo(table);
+			}
+		} else if (key == "Number" && v == null && row.length > 0) {
+			row.remove();
+			return;
+		}
+		if (v != null) {
+			if (key == "JamScore") { row.find("td.Points ."+tj).text(v); }
+			if (key == "Duration") {
+				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
+					row.find("td.Duration").text("running");
+				} else {
+					row.find("td.Duration").text(_timeConversions.msToMinSec(v));
+				}
+			}
+		}
+	});
+	
+	WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
+		dialog.find("table.Period.Show").removeClass("Show");
+		dialog.find("table.Period[nr="+v+"]").addClass("Show");
+	})
+
+	return dialog.dialog({
+		title: "Jams",
+		autoOpen: false,
+		modal: true,
+		width: 500,
+		buttons: { Close: function() { $(this).dialog("close"); } }
+	});
 }
 
 function createTimeDialog(clock) {
@@ -1123,21 +1313,21 @@ function createScoreBoardViewPreviewRows(table, type) {
 			{ text: "10%", value: "10" }
 		]}});
 	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
-			optionParent: "ScoreBoard.Media.images.fullscreen",
+			optionParent: "ScoreBoard.Media.Format(images).Type(fullscreen)",
 			optionChildName: "File",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Image", value: "" }
 		} });
 	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
-			optionParent: "ScoreBoard.Media.videos.fullscreen",
+			optionParent: "ScoreBoard.Media.Format(videos).Type(fullscreen)",
 			optionChildName: "File",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
 			firstOption: { text: "No Video", value: "" }
 		} });
 	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
-			optionParent: "ScoreBoard.Media.customhtml.fullscreen",
+			optionParent: "ScoreBoard.Media.Format(customhtml).Type(fullscreen)",
 			optionChildName: "File",
 			optionNameElement: "Name",
 			optionValueElement: "Src",
@@ -1289,7 +1479,7 @@ function createNewTeamTable(team, teamid) {
 	team.$sb("Name").$sbControl("<input type='text'>")
 		.appendTo(controlTable.find("td:eq(0)"));
 	team.$sb("Logo").$sbControl("<select>", { sbelement: {
-		optionParent: "ScoreBoard.Media.images.teamlogo",
+		optionParent: "ScoreBoard.Media.Format(images).Type(teamlogo)",
 		optionChildName: "File",
 		optionNameElement: "Name",
 		optionValueElement: "Src",

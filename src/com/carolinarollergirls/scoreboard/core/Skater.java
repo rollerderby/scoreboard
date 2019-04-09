@@ -8,20 +8,30 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
     public SkaterSnapshot snapshot();
     public void restoreSnapshot(SkaterSnapshot s);
 
+    public int compareTo(Skater other);
+
     public Team getTeam();
-    public String getId();
     public String getName();
     public void setName(String id);
     public String getNumber();
     public void setNumber(String number);
+    public Fielding getFielding(TeamJam teamJam);
+    public Fielding getCurrentFielding();
+    public void removeCurrentFielding();
     public Position getPosition();
     public void setPosition(Position position);
     public Role getRole();
@@ -29,43 +39,54 @@ public interface Skater extends ScoreBoardEventProvider {
     public void setRoleToBase();
     public Role getBaseRole();
     public void setBaseRole(Role base);
+    public void updateEligibility();
     public boolean isPenaltyBox();
     public void setPenaltyBox(boolean box);
     public String getFlags();
     public void setFlags(String flags);
-    public List<Penalty> getPenalties();
-    public Penalty getFOEXPPenalty();
-    // A null code removes the penalty.
-    public void AddPenalty(String id, boolean foulout_explusion, int period, int jam, String code);
+    public Penalty getPenalty(String num);
+    public List<Penalty> getUnservedPenalties();
+    public boolean hasUnservedPenalties();
 
-    public static final String EVENT_NAME = "Name";
-    public static final String EVENT_NUMBER = "Number";
-    public static final String EVENT_POSITION = "Position";
-    public static final String EVENT_ROLE = "Role";
-    public static final String EVENT_BASE_ROLE = "BaseRole";
-    public static final String EVENT_PENALTY_BOX = "PenaltyBox";
-    public static final String EVENT_FLAGS = "Flags";
+    public enum Value implements PermanentProperty {
+        ID(String.class, ""),
+        NAME(String.class, ""),
+        NUMBER(String.class, ""),
+        CURRENT_FIELDING(Fielding.class, null),
+        CURRENT_BOX_SYMBOLS(String.class, ""),
+        POSITION(Position.class, null),
+        ROLE(Role.class, null),
+        BASE_ROLE(Role.class, null),
+        PENALTY_BOX(Boolean.class, false),
+        FLAGS(String.class, "");
 
-    public static final String EVENT_PENALTY = "Penalty";
-    public static final String EVENT_REMOVE_PENALTY = "RemovePenalty";
-    public static final String EVENT_PENALTY_FOEXP = "PenaltyFOEXP";
-    public static final String EVENT_PENALTY_REMOVE_FOEXP = "RemovePenaltyFOEXP";
-    public static final String EVENT_PENALTY_PERIOD = "Period";
-    public static final String EVENT_PENALTY_JAM = "Jam";
-    public static final String EVENT_PENALTY_CODE = "Code";
-
-    public static interface Penalty extends ScoreBoardEventProvider {
-        public String getId();
-        public int getPeriod();
-        public int getJam();
-        public String getCode();
+        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        public Class<?> getType() { return type; }
+        public Object getDefaultValue() { return defaultValue; }
     }
+    public enum Child implements AddRemoveProperty {
+        FIELDING(Fielding.class);
+
+        private Child(Class<? extends ValueWithId> t) { type = t; }
+        private final Class<? extends ValueWithId> type;
+        public Class<? extends ValueWithId> getType() { return type; }
+    }
+    public enum NChild implements NumberedProperty {
+        PENALTY(Penalty.class);
+
+        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
+        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
+        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
+    }
+
+    public static final String FO_EXP_ID = "0";
 
     public static interface SkaterSnapshot	{
         public String getId();
         public Position getPosition();
         public Role getRole();
         public Role getBaseRole();
-        public boolean isPenaltyBox();
     }
 }

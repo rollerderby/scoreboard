@@ -53,10 +53,10 @@ function initialize() {
 			   "ScoreBoard.Team(1)",
 			   "ScoreBoard.Team(2)",
 		       "ScoreBoard.Clock(Intermission).MaximumNumber",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.PreGame",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.Unofficial",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.Official",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.Intermission" ], function(k,v) { } );
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)",
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)",
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)",
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)" ], function(k,v) { } );
 
 	WS.Register( [  'ScoreBoard.Clock(Timeout).Running', 
 		        'ScoreBoard.TimeoutOwner',
@@ -71,33 +71,33 @@ function initialize() {
 	WS.Register( 'ScoreBoard.Team(1)', function(k,v) { teamData(1, k,v); } );
 	WS.Register( 'ScoreBoard.Team(2)', function(k,v) { teamData(2, k,v); } );
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.DDTV.Score', 'ScoreBoard.Settings.Overlay.DDTV.Top' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.DDTV.Score)', 'ScoreBoard.Settings.Setting(Overlay.DDTV.Top)' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
 			if(v == 'On') { $(this).addClass('Show'); } else { $(this).removeClass('Show'); }
 		});
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.DDTV.ShowJammers' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.DDTV.ShowJammers)' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
 			if(v == 'On') { $(this).addClass('ShowJammers'); } else { $(this).removeClass('ShowJammers'); }
 		});
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.DDTV.Mode' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.DDTV.Mode)' ], function(k,v) {  
 		$('body').removeClass('alpha').removeClass('green').addClass(v);
 	});
-	WS.Register([ 'ScoreBoard.Settings.Overlay.DDTV.Resolution' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.DDTV.Resolution)' ], function(k,v) {  
 		$('body').removeClass('FHD HD SDW SD LDW LD').addClass(v);
 	});
-	WS.Register([ 'ScoreBoard.Settings.Overlay.DDTV.Font.Clock' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.DDTV.Font.Clock)' ], function(k,v) {  
 		$('body').removeClass('ClockFaceDigital7 ClockFaceErics ClockFaceTick ClockFaceLCD14 ClockFaceUbuntu ClockFaceVerdana ClockFaceHelvetica ClockFaceArial ClockFaceSerif ClockFaceSans').addClass(v);
 	});
 
-	WS.Register('ScoreBoard.Settings.Overlay.DDTV.Transition', function(k,v) { 
+	WS.Register('ScoreBoard.Settings.Setting(Overlay.DDTV.Transition)', function(k,v) { 
 		window.alert(k,v);
 	});
 
-	WS.Register('ScoreBoard.Settings.Overlay.DDTV.Panel', function(k,v) { 
+	WS.Register('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', function(k,v) { 
 		console.log('changed panel', k, v);
 		$('.OverlayPanel').removeClass('Show'); 
 		// sort divs in the panel before we show, just in case it's changed
@@ -109,25 +109,25 @@ function initialize() {
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.DDTV.LowerThird.Line' ] , function(k,v) { 
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Line)' ] , function(k,v) { 
 		sp = '.' + k.split('.').slice(2,4).join(' .');
 		$(sp).text(v);
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.DDTV.LowerThird.Style' ] , function(k,v) { 
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.DDTV.LowerThird.Style)' ] , function(k,v) { 
 		$('.LowerThird .Line2').removeClass( 'ColourTeam1 ColourTeam2 ColourDefault' ).addClass(v);
 	});
 
 	$(document).keyup(function(e) {
-		if(e.which == 74) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.ShowJammers', WS.state['ScoreBoard.Settings.Overlay.DDTV.ShowJammers'] == 'On' ? 'Off' : 'On'); }
-		if(e.which == 67) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Panel', WS.state['ScoreBoard.Settings.Overlay.DDTV.Panel'] == 'ClockBox' ? '' : 'ClockBox'); }
-		if(e.which == 69) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Panel', WS.state['ScoreBoard.Settings.Overlay.DDTV.Panel'] == 'PT1' ? '' : 'PT1'); } /* E */
-		if(e.which == 49) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Panel', WS.state['ScoreBoard.Settings.Overlay.DDTV.Panel'] == 'RosterTeam1' ? '' : 'RosterTeam1'); }
-		if(e.which == 50) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Panel', WS.state['ScoreBoard.Settings.Overlay.DDTV.Panel'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
-		if(e.which == 51) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Panel', WS.state['ScoreBoard.Settings.Overlay.DDTV.Panel'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
-		if(e.which == 52) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Panel', WS.state['ScoreBoard.Settings.Overlay.DDTV.Panel'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
-		if(e.which == 84) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Top',   WS.state['ScoreBoard.Settings.Overlay.DDTV.Top'] == 'Off' ? 'On': 'Off'); }
-		if(e.which == 32) { WS.Set('ScoreBoard.Settings.Overlay.DDTV.Panel', ''); }
+		if(e.which == 74) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.ShowJammers)', WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.ShowJammers)'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 67) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)'] == 'ClockBox' ? '' : 'ClockBox'); }
+		if(e.which == 69) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)'] == 'PT1' ? '' : 'PT1'); } /* E */
+		if(e.which == 49) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)'] == 'RosterTeam1' ? '' : 'RosterTeam1'); }
+		if(e.which == 50) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
+		if(e.which == 51) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
+		if(e.which == 52) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
+		if(e.which == 84) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Top)',   WS.state['ScoreBoard.Settings.Setting(Overlay.DDTV.Top)'] == 'Off' ? 'On': 'Off'); }
+		if(e.which == 32) { WS.Set('ScoreBoard.Settings.Setting(Overlay.DDTV.Panel)', ''); }
 	});
 
 	setTimeout(function() { $('body').removeClass('preload'); }, 1000);
@@ -165,7 +165,7 @@ function teamData(team, k,v) {
 		}
 	}
 
-	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\)$/;
+	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\).Color$/;
 	var match = k.match(colourRegEx);
 	if(match) { 
 		var setting = match[2];
@@ -317,13 +317,13 @@ function clockType(k,v) {
 		var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
 		var isOfficial = WS.state["ScoreBoard.OfficialScore"];
 		if (num == 0)  
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.PreGame"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)"];
 		else if (num != max)
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Intermission"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)"];
 		else if (!isOfficial)
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Unofficial"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)"];
 		else
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Official"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)"];
 
 	}
 
@@ -413,7 +413,7 @@ function jammer(k, v) {
 	var jammerName = WS.state[prefix + "Skater(" + jammerId + ").Name"];
 	var pivotId = WS.state[prefix + "Position(Pivot).Skater"];
 	var pivotName = WS.state[prefix + "Skater(" + pivotId + ").Name"];
-	var leadJammer = (WS.state[prefix + "LeadJammer"] === "Lead");
+	var leadJammer = isTrue(WS.state[prefix + "DisplayLead"]);
 	var starPass = isTrue(WS.state[prefix + "StarPass"]);
 
 	if (jammerName == null)

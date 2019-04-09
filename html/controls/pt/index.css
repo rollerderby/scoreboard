@@ -7,7 +7,6 @@ table,tr,td {
 	border-collapse: collapse;
 	border-color:#777;
 }
-/*increase readability by making penalty codes bold */
 tr {
     color: #333;
 }
@@ -30,6 +29,9 @@ tr {
 .Team .Warn2:nth-child(4n+0), .Team .Warn2:nth-child(4n-1) { background-color: #cc7222; }
 .Team .Warn3 { background-color: #ff8080; }
 .Team .Warn3:nth-child(4n+0), .Team .Warn3:nth-child(4n-1) { background-color: #cc2d2d; }
+
+.Team .Unserved { background-color: #0FF; }
+.Team .Serving { background-color: #0F0; }
 
 .PenaltyEditor .Codes>div { float: left; width: 150px; height: 80px; margin: 10px; border: 1px solid black; font-weight: bold; }
 .PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }

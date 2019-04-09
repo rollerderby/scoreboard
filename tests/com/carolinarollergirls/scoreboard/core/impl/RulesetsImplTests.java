@@ -10,17 +10,19 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Set;
 
 public class RulesetsImplTests {
 
     private ScoreBoard sb;
     private Rulesets rulesets;
 
-    private final String rootId = RulesetsImpl.rootId;
+    private final String rootId = RulesetsImpl.ROOT_ID;
     private final String id1 = "11111111-1111-1111-1111-111111111";
     private final String id2 = "22222222-2222-2222-2222-222222222";
 
@@ -37,23 +39,23 @@ public class RulesetsImplTests {
         assertEquals(rootId, child.getParentRulesetId());
         assertEquals(2, rulesets.getInt(Rule.NUMBER_PERIODS));
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
-        assertEquals(rootId, rulesets.getId());
-        assertEquals("WFTDA Sanctioned", rulesets.getName());
+        assertEquals(rootId, rulesets.getCurrentRulesetId());
+        assertEquals("WFTDA Sanctioned", rulesets.getCurrentRulesetName());
 
-        Map<Rule,String> s = new HashMap<Rule,String>();
-        s.put(Rule.NUMBER_PERIODS, "5");
+        Set<ValueWithId> s = new HashSet<ValueWithId>();
+        s.add(new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
         child.setAll(s);
         rulesets.setCurrentRuleset(id1);
         assertEquals(5, rulesets.getInt(Rule.NUMBER_PERIODS));
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
-        assertEquals(id1, rulesets.getId());
-        assertEquals("child", rulesets.getName());
+        assertEquals(id1, rulesets.getCurrentRulesetId());
+        assertEquals("child", rulesets.getCurrentRulesetName());
 
         rulesets.setCurrentRuleset(rootId);
         assertEquals(2, rulesets.getInt(Rule.NUMBER_PERIODS));
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
-        assertEquals(rootId, rulesets.getId());
-        assertEquals("WFTDA Sanctioned", rulesets.getName());
+        assertEquals(rootId, rulesets.getCurrentRulesetId());
+        assertEquals("WFTDA Sanctioned", rulesets.getCurrentRulesetName());
 
         rulesets.set(Rule.NUMBER_PERIODS, "6");
         assertEquals(6, rulesets.getInt(Rule.NUMBER_PERIODS));
@@ -62,13 +64,14 @@ public class RulesetsImplTests {
         assertEquals(6, rulesets.getInt(Rule.NUMBER_PERIODS));
     }
 
+    @Test
     public void testTimeRule() {
         Ruleset child = rulesets.addRuleset("child", rootId, id1);
         assertEquals(rootId, child.getParentRulesetId());
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
 
-        Map<Rule,String> s = new HashMap<Rule,String>();
-        s.put(Rule.PERIOD_DURATION, "1:00");
+        Set<ValueWithId> s = new HashSet<ValueWithId>();
+        s.add(new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
         child.setAll(s);
         rulesets.setCurrentRuleset(id1);
         assertEquals(60000, rulesets.getLong(Rule.PERIOD_DURATION));

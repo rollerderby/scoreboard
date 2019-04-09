@@ -33,6 +33,8 @@ import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 public class XmlDocumentEditor {
     public XmlDocumentEditor() { }
@@ -50,7 +52,9 @@ public class XmlDocumentEditor {
         if (id == null) {
             return null;
         } else {
-            return id.replaceAll("['\"()]", "");
+            String i = id.replaceAll("['\"()]", "");
+            if ("".equals(i)) { i = null; }
+            return i; 
         }
     }
 
@@ -92,6 +96,18 @@ public class XmlDocumentEditor {
         return false;
     }
 
+    public Element addElement(Element parent, Property prop) {
+        return addElement(parent, prop, null, null);
+    }
+
+    public Element addElement(Element parent, Property prop, String id) {
+        return addElement(parent, prop, id, null);
+    }
+
+    public Element addElement(Element parent, Property prop, String id, String text) {
+        return addElement(parent, PropertyConversion.toFrontend(prop), id, text);
+    }
+
     public Element addElement(Element parent, String name) {
         return addElement(parent, name, null, null);
     }
@@ -104,13 +120,25 @@ public class XmlDocumentEditor {
         Document d = parent.getDocument();
         Element element = new Element(name);
         id = checkId(id);
-        if (null != id && !"".equals(id)) {
+        if (null != id) {
             element.setAttribute("Id", id);
         }
         synchronized (d) {
             parent.addContent(setText(element, text));
         }
         return element;
+    }
+
+    public Element setElement(Element parent, Property prop) {
+        return setElement(parent, prop, null, null);
+    }
+
+    public Element setElement(Element parent, Property prop, String id) {
+        return setElement(parent, prop, id, null);
+    }
+
+    public Element setElement(Element parent, Property prop, String id, String text) {
+        return setElement(parent, PropertyConversion.toFrontend(prop), id, text);
     }
 
     public Element setElement(Element parent, String name) {
@@ -348,6 +376,7 @@ public class XmlDocumentEditor {
      */
     public Element setRemovePI(Element e) { return setPI(e, "Remove"); }
     public boolean hasRemovePI(Element e) { return hasPI(e, "Remove"); }
+    public Element setRemovePI(Element e, boolean status) { return status ? setPI(e, "Remove") : removePI(e, "Remove"); }
     public Element setOncePI(Element e) { return setPI(e, "Once"); }
     public boolean hasOncePI(Element e) { return hasPI(e, "Once"); }
     public Element setNoSavePI(Element e) { return setPI(e, "NoSave"); }

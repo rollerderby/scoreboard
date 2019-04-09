@@ -29,51 +29,23 @@ public class AsyncScoreBoardListener extends Thread implements ScoreBoardListene
     public void run() {
         while (true) {
             ScoreBoardEvent event = null;
-            synchronized(this) {
+            synchronized (this) {
                 try {
                     if((event = queue.poll()) == null) {
                         this.wait();
                     }
                 } catch (InterruptedException e) {}
-                inProgress = true;
             }
             if (event != null) {
                 listener.scoreBoardChange(event);
             }
-            synchronized(this) {
-                inProgress = false;
-            }
         }
 
-    }
-
-    private boolean isEmpty() {
-        synchronized(this) {
-            return queue.size() == 0 && !inProgress;
-        }
     }
 
     private ScoreBoardListener listener;
-    private boolean inProgress;
     private Queue<ScoreBoardEvent> queue = new LinkedList<ScoreBoardEvent>();
 
-    // For unittests.
-    public static void waitForEvents() {
-        while (true) {
-            boolean empty = true;
-            for (AsyncScoreBoardListener asbl : listeners) {
-                if (!asbl.isEmpty()) {
-                    empty = false;
-                }
-            }
-            if (empty) {
-                break;
-            }
-            try {
-                Thread.sleep(1);
-            } catch (InterruptedException e) {};
-        }
-    }
     private static Queue<AsyncScoreBoardListener> listeners = new ConcurrentLinkedQueue<AsyncScoreBoardListener>();
 }
 

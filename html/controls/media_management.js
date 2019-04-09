@@ -25,17 +25,18 @@ $sb(function() {
 
 	$("#tabsDiv").tabs();
 
-	setupTab("ScoreBoard.Media.images", "File", "<img>");
-	setupTab("ScoreBoard.Media.videos", "File", "<video>");
-	setupTab("ScoreBoard.Media.customhtml", "File", "<iframe>");
+	setupTab("ScoreBoard.Media.Format(images)", "File", "<img>");
+	setupTab("ScoreBoard.Media.Format(videos)", "File", "<video>");
+	setupTab("ScoreBoard.Media.Format(customhtml)", "File", "<iframe>");
 });
 
 function setupTab(parentName, childName, previewElement) {
-	$sb(parentName).$sbBindAddRemoveEach("", function(event,node) {
+	var media = $sb(parentName).$sbId;
+	$sb(parentName).$sbBindAddRemoveEach("Type", function(event,node) {
 		var newTable = $("body>table.TypeTemplate").clone(true)
 			.removeClass("TypeTemplate").addClass("Type")
 			.data({
-				type: node.$sbName,
+				type: node.$sbId,
 				sbType: node,
 				parentName: parentName,
 				childName: childName,
@@ -45,11 +46,11 @@ function setupTab(parentName, childName, previewElement) {
 				createUploadMediaDialog($(this).closest("table"));
 			}).end()
 			.find("thead button").button().end()
-			.find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbName).end();
-		_windowFunctions.appendAlphaSortedByData($("#"+parentName.split(".")[2]+">div.Type"), newTable, childName);
+			.find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
+		_windowFunctions.appendAlphaSortedByData($("#"+media+">div.Type"), newTable, childName);
 	}, function(event,node) {
-		$("#"+parentName.split(".")[2]+">div.Type>table.Type")
-			.filter(function() { return $(this).data("type") == node.$sbName; })
+		$("#"+media+">div.Type>table.Type")
+			.filter(function() { return $(this).data("type") == node.$sbId; })
 			.remove();
 	});
 
@@ -58,8 +59,7 @@ function setupTab(parentName, childName, previewElement) {
 		subChildren: true,
 		add: function(event,node) {
 			var sbType = $sb(node.parent());
-			var media = parentName.split(".")[2];
-			var type = sbType.$sbName;
+			var type = sbType.$sbId;
 			var srcprefix = "/"+media+"/"+type+"/";
 			var table = $("#"+media+">div.Type>table.Type")
 				.filter(function() { return $(this).data("type") == type; });
@@ -76,8 +76,8 @@ function setupTab(parentName, childName, previewElement) {
 			_windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbName", 1);
 		},
 		remove: function(event,node) {
-			$("#"+parentName.split(".")[2]+">div.Type>table.Type")
-				.filter(function() { return $(this).data("type") == $sb(node.parent()).$sbName; })
+			$("#"+media+">div.Type>table.Type")
+				.filter(function() { return $(this).data("type") == $sb(node.parent()).$sbId; })
 				.find("tr.Item")
 				.filter(function() { return $(this).data("sbName") == node.$sbName; })
 				.remove();
@@ -118,7 +118,7 @@ function createRemoveMediaDialog(media, type, node) {
 }
 
 function createUploadMediaDialog(table) {
-	var media = table.data("parentName").split(".")[2];
+	var media = $sb(table.data("parentName")).$sbId;
 	var type = table.data("type");
 	var div = $("body>div.UploadMediaDialog.DialogTemplate").clone(true)
 		.removeClass("DialogTemplate");

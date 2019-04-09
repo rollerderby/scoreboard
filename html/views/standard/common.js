@@ -6,7 +6,7 @@ function jammer(k, v) {
 	var jammerName = WS.state[prefix + "Skater(" + jammerId + ").Name"];
 	var pivotId = WS.state[prefix + "Position(Pivot).Skater"];
 	var pivotName = WS.state[prefix + "Skater(" + pivotId + ").Name"];
-	var leadJammer = (WS.state[prefix + "LeadJammer"] === "Lead");
+	var leadJammer = isTrue(WS.state[prefix + "DisplayLead"]);
 	var starPass = isTrue(WS.state[prefix + "StarPass"]);
 
 	if (jammerName == null)
@@ -32,8 +32,8 @@ function nameUpdate(k, v) {
 	id = getTeamId(k);
 	var prefix = "ScoreBoard.Team(" + id + ").";
 	var name = WS.state[prefix + "Name"];
-	var altName1 = WS.state[prefix + "AlternateName(overlay)"];
-	var altName2 = WS.state[prefix + "AlternateName(scoreboard)"];
+	var altName1 = WS.state[prefix + "AlternateName(overlay).Name"];
+	var altName2 = WS.state[prefix + "AlternateName(scoreboard).Name"];
 
 	if (altName1 != null && altName1 != "")
 		name = altName1;
@@ -113,18 +113,18 @@ function smallDescriptionUpdate(k, v) {
 
 function intermissionDisplay() {
 	var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
-	var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
+	var max = WS.state["ScoreBoard.Rulesets.CurrentRule(Period.Number)"];
 	var isOfficial = WS.state["ScoreBoard.OfficialScore"];
 	var ret = '';
 
 	if (num == 0) {
-		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.PreGame"];
+		ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)"];
 	} else if (num != max)
-		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Intermission"];
+		ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)"];
 	else if (!isOfficial)
-		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Unofficial"];
+		ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)"];
 	else
-		ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Official"];
+		ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)"];
 
 	$(".Clock.Intermission .Time").toggleClass("Hide", num == max);
 	return ret;
@@ -140,7 +140,7 @@ function toClockInitialNumber(k, v) {
 			if (name != null && number != null)
 				ret = name.substring(0, 1) + number;
 
-			if (name == 'Period' && WS.state['ScoreBoard.Clock(Period).MaximumNumber'] == 1) 
+			if (name == 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1) 
 				ret = 'Game';
 		}
 	});
@@ -181,4 +181,4 @@ WS.Register( [
 	"ScoreBoard.Clock(Timeout).Running",
 	"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); } );
 
-WS.Register( 'ScoreBoard.Clock(Period).MaximumNumber' );
+WS.Register( 'ScoreBoard.Rulesets.CurrentRule(Period.Number)' );

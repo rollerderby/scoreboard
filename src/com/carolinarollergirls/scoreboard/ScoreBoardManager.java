@@ -53,6 +53,7 @@ public class ScoreBoardManager {
 
         //FIXME - not the best way to load autosave doc.
         scoreBoard.getXmlScoreBoard().load();
+        scoreBoard.postAutosaveUpdate();
     }
 
     public static void stop() {

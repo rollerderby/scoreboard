@@ -43,10 +43,10 @@ function initialize() {
 
 	WS.Register( [ "ScoreBoard.Clock(Intermission).Number",
 		       "ScoreBoard.Clock(Intermission).MaximumNumber",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.PreGame",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.Unofficial",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.Official",
-		       "ScoreBoard.Settings.ScoreBoard.Intermission.Intermission" ], function(k,v) { } );
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)",
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)",
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)",
+		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)" ], function(k,v) { } );
 
 	WS.Register( [  'ScoreBoard.Clock(Timeout).Running', 
 		        'ScoreBoard.TimeoutOwner',
@@ -58,7 +58,7 @@ function initialize() {
 			'ScoreBoard.Team(1).RetainedOfficialReview',
 			'ScoreBoard.Team(2).RetainedOfficialReview' ], function(k,v) { smallDescriptionUpdate(k,v); } );
 
-	WS.Register( 'ScoreBoard.Stats.Period', function(k,v) { jamData(k,v); } );
+	WS.Register( 'ScoreBoard.Period', function(k,v) { jamData(k,v); } );
 
 	WS.Register( 'ScoreBoard.Team(1)', function(k,v) { teamData(1, k,v); } );
 	WS.Register( 'ScoreBoard.Team(2)', function(k,v) { teamData(2, k,v); } );
@@ -67,23 +67,23 @@ function initialize() {
 		if(v == 2) { $('.PPJBox .Team .Period2').show(); } else { $('.PPJBox .Team .Period2').hide(); }
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.Interactive.Clock', 'ScoreBoard.Settings.Overlay.Interactive.Score' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
 			if(v == 'On') { $(this).addClass('Show'); } else { $(this).removeClass('Show'); }
 		});
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.Interactive.ShowJammers' ], function(k,v) {  
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
 			if(v == 'On') { $(this).addClass('ShowJammers'); } else { $(this).removeClass('ShowJammers'); }
 		});
 	});
 
-	WS.Register('ScoreBoard.Settings.Overlay.Interactive.Transition', function(k,v) { 
+	WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.Transition)', function(k,v) { 
 		window.alert(k,v);
 	});
 
-	WS.Register('ScoreBoard.Settings.Overlay.Interactive.Panel', function(k,v) { 
+	WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', function(k,v) { 
 		$('.OverlayPanel').removeClass('Show'); 
 		// sort divs in the panel before we show, just in case it's changed
 		if(v == 'PenaltyTeam1' || v == 'PenaltyTeam2') {
@@ -94,24 +94,24 @@ function initialize() {
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.Interactive.LowerThird.Line' ] , function(k,v) { 
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line)' ] , function(k,v) { 
 		sp = '.' + k.split('.').slice(2,4).join(' .');
 		$(sp).text(v);
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Overlay.Interactive.LowerThird.Style' ] , function(k,v) { 
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)' ] , function(k,v) { 
 		$('.LowerThird .Line2').removeClass( 'ColourTeam1 ColourTeam2 ColourDefault' ).addClass(v);
 	});
 
 	$(document).keyup(function(e) {
-		if(e.which == 74) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.ShowJammers', WS.state['ScoreBoard.Settings.Overlay.Interactive.ShowJammers'] == 'On' ? 'Off' : 'On'); }
-		if(e.which == 67) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.Clock', WS.state['ScoreBoard.Settings.Overlay.Interactive.Clock'] == 'On' ? 'Off' : 'On'); }
-		if(e.which == 83) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.Score', WS.state['ScoreBoard.Settings.Overlay.Interactive.Score'] == 'On' ? 'Off' : 'On'); }
-		if(e.which == 49) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.Panel', WS.state['ScoreBoard.Settings.Overlay.Interactive.Panel'] == 'RosterTeam1' ? '' : 'RosterTeam1'); }
-		if(e.which == 50) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.Panel', WS.state['ScoreBoard.Settings.Overlay.Interactive.Panel'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
-		if(e.which == 51) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.Panel', WS.state['ScoreBoard.Settings.Overlay.Interactive.Panel'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
-		if(e.which == 52) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.Panel', WS.state['ScoreBoard.Settings.Overlay.Interactive.Panel'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
-		if(e.which == 32) { WS.Set('ScoreBoard.Settings.Overlay.Interactive.Panel', ''); }
+		if(e.which == 74) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 67) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 83) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Score)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Score)'] == 'On' ? 'Off' : 'On'); }
+		if(e.which == 49) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] == 'RosterTeam1' ? '' : 'RosterTeam1'); }
+		if(e.which == 50) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] == 'RosterTeam2' ? '' : 'RosterTeam2'); }
+		if(e.which == 51) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] == 'PenaltyTeam1' ? '' : 'PenaltyTeam1'); }
+		if(e.which == 52) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] == 'PenaltyTeam2' ? '' : 'PenaltyTeam2'); }
+		if(e.which == 32) { WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', ''); }
 	});
 
 	setTimeout(function() { $('body').removeClass('preload'); }, 1000);                                                                                                                                            
@@ -150,7 +150,7 @@ function teamData(team, k,v) {
 		}
 	}
 
-	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\)$/;
+	var colourRegEx = /^ScoreBoard\.Team\((.+)\)\.Color\((.+)\).Color$/;
 	var match = k.match(colourRegEx);
 	if(match) { 
 		var setting = match[2];
@@ -249,7 +249,7 @@ function createPenalty(mb, pnum, v) {
 	$(mb).sortDivs();
 }
 
-var jamScoreRegEx = /^ScoreBoard.Stats.Period\((.+)\)\.Jam\((.+)\)\.Team\((.+)\)\.(.+)$/;
+var jamScoreRegEx = /^ScoreBoard.Period\((.+)\)\.Jam\((.+)\)\.TeamJam\((.+)\)\.(.+)$/;
 
 function jamData(k,v) {
         match = k.match(jamScoreRegEx);
@@ -260,7 +260,7 @@ function jamData(k,v) {
         var team = match[3];
 	var key = match[4];
 
-	if (key != 'JamScore' && key != 'LeadJammer') return;
+	if (key != 'JamScore' && key != 'DisplayLead') return;
 
 	pa = '.PPJBox .Team'+ team + ' .Period'+period;
 	me = pa + ' .Jam'+jam;
@@ -281,7 +281,7 @@ function jamData(k,v) {
 		$pId.sortDivs();
 	}
 
-	if(key == 'LeadJammer') {
+	if(key == 'DisplayLead') {
 		$(me).attr('lead', v);
 	}
 
@@ -334,13 +334,13 @@ function clockType(k,v) {
 		var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
 		var isOfficial = WS.state["ScoreBoard.OfficialScore"];
 		if (num == 0)  
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.PreGame"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)"];
 		else if (num != max)
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Intermission"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)"];
 		else if (!isOfficial)
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Unofficial"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)"];
 		else
-			ret = WS.state["ScoreBoard.Settings.ScoreBoard.Intermission.Official"];
+			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)"];
 
 		$('.ClockDescription').css('backgroundColor', 'blue');
 	} else {

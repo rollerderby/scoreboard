@@ -3,7 +3,9 @@ package com.carolinarollergirls.scoreboard.penalties;
 import java.util.Arrays;
 import java.util.List;
 
-public class PenaltyCode {
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+
+public class PenaltyCode implements ValueWithId {
 
     private String code;
     private List<String> verbalCues;
@@ -22,6 +24,14 @@ public class PenaltyCode {
         this.verbalCues = Arrays.asList(verbalCues);
     }
 
+    public String getId() {
+        return code;
+    }
+
+    public String getValue() {
+        return cuesForWS();
+    }
+
     public String getCode() {
         return code;
     }
@@ -35,7 +45,7 @@ public class PenaltyCode {
         this.verbalCues = verbalCues;
     }
 
-    public String CuesForWS(PenaltyCode c) {
+    public String cuesForWS() {
         //TODO: replace by String.join() when we move to Java 1.8
         if (verbalCues.isEmpty()) {
             return "";
