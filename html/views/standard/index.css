@@ -306,3 +306,28 @@ body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
 	@-moz-keyframes DotActive    {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 	@-webkit-keyframes DotActive {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
 	@keyframes DotActive         {  0% { opacity: 1; } 50% { opacity: 0; } 100% { opacity: 1; } }
+
+
+#SponsorBox { position: absolute; left: 0%; top: 100%; width: 100%; height: 26%; animation: SponsorHide 0.5s; -moz-animation: SponsorHide 0.5s; -webkit-animation: SponsorHide 0.5s; }
+#SponsorBox.Show { top: 74%; animation: SponsorShow 0.5s; -moz-animation: SponsorShow 0.5s; -webkit-animation: SponsorShow 0.5s; }
+	@-moz-keyframes SponsorHide { 0% { top:  74%; } 50% { top: 100%; } 100% { top: 100%; } }
+	@-moz-keyframes SponsorShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  74%; } }
+	@-webkit-keyframes SponsorHide { 0% { top:  74%; } 50% { top: 100%; } 100% { top: 100%; } }
+	@-webkit-keyframes SponsorShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  74%; } }
+	@keyframes SponsorHide { 0% { top:  74%; } 50% { top: 100%; } 100% { top: 100%; } }
+	@keyframes SponsorShow { 0% { top: 100%; } 50% { top: 100%; } 100% { top:  74%; } }
+
+#SponsorBox>div { position: absolute; top: 0%; right: 0%; width: 100%; height: 100%; font-size: 0px; }
+#SponsorBox>div.NextImg { right: 100%; }
+#SponsorBox>div.CurrentImg { right: 0%; animation: CurrentImg 1.01s; -moz-animation: CurrentImg 1.01s; -webkit-animation: CurrentImg 1.01s; }
+	@-moz-keyframes CurrentImg { from { right: 100%; } to { right: 0%; } }
+	@-webkit-keyframes CurrentImg { from { right: 100%; } to { right: 0%; } }
+	@keyframes CurrentImg { from { right: 100%; } to { right: 0%; } }
+#SponsorBox>div.FinishedImg { right: -100%; animation: FinishedImg 0.99s; -moz-animation: FinishedImg 0.99s; -webkit-animation: FinishedImg 0.99s; }
+	@-moz-keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
+	@-webkit-keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
+	@keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
+body.MinAnimations #SponsorBox>div.CurrentImg { right: 0%; animation: none; -moz-animation: none; -webkit-animation: none; }
+body.MinAnimations #SponsorBox>div.FinishedImg { right: -100%; animation: none; -moz-animation: none; -webkit-animation: none; }
+
+#SponsorBox>div>img { width: 100%; height: 100%; }

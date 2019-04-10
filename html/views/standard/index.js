@@ -92,5 +92,55 @@ function initialize() {
 		})
 	});
 
+
+
+	(function() {
+		var switchTimeMs = 5000;
+		var banners = [];
+		var div = $("#SponsorBox");
+		var setNextSrc = function() {
+			if (banners.length == 0) {
+				div.find(".NextImg>img").prop("src", "").toggle(false);
+			} else {
+				// Use time so different scoreboards will be using the same images.
+				var index = Math.round((new Date().getTime() / switchTimeMs) % banners.length);
+				div.find(".NextImg>img").prop("src", banners[index].Src).toggle(true);
+
+				// Also set the current image. This gets a banner up when the page is loaded,
+				// and is otherwise a noop.
+				div.find(".CurrentImg>img").prop("src", banners[index].Src).toggle(true);
+			}
+		};
+		var nextImgFunction = function() {
+			var cur = $(div.find(".CurrentImg")[0]);
+			var nex = $(div.find(".NextImg")[0]);
+			var fin = $(div.find(".FinishedImg")[0]);
+			cur.removeClass("CurrentImg").addClass("FinishedImg");
+			nex.removeClass("NextImg").addClass("CurrentImg");
+			fin.removeClass("FinishedImg").addClass("NextImg");
+			setNextSrc();
+			// Align to clock, so different scoreboards will be synced.
+			setTimeout(nextImgFunction, switchTimeMs - (new Date().getTime() % switchTimeMs));
+		};
+		WS.Register(['ScoreBoard.Media.images.sponsor_banner'], {triggerBatchFunc: function() {
+			var images = {};
+			for (var prop in WS.state) {
+				if (WS.state[prop] == null) {
+					continue;
+				}
+				var re = /ScoreBoard.Media.images.sponsor_banner\((.*)\)\.(\w+)/;
+				var m = prop.match(re);
+				if (m != null) {
+					images[m[1]] = images[m[1]] || {};
+					images[m[1]][m[2]] = WS.state[prop];
+				}
+			}
+			banners = Object.values(images).sort(function (a, b) {a.Id.localeCompare(b.Id, "en")});
+		}});
+
+		setNextSrc();
+		nextImgFunction();
+	})();
+
 }
 //# sourceURL=views\standard\index.js
