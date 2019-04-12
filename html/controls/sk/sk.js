@@ -220,6 +220,7 @@ function setupTripEditor(p, j, teamId, t) {
 		WS.Set(prefix+'Remove', true);
 		tripEditor.dialog('close');
 	});
+	tripEditor.find(":input").keydown(function(event) { if (event.which == 13) tripEditor.find('#submit').click(); });
 	
 	tripEditor.dialog('open');
 }
