@@ -18,11 +18,12 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public TeamJamImpl(Jam j, String teamId) {
         super(j, teamId, Jam.Child.TEAM_JAM, TeamJam.class, Value.class, Child.class, NChild.class);
         team = scoreBoard.getTeam(teamId);
+        setRecalculated(Value.CURRENT_TRIP).addSource(this, NChild.SCORING_TRIP);
         setRecalculated(Value.TOTAL_SCORE).addSource(this, Value.LAST_SCORE)
             .addSource(this, Value.JAM_SCORE).addSource(this, Value.OS_OFFSET);
         setCopy(Value.LAST_SCORE, this, IValue.PREVIOUS, Value.TOTAL_SCORE, true);
-        jamScoreListener = setRecalculated(Value.JAM_SCORE);
-        afterSPScoreListener = setRecalculated(Value.AFTER_S_P_SCORE);
+        jamScoreListener = setRecalculated(Value.JAM_SCORE).addSource(this, NChild.SCORING_TRIP);
+        afterSPScoreListener = setRecalculated(Value.AFTER_S_P_SCORE).addSource(this, NChild.SCORING_TRIP);
         setRecalculated(Value.NO_INITIAL).addSource(this, Value.CURRENT_TRIP);
         setRecalculated(Value.DISPLAY_LEAD).addSource(this, Value.LEAD).addSource(this, Value.LOST);
         setRecalculated(Value.STAR_PASS).addSource(this, Value.STAR_PASS_TRIP);
@@ -30,7 +31,6 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             add(Child.FIELDING, new FieldingImpl(this, (Position)p));
         }
         addWriteProtection(Child.FIELDING);
-        addWriteProtectionOverride(Value.CURRENT_TRIP, Flag.INTERNAL);
         getOrCreate(NChild.SCORING_TRIP, 1);
     }
 
@@ -53,6 +53,9 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
         if (prop == Value.TOTAL_SCORE) {
             return getLastScore() + getJamScore() + getOsOffset();
+        }
+        if (prop == Value.CURRENT_TRIP) {
+            return getLast(NChild.SCORING_TRIP);
         }
         if (prop == Value.NO_INITIAL) {
             if (getCurrentScoringTrip() == null) { return true; }
@@ -102,23 +105,15 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             jamScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.SCORE);
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.SCORE);
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.AFTER_S_P);
-            set(Value.CURRENT_TRIP, getLast(NChild.SCORING_TRIP), Flag.INTERNAL);
-            set(Value.JAM_SCORE, getJamScore(), Flag.RECALCULATE);
         }
     }
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == NChild.SCORING_TRIP) {
-            if (item == get(Value.CURRENT_TRIP)) {
-                set(Value.CURRENT_TRIP, getLast(NChild.SCORING_TRIP), Flag.INTERNAL);
-            }
-            if (item == get(Value.STAR_PASS_TRIP)) {
-                for (ScoringTrip trip = (ScoringTrip)getLast(NChild.SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
-                    if (!(Boolean)trip.get(ScoringTrip.Value.AFTER_S_P)) {
-                        set(Value.STAR_PASS_TRIP, trip.getNext());
-                    }
+        if (prop == NChild.SCORING_TRIP && item == get(Value.STAR_PASS_TRIP)) {
+            for (ScoringTrip trip = (ScoringTrip)getLast(NChild.SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
+                if (!(Boolean)trip.get(ScoringTrip.Value.AFTER_S_P)) {
+                    set(Value.STAR_PASS_TRIP, trip.getNext());
                 }
-            }
-            set(Value.JAM_SCORE, getJamScore(), Flag.RECALCULATE);
+          }
         }
     }
     public ValueWithId create(AddRemoveProperty prop, String id) {
