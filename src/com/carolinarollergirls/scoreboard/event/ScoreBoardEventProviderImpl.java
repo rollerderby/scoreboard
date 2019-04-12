@@ -37,6 +37,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProvider,ScoreBoardListener {
     @SafeVarargs
+    @SuppressWarnings("varargs")  // @SafeVarargs isn't working for some reason.
     protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, PermanentProperty idProp, String id,
             AddRemoveProperty type, Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
         this.parent = parent;
