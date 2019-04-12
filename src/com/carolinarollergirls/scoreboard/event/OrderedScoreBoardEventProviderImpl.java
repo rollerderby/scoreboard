@@ -6,6 +6,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 public abstract class OrderedScoreBoardEventProviderImpl<T extends OrderedScoreBoardEventProvider<T>>
         extends ScoreBoardEventProviderImpl implements OrderedScoreBoardEventProvider<T> {
     @SafeVarargs
+    @SuppressWarnings("varargs")  // @SafeVarargs isn't working for some reason.
     public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, 
             AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
         super(parent, IValue.ID, id, type, ownClass, append(props, IValue.class));
