@@ -1004,6 +1004,7 @@ function createJamDialog() {
 		.appendTo(headers.find("td:eq(1)").addClass("Title"));
 	$("<a>").text("Duration").addClass("Title")
 		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+	var currentPeriod;
 
 	var jamRegex = /Period\(([^\)]+)\)\.Jam\(([^\)]+)\)\.(?:TeamJam\(([^\)]+)\)\.)?([^\.\(]+)/;
 	WS.Register(['ScoreBoard.Period'], function (k, v) {
@@ -1022,6 +1023,9 @@ function createJamDialog() {
 		var table = dialog.find("table.Period[nr="+per+"]");
 		if (table.length == 0 && v != null) {
 			table = tableTemplate.clone().attr("nr", per).appendTo(dialog);
+			if (per == currentPeriod) {
+				table.addClass('Show');
+			}
 		}
 		if (table.length == 0) { return; }
 
@@ -1069,6 +1073,7 @@ function createJamDialog() {
 	});
 	
 	WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
+		currentPeriod = v;
 		dialog.find("table.Period.Show").removeClass("Show");
 		dialog.find("table.Period[nr="+v+"]").addClass("Show");
 	})
