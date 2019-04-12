@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.HashMap;
 import java.util.Map;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 
 public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListener {
@@ -15,7 +16,7 @@ public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListen
         targetElement.set(targetProperty, targetElement.get(targetProperty), Flag.RECALCULATE);
     }
     
-    public RecalculateScoreBoardListener addSource(ScoreBoardEventProvider element, PermanentProperty property) {
+    public RecalculateScoreBoardListener addSource(ScoreBoardEventProvider element, Property property) {
         ConditionalScoreBoardListener l = new ConditionalScoreBoardListener(element, property, this);
         sources.put(l, element);
         element.addScoreBoardListener(l);
