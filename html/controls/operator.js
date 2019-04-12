@@ -747,7 +747,7 @@ function createTeamTable() {
 			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"2")+")").addClass("OfficialReviews"));
 		var retainedOR = sbTeam.$sb("RetainedOfficialReview");
 		var retainedORButton = retainedOR.$sbControl("<button>").text("Retained").val("true")
-			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl Box").button();
+			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl").button();
 		retainedOR.$sbBindAndRun("sbchange", function(event, value) {
 			retainedORButton.val(!isTrue(value));
 			retainedORButton.toggleClass("Active", isTrue(value));

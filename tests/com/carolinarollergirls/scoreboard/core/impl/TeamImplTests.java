@@ -196,6 +196,7 @@ public class TeamImplTests {
 
         team.setRetainedOfficialReview(false);
         assertFalse(team.retainedOfficialReview());
+        assertEquals(0, team.getOfficialReviews());
 
         team.setOfficialReviews(0);
         collectedEvents.clear();

@@ -61,8 +61,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         return value;
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.RETAINED_OFFICIAL_REVIEW && (Boolean)value && getOfficialReviews() == 0) {
-            setOfficialReviews(1);
+        if (prop == Value.RETAINED_OFFICIAL_REVIEW) {
+            if ((Boolean)value) {
+                changeOfficialReviews(1);
+            } else {
+                changeOfficialReviews(-1);
+            }
         } else if (prop == Value.LEAD && (Boolean)value && scoreBoard.isInJam()) {
             if (getCurrentTrip().getNumber() == 1) {
                 getRunningOrEndedTeamJam().addScoringTrip();
@@ -299,8 +303,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 setTimeouts(scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS));
             }
             if (gameStart || scoreBoard.getRulesets().getBoolean(Rule.REVIEWS_PER_PERIOD)) {
-                setOfficialReviews(scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS));
                 setRetainedOfficialReview(false);
+                setOfficialReviews(scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS));
             }
         }
     }
