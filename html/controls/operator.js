@@ -965,7 +965,7 @@ function createPeriodDialog() {
 			var inserted = false;
 			table.find("tr.Period").each(function (i, r) {
 				r = $(r);
-				if (r.attr("nr") > nr) {
+				if (Number(r.attr("nr")) > Number(nr)) {
 					r.before(row);
 					inserted = true;
 					return false;
@@ -1048,7 +1048,7 @@ function createJamDialog() {
 			var inserted = false;
 			table.find("tr.Jam").each(function (i, r) {
 				r = $(r);
-				if (r.attr("nr") > nr) {
+				if (Number(r.attr("nr")) > Number(nr)) {
 					r.before(row);
 					inserted = true;
 					return false;
