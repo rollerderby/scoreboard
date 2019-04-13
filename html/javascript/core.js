@@ -528,6 +528,11 @@ _crgScoreBoard = {
 	processScoreBoardElement: function(parent, element, triggerArray) {
 		var $element = $(element);
 		var name = element.nodeName;
+		if (name == 'Period' || name == 'Jam') {
+			// The XML parts of the scoreboard don't use this, and it's
+			// relatively slow to process.
+			return;
+		}
 		var id = $element.attr("Id");
 		var remove = _crgScoreBoard.hasXmlElementPI($element, "Remove");
 		var once = _crgScoreBoard.hasXmlElementPI($element, "Once");
