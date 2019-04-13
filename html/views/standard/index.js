@@ -79,7 +79,7 @@ function initialize() {
 					break;
 				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_dots_fg).Color':
 					var dotColor = v;
-					if (dotColor == null) {dotColor = '#000000';}
+					if (dotColor == '') {dotColor = '#000000';}
 					$('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);
 					$('.Team' + t + ' .Dot.OfficialReview1').css('background', dotColor);
 					

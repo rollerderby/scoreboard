@@ -102,6 +102,10 @@ body.box_flat .Box.Red {
 	border-radius: 5px !important;
 }
 
+body.box_flat.bright .Box.Red {
+	background: #FF4040;
+}
+
 body.box_flat .FlatDark {
   color: #FFFFFF;
 }
@@ -327,7 +331,5 @@ body.box_flat .Clock.Jam.Large>.Name { left: 0%; width: 100%; height: 40% }
 	@-moz-keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
 	@-webkit-keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
 	@keyframes FinishedImg { from { right: 0%; } to { right: -100%; } }
-body.MinAnimations #SponsorBox>div.CurrentImg { right: 0%; animation: none; -moz-animation: none; -webkit-animation: none; }
-body.MinAnimations #SponsorBox>div.FinishedImg { right: -100%; animation: none; -moz-animation: none; -webkit-animation: none; }
 
 #SponsorBox>div>img { width: 100%; height: 100%; }
