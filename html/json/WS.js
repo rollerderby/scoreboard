@@ -4,6 +4,7 @@ var WS = {
 	connectCallback: null,
 	connectTimeout: null,
 	callbacks: new Array(),
+	callbackTrie: {},
 	batchCallbacks: new Array(),
 	Connected: false,
 	state: { },
@@ -104,16 +105,15 @@ var WS = {
 	},
 
 	triggerCallback: function (k, v) {
-		for (idx = 0; idx < WS.callbacks.length; idx++) {
-			c = WS.callbacks[idx];
-			if (c.callback == null)
+		var callbacks = WS._getMatchesFromTrie(WS.callbackTrie, k);
+		for (idx = 0; idx < callbacks.length; idx++) {
+			c = callbacks[idx];
+			if (c == null)
 				continue;
-			if (k.indexOf(c.path) == 0) {
-				try {
-					c.callback(k, v);
-				} catch (err) {
-					console.log(err.message, err.stack);
-				}
+			try {
+				c(k, v);
+			} catch (err) {
+				console.log(err.message, err.stack);
 			}
 		}
 	},
@@ -219,6 +219,7 @@ var WS = {
 
 		$.each(paths, function(idx, path) {
 			WS.callbacks.push( { path: path, callback: callback } );
+			WS._addToTrie(WS.callbackTrie, path, callback);
 			WS.batchCallbacks.push( { path: path, callback: batchCallback } );
 		});
 
@@ -227,6 +228,29 @@ var WS = {
 			paths: paths
 		};
 		WS.send(JSON.stringify(req));
+	},
+
+	_addToTrie: function(t, key, value) {
+		for (var i = 0; i < key.length; i++) {
+			var c = key.charAt(i);
+			t[c] = t[c] || {};
+			t = t[c];
+		}
+		t.values = t.values || [];
+		t.values.push(value);
+	},
+
+	_getMatchesFromTrie: function(t, key) {
+		var result = t.values || [];
+		for (var i = 0; i < key.length; i++) {
+			var c = key.charAt(i);
+			t = t[c];
+			if (t == null) {
+				break;
+			}
+			result = result.concat(t.values || []);
+		}
+		return result;
 	},
 
 	getPaths: function(elem, attr) {
