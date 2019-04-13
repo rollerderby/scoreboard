@@ -16,9 +16,6 @@ if (typeof $ == "undefined") {
 
 function _includeUrl(url) {
 	var filename = url.replace(/^.*[\/]/g, "");
-	/* Use HTTP HEAD to verify url exists before adding it to the document */
-	if ($.ajax(url, { async: false, type: "HEAD", global: false }).status != 200)
-		return;
 	if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$("head link[href='"+url+"'],head link[href='"+filename+"']").length)
 		$("<link>").attr({ href: url, type: "text/css", rel: "stylesheet"}).appendTo("head");
 	else if (/\.[jJ][sS](\?.*)?$/.test(url) && !$("head script[src='"+url+"'],head script[src='"+filename+"']").length)
