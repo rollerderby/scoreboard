@@ -102,6 +102,10 @@ body.box_flat .Box.Red {
 	border-radius: 5px !important;
 }
 
+body.box_flat.bright .Box.Red {
+	background: #FF4040;
+}
+
 body.box_flat .FlatDark {
   color: #FFFFFF;
 }
