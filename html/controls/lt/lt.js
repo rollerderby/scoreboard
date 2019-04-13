@@ -109,9 +109,7 @@ function prepareLtTable(element, teamId, mode) {
 			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 				var pos = String(this);
 				if (mode == 'copyToStatsbook') {
-					if (pos != 'Jammer') {
-						$('<td>').addClass('Skater '+pos).appendTo(jamRow);
-					}
+					$('<td>').addClass('Skater '+pos).appendTo(jamRow);
 					$('<td>').addClass('Box Box'+pos+'_1').appendTo(jamRow);
 					$('<td>').addClass('Box Box'+pos+'_2').appendTo(jamRow);
 					$('<td>').addClass('Box Box'+pos+'_3').appendTo(jamRow);
@@ -122,10 +120,18 @@ function prepareLtTable(element, teamId, mode) {
 			});
 
 			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
-			spRow.find('.Jammer').insertAfter(spRow.find('.BoxPivot'));
+			spRow.find('.Jammer').insertBefore(spRow.find('.Blocker1'));
 			spRow.find('.BoxJammer').insertAfter(spRow.find('.Jammer'));
+			spRow.find('.BoxJammer_3').insertAfter(spRow.find('.Jammer'));
+			spRow.find('.BoxJammer_2').insertAfter(spRow.find('.Jammer'));
+			spRow.find('.BoxJammer_1').insertAfter(spRow.find('.Jammer'));
 			WS.Register(['ScoreBoard.Period('+p+').Jam('+nr+').StarPass'], function(k, v) { spRow.toggleClass('Hide', !isTrue(v)); });
 
+			if (mode == 'copyToStatsbook') {
+				jamRow.find('.Jammer').addClass('Hide');
+				spRow.find('.Pivot').addClass('Hide');
+			}
+			
 			WS.Register([prefix+'Id'], function (k, v) { if (v == null) { jamRow.remove(); spRow.remove(); }});
 			if (WS.state[prefix+'Id'] == null) { return; }
 
