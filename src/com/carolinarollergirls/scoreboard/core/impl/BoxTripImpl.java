@@ -86,6 +86,14 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
                 ((Fielding)f).set(Fielding.Value.PENALTY_BOX, false);
             }
         }
+        if ((prop == Value.END_FIELDING || prop == Value.END_AFTER_S_P || prop == Value.END_BETWEEN_JAMS)
+                && getEndFielding() != null) {
+            getEndFielding().updateBoxTripSymbols();
+        }
+        if ((prop == Value.START_FIELDING || prop == Value.START_AFTER_S_P || prop == Value.START_BETWEEN_JAMS)
+                && getStartFielding() != null) {
+            getStartFielding().updateBoxTripSymbols();
+        }
     }
     
     @Override
@@ -131,7 +139,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
                         last = (Fielding) f;
                     }
                 }
-                set(Value.START_FIELDING, last);
+                set(Value.END_FIELDING, last);
             }
         }
     }

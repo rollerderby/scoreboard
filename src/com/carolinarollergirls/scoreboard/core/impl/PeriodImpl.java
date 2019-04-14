@@ -66,6 +66,9 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             switch((Command)prop) {
             case DELETE:
                 if (!isRunning()) {
+                    if (this == scoreBoard.getCurrentPeriod()) {
+                        scoreBoard.set(ScoreBoard.Value.CURRENT_PERIOD, getPrevious());
+                    }
                     unlink();
                 }
                 break;

@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
@@ -79,14 +80,20 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
 
     @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == Child.BOX_TRIP && ((BoxTrip)item).isCurrent()) {
-            set(Value.CURRENT_BOX_TRIP, item);
+        if (prop == Child.BOX_TRIP) { 
+            if (((BoxTrip)item).isCurrent()) {
+                set(Value.CURRENT_BOX_TRIP, item);
+            }
+            updateBoxTripSymbols();
         }
     }
     @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == Child.BOX_TRIP && item == getCurrentBoxTrip()) {
-            set(Value.CURRENT_BOX_TRIP, null);
+        if (prop == Child.BOX_TRIP) {
+            if (item == getCurrentBoxTrip()) {
+                set(Value.CURRENT_BOX_TRIP, null);
+            }
+            updateBoxTripSymbols();
         }
     }
     
@@ -130,7 +137,12 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         for (ValueWithId v : getAll(Child.BOX_TRIP)) {
             trips.add((BoxTrip) v);
         }
-        Collections.sort(trips);
+        Collections.sort(trips, new Comparator<BoxTrip>() {
+            public int compare(BoxTrip b1, BoxTrip b2) {
+                if (b1 == b2) { return 0; }
+                if (b1 == null) { return 1; }
+                return b1.compareTo(b2); }
+        });
         StringBuilder beforeSP = new StringBuilder();
         StringBuilder afterSP = new StringBuilder();
         StringBuilder jam = new StringBuilder();
@@ -162,7 +174,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 }
             }
             if (this == trip.getEndFielding()) {
-                if (trip.isCurrent() || trip.endedBetweenJams()) {
+                if (trip.endedBetweenJams()) {
                     typeJam = 0;
                     typeBeforeSP = 0;
                     typeAfterSP = 0;

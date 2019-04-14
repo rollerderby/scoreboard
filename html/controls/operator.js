@@ -1195,7 +1195,7 @@ function createScoreBoardViewContent(table) {
 	var usePreviewButton = $("<label for='UsePreviewButton'/><input type='checkbox' id='UsePreviewButton'/>")
 		.button();
 	_crgUtils.bindAndRun(usePreviewButton.filter("input:checkbox"), "click", function() {
-		$(this).button("option", "label", (isTrue(this.checked)?"Edit Live ScoreBoard":"Edit Preview"));
+		$(this).button("option", "label", (isTrue(this.checked)?"Editing Live ScoreBoard":"Editing Preview"));
 		table.toggleClass("UsePreview", !isTrue(this.checked));
 	});
 	var applyPreviewButton = $("<button>Apply Preview</button>").button()
