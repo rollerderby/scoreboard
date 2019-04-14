@@ -85,8 +85,9 @@ public class XmlScoreBoard {
             } else {
                 //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
                 final XmlDocumentManager xdM = exclusiveDocumentManager;
-                exclusiveExecutor.submit(new Runnable() { @Override
-                public void run() { xdM.reset(); } });
+                exclusiveExecutor.submit(new Runnable() {
+                    @Override
+                    public void run() { xdM.reset(); } });
             }
         }
     }
