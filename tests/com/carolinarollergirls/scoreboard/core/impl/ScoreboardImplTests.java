@@ -1617,7 +1617,9 @@ public class ScoreboardImplTests {
     @Test
     public void testDeleteCurrentPeriod() {
         fastForwardJams(2);
-        advance(sb.getRulesets().getLong(Rule.PERIOD_DURATION));
+        assertTrue(pc.isCountDirectionDown());
+        pc.setTime(1000);
+        advance(1000);
         
         assertTrue(pc.isTimeAtEnd());
         assertFalse(pc.isRunning());
