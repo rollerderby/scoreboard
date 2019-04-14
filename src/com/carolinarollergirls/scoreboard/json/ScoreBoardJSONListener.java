@@ -33,6 +33,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         sb.addScoreBoardListener(this);
     }
 
+    @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
         synchronized (this) {
             try {
@@ -148,6 +149,6 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
     }
 
     private JSONStateManager jsm;
-    private List<WSUpdate> updates = new LinkedList<WSUpdate>();
+    private List<WSUpdate> updates = new LinkedList<>();
     private long batch = 0;
 }

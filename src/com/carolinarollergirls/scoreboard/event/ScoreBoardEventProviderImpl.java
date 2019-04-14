@@ -67,20 +67,29 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         addWriteProtection(idProp);
     }
 
+    @Override
     public String getId() { 
         if (idProperty == null) {
             return "";
         } else {
             return String.valueOf(get(idProperty)); }
     }
+    @Override
     public String getProviderName() { return providerName; }
+    @Override
     public Class<? extends ScoreBoardEventProvider> getProviderClass() { return providerClass; }
+    @Override
     public String getProviderId() { return getId(); }
+    @Override
     public String getValue() { return getId(); }
+    @Override
     public String toString() { return getId(); }
+    @Override
     public List<Class<? extends Property>> getProperties() { return properties; }
+    @Override
     public ScoreBoardEventProvider getParent() { return parent; }
 
+    @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
         dispatch(event);
     }
@@ -89,7 +98,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         // Synchronously send events to listeners.
         // need to copy the list as some listeners may add or remove listeners
         synchronized(scoreBoardEventListeners) {
-            for (ScoreBoardListener l : new ArrayList<ScoreBoardListener>(scoreBoardEventListeners)) {
+            for (ScoreBoardListener l : new ArrayList<>(scoreBoardEventListeners)) {
                 l.scoreBoardChange(event);
             }
         }
@@ -103,17 +112,20 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         scoreBoardChange(new ScoreBoardEvent(this, BatchEvent.END, Boolean.TRUE, Boolean.TRUE));
     }
 
+    @Override
     public void addScoreBoardListener(ScoreBoardListener listener) {
         synchronized(scoreBoardEventListeners) {
             scoreBoardEventListeners.add(listener);
         }
     }
+    @Override
     public void removeScoreBoardListener(ScoreBoardListener listener) {
         synchronized(scoreBoardEventListeners) {
             scoreBoardEventListeners.remove(listener);
         }
     }
     
+    @Override
     public int compareTo(ScoreBoardEventProvider other) {
         if (other == null) { return -1; }
         if (getParent() == other.getParent()) { return 0; }
@@ -126,6 +138,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         return getParent().compareTo(other.getParent());
     }
 
+    @Override
     public void unlink() { unlink(false); }
     protected void unlink(boolean neighborsRemoved) {
         for (Class<? extends Property> propertySet : properties) {
@@ -204,6 +217,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             ScoreBoardListener reverseListener = 
             new ConditionalScoreBoardListener(indirectionElement, indirectionProperty,
                     new ScoreBoardListener() {
+                        @Override
                         public void scoreBoardChange(ScoreBoardEvent event) {
                             reverseCopyListeners.put(targetProperty,
                                     new CopyScoreBoardListener((ScoreBoardEventProvider) event.getValue(),
@@ -233,6 +247,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         return l;
     }
 
+    @Override
     public Object valueFromString(PermanentProperty prop, String sValue, Flag flag) {
         synchronized (coreLock) {
             @SuppressWarnings("rawtypes")
@@ -261,13 +276,16 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             return sValue;
         }
     }
+    @Override
     public Object get(PermanentProperty prop) {
         synchronized (coreLock) {
             if (!values.containsKey(prop)) return prop.getDefaultValue();
             return values.get(prop);
         }
     }
+    @Override
     public boolean set(PermanentProperty prop, Object value) { return set(prop, value, null); }
+    @Override
     public boolean set(PermanentProperty prop, Object value, Flag flag) {
         synchronized (coreLock) {
             if (prop == null) { return false; }
@@ -318,6 +336,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {}
 
+    @Override
     public ValueWithId childFromString(AddRemoveProperty prop, String id, String sValue) {
         synchronized (coreLock) {
             if (prop.getType() == ValWithId.class) {
@@ -326,11 +345,14 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             return (ValueWithId) getElement(prop.getType(), sValue);
         }
     }
+    @Override
     public ValueWithId get(AddRemoveProperty prop, String id) {
         if(children.get(prop) == null) { return null; }
         return children.get(prop).get(id);
     }
+    @Override
     public ValueWithId get(NumberedProperty prop, Integer num) { return get(prop, String.valueOf(num)); }
+    @Override
     public ValueWithId getOrCreate(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             ValueWithId result = get(prop, id);
@@ -341,22 +363,27 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             return result;
         }
     }
+    @Override
     public ValueWithId getOrCreate(NumberedProperty prop, Integer num) { return getOrCreate(prop, String.valueOf(num)); }
+    @Override
     public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop) {
         synchronized (coreLock) {
             return (OrderedScoreBoardEventProvider<?>)get(prop, minIds.get(prop));
         }
     }
+    @Override
     public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop) {
         synchronized (coreLock) {
             return (OrderedScoreBoardEventProvider<?>)get(prop, maxIds.get(prop));
         }
     }
+    @Override
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) {
         synchronized (coreLock) {
-            return new HashSet<ValueWithId>(children.get(prop).values());
+            return new HashSet<>(children.get(prop).values());
         }
     }
+    @Override
     public boolean add(AddRemoveProperty prop, ValueWithId item) {
         synchronized (coreLock) {
             if (item == null || !isWritable(prop, null)) { return false; }
@@ -385,8 +412,11 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         itemAdded(prop, item);
     }
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {}
+    @Override
     public ValueWithId create(AddRemoveProperty prop, String id) { return null; }
+    @Override
     public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id)); }
+    @Override
     public boolean remove(AddRemoveProperty prop, ValueWithId item) {
         synchronized (coreLock) {
             if (item == null || !isWritable(prop, null)) { return false; }
@@ -428,6 +458,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         requestBatchEnd();
     }
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {}
+    @Override
     public void removeAll(AddRemoveProperty prop) {
         synchronized (coreLock) {
             for (ValueWithId item : getAll(prop)) {
@@ -435,15 +466,20 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             }
         }
     }
+    @Override
     public Integer getMinNumber(NumberedProperty prop) { return minIds.get(prop); }
+    @Override
     public Integer getMaxNumber(NumberedProperty prop) { return maxIds.get(prop); }
 
+    @Override
     public void execute(CommandProperty prop) {  }
 
+    @Override
     public ScoreBoard getScoreBoard() { return scoreBoard; }
 
     public static Object getCoreLock() { return coreLock; }
 
+    @Override
     public ScoreBoardEventProvider getElement(Class<?> type, String id) {
         try {
             return elements.get(type).get(id);
@@ -461,19 +497,19 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     protected List<Class<? extends Property>> properties;
 
-    protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<ScoreBoardListener>();
-    protected Map<ScoreBoardListener, ScoreBoardEventProvider> providers = new HashMap<ScoreBoardListener, ScoreBoardEventProvider>();
+    protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<>();
+    protected Map<ScoreBoardListener, ScoreBoardEventProvider> providers = new HashMap<>();
     
-    protected Map<PermanentProperty, Object> values = new HashMap<PermanentProperty, Object>();
-    protected Map<Property, Flag> writeProtectionOverride = new HashMap<Property, Flag>();
-    protected Map<PermanentProperty, CopyScoreBoardListener> reverseCopyListeners = new HashMap<PermanentProperty, CopyScoreBoardListener>();
+    protected Map<PermanentProperty, Object> values = new HashMap<>();
+    protected Map<Property, Flag> writeProtectionOverride = new HashMap<>();
+    protected Map<PermanentProperty, CopyScoreBoardListener> reverseCopyListeners = new HashMap<>();
 
-    protected Map<AddRemoveProperty, Map<String, ValueWithId>> children = new HashMap<AddRemoveProperty, Map<String, ValueWithId>>();
-    protected Map<NumberedProperty, Integer> minIds = new HashMap<NumberedProperty, Integer>();
-    protected Map<NumberedProperty, Integer> maxIds = new HashMap<NumberedProperty, Integer>();
+    protected Map<AddRemoveProperty, Map<String, ValueWithId>> children = new HashMap<>();
+    protected Map<NumberedProperty, Integer> minIds = new HashMap<>();
+    protected Map<NumberedProperty, Integer> maxIds = new HashMap<>();
 
     protected static Map<Class<? extends ScoreBoardEventProvider>, Map<String, ScoreBoardEventProvider>> elements =
-            new HashMap<Class<? extends ScoreBoardEventProvider>, Map<String, ScoreBoardEventProvider>>();
+            new HashMap<>();
 
     public enum BatchEvent implements ScoreBoardEvent.PermanentProperty {
         START(true),
@@ -481,7 +517,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         
         private BatchEvent(Boolean v) { defaultValue = v; }
         private final Boolean defaultValue;        
+        @Override
         public Class<Boolean> getType() { return Boolean.class; }
+        @Override
         public Boolean getDefaultValue() { return defaultValue; }
     }
 }

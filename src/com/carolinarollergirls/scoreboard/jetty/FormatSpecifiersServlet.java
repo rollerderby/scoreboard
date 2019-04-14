@@ -22,13 +22,16 @@ import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 public class FormatSpecifiersServlet extends DefaultScoreBoardControllerServlet {
     public FormatSpecifiersServlet() { }
 
+    @Override
     public String getPath() { return "/FormatSpecifiers"; }
 
+    @Override
     public void setScoreBoard(ScoreBoard scoreBoard) {
         super.setScoreBoard(scoreBoard);
         formatSpecifierViewer = new FormatSpecifierViewer(scoreBoard);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");
@@ -60,6 +63,7 @@ public class FormatSpecifiersServlet extends DefaultScoreBoardControllerServlet 
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");

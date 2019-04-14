@@ -45,7 +45,7 @@ public class TeamImplTests {
 
     @Before
     public void setUp() throws Exception {
-        collectedEvents = new LinkedList<ScoreBoardEvent>();
+        collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
 
@@ -298,7 +298,7 @@ public class TeamImplTests {
         assertEquals(1, team.getOfficialReviews());
         assertFalse(team.retainedOfficialReview());
         assertEquals(4, collectedEvents.size());
-        List<Property> events = new ArrayList<Property>();
+        List<Property> events = new ArrayList<>();
         while(!collectedEvents.isEmpty()) {
             events.add(collectedEvents.poll().getProperty());
         }
@@ -321,7 +321,7 @@ public class TeamImplTests {
         assertEquals(2, team.getOfficialReviews());
         assertFalse(team.retainedOfficialReview());
         assertEquals(5, collectedEvents.size());
-        events = new ArrayList<Property>();
+        events = new ArrayList<>();
         while(!collectedEvents.isEmpty()) {
             events.add(collectedEvents.poll().getProperty());
         }

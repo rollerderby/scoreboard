@@ -36,8 +36,10 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     public Object getPreviousValue() { return previousValue; }
     public boolean isRemove() { return remove; }
 
+    @Override
     public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue(), getPreviousValue()); }
 
+    @Override
     public boolean equals(Object o) {
         if (null == o) {
             return false;
@@ -66,10 +68,12 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     public boolean equals(ScoreBoardCondition c) {
         return c.equals(this);
     }
+    @Override
     public int hashCode() {
         return Objects.hash(provider, property, value, previousValue);
     }
 
+    @Override
     public String toString() {
         return provider.getClass().getName() + ": " + property + "='" + value + "' (was '" + previousValue + "')";
     }
@@ -87,12 +91,15 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
         public Object getDefaultValue();
     }
     public interface AddRemoveProperty extends Property {
+        @Override
         public Class<? extends ValueWithId> getType();
     }
     public interface NumberedProperty extends AddRemoveProperty {
+        @Override
         public Class<? extends OrderedScoreBoardEventProvider<?>> getType();
     }
     public interface CommandProperty extends Property {
+        @Override
         public Class<Boolean> getType();
     }
 

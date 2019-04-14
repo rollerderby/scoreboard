@@ -23,6 +23,7 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
         super("SaveLoad", name);
     }
 
+    @Override
     public void setXmlScoreBoard(XmlScoreBoard xsB) {
         super.setXmlScoreBoard(xsB);
 
@@ -34,10 +35,12 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
         update(e);
     }
 
+    @Override
     public void reset() {
         /* Don't reset anything, as this controls loading. */
     }
 
+    @Override
     protected void processChildElement(Element e) throws JDOMException {
         synchronized (processLock) {
             if (e.getName() == "Filename") {
@@ -140,6 +143,7 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
         return file;
     }
 
+    @Override
     public void xmlChange(Document d) {
         try {
             if (running) {
@@ -153,6 +157,7 @@ public abstract class AbstractScoreBoardStream extends SegmentedXmlDocumentManag
         }
     }
 
+    @Override
     protected Element createXPathElement() {
         return editor.setNoSavePI(super.createXPathElement());
     }

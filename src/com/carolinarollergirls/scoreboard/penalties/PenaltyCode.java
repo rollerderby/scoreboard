@@ -24,10 +24,12 @@ public class PenaltyCode implements ValueWithId {
         this.verbalCues = Arrays.asList(verbalCues);
     }
 
+    @Override
     public String getId() {
         return code;
     }
 
+    @Override
     public String getValue() {
         return cuesForWS();
     }

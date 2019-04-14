@@ -17,6 +17,7 @@ import org.jdom.input.SAXBuilder;
 public class LoadScoreBoard extends SegmentedXmlDocumentManager {
     public LoadScoreBoard() { super("SaveLoad", "Load"); }
 
+    @Override
     public void setXmlScoreBoard(XmlScoreBoard xsB) {
         super.setXmlScoreBoard(xsB);
 
@@ -26,10 +27,12 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager {
         update(e);
     }
 
+    @Override
     public void reset() {
         /* Don't reset anything, as this controls loading. */
     }
 
+    @Override
     protected void processChildElement(Element e) throws Exception {
         super.processChildElement(e);
         Document d = saxBuilder.build(new File(DIRECTORY_NAME, editor.getText(e)));
@@ -40,6 +43,7 @@ public class LoadScoreBoard extends SegmentedXmlDocumentManager {
         }
     }
 
+    @Override
     protected Element createXPathElement() {
         return editor.setNoSavePI(super.createXPathElement());
     }

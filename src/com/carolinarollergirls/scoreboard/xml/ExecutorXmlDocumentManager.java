@@ -35,7 +35,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager {
 
     public List<XmlDocumentManager> findXmlDocumentManagers(Class<? extends XmlDocumentManager> c) {
         synchronized (managerLock) {
-            List<XmlDocumentManager> l = new ArrayList<XmlDocumentManager>();
+            List<XmlDocumentManager> l = new ArrayList<>();
             Iterator<XmlDocumentManager> m = managers.keySet().iterator();
             while (m.hasNext()) {
                 XmlDocumentManager m2 = m.next();
@@ -47,6 +47,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager {
         }
     }
 
+    @Override
     public void processDocument(Document d) {
         synchronized (managerLock) {
             Iterator<XmlDocumentManager> m = managers.keySet().iterator();
@@ -56,6 +57,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager {
         }
     }
 
+    @Override
     public void reset() {
         synchronized (managerLock) {
             Iterator<XmlDocumentManager> m = managers.keySet().iterator();
@@ -79,7 +81,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager {
         }
     }
 
-    protected HashMap<XmlDocumentManager,ExecutorService> managers = new LinkedHashMap<XmlDocumentManager,ExecutorService>();
+    protected HashMap<XmlDocumentManager,ExecutorService> managers = new LinkedHashMap<>();
     protected Object managerLock = new Object();
 
     public class ProcessDocumentRunnable implements Runnable {
@@ -87,6 +89,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager {
             manager = m;
             document = d;
         }
+        @Override
         public void run() { manager.processDocument(document); }
         public XmlDocumentManager manager;
         public Document document;
@@ -96,6 +99,7 @@ public class ExecutorXmlDocumentManager implements XmlDocumentManager {
         public ResetRunnable(XmlDocumentManager m) {
             manager = m;
         }
+        @Override
         public void run() { manager.reset(); }
         public XmlDocumentManager manager;
     }

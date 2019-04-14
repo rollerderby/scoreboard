@@ -19,7 +19,9 @@ public interface OrderedScoreBoardEventProvider<T extends OrderedScoreBoardEvent
         private IValue(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
         private final Object defaultValue;
+        @Override
         public Class<?> getType() { return type; }
+        @Override
         public Object getDefaultValue() { return defaultValue; }
     }
 }

@@ -31,8 +31,10 @@ public class ScoreBoardCondition implements Cloneable {
     public Property getProperty() { return property; }
     public Object getValue() { return value; }
 
+    @Override
     public Object clone() { return new ScoreBoardCondition(getProviderClass(), getProviderId(), getProperty(), getValue()); }
 
+    @Override
     public boolean equals(Object o) {
         if (null == o) {
             return false;
@@ -75,6 +77,7 @@ public class ScoreBoardCondition implements Cloneable {
         }
         return true;
     }
+    @Override
     public int hashCode() {
         return Objects.hash(providerClass, providerId, property, value);
     }

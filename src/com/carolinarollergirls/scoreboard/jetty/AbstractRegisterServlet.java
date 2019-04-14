@@ -28,6 +28,7 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
 
     protected abstract void register(HttpServletRequest request, HttpServletResponse response) throws IOException;
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doGet(request, response);
 
@@ -75,7 +76,7 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
         clientMap.remove(listener.getKey());
     }
 
-    protected Map<String,RegisteredListener> clientMap = new ConcurrentHashMap<String,RegisteredListener>();
+    protected Map<String,RegisteredListener> clientMap = new ConcurrentHashMap<>();
 
     protected class RegisteredListener {
         public void setKey(String k) { key = k; }
@@ -90,6 +91,7 @@ public abstract class AbstractRegisterServlet extends DefaultScoreBoardControlle
     }
 
     protected class RegisteredListenerWatchdog implements Runnable {
+        @Override
         public void run() {
             while (true) {
                 Iterator<RegisteredListener> listeners = clientMap.values().iterator();

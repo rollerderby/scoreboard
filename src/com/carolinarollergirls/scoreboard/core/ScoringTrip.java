@@ -18,12 +18,15 @@ public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
         private final Object defaultValue;
+        @Override
         public Class<?> getType() { return type; }
+        @Override
         public Object getDefaultValue() { return defaultValue; }
     }
     public enum Command implements CommandProperty {
         REMOVE;
         
+        @Override
         public Class<Boolean> getType() { return Boolean.class; }
     }
 }

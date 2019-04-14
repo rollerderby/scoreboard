@@ -16,6 +16,7 @@ import org.jdom.xpath.XPath;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class FilterXmlScoreBoardListener implements XmlScoreBoardListener {
+    @Override
     public void xmlChange(Document d) {
         try {
             editor.filterOutDocumentXPath(d, getFilter());

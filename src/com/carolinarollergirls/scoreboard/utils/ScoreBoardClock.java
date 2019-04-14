@@ -90,6 +90,7 @@ public class ScoreBoardClock extends TimerTask {
         }
     }
 
+    @Override
     public void run() {
         synchronized (coreLock) {
             if (stopCounter == 0) {
@@ -109,7 +110,7 @@ public class ScoreBoardClock extends TimerTask {
 
     private Object coreLock = ScoreBoardImpl.getCoreLock();
 
-    private List<ScoreBoardClockClient> clients = new ArrayList<ScoreBoardClockClient>();
+    private List<ScoreBoardClockClient> clients = new ArrayList<>();
 
     public static final long CLOCK_UPDATE_INTERVAL = 200; /* in ms */
 

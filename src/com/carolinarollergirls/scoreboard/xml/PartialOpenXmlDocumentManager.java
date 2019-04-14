@@ -18,12 +18,14 @@ import org.jdom.xpath.XPath;
 public abstract class PartialOpenXmlDocumentManager extends DefaultXmlDocumentManager implements XmlDocumentManager {
     public PartialOpenXmlDocumentManager(String n) { super(n); }
 
+    @Override
     public void setXmlScoreBoard(XmlScoreBoard xsB) {
         myPartialXPath = editor.createXPath(getPartialXPathString());
         super.setXmlScoreBoard(xsB);
     }
 
     /* Write back all child elements after pruning (except a Reset) */
+    @Override
     protected void processChildElement(Element e) throws Exception {
         super.processChildElement(e);
         if (!e.getName().equals("Reset")) {

@@ -38,8 +38,10 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
     public MediaServlet() {
     }
 
+    @Override
     public String getPath() { return "/Media"; }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doPost(request, response);
 
@@ -52,6 +54,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         }
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doGet(request, response);
 
@@ -68,7 +71,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
             String media = null, type = null;
             FileItemFactory fiF = new DiskFileItemFactory();
             ServletFileUpload sfU = new ServletFileUpload(fiF);
-            List<FileItem> fileItems = new LinkedList<FileItem>();
+            List<FileItem> fileItems = new LinkedList<>();
             Iterator<?> i = sfU.parseRequest(request).iterator();
 
             while (i.hasNext()) {

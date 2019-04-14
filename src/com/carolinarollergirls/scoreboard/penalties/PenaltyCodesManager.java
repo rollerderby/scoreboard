@@ -33,8 +33,11 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
         }
         return null;
     }
+    @Override
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) { return getDefinitions(); }
+    @Override
     public boolean add(AddRemoveProperty prop, ValueWithId item) { return false; }
+    @Override
     public boolean remove(AddRemoveProperty prop, ValueWithId item) { return false; }
 
     public List<PenaltyCode> getDefinitions() {
@@ -61,6 +64,7 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
     private PenaltyCodesDefinition definitions;
 
     protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
+        @Override
         public void scoreBoardChange(ScoreBoardEvent event) {
             ValueWithId v = (ValueWithId)event.getValue();
             if (v.getId() == Rule.PENALTIES_FILE.toString()) {
@@ -74,6 +78,7 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;
+        @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
 }

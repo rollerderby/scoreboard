@@ -7,6 +7,7 @@ public class TimeRule extends RuleDefinition {
         super(Type.TIME, fullname, description, defaultValue);
     }
 
+    @Override
     public boolean isValueValid(String v) {
         return ClockConversion.fromHumanReadable(v) != null;
     }

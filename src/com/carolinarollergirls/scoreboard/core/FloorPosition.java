@@ -25,6 +25,7 @@ public enum FloorPosition {
         }
     }
 
+    @Override
     public String toString() { return string; }
     public static FloorPosition fromString(String s) {
         for (FloorPosition fp : values()) {

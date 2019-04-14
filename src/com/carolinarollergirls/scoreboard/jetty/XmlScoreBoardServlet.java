@@ -22,6 +22,7 @@ import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 
 public class XmlScoreBoardServlet extends AbstractXmlServlet {
+    @Override
     public String getPath() { return "/XmlScoreBoard"; }
 
     protected void getAll(HttpServletRequest request, HttpServletResponse response) throws IOException,JDOMException {
@@ -125,6 +126,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet {
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doPost(request, response);
 
@@ -140,6 +142,7 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet {
         }
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doGet(request, response);
 
@@ -161,8 +164,9 @@ public class XmlScoreBoardServlet extends AbstractXmlServlet {
         }
     }
 
-    protected XmlListener createXmlListener(ScoreBoard scoreBoard) {
-        XmlListener listener = super.createXmlListener(scoreBoard);
+    @Override
+    protected XmlListener createXmlListener(ScoreBoard sb) {
+        XmlListener listener = super.createXmlListener(sb);
         listener.setFilter(timeUpdateSecondFilter);
         return listener;
     }

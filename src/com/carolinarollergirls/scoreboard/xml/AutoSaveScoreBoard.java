@@ -36,6 +36,7 @@ public class AutoSaveScoreBoard implements Runnable {
             return;
         }
         Runnable r = new Runnable() {
+            @Override
             public void run() {
                 backupAutoSavedFiles();
                 ScoreBoardManager.printMessage("Starting auto-save");
@@ -52,6 +53,7 @@ public class AutoSaveScoreBoard implements Runnable {
         } catch ( NullPointerException npE ) { }
     }
 
+    @Override
     public void run() {
         FileOutputStream fos = null;
         try {

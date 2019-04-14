@@ -23,6 +23,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         setRecalculated(Value.DURATION).addSource(this, Value.WALLTIME_END).addSource(this, Value.WALLTIME_START);
     }
 
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.DURATION) {
             if (getWalltimeEnd() == 0L) { return 0L; }
@@ -30,6 +31,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.RUNNING && flag != Flag.FROM_AUTOSAVE) {
             if (!(Boolean)value) {
@@ -47,6 +49,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         }
     }
 
+    @Override
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             int num = Integer.parseInt(id);
@@ -57,6 +60,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         }
     }
     
+    @Override
     public void execute(CommandProperty prop) {
         synchronized (coreLock) {
             switch((Command)prop) {
@@ -73,11 +77,13 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         }
     }
 
+    @Override
     public PeriodSnapshot snapshot() {
         synchronized (coreLock) {
             return new PeriodSnapshotImpl(this);
         }
     }
+    @Override
     public void restoreSnapshot(PeriodSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
@@ -85,13 +91,18 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         }
     }
 
+    @Override
     public boolean isRunning() { return (Boolean)get(Value.RUNNING); }
 
+    @Override
     public Jam getJam(int j) { return (Jam)get(NChild.JAM, j); }
+    @Override
     public Jam getCurrentJam() { return (Jam)get(Value.CURRENT_JAM); }
+    @Override
     public int getCurrentJamNumber() { return (Integer)get(Value.CURRENT_JAM_NUMBER); }
     
 
+    @Override
     public void startJam() {
         synchronized (coreLock) {
             requestBatchStart();
@@ -101,6 +112,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             requestBatchEnd();
         }
     }
+    @Override
     public void stopJam() {
         synchronized (coreLock) {
             requestBatchStart();
@@ -109,8 +121,11 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         }
     }
 
+    @Override
     public long getDuration() { return (Long)get(Value.DURATION); }
+    @Override
     public long getWalltimeStart() { return (Long)get(Value.WALLTIME_START); }
+    @Override
     public long getWalltimeEnd() { return (Long)get(Value.WALLTIME_END); }
 
     public static class PeriodSnapshotImpl implements PeriodSnapshot {
@@ -119,7 +134,9 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             currentJam = period.getCurrentJam();
         }
 
+        @Override
         public String getId() { return id; }
+        @Override
         public Jam getCurrentJam() { return currentJam; }
 
         private String id;

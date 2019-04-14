@@ -118,7 +118,9 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
         private final Object defaultValue;
+        @Override
         public Class<?> getType() { return type; }
+        @Override
         public Object getDefaultValue() { return defaultValue; }
     }
     public enum Child implements AddRemoveProperty {
@@ -131,6 +133,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;
+        @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
     public enum NChild implements NumberedProperty {
@@ -138,6 +141,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
         private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
         private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
+        @Override
         public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
     }
     public enum Command implements CommandProperty {
@@ -150,6 +154,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         START_OVERTIME,
         OFFICIAL_TIMEOUT;
         
+        @Override
         public Class<Boolean> getType() { return Boolean.class; }
     }
 

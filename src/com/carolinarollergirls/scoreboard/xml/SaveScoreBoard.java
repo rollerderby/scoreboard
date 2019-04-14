@@ -17,6 +17,7 @@ import org.jdom.output.XMLOutputter;
 public class SaveScoreBoard extends SegmentedXmlDocumentManager {
     public SaveScoreBoard() { super("SaveLoad", "Save"); }
 
+    @Override
     public void setXmlScoreBoard(XmlScoreBoard xsB) {
         super.setXmlScoreBoard(xsB);
 
@@ -28,10 +29,12 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager {
         update(e);
     }
 
+    @Override
     public void reset() {
         /* Don't reset anything, as these controls should not be saved. */
     }
 
+    @Override
     protected void processChildElement(Element e) {
         if (e.getName().equals("Filename")) {
             update(editor.cloneDocumentToElement(e, true));
@@ -59,6 +62,7 @@ public class SaveScoreBoard extends SegmentedXmlDocumentManager {
         }
     }
 
+    @Override
     protected Element createXPathElement() {
         return editor.setNoSavePI(super.createXPathElement());
     }

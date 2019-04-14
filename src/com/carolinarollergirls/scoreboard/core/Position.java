@@ -38,12 +38,15 @@ public interface Position extends ScoreBoardEventProvider {
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
         private final Object defaultValue;
+        @Override
         public Class<?> getType() { return type; }
+        @Override
         public Object getDefaultValue() { return defaultValue; }
     }
     public enum Command implements CommandProperty {
         CLEAR;
         
+        @Override
         public Class<Boolean> getType() { return Boolean.class; }
     }
 }

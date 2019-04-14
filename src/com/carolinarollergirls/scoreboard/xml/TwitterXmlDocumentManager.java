@@ -23,6 +23,7 @@ import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager {
     public TwitterXmlDocumentManager() { super("Viewers", "Twitter"); }
 
+    @Override
     public void reset() {
         Element updateE = createXPathElement();
         editor.setPI(editor.addElement(updateE, "AuthURL"), "NoSave");
@@ -37,6 +38,7 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager {
         removeAllConditionalTweets();
     }
 
+    @Override
     protected void processChildElement(Element e) {
         String text = editor.getText(e);
         boolean nullText = (null == text);
@@ -244,12 +246,15 @@ public class TwitterXmlDocumentManager extends SegmentedXmlDocumentManager {
     protected TwitterViewer twitterViewer = null;
     protected Object twitterViewerLock = new Object();
     protected TwitterViewer.TweetListener tweetListener = new TwitterViewer.TweetListener() {
+        @Override
         public void tweet(String tweet) { updateStatus(tweet); }
     };
     protected TwitterViewer.TweetListener testModeTweetListener = new TwitterViewer.TweetListener() {
+        @Override
         public void tweet(String tweet) { updateStatus(tweet); }
     };
     protected TwitterViewer.TwitterExceptionListener exceptionListener = new TwitterViewer.TwitterExceptionListener() {
+        @Override
         public void twitterException(String tweet, TwitterException tE) {
             updateStatusException(tweet, tE);
         }

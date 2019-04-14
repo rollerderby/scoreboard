@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 public class RealtimeStreamListenerFilter extends StreamListenerFilter implements StreamListener {
     public RealtimeStreamListenerFilter(StreamListener l) { super(l); }
 
+    @Override
     public void xmlChange(Document d) {
         if (!lastTimeSet) {
             setLastTime(d);

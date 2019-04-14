@@ -14,6 +14,7 @@ public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListen
     public SleepingQueueXmlScoreBoardListener() { super(); }
     public SleepingQueueXmlScoreBoardListener(XmlScoreBoard sb) { super(sb); }
 
+    @Override
     public void xmlChange(Document d) {
         synchronized (documentsLock) {
             super.xmlChange(d);
@@ -23,6 +24,7 @@ public class SleepingQueueXmlScoreBoardListener extends QueueXmlScoreBoardListen
         }
     }
 
+    @Override
     public Document getNextDocument() { return getNextDocument(0); }
     public Document getNextDocument(int timeout) {
         synchronized (documentsLock) {

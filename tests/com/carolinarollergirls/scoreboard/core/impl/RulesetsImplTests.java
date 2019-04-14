@@ -42,7 +42,7 @@ public class RulesetsImplTests {
         assertEquals(rootId, rulesets.getCurrentRulesetId());
         assertEquals("WFTDA Sanctioned", rulesets.getCurrentRulesetName());
 
-        Set<ValueWithId> s = new HashSet<ValueWithId>();
+        Set<ValueWithId> s = new HashSet<>();
         s.add(new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
         child.setAll(s);
         rulesets.setCurrentRuleset(id1);
@@ -70,7 +70,7 @@ public class RulesetsImplTests {
         assertEquals(rootId, child.getParentRulesetId());
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
 
-        Set<ValueWithId> s = new HashSet<ValueWithId>();
+        Set<ValueWithId> s = new HashSet<>();
         s.add(new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
         child.setAll(s);
         rulesets.setCurrentRuleset(id1);

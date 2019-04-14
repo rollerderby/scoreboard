@@ -8,6 +8,7 @@ public class BooleanRule extends RuleDefinition {
         values.put(Value.FALSE_VALUE, falseValue);
     }
 
+    @Override
     public boolean isValueValid(String v) {
         try {
             new Boolean(v);

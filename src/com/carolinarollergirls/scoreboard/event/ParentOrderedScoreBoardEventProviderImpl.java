@@ -19,8 +19,10 @@ extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoard
         setCopy(IValue.NUMBER, parent, IValue.NUMBER, true);
     }
 
+    @Override
     public String getProviderId() { return subId; }
 
+    @Override
     protected Object _computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == IValue.PREVIOUS && flag != Flag.INVERSE_REFERENCE) {
             if (((OrderedScoreBoardEventProvider<?>) parent).hasPrevious()) {
@@ -39,6 +41,7 @@ extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoard
         return super._computeValue(prop, value, last, flag);
     }
 
+    @SuppressWarnings("hiding")
     protected AddRemoveProperty ownType;
     protected String subId;
 }

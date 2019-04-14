@@ -22,14 +22,17 @@ import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.xml.AbstractScoreBoardStream;
 
 public class StreamServlet extends DefaultScoreBoardControllerServlet {
+    @Override
     public String getPath() { return "/Stream"; }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doPost(request, response);
 
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doGet(request, response);
 

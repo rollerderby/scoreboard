@@ -18,18 +18,22 @@ import javax.servlet.http.HttpServletResponse;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 
 public abstract class DefaultScoreBoardControllerServlet extends HttpServlet implements ScoreBoardControllerServlet {
+    @Override
     public abstract String getPath();
 
+    @Override
     public void setScoreBoard(ScoreBoard sb) {
         scoreBoard = sb;
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");
         response.setCharacterEncoding("UTF-8");
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");

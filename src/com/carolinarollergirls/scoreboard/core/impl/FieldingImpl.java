@@ -30,8 +30,10 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         setRecalculated(Value.NOT_FIELDED).addSource(this, Value.SKATER);
     }
 
+    @Override
     public String getProviderId() { return getPosition().getProviderId(); }
 
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.PENALTY_BOX && flag != Flag.FROM_AUTOSAVE) {
             if ((Boolean)value && (getCurrentBoxTrip() == null || !getCurrentBoxTrip().isCurrent())) {
@@ -56,6 +58,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.PENALTY_BOX && isCurrent() && (Boolean)value &&
                 getPosition().getFloorPosition() == FloorPosition.JAMMER &&
@@ -74,17 +77,20 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         }
     }
 
+    @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.BOX_TRIP && ((BoxTrip)item).isCurrent()) {
             set(Value.CURRENT_BOX_TRIP, item);
         }
     }
+    @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.BOX_TRIP && item == getCurrentBoxTrip()) {
             set(Value.CURRENT_BOX_TRIP, null);
         }
     }
     
+    @Override
     public void execute(CommandProperty prop) {
         if (prop == Command.ADD_BOX_TRIP && getSkater() != null) {
             BoxTrip bt = new BoxTripImpl(this);
@@ -96,21 +102,31 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         }
     }
 
+    @Override
     public TeamJam getTeamJam() { return teamJam; }
+    @Override
     public Position getPosition() { return (Position)get(Value.POSITION); }
 
+    @Override
     public boolean isCurrent() { return teamJam.isRunningOrUpcoming(); }
 
+    @Override
     public Role getCurrentRole() { return getPosition().getFloorPosition().getRole(teamJam); }
 
+    @Override
     public Skater getSkater() { return (Skater)get(Value.SKATER); }
+    @Override
     public void setSkater(Skater s) { set(Value.SKATER, s); }
 
+    @Override
     public boolean isSitFor3() { return (Boolean)get(Value.SIT_FOR_3); }
+    @Override
     public boolean isInBox() { return (Boolean)get(Value.PENALTY_BOX); }
+    @Override
     public BoxTrip getCurrentBoxTrip() { return (BoxTrip)get(Value.CURRENT_BOX_TRIP); }
+    @Override
     public void updateBoxTripSymbols() {
-        List<BoxTrip> trips = new ArrayList<BoxTrip>();
+        List<BoxTrip> trips = new ArrayList<>();
         for (ValueWithId v : getAll(Child.BOX_TRIP)) {
             trips.add((BoxTrip) v);
         }

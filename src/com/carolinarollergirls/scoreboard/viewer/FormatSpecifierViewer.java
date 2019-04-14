@@ -29,7 +29,7 @@ public class FormatSpecifierViewer {
     public FormatSpecifierViewer(ScoreBoard sb) { setScoreBoard(sb); }
 
     public Map<String,String> getFormatSpecifierDescriptions() {
-        Map<String,String> m = new LinkedHashMap<String,String>();
+        Map<String,String> m = new LinkedHashMap<>();
         Iterator<String> keys = scoreBoardValues.keySet().iterator();
         while (keys.hasNext()) {
             String k = keys.next();
@@ -168,15 +168,19 @@ public class FormatSpecifierViewer {
 
     protected void setupScoreBoardValues() {
         new ScoreBoardValue("%sbto", "ScoreBoard Timeout Owner", getScoreBoard(), ScoreBoard.Value.TIMEOUT_OWNER) {
+            @Override
             public String getValue() { return getScoreBoard().getTimeoutOwner().getId(); }
         };
         new ScoreBoardValue("%sbip", "ScoreBoard Is In Period", getScoreBoard(), ScoreBoard.Value.IN_PERIOD) {
+            @Override
             public String getValue() { return String.valueOf(getScoreBoard().isInPeriod()); }
         };
         new ScoreBoardValue("%sbio", "ScoreBoard Is In Overtime", getScoreBoard(), ScoreBoard.Value.IN_OVERTIME) {
+            @Override
             public String getValue() { return String.valueOf(getScoreBoard().isInOvertime()); }
         };
         new ScoreBoardValue("%sbos", "ScoreBoard Is Score Official", getScoreBoard(), ScoreBoard.Value.OFFICIAL_SCORE) {
+            @Override
             public String getValue() { return String.valueOf(getScoreBoard().isOfficialScore()); }
         };
 
@@ -201,9 +205,11 @@ public class FormatSpecifierViewer {
 
     protected void setupTeamValues(String t, final String id) {
         new ScoreBoardValue("%t"+t+"n", "Team "+t+" Name", getTeam(id), Team.Value.NAME) {
+            @Override
             public String getValue() { return getTeam(id).getName(); }
         };
         new ScoreBoardValue("%t"+t+"Nt", "Team "+t+" Twitter Name", Team.AlternateName.class, Team.AlternateName.ID_TWITTER, Team.AlternateName.Value.NAME) {
+            @Override
             public String getValue() {
                 try {
                     return getTeam(id).getAlternateName(Team.AlternateName.ID_TWITTER).getName();
@@ -213,65 +219,89 @@ public class FormatSpecifierViewer {
             }
         };
         new ScoreBoardValue("%t"+t+"s", "Team "+t+" Score", getTeam(id), Team.Value.SCORE) {
+            @Override
             public String getValue() { return String.valueOf(getTeam(id).getScore()); }
         };
         new ScoreBoardValue("%t"+t+"t", "Team "+t+" Timeouts", getTeam(id), Team.Value.TIMEOUTS) {
+            @Override
             public String getValue() { return String.valueOf(getTeam(id).getTimeouts()); }
         };
         new ScoreBoardValue("%t"+t+"or", "Team "+t+" Official Reviews", getTeam(id), Team.Value.OFFICIAL_REVIEWS) {
+            @Override
             public String getValue() { return String.valueOf(getTeam(id).getOfficialReviews()); }
         };
         new ScoreBoardValue("%t"+t+"l", "Team "+t+" is Lead Jammer", getTeam(id), Team.Value.DISPLAY_LEAD) {
+            @Override
             public String getValue() { return String.valueOf(getTeam(id).isDisplayLead()); }
         };
         new ScoreBoardValue("%t"+t+"jn", "Team "+t+" Jammer Name",
                 getTeam(id).getPosition(FloorPosition.JAMMER), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.JAMMER)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"jN", "Team "+t+" Jammer Number",
                 getTeam(id).getPosition(FloorPosition.JAMMER), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.JAMMER)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"pn", "Team "+t+" Pivot Name",
                 getTeam(id).getPosition(FloorPosition.PIVOT), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.PIVOT)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"pN", "Team "+t+" Pivot Number",
                 getTeam(id).getPosition(FloorPosition.PIVOT), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.PIVOT)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b1n", "Team "+t+" Blocker1 Name",
                 getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER1)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b1N", "Team "+t+" Blocker1 Number",
                 getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER1)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b2n", "Team "+t+" Blocker2 Name",
                 getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER2)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b2N", "Team "+t+" Blocker2 Number",
                 getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER2)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b3n", "Team "+t+" Blocker3 Name",
                 getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER3)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterName((Skater)o); }
         };
         new ScoreBoardValue("%t"+t+"b3N", "Team "+t+" Blocker3 Number",
                 getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.Value.SKATER) {
+            @Override
             public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER3)); }
+            @Override
             public String getPreviousValue(Object o) { return getSkaterNumber((Skater)o); }
         };
     }
@@ -287,20 +317,27 @@ public class FormatSpecifierViewer {
 
     protected void setupClockValues(String c, final String id) {
         new ScoreBoardValue("%c"+c+"n", "Clock "+id+" Name", getClock(id), Clock.Value.NAME) {
+            @Override
             public String getValue() { return getClock(id).getName(); }
         };
         new ScoreBoardValue("%c"+c+"N", "Clock "+id+" Number", getClock(id), Clock.Value.NUMBER) {
+            @Override
             public String getValue() { return String.valueOf(getClock(id).getNumber()); }
         };
         new ScoreBoardValue("%c"+c+"r", "Clock "+id+" is Running", getClock(id), Clock.Value.RUNNING) {
+            @Override
             public String getValue() { return String.valueOf(getClock(id).isRunning()); }
         };
         new ScoreBoardValue("%c"+c+"ts", "Clock "+id+" Time (seconds)", getClock(id), Clock.Value.TIME) {
+            @Override
             public String getValue() { return getClockSecs(id); }
+            @Override
             public String getPreviousValue(Object o) { return getClockSecs(((Long)o).longValue()); }
         };
         new ScoreBoardValue("%c"+c+"tms", "Clock "+id+" Time (min:sec)", getClock(id), Clock.Value.TIME) {
+            @Override
             public String getValue() { return getClockMinSecs(id); }
+            @Override
             public String getPreviousValue(Object o) { return getClockMinSecs(((Long)o).longValue()); }
         };
     }
@@ -330,7 +367,7 @@ public class FormatSpecifierViewer {
 
     protected String comparatorRegex = "=|!=|<|<=|>|>=|%";
 
-    protected Map<String,ScoreBoardValue> scoreBoardValues = new LinkedHashMap<String,ScoreBoardValue>();
+    protected Map<String,ScoreBoardValue> scoreBoardValues = new LinkedHashMap<>();
 
     protected abstract class ScoreBoardValue {
         public ScoreBoardValue(String f, String d, ScoreBoardEventProvider p, Property prop) {

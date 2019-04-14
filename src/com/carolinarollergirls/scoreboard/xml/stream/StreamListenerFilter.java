@@ -13,8 +13,10 @@ import org.jdom.Document;
 public class StreamListenerFilter implements StreamListener {
     public StreamListenerFilter(StreamListener l) { listener = l; }
 
+    @Override
     public void xmlChange(Document d) { listener.xmlChange(d); }
 
+    @Override
     public void end() { listener.end(); }
 
     protected StreamListener getListener() { return listener; }

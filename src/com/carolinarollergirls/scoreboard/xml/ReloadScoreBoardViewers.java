@@ -17,6 +17,7 @@ public class ReloadScoreBoardViewers extends DefaultXmlDocumentManager implement
         update(editor.setPI(createXPathElement(), "Reload"));
     }
 
+    @Override
     protected void processElement(Element e) throws Exception {
         if (Boolean.parseBoolean(editor.getText(e))) {
             reloadViewers();

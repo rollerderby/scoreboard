@@ -18,6 +18,7 @@ public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener impl
         sb.addXmlScoreBoardListener(this);
     }
 
+    @Override
     public void xmlChange(Document d) {
         super.xmlChange(d);
         if (editor.isEmptyDocument(d)) {
@@ -46,6 +47,6 @@ public class QueueXmlScoreBoardListener extends FilterXmlScoreBoardListener impl
     public boolean isEmpty() { return (null == documents.peek()); }
 
     protected boolean queueNextDocument = false;
-    protected LinkedList<Document> documents = new LinkedList<Document>();
+    protected LinkedList<Document> documents = new LinkedList<>();
     protected Object documentsLock = new Object();
 }

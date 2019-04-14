@@ -19,8 +19,10 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         setNeighbors(getNumber());
     }
 
+    @Override
     public String getProviderId() { return String.valueOf(getNumber()); }
 
+    @Override
     public int compareTo(NumberedScoreBoardEventProvider<?> other) {
         if (other == null) { return -1; }
         if (getParent() == other.getParent()) {
@@ -35,6 +37,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         return getParent().compareTo(other.getParent());
     }
     
+    @Override
     protected void unlink(boolean neighborsRemoved) {
         T next = null;
         if (!neighborsRemoved) {
@@ -47,6 +50,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         }
     }
 
+    @Override
     protected Object _computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         value = super._computeValue(prop, value, last, flag);
         if (prop == IValue.NUMBER && last != null && !Objects.equals(value, last)) {
@@ -54,6 +58,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         }
         return value;
     }
+    @Override
     protected void _valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == IValue.NUMBER && last != null) {
             if (flag != Flag.INTERNAL) {
@@ -69,9 +74,12 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         super._valueChanged(prop, value, last, flag);
     }
 
+    @Override
     public void setPrevious(T p) { set(IValue.PREVIOUS, p); }
+    @Override
     public void setNext(T n) { set(IValue.NEXT, n); }
 
+    @Override
     public void moveToNumber(int num)  {
         synchronized (coreLock) {
             if (num == getNumber()) { return; }
@@ -122,5 +130,6 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         }
     }
 
+    @SuppressWarnings("hiding")
     protected NumberedProperty ownType;
 }

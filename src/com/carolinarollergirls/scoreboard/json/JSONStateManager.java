@@ -30,16 +30,16 @@ public class JSONStateManager {
     }
 
     public void updateState(String key, Object value) {
-        List<WSUpdate> updates = new ArrayList<WSUpdate>();
+        List<WSUpdate> updates = new ArrayList<>();
         updates.add(new WSUpdate(key, value));
         updateState(updates);
     }
 
     public synchronized void updateState(List<WSUpdate> updates) {
         Histogram.Timer timer = updateStateDuration.startTimer();
-        Set<String> changed = new HashSet<String>();
-        Set<String> toRemove = new HashSet<String>();
-        Map<String, Object> newState = new HashMap<String, Object>(state);
+        Set<String> changed = new HashSet<>();
+        Set<String> toRemove = new HashSet<>();
+        Map<String, Object> newState = new HashMap<>(state);
 
         for (WSUpdate update : updates) {
             if (update.getValue() == null) {
@@ -84,6 +84,7 @@ public class JSONStateManager {
                 pending.incrementAndGet();
                 sources.get(source).execute(
                         new Runnable() {
+                            @Override
                             public void run() {
                                 localSource.sendUpdates(localState, immutableChanged);
                                 pending.decrementAndGet();
@@ -105,8 +106,8 @@ public class JSONStateManager {
         }
     }
 
-    private Map<JSONStateListener, ThreadPoolExecutor> sources = new HashMap<JSONStateListener, ThreadPoolExecutor>();
-    private Map<String, Object> state = new HashMap<String, Object>();
+    private Map<JSONStateListener, ThreadPoolExecutor> sources = new HashMap<>();
+    private Map<String, Object> state = new HashMap<>();
     private final AtomicInteger pending = new AtomicInteger();
 
     private static final Histogram updateStateDuration = Histogram.build()
