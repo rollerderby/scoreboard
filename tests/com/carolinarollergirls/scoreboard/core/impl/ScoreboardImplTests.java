@@ -1615,6 +1615,22 @@ public class ScoreboardImplTests {
     }
     
     @Test
+    public void testDeleteCurrentPeriod() {
+        fastForwardJams(2);
+        advance(sb.getRulesets().getLong(Rule.PERIOD_DURATION));
+        
+        assertTrue(pc.isTimeAtEnd());
+        assertFalse(pc.isRunning());
+        assertEquals(2, sb.getAll(ScoreBoard.NChild.PERIOD).size());
+        assertEquals(1, sb.getCurrentPeriodNumber());
+        
+        sb.getCurrentPeriod().execute(Period.Command.DELETE);
+        
+        assertEquals(1, sb.getAll(ScoreBoard.NChild.PERIOD).size());
+        assertEquals(0, sb.getCurrentPeriodNumber());
+    }
+    
+    @Test
     public void testDeleteJam() {
         fastForwardJams(3);
         sb.startJam();

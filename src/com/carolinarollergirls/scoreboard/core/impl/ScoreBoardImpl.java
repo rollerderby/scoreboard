@@ -131,7 +131,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             return null;
         }
     }
-
+    
     public void reset() {
         synchronized (coreLock) {
             for (ValueWithId t : getAll(Child.TEAM)) {
