@@ -35,7 +35,7 @@ public class UrlsServlet extends HttpServlet {
     public UrlsServlet(Server s) { server = s; }
 
     public List<URL> getUrls() throws MalformedURLException,SocketException {
-        List<URL> urls = new ArrayList<URL>();
+        List<URL> urls = new ArrayList<>();
         Iterator<Connector> connectors = Arrays.asList(server.getConnectors()).iterator();
         while (connectors.hasNext()) {
             Connector c = connectors.next();
@@ -44,6 +44,7 @@ public class UrlsServlet extends HttpServlet {
         return urls;
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");

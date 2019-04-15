@@ -20,6 +20,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
         jsm.register(this);
     }
 
+    @Override
     public void sendUpdates(Map<String, Object> state, Set<String> changed) {
         // If the jam has just ended or the score is now official, write out a file.
         if ((inJam && !bool(state.get("ScoreBoard.Clock(Jam).Running")))
@@ -57,7 +58,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
                     .with(JSON.Feature.PRETTY_PRINT_OUTPUT)
                     .composeString()
                     .startObject()
-                    .putObject("state", new TreeMap<String, Object>(state))
+                    .putObject("state", new TreeMap<>(state))
                     .end()
                     .finish();
 

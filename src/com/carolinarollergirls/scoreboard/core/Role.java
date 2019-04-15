@@ -12,6 +12,7 @@ public enum Role {
         string = str;
     }
 
+    @Override
     public String toString() { return string; }
     public static Role fromString(String s) {
         for (Role r : values()) {

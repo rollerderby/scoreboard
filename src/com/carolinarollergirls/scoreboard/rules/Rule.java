@@ -42,6 +42,7 @@ public enum Rule {
     private Rule(RuleDefinition r) { rule = r; }
 
     public RuleDefinition getRuleDefinition() { return rule; }
+    @Override
     public String toString() {return rule.getName(); }
 
     RuleDefinition rule;

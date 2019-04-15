@@ -20,6 +20,7 @@ import com.carolinarollergirls.scoreboard.xml.stream.ScoreBoardOutputStream;
 public class SaveScoreBoardStream extends AbstractScoreBoardStream {
     public SaveScoreBoardStream() { super("SaveStream"); }
 
+    @Override
     protected void doStart(File file) throws IOException,FileNotFoundException {
         if (!file.getName().matches("^.*[.][xX][mM][lL]$")) {
             String xmlFilename = file.getName()+".xml";
@@ -42,6 +43,7 @@ public class SaveScoreBoardStream extends AbstractScoreBoardStream {
         }
     }
 
+    @Override
     protected void doStop() {
         getXmlScoreBoard().removeXmlScoreBoardListener(this);
         if (null != outputStream) {
@@ -50,6 +52,7 @@ public class SaveScoreBoardStream extends AbstractScoreBoardStream {
         outputStream = null;
     }
 
+    @Override
     protected void doXmlChange(Document d) throws IOException {
         try {
             outputStream.write(editor.filterNoSavePI(d));

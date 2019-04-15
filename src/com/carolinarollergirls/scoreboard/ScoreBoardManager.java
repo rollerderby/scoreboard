@@ -155,9 +155,9 @@ public class ScoreBoardManager {
     }
 
     private static Properties properties = new Properties();
-    private static Map<String,String> properties_overrides = new HashMap<String,String>();
-    private static Map<String,Object> controllers = new ConcurrentHashMap<String,Object>();
-    private static Map<String,Object> viewers = new ConcurrentHashMap<String,Object>();
+    private static Map<String,String> properties_overrides = new HashMap<>();
+    private static Map<String,Object> controllers = new ConcurrentHashMap<>();
+    private static Map<String,Object> viewers = new ConcurrentHashMap<>();
 
     private static ScoreBoard scoreBoard;
     private static Logger logger = null;

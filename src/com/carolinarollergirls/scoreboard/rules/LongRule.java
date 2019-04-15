@@ -6,6 +6,7 @@ public class LongRule extends RuleDefinition {
         super(Type.LONG, fullname, description, new Long(defaultValue));
     }
 
+    @Override
     public boolean isValueValid(String v) {
         try {
             new Long(v);

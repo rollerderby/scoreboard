@@ -36,6 +36,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             .addSource(getTeamJam(Team.ID_2), TeamJam.Value.STAR_PASS);
     }
 
+    @Override
     public void setParent(ScoreBoardEventProvider p) {
         if (parent == p) { return; }
         parent.removeScoreBoardListener(periodNumberListener);
@@ -46,6 +47,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                         true);
     }
     
+    @Override
     protected void unlink(boolean neighborsRemoved) {
         if (!neighborsRemoved) {
             if (parent instanceof Period && this == ((Period)parent).getCurrentJam()) {
@@ -58,6 +60,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         super.unlink(neighborsRemoved);
     }
 
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.STAR_PASS) {
             return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass();
@@ -65,6 +68,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         return value;
     }
     
+    @Override
     public void execute(CommandProperty prop) {
         synchronized (coreLock) {
             switch ((Command)prop) {
@@ -89,23 +93,30 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         }
     }
 
+    @Override
     public long getDuration() { return (Long)get(Value.DURATION); }
     public void setDuration(long t) { set(Value.DURATION, t); }
 
+    @Override
     public long getPeriodClockElapsedStart() { return (Long)get(Value.PERIOD_CLOCK_ELAPSED_START); }
     public void setPeriodClockElapsedStart(long t) { set(Value.PERIOD_CLOCK_ELAPSED_START, t); }
 
+    @Override
     public long getPeriodClockElapsedEnd() { return (Long)get(Value.PERIOD_CLOCK_ELAPSED_END); }
     public void setPeriodClockElapsedEnd(long t) { set(Value.PERIOD_CLOCK_ELAPSED_END, t); }
 
+    @Override
     public long getWalltimeStart() { return (Long)get(Value.WALLTIME_START); }
     public void setWalltimeStart(long t) { set(Value.WALLTIME_START, t); }
 
+    @Override
     public long getWalltimeEnd() { return (Long)get(Value.WALLTIME_END); }
     public void setWalltimeEnd(long t) { set(Value.WALLTIME_END, t); }
 
+    @Override
     public TeamJam getTeamJam(String id) { return (TeamJam)get(Child.TEAM_JAM, id); }
 
+    @Override
     public void start() {
         synchronized (coreLock) {
             requestBatchStart();
@@ -114,6 +125,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             requestBatchEnd();
         }
     }
+    @Override
     public void stop() {
         synchronized (coreLock) {
             requestBatchStart();

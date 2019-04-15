@@ -34,6 +34,7 @@ public class JSONServlet extends HttpServlet {
         scoreBoard = m;
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");

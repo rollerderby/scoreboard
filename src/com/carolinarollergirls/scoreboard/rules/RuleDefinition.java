@@ -38,6 +38,7 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
 
         private Type(String s) { string = s; }
 
+        @Override
         public String toString() { return string; }
 
         String string;
@@ -55,7 +56,9 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
         private final Object defaultValue;
+        @Override
         public Class<?> getType() { return type; }
+        @Override
         public Object getDefaultValue() { return defaultValue; }
     }
 }

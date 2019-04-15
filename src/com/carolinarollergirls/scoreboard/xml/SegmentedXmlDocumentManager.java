@@ -20,11 +20,13 @@ public class SegmentedXmlDocumentManager extends DefaultXmlDocumentManager imple
         managedSubElementName = b;
     }
 
+    @Override
     protected Element createXPathElement() {
         Element e = new Element(getManagedSubElementName());
         super.createXPathElement().addContent(e);
         return e;
     }
+    @Override
     protected String getXPathString() { return super.getXPathString()+"/"+getManagedSubElementName(); }
     protected String getManagedSubElementName() { return managedSubElementName; }
 

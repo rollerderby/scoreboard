@@ -25,6 +25,7 @@ public interface Settings extends ScoreBoardEventProvider {
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;
+        @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
 }

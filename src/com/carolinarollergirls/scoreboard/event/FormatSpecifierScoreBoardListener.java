@@ -19,6 +19,7 @@ public class FormatSpecifierScoreBoardListener extends ConditionalScoreBoardList
 
     public String getFormat() { return format; }
 
+    @Override
     protected boolean checkScoreBoardEvent(ScoreBoardEvent e) {
         return (super.checkScoreBoardEvent(e) && formatSpecifierViewer.checkCondition(getFormat(), e));
     }

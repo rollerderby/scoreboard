@@ -47,7 +47,9 @@ public interface Rulesets extends ScoreBoardEventProvider {
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
         private final Object defaultValue;
+        @Override
         public Class<?> getType() { return type; }
+        @Override
         public Object getDefaultValue() { return defaultValue; }
     }
     public enum Child implements AddRemoveProperty {
@@ -57,6 +59,7 @@ public interface Rulesets extends ScoreBoardEventProvider {
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;
+        @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
 
@@ -79,7 +82,9 @@ public interface Rulesets extends ScoreBoardEventProvider {
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
             private final Class<?> type;
             private final Object defaultValue;
+            @Override
             public Class<?> getType() { return type; }
+            @Override
             public Object getDefaultValue() { return defaultValue; }
         }
         public enum Child implements AddRemoveProperty {
@@ -87,6 +92,7 @@ public interface Rulesets extends ScoreBoardEventProvider {
 
             private Child(Class<? extends ValueWithId> t) { type = t; }
             private final Class<? extends ValueWithId> type;
+            @Override
             public Class<? extends ValueWithId> getType() { return type; }
         }
     }

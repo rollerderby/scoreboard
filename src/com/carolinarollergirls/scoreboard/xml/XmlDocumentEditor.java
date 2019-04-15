@@ -294,7 +294,7 @@ public class XmlDocumentEditor {
     public boolean hasAnyPI(Document d) { return d.getDescendants(piFilter).hasNext(); }
     public boolean hasRemovePI(Document d) { return d.getDescendants(removePIFilter).hasNext(); }
     public Document removeAllPI(Document d, List<?> targets, boolean inclusive) {
-        LinkedList<ProcessingInstruction> list = new LinkedList<ProcessingInstruction>();
+        LinkedList<ProcessingInstruction> list = new LinkedList<>();
         Iterator<?> pis = d.getDescendants(piFilter);
         while (pis.hasNext()) {
             ProcessingInstruction pi = (ProcessingInstruction)pis.next();
@@ -502,7 +502,8 @@ public class XmlDocumentEditor {
         }
         // Need to copy list first to avoid ConcurrentModificationException
         // Suppress unchecked warnings because JDOM 1.x doesn't support Java generics
-        @SuppressWarnings("unchecked") Iterator<Element> children = new ArrayList<Element>(e.getChildren()).iterator();
+        @SuppressWarnings("unchecked") 
+        Iterator<Element> children = new ArrayList<Element>(e.getChildren()).iterator();
         while (children.hasNext()) {
             filterElementList(children.next(), keep);
         }
@@ -594,6 +595,7 @@ public class XmlDocumentEditor {
             super(ContentFilter.PI);
             target = t;
         }
+        @Override
         public boolean matches(Object o) {
             try {
                 return (super.matches(o) && ((ProcessingInstruction)o).getTarget().equals(target));

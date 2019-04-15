@@ -64,6 +64,7 @@ public class ScoreBoardInputStream {
             fileInputStream = fos;
             listener = l;
         }
+        @Override
         public void run() {
             try {
                 setParent(SAXParserFactory.newInstance().newSAXParser().getXMLReader());
@@ -87,6 +88,7 @@ public class ScoreBoardInputStream {
             try { myThread.join(); }
             catch ( InterruptedException iE ) { /* Can only hope myThread is stopped */ }
         }
+        @Override
         public void startElement(String uri, String localName, String qName, Attributes atts) throws SAXException {
             if (stopped) {
                 throw new SAXException("Parsing stopped");
@@ -98,6 +100,7 @@ public class ScoreBoardInputStream {
             }
             super.startElement(uri, localName, qName, atts);
         }
+        @Override
         public void endElement(String uri, String localName, String qName) throws SAXException {
             super.endElement(uri, localName, qName);
             if (qName.equals("document")) {

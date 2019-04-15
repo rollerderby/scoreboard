@@ -26,6 +26,7 @@ public interface Media extends ScoreBoardEventProvider {
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;
+        @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
 
@@ -38,6 +39,7 @@ public interface Media extends ScoreBoardEventProvider {
 
             private Child(Class<? extends ValueWithId> t) { type = t; }
             private final Class<? extends ValueWithId> type;
+            @Override
             public Class<? extends ValueWithId> getType() { return type; }
         }
     }
@@ -55,6 +57,7 @@ public interface Media extends ScoreBoardEventProvider {
 
             private Child(Class<? extends ValueWithId> t) { type = t; }
             private final Class<? extends ValueWithId> type;
+            @Override
             public Class<? extends ValueWithId> getType() { return type; }
         }
     }
@@ -62,6 +65,7 @@ public interface Media extends ScoreBoardEventProvider {
     public static interface MediaFile extends ScoreBoardEventProvider {
         public String getFormat();
         public String getType();
+        @Override
         public String getId();
         public String getName();
         public void setName(String s);
@@ -75,7 +79,9 @@ public interface Media extends ScoreBoardEventProvider {
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
             private final Class<?> type;
             private final Object defaultValue;
+            @Override
             public Class<?> getType() { return type; }
+            @Override
             public Object getDefaultValue() { return defaultValue; }
         }
     }

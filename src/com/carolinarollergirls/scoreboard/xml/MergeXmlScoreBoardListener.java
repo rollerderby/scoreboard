@@ -17,6 +17,7 @@ public class MergeXmlScoreBoardListener implements XmlScoreBoardListener {
         sb.addXmlScoreBoardListener(this);
     }
 
+    @Override
     public void xmlChange(Document d) {
         synchronized (documentLock) {
             editor.mergeDocuments(document, d);

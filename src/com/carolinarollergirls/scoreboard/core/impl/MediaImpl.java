@@ -56,6 +56,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         }
 
         Thread thread = new Thread() {
+            @Override
             public void run() {
                 while (true) {
                     WatchKey key;
@@ -110,6 +111,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         }
     }
 
+    @Override
     public boolean validFileName(String fn) {
         return !fn.matches("(^\\.)|(\\.[dD][bB]$)|\\\\|/");
     }
@@ -140,8 +142,10 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
             child.addType(type);
         }
     }
+    @Override
     public MediaFormat getFormat(String format) { return (MediaFormat)get(Child.FORMAT, format); }
 
+    @Override
     public boolean removeMediaFile(String format, String type, String id) {
         synchronized (coreLock) {
             try {
@@ -166,10 +170,13 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
             this.format = format;
         }
 
+        @Override
         public String getId() { return format; }
 
+        @Override
         public String getFormat() { return format; }
 
+        @Override
         public MediaType getType(String type) { return (MediaType)get(Child.TYPE, type); }
         protected void addType(String type) { add(Child.TYPE, new MediaTypeImpl(this, type)); }
 
@@ -183,16 +190,23 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
             this.type = type;
         }
 
+        @Override
         public String getId() { return type; }
 
+        @Override
         public String getFormat() { return parent.getFormat(); }
 
+        @Override
         public String getType() { return type; }
 
+        @Override
         public MediaFile getFile(String file) { return (MediaFile)get(Child.FILE, file); }
+        @Override
         public void addFile(MediaFile file) { add(Child.FILE, file); }
+        @Override
         public void removeFile(MediaFile file) { remove(Child.FILE, file); }
 
+        @SuppressWarnings("hiding")
         private MediaFormat parent;
         private String type;
     }
@@ -206,10 +220,15 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
             addWriteProtection(Value.SRC);
         }
 
+        @Override
         public String getFormat() { synchronized (coreLock) { return type.getFormat() ;} }
+        @Override
         public String getType() { synchronized (coreLock) { return type.getType() ;} }
+        @Override
         public String getName() { synchronized (coreLock) { return (String)get(Value.NAME) ;} }
+        @Override
         public void setName(String n) { synchronized (coreLock) { set(Value.NAME, n) ;} }
+        @Override
         public String getSrc() { synchronized (coreLock) { return (String)get(Value.SRC); } }
 
         private MediaType type;

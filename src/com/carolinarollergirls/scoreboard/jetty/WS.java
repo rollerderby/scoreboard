@@ -51,6 +51,7 @@ public class WS extends WebSocketServlet {
         jsm = j;
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         getServletContext().getNamedDispatcher("default").forward(request, response);
     }
@@ -80,12 +81,14 @@ public class WS extends WebSocketServlet {
 
     public class Conn implements OnTextMessage, JSONStateListener {
         private Connection connection;
+        @SuppressWarnings("hiding")
         private JSONStateManager jsm;
 
         public Conn(JSONStateManager jsm) {
             this.jsm = jsm;
         }
 
+        @Override
         public synchronized void onMessage(String message_data) {
             messagesReceived.inc();
             try {
@@ -98,11 +101,11 @@ public class WS extends WebSocketServlet {
                     return;
                 }
                 if (action.equals("Register")) {
-                    JSONArray paths = json.optJSONArray("paths");
-                    if (paths != null) {
-                        Set<String> newPaths = new HashSet<String>();
-                        for (int i = 0; i < paths.length(); i++) {
-                            newPaths.add(paths.getString(i));
+                    JSONArray jsonPaths = json.optJSONArray("paths");
+                    if (jsonPaths != null) {
+                        Set<String> newPaths = new HashSet<>();
+                        for (int i = 0; i < jsonPaths.length(); i++) {
+                            newPaths.add(jsonPaths.getString(i));
                         }
                         // Send on updates for the newly registered paths.
                         sendWSUpdatesForPaths(newPaths, state.keySet());
@@ -146,9 +149,9 @@ public class WS extends WebSocketServlet {
             Matcher m = pathElementPattern.matcher(path);
             if (m.matches()) {
                 String name = m.group("name");
-                String id = m.group("id");
+                String elementId = m.group("id");
                 String remainder = m.group("remainder");
-                if (id == null) { id = ""; }
+                if (elementId == null) { elementId = ""; }
                 try {
                     Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
                     if (prop == null) { throw new IllegalArgumentException("Unknown property"); }
@@ -160,15 +163,15 @@ public class WS extends WebSocketServlet {
                             p.execute((CommandProperty)prop);
                         }
                     } else if (remainder != null) {
-                        set((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, id), remainder, value, flag);
+                        set((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, elementId), remainder, value, flag);
                     } else if (value == null) {
-                        p.remove((AddRemoveProperty)prop, id);
+                        p.remove((AddRemoveProperty)prop, elementId);
                     } else {
-                        p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, id, value));
+                        p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, elementId, value));
                     }
                 } catch (Exception e) {
                     ScoreBoardManager.printMessage("Exception parsing JSON for " + p.getProviderName() +
-                            "(" + p.getProviderId() + ")." + name + "(" + id + ") - " + value + ": " + e.toString());
+                            "(" + p.getProviderId() + ")." + name + "(" + elementId + ") - " + value + ": " + e.toString());
                     e.printStackTrace();
                 }
             } else {
@@ -190,12 +193,12 @@ public class WS extends WebSocketServlet {
         }
 
         @Override
-        public void onOpen(Connection connection) {
+        public void onOpen(Connection conn) {
             connectionsActive.inc();
             // Some messages can be bigger than the 16k default
             // when there is broad registration.
-            connection.setMaxTextMessageSize(1024 * 1024);
-            this.connection = connection;
+            conn.setMaxTextMessageSize(1024 * 1024);
+            this.connection = conn;
             id = UUID.randomUUID();
             jsm.register(this);
 
@@ -227,15 +230,17 @@ public class WS extends WebSocketServlet {
         }
 
         // State changes from JSONStateManager.
+        @SuppressWarnings("hiding")
+        @Override
         public synchronized void sendUpdates(Map<String, Object> state, Set<String> changed) {
             this.state = state;
             sendWSUpdatesForPaths(paths, changed);
         }
 
-        private void sendWSUpdatesForPaths(Set<String>paths, Set<String> changed) {
-            Map<String, Object> updates = new HashMap<String, Object>();
+        private void sendWSUpdatesForPaths(Set<String> watchedPaths, Set<String> changed) {
+            Map<String, Object> updates = new HashMap<>();
             for (String k: changed) {
-                for (String p : paths) {
+                for (String p : watchedPaths) {
                     if (k.startsWith(p)) {
                         if (state.get(k) == null) {
                             updates.put(k, JSONObject.NULL);
@@ -260,7 +265,7 @@ public class WS extends WebSocketServlet {
         }
 
         protected UUID id;
-        protected Set<String> paths = new HashSet<String>();
+        protected Set<String> paths = new HashSet<>();
         private Map<String, Object> state;
     }
 }

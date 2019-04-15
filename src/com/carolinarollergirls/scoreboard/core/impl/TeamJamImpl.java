@@ -34,6 +34,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         getOrCreate(NChild.SCORING_TRIP, 1);
     }
 
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.JAM_SCORE) {
             int sum = 0;
@@ -78,6 +79,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         if (value instanceof Integer && prop != Value.OS_OFFSET && (Integer)value < 0) { return 0; }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.STAR_PASS_TRIP) {
             if (last != null) {
@@ -100,6 +102,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
     }
 
+    @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == NChild.SCORING_TRIP) {
             jamScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.SCORE);
@@ -107,6 +110,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.Value.AFTER_S_P);
         }
     }
+    @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
         if (prop == NChild.SCORING_TRIP && item == get(Value.STAR_PASS_TRIP)) {
             for (ScoringTrip trip = (ScoringTrip)getLast(NChild.SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
@@ -116,6 +120,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
           }
         }
     }
+    @Override
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             if (prop == NChild.SCORING_TRIP) {
@@ -125,40 +130,65 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
     }
 
+    @Override
     public Jam getJam() { return (Jam)parent; }
+    @Override
     public Team getTeam() { return team; }
     
+    @Override
     public TeamJam getOtherTeam() { return getJam().getTeamJam(Team.ID_1.equals(subId) ? Team.ID_2 : Team.ID_1); }
 
+    @Override
     public boolean isRunningOrEnded() { return this == team.getRunningOrEndedTeamJam(); }
+    @Override
     public boolean isRunningOrUpcoming() { return this == team.getRunningOrUpcomingTeamJam(); }
 
+    @Override
     public int getLastScore() { return (Integer)get(Value.LAST_SCORE); }
+    @Override
     public void setLastScore(int l) { set(Value.LAST_SCORE, l); }
 
+    @Override
     public int getOsOffset() { return (Integer)get(Value.OS_OFFSET); }
+    @Override
     public void setOsOffset(int o) { set(Value.OS_OFFSET, o); }
+    @Override
     public void changeOsOffset(int c) { set(Value.OS_OFFSET, c, Flag.CHANGE); }
 
+    @Override
     public int getJamScore() { return (Integer)get(Value.JAM_SCORE); }
+    @Override
     public int getTotalScore() { return (Integer)get(Value.TOTAL_SCORE); }
     
+    @Override
     public ScoringTrip getCurrentScoringTrip() { return (ScoringTrip)get(Value.CURRENT_TRIP); }
+    @Override
     public void addScoringTrip() { getOrCreate(NChild.SCORING_TRIP, getCurrentScoringTrip().getNumber() + 1); }
+    @Override
     public void removeScoringTrip() { if (getAll(NChild.SCORING_TRIP).size() > 1) { getCurrentScoringTrip().unlink(); }}
 
+    @Override
     public boolean isLost() { return (Boolean)get(Value.LOST); }
+    @Override
     public boolean isLead() { return (Boolean)get(Value.LEAD); }
+    @Override
     public boolean isCalloff() { return (Boolean)get(Value.CALLOFF); }
+    @Override
     public boolean isInjury() { return (Boolean)get(Value.INJURY); }
+    @Override
     public boolean isDisplayLead() { return (Boolean)get(Value.DISPLAY_LEAD); }
 
+    @Override
     public boolean isStarPass() { return (Boolean)get(Value.STAR_PASS); }
+    @Override
     public ScoringTrip getStarPassTrip() { return (ScoringTrip)get(Value.STAR_PASS_TRIP); }
     
+    @Override
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
+    @Override
     public void setNoPivot(boolean np) { set(Value.NO_PIVOT, np); }
 
+    @Override
     public Fielding getFielding (FloorPosition fp) { return (Fielding)get(Child.FIELDING, fp.toString()); }
 
     private Team team;

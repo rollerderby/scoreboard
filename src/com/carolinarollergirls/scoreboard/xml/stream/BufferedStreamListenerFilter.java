@@ -18,10 +18,12 @@ import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 public class BufferedStreamListenerFilter extends StreamListenerFilter implements StreamListener {
     public BufferedStreamListenerFilter(StreamListener l) { super(l); }
 
+    @Override
     public void xmlChange(Document d) {
         addDocument(d);
     }
 
+    @Override
     public void end() {
         synchronized (processorLock) {
             if (null != processor) {
@@ -69,7 +71,7 @@ public class BufferedStreamListenerFilter extends StreamListenerFilter implement
 
     protected Object processorLock = new Object();
     protected DocumentsProcessor processor = null;
-    protected List<Document> documents = new ArrayList<Document>();
+    protected List<Document> documents = new ArrayList<>();
 
     protected class DocumentsProcessor implements Runnable {
         public DocumentsProcessor(StreamListener l, List<Document> d, int start) {
@@ -79,6 +81,7 @@ public class BufferedStreamListenerFilter extends StreamListenerFilter implement
             myThread = new Thread(this);
         }
 
+        @Override
         public void run() {
             while (running) {
                 Document d;
@@ -135,7 +138,9 @@ public class BufferedStreamListenerFilter extends StreamListenerFilter implement
         protected boolean running;
         protected Object runLock = new Object();
         protected boolean ended = false;
+        @SuppressWarnings("hiding")
         protected StreamListener listener;
+        @SuppressWarnings("hiding")
         protected List<Document> documents;
         protected int position;
     }

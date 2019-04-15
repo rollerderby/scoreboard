@@ -67,6 +67,7 @@ public class ScoreBoardXmlListener implements ScoreBoardListener {
         root.setAttribute("BATCH_END", b);
     }
 
+    @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
         ScoreBoardEventProvider p = event.getProvider();
         Element e = getElement(p);

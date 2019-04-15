@@ -44,6 +44,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET_ID, rulesetChangeListener));
     }
 
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.TIME) {
             if (isRunning() && isSyncTime()) {
@@ -75,6 +76,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.TIME && isTimeAtEnd()) {
             stop();
@@ -94,6 +96,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     }
 
+    @Override
     public void execute(CommandProperty prop) {
         switch((Command)prop) {
         case RESET_TIME:
@@ -108,6 +111,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     }
 
+    @Override
     public void reset() {
         synchronized (coreLock) {
             stop();
@@ -125,6 +129,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     }
 
     protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
+        @Override
         public void scoreBoardChange(ScoreBoardEvent event) {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
@@ -148,11 +153,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     };
 
+    @Override
     public ClockSnapshot snapshot() {
         synchronized (coreLock) {
             return new ClockSnapshotImpl(this);
         }
     }
+    @Override
     public void restoreSnapshot(ClockSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) { return; }
@@ -166,40 +173,58 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     }
 
+    @Override
     public String getName() { return (String)get(Value.NAME); }
     public void setName(String n) { set(Value.NAME, n); }
 
+    @Override
     public int getNumber() { return (Integer)get(Value.NUMBER); }
+    @Override
     public void setNumber(int n) { set(Value.NUMBER, n); }
+    @Override
     public void changeNumber(int change) { set(Value.NUMBER, change, Flag.CHANGE); }
 
+    @Override
     public int getMinimumNumber() { return (Integer)get(Value.MINIMUM_NUMBER); }
+    @Override
     public void setMinimumNumber(int n) { set(Value.MINIMUM_NUMBER, n); }
+    @Override
     public void changeMinimumNumber(int change) { set(Value.MINIMUM_NUMBER, change, Flag.CHANGE); }
 
+    @Override
     public int getMaximumNumber() { return (Integer)get(Value.MAXIMUM_NUMBER); }
+    @Override
     public void setMaximumNumber(int n) { set(Value.MAXIMUM_NUMBER, n); }
+    @Override
     public void changeMaximumNumber(int change) { set(Value.MAXIMUM_NUMBER, change, Flag.CHANGE); }
 
+    @Override
     public long getTime() { return (Long)get(Value.TIME); }
+    @Override
     public long getInvertedTime() { return (Long)get(Value.INVERTED_TIME); }
+    @Override
     public long getTimeElapsed() {
         synchronized (coreLock) {
             return isCountDirectionDown()?getInvertedTime():getTime();
         }
     }
+    @Override
     public long getTimeRemaining() {
         synchronized (coreLock) {
             return isCountDirectionDown()?getTime():getInvertedTime();
         }
     }
+    @Override
     public void setTime(long ms) { set(Value.TIME, ms); }
+    @Override
     public void changeTime(long change) { set(Value.TIME, change, Flag.CHANGE); }
+    @Override
     public void elapseTime(long change) {
         synchronized (coreLock) {
             changeTime(isCountDirectionDown()?-change:change);
         }
     }
+    @Override
     public void resetTime() { set(Value.TIME, getTime(), Flag.RESET); }
     protected boolean isDisplayChange(long current, long last) {
         //the frontend rounds values that are not full seconds to the earlier second
@@ -211,12 +236,19 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     }
 
+    @Override
     public long getMinimumTime() { return (Long)get(Value.MINIMUM_TIME); }
+    @Override
     public void setMinimumTime(long ms) { set(Value.MINIMUM_TIME, ms); }
+    @Override
     public void changeMinimumTime(long change) { set(Value.MINIMUM_TIME, change, Flag.CHANGE); }
+    @Override
     public long getMaximumTime() { return (Long)get(Value.MAXIMUM_TIME); }
+    @Override
     public void setMaximumTime(long ms) { set(Value.MAXIMUM_TIME, ms); }
+    @Override
     public void changeMaximumTime(long change) { set(Value.MAXIMUM_TIME, change, Flag.CHANGE); }
+    @Override
     public boolean isTimeAtStart(long t) {
         synchronized (coreLock) {
             if (isCountDirectionDown()) {
@@ -226,7 +258,9 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             }
         }
     }
+    @Override
     public boolean isTimeAtStart() { return isTimeAtStart(getTime()); }
+    @Override
     public boolean isTimeAtEnd(long t) {
         synchronized (coreLock) {
             if (isCountDirectionDown()) {
@@ -236,17 +270,24 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             }
         }
     }
+    @Override
     public boolean isTimeAtEnd() { return isTimeAtEnd(getTime()); }
 
+    @Override
     public boolean isCountDirectionDown() { return ((Boolean)get(Value.DIRECTION)).booleanValue(); }
+    @Override
     public void setCountDirectionDown(boolean down) { set(Value.DIRECTION, down); }
 
+    @Override
     public boolean isRunning() { return (Boolean)get(Value.RUNNING); }
 
+    @Override
     public void start() { start(false); }
     public void start(boolean quickAdd) { set(Value.RUNNING, Boolean.TRUE, quickAdd ? Flag.INTERNAL : null); }
+    @Override
     public void stop() { set(Value.RUNNING, Boolean.FALSE); }
 
+    @Override
     public void restart() {
         synchronized (coreLock) {
             requestBatchStart();
@@ -296,9 +337,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             isRunning = clock.isRunning();
         }
 
+        @Override
         public String getId() { return id; }
+        @Override
         public int getNumber() { return number; }
+        @Override
         public long getTime() { return time; }
+        @Override
         public boolean isRunning() { return isRunning; }
 
         protected String id;
@@ -360,10 +405,11 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 
         private void tick() {
             Iterator<ClockImpl> i;
+            @SuppressWarnings("hiding")
             ArrayList<ClockImpl> clocks;
             synchronized (coreLock) {
                 currentTime += update_interval;
-                clocks = new ArrayList<ClockImpl>(this.clocks);
+                clocks = new ArrayList<>(this.clocks);
             }
             ClockImpl clock;
             i = clocks.iterator();
@@ -383,6 +429,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             }
         }
 
+        @Override
         public void updateTime(long time) {
             long curSystemTime = time;
             long curTicks = (curSystemTime - startSystemTime) / update_interval;
@@ -401,6 +448,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         private long startSystemTime = 0;
         private long ticks = 0;
         protected ClockImpl masterClock = null;
-        ArrayList<ClockImpl> clocks = new ArrayList<ClockImpl>();
+        ArrayList<ClockImpl> clocks = new ArrayList<>();
     }
 }

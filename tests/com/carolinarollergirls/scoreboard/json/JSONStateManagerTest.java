@@ -27,6 +27,8 @@ public class JSONStateManagerTest {
         public Set<String> changed;
         public int num_updates;
 
+        @SuppressWarnings("hiding")
+        @Override
         public void sendUpdates(Map<String, Object> state, Set<String> changed) {
             this.state = state;
             this.changed = changed;
@@ -38,7 +40,7 @@ public class JSONStateManagerTest {
     public void listener_gets_update_on_register() {
         jsm.updateState("foo", "bar");
         jsm.register(listener);
-        HashMap<String, Object> hm = new HashMap<String, Object>();
+        HashMap<String, Object> hm = new HashMap<>();
         hm.put("foo", "bar");
 
         jsm.waitForSent();
@@ -97,12 +99,12 @@ public class JSONStateManagerTest {
     public void delete_and_recreate_in_one_update() {
         jsm.register(listener);
         jsm.updateState("foo.1", "bar");
-        List<WSUpdate> updates =  new ArrayList<WSUpdate>();
+        List<WSUpdate> updates =  new ArrayList<>();
         updates.add(new WSUpdate("foo", null));
         updates.add(new WSUpdate("foo.1", "baz"));
         jsm.updateState(updates);
 
-        HashMap<String, Object> hm = new HashMap<String, Object>();
+        HashMap<String, Object> hm = new HashMap<>();
         hm.put("foo.1", "baz");
         jsm.waitForSent();
         assertEquals(hm, listener.state);

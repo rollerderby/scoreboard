@@ -50,6 +50,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         setCopy(Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS_TRIP, false);
     }
 
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if(value instanceof Integer && (Integer)value < 0) { return 0; }
         if (prop == Value.TIMEOUTS && (Integer)value > scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS)) {
@@ -60,6 +61,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.RETAINED_OFFICIAL_REVIEW && (Boolean)value && getOfficialReviews() == 0) {
             setOfficialReviews(1);
@@ -87,6 +89,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public void execute(CommandProperty prop) {
         switch((Command)prop) {
         case ADD_TRIP:
@@ -104,6 +107,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             switch((Child)prop) {
@@ -122,14 +126,17 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.SKATER) {
             ((Skater)item).unlink();
         }
     }
 
+    @Override
     public ScoreBoard getScoreBoard() { return scoreBoard; }
 
+    @Override
     public void reset() {
         synchronized (coreLock) {
             setName(DEFAULT_NAME_PREFIX + getId());
@@ -149,15 +156,19 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public String getName() { return (String)get(Value.NAME); }
+    @Override
     public void setName(String n) { set(Value.NAME, n); }
 
+    @Override
     public void startJam() {
         synchronized (coreLock) {
             updateTeamJams();
         }
     }
 
+    @Override
     public void stopJam() {
         synchronized (coreLock) {
             requestBatchStart();
@@ -168,7 +179,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             
             updateTeamJams();
 
-            Map<Skater, Role> toField = new HashMap<Skater, Role>();
+            Map<Skater, Role> toField = new HashMap<>();
             TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
             TeamJam endedTJ = getRunningOrEndedTeamJam();
             for (FloorPosition fp : FloorPosition.values()) {
@@ -195,11 +206,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public TeamSnapshot snapshot() {
         synchronized (coreLock) {
             return new TeamSnapshotImpl(this);
         }
     }
+    @Override
     public void restoreSnapshot(TeamSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
@@ -214,7 +227,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public AlternateName getAlternateName(String i) { return (AlternateName)get(Child.ALTERNATE_NAME, i); }
+    @Override
     public void setAlternateName(String i, String n) {
         synchronized (coreLock) {
             requestBatchStart();
@@ -222,9 +237,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             requestBatchEnd();
         }
     }
+    @Override
     public void removeAlternateName(String i) { remove(Child.ALTERNATE_NAME, getAlternateName(i)); }
 
+    @Override
     public Color getColor(String i) { return (Color)get(Child.COLOR, i); }
+    @Override
     public void setColor(String i, String c) {
         synchronized (coreLock) {
             requestBatchStart();
@@ -232,11 +250,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             requestBatchEnd();
         }
     }
+    @Override
     public void removeColor(String i) { remove(Child.COLOR, getColor(i)); }
 
+    @Override
     public String getLogo() { return (String)get(Value.LOGO); }
+    @Override
     public void setLogo(String l) { set(Value.LOGO, l); }
 
+    @Override
     public void timeout() {
         synchronized (coreLock) {
             if (getTimeouts() > 0) {
@@ -245,6 +267,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
         }
     }
+    @Override
     public void officialReview() {
         synchronized (coreLock) {
             if (getOfficialReviews() > 0) {
@@ -254,9 +277,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public TeamJam getRunningOrUpcomingTeamJam() { return (TeamJam)get(Value.RUNNING_OR_UPCOMING_TEAM_JAM); }
+    @Override
     public TeamJam getRunningOrEndedTeamJam() { return (TeamJam)get(Value.RUNNING_OR_ENDED_TEAM_JAM); }
+    @Override
     public TeamJam getLastEndedTeamJam() { return (TeamJam)get(Value.LAST_ENDED_TEAM_JAM); }
+    @Override
     public void updateTeamJams() {
         synchronized (coreLock) {
             requestBatchStart();
@@ -272,25 +299,40 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
 
+    @Override
     public int getScore() { return (Integer)get(Value.SCORE); }
 
+    @Override
     public ScoringTrip getCurrentTrip() { return (ScoringTrip)get(Value.CURRENT_TRIP); }
 
+    @Override
     public boolean inTimeout() { return (Boolean)get(Value.IN_TIMEOUT); }
+    @Override
     public void setInTimeout(boolean b) { set(Value.IN_TIMEOUT, b); }
 
+    @Override
     public boolean inOfficialReview() { return (Boolean)get(Value.IN_OFFICIAL_REVIEW); }
+    @Override
     public void setInOfficialReview(boolean b) { set(Value.IN_OFFICIAL_REVIEW, b); }
 
+    @Override
     public boolean retainedOfficialReview() { return (Boolean)get(Value.RETAINED_OFFICIAL_REVIEW); }
+    @Override
     public void setRetainedOfficialReview(boolean b) { set(Value.RETAINED_OFFICIAL_REVIEW, b); }
 
+    @Override
     public int getTimeouts() { return (Integer)get(Value.TIMEOUTS); }
+    @Override
     public void setTimeouts(int t) { set(Value.TIMEOUTS, t); }
+    @Override
     public void changeTimeouts(int c) { set(Value.TIMEOUTS, c, Flag.CHANGE); } 
+    @Override
     public int getOfficialReviews() { return (Integer)get(Value.OFFICIAL_REVIEWS); }
+    @Override
     public void setOfficialReviews(int r) { set(Value.OFFICIAL_REVIEWS, r); }
+    @Override
     public void changeOfficialReviews(int c) { set(Value.OFFICIAL_REVIEWS, c, Flag.CHANGE); }
+    @Override
     public void resetTimeouts(boolean gameStart) {
         synchronized (coreLock) {
             setInTimeout(false);
@@ -305,8 +347,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public Skater getSkater(String id) { return (Skater)get(Child.SKATER, id); }
     public Skater addSkater(String id) { return (Skater)getOrCreate(Child.SKATER, id); }
+    @Override
     public Skater addSkater(String id, String n, String num, String flags) {
         synchronized (coreLock) {
             Skater s = new SkaterImpl(this, id, n, num, flags);
@@ -314,11 +358,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             return s;
         }
     }
+    @Override
     public void addSkater(Skater skater) { add(Child.SKATER, skater); }
+    @Override
     public void removeSkater(String id) { remove(Child.SKATER, id); }
 
+    @Override
     public Position getPosition(FloorPosition fp) { return fp == null ? null : (Position)get(Child.POSITION, fp.toString()); }
 
+    @Override
     public void field(Skater s, Role r) {
         synchronized (coreLock) {
             if (s == null) { return; }
@@ -406,16 +454,23 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
     }
 
+    @Override
     public boolean isLost() { return (Boolean)get(Value.LOST); }
+    @Override
     public boolean isLead() { return (Boolean)get(Value.LEAD); }
+    @Override
     public boolean isCalloff() { return (Boolean)get(Value.CALLOFF); }
+    @Override
     public boolean isInjury() { return (Boolean)get(Value.INJURY); }
+    @Override
     public boolean isDisplayLead() { return (Boolean)get(Value.DISPLAY_LEAD); }
 
     protected boolean isFieldingStarPass() { return getRunningOrUpcomingTeamJam().isStarPass(); }
+    @Override
     public boolean isStarPass() { return (Boolean)get(Value.STAR_PASS); }
     public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
 
+    @Override
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
     private void setNoPivot(boolean noPivot) { set(Value.NO_PIVOT, noPivot); }
 
@@ -430,9 +485,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             team = t;
             setName(n);
         }
+        @Override
         public String getName() { return (String)get(Value.NAME); }
+        @Override
         public void setName(String n) { set(Value.NAME, n); }
 
+        @Override
         public Team getTeam() { return team; }
 
         protected Team team;
@@ -444,9 +502,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             team = t;
             setColor(c);
         }
+        @Override
         public String getColor() { return (String)get(Value.COLOR); }
+        @Override
         public void setColor(String c) { set(Value.COLOR, c); }
 
+        @Override
         public Team getTeam() { return team; }
 
         protected Team team;
@@ -459,18 +520,25 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             officialReviews = team.getOfficialReviews();
             inTimeout = team.inTimeout();
             inOfficialReview = team.inOfficialReview();
-            skaterSnapshots = new HashMap<String, Skater.SkaterSnapshot>();
+            skaterSnapshots = new HashMap<>();
             for (ValueWithId skater : team.getAll(Child.SKATER)) {
                 skaterSnapshots.put(skater.getId(), ((Skater)skater).snapshot());
             }
         }
 
+        @Override
         public String getId() { return id; }
+        @Override
         public int getTimeouts() { return timeouts; }
+        @Override
         public int getOfficialReviews() { return officialReviews; }
+        @Override
         public boolean inTimeout() { return inTimeout; }
+        @Override
         public boolean inOfficialReview() { return inOfficialReview; }
+        @Override
         public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots() { return skaterSnapshots; }
+        @Override
         public Skater.SkaterSnapshot getSkaterSnapshot(String skater) { return skaterSnapshots.get(skater); }
 
         protected String id;

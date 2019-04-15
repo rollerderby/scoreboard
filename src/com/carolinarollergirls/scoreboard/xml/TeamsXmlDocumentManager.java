@@ -27,11 +27,13 @@ import com.carolinarollergirls.scoreboard.core.Team;
 public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implements XmlDocumentManager {
     public TeamsXmlDocumentManager() { super("Teams"); }
 
+    @Override
     public void setXmlScoreBoard(XmlScoreBoard xsB) {
         super.setXmlScoreBoard(xsB);
         reset();
     }
 
+    @Override
     public void reset() {
         super.reset();
         Element e = createXPathElement();
@@ -52,6 +54,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         update(e);
     }
 
+    @Override
     protected void processElement(Element e) throws Exception {
         super.processElement(e);
         Iterator<XPath> transferTypes = transferXPaths.iterator();
@@ -72,6 +75,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         }
     }
 
+    @Override
     protected void processChildElement(Element e) throws Exception {
         super.processChildElement(e);
         if (e.getName().equals("Team")) {

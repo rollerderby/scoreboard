@@ -13,6 +13,7 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
         scoreBoardChange(new ScoreBoardEvent(indirectionElement, indirectionProperty, indirectionElement.get(indirectionProperty), null));
     }
 
+    @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
         if (event.getValue() == watchedElement) { return; }
         ScoreBoardEventProvider lastWatched = watchedElement;
@@ -34,6 +35,7 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
         }
     }
     
+    @Override
     public void unlink() {
         if (watchedElement != null) {
             watchedElement.removeScoreBoardListener(listener);

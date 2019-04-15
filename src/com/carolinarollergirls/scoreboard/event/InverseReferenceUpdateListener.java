@@ -12,6 +12,7 @@ public class InverseReferenceUpdateListener extends ConditionalScoreBoardListene
         this.remoteProperty = remoteProperty;
     }
 
+    @Override
     public void matchedScoreBoardChange(ScoreBoardEvent e) {
         ScoreBoardEventProvider newRemote =
                 (ScoreBoardEventProvider) (e.isRemove() ? null : e.getValue());

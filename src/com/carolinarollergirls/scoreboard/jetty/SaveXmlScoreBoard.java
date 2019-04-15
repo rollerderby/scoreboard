@@ -28,13 +28,16 @@ import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public class SaveXmlScoreBoard extends DefaultScoreBoardControllerServlet {
+    @Override
     public String getPath() { return "/SaveXml"; }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doPost(request, response);
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doGet(request, response);
 

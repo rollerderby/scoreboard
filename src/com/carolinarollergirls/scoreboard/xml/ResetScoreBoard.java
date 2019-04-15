@@ -13,6 +13,7 @@ import org.jdom.Element;
 public class ResetScoreBoard extends DefaultXmlDocumentManager implements XmlDocumentManager {
     public ResetScoreBoard() { super("Reset"); }
 
+    @Override
     protected void processElement(Element e) throws Exception {
         if (Boolean.parseBoolean(editor.getText(e))) {
             getXmlScoreBoard().reset();

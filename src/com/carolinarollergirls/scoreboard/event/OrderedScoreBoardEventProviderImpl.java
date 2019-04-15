@@ -14,13 +14,18 @@ public abstract class OrderedScoreBoardEventProviderImpl<T extends OrderedScoreB
         addScoreBoardListener(new InverseReferenceUpdateListener(this, IValue.NEXT, IValue.PREVIOUS));
     }
 
+    @Override
     public int getNumber() { return (Integer)get(IValue.NUMBER); }
 
+    @Override
     @SuppressWarnings("unchecked")
     public T getPrevious() { return (T)get(IValue.PREVIOUS); }
+    @Override
     public boolean hasPrevious() { return getPrevious() != null; }
+    @Override
     @SuppressWarnings("unchecked")
     public T getNext() { return (T)get(IValue.NEXT); }
+    @Override
     public boolean hasNext() { return getNext() != null; }
 
     static <U> U[] append(U[] arr, U lastElement) {

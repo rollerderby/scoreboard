@@ -43,6 +43,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
     }
 
+    @Override
     public int compareTo(Skater other) {
         if (other == null) { return -1; }
         if (getNumber() == other.getNumber()) { return 0; }
@@ -51,6 +52,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         return getNumber().compareTo(other.getNumber());
     }
     
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.ROLE && flag != Flag.INTERNAL) {
             team.field(this, (Role)value);
@@ -58,6 +60,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.CURRENT_FIELDING) {
             Fielding f = (Fielding)value;
@@ -83,12 +86,14 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
     }
 
+    @Override
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             if (prop == NChild.PENALTY) { return new PenaltyImpl(this, Integer.valueOf(id)); }
             return null;
         }	
     }
+    @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
             updateEligibility();
@@ -96,6 +101,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
         }
     }
+    @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
         if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
             updateEligibility();
@@ -104,14 +110,20 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
     }
 
+    @Override
     public Team getTeam() { return team; }
 
+    @Override
     public String getName() { return (String)get(Value.NAME); }
+    @Override
     public void setName(String n) { set(Value.NAME, n); }
 
+    @Override
     public String getNumber() { return (String)get(Value.NUMBER); }
+    @Override
     public void setNumber(String n) { set(Value.NUMBER, n); }
 
+    @Override
     public Fielding getFielding(TeamJam teamJam) {
         for (FloorPosition fp : FloorPosition.values()) {
             Fielding f = (Fielding) get(Child.FIELDING, teamJam.getId() + "_" + fp.toString());
@@ -119,23 +131,33 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
         return null;
     }
+    @Override
     public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
+    @Override
     public void removeCurrentFielding() {
         if (getCurrentFielding() != null) {
             remove(Child.FIELDING, getCurrentFielding());
         }
     }
 
+    @Override
     public Position getPosition() { return (Position)get(Value.POSITION); }
+    @Override
     public void setPosition(Position p) { set(Value.POSITION, p); }
 
+    @Override
     public Role getRole() { return (Role)get(Value.ROLE); }
+    @Override
     public void setRole(Role r) { set(Value.ROLE, r, Flag.INTERNAL); }
+    @Override
     public void setRoleToBase() { setRole(getBaseRole()); }
 
+    @Override
     public Role getBaseRole() { return (Role)get(Value.BASE_ROLE); }
+    @Override
     public void setBaseRole(Role b) { set(Value.BASE_ROLE, b); }
 
+    @Override
     public void updateEligibility() {
         if (getBaseRole() != Role.BENCH && getBaseRole() != Role.INELIGIBLE) {
             return;
@@ -145,7 +167,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             return;
         }
         boolean satThisPeriod = false;
-        Set<TeamJam> last3 = new HashSet<TeamJam>();
+        Set<TeamJam> last3 = new HashSet<>();
         TeamJam tj = getTeam().getRunningOrUpcomingTeamJam();
         while(tj != null && last3.size() < 3) {
             last3.add(tj);
@@ -170,15 +192,21 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
     }
     
+    @Override
     public boolean isPenaltyBox() { return (Boolean)get(Value.PENALTY_BOX); }
+    @Override
     public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }
 
+    @Override
     public String getFlags() { return (String)get(Value.FLAGS); }
+    @Override
     public void setFlags(String f) { set(Value.FLAGS, f); }
 
+    @Override
     public Penalty getPenalty(String id) { return (Penalty)get(NChild.PENALTY, id); }
+    @Override
     public List<Penalty> getUnservedPenalties() {
-        List<Penalty> usp = new ArrayList<Penalty>();
+        List<Penalty> usp = new ArrayList<>();
         for (ValueWithId p : getAll(NChild.PENALTY)) {
             if (!((Penalty)p).isServed()) {
                 usp.add((Penalty)p);
@@ -186,13 +214,16 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         }
         return usp;
     }
+    @Override
     public boolean hasUnservedPenalties() { return getUnservedPenalties().size() > 0; }
 
+    @Override
     public SkaterSnapshot snapshot() {
         synchronized (coreLock) {
             return new SkaterSnapshotImpl(this);
         }
     }
+    @Override
     public void restoreSnapshot(SkaterSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
@@ -212,9 +243,13 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             baseRole = skater.getBaseRole();
         }
 
+        @Override
         public String getId( ) { return id; }
+        @Override
         public Position getPosition() { return position; }
+        @Override
         public Role getRole() { return role; }
+        @Override
         public Role getBaseRole() { return baseRole; }
 
         protected String id;

@@ -11,7 +11,6 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     public void restoreSnapshot(PeriodSnapshot s);
 
     public boolean isRunning();
-    public int getNumber();
 
     public Jam getJam(int j);
     public Jam getCurrentJam();
@@ -35,7 +34,9 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
         private final Object defaultValue;
+        @Override
         public Class<?> getType() { return type; }
+        @Override
         public Object getDefaultValue() { return defaultValue; }
     }
     public enum NChild implements NumberedProperty {
@@ -43,12 +44,14 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
 
         private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
         private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
+        @Override
         public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
     }
     public enum Command implements CommandProperty {
         DELETE,
         INSERT_BEFORE;
         
+        @Override
         public Class<Boolean> getType() { return Boolean.class; }
     }
 

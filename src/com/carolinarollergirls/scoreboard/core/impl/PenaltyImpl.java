@@ -24,6 +24,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         set(Value.SERVED, get(Value.BOX_TRIP) != null);
     }
     
+    @Override
     public int compareTo(Penalty other) {
         if (other == null) { return -1; }
         if (getJam() == other.getJam()) {
@@ -33,12 +34,14 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         return getJam().compareTo(other.getJam());
     }
 
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == IValue.NEXT && getNumber() == 0) { return null; }
         if (prop == IValue.PREVIOUS && getNumber() == 1) { return null; }
         if (prop == Value.SERVED) { return (get(Value.BOX_TRIP) != null); }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.JAM && !Skater.FO_EXP_ID.equals(getProviderId())) {
             int newPos = getNumber();
@@ -63,13 +66,19 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
 
     
+    @Override
     public void execute(CommandProperty prop) {
         if (prop == Command.REMOVE) { unlink(); }
     }
 
+    @Override
     public int getPeriodNumber() { return (Integer)get(Value.PERIOD_NUMBER); }
+    @Override
     public int getJamNumber() { return (Integer)get(Value.JAM_NUMBER); }
+    @Override
     public Jam getJam() { return (Jam)get(Value.JAM); }
+    @Override
     public String getCode() { return (String)get(Value.CODE); }
+    @Override
     public boolean isServed() { return (Boolean)get(Value.SERVED); }
 }

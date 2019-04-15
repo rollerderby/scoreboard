@@ -44,6 +44,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         setCopy(Value.END_JAM_NUMBER, this, Value.END_FIELDING, IValue.NUMBER, true);
     }
 
+    @Override
     public int compareTo(BoxTrip other) {
         if (other == null) { return -1; }
         if (getStartFielding() == other.getStartFielding()) {
@@ -58,6 +59,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         
     }
     
+    @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.DURATION) {
             long time = 0;
@@ -77,6 +79,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         }
         return value;
     }
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.IS_CURRENT && !(Boolean)value) {
             for (ValueWithId f : getAll(Child.FIELDING)) {
@@ -93,6 +96,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         }
     }
     
+    @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.FIELDING) {
             if (getStartFielding() == null || ((Fielding) item).compareTo(getStartFielding()) < 0) {
@@ -107,6 +111,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         }
     }
     
+    @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.FIELDING) {
             if (getStartFielding() == item) {
@@ -139,6 +144,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         }
     }
     
+    @Override
     public void execute(CommandProperty prop) {
         synchronized (coreLock) {
             requestBatchStart();
@@ -221,6 +227,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         }
     }
     
+    @Override
     public void end() {
         set(Value.IS_CURRENT, false);
         set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
@@ -237,11 +244,18 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
 
     @Override
     public boolean isCurrent() { return (Boolean)get(Value.IS_CURRENT); }
+    @Override
     public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
+    @Override
     public Fielding getStartFielding() { return (Fielding)get(Value.START_FIELDING); }
+    @Override
     public boolean startedBetweenJams() { return (Boolean)get(Value.START_BETWEEN_JAMS); }
+    @Override
     public boolean startedAfterSP() { return (Boolean)get(Value.START_AFTER_S_P); }
+    @Override
     public Fielding getEndFielding() { return (Fielding)get(Value.END_FIELDING); }
+    @Override
     public boolean endedBetweenJams() { return (Boolean)get(Value.END_BETWEEN_JAMS); }
+    @Override
     public boolean endedAfterSP() { return (Boolean)get(Value.END_AFTER_S_P); }
 }

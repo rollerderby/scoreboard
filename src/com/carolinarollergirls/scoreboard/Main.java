@@ -31,6 +31,7 @@ public class Main implements ScoreBoardManager.Logger {
         }
     }
 
+    @Override
     public void log(String msg) {
         if (guiMessages != null) {
             guiMessages.append(msg+"\n");

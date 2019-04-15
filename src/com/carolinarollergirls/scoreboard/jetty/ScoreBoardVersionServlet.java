@@ -17,13 +17,16 @@ import javax.servlet.http.HttpServletResponse;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 
 public class ScoreBoardVersionServlet extends DefaultScoreBoardControllerServlet {
+    @Override
     public String getPath() { return "/version"; }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doPost(request, response);
         response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
         super.doGet(request, response);
 

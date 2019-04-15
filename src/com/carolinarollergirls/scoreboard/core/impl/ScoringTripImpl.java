@@ -15,6 +15,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         set(Value.AFTER_S_P, hasPrevious() ? getPrevious().get(Value.AFTER_S_P) : false);
     }
 
+    @Override
     public Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.SCORE && (Integer)value < 0) { return 0; }
         if (prop == Value.DURATION) {
@@ -26,6 +27,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         }
         return value;
     }
+    @Override
     public void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if ((prop == Value.SCORE || (prop == Value.CURRENT && !(Boolean)value)) &&
                 (Long)get(Value.JAM_CLOCK_END) == 0L) {
@@ -51,9 +53,11 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         }
     }
     
+    @Override
     public void execute(CommandProperty prop) {
         if (prop == Command.REMOVE) { unlink(); }
     }
     
+    @Override
     public int getScore() { return (Integer)get(Value.SCORE); }
 }

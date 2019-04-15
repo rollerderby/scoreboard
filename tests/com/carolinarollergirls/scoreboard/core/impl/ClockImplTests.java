@@ -47,7 +47,7 @@ public class ClockImplTests {
     @Before
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
-        collectedEvents = new LinkedList<ScoreBoardEvent>();
+        collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
         sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));

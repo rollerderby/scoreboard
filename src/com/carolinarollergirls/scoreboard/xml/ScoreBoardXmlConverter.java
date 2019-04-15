@@ -82,7 +82,7 @@ public class ScoreBoardXmlConverter {
         while (children.hasNext()) {
             Element child = (Element)children.next();
             if (child.getName().equals(scoreBoard.getProviderName())) {
-                List<ValueUpdate> postponedUpdates = new ArrayList<ValueUpdate>();
+                List<ValueUpdate> postponedUpdates = new ArrayList<>();
                 process(scoreBoard, child, restore, postponedUpdates);
                 for (ValueUpdate update : postponedUpdates) {
                     update.process();

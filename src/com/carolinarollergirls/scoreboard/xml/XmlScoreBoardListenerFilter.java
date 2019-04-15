@@ -13,6 +13,7 @@ import org.jdom.Document;
 public class XmlScoreBoardListenerFilter implements XmlScoreBoardListener {
     public XmlScoreBoardListenerFilter(XmlScoreBoardListener l) { listener = l; }
 
+    @Override
     public void xmlChange(Document d) { listener.xmlChange(d); }
 
     protected XmlScoreBoardListener getListener() { return listener; }

@@ -36,6 +36,7 @@ public class ExecutorXmlScoreBoardListener implements XmlScoreBoardListener {
         }
     }
 
+    @Override
     public void xmlChange(Document d) {
         synchronized (listenerLock) {
             Iterator<XmlScoreBoardListener> l = listeners.keySet().iterator();
@@ -52,7 +53,7 @@ public class ExecutorXmlScoreBoardListener implements XmlScoreBoardListener {
         }
     }
 
-    protected HashMap<XmlScoreBoardListener,ExecutorService> listeners = new LinkedHashMap<XmlScoreBoardListener,ExecutorService>();
+    protected HashMap<XmlScoreBoardListener,ExecutorService> listeners = new LinkedHashMap<>();
     protected Object listenerLock = new Object();
 
     public class XmlChangeRunnable implements Runnable {
@@ -60,6 +61,7 @@ public class ExecutorXmlScoreBoardListener implements XmlScoreBoardListener {
             listener = l;
             document = d;
         }
+        @Override
         public void run() { listener.xmlChange(document); }
         public XmlScoreBoardListener listener;
         public Document document;

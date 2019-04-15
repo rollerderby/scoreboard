@@ -18,14 +18,17 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl implements Setting
         super (s, null, "", ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
     }
 
+    @Override
     public void reset() { removeAll(Child.SETTING); }
 
+    @Override
     public String get(String k) {
         synchronized(coreLock) {
             if (get(Child.SETTING, k) == null) { return null; }
             return get(Child.SETTING, k).getValue();
         }
     }
+    @Override
     public void set(String k, String v) {
         synchronized (coreLock) {
             if (v == null) {

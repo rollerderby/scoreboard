@@ -108,7 +108,8 @@ public class TwitterViewer {
             Iterator<TweetListener> listeners = tweetListeners.keySet().iterator();
             while (listeners.hasNext()) {
                 final TweetListener listener = listeners.next();
-                Runnable r = new Runnable() { public void run() { listener.tweet(tweetText); } };
+                Runnable r = new Runnable() { @Override
+                    public void run() { listener.tweet(tweetText); } };
                 tweetListeners.get(listener).submit(r);
             }
         }
@@ -139,7 +140,8 @@ public class TwitterViewer {
             // We don't need or want to wait so let's do the cleanup
             // in a separate thread.
             final TwitterStream tS = twitterStream;
-            Runnable r = new Runnable() { public void run() { tS.cleanUp(); } };
+            Runnable r = new Runnable() { @Override
+                public void run() { tS.cleanUp(); } };
             new Thread(r).start();
         }
         twitterStream = null;
@@ -178,7 +180,7 @@ public class TwitterViewer {
     protected ScoreBoard scoreBoard;
     protected FormatSpecifierViewer formatSpecifier;
 
-    protected Map<String,ScoreBoardListener> conditionalListeners = new HashMap<String,ScoreBoardListener>();
+    protected Map<String,ScoreBoardListener> conditionalListeners = new HashMap<>();
 
     protected Twitter twitter;
     protected Object twitterLock = new Object();
@@ -190,9 +192,10 @@ public class TwitterViewer {
     protected RequestToken requestToken = null;
     protected TwitterStream twitterStream = null;
 
-    protected Map<TweetListener,ExecutorService> tweetListeners = new HashMap<TweetListener,ExecutorService>();
+    protected Map<TweetListener,ExecutorService> tweetListeners = new HashMap<>();
 
     protected UserStreamListener userStreamListener = new UserStreamAdapter() {
+        @Override
         public void onStatus(Status status) {
             if (status.getUser().getId() == userId) {
                 notifyTweetListeners(status.getText());
@@ -205,6 +208,7 @@ public class TwitterViewer {
             tweet = t;
             exceptionListener = l;
         }
+        @Override
         public void scoreBoardChange(ScoreBoardEvent e) {
             try {
                 if (isLoggedIn() || isTestMode()) {

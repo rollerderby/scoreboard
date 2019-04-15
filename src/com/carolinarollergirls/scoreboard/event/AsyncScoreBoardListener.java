@@ -19,6 +19,7 @@ public class AsyncScoreBoardListener extends Thread implements ScoreBoardListene
         start();
     }
 
+    @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
         synchronized(this) {
             queue.add(event);
@@ -26,6 +27,7 @@ public class AsyncScoreBoardListener extends Thread implements ScoreBoardListene
         }
     }
 
+    @Override
     public void run() {
         while (true) {
             ScoreBoardEvent event = null;
@@ -44,8 +46,8 @@ public class AsyncScoreBoardListener extends Thread implements ScoreBoardListene
     }
 
     private ScoreBoardListener listener;
-    private Queue<ScoreBoardEvent> queue = new LinkedList<ScoreBoardEvent>();
+    private Queue<ScoreBoardEvent> queue = new LinkedList<>();
 
-    private static Queue<AsyncScoreBoardListener> listeners = new ConcurrentLinkedQueue<AsyncScoreBoardListener>();
+    private static Queue<AsyncScoreBoardListener> listeners = new ConcurrentLinkedQueue<>();
 }
 

@@ -14,6 +14,7 @@ public class CopyScoreBoardListener implements ScoreBoardListener {
         this.targetProperty = targetProperty;
     }
 
+    @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
         scoreBoardChange(event, Flag.COPY);
     }

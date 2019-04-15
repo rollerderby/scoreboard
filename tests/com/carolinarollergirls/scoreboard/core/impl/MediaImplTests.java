@@ -45,7 +45,7 @@ public class MediaImplTests {
 
     @Before
     public void setUp() throws Exception {
-        collectedEvents = new LinkedBlockingQueue<ScoreBoardEvent>();
+        collectedEvents = new LinkedBlockingQueue<>();
 
         sbMock = Mockito.mock(ScoreBoardImpl.class);
 

@@ -26,8 +26,9 @@ public class ScoreBoardMetricsCollector extends Collector {
     public ScoreBoardMetricsCollector(ScoreBoard sb) {
         this.sb = sb;
     }
+    @Override
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+        List<MetricFamilySamples> mfs = new ArrayList<>();
 
         GaugeMetricFamily clockTime = new GaugeMetricFamily("crg_scoreboard_clock_time_seconds",
                 "Time on scoreboard clock.", Arrays.asList("clock"));

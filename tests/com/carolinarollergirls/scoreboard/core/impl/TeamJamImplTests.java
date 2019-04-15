@@ -2,9 +2,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 import org.junit.Before;
@@ -15,9 +13,7 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.TeamJamImpl;
-import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -41,7 +37,7 @@ public class TeamJamImplTests {
 
     @Before
     public void setUp() throws Exception {
-        collectedEvents = new LinkedList<ScoreBoardEvent>();
+        collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
         tj = (TeamJamImpl)sb.getTeam(Team.ID_1).get(Team.Value.RUNNING_OR_UPCOMING_TEAM_JAM);

@@ -22,6 +22,7 @@ import com.carolinarollergirls.scoreboard.xml.SleepingQueueXmlScoreBoardListener
 import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
 
 public abstract class AbstractXmlServlet extends AbstractRegisterServlet {
+    @Override
     protected void register(HttpServletRequest request, HttpServletResponse response) throws IOException {
         XmlListener listener = createXmlListener(scoreBoard);
         String key = addRegisteredListener(listener);
@@ -34,8 +35,8 @@ public abstract class AbstractXmlServlet extends AbstractRegisterServlet {
         return (XmlListener)getRegisteredListenerForRequest(request);
     }
 
-    protected XmlListener createXmlListener(ScoreBoard scoreBoard) {
-        return new XmlListener(scoreBoard);
+    protected XmlListener createXmlListener(ScoreBoard sb) {
+        return new XmlListener(sb);
     }
 
     protected XmlDocumentEditor editor = new XmlDocumentEditor();

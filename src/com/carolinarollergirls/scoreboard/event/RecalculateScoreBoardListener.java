@@ -12,6 +12,7 @@ public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListen
         this.targetProperty = targetProperty;
     }
 
+    @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
         targetElement.set(targetProperty, targetElement.get(targetProperty), Flag.RECALCULATE);
     }
@@ -30,6 +31,7 @@ public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListen
         return this;
     }
     
+    @Override
     public void unlink() {
         for (ScoreBoardListener l : sources.keySet()) {
             if (l instanceof IndirectScoreBoardListener) {
@@ -40,8 +42,7 @@ public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListen
         }
     }
     
-    protected Map<ScoreBoardListener, ScoreBoardEventProvider> sources =
-            new HashMap<ScoreBoardListener, ScoreBoardEventProvider>();
+    protected Map<ScoreBoardListener, ScoreBoardEventProvider> sources = new HashMap<>();
     protected ScoreBoardEventProvider targetElement;
     protected PermanentProperty targetProperty;
 }

@@ -24,6 +24,7 @@ import com.carolinarollergirls.scoreboard.xml.stream.StreamListener;
 public class LoadScoreBoardStream extends AbstractScoreBoardStream implements StreamListener {
     public LoadScoreBoardStream() { super("LoadStream"); }
 
+    @Override
     public void update(Document d) {
         if (running) {
             d.setProperty("DocumentManager", this);
@@ -31,6 +32,7 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
         super.update(d);
     }
 
+    @Override
     public void setXmlScoreBoard(XmlScoreBoard xsB) {
         super.setXmlScoreBoard(xsB);
 
@@ -44,6 +46,7 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
         update(updateE);
     }
 
+    @Override
     protected void processChildElement(Element e) throws JDOMException {
         super.processChildElement(e);
         synchronized (processLock) {
@@ -78,6 +81,7 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
         update(updateE);
     }
 
+    @Override
     protected void doStart(File file) throws IOException,FileNotFoundException {
         try {
             if (!getXmlScoreBoard().startExclusive(this)) {
@@ -97,6 +101,7 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
         }
     }
 
+    @Override
     protected void doStop() {
         if (null != inputStream) {
             inputStream.stop();
@@ -145,8 +150,10 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
         update(updateE);
     }
 
+    @Override
     protected void doXmlChange(Document d) { update(d); }
 
+    @Override
     public void end() { stop(); }
 
     protected ScoreBoardInputStream inputStream = null;
@@ -157,6 +164,7 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
 
     protected class MyBufferedFilter extends BufferedStreamListenerFilter {
         public MyBufferedFilter(StreamListener l) { super(l); }
+        @Override
         protected void addDocument(Document d) {
             super.addDocument(d);
             LoadScoreBoardStream.this.updateStartTime(getStartTime());
@@ -166,6 +174,7 @@ public class LoadScoreBoardStream extends AbstractScoreBoardStream implements St
 
     protected class MyRealtimeFilter extends RealtimeStreamListenerFilter {
         public MyRealtimeFilter(StreamListener l) { super(l); }
+        @Override
         public void xmlChange(Document d) {
             super.xmlChange(d);
             LoadScoreBoardStream.this.updateCurrentTime(LoadScoreBoardStream.this.editor.getSystemTime(d));

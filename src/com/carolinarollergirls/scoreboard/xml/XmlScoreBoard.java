@@ -30,11 +30,13 @@ public class XmlScoreBoard {
     public XmlScoreBoard(ScoreBoard sb) {
         scoreBoard = sb;
         scoreBoardXmlListener = new ScoreBoardXmlListener(sb) {
+            @Override
             public void scoreBoardChange(ScoreBoardEvent sbE) {
                 super.scoreBoardChange(sbE);
                 final Document d = resetDocument();
                 if (d != null) {
                     mergeSbExecutor.submit(new Runnable() {
+                        @Override
                         public void run() {
                             XmlScoreBoard.this.xmlChange(d);
                         }
@@ -83,7 +85,9 @@ public class XmlScoreBoard {
             } else {
                 //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
                 final XmlDocumentManager xdM = exclusiveDocumentManager;
-                exclusiveExecutor.submit(new Runnable() { public void run() { xdM.reset(); } });
+                exclusiveExecutor.submit(new Runnable() {
+                    @Override
+                    public void run() { xdM.reset(); } });
             }
         }
     }
@@ -121,7 +125,8 @@ public class XmlScoreBoard {
                 //FIXME - would be better to pass "exclusivity" selection on to the real executors instead of this
                 final XmlDocumentManager xdM = exclusiveDocumentManager;
                 final Document d = doc;
-                exclusiveExecutor.submit(new Runnable() { public void run() { xdM.processDocument(d); } });
+                exclusiveExecutor.submit(new Runnable() { @Override
+                public void run() { xdM.processDocument(d); } });
             }
         }
     }
@@ -235,11 +240,13 @@ public class XmlScoreBoard {
         }
 
         FilenameFilter xmlFilter = new FilenameFilter() {
+            @Override
             public boolean accept(File f, String n) {
                 return (n.endsWith(".xml") || n.endsWith(".XML"));
             }
         };
         Comparator<File> fileCompare = new Comparator<File>() {
+            @Override
             public int compare(File a, File b) { return a.getName().compareTo(b.getName()); }
         };
         List<File> unsortedXmlFiles = Arrays.asList(initialDocumentDir.listFiles(xmlFilter));

@@ -28,20 +28,26 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
         setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
     }
 
+    @Override
     public String getProviderId() { return floorPosition.toString(); }
 
+    @Override
     public void execute(CommandProperty prop) {
         if (prop == Command.CLEAR) {
             set(Value.SKATER, null);
         }
     }
 
+    @Override
     public Team getTeam() { return (Team)parent; }
 
+    @Override
     public FloorPosition getFloorPosition() { return floorPosition; }
 
+    @Override
     public void reset() { setCurrentFielding(null); }
     
+    @Override
     public void updateCurrentFielding() {
         synchronized (coreLock) {
             setCurrentFielding(getTeam().getRunningOrUpcomingTeamJam().getFielding(floorPosition));
@@ -49,13 +55,19 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
         }
     }
 
+    @Override
     public Skater getSkater() { return (Skater)get(Value.SKATER); }
+    @Override
     public void setSkater(Skater s) { set(Value.SKATER, s); }
 
+    @Override
     public Fielding getCurrentFielding() { return (Fielding)get(Value.CURRENT_FIELDING); }
+    @Override
     public void setCurrentFielding(Fielding f) { set(Value.CURRENT_FIELDING, f); }
 
+    @Override
     public boolean isPenaltyBox() { return (Boolean)get(Value.PENALTY_BOX); }
+    @Override
     public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }
 
     protected FloorPosition floorPosition;

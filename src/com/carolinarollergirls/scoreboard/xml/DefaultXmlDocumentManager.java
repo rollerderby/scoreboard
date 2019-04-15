@@ -30,12 +30,14 @@ public class DefaultXmlDocumentManager implements XmlDocumentManager {
 
     public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
+    @Override
     public void reset() {
         update(editor.setRemovePI(createXPathElement()));
         Element reset = new Element("Reset");
         update(createXPathElement().addContent(reset));
     }
 
+    @Override
     public void processDocument(Document d) {
         try {
             processElement(editor.cloneDocumentToClonedElement((Element)myXPath.selectSingleNode(d)));

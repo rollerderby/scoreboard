@@ -6,6 +6,7 @@ public class IntegerRule extends RuleDefinition {
         super(Type.INTEGER, fullname, description, new Integer(defaultValue));
     }
 
+    @Override
     public boolean isValueValid(String v) {
         try {
             Integer.parseInt(v);
