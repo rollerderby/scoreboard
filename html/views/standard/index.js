@@ -122,13 +122,13 @@ function initialize() {
 			// Align to clock, so different scoreboards will be synced.
 			setTimeout(nextImgFunction, switchTimeMs - (new Date().getTime() % switchTimeMs));
 		};
-		WS.Register(['ScoreBoard.Media.images.sponsor_banner'], {triggerBatchFunc: function() {
+		WS.Register(['ScoreBoard.Media.Format(images).Type(sponsor_banner)'], {triggerBatchFunc: function() {
 			var images = {};
 			for (var prop in WS.state) {
 				if (WS.state[prop] == null) {
 					continue;
 				}
-				var re = /ScoreBoard.Media.images.sponsor_banner\((.*)\)\.(\w+)/;
+				var re = /ScoreBoard.Media.Format\(images\).Type\(sponsor_banner\)\.File\((.*)\)\.(\w+)/;
 				var m = prop.match(re);
 				if (m != null) {
 					images[m[1]] = images[m[1]] || {};
