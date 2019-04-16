@@ -247,6 +247,7 @@ public class WS extends WebSocketServlet {
                         } else {
                             updates.put(k, state.get(k));
                         }
+                        break;
                     }
                 }
             }
