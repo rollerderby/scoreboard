@@ -488,7 +488,15 @@ public class TeamImplTests {
         skater5.setPenaltyBox(true);
         skater4.setPenaltyBox(true);
         sb.stopJamTO();
+        assertEquals(team.getPosition(FloorPosition.BLOCKER1), skater1.getPosition());
+        assertEquals(team.getPosition(FloorPosition.BLOCKER2), skater2.getPosition());
+        assertNull(skater3.getPosition());
+        assertEquals(team.getPosition(FloorPosition.BLOCKER3), skater4.getPosition());
+        assertEquals(team.getPosition(FloorPosition.PIVOT), skater5.getPosition());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater6.getPosition());
 
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+        
         assertNull(skater1.getPosition());
         assertNull(skater2.getPosition());
         assertNull(skater3.getPosition());
@@ -512,6 +520,7 @@ public class TeamImplTests {
         skater6.setPenaltyBox(false);
         sb.startJam();
         sb.stopJamTO();
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
 
         assertNull(skater1.getPosition());
         assertNull(skater2.getPosition());

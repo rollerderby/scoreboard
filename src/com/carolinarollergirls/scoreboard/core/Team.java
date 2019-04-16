@@ -71,6 +71,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public Position getPosition(FloorPosition fp);
 
     public void field(Skater s, Role r);
+    public boolean hasFieldingAdvancePending();
 
     public boolean isLost();
     public boolean isLead();
@@ -91,6 +92,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         RUNNING_OR_UPCOMING_TEAM_JAM(TeamJam.class, null),
         RUNNING_OR_ENDED_TEAM_JAM(TeamJam.class, null),
         LAST_ENDED_TEAM_JAM(TeamJam.class, null),
+        FIELDING_ADVANCE_PENDING(Boolean.class, false),
         CURRENT_TRIP(ScoringTrip.class, null),
         SCORE(Integer.class, 0),
         JAM_SCORE(Integer.class, 0),
@@ -134,6 +136,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public enum Command implements CommandProperty {
         ADD_TRIP,
         REMOVE_TRIP,
+        ADVANCE_FIELDINGS,
         TIMEOUT,
         OFFICIAL_REVIEW;
         

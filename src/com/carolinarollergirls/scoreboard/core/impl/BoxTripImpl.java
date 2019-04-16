@@ -241,6 +241,9 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             unlink();
         }
     }
+    
+    @Override
+    public Team getTeam() { return (Team)getParent(); }
 
     @Override
     public boolean isCurrent() { return (Boolean)get(Value.IS_CURRENT); }

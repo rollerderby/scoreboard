@@ -138,6 +138,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             trips.add((BoxTrip) v);
         }
         Collections.sort(trips, new Comparator<BoxTrip>() {
+            @Override
             public int compare(BoxTrip b1, BoxTrip b2) {
                 if (b1 == b2) { return 0; }
                 if (b1 == null) { return 1; }

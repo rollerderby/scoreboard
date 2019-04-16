@@ -98,6 +98,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         case REMOVE_TRIP:
             getRunningOrEndedTeamJam().removeScoringTrip();
             break;
+        case ADVANCE_FIELDINGS:
+            benchSkaters();
+            break;
         case OFFICIAL_REVIEW:
             officialReview();
             break;
@@ -164,6 +167,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void startJam() {
         synchronized (coreLock) {
+            benchSkaters(); // if this hasn't been manually triggered between jams, do it now
             updateTeamJams();
         }
     }
@@ -178,32 +182,40 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             getCurrentTrip().set(ScoringTrip.Value.CURRENT, false);
             
             updateTeamJams();
-
-            Map<Skater, Role> toField = new HashMap<>();
-            TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
-            TeamJam endedTJ = getRunningOrEndedTeamJam();
-            for (FloorPosition fp : FloorPosition.values()) {
-                Skater s = endedTJ.getFielding(fp).getSkater();
-                if (s != null && (endedTJ.getFielding(fp).isInBox() || s.hasUnservedPenalties())) {
-                    if (fp.getRole(endedTJ) != fp.getRole(upcomingTJ)) {
-                        toField.put(s, fp.getRole(endedTJ));
-                    } else {
-                        upcomingTJ.getFielding(fp).setSkater(s);
-                    }
-                } else if (s != null) {
-                    s.set(Skater.Value.CURRENT_FIELDING, null, Flag.INTERNAL);
-                }
-            }            
-            nextReplacedBlocker = FloorPosition.PIVOT;
-            for (Skater s : toField.keySet()) {
-                field(s, toField.get(s));
-            }
             
-            for (ValueWithId s : getAll(Child.SKATER)) {
-                ((Skater)s).updateEligibility();
-            }
+            set(Value.FIELDING_ADVANCE_PENDING, true);
             requestBatchEnd();
         }
+    }
+    
+    private void benchSkaters() {
+        if(!hasFieldingAdvancePending()) { return; }
+        
+        Map<Skater, Role> toField = new HashMap<>();
+        TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
+        TeamJam endedTJ = getRunningOrEndedTeamJam();
+        for (FloorPosition fp : FloorPosition.values()) {
+            Skater s = endedTJ.getFielding(fp).getSkater();
+            if (s != null && (endedTJ.getFielding(fp).isInBox() || s.hasUnservedPenalties())) {
+                if (fp.getRole(endedTJ) != fp.getRole(upcomingTJ)) {
+                    toField.put(s, fp.getRole(endedTJ));
+                } else {
+                    upcomingTJ.getFielding(fp).setSkater(s);
+                }
+            } else if (s != null) {
+                s.set(Skater.Value.CURRENT_FIELDING, null, Flag.INTERNAL);
+            }
+        }            
+        nextReplacedBlocker = FloorPosition.PIVOT;
+        for (Skater s : toField.keySet()) {
+            field(s, toField.get(s));
+        }
+        
+        for (ValueWithId s : getAll(Child.SKATER)) {
+            ((Skater)s).updateEligibility();
+        }
+        
+        set(Value.FIELDING_ADVANCE_PENDING, false);
     }
 
     @Override
@@ -453,6 +465,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             return null;
         }
     }
+    @Override
+    public boolean hasFieldingAdvancePending() { return (Boolean)get(Value.FIELDING_ADVANCE_PENDING); }
 
     @Override
     public boolean isLost() { return (Boolean)get(Value.LOST); }

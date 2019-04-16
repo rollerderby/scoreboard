@@ -15,17 +15,16 @@ table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr
 }
 .PLT.Team thead td { font-size: 1em; font-weight: bold; background-color: #222; color: #FFF; }
 .PLT.Team td { text-align: center; vertical-align: middle; }
-.PLT.Team .Number, .Team .Box, .PLT.Team .Total { width: 4.76%; }
-.PLT.Team .Role, .Team .Sitting, .PLT.Team .Trips { width: 7.14%; }
+.PLT.Team .Number, .PLT.Team .Box, .PLT.Team .Total, .PLT.Team .Advance { width: 5%; }
+.PLT.Team .Role, .PLT.Team .Sitting { width: 7%; }
 .PLT.Team tr { background-color: #FFF; }
 .PLT.Team tr:nth-child(4n+0), .PLT.Team tr:nth-child(4n-1) { background-color: #FFE8FF; }
 .PLT.Team .Role { background-color: #FFF; }
-.PLT.Team tr:nth-child(4n+0) .Role:not(.OnTrack), .PLT.Team tr:nth-child(4n-1) .Role:not(.OnTrack) { background-color: #e7f3ff; }
+.PLT.Team tr:nth-child(4n-1) .Role:not(.OnTrack), .PLT.Team .Advance:not(.Active) { background-color: #e7f3ff; }
 .PLT.Team .Sitting, .PLT.Team .Trips { background-color: #e7f3ff; }
-.PLT.Team tr:nth-child(4n+0) .Sitting:not(.inBox), .PLT.Team tr:nth-child(4n-1) .Sitting:not(.inBox),
-.PLT.Team tr:nth-child(4n+0) .Trips, .PLT.Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
+.PLT.Team tr:nth-child(4n-1) .Sitting:not(.inBox), .PLT.Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
 .PLT.Team .Number { font-weight: bold; background-color: #f4f4f4; }
-.PLT.Team tr:nth-child(4n+0) .Number, .PLT.Team tr:nth-child(4n-1) .Number { background-color: #E8E8E8; }
+.PLT.Team tr:nth-child(4n-1) .Number { background-color: #E8E8E8; }
 .PLT.Team .Box0 { background-color: #ffd0ff; }
 .PLT.Team .Role:not(.OnTrack)>span.Num { display: none; }
 .PLT.Team .Role.OnTrack>span.Pos { display: none; }
@@ -44,6 +43,9 @@ table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr
 .PLT.Team .Serving { background-color: #70ff70; }
 .PLT.Team .OnTrack { background-color: #70ff70; }
 .PLT.Team .inBox { background-color: #ff4040; }
+.PLT.Team .Advance { border: none; }
+.PLT.Team .Advance.Active { background-color: #70ff70; }
+.PLT.Team tr:nth-child(6n+3) .Advance.Active::after { content: "next Jam"; }
 
 #PenaltyEditor .Codes>div { float: left; width: 150px; height: 90px; margin: 10px; border: 1px solid black; font-weight: bold; }
 #PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }
