@@ -110,6 +110,11 @@ function displayPenalty(t, s, p) {
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn2", cnt == limit-1 && !fo_exp);
 	$('.Team' + t + ' .Skater[id=' + s + ']').toggleClass("Warn3", cnt >= limit || fo_exp);
+
+	// Update the team's total penalties
+	var teamCnt = 0;
+	$('.Team' + t + ' .Skater .Total').each(function(idx, elem) { teamCnt += parseInt($(elem).text(), 10); })
+	$('#foot' + t + ' .teamTotal').text(teamCnt);
 }
 
 function makeSkaterRows(t, id, number) { //team, id, number
