@@ -310,6 +310,7 @@ function openPenaltyEditor(t, id, which) {
 	var periodNumber = WS.state["ScoreBoard.CurrentPeriodNumber"];
 	$('#PenaltyEditor .Period').val(periodNumber).change();
 	$('#PenaltyEditor .Jam').val(WS.state["ScoreBoard.Period("+periodNumber+").CurrentJam"]);
+	$('#PenaltyEditor #served').prop('checked', false);
 
 	$('#PenaltyEditor .Codes>.Penalty').toggle(which != 0);
 	$('#PenaltyEditor .Codes>.FO_EXP').toggle(which == 0);
