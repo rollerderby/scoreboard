@@ -42,6 +42,14 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                     return false;
                 } else {
                     getTeamJam().getTeam().add(Team.Child.BOX_TRIP, new BoxTripImpl(this));
+                    if (getTeamJam().getTeam().hasFieldingAdvancePending()) {
+                        if (getNext().getSkater() == null && getNext().getCurrentRole() == getCurrentRole()) {
+                            getNext().setSkater(getSkater());
+                        } else {
+                            getTeamJam().getTeam().field(getSkater(), getCurrentRole(), getTeamJam().getNext());
+                        }
+                        getCurrentBoxTrip().add(BoxTrip.Child.FIELDING, getSkater().getFielding(getTeamJam().getNext()));
+                    }
                 }
             } else if (!(Boolean)value && getCurrentBoxTrip() != null && getCurrentBoxTrip().isCurrent()) {
                 getCurrentBoxTrip().end();
@@ -115,7 +123,9 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     public Position getPosition() { return (Position)get(Value.POSITION); }
 
     @Override
-    public boolean isCurrent() { return teamJam.isRunningOrUpcoming(); }
+    public boolean isCurrent() {
+        return (teamJam.isRunningOrUpcoming() && !teamJam.getTeam().hasFieldingAdvancePending()) 
+                || teamJam.isRunningOrEnded() && teamJam.getTeam().hasFieldingAdvancePending(); }
 
     @Override
     public Role getCurrentRole() { return getPosition().getFloorPosition().getRole(teamJam); }
@@ -138,6 +148,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             trips.add((BoxTrip) v);
         }
         Collections.sort(trips, new Comparator<BoxTrip>() {
+            @Override
             public int compare(BoxTrip b1, BoxTrip b2) {
                 if (b1 == b2) { return 0; }
                 if (b1 == null) { return 1; }

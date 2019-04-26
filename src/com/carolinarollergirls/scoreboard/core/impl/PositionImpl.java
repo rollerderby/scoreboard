@@ -51,7 +51,6 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
     public void updateCurrentFielding() {
         synchronized (coreLock) {
             setCurrentFielding(getTeam().getRunningOrUpcomingTeamJam().getFielding(floorPosition));
-            if (getSkater() != null) { getSkater().set(Value.CURRENT_FIELDING, getCurrentFielding()); }
         }
     }
 

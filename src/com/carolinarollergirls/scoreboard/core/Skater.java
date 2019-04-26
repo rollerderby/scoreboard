@@ -35,6 +35,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public Position getPosition();
     public void setPosition(Position position);
     public Role getRole();
+    public Role getRole(TeamJam tj);
     public void setRole(Role role);
     public void setRoleToBase();
     public Role getBaseRole();

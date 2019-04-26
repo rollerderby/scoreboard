@@ -11,6 +11,8 @@ public interface BoxTrip extends ScoreBoardEventProvider {
     
     public void end();
     
+    public Team getTeam();
+    
     public boolean isCurrent();
     public Fielding getCurrentFielding();
     public Fielding getStartFielding();

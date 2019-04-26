@@ -15,7 +15,8 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 			$('<td>').text('Jammer').appendTo(thead);
 			$('<td>').text('Pivot').appendTo(thead);
 			$('<td>').text('Blocker').appendTo(thead);
-			$('<td>').attr('colspan', '2').text('Box').appendTo(thead);
+			$('<td>').text('Box').appendTo(thead);
+			$('<td>').appendTo(thead);
 			$('<td>').text('#').appendTo(thead);
 		}
 		$('<td>').attr('colspan', '9').attr('id', 'head').text('Penalty/Jam').appendTo(thead);
@@ -36,6 +37,9 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		WS.Register(['ScoreBoard.Clock(Jam).Number'], updateJam);
 
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function (k, v) { skaterUpdate(teamId, k, v); });
+		WS.Register(['ScoreBoard.Team('+teamId+').FieldingAdvancePending'], function(k, v) {
+			element.find('.Advance').toggleClass('Active', isTrue(v)); 
+		});
 
 		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)']);
 		
@@ -112,8 +116,6 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 				element.find('.Skater.Penalty[id=' + id + '] .'+v).addClass('OnTrack');
 			} else if (field === 'PenaltyBox') {
 				element.find('.Skater.Penalty[id=' + id + '] .Sitting').toggleClass('inBox', isTrue(v));
-			} else if (field === 'CurrentBoxSymbols') {
-				element.find('.Skater.Penalty[id=' + id + '] .Trips').text(v);
 			}
 		} else {
 			// Look for penalty
@@ -256,9 +258,12 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 				boxCell.addClass('inBox');
 			}
 			p.append(boxCell);
-			var tripCell = $('<td>').addClass('Trips').attr('rowspan', 2)
-				.text(WS.state['ScoreBoard.Team('+t+').Skater('+id+').CurrentBoxSymbols']);
-			p.append(tripCell);
+			
+			var advanceCell = $('<td>').addClass('Advance').attr('rowspan', 2).click(function() {
+				WS.Set('ScoreBoard.Team('+t+').AdvanceFieldings', true);
+			});
+			if (isTrue(WS.state['ScoreBoard.Team('+t+').FieldingAdvancePending'])) { advanceCell.addClass('Active'); }
+			p.append(advanceCell);
 	
 			var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id, 10); });
 			p.append(numberCell);

@@ -49,7 +49,7 @@ public class FieldingImplTests {
 
     @Before
     public void setUp() throws Exception {
-        collectedEvents = new LinkedList<ScoreBoardEvent>();
+        collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
         sb.addScoreBoardListener(batchCounter);
