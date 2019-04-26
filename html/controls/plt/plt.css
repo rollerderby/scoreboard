@@ -44,8 +44,9 @@ table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr
 .PLT.Team .OnTrack { background-color: #70ff70; }
 .PLT.Team .inBox { background-color: #ff4040; }
 .PLT.Team .Advance { border: none; }
-.PLT.Team .Advance.Active { background-color: #70ff70; }
-.PLT.Team tr:nth-child(6n+3) .Advance.Active::after { content: "next Jam"; }
+.PLT.Team .Advance.Active { background-color: #ffd000;  vertical-align: bottom; }
+.PLT.Team tr:nth-child(6n+1) .Advance.Active::after { content: "Go To"; }
+.PLT.Team tr:nth-child(6n+3) .Advance.Active::after { content: "Next Jam"; }
 
 #PenaltyEditor .Codes>div { float: left; width: 150px; height: 90px; margin: 10px; border: 1px solid black; font-weight: bold; }
 #PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }

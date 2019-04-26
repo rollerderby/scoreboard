@@ -25,7 +25,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         super(f.getTeamJam().getTeam(), Value.ID, UUID.randomUUID().toString(), Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class, Command.class);
         set(Value.WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(Value.START_AFTER_S_P, f.getTeamJam().isStarPass());
-        set(Value.START_BETWEEN_JAMS, f.isCurrent() && !scoreBoard.isInJam());
+        set(Value.START_BETWEEN_JAMS, !scoreBoard.isInJam() && !getTeam().hasFieldingAdvancePending());
         set(Value.JAM_CLOCK_START, startedBetweenJams() ? 0L : scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
         set(Value.IS_CURRENT, true);
         initReferences();
@@ -117,7 +117,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             if (getStartFielding() == item) {
                 Fielding first = null;
                 for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (first == null || first.compareTo((Fielding) f) < 0) {
+                    if (first == null || first.compareTo((Fielding) f) > 0) {
                         first = (Fielding) f;
                     }
                 }
@@ -126,7 +126,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             if (getCurrentFielding() == item) {
                 Fielding last = null;
                 for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (last == null || last.compareTo((Fielding) f) > 0) {
+                    if (last == null || last.compareTo((Fielding) f) < 0) {
                         last = (Fielding) f;
                     }
                 }
@@ -135,7 +135,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
             if (getEndFielding() == item) {
                 Fielding last = null;
                 for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (last == null || last.compareTo((Fielding) f) > 0) {
+                    if (last == null || last.compareTo((Fielding) f) < 0) {
                         last = (Fielding) f;
                     }
                 }
@@ -231,8 +231,12 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
     public void end() {
         set(Value.IS_CURRENT, false);
         set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
+        if (getTeam().hasFieldingAdvancePending()) {
+            getCurrentFielding().setSkater(null);
+            remove(Child.FIELDING, getCurrentFielding());
+        }
         set(Value.END_FIELDING, get(Value.CURRENT_FIELDING));
-        set(Value.END_BETWEEN_JAMS, getEndFielding().isCurrent() && !scoreBoard.isInJam());
+        set(Value.END_BETWEEN_JAMS, !scoreBoard.isInJam() && !getTeam().hasFieldingAdvancePending());
         set(Value.END_AFTER_S_P, getEndFielding().getTeamJam().isStarPass());
         set(Value.JAM_CLOCK_END, endedBetweenJams() ? 0L : scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
         getCurrentFielding().updateBoxTripSymbols();

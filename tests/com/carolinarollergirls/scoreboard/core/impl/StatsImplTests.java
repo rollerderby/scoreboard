@@ -259,6 +259,7 @@ public class StatsImplTests {
 
         // Jam ends.
         sb.stopJamTO();
+        team1.execute(Team.Command.ADVANCE_FIELDINGS);
         advance(1000);
         // New jammer does not replace jammer from previous jam.
         team1.field(skater4, Role.JAMMER);

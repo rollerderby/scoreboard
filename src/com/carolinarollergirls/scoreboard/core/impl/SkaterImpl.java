@@ -99,6 +99,9 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             updateEligibility();
         } else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
             set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
+        } else if (prop == Child.FIELDING && team.hasFieldingAdvancePending() &&
+                ((Fielding)item).getTeamJam().isRunningOrEnded()) {
+            setRole(((Fielding)item).getCurrentRole());
         }
     }
     @Override
@@ -147,6 +150,12 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
 
     @Override
     public Role getRole() { return (Role)get(Value.ROLE); }
+    @Override
+    public Role getRole(TeamJam tj) {
+        Fielding f = getFielding(tj);
+        if (f == null) { return getBaseRole(); }
+        return f.getCurrentRole();
+    }
     @Override
     public void setRole(Role r) { set(Value.ROLE, r, Flag.INTERNAL); }
     @Override

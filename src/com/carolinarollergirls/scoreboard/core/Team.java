@@ -71,6 +71,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public Position getPosition(FloorPosition fp);
 
     public void field(Skater s, Role r);
+    public void field(Skater s, Role r, TeamJam tj);
     public boolean hasFieldingAdvancePending();
 
     public boolean isLost();

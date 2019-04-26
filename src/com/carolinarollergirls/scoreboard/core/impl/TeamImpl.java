@@ -11,7 +11,9 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import java.util.Map;
 import java.util.HashMap;
 
+import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
@@ -99,7 +101,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             getRunningOrEndedTeamJam().removeScoringTrip();
             break;
         case ADVANCE_FIELDINGS:
-            benchSkaters();
+            advanceFieldings();
             break;
         case OFFICIAL_REVIEW:
             officialReview();
@@ -167,7 +169,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void startJam() {
         synchronized (coreLock) {
-            benchSkaters(); // if this hasn't been manually triggered between jams, do it now
+            advanceFieldings(); // if this hasn't been manually triggered between jams, do it now
             updateTeamJams();
         }
     }
@@ -184,38 +186,50 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             updateTeamJams();
             
             set(Value.FIELDING_ADVANCE_PENDING, true);
+            
+            Map<Skater, Role> toField = new HashMap<>();
+            TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
+            TeamJam endedTJ = getRunningOrEndedTeamJam();
+            for (FloorPosition fp : FloorPosition.values()) {
+                Skater s = endedTJ.getFielding(fp).getSkater();
+                if (s != null && (endedTJ.getFielding(fp).isInBox() || s.hasUnservedPenalties())) {
+                    if (fp.getRole(endedTJ) != fp.getRole(upcomingTJ)) {
+                        toField.put(s, fp.getRole(endedTJ));
+                    } else {
+                        upcomingTJ.getFielding(fp).setSkater(s);
+                        BoxTrip bt = endedTJ.getFielding(fp).getCurrentBoxTrip();
+                        if (bt != null && bt.isCurrent()) {
+                            bt.add(BoxTrip.Child.FIELDING, upcomingTJ.getFielding(fp));
+                        }
+                    }
+                }
+            }            
+            nextReplacedBlocker = FloorPosition.PIVOT;
+            for (Skater s : toField.keySet()) {
+                field(s, toField.get(s), upcomingTJ);
+                BoxTrip bt = s.getFielding(endedTJ).getCurrentBoxTrip();
+                if (bt != null && bt.isCurrent()) {
+                    bt.add(BoxTrip.Child.FIELDING, s.getFielding(upcomingTJ));
+                }
+            }
+            
+            for (ValueWithId s : getAll(Child.SKATER)) {
+                ((Skater)s).updateEligibility();
+            }
             requestBatchEnd();
         }
     }
     
-    private void benchSkaters() {
+    private void advanceFieldings() {
         if(!hasFieldingAdvancePending()) { return; }
         
-        Map<Skater, Role> toField = new HashMap<>();
-        TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
-        TeamJam endedTJ = getRunningOrEndedTeamJam();
-        for (FloorPosition fp : FloorPosition.values()) {
-            Skater s = endedTJ.getFielding(fp).getSkater();
-            if (s != null && (endedTJ.getFielding(fp).isInBox() || s.hasUnservedPenalties())) {
-                if (fp.getRole(endedTJ) != fp.getRole(upcomingTJ)) {
-                    toField.put(s, fp.getRole(endedTJ));
-                } else {
-                    upcomingTJ.getFielding(fp).setSkater(s);
-                }
-            } else if (s != null) {
-                s.set(Skater.Value.CURRENT_FIELDING, null, Flag.INTERNAL);
-            }
-        }            
-        nextReplacedBlocker = FloorPosition.PIVOT;
-        for (Skater s : toField.keySet()) {
-            field(s, toField.get(s));
-        }
-        
-        for (ValueWithId s : getAll(Child.SKATER)) {
-            ((Skater)s).updateEligibility();
-        }
-        
         set(Value.FIELDING_ADVANCE_PENDING, false);
+        
+        for (ValueWithId v : getAll(Child.SKATER)) {
+            Skater s = (Skater)v;
+            s.set(Skater.Value.CURRENT_FIELDING, s.getFielding(getRunningOrUpcomingTeamJam()));
+            s.setRole(s.getRole(getRunningOrUpcomingTeamJam()));
+        }
     }
 
     @Override
@@ -380,63 +394,69 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     @Override
     public void field(Skater s, Role r) {
+        field(s, r, hasFieldingAdvancePending() ? getRunningOrEndedTeamJam() : getRunningOrUpcomingTeamJam());
+    }
+    @Override
+    public void field(Skater s, Role r, TeamJam tj) {
         synchronized (coreLock) {
             if (s == null) { return; }
             requestBatchStart();
-            if (s.getPosition() == getPosition(FloorPosition.PIVOT)) {
-                setNoPivot(r != Role.PIVOT);
-                if (r == Role.BLOCKER || r == Role.PIVOT) {
+            if (s.getFielding(tj) != null && 
+                    s.getFielding(tj).getPosition() == getPosition(FloorPosition.PIVOT)) {
+                tj.setNoPivot(r != Role.PIVOT);
+                if ((r == Role.BLOCKER || r == Role.PIVOT) &&
+                        ((tj.isRunningOrEnded() && hasFieldingAdvancePending()) ||
+                                (tj.isRunningOrUpcoming() && !hasFieldingAdvancePending()))) {
                     s.setRole(r);
                 }
             }
-            if (s.getRole() != r || s.getCurrentFielding() == null
-                    || s.getCurrentFielding().getTeamJam() != getRunningOrUpcomingTeamJam()) {
-                Position p = getAvailablePosition(r);
-                if (r == Role.PIVOT && p != null) {
-                    if (p.getSkater() != null && (hasNoPivot() || s.getRole() == Role.BLOCKER)) {
+            if (s.getFielding(tj) == null || s.getRole(tj) != r) {
+                Fielding f = getAvailableFielding(r, tj);
+                if (r == Role.PIVOT && f != null) {
+                    if (f.getSkater() != null && (tj.hasNoPivot() || s.getRole(tj) == Role.BLOCKER)) {
                         // If we are moving a blocker to pivot, move the previous pivot to blocker
                         // If we are replacing a blocker from the pivot spot,
                         //  see if we have a blocker spot available for them instead
-                        Position p2;
-                        if (s.getRole() == Role.BLOCKER) {
-                            p2 = s.getPosition();
+                        Fielding f2;
+                        if (s.getRole(tj) == Role.BLOCKER) {
+                            f2 = s.getFielding(tj);
                         } else {
-                            p2 = getAvailablePosition(Role.BLOCKER);
+                            f2 = getAvailableFielding(Role.BLOCKER, tj);
                         }
-                        p2.setSkater(p.getSkater());
+                        f2.setSkater(f.getSkater());
                     }
-                    setNoPivot(false);
+                    tj.setNoPivot(false);
                 }
-                if (p != null) { p.setSkater(s); }
-                else { s.removeCurrentFielding(); }
+                if (f != null) { f.setSkater(s); }
+                else { s.remove(Skater.Child.FIELDING, s.getFielding(tj)); }
             }
             requestBatchEnd();
         }
     }
-    private Position getAvailablePosition(Role r) {
+    private Fielding getAvailableFielding(Role r, TeamJam tj) {
         switch (r) {
         case JAMMER:
-            if (isFieldingStarPass()) {
-                return getPosition(FloorPosition.PIVOT);
+            if (tj.isStarPass()) {
+                return tj.getFielding(FloorPosition.PIVOT);
             } else {
-                return getPosition(FloorPosition.JAMMER);
+                return tj.getFielding(FloorPosition.JAMMER);
             }
         case PIVOT:
-            if (isFieldingStarPass()) {
+            if (tj.isStarPass()) {
                 return null;
             } else {
-                return getPosition(FloorPosition.PIVOT);
+                return tj.getFielding(FloorPosition.PIVOT);
             }
         case BLOCKER:
-            Position[] ps = {getPosition(FloorPosition.BLOCKER1),
-                    getPosition(FloorPosition.BLOCKER2),
-                    getPosition(FloorPosition.BLOCKER3)};
-            for (Position p : ps) {
-                if (p.getSkater() == null) { 
-                    return p; 
+            Fielding[] fs = {tj.getFielding(FloorPosition.BLOCKER1),
+                    tj.getFielding(FloorPosition.BLOCKER2),
+                    tj.getFielding(FloorPosition.BLOCKER3)};
+            for (Fielding f : fs) {
+                if (f.getSkater() == null) { 
+                    return f; 
                 }
             }
-            Position fourth = getPosition(isFieldingStarPass() ? FloorPosition.JAMMER : FloorPosition.PIVOT);
+            Fielding fourth = tj.getFielding(tj.isStarPass() ? FloorPosition.JAMMER : FloorPosition.PIVOT);
             if (fourth.getSkater() == null) {
                 return fourth;
             }
@@ -451,7 +471,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     nextReplacedBlocker = FloorPosition.BLOCKER3;
                     break;
                 case BLOCKER3:
-                    nextReplacedBlocker = (hasNoPivot() && !isFieldingStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
+                    nextReplacedBlocker = (tj.hasNoPivot() && !tj.isStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
                     break;
                 case PIVOT:
                     nextReplacedBlocker = FloorPosition.BLOCKER1;
@@ -459,8 +479,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 default:
                     break;
                 }
-            } while(getPosition(nextReplacedBlocker).isPenaltyBox());
-            return getPosition(nextReplacedBlocker);
+            } while(tj.getFielding(nextReplacedBlocker).isInBox());
+            return tj.getFielding(nextReplacedBlocker);
         default:
             return null;
         }
@@ -479,14 +499,19 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public boolean isDisplayLead() { return (Boolean)get(Value.DISPLAY_LEAD); }
 
-    protected boolean isFieldingStarPass() { return getRunningOrUpcomingTeamJam().isStarPass(); }
+    protected boolean isFieldingStarPass() {
+        if (hasFieldingAdvancePending()) {
+            return getRunningOrEndedTeamJam().isStarPass();
+        } else {
+            return getRunningOrUpcomingTeamJam().isStarPass();
+        }
+    }
     @Override
     public boolean isStarPass() { return (Boolean)get(Value.STAR_PASS); }
     public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
 
     @Override
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
-    private void setNoPivot(boolean noPivot) { set(Value.NO_PIVOT, noPivot); }
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
 

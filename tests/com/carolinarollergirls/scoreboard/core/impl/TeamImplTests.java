@@ -73,6 +73,7 @@ public class TeamImplTests {
         team.setStarPass(true);
 
         sb.stopJamTO();
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
 
         assertTrue(team.isStarPass());
         assertFalse(team.isFieldingStarPass());
@@ -394,12 +395,12 @@ public class TeamImplTests {
 
     @Test
     public void testField() {
-        Skater skater1 = new SkaterImpl(team, "S1", "One", "1", "");
-        Skater skater2 = new SkaterImpl(team, "S2", "Two", "2", "");
-        Skater skater3 = new SkaterImpl(team, "S3", "Three", "3", "");
-        Skater skater4 = new SkaterImpl(team, "S4", "Four", "4", "");
-        Skater skater5 = new SkaterImpl(team, "S5", "Five", "5", "");
-        Skater skater6 = new SkaterImpl(team, "S6", "Six", "6", "");
+        Skater skater1 = team.addSkater("S1", "One", "1", "");
+        Skater skater2 = team.addSkater("S2", "Two", "2", "");
+        Skater skater3 = team.addSkater("S3", "Three", "3", "");
+        Skater skater4 = team.addSkater("S4", "Four", "4", "");
+        Skater skater5 = team.addSkater("S5", "Five", "5", "");
+        Skater skater6 = team.addSkater("S6", "Six", "6", "");
 
         team.field(skater1, Role.JAMMER);
         team.field(skater2, Role.PIVOT);
@@ -486,14 +487,47 @@ public class TeamImplTests {
 
         skater6.setPenaltyBox(true);
         skater5.setPenaltyBox(true);
-        skater4.setPenaltyBox(true);
+        skater2.setPenaltyBox(true);
         sb.stopJamTO();
+
         assertEquals(team.getPosition(FloorPosition.BLOCKER1), skater1.getPosition());
         assertEquals(team.getPosition(FloorPosition.BLOCKER2), skater2.getPosition());
         assertNull(skater3.getPosition());
         assertEquals(team.getPosition(FloorPosition.BLOCKER3), skater4.getPosition());
         assertEquals(team.getPosition(FloorPosition.PIVOT), skater5.getPosition());
         assertEquals(team.getPosition(FloorPosition.JAMMER), skater6.getPosition());
+        assertEquals(Role.BLOCKER, skater1.getRole());
+        assertEquals(Role.BLOCKER, skater2.getRole());
+        assertEquals(Role.BENCH, skater3.getRole());
+        assertEquals(Role.BLOCKER, skater4.getRole());
+        assertEquals(Role.JAMMER, skater5.getRole());
+        assertEquals(Role.BLOCKER, skater6.getRole());
+        assertEquals(skater5, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertNull(team.getPosition(FloorPosition.PIVOT).getSkater());
+        assertEquals(skater6, team.getPosition(FloorPosition.BLOCKER1).getSkater());
+        assertEquals(skater2, team.getPosition(FloorPosition.BLOCKER2).getSkater());
+        assertNull(team.getPosition(FloorPosition.BLOCKER3).getSkater());
+        
+        skater2.setPenaltyBox(false);
+        skater4.setPenaltyBox(true);
+
+        assertEquals(team.getPosition(FloorPosition.BLOCKER1), skater1.getPosition());
+        assertEquals(team.getPosition(FloorPosition.BLOCKER2), skater2.getPosition());
+        assertNull(skater3.getPosition());
+        assertEquals(team.getPosition(FloorPosition.BLOCKER3), skater4.getPosition());
+        assertEquals(team.getPosition(FloorPosition.PIVOT), skater5.getPosition());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater6.getPosition());
+        assertEquals(Role.BLOCKER, skater1.getRole());
+        assertEquals(Role.BLOCKER, skater2.getRole());
+        assertEquals(Role.BENCH, skater3.getRole());
+        assertEquals(Role.BLOCKER, skater4.getRole());
+        assertEquals(Role.JAMMER, skater5.getRole());
+        assertEquals(Role.BLOCKER, skater6.getRole());
+        assertEquals(skater5, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertNull(team.getPosition(FloorPosition.PIVOT).getSkater());
+        assertEquals(skater6, team.getPosition(FloorPosition.BLOCKER1).getSkater());
+        assertNull(team.getPosition(FloorPosition.BLOCKER2).getSkater());
+        assertEquals(skater4, team.getPosition(FloorPosition.BLOCKER3).getSkater());
 
         team.execute(Team.Command.ADVANCE_FIELDINGS);
         
