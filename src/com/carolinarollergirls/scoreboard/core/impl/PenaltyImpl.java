@@ -16,7 +16,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         setInverseReference(Value.JAM, Jam.Child.PENALTY);
         setInverseReference(Value.BOX_TRIP, BoxTrip.Child.PENALTY);
         addWriteProtectionOverride(Value.TIME, Flag.FROM_AUTOSAVE);
-        setRecalculated(Value.SERVED).addSource(this, Value.BOX_TRIP);
+        setRecalculated(Value.SERVED).addSource(this, Value.BOX_TRIP).addSource(this, Value.FORCE_SERVED);
         setCopy(Value.SERVING, this, Value.BOX_TRIP, BoxTrip.Value.IS_CURRENT, true);
         setCopy(Value.JAM_NUMBER, this, Value.JAM, IValue.NUMBER, true);
         setCopy(Value.PERIOD_NUMBER, this, Value.JAM, Jam.Value.PERIOD_NUMBER, true);
@@ -38,7 +38,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == IValue.NEXT && getNumber() == 0) { return null; }
         if (prop == IValue.PREVIOUS && getNumber() == 1) { return null; }
-        if (prop == Value.SERVED) { return (get(Value.BOX_TRIP) != null); }
+        if (prop == Value.SERVED) { return (get(Value.BOX_TRIP) != null || (Boolean)get(Value.FORCE_SERVED)); }
         return value;
     }
     @Override

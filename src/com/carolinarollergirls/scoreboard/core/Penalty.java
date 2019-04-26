@@ -22,6 +22,7 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
         CODE(String.class, ""),
         SERVING(Boolean.class, false),
         SERVED(Boolean.class, false),
+        FORCE_SERVED(Boolean.class, false),
         BOX_TRIP(BoxTrip.class, null);
 
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }

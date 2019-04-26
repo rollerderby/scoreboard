@@ -302,6 +302,7 @@ function openPenaltyEditor(t, id, which) {
 	
 	var penaltyNumber = which;
 	var penaltyId = null;
+	var wasServed = false;
 
 	$('#PenaltyEditor .Codes>div').removeClass('Active');
 
@@ -318,6 +319,7 @@ function openPenaltyEditor(t, id, which) {
 		var c = WS.state[prefix + '.Penalty(' + which + ').Code'];
 		var p = WS.state[prefix + '.Penalty(' + which + ').PeriodNumber'];
 		var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
+		wasServed = isTrue(WS.state[prefix + '.Penalty(' + which + ').Served']);
 		penaltyId = penaltyBox.data("id");
 		if (penaltyId != null) {
 			if (c == null || j == null || p == null) {
@@ -326,6 +328,7 @@ function openPenaltyEditor(t, id, which) {
 				$('#PenaltyEditor .Codes>div.' + (which == 0 ? 'FO_EXP' : 'Penalty') + '[code="' + c + '"]').addClass('Active');
 				$('#PenaltyEditor .Period').val(p).change();
 				$('#PenaltyEditor .Jam').val(j);
+				$('#PenaltyEditor #served').prop('checked', wasServed);
 			}
 		}
 		while (!isNaN(penaltyNumber) && penaltyNumber > 1 &&
@@ -334,7 +337,7 @@ function openPenaltyEditor(t, id, which) {
 		}
 	}
 
-	penaltyEditor.data('team', t).data('skater', id).data('pnr', penaltyNumber).data('pid', penaltyId);
+	penaltyEditor.data('team', t).data('skater', id).data('pnr', penaltyNumber).data('pid', penaltyId).data('wasServed', wasServed);
 	penaltyEditor.dialog('open');
 }
 
@@ -347,12 +350,17 @@ function preparePenaltyEditor() {
 
 	function initialize() {
 		
-		var tr = $('<tr>').appendTo($('<table width="80%">').appendTo($('#PenaltyEditor')));
+		var topTable = $('<table width="80%">').appendTo($('#PenaltyEditor'));
+		var tr = $('<tr>').appendTo(topTable);
 		$('<td width="33%">').append($('<span>').text('Period: ')).append($('<button>').addClass('period_minus').text('-1'))
 			.append($('<select>').addClass('Period')).append($('<button>').addClass('period_plus').text('+1')).appendTo(tr);
 		$('<td width="33%">').append($('<span>').text('Jam: ')).append($('<button>').addClass('jam_minus').text('-1'))
 			.append($('<select>').addClass('Jam')).append($('<button>').addClass('jam_plus').text('+1')).appendTo(tr);
 		$('<td width="33%">').append($('<button>').addClass('clear').text('Clear')).appendTo(tr);
+		
+		var tr2 = $('<tr>').appendTo(topTable);
+		$('<td>').append($('<input type="checkbox">').attr('id', 'served'))
+			.append($('<span>').text(' has been served')).appendTo(tr2);
 		$('<div>').addClass('Codes').appendTo($('#PenaltyEditor'));
 
 		WS.Register(['ScoreBoard.PenaltyCodes.Code'], penaltyCode);
@@ -385,9 +393,13 @@ function preparePenaltyEditor() {
 		var teamId = penaltyEditor.data('team');
 		var skaterId = penaltyEditor.data('skater');
 		var penaltyNumber = penaltyEditor.data('pnr');
+		var wasServed = penaltyEditor.data('wasServed');
 
 		var prefix = 'ScoreBoard.Team(' + teamId + ').Skater(' + skaterId + ').Penalty(' + penaltyNumber + ')';
 		WS.Set(prefix + '.Code', $('#PenaltyEditor .Codes .Active').attr('code'));
+		if ($('#PenaltyEditor #served').prop('checked') != wasServed) {
+			WS.Set(prefix + '.ForceServed', !wasServed);
+		}
 		WS.Set(prefix + '.Jam', $('#PenaltyEditor .Jam').val());
 
 		penaltyEditor.dialog('close');
