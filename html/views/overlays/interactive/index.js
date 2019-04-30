@@ -23,7 +23,7 @@ if(document.location.search == '?camera') {
 		   function(stream) {
 			 var video = document.querySelector('video');
 			 video.src = window.URL.createObjectURL(stream);
-			 video.onloadedmetadata = function(e) { video.play(); $('#VIDEO-GREEN').hide(); };
+			 video.onloadedmetadata = function(e) { video.play(); $('#VIDEO-BG').hide(); };
 		      },
 		      function(err) {
 			 console.log("The following error occured: " + err.name);
@@ -67,6 +67,12 @@ function initialize() {
 		if(v == 2) { $('.PPJBox .Team .Period2').show(); } else { $('.PPJBox .Team .Period2').hide(); }
 	});
 
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)' ], function(k,v) {
+		if (k == 'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)') {
+			$('#VIDEO-BG').css('backgroundColor', v || 'transparent');
+		}
+	});
+
 	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)' ], function(k,v) {  
 		$('div[data-setting="'+k+'"]').each(function() {
 			if(v == 'On') { $(this).addClass('Show'); } else { $(this).removeClass('Show'); }
@@ -94,8 +100,8 @@ function initialize() {
 		$('.OverlayPanel.' + v).addClass('Show'); 
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line)' ] , function(k,v) { 
-		sp = '.' + k.split('.').slice(2,4).join(' .');
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line' ] , function(k,v) {
+		sp = '.' + k.split('.').slice(4,6).join(' .').slice(0, -1);
 		$(sp).text(v);
 	});
 

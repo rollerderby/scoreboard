@@ -27,6 +27,7 @@ function initialize() {
 	WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)', 
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
+		     'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)',
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Alert)',
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'], function(k,v) { 
 
@@ -65,12 +66,11 @@ function initialize() {
 
 }
 
-$('#Controls input').change(function() {
+$('#Controls input, #Controls .Selector').change(function() {
 	t = $(this).attr('data-setting');
 	v = $(this).val();
 	if(t) WS.Set(t, v);
 });
-
 
 $('.SelectUpdator').change(function() {
 	$t = $(this);
