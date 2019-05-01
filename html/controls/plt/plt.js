@@ -1,5 +1,12 @@
 function preparePltTable(element, teamId, mode, statsbookPeriod) {
-
+	
+	/* Values supported for mode:
+	 * plt: Full LT and PT inputs with headers
+	 * pt: Full PT cells, no LT cells
+	 * lt: Full LT cells, no PT cells
+	 * copyToStatsbook: Only PT cells that have to be manually typed in a WFTDA statsbook for the given period
+	 */
+	
 	'use strict';
 	$(initialize);
 
@@ -10,19 +17,23 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		
 		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('PLT Team').appendTo(element);
 		var thead = $('<tr>').appendTo($('<thead>').appendTo(table));
-		if (mode != 'copyToStatsbook') {
+		if (mode == 'plt' || mode == 'lt') {
 			$('<td>').text('Bench').appendTo(thead);
 			$('<td>').text('Jammer').appendTo(thead);
 			$('<td>').text('Pivot').appendTo(thead);
 			$('<td>').text('Blocker').appendTo(thead);
 			$('<td>').text('Box').appendTo(thead);
 			$('<td>').appendTo(thead);
+		}
+		if (mode == 'plt' || mode == 'pt') {
 			$('<td>').text('#').appendTo(thead);
 		}
-		$('<td>').attr('colspan', '9').attr('id', 'head').text('Penalty/Jam').appendTo(thead);
-		$('<td>').text('FO_Ex').appendTo(thead);
-		if (mode != 'copyToStatsbook') {
-			$('<td>').text('Total').appendTo(thead);
+		if (mode != 'lt') {
+			$('<td>').attr('colspan', '9').attr('id', 'head').text('Penalty/Jam').appendTo(thead);
+			$('<td>').text('FO_Ex').appendTo(thead);
+		}
+		if (mode == 'plt' || mode == 'pt') {
+			$('<td>').attr('id', 'totalPenalties').text('Σ 0').appendTo(thead);
 		}
 		$('<tbody>').appendTo(table);
 
@@ -46,10 +57,6 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		WS.Register(['ScoreBoard.Period']);
 		WS.Register(['ScoreBoard.CurrentPeriodNumber']);
 		WS.Register(['ScoreBoard.UpcomingJam']);
-
-		if (mode == "autoFit") {
-			element.find('.Team').addClass('auto-fit');
-		}
 	}
 
 	function updatePeriod(k, v) {
@@ -108,16 +115,21 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 	
 				// New skater, or number has been updated.
 				makeSkaterRows(t, id, v);
-				for (var i = 1; i <= 9; i++)
-					displayPenalty(t, id, i);
-				displayPenalty(t, id, 0);
+				if (mode != 'lt') {
+					for (var i = 1; i <= 9; i++) {
+						displayPenalty(t, id, i);
+					}
+					displayPenalty(t, id, 0);
+				}
 			} else if (field === 'Role') {
 				element.find('.Skater.Penalty[id=' + id + '] .Role').removeClass('OnTrack');
 				element.find('.Skater.Penalty[id=' + id + '] .'+v).addClass('OnTrack');
+				element.find('.Skater.Penalty[id=' + id + '] .Number')
+					.toggleClass('OnTrack', v == 'Jammer' || v == 'Pivot' || v == 'Blocker');
 			} else if (field === 'PenaltyBox') {
 				element.find('.Skater.Penalty[id=' + id + '] .Sitting').toggleClass('inBox', isTrue(v));
 			}
-		} else {
+		} else if (mode != 'lt'){
 			// Look for penalty
 			match = k.match(penaltyRegex);
 			if (match == null || match.length == 0)
@@ -199,6 +211,11 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		element.find('.Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);
 		element.find('.Skater[id=' + s + ']').toggleClass("Warn2", cnt == limit-1 && !fo_exp);
 		element.find('.Skater[id=' + s + ']').toggleClass("Warn3", cnt >= limit || fo_exp);
+
+		// Update the team's total penalties
+		var teamCnt = 0;
+		element.find('.Skater .Total').each(function(idx, elem) { teamCnt += parseInt($(elem).text(), 10); })
+		$('#totalPenalties').text('Σ ' + teamCnt);
 	}
 
 	function teamNameUpdate() {
@@ -217,8 +234,8 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
-		if (mode != 'copyToStatsbook') {
-			var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
+		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
+		if (mode == 'lt' || mode == 'plt') {
 			var benchCell = $('<td>').addClass('Role Bench').attr('rowspan', 2).click(function() {
 				WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Bench');
 			}).append($('<span>').addClass('Num').text(number)).append($('<span>').addClass('Pos').text('Bench'));
@@ -264,22 +281,28 @@ function preparePltTable(element, teamId, mode, statsbookPeriod) {
 			});
 			if (isTrue(WS.state['ScoreBoard.Team('+t+').FieldingAdvancePending'])) { advanceCell.addClass('Active'); }
 			p.append(advanceCell);
-	
-			var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id, 10); });
+		}
+		if (mode == 'plt' || mode == 'pt') {
+			var numberCell = $('<td>').addClass('Number').attr('rowspan', 2).text(number).click(function () { openPenaltyEditor(t, id, 9); });
+			if (role == 'Jammer' || role == 'Pivot' || role == 'Blocker') {
+				numberCell.addClass('OnTrack');
+			}
 			p.append(numberCell);
 		}
-		$.each(new Array(9), function (idx) {
-			var c = idx + 1;
-			p.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
-			j.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
-		});
-
-		p.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
-		j.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
-		if (mode != 'copyToStatsbook') {
-			p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
+		if (mode != 'lt') {
+			$.each(new Array(9), function (idx) {
+				var c = idx + 1;
+				p.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
+				j.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
+			});
+	
+			p.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
+			j.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
+			if (mode != 'copyToStatsbook') {
+				p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
+			}
 		}
-
+		
 		var inserted = false;
 		team.find('tr.Penalty').each(function (idx, row) {
 			row = $(row);

@@ -6,6 +6,4 @@
 
 	preparePltTable($('#pt1'), '1', 'pt');
 	preparePltTable($('#pt2'), '2', 'pt');
-	
-	preparePenaltyEditor();
 })();
