@@ -17,14 +17,14 @@ table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr
 .PLT.Team td { text-align: center; vertical-align: middle; }
 .PLT.Team .Number, .PLT.Team .Box, .PLT.Team .Total, .PLT.Team .Advance { width: 5%; }
 .PLT.Team .Role, .PLT.Team .Sitting { width: 7%; }
-.PLT.Team tr { background-color: #FFF; }
+.PLT.Team tr { background-color: #FFF; height: 22px; }
 .PLT.Team tr:nth-child(4n+0), .PLT.Team tr:nth-child(4n-1) { background-color: #FFE8FF; }
 .PLT.Team .Role { background-color: #FFF; }
 .PLT.Team tr:nth-child(4n-1) .Role:not(.OnTrack), .PLT.Team .Advance:not(.Active) { background-color: #e7f3ff; }
 .PLT.Team .Sitting, .PLT.Team .Trips { background-color: #e7f3ff; }
 .PLT.Team tr:nth-child(4n-1) .Sitting:not(.inBox), .PLT.Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
 .PLT.Team .Number { font-weight: bold; background-color: #f4f4f4; }
-.PLT.Team tr:nth-child(4n-1) .Number { background-color: #E8E8E8; }
+.PLT.Team tr:nth-child(4n-1) .Number:not(.OnTrack) { background-color: #E8E8E8; }
 .PLT.Team .Box0 { background-color: #ffd0ff; }
 .PLT.Team .Role:not(.OnTrack)>span.Num { display: none; }
 .PLT.Team .Role.OnTrack>span.Pos { display: none; }
