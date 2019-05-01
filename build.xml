@@ -108,6 +108,10 @@
 			</classpath>
 		</javac>
 
+		<copy todir="${dest.dir}">
+			<fileset dir="${src.dir}" includes="**/*.properties"/>
+		</copy>
+
 		<mkdir dir="${jar.dir}"/>
 		<one-jar destfile="${jar.dir}/${jar.file}" manifest="${jar.dir}/one-jar.mf" mainmanifest="${jar.dir}/${manifest.file}">
 			<main>
