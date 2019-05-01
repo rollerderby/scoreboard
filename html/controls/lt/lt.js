@@ -185,8 +185,8 @@ function prepareLtTable(element, teamId, mode) {
 
 var fieldingEditor;
 
-function openFieldingEditor(p, j, t, pos, upcoming = false) {
-	var prefix = 'ScoreBoard.'+(upcoming?'':'Period('+p+').')+'Jam('+j+').TeamJam('+t+').Fielding('+pos+').';
+function openFieldingEditor(p, j, t, pos, upcoming) {
+	var prefix = 'ScoreBoard.'+(isTrue(upcoming)?'':'Period('+p+').')+'Jam('+j+').TeamJam('+t+').Fielding('+pos+').';
 	
 	fieldingEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' ' + (pos));
 	var skaterField = fieldingEditor.find('#skater').val(WS.state[prefix+'Skater']);
