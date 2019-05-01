@@ -1,4 +1,4 @@
-function preparePltTable(element, teamId, mode, statsbookPeriod) {
+function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 	
 	/* Values supported for mode:
 	 * plt: Full LT and PT inputs with headers

@@ -1,4 +1,4 @@
-function prepareSkTable(element, teamId, mode) {
+function prepareSkSheetTable(element, teamId, mode) {
 
 	'use strict';
 	$(initialize);

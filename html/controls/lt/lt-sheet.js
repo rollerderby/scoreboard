@@ -1,4 +1,4 @@
-function prepareLtTable(element, teamId, mode) {
+function prepareLtSheetTable(element, teamId, mode) {
 
 	'use strict';
 	$(initialize);
