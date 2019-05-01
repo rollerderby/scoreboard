@@ -9,13 +9,6 @@
 <script type="text/javascript">
 
 $(function() {
-	$("#OverlayDialog").dialog({
-		title: "Overlays",
-		autoOpen: false,
-		modal: true,
-		width: 800,
-		buttons: { Close: function() { $(this).dialog("close"); } }
-	});
 
 	$.get("/version", function(data) { $("#version").html(data); });
 	$.get("/urls", function(data) {
@@ -121,7 +114,8 @@ function showOverlays() {
         <div class="btn">
           <h2><span class="fa fa-2x fa-video-camera"></span> BROADCAST OVERLAYS</h2>
           <ul>
-            <li><a href="javascript: showOverlays();">Broadcast Overlays</a></li>
+            <li><a href='views/overlays/interactive/index.html'>Broadcast Overlay</a></li>
+            <li><a href='views/overlays/interactive/admin.html'>Overlay Admin Page</a></li>
             <li><a href='controls/wo.html'>General Overlay Controls</a></li>
           </ul>
         </div>
@@ -163,56 +157,6 @@ function showOverlays() {
 <p><b>Scoreboard Wiki:</b></p>
 <p>Documentation for the getting the scoreboard installed and started quickly is available in the included README file. To check for the latest release of this software, please visit the <a href="https://github.com/rollerderby/scoreboard">project home on GitHub</a> and visit the <a href="https://github.com/rollerderby/scoreboard/wiki">project wiki</a> for all docs. The Derby Scoreboard <a href="https://www.facebook.com/groups/derbyscoreboard/">Facebook group</a> is very active and currently the best way to reach other users and developers.</p>
 
-  </div>
-
-  <div id="OverlayDialog">
-
-    <p style="columns: 2">
-
-        <strong>DDTV 2017 Interactive</strong> 
-        <br/>
-        <a href="views/overlays/ddtv/index.html">Overlay FullHD/HD</a><br/>
-        <a style="color: green;" href="views/overlays/ddtv/admin.html">Admin Page</a><br/>
-        <br/>
-
-        <strong>DDTV 2015 Interactive</strong>
-        <br/>
-        <a href='views/overlays/interactive/index.html'>Overlay 16x9/720p</a><br/>
-        <a href='views/overlays/interactive/index.html?camera'>Camera Underlay</a><br/>
-        <a style="color: green;" href='views/overlays/interactive/admin.html'>Admin Page</a><br/>
-        <br/>
-
-        <strong>WFTDA Style 16x9</strong>
-        <br/>
-        <a href='views/overlays/wftda/wg_color.html'>WFTDA Style With Logo</a><br/>
-        <a href='views/overlays/wftda/wg_color_nl.html'>WFTDA Style Without Logo</a><br/>
-        <br/>
-        <br/>
-        <br/>
-
-        <strong>WFTDA Style 16x9 With Jammer Names</strong>
-        <br/>
-        <a href='views/overlays/wftda/wg_color_jammer.html'>WFTDA Style With Jammer Names and Logo</a><br/>
-        <a href='views/overlays/wftda/wg_color_nl_jammer.html'>WFTDA Style With Jammer Names, Without Logo</a><br/>
-        <br/>
-
-        <strong style="break-before: column;" >TCDG Video Feed </strong>
-        <br/>
-        <a href='views/overlays/tcdg/overlay-4x3.html'>4x3 Overlay</a><br/>
-        <a href='views/overlays/tcdg/overlay-4x3-trans.html'>4x3 Partial Transparency</a><br/>
-        <a href='views/overlays/tcdg/overlay-16x9-pip.html'>16x9 Picture In Picture</a><br/>
-        <a href='views/overlays/tcdg/overlay-16x9-trans.html'>16x9 Partial Transparency</a><br/>
-        <a href='views/overlays/wb/tcdg2016wb.html'>Penalty Whiteboard 16x9</a><br/>
-        <br/>
-
-
-        <strong>Legacy Overlays</strong>
-        <br/>
-        <a href="views/overlays/standard/overlay-4x3.html">Standard 4x3 Version</a><br/>
-        <a href="views/overlays/standard/overlay-16x9.html">Standard 16x9 Pink Bar</a><br/>
-        <a href="views/overlays/standard/overlay-top.html">Full Width Top Bar</a><br/>
-
-    </p>
   </div>
 
 </body>
