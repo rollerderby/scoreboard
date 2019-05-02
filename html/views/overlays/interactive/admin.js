@@ -23,12 +23,12 @@ $(initialize)
 function initialize() {
 
 	WS.Connect();
+	WS.AutoRegister();
 
 	WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)', 
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)',
-		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Alert)',
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'], function(k,v) { 
 
 		$('[data-setting="' + k +'"]').each(function(i) {
@@ -61,7 +61,25 @@ function initialize() {
 		}	
 	});
 
-	WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line)', function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
+	WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line',
+	'ScoreBoard.Team(1).AlternateName(overlay).Name',
+	'ScoreBoard.Team(2).AlternateName(overlay).Name'],
+				function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
+
+	WS.Register(['ScoreBoard.Team(1).Color(overlay_fg).Color',
+	'ScoreBoard.Team(1).Color(overlay_bg).Color',
+	'ScoreBoard.Team(2).Color(overlay_fg).Color',
+	'ScoreBoard.Team(2).Color(overlay_bg).Color'],
+				function(k,v) {
+					if (v == null || v == "") {
+						$('input[data-setting="'+k+'"]').attr("cleared", "true");
+						$('input[data-setting="'+k+'"]').val("#666666");  // Same as background color.
+					} else {
+						$('input[data-setting="'+k+'"]').attr("cleared", "false");
+						$('input[data-setting="'+k+'"]').val(v);
+					}
+				});
+
 	WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', function(k,v) { $('#LowerThirdStyle option[value="'+v+'"]').attr('selected', 'selected'); });
 
 }
@@ -69,6 +87,9 @@ function initialize() {
 $('#Controls input, #Controls .Selector').change(function() {
 	t = $(this).attr('data-setting');
 	v = $(this).val();
+	if ($(this).attr("type") == "color") {
+		$(this).attr("cleared", "false")
+	}
 	if(t) WS.Set(t, v);
 });
 
@@ -146,7 +167,10 @@ $('#Controls button').click(function() {
 	$t = $(this);
 	v = $t.val();
 	$t.removeClass('changed'); 
-	if( $t.hasClass('ToggleSwitch') ) {
+	if( $t.hasClass('ClearPrev') ) {
+		$t = $t.prev()
+		$t.attr("cleared", true);
+	} else if( $t.hasClass('ToggleSwitch') ) {
 		if( $t.hasClass('NoAuto') ) {
 			nv = $t.attr('data-next');
 			if(nv == v) { nv = null; }
@@ -175,4 +199,5 @@ $(function() {
     });
 });
 
+//# sourceURL=views\overlays\interactive\admin.js
 

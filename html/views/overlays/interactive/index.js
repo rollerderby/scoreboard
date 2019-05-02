@@ -334,3 +334,4 @@ $(document).ready(function() {
 	$('#sb').css('opacity',1);
 });
 
+//# sourceURL=views\overlays\interactive\index.js

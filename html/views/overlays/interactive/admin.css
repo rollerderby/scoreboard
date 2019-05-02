@@ -23,9 +23,20 @@ button, input, select {
     margin-bottom: 2px;
 }
 
+input[type="color"] {
+    padding: 0;
+    width: 75%;
+}
+input[type="color"][cleared="true"] + button {
+    background-color: #ff0000;
+}
+button.ClearPrev {
+    padding: 0;
+    width: 20%;
+}
+
 select { display: inline-block; appearance:none; }
 
-button.ToggleAlert,
 button.ToggleSwitch {
     cursor: pointer; outline: none; 
     width: 100%;
@@ -35,11 +46,6 @@ button.ToggleSwitch {
 
 button.ToggleSwitch	    { border: 0px solid; border-color: #999 #999 #999 #FF0000;    background: #666; border-left-width: 20px;  border-right-width: 0px; text-decoration: none; }
 button.ToggleSwitch.current { border: 0px solid; border-color: #999 #00FF00 #999 #999 ;  background: #666; border-right-width: 20px; border-left-width: 0px; text-decoration: none; }
-
-button.ToggleAlert	    { background: #666; border: 0; }
-button.ToggleAlert.current  { background: red; border: 0;  }
-button.ToggleAlert.current { animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); }
-@-webkit-keyframes DotActive {  0% { background: #000; } 50% { background: #d00; } 100% { background: #F00; } }
 
 button.Reverse 		     { border-color: #999 #999 #999 #FF0000; border-left-width: 20px; border-right-width: 0px; }
 button.Reverse.current	    { border-color: #999 #00FF00 #999 #999; border-right-width: 20px; border-left-width: 0px; }
