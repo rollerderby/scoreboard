@@ -28,7 +28,6 @@ function initialize() {
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)', 
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)',
-		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Alert)',
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'], function(k,v) { 
 
 		$('[data-setting="' + k +'"]').each(function(i) {
