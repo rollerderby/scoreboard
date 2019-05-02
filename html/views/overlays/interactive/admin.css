@@ -23,6 +23,18 @@ button, input, select {
     margin-bottom: 2px;
 }
 
+input[type="color"] {
+    padding: 0;
+    width: 75%;
+}
+input[type="color"][cleared="true"] + button {
+    background-color: #ff0000;
+}
+button.ClearPrev {
+    padding: 0;
+    width: 20%;
+}
+
 select { display: inline-block; appearance:none; }
 
 button.ToggleSwitch {
