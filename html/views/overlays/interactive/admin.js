@@ -88,9 +88,14 @@ $('#Controls input, #Controls .Selector').change(function() {
 	t = $(this).attr('data-setting');
 	v = $(this).val();
 	if ($(this).attr("type") == "color") {
-		$(this).attr("cleared", "false")
+		$(this).attr("cleared", "false");
 	}
-	if(t) WS.Set(t, v);
+	if (v == '' && t.endsWith('.Name')) {
+		// Delete the AlternateName
+		WS.Set(t.substr(0, t.length-5), null);
+	} else if(t) {
+		WS.Set(t, v);
+	}
 });
 
 $('.SelectUpdator').change(function() {
