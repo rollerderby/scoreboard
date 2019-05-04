@@ -29,7 +29,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 			$('<td>').text('#').appendTo(thead);
 		}
 		if (mode != 'lt') {
-			$('<td>').attr('colspan', '9').attr('id', 'head').text('Penalty/Jam').appendTo(thead);
+			$('<td>').attr('colspan', '9').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
 			$('<td>').text('FO_Ex').appendTo(thead);
 		}
 		if (mode == 'plt' || mode == 'pt') {
@@ -41,8 +41,8 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 		WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name'], function () { teamNameUpdate(); });
 
 		WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-			element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg)']);
-			element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg)']);
+			element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg).Color'] || '');
+			element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg).Color'] || '');
 		});
 		WS.Register(['ScoreBoard.Clock(Period).Number'], updatePeriod);
 		WS.Register(['ScoreBoard.Clock(Jam).Number'], updateJam);
@@ -226,7 +226,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 			teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name']
 		}
 
-		head.innerHTML = '<span class="Team' + teamId + 'custColor"; style="font-size: 200%;">' + teamName + '</span>';
+		head.text(teamName);
 	}
 
 	function makeSkaterRows(t, id, number) {
@@ -318,11 +318,9 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 
 function openPenaltyEditor(t, id, which) {
 	var prefix = 'ScoreBoard.Team(' + t + ')';
-	var teamColor = WS.state[prefix + '.AlternateName(team).Name'];
-	if (teamColor == null)
-		teamColor = WS.state[prefix + '.AlternateName(operator).Name'];
-	if (teamColor == null)
-		teamColor = WS.state[prefix + '.Name'];
+		teamName = WS.state[prefix + '.AlternateName(operator).Name'];
+	if (teamName == null)
+		teamName = WS.state[prefix + '.Name'];
 
 	prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
 	var skaterName = WS.state[prefix + '.Name'];
@@ -334,7 +332,7 @@ function openPenaltyEditor(t, id, which) {
 
 	$('#PenaltyEditor .Codes>div').removeClass('Active');
 
-	penaltyEditor.dialog('option', 'title', teamColor + ' ' + skaterNumber + ' (' + skaterName + ')');
+	penaltyEditor.dialog('option', 'title', teamName + ' ' + skaterNumber + ' (' + skaterName + ')');
 	var periodNumber = WS.state["ScoreBoard.CurrentPeriodNumber"];
 	$('#PenaltyEditor .Period').val(periodNumber).change();
 	$('#PenaltyEditor .Jam').val(WS.state["ScoreBoard.Period("+periodNumber+").CurrentJam"]);
@@ -535,4 +533,4 @@ function preparePenaltyEditor() {
 		}
 	}
 }
-//# sourceURL=controls\plt\plt.js
+//# sourceURL=controls\plt\plt-input.js

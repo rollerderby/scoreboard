@@ -11,8 +11,8 @@ function prepareLtSheetTable(element, teamId, mode) {
 			WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name'], function () { teamNameUpdate(); });
 	
 			WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-				element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg)']);
-				element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg)']);
+				element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg).Color']);
+				element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg).Color']);
 			});
 		}
 		
@@ -40,7 +40,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 				table.appendTo(element);
 			}
 			if (mode != 'plt') {
-				$('<div>').html('<span class ="Team">' + teamName + '</span> P' + nr)
+				$('<div class="LT">').html('<span class ="Team">' + teamName + '</span> P' + nr)
 					.prop('id','head').insertBefore(table);
 				var header = $('<thead>').appendTo(table);
 				var row = $('<tr>').appendTo(header);
