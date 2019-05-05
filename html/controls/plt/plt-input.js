@@ -520,10 +520,10 @@ function preparePenaltyEditor() {
 		var p = $('#PenaltyEditor .Period').val();
 		var prefix = 'ScoreBoard.Period('+p+').';
 		var min = WS.state[prefix + 'CurrentJamNumber'];
-		if (isNaN(min)) { min = 1; }
+		if (min == null) { min = 1; }
 		while (WS.state[prefix + 'Jam('+ (min-1) +').Id'] != null) { min--; }
 		var max = WS.state[prefix + 'CurrentJamNumber'];
-		if (isNaN(max)) { max = 0; }
+		if (max == null) { max = 0; }
 		while (WS.state[prefix + 'Jam('+ (max+1) +').Id'] != null) { max++; }
 		var select = $('#PenaltyEditor .Jam');
 		select.empty();
