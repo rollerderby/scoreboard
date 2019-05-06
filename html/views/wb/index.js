@@ -4,6 +4,6 @@
 	WS.Connect();
 	WS.AutoRegister();
 
-	preparePltInputTable($('#pt1'), '1', 'pt');
-	preparePltInputTable($('#pt2'), '2', 'pt');
+	preparePltInputTable($('#pt1'), '1', 'pt', null, 'scoreboard');
+	preparePltInputTable($('#pt2'), '2', 'pt', null, 'scoreboard');
 })();

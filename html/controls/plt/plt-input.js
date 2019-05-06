@@ -1,4 +1,4 @@
-function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
+function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateName) {
 	
 	/* Values supported for mode:
 	 * plt: Full LT and PT inputs with headers
@@ -14,8 +14,11 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 	var jamNumber = null;
 
 	function initialize() {
-		
-		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('PLT Team').appendTo(element);
+		if (alternateName == null) {
+			alternateName = 'operator';
+		}
+
+		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('PLT Team').addClass("AlternateName_" + alternateName).appendTo(element);
 		var thead = $('<tr>').appendTo($('<thead>').appendTo(table));
 		if (mode == 'plt' || mode == 'lt') {
 			$('<td>').text('Bench').appendTo(thead);
@@ -38,11 +41,11 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 		$('<tbody>').appendTo(table);
 
 		WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
-		WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name'], function () { teamNameUpdate(); });
+		WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ').Name'], function () { teamNameUpdate(); });
 
 		WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-			element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg).Color'] || '');
-			element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg).Color'] || '');
+			element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_bg).Color'] || '');
+			element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_fg).Color'] || '');
 		});
 		WS.Register(['ScoreBoard.Clock(Period).Number'], updatePeriod);
 		WS.Register(['ScoreBoard.Clock(Jam).Number'], updateJam);
@@ -222,8 +225,8 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod) {
 		var head = element.find('#head');
 		var teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
 
-		if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name'] != null) {
-			teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator).Name']
+		if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ').Name'] != null) {
+			teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ').Name']
 		}
 
 		head.text(teamName);
