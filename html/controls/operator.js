@@ -1710,7 +1710,7 @@ function createColorsDialog(team) {
 			return;
 		var colorId = node.$sbId.substring(0, node.$sbId.lastIndexOf("_"));
 		var tr = tbody.find("[data-id=" + colorId + "]");
-		if (tr.length == 0) {
+		if (tr.length == 0 && colorId != "") {
 			 tr = $("<tr>").attr("data-id", colorId)
 				.append("<td class='X'>")
 				.append("<td class='Id'>")
