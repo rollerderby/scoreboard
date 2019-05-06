@@ -218,7 +218,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		// Update the team's total penalties
 		var teamCnt = 0;
 		element.find('.Skater .Total').each(function(idx, elem) { teamCnt += parseInt($(elem).text(), 10); })
-		$('#totalPenalties').text('Σ ' + teamCnt);
+		element.find('#totalPenalties').text('Σ ' + teamCnt);
 	}
 
 	function teamNameUpdate() {
