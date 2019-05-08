@@ -1517,6 +1517,13 @@ function createNewTeamTable(team, teamid) {
 		.append("<tr><th colspan='4'><hr/></th></tr>")
 		.end();
 
+	var addSkater = function(number, name, flags, id) {
+			id = id || _crgScoreBoard.newUUID(true);
+			team.$sb("Skater("+id+").Number").$sbSet(number);
+			team.$sb("Skater("+id+").Name").$sbSet(name);
+			team.$sb("Skater("+id+").Flags").$sbSet(flags);
+	}
+
 	var newSkaterNumber = $("<input type='text' size='10'>").addClass("Number")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(0)"));
 	var newSkaterName = $("<input type='text' size='30'>").addClass("Name")
@@ -1526,10 +1533,7 @@ function createNewTeamTable(team, teamid) {
 	var newSkaterButton = $("<button>").text("Add Skater").button({ disabled: true }).addClass("AddSkater")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
 		.click(function() {
-			var id = _crgScoreBoard.newUUID(true);
-			team.$sb("Skater("+id+").Number").$sbSet(newSkaterNumber.val());
-			team.$sb("Skater("+id+").Name").$sbSet(newSkaterName.val());
-			team.$sb("Skater("+id+").Flags").$sbSet(newSkaterFlags.val());
+			addSkater(newSkaterNumber.val(), newSkaterName.val(), newSkaterFlags.val());
 			newSkaterNumber.val("");
 			newSkaterFlags.val("");
 			newSkaterName.val("").focus();
@@ -1546,6 +1550,39 @@ function createNewTeamTable(team, teamid) {
 	newSkaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
 	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
 	newSkaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
+	var pasteHandler = function(e){ 
+		var text = e.originalEvent.clipboardData.getData("text");
+		var lines = text.split("\n");
+		if (lines.length <= 1) {
+			// Not pasting in many values, so paste as usual.
+			return true;
+		}
+
+		// Treat as a tab-seperated roster.
+		var knownNumbers = {};
+		team.find('Skater Number').map( function(_, n) {
+			n = $(n)
+			knownNumbers[n.text()] = n.parent().attr("Id");
+		});
+
+		for (var i = 0; i < lines.length; i++) {
+			var cols = lines[i].split("\t");
+			if (cols.length < 2) {
+				continue;
+			}
+			var number = $.trim(cols[0]);
+			if (number == "") {
+				continue;
+			}
+			var name = $.trim(cols[1]);
+			// Assume same number means same skater.
+			var id = knownNumbers[number];
+			addSkater(number, name, "", id);
+		}
+		return false;
+	}
+	newSkaterNumber.bind("paste", pasteHandler);
+	newSkaterName.bind("paste", pasteHandler);
 
 	team.$sbBindAddRemoveEach("Skater", function(event,node) {
 		var skaterid = node.$sbId;
