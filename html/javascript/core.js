@@ -328,7 +328,9 @@ _crgScoreBoard = {
 				type: "POST",
 				processData: false,
 				contentType: "text/xml;encoding=UTF-8",
-				data: e[0].ownerDocument
+				data: e[0].ownerDocument,
+				async: false,
+				timeout: 5000
 			});
 	},
 
