@@ -1505,21 +1505,21 @@ function createNewTeamTable(team, teamid) {
 
 	var skatersTable = $("<table>").addClass("Skaters Empty")
 		.appendTo(teamTable.find("tr.Skaters>td"))
-		.append("<col class='Name'>")
 		.append("<col class='Number'>")
+		.append("<col class='Name'>")
 		.append("<col class='Flags'>")
 		.append("<col class='Button'>")
 		.append("<thead/><tbody/>")
 		.children("thead")
 		.append("<tr><th colspan='4' class='Title'>Skaters</th></tr>")
-		.append("<tr><th>Name</th><th>Number</th><th>Flags</th><th>Add</th>")
+		.append("<tr><th>Number</th><th>Name</th><th>Flags</th><th>Add</th>")
 		.append("<tr class='AddSkater'><th/><th/><th/><th/><th/></tr>")
 		.append("<tr><th colspan='4'><hr/></th></tr>")
 		.end();
 
-	var newSkaterName = $("<input type='text' size='30'>").addClass("Name")
-		.appendTo(skatersTable.find("tr.AddSkater>th:eq(0)"));
 	var newSkaterNumber = $("<input type='text' size='10'>").addClass("Number")
+		.appendTo(skatersTable.find("tr.AddSkater>th:eq(0)"));
+	var newSkaterName = $("<input type='text' size='30'>").addClass("Name")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(1)"));
 	var newSkaterFlags = $("<select>").addClass("Flags")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(2)"));
@@ -1554,14 +1554,14 @@ function createNewTeamTable(team, teamid) {
 		skatersTable.removeClass("Empty");
 
 		var skaterRow = $("<tr>").attr("data-skaterid", skaterid)
-			.append("<td class='Name'>")
 			.append("<td class='Number'>")
+			.append("<td class='Name'>")
 			.append("<td class='Flags'>")
 			.append("<td class='Remove'>");
-		node.$sb("Name").$sbControl("<input type='text' size='30'>")
-			.appendTo(skaterRow.children("td.Name"));
 		var numberInput = node.$sb("Number").$sbControl("<input type='text' size='10'>")
 			.appendTo(skaterRow.children("td.Number"));
+		node.$sb("Name").$sbControl("<input type='text' size='30'>")
+			.appendTo(skaterRow.children("td.Name"));
 		$("<button>").text("Remove").addClass("RemoveSkater").button()
 			.click(function() { createTeamsSkaterRemoveDialog(team, teamid, node); })
 			.appendTo(skaterRow.children("td.Remove"));
