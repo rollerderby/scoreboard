@@ -1435,6 +1435,8 @@ function createTeamsContent() {
 		var teamid = _crgUtils.checkSbId(teamname);
 		$sb("Teams.Team("+teamid+").Name").$sbSet(teamname);
 		newTeamName.val("").keyup().focus();
+		// Presume we'll have gotten the XML update within 100ms.
+		setTimeout(function(){selectTeam.val(teamname);}, 100);
 	});
 
 	createNewTeamTable($sb("ScoreBoard.Team(1)"), "(Current Team 1)")
