@@ -165,7 +165,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
        }
 
         public static final String ID_OPERATOR = "operator";
-        public static final String ID_MOBILE = "mobile";
         public static final String ID_OVERLAY = "overlay";
         public static final String ID_TWITTER = "twitter";
     };

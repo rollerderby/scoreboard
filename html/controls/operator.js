@@ -1651,7 +1651,6 @@ function createAlternateNamesDialog(team) {
 	newIdInput.autocomplete({
 		minLength: 0,
 		source: [
-			{ label: "mobile (Mobile Control)", value: "mobile" },
 			{ label: "operator (Operator Controls)", value: "operator" },
 			{ label: "overlay (Video Overlay)", value: "overlay" },
 			{ label: "scoreboard (Scoreboard Display)", value: "scoreboard" },
@@ -1774,7 +1773,6 @@ function createColorsDialog(team) {
 	newIdInput.autocomplete({
 		minLength: 0,
 		source: [
-			{ label: "mobile (Mobile Colors)", value: "mobile" },
 			{ label: "operator (Operator Colors)", value: "operator" },
 			{ label: "overlay (Video Overlay Colors)", value: "overlay" },
 			{ label: "scoreboard (Scoreboard Colors)", value: "scoreboard" },
