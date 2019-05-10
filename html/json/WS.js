@@ -270,8 +270,26 @@ var WS = {
 		$.each($("[sbDisplay]"), function(idx, elem) {
 			elem = $(elem);
 			var paths = WS.getPaths(elem, "sbDisplay");
-			if (paths.length > 0)
-				WS.Register(paths, { element: elem, modifyFunc: window[elem.attr("sbModify")] });
+			if (paths.length > 0) {
+				// When there's multiple names, use the
+				// first non-empty one.
+				var mf = function() {
+					var v = null;
+					var path;
+					for (var i = 0; i < paths.length; i++) {
+						path = paths[i];
+						if (WS.state[path] != null ) {
+							v = WS.state[path];
+							break;
+						}
+					}
+					if (window[elem.attr("sbModify")] != null) {
+						v = window[elem.attr("sbModify")](path, v);
+					}
+					return v;
+				}
+				WS.Register(paths, { element: elem, modifyFunc: mf });
+			}
 		});
 		$.each($("[sbTrigger]"), function(idx, elem) {
 			elem = $(elem);
