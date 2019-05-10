@@ -13,7 +13,12 @@ table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr
 	width: 99%;
 	top: 0%;
 }
-.PLT.Team thead td { font-size: 1em; font-weight: bold; background-color: #222; color: #FFF; }
+/* Colors are the same as the operator controls, so per-team colours look the same on both. */
+.PLT.Team thead td { font-size: 1em; font-weight: bold; background-color: #cccccc; color: #333333; }
+
+/* Similarly for the IWB view and the scoreboard. */
+.PLT.Team.AlternateName_scoreboard thead td { background-color: #000; color: #FFF; }
+
 .PLT.Team td { text-align: center; vertical-align: middle; }
 .PLT.Team .Number, .PLT.Team .Box, .PLT.Team .Total, .PLT.Team .Advance { width: 5%; }
 .PLT.Team .Role, .PLT.Team .Sitting { width: 7%; }

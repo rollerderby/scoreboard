@@ -10,9 +10,9 @@ table.LT, .LT table,.LT tr, .LT td, #FieldingEditor table, #FieldingEditor tr, #
     color: #333;
 }
 .LT .Hide, #FieldingEditor .Hide { display: none; }
-.LT #head { font-size: 200%; text-align: center; background-color: #222; color: #FFF; }
+div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: #333333; margin-top: 1em}
 .LT.Period { width: 100%; table-layout:fixed; margin-top: 0.5em; }
-.LT.Period thead td { font-size: 95%; background-color: #222; color: #FFF; }
+.LT.Period thead td { font-size: 95%; background-color: #cccccc; color: #333333; }
 .LT.Period td { text-align: center; vertical-align: middle; }
 .LT.Period tbody tr { background-color: #FFF; }
 .LT.Period tbody tr:nth-child(4n+0), .LT.Period tr:nth-child(4n-1) { background-color: #e7f3ff; }

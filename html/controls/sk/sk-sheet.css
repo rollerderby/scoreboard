@@ -11,7 +11,7 @@ table.SK, .SK .table, .SK tr, .SK td, #TripEditor table, #TripEditor tr, #TripEd
 }
 .SK .Hide { display: none; }
 .SK.Period { width: 98%; table-layout:fixed; margin: 1%; }
-.SK.Period thead td { font-size: 95%; background-color: #222; color: #FFF; }
+.SK.Period thead td { font-size: 95%; background-color: #cccccc; color: #333333; }
 .SK.Period .SmallHead>div { font-size: 75%; transform: rotate(270deg); }
 .SK.Period td { text-align: center; vertical-align: middle; }
 .SK.Period tr { background-color: #FFF; }
