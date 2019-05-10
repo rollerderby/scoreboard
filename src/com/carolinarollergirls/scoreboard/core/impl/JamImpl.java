@@ -82,6 +82,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                 scoreBoard.updateTeamJams();
                 ((ScoreBoardEventProviderImpl) parent).scoreBoardChange(
                         new ScoreBoardEvent(this, BatchEvent.END, Boolean.TRUE, Boolean.TRUE));
+                requestBatchEnd();
                 break;
             case INSERT_BEFORE:
                 requestBatchStart();

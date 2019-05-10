@@ -90,7 +90,10 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void restoreSnapshot(PeriodSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
-            set(Value.CURRENT_JAM, s.getCurrentJam());
+            if (getCurrentJam() != s.getCurrentJam()) {
+              remove(NChild.JAM, getCurrentJam());
+              set(Value.CURRENT_JAM, s.getCurrentJam());
+            }
         }
     }
 

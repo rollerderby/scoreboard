@@ -83,11 +83,19 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 lc.setMaximumTime(getRulesets().getLong(Rule.LINEUP_DURATION));
             }
         } else if (prop == Value.UPCOMING_JAM) {
-            removeAll(Period.NChild.JAM);
             if (value instanceof Jam) {
                 add(Period.NChild.JAM, (Jam)value);
             }
         }
+    }
+
+    @Override
+    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
+      if (prop == NChild.PERIOD) {
+        // If the current period was removed, assign
+        // the upcoming jam to the now current period.
+        getCurrentPeriod().getCurrentJam().setNext(getUpcomingJam());
+      }
     }
 
     @Override
@@ -568,10 +576,13 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
         if (getCurrentPeriod() != snapshot.getCurrentPeriod()) {
-            set(Value.UPCOMING_JAM, getCurrentPeriod().getFirst(Period.NChild.JAM));
-            getCurrentPeriod().remove(Period.NChild.JAM, getUpcomingJam());
-            getUpcomingJam().setParent(this);
+            Period oldPeriod = getCurrentPeriod();
             set(Value.CURRENT_PERIOD, snapshot.getCurrentPeriod());
+            oldPeriod.unlink();
+        }
+        getUpcomingJam().setParent(this);
+        if (getUpcomingJam().hasNext()) {
+          getUpcomingJam().getNext().unlink();
         }
         getCurrentPeriod().restoreSnapshot(snapshot.getPeriodSnapshot());
         for (ValueWithId clock : getAll(Child.CLOCK)) {

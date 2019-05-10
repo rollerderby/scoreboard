@@ -1030,6 +1030,31 @@ public class ScoreboardImplTests {
     }
 
     @Test
+    public void testJamStartUndoRedo() {
+        sb.startJam();
+        for (int i = 0; i < 5; i++){
+          sb.clockUndo(false);
+          // Regression test for an NPE here.
+          sb.startJam();
+        }
+    }
+
+    @Test
+    public void testJamStartUndoAfterPeriodEnd() {
+        fastForwardJams(5);
+        pc.setTime(2000);
+        advance(2000);
+        assertFalse(pc.isRunning());
+        assertEquals(5, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+
+        sb.startJam();
+        assertEquals(6, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+
+        sb.clockUndo(false);
+        assertEquals(5, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+    }
+
+    @Test
     public void testTimeoutCountOnUndo() {
         fastForwardJams(1);
         assertEquals(3, sb.getTeam(Team.ID_1).getTimeouts());
@@ -1478,15 +1503,15 @@ public class ScoreboardImplTests {
         assertEquals(4, p1.getAll(Period.NChild.JAM).size());
         assertEquals(1, p1.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(4, p1.getMaxNumber(Period.NChild.JAM) + 0);
-        assertEquals(1, sb.getAll(Period.NChild.JAM).size());
-        assertEquals(5, sb.getMinNumber(Period.NChild.JAM) + 0);
+        assertEquals(5, sb.getAll(Period.NChild.JAM).size());
+        assertEquals(1, sb.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(5, sb.getMaxNumber(Period.NChild.JAM) + 0);
         Jam j0 = (Jam) p0.getFirst(Period.NChild.JAM);
         Jam j1 = (Jam) p1.getFirst(Period.NChild.JAM);
         Jam j2 = (Jam) p1.get(Period.NChild.JAM, 2);
         Jam j3 = (Jam) p1.get(Period.NChild.JAM, 3);
         Jam j4 = (Jam) p1.getLast(Period.NChild.JAM);
-        Jam j5 = (Jam)sb.getFirst(Period.NChild.JAM);
+        Jam j5 = (Jam) sb.getLast(Period.NChild.JAM);
         assertEquals(j0, p0.getCurrentJam());
         assertEquals(j4, p1.getCurrentJam());
         assertEquals(j5, sb.getUpcomingJam());
@@ -1530,15 +1555,15 @@ public class ScoreboardImplTests {
         assertEquals(4, p1.getAll(Period.NChild.JAM).size());
         assertEquals(1, p1.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(4, p1.getMaxNumber(Period.NChild.JAM) + 0);
-        assertEquals(1, sb.getAll(Period.NChild.JAM).size());
-        assertEquals(5, sb.getMinNumber(Period.NChild.JAM) + 0);
+        assertEquals(5, sb.getAll(Period.NChild.JAM).size());
+        assertEquals(1, sb.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(5, sb.getMaxNumber(Period.NChild.JAM) + 0);
         j0 = (Jam) p0.getFirst(Period.NChild.JAM);
         j1 = (Jam) p1.getFirst(Period.NChild.JAM);
         j2 = (Jam) p1.get(Period.NChild.JAM, 2);
         j3 = (Jam) p1.get(Period.NChild.JAM, 3);
         j4 = (Jam) p1.getLast(Period.NChild.JAM);
-        j5 = (Jam)sb.getFirst(Period.NChild.JAM);
+        j5 = (Jam) sb.getLast(Period.NChild.JAM);
         assertEquals(j0, p0.getCurrentJam());
         assertEquals(j4, p1.getCurrentJam());
         assertEquals(j5, sb.getUpcomingJam());
@@ -1582,15 +1607,15 @@ public class ScoreboardImplTests {
         assertEquals(4, p1.getAll(Period.NChild.JAM).size());
         assertEquals(1, p1.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(4, p1.getMaxNumber(Period.NChild.JAM) + 0);
-        assertEquals(1, sb.getAll(Period.NChild.JAM).size());
-        assertEquals(5, sb.getMinNumber(Period.NChild.JAM) + 0);
+        assertEquals(5, sb.getAll(Period.NChild.JAM).size());
+        assertEquals(1, sb.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(5, sb.getMaxNumber(Period.NChild.JAM) + 0);
         j0 = (Jam) p0.getFirst(Period.NChild.JAM);
         j1 = (Jam) p1.getFirst(Period.NChild.JAM);
         j2 = (Jam) p1.get(Period.NChild.JAM, 2);
         j3 = (Jam) p1.get(Period.NChild.JAM, 3);
         j4 = (Jam) p1.getLast(Period.NChild.JAM);
-        j5 = (Jam)sb.getFirst(Period.NChild.JAM);
+        j5 = (Jam) sb.getLast(Period.NChild.JAM);
         assertEquals(j0, p0.getCurrentJam());
         assertEquals(j4, p1.getCurrentJam());
         assertEquals(j5, sb.getUpcomingJam());
@@ -1630,17 +1655,29 @@ public class ScoreboardImplTests {
         
         assertEquals(1, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         assertEquals(0, sb.getCurrentPeriodNumber());
+
+        // Make sure we can start the jam.
+        sb.startJam();
+        assertEquals(1, sb.getCurrentPeriodNumber());
     }
     
     @Test
     public void testDeleteJam() {
         fastForwardJams(3);
         sb.startJam();
-        
+
         Jam j2 = sb.getCurrentPeriod().getJam(2);
         j2.execute(Jam.Command.DELETE);
         
         assertEquals(3, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+
+        // Make sure we can start the jam again.
+        sb.stopJamTO();
+        assertEquals(3, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+        sb.startJam();
+        assertEquals(4, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+        assertEquals(4, sb.getCurrentPeriod().getCurrentJam().getNumber());
+
     }
     
     @Test
