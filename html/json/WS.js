@@ -56,8 +56,9 @@ var WS = {
 				if (WS.debug) console.log("WS", json);
 				if (json.authorization != null)
 					alert(json.authorization);
-				if (json.state != null)
+				if (json.state != null) {
 					WS.processUpdate(json.state);
+				}
 			};
 			WS.socket.onclose = function(e) {
 				WS.Connected = false;
@@ -105,6 +106,7 @@ var WS = {
 	},
 
 	triggerCallback: function (k, v) {
+		k = WS._enrichProp(k);
 		var callbacks = WS._getMatchesFromTrie(WS.callbackTrie, k);
 		for (idx = 0; idx < callbacks.length; idx++) {
 			c = callbacks[idx];
@@ -157,6 +159,39 @@ var WS = {
 			}
 		});
 
+	},
+
+	_enrichPropCache: {},
+
+	// Parse property name, and make it easily accessible.
+	_enrichProp: function(prop) {
+		if (WS._enrichPropCache[prop] != null) {
+			return WS._enrichPropCache[prop];
+		}
+		prop = new String(prop);
+		var i = prop.length - 1;
+		var parts = [];
+		while (i >= 0) {
+			if (prop[i] == ')') {
+				var open = prop.lastIndexOf('(', i)
+				var dot = prop.lastIndexOf('.', open)
+				var key = prop.substring(dot + 1, open);
+				var val = prop.substring(open + 1, i)
+				prop[key] = val;
+				parts.push(key)
+				i = dot - 1;
+			} else {
+				var dot = prop.lastIndexOf('.', i)
+				var key = prop.substring(dot + 1, i + 1);
+				prop[key] = "";
+				parts.push(key)
+				i = dot - 1;
+			}
+		}
+		parts.reverse();
+		prop.parts = parts
+		WS._enrichPropCache[prop] = prop
+		return prop;
 	},
 
 	Register: function(paths, options) {
