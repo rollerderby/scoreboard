@@ -124,7 +124,11 @@ var WS = {
 		for (var prop in state) {
 			// update all incoming properties before triggers 
 			// dependency issues causing problems
-			WS.state[prop] = state[prop];
+			if (state[prop] == null) {
+				delete WS.state[prop];
+			} else {
+				WS.state[prop] = state[prop];
+			}
 		}
 
 		for (var prop in state) {
@@ -158,6 +162,13 @@ var WS = {
 				console.log(err.message, err.stack);
 			}
 		});
+
+		// Clean cache to avoid a memory leak for long running screens.
+		for (var prop in state) {
+			if (state[prop] == null) {
+				delete WS._enrichPropCache[prop];
+			}
+		}
 
 	},
 
