@@ -199,6 +199,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
                 }
             }
         }
+        set(Value.BASE_ROLE, Role.BENCH);
     }
     
     @Override

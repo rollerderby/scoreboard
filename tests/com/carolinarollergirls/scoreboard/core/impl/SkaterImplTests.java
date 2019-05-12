@@ -8,11 +8,12 @@ import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
-import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.Skater.NChild;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
+import com.carolinarollergirls.scoreboard.core.Role;
+import com.carolinarollergirls.scoreboard.core.Skater;
+import com.carolinarollergirls.scoreboard.core.Skater.NChild;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
@@ -203,5 +204,9 @@ public class SkaterImplTests {
         assertEquals("C", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
         assertEquals(3, penalty.getJamNumber());
+
+        assertEquals(Role.INELIGIBLE, skater.getBaseRole());
+        penalty.unlink();
+        assertEquals(Role.BENCH, skater.getBaseRole());
     }
 }
