@@ -1536,9 +1536,9 @@ function createNewTeamTable(team, teamid) {
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
 		.click(function() {
 			addSkater(newSkaterNumber.val(), newSkaterName.val(), newSkaterFlags.val());
-			newSkaterNumber.val("");
+			newSkaterNumber.val("").focus();
 			newSkaterFlags.val("");
-			newSkaterName.val("").focus();
+			newSkaterName.val("");
 			$(this).blur();
 			newSkaterButton.button("option", "disabled", true);
 		});
