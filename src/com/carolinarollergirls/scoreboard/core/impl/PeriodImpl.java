@@ -81,6 +81,18 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
 
     @Override
+    public void unlink(boolean neighborsRemoved) {
+        if (!neighborsRemoved && getAll(NChild.JAM).size() > 0) {
+            if (getFirst(NChild.JAM).getPrevious() != null) {
+                ((Jam) getFirst(NChild.JAM).getPrevious()).setNext((Jam) getLast(NChild.JAM).getNext());
+            } else if (getLast(NChild.JAM).getNext() != null) {
+                ((Jam) getLast(NChild.JAM).getNext()).setPrevious(null);
+            }
+        }
+        super.unlink(neighborsRemoved);
+    }
+    
+    @Override
     public PeriodSnapshot snapshot() {
         synchronized (coreLock) {
             return new PeriodSnapshotImpl(this);
@@ -90,7 +102,13 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public void restoreSnapshot(PeriodSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
-            set(Value.CURRENT_JAM, s.getCurrentJam());
+            if (getCurrentJam() != s.getCurrentJam()) {
+                Jam movedJam = getCurrentJam();
+                remove (NChild.JAM, movedJam);
+                movedJam.setParent(scoreBoard);
+                scoreBoard.set(ScoreBoard.Value.UPCOMING_JAM, movedJam);
+                set(Value.CURRENT_JAM, s.getCurrentJam());
+            }
         }
     }
 

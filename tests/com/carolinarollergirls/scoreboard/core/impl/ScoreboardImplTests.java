@@ -1030,6 +1030,31 @@ public class ScoreboardImplTests {
     }
 
     @Test
+    public void testJamStartUndoRedo() {
+        sb.startJam();
+        for (int i = 0; i < 5; i++){
+          sb.clockUndo(false);
+          // Regression test for an NPE here.
+          sb.startJam();
+        }
+    }
+
+    @Test
+    public void testJamStartUndoAfterPeriodEnd() {
+        fastForwardJams(5);
+        pc.setTime(2000);
+        advance(2000);
+        assertFalse(pc.isRunning());
+        assertEquals(5, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+
+        sb.startJam();
+        assertEquals(6, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+
+        sb.clockUndo(false);
+        assertEquals(5, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+    }
+
+    @Test
     public void testTimeoutCountOnUndo() {
         fastForwardJams(1);
         assertEquals(3, sb.getTeam(Team.ID_1).getTimeouts());
@@ -1630,6 +1655,10 @@ public class ScoreboardImplTests {
         
         assertEquals(1, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         assertEquals(0, sb.getCurrentPeriodNumber());
+
+        // Make sure we can start the jam.
+        sb.startJam();
+        assertEquals(1, sb.getCurrentPeriodNumber());
     }
     
     @Test
@@ -1641,6 +1670,13 @@ public class ScoreboardImplTests {
         j2.execute(Jam.Command.DELETE);
         
         assertEquals(3, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+
+        // Make sure we can start the jam again.
+        sb.stopJamTO();
+        assertEquals(3, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+        sb.startJam();
+        assertEquals(4, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
+        assertEquals(4, sb.getCurrentPeriod().getCurrentJam().getNumber());
     }
     
     @Test

@@ -76,6 +76,14 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
     @Override
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.UPCOMING_JAM && !(value instanceof Jam)) {
+            value = new JamImpl(this, getCurrentPeriod().getCurrentJam());
+        }
+        return value;
+    }
+
+    @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.IN_OVERTIME && !(Boolean)value) {
             Clock lc = getClock(Clock.ID_LINEUP);
@@ -84,9 +92,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             }
         } else if (prop == Value.UPCOMING_JAM) {
             removeAll(Period.NChild.JAM);
-            if (value instanceof Jam) {
-                add(Period.NChild.JAM, (Jam)value);
-            }
+            add(Period.NChild.JAM, (Jam)value);
         }
     }
 
@@ -567,12 +573,15 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
-        if (getCurrentPeriod() != snapshot.getCurrentPeriod()) {
-            set(Value.UPCOMING_JAM, getCurrentPeriod().getFirst(Period.NChild.JAM));
-            getCurrentPeriod().remove(Period.NChild.JAM, getUpcomingJam());
-            getUpcomingJam().setParent(this);
-            set(Value.CURRENT_PERIOD, snapshot.getCurrentPeriod());
+        if (getCurrentPeriod() != snapshot.getCurrentPeriod() &&
+                getCurrentPeriod().getAll(Period.NChild.JAM).size() > 0) {
+            Jam movedJam = (Jam) getCurrentPeriod().getFirst(Period.NChild.JAM);
+            getCurrentPeriod().remove(Period.NChild.JAM, movedJam);
+            movedJam.setParent(this);
+            set(Value.UPCOMING_JAM, movedJam);
+            getCurrentPeriod().unlink();
         }
+        set(Value.CURRENT_PERIOD, snapshot.getCurrentPeriod());
         getCurrentPeriod().restoreSnapshot(snapshot.getPeriodSnapshot());
         for (ValueWithId clock : getAll(Child.CLOCK)) {
             ((Clock)clock).restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
