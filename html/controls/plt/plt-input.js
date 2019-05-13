@@ -29,7 +29,11 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			$('<td>').text('Pivot').appendTo(thead);
 			$('<td>').text('Blocker').appendTo(thead);
 			$('<td>').text('Box').appendTo(thead);
-			$('<td>').appendTo(thead);
+			if (mode == 'lt') {
+				$('<td>').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
+			} else {
+				$('<td>').appendTo(thead);
+			}
 		}
 		if (mode == 'plt' || mode == 'pt') {
 			$('<td>').text('#').appendTo(thead);
