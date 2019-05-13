@@ -252,8 +252,17 @@ function prepareFieldingEditor(teamId) {
 
 		var id = match[1];
 		var option = $(".FieldingEditor #skater option[value='"+id+"']")
+		var inserted = false;
 		if (v != null && option.length == 0) {
-			$('<option>').attr('value', id).text(v).appendTo($('#FieldingEditor #skater'));
+			var option = $('<option>').attr('value', id).text(v);
+			$('#FieldingEditor #skater').children().each(function (idx, s) {
+				if (s.text > String(v) && idx > 0) {
+					$(s).before(option);
+					inserted = true;
+					return false;
+				}
+			});
+			if (!inserted) option.appendTo($('#FieldingEditor #skater'));
 		} else if (v == null) {
 			option.remove();
 		} else {
