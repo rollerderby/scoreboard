@@ -824,20 +824,63 @@ function createTeamTable() {
 
 		starPassTd.buttonset();
 
-		var makeSkaterDropdown = function(pos, elem, sort) {
-			var sortFunc = _windowFunctions.alphaCompareByProp;
-			if (sort == "Num") sortFunc = _windowFunctions.numCompareByProp;
-			return sbTeam.$sb("Position("+pos+").Skater").$sbControl("<select>", { sbelement: {
-					optionParent: sbTeam,
-					optionChildName: "Skater",
-					optionNameElement: elem,
-					compareOptions: function(a, b) { return sortFunc("text", a, b); },
-					firstOption: { text: "No "+pos, value: "" }
-				} }).addClass(pos+" By"+elem+" "+sort+"Sort");
-		};
+		var setupSkaterSelect = function(select, position) {
+			select.append($("<option>").text("No " + position));
+			var currentVal = function() {
+				if (isTrue(WS.state["ScoreBoard.InJam"])) {
+					if (isTrue(WS.state["ScoreBoard.Team(" + team + ").NoPivot"]) && position == "Pivot") {
+						return "";
+					}
+				} else {
+					var jn = WS.state['ScoreBoard.UpcomingJamNumber'];
+					if (isTrue(WS.state["ScoreBoard.Jam(" + jn + ").TeamJam(" + team + ").NoPivot"]) && position == "Pivot") {
+						return "";
+					}
+				}
+				return WS.state["ScoreBoard.Team(" + team + ").Position(" + position + ").Skater"];
+			}
+			WS.Register(["ScoreBoard.Team(" + team + ").Position(" + position + ").Skater",
+					"ScoreBoard.Team(" + team + ").NoPivot",
+					"ScoreBoard.Jam", "ScoreBoard.UpcomingJamNumber", "ScoreBoard.InJam"], function(){
+						select.val(currentVal());
+					});
+			WS.Register("ScoreBoard.Team(" + team + ").Skater", function(k, v) {
+				if (k.Number == null) return;
+				var option = select.children("[value='"+k.Skater+"']");
+				if (v != null && option.length == 0) {
+					$("<option>").attr("value", k.Skater).text(v).appendTo(select);
+				} else if (v == null) {
+					option.remove();
+				} else {
+					option.text(v);
+				}
+				select.html(select.children().sort(function(a, b) {
+					if (a.text.startsWith("No ")) return -1;
+					if (b.text.startsWith("No ")) return 1;
+					return a.text > b.text ? 1 : -1;
+				}));
+				select.val(currentVal());
+			});
+			select.change(function(){
+				var val = select.val();
+				if (val == "No " + position) {
+					val = "";
+				}
+				if (position == "Pivot") {
+					if (isTrue(WS.state["ScoreBoard.InJam"])) {
+						WS.Set("ScoreBoard.Team(" + team + ").NoPivot", false);
+					} else {
+						var jn = WS.state['ScoreBoard.UpcomingJamNumber'];
+						WS.Set("ScoreBoard.Jam(" + jn + ").TeamJam(" + team + ").NoPivot", false);
+					}
+				}
+				WS.Set("ScoreBoard.Team(" + team + ").Position(" + position + ").Skater", val);
+			});
+		}
 
 		var jammerSelectTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer");
-		makeSkaterDropdown("Jammer", "Number", "Alpha").appendTo(jammerSelectTd);
+		setupSkaterSelect($("<select>").appendTo(jammerSelectTd), "Jammer");
+
 
 		var jammerBox = sbTeam.$sb("Position(Jammer).PenaltyBox");
 		var jammerBoxButton = jammerBox.$sbControl("<button>").text("Box").val("true")
@@ -849,7 +892,7 @@ function createTeamTable() {
 		jammerBoxButton.appendTo(jammerSelectTd);
 
 		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot");
-		makeSkaterDropdown("Pivot", "Number", "Alpha").appendTo(pivotSelectTd);
+		setupSkaterSelect($("<select>").appendTo(pivotSelectTd), "Pivot");
 
 		var pivotBox = sbTeam.$sb("Position(Pivot).PenaltyBox");
 		var pivotBoxButton = pivotBox.$sbControl("<button>").text("Box").val("true")
@@ -962,7 +1005,7 @@ function createPeriodDialog() {
 						})))
 				.append($('<td>').append($("<button>").text("Insert Before")
 						.button().click(function () {
-							WS.Set(prefix + ".InsertBefore", true); 
+							WS.Set(prefix + ".InsertBefore", true);
 						})));
 			var inserted = false;
 			table.find("tr.Period").each(function (i, r) {
@@ -1045,7 +1088,7 @@ function createJamDialog() {
 						})))
 				.append($('<td>').append($("<button>").text("Insert Before")
 						.button().click(function () {
-							WS.Set(prefix + ".InsertBefore", true); 
+							WS.Set(prefix + ".InsertBefore", true);
 						})));
 			var inserted = false;
 			table.find("tr.Jam").each(function (i, r) {
@@ -1454,7 +1497,7 @@ function createTeamsContent() {
 	_crgUtils.bindAddRemoveEach($sb("Teams"), "Team", function(event, node) {
 		if (node.$sbId){
 			teams[node.$sbId] = node;
-		} 
+		}
 	}, function(event, node) {
 		$("table.Team", "#Teams")
 			.filter(function() { return (node.$sbId == $(this).data("id")); })
@@ -1554,7 +1597,7 @@ function createNewTeamTable(team, teamid) {
 	newSkaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
 	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
 	newSkaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
-	var pasteHandler = function(e){ 
+	var pasteHandler = function(e){
 		var text = e.originalEvent.clipboardData.getData("text");
 		var lines = text.split("\n");
 		if (lines.length <= 1) {
