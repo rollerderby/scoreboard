@@ -12,6 +12,9 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 	var periodNumber = null;
 	var jamNumber = null;
+	var totalPenalties = null;
+	var totalPenaltyCount = 0;
+	var tbody = null;
 
 	function initialize() {
 		if (alternateName == null) {
@@ -26,7 +29,11 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			$('<td>').text('Pivot').appendTo(thead);
 			$('<td>').text('Blocker').appendTo(thead);
 			$('<td>').text('Box').appendTo(thead);
-			$('<td>').appendTo(thead);
+			if (mode == 'lt') {
+				$('<td>').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
+			} else {
+				$('<td>').appendTo(thead);
+			}
 		}
 		if (mode == 'plt' || mode == 'pt') {
 			$('<td>').text('#').appendTo(thead);
@@ -36,9 +43,9 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			$('<td>').text('FO_Ex').appendTo(thead);
 		}
 		if (mode == 'plt' || mode == 'pt') {
-			$('<td>').attr('id', 'totalPenalties').text('Σ 0').appendTo(thead);
+			totalPenalties = $('<td>').attr('id', 'totalPenalties').text('Σ 0').appendTo(thead);
 		}
-		$('<tbody>').appendTo(table);
+		tbody = $('<tbody>').appendTo(table);
 
 		WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
 		WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ').Name'], function () { teamNameUpdate(); });
@@ -52,7 +59,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function (k, v) { skaterUpdate(teamId, k, v); });
 		WS.Register(['ScoreBoard.Team('+teamId+').FieldingAdvancePending'], function(k, v) {
-			element.find('.Advance').toggleClass('Active', isTrue(v)); 
+			element.find('.Advance').toggleClass('Active', isTrue(v));
 		});
 
 		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)']);
@@ -80,7 +87,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		
 		$('#current-period-style').remove();
 		if (mode != 'copyToStatsbook') {
-			$('<style> .Box.period-' + periodNumber +' { font-weight: bold; color: #000; }</style>')
+			$('<style> .Box[period="' + periodNumber +'"] { font-weight: bold; color: #000; }</style>')
 				.attr('id','current-period-style')
 				.appendTo('head');
 		}
@@ -93,132 +100,146 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 		$('#current-jam-style').remove();
 		if (mode != 'copyToStatsbook') {
-			$("<style> .Box.period-" + periodNumber + ".jam-" + jamNumber + " { text-decoration: underline; } </style>")
+			$("<style> .Box[period='" + periodNumber + "'][jam='" + jamNumber + "'] { text-decoration: underline; } </style>")
 				.attr('id', 'current-jam-style')
 				.appendTo('head');
 		}
 	}
 
-	var skaterIdRegex = /Skater\(([^\)]+)\)/;
-	var penaltyRegex = /Penalty\(([^\)]+)\)/;
 	function skaterUpdate(t, k, v) {
+		if (k.Skater == null) return;
 		
-		var match = (k || "").match(skaterIdRegex);
-		if (match == null || match.length == 0) { return; }
-		
-		var id = match[1];
-		var field = k.split('.').pop();
-		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
-		if (k == prefix + "." + field) {
-			if (field === 'Number') {
-				element.find('.Skater[id=' + id + ']').remove();
-				if (v == null) {
-					return;
-				}
-	
-				// New skater, or number has been updated.
-				makeSkaterRows(t, id, v);
-				if (mode != 'lt') {
-					for (var i = 1; i <= 9; i++) {
-						displayPenalty(t, id, i);
-					}
-					displayPenalty(t, id, 0);
-				}
-			} else if (field === 'Role') {
-				element.find('.Skater.Penalty[id=' + id + '] .Role').removeClass('OnTrack');
-				element.find('.Skater.Penalty[id=' + id + '] .'+v).addClass('OnTrack');
-				element.find('.Skater.Penalty[id=' + id + '] .Number')
-					.toggleClass('OnTrack', v == 'Jammer' || v == 'Pivot' || v == 'Blocker');
-			} else if (field === 'PenaltyBox') {
-				element.find('.Skater.Penalty[id=' + id + '] .Sitting').toggleClass('inBox', isTrue(v));
+		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
+		var field = k.substring(prefix.length + 1);
+		if (field == 'Number') {
+			if (v == null) {
+				tbody.children('.Skater.Penalty[id=' + k.Skater + ']').children('.Total').each( function(idx, elem) {
+					totalPenaltyCount -= parseInt($(elem).text(), 10);
+				});
+				totalPenalties.text('Σ ' + totalPenaltyCount);
 			}
+			tbody.children('.Skater[id=' + k.Skater + ']').remove();
+			if (v == null) {
+				return;
+			}
+
+			// New skater, or number has been updated.
+			makeSkaterRows(t, k.Skater, v);
+			if (mode != 'lt') {
+				for (var i = 1; i <= 9; i++) {
+					displayPenalty(t, k.Skater, i, null);
+				}
+				displayPenalty(t, k.Skater, 0, null);
+			}
+		} else if (field == 'Role') {
+			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Role').removeClass('OnTrack');
+			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .'+v).addClass('OnTrack');
+			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Number')
+				.toggleClass('OnTrack', v == 'Jammer' || v == 'Pivot' || v == 'Blocker');
+		} else if (field == 'PenaltyBox') {
+			element.find('.Skater.Penalty[id=' + k.Skater + '] .Sitting').toggleClass('inBox', isTrue(v));
 		} else if (mode != 'lt'){
 			// Look for penalty
-			match = k.match(penaltyRegex);
-			if (match == null || match.length == 0)
-				return;
-			var p = match[1];
-			displayPenalty(t, id, p);
+			if (k.Penalty == null) return
+			displayPenalty(t, k.Skater, k.Penalty, k);
 		}
 	}
 
-	function displayPenalty(t, s, p) {
-		var penaltyBox = element.find('.Skater.Penalty[id=' + s + '] .Box' + p);
-		var jamBox = element.find('.Skater.Jam[id=' + s + '] .Box' + p);
-		var totalBox = element.find('.Skater.Penalty[id=' + s + '] .Total');
+	function displayPenalty(t, s, p, k) {
+		var codeRow = tbody.children('.Skater.Penalty[id=' + s + ']');
+		if (codeRow.length == 0) {
+			return;
+		}
+		var jamRow = tbody.children('.Skater.Jam[id=' + s + ']');
+		var penaltyBox = codeRow.children('.Box' + p);
+		var jamBox = jamRow.children('.Box' + p);
+		var totalBox = codeRow.children('.Total');
 
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
-		var code = WS.state[prefix + ".Code"];
 
-		var penaltyPeriod = penaltyBox.data("period");
-		var penaltyJam = penaltyBox.data("jam");
-
-		if (penaltyPeriod !== undefined) {
-			penaltyBox.removeClass("period-" + penaltyPeriod);
-			jamBox.removeClass("period-" + penaltyPeriod);
+		var field = "";
+		if (k != null) {
+			field = k.parts[4];
 		}
 
-		if (penaltyJam !== undefined) {
-			penaltyBox.removeClass("jam-" + penaltyJam);
-			jamBox.removeClass("jam-" + penaltyJam);
-		}
-
-		if (code != null) {
-			penaltyPeriod = WS.state[prefix + ".PeriodNumber"];
-			penaltyJam = WS.state[prefix + ".JamNumber"];
-
-			penaltyBox.data("id", WS.state[prefix + ".Id"]);
-			jamBox.data("id", WS.state[prefix + ".Id"]);
-			if (mode == 'copyToStatsbook') {
-				if (penaltyPeriod == statsbookPeriod) {
-					penaltyBox.text(WS.state[prefix + ".Code"]);
-					jamBox.text(penaltyJam);
+		if (field == "Code" || field == "PeriodNumber" || field == "") {
+			var code = WS.state[prefix + ".Code"];
+			var penaltyPeriod = WS.state[prefix + ".PeriodNumber"];
+			if (code != null) {
+				if (mode == 'copyToStatsbook') {
+					if (penaltyPeriod == statsbookPeriod) {
+						penaltyBox.text(code);
+					} else {
+						penaltyBox.html('&nbsp;');
+					}
 				} else {
-					penaltyBox.html('&nbsp;');
-					jamBox.html('&nbsp;');
+					penaltyBox.text(code);
 				}
 			} else {
-				penaltyBox.text(WS.state[prefix + ".Code"]);
-				jamBox.text(penaltyPeriod + '-' + penaltyJam);
+				penaltyBox.html('&nbsp;');
 			}
-
-			penaltyBox.data("period", penaltyPeriod);
-			penaltyBox.data("jam", penaltyJam);
-
-			jamBox.addClass("period-" + penaltyPeriod).addClass("jam-" + penaltyJam);
-			penaltyBox.addClass("period-" + penaltyPeriod).addClass("jam-" + penaltyJam);
-			
-			jamBox.toggleClass("Unserved", !isTrue(WS.state[prefix + ".Served"]))
-				.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
-			penaltyBox.toggleClass("Unserved", !isTrue(WS.state[prefix + ".Served"]))
-				.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
-
-		} else {
-			penaltyBox.data("id", null);
-			jamBox.data("id", null);
-			penaltyBox.html("&nbsp;");
-			jamBox.html("&nbsp;");
-			penaltyBox.removeClass("Serving Unserved");
-			jamBox.removeClass("Serving Unserved");
 		}
 
-		var cnt = 0; // Change row colors for skaters on 5 or more penalties, or expulsion.
-		var limit = WS.state["ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)"];
-		var fo_exp = ($($('.PLT.Team .Skater.Penalty[id=' + s + '] .Box0')[0]).data("id") != null);
-
-		element.find('.Skater.Penalty[id=' + s + '] .Box').each(function (idx, elem) {
-			cnt += ($(elem).data("id") != null ? 1 : 0); });
-		if (mode != 'copyToStatsbook') {
-			totalBox.text(cnt);
+		if (field == "JamNumber" || field == "PeriodNumber" || field == "") {
+			var penaltyPeriod = WS.state[prefix + ".PeriodNumber"] || null;
+			var penaltyJam = WS.state[prefix + ".JamNumber"] || null;
+			penaltyBox.attr("period", penaltyPeriod);
+			penaltyBox.attr("jam", penaltyJam);
+			jamBox.attr("period", penaltyPeriod);
+			jamBox.attr("jam", penaltyJam);
+			if (mode == 'copyToStatsbook') {
+				if (penaltyPeriod == statsbookPeriod) {
+					jamBox.text(penaltyJam);
+				} else {
+					jamBox.html('&nbsp;');
+				}
+			} else if (penaltyJam != null) {
+				jamBox.text(penaltyPeriod + '-' + penaltyJam);
+			} else {
+				jamBox.html('&nbsp');
+			}
 		}
-		element.find('.Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);
-		element.find('.Skater[id=' + s + ']').toggleClass("Warn2", cnt == limit-1 && !fo_exp);
-		element.find('.Skater[id=' + s + ']').toggleClass("Warn3", cnt >= limit || fo_exp);
 
-		// Update the team's total penalties
-		var teamCnt = 0;
-		element.find('.Skater .Total').each(function(idx, elem) { teamCnt += parseInt($(elem).text(), 10); })
-		element.find('#totalPenalties').text('Σ ' + teamCnt);
+		if (field == "Id" || field == "") {
+			var oldId = penaltyBox.attr("pid");
+			var newId = WS.state[prefix + ".Id"] || null;
+			if (oldId == newId) return;
+			penaltyBox.attr("pid", newId);
+			jamBox.attr("pid", newId);
+
+			var cnt = 0; // Change row colors for skaters on 5 or more penalties, or expulsion.
+			var limit = WS.state["ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)"];
+			var fo_exp = ($($('.PLT.Team .Skater.Penalty[id=' + s + '] .Box0')[0]).attr("pid") != null);
+
+			codeRow.children('.Box:not(.Box0)').each(function (idx, elem) {
+				cnt += ($(elem).attr("pid") != null ? 1 : 0); });
+			if (mode != 'copyToStatsbook') {
+				totalBox.text(cnt);
+			}
+			tbody.children('.Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);
+			tbody.children('.Skater[id=' + s + ']').toggleClass("Warn2", cnt == limit-1 && !fo_exp);
+			tbody.children('.Skater[id=' + s + ']').toggleClass("Warn3", cnt >= limit || fo_exp);
+
+			if (p != 0) {
+				if (oldId == null && newId != null) {
+					totalPenaltyCount++;
+				} else if (oldId != null && newId == null) {
+					totalPenaltyCount--;
+				}
+				if (totalPenalties != null) {
+					totalPenalties.text('Σ ' + totalPenaltyCount);
+				}
+			}
+		}
+
+		if (field == "Serving" || field == "") {
+			jamBox.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
+			penaltyBox.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
+		}
+		if (field == "Served" || field == "") {
+			jamBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
+			penaltyBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
+		}
 	}
 
 	function teamNameUpdate() {
@@ -233,8 +254,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 	}
 
 	function makeSkaterRows(t, id, number) {
-		var team = element.find('tbody');
-		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).data('number', number);
+		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).attr('number', number);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
 		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
@@ -307,15 +327,15 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		}
 		
 		var inserted = false;
-		team.find('tr.Penalty').each(function (idx, row) {
+		tbody.find('tr.Penalty').each(function (idx, row) {
 			row = $(row);
-			if (row.data('number') > number) {
+			if (row.attr('number') > number) {
 				row.before(p).before(j);
 				inserted = true;
 				return false;
 			}
 		});
-		if (!inserted) { team.append(p).append(j); }
+		if (!inserted) { tbody.append(p).append(j); }
 	}
 }
 
@@ -350,7 +370,7 @@ function openPenaltyEditor(t, id, which) {
 		var p = WS.state[prefix + '.Penalty(' + which + ').PeriodNumber'];
 		var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
 		wasServed = isTrue(WS.state[prefix + '.Penalty(' + which + ').Served']);
-		penaltyId = penaltyBox.data("id");
+		penaltyId = penaltyBox.attr("pid");
 		if (penaltyId != null) {
 			if (c == null || j == null || p == null) {
 				penaltyId = null;
@@ -367,7 +387,13 @@ function openPenaltyEditor(t, id, which) {
 		}
 	}
 
-	penaltyEditor.data('team', t).data('skater', id).data('pnr', penaltyNumber).data('pid', penaltyId).data('wasServed', wasServed);
+	penaltyEditor.data({
+		'team': t,
+		'skater': id,
+		'pnr': penaltyNumber,
+		'pid': penaltyId,
+		'wasServed': wasServed
+	});
 	penaltyEditor.dialog('open');
 }
 

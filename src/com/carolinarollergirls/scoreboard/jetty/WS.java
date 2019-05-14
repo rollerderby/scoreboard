@@ -14,7 +14,7 @@ import io.prometheus.client.Histogram;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.TreeSet;
 import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
@@ -103,12 +103,14 @@ public class WS extends WebSocketServlet {
                 if (action.equals("Register")) {
                     JSONArray jsonPaths = json.optJSONArray("paths");
                     if (jsonPaths != null) {
-                        Set<String> newPaths = new HashSet<>();
+                        Set<String> newPaths = new TreeSet<>();
                         for (int i = 0; i < jsonPaths.length(); i++) {
                             newPaths.add(jsonPaths.getString(i));
                         }
                         // Send on updates for the newly registered paths.
-                        sendWSUpdatesForPaths(newPaths, state.keySet());
+                        PathTrie pt = new PathTrie();
+                        pt.addAll(newPaths);
+                        sendWSUpdatesForPaths(pt, state.keySet());
                         this.paths.addAll(newPaths);
                     }
                 } else if (action.equals("Set")) {
@@ -237,19 +239,16 @@ public class WS extends WebSocketServlet {
             sendWSUpdatesForPaths(paths, changed);
         }
 
-        private void sendWSUpdatesForPaths(Set<String> watchedPaths, Set<String> changed) {
+        private void sendWSUpdatesForPaths(PathTrie watchedPaths, Set<String> changed) {
             Map<String, Object> updates = new HashMap<>();
             for (String k: changed) {
-                for (String p : watchedPaths) {
-                    if (k.startsWith(p)) {
-                        if (state.get(k) == null) {
-                            updates.put(k, JSONObject.NULL);
-                        } else {
-                            updates.put(k, state.get(k));
-                        }
-                        break;
-                    }
+              if (watchedPaths.covers(k)) {
+                if (state.get(k) == null) {
+                  updates.put(k, JSONObject.NULL);
+                } else {
+                  updates.put(k, state.get(k));
                 }
+              }
             }
             if (updates.size() == 0) {
                 return;
@@ -266,7 +265,53 @@ public class WS extends WebSocketServlet {
         }
 
         protected UUID id;
-        protected Set<String> paths = new HashSet<>();
+        protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
+
+        private class PathTrie {
+          boolean exists = false;
+          Map<Character, PathTrie> trie = new HashMap<>();
+
+          public void addAll(Set<String> c) {
+            for (String p: c) {
+              add(p);
+            }
+          }
+          public void add(String p) {
+            PathTrie head = this;
+            for (int i = 0;; i++) {
+              if (head.exists) {
+                // Already covered.
+                return;
+              }
+              if (i >= p.length()) {
+                break;
+              }
+              if (head.trie.containsKey(p.charAt(i))) {
+                 head = head.trie.get(p.charAt(i));
+              } else {
+                 PathTrie child = new PathTrie();
+                 head.trie.put(p.charAt(i), child);
+                 head = child;
+              }
+            }
+            head.exists = true;
+          }
+          public boolean covers(String p) {
+            PathTrie head = this;
+            for (int i = 0;; i++) {
+              if (head.exists) {
+                return true;
+              }
+              if (i >= p.length()) {
+                return false;
+              }
+              head = head.trie.get(p.charAt(i));
+              if (head == null) {
+                return false;
+              }
+            }
+          }
+        }
     }
 }

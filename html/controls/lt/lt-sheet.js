@@ -325,3 +325,5 @@ function prepareFieldingEditor(teamId) {
 		}
 	}
 }
+
+//# sourceURL=controls\lt\lt-sheet.js

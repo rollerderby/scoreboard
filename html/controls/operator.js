@@ -14,14 +14,16 @@ _include("/json", [ "Game.js", "WS.js" ]);
 _include("sk", [ "sk-sheet.js" ]);
 $('head').append('<link rel="stylesheet" href="sk/sk-sheet.css" type="text/css" />');
 
-WS.Connect();
-WS.AutoRegister();
 
 $sb(function() {
 	createScoreTimeTab();
 	createScoreBoardViewTab();
 	createTeamsTab();
 	createSaveLoadTab();
+	// Only connect after any registrations from the above are in place.
+	// This avoids repeating work on the initial load.
+	WS.AutoRegister();
+	WS.Connect();
 
 	$("#tabsDiv").tabs();
 	_crgUtils.bindAndRun($("#tabsDiv"), "tabsselect", function(event,ui) {
@@ -125,9 +127,9 @@ function createRowTable(n, r) {
 ////////////////////////////
 
 function createScoreTimeTab() {
-	$("<table>").attr("id", "TeamTime")
-		.appendTo(createTab("Team/Time", "TeamTimeTab"))
-		.data("loadContentFunction", createScoreTimeContent);
+	var table = $("<table>").attr("id", "TeamTime")
+		.appendTo(createTab("Team/Time", "TeamTimeTab"));
+	createScoreTimeContent(table);
 	var sk1 = $('<div>').addClass('SKSheet').appendTo($('#TeamTimeTab'));
 	var sk2 = $('<div>').addClass('SKSheet').appendTo($('#TeamTimeTab'));
 	$('<div>').attr('id', 'TripEditor').appendTo($('#TeamTimeTab'));
