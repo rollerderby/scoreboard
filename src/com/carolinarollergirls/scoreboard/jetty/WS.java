@@ -301,7 +301,6 @@ public class WS extends WebSocketServlet {
             PathTrie head = this;
             for (int i = 0;; i++) {
               if (head.exists) {
-                // Already covered.
                 return true;
               }
               if (i >= p.length()) {

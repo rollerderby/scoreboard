@@ -130,7 +130,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 				break;
 
 			 default:
-				if (k.parts[4] == 'ScoringTrip' && k.ScoringTrip >= 3 && k.ScoringTrip <= 10) {
+				if (k.parts[4] == 'ScoringTrip' && k.ScoringTrip >= 3 && k.ScoringTrip < 10) {
 					var t = k.ScoringTrip;
 					var row = jamRow;
 					var otherRow = spRow;
@@ -142,22 +142,22 @@ function prepareSkSheetTable(element, teamId, mode) {
 					var current = isTrue(WS.state[prefix+'ScoringTrip('+t+').Current']);
 					row.find('.Trip'+t).text(score == null ? '' : current && score == 0 ? '.' : score);
 					otherRow.find('.Trip'+t).text('');
-				} else if (k.parts[4] == 'ScoringTrip' && k.ScoringTrip > 10) {
+				} else if (k.parts[4] == 'ScoringTrip' && k.ScoringTrip >= 10) {
 					var scoreBeforeSP = '';
 					var scoreAfterSP = '';
-					$.each(new Array(3), function(idx) {
-						var t = idx + 10;
+					var t = 10;
+					while (true) {
 						var tripScore = WS.state[prefix+'ScoringTrip('+t+').Score'];
-						if (tripScore != null) {
-							if (isTrue(WS.state[prefix+'ScoringTrip('+t+').AfterSP'])) {
-								scoreAfterSP = scoreAfterSP=='' ? tripScore : scoreAfterSP + "+" + tripScore;
-							} else {
-								scoreBeforeSP = scoreBeforeSP=='' ? tripScore : scoreBeforeSP + "+" + tripScore;
-							}
+						if (tripScore == null) break;
+						if (isTrue(WS.state[prefix+'ScoringTrip('+t+').AfterSP'])) {
+							scoreAfterSP = scoreAfterSP=='' ? tripScore : scoreAfterSP + " + " + tripScore;
+						} else {
+							scoreBeforeSP = scoreBeforeSP=='' ? tripScore : scoreBeforeSP + " + " + tripScore;
 						}
-					});
-					jamRow.find('Trip10').text(scoreBeforeSP);
-					spRow.find('Trip10').text(scoreAfterSP);
+						t++;
+					}
+					jamRow.find('.Trip10').text(scoreBeforeSP);
+					spRow.find('.Trip10').text(scoreAfterSP);
 				}
 
 		}
