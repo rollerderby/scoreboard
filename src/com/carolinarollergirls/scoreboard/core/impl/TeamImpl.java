@@ -149,6 +149,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             set(Value.RUNNING_OR_UPCOMING_TEAM_JAM, null);
             set(Value.RUNNING_OR_ENDED_TEAM_JAM, null);
             set(Value.LAST_ENDED_TEAM_JAM, null);
+            set(Value.FIELDING_ADVANCE_PENDING, false);
             resetTimeouts(true);
 
             for (ValueWithId p : getAll(Child.POSITION)) {

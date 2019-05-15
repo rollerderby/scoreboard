@@ -574,4 +574,13 @@ public class TeamImplTests {
         assertNull(team.getPosition(FloorPosition.BLOCKER2).getSkater());
         assertEquals(skater4, team.getPosition(FloorPosition.BLOCKER3).getSkater());
     }
+
+    @Test
+    public void testReset() {
+        team.set(Team.Value.FIELDING_ADVANCE_PENDING, true);
+        assertEquals(true, team.hasFieldingAdvancePending());
+
+        team.reset();
+        assertEquals(false, team.hasFieldingAdvancePending());
+    }
 }
