@@ -229,6 +229,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             Skater s = (Skater)v;
             s.set(Skater.Value.CURRENT_FIELDING, s.getFielding(getRunningOrUpcomingTeamJam()));
             s.setRole(s.getRole(getRunningOrUpcomingTeamJam()));
+            s.updateEligibility();
         }
     }
 

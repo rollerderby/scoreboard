@@ -176,16 +176,17 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             return;
         }
         boolean satThisPeriod = false;
-        Set<TeamJam> last3 = new HashSet<>();
+        Set<TeamJam> lastN = new HashSet<>();
         TeamJam tj = getTeam().getRunningOrUpcomingTeamJam();
-        while(tj != null && last3.size() < 3) {
-            last3.add(tj);
+        int n = getTeam().hasFieldingAdvancePending() ? 5 : 4;
+        while(tj != null && lastN.size() < n) {
+            lastN.add(tj);
             tj = tj.getPrevious();
         }
         for (ValueWithId v : getAll(Child.FIELDING)) {
             Fielding f = (Fielding)v;
             if (f.isSitFor3()) {
-                if (last3.contains(f.getTeamJam())) {
+                if (lastN.contains(f.getTeamJam())) {
                     setBaseRole(Role.INELIGIBLE);
                     return;
                 }
