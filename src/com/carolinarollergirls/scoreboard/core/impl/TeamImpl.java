@@ -17,16 +17,20 @@ import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
+import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
@@ -50,6 +54,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         setCopy(Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_PIVOT, false);
         setCopy(Value.STAR_PASS, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS, false);
         setCopy(Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS_TRIP, false);
+
+        sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET_ID, rulesetChangeListener));
     }
 
     @Override
@@ -374,6 +380,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
         }
     }
+
+    protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
+        @Override
+        public void scoreBoardChange(ScoreBoardEvent event) {
+            setTimeouts(scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS));
+            setOfficialReviews(scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS));
+        }
+    };
 
     @Override
     public Skater getSkater(String id) { return (Skater)get(Child.SKATER, id); }
