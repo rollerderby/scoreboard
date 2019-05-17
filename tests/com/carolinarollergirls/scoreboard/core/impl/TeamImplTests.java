@@ -5,24 +5,30 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.HashSet;
 import java.util.Queue;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Role;
+import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
 import com.carolinarollergirls.scoreboard.core.impl.TeamImpl.TeamSnapshotImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class TeamImplTests {
 
@@ -597,5 +603,26 @@ public class TeamImplTests {
         team.execute(Team.Command.ADVANCE_FIELDINGS);
         
         assertEquals(Role.PIVOT, skater1.getRole());
+    }
+
+    public void testReset() {
+        team.set(Team.Value.FIELDING_ADVANCE_PENDING, true);
+        assertEquals(true, team.hasFieldingAdvancePending());
+
+        team.reset();
+        assertEquals(false, team.hasFieldingAdvancePending());
+    }
+
+    @Test
+    public void testRulesetChange() {
+        Rulesets.Ruleset child = sb.getRulesets().addRuleset("child", RulesetsImpl.ROOT_ID, "id");
+        Set<ValueWithId> s = new HashSet<>();
+        s.add(new ValWithId(Rule.NUMBER_TIMEOUTS.toString(), "1"));
+        s.add(new ValWithId(Rule.NUMBER_REVIEWS.toString(), "0"));
+        child.setAll(s);
+
+        sb.getRulesets().setCurrentRuleset("id");
+        assertEquals(1, team.getTimeouts());
+        assertEquals(0, team.getOfficialReviews());
     }
 }

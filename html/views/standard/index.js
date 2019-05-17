@@ -62,7 +62,7 @@ function initialize() {
 			if (v === null) {
 				v = '';
 			}
-			switch (k){
+			switch (String(k)){
 				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_fg).Color':
 					$('.Team' + t + ' .Name').css('color', v);
 					break;

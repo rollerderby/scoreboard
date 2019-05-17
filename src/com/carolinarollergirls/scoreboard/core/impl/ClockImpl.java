@@ -52,7 +52,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
                     value = (((Long)value / 1000L) * 1000L) + (Long)last % 1000L;
                 }
             }
-            if ((flag == Flag.RESET && isCountDirectionDown()) || (Long)value > getMaximumTime() + 500) {
+            if ((flag == Flag.RESET && isCountDirectionDown()) || (Long)value > getMaximumTime() + 500 && (!isCountDirectionDown() || flag != Flag.RECALCULATE)) {
                 return getMaximumTime();
             }
             if ((flag == Flag.RESET && !isCountDirectionDown()) || (Long)value < getMinimumTime() - 500) {

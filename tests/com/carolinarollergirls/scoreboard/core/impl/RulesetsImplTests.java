@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
@@ -75,6 +76,7 @@ public class RulesetsImplTests {
         child.setAll(s);
         rulesets.setCurrentRuleset(id1);
         assertEquals(60000, rulesets.getLong(Rule.PERIOD_DURATION));
+        assertEquals(60000, sb.getClock(Clock.ID_PERIOD).getTime());
     }
 
     @Test

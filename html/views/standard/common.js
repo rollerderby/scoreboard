@@ -29,7 +29,7 @@ function getTeamId(k) {
 }
 
 function nameUpdate(k, v) {
-	$(".Team" + id).toggleClass("HasName", v != "");
+	$(".Team" + getTeamId(k)).toggleClass("HasName", v != "");
 	return v;
 }
 

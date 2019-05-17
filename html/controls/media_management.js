@@ -64,7 +64,7 @@ function setupTab(parentName, childName, previewElement) {
 			var table = $("#"+media+">div.Type>table.Type")
 				.filter(function() { return $(this).data("type") == type; });
 			var newRow = table.find("tr.ItemTemplate").clone(true)
-				.removeClass("ItemTemplate").addClass("Item").data("sbName", node.$sbName);
+				.removeClass("ItemTemplate").addClass("Item").data("sbId", node.$sbId);
 			newRow.find("button").button()
 				.filter(".Remove").click(function() { createRemoveMediaDialog(media, type, node); });
 			node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
@@ -79,7 +79,7 @@ function setupTab(parentName, childName, previewElement) {
 			$("#"+media+">div.Type>table.Type")
 				.filter(function() { return $(this).data("type") == $sb(node.parent()).$sbId; })
 				.find("tr.Item")
-				.filter(function() { return $(this).data("sbName") == node.$sbName; })
+				.filter(function() { return $(this).data("sbId") == node.$sbId; })
 				.remove();
 		}
 	});
