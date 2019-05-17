@@ -252,9 +252,9 @@ _crgUtils = {
 	 *		 Optional name of each child subelement value to use
 	 *		 for the option value.
 	 *		 If not set, the child node's $sbId will be used.
-	 *   optionFilterElement: string
-	 *   	Optional name of a child subelement that will trigger a
-	 *   	reevaluation of the filter when changed
+	 *	 optionFilterElement: string
+	 *		 Optional name of a child subelement that will trigger a
+	 *		 reevaluation of the filter when changed
 	 */
 	setupSelect: function(s, params) {
 		s = $(s);

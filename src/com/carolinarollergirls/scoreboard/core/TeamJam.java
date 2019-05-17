@@ -60,6 +60,11 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
         DISPLAY_LEAD(Boolean.class, false),
         STAR_PASS(Boolean.class, false),
         STAR_PASS_TRIP(ScoringTrip.class, null),
+        // NO_NAMED_PIVOT is only false when a pivot has been explicitly set.
+        // NO_PIVOT is only true when either a 4th blocker has been set or the
+        // "no skater fielded" flag has been set for the pivot position.
+        // They differ when neither of these inputs has been made (yet) or all
+        // inputs have been reversed.
         NO_NAMED_PIVOT(Boolean.class, true),
         NO_PIVOT(Boolean.class, false);
 

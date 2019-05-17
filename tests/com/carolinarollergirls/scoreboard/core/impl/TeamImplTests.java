@@ -73,6 +73,10 @@ public class TeamImplTests {
         team.setStarPass(true);
 
         sb.stopJamTO();
+        
+        assertTrue(team.isStarPass());
+        assertTrue(team.isFieldingStarPass());
+        
         team.execute(Team.Command.ADVANCE_FIELDINGS);
 
         assertTrue(team.isStarPass());
@@ -573,5 +577,25 @@ public class TeamImplTests {
         assertNull(team.getPosition(FloorPosition.BLOCKER1).getSkater());
         assertNull(team.getPosition(FloorPosition.BLOCKER2).getSkater());
         assertEquals(skater4, team.getPosition(FloorPosition.BLOCKER3).getSkater());
+    }
+
+    @Test
+    public void testFieldPivot() {
+        Skater skater1 = team.addSkater("S1", "One", "1", "");
+        
+        sb.startJam();
+        sb.stopJamTO();
+        
+        team.getPosition(FloorPosition.PIVOT).setSkater(skater1);
+        
+        assertEquals(skater1, team.getPosition(FloorPosition.PIVOT).getSkater());
+        assertFalse(team.getRunningOrUpcomingTeamJam().hasNoNamedPivot());
+        assertTrue(team.getRunningOrEndedTeamJam().hasNoNamedPivot());
+        assertEquals(Role.BENCH, skater1.getRole());
+        assertEquals(1, skater1.getAll(Skater.Child.FIELDING).size());
+        
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+        
+        assertEquals(Role.PIVOT, skater1.getRole());
     }
 }

@@ -110,7 +110,8 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
                 ((ScoringTrip)last).set(ScoringTrip.Value.CURRENT, false);
             }
         }
-        if (prop == Value.NO_NAMED_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() != null) {
+        if (prop == Value.NO_NAMED_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() != null &&
+                getFielding(FloorPosition.PIVOT).isCurrent()) {
             getFielding(FloorPosition.PIVOT).getSkater().setRole(FloorPosition.PIVOT.getRole(this));
         }
         if (prop == Value.NO_PIVOT && (Boolean)value) {

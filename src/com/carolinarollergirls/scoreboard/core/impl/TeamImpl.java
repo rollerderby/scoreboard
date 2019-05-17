@@ -109,9 +109,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void execute(CommandProperty prop) {
         switch((Command)prop) {
         case ADD_TRIP:
+            tripScoreTimerTask.cancel();
             getRunningOrEndedTeamJam().addScoringTrip();
             break;
         case REMOVE_TRIP:
+            tripScoreTimerTask.cancel();
             getRunningOrEndedTeamJam().removeScoringTrip();
             break;
         case ADVANCE_FIELDINGS:
