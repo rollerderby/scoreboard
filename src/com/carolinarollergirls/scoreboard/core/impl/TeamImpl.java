@@ -9,6 +9,8 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.HashMap;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
@@ -47,6 +49,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         setCopy(Value.INJURY, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.INJURY, false);
         setCopy(Value.NO_INITIAL, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.NO_INITIAL, false);
         setCopy(Value.DISPLAY_LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.DISPLAY_LEAD, false);
+        setCopy(Value.NO_NAMED_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_NAMED_PIVOT, false);
         setCopy(Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_PIVOT, false);
         setCopy(Value.STAR_PASS, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS, false);
         setCopy(Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS_TRIP, false);
@@ -60,6 +63,17 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
         if (prop == Value.OFFICIAL_REVIEWS && (Integer)value > scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS)) {
             return scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
+        }
+        if (prop == Value.TRIP_SCORE && flag != Flag.COPY && scoreBoard.isInJam() && (Integer)value > 0) {
+            tripScoreTimerTask.cancel();
+            tripScoreTimer.purge();
+            tripScoreTimerTask = new TimerTask() {
+                @Override
+                public void run() {
+                    execute(Command.ADD_TRIP);
+                }
+            };
+            tripScoreTimer.schedule(tripScoreTimerTask, 4000);
         }
         return value;
     }
@@ -403,7 +417,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             requestBatchStart();
             if (s.getFielding(tj) != null && 
                     s.getFielding(tj).getPosition() == getPosition(FloorPosition.PIVOT)) {
-                tj.setNoPivot(r != Role.PIVOT);
+                tj.setNoNamedPivot(r != Role.PIVOT);
                 if ((r == Role.BLOCKER || r == Role.PIVOT) &&
                         ((tj.isRunningOrEnded() && hasFieldingAdvancePending()) ||
                                 (tj.isRunningOrUpcoming() && !hasFieldingAdvancePending()))) {
@@ -413,7 +427,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             if (s.getFielding(tj) == null || s.getRole(tj) != r) {
                 Fielding f = getAvailableFielding(r, tj);
                 if (r == Role.PIVOT && f != null) {
-                    if (f.getSkater() != null && (tj.hasNoPivot() || s.getRole(tj) == Role.BLOCKER)) {
+                    if (f.getSkater() != null && (tj.hasNoNamedPivot() || s.getRole(tj) == Role.BLOCKER)) {
                         // If we are moving a blocker to pivot, move the previous pivot to blocker
                         // If we are replacing a blocker from the pivot spot,
                         //  see if we have a blocker spot available for them instead
@@ -425,10 +439,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                         }
                         f2.setSkater(f.getSkater());
                     }
-                    tj.setNoPivot(false);
+                    f.setSkater(s);
+                    tj.setNoNamedPivot(false);
+                } else if (f != null) { 
+                    f.setSkater(s);
+                } else { 
+                    s.remove(Skater.Child.FIELDING, s.getFielding(tj));
                 }
-                if (f != null) { f.setSkater(s); }
-                else { s.remove(Skater.Child.FIELDING, s.getFielding(tj)); }
             }
             requestBatchEnd();
         }
@@ -471,7 +488,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     nextReplacedBlocker = FloorPosition.BLOCKER3;
                     break;
                 case BLOCKER3:
-                    nextReplacedBlocker = (tj.hasNoPivot() && !tj.isStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
+                    nextReplacedBlocker = (tj.hasNoNamedPivot() && !tj.isStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
                     break;
                 case PIVOT:
                     nextReplacedBlocker = FloorPosition.BLOCKER1;
@@ -511,9 +528,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
 
     @Override
-    public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
+    public boolean hasNoNamedPivot() { return (Boolean)get(Value.NO_NAMED_PIVOT); }
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
+    
+    private Timer tripScoreTimer = new Timer();
+    private TimerTask tripScoreTimerTask = new TimerTask() {
+        @Override
+        public void run() {} // dummy, so the variable is not null at the first score entry
+    };
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";

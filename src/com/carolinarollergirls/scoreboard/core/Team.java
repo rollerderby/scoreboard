@@ -80,7 +80,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public boolean isInjury();
     public boolean isDisplayLead();
     public boolean isStarPass();
-    public boolean hasNoPivot();
+    public boolean hasNoNamedPivot();
 
 
     public static final String ID_1 = "1";
@@ -103,7 +103,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         OFFICIAL_REVIEWS(Integer.class, 0),
         IN_TIMEOUT(Boolean.class, false),
         IN_OFFICIAL_REVIEW(Boolean.class, false),
-        NO_PIVOT(Boolean.class, true),
+        NO_NAMED_PIVOT(Boolean.class, true),
+        NO_PIVOT(Boolean.class, false),
         RETAINED_OFFICIAL_REVIEW(Boolean.class, false),
         LOST(Boolean.class, false),
         LEAD(Boolean.class, false),

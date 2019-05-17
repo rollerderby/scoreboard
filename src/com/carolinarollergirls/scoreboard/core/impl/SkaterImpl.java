@@ -81,6 +81,14 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
                 }
             }
         }
+        if (prop == Value.FLAGS) {
+            if ("ALT".equals(value) || "BC".equals(value)) {
+                set(Value.BASE_ROLE, Role.NOT_IN_GAME);
+            } else if (get(Value.BASE_ROLE) == Role.NOT_IN_GAME) {
+                set(Value.BASE_ROLE, Role.BENCH);
+                updateEligibility();
+            }
+        }
         if (prop == Value.BASE_ROLE && get(Value.ROLE) == last) {
             set(Value.ROLE, value, Flag.INTERNAL);
         }

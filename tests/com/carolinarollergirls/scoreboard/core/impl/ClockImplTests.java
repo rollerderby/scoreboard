@@ -62,9 +62,7 @@ public class ClockImplTests {
 
     @Test
     public void testDefaults() {
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getMinimumNumber());
-        assertEquals(ClockImpl.DEFAULT_MAXIMUM_NUMBER, clock.getMaximumNumber());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
+        assertEquals(0, clock.getNumber());
 
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getMinimumTime());
         assertEquals(ClockImpl.DEFAULT_MAXIMUM_TIME, clock.getMaximumTime());
@@ -85,8 +83,6 @@ public class ClockImplTests {
 
     @Test
     public void testReset() {
-        clock.setMaximumNumber(5);
-        clock.setMinimumNumber(2);
         clock.setNumber(4);
         clock.setMaximumTime(1200000);
         clock.setTime(5000);
@@ -95,17 +91,14 @@ public class ClockImplTests {
         clock.reset();
 
         assertFalse(clock.isCountDirectionDown());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getMinimumNumber());
-        assertEquals(ClockImpl.DEFAULT_MAXIMUM_NUMBER, clock.getMaximumNumber());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getMinimumTime());
         assertEquals(ClockImpl.DEFAULT_MAXIMUM_TIME, clock.getMaximumTime());
-        assertEquals(clock.getMinimumNumber(), clock.getNumber());
+        assertEquals(0, clock.getNumber());
         assertTrue(clock.isTimeAtStart());
     }
 
     @Test
     public void testRestoreSnapshot() {
-        clock.setMaximumNumber(5);
         clock.setNumber(4);
         clock.setMaximumTime(1200000);
         clock.setTime(5000);
@@ -114,14 +107,14 @@ public class ClockImplTests {
 
         clock.reset();
         assertFalse(clock.isRunning());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
+        assertEquals(0, clock.getNumber());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
 
         //if IDs don't match no restore should be done
         snapshot.id = "OTHER";
         clock.restoreSnapshot(snapshot);
         assertFalse(clock.isRunning());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
+        assertEquals(0, clock.getNumber());
         assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
 
         snapshot.id = ID;
@@ -206,128 +199,9 @@ public class ClockImplTests {
     }
 
     @Test
-    public void testSetMinimumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
-
-        clock.setMinimumNumber(1000);
-
-        // validate constraint: max >= number >= min
-        assertEquals(1000, clock.getMinimumNumber());
-        assertEquals(1000, clock.getMaximumNumber());
-        assertEquals(1000, clock.getNumber());
-
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(1000, event.getValue());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, event.getPreviousValue());
-    }
-
-    @Test
-    public void testSetMinimumNumber2() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.NUMBER, listener));
-
-
-        clock.setMaximumNumber(10);
-        clock.setMinimumNumber(10);
-        collectedEvents.clear();
-
-        clock.setMinimumNumber(5);
-
-        // validate constraint: number is automatically set to max
-        assertEquals(5, clock.getMinimumNumber());
-        assertEquals(10, clock.getMaximumNumber());
-        assertEquals(10, clock.getNumber());
-
-        assertEquals(1, collectedEvents.size());
-    }
-
-    @Test
-    public void testSetMaximumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
-
-        clock.setMaximumNumber(ClockImpl.DEFAULT_MINIMUM_NUMBER);
-        advance(0);
-        collectedEvents.clear();
-
-        clock.setMaximumNumber(5);
-
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getMinimumNumber());
-        assertEquals(5, clock.getMaximumNumber());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
-
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(5, event.getValue());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, event.getPreviousValue());
-    }
-
-    @Test
-    public void testSetMaximumNumber2() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.NUMBER, listener));
-
-
-        clock.setMinimumNumber(10);
-        collectedEvents.clear();
-
-        clock.setMaximumNumber(5);
-
-        // validate constraint: cannot set a max that is < min
-        assertEquals(10, clock.getMinimumNumber());
-        assertEquals(10, clock.getMaximumNumber());
-        assertEquals(10, clock.getNumber());
-
-        assertEquals(1, collectedEvents.size());
-    }
-
-    @Test
-    public void testChangeMaximumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_NUMBER, listener));
-
-        clock.setMaximumNumber(5);
-        collectedEvents.clear();
-
-        clock.changeMaximumNumber(2);
-
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getMinimumNumber());
-        assertEquals(7, clock.getMaximumNumber());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_NUMBER, clock.getNumber());
-
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(7, event.getValue());
-        assertEquals(5, event.getPreviousValue());
-    }
-
-    @Test
-    public void testChangeMinimumNumber() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_NUMBER, listener));
-
-        clock.setMaximumNumber(5);
-        clock.setMinimumNumber(5);
-        collectedEvents.clear();
-
-        clock.changeMinimumNumber(2);
-
-        assertEquals(7, clock.getMinimumNumber());
-        assertEquals(7, clock.getMaximumNumber());
-        assertEquals(7, clock.getNumber());
-
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(7, event.getValue());
-        assertEquals(5, event.getPreviousValue());
-    }
-
-    @Test
     public void testChangeNumber() {
         clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.NUMBER, listener));
 
-        clock.setMaximumNumber(12);
-        clock.setMinimumNumber(3);
         collectedEvents.clear();
 
         clock.setNumber(5);
@@ -335,53 +209,31 @@ public class ClockImplTests {
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
         assertEquals(5, event.getValue());
-        assertEquals(3, event.getPreviousValue());
+        assertEquals(0, event.getPreviousValue());
 
         clock.changeNumber(3);
         assertEquals(8, clock.getNumber());
         assertEquals(1, collectedEvents.size());
         collectedEvents.clear();
 
-        // validate constraint: cannot set number above maximum
-        clock.setNumber(23);
-        assertEquals(12, clock.getNumber());
-        assertEquals(1, collectedEvents.size());
-        collectedEvents.clear();
-
-        // validate constraint: cannot set number below minimum
+        // validate constraint: cannot set negative number
         clock.setNumber(-2);
-        assertEquals(3, clock.getNumber());
+        assertEquals(0, clock.getNumber());
         assertEquals(1, collectedEvents.size());
         collectedEvents.clear();
 
-        // ...and check that constraint is not a >0 type constraint
-        clock.setNumber(1);
+        clock.setNumber(3);
         assertEquals(3, clock.getNumber());
-        assertEquals(0, collectedEvents.size());
         collectedEvents.clear();
-
         clock.changeNumber(6);
         assertEquals(9, clock.getNumber());
         assertEquals(1, collectedEvents.size());
         collectedEvents.clear();
 
-        // validate constraint: cannot changeNumber above maximum
-        clock.changeNumber(6);
-        assertEquals(12, clock.getNumber());
-        assertEquals(1, collectedEvents.size());
-        collectedEvents.clear();
-
-
         clock.setNumber(5);
         clock.changeNumber(-1);
         assertEquals(4, clock.getNumber());
         assertEquals(2, collectedEvents.size());
-        collectedEvents.clear();
-
-        // validate constraint: cannot changeNumber below minimum
-        clock.changeNumber(-4);
-        assertEquals(3, clock.getNumber());
-        assertEquals(1, collectedEvents.size());
     }
 
     @Test
@@ -752,7 +604,6 @@ public class ClockImplTests {
 
     @Test
     public void testRestart() {
-        clock.setMaximumNumber(5);
         clock.setNumber(2);
         clock.setMaximumTime(60000);
         clock.setTime(45000);

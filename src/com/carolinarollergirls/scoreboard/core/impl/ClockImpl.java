@@ -20,7 +20,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -35,8 +34,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         } else {
             values.put(Value.NUMBER, 0);
         }
-        setRecalculated(Value.NUMBER).addSource(this, Value.MAXIMUM_NUMBER).addSource(this, Value.MINIMUM_NUMBER);
-        setRecalculated(Value.MAXIMUM_NUMBER).addSource(this, Value.MINIMUM_NUMBER);
         setRecalculated(Value.TIME).addSource(this, Value.MAXIMUM_TIME).addSource(this, Value.MINIMUM_TIME);
         setRecalculated(Value.MAXIMUM_TIME).addSource(this, Value.MINIMUM_TIME);
         setRecalculated(Value.INVERTED_TIME).addSource(this, Value.MAXIMUM_TIME).addSource(this, Value.TIME);
@@ -68,11 +65,8 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         if (prop == Value.MAXIMUM_TIME && (Long)value < getMinimumTime()) {
             return getMinimumTime();
         }
-        if ((prop == Value.MAXIMUM_NUMBER || prop == Value.NUMBER) && (Integer)value < getMinimumNumber()) {
-            return getMinimumNumber();
-        }
-        if (prop == Value.NUMBER && (Integer)value > getMaximumNumber()) {
-            return getMaximumNumber();
+        if (prop == Value.NUMBER && (Integer)value < 0) {
+            return 0;
         }
         return value;
     }
@@ -122,7 +116,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             rulesetChangeListener.scoreBoardChange(null);
 
             // We hardcode the assumption that numbers count up.
-            setNumber(getMinimumNumber());
+            setNumber(0);
 
             resetTime();
         }
@@ -134,16 +128,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
             setCountDirectionDown(Boolean.parseBoolean(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".ClockDirection").getValue()));
-            if (getId().equals(ID_JAM) || getId().equals(ID_INTERMISSION) || getId().equals(ID_PERIOD)) {
-                setMinimumNumber(0);
-            } else {
-                setMinimumNumber(DEFAULT_MINIMUM_NUMBER);
-            }
-            if (getId().equals(ID_PERIOD) || getId().equals(ID_INTERMISSION)) {
-                setMaximumNumber(r.getInt(Rule.NUMBER_PERIODS));
-            } else {
-                setMaximumNumber(DEFAULT_MAXIMUM_NUMBER);
-            }
             setMinimumTime(DEFAULT_MINIMUM_TIME);
             if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
                 setMaximumTime(ClockConversion.fromHumanReadable(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".Duration").getValue()));
@@ -184,19 +168,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     @Override
     public void changeNumber(int change) { set(Value.NUMBER, change, Flag.CHANGE); }
 
-    @Override
-    public int getMinimumNumber() { return (Integer)get(Value.MINIMUM_NUMBER); }
-    @Override
-    public void setMinimumNumber(int n) { set(Value.MINIMUM_NUMBER, n); }
-    @Override
-    public void changeMinimumNumber(int change) { set(Value.MINIMUM_NUMBER, change, Flag.CHANGE); }
-
-    @Override
-    public int getMaximumNumber() { return (Integer)get(Value.MAXIMUM_NUMBER); }
-    @Override
-    public void setMaximumNumber(int n) { set(Value.MAXIMUM_NUMBER, n); }
-    @Override
-    public void changeMaximumNumber(int change) { set(Value.MAXIMUM_NUMBER, change, Flag.CHANGE); }
 
     @Override
     public long getTime() { return (Long)get(Value.TIME); }
@@ -323,8 +294,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 
     public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
-    public static final int DEFAULT_MINIMUM_NUMBER = 1;
-    public static final int DEFAULT_MAXIMUM_NUMBER = 999;
     public static final long DEFAULT_MINIMUM_TIME = 0;
     public static final long DEFAULT_MAXIMUM_TIME = 24 * 60 * 60 * 1000; // 1 day for long time to derby
     public static final boolean DEFAULT_DIRECTION = false;   // up

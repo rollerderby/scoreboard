@@ -246,7 +246,7 @@ function createMetaControlTable() {
 	var updatePeriodEndDoPulse = function() {
 		var pc = $sb("ScoreBoard.Clock(Period)");
 		var under30 = (Number(pc.$sb("Time").$sbGet()) < 30000);
-		var last = pc.$sb("Number").$sbIs(pc.$sb("MaximumNumber").$sbGet());
+		var last = pc.$sb("Number").$sbIs($sb("ScoreBoard.Rulesets.CurrentRule(Period.Number)").$sbGet());
 		doPulseFlag = (under30 && last);
 	};
 	$sb("ScoreBoard.Clock(Period).Time").$sbBindAndRun("sbchange", updatePeriodEndDoPulse);
@@ -450,7 +450,7 @@ function createPeriodEndTimeoutDialog(td) {
 function createOvertimeDialog() {
 	var dialog = $("<div>");
 	$("<span>").text("Note: Overtime can only be started at the end of Period ").appendTo(dialog);
-	$sb("ScoreBoard.Clock(Period).MaximumNumber").$sbElement("<span>").appendTo(dialog);
+	$sb("ScoreBoard.Rulesets.CurrentRule(Period.Number)").$sbElement("<span>").appendTo(dialog);
 	$("<button>").addClass("StartOvertime").text("Start Overtime Lineup clock").appendTo(dialog)
 		.click(function() {
 			$sb("ScoreBoard.StartOvertime").$sbSet("true");
@@ -696,10 +696,7 @@ function createTeamTable() {
 			scoreChangeTimeout = setTimeout(function() {
 				scoreChange.last()
 					.animate({ color: "#000" }, 1000)
-					.animate({ opacity: "0" }, 1000, "easeInExpo", function() {
-						if (s > 0 && addTrip) {
-							sbTeam.$sb("AddTrip").$sbSet("true");
-						}});
+					.animate({ opacity: "0" }, 1000, "easeInExpo");
 				scoreChangeTimeout = null;
 			}, 2000);
 		});
@@ -821,8 +818,14 @@ function createTeamTable() {
 			starPassButton.toggleClass("Active", isTrue(value));
 		});
 		starPassButton.appendTo(starPassTd);
-
-		starPassTd.buttonset();
+		var noPivot = sbTeam.$sb("NoPivot");
+		var noPivotButton = starPass.$sbElement("<button>").text("No Pivot").val("true")
+			.attr("id", "Team"+team+"NoPivot").addClass("KeyControl").button();
+		noPivot.$sbBindAndRun("sbchange", function(event, value) {
+			noPivotButton.val(!isTrue(value));
+			noPivotButton.toggleClass("Active", isTrue(value));
+		});
+		noPivotButton.appendTo(starPassTd);
 
 		var makeSkaterDropdown = function(pos, elem, sort) {
 			var sortFunc = _windowFunctions.alphaCompareByProp;
@@ -831,6 +834,8 @@ function createTeamTable() {
 					optionParent: sbTeam,
 					optionChildName: "Skater",
 					optionNameElement: elem,
+					optionFilterElement: "Role",
+					optionChildFilter: function(node) { return (node.$sb("Role").$sbGet() != 'NotInGame'); },
 					compareOptions: function(a, b) { return sortFunc("text", a, b); },
 					firstOption: { text: "No "+pos, value: "" }
 				} }).addClass(pos+" By"+elem+" "+sort+"Sort");
@@ -1552,8 +1557,8 @@ function createNewTeamTable(team, teamid) {
 	newSkaterFlags.append($("<option>").attr("value", "").text("Skater"));
 	newSkaterFlags.append($("<option>").attr("value", "C").text("Captain"));
 	newSkaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
-	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
 	newSkaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
+	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Not Skating"));
 	var pasteHandler = function(e){ 
 		var text = e.originalEvent.clipboardData.getData("text");
 		var lines = text.split("\n");
@@ -1614,8 +1619,8 @@ function createNewTeamTable(team, teamid) {
 		skaterFlags.append($("<option>").attr("value", "").text("Skater"));
 		skaterFlags.append($("<option>").attr("value", "C").text("Captain"));
 		skaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
-		skaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
 		skaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
+		skaterFlags.append($("<option>").attr("value", "ALT").text("Not Skating"));
 		node.$sb("Flags").$sbControl(skaterFlags);
 
 		node.$sb("Number").$sbBindAndRun("sbchange", function(event, value) {

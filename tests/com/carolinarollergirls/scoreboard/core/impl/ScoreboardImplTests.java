@@ -251,7 +251,7 @@ public class ScoreboardImplTests {
         fastForwardPeriod();
         assertFalse(pc.isRunning());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(pc.getMaximumNumber(), pc.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         jc.setTime(0);
         assertTrue(jc.isTimeAtEnd());
@@ -280,7 +280,7 @@ public class ScoreboardImplTests {
         sb.timeout();
         assertFalse(pc.isRunning());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(pc.getMaximumNumber(), pc.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         jc.setTime(0);
         assertTrue(jc.isTimeAtEnd());
@@ -304,7 +304,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testStartOvertime_notLastPeriod() {
-        assertNotEquals(pc.getNumber(), pc.getMaximumNumber());
+        assertNotEquals(pc.getNumber(), sb.getRulesets().getInt(Rule.NUMBER_PERIODS));
 
         sb.startOvertime();
 
@@ -317,7 +317,7 @@ public class ScoreboardImplTests {
         fastForwardPeriod();
         ic.setTime(0);
         sb.startJam();
-        assertEquals(pc.getMaximumNumber(), pc.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertTrue(pc.isRunning());
         ScoreBoardSnapshot saved = sb.snapshot;
 
@@ -333,7 +333,7 @@ public class ScoreboardImplTests {
         ic.setTime(0);
         sb.startJam();
         pc.setTime(0);
-        assertEquals(pc.getMaximumNumber(), pc.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(pc.isRunning());
         assertTrue(jc.isRunning());
         ScoreBoardSnapshot saved = sb.snapshot;
@@ -1292,7 +1292,7 @@ public class ScoreboardImplTests {
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(pc.getMaximumNumber(), pc.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         assertEquals(21, jc.getNumber());
         jc.setTime(56000);
@@ -1300,14 +1300,14 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertTrue(ic.isRunning());
         assertTrue(ic.isCountDirectionDown());
-        assertEquals(pc.getMaximumNumber(), ic.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), ic.getNumber());
         ic.setTime(3000);
 
         advance(3000);
 
         assertFalse(pc.isRunning());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(pc.getMaximumNumber(), pc.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         assertEquals(21, jc.getNumber());
         assertEquals(56000, jc.getTime());
@@ -1315,7 +1315,7 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
         assertTrue(ic.isTimeAtEnd());
-        assertEquals(pc.getMaximumNumber(), ic.getNumber());
+        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), ic.getNumber());
         checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, prevUndoLabel);
     }
 

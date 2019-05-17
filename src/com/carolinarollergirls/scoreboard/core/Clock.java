@@ -27,12 +27,6 @@ public interface Clock extends ScoreBoardEventProvider {
     public int getNumber();
     public void setNumber(int n);
     public void changeNumber(int n);
-    public int getMinimumNumber();
-    public void setMinimumNumber(int n);
-    public void changeMinimumNumber(int n);
-    public int getMaximumNumber();
-    public void setMaximumNumber(int n);
-    public void changeMaximumNumber(int n);
 
     /**
      *
@@ -94,8 +88,6 @@ public interface Clock extends ScoreBoardEventProvider {
         ID(String.class, ""),
         NAME(String.class, ""),
         NUMBER(Integer.class, 0),
-        MINIMUM_NUMBER(Integer.class, 0),
-        MAXIMUM_NUMBER(Integer.class, 0),
         TIME(Long.class, 0L),
         INVERTED_TIME(Long.class, 0L),
         MINIMUM_TIME(Long.class, 0L),

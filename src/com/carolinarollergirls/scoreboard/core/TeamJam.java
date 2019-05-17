@@ -39,8 +39,8 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public boolean isStarPass();
     public ScoringTrip getStarPassTrip();
 
-    public boolean hasNoPivot();
-    public void setNoPivot(boolean np);
+    public boolean hasNoNamedPivot();
+    public void setNoNamedPivot(boolean np);
 
     public Fielding getFielding(FloorPosition fp);
 
@@ -60,7 +60,8 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
         DISPLAY_LEAD(Boolean.class, false),
         STAR_PASS(Boolean.class, false),
         STAR_PASS_TRIP(ScoringTrip.class, null),
-        NO_PIVOT(Boolean.class, true);
+        NO_NAMED_PIVOT(Boolean.class, true),
+        NO_PIVOT(Boolean.class, false);
 
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;

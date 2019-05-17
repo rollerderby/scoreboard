@@ -302,12 +302,12 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             }
             if (!isWritable(prop, flag)) { return false; }
             Object last = get(prop);
+            value = _computeValue(prop, value, last, flag);
             if (reverseCopyListeners.containsKey(prop) && flag != Flag.COPY) {
                 reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent(
                         this, prop, value, last), flag);
                 return false;
             }
-            value = _computeValue(prop, value, last, flag);
             if (Objects.equals(value, last)) { return false; }
             values.put(prop, value);
             _valueChanged(prop, value, last, flag);

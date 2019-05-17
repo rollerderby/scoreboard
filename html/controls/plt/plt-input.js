@@ -112,12 +112,10 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
 		var field = k.substring(prefix.length + 1);
 		if (field == 'Number') {
-			if (v == null) {
-				tbody.children('.Skater.Penalty[id=' + k.Skater + ']').children('.Total').each( function(idx, elem) {
-					totalPenaltyCount -= parseInt($(elem).text(), 10);
-				});
-				totalPenalties.text('Σ ' + totalPenaltyCount);
-			}
+			tbody.children('.Skater.Penalty[id=' + k.Skater + ']').children('.Total').each( function(idx, elem) {
+				totalPenaltyCount -= parseInt($(elem).text(), 10);
+			});
+			totalPenalties.text('Σ ' + totalPenaltyCount);
 			tbody.children('.Skater[id=' + k.Skater + ']').remove();
 			if (v == null) {
 				return;
@@ -132,6 +130,25 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 				displayPenalty(t, k.Skater, 0, null);
 			}
 		} else if (field == 'Role') {
+			if (mode != 'copyToStatsbook' && v == 'NotInGame') {
+				tbody.children('.Skater.Penalty[id=' + k.Skater + ']').children('.Total').each( function(idx, elem) {
+					totalPenaltyCount -= parseInt($(elem).text(), 10);
+				});
+				totalPenalties.text('Σ ' + totalPenaltyCount);
+				tbody.children('.Skater[id=' + k.Skater + ']').remove();
+				return;
+			} else if (tbody.children('.Skater[id=' + k.Skater + ']').size() == 0 &&
+					WS.state[prefix + '.Number'] != null) {
+				makeSkaterRows(t, k.Skater, WS.state[prefix + '.Number']);
+				if (WS.state[prefix + '.Penalty(0).Code'] != null) {
+					displayPenalty(t, k.Skater, 0);
+				}
+				var p = 1;
+				while (p < 10 && WS.state[prefix + '.Penalty('+p+').Code'] != null) {
+					displayPenalty(t, k.Skater, p);
+					p++;
+				}
+			}
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Role').removeClass('OnTrack');
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .'+v).addClass('OnTrack');
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Number')
@@ -254,10 +271,14 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 	}
 
 	function makeSkaterRows(t, id, number) {
+		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
+		if (mode != 'copyToStatsbook' && role == 'NotInGame') {
+			return;
+		}
+
 		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).attr('number', number);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
-		var role = WS.state['ScoreBoard.Team(' + t + ').Skater(' + id + ').Role'];
 		if (mode == 'lt' || mode == 'plt') {
 			var benchCell = $('<td>').addClass('Role Bench').attr('rowspan', 2).click(function() {
 				WS.Set('ScoreBoard.Team(' + t + ').Skater(' + id + ').Role', 'Bench');
