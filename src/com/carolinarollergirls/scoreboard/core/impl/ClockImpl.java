@@ -230,9 +230,9 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         //the frontend rounds values that are not full seconds to the earlier second
         //i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count down clock.
         if (isCountDirectionDown()) {
-            return Math.floor(((float)current-1)/1000) != Math.floor(((float)last-1)/1000);
+            return Math.floor(((double)current-1)/1000) != Math.floor(((double)last-1)/1000);
         } else {
-            return Math.floor((float)current/1000) != Math.floor((float)last/1000);
+            return Math.floor((double)current/1000) != Math.floor((double)last/1000);
         }
     }
 
@@ -314,10 +314,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         return Boolean.parseBoolean(getScoreBoard().getSettings().get(SETTING_SYNC));
     }
 
-    protected boolean isMasterClock() {
-        return getId() == ID_PERIOD || getId() == ID_TIMEOUT || getId() == ID_INTERMISSION;
-    }
-
     protected long lastTime;
     protected boolean isRunning = false;
 
@@ -363,18 +359,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 
         public void addClock(ClockImpl c, boolean quickAdd) {
             synchronized (coreLock) {
-                if (c.isMasterClock()) {
-                    masterClock = c;
-                }
-                if (c.isSyncTime() && !quickAdd) {
+                if (c.isSyncTime() && !quickAdd && !clocks.isEmpty()) {
                     // This syncs all the clocks to change second at the same time
-                    // with respect to the master clock
-                    long nowMs = currentTime % 1000;
-                    if (masterClock != null) {
-                        nowMs = masterClock.getTime() % 1000;
-                        if (masterClock.isCountDirectionDown()) {
-                            nowMs = (1000 - nowMs) % 1000;
-                        }
+                    // with respect to the running clocks.
+                    ClockImpl masterClock = clocks.get(0);
+                    long nowMs = masterClock.getTime() % 1000;
+                    if (masterClock.isCountDirectionDown()) {
+                        nowMs = (1000 - nowMs) % 1000;
                     }
 
                     long timeMs = c.getTime() % 1000;
@@ -447,7 +438,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         private long currentTime = 0;
         private long startSystemTime = 0;
         private long ticks = 0;
-        protected ClockImpl masterClock = null;
         ArrayList<ClockImpl> clocks = new ArrayList<>();
     }
 }
