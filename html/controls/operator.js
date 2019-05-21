@@ -1515,7 +1515,7 @@ function createNewTeamTable(team, teamid) {
 		.append("<col class='Button'>")
 		.append("<thead/><tbody/>")
 		.children("thead")
-		.append("<tr><th colspan='4' class='Title'>Skaters</th></tr>")
+		.append("<tr><th></th><th class='Title'>Skaters</th><th id='skaterCount'></th><th></th></tr>")
 		.append("<tr><th>Number</th><th>Name</th><th>Flags</th><th>Add</th>")
 		.append("<tr class='AddSkater'><th/><th/><th/><th/><th/></tr>")
 		.append("<tr><th colspan='4'><hr/></th></tr>")
@@ -1588,6 +1588,17 @@ function createNewTeamTable(team, teamid) {
 	newSkaterNumber.bind("paste", pasteHandler);
 	newSkaterName.bind("paste", pasteHandler);
 
+	var updateSkaterCount = function() {
+			var count = 0;
+			team.find("Skater").find("Flags").each(function(_, f) {
+				if (f.textContent != "BC" && f.textContent != "ALT") {
+					count++;
+				}
+			});
+			skatersTable.find("#skaterCount").text("(" + count + " skating)");
+	};
+	updateSkaterCount();
+
 	team.$sbBindAddRemoveEach("Skater", function(event,node) {
 		var skaterid = node.$sbId;
 		if (skatersTable.find("tr[data-skaterid='"+skaterid+"']").length)
@@ -1617,6 +1628,7 @@ function createNewTeamTable(team, teamid) {
 		skaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
 		skaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
 		node.$sb("Flags").$sbControl(skaterFlags);
+		node.$sb("Flags").$sbBindAndRun("sbchange", updateSkaterCount);
 
 		node.$sb("Number").$sbBindAndRun("sbchange", function(event, value) {
 			if (!numberInput.is(':focus')) {
@@ -1628,6 +1640,7 @@ function createNewTeamTable(team, teamid) {
 		skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").remove();
 		if (!skatersTable.find("tr[data-skaterid]").length)
 			skatersTable.addClass("Empty");
+		updateSkaterCount();
 	});
 
 	return teamTable;

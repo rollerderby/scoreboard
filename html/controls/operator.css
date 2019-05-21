@@ -126,7 +126,7 @@ table.RowTable { border-spacing: 0px; }
 	#Teams table.Skaters col.Button { width: 15%; }
 
 	#Teams table.Skaters th.Title { font-size: 200%; }
-	#Teams table.Skaters td.Id { font-size: 75%; }
+	#Teams table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; }
 	#Teams table.Skaters button.AddSkater>span { padding-top: 0em; padding-bottom: 0em; }
 	#Teams table.Skaters button.RemoveSkater>span { padding-top: 0em; padding-bottom: 0em; }
 /* End Teams Control */
