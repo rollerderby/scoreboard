@@ -10,6 +10,7 @@
 	prepareFieldingEditor(teamId);
 
 	prepareOptionsDialog(teamId);
+	_windowFunctions.configureZoom();
 	
 	WS.AutoRegister();
 	WS.Connect();
