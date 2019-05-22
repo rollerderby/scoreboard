@@ -28,3 +28,11 @@ div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: 
 #FieldingEditor .ButtonCell { text-align: center; }
 
 #FieldingEditor .BoxTrip>td, #FieldingEditor .Skater>td { padding: 0.5em 0em; }
+
+#sitFor3, #notFielded {
+  color: #000;
+  padding: .3em .6em;
+}
+#sitFor3[checked], #notFielded[checked] {
+  background: #3f3;
+}
