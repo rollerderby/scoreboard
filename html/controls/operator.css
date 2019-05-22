@@ -156,6 +156,11 @@ table.RowTable { border-spacing: 0px; }
 	table.TimeDialog button.Set>span { padding: 0.1em 1em; }
 /* End Time Control Dialog */
 
+/* Period/Jam/Timeout Dialog */
+	div.NumberDialog .Hide { display: none; }
+	div.NumberDialog button.Active { background: #3F3; color: black; }
+/* End Period/Jam/Timeout Dialog */
+
 /* Alternate Names Dialog */
 	div.AlternateNamesDialog { text-align: center; }
 	div.AlternateNamesDialog table { width: 100%; border-spacing: 0px; }

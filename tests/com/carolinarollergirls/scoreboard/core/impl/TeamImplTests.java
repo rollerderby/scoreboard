@@ -2,15 +2,15 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.*;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.HashSet;
 import java.util.Queue;
 import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
@@ -20,10 +20,8 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
-import com.carolinarollergirls.scoreboard.core.impl.TeamImpl.TeamSnapshotImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -57,6 +55,15 @@ public class TeamImplTests {
 
         team = (TeamImpl)sb.getTeam(ID);
         ScoreBoardClock.getInstance().stop();
+        
+        //run a jam so timeouts and ORs are credited to period 1.
+        sb.startJam();
+        sb.stopJamTO();
+    }
+
+
+    private void advance(long time_ms) {
+        ScoreBoardClock.getInstance().advance(time_ms);
     }
 
     @Test
@@ -86,46 +93,16 @@ public class TeamImplTests {
     }
 
     @Test
-    public void testRestoreSnapshot() {
-        sb.startJam();
-        assertFalse(team.inTimeout());
-        assertFalse(team.inOfficialReview());
-        assertEquals(3, team.getTimeouts());
-        assertEquals(1, team.getOfficialReviews());
-        TeamImpl.TeamSnapshotImpl snapshot = (TeamSnapshotImpl) team.snapshot();
-
-        team.setInTimeout(true);
-        team.setInOfficialReview(true);
-        team.setTimeouts(1);
-        team.setOfficialReviews(0);
-
-        //snapshot should not be applied when id doesn't match
-        snapshot.id = "OTHER";
-        team.restoreSnapshot(snapshot);
-        assertTrue(team.inTimeout());
-        assertTrue(team.inOfficialReview());
-        assertEquals(1, team.getTimeouts());
-        assertEquals(0, team.getOfficialReviews());
-
-        snapshot.id = ID;
-        team.restoreSnapshot(snapshot);
-        assertFalse(team.inTimeout());
-        assertFalse(team.inOfficialReview());
-        assertEquals(3, team.getTimeouts());
-        assertEquals(1, team.getOfficialReviews());
-    }
-
-    @Test
     public void testTimeout() {
-        team.setTimeouts(1);
+        assertEquals(3, team.getTimeouts());
 
         team.timeout();
-        assertEquals(0, team.getTimeouts());
+        assertEquals(2, team.getTimeouts());
         assertEquals(team, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
 
         team.timeout();
-        assertEquals(0, team.getTimeouts());
+        assertEquals(2, team.getTimeouts());
     }
 
     @Test
@@ -140,53 +117,20 @@ public class TeamImplTests {
     }
 
     @Test
-    public void testSetInTimeout() {
-        assertFalse(team.inTimeout());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_TIMEOUT, listener));
-
-        team.setInTimeout(true);
-        assertTrue(team.inTimeout());
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertTrue((Boolean)event.getValue());
-        assertFalse((Boolean)event.getPreviousValue());
-
-        //check idempotency
-        team.setInTimeout(true);
-        assertTrue(team.inTimeout());
-        assertEquals(0, collectedEvents.size());
-
-        team.setInTimeout(false);
-        assertFalse(team.inTimeout());
-    }
-
-    @Test
-    public void testSetInOfficialReview() {
-        assertFalse(team.inOfficialReview());
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_OFFICIAL_REVIEW, listener));
-
-        team.setInOfficialReview(true);
-        assertTrue(team.inOfficialReview());
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertTrue((Boolean)event.getValue());
-        assertFalse((Boolean)event.getPreviousValue());
-
-        //check idempotency
-        team.setInOfficialReview(true);
-        assertTrue(team.inOfficialReview());
-        assertEquals(0, collectedEvents.size());
-
-        team.setInOfficialReview(false);
-        assertFalse(team.inOfficialReview());
-    }
-
-    @Test
     public void testSetRetainedOfficialReview() {
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
         assertFalse(team.retainedOfficialReview());
         assertEquals(1, team.getOfficialReviews());
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.RETAINED_OFFICIAL_REVIEW, listener));
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
+
+        // can't set retained when there was no OR
+        team.setRetainedOfficialReview(true);
+        assertFalse(team.retainedOfficialReview());
+        assertEquals(1, team.getOfficialReviews());
+        assertEquals(0, collectedEvents.size());
+        
+        team.officialReview();
+        sb.stopJamTO();
 
         team.setRetainedOfficialReview(true);
         assertTrue(team.retainedOfficialReview());
@@ -203,154 +147,60 @@ public class TeamImplTests {
 
         team.setRetainedOfficialReview(false);
         assertFalse(team.retainedOfficialReview());
-
-        team.setOfficialReviews(0);
-        collectedEvents.clear();
-        team.setRetainedOfficialReview(true);
-        assertEquals(1, team.getOfficialReviews());
-        assertEquals(2, collectedEvents.size());
-    }
-
-    @Test
-    public void testSetTimeouts() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
-        sb.getRulesets().set(Rule.NUMBER_TIMEOUTS, String.valueOf(5));
-
-        team.setTimeouts(4);
-        assertEquals(4, team.getTimeouts());
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(4, event.getValue());
-        assertEquals(3, event.getPreviousValue());
-
-        //values higher than maximum are clamped
-        team.setTimeouts(12);
-        assertEquals(5, team.getTimeouts());
-        assertEquals(1, collectedEvents.size());
-        assertEquals(5, collectedEvents.poll().getValue());
-
-        //negative values are clamped
-        team.setTimeouts(-2);
-        assertEquals(0, team.getTimeouts());
-    }
-
-    @Test
-    public void testChangeTimeouts() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
-        assertEquals(3, team.getTimeouts());
-
-        team.changeTimeouts(-2);
-        assertEquals(1, team.getTimeouts());
-        assertEquals(1, collectedEvents.size());
-
-        team.changeTimeouts(1);
-        assertEquals(2, team.getTimeouts());
-    }
-
-    @Test
-    public void testSetOfficialReviews() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
-        sb.getRulesets().set(Rule.NUMBER_REVIEWS, String.valueOf(5));
-
-        team.setOfficialReviews(4);
-        assertEquals(4, team.getOfficialReviews());
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(4, event.getValue());
-        assertEquals(1, event.getPreviousValue());
-
-        //values higher than maximum are clamped
-        team.setOfficialReviews(12);
-        assertEquals(5, team.getOfficialReviews());
-        assertEquals(1, collectedEvents.size());
-        assertEquals(5, collectedEvents.poll().getValue());
-
-        //negative values are clamped
-        team.setOfficialReviews(-2);
         assertEquals(0, team.getOfficialReviews());
-    }
 
-    @Test
-    public void testChangeOfficialReviews() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
-        sb.getRulesets().set(Rule.NUMBER_REVIEWS, String.valueOf(3));
+        collectedEvents.clear();
+        team.setRetainedOfficialReview(true);
         assertEquals(1, team.getOfficialReviews());
-
-        team.changeOfficialReviews(2);
-        assertEquals(3, team.getOfficialReviews());
         assertEquals(1, collectedEvents.size());
-
-        team.changeOfficialReviews(-1);
-        assertEquals(2, team.getOfficialReviews());
     }
 
     @Test
-    public void testResetTimeouts() {
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_TIMEOUT, listener));
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.IN_OFFICIAL_REVIEW, listener));
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.TIMEOUTS, listener));
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.OFFICIAL_REVIEWS, listener));
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(team, Team.Value.RETAINED_OFFICIAL_REVIEW, listener));
-        team.setInTimeout(true);
-        team.setInOfficialReview(true);
+    public void testTimeoutsResetAtHalf() {
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
+        team.timeout();
+        advance(60000);
+        sb.timeout();
+        team.officialReview();
         team.setRetainedOfficialReview(true);
-        team.setTimeouts(1);
-        team.setOfficialReviews(0);
-        collectedEvents.clear();
+        advance(60000);
+        sb.timeout();
+        team.officialReview();
 
-        team.resetTimeouts(false);
+        assertFalse(team.inTimeout());
+        assertTrue(team.inOfficialReview());
+        assertEquals(2, team.getTimeouts());
+        assertEquals(0, team.getOfficialReviews());
+        assertFalse(team.retainedOfficialReview());
+
+        sb.stopJamTO();
+        sb.startJam();
+        advance(sb.getRulesets().getLong(Rule.PERIOD_DURATION));
+        advance(15*60*1000);
+        sb.startJam();
+        team.setRetainedOfficialReview(true);
+
         assertFalse(team.inTimeout());
         assertFalse(team.inOfficialReview());
-        assertEquals(1, team.getTimeouts());
+        assertEquals(2, team.getTimeouts());
         assertEquals(1, team.getOfficialReviews());
         assertFalse(team.retainedOfficialReview());
-        assertEquals(4, collectedEvents.size());
-        List<Property> events = new ArrayList<>();
-        while(!collectedEvents.isEmpty()) {
-            events.add(collectedEvents.poll().getProperty());
-        }
-        assertTrue(events.contains(Team.Value.IN_TIMEOUT));
-        assertTrue(events.contains(Team.Value.IN_OFFICIAL_REVIEW));
-        assertTrue(events.contains(Team.Value.OFFICIAL_REVIEWS));
-        assertTrue(events.contains(Team.Value.RETAINED_OFFICIAL_REVIEW));
-
+        
         sb.getRulesets().set(Rule.NUMBER_REVIEWS, String.valueOf(2));
-        team.setInTimeout(true);
-        team.setInOfficialReview(true);
-        team.setRetainedOfficialReview(true);
-        team.setTimeouts(1);
-        team.setOfficialReviews(0);
-        collectedEvents.clear();
-        team.resetTimeouts(true);
+        team.recountTimeouts();
         assertFalse(team.inTimeout());
         assertFalse(team.inOfficialReview());
-        assertEquals(3, team.getTimeouts());
+        assertEquals(2, team.getTimeouts());
         assertEquals(2, team.getOfficialReviews());
         assertFalse(team.retainedOfficialReview());
-        assertEquals(5, collectedEvents.size());
-        events = new ArrayList<>();
-        while(!collectedEvents.isEmpty()) {
-            events.add(collectedEvents.poll().getProperty());
-        }
-        assertTrue(events.contains(Team.Value.IN_TIMEOUT));
-        assertTrue(events.contains(Team.Value.IN_OFFICIAL_REVIEW));
-        assertTrue(events.contains(Team.Value.TIMEOUTS));
-        assertTrue(events.contains(Team.Value.OFFICIAL_REVIEWS));
-        assertTrue(events.contains(Team.Value.RETAINED_OFFICIAL_REVIEW));
 
         sb.getRulesets().set(Rule.NUMBER_TIMEOUTS, String.valueOf(4));
         sb.getRulesets().set(Rule.TIMEOUTS_PER_PERIOD, String.valueOf(true));
         sb.getRulesets().set(Rule.REVIEWS_PER_PERIOD, String.valueOf(false));
-        team.setRetainedOfficialReview(true);
-        team.setTimeouts(1);
-        team.setOfficialReviews(0);
-        collectedEvents.clear();
-        team.resetTimeouts(false);
+        team.recountTimeouts();
         assertEquals(4, team.getTimeouts());
-        assertEquals(0, team.getOfficialReviews());
-        assertTrue(team.retainedOfficialReview());
-        assertEquals(1, collectedEvents.size());
-        assertEquals(Team.Value.TIMEOUTS, collectedEvents.poll().getProperty());
+        assertEquals(1, team.getOfficialReviews());
+        assertFalse(team.retainedOfficialReview());
     }
 
     @Test
@@ -401,6 +251,7 @@ public class TeamImplTests {
 
     @Test
     public void testField() {
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
         Skater skater1 = team.addSkater("S1", "One", "1", "");
         Skater skater2 = team.addSkater("S2", "Two", "2", "");
         Skater skater3 = team.addSkater("S3", "Three", "3", "");

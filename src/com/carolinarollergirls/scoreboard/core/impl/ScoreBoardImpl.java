@@ -35,6 +35,7 @@ import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements ScoreBoard {
@@ -47,6 +48,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         setCopy(Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD, IValue.NUMBER, true);
         setCopy(Value.IN_PERIOD, this, Value.CURRENT_PERIOD, Period.Value.RUNNING, false);
         setCopy(Value.UPCOMING_JAM_NUMBER, this, Value.UPCOMING_JAM, IValue.NUMBER, true);
+        setCopy(Value.TIMEOUT_OWNER, this, Value.CURRENT_TIMEOUT, Timeout.Value.OWNER, false);
+        setCopy(Value.OFFICIAL_REVIEW, this, Value.CURRENT_TIMEOUT, Timeout.Value.REVIEW, false);
         for (Button b : Button.values()) {
             b.setScoreBoard(this);
         }
@@ -93,6 +96,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         } else if (prop == Value.UPCOMING_JAM) {
             removeAll(Period.NChild.JAM);
             add(Period.NChild.JAM, (Jam)value);
+        } else if (prop == Value.CURRENT_TIMEOUT && value == null) {
+            return;
         }
     }
 
@@ -121,7 +126,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             startOvertime();
             break;
         case OFFICIAL_TIMEOUT:
-            setTimeoutType(TimeoutOwners.OTO, false);
+            setTimeoutType(Timeout.Owners.OTO, false);
             break;
         }
     }
@@ -152,14 +157,15 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             removeAll(Period.NChild.JAM);
             removeAll(NChild.PERIOD);
             set(Value.CURRENT_PERIOD, getOrCreate(NChild.PERIOD, "0"));
+            noTimeoutDummy = new TimeoutImpl(getCurrentPeriod(), "noTimeout");
+            getCurrentPeriod().add(Period.Child.TIMEOUT, noTimeoutDummy);
+            set(Value.CURRENT_TIMEOUT, noTimeoutDummy);
             set(Value.UPCOMING_JAM, new JamImpl(this, getCurrentPeriod().getCurrentJam()));
             for (ValueWithId c : getAll(Child.CLOCK)) {
                 ((Clock)c).reset();
             }
             updateTeamJams();
 
-            setTimeoutOwner(TimeoutOwners.NONE);
-            setOfficialReview(false);
             setInPeriod(false);
             setInOvertime(false);
             setOfficialScore(false);
@@ -319,27 +325,11 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             Clock pc = getClock(Clock.ID_PERIOD);
 
             requestBatchStart();
-            if (!tc.isRunning()) {
+            if (!getCurrentTimeout().isRunning()) {
                 timeout();
             }
-            //if overridden TO type is Team TO or OR, credit it back
-            if (getTimeoutOwner() instanceof Team) {
-                Team t = (Team)getTimeoutOwner();
-                if (isOfficialReview()) {
-                    t.changeOfficialReviews(1);
-                    t.setInOfficialReview(false);
-                } else {
-                    t.changeTimeouts(1);
-                    t.setInTimeout(false);
-                }
-            }
-            setTimeoutOwner(owner);
-            setOfficialReview(review);
-            if (review) {
-                owner.setInOfficialReview(true);
-            } else {
-                owner.setInTimeout(true);
-            }
+            getCurrentTimeout().set(Timeout.Value.REVIEW, review);
+            getCurrentTimeout().set(Timeout.Value.OWNER, owner);
             if (!getRulesets().getBoolean(Rule.STOP_PC_ON_TO)) {
                 boolean stopPc = false;
                 if (owner instanceof Team) {
@@ -349,7 +339,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                     if (!review && getRulesets().getBoolean(Rule.STOP_PC_ON_TTO)) {
                         stopPc = true;
                     }
-                } else if (owner == TimeoutOwners.OTO && getRulesets().getBoolean(Rule.STOP_PC_ON_OTO)) {
+                } else if (owner == Timeout.Owners.OTO && getRulesets().getBoolean(Rule.STOP_PC_ON_OTO)) {
                     stopPc = true;
                 }
                 if (stopPc && pc.isRunning()) {
@@ -379,7 +369,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         jc.resetTime();
         restartPcAfterTimeout = false;
         for (ValueWithId t : getAll(Child.TEAM)) {
-            ((Team)t).resetTimeouts(false);
+            ((Team)t).recountTimeouts();
         }
         requestBatchEnd();
     }
@@ -462,7 +452,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         Clock tc = getClock(Clock.ID_TIMEOUT);
 
         requestBatchStart();
-        if (tc.isRunning()) {
+        if (getCurrentTimeout().isRunning()) {
             //end the previous timeout before starting a new one
             _endTimeout(true);
         }
@@ -474,6 +464,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         _endJam();
         _endIntermission(false);
         setInPeriod(true);
+        set(Value.CURRENT_TIMEOUT, new TimeoutImpl(getCurrentPeriod().getCurrentJam()));
+        getCurrentPeriod().add(Period.Child.TIMEOUT, getCurrentTimeout());
         tc.changeNumber(1);
         tc.restart();
         requestBatchEnd();
@@ -482,7 +474,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         Clock tc = getClock(Clock.ID_TIMEOUT);
         Clock pc = getClock(Clock.ID_PERIOD);
 
-        if (!tc.isRunning()) { return; }
+        if (!getCurrentTimeout().isRunning()) { return; }
 
         requestBatchStart();
         if (!getSettings().get(SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) {
@@ -491,11 +483,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         if (getTimeoutOwner() instanceof Team) {
             restartPcAfterTimeout = false;
         }
-        getTimeoutOwner().setInTimeout(false);
-        getTimeoutOwner().setInOfficialReview(false);
-        setTimeoutOwner(TimeoutOwners.NONE);
-        setOfficialReview(false);
+        getCurrentTimeout().stop();
         if (!timeoutFollows) {
+            set(Value.CURRENT_TIMEOUT, noTimeoutDummy);
             if (pc.isTimeAtEnd()) {
                 _possiblyEndPeriod();
             } else {
@@ -589,8 +579,13 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         for (ValueWithId team : getAll(Child.TEAM)) {
             ((Team)team).restoreSnapshot(snapshot.getTeamSnapshot(team.getId()));
         }
-        setTimeoutOwner(snapshot.getTimeoutOwner());
-        setOfficialReview(snapshot.isOfficialReview());
+        if (getCurrentTimeout() != snapshot.getCurrentTimeout() && getCurrentTimeout() != noTimeoutDummy) {
+            getCurrentTimeout().unlink();
+        }
+        if (getCurrentTimeout() != snapshot.getCurrentTimeout() && snapshot.getCurrentTimeout() != noTimeoutDummy) {
+            snapshot.getCurrentTimeout().set(Timeout.Value.RUNNING, true);
+        }
+        set(Value.CURRENT_TIMEOUT, snapshot.getCurrentTimeout());
         setInOvertime(snapshot.inOvertime());
         set(Value.IN_JAM, snapshot.inJam());
         setInPeriod(snapshot.inPeriod());
@@ -657,12 +652,17 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     @Override
     public TimeoutOwner getTimeoutOwner(String id) {
         if (id == null) { id = ""; }
-        for (TimeoutOwners o : TimeoutOwners.values()) {
+        for (Timeout.Owners o : Timeout.Owners.values()) {
             if (o.getId().equals(id)) { return o; }
         }
-        return getTeam(id);
+        if (getTeam(id) != null) {
+            return getTeam(id);
+        }
+        return Timeout.Owners.NONE;
     }
 
+    @Override
+    public Timeout getCurrentTimeout() { return (Timeout)get(Value.CURRENT_TIMEOUT); }
     @Override
     public TimeoutOwner getTimeoutOwner() { return (TimeoutOwner)get(Value.TIMEOUT_OWNER); }
     @Override
@@ -675,6 +675,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     protected ScoreBoardSnapshot snapshot = null;
     protected boolean replacePending = false;
 
+    protected Timeout noTimeoutDummy;
     protected boolean restartPcAfterTimeout;
 
     protected XmlScoreBoard xmlScoreBoard;
@@ -733,35 +734,33 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     };
 
     public static class ScoreBoardSnapshot {
-        private ScoreBoardSnapshot(ScoreBoardImpl sbm, String type) {
+        private ScoreBoardSnapshot(ScoreBoardImpl sb, String type) {
             snapshotTime = ScoreBoardClock.getInstance().getCurrentTime();
             this.type = type;
-            timeoutOwner = sbm.getTimeoutOwner();
-            isOfficialReview = sbm.isOfficialReview();
-            inOvertime = sbm.isInOvertime();
-            inJam = sbm.isInJam();
-            inPeriod = sbm.isInPeriod();
-            restartPcAfterTo = sbm.restartPcAfterTimeout;
-            currentPeriod = sbm.getCurrentPeriod();
-            periodSnapshot = sbm.getCurrentPeriod().snapshot();
+            currentTimeout = sb.getCurrentTimeout();
+            inOvertime = sb.isInOvertime();
+            inJam = sb.isInJam();
+            inPeriod = sb.isInPeriod();
+            restartPcAfterTo = sb.restartPcAfterTimeout;
+            currentPeriod = sb.getCurrentPeriod();
+            periodSnapshot = sb.getCurrentPeriod().snapshot();
             labels = new HashMap<>();
             for (Button button : Button.values()) {
                 labels.put(button, button.getLabel());
             }
             clockSnapshots = new HashMap<>();
-            for (ValueWithId clock : sbm.getAll(Child.CLOCK)) {
+            for (ValueWithId clock : sb.getAll(Child.CLOCK)) {
                 clockSnapshots.put(clock.getId(), ((Clock)clock).snapshot());
             }
             teamSnapshots = new HashMap<>();
-            for (ValueWithId team : sbm.getAll(Child.TEAM)) {
+            for (ValueWithId team : sb.getAll(Child.TEAM)) {
                 teamSnapshots.put(team.getId(), ((Team)team).snapshot());
             }
         }
 
         public String getType() { return type; }
         public long getSnapshotTime() { return snapshotTime; }
-        public TimeoutOwner getTimeoutOwner() { return timeoutOwner; }
-        public boolean isOfficialReview() { return isOfficialReview; }
+        public Timeout getCurrentTimeout() { return currentTimeout; }
         public boolean inOvertime() { return inOvertime; }
         public boolean inJam() { return inJam; }
         public boolean inPeriod() { return inPeriod; }
@@ -776,8 +775,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         protected String type;
         protected long snapshotTime;
-        protected TimeoutOwner timeoutOwner;
-        protected boolean isOfficialReview;
+        protected Timeout currentTimeout;
         protected boolean inOvertime;
         protected boolean inJam;
         protected boolean inPeriod;
@@ -807,27 +805,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         private ScoreBoard scoreBoard;
         private String setting;
-    }
-
-    public enum TimeoutOwners implements TimeoutOwner {
-        NONE(""),
-        OTO("O");
-
-        TimeoutOwners(String id) {
-            this.id = id;
-        }
-
-        @Override
-        public String getId() { return id; }
-        @Override
-        public String toString() { return id; }
-
-        @Override
-        public void setInTimeout(boolean in_timeout) { /*noop*/ }
-        @Override
-        public void setInOfficialReview(boolean in_official_review) { /*noop*/ }
-
-        private String id;
     }
 }
 

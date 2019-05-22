@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-
+import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
@@ -26,6 +26,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     public JamImpl(ScoreBoardEventProvider p, int j) {
         super(p, j, Period.NChild.JAM, Jam.class, Value.class, Child.class, Command.class);
         setInverseReference(Child.PENALTY, Penalty.Value.JAM);
+        setInverseReference(Child.TIMEOUTS_AFTER, Timeout.Value.PRECEDING_JAM);
         periodNumberListener = setCopy(Value.PERIOD_NUMBER, parent,
                 parent instanceof ScoreBoard ? ScoreBoard.Value.CURRENT_PERIOD_NUMBER : IValue.NUMBER,
                         true);
@@ -55,6 +56,9 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             }
             for (ValueWithId p : getAll(Child.PENALTY)) {
                 ((Penalty)p).set(Penalty.Value.JAM, getNext());
+            }
+            for (ValueWithId p : getAll(Child.TIMEOUTS_AFTER)) {
+                ((Timeout)p).set(Timeout.Value.PRECEDING_JAM, getPrevious());
             }
         }
         super.unlink(neighborsRemoved);

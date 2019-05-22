@@ -35,6 +35,7 @@ public enum Rule {
     TIMEOUTS_PER_PERIOD(new BooleanRule("Team.TimeoutsPer", "Are timeouts granted per period or per game?", false, "Period", "Game")),
     NUMBER_REVIEWS(new IntegerRule("Team.OfficialReviews", "How many official reviews each team is granted per game or period", 1)),
     REVIEWS_PER_PERIOD(new BooleanRule("Team.OfficialReviewsPer", "Are official reviews granted per period or per game?", true, "Period", "Game")),
+    NUMBER_RETAINS(new IntegerRule("Team.MaxRetains", "How many times per game or period a team can retain an official review", 1)),
 
     PENALTIES_FILE(new StringRule("Penalties.DefinitionFile", "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json")),
     FO_LIMIT(new IntegerRule("Penalties.NumberToFoulout", "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.", 7));

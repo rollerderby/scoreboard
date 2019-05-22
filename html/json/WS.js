@@ -199,6 +199,7 @@ var WS = {
 				i = dot - 1;
 			}
 		}
+		prop.field = parts[0];
 		parts.reverse();
 		prop.parts = parts
 		WS._enrichPropCache[prop] = prop

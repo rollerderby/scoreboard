@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
@@ -13,8 +14,10 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
     public PeriodImpl(ScoreBoard s, int p) {
-        super(s, p, ScoreBoard.NChild.PERIOD, Period.class, Value.class, NChild.class, Command.class);
+        super(s, p, ScoreBoard.NChild.PERIOD, Period.class, Value.class, Child.class, NChild.class, Command.class);
         setCopy(Value.CURRENT_JAM_NUMBER, this, Value.CURRENT_JAM, IValue.NUMBER, true);
+        setRecalculated(Value.FIRST_JAM).addSource(this, NChild.JAM);
+        setCopy(Value.FIRST_JAM_NUMBER, this, Value.FIRST_JAM, IValue.NUMBER, true);
         if (hasPrevious()) {
             set(Value.CURRENT_JAM, getPrevious().get(Value.CURRENT_JAM));
         } else {
@@ -25,6 +28,9 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
 
     @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.FIRST_JAM) {
+            return getFirst(NChild.JAM);
+        }
         if (prop == Value.DURATION) {
             if (getWalltimeEnd() == 0L) { return 0L; }
             else { return getWalltimeEnd() - getWalltimeStart(); }
@@ -52,9 +58,14 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     @Override
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
-            int num = Integer.parseInt(id);
-            if (prop == NChild.JAM && (num > 0 || (num == 0 && getNumber() == 0))) {
-                return new JamImpl(this, num);
+            if (prop == NChild.JAM) { 
+                int num = Integer.parseInt(id);
+                if (num > 0 || (num == 0 && getNumber() == 0)) {
+                    return new JamImpl(this, num);
+                }
+            }
+            if (prop == Child.TIMEOUT) {
+                return new TimeoutImpl(this, id);
             }
             return null;
         }
@@ -76,6 +87,11 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                 if (scoreBoard.getCurrentPeriodNumber() < scoreBoard.getRulesets().getInt(Rule.NUMBER_PERIODS))
                     scoreBoard.add(ownType, new PeriodImpl(scoreBoard, getNumber()));
                 break;
+            case INSERT_TIMEOUT:
+                Timeout t = new TimeoutImpl(getCurrentJam());
+                t.stop();
+                t.set(Timeout.Value.DURATION, 0L);
+                add(Child.TIMEOUT, t);
             }
         }
     }

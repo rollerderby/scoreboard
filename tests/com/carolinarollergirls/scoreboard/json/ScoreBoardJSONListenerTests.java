@@ -18,7 +18,9 @@ import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Role;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
+import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Skater.NChild;
 import com.carolinarollergirls.scoreboard.core.Team.Value;
 import com.carolinarollergirls.scoreboard.core.Penalty;
@@ -58,6 +60,7 @@ public class ScoreBoardJSONListenerTests {
 
         ScoreBoardClock.getInstance().stop();
         sb = new ScoreBoardImpl();
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
 
         jsm = new JSONStateManager();
         jsm.register(jsonListener);
@@ -82,6 +85,7 @@ public class ScoreBoardJSONListenerTests {
 
     @Test
     public void testScoreBoardEvents() {
+        sb.timeout();
         assertEquals(false, state.get("ScoreBoard.InPeriod"));
         assertEquals(false, state.get("ScoreBoard.InOvertime"));
         assertEquals(false, state.get("ScoreBoard.OfficialScore"));
@@ -130,22 +134,19 @@ public class ScoreBoardJSONListenerTests {
         advance(0);
         assertEquals(true, state.get("ScoreBoard.Team(1).Lead"));
 
-        sb.getTeam("1").setTimeouts(2);
-        sb.getTeam("1").setOfficialReviews(1);
-        sb.getTeam("1").setRetainedOfficialReview(true);
+        sb.timeout();
+        sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
+        sb.timeout();
+        sb.setTimeoutType(sb.getTeam(Team.ID_1), true);
+        sb.getTeam(Team.ID_1).setRetainedOfficialReview(true);
         advance(0);
         assertEquals(2, state.get("ScoreBoard.Team(1).Timeouts"));
         assertEquals(1, state.get("ScoreBoard.Team(1).OfficialReviews"));
         assertEquals(true, state.get("ScoreBoard.Team(1).RetainedOfficialReview"));
-
-        sb.getTeam("1").setInOfficialReview(true);
-        sb.getTeam("1").setInTimeout(false);
-        advance(0);
         assertEquals(true, state.get("ScoreBoard.Team(1).InOfficialReview"));
         assertEquals(false, state.get("ScoreBoard.Team(1).InTimeout"));
 
-        sb.getTeam("1").setInOfficialReview(false);
-        sb.getTeam("1").setInTimeout(true);
+        sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
         advance(0);
         assertEquals(false, state.get("ScoreBoard.Team(1).InOfficialReview"));
         assertEquals(true, state.get("ScoreBoard.Team(1).InTimeout"));
