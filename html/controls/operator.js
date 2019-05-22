@@ -1487,13 +1487,36 @@ function createNewTeamTable(team, teamid) {
 
 	team.$sb("Name").$sbControl("<input type='text'>")
 		.appendTo(controlTable.find("td:eq(0)"));
-	team.$sb("Logo").$sbControl("<select>", { sbelement: {
+	var waitingOnUpload = "";
+	var logoSelect = team.$sb("Logo").$sbControl("<select>", { sbelement: {
 		optionParent: "ScoreBoard.Media.Format(images).Type(teamlogo)",
 		optionChildName: "File",
 		optionNameElement: "Name",
 		optionValueElement: "Src",
-		firstOption: { text: "No Logo", value: "" }
+		firstOption: { text: "No Logo", value: "" },
 	} }).appendTo(controlTable.find("td:eq(1)"));
+	$sb("ScoreBoard.Media.Format(images).Type(teamlogo)").$sbBindAddRemoveEach("File",
+			function(event, node){
+				if (waitingOnUpload == node.$sb("Id").$sbGet()) {
+					logoSelect.val(node.$sb("Src").$sbGet());
+					waitingOnUpload = "";
+				}
+			});
+	$("<input type='file' id='teamLogoUpload'>").fileupload({
+		url: "/Media/upload",
+		formData: [{name: "media", value: "images"}, {name: "type", value: "teamlogo"}],
+		add: function(e, data) {
+			var fd = new FormData();
+			fd.append("f", data.files[0], (isCurrentTeam ? "current" : teamid)+ "_" + data.files[0].name);
+			data.files[0] = fd.get("f");
+			data.submit();
+			waitingOnUpload = fd.get("f").name;
+		},
+		fail: function(e, data) {
+			console.log("Failed upload", data.errorThrown);
+		}
+	}).css("display", "none").appendTo(controlTable.find("td:eq(1)"));
+	$("<button>").text("Upload...").appendTo(controlTable.find("td:eq(1)")).click(function(){controlTable.find("#teamLogoUpload").click();});
 	$("<button>").text("Alternate Names").button()
 		.click(function() { createAlternateNamesDialog(team); })
 		.appendTo(controlTable.find("td:eq(2)"));
@@ -1522,10 +1545,10 @@ function createNewTeamTable(team, teamid) {
 		.end();
 
 	var addSkater = function(number, name, flags, id) {
-			id = id || _crgScoreBoard.newUUID(true);
-			team.$sb("Skater("+id+").Number").$sbSet(number);
-			team.$sb("Skater("+id+").Name").$sbSet(name);
-			team.$sb("Skater("+id+").Flags").$sbSet(flags);
+		id = id || _crgScoreBoard.newUUID(true);
+		team.$sb("Skater("+id+").Number").$sbSet(number);
+		team.$sb("Skater("+id+").Name").$sbSet(name);
+		team.$sb("Skater("+id+").Flags").$sbSet(flags);
 	}
 
 	var newSkaterNumber = $("<input type='text' size='10'>").addClass("Number")
@@ -1566,7 +1589,7 @@ function createNewTeamTable(team, teamid) {
 		var knownNumbers = {};
 		team.find('Skater Number').map( function(_, n) {
 			n = $(n)
-			knownNumbers[n.text()] = n.parent().attr("Id");
+				knownNumbers[n.text()] = n.parent().attr("Id");
 		});
 
 		for (var i = 0; i < lines.length; i++) {
