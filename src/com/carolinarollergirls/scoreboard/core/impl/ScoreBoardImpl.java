@@ -98,6 +98,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             add(Period.NChild.JAM, (Jam)value);
         } else if (prop == Value.CURRENT_TIMEOUT && value == null) {
             return;
+        } if ( prop == Value.CURRENT_PERIOD ) {
+            for (ValueWithId t : getAll(Child.TEAM)) {
+                ((Team)t).recountTimeouts();
+            }
         }
     }
 
@@ -368,9 +372,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         pc.resetTime();
         jc.resetTime();
         restartPcAfterTimeout = false;
-        for (ValueWithId t : getAll(Child.TEAM)) {
-            ((Team)t).recountTimeouts();
-        }
         requestBatchEnd();
     }
     private void _possiblyEndPeriod() {
@@ -465,7 +466,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         _endIntermission(false);
         setInPeriod(true);
         set(Value.CURRENT_TIMEOUT, new TimeoutImpl(getCurrentPeriod().getCurrentJam()));
-        getCurrentPeriod().add(Period.Child.TIMEOUT, getCurrentTimeout());
+        getCurrentTimeout().getParent().add(Period.Child.TIMEOUT, getCurrentTimeout());
         tc.changeNumber(1);
         tc.restart();
         requestBatchEnd();

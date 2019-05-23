@@ -91,7 +91,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                 Timeout t = new TimeoutImpl(getCurrentJam());
                 t.stop();
                 t.set(Timeout.Value.DURATION, 0L);
-                add(Child.TIMEOUT, t);
+                t.getParent().add(Child.TIMEOUT, t); // if this period hasn't started, the timeout is added to the previous period
             }
         }
     }

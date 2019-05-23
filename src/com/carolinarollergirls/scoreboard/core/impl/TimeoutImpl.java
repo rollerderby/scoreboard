@@ -108,6 +108,7 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl implements Timeout 
         set(Value.DURATION, scoreBoard.getClock(Clock.ID_TIMEOUT).getTimeElapsed());
         set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(Value.PERIOD_CLOCK_ELAPSED_END, scoreBoard.getClock(Clock.ID_PERIOD).getTimeElapsed());
+        set(Value.PERIOD_CLOCK_END, scoreBoard.getClock(Clock.ID_PERIOD).getTime());
     }
 
     @Override

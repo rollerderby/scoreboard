@@ -527,6 +527,7 @@ function createJamControlTable() {
 	return table;
 }
 
+var timeoutDialog;
 function createTeamTable() {
 	var table = $("<table>").addClass("Team");
 	var row = $("<tr></tr>");
@@ -728,7 +729,7 @@ function createTeamTable() {
 		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", timeoutHighlight);
 		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", timeoutHighlight);
 		timeoutButton.appendTo(timeoutTr.children("td:eq("+(first?"0":"5")+")").addClass("Timeout"));
-		sbTeam.$sb("Timeouts").$sbElement("<a/>")
+		sbTeam.$sb("Timeouts").$sbElement("<a/>").click(function() { timeoutDialog.dialog("open"); })
 			.appendTo(timeoutTr.children("td:eq("+(first?"1":"4")+")").addClass("Timeouts"));
 		var review = sbTeam.$sb("OfficialReview");
 		var reviewButton = review.$sbControl("<button>").text("Off Review").val("true")
@@ -741,11 +742,11 @@ function createTeamTable() {
 		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", reviewHighlight);
 		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", reviewHighlight);
 		reviewButton.appendTo(timeoutTr.children("td:eq("+(first?"2":"3")+")").addClass("OfficialReview"));
-		sbTeam.$sb("OfficialReviews").$sbElement("<a/>")
+		sbTeam.$sb("OfficialReviews").$sbElement("<a/>").click(function() { timeoutDialog.dialog("open"); })
 			.appendTo(timeoutTr.children("td:eq("+(first?"3":"2")+")").addClass("OfficialReviews"));
 		var retainedOR = sbTeam.$sb("RetainedOfficialReview");
 		var retainedORButton = retainedOR.$sbControl("<button>").text("Retained").val("true")
-			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl Box").button();
+			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl").button();
 		retainedOR.$sbBindAndRun("sbchange", function(event, value) {
 			retainedORButton.val(!isTrue(value));
 			retainedORButton.toggleClass("Active", isTrue(value));
@@ -898,7 +899,7 @@ function createTimeTable() {
 			var jamDialog = createJamDialog();
 			numberTr.children("td:eq(1)").click(function() { jamDialog.dialog("open"); });			
 		} else if (clock == "Timeout") {
-			var timeoutDialog = createTimeoutDialog();
+			timeoutDialog = createTimeoutDialog();
 			numberTr.children("td:eq(1)").click(function() { timeoutDialog.dialog("open"); });
 		}
 
@@ -1107,21 +1108,25 @@ function createTimeoutDialog() {
 	
 	var dialog = $("<div>").addClass("NumberDialog");
 	var table = $("<table>").appendTo(dialog);
-	var headers = $("<tr><td/><td/><td/><td/><td/><td/></tr>").appendTo(table);
+	var headers = $("<tr><td/><td/><td/><td/><td/><td/><td/></tr>").appendTo(table);
 	$("<a>").text("Period").addClass("Title")
 		.appendTo(headers.find("td:eq(0)").addClass("Title"));
 	$("<a>").text("After Jam").addClass("Title")
 		.appendTo(headers.find("td:eq(1)").addClass("Title"));
 	$("<a>").text("Duration").addClass("Title")
 		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+	$("<a>").text("Period Clock").addClass("Title")
+	.appendTo(headers.find("td:eq(3)").addClass("Title"));
 	$("<a>").text("Type").addClass("Title")
-		.appendTo(headers.find("td:eq(3)").addClass("Title"));
+		.appendTo(headers.find("td:eq(4)").addClass("Title"));
 	
-	var footer = $("<tr><td/><td/><td/><td/><td/><td/></tr>").attr('id', 'toFooter').appendTo(table);
+	var footer = $("<tr><td/><td colspan=\"3\"/><td/><td/><td/></tr>").attr('id', 'toFooter').appendTo(table);
 	periodDropdownTemplate.clone().appendTo(footer.find('td:eq(0)'));
 	$('<button>').text('Add Timeout').button().click(function() {
 		WS.Set('ScoreBoard.Period('+footer.find('#PeriodDropdown').val()+').InsertTimeout', true);
-	}).appendTo(footer.find('td:eq(3)'));
+	}).appendTo(footer.find('td:eq(1)'));
+	
+	WS.Register(['ScoreBoard.Clock(Period).Time']);
 	
 	WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
 		var p = Number(v);
@@ -1130,8 +1135,7 @@ function createTimeoutDialog() {
 			firstJamListed[p] = 0;
 			lastJamListed[p] = 0;
 			jamDropdownTemplate[i] = $('<select>').attr('id', 'JamDropdown').attr('period', i);
-			WS.Register(['ScoreBoard.Period('+i+').FirstJamNumber'], processFirstJamNumber);
-			WS.Register(['ScoreBoard.Period('+i+').CurrentJamNumber'], processCurrentJamNumber);
+			WS.Register(['ScoreBoard.Period('+i+').CurrentJamNumber', 'ScoreBoard.Period('+i+').FirstJamNumber'], processJamNumber);
 			WS.Register(['ScoreBoard.Period('+i+').Timeout'], processTimeout);
 			lastPeriodRegistered = i;
 		}
@@ -1144,70 +1148,61 @@ function createTimeoutDialog() {
 		for (i = lastPeriodListed; i > p; i--) {
 			periodDropdownTemplate.find('option[value='+i+']').remove();
 			table.find('#PeriodDropdown option[value='+i+']').remove();
+			clearPeriod(p);
 			lastPeriodListed = i-1;
 		}
 		footer.find('#PeriodDropdown').val(p);
 	});
-
-	function processFirstJamNumber(k, v) {
-		var p = Number(k.Period);
-		var j = Number(v);
-		var i;
-		if (j == 0 && p > 0) {
-			jamDropdownTemplate[p].find('option').remove();
-			table.find('#JamDropdown[period='+p+'] option').remove();
-			firstJamListed[p] = 0;
-			lastJamListed[p] = 0;
-			return;
-		}
-		if (firstJamListed[p] == 0 && p > 0) {
-			var last = Number(WS.state['ScoreBoard.Period('+p+').CurrentJamNumber']);
-			for (i = j; i <= last; i++) {
-				var option = $('<option>').attr('value', i).text('J'+i);
-				jamDropdownTemplate[p].append(option.clone());
-				table.find('#JamDropdown[period='+p+']').append(option);
-			}
-			firstJamListed[p] = j;
-			lastJamListed[p] = last;
-			return;
-		}
-		for (i = firstJamListed[p]; i < j; i++) {
-			jamDropdownTemplate[p].find('option[value='+i+']').remove();
-			table.find('#JamDropdown[period='+p+'] option[value='+i+']').remove();
-			firstJamListed[p] = i+1;
-		}
-		for (i = firstJamListed[p]-1; i >= j; i--) {
-			var option = $('<option>').attr('value', i).text('J'+i);
-			jamDropdownTemplate[p].prepend(option.clone());
-			table.find('#JamDropdown[period='+p+']').prepend(option);
-			firstJamListed[p] = i;
-		}
-	}
-
-	function processCurrentJamNumber(k, v) {
-		var p = Number(k.Period);
-		var j = Number(v);
-		var i;
-		if (firstJamListed[p] == 0 || WS.state['ScoreBoard.Period('+p+').FirstJamNumber'] == 0) {
-			// currentJamNumber may be pointing to the previous period
-			// processFirstJamNumber will cleanup or initialize as appropriate
-			return;
-		}
-		for (i = lastJamListed[p] + 1; i <= j; i++) {
-			var option = $('<option>').attr('value', i).text('J'+i);
+	
+	function addJam(p, j, append) {
+		var option = $('<option>').attr('value', j).text('J'+j);
+		if (append) {
 			jamDropdownTemplate[p].append(option.clone());
 			table.find('#JamDropdown[period='+p+']').append(option);
-			lastPeriodListed = i;
-		}
-		for (i = lastJamListed[p]; i > j; i--) {
-			jamDropdownTemplate[p].find('option[value='+i+']').remove();
-			table.find('#JamDropdown[period='+p+'] option[value='+i+']').remove();
-			lastPeriodListed = i-1;
+		} else {
+			jamDropdownTemplate[p].prepend(option.clone());
+			table.find('#JamDropdown[period='+p+']').prepend(option);
 		}
 	}
+	function removeJam(p, j) {
+		jamDropdownTemplate[p].find('option[value='+i+']').remove();
+		table.find('#JamDropdown[period='+p+'] option[value='+i+']').remove();
+	}
+	function clearPeriod(p) {
+		table.find('tr.Timeout[period='+p+']').remove();
+		jamDropdownTemplate[p].find('option').remove();
+		table.find('#JamDropdown[period='+p+'] option').remove();
+		firstJamListed[p] = 0;
+		lastJamListed[p] = 0;
+	}
 
+	function processJamNumber(k, v) {
+		var p = Number(k.Period);
+		newFirst = WS.state['ScoreBoard.Period('+p+').FirstJamNumber'];
+		newLast = WS.state['ScoreBoard.Period('+p+').CurrentJamNumber'];
+		oldFirst = firstJamListed[p];
+		oldLast = lastJamListed[p];
+		console.log('P'+p+':'+oldFirst+'-'+oldLast+' -> '+newFirst+'-'+newLast)
+		var j;
+		if (newFirst == 0 && oldFirst > 0) {
+			clearPeriod(p);
+			return;
+		}
+		if (newFirst > 0 && !(oldFirst > 0)) {
+			for (j = newFirst; j <= newLast; j++) { addJam(p, j, true); }
+			firstJamListed[p] = newFirst;
+			lastJamListed[p] = newLast;
+			return;
+		}
+		for (j = oldFirst; j < newFirst; j++) { removeJam(p, j); }
+		for (j = oldFirst; j > newFirst; j--) { addJam(p, j-1, false); }
+		for (j = oldLast; j < newLast; j++) { addJam(p, j+1, true); }
+		for (j = oldLast; j > newLast; j--) { removeJam(p, j); }
+		firstJamListed[p] = newFirst;
+		lastJamListed[p] = newLast;
+	}
+	
 	function processTimeout(k, v) {
-		console.log(k.field);
 		var id = k.Timeout;
 		if (id == 'noTimeout') { return; }
 		var p = Number(k.Period);
@@ -1224,19 +1219,21 @@ function createTimeoutDialog() {
 		if (v != null && row.length == 0) {
 			var jam = Number(WS.state[prefix+'.PrecedingJamNumber']);
 			var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix+'.Duration']);
+			var pc = _timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
+					WS.state['ScoreBoard.Clock(Period).Time'] :
+					WS.state[prefix+'.PeriodClockEnd']);
 			var type = WS.state[prefix+'.Owner'] + '.' + WS.state[prefix+'.Review'];
 			var review = isTrue(WS.state[prefix+'.Review']);
 			var retained = isTrue(WS.state[prefix+'.RetainedReview']);
 			row = $("<tr>").addClass("Timeout").attr("toId", id).attr('period', k.Period).attr('jam', jam)
 				.append($('<td>').addClass('Period').append(periodDropdownTemplate.clone().val(p).change(function() {
-					var per = $(this).val();
-					var j = jamDropdownTemplate[per].val();
-					WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+per+').Jam('+j+').Id']);
+					WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+$(this).val()+').CurrentJam']);
 				})))
 				.append($('<td>').addClass('Jam').append(jamDropdownTemplate[p].clone().val(jam).change(function() {
 					WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+p+').Jam('+$(this).val()+').Id']);
 				})))
 				.append($('<td>').addClass('Duration').text(dur))
+				.append($('<td>').addClass('PerClock').text(pc))
 				.append($('<td>').addClass('Type').append(typeDropdownTemplate.clone().val(type).change(function() {
 					var parts = $(this).val().split('.');
 					WS.Set(prefix+'.Owner', parts[0]);
@@ -1267,6 +1264,12 @@ function createTimeoutDialog() {
 		}
 		switch(k.field) {
 			case 'Running':
+			case 'PeriodClockEnd':
+				row.find('.PerClock').text(_timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
+						WS.state['ScoreBoard.Clock(Period).Time'] :
+						WS.state[prefix+'.PeriodClockEnd']));
+				break;
+			case 'Running':
 			case 'Duration':
 				row.find('.Duration').text(isTrue(WS.state[prefix+'.Running']) ?
 						'Running' :
@@ -1289,7 +1292,7 @@ function createTimeoutDialog() {
 		title: "Timeouts",
 		autoOpen: false,
 		modal: true,
-		width: 620,
+		width: 700,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 }

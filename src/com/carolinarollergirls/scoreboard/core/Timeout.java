@@ -25,6 +25,7 @@ public interface Timeout extends ScoreBoardEventProvider {
         DURATION(Long.class, 0L),
         PERIOD_CLOCK_ELAPSED_START(Long.class, 0L),
         PERIOD_CLOCK_ELAPSED_END(Long.class, 0L),
+        PERIOD_CLOCK_END(Long.class, 0L),
         WALLTIME_START(Long.class, 0L),
         WALLTIME_END(Long.class, 0L);
 
