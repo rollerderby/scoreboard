@@ -889,6 +889,26 @@ function createTimeTable() {
 				it.toggleClass("CountUp", !isTrue(value));
 			});
 		}
+		// Show when the last jam was called, when there's less than 2 minutes on the period clock.
+		// When there's less than 30s on the period clock at call time, highlight the period clock.
+		if (clock == "Period") {
+			var jamClock = $sb("ScoreBoard.Clock(Jam)");
+			var callTime = $sb().$sbElement("<a>", { sbelement: { convert: _timeConversions.msToMinSec } }).appendTo(nameTd).addClass("CallTime");
+			var remaining = function() { return isTrue(sbClock.$sb("Direction").$sbGet()) ? sbClock.$sb("Time").$sbGet() : sbClock.$sb("InvertedTime").$sbGet(); };
+			jamClock.$sb("Running").$sbBindAndRun("sbchange", function(event,value) {
+				if (!isTrue(value) && remaining() <= 120000 ) {
+					callTime.text("(last call at " + _timeConversions.msToMinSec(sbClock.$sb("Time").$sbGet()) + ")");
+					nameTd.toggleClass("WasLastJam", remaining() < 30000);
+				}
+			});
+			sbClock.$sb("Time").$sbBindAndRun("sbchange", function(event,value) {
+				if (remaining() > 120000) {
+					callTime.text("");
+					nameTd.removeClass("WasLastJam");
+				}
+			});
+		}
+
 		sbClock.$sb("Running").$sbBindAndRun("sbchange", function(event,value) {
 			nameTd.toggleClass("Running", isTrue(value));
 		});
