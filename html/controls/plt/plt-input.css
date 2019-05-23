@@ -15,6 +15,7 @@ table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr
 }
 /* Colors are the same as the operator controls, so per-team colours look the same on both. */
 .PLT.Team thead td { font-size: 1em; font-weight: bold; background-color: #cccccc; color: #333333; }
+.PLT.Team thead td.Active { background-color: #70ff70; }
 
 /* Similarly for the IWB view and the scoreboard. */
 .PLT.Team.AlternateName_scoreboard thead td { background-color: #000; color: #FFF; }

@@ -24,16 +24,18 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('PLT Team').addClass("AlternateName_" + alternateName).appendTo(element);
 		var thead = $('<tr>').appendTo($('<thead>').appendTo(table));
 		if (mode == 'plt' || mode == 'lt') {
-			$('<td>').text('Bench').appendTo(thead);
-			$('<td>').text('Jammer').appendTo(thead);
-			$('<td>').text('Pivot').appendTo(thead);
-			$('<td>').text('Blocker').appendTo(thead);
-			$('<td>').text('Box').appendTo(thead);
 			if (mode == 'lt') {
-				$('<td>').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
+				$('<td>').attr('colspan', '5').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
 			} else {
-				$('<td>').appendTo(thead);
+				$('<td>').text('Bench').appendTo(thead);
+				$('<td>').text('Jammer').appendTo(thead);
+				$('<td>').text('Pivot').appendTo(thead);
+				$('<td>').text('Blocker').appendTo(thead);
+				$('<td>').text('Box').appendTo(thead);
 			}
+			$('<td>').attr('id', 'StarPass').text('SP').click(function() {
+				WS.Set('ScoreBoard.Team('+teamId+').StarPass', !$(this).hasClass('Active'));
+			}).appendTo(thead);
 		}
 		if (mode == 'plt' || mode == 'pt') {
 			$('<td>').text('#').appendTo(thead);
@@ -60,6 +62,9 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function (k, v) { skaterUpdate(teamId, k, v); });
 		WS.Register(['ScoreBoard.Team('+teamId+').FieldingAdvancePending'], function(k, v) {
 			element.find('.Advance').toggleClass('Active', isTrue(v));
+		});
+		WS.Register(['ScoreBoard.Team('+teamId+').StarPass'], function(k, v) {
+			element.find('#StarPass').toggleClass('Active', isTrue(v));
 		});
 
 		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)']);
