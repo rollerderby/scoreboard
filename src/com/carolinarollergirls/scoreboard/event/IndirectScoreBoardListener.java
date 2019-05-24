@@ -1,10 +1,13 @@
 package com.carolinarollergirls.scoreboard.event;
 
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener {
     public IndirectScoreBoardListener(ScoreBoardEventProvider indirectionElement, PermanentProperty indirectionProperty,
-            PermanentProperty watchedProperty, ScoreBoardListener listener) {
+            Property watchedProperty, ScoreBoardListener listener) {
         indirectionListener = new ConditionalScoreBoardListener(indirectionElement, indirectionProperty, this);
         this.indirectionElement = indirectionElement;
         indirectionElement.addScoreBoardListener(indirectionListener);
@@ -17,21 +20,42 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
     public void scoreBoardChange(ScoreBoardEvent event) {
         if (event.getValue() == watchedElement) { return; }
         ScoreBoardEventProvider lastWatched = watchedElement;
-        Object last = watchedProperty.getDefaultValue();
-        if (watchedElement != null) {
-            last = watchedElement.get(watchedProperty);
-            watchedElement.removeScoreBoardListener(listener);
-        }
-        watchedElement = (ScoreBoardEventProvider) event.getValue();
-        if (watchedElement != null) {
-            listener = new ConditionalScoreBoardListener(watchedElement, watchedProperty, externalListener);
-            watchedElement.addScoreBoardListener(listener);
-            externalListener.scoreBoardChange(new ScoreBoardEvent(watchedElement, watchedProperty,
-                    watchedElement.get(watchedProperty), last));
-        } else {
-            listener = null;
-            externalListener.scoreBoardChange(new ScoreBoardEvent(lastWatched, watchedProperty,
-                    watchedProperty.getDefaultValue(), last));
+        if (watchedProperty instanceof PermanentProperty) {
+            PermanentProperty wp = (PermanentProperty)watchedProperty;
+            Object last = wp.getDefaultValue();
+            if (watchedElement != null) {
+                last = watchedElement.get(wp);
+                watchedElement.removeScoreBoardListener(listener);
+            }
+            watchedElement = (ScoreBoardEventProvider) event.getValue();
+            if (watchedElement != null) {
+                listener = new ConditionalScoreBoardListener(watchedElement, wp, externalListener);
+                watchedElement.addScoreBoardListener(listener);
+                externalListener.scoreBoardChange(new ScoreBoardEvent(watchedElement, wp,
+                        watchedElement.get(wp), last));
+            } else {
+                listener = null;
+                externalListener.scoreBoardChange(new ScoreBoardEvent(lastWatched, wp,
+                        wp.getDefaultValue(), last));
+            }
+        } else if (watchedProperty instanceof AddRemoveProperty) {
+            AddRemoveProperty wp = (AddRemoveProperty)watchedProperty;
+            if (watchedElement != null) {
+                for (ValueWithId v : watchedElement.getAll(wp)) {
+                    externalListener.scoreBoardChange(new ScoreBoardEvent(watchedElement, wp, v, true));
+                }
+                watchedElement.removeScoreBoardListener(listener);
+            }
+            watchedElement = (ScoreBoardEventProvider) event.getValue();
+            if (watchedElement != null) {
+                listener = new ConditionalScoreBoardListener(watchedElement, wp, externalListener);
+                watchedElement.addScoreBoardListener(listener);
+                for (ValueWithId v : watchedElement.getAll(wp)) {
+                    externalListener.scoreBoardChange(new ScoreBoardEvent(watchedElement, wp, v, false));
+                }
+            } else {
+                listener = null;
+            }
         }
     }
     
@@ -45,7 +69,7 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
     
     protected ScoreBoardEventProvider indirectionElement;
     protected ScoreBoardEventProvider watchedElement;
-    protected PermanentProperty watchedProperty;
+    protected Property watchedProperty;
     protected ConditionalScoreBoardListener indirectionListener;
     protected ScoreBoardListener listener;
     protected ScoreBoardListener externalListener;

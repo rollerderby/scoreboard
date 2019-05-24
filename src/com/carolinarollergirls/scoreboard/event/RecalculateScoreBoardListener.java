@@ -24,7 +24,7 @@ public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListen
         return this;
     }
     public RecalculateScoreBoardListener addIndirectSource(ScoreBoardEventProvider indirectionElement,
-            PermanentProperty indirectionProperty, PermanentProperty watchedProperty) {
+            PermanentProperty indirectionProperty, Property watchedProperty) {
         IndirectScoreBoardListener l = new
                 IndirectScoreBoardListener(indirectionElement, indirectionProperty, watchedProperty, this);
         sources.put(l, null);

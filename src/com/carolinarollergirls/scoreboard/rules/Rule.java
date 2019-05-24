@@ -21,6 +21,7 @@ public enum Rule {
     STOP_PC_ON_TTO(new BooleanRule("Timeout.StopPeriodClockOnTTO", "Stop the period clock on team timeouts?", false, "True", "False")),
     STOP_PC_ON_OR(new BooleanRule("Timeout.StopPeriodClockOnOR", "Stop the period clock on official reviews?", false, "True", "False")),
     STOP_PC_AFTER_TO_DURATION(new TimeRule("Timeout.StopPeriodClockAfterTODuration", "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00")),
+    EXTRA_JAM_AFTER_OTO(new BooleanRule("Timeut.ExtraJamAfterOTO", "Can an OTO cause an extra Jam to be played when there wouldn't be one otherwise?", false, "True", "False")),
 
     INTERMISSION_DURATIONS(new StringRule("Intermission.Durations", "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00")),
     INTERMISSION_DIRECTION(new BooleanRule("Intermission.ClockDirection", "Which way should the intermission clock count?", true, "Count Down", "Count Up")),
@@ -36,6 +37,8 @@ public enum Rule {
     NUMBER_REVIEWS(new IntegerRule("Team.OfficialReviews", "How many official reviews each team is granted per game or period", 1)),
     REVIEWS_PER_PERIOD(new BooleanRule("Team.OfficialReviewsPer", "Are official reviews granted per period or per game?", true, "Period", "Game")),
     NUMBER_RETAINS(new IntegerRule("Team.MaxRetains", "How many times per game or period a team can retain an official review", 1)),
+    
+    MANDATORY_OVERTIME(new BooleanRule("Overtime.Mandatory", "Will a tied game always go to overtime?", true, "True", "False")),
 
     PENALTIES_FILE(new StringRule("Penalties.DefinitionFile", "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json")),
     FO_LIMIT(new IntegerRule("Penalties.NumberToFoulout", "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.", 7));

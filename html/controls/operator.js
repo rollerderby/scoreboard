@@ -896,6 +896,9 @@ function createTimeTable() {
 		sbClock.$sb("Running").$sbBindAndRun("sbchange", function(event,value) {
 			nameTd.toggleClass("Running", isTrue(value));
 		});
+		$sb("ScoreBoard.NoMoreJam").$sbBindAndRun("sbchange", function(event,value) {
+			nameTd.toggleClass("NoMoreJam", isTrue(value));
+		});
 
 		sbClock.$sb("Number").$sbControl("<a>").appendTo(numberTr.children("td:eq(1)")
 				.addClass("Number").css("width", "20%"));
@@ -1006,13 +1009,15 @@ function createPeriodDialog() {
 function createJamDialog() {
 	var dialog = $("<div>").addClass("NumberDialog");
 	var tableTemplate = $("<table>").addClass("Period");
-	var headers = $("<tr><td/><td/><td/><td/><td/></tr>").appendTo(tableTemplate);
+	var headers = $("<tr><td/><td/><td/><td/><td/><td/></tr>").appendTo(tableTemplate);
 	$("<a>").text("Nr").addClass("Title")
 		.appendTo(headers.find("td:eq(0)").addClass("Title"));
 	$("<a>").text("Points").addClass("Title")
 		.appendTo(headers.find("td:eq(1)").addClass("Title"));
 	$("<a>").text("Duration").addClass("Title")
 		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+	$("<a>").text("PC at end").addClass("Title")
+	.appendTo(headers.find("td:eq(3)").addClass("Title"));
 	var currentPeriod;
 
 	var jamRegex = /Period\(([^\)]+)\)\.Jam\(([^\)]+)\)\.(?:TeamJam\(([^\)]+)\)\.)?([^\.\(]+)/;
@@ -1045,6 +1050,7 @@ function createJamDialog() {
 				.append($('<td>').addClass('Points').append($('<span>').addClass('1'))
 						.append($('<span>').text(" - ")).append($('<span>').addClass('2')))
 				.append($('<td>').addClass('Duration'))
+				.append($('<td>').addClass('PC'))
 				.append($('<td>').append($("<button>").text("Delete")
 						.button().click(function () {
 							//TODO: confirmation popup
@@ -1076,6 +1082,13 @@ function createJamDialog() {
 					row.find("td.Duration").text("running");
 				} else {
 					row.find("td.Duration").text(_timeConversions.msToMinSec(v));
+				}
+			}
+			if (key == 'PeriodClockElapsedEnd') {
+				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
+					row.find("td.PC").text("running");
+				} else {
+					row.find("td.PC").text(_timeConversions.msToMinSec(v));
 				}
 			}
 		}

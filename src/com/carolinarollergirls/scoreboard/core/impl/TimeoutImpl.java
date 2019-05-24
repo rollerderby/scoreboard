@@ -5,6 +5,7 @@ import java.util.UUID;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
@@ -63,21 +64,32 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl implements Timeout 
             if (value instanceof Team) {
                 ((Team) value).add(Team.Child.TIME_OUT, this);
             }
+            if (get(Value.PRECEDING_JAM) == scoreBoard.getCurrentPeriod().getCurrentJam()) {
+                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM), Flag.RECALCULATE);
+            }
         }
         if (prop == Value.REVIEW && getOwner() instanceof Team) {
             ((Team)getOwner()).recountTimeouts();
+            if (get(Value.PRECEDING_JAM) == scoreBoard.getCurrentPeriod().getCurrentJam()) {
+                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM), Flag.RECALCULATE);
+            }
         }
         if (prop == Value.RETAINED_REVIEW && getOwner() instanceof Team) {
             ((Team)getOwner()).recountTimeouts();
         }
-        if (prop == Value.PRECEDING_JAM && value != null &&
-                ((Jam)value).getParent() != getParent()) {
-            getParent().remove(Period.Child.TIMEOUT, this);
-            parent = ((Jam)value).getParent();
-            getParent().add(Period.Child.TIMEOUT, this);
-        }
-        if (prop == Value.PRECEDING_JAM && getOwner() instanceof Team) {
-            ((Team) getOwner()).recountTimeouts();
+        if (prop == Value.PRECEDING_JAM) {
+            if (value != null && ((Jam)value).getParent() != getParent()) {
+                getParent().remove(Period.Child.TIMEOUT, this);
+                parent = ((Jam)value).getParent();
+                getParent().add(Period.Child.TIMEOUT, this);
+            }
+            if (getOwner() instanceof Team) {
+                ((Team) getOwner()).recountTimeouts();
+            }
+            if (value == scoreBoard.getCurrentPeriod().getCurrentJam() ||
+                    last == scoreBoard.getCurrentPeriod().getCurrentJam()) {
+                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM), Flag.RECALCULATE);
+            }
         }
     }
 
