@@ -63,13 +63,13 @@ function initialize() {
 				v = '';
 			}
 			switch (String(k)){
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_fg).Color':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_fg)':
 					$('.Team' + t + ' .Name').css('color', v);
 					break;
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_bg).Color':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_bg)':
 					$('.Team' + t + ' .Name').css('background-color', v);
 					break;
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_glow).Color':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_glow)':
 					var shadow = '0px 0px 0.2em ' + v;
 					var shadowCSS = shadow + ', ' + shadow + ', ' + shadow;
 					if (v === '') {
@@ -77,7 +77,7 @@ function initialize() {
 					}
 					$('.Team' + t + ' .Name').css('text-shadow',shadowCSS);
 					break;
-				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_dots_fg).Color':
+				case 'ScoreBoard.Team(' + t + ').Color(scoreboard_dots_fg)':
 					var dotColor = v;
 					if (dotColor == '') {dotColor = '#000000';}
 					$('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);

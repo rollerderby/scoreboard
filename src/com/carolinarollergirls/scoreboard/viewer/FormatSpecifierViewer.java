@@ -208,11 +208,11 @@ public class FormatSpecifierViewer {
             @Override
             public String getValue() { return getTeam(id).getName(); }
         };
-        new ScoreBoardValue("%t"+t+"Nt", "Team "+t+" Twitter Name", Team.AlternateName.class, Team.AlternateName.ID_TWITTER, Team.AlternateName.Value.NAME) {
+        new ScoreBoardValue("%t"+t+"Nt", "Team "+t+" Twitter Name", getTeam(id), Team.Child.ALTERNATE_NAME) {
             @Override
             public String getValue() {
                 try {
-                    return getTeam(id).getAlternateName(Team.AlternateName.ID_TWITTER).getName();
+                    return getTeam(id).getAlternateName(Team.AlternateNameId.TWITTER);
                 } catch ( NullPointerException npE ) {
                     return getTeam(id).getName();
                 }

@@ -15,6 +15,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public void reset();
@@ -27,11 +28,12 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public TeamSnapshot snapshot();
     public void restoreSnapshot(TeamSnapshot s);
 
-    public AlternateName getAlternateName(String id);
+    public String getAlternateName(String id);
+    public String getAlternateName(AlternateNameId id);
     public void setAlternateName(String id, String name);
     public void removeAlternateName(String id);
 
-    public Color getColor(String id);
+    public String getColor(String id);
     public void setColor(String id, String color);
     public void removeColor(String id);
 
@@ -125,8 +127,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public enum Child implements AddRemoveProperty {
         SKATER(Skater.class),
         POSITION(Position.class),
-        ALTERNATE_NAME(AlternateName.class),
-        COLOR(Color.class),
+        ALTERNATE_NAME(ValWithId.class),
+        COLOR(ValWithId.class),
         BOX_TRIP(BoxTrip.class);
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
@@ -145,48 +147,16 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         public Class<Boolean> getType() { return Boolean.class; }
     }
 
-    public static interface AlternateName extends ScoreBoardEventProvider {
-        public String getName();
-        public void setName(String n);
+    public enum AlternateNameId {
+        OPERATOR("operator"),
+        OVERLAY("overlay"),
+        TWITTER("twitter");
+        
+        private AlternateNameId(String i) { id = i; }
+        @Override
+        public String toString() { return id; }
 
-        public Team getTeam();
-
-        public enum Value implements PermanentProperty {
-            ID(String.class, ""),
-            NAME(String.class, "");
-
-            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-            private final Class<?> type;
-            private final Object defaultValue;
-            @Override
-            public Class<?> getType() { return type; }
-            @Override
-            public Object getDefaultValue() { return defaultValue; }
-       }
-
-        public static final String ID_OPERATOR = "operator";
-        public static final String ID_OVERLAY = "overlay";
-        public static final String ID_TWITTER = "twitter";
-    };
-
-    public static interface Color extends ScoreBoardEventProvider {
-        public String getColor();
-        public void setColor(String c);
-
-        public Team getTeam();
-
-        public enum Value implements PermanentProperty {
-            ID(String.class, ""),
-            COLOR(String.class, "");
-
-            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-            private final Class<?> type;
-            private final Object defaultValue;
-            @Override
-            public Class<?> getType() { return type; }
-            @Override
-            public Object getDefaultValue() { return defaultValue; }
-        }
+        private String id;
     }
 
     public static interface TeamSnapshot {

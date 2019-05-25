@@ -158,21 +158,21 @@ public class ScoreBoardJSONListenerTests {
 
         sb.getTeam("1").setAlternateName("overlay", "AT");
         advance(0);
-        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay).Name"));
+        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay)"));
 
         sb.getTeam("1").setAlternateName("overlay", "AT");
         advance(0);
-        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay).Name"));
+        assertEquals("AT", state.get("ScoreBoard.Team(1).AlternateName(overlay)"));
         sb.getTeam("1").removeAlternateName("overlay");
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Team(1).AlternateName(overlay).Name"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).AlternateName(overlay)"));
 
         sb.getTeam("1").setColor("overlay", "red");
         advance(0);
-        assertEquals("red", state.get("ScoreBoard.Team(1).Color(overlay).Color"));
+        assertEquals("red", state.get("ScoreBoard.Team(1).Color(overlay)"));
         sb.getTeam("1").removeColor("overlay");
         advance(0);
-        assertEquals(null, state.get("ScoreBoard.Team(1).Color(overlay).Color"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).Color(overlay)"));
     }
 
     @Test
