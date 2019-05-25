@@ -32,6 +32,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
@@ -122,18 +123,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             switch((Child)prop) {
-            case ALTERNATE_NAME:
-                return new AlternateNameImpl(this, id, "");
-            case COLOR:
-                return new ColorImpl(this, id, "");
             case SKATER:
                 return new SkaterImpl(this, id, "", "", "");
-            case POSITION:
-                return null;
             case BOX_TRIP:
                 return new BoxTripImpl(this, id);
+            default:
+                return null;
             }
-            return null;
         }
     }
 
@@ -262,30 +258,32 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     @Override
-    public AlternateName getAlternateName(String i) { return (AlternateName)get(Child.ALTERNATE_NAME, i); }
+    public String getAlternateName(String i) { return get(Child.ALTERNATE_NAME, i).getValue(); }
+    @Override
+    public String getAlternateName(AlternateNameId id) { return getAlternateName(id.toString()); }
     @Override
     public void setAlternateName(String i, String n) {
         synchronized (coreLock) {
             requestBatchStart();
-            ((AlternateName)getOrCreate(Child.ALTERNATE_NAME, i)).setName(n);
+            add(Child.ALTERNATE_NAME, new ValWithId(i, n));
             requestBatchEnd();
         }
     }
     @Override
-    public void removeAlternateName(String i) { remove(Child.ALTERNATE_NAME, getAlternateName(i)); }
+    public void removeAlternateName(String i) { remove(Child.ALTERNATE_NAME, i); }
 
     @Override
-    public Color getColor(String i) { return (Color)get(Child.COLOR, i); }
+    public String getColor(String i) { return get(Child.COLOR, i).getValue(); }
     @Override
     public void setColor(String i, String c) {
         synchronized (coreLock) {
             requestBatchStart();
-            ((Color)getOrCreate(Child.COLOR, i)).setColor(c);
+            add(Child.COLOR, new ValWithId(i, c));
             requestBatchEnd();
         }
     }
     @Override
-    public void removeColor(String i) { remove(Child.COLOR, getColor(i)); }
+    public void removeColor(String i) { remove(Child.COLOR, i); }
 
     @Override
     public String getLogo() { return (String)get(Value.LOGO); }
@@ -533,40 +531,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";
-
-    public class AlternateNameImpl extends ScoreBoardEventProviderImpl implements AlternateName {
-        public AlternateNameImpl(Team t, String i, String n) {
-            super(t, Value.ID, i, Team.Child.ALTERNATE_NAME, AlternateName.class, Value.class);
-            team = t;
-            setName(n);
-        }
-        @Override
-        public String getName() { return (String)get(Value.NAME); }
-        @Override
-        public void setName(String n) { set(Value.NAME, n); }
-
-        @Override
-        public Team getTeam() { return team; }
-
-        protected Team team;
-    }
-
-    public class ColorImpl extends ScoreBoardEventProviderImpl implements Color {
-        public ColorImpl(Team t, String i, String c) {
-            super(t, Value.ID, i, Team.Child.COLOR, Color.class, Value.class);
-            team = t;
-            setColor(c);
-        }
-        @Override
-        public String getColor() { return (String)get(Value.COLOR); }
-        @Override
-        public void setColor(String c) { set(Value.COLOR, c); }
-
-        @Override
-        public Team getTeam() { return team; }
-
-        protected Team team;
-    }
 
     public static class TeamSnapshotImpl implements TeamSnapshot {
         private TeamSnapshotImpl(Team team) {

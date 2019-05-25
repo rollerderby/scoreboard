@@ -359,15 +359,15 @@ _crgUtils = {
 				var id = $sb(node).$sbId;
 				if (map == null) {
 					if (id == fg) {
-						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						node.$sbBindAndRun("sbchange", function(event,val) {
 							$(fg_elem).css('color', $.trim(val));
 						});
 					} else if (id == bg) {
-						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						node.$sbBindAndRun("sbchange", function(event,val) {
 							$(bg_elem).css('background-color', $.trim(val));
 						});
 					} else if (id == gl) {
-						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						node.$sbBindAndRun("sbchange", function(event,val) {
 							var shadow = '';
 							if ($.trim(val) != "") {
 								shadow = '0 0 0.2em ' + val;
@@ -378,15 +378,15 @@ _crgUtils = {
 					}
 				} else {
 					if (map.fg != null && id == fg) {
-						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						node.$sbBindAndRun("sbchange", function(event,val) {
 							$(fg_elem).css(map.fg, $.trim(val));
 						});
 					} else if (map.bg != null && id == bg) {
-						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						node.$sbBindAndRun("sbchange", function(event,val) {
 							$(fg_elem).css(map.bg, $.trim(val));
 						});
 					} else if (map.glow != null && id == gl) {
-						node.$sb("Color").$sbBindAndRun("sbchange", function(event,val) {
+						node.$sbBindAndRun("sbchange", function(event,val) {
 							$(fg_elem).css(map.glow, $.trim(val));
 						});
 					}
