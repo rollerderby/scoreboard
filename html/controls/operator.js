@@ -603,14 +603,14 @@ function createTeamTable() {
 				if (val == "") {
 					sbTeam.$sb("AlternateName(operator)").$sbRemove();
 				} else {
-					sbTeam.$sb("AlternateName(operator).Name").$sbSet(val);
+					sbTeam.$sb("AlternateName(operator)").$sbSet(val);
 				}
 			}
 		});
 		
 		sbTeam.$sbBindAddRemoveEach("AlternateName", function(event, node) {
 			if ($sb(node).$sbId == "operator")
-				$sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event, val) {
+				$sb(node).$sbBindAndRun("sbchange", function(event, val) {
 					altNameA.html($.trim(val));
 					altNameInput.val($.trim(val));
 					nameA.toggleClass("AlternateName", ($.trim(val) != ""));
@@ -1852,7 +1852,7 @@ function createAlternateNamesDialog(team) {
 	var newFunc = function() {
 		var newId = newIdInput.val();
 		var newName = newNameInput.val();
-		team.$sb("AlternateName("+newId+").Name").$sbSet(newName);
+		team.$sb("AlternateName("+newId+")").$sbSet(newName);
 		newNameInput.val("");
 		newIdInput.val("").focus();
 	};
@@ -1885,7 +1885,7 @@ function createAlternateNamesDialog(team) {
 			.click(function() { node.$sbRemove(); })
 			.appendTo(tr.children("td.X"));
 		tr.children("td.Id").text(node.$sbId);
-		node.$sb("Name").$sbControl("<input type='text' size='20'>").appendTo(tr.children("td.Name"));
+		node.$sbControl("<input type='text' size='20'>").appendTo(tr.children("td.Name"));
 		tr.appendTo(table);
 	};
 	var removeFunc = function(event, node) {
@@ -1925,9 +1925,9 @@ function createColorsDialog(team) {
 	var newFunc = function() {
 		var newId = newIdInput.val();
 
-		team.$sb("Color(" + newId + "_fg).Color").$sbSet("");
-		team.$sb("Color(" + newId + "_bg).Color").$sbSet("");
-		team.$sb("Color(" + newId + "_glow).Color").$sbSet("");
+		team.$sb("Color(" + newId + "_fg)").$sbSet("");
+		team.$sb("Color(" + newId + "_bg)").$sbSet("");
+		team.$sb("Color(" + newId + "_glow)").$sbSet("");
 
 		newIdInput.val("").focus();
 	};
@@ -1969,19 +1969,19 @@ function createColorsDialog(team) {
 			var fg = team.$sb("Color(" + colorId + "_fg)");
 			var bg = team.$sb("Color(" + colorId + "_bg)");
 			var gl = team.$sb("Color(" + colorId + "_glow)");
-			var fgInput = fg.$sb("Color")
+			var fgInput = fg
 				.$sbControl("<input type='text' size='5'>", { sbcontrol: {
 					colorpicker: true
 				} })
 				.appendTo(tr.children("td.Foreground"))
 				.addClass("ColorPicker");
-			var bgInput = bg.$sb("Color")
+			var bgInput = bg
 				.$sbControl("<input type='text' size='5'>", { sbcontrol: {
 					colorpicker: true
 				} })
 				.appendTo(tr.children("td.Background"))
 				.addClass("ColorPicker");
-			var glInput = gl.$sb("Color")
+			var glInput = gl
 				.$sbControl("<input type='text' size='5'>", { sbcontrol: {
 					colorpicker: true
 				} })

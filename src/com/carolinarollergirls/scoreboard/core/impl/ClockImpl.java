@@ -81,7 +81,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         if (prop == Value.TIME && isTimeAtEnd()) {
             stop();
         }
-        if (prop == Value.MAXIMUM_TIME && isCountDirectionDown()) {
+        if (prop == Value.MAXIMUM_TIME && isCountDirectionDown() && flag != Flag.FROM_AUTOSAVE) {
             changeTime((Long)value - (Long)last);
         }
         if (prop == Value.DIRECTION) {

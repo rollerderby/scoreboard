@@ -48,11 +48,11 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		tbody = $('<tbody>').appendTo(table);
 
 		WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
-		WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ').Name'], function () { teamNameUpdate(); });
+		WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'], function () { teamNameUpdate(); });
 
 		WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-			element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_bg).Color'] || '');
-			element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_fg).Color'] || '');
+			element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_bg)'] || '');
+			element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_fg)'] || '');
 		});
 		WS.Register(['ScoreBoard.Clock(Period).Number'], updatePeriod);
 		WS.Register(['ScoreBoard.Clock(Jam).Number'], updateJam);
@@ -246,8 +246,8 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		var head = element.find('#head');
 		var teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
 
-		if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ').Name'] != null) {
-			teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ').Name']
+		if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'] != null) {
+			teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')']
 		}
 
 		head.text(teamName);
@@ -341,7 +341,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 function openPenaltyEditor(t, id, which) {
 	var prefix = 'ScoreBoard.Team(' + t + ')';
-		teamName = WS.state[prefix + '.AlternateName(operator).Name'];
+		teamName = WS.state[prefix + '.AlternateName(operator)'];
 	if (teamName == null)
 		teamName = WS.state[prefix + '.Name'];
 

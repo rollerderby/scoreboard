@@ -18,6 +18,7 @@ import org.jdom.xpath.XPath;
 
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 /**
  * This allows storing team info, e.g. name, logo, roster, etc., separate from the actual teams
@@ -127,17 +128,11 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         if (null == alternateNameId || "".equals(alternateNameId.trim())) {
             return;
         }
-        Element newAlternateName = editor.addElement(newTeam, "AlternateName", alternateNameId);
+        Element newAlternateName = editor.addElement(newTeam, "AlternateName", alternateNameId, editor.getText(alternateName));
 
         if (editor.hasRemovePI(alternateName)) {
             Element removeAlternateNameTeam = editor.addElement(createXPathElement(), "Team", newTeam.getAttributeValue("Id"));
             update(removeAlternateNameTeam.addContent(editor.setRemovePI((Element)newAlternateName.detach())));
-            return;
-        }
-
-        Element aName = alternateName.getChild("Name");
-        if (null != aName) {
-            editor.addElement(newAlternateName, "Name", null, editor.getText(aName));
         }
     }
 
@@ -146,17 +141,11 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         if (null == colorId || "".equals(colorId.trim())) {
             return;
         }
-        Element newColor = editor.addElement(newTeam, "Color", colorId);
+        Element newColor = editor.addElement(newTeam, "Color", colorId, editor.getText(color));
 
         if (editor.hasRemovePI(color)) {
             Element removeColorTeam = editor.addElement(createXPathElement(), "Team", newTeam.getAttributeValue("Id"));
             update(removeColorTeam.addContent(editor.setRemovePI((Element)newColor.detach())));
-            return;
-        }
-
-        Element cColor = color.getChild("Color");
-        if (null != cColor) {
-            editor.addElement(newColor, "Color", null, editor.getText(cColor));
         }
     }
 
@@ -229,7 +218,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
                 continue;
             }
             String aName = "";
-            aName = editor.getText(alternateName.getChild("Name"));
+            aName = editor.getText(alternateName);
             team.setAlternateName(aId, aName);
         }
         Iterator<?> colors = newTeam.getChildren("Color").iterator();
@@ -240,7 +229,7 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
                 continue;
             }
             String cColor = "";
-            cColor = editor.getText(color.getChild("Color"));
+            cColor = editor.getText(color);
             team.setColor(cId, cColor);
         }
         Iterator<?> skaters = newTeam.getChildren("Skater").iterator();
@@ -274,17 +263,11 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         createXPathElement().addContent(newTeam);
         editor.addElement(newTeam, "Name", null, team.getName());
         editor.addElement(newTeam, "Logo", null, team.getLogo());
-        Iterator<?> alternateNames = team.getAll(Team.Child.ALTERNATE_NAME).iterator();
-        while (alternateNames.hasNext()) {
-            Team.AlternateName alternateName = (Team.AlternateName)alternateNames.next();
-            Element newAlternateName = editor.addElement(newTeam, "AlternateName", alternateName.getId());
-            editor.addElement(newAlternateName, "Name", null, alternateName.getName());
+        for (ValueWithId alternateName : team.getAll(Team.Child.ALTERNATE_NAME)) {
+            editor.addElement(newTeam, "AlternateName", alternateName.getId(), alternateName.getValue());
         }
-        Iterator<?> colors = team.getAll(Team.Child.COLOR).iterator();
-        while (colors.hasNext()) {
-            Team.Color color = (Team.Color)colors.next();
-            Element newColor = editor.addElement(newTeam, "Color", color.getId());
-            editor.addElement(newColor, "Color", null, color.getColor());
+        for (ValueWithId color : team.getAll(Team.Child.COLOR)) {
+            editor.addElement(newTeam, "Color", color.getId(), color.getValue());
         }
         Iterator<?> skaters = team.getAll(Team.Child.SKATER).iterator();
         while (skaters.hasNext()) {
