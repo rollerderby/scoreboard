@@ -8,11 +8,13 @@ function jammer(k, v) {
 	var pivotName = WS.state[prefix + "Skater(" + pivotId + ").Name"];
 	var leadJammer = isTrue(WS.state[prefix + "DisplayLead"]);
 	var starPass = isTrue(WS.state[prefix + "StarPass"]);
+	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
-	if (jammerName == null)
-		jammerName = leadJammer ? "Lead" : "";
+	if (jammerName == null || jammerName == "") {
+		jammerName = (leadJammer && inJam) ? "Lead" : "";
 	if (pivotName == null)
 		pivotName = "";
+	}
 
 	var jn = !starPass ? jammerName : pivotName;
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
@@ -171,3 +173,4 @@ WS.Register( [
 	"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); } );
 
 WS.Register( 'ScoreBoard.Rulesets.CurrentRule(Period.Number)' );
+WS.Register( 'ScoreBoard.InJam' );

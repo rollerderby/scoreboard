@@ -120,13 +120,13 @@ table.RowTable { border-spacing: 0px; }
 	#Teams table.Skaters.Empty tr:last-of-type>th:last-of-type { border-radius: 0px 0px 12px 0px; }
 	#Teams table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; }
 	#Teams table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; }
-	#Teams table.Skaters col.Id { width: 15%; }
+	#Teams table.Skaters tbody tr:nth-child(2n) { background: #ccc; }
 	#Teams table.Skaters col.Name { width: 40%; }
 	#Teams table.Skaters col.Number { width: 30%; }
 	#Teams table.Skaters col.Button { width: 15%; }
 
 	#Teams table.Skaters th.Title { font-size: 200%; }
-	#Teams table.Skaters td.Id { font-size: 75%; }
+	#Teams table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; }
 	#Teams table.Skaters button.AddSkater>span { padding-top: 0em; padding-bottom: 0em; }
 	#Teams table.Skaters button.RemoveSkater>span { padding-top: 0em; padding-bottom: 0em; }
 /* End Teams Control */

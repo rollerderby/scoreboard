@@ -712,9 +712,16 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertTrue(ic.isCountDirectionDown());
         ic.setMaximumTime(900000);
-        ic.setTime(880000);
+        ic.setTime(ic.getMaximumTime() - 500);
         assertTrue(ic.isRunning());
 
+        sb.stopJamTO();
+        
+        // less than 1s of intermission has passed, stopJamTO should be ignored
+        assertFalse(lc.isRunning());
+        assertTrue(ic.isRunning());
+        
+        advance(20000);
         sb.stopJamTO();
 
         assertEquals(ScoreBoard.ACTION_LINEUP, sb.snapshot.getType());
@@ -872,7 +879,7 @@ public class ScoreboardImplTests {
         tc.setTime(24000);
         tc.setNumber(7);
         assertFalse(ic.isRunning());
-        sb.setTimeoutOwner(Timeout.Owners.NONE);
+        sb.setTimeoutOwner(TimeoutOwners.OTO);
 
         sb.timeout();
 
@@ -887,9 +894,19 @@ public class ScoreboardImplTests {
         assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_RE_TIMEOUT);
 
+        sb.setTimeoutOwner(TimeoutOwners.OTO);
         sb.timeout();
 
-        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
+        // timeout was entered with less than 1s on the TO clock
+        // and should be ignored
+        assertEquals(8, tc.getNumber());
+        assertEquals(TimeoutOwners.OTO, sb.getTimeoutOwner());
+        
+        advance(1500);
+        sb.timeout();
+        
+        assertEquals(9, tc.getNumber());
+        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
     }
 
     @Test

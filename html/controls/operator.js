@@ -573,7 +573,7 @@ function createTeamTable() {
 			}
 		};
 		var nameInputBlur = function(event) {
-			if (event.relatedTarget != nameInput && event.relatedTarget != altNameInput) {
+			if (event.relatedTarget != nameInput[0] && event.relatedTarget != altNameInput[0]) {
 				nameEditTable.hide();
 				nameDisplayDiv.show();
 				nameInput.removeClass("Editing").trigger("editstop");;
@@ -1695,13 +1695,36 @@ function createNewTeamTable(team, teamid) {
 
 	team.$sb("Name").$sbControl("<input type='text'>")
 		.appendTo(controlTable.find("td:eq(0)"));
-	team.$sb("Logo").$sbControl("<select>", { sbelement: {
+	var waitingOnUpload = "";
+	var logoSelect = team.$sb("Logo").$sbControl("<select>", { sbelement: {
 		optionParent: "ScoreBoard.Media.Format(images).Type(teamlogo)",
 		optionChildName: "File",
 		optionNameElement: "Name",
 		optionValueElement: "Src",
-		firstOption: { text: "No Logo", value: "" }
+		firstOption: { text: "No Logo", value: "" },
 	} }).appendTo(controlTable.find("td:eq(1)"));
+	$sb("ScoreBoard.Media.Format(images).Type(teamlogo)").$sbBindAddRemoveEach("File",
+			function(event, node){
+				if (waitingOnUpload == node.$sb("Id").$sbGet()) {
+					logoSelect.val(node.$sb("Src").$sbGet());
+					waitingOnUpload = "";
+				}
+			});
+	$("<input type='file' id='teamLogoUpload'>").fileupload({
+		url: "/Media/upload",
+		formData: [{name: "media", value: "images"}, {name: "type", value: "teamlogo"}],
+		add: function(e, data) {
+			var fd = new FormData();
+			fd.append("f", data.files[0], (isCurrentTeam ? "current" : teamid)+ "_" + data.files[0].name);
+			data.files[0] = fd.get("f");
+			data.submit();
+			waitingOnUpload = fd.get("f").name;
+		},
+		fail: function(e, data) {
+			console.log("Failed upload", data.errorThrown);
+		}
+	}).css("display", "none").appendTo(controlTable.find("td:eq(1)"));
+	$("<button>").text("Upload...").appendTo(controlTable.find("td:eq(1)")).click(function(){controlTable.find("#teamLogoUpload").click();});
 	$("<button>").text("Alternate Names").button()
 		.click(function() { createAlternateNamesDialog(team); })
 		.appendTo(controlTable.find("td:eq(2)"));
@@ -1723,17 +1746,17 @@ function createNewTeamTable(team, teamid) {
 		.append("<col class='Button'>")
 		.append("<thead/><tbody/>")
 		.children("thead")
-		.append("<tr><th colspan='4' class='Title'>Skaters</th></tr>")
+		.append("<tr><th></th><th class='Title'>Skaters</th><th id='skaterCount'></th><th></th></tr>")
 		.append("<tr><th>Number</th><th>Name</th><th>Flags</th><th>Add</th>")
 		.append("<tr class='AddSkater'><th/><th/><th/><th/><th/></tr>")
 		.append("<tr><th colspan='4'><hr/></th></tr>")
 		.end();
 
 	var addSkater = function(number, name, flags, id) {
-			id = id || _crgScoreBoard.newUUID(true);
-			team.$sb("Skater("+id+").Number").$sbSet(number);
-			team.$sb("Skater("+id+").Name").$sbSet(name);
-			team.$sb("Skater("+id+").Flags").$sbSet(flags);
+		id = id || _crgScoreBoard.newUUID(true);
+		team.$sb("Skater("+id+").Number").$sbSet(number);
+		team.$sb("Skater("+id+").Name").$sbSet(name);
+		team.$sb("Skater("+id+").Flags").$sbSet(flags);
 	}
 
 	var newSkaterNumber = $("<input type='text' size='10'>").addClass("Number")
@@ -1774,7 +1797,7 @@ function createNewTeamTable(team, teamid) {
 		var knownNumbers = {};
 		team.find('Skater Number').map( function(_, n) {
 			n = $(n)
-			knownNumbers[n.text()] = n.parent().attr("Id");
+				knownNumbers[n.text()] = n.parent().attr("Id");
 		});
 
 		for (var i = 0; i < lines.length; i++) {
@@ -1795,6 +1818,17 @@ function createNewTeamTable(team, teamid) {
 	}
 	newSkaterNumber.bind("paste", pasteHandler);
 	newSkaterName.bind("paste", pasteHandler);
+
+	var updateSkaterCount = function() {
+			var count = 0;
+			team.find("Skater").find("Flags").each(function(_, f) {
+				if (f.textContent != "BC" && f.textContent != "ALT") {
+					count++;
+				}
+			});
+			skatersTable.find("#skaterCount").text("(" + count + " skating)");
+	};
+	updateSkaterCount();
 
 	team.$sbBindAddRemoveEach("Skater", function(event,node) {
 		var skaterid = node.$sbId;
@@ -1825,6 +1859,7 @@ function createNewTeamTable(team, teamid) {
 		skaterFlags.append($("<option>").attr("value", "ALT").text("Alt Skater"));
 		skaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
 		node.$sb("Flags").$sbControl(skaterFlags);
+		node.$sb("Flags").$sbBindAndRun("sbchange", updateSkaterCount);
 
 		node.$sb("Number").$sbBindAndRun("sbchange", function(event, value) {
 			if (!numberInput.is(':focus')) {
@@ -1836,6 +1871,7 @@ function createNewTeamTable(team, teamid) {
 		skatersTable.find("tr[data-skaterid='"+node.$sbId+"']").remove();
 		if (!skatersTable.find("tr[data-skaterid]").length)
 			skatersTable.addClass("Empty");
+		updateSkaterCount();
 	});
 
 	return teamTable;
