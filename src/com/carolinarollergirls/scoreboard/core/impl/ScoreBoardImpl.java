@@ -280,6 +280,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             Clock jc = getClock(Clock.ID_JAM);
             Clock lc = getClock(Clock.ID_LINEUP);
             Clock tc = getClock(Clock.ID_TIMEOUT);
+            Clock ic = getClock(Clock.ID_INTERMISSION);
 
             if (jc.isRunning()) {
                 createSnapshot(ACTION_STOP_JAM);
@@ -291,7 +292,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
                 _endTimeout(false);
                 finishReplace();
-            } else if (!lc.isRunning()) {
+            } else if (!lc.isRunning() && (!ic.isRunning() || ic.getTimeElapsed() > 1000L)) {
+                // just after starting intermission this is almost surely the operator trying to end
+                // a last jam that was just auto ended or accidentally hitting the button twice
+                // - ignore, as this confuses operators and makes undoing the Jam end impossible
                 createSnapshot(ACTION_LINEUP);
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
                 _startLineup();
@@ -463,6 +467,12 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         requestBatchStart();
         if (tc.isRunning()) {
+            if (tc.getTimeElapsed() < 1000L) {
+                // This is almost surely an accidental double press
+                // ignore as it messes up stats and makes undo impossible
+                requestBatchEnd();
+                return;
+            }
             //end the previous timeout before starting a new one
             _endTimeout(true);
         }
