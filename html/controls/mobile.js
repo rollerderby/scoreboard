@@ -18,7 +18,7 @@ $sb(function() {
 	$.each( [ "1", "2" ], function(i, t) {
 		$sb("ScoreBoard.Team("+t+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
 			if ($sb(node).$sbId == "mobile")
-				$sb(node).$sb("Name").$sbBindAndRun("sbchange", function(event2, val) {
+				$sb(node).$sbBindAndRun("sbchange", function(event2, val) {
 					$(".Team"+t+".Name,.Team"+t+".AlternateName")
 						.toggleClass("HasAlternateName", $.trim(val) != "");
 				});
@@ -34,16 +34,16 @@ function setupJamControlPage() {
 	$sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
 	$sb("ScoreBoard.Team(1).OfficialReview").$sbControl("#JamControlPage div.OfficialReview button.Team1").val(true);
 	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>span.Name");
-	$sb("ScoreBoard.Team(1).AlternateName(operator).Name").$sbElement("#JamControlPage div.Timeout button.Team1>span.AlternateName");
+	$sb("ScoreBoard.Team(1).AlternateName(operator)").$sbElement("#JamControlPage div.Timeout button.Team1>span.AlternateName");
 	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.OfficialReview button.Team1>span.Name");
-	$sb("ScoreBoard.Team(1).AlternateName(operator).Name").$sbElement("#JamControlPage div.OfficialReview button.Team1>span.AlternateName");
+	$sb("ScoreBoard.Team(1).AlternateName(operator)").$sbElement("#JamControlPage div.OfficialReview button.Team1>span.AlternateName");
 	$sb("ScoreBoard.OfficialTimeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
 	$sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
 	$sb("ScoreBoard.Team(2).OfficialReview").$sbControl("#JamControlPage div.OfficialReview button.Team2").val(true);
 	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>span.Name");
-	$sb("ScoreBoard.Team(2).AlternateName(operator).Name").$sbElement("#JamControlPage div.Timeout button.Team2>span.AlternateName");
+	$sb("ScoreBoard.Team(2).AlternateName(operator)").$sbElement("#JamControlPage div.Timeout button.Team2>span.AlternateName");
 	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.OfficialReview button.Team2>span.Name");
-	$sb("ScoreBoard.Team(2).AlternateName(operator).Name").$sbElement("#JamControlPage div.OfficialReview button.Team2>span.AlternateName");
+	$sb("ScoreBoard.Team(2).AlternateName(operator)").$sbElement("#JamControlPage div.OfficialReview button.Team2>span.AlternateName");
 
 	$.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
 		$sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {

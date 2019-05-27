@@ -127,8 +127,6 @@ public class WS extends WebSocketServlet {
                     String f = json.getString("flag");
                     if ("reset".equals(f)) { flag = Flag.RESET; }
                     if ("change".equals(f)) { flag = Flag.CHANGE; }
-                    //TODO: remove for release
-                    ScoreBoardManager.printMessage("Setting " + key + " to " + v + (flag == null ? "" : (", Flag: " + flag.name())));
                     Matcher m = pathElementPattern.matcher(key);
                     if (m.matches() && m.group("name").equals("ScoreBoard") &&
                             m.group("id") == null && m.group("remainder") != null) {

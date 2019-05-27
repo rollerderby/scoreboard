@@ -62,14 +62,14 @@ function initialize() {
 	});
 
 	WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line',
-	'ScoreBoard.Team(1).AlternateName(overlay).Name',
-	'ScoreBoard.Team(2).AlternateName(overlay).Name'],
+	'ScoreBoard.Team(1).AlternateName(overlay)',
+	'ScoreBoard.Team(2).AlternateName(overlay)'],
 				function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
 
-	WS.Register(['ScoreBoard.Team(1).Color(overlay_fg).Color',
-	'ScoreBoard.Team(1).Color(overlay_bg).Color',
-	'ScoreBoard.Team(2).Color(overlay_fg).Color',
-	'ScoreBoard.Team(2).Color(overlay_bg).Color'],
+	WS.Register(['ScoreBoard.Team(1).Color(overlay_fg)',
+	'ScoreBoard.Team(1).Color(overlay_bg)',
+	'ScoreBoard.Team(2).Color(overlay_fg)',
+	'ScoreBoard.Team(2).Color(overlay_bg)'],
 				function(k,v) {
 					if (v == null || v == "") {
 						$('input[data-setting="'+k+'"]').attr("cleared", "true");
@@ -132,7 +132,7 @@ $('select#Skaters').change(function(e) {
 	v = $t.val();
 	team = $( 'option[value=' + v + ']', $t ).attr('data-team');
 	name = $( 'option[value=' + v + ']', $t ).attr('data-name');
-	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay).Name'];
+	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
 	tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
 	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').change();
 	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(name).change();
