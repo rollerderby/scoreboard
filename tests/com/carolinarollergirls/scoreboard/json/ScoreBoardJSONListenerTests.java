@@ -136,6 +136,7 @@ public class ScoreBoardJSONListenerTests {
 
         sb.timeout();
         sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
+        advance(1500);
         sb.timeout();
         sb.setTimeoutType(sb.getTeam(Team.ID_1), true);
         sb.getTeam(Team.ID_1).setRetainedOfficialReview(true);

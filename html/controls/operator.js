@@ -1119,6 +1119,8 @@ function createTimeoutDialog() {
 	.appendTo(headers.find("td:eq(3)").addClass("Title"));
 	$("<a>").text("Type").addClass("Title")
 		.appendTo(headers.find("td:eq(4)").addClass("Title"));
+	$("<a>").text("Retained").addClass("Title")
+	.appendTo(headers.find("td:eq(5)").addClass("Title"));
 	
 	var footer = $("<tr><td/><td colspan=\"3\"/><td/><td/><td/></tr>").attr('id', 'toFooter').appendTo(table);
 	periodDropdownTemplate.clone().appendTo(footer.find('td:eq(0)'));
@@ -1132,8 +1134,8 @@ function createTimeoutDialog() {
 		var p = Number(v);
 		var i;
 		for (i = lastPeriodRegistered + 1; i <= p; i++) {
-			firstJamListed[p] = 0;
-			lastJamListed[p] = 0;
+			firstJamListed[i] = 0;
+			lastJamListed[i] = 0;
 			jamDropdownTemplate[i] = $('<select>').attr('id', 'JamDropdown').attr('period', i);
 			WS.Register(['ScoreBoard.Period('+i+').CurrentJamNumber', 'ScoreBoard.Period('+i+').FirstJamNumber'], processJamNumber);
 			WS.Register(['ScoreBoard.Period('+i+').Timeout'], processTimeout);
@@ -1148,13 +1150,14 @@ function createTimeoutDialog() {
 		for (i = lastPeriodListed; i > p; i--) {
 			periodDropdownTemplate.find('option[value='+i+']').remove();
 			table.find('#PeriodDropdown option[value='+i+']').remove();
-			clearPeriod(p);
+			clearPeriod(i);
 			lastPeriodListed = i-1;
 		}
 		footer.find('#PeriodDropdown').val(p);
 	});
 	
 	function addJam(p, j, append) {
+		console.log('add P'+p+'J'+j);
 		var option = $('<option>').attr('value', j).text('J'+j);
 		if (append) {
 			jamDropdownTemplate[p].append(option.clone());
@@ -1165,10 +1168,12 @@ function createTimeoutDialog() {
 		}
 	}
 	function removeJam(p, j) {
+		console.log('remove P'+p+'J'+j);
 		jamDropdownTemplate[p].find('option[value='+i+']').remove();
 		table.find('#JamDropdown[period='+p+'] option[value='+i+']').remove();
 	}
 	function clearPeriod(p) {
+		console.log('clear P'+p);
 		table.find('tr.Timeout[period='+p+']').remove();
 		jamDropdownTemplate[p].find('option').remove();
 		table.find('#JamDropdown[period='+p+'] option').remove();
@@ -1184,6 +1189,9 @@ function createTimeoutDialog() {
 		oldLast = lastJamListed[p];
 		console.log('P'+p+':'+oldFirst+'-'+oldLast+' -> '+newFirst+'-'+newLast)
 		var j;
+		if (newFirst == 0 && oldFirst == 0) {
+			return;
+		}
 		if (newFirst == 0 && oldFirst > 0) {
 			clearPeriod(p);
 			return;
@@ -1292,7 +1300,7 @@ function createTimeoutDialog() {
 		title: "Timeouts",
 		autoOpen: false,
 		modal: true,
-		width: 700,
+		width: 750,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 }
