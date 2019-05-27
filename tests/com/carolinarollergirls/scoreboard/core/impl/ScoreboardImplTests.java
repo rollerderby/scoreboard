@@ -879,7 +879,7 @@ public class ScoreboardImplTests {
         tc.setTime(24000);
         tc.setNumber(7);
         assertFalse(ic.isRunning());
-        sb.setTimeoutOwner(TimeoutOwners.OTO);
+        sb.setTimeoutOwner(Timeout.Owners.OTO);
 
         sb.timeout();
 
@@ -894,19 +894,19 @@ public class ScoreboardImplTests {
         assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_RE_TIMEOUT);
 
-        sb.setTimeoutOwner(TimeoutOwners.OTO);
+        sb.setTimeoutOwner(Timeout.Owners.OTO);
         sb.timeout();
 
         // timeout was entered with less than 1s on the TO clock
         // and should be ignored
         assertEquals(8, tc.getNumber());
-        assertEquals(TimeoutOwners.OTO, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.OTO, sb.getTimeoutOwner());
         
         advance(1500);
         sb.timeout();
         
         assertEquals(9, tc.getNumber());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
     }
 
     @Test
