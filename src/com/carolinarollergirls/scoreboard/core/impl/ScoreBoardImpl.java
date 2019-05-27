@@ -90,7 +90,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             if (!getRulesets().getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { return false; }
             Jam lastJam = getCurrentPeriod().getCurrentJam();
             long pcRemaining = getClock(Clock.ID_PERIOD).getMaximumTime() - lastJam.getPeriodClockElapsedEnd();
-            if (pcRemaining > getRulesets().getLong(Rule.LINEUP_DURATION)) { return false; }
+            if (pcRemaining >= getRulesets().getLong(Rule.LINEUP_DURATION)) { return false; }
             boolean ttoForcesJam = getRulesets().getBoolean(Rule.STOP_PC_ON_TO) || getRulesets().getBoolean(Rule.STOP_PC_ON_TTO);
             boolean orForcesJam = getRulesets().getBoolean(Rule.STOP_PC_ON_TO) || getRulesets().getBoolean(Rule.STOP_PC_ON_OR);
             boolean otoForcesJam = getRulesets().getBoolean(Rule.EXTRA_JAM_AFTER_OTO) &&
