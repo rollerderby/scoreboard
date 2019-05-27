@@ -572,7 +572,7 @@ function createTeamTable() {
 			}
 		};
 		var nameInputBlur = function(event) {
-			if (event.relatedTarget != nameInput && event.relatedTarget != altNameInput) {
+			if (event.relatedTarget != nameInput[0] && event.relatedTarget != altNameInput[0]) {
 				nameEditTable.hide();
 				nameDisplayDiv.show();
 				nameInput.removeClass("Editing").trigger("editstop");;
