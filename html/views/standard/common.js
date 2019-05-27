@@ -10,10 +10,11 @@ function jammer(k, v) {
 	var starPass = isTrue(WS.state[prefix + "StarPass"]);
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
-	if (jammerName == null)
+	if (jammerName == null || jammerName == "") {
 		jammerName = (leadJammer && inJam) ? "Lead" : "";
 	if (pivotName == null)
 		pivotName = "";
+	}
 
 	var jn = !starPass ? jammerName : pivotName;
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
