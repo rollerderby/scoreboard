@@ -1157,7 +1157,6 @@ function createTimeoutDialog() {
 	});
 	
 	function addJam(p, j, append) {
-		console.log('add P'+p+'J'+j);
 		var option = $('<option>').attr('value', j).text('J'+j);
 		if (append) {
 			jamDropdownTemplate[p].append(option.clone());
@@ -1168,12 +1167,10 @@ function createTimeoutDialog() {
 		}
 	}
 	function removeJam(p, j) {
-		console.log('remove P'+p+'J'+j);
 		jamDropdownTemplate[p].find('option[value='+i+']').remove();
 		table.find('#JamDropdown[period='+p+'] option[value='+i+']').remove();
 	}
 	function clearPeriod(p) {
-		console.log('clear P'+p);
 		table.find('tr.Timeout[period='+p+']').remove();
 		jamDropdownTemplate[p].find('option').remove();
 		table.find('#JamDropdown[period='+p+'] option').remove();
@@ -1187,7 +1184,6 @@ function createTimeoutDialog() {
 		newLast = WS.state['ScoreBoard.Period('+p+').CurrentJamNumber'];
 		oldFirst = firstJamListed[p];
 		oldLast = lastJamListed[p];
-		console.log('P'+p+':'+oldFirst+'-'+oldLast+' -> '+newFirst+'-'+newLast)
 		var j;
 		if (newFirst == 0 && oldFirst == 0) {
 			return;
