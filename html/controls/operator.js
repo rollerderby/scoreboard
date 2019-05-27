@@ -825,7 +825,11 @@ function createTeamTable() {
 			noPivotButton.val(!isTrue(value));
 			noPivotButton.toggleClass("Active", isTrue(value));
 		});
-		noPivotButton.appendTo(starPassTd);
+		if (first) {
+			noPivotButton.appendTo(starPassTd);
+		} else {
+			noPivotButton.prependTo(starPassTd);
+		}
 
 		var makeSkaterDropdown = function(pos, elem, sort) {
 			var sortFunc = _windowFunctions.alphaCompareByProp;
@@ -837,11 +841,12 @@ function createTeamTable() {
 					optionFilterElement: "Role",
 					optionChildFilter: function(node) { return (node.$sb("Role").$sbGet() != 'NotInGame'); },
 					compareOptions: function(a, b) { return sortFunc("text", a, b); },
-					firstOption: { text: "No "+pos, value: "" }
+					firstOption: { text: '?', value: "" }
 				} }).addClass(pos+" By"+elem+" "+sort+"Sort");
 		};
 
 		var jammerSelectTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer");
+		$('<span>').text('Jammer:').appendTo(jammerSelectTd);
 		makeSkaterDropdown("Jammer", "Number", "Alpha").appendTo(jammerSelectTd);
 
 		var jammerBox = sbTeam.$sb("Position(Jammer).PenaltyBox");
@@ -854,6 +859,7 @@ function createTeamTable() {
 		jammerBoxButton.appendTo(jammerSelectTd);
 
 		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot");
+		$('<span>').text('Piv/4th Bl:').appendTo(pivotSelectTd);
 		makeSkaterDropdown("Pivot", "Number", "Alpha").appendTo(pivotSelectTd);
 
 		var pivotBox = sbTeam.$sb("Position(Pivot).PenaltyBox");
