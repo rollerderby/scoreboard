@@ -104,7 +104,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
 			if (mode != 'copyToStatsbook') {
 				$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
-				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
+				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoNamedPivot', $(this).text() == ""); }).appendTo(jamRow);
 			}
 			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 				var pos = String(this);
@@ -248,27 +248,34 @@ function prepareFieldingEditor(teamId) {
 	}		
 	
 	function processSkater(k, v) {
-		var match = (k || "").match(/Skater\(([^\)]+)\)\.Number/);
+		var match = (k || "").match(/Skater\(([^\)]+)\)\.([^\.]+)/);
 		if (match == null || match.length == 0)
 			return;
 
 		var id = match[1];
-		var option = $(".FieldingEditor #skater option[value='"+id+"']")
-		var inserted = false;
-		if (v != null && option.length == 0) {
-			var option = $('<option>').attr('value', id).text(v);
+		var field = match[2];
+		if (field != 'Role' && field != 'Number') { return; }
+		var role = WS.state['ScoreBoard.Team('+teamId+').Skater('+id+').Role'];
+		var number = WS.state['ScoreBoard.Team('+teamId+').Skater('+id+').Number'];
+		
+		var playing = (role != null && role != 'NotInGame'); 
+		
+		var option = $("#FieldingEditor #skater option[value='"+id+"']");
+		if (playing && option.length == 0) {
+			var option = $('<option>').attr('value', id).text(number);
+			var inserted = false;
 			$('#FieldingEditor #skater').children().each(function (idx, s) {
-				if (s.text > String(v) && idx > 0) {
+				if (s.text > number && idx > 0) {
 					$(s).before(option);
 					inserted = true;
 					return false;
 				}
 			});
 			if (!inserted) option.appendTo($('#FieldingEditor #skater'));
-		} else if (v == null) {
+		} else if (!playing) {
 			option.remove();
 		} else {
-			option.text(v);
+			option.text(number);
 		}
 	}
 	

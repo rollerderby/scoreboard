@@ -237,7 +237,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             if (pc.isRunning() || isInJam()) {
                 return;
             }
-            if (pc.getNumber() < pc.getMaximumNumber()) {
+            if (pc.getNumber() < getRulesets().getInt(Rule.NUMBER_PERIODS)) {
                 return;
             }
             if (!pc.isTimeAtEnd()) {
@@ -543,7 +543,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         ic.stop();
         if (getCurrentPeriodNumber() == 0 || 
                 (ic.getTimeRemaining() < 60000 
-                        && pc.getNumber() < pc.getMaximumNumber())) {
+                        && pc.getNumber() < getRulesets().getInt(Rule.NUMBER_PERIODS))) {
             //If less than one minute of intermission is left and there is another period,
             // go to the next period. Otherwise extend the previous period.
             //Always start period 1 as there is no previous period to extend.

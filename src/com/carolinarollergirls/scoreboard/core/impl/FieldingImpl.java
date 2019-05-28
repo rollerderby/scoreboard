@@ -42,7 +42,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                     return false;
                 } else {
                     getTeamJam().getTeam().add(Team.Child.BOX_TRIP, new BoxTripImpl(this));
-                    if (getTeamJam().getTeam().hasFieldingAdvancePending()) {
+                    if (getTeamJam().getTeam().hasFieldingAdvancePending() && isCurrent()) {
                         if (getNext().getSkater() == null && getNext().getCurrentRole() == getCurrentRole()) {
                             getNext().setSkater(getSkater());
                         } else {

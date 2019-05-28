@@ -59,7 +59,7 @@
 						<div class="Box TextRight Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
 					</div>
 
-					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineUp ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="clockType"></div>
+					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineUp ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rulesets.CurrentRule(Period.Number)" sbModify="clockType"></div>
 					<div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
 						<div class="Box TextLeft Time Clock Show ShowInJam ShowInLineup ShowInTimeout" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
 						<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
@@ -76,7 +76,7 @@
 
 				<div class="ClockBox Wrapper OverlayPanel PanelHideBottom MediumPanel AnimatedPanel">
 						<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineUp ShowInTimeout">
-							<div class="Box BigName ShowInIntermission Clock" sbDisplay="Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Clock(Intermission).MaximumNumber" sbModify="intermissionDisplay"></div>
+							<div class="Box BigName ShowInIntermission Clock" sbDisplay="Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rulesets.CurrentRule(Period.Number)" sbModify="intermissionDisplay"></div>
 							<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 						</div>
 				</div>
