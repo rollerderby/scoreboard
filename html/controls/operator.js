@@ -825,11 +825,7 @@ function createTeamTable() {
 			noPivotButton.val(!isTrue(value));
 			noPivotButton.toggleClass("Active", isTrue(value));
 		});
-		if (first) {
-			noPivotButton.appendTo(starPassTd);
-		} else {
-			noPivotButton.prependTo(starPassTd);
-		}
+		noPivotButton.appendTo(starPassTd);
 
 		var makeSkaterDropdown = function(pos, elem, sort) {
 			var sortFunc = _windowFunctions.alphaCompareByProp;
