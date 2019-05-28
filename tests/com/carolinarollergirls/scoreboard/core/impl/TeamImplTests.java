@@ -86,6 +86,10 @@ public class TeamImplTests {
         team.setStarPass(true);
 
         sb.stopJamTO();
+        
+        assertTrue(team.isStarPass());
+        assertTrue(team.isFieldingStarPass());
+        
         team.execute(Team.Command.ADVANCE_FIELDINGS);
 
         assertTrue(team.isStarPass());
@@ -265,7 +269,7 @@ public class TeamImplTests {
         team.field(skater4, Role.BLOCKER);
         team.field(skater5, Role.BLOCKER);
 
-        assertFalse(team.hasNoPivot());
+        assertFalse(team.hasNoNamedPivot());
         assertEquals(skater1, team.getPosition(FloorPosition.JAMMER).getSkater());
         assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
         assertEquals(Role.JAMMER, skater1.getRole());
@@ -300,14 +304,14 @@ public class TeamImplTests {
 
         team.field(skater2, Role.BLOCKER);
 
-        assertTrue(team.hasNoPivot());
+        assertTrue(team.hasNoNamedPivot());
         assertEquals(skater2, team.getPosition(FloorPosition.PIVOT).getSkater());
         assertEquals(team.getPosition(FloorPosition.PIVOT), skater2.getPosition());
         assertEquals(Role.BLOCKER, skater2.getRole());
 
         team.field(skater4, Role.PIVOT);
 
-        assertFalse(team.hasNoPivot());
+        assertFalse(team.hasNoNamedPivot());
         assertEquals(skater4, team.getPosition(FloorPosition.PIVOT).getSkater());
         assertEquals(team.getPosition(FloorPosition.PIVOT), skater4.getPosition());
         assertEquals(Role.PIVOT, skater4.getRole());
@@ -317,7 +321,7 @@ public class TeamImplTests {
 
         team.field(skater5, Role.PIVOT);
 
-        assertFalse(team.hasNoPivot());
+        assertFalse(team.hasNoNamedPivot());
         assertEquals(skater5, team.getPosition(FloorPosition.PIVOT).getSkater());
         assertEquals(team.getPosition(FloorPosition.PIVOT), skater5.getPosition());
         assertEquals(Role.PIVOT, skater5.getRole());
@@ -334,7 +338,7 @@ public class TeamImplTests {
         
         team.setStarPass(true);
 
-        assertFalse(team.hasNoPivot());
+        assertFalse(team.hasNoNamedPivot());
         assertEquals(skater6, team.getPosition(FloorPosition.JAMMER).getSkater());
         assertEquals(team.getPosition(FloorPosition.JAMMER), skater6.getPosition());
         assertEquals(Role.BLOCKER, skater6.getRole());
@@ -433,6 +437,25 @@ public class TeamImplTests {
     }
 
     @Test
+    public void testFieldPivot() {
+        Skater skater1 = team.addSkater("S1", "One", "1", "");
+        
+        sb.startJam();
+        sb.stopJamTO();
+        
+        team.getPosition(FloorPosition.PIVOT).setSkater(skater1);
+        
+        assertEquals(skater1, team.getPosition(FloorPosition.PIVOT).getSkater());
+        assertFalse(team.getRunningOrUpcomingTeamJam().hasNoNamedPivot());
+        assertTrue(team.getRunningOrEndedTeamJam().hasNoNamedPivot());
+        assertEquals(Role.BENCH, skater1.getRole());
+        assertEquals(1, skater1.getAll(Skater.Child.FIELDING).size());
+        
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+        
+        assertEquals(Role.PIVOT, skater1.getRole());
+    }
+
     public void testReset() {
         team.set(Team.Value.FIELDING_ADVANCE_PENDING, true);
         assertEquals(true, team.hasFieldingAdvancePending());

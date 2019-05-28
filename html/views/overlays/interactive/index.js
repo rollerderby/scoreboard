@@ -13,7 +13,7 @@ function initialize() {
 	WS.AutoRegister();
 
 	WS.Register( [ "ScoreBoard.Clock(Intermission).Number",
-		       "ScoreBoard.Clock(Intermission).MaximumNumber",
+		       "ScoreBoard.Rulesets.CurrentRule(Period.Number)",
 		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)",
 		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)",
 		       "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)",
@@ -308,7 +308,7 @@ function clockType(k,v) {
 		$('.ClockDescription').css('backgroundColor', '#888');
 	} else if(ic) {
 		var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
-		var max = WS.state["ScoreBoard.Clock(Intermission).MaximumNumber"];
+		var max = WS.state["ScoreBoard.Rulesets.CurrentRule(Period.Number)"];
 		var isOfficial = WS.state["ScoreBoard.OfficialScore"];
 		if (num == 0)  
 			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)"];

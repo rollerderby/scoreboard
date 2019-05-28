@@ -78,7 +78,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public boolean isInjury();
     public boolean isDisplayLead();
     public boolean isStarPass();
-    public boolean hasNoPivot();
+    public boolean hasNoNamedPivot();
 
 
     public static final String ID_1 = "1";
@@ -102,7 +102,13 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         LAST_REVIEW(Timeout.class, null),
         IN_TIMEOUT(Boolean.class, false),
         IN_OFFICIAL_REVIEW(Boolean.class, false),
-        NO_PIVOT(Boolean.class, true),
+        // NO_NAMED_PIVOT is only false when a pivot has been explicitly set.
+        // NO_PIVOT is only true when either a 4th blocker has been set or the
+        // "no skater fielded" flag has been set for the pivot position.
+        // They differ when neither of these inputs has been made (yet) or all
+        // inputs have been reversed.
+        NO_NAMED_PIVOT(Boolean.class, true),
+        NO_PIVOT(Boolean.class, false),
         RETAINED_OFFICIAL_REVIEW(Boolean.class, false),
         LOST(Boolean.class, false),
         LEAD(Boolean.class, false),

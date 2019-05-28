@@ -104,7 +104,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
 			if (mode != 'copyToStatsbook') {
 				$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
-				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
+				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoNamedPivot', $(this).text() == ""); }).appendTo(jamRow);
 			}
 			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 				var pos = String(this);
@@ -190,8 +190,8 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 	
 	fieldingEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' ' + (pos));
 	var skaterField = fieldingEditor.find('#skater').val(WS.state[prefix+'Skater']);
-	var notFieldedField = fieldingEditor.find('#notFielded').prop('checked', isTrue(WS.state[prefix+'NotFielded']));
-	var sitFor3Field = fieldingEditor.find('#sitFor3').prop('checked', isTrue(WS.state[prefix+'SitFor3']));
+	var notFieldedField = fieldingEditor.find('#notFielded').attr('checked', isTrue(WS.state[prefix+'NotFielded']));
+	var sitFor3Field = fieldingEditor.find('#sitFor3').attr('checked', isTrue(WS.state[prefix+'SitFor3']));
 	fieldingEditor.find('.BoxTrip').addClass('Hide');
 	fieldingEditor.find('.'+WS.state[prefix+'Id']).removeClass('Hide');
 	fieldingEditor.find('#addTrip, #submit').unbind('click');
@@ -200,8 +200,8 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 	});
 	fieldingEditor.find('#submit').click(function() {
 		WS.Set(prefix+'Skater', skaterField.val());
-		WS.Set(prefix+'NotFielded', isTrue(notFieldedField.prop('checked')));
-		WS.Set(prefix+'SitFor3', isTrue(sitFor3Field.prop('checked')));
+		WS.Set(prefix+'NotFielded', notFieldedField.attr('checked') != null);
+		WS.Set(prefix+'SitFor3', sitFor3Field.attr('checked') != null);
 		fieldingEditor.dialog('close');
 	});
 	
@@ -217,8 +217,10 @@ function prepareFieldingEditor(teamId) {
 		var table = $('<table>').appendTo($('#FieldingEditor'));
 		var row = $('<tr>').addClass('Skater').appendTo(table);
 		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown'))).appendTo(row);
-		$('<td>').append($('<input type=checkbox>').attr('id', 'notFielded')).append($('<span>').text('No Skater fielded')).appendTo(row);
-		$('<td>').append($('<input type=checkbox>').attr('id', 'sitFor3')).append($('<span>').text('Sit out next 3')).appendTo(row);
+		var notFieldedField = $('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded')).appendTo(row).children('button');
+		notFieldedField.click(function(){notFieldedField.attr('checked', notFieldedField.attr('checked') == null);});
+		var sitFor3Field = $('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3')).appendTo(row).children('button');
+		sitFor3Field.click(function(){sitFor3Field.attr('checked', sitFor3Field.attr('checked') == null);});
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').attr('colspan', '2').text('Box Trips').appendTo(row);
 		$('<td>').appendTo(row);
@@ -232,7 +234,7 @@ function prepareFieldingEditor(teamId) {
 			fieldingEditor.dialog('close');
 		}).appendTo(row);
 		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'submit').text('Submit')).appendTo(row);
-		
+
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function(k,v) { processSkater(k,v); })
 		WS.Register(['ScoreBoard.Team('+teamId+').BoxTrip'], function(k,v) { processBoxTrip(k,v); })
 
@@ -246,27 +248,34 @@ function prepareFieldingEditor(teamId) {
 	}		
 	
 	function processSkater(k, v) {
-		var match = (k || "").match(/Skater\(([^\)]+)\)\.Number/);
+		var match = (k || "").match(/Skater\(([^\)]+)\)\.([^\.]+)/);
 		if (match == null || match.length == 0)
 			return;
 
 		var id = match[1];
-		var option = $(".FieldingEditor #skater option[value='"+id+"']")
-		var inserted = false;
-		if (v != null && option.length == 0) {
-			var option = $('<option>').attr('value', id).text(v);
+		var field = match[2];
+		if (field != 'Role' && field != 'Number') { return; }
+		var role = WS.state['ScoreBoard.Team('+teamId+').Skater('+id+').Role'];
+		var number = WS.state['ScoreBoard.Team('+teamId+').Skater('+id+').Number'];
+		
+		var playing = (role != null && role != 'NotInGame'); 
+		
+		var option = $("#FieldingEditor #skater option[value='"+id+"']");
+		if (playing && option.length == 0) {
+			var option = $('<option>').attr('value', id).text(number);
+			var inserted = false;
 			$('#FieldingEditor #skater').children().each(function (idx, s) {
-				if (s.text > String(v) && idx > 0) {
+				if (s.text > number && idx > 0) {
 					$(s).before(option);
 					inserted = true;
 					return false;
 				}
 			});
 			if (!inserted) option.appendTo($('#FieldingEditor #skater'));
-		} else if (v == null) {
+		} else if (!playing) {
 			option.remove();
 		} else {
-			option.text(v);
+			option.text(number);
 		}
 	}
 	

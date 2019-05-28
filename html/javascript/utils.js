@@ -252,6 +252,9 @@ _crgUtils = {
 	 *		 Optional name of each child subelement value to use
 	 *		 for the option value.
 	 *		 If not set, the child node's $sbId will be used.
+	 *	 optionFilterElement: string
+	 *		 Optional name of a child subelement that will trigger a
+	 *		 reevaluation of the filter when changed
 	 */
 	setupSelect: function(s, params) {
 		s = $(s);
@@ -287,6 +290,7 @@ _crgUtils = {
 		var optionChildFilter = (params.optionChildFilter || function() { return true; });
 		var optionNameElement = params.optionNameElement;
 		var optionValueElement = params.optionValueElement;
+		var optionFilterElement = params.optionFilterElement;
 
 //FIXME - need to add code to unbind if/when the option/select is removed from the DOM!
 		var setOptionName = function(option, node) {
@@ -337,8 +341,20 @@ _crgUtils = {
 
 		if (optionParent && optionChildName) {
 			_crgUtils.bindAddRemoveEach(optionParent, optionChildName, function(event, node) {
-				if (optionChildFilter(node))
+				if (optionChildFilter(node)) {
 					addOption(createOption(node));
+				}
+				if (optionFilterElement) {
+					node.$sb(optionFilterElement).$sbBindAndRun("sbchange", function(event, value) {
+						if (optionChildFilter(node)) {
+							if (!s.find("option[data-optionid='"+node.$sbPath+"']").size()) {
+								addOption(createOption(node));
+							}
+						} else {
+							removeOption(node);
+						}
+					});
+				}
 			}, function(event, node) {
 				removeOption(node);
 			});
