@@ -1090,14 +1090,16 @@ function createJamDialog() {
 }
 
 function createTimeoutDialog() {
-	var lastPeriodRegistered = 0;
+	var lastPeriodRegistered = 2;
 	var lastPeriodListed = 0;
-	var firstJamListed = [0];
-	var lastJamListed = [0];
+	var firstJamListed = [0, 0, 0];
+	var lastJamListed = [0, 0, 0];
 	var periodDropdownTemplate = $('<select>').attr('id', 'PeriodDropdown')
 		.append($('<option>').attr('value', 0).text('P0'));
 	var jamDropdownTemplate = [$('<select>').attr('id', 'JamDropdown').attr('period', 0)
-		.append($('<option>').attr('value', 0).text('J0'))];
+		.append($('<option>').attr('value', 0).text('J0')), 
+		$('<select>').attr('id', 'JamDropdown').attr('period', 1),
+		$('<select>').attr('id', 'JamDropdown').attr('period', 2)];
 	var typeDropdownTemplate = $('<select>').attr('id', 'TypeDropdown')
 		.append($('<option>').attr('value', '.false').text('No type'))
 		.append($('<option>').attr('value', 'O.false').text('Off. Timeout'))
@@ -1290,8 +1292,13 @@ function createTimeoutDialog() {
 				break;
 		}
 	}
-	WS.Register(['ScoreBoard.Period(0).Timeout'], processTimeout);
-
+	// Period 1 and 2 registers are for performance reasons as doing them initially speeds up page load with
+	// the current WS implementation.
+	WS.Register(['ScoreBoard.Period(1).CurrentJamNumber', 'ScoreBoard.Period(1).FirstJamNumber', 
+		'ScoreBoard.Period(2).CurrentJamNumber', 'ScoreBoard.Period(2).FirstJamNumber'], processJamNumber);
+	WS.Register(['ScoreBoard.Period(0).Timeout', 'ScoreBoard.Period(1).Timeout', 
+		'ScoreBoard.Period(2).Timeout'], processTimeout);
+	
 	return dialog.dialog({
 		title: "Timeouts",
 		autoOpen: false,
