@@ -25,14 +25,15 @@ import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -58,18 +59,29 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         setCopy(Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_PIVOT, false);
         setCopy(Value.STAR_PASS, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS, false);
         setCopy(Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS_TRIP, false);
+        setRecalculated(Value.IN_TIMEOUT).addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.OWNER)
+            .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.REVIEW)
+            .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.RUNNING);
+        setRecalculated(Value.IN_OFFICIAL_REVIEW).addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.OWNER)
+            .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.REVIEW)
+            .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.RUNNING);
+        addWriteProtectionOverride(Value.TIMEOUTS, Flag.INTERNAL);
+        addWriteProtectionOverride(Value.OFFICIAL_REVIEWS, Flag.INTERNAL);
+        addWriteProtectionOverride(Value.LAST_REVIEW, Flag.INTERNAL);
+        setCopy(Value.RETAINED_OFFICIAL_REVIEW, this, Value.LAST_REVIEW, Timeout.Value.RETAINED_REVIEW, false);
 
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET_ID, rulesetChangeListener));
     }
 
     @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if(value instanceof Integer && (Integer)value < 0) { return 0; }
-        if (prop == Value.TIMEOUTS && (Integer)value > scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS)) {
-            return scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS);
+        if (prop == Value.IN_TIMEOUT) {
+            Timeout t = scoreBoard.getCurrentTimeout(); 
+            return t.isRunning() && this == t.getOwner() && !t.isReview();
         }
-        if (prop == Value.OFFICIAL_REVIEWS && (Integer)value > scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS)) {
-            return scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
+        if (prop == Value.IN_OFFICIAL_REVIEW) {
+            Timeout t = scoreBoard.getCurrentTimeout(); 
+            return t.isRunning() && this == t.getOwner() && t.isReview();
         }
         if (prop == Value.TRIP_SCORE && flag != Flag.COPY && scoreBoard.isInJam() && (Integer)value > 0) {
             tripScoreTimerTask.cancel();
@@ -86,9 +98,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
     @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.RETAINED_OFFICIAL_REVIEW && (Boolean)value && getOfficialReviews() == 0) {
-            setOfficialReviews(1);
-        } else if (prop == Value.LEAD && (Boolean)value && scoreBoard.isInJam()) {
+        if (prop == Value.LEAD && (Boolean)value && scoreBoard.isInJam()) {
             if (getCurrentTrip().getNumber() == 1) {
                 getRunningOrEndedTeamJam().addScoringTrip();
             }
@@ -148,11 +158,21 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
         }
     }
+    
+    @Override
+    protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
+        if (prop == Child.TIME_OUT) {
+            recountTimeouts();
+        }
+    }
 
     @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.SKATER) {
             ((Skater)item).unlink();
+        }
+        if (prop == Child.TIME_OUT) {
+            recountTimeouts();
         }
     }
 
@@ -168,7 +188,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             set(Value.RUNNING_OR_ENDED_TEAM_JAM, null);
             set(Value.LAST_ENDED_TEAM_JAM, null);
             set(Value.FIELDING_ADVANCE_PENDING, false);
-            resetTimeouts(true);
 
             for (ValueWithId p : getAll(Child.POSITION)) {
                 ((Position)p).reset();
@@ -177,6 +196,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             removeAll(Child.ALTERNATE_NAME);
             removeAll(Child.COLOR);
             removeAll(Child.SKATER);
+            removeAll(Child.TIME_OUT);
         }
     }
 
@@ -262,10 +282,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void restoreSnapshot(TeamSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
-            setTimeouts(s.getTimeouts());
-            setOfficialReviews(s.getOfficialReviews());
-            setInTimeout(s.inTimeout());
-            setInOfficialReview(s.inOfficialReview());
             for (ValueWithId skater : getAll(Child.SKATER)) {
                 ((Skater)skater).restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
             }
@@ -311,7 +327,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         synchronized (coreLock) {
             if (getTimeouts() > 0) {
                 getScoreBoard().setTimeoutType(this, false);
-                changeTimeouts(-1);
             }
         }
     }
@@ -320,7 +335,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         synchronized (coreLock) {
             if (getOfficialReviews() > 0) {
                 getScoreBoard().setTimeoutType(this, true);
-                changeOfficialReviews(-1);
             }
         }
     }
@@ -355,13 +369,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     @Override
     public boolean inTimeout() { return (Boolean)get(Value.IN_TIMEOUT); }
-    @Override
-    public void setInTimeout(boolean b) { set(Value.IN_TIMEOUT, b); }
 
     @Override
     public boolean inOfficialReview() { return (Boolean)get(Value.IN_OFFICIAL_REVIEW); }
-    @Override
-    public void setInOfficialReview(boolean b) { set(Value.IN_OFFICIAL_REVIEW, b); }
 
     @Override
     public boolean retainedOfficialReview() { return (Boolean)get(Value.RETAINED_OFFICIAL_REVIEW); }
@@ -371,38 +381,47 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public int getTimeouts() { return (Integer)get(Value.TIMEOUTS); }
     @Override
-    public void setTimeouts(int t) { set(Value.TIMEOUTS, t); }
-    @Override
-    public void changeTimeouts(int c) { set(Value.TIMEOUTS, c, Flag.CHANGE); } 
-    @Override
     public int getOfficialReviews() { return (Integer)get(Value.OFFICIAL_REVIEWS); }
+
     @Override
-    public void setOfficialReviews(int r) { set(Value.OFFICIAL_REVIEWS, r); }
-    @Override
-    public void changeOfficialReviews(int c) { set(Value.OFFICIAL_REVIEWS, c, Flag.CHANGE); }
-    @Override
-    public void resetTimeouts(boolean gameStart) {
-        synchronized (coreLock) {
-            setInTimeout(false);
-            setInOfficialReview(false);
-            if (gameStart || scoreBoard.getRulesets().getBoolean(Rule.TIMEOUTS_PER_PERIOD)) {
-                setTimeouts(scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS));
-            }
-            if (gameStart || scoreBoard.getRulesets().getBoolean(Rule.REVIEWS_PER_PERIOD)) {
-                setOfficialReviews(scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS));
-                setRetainedOfficialReview(false);
+    public void recountTimeouts() {
+        boolean toPerPeriod = scoreBoard.getRulesets().getBoolean(Rule.TIMEOUTS_PER_PERIOD);
+        boolean revPerPeriod = scoreBoard.getRulesets().getBoolean(Rule.REVIEWS_PER_PERIOD);
+        int toCount = scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS);
+        int revCount = scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
+        int retainsLeft = scoreBoard.getRulesets().getInt(Rule.NUMBER_RETAINS);
+        Timeout lastReview = null;
+
+        for (ValueWithId v : getAll(Child.TIME_OUT)) {
+            Timeout t = (Timeout)v;
+            if (t.isReview()) {
+                if (!revPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod()) {
+                    if (retainsLeft > 0 && t.isRetained()) {
+                        retainsLeft--;
+                    } else if (revCount > 0){
+                        revCount--;
+                    }
+                    if (lastReview == null || t.compareTo(lastReview) > 0) {
+                        lastReview = t;
+                    }
+                }
+            } else {
+                if (toCount > 0 && (!toPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod())) {
+                    toCount--;
+                }
             }
         }
+        set(Value.TIMEOUTS, toCount, Flag.INTERNAL);
+        set(Value.OFFICIAL_REVIEWS, revCount, Flag.INTERNAL);
+        set(Value.LAST_REVIEW, lastReview, Flag.INTERNAL);
     }
-
+    
     protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
         @Override
         public void scoreBoardChange(ScoreBoardEvent event) {
-            setTimeouts(scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS));
-            setOfficialReviews(scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS));
+            recountTimeouts();
         }
-    };
-
+};
     @Override
     public Skater getSkater(String id) { return (Skater)get(Child.SKATER, id); }
     public Skater addSkater(String id) { return (Skater)getOrCreate(Child.SKATER, id); }
@@ -560,10 +579,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public static class TeamSnapshotImpl implements TeamSnapshot {
         private TeamSnapshotImpl(Team team) {
             id = team.getId();
-            timeouts = team.getTimeouts();
-            officialReviews = team.getOfficialReviews();
-            inTimeout = team.inTimeout();
-            inOfficialReview = team.inOfficialReview();
             skaterSnapshots = new HashMap<>();
             for (ValueWithId skater : team.getAll(Child.SKATER)) {
                 skaterSnapshots.put(skater.getId(), ((Skater)skater).snapshot());
@@ -573,23 +588,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         @Override
         public String getId() { return id; }
         @Override
-        public int getTimeouts() { return timeouts; }
-        @Override
-        public int getOfficialReviews() { return officialReviews; }
-        @Override
-        public boolean inTimeout() { return inTimeout; }
-        @Override
-        public boolean inOfficialReview() { return inOfficialReview; }
-        @Override
         public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots() { return skaterSnapshots; }
         @Override
         public Skater.SkaterSnapshot getSkaterSnapshot(String skater) { return skaterSnapshots.get(skater); }
 
         protected String id;
-        protected int timeouts;
-        protected int officialReviews;
-        protected boolean inTimeout;
-        protected boolean inOfficialReview;
         protected Map<String, Skater.SkaterSnapshot> skaterSnapshots;
     }
 }

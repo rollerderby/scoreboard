@@ -527,6 +527,7 @@ function createJamControlTable() {
 	return table;
 }
 
+var timeoutDialog;
 function createTeamTable() {
 	var table = $("<table>").addClass("Team");
 	var row = $("<tr></tr>");
@@ -725,10 +726,8 @@ function createTeamTable() {
 		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", timeoutHighlight);
 		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", timeoutHighlight);
 		timeoutButton.appendTo(timeoutTr.children("td:eq("+(first?"0":"5")+")").addClass("Timeout"));
-		sbTeam.$sb("Timeouts").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: timeoutTr.children("td:eq("+(first?"1":"4")+")")
-			} }).appendTo(timeoutTr.children("td:eq("+(first?"1":"4")+")").addClass("Timeouts"));
+		sbTeam.$sb("Timeouts").$sbElement("<a/>").click(function() { timeoutDialog.dialog("open"); })
+			.appendTo(timeoutTr.children("td:eq("+(first?"1":"4")+")").addClass("Timeouts"));
 		var review = sbTeam.$sb("OfficialReview");
 		var reviewButton = review.$sbControl("<button>").text("Off Review").val("true")
 			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button();
@@ -740,13 +739,11 @@ function createTeamTable() {
 		$sb("ScoreBoard.TimeoutOwner").$sbBindAndRun("sbchange", reviewHighlight);
 		$sb("ScoreBoard.OfficialReview").$sbBindAndRun("sbchange", reviewHighlight);
 		reviewButton.appendTo(timeoutTr.children("td:eq("+(first?"2":"3")+")").addClass("OfficialReview"));
-		sbTeam.$sb("OfficialReviews").$sbControl("<a/><input type='text' size='2'/>", { sbcontrol: {
-				editOnClick: true,
-				bindClickTo: timeoutTr.children("td:eq("+(first?"3":"2")+")")
-			} }).appendTo(timeoutTr.children("td:eq("+(first?"3":"2")+")").addClass("OfficialReviews"));
+		sbTeam.$sb("OfficialReviews").$sbElement("<a/>").click(function() { timeoutDialog.dialog("open"); })
+			.appendTo(timeoutTr.children("td:eq("+(first?"3":"2")+")").addClass("OfficialReviews"));
 		var retainedOR = sbTeam.$sb("RetainedOfficialReview");
 		var retainedORButton = retainedOR.$sbControl("<button>").text("Retained").val("true")
-			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl Box").button();
+			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl").button();
 		retainedOR.$sbBindAndRun("sbchange", function(event, value) {
 			retainedORButton.val(!isTrue(value));
 			retainedORButton.toggleClass("Active", isTrue(value));
@@ -908,6 +905,9 @@ function createTimeTable() {
 		} else if (clock == "Jam") {
 			var jamDialog = createJamDialog();
 			numberTr.children("td:eq(1)").click(function() { jamDialog.dialog("open"); });			
+		} else if (clock == "Timeout") {
+			timeoutDialog = createTimeoutDialog();
+			numberTr.children("td:eq(1)").click(function() { timeoutDialog.dialog("open"); });
 		}
 
 		sbClock.$sb("Start").$sbControl("<button>").text("Start").val("true")
@@ -1092,6 +1092,225 @@ function createJamDialog() {
 		autoOpen: false,
 		modal: true,
 		width: 500,
+		buttons: { Close: function() { $(this).dialog("close"); } }
+	});
+}
+
+function createTimeoutDialog() {
+	var lastPeriodRegistered = 2;
+	var lastPeriodListed = 0;
+	var firstJamListed = [0, 0, 0];
+	var lastJamListed = [0, 0, 0];
+	var periodDropdownTemplate = $('<select>').attr('id', 'PeriodDropdown')
+		.append($('<option>').attr('value', 0).text('P0'));
+	var jamDropdownTemplate = [$('<select>').attr('id', 'JamDropdown').attr('period', 0)
+		.append($('<option>').attr('value', 0).text('J0')), 
+		$('<select>').attr('id', 'JamDropdown').attr('period', 1),
+		$('<select>').attr('id', 'JamDropdown').attr('period', 2)];
+	var typeDropdownTemplate = $('<select>').attr('id', 'TypeDropdown')
+		.append($('<option>').attr('value', '.false').text('No type'))
+		.append($('<option>').attr('value', 'O.false').text('Off. Timeout'))
+		.append($('<option>').attr('value', '1.false').text('Team TO left'))
+		.append($('<option>').attr('value', '2.false').text('Team TO right'))
+		.append($('<option>').attr('value', '1.true').text('Off. Review left'))
+		.append($('<option>').attr('value', '2.true').text('Off. Review right'));
+	
+	var dialog = $("<div>").addClass("NumberDialog");
+	var table = $("<table>").appendTo(dialog);
+	var headers = $("<tr><td/><td/><td/><td/><td/><td/><td/></tr>").appendTo(table);
+	$("<a>").text("Period").addClass("Title")
+		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+	$("<a>").text("After Jam").addClass("Title")
+		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+	$("<a>").text("Duration").addClass("Title")
+		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+	$("<a>").text("Period Clock").addClass("Title")
+	.appendTo(headers.find("td:eq(3)").addClass("Title"));
+	$("<a>").text("Type").addClass("Title")
+		.appendTo(headers.find("td:eq(4)").addClass("Title"));
+	$("<a>").text("Retained").addClass("Title")
+	.appendTo(headers.find("td:eq(5)").addClass("Title"));
+	
+	var footer = $("<tr><td/><td colspan=\"3\"/><td/><td/><td/></tr>").attr('id', 'toFooter').appendTo(table);
+	periodDropdownTemplate.clone().appendTo(footer.find('td:eq(0)'));
+	$('<button>').text('Add Timeout').button().click(function() {
+		WS.Set('ScoreBoard.Period('+footer.find('#PeriodDropdown').val()+').InsertTimeout', true);
+	}).appendTo(footer.find('td:eq(1)'));
+	
+	WS.Register(['ScoreBoard.Clock(Period).Time']);
+	
+	WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
+		var p = Number(v);
+		var i;
+		for (i = lastPeriodRegistered + 1; i <= p; i++) {
+			firstJamListed[i] = 0;
+			lastJamListed[i] = 0;
+			jamDropdownTemplate[i] = $('<select>').attr('id', 'JamDropdown').attr('period', i);
+			WS.Register(['ScoreBoard.Period('+i+').CurrentJamNumber', 'ScoreBoard.Period('+i+').FirstJamNumber'], processJamNumber);
+			WS.Register(['ScoreBoard.Period('+i+').Timeout'], processTimeout);
+			lastPeriodRegistered = i;
+		}
+		for (i = lastPeriodListed + 1; i <= p; i++) {
+			var option = $('<option>').attr('value', i).text('P'+i);
+			periodDropdownTemplate.append(option.clone());
+			table.find('#PeriodDropdown').append(option);
+			lastPeriodListed = i;
+		}
+		for (i = lastPeriodListed; i > p; i--) {
+			periodDropdownTemplate.find('option[value='+i+']').remove();
+			table.find('#PeriodDropdown option[value='+i+']').remove();
+			clearPeriod(i);
+			lastPeriodListed = i-1;
+		}
+		footer.find('#PeriodDropdown').val(p);
+	});
+	
+	function addJam(p, j, append) {
+		var option = $('<option>').attr('value', j).text('J'+j);
+		if (append) {
+			jamDropdownTemplate[p].append(option.clone());
+			table.find('#JamDropdown[period='+p+']').append(option);
+		} else {
+			jamDropdownTemplate[p].prepend(option.clone());
+			table.find('#JamDropdown[period='+p+']').prepend(option);
+		}
+	}
+	function removeJam(p, j) {
+		jamDropdownTemplate[p].find('option[value='+i+']').remove();
+		table.find('#JamDropdown[period='+p+'] option[value='+i+']').remove();
+	}
+	function clearPeriod(p) {
+		table.find('tr.Timeout[period='+p+']').remove();
+		jamDropdownTemplate[p].find('option').remove();
+		table.find('#JamDropdown[period='+p+'] option').remove();
+		firstJamListed[p] = 0;
+		lastJamListed[p] = 0;
+	}
+
+	function processJamNumber(k, v) {
+		var p = Number(k.Period);
+		newFirst = WS.state['ScoreBoard.Period('+p+').FirstJamNumber'];
+		newLast = WS.state['ScoreBoard.Period('+p+').CurrentJamNumber'];
+		oldFirst = firstJamListed[p];
+		oldLast = lastJamListed[p];
+		var j;
+		if (newFirst == 0 && oldFirst == 0) {
+			return;
+		}
+		if (newFirst == 0 && oldFirst > 0) {
+			clearPeriod(p);
+			return;
+		}
+		if (newFirst > 0 && !(oldFirst > 0)) {
+			for (j = newFirst; j <= newLast; j++) { addJam(p, j, true); }
+			firstJamListed[p] = newFirst;
+			lastJamListed[p] = newLast;
+			return;
+		}
+		for (j = oldFirst; j < newFirst; j++) { removeJam(p, j); }
+		for (j = oldFirst; j > newFirst; j--) { addJam(p, j-1, false); }
+		for (j = oldLast; j < newLast; j++) { addJam(p, j+1, true); }
+		for (j = oldLast; j > newLast; j--) { removeJam(p, j); }
+		firstJamListed[p] = newFirst;
+		lastJamListed[p] = newLast;
+	}
+	
+	function processTimeout(k, v) {
+		var id = k.Timeout;
+		if (id == 'noTimeout') { return; }
+		var p = Number(k.Period);
+		var prefix = 'ScoreBoard.Period('+k.Period+').Timeout('+id+')';
+		var row = table.find('tr.Timeout[toId='+id+']');
+		if (k.field == 'Id' && v == null && row.length > 0) {
+			row.remove();
+			return;
+		}
+		if (k.field == 'PrecedingJamNumber') {
+			row.remove();
+			row = [];
+		}
+		if (v != null && row.length == 0) {
+			var jam = Number(WS.state[prefix+'.PrecedingJamNumber']);
+			var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix+'.Duration']);
+			var pc = _timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
+					WS.state['ScoreBoard.Clock(Period).Time'] :
+					WS.state[prefix+'.PeriodClockEnd']);
+			var type = WS.state[prefix+'.Owner'] + '.' + WS.state[prefix+'.Review'];
+			var review = isTrue(WS.state[prefix+'.Review']);
+			var retained = isTrue(WS.state[prefix+'.RetainedReview']);
+			row = $("<tr>").addClass("Timeout").attr("toId", id).attr('period', k.Period).attr('jam', jam)
+				.append($('<td>').addClass('Period').append(periodDropdownTemplate.clone().val(p).change(function() {
+					WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+$(this).val()+').CurrentJam']);
+				})))
+				.append($('<td>').addClass('Jam').append(jamDropdownTemplate[p].clone().val(jam).change(function() {
+					WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+p+').Jam('+$(this).val()+').Id']);
+				})))
+				.append($('<td>').addClass('Duration').text(dur))
+				.append($('<td>').addClass('PerClock').text(pc))
+				.append($('<td>').addClass('Type').append(typeDropdownTemplate.clone().val(type).change(function() {
+					var parts = $(this).val().split('.');
+					WS.Set(prefix+'.Owner', parts[0]);
+					WS.Set(prefix+'.Review', isTrue(parts[1]));
+				})))
+				.append($('<td>').addClass('Retained').append($('<button>').toggleClass('Hide', !review).toggleClass('Active', retained)
+						.text('Retained').button().click(function () {
+							WS.Set(prefix+'.RetainedReview', !isTrue(WS.state[prefix+'.RetainedReview']));
+						})))
+				.append($('<td>').append($("<button>").text("Delete")
+						.button().click(function () {
+							//TODO: confirmation popup
+							WS.Set(prefix + ".Delete", true);
+						})));
+			var inserted = false;
+			table.find("tr.Timeout").each(function (i, r) {
+				r = $(r);
+				if (Number(r.attr('period')) > p ||
+						(Number(r.attr('period')) == p && Number(r.attr('jam')) > jam)) {
+					r.before(row);
+					inserted = true;
+					return false;
+				}
+			});
+			if (!inserted) {
+				table.find('#toFooter').before(row);
+			}
+		}
+		switch(k.field) {
+			case 'Running':
+			case 'PeriodClockEnd':
+				row.find('.PerClock').text(_timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
+						WS.state['ScoreBoard.Clock(Period).Time'] :
+						WS.state[prefix+'.PeriodClockEnd']));
+				break;
+			case 'Running':
+			case 'Duration':
+				row.find('.Duration').text(isTrue(WS.state[prefix+'.Running']) ?
+						'Running' :
+						_timeConversions.msToMinSec(WS.state[prefix+'.Duration']));
+				break;
+			case 'Review':
+				row.find('.Retained button').toggleClass('Hide', !isTrue(v));
+				//no break
+			case 'Owner':
+				row.find('#TypeDropdown').val(WS.state[prefix+'.Owner'] + '.' + WS.state[prefix+'.Review']);
+				break;
+			case 'RetainedReview':
+				row.find('.Retained button').toggleClass('Active', isTrue(v));
+				break;
+		}
+	}
+	// Period 1 and 2 registers are for performance reasons as doing them initially speeds up page load with
+	// the current WS implementation.
+	WS.Register(['ScoreBoard.Period(1).CurrentJamNumber', 'ScoreBoard.Period(1).FirstJamNumber', 
+		'ScoreBoard.Period(2).CurrentJamNumber', 'ScoreBoard.Period(2).FirstJamNumber'], processJamNumber);
+	WS.Register(['ScoreBoard.Period(0).Timeout', 'ScoreBoard.Period(1).Timeout', 
+		'ScoreBoard.Period(2).Timeout'], processTimeout);
+	
+	return dialog.dialog({
+		title: "Timeouts",
+		autoOpen: false,
+		modal: true,
+		width: 750,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 }

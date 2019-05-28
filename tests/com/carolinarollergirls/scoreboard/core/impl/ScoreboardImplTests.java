@@ -19,10 +19,10 @@ import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Team.Value;
+import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.Button;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.ScoreBoardSnapshot;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.TimeoutOwners;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -204,6 +204,7 @@ public class ScoreboardImplTests {
 
     @Test
     public void testSetOfficialReview() {
+        sb.timeout();
         assertFalse(sb.isOfficialReview());
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.OFFICIAL_REVIEW, listener));
 
@@ -225,22 +226,23 @@ public class ScoreboardImplTests {
 
     @Test
     public void testSetTimeoutOwner() {
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        sb.timeout();
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(sb, ScoreBoard.Value.TIMEOUT_OWNER, listener));
 
-        sb.setTimeoutOwner(TimeoutOwners.OTO);
-        assertEquals(TimeoutOwners.OTO, sb.getTimeoutOwner());
+        sb.setTimeoutOwner(Timeout.Owners.OTO);
+        assertEquals(Timeout.Owners.OTO, sb.getTimeoutOwner());
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(TimeoutOwners.OTO, event.getValue());
-        assertEquals(TimeoutOwners.NONE, event.getPreviousValue());
+        assertEquals(Timeout.Owners.OTO, event.getValue());
+        assertEquals(Timeout.Owners.NONE, event.getPreviousValue());
 
-        sb.setTimeoutOwner(TimeoutOwners.NONE);
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        sb.setTimeoutOwner(Timeout.Owners.NONE);
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
-        assertEquals(TimeoutOwners.NONE, event.getValue());
-        assertEquals(TimeoutOwners.OTO, event.getPreviousValue());
+        assertEquals(Timeout.Owners.NONE, event.getValue());
+        assertEquals(Timeout.Owners.OTO, event.getPreviousValue());
     }
 
     @Test
@@ -380,12 +382,12 @@ public class ScoreboardImplTests {
         jc.setNumber(17);
         assertFalse(lc.isRunning());
         tc.setNumber(3);
-        sb.setTimeoutOwner(sb.getTeam("2"));
+        sb.setTimeoutType(sb.getTeam(Team.ID_2), true);
         sb.setOfficialReview(true);
         assertTrue(tc.isRunning());
         assertFalse(ic.isRunning());
-        sb.getTeam(Team.ID_2).setInTimeout(true);
-        sb.getTeam(Team.ID_2).setInOfficialReview(true);
+        assertFalse(sb.getTeam(Team.ID_2).inTimeout());
+        assertTrue(sb.getTeam(Team.ID_2).inOfficialReview());
 
         sb.startJam();
 
@@ -398,7 +400,7 @@ public class ScoreboardImplTests {
         assertFalse(lc.isRunning());
         assertFalse(tc.isRunning());
         assertEquals(3, tc.getNumber());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         assertFalse(ic.isRunning());
         assertFalse(sb.getTeam(Team.ID_2).inTimeout());
@@ -617,15 +619,17 @@ public class ScoreboardImplTests {
 
     @Test
     public void testStopJam_endTimeoutDuringPeriod() {
+        sb.startJam();
+        sb.timeout();
         assertFalse(pc.isRunning());
         assertFalse(pc.isTimeAtEnd());
         assertFalse(jc.isRunning());
         assertFalse(lc.isRunning());
         lc.setTime(37000);
-        tc.start();
+        assertTrue(tc.isRunning());
         tc.setNumber(4);
         assertFalse(ic.isRunning());
-        sb.setTimeoutOwner(TimeoutOwners.OTO);
+        sb.setTimeoutOwner(Timeout.Owners.OTO);
         sb.setOfficialReview(true);
 
         sb.stopJamTO();
@@ -638,19 +642,21 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertEquals(4, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
     }
 
     @Test
     public void testStopJam_endTimeoutAfterPeriod() {
+        sb.startJam();
+        sb.timeout();
         assertFalse(pc.isRunning());
         pc.setTime(0);
         assertTrue(pc.isTimeAtEnd());
         assertFalse(jc.isRunning());
         assertFalse(lc.isRunning());
-        tc.start();
+        assertTrue(tc.isRunning());
         tc.setNumber(3);
         assertFalse(ic.isRunning());
 
@@ -678,7 +684,7 @@ public class ScoreboardImplTests {
         tc.start();
         tc.setNumber(8);
         assertFalse(ic.isRunning());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
 
         sb.stopJamTO();
@@ -690,7 +696,7 @@ public class ScoreboardImplTests {
         assertEquals(32000, tc.getTimeElapsed());
         assertEquals(8, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_TO);
     }
@@ -797,7 +803,7 @@ public class ScoreboardImplTests {
         assertTrue(tc.isTimeAtStart());
         assertEquals(3, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_TIMEOUT);
     }
@@ -873,7 +879,7 @@ public class ScoreboardImplTests {
         tc.setTime(24000);
         tc.setNumber(7);
         assertFalse(ic.isRunning());
-        sb.setTimeoutOwner(TimeoutOwners.OTO);
+        sb.setTimeoutOwner(Timeout.Owners.OTO);
 
         sb.timeout();
 
@@ -885,30 +891,27 @@ public class ScoreboardImplTests {
         assertTrue(tc.isTimeAtStart());
         assertEquals(8, tc.getNumber());
         assertFalse(ic.isRunning());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_TO, ScoreBoard.ACTION_RE_TIMEOUT, ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_RE_TIMEOUT);
 
-        sb.setTimeoutOwner(TimeoutOwners.OTO);
+        sb.setTimeoutOwner(Timeout.Owners.OTO);
         sb.timeout();
 
         // timeout was entered with less than 1s on the TO clock
         // and should be ignored
         assertEquals(8, tc.getNumber());
-        assertEquals(TimeoutOwners.OTO, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.OTO, sb.getTimeoutOwner());
         
         advance(1500);
         sb.timeout();
         
         assertEquals(9, tc.getNumber());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
     }
 
     @Test
     public void testSetTimeoutType() {
-        sb.setTimeoutOwner(TimeoutOwners.NONE);
-
         sb.setTimeoutType(sb.getTeam(Team.ID_2), false);
-        sb.getTeam(Team.ID_2).setTimeouts(2);
 
         assertEquals(ScoreBoard.ACTION_TIMEOUT, sb.snapshot.getType());
         assertFalse(pc.isRunning());
@@ -932,7 +935,7 @@ public class ScoreboardImplTests {
         assertFalse(lc.isRunning());
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         assertFalse(sb.isInOvertime());
         assertTrue(sb.isInPeriod());
@@ -943,12 +946,10 @@ public class ScoreboardImplTests {
         assertEquals("TEST", sb.snapshot.getType());
         assertEquals(ScoreBoard.UNDO_PREFIX + "TEST", Button.UNDO.getLabel());
 
-        pc.stop();
-        jc.stop();
+        sb.timeout();
         lc.start();
-        tc.start();
         ic.start();
-        sb.setTimeoutOwner(TimeoutOwners.OTO);
+        sb.setTimeoutOwner(Timeout.Owners.OTO);
         sb.setOfficialReview(true);
         sb.setInOvertime(true);
         sb.setInPeriod(false);
@@ -968,7 +969,7 @@ public class ScoreboardImplTests {
         assertTrue(tc.isTimeAtStart());
         assertFalse(ic.isRunning());
         assertTrue(ic.isTimeAtStart());
-        assertEquals(TimeoutOwners.NONE, sb.getTimeoutOwner());
+        assertEquals(Timeout.Owners.NONE, sb.getTimeoutOwner());
         assertFalse(sb.isOfficialReview());
         assertFalse(sb.isInOvertime());
         assertTrue(sb.isInPeriod());
@@ -1407,7 +1408,7 @@ public class ScoreboardImplTests {
         advance(3000);
         assertEquals(600000, pc.getTimeElapsed());
 
-        sb.setTimeoutType(TimeoutOwners.OTO, false);
+        sb.setTimeoutType(Timeout.Owners.OTO, false);
 
         assertTrue(pc.isRunning());
         assertEquals(605000, pc.getTimeElapsed());

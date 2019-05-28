@@ -53,17 +53,13 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public ScoringTrip getCurrentTrip();
 
     public int getTimeouts();
-    public void setTimeouts(int timeouts);
-    public void changeTimeouts(int change);
     public int getOfficialReviews();
-    public void setOfficialReviews(int reviews);
-    public void changeOfficialReviews(int reviews);
-    public void resetTimeouts(boolean gameStart);
 
     public boolean inTimeout();
     public boolean inOfficialReview();
     public boolean retainedOfficialReview();
     public void setRetainedOfficialReview(boolean retained_official_review);
+    public void recountTimeouts();
 
     public Skater getSkater(String id);
     public void addSkater(Skater skater);
@@ -103,6 +99,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         LAST_SCORE(Integer.class, 0),
         TIMEOUTS(Integer.class, 0),
         OFFICIAL_REVIEWS(Integer.class, 0),
+        LAST_REVIEW(Timeout.class, null),
         IN_TIMEOUT(Boolean.class, false),
         IN_OFFICIAL_REVIEW(Boolean.class, false),
         // NO_NAMED_PIVOT is only false when a pivot has been explicitly set.
@@ -133,6 +130,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public enum Child implements AddRemoveProperty {
         SKATER(Skater.class),
         POSITION(Position.class),
+        TIME_OUT(Timeout.class), // can't be TIMEOUT, as that would lead to a conflict with Command.TIMEOUT
         ALTERNATE_NAME(ValWithId.class),
         COLOR(ValWithId.class),
         BOX_TRIP(BoxTrip.class);
@@ -167,10 +165,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public static interface TeamSnapshot {
         public String getId();
-        public int getTimeouts();
-        public int getOfficialReviews();
-        public boolean inTimeout();
-        public boolean inOfficialReview();
         public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots();
         public Skater.SkaterSnapshot getSkaterSnapshot(String skater);
     }

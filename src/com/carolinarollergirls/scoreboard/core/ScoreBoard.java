@@ -25,10 +25,13 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     /** Update state after restoring from autosave */
     public void postAutosaveUpdate();
 
+    public Timeout getCurrentTimeout();
+    
     /**
      * Id of Team who called Timeout.
      *
-     * The Id is as returned from Team.getId().	 For Offical Timeouts, this returns an empty string.
+     * The Id is as returned from Team.getId().	 For Offical Timeouts, this returns the letter "O".
+     * If the type of timeout hasn't been set, it returns an empty string.
      */
     public TimeoutOwner getTimeoutOwner();
     public void setTimeoutOwner(TimeoutOwner owner);
@@ -37,7 +40,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
      * If this Timeout is an Official Review.
      *
      * This is true if the current timeout is actually a team-requested Official Review.
-     * This is false if the current timeout is a normal team or official timeout.
+     * This is false if the current timeout is a normal team or official timeout or the type
+     * of timeout hasn't been set.
      */
     public boolean isOfficialReview();
     public void setOfficialReview(boolean official);
@@ -112,6 +116,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         IN_JAM(Boolean.class, false),
         IN_OVERTIME(Boolean.class, false),
         OFFICIAL_SCORE(Boolean.class, false),
+        CURRENT_TIMEOUT(Timeout.class, null),
         TIMEOUT_OWNER(TimeoutOwner.class, null),
         OFFICIAL_REVIEW(Boolean.class, false);
 

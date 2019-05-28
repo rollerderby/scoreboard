@@ -40,7 +40,8 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     }
     public enum Child implements AddRemoveProperty {
         TEAM_JAM(TeamJam.class),
-        PENALTY(Penalty.class);
+        PENALTY(Penalty.class),
+        TIMEOUTS_AFTER(Timeout.class);
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;
