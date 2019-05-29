@@ -1658,13 +1658,16 @@ function createTeamsContent() {
 		if (!createNewTeam.button("option", "disabled") && (13 == event.which)) // Enter
 			createNewTeam.click();
 	});
+	var waitingOnNewTeam = "";
 	createNewTeam.click(function(event) {
 		var teamname = newTeamName.val();
 		var teamid = _crgUtils.checkSbId(teamname);
 		$sb("Teams.Team("+teamid+").Name").$sbSet(teamname);
+		waitingOnNewTeam = teamid;
 		newTeamName.val("").keyup().focus();
-		// Presume we'll have gotten the XML update within 100ms.
-		setTimeout(function(){selectTeam.val(teamname);}, 100);
+		// If team already exists, switch to it.
+		selectTeam.val(teamid);
+		selectTeam.change();
 	});
 
 	createNewTeamTable($sb("ScoreBoard.Team(1)"), "(Current Team 1)")
@@ -1680,6 +1683,11 @@ function createTeamsContent() {
 	_crgUtils.bindAddRemoveEach($sb("Teams"), "Team", function(event, node) {
 		if (node.$sbId){
 			teams[node.$sbId] = node;
+			if (node.$sbId == waitingOnNewTeam) {
+				selectTeam.val(node.$sbId);
+				selectTeam.change();
+				waitingOnNewTeam = "";
+			}
 		} 
 	}, function(event, node) {
 		$("table.Team", "#Teams")
@@ -1719,7 +1727,7 @@ function createNewTeamTable(team, teamid) {
 		optionChildName: "File",
 		optionNameElement: "Name",
 		optionValueElement: "Src",
-		firstOption: { text: "No Logo", value: "" },
+		firstOption: { text: "No Logo", value: "" }
 	} }).appendTo(controlTable.find("td:eq(1)"));
 	$sb("ScoreBoard.Media.Format(images).Type(teamlogo)").$sbBindAddRemoveEach("File",
 			function(event, node){
