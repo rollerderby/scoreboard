@@ -72,6 +72,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		WS.Register(['ScoreBoard.Period']);
 		WS.Register(['ScoreBoard.CurrentPeriodNumber']);
 		WS.Register(['ScoreBoard.UpcomingJam']);
+		WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)']);
 	}
 
 	function updatePeriod(k, v) {
@@ -377,7 +378,7 @@ function openPenaltyEditor(t, id, which) {
 	
 	var penaltyNumber = which;
 	var penaltyId = null;
-	var wasServed = false;
+	var wasServed = isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)']);
 
 	$('#PenaltyEditor .Codes>div').removeClass('Active');
 
@@ -390,27 +391,25 @@ function openPenaltyEditor(t, id, which) {
 	$('#PenaltyEditor .Codes>.Penalty').toggle(which != 0);
 	$('#PenaltyEditor .Codes>.FO_EXP').toggle(which == 0);
 
-	if (which != null) {
-		var penaltyBox = $('.PLT.Team .Skater.Penalty[id=' + id + '] .Box' + which);
-		var c = WS.state[prefix + '.Penalty(' + which + ').Code'];
-		var p = WS.state[prefix + '.Penalty(' + which + ').PeriodNumber'];
-		var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
-		wasServed = isTrue(WS.state[prefix + '.Penalty(' + which + ').Served']);
-		penaltyId = penaltyBox.attr("pid");
-		if (penaltyId != null) {
-			if (c == null || j == null || p == null) {
-				penaltyId = null;
-			} else {
-				$('#PenaltyEditor .Codes>div.' + (which == 0 ? 'FO_EXP' : 'Penalty') + '[code="' + c + '"]').addClass('Active');
-				$('#PenaltyEditor .Period').val(p).change();
-				$('#PenaltyEditor .Jam').val(j);
-				$('#PenaltyEditor #served').prop('checked', wasServed);
-			}
+	var penaltyBox = $('.PLT.Team .Skater.Penalty[id=' + id + '] .Box' + which);
+	var c = WS.state[prefix + '.Penalty(' + which + ').Code'];
+	var p = WS.state[prefix + '.Penalty(' + which + ').PeriodNumber'];
+	var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
+	penaltyId = penaltyBox.attr("pid");
+	if (penaltyId != null) {
+		if (c == null || j == null || p == null) {
+			penaltyId = null;
+		} else {
+			wasServed = isTrue(WS.state[prefix + '.Penalty(' + which + ').Served']);
+			$('#PenaltyEditor .Codes>div.' + (which == 0 ? 'FO_EXP' : 'Penalty') + '[code="' + c + '"]').addClass('Active');
+			$('#PenaltyEditor .Period').val(p).change();
+			$('#PenaltyEditor .Jam').val(j);
 		}
-		while (!isNaN(penaltyNumber) && penaltyNumber > 1 &&
-				WS.state[prefix + '.Penalty(' + (penaltyNumber-1) + ').Code'] == null) {
-			penaltyNumber--;
-		}
+	}
+	$('#PenaltyEditor #served').prop('checked', wasServed);
+	while (!isNaN(penaltyNumber) && penaltyNumber > 1 &&
+			WS.state[prefix + '.Penalty(' + (penaltyNumber-1) + ').Code'] == null) {
+		penaltyNumber--;
 	}
 
 	penaltyEditor.data({
@@ -481,6 +480,8 @@ function preparePenaltyEditor() {
 		WS.Set(prefix + '.Code', $('#PenaltyEditor .Codes .Active').attr('code'));
 		if ($('#PenaltyEditor #served').prop('checked') != wasServed) {
 			WS.Set(prefix + '.ForceServed', !wasServed);
+		} else if (isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)'])) {
+			WS.Set(prefix + '.ForceServed', wasServed);
 		}
 		WS.Set(prefix + '.Jam', $('#PenaltyEditor .Jam').val());
 

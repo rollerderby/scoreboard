@@ -1301,6 +1301,17 @@ function createScoreBoardViewPreviewRows(table, type) {
 			}
 		} }).addClass("ui-button-small");
 
+	var forceServedButton = $("<label/><input type='checkbox'/>");
+	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)").$sbControl(forceServedButton, { sbcontrol: {
+			button: true
+		}, sbelement: {
+			convert: function(value) {
+				forceServedButton.filter("input:checkbox")
+					.button("option", "label", (isTrue(value)?"Assume Penalties Served":"Track Penalty Serving"));
+				return value;
+			}
+		} }).addClass("ui-button-small");
+
 	var swapTeamsButton = $("<label/><input type='checkbox'/>");
 	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
 			button: true
@@ -1368,6 +1379,9 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.first().append(clockAfterTimeout)
 		.next().append(sidePadding)
 		.next().append(customPageViewSelect);
+	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
+		.find("td").addClass("ScoreBoardOptions Footer")
+		.first().append(forceServedButton);
 	
 }
 
