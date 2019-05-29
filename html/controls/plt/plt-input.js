@@ -44,8 +44,9 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			$('<td>').attr('colspan', '9').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
 			$('<td>').text('FO_Ex').appendTo(thead);
 		}
+		totalPenalties = $('<td>').attr('id', 'totalPenalties').text('Σ 0');
 		if (mode == 'plt' || mode == 'pt') {
-			totalPenalties = $('<td>').attr('id', 'totalPenalties').text('Σ 0').appendTo(thead);
+			totalPenalties.appendTo(thead);
 		}
 		tbody = $('<tbody>').appendTo(table);
 
