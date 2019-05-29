@@ -21,6 +21,7 @@ public enum Rule {
     STOP_PC_ON_TTO(new BooleanRule("Timeout.StopPeriodClockOnTTO", "Stop the period clock on team timeouts?", false, "True", "False")),
     STOP_PC_ON_OR(new BooleanRule("Timeout.StopPeriodClockOnOR", "Stop the period clock on official reviews?", false, "True", "False")),
     STOP_PC_AFTER_TO_DURATION(new TimeRule("Timeout.StopPeriodClockAfterTODuration", "Stop the period clock, if a timeout lasts longer than this time. Set to a high value to disable.", "60:00")),
+    EXTRA_JAM_AFTER_OTO(new BooleanRule("Timeut.ExtraJamAfterOTO", "Can an OTO cause an extra Jam to be played when there wouldn't be one otherwise?", false, "True", "False")),
 
     INTERMISSION_DURATIONS(new StringRule("Intermission.Durations", "List of the duration of intermissions as they appear in the game, separated by commas.", "15:00,60:00")),
     INTERMISSION_DIRECTION(new BooleanRule("Intermission.ClockDirection", "Which way should the intermission clock count?", true, "Count Down", "Count Up")),

@@ -92,7 +92,10 @@ function initialize() {
 		})
 	});
 
-
+	WS.Register(['ScoreBoard.NoMoreJam'], function(k, v) {
+		$('.Clock.Lineup').toggleClass('Red', isTrue(v));
+		$('.Clock.Timeout').toggleClass('Red', isTrue(v));
+	});
 
 	(function() {
 		var switchTimeMs = 5000;

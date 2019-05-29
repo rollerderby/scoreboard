@@ -135,6 +135,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             requestBatchStart();
             set(Value.DURATION, scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
             set(Value.PERIOD_CLOCK_ELAPSED_END, scoreBoard.getClock(Clock.ID_PERIOD).getTimeElapsed());
+            set(Value.PERIOD_CLOCK_DISPLAY_END, scoreBoard.getClock(Clock.ID_PERIOD).getTime());
             set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
             requestBatchEnd();
         }
