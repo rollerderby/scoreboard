@@ -1025,7 +1025,7 @@ function createJamDialog() {
 		var tj = k.TeamJam;
 		var tjPrefix = prefix + ".TeamJam(" + tj + ")";
 		var key = k.field;
-		if (!((k == prefix + "." + key && ["Duration", "Number", "PeriodClockElapsedEnd"].includes(key))
+		if (!((k == prefix + "." + key && ["Duration", "Number", "PeriodClockDisplayEnd"].includes(key))
 				|| k == tjPrefix + ".JamScore")) { return; }
 		
 		var table = dialog.find("table.Period[nr="+per+"]");
@@ -1078,7 +1078,7 @@ function createJamDialog() {
 					row.children("td.Duration").text(_timeConversions.msToMinSec(v));
 				}
 			}
-			if (key == 'PeriodClockElapsedEnd') {
+			if (key == 'PeriodClockDisplayEnd') {
 				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
 					row.children("td.PC").text("running");
 				} else {

@@ -27,6 +27,7 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
         DURATION(Long.class, 0L),
         PERIOD_CLOCK_ELAPSED_START(Long.class, 0L),
         PERIOD_CLOCK_ELAPSED_END(Long.class, 0L),
+        PERIOD_CLOCK_DISPLAY_END(Long.class, 0L),
         WALLTIME_START(Long.class, 0L),
         WALLTIME_END(Long.class, 0L);
 
