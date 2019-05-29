@@ -1344,30 +1344,39 @@ public class ScoreboardImplTests {
         sb.startJam();
         pc.setTime(35000);
         sb.stopJamTO();
+        assertFalse((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
         assertTrue(pc.isRunning());
         assertTrue(lc.isRunning());
         advance(10000);
         sb.timeout();
         advance(20000);
         sb.stopJamTO();
+        assertFalse((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
         assertFalse(pc.isRunning());
 
         //jam ended after 30s mark, official timeout
         sb.startJam();
         sb.stopJamTO();
+        assertTrue((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
         assertEquals(25000, pc.getTime());
         assertTrue(pc.isRunning());
         advance(1000);
         sb.timeout();
         advance(35000);
+        assertTrue((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
+        sb.setTimeoutType(Timeout.Owners.OTO, false);
+        assertTrue((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
         sb.stopJamTO();
+        assertTrue((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
         assertTrue(pc.isRunning());
 
         //follow up with team timeout
         advance(2000);
         sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
+        assertFalse((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
         advance(60000);
         sb.stopJamTO();
+        assertFalse((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
         assertFalse(pc.isRunning());
         assertEquals(22000, pc.getTimeRemaining());
     }
