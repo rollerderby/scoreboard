@@ -1,10 +1,11 @@
 (function () {
+	$('head').append('<link rel="stylesheet" href="roster-sheet.css" type="text/css" />');
 	$('head').append('<link rel="stylesheet" href="/controls/sk/sk-sheet.css" type="text/css" />');
 	$('head').append('<link rel="stylesheet" href="/controls/plt/plt-input.css" type="text/css" />');
 	$('head').append('<link rel="stylesheet" href="/controls/lt/lt-sheet.css" type="text/css" />');
 
-	WS.Connect();
-	WS.AutoRegister();
+	prepareRosterSheetTable($('#roster1'), 1, 'copyToStatsbook');
+	prepareRosterSheetTable($('#roster2'), 2, 'copyToStatsbook');
 
 	prepareSkSheetTable($('#sk1'), 1, 'copyToStatsbook');
 	prepareSkSheetTable($('#sk2'), 2, 'copyToStatsbook');
@@ -16,6 +17,9 @@
 	
 	prepareLtSheetTable($('#lt1'), 1, 'copyToStatsbook');
 	prepareLtSheetTable($('#lt2'), 2, 'copyToStatsbook');
+
+	WS.AutoRegister();
+	WS.Connect();
 })();
 
 //# sourceURL=views\copy\copy.js
