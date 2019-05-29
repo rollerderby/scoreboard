@@ -942,21 +942,18 @@ function createPeriodDialog() {
 	var table = $("<table>").appendTo(dialog);
 	var headers = $("<tr><td/><td/><td/><td/><td/></tr>").appendTo(table);
 	$("<a>").text("Nr").addClass("Title")
-		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+		.appendTo(headers.children("td:eq(0)").addClass("Title"));
 	$("<a>").text("Jams").addClass("Title")
-		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+		.appendTo(headers.children("td:eq(1)").addClass("Title"));
 	$("<a>").text("Duration").addClass("Title")
-		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+		.appendTo(headers.children("td:eq(2)").addClass("Title"));
 
-	var periodRegex = /Period\(([^\)]+)\)\.([^\.]+)/;
 	WS.Register(['ScoreBoard.Period'], function (k, v) {
-		var match = (k || "").match(periodRegex);
-		if (match == null || match.length == 0) { return; }
-		var nr = match[1];
-		if (nr == 0) { return; }
+		var nr = k.Period;
+		if (nr == null || nr == 0) { return; }
 		var prefix = "ScoreBoard.Period(" + nr + ")";
-		var key = match[2];
-		if (k != prefix + "." + key) { return; }
+		var key = k.field;
+		if (k.parts.length > 3) { return; }
 		if (!(["CurrentJamNumber", "Duration", "Number", "Running"].includes(key))) { return; }
 
 		var row = table.find("tr.Period[nr="+nr+"]");
@@ -990,10 +987,10 @@ function createPeriodDialog() {
 			return;
 		}
 		if (v != null) {
-			if (key == "CurrentJamNumber") { row.find("td.Jams").text(v); }
-			if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.find("td.Duration").text(_timeConversions.msToMinSec(v)); }
-			if (key == "Running" && isTrue(v)) { row.find("td.Duration").text("running"); }
-			if (key == "Running" && !isTrue(v)) { row.find("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'])); }
+			if (key == "CurrentJamNumber") { row.children("td.Jams").text(v); }
+			if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.children("td.Duration").text(_timeConversions.msToMinSec(v)); }
+			if (key == "Running" && isTrue(v)) { row.children("td.Duration").text("running"); }
+			if (key == "Running" && !isTrue(v)) { row.children("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'])); }
 		}
 	});
 
@@ -1011,27 +1008,24 @@ function createJamDialog() {
 	var tableTemplate = $("<table>").addClass("Period");
 	var headers = $("<tr><td/><td/><td/><td/><td/><td/></tr>").appendTo(tableTemplate);
 	$("<a>").text("Nr").addClass("Title")
-		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+		.appendTo(headers.children("td:eq(0)").addClass("Title"));
 	$("<a>").text("Points").addClass("Title")
-		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+		.appendTo(headers.children("td:eq(1)").addClass("Title"));
 	$("<a>").text("Duration").addClass("Title")
-		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+		.appendTo(headers.children("td:eq(2)").addClass("Title"));
 	$("<a>").text("PC at end").addClass("Title")
-	.appendTo(headers.find("td:eq(3)").addClass("Title"));
+		.appendTo(headers.children("td:eq(3)").addClass("Title"));
 	var currentPeriod;
 
-	var jamRegex = /Period\(([^\)]+)\)\.Jam\(([^\)]+)\)\.(?:TeamJam\(([^\)]+)\)\.)?([^\.\(]+)/;
 	WS.Register(['ScoreBoard.Period'], function (k, v) {
-		var match = (k || "").match(jamRegex);
-		if (match == null || match.length == 0) { return; }
-		var per = match[1];
+		var per = k.Period;
 		if (per == 0) { return; }
-		var nr = match[2];
+		var nr = k.Jam;
 		var prefix = "ScoreBoard.Period(" + per + ").Jam(" + nr + ")";
-		var tj = match[3];
+		var tj = k.TeamJam;
 		var tjPrefix = prefix + ".TeamJam(" + tj + ")";
-		var key = match[4];
-		if (!((k == prefix + "." + key && ["Duration", "Number"].includes(key))
+		var key = k.field;
+		if (!((k == prefix + "." + key && ["Duration", "Number", "PeriodClockElapsedEnd"].includes(key))
 				|| k == tjPrefix + ".JamScore")) { return; }
 		
 		var table = dialog.find("table.Period[nr="+per+"]");
@@ -1076,19 +1070,19 @@ function createJamDialog() {
 			return;
 		}
 		if (v != null) {
-			if (key == "JamScore") { row.find("td.Points ."+tj).text(v); }
+			if (key == "JamScore") { row.children("td.Points ."+tj).text(v); }
 			if (key == "Duration") {
 				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
-					row.find("td.Duration").text("running");
+					row.children("td.Duration").text("running");
 				} else {
-					row.find("td.Duration").text(_timeConversions.msToMinSec(v));
+					row.children("td.Duration").text(_timeConversions.msToMinSec(v));
 				}
 			}
 			if (key == 'PeriodClockElapsedEnd') {
 				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
-					row.find("td.PC").text("running");
+					row.children("td.PC").text("running");
 				} else {
-					row.find("td.PC").text(_timeConversions.msToMinSec(v));
+					row.children("td.PC").text(_timeConversions.msToMinSec(v));
 				}
 			}
 		}
@@ -1104,7 +1098,7 @@ function createJamDialog() {
 		title: "Jams",
 		autoOpen: false,
 		modal: true,
-		width: 500,
+		width: 550,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 }
@@ -1132,17 +1126,17 @@ function createTimeoutDialog() {
 	var table = $("<table>").appendTo(dialog);
 	var headers = $("<tr><td/><td/><td/><td/><td/><td/><td/></tr>").appendTo(table);
 	$("<a>").text("Period").addClass("Title")
-		.appendTo(headers.find("td:eq(0)").addClass("Title"));
+		.appendTo(headers.children("td:eq(0)").addClass("Title"));
 	$("<a>").text("After Jam").addClass("Title")
-		.appendTo(headers.find("td:eq(1)").addClass("Title"));
+		.appendTo(headers.children("td:eq(1)").addClass("Title"));
 	$("<a>").text("Duration").addClass("Title")
-		.appendTo(headers.find("td:eq(2)").addClass("Title"));
+		.appendTo(headers.children("td:eq(2)").addClass("Title"));
 	$("<a>").text("Period Clock").addClass("Title")
-	.appendTo(headers.find("td:eq(3)").addClass("Title"));
+	.appendTo(headers.children("td:eq(3)").addClass("Title"));
 	$("<a>").text("Type").addClass("Title")
-		.appendTo(headers.find("td:eq(4)").addClass("Title"));
+		.appendTo(headers.children("td:eq(4)").addClass("Title"));
 	$("<a>").text("Retained").addClass("Title")
-	.appendTo(headers.find("td:eq(5)").addClass("Title"));
+		.appendTo(headers.children("td:eq(5)").addClass("Title"));
 	
 	var footer = $("<tr><td/><td colspan=\"3\"/><td/><td/><td/></tr>").attr('id', 'toFooter').appendTo(table);
 	periodDropdownTemplate.clone().appendTo(footer.find('td:eq(0)'));
@@ -1170,7 +1164,7 @@ function createTimeoutDialog() {
 			lastPeriodListed = i;
 		}
 		for (i = lastPeriodListed; i > p; i--) {
-			periodDropdownTemplate.find('option[value='+i+']').remove();
+			periodDropdownTemplate.children('option[value='+i+']').remove();
 			table.find('#PeriodDropdown option[value='+i+']').remove();
 			clearPeriod(i);
 			lastPeriodListed = i-1;
@@ -1189,12 +1183,12 @@ function createTimeoutDialog() {
 		}
 	}
 	function removeJam(p, j) {
-		jamDropdownTemplate[p].find('option[value='+i+']').remove();
+		jamDropdownTemplate[p].children('option[value='+i+']').remove();
 		table.find('#JamDropdown[period='+p+'] option[value='+i+']').remove();
 	}
 	function clearPeriod(p) {
 		table.find('tr.Timeout[period='+p+']').remove();
-		jamDropdownTemplate[p].find('option').remove();
+		jamDropdownTemplate[p].children('option').remove();
 		table.find('#JamDropdown[period='+p+'] option').remove();
 		firstJamListed[p] = 0;
 		lastJamListed[p] = 0;
