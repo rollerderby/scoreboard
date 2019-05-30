@@ -304,9 +304,17 @@ public class WS extends WebSocketServlet {
               if (i >= p.length()) {
                 return false;
               }
-              head = head.trie.get(p.charAt(i));
+              Character c = p.charAt(i);
+              head = head.trie.get(c);
               if (head == null) {
                 return false;
+              }
+              // Allow Blah(*).
+              if (c == '(' && head.trie.containsKey('*')) {
+                int closeIndex = p.indexOf(')', i);
+                if (closeIndex != -1 && head.trie.get('*').covers(p.substring(closeIndex))) {
+                  return true;
+                }
               }
             }
           }
