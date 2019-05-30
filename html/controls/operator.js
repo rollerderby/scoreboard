@@ -42,6 +42,19 @@ $sb(function() {
 // FIXME - also provide visual feedback that key-control is disabled while typing into input text box?
 	_crgKeyControls.addCondition(function() { return !$("#TeamTime input:text.Editing").length; });
 
+
+	$("<li>").text("Caps Lock is On").attr("id", "capsLockWarning").addClass("Hidden").appendTo("#tabBar");
+	$(document).keydown(function(e) {
+		if (e.originalEvent.key === "CapsLock") {
+			// Assume it'll be toggled. Different OSes actually change
+			// the setting at different stages of the keypress, so
+			// this is the best we can do. If it is wrong, it'll be
+			// fixed at the next non-Caps Lock keypress.
+			$("#capsLockWarning").toggleClass("Hidden");
+		} else {
+			$("#capsLockWarning").toggleClass("Hidden", !e.originalEvent.getModifierState("CapsLock"));
+		}
+	});
 	$("<button>").text("Logout").click(logout).button().css("float", "right").appendTo("#tabBar");
 });
 
