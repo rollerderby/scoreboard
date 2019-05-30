@@ -20,7 +20,23 @@ function prepareSkSheetTable(element, teamId, mode) {
 			});
 		}
 
-		WS.Register(['ScoreBoard.Period'], handleUpdate);
+		WS.Register(['ScoreBoard.Period(*).Number',
+				'ScoreBoard.Period(*).Jam(*).Number',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Injury',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Lead',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Lost',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').NoInitial',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').TotalScore',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Jammer).SkaterNumber',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).SkaterNumber',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Current',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score'
+		], handleUpdate);
 	}
 
 	function teamNameUpdate() {

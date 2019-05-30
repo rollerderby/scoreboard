@@ -70,7 +70,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)']);
 		
-		WS.Register(['ScoreBoard.Period']);
+		WS.Register(['ScoreBoard.Period(*).CurrentJam']);
 		WS.Register(['ScoreBoard.CurrentPeriodNumber']);
 		WS.Register(['ScoreBoard.UpcomingJam']);
 		WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)']);

@@ -20,8 +20,15 @@ function prepareLtSheetTable(element, teamId, mode) {
 			});
 		}
 
-		WS.Register(['ScoreBoard.Jam']); // for fielding editor
-		WS.Register(['ScoreBoard.Period'], handleUpdate);
+		// for fielding editor
+		WS.Register(['ScoreBoard.Jam(*).TeamJam(' + teamId + ').NoPivot',
+				'ScoreBoard.Jam(*).TeamJam(' + teamId + ').StarPass',
+				'ScoreBoard.Jam(*).TeamJam(' + teamId + ').Fielding(*)']);
+		WS.Register(['ScoreBoard.Period(*).Number', 'ScoreBoard.Period(*).Jam(*).Number',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').NoPivot',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(*)',
+		], handleUpdate);
 
 		if (mode == 'plt') {
 			WS.Register(['ScoreBoard.UpcomingJamNumber'], function (k, v) { element.find("#upcoming .JamNumber").text(v); });
@@ -33,10 +40,10 @@ function prepareLtSheetTable(element, teamId, mode) {
 				}
 			});
 
-			WS.Register(['ScoreBoard.Team('+teamId+').Position('], function(k, v) {
-				if (k.parts[3] == "Number") {
+			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).Number', 'ScoreBoard.Team('+teamId+').Position(*).CurrentBoxSymbols'], function(k, v) {
+				if (k.field == "Number") {
 					element.find("#upcoming .Skater."+k.Position).text(v);
-				} else if (k.parts[3] == "CurrentBoxSymbols") {
+				} else if (k.field == "CurrentBoxSymbols") {
 					element.find("#upcoming .Box.Box"+k.Position).text(v);
 				}
 			});
