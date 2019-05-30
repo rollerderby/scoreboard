@@ -187,7 +187,7 @@ function createMetaControlTable() {
 			_crgKeyControls.editKeys(this.checked);
 			table.find("tr.Help").toggleClass("Hidden", !this.checked);
 		});
-	$("<a>").text("Key Control Edit mode enabled.	 Buttons do not operate in this mode.	 Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.")
+	$("<a>").text("Key Control Edit mode enabled.	 Buttons do not operate in this mode.	 Move the mouse over a button, then press a normal key (not ESC, Enter, F1, etc.) to assign.  Backspace/Delete to remove.")
 		.appendTo(helpTd);
 
 	$("<label>").addClass("EnableReplaceButton").text("Enable Replace on Undo").attr("for", "EnableReplaceButton")
