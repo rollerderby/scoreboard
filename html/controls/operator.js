@@ -1070,7 +1070,7 @@ function createJamDialog() {
 			return;
 		}
 		if (v != null) {
-			if (key == "JamScore") { row.children("td.Points ."+tj).text(v); }
+			if (key == "JamScore") { row.find("td.Points ."+tj).text(v); }
 			if (key == "Duration") {
 				if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
 					row.children("td.Duration").text("running");
