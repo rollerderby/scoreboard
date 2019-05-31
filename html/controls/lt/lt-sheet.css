@@ -6,6 +6,13 @@ table.LT, .LT table,.LT tr, .LT td, #FieldingEditor table, #FieldingEditor tr, #
 	border-collapse: collapse;
 	border-color:#777;
 }
+body:not(.AllowSelect) .LT {
+	user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+}
 .LT tr {
     color: #333;
 }
