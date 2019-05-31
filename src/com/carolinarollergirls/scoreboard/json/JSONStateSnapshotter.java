@@ -22,10 +22,12 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
     @Override
     public void sendUpdates(Map<String, Object> state, Set<String> changed) {
-        // If the jam has just ended or the score is now official, write out a file.
-        if ((inJam && !bool(state.get("ScoreBoard.Clock(Jam).Running")))
-                || (!officialScore && bool(state.get("ScoreBoard.OfficialScore")))) {
-            writeFile(state);
+        if (state.get("ScoreBoard.CurrentPeriodNumber") != "0") {
+          // If the jam has just ended or the score is now official, write out a file.
+          if ((inJam && !bool(state.get("ScoreBoard.Clock(Jam).Running")))
+                  || (!officialScore && bool(state.get("ScoreBoard.OfficialScore")))) {
+              writeFile(state);
+          }
         }
 
         officialScore = bool(state.get("ScoreBoard.OfficialScore"));
@@ -37,14 +39,16 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
         // Fallback to current time.
         long startTime = System.currentTimeMillis();
-        Object periodState = state.get("ScoreBoard.Stats.Period(1).Jam(1).PeriodClockWalltimeStart");
-        if (periodState != null) {
-            startTime = (long)periodState;
+        Object periodStart = state.get("ScoreBoard.Period(1).WalltimeStart");
+        if (periodStart != null) {
+            startTime = (long)periodStart;
         }
+        Object period = state.get("ScoreBoard.CurrentPeriodNumber");
 
         String name = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss").format(startTime)
                 + " - " + state.get("ScoreBoard.Team(1).Name")
                 + " vs " + state.get("ScoreBoard.Team(2).Name")
+                + " P" + period
                 + ".json";
         name = name.replaceAll("[^a-zA-Z0-9\\.\\- ]", "_");
         File file = new File(new File(directory, "game-data"), name);
