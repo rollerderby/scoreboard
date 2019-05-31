@@ -548,9 +548,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         requestBatchStart();
         ic.stop();
         if (getCurrentPeriodNumber() == 0 || 
-                (ic.getTimeRemaining() < 60000 
+                (ic.getTimeRemaining() < ic.getTimeElapsed() 
                         && pc.getNumber() < getRulesets().getInt(Rule.NUMBER_PERIODS))) {
-            //If less than one minute of intermission is left and there is another period,
+            //If less than half of intermission is left and there is another period,
             // go to the next period. Otherwise extend the previous period.
             //Always start period 1 as there is no previous period to extend.
             _preparePeriod();
