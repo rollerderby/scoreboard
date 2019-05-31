@@ -31,6 +31,7 @@ import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Period.PeriodSnapshot;
+import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Settings;
@@ -161,6 +162,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         synchronized (coreLock) {
             if (prop == Child.CLOCK) { return new ClockImpl(this, id); }
             if (prop == Child.TEAM) { return new TeamImpl(this, id); }
+            if (prop == Child.PREPARED_TEAM) { return new PreparedTeamImpl(this, id); }
             if (prop == Period.NChild.JAM) { return new JamImpl(this, Integer.parseInt(id)); }
             if (prop == NChild.PERIOD) {
                 int num = Integer.parseInt(id);
@@ -673,6 +675,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
     @Override
     public Team getTeam(String id) { return (Team)getOrCreate(Child.TEAM, id); }
+ 
+    @Override
+    public PreparedTeam getPreparedTeam(String id) { return (PreparedTeam)get(Child.PREPARED_TEAM, id); }
 
     @Override
     public TimeoutOwner getTimeoutOwner(String id) {

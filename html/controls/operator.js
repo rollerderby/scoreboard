@@ -10,7 +10,7 @@
 
 
 $.fx.interval = 33;
-_include("/json", [ "Game.js", "WS.js" ]);
+_include("/json", [ "WS.js" ]);
 _include("sk", [ "sk-sheet.js" ]);
 $('head').append('<link rel="stylesheet" href="sk/sk-sheet.css" type="text/css" />');
 
@@ -332,10 +332,8 @@ function createGameControlDialog() {
 			IntermissionClock: IntermissionClock
 		};
 		console.log(game);
-		Game.Adhoc(game, function() {
-			dialog.dialog("close");
-			hideEndOfPeriodControls();
-		});
+		WS.Command("StartNewGame", game);
+		dialog.dialog("close");
 	};
 
 	$("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
@@ -373,15 +371,15 @@ function createGameControlDialog() {
 	};
 
 	_crgUtils.setupSelect(adhocGame.find("select.Team1"), {
-		optionParent: "Teams",
-		optionChildName: "Team",
+		optionParent: "ScoreBoard",
+		optionChildName: "PreparedTeam",
 		prependOptions: [
 			{ text: "No Team Selected", value: "" },
 		]
 	}).change(function(e) { updateAdhocName(); });
 	_crgUtils.setupSelect(adhocGame.find("select.Team2"), {
-		optionParent: "Teams",
-		optionChildName: "Team",
+		optionParent: "ScoreBoard",
+		optionChildName: "PreparedTeam",
 		prependOptions: [
 			{ text: "No Team Selected", value: "" },
 		]
@@ -1671,8 +1669,8 @@ function createTeamsContent() {
 	createRowTable(2).appendTo("#Teams>tbody>tr.Selection>td").addClass("Selection");
 
 	var selectTeam = _crgUtils.setupSelect("<select>", {
-		optionParent: "Teams",
-		optionChildName: "Team",
+		optionParent: "ScoreBoard",
+		optionChildName: "PreparedTeam",
 		prependOptions: [
 			{ text: "No Team Selected", value: "" },
 			{ text: "Current Team 1", value: "(Current Team 1)" },
@@ -1693,7 +1691,7 @@ function createTeamsContent() {
 	createNewTeam.click(function(event) {
 		var teamname = newTeamName.val();
 		var teamid = _crgUtils.checkSbId(teamname);
-		$sb("Teams.Team("+teamid+").Name").$sbSet(teamname);
+		$sb("ScoreBoard.PreparedTeam("+teamid+").Name").$sbSet(teamname);
 		waitingOnNewTeam = teamid;
 		newTeamName.val("").keyup().focus();
 		// If team already exists, switch to it.
@@ -1711,7 +1709,7 @@ function createTeamsContent() {
 	// fixing major performance issues on this page
 	var teams = {};
 	
-	_crgUtils.bindAddRemoveEach($sb("Teams"), "Team", function(event, node) {
+	_crgUtils.bindAddRemoveEach($sb("ScoreBoard"), "PreparedTeam", function(event, node) {
 		if (node.$sbId){
 			teams[node.$sbId] = node;
 			if (node.$sbId == waitingOnNewTeam) {
@@ -2147,7 +2145,7 @@ function createTeamsRemoveDialog(teamId) {
 		dialog.dialog("close");
 	}).button();
 	$("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
-		$sb("Teams.Team("+teamId+")").$sbRemove();
+		$sb("ScoreBoard.PreparedTeam("+teamId+")").$sbRemove();
 		dialog.dialog("close");
 	}).button();
 

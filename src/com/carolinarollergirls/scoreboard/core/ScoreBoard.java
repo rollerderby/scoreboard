@@ -94,6 +94,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public Clock getClock(String id);
 
     public Team getTeam(String id);
+    public PreparedTeam getPreparedTeam(String id);
 
     public TimeoutOwner getTimeoutOwner(String id);
 
@@ -135,7 +136,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         PENALTY_CODES(PenaltyCodesManager.class),
         MEDIA(Media.class),
         CLOCK(Clock.class),
-        TEAM(Team.class);
+        TEAM(Team.class),
+        PREPARED_TEAM(PreparedTeam.class);
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
         private final Class<? extends ValueWithId> type;

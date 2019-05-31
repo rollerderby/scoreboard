@@ -33,7 +33,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -133,6 +136,24 @@ public class WS extends WebSocketServlet {
                         set(sb, m.group("remainder"), v, flag);
                     } else {
                         ScoreBoardManager.printMessage("Illegal path: " + key);
+                    }
+                } else if (action.equals("StartNewGame")) {
+                    JSONObject data = json.getJSONObject("data");
+                    PreparedTeam t1 = sb.getPreparedTeam(data.getString("Team1"));
+                    PreparedTeam t2 = sb.getPreparedTeam(data.getString("Team2"));
+                    String rs = data.getString("Ruleset");
+                    sb.reset();
+                    sb.getRulesets().setCurrentRuleset(rs);
+                    sb.getTeam(Team.ID_1).loadPreparedTeam(t1);
+                    sb.getTeam(Team.ID_2).loadPreparedTeam(t2);
+
+                    String intermissionClock = data.optString("IntermissionClock", null);
+                    if (intermissionClock != null) {
+                        Long ic_time = new Long(intermissionClock);
+                        ic_time = ic_time - (ic_time % 1000);
+                        Clock c = sb.getClock(Clock.ID_INTERMISSION);
+                        c.setMaximumTime(ic_time);
+                        c.restart();
                     }
                 } else if (action.equals("Ping")) {
                     send(new JSONObject().put("Pong", ""));

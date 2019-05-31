@@ -18,6 +18,8 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
+import com.carolinarollergirls.scoreboard.core.PreparedTeam;
+import com.carolinarollergirls.scoreboard.core.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -321,6 +323,30 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public String getLogo() { return (String)get(Value.LOGO); }
     @Override
     public void setLogo(String l) { set(Value.LOGO, l); }
+
+ 
+    @Override
+    public void loadPreparedTeam(PreparedTeam pt) {
+        synchronized (coreLock) {
+            requestBatchStart();
+            setLogo((String)pt.get(PreparedTeam.Value.LOGO));
+            setName((String)pt.get(PreparedTeam.Value.NAME));
+            for (ValueWithId v : pt.getAll(PreparedTeam.Child.ALTERNATE_NAME)) {
+                setAlternateName(v.getId(), v.getValue());
+            }
+            for (ValueWithId v : pt.getAll(PreparedTeam.Child.COLOR)) {
+                setColor(v.getId(), v.getValue());
+            }
+            for (ValueWithId v : pt.getAll(PreparedTeam.Child.SKATER)) {
+              PreparedTeamSkater s = (PreparedTeamSkater)v;
+                addSkater(s.getId(), 
+                    (String)s.get(PreparedTeamSkater.Value.NAME),
+                    (String)s.get(PreparedTeamSkater.Value.NUMBER),
+                    (String)s.get(PreparedTeamSkater.Value.FLAGS));
+            }
+            requestBatchEnd();
+        }
+    }
 
     @Override
     public void timeout() {

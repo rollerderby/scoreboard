@@ -63,16 +63,14 @@
         <Number empty="true"><![CDATA[]]></Number>
       </Position>
     </Team>
-  </ScoreBoard>
-  <Teams>
-    <Team Id="Black">
+    <PreparedTeam Id="Black">
       <Name><![CDATA[Black]]></Name>
       <Logo />
-    </Team>
-    <Team Id="White">
+    </PreparedTeam>
+    <PreparedTeam Id="White">
       <Name><![CDATA[White]]></Name>
       <Logo />
-    </Team>
-  </Teams>
+    </PreparedTeam>
+  </ScoreBoard>
 </document>
 
