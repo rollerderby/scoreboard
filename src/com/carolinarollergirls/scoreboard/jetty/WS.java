@@ -265,59 +265,59 @@ public class WS extends WebSocketServlet {
         protected UUID id;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
+    }
 
-        private class PathTrie {
-          boolean exists = false;
-          Map<Character, PathTrie> trie = new HashMap<>();
+    protected static class PathTrie {
+      boolean exists = false;
+      Map<Character, PathTrie> trie = new HashMap<>();
 
-          public void addAll(Set<String> c) {
-            for (String p: c) {
-              add(p);
-            }
+      public void addAll(Set<String> c) {
+        for (String p: c) {
+          add(p);
+        }
+      }
+      public void add(String p) {
+        PathTrie head = this;
+        for (int i = 0;; i++) {
+          if (head.exists) {
+            // Already covered.
+            return;
           }
-          public void add(String p) {
-            PathTrie head = this;
-            for (int i = 0;; i++) {
-              if (head.exists) {
-                // Already covered.
-                return;
-              }
-              if (i >= p.length()) {
-                break;
-              }
-              if (head.trie.containsKey(p.charAt(i))) {
-                 head = head.trie.get(p.charAt(i));
-              } else {
-                 PathTrie child = new PathTrie();
-                 head.trie.put(p.charAt(i), child);
-                 head = child;
-              }
-            }
-            head.exists = true;
+          if (i >= p.length()) {
+            break;
           }
-          public boolean covers(String p) {
-            PathTrie head = this;
-            for (int i = 0;; i++) {
-              if (head.exists) {
-                return true;
-              }
-              if (i >= p.length()) {
-                return false;
-              }
-              Character c = p.charAt(i);
-              head = head.trie.get(c);
-              if (head == null) {
-                return false;
-              }
-              // Allow Blah(*).
-              if (c == '(' && head.trie.containsKey('*')) {
-                int closeIndex = p.indexOf(')', i);
-                if (closeIndex != -1 && head.trie.get('*').covers(p.substring(closeIndex))) {
-                  return true;
-                }
-              }
+          if (head.trie.containsKey(p.charAt(i))) {
+             head = head.trie.get(p.charAt(i));
+          } else {
+             PathTrie child = new PathTrie();
+             head.trie.put(p.charAt(i), child);
+             head = child;
+          }
+        }
+        head.exists = true;
+      }
+      public boolean covers(String p) {
+        PathTrie head = this;
+        for (int i = 0;; i++) {
+          if (head.exists) {
+            return true;
+          }
+          if (i >= p.length()) {
+            return false;
+          }
+          Character c = p.charAt(i);
+          head = head.trie.get(c);
+          if (head == null) {
+            return false;
+          }
+          // Allow Blah(*).
+          if (c == '(' && head.trie.containsKey('*')) {
+            int closeIndex = p.indexOf(')', i);
+            if (closeIndex != -1 && head.trie.get('*').covers(p.substring(closeIndex))) {
+              return true;
             }
           }
         }
+      }
     }
 }
