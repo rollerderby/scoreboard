@@ -35,48 +35,6 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
     }
 
     @Override
-    public void reset() {
-        super.reset();
-        Element e = createXPathElement();
-        Element t = editor.addElement(e, "Transfer");
-        Element tTo = editor.addElement(t, "To");
-        editor.addElement(tTo, "Team1");
-        editor.addElement(tTo, "Team2");
-        Element tFrom = editor.addElement(t, "From");
-        editor.addElement(tFrom, "Team1");
-        editor.addElement(tFrom, "Team2");
-        Element m = editor.addElement(e, "Merge");
-        Element mTo = editor.addElement(m, "To");
-        editor.addElement(mTo, "Team1");
-        editor.addElement(mTo, "Team2");
-        Element mFrom = editor.addElement(m, "From");
-        editor.addElement(mFrom, "Team1");
-        editor.addElement(mFrom, "Team2");
-        update(e);
-    }
-
-    @Override
-    protected void processElement(Element e) throws Exception {
-        super.processElement(e);
-        Iterator<XPath> transferTypes = transferXPaths.iterator();
-        while (transferTypes.hasNext()) {
-            Iterator<?> elements = transferTypes.next().selectNodes(e).iterator();
-            while (elements.hasNext()) {
-                Element element = (Element)elements.next();
-                String teamId = element.getName();
-                if (!teamId.startsWith("Team")) {
-                    continue;
-                } else {
-                    teamId = teamId.replaceFirst("Team", "");
-                }
-                Element direction = element.getParentElement();
-                Element type = direction.getParentElement();
-                processTransfer(type.getName(), direction.getName(), teamId, editor.getText(element));
-            }
-        }
-    }
-
-    @Override
     protected void processChildElement(Element e) throws Exception {
         super.processChildElement(e);
         if (e.getName().equals("Team")) {
@@ -176,23 +134,6 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
         }
     }
 
-    protected void processTransfer(String type, String direction, String sbTeamId, String teamId) throws JDOMException {
-        if (!Team.ID_1.equals(sbTeamId) && !Team.ID_2.equals(sbTeamId)) {
-            return;    /* Only process Team 1 or 2 transfers... */
-        }
-        if (null == teamId || "".equals(teamId)) {
-            return;    /* Teams.Team elements must have an id */
-        }
-        if (!"Transfer".equals(type) && !"Merge".equals(type)) {
-            return;
-        }
-        if ("To".equals(direction)) {
-            toScoreBoard(sbTeamId, teamId, "Transfer".equals(type));
-        } else if ("From".equals(direction)) {
-            fromScoreBoard(sbTeamId, teamId, "Transfer".equals(type));
-        }
-    }
-
     public void toScoreBoard(String sbTeamId, String id, boolean reset) throws JDOMException {
         Element newTeam = editor.getElement(getXPathElement(), "Team", id, false);
         if (null == newTeam) {
@@ -248,43 +189,5 @@ public class TeamsXmlDocumentManager extends DefaultXmlDocumentManager implement
             team.addSkater(sId, sName, sNumber, sFlags);
         }
     }
-
-    protected void fromScoreBoard(String sbTeamId, String id, boolean clear) throws JDOMException {
-        Team team = xmlScoreBoard.getScoreBoard().getTeam(sbTeamId);
-        Element newTeam = (Element)editor.getElement(getXPathElement(), "Team", id).clone();
-        if (clear) {
-            Element clearTeam = (Element)newTeam.clone();
-            Iterator<?> clearSkaters = clearTeam.getChildren("Skater").iterator();
-            while (clearSkaters.hasNext()) {
-                editor.setRemovePI((Element)clearSkaters.next());
-            }
-            update(createXPathElement().addContent(clearTeam));
-        }
-        createXPathElement().addContent(newTeam);
-        editor.addElement(newTeam, "Name", null, team.getName());
-        editor.addElement(newTeam, "Logo", null, team.getLogo());
-        for (ValueWithId alternateName : team.getAll(Team.Child.ALTERNATE_NAME)) {
-            editor.addElement(newTeam, "AlternateName", alternateName.getId(), alternateName.getValue());
-        }
-        for (ValueWithId color : team.getAll(Team.Child.COLOR)) {
-            editor.addElement(newTeam, "Color", color.getId(), color.getValue());
-        }
-        Iterator<?> skaters = team.getAll(Team.Child.SKATER).iterator();
-        while (skaters.hasNext()) {
-            Skater skater = (Skater)skaters.next();
-            Element newSkater = editor.addElement(newTeam, "Skater", skater.getId());
-            editor.addElement(newSkater, "Name", null, skater.getName());
-            editor.addElement(newSkater, "Number", null, skater.getNumber());
-            editor.addElement(newSkater, "Flags", null, skater.getFlags());
-        }
-        update(newTeam);
-    }
-
-    protected List<XPath> transferXPaths = Arrays.asList(new XPath[] {
-            editor.createXPath("Transfer/To/*"),
-            editor.createXPath("Merge/To/*"),
-            editor.createXPath("Transfer/From/*"),
-            editor.createXPath("Merge/From/*")
-    });
 }
 
