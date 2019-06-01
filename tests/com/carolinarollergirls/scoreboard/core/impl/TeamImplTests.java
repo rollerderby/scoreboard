@@ -23,6 +23,7 @@ import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -205,6 +206,20 @@ public class TeamImplTests {
         assertEquals(4, team.getTimeouts());
         assertEquals(1, team.getOfficialReviews());
         assertFalse(team.retainedOfficialReview());
+    }
+    
+    @Test
+    public void testChangeScore() {
+        sb.startJam();
+        sb.stopJamTO();
+        team.set(Team.Value.TRIP_SCORE, 3);
+        assertEquals(3, team.getScore());
+        
+        team.set(Team.Value.TRIP_SCORE, 1, Flag.CHANGE);
+        assertEquals(4, team.getScore());
+        
+        team.set(Team.Value.TRIP_SCORE, -1, Flag.CHANGE);
+        assertEquals(3, team.getScore());
     }
 
     @Test
