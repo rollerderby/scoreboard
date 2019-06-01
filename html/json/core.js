@@ -50,7 +50,6 @@ _include("/javascript", [
 	"autofit.js",
 ]);
 _include("/json", [
-	"Game.js",
 	"WS.js",
 ]);
 

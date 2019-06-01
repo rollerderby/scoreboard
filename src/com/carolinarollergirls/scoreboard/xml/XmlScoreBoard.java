@@ -266,7 +266,6 @@ public class XmlScoreBoard {
     protected void loadXmlDocumentManagers() {
         //FIXME - this isn't the right way to do this!	use properties file, or xml maybe?
         new LoadScoreBoard().setXmlScoreBoard(this);
-        new TeamsXmlDocumentManager().setXmlScoreBoard(this);
         new ResetScoreBoard().setXmlScoreBoard(this);
         reloadScoreBoardViewers = new ReloadScoreBoardViewers();
         reloadScoreBoardViewers.setXmlScoreBoard(this);

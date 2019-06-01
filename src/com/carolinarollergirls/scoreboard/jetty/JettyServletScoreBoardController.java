@@ -106,9 +106,6 @@ public class JettyServletScoreBoardController {
         urlsServlet = new UrlsServlet(server);
         sch.addServlet(new ServletHolder(urlsServlet), "/urls/*");
 
-        jsonServlet = new JSONServlet(server, scoreBoard);
-        sch.addServlet(new ServletHolder(jsonServlet), "/JSON/*");
-
         ws = new WS(scoreBoard, jsm);
         sch.addServlet(new ServletHolder(ws), "/WS/*");
 
@@ -157,7 +154,6 @@ public class JettyServletScoreBoardController {
     protected JSONStateManager jsm;
     protected int port;
     protected UrlsServlet urlsServlet;
-    protected JSONServlet jsonServlet;
     protected WS ws;
     protected MetricsServlet metricsServlet;
 

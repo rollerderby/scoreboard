@@ -3,11 +3,6 @@
 	SystemTime="1327779979435">
 	<ScoreBoard>
 		<Settings>
-			<Setting Id="Overlay.4x3.LogoBackground"><![CDATA[true]]></Setting>
-			<Setting Id="Overlay.4x3.TeamLogos"><![CDATA[true]]></Setting>
-			<Setting Id="Overlay.DDTV.Clock"><![CDATA[On]]></Setting>
-			<Setting Id="Overlay.DDTV.Score"><![CDATA[On]]></Setting>
-			<Setting Id="Overlay.DDTV.ShowJammers"><![CDATA[On]]></Setting>
 			<Setting Id="Overlay.Interactive.Clock"><![CDATA[On]]></Setting>
 			<Setting Id="Overlay.Interactive.Score"><![CDATA[On]]></Setting>
 			<Setting Id="Overlay.Interactive.ShowJammers"><![CDATA[On]]></Setting>
