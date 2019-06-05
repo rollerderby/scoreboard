@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <document Version="0.3.0-beta3-20121025161637" SystemTime="1351196844738">
-  <Viewers>
+  <ScoreBoard>
     <Twitter>
       <ConditionalTweet Id="00000000-0000-0000-0000-000000000001">
         <Condition><![CDATA[%citms=5:00 %ciN=0 %cir=true]]></Condition>
@@ -59,6 +59,6 @@
         <Tweet><![CDATA[Overtime! %t1Nt %t1s, %t2Nt %t2s]]></Tweet>
       </ConditionalTweet>
     </Twitter>
-  </Viewers>
+  </ScoreBoard>
 </document>
 

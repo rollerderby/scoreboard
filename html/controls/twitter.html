@@ -12,21 +12,19 @@
 
 <script type="text/javascript" src="/external/jquery/jquery.js"></script>
 
-<script type="text/javascript" src="/javascript/scoreboard.js"></script>
+<script type="text/javascript" src="/json/core.js"></script>
 
 </head>
 
-<body>
+<body sbContext="ScoreBoard.Twitter">
 
 <p class="LogInStatus Center">
-	<label for="TestModeCheckBox"></label>
-	<input type="checkbox" class="TestMode" id="TestModeCheckBox"></input>
+	<button class="TestMode"></button>
 	<button class="Login">Login</button>
 	<button class="Logout">Logout</button>
-	<label for="EditConditionalTweetsCheckBox"></label>
-	<input type="checkbox" class="EditConditionalTweets" id="EditConditionalTweetsCheckBox"></input>
+	<button class="EditConditionalTweets">Edit Conditional Tweets</button>
 	<a class="NotLoggedIn">Not Logged In</a>
-	<a class="LoggedIn">Logged In As <span class="ScreenName"></span></a>
+	<a class="LoggedIn">Logged In As <span class="ScreenName" sbDisplay="ScreenName"></span></a>
 </p>
 <p class="Error Center">Error: <a class="Error"></a></p>
 <p class="TestMode Center">In Test Mode!	Twitter will <b>not</b> be updated!</p>

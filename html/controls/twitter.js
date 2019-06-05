@@ -1,165 +1,185 @@
 
-$sb(function() {
-	var sbTwitter = $sb("Viewers.Twitter");
-	var auth_callback_url = window.location.protocol+"//"+window.location.host+"/controls/twitter_auth.html";
-	sbTwitter.$sb("TestMode").$sbControl($("input:checkbox.TestMode")).button();
-	$("button.Login").click(function() { sbTwitter.$sb("Start").$sbSet(auth_callback_url); }).button();
-	$("button.Logout").click(function() { sbTwitter.$sb("Stop").$sbSet("true"); }).button();
-	$("p.DirectTweet button.Tweet").click(function() {
-		sbTwitter.$sb("Tweet").$sbSet($("p.DirectTweet input:text.Tweet").val());
-		$("p.DirectTweet input:text.Tweet").val("").focus();
-	}).button();
-	$("p.DirectTweet input:text.Tweet").keydown(function(event) {
-		if (event.which == 13) // Pressed Enter
-			$("p.DirectTweet button.Tweet").click();
-	});
-	sbTwitter.$sb("ScreenName").$sbElement("p.LogInStatus span.ScreenName");
-	sbTwitter.$sb("LoggedIn").$sbBindAndRun("sbchange", function(event, value) {
-		var directTweetEnabled = sbTwitter.$sb("TestMode").$sbIsTrue() || isTrue(value);
-		$("button.Login").button("option", "disabled", isTrue(value));
-		$("button.Logout").button("option", "disabled", !isTrue(value));
-		$("p.DirectTweet button.Tweet").button("option", "disabled", !directTweetEnabled);
-		$("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
-		$("p.LogInStatus").toggleClass("LoggedIn", isTrue(value));
-	});
-	sbTwitter.$sb("TestMode").$sbBindAndRun("sbchange", function(event, value) {
-		var directTweetEnabled = sbTwitter.$sb("LoggedIn").$sbIsTrue() || isTrue(value);
-		$("p.DirectTweet button.Tweet").button("option", "disabled", !directTweetEnabled);
-		$("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
-		$("input:checkbox.TestMode").button("option", "label", (isTrue(value)?"Stop Test Mode":"Start Test Mode"));
-		$("p.TestMode").toggleClass("Show", isTrue(value));
-	});
-	sbTwitter.$sb("Error").$sbElement("p.Error a.Error");
-	sbTwitter.$sb("Error").$sbBindAndRun("sbchange", function(event, value) {
-		$("p.Error").toggleClass("Show", !!value);
-	});
-	sbTwitter.$sb("Status").$sbOnAndRun("sbchange", function(event, value) {
-		if (value) {
-			$("#UserTweets>tbody>tr.Template").clone(true).removeClass("Template")
-				.prependTo("#UserTweets>tbody")
-				.find("a.Tweet").html(value);
-		}
-	});
+$(function() {
+  WS.AutoRegister();
+  WS.Connect();
 
-	$("p.AddConditionalTweet button.Add").click(function() {
-		var p = $(this).closest("p");
-		var conditionInput = p.find("input:text.Condition");
-		var tweetInput = p.find("input:text.Tweet");
-		var idInput = p.find("input:text.UpdateId");
-		var condition = conditionInput.val();
-		var tweet = tweetInput.val();
-		var id = idInput.val();
-		var sbE = $sb("Viewers.Twitter.ConditionalTweet"+(id?"("+id+")":""));
-		var updateE = _crgScoreBoard.toNewElement(sbE);
-		_crgScoreBoard.createScoreBoardElement(updateE, "Condition", null, condition);
-		_crgScoreBoard.createScoreBoardElement(updateE, "Tweet", null, tweet);
-		_crgScoreBoard.updateServer(updateE);
-		idInput.val("");
-		tweetInput.val("");
-		conditionInput.val("").focus();
-		p.removeClass("Update");
-	}).button();
-	$("p.AddConditionalTweet button.Cancel").click(function() {
-		var p = $(this).closest("p");
-		p.find("input:text.UpdateId").val("");
-		p.find("input:text.Tweet").val("");
-		p.find("input:text.Condition").val("").focus();
-		p.removeClass("Update");		
-	}).button();
-	$("p.AddConditionalTweet input:text.Tweet").keydown(function(event) {
-		if (event.which == 13) // Pressed Enter
-			$("p.AddConditionalTweet button.Add").click();
-	});
-	sbTwitter.$sbBindAddRemoveEach("ConditionalTweet", function(event, node) {
-		var tr = $("#ConditionalTweets>tbody>tr.ConditionalTweet.Template").clone(true)
-			.removeClass("Template").attr("data-UUID", node.$sbId)
-			.appendTo("#ConditionalTweets>tbody");
-		node.$sb("Condition").$sbElement(tr.find("a.Condition"));
-		node.$sb("Tweet").$sbElement(tr.find("a.Tweet"));
-		tr.find("button.Remove").click(function() { node.$sbRemove(); });
-		tr.find("button.Edit").click(function() {
-			$("p.AddConditionalTweet").addClass("Update");
-			$("p.AddConditionalTweet input:text.UpdateId").val(node.$sbId);
-			$("p.AddConditionalTweet input:text.Condition").val(node.$sb("Condition").$sbGet());
-			$("p.AddConditionalTweet input:text.Tweet").val(node.$sb("Tweet").$sbGet());
-		});
-	}, function(event, node) {
-		$("#ConditionalTweets tr.ConditionalTweet[data-UUID='"+node.$sbId+"']").remove();
-	});
-	_crgUtils.bindAndRun($("input:checkbox#EditConditionalTweetsCheckBox").button(), "click", function() {
-		$("#ConditionalTweetConfiguration").toggleClass("show", this.checked);
-		$(this).button("option", "label", (this.checked ? "Hide Conditional Tweets" : "Edit Conditional Tweets"));
-	});
-	$("#HelpText").insertBefore("#ConditionalTweets");
-	$("#ShowHelp").change(function() {
-		$("#HelpText").toggle(this.checked);
-		$(this).button("option", "label", (this.checked?"Hide Help":"Show Help"));
-	}).after("<label for=ShowHelp />").button().change();
+  var formatSpecifiers = {};
 
-	sbTwitter.$sb("AuthURL").$sbBindAndRun("sbchange", function(event, value) {
-		if (value) {
-			$sb(this).$sbSet("");
-			window.location.assign(value);
-		}
-	});
+  $("button.TestMode").click(function(){
+    WS.Set("ScoreBoard.Twitter.TestMode", $(this).attr('checked') == null);
+  }).button();
 
-	$.get("/FormatSpecifiers/descriptions", function(data) {
-		$.each( data.trim().split("\n"), function(i,e) {
-			$("<li>").text(e).appendTo("ul.FormatSpecifierDescriptions");
-		});
-	});
+  $("button.Login").click(function() {
+    WS.Set("ScoreBoard.Twitter.CallbackUrl", window.location.protocol+"//"+window.location.host+"/controls/twitter_auth.html");
+    WS.Set("ScoreBoard.Twitter.Login", true);
+  }).button();
+  WS.Register(["ScoreBoard.Twitter.AuthUrl"], function(k, v) {
+    if (v) {
+      window.location.assign(v);
+    }
+  });
 
-	parseInputFieldFormatSpecifiers();
+  $("button.Logout").click(function() { WS.Set("ScoreBoard.Twitter.Logout", true)}).button();
 
-	var keys = [ ];
-	$.get("/FormatSpecifiers/keys").done(function(data) {
-		$.each( data.split(/\s/), function(i,e) {
-			$.ajax("/FormatSpecifiers/description", {
-				async: false,
-				data: { format: e },
-				success: function(desc) {
-					keys.push({ label: e+" ("+desc+")", value: e });
-				}
-			});
-		});
-		setupInputFieldAutoComplete(keys);
-	});
+  $("p.DirectTweet button.Tweet").click(function() {
+    WS.Set("ScoreBoard.Twitter.ManualTweet", $("p.DirectTweet input:text.Tweet").val());
+    $("p.DirectTweet input:text.Tweet").val("").focus();
+  }).button();
+  $("p.DirectTweet input:text.Tweet").keydown(function(event) {
+    if (event.which == 13) // Pressed Enter
+      $("p.DirectTweet button.Tweet").click();
+  });
+
+  WS.Register(["ScoreBoard.Twitter.LoggedIn", "ScoreBoard.Twitter.TestMode"], function(k, v) {
+    var loggedIn = isTrue(WS.state["ScoreBoard.Twitter.LoggedIn"]);
+    var testMode = isTrue(WS.state["ScoreBoard.Twitter.TestMode"]);
+    var directTweetEnabled = loggedIn || testMode;
+    $("button.Login").button("option", "disabled", loggedIn);
+    $("button.Logout").button("option", "disabled", !loggedIn);
+    $("p.DirectTweet button.Tweet").button("option", "disabled", !directTweetEnabled);
+    $("p.DirectTweet input:text.Tweet").prop("disabled", !directTweetEnabled);
+    $("p.LogInStatus").toggleClass("LoggedIn", loggedIn);
+    $("p.TestMode").toggleClass("Show", testMode);
+    $("button.TestMode").button("option", "label", testMode?"Stop Test Mode":"Start Test Mode");
+    $("button.TestMode").attr('checked', testMode);
+  });
+  WS.Register(["ScoreBoard.Twitter.Error"], function(k, v) {
+    $("a.Error").text(v);
+    $("p.Error").toggleClass("Show", v != "");
+  });
+  WS.Register(["ScoreBoard.Twitter.Status"], function(k, v) {
+    if (v != "") {
+      $("#UserTweets>tbody>tr.Template").clone(true).removeClass("Template")
+        .prependTo("#UserTweets>tbody")
+        .find("a.Tweet").html(v);
+    }
+  });
+
+  $("button.EditConditionalTweets").click(function() {
+    var checked = ($(this).attr('checked') == null);
+    $("#ConditionalTweetConfiguration").toggleClass("show", checked);
+    $(this).button("option", "label", (checked ? "Hide Conditional Tweets" : "Edit Conditional Tweets"));
+    $(this).attr('checked', checked);
+  }).button();
+
+  $("p.AddConditionalTweet button.Add").click(function() {
+    var p = $(this).closest("p");
+    var conditionInput = p.find("input:text.Condition");
+    var tweetInput = p.find("input:text.Tweet");
+    var idInput = p.find("input:text.UpdateId");
+    var condition = conditionInput.val();
+    var tweet = tweetInput.val();
+    var id = idInput.val() || newUUID();
+    WS.Set("ScoreBoard.Twitter.ConditionalTweet(" + id + ").Condition", condition);
+    WS.Set("ScoreBoard.Twitter.ConditionalTweet(" + id + ").Tweet", tweet)
+      idInput.val("");
+    tweetInput.val("").trigger("input");
+    conditionInput.val("").trigger("input").focus();
+    p.removeClass("Update");
+  }).button();
+  $("p.AddConditionalTweet button.Cancel").click(function() {
+    var p = $(this).closest("p");
+    p.find("input:text.UpdateId").val("");
+    p.find("input:text.Tweet").val("");
+    p.find("input:text.Condition").val("").focus();
+    p.find("input:text").trigger("input");
+    p.removeClass("Update");
+  }).button();
+  $("p.AddConditionalTweet input:text.Tweet").keydown(function(event) {
+    if (event.which == 13) // Pressed Enter
+      $("p.AddConditionalTweet button.Add").click();
+  });
+  WS.Register(["ScoreBoard.Twitter.ConditionalTweet("], function(k, v) {
+    var id = k.ConditionalTweet;
+    if (v == null) {
+      $("#ConditionalTweets>tbody>tr[conditionId='"+ id +"']").remove();
+      return;
+    }
+    var prefix = "ScoreBoard.Twitter.ConditionalTweet(" + id + ")";
+
+    var tr = $("#ConditionalTweets>tbody>tr[conditionId='"+ id +"']");
+    if (tr.length == 0) {
+      tr = $("#ConditionalTweets>tbody>tr.ConditionalTweet.Template").clone(true)
+        .removeClass("Template").attr("conditionId", id)
+        .appendTo("#ConditionalTweets>tbody");
+      tr.find("button.Remove").click(function() { WS.Set(prefix, null); });
+      tr.find("button.Edit").click(function() {
+        $("p.AddConditionalTweet").addClass("Update");
+        $("p.AddConditionalTweet input:text.UpdateId").val(id);
+        $("p.AddConditionalTweet input:text.Condition").val(WS.state[prefix + ".Condition"]);
+        $("p.AddConditionalTweet input:text.Tweet").val(WS.state[prefix + ".Tweet"]);
+        $("p.AddConditionalTweet input:text").trigger("input");
+      });
+    }
+    switch (k.field) {
+      case "Condition":
+        tr.find("a.Condition").text(v);
+        break;
+      case "Tweet":
+        tr.find("a.Tweet").text(v);
+        break;
+    }
+  });
+
+  $("#HelpText").insertBefore("#ConditionalTweets");
+  $("#ShowHelp").change(function() {
+    $("#HelpText").toggle(this.checked);
+    $(this).button("option", "label", (this.checked?"Hide Help":"Show Help"));
+  }).after("<label for=ShowHelp />").button().change();
+
+  WS.Register(["ScoreBoard.Twitter.FormatSpecifier"], function(k, v) {
+    var ul = $("ul.FormatSpecifierDescriptions");
+    var li =  ul.children("li#" + k.FormatSpecifier);
+    if (li.length == 0) {
+      li = $("<li>").attr('id', k.FormatSpecifier)
+        .append($("<span class=Key>"))
+        .append($("<span>").text(" : "))
+        .append($("<span class=Description>"))
+        .append($("<span>").text(" : "))
+        .append($("<span class=CurrentValue>"));
+      _windowFunctions.appendAlphaNumSortedByAttr(ul, li, "id")
+    }
+    li.children("."+k.field).text(v);
+    if (k.field == "Key") {
+      formatSpecifiers[v] = k.FormatSpecifier;
+    } else if (k.field == "CurrentValue") {
+      $("p.AddConditionalTweet input:text").trigger("input");
+    }
+  });
+
+  replaceSpecifiers = function(s) {
+    for(var k in formatSpecifiers) {
+      s = s.replace(k, WS.state["ScoreBoard.Twitter.FormatSpecifier(" + formatSpecifiers[k] + ").CurrentValue"]);
+    }
+    return s;
+  }
+
+  $.each( [ "Condition", "Tweet" ], function(i,e) {
+    var div = $("#ConditionalTweetConfiguration");
+    var input = div.find("input:text."+e);
+    input.bind("input", function() {
+      div.find("a.Preview."+e).text(replaceSpecifiers(input.val()));
+    })
+  });
+
+
+  $("#ConditionalTweetConfiguration")
+    .find("input:text.Condition,input:text.Tweet").autocomplete({
+      source: function(request, response) {
+        var key = request.term.split(" ").pop();
+        response(key ? $.ui.autocomplete.filter(Object.keys(formatSpecifiers), key) : "");
+      },
+      focus: function() { return false; },
+      select: function(event, ui) {
+        var words = this.value.split(" ");
+        words.pop();
+        words.push(ui.item.value);
+        this.value = words.join(" ");
+        $(this).trigger("input");
+        return false;
+      }
+    });
+
 });
 
-function parseInputFieldFormatSpecifiers() {
-	var div = $("#ConditionalTweetConfiguration");
-	if (div.hasClass("show")) {
-		$.each( [ "Condition", "Tweet" ], function(i,e) {
-			var input = div.find("input:text."+e);
-			if (input.val()) {
-				$.post("/FormatSpecifiers/parse", {
-					format: input.val()
-				}, function(data) {
-					div.find("a.Preview."+e).text(data);
-				});
-			} else {
-				div.find("a.Preview."+e).text("");
-			}
-		});
-	}
-	setTimeout(parseInputFieldFormatSpecifiers, 1000);
-}
-
-function setupInputFieldAutoComplete(keys) {
-	$("#ConditionalTweetConfiguration")
-		.find("input:text.Condition,input:text.Tweet").autocomplete({
-			source: function(request, response) {
-				var key = request.term.split(" ").pop();
-				response(key ? $.ui.autocomplete.filter(keys, key) : "");
-			},
-			focus: function() { return false; },
-			select: function(event, ui) {
-				var words = this.value.split(" ");
-				words.pop();
-				words.push(ui.item.value);
-				this.value = words.join(" ");
-				return false;
-			}
-		});
-}
 //# sourceURL=controls\twitter.js
