@@ -6,6 +6,13 @@ table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr
 	border-collapse: collapse;
 	border-color:#777;
 }
+body:not(.AllowSelect) .PLT {
+	user-select: none;
+	-webkit-user-select: none;
+	-khtml-user-select: none;
+	-moz-user-select: none;
+	-o-user-select: none;
+}
 .PLT tr {
     color: #333;
 }
