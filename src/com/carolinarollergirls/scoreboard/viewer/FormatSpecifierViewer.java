@@ -39,14 +39,6 @@ public class FormatSpecifierViewer {
         return m;
     }
 
-    public String getFormatSpecifierDescription(String format) {
-        try {
-            return scoreBoardValues.get(format).getDescription();
-        } catch ( NullPointerException npE ) {
-            return "";
-        }
-    }
-
     public void setScoreBoard(ScoreBoard sb) {
         scoreBoard = sb;
         setupScoreBoardValues();
@@ -166,6 +158,7 @@ public class FormatSpecifierViewer {
         }
         return value.getValue();
     }
+
 
     public ScoreBoardValue getFormatSpecifierScoreBoardValue(String formatSpecifier) {
         return scoreBoardValues.get(formatSpecifier);

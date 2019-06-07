@@ -25,7 +25,6 @@ import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
-import com.carolinarollergirls.scoreboard.viewer.TwitterViewer;
 
 public class ScoreBoardManager {
     public interface Logger {
@@ -47,7 +46,6 @@ public class ScoreBoardManager {
         registerScoreBoardController(new JettyServletScoreBoardController(scoreBoard, jsm));
 
         // Viewers.
-        registerScoreBoardViewer(new TwitterViewer(scoreBoard));
         registerScoreBoardViewer(new ScoreBoardMetricsCollector(scoreBoard).register());
         registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
 

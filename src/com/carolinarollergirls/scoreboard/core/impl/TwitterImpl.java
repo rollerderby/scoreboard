@@ -16,13 +16,11 @@ import twitter4j.TwitterException;
 import twitter4j.AsyncTwitter;
 import twitter4j.AsyncTwitterFactory;
 import twitter4j.TwitterAdapter;
-import twitter4j.TwitterListener;
 import twitter4j.TwitterMethod;
 import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
-import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Twitter;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -63,7 +61,8 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
 
         twitter.addListener(new Listener());
     }
-
+    
+    @Override
     public void postAutosaveUpdate() {
         set(Value.MANUAL_TWEET, "");
         set(Value.ERROR, "");

@@ -1,8 +1,5 @@
 
 $(function() {
-  WS.AutoRegister();
-  WS.Connect();
-
   var formatSpecifiers = {};
 
   $("button.TestMode").click(function(){
@@ -180,6 +177,8 @@ $(function() {
       }
     });
 
+  WS.AutoRegister();
+  WS.Connect();
 });
 
 //# sourceURL=controls\twitter.js

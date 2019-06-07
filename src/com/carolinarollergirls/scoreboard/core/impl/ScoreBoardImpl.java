@@ -47,9 +47,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     protected void setupScoreBoard() {
-        if (getCurrentTimeout() == null) {
-          set(Value.CURRENT_TIMEOUT, noTimeoutDummy);
-        }
         setCopy(Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD, IValue.NUMBER, true);
         setCopy(Value.IN_PERIOD, this, Value.CURRENT_PERIOD, Period.Value.RUNNING, false);
         setCopy(Value.UPCOMING_JAM_NUMBER, this, Value.UPCOMING_JAM, IValue.NUMBER, true);
