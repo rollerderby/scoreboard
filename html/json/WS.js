@@ -295,6 +295,10 @@ var WS = {
 			if (t == null) {
 				break;
 			}
+			if (c == "(" && t["*"] != null) {
+				// Allow Blah(*) as a wildcard.
+				result = result.concat(WS._getMatchesFromTrie(t["*"], key.substring(key.indexOf(")", i))) || []);
+			}
 			result = result.concat(t.values || []);
 		}
 		return result;
