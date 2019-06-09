@@ -13,13 +13,12 @@ import io.prometheus.client.Gauge;
 import io.prometheus.client.Histogram;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.TreeSet;
 import java.util.Set;
 import java.util.Map;
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -37,15 +36,10 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
+import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 
 public class WS extends WebSocketServlet {
 
@@ -67,7 +61,6 @@ public class WS extends WebSocketServlet {
 
     private ScoreBoard sb;
     private JSONStateManager jsm;
-    private static final Pattern pathElementPattern = Pattern.compile("^(?<name>\\w+)(\\((?<id>[^\\)]*)\\))?(\\.(?<remainder>.*))?$");
 
     private boolean hasPermission(String action) {
         return true;
@@ -130,13 +123,8 @@ public class WS extends WebSocketServlet {
                     String f = json.getString("flag");
                     if ("reset".equals(f)) { flag = Flag.RESET; }
                     if ("change".equals(f)) { flag = Flag.CHANGE; }
-                    Matcher m = pathElementPattern.matcher(key);
-                    if (m.matches() && m.group("name").equals("ScoreBoard") &&
-                            m.group("id") == null && m.group("remainder") != null) {
-                        set(sb, m.group("remainder"), v, flag);
-                    } else {
-                        ScoreBoardManager.printMessage("Illegal path: " + key);
-                    }
+                    ScoreBoardJSONSetter.JSONSet js = new ScoreBoardJSONSetter.JSONSet(key, v, flag);
+                    ScoreBoardJSONSetter.set(sb, Collections.singletonList(js));
                 } else if (action.equals("StartNewGame")) {
                     JSONObject data = json.getJSONObject("data");
                     PreparedTeam t1 = sb.getPreparedTeam(data.getString("Team1"));
@@ -163,40 +151,6 @@ public class WS extends WebSocketServlet {
             } catch (JSONException je) {
                 ScoreBoardManager.printMessage("Error parsing JSON message: " + je);
                 je.printStackTrace();
-            }
-        }
-
-        private void set(ScoreBoardEventProvider p, String path, String value, Flag flag) {
-            Matcher m = pathElementPattern.matcher(path);
-            if (m.matches()) {
-                String name = m.group("name");
-                String elementId = m.group("id");
-                String remainder = m.group("remainder");
-                if (elementId == null) { elementId = ""; }
-                try {
-                    Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
-                    if (prop == null) { throw new IllegalArgumentException("Unknown property"); }
-
-                    if (prop instanceof PermanentProperty) {
-                        p.set((PermanentProperty)prop, p.valueFromString((PermanentProperty)prop, value, flag), flag);
-                    } else if (prop instanceof CommandProperty) { 
-                        if (Boolean.parseBoolean(value)) {
-                            p.execute((CommandProperty)prop);
-                        }
-                    } else if (remainder != null) {
-                        set((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, elementId), remainder, value, flag);
-                    } else if (value == null) {
-                        p.remove((AddRemoveProperty)prop, elementId);
-                    } else {
-                        p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, elementId, value));
-                    }
-                } catch (Exception e) {
-                    ScoreBoardManager.printMessage("Exception parsing JSON for " + p.getProviderName() +
-                            "(" + p.getProviderId() + ")." + name + "(" + elementId + ") - " + value + ": " + e.toString());
-                    e.printStackTrace();
-                }
-            } else {
-                ScoreBoardManager.printMessage("Illegal path element: " + path);
             }
         }
 

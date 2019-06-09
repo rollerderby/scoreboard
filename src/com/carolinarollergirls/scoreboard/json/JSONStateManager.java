@@ -97,6 +97,10 @@ public class JSONStateManager {
         updateStateUpdates.observe(updates.size());
     }
 
+    public synchronized Map<String, Object> getState() {
+      return state;
+    }
+
     // For unittests.
     protected void waitForSent() {
         while(pending.get() > 0) {
