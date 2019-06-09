@@ -41,15 +41,6 @@ _include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
 _include("/external/jquery-plugins/string/jquery.string.js");
 _include("/external/jquery-plugins/fileupload/jquery.fileupload.js");
 
-/* Good places to find fonts are:
- * http://fontspace.com/
- * http://fontsquirrel.com/
- * Also very handy is the @font-face generator at fontsquirrel:
- * http://www.fontsquirrel.com/fontface/generator
- */
-_include("/fonts", [
-	"liberationsans/stylesheet.css", "roboto/stylesheet.css" ]);
-
 /* Core functionality */
 _include("/javascript", [
 	"autofit.js",
