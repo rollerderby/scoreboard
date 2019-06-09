@@ -22,9 +22,6 @@ $(initialize)
 
 function initialize() {
 
-	WS.Connect();
-	WS.AutoRegister();
-
 	WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)', 
 		     'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
@@ -82,6 +79,8 @@ function initialize() {
 
 	WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Style)', function(k,v) { $('#LowerThirdStyle option[value="'+v+'"]').attr('selected', 'selected'); });
 
+	WS.Connect();
+	WS.AutoRegister();
 }
 
 $('#Controls input, #Controls .Selector').change(function() {
@@ -90,9 +89,9 @@ $('#Controls input, #Controls .Selector').change(function() {
 	if ($(this).attr("type") == "color") {
 		$(this).attr("cleared", "false");
 	}
-	if (v == '' && t.endsWith('.Name')) {
+	if (v == '' && t.endsWith('AlternateName(overlay)')) {
 		// Delete the AlternateName
-		WS.Set(t.substr(0, t.length-5), null);
+		WS.Set(t, null);
 	} else if(t) {
 		WS.Set(t, v);
 	}
