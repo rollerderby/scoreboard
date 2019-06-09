@@ -9,61 +9,32 @@
  * See the file COPYING for details.
  */
 
-XML_ELEMENT_SELECTOR = "ScoreBoard";
-
-$sb(function() {
+$(function() {
 	setupJamControlPage();
 	setupPeriodTimePage();
 
-	$.each( [ "1", "2" ], function(i, t) {
-		$sb("ScoreBoard.Team("+t+")").$sbBindAddRemoveEach("AlternateName", function(event, node) {
-			if ($sb(node).$sbId == "mobile")
-				$sb(node).$sbBindAndRun("sbchange", function(event2, val) {
-					$(".Team"+t+".Name,.Team"+t+".AlternateName")
-						.toggleClass("HasAlternateName", $.trim(val) != "");
-				});
-		});
-	});
+	WS.AutoRegister();
+	WS.Connect();
 });
 
 function setupJamControlPage() {
-	$sb("ScoreBoard.StartJam").$sbControl("#JamControlPage button.StartJam").val(true);
-	$sb("ScoreBoard.StopJam").$sbControl("#JamControlPage button.StopJam").val(true);
-	$sb("ScoreBoard.Timeout").$sbControl("#JamControlPage button.Timeout").val(true);
-	$sb("ScoreBoard.ClockUndo").$sbControl("#JamControlPage button.Undo").val(true);
-	$sb("ScoreBoard.Team(1).Timeout").$sbControl("#JamControlPage div.Timeout button.Team1").val(true);
-	$sb("ScoreBoard.Team(1).OfficialReview").$sbControl("#JamControlPage div.OfficialReview button.Team1").val(true);
-	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.Timeout button.Team1>span.Name");
-	$sb("ScoreBoard.Team(1).AlternateName(operator)").$sbElement("#JamControlPage div.Timeout button.Team1>span.AlternateName");
-	$sb("ScoreBoard.Team(1).Name").$sbElement("#JamControlPage div.OfficialReview button.Team1>span.Name");
-	$sb("ScoreBoard.Team(1).AlternateName(operator)").$sbElement("#JamControlPage div.OfficialReview button.Team1>span.AlternateName");
-	$sb("ScoreBoard.OfficialTimeout").$sbControl("#JamControlPage div.Timeout button.Official").val(true);
-	$sb("ScoreBoard.Team(2).Timeout").$sbControl("#JamControlPage div.Timeout button.Team2").val(true);
-	$sb("ScoreBoard.Team(2).OfficialReview").$sbControl("#JamControlPage div.OfficialReview button.Team2").val(true);
-	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.Timeout button.Team2>span.Name");
-	$sb("ScoreBoard.Team(2).AlternateName(operator)").$sbElement("#JamControlPage div.Timeout button.Team2>span.AlternateName");
-	$sb("ScoreBoard.Team(2).Name").$sbElement("#JamControlPage div.OfficialReview button.Team2>span.Name");
-	$sb("ScoreBoard.Team(2).AlternateName(operator)").$sbElement("#JamControlPage div.OfficialReview button.Team2>span.AlternateName");
+	$("#JamControlPage button.StartJam").click(function() { WS.Set("ScoreBoard.StartJam", true); });
+	$("#JamControlPage button.StopJam").click(function() { WS.Set("ScoreBoard.StopJam", true); });
+	$("#JamControlPage button.Timeout").click(function() { WS.Set("ScoreBoard.Timeout", true); });
+	$("#JamControlPage button.Undo").click(function() { WS.Set("ScoreBoard.ClockUndo", true); });
+	$("#JamControlPage div.Timeout button.Official").click(function() { WS.Set("ScoreBoard.OfficialTimeout", true); });
+	$("#JamControlPage div.Timeout button.Team1").click(function() { WS.Set("ScoreBoard.Team(1).Timeout", true); });
+	$("#JamControlPage div.OfficialReview button.Team1").click(function() { WS.Set("ScoreBoard.Team(1).OfficialReview", true); });
+	$("#JamControlPage div.Timeout button.Team2").click(function() { WS.Set("ScoreBoard.Team(2).Timeout", true); });
+	$("#JamControlPage div.OfficialReview button.Team2").click(function() { WS.Set("ScoreBoard.Team(2).OfficialReview", true); });
 
-	$.each( [ "Period", "Jam", "Timeout" ], function(i, clock) {
-		$sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(event, value) {
-			$("#JamControlPage span.ClockBubble."+clock).toggleClass("Running", isTrue(value));
-		});
+	WS.Register(["ScoreBoard.Team(*).Name", "ScoreBoard.Team(*).AlternateName(operator)"], function(k, v) {
+		var name = WS.state["ScoreBoard.Team("+k.Team+").AlternateName(operator)"];
+		name = name || WS.state["ScoreBoard.Team("+k.Team+").Name"];
+		$(".Name.Team"+k.Team).text(name);
 	});
-	$.each( [ "Start", "Stop", "Timeout", "Undo" ], function(i, button) {
-		$sb("ScoreBoard.Settings.Setting(ScoreBoard.Button."+button+"Label)").$sbBindAndRun("sbchange", function(event, val) {
-			$("#JamControlPage span."+button+"Label").html(val);
-		});
-	});
-	
-	// Period number
-	$sb("ScoreBoard.Clock(Period).Number").$sbElement("#JamControlPage div.PeriodNumber a.Number");
 
-	// Period Clock
-	$sb("ScoreBoard.Clock(Period).Time").$sbElement("#JamControlPage div.PeriodTime a.Time", { sbelement: {
-			convert: _timeConversions.msToMinSec
-	}});
-	
+	// Setup clocks
 	var showJamControlClock = function(clock) {
 		$("#JamControlPage div.Time").not("."+clock+"Time").hide().end()
 			.filter("."+clock+"Time").show();
@@ -71,39 +42,36 @@ function setupJamControlPage() {
 	// In case no clocks are running now, default to showing only Jam
 	showJamControlClock("Jam");
 
-	// Setup clocks
-	$.each([ "Jam", "Lineup", "Timeout" ], function(i, clock) {
-		$sb("Scoreboard.Clock("+clock+").Time").$sbElement("#JamControlPage div."+clock+"Time a.Time", { sbelement: {
-			convert: _timeConversions.msToMinSec
-		}});
-		$sb("ScoreBoard.Clock("+clock+").Running").$sbBindAndRun("sbchange", function(e, v) {
-			if (isTrue(v))
-				showJamControlClock(clock);
+	WS.Register("ScoreBoard.Clock(*).Running", function(k, v) {
+		$("#JamControlPage span.ClockBubble."+k.Clock).toggleClass("Running", isTrue(v));
+	});
+	$.each( [ "Start", "Stop", "Timeout", "Undo" ], function(i, button) {
+		WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.Button."+button+"Label)", function(k, v) {
+			$("#JamControlPage span."+button+"Label").text(v);
 		});
 	});
-}
-
-function setupPeriodTimePage() {
-	var time = $sb("ScoreBoard.Clock(Period).Time");
-
-	time.$sbElement("#PeriodTimePage a.Time", { sbelement: {
-		convert: _timeConversions.msToMinSec
-	}});
-
-	time.$sbControl("#PeriodTimePage button.TimeDown", { sbcontrol: {
-		sbSetAttrs: { change: true }
-	}});
-	time.$sbControl("#PeriodTimePage button.TimeUp", { sbcontrol: {
-		sbSetAttrs: { change: true }
-	}});
-
-	time.$sbControl("#PeriodTimePage input:text.SetTime,#PeriodTimePage button.SetTime", {
-		sbcontrol: {
-			convert: _timeConversions.minSecToMs,
-			delayupdate: true,
-			noSetControlValue: true
+	WS.Register("ScoreBoard.Clock(*).Running", function(k, v) {
+		if (isTrue(v)) {
+			showJamControlClock(k.Clock);
 		}
 	});
 }
 
+function setupPeriodTimePage() {
+	$("#PeriodTimePage button.TimeDown").click(function() {
+		WS.Set("ScoreBoard.Clock(Period).Time", -1000, "change");
+	});
+	$("#PeriodTimePage button.TimeUp").click(function() {
+		WS.Set("ScoreBoard.Clock(Period).Time", 1000, "change");
+	});
+	$("#PeriodTimePage button.SetTime").click(function() {
+		var t = $("#PeriodTimePage input:text.SetTime");
+		WS.Set("ScoreBoard.Clock(Period).Time", _timeConversions.minSecToMs(t.val()));
+	});
+}
+
+
+function toTime(k, v) {
+	return _timeConversions.msToMinSecNoZero(v);
+}
 //# sourceURL=controls\mobile.js
