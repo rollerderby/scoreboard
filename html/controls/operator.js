@@ -10,7 +10,7 @@
 
 
 $.fx.interval = 33;
-_include("/json", [ "Game.js", "WS.js" ]);
+_include("/json", [ "WS.js" ]);
 _include("sk", [ "sk-sheet.js" ]);
 $('head').append('<link rel="stylesheet" href="sk/sk-sheet.css" type="text/css" />');
 
@@ -332,10 +332,8 @@ function createGameControlDialog() {
 			IntermissionClock: IntermissionClock
 		};
 		console.log(game);
-		Game.Adhoc(game, function() {
-			dialog.dialog("close");
-			hideEndOfPeriodControls();
-		});
+		WS.Command("StartNewGame", game);
+		dialog.dialog("close");
 	};
 
 	$("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
@@ -373,15 +371,15 @@ function createGameControlDialog() {
 	};
 
 	_crgUtils.setupSelect(adhocGame.find("select.Team1"), {
-		optionParent: "Teams",
-		optionChildName: "Team",
+		optionParent: "ScoreBoard",
+		optionChildName: "PreparedTeam",
 		prependOptions: [
 			{ text: "No Team Selected", value: "" },
 		]
 	}).change(function(e) { updateAdhocName(); });
 	_crgUtils.setupSelect(adhocGame.find("select.Team2"), {
-		optionParent: "Teams",
-		optionChildName: "Team",
+		optionParent: "ScoreBoard",
+		optionChildName: "PreparedTeam",
 		prependOptions: [
 			{ text: "No Team Selected", value: "" },
 		]
@@ -1671,8 +1669,8 @@ function createTeamsContent() {
 	createRowTable(2).appendTo("#Teams>tbody>tr.Selection>td").addClass("Selection");
 
 	var selectTeam = _crgUtils.setupSelect("<select>", {
-		optionParent: "Teams",
-		optionChildName: "Team",
+		optionParent: "ScoreBoard",
+		optionChildName: "PreparedTeam",
 		prependOptions: [
 			{ text: "No Team Selected", value: "" },
 			{ text: "Current Team 1", value: "(Current Team 1)" },
@@ -1693,7 +1691,7 @@ function createTeamsContent() {
 	createNewTeam.click(function(event) {
 		var teamname = newTeamName.val();
 		var teamid = _crgUtils.checkSbId(teamname);
-		$sb("Teams.Team("+teamid+").Name").$sbSet(teamname);
+		$sb("ScoreBoard.PreparedTeam("+teamid+").Name").$sbSet(teamname);
 		waitingOnNewTeam = teamid;
 		newTeamName.val("").keyup().focus();
 		// If team already exists, switch to it.
@@ -1711,7 +1709,7 @@ function createTeamsContent() {
 	// fixing major performance issues on this page
 	var teams = {};
 	
-	_crgUtils.bindAddRemoveEach($sb("Teams"), "Team", function(event, node) {
+	_crgUtils.bindAddRemoveEach($sb("ScoreBoard"), "PreparedTeam", function(event, node) {
 		if (node.$sbId){
 			teams[node.$sbId] = node;
 			if (node.$sbId == waitingOnNewTeam) {
@@ -1748,7 +1746,7 @@ function createNewTeamTable(team, teamid) {
 	var teamTable = $("<table>").addClass("Team Hide").data("id", teamid)
 		.append($("<tr><td/></tr>").addClass("Control"))
 		.append($("<tr><td/></tr>").addClass("Skaters"));
-	var controlTable = createRowTable(6).appendTo(teamTable.find("tr.Control>td")).addClass("Control");
+	var controlTable = createRowTable(5).appendTo(teamTable.find("tr.Control>td")).addClass("Control");
 
 	team.$sb("Name").$sbControl("<input type='text'>")
 		.appendTo(controlTable.find("td:eq(0)"));
@@ -1788,12 +1786,9 @@ function createNewTeamTable(team, teamid) {
 	$("<button>").text("Colors").button()
 		.click(function() { createColorsDialog(team); })
 		.appendTo(controlTable.find("td:eq(3)"));
-	$("<button>").text("Assign Team").button({ disabled: isCurrentTeam })
-		.click(function() { createTeamsAssignDialog(teamid); })
-		.appendTo(controlTable.find("td:eq(4)"));
 	$("<button>").text("Remove Team").button({ disabled: isCurrentTeam })
 		.click(function() { createTeamsRemoveDialog(teamid); })
-		.appendTo(controlTable.find("td:eq(5)"));
+		.appendTo(controlTable.find("td:eq(4)"));
 
 	var skatersTable = $("<table>").addClass("Skaters Empty")
 		.appendTo(teamTable.find("tr.Skaters>td"))
@@ -2135,49 +2130,6 @@ function createColorsDialog(team) {
 	});
 }
 
-function createTeamsAssignDialog(teamId) {
-	var dialog = $("<div>").addClass("TeamsAssignDialog");
-	$("<h4>").text("Load Selected Team's information to ScoreBoard").appendTo(dialog);
-	$("<label>").attr("for", "TeamsAssignDialogCheckboxTo").appendTo(dialog);
-	$("<input type='checkbox'>").attr("id", "TeamsAssignDialogCheckboxTo").appendTo(dialog).button();
-	$("<a>").text(" team info to the Scoreboard as:").appendTo(dialog);
-	$("<button>").text("Team 1").data({ team: "1", dir: "To" }).button().appendTo(dialog);
-	$("<button>").text("Team 2").data({ team: "2", dir: "To" }).button().appendTo(dialog);
-	$("<br>").appendTo(dialog);
-
-	$("<h4>").text("Get Selected Team's information from ScoreBoard").appendTo(dialog);
-	$("<label>").attr("for", "TeamsAssignDialogCheckboxFrom").appendTo(dialog);
-	$("<input type='checkbox'>").attr("id", "TeamsAssignDialogCheckboxFrom").appendTo(dialog).button();
-	$("<a>").text(" team info from the Scoreboard from:").appendTo(dialog);
-	$("<button>").text("Team 1").data({ team: "1", dir: "From" }).button().appendTo(dialog);
-	$("<button>").text("Team 2").data({ team: "2", dir: "From" }).button().appendTo(dialog);
-
-	$.each( [ "To", "From" ], function() {
-		var label = dialog.children("label[for='TeamsAssignDialogCheckbox"+this+"']");
-		var box = dialog.children("input:checkbox#TeamsAssignDialogCheckbox"+this);
-		_crgUtils.bindAndRun(box, "click", function() {
-			label.children("span").text(this.checked ? "Merge" : "Transfer");
-		});
-	});
-
-	dialog.find("button").click(function() {
-		var dir = $(this).data("dir");
-		var type = dialog.find(">label[for='TeamsAssignDialogCheckbox"+dir+"']>span").text();
-		var target = "Team"+$(this).data("team");
-		$sb("Teams").$sb(type).$sb(dir).$sb(target).$sbSet(teamId);
-		dialog.dialog("close");
-	});
-//FIXME - add way to register on specific element removal (not child removal) and destroy this dialog if removed,
-//FIXME - do same in TeamsRemoveDialog below
-	dialog.dialog({
-		title: "Assign Team",
-		modal: true,
-		width: 700,
-		close: function() { $(this).dialog("destroy").remove(); },
-		buttons: { Close: function() { $(this).dialog("close"); } }
-	});
-}
-
 function createTeamsRemoveDialog(teamId) {
 	var dialog = $("<div>").addClass("TeamsRemoveDialog");
 
@@ -2193,7 +2145,7 @@ function createTeamsRemoveDialog(teamId) {
 		dialog.dialog("close");
 	}).button();
 	$("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
-		$sb("Teams.Team("+teamId+")").$sbRemove();
+		$sb("ScoreBoard.PreparedTeam("+teamId+")").$sbRemove();
 		dialog.dialog("close");
 	}).button();
 

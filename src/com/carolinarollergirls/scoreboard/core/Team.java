@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
+// Managemnt of currently playing teams.
 public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public void reset();
 
@@ -39,6 +40,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public String getLogo();
     public void setLogo(String logo);
+
+    public void loadPreparedTeam(PreparedTeam pt);
 
     public void timeout();
     public void officialReview();
