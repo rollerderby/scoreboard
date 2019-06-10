@@ -9,7 +9,7 @@
  */
 
 
-$sb(function() {
+$(function() {
 
 	$("body>table.TypeTemplate")
 		.find("tr.Type>th.Type>button")
@@ -25,71 +25,57 @@ $sb(function() {
 
 	$("#tabsDiv").tabs();
 
-	setupTab("ScoreBoard.Media.Format(images)", "File", "<img>");
-	setupTab("ScoreBoard.Media.Format(videos)", "File", "<video>");
-	setupTab("ScoreBoard.Media.Format(customhtml)", "File", "<iframe>");
-});
-
-function setupTab(parentName, childName, previewElement) {
-	var media = $sb(parentName).$sbId;
-	$sb(parentName).$sbBindAddRemoveEach("Type", function(event,node) {
+	WS.Register("ScoreBoard.Media.Format(*).Type(*)" , function(k, v) {
+		if (k.field != "Type") {
+			return;
+		}
+		if (v == null) {
+			$("#"+k.Format+">div.Type>table.Type")
+				.filter(function() { return $(this).data("type") == k.Format; })
+				.remove();
+			return;
+		}
 		var newTable = $("body>table.TypeTemplate").clone(true)
 			.removeClass("TypeTemplate").addClass("Type")
-			.data({
-				type: node.$sbId,
-				sbType: node,
-				parentName: parentName,
-				childName: childName,
-				previewElement: previewElement
-			})
+			.attr("type", k.Type)
 			.find("th.Type>button.Upload").click(function() {
-				createUploadMediaDialog($(this).closest("table"));
+				createUploadMediaDialog(k.Format, k.Type);
 			}).end()
-			.find("thead button").button().end()
-			.find("tr.Type>th.Type>a.Type>span.Type").html(node.$sbId).end();
-		_windowFunctions.appendAlphaSortedByData($("#"+media+">div.Type"), newTable, childName);
-	}, function(event,node) {
-		$("#"+media+">div.Type>table.Type")
-			.filter(function() { return $(this).data("type") == node.$sbId; })
-			.remove();
+		.find("thead button").button().end()
+			.find("tr.Type>th.Type>a.Type>span.Type").text(k.Type).end();
+		_windowFunctions.appendAlphaSortedByData($("#"+k.Format+">div.Type"), newTable, "Type");
+
 	});
 
-	$sb(parentName).$sbBindAddRemoveEach({
-		childname: childName,
-		subChildren: true,
-		add: function(event,node) {
-			var sbType = $sb(node.parent());
-			var type = sbType.$sbId;
-			var srcprefix = "/"+media+"/"+type+"/";
-			var table = $("#"+media+">div.Type>table.Type")
-				.filter(function() { return $(this).data("type") == type; });
-			var newRow = table.find("tr.ItemTemplate").clone(true)
-				.removeClass("ItemTemplate").addClass("Item").data("sbId", node.$sbId);
-			newRow.find("button").button()
-				.filter(".Remove").click(function() { createRemoveMediaDialog(media, type, node); });
-			node.$sb("Name").$sbControl(newRow.find("td.Name>input:text"));
-			node.$sb("Src").$sbElement(newRow.find("td.Src>span"), {
-				sbelement: {
-					convert: function(val) { return String(val).replace(new RegExp("^"+srcprefix), ""); }
-				}});
-			node.$sb("Src").$sbElement(previewElement).appendTo(newRow.find("td.Preview"));
-			_windowFunctions.appendAlphaSortedByData(table.children("tbody"), newRow, "sbName", 1);
-		},
-		remove: function(event,node) {
-			$("#"+media+">div.Type>table.Type")
-				.filter(function() { return $(this).data("type") == $sb(node.parent()).$sbId; })
-				.find("tr.Item")
-				.filter(function() { return $(this).data("sbId") == node.$sbId; })
-				.remove();
+	WS.Register("ScoreBoard.Media.Format(*).Type(*).File(*).Name", function(k, v) {
+		var table = $("#"+k.Format+">div.Type>table.Type[type="+k.Type+"]");
+		if (v == null) {
+			table.find("tr.Item[file='"+k.File+"']").remove();
+			return;
 		}
+		var newRow = table.find("tr.ItemTemplate").clone(true)
+			.removeClass("ItemTemplate").addClass("Item").attr("file", k.File);
+		newRow.find("button.Remove").button().click(function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
+		newRow.find("td.Name>input").val(v);
+		newRow.find("td.Src>span").text(k.File);
+		var previewElement = "<iframe>";
+		if (k.Format == "images") {
+			previewElement = "<img>";
+		} else if (k.Format == "videos") {
+			previewElement = "<video>";
+		}
+		$(previewElement).attr("src", "/"+k.Format+"/"+k.Type+"/" + k.File).appendTo(newRow.find("td.Preview"));
+		_windowFunctions.appendAlphaSortedByAttr(table.children("tbody"), newRow, "file", 1);
 	});
-}
 
-function createRemoveMediaDialog(media, type, node) {
-	var filename = node.$sbId;
+	WS.AutoRegister();
+	WS.Connect();
+});
+
+function createRemoveMediaDialog(format, type, file) {
 	var div = $("body>div.RemoveMediaDialog.DialogTemplate").clone(true)
 		.removeClass("DialogTemplate");
-	div.find("a.File").text(media+"/"+type+"/"+filename);
+	div.find("a.File").text(format+"/"+type+"/"+file);
 	div.dialog({
 		title: "Remove media",
 		modal: true,
@@ -100,9 +86,9 @@ function createRemoveMediaDialog(media, type, node) {
 				div.find("p.Warning,p.Confirm").text("");
 				div.find("p.Status").text("Removing file...");
 				$.post("/Media/remove", {
-					media: media,
+					media: format,
 					type: type,
-					filename: filename
+					filename: file
 				}).fail(function(jqxhr, textStatus, errorThrown) {
 					div.find("p.Status").text("Error removing media file: "+jqxhr.responseText);
 					div.dialog("option", "buttons", { Close: function() { div.dialog("close"); } });
@@ -117,9 +103,7 @@ function createRemoveMediaDialog(media, type, node) {
 	});
 }
 
-function createUploadMediaDialog(table) {
-	var media = $sb(table.data("parentName")).$sbId;
-	var type = table.data("type");
+function createUploadMediaDialog(format, type) {
 	var div = $("body>div.UploadMediaDialog.DialogTemplate").clone(true)
 		.removeClass("DialogTemplate");
 	var uploader = div.find("div.Upload").fileupload({
@@ -133,21 +117,21 @@ function createUploadMediaDialog(table) {
 		var length = data.files.length;
 		var statustxt = "file"+(length>1?"s":"");
 		uploader.fileupload("option", "formData", [
-			{ name: "media", value: media },
-			{ name: "type", value: type }
+				{ name: "media", value: format },
+				{ name: "type", value: type }
 		]);
 		uploader.fileupload("send", data)
 			.done(function(data, textStatus, jqxhr) {
 				div.find("a.Status").text(data);
 			})
-			.fail(function(jqxhr, textStatus, errorThrown) {
-				div.find("a.Status").text("Error while uploading : "+jqxhr.responseText);
-			})
-			.always(function() {
-				var newInputFile = inputFile.clone(true).insertAfter(inputFile);
-				inputFile.remove();
-				inputFile = newInputFile.change();
-			});
+		.fail(function(jqxhr, textStatus, errorThrown) {
+			div.find("a.Status").text("Error while uploading : "+jqxhr.responseText);
+		})
+		.always(function() {
+			var newInputFile = inputFile.clone(true).insertAfter(inputFile);
+			inputFile.remove();
+			inputFile = newInputFile.change();
+		});
 		uploader.fileupload("option", "formData", []);
 	};
 	var closeFunction = function() { $(this).dialog("close"); };
@@ -155,12 +139,12 @@ function createUploadMediaDialog(table) {
 	var buttonsUploadClose = { Upload: uploadFunction, Close: closeFunction };
 
 	div.dialog({
-			title: "Upload media "+media+" : "+type,
-			modal: true,
-			width: 700,
-			close: function() { $(this).dialog("destroy").remove(); },
-			buttons: buttonsCloseOnly
-		});
+		title: "Upload media "+format+" : "+type,
+		modal: true,
+		width: 700,
+		close: function() { $(this).dialog("destroy").remove(); },
+		buttons: buttonsCloseOnly
+	});
 	inputFile.change(function() {
 		var files = this.files;
 		if (!files || !files.length) {
@@ -169,16 +153,6 @@ function createUploadMediaDialog(table) {
 			return;
 		}
 		div.dialog("option", "buttons", buttonsUploadClose);
-		if (files.length == 1) {
-			var file = files[0];
-			var name = file.name.replace(/\.[^.]*$/, "");
-			if (file.name.match(/\.[zZ][iI][pP]$/))
-				inputName.val("Cannot set name when uploading zip file").prop("disabled", true);
-			else
-				inputName.val(name).prop("disabled", false);
-		} else {
-			inputName.val("Cannot set name when uploading multiple files").prop("disabled", true);
-		}
 	}).change();
 }
 

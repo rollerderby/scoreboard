@@ -42,6 +42,7 @@ _include("/external/jquery-ui", [ "jquery-ui.js", "css/default/jquery-ui.css" ])
 
 _include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
 _include("/external/jquery-plugins/string/jquery.string.js");
+_include("/external/jquery-plugins/fileupload/jquery.fileupload.js");
 
 /* Core functionality */
 _include("/javascript", [
