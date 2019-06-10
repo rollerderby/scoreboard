@@ -42,7 +42,7 @@ public class StatsImplTests {
             Team t = sb.getTeam(tid);
             for (int i = 0; i <= 15; i++) {
                 String number = String.format("%s%02d", tid, i);
-                t.addSkater(ID_PREFIX + number, "name-" + number, number, "");
+                t.addSkater(new SkaterImpl(t, ID_PREFIX + number));
             }
         }
         team1 = sb.getTeam(Team.ID_1);

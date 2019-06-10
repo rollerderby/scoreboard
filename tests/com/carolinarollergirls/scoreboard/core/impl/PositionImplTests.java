@@ -33,9 +33,9 @@ public class PositionImplTests {
 
         team = sb.getTeam(Team.ID_1);
 
-        first = new SkaterImpl(team, firstId, "First","123", "");
-        second = new SkaterImpl(team, secondId, "Second","456", "");
-        third = new SkaterImpl(team, thirdId, "Third","789","");
+        first = new SkaterImpl(team, firstId);
+        second = new SkaterImpl(team, secondId);
+        third = new SkaterImpl(team, thirdId);
 
         team.addSkater(first);
         team.addSkater(second);

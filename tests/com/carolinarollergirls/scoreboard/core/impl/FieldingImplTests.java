@@ -66,7 +66,9 @@ public class FieldingImplTests {
 
     @Test
     public void testSortBoxTripSymbols() {
-        Skater s = sb.getTeam(Team.ID_1).addSkater("SkaterId", "Name", "3", null);
+        Team t = sb.getTeam(Team.ID_1);
+        Skater s = new SkaterImpl(t, (String)null);
+        t.addSkater(s);
         sb.startJam();
         sb.getTeam(Team.ID_1).field(s, Role.PIVOT);
         s.setPenaltyBox(true);

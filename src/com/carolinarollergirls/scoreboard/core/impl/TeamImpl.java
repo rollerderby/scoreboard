@@ -152,7 +152,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         synchronized (coreLock) {
             switch((Child)prop) {
             case SKATER:
-                return new SkaterImpl(this, id, "", "", "");
+                return new SkaterImpl(this, id);
             case BOX_TRIP:
                 return new BoxTripImpl(this, id);
             default:
@@ -338,11 +338,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 setColor(v.getId(), v.getValue());
             }
             for (ValueWithId v : pt.getAll(PreparedTeam.Child.SKATER)) {
-              PreparedTeamSkater s = (PreparedTeamSkater)v;
-                addSkater(s.getId(), 
-                    (String)s.get(PreparedTeamSkater.Value.NAME),
-                    (String)s.get(PreparedTeamSkater.Value.NUMBER),
-                    (String)s.get(PreparedTeamSkater.Value.FLAGS));
+                addSkater(new SkaterImpl(this, (PreparedTeamSkater)v));
             }
             requestBatchEnd();
         }
@@ -451,14 +447,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public Skater getSkater(String id) { return (Skater)get(Child.SKATER, id); }
     public Skater addSkater(String id) { return (Skater)getOrCreate(Child.SKATER, id); }
-    @Override
-    public Skater addSkater(String id, String n, String num, String flags) {
-        synchronized (coreLock) {
-            Skater s = new SkaterImpl(this, id, n, num, flags);
-            addSkater(s);
-            return s;
-        }
-    }
     @Override
     public void addSkater(Skater skater) { add(Child.SKATER, skater); }
     @Override

@@ -66,7 +66,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public Skater getSkater(String id);
     public void addSkater(Skater skater);
-    public Skater addSkater(String id, String name, String number, String flag);
     public void removeSkater(String id);
 
     public Position getPosition(FloorPosition fp);
