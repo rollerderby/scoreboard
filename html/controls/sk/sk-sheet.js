@@ -22,6 +22,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 
 		WS.Register(['ScoreBoard.Period(*).Number',
 				'ScoreBoard.Period(*).Jam(*).Number',
+				'ScoreBoard.Period(*).Jam(*).StarPass',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
