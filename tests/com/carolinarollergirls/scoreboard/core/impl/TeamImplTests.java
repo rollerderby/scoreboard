@@ -271,13 +271,19 @@ public class TeamImplTests {
     @Test
     public void testField() {
         team.execute(Team.Command.ADVANCE_FIELDINGS);
-        Skater skater1 = team.addSkater("S1", "One", "1", "");
-        Skater skater2 = team.addSkater("S2", "Two", "2", "");
-        Skater skater3 = team.addSkater("S3", "Three", "3", "");
-        Skater skater4 = team.addSkater("S4", "Four", "4", "");
-        Skater skater5 = team.addSkater("S5", "Five", "5", "");
-        Skater skater6 = team.addSkater("S6", "Six", "6", "");
-
+        Skater skater1 = new SkaterImpl(team, "S1");
+        Skater skater2 = new SkaterImpl(team, "S2");
+        Skater skater3 = new SkaterImpl(team, "S3");
+        Skater skater4 = new SkaterImpl(team, "S4");
+        Skater skater5 = new SkaterImpl(team, "S5");
+        Skater skater6 = new SkaterImpl(team, "S6");
+        team.addSkater(skater1);
+        team.addSkater(skater2);
+        team.addSkater(skater3);
+        team.addSkater(skater4);
+        team.addSkater(skater5);
+        team.addSkater(skater6);
+        
         team.field(skater1, Role.JAMMER);
         team.field(skater2, Role.PIVOT);
         team.field(skater3, Role.BLOCKER);
@@ -453,7 +459,8 @@ public class TeamImplTests {
 
     @Test
     public void testFieldPivot() {
-        Skater skater1 = team.addSkater("S1", "One", "1", "");
+        Skater skater1 = new SkaterImpl(team, "S1");
+        team.addSkater(skater1);
         
         sb.startJam();
         sb.stopJamTO();

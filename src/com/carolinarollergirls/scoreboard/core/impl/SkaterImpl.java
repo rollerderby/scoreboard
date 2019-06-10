@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Position;
+import com.carolinarollergirls.scoreboard.core.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
@@ -28,13 +29,22 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
-    public SkaterImpl(Team t, String i, String n, String num, String flags) {
+    public SkaterImpl(Team t, String i) {
         super(t, Value.ID, (i == null ? UUID.randomUUID().toString() : i),
                 Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
         team = t;
-        setName(n);
-        setNumber(num);
-        setFlags(flags);
+        initialize();
+    }
+    public SkaterImpl(Team t, PreparedTeamSkater pts) {
+        super(t, Value.ID, pts.getId(),
+                Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
+        team = t;
+        setName((String)pts.get(PreparedTeamSkater.Value.NAME));
+        setNumber((String)pts.get(PreparedTeamSkater.Value.NUMBER));
+        setFlags((String)pts.get(PreparedTeamSkater.Value.FLAGS));
+        initialize();
+    }
+    private void initialize() {
         set(Value.BASE_ROLE, Role.BENCH);
         set(Value.ROLE, Role.BENCH);
         setInverseReference(Child.FIELDING, Fielding.Value.SKATER);

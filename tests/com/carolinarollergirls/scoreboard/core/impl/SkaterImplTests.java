@@ -31,7 +31,7 @@ public class SkaterImplTests {
         team = sb.getTeam(Team.ID_1);
         skaterId = UUID.randomUUID();
 
-        skater = new SkaterImpl(team, skaterId.toString(), "Test Skater", "123", "");
+        skater = new SkaterImpl(team, skaterId.toString());
         sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "2");
         sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "3");
         sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "4");
