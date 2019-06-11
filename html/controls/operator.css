@@ -185,9 +185,9 @@ table.RowTable { border-spacing: 0px; }
 	div.ColorsDialog table { width: 100%; border-spacing: 0px; }
 	div.ColorsDialog table thead tr>th.X { width: 10%; }
 	div.ColorsDialog table thead tr>th.Id { width: 30%; }
-	div.ColorsDialog table thead tr>th.Foreground { width: 20%; }
-	div.ColorsDialog table thead tr>th.Background { width: 20%; }
-	div.ColorsDialog table thead tr>th.Glow { width: 20%; }
+	div.ColorsDialog table thead tr>th.fg { width: 20%; }
+	div.ColorsDialog table thead tr>th.bg { width: 20%; }
+	div.ColorsDialog table thead tr>th.glow { width: 20%; }
 	div.ColorsDialog table thead tr>th { background: #ccc; }
 	div.ColorsDialog table thead tr>th:first-of-type { border-radius: 5px 0px 0px 0px; }
 	div.ColorsDialog table thead tr>th:last-of-type { border-radius: 0px 5px 0px 0px; }
@@ -197,6 +197,9 @@ table.RowTable { border-spacing: 0px; }
 	div.ColorsDialog table tr>td.Id { text-align: left; }
 	div.ColorsDialog table tbody tr:nth-of-type(odd)>td { background: #eee; }
 	div.ColorsDialog table tbody tr:nth-of-type(even)>td { background: #ddd; }
+	div.ColorsDialog table tbody tr input[type="color"] { padding: 0; width: 75%; }
+	div.ColorsDialog table tbody tr input[type="color"][cleared="true"] + button { background-color: #ff0000; }
+	div.ColorsDialog table tbody tr button.ClearPrev { padding: 0; width: 20%; }
 /* End Colors Dialog */
 
 /* Teams Assign Dialog */
