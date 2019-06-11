@@ -86,13 +86,12 @@ public class ScoreBoardJSONListenerTests {
 
     @Test
     public void testScoreBoardEvents() {
-        sb.timeout();
         assertEquals(false, state.get("ScoreBoard.InPeriod"));
         assertEquals(false, state.get("ScoreBoard.InOvertime"));
         assertEquals(false, state.get("ScoreBoard.OfficialScore"));
         assertEquals(false, state.get("ScoreBoard.OfficialReview"));
 
-        sb.setInPeriod(true);
+        sb.timeout();
         advance(0);
         assertEquals(true, state.get("ScoreBoard.InPeriod"));
 
