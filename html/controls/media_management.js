@@ -26,37 +26,38 @@ $(function() {
 	$("#tabsDiv").tabs();
 
 	WS.Register("ScoreBoard.Media.Format(*).Type(*)" , function(k, v) {
-		if (k.field != "Type") {
-			return;
-		}
-		if (v == null) {
+		if (v == null && k.field == "Type") {
 			$("#"+k.Format+">div.Type>table.Type")
 				.filter(function() { return $(this).data("type") == k.Format; })
 				.remove();
 			return;
 		}
-		var newTable = $("body>table.TypeTemplate").clone(true)
-			.removeClass("TypeTemplate").addClass("Type")
-			.attr("type", k.Type)
-			.find("th.Type>button.Upload").click(function() {
-				createUploadMediaDialog(k.Format, k.Type);
-			}).end()
-		.find("thead button").button().end()
-			.find("tr.Type>th.Type>a.Type>span.Type").text(k.Type).end();
-		_windowFunctions.appendAlphaSortedByData($("#"+k.Format+">div.Type"), newTable, "Type");
+		if ($("#"+k.Format+">div.Type>table.Type[type="+k.Type+"]").length == 0) {
+			var newTable = $("body>table.TypeTemplate").clone(true)
+				.removeClass("TypeTemplate").addClass("Type")
+				.attr("type", k.Type)
+				.find("th.Type>button.Upload").click(function() {
+					createUploadMediaDialog(k.Format, k.Type);
+				}).end()
+			.find("thead button").button().end()
+				.find("tr.Type>th.Type>a.Type>span.Type").text(k.Type).end();
+			_windowFunctions.appendAlphaSortedByAttr($("#"+k.Format+">div.Type"), newTable, "Type");
+		}
 
 	});
 
 	WS.Register("ScoreBoard.Media.Format(*).Type(*).File(*).Name", function(k, v) {
 		var table = $("#"+k.Format+">div.Type>table.Type[type="+k.Type+"]");
+		table.find("tr.Item[file='"+k.File+"']").remove();
 		if (v == null) {
-			table.find("tr.Item[file='"+k.File+"']").remove();
 			return;
 		}
 		var newRow = table.find("tr.ItemTemplate").clone(true)
-			.removeClass("ItemTemplate").addClass("Item").attr("file", k.File);
+			.removeClass("ItemTemplate").addClass("Item").attr("name", v).attr("file", k.File);
 		newRow.find("button.Remove").button().click(function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
-		newRow.find("td.Name>input").val(v);
+		newRow.find("td.Name>input").val(v).change(function(e) {
+			WS.Set("ScoreBoard.Media.Format("+k.Format+").Type("+k.Type+").File("+k.File+").Name", e.target.value)
+		});
 		newRow.find("td.Src>span").text(k.File);
 		var previewElement = "<iframe>";
 		if (k.Format == "images") {
@@ -65,7 +66,7 @@ $(function() {
 			previewElement = "<video>";
 		}
 		$(previewElement).attr("src", "/"+k.Format+"/"+k.Type+"/" + k.File).appendTo(newRow.find("td.Preview"));
-		_windowFunctions.appendAlphaSortedByAttr(table.children("tbody"), newRow, "file", 1);
+		_windowFunctions.appendAlphaSortedByAttr(table.children("tbody"), newRow, "name", 1);
 	});
 
 	WS.AutoRegister();
