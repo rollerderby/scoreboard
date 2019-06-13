@@ -18,6 +18,7 @@ import java.net.SocketException;
 import java.net.URL;
 import java.util.Enumeration;
 import java.util.Iterator;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
 import org.eclipse.jetty.server.Server;
@@ -120,6 +121,12 @@ public class JettyServletScoreBoardController {
         c.addServlet(sh, "/*");
         c.addFilter(mf, "/*", 1);
         c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), "html")).getPath());
+
+        HttpServlet sjs = new SaveJsonScoreBoard(jsm);
+        c.addServlet(new ServletHolder(sjs), "/SaveJSON/*");
+
+        HttpServlet ljs = new LoadJsonScoreBoard(scoreBoard);
+        c.addServlet(new ServletHolder(ljs), "/LoadJSON/*");
 
         Enumeration<?> keys = ScoreBoardManager.getProperties().propertyNames();
 

@@ -11,7 +11,11 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.IOException;
 import java.io.InputStream;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -19,20 +23,17 @@ import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.jdom.Document;
-import org.jdom.JDOMException;
+import org.apache.commons.io.IOUtils;
+import org.json.JSONObject;
+import org.json.JSONException;
 
-import com.carolinarollergirls.scoreboard.xml.XmlDocumentEditor;
-import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
+import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 
-public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet {
-    @Override
-    public String getPath() { return "/LoadXml"; }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        super.doGet(request, response);
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
+public class LoadJsonScoreBoard extends HttpServlet {
+    public LoadJsonScoreBoard(ScoreBoard sb) {
+        this.scoreBoard = sb;
     }
 
     @Override
@@ -51,34 +52,49 @@ public class LoadXmlScoreBoard extends DefaultScoreBoardControllerServlet {
                 FileItemStream item = items.next();
                 if (!item.isFormField()) {
                     InputStream stream = item.openStream();
-                    Document doc = editor.toDocument(stream);
+                    String data = IOUtils.toString(stream, "utf-8");
+                    JSONObject json = new JSONObject(data);
                     stream.close();
-                    handleDocument(request, response, doc);
+                    handleJSON(request, response, json);
                     return;
                 }
             }
 
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No XML uploaded");
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No JSON uploaded");
         } catch ( FileUploadException fuE ) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
-        } catch ( JDOMException jE ) {
+        } catch ( JSONException jE ) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, jE.getMessage());
         }
     }
 
-    protected void handleDocument(HttpServletRequest request, HttpServletResponse response, Document doc) throws IOException {
+    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, JSONObject json) throws IOException {
+        List<ScoreBoardJSONSetter.JSONSet> jsl = new ArrayList<>();
+
+        JSONObject state = json.getJSONObject("state");
+        for (String key: state.keySet()) {
+            Object value = state.get(key);
+            String v;
+            if (value == JSONObject.NULL) {
+                v = null;
+            } else {
+                v = value.toString();
+            }
+            jsl.add(new ScoreBoardJSONSetter.JSONSet(key, v, Flag.FROM_AUTOSAVE));
+        }
+
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
-            getXmlScoreBoard().loadDocument(doc);
+            scoreBoard.reset();
+            ScoreBoardJSONSetter.set(scoreBoard, jsl);
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
-            getXmlScoreBoard().mergeDocument(doc, false);
+            ScoreBoardJSONSetter.set(scoreBoard, jsl);
         } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge document");
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge");
         }
         response.setContentType("text/plain");
         response.setStatus(HttpServletResponse.SC_OK);
     }
 
-    protected XmlScoreBoard getXmlScoreBoard() { return scoreBoard.getXmlScoreBoard(); }
+    protected final ScoreBoard scoreBoard;
 
-    protected XmlDocumentEditor editor = new XmlDocumentEditor();
 }
