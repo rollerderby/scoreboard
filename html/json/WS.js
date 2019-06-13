@@ -295,6 +295,7 @@ var WS = {
 				if (t["*)"] != null) {
 					// Allow Blah(*) as a wildcard.
 					var j;
+					// id captured by * might contain . and thus be split - find the end
 					for (j = i; j < p.length && !p[j].endsWith(")"); j++);
 					result = result.concat(matches(t["*)"], p, j+1) || []);
 				}

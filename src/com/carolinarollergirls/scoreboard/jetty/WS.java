@@ -326,6 +326,7 @@ public class WS extends WebSocketServlet {
                 // Allow Blah(*).
                 if (head.trie.containsKey("*)")) {
                     int j;
+                    // id captured by * might contain . and thus be split - find the end
                     for (j = i; j < p.length && !p[j].endsWith(")"); j++);
                     if (head.trie.get("*)")._covers(p, j+1)) {
                         return true;

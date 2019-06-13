@@ -93,5 +93,11 @@ public class WSTest {
         assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Period.Direction)"));
         assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Jam)"));
         assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Intermission.Direction)"));
+        
+        pt.add("ScoreBoard.Rulesets.Rule(*)");
+        
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Period.Direction)"));
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Jam)"));
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Intermission.Direction)"));
     }
 }
