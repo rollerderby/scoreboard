@@ -21,8 +21,8 @@ public class WSTest {
         assertTrue(pt.covers("ScoreBoard.Period"));
         assertTrue(pt.covers("ScoreBoard.Period(1)"));
         assertTrue(pt.covers("ScoreBoard.Period.Jam"));
-        assertTrue(pt.covers("ScoreBoard.PeriodFoo"));
 
+        assertFalse(pt.covers("ScoreBoard.PeriodFoo"));
         assertFalse(pt.covers("ScoreBoard.Perioc"));
         assertFalse(pt.covers("ScoreBoard.Perioe"));
         assertFalse(pt.covers("ScoreBoard(1).Perioe"));
@@ -73,11 +73,31 @@ public class WSTest {
         pt.add("ScoreBoard.Period*");
 
         assertTrue(pt.covers("ScoreBoard.Period*"));
-        assertTrue(pt.covers("ScoreBoard.Period*a"));
 
+        assertFalse(pt.covers("ScoreBoard.Period*a"));
         assertFalse(pt.covers("ScoreBoard.Period"));
         assertFalse(pt.covers("ScoreBoard.Period("));
         assertFalse(pt.covers("ScoreBoard.Period(1).Jam(2).Foo(2).Bar"));
     }
 
+    @Test
+    public void path_trie_dot_in_id() {
+        pt.add("ScoreBoard.Rulesets.Rule(Period.Duration)");
+        pt.add("ScoreBoard.Rulesets.Rule(Jam.*)");
+        pt.add("ScoreBoard.Rulesets.Rule(Intermission*)");
+        
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Period.Duration)"));
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Jam.Foo)"));
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Jam.Foo.Bar)"));
+        
+        assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Period.Direction)"));
+        assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Jam)"));
+        assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Intermission.Direction)"));
+        
+        pt.add("ScoreBoard.Rulesets.Rule(*)");
+        
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Period.Direction)"));
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Jam)"));
+        assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Intermission.Direction)"));
+    }
 }

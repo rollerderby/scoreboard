@@ -278,8 +278,9 @@ var WS = {
 	},
 
 	_addToTrie: function(t, key, value) {
-		for (var i = 0; i < key.length; i++) {
-			var c = key.charAt(i);
+		var p = key.split(/[.(]/);
+		for (var i = 0; i < p.length; i++) {
+			var c = p[i];
 			t[c] = t[c] || {};
 			t = t[c];
 		}
@@ -288,20 +289,26 @@ var WS = {
 	},
 
 	_getMatchesFromTrie: function(t, key) {
-		var result = t.values || [];
-		for (var i = 0; i < key.length; i++) {
-			var c = key.charAt(i);
-			t = t[c];
-			if (t == null) {
-				break;
+		function matches(t, p, i) {
+			var result = t.values || [];
+			for (; i < p.length; i++) {
+				if (t["*)"] != null) {
+					// Allow Blah(*) as a wildcard.
+					var j;
+					// id captured by * might contain . and thus be split - find the end
+					for (j = i; j < p.length && !p[j].endsWith(")"); j++);
+					result = result.concat(matches(t["*)"], p, j+1) || []);
+				}
+				t = t[p[i]];
+				if (t == null) {
+					break;
+				}
+				result = result.concat(t.values || []);
 			}
-			if (c == "(" && t["*"] != null) {
-				// Allow Blah(*) as a wildcard.
-				result = result.concat(WS._getMatchesFromTrie(t["*"], key.substring(key.indexOf(")", i))) || []);
-			}
-			result = result.concat(t.values || []);
-		}
-		return result;
+			return result;
+		};
+		
+		return matches(t, key.split(/[.(]/), 0);
 	},
 
 	getPaths: function(elem, attr) {

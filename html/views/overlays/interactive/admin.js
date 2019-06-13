@@ -58,15 +58,16 @@ function initialize() {
 		}	
 	});
 
-	WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line',
-	'ScoreBoard.Team(1).AlternateName(overlay)',
-	'ScoreBoard.Team(2).AlternateName(overlay)'],
+	WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)',
+		'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)',
+		'ScoreBoard.Team(1).AlternateName(overlay)',
+		'ScoreBoard.Team(2).AlternateName(overlay)'],
 				function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
 
 	WS.Register(['ScoreBoard.Team(1).Color(overlay_fg)',
-	'ScoreBoard.Team(1).Color(overlay_bg)',
-	'ScoreBoard.Team(2).Color(overlay_fg)',
-	'ScoreBoard.Team(2).Color(overlay_bg)'],
+		'ScoreBoard.Team(1).Color(overlay_bg)',
+		'ScoreBoard.Team(2).Color(overlay_fg)',
+		'ScoreBoard.Team(2).Color(overlay_bg)'],
 				function(k,v) {
 					if (v == null || v == "") {
 						$('input[data-setting="'+k+'"]').attr("cleared", "true");

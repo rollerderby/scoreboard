@@ -130,7 +130,8 @@ function initialize() {
 		$('.OverlayPanel.' + v).addClass('Show');
 	});
 
-	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line' ] , function(k,v) {
+	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)',
+		'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)' ] , function(k,v) {
 		sp = '.' + k.split('.').slice(4,6).join(' .').slice(0, -1);
 		$(sp).text(v);
 	});
