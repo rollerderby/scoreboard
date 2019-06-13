@@ -1429,40 +1429,26 @@ function createTimeSetWarningDialog(source) {
 //////////////////////
 
 function createScoreBoardViewTab() {
-	$("<table>").attr("id", "ScoreBoardView")
+	var table = $("<table>").attr("id", "ScoreBoardView")
 		.appendTo(createTab("ScoreBoard View", "ScoreBoardViewTab"))
-		.data("loadContentFunction", createScoreBoardViewContent);
-}
 
-function createScoreBoardViewContent(table) {
-	var usePreviewButton = $("<label for='UsePreviewButton'/><input type='checkbox' id='UsePreviewButton'/>")
-		.button();
-	_crgUtils.bindAndRun(usePreviewButton.filter("input:checkbox"), "click", function() {
+		var usePreviewButton = $("<label for='UsePreviewButton'/><input type='checkbox' id='UsePreviewButton'/>");
+	usePreviewButton.last().button();
+	_crgUtils.bindAndRun(usePreviewButton.filter("input:checkbox"), "change", function() {
 		$(this).button("option", "label", (isTrue(this.checked)?"Editing Live ScoreBoard":"Editing Preview"));
 		table.toggleClass("UsePreview", !isTrue(this.checked));
 	});
 	var applyPreviewButton = $("<button>Apply Preview</button>").button()
 		.click(function() {
-			$sb("ScoreBoard.Settings").find("Setting").each(function() {
-				oldPath = String($sb(this).$sbPath);
-				var path = oldPath.replace("(ScoreBoard.Preview_", "(ScoreBoard.View_");
-				if (path != oldPath) {
-					var val = $sb(this).$sbGet();
-					$sb(path).$sbSet($sb(this).$sbGet());
-				}
+			var done = {};
+			table.find(".Preview [ApplyPreview]").each(function(_, e) {
+				var name = $(e).attr("ApplyPreview");
+				if (done[name]) return;
+				WS.Set("ScoreBoard.Settings.Setting(ScoreBoard.View_" + name + ")",
+						WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Preview_" + name + ")"]);
+				done[name] = true;
 			});
 		});
-	_crgUtils.bindAndRun("ScoreBoard.Settings.Setting", "sbchange", function() {
-		var disableApplyButton = true;
-		$sb("Pages.Page(scoreboard.html).PreviewOptions").find("*").each(function() {
-			var viewPath = String($sb(this).$sbPath).replace("PreviewOptions","ViewOptions");
-			if (!$sb(this).$sbIs($sb(viewPath).$sbGet())) {
-				disableApplyButton = false;
-				return false;
-			}
-		});
-		applyPreviewButton.button("option", "disabled", disableApplyButton);
-	});
 
 	$("<tr><td/></tr>").appendTo(table)
 		.find("td").addClass("Header NoChildren PreviewControl")
@@ -1500,98 +1486,105 @@ function createScoreBoardViewContent(table) {
 
 function createScoreBoardViewPreviewRows(table, type) {
 	var currentViewTd = $("<tr><td/></tr>").addClass(type).appendTo(table)
-		.find("td").addClass("Header NoChildren CurrentView")
-		.append("<label>ScoreBoard</label><input type='radio' value='scoreboard'/>")
-		.append("<label>WhiteBoard</label><input type='radio' value='whiteboard'/>")
-		.append("<label>Image</label><input type='radio' value='image'/>")
-		.append("<label>Video</label><input type='radio' value='video'/>")
-		.append("<label>Custom Page</label><input type='radio' value='html'/>");
+		.children("td").addClass("Header NoChildren CurrentView")
+		.attr("ApplyPreview", "CurrentView")
+		.append("<label >ScoreBoard</label><input type='radio' value='scoreboard'/>")
+		.append("<label >WhiteBoard</label><input type='radio' value='whiteboard'/>")
+		.append("<label >Image</label><input type='radio' value='image'/>")
+		.append("<label >Video</label><input type='radio' value='video'/>")
+		.append("<label >Custom Page</label><input type='radio' value='html'/>");
 
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)").$sbControl(currentViewTd.children());
-	currentViewTd.buttonset()
-		.prepend("<a>Current View : </a>");
+	currentViewTd.children("input")
+		.attr("name", "createScoreBoardViewPreviewRows" + type)
+		.each(function(_, e) {
+			e = $(e);
+			e.attr("id", "createScoreBoardViewPreviewRows" + e.attr("value") + type);
+			e.prev().attr("for", "createScoreBoardViewPreviewRows" + e.attr("value") + type);
+		})
+	.change(function(e) {
+		WS.Set("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)", e.target.value);
+	});
+
+	currentViewTd.buttonset({items: "input"}).prepend("<a>Current View : </a>");
+
+	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)", function(k, v) {
+		currentViewTd.children("input[value=" + v + "]").prop("checked", true).button("refresh");
+	});
+
 
 	$("<tr><td><a>ScoreBoard Options</a></td></tr>").addClass(type).appendTo(table)
 		.find("td").addClass("ScoreBoardOptions Header");
 
-//FIXME - this intermission control should not be on the View tab,
-//FIXME - it should be on the policy or scoreboard operation/behavior tab
 	var intermissionControlDialog = createIntermissionControlDialog();
 	var intermissionControlButton = $("<button>Intermission Labels</button>").button().addClass("ui-button-small")
 		.click(function() { intermissionControlDialog.dialog("open"); });
-	var clockAfterTimeout = $sb("ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)").$sbControl("<label>Clock shown after Timeout: </label><select>", { sbelement: {
-		prependOptions: [
-			{ text: "Lineup", value: "Lineup" },
-			{ text: "Timeout", value: "Timeout" }
-		]}});
-	var syncClocksButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)").$sbControl(syncClocksButton, { sbcontrol: {
-			button: true
-		}, sbelement: {
-			convert: function(value) {
-				syncClocksButton.filter("input:checkbox")
-					.button("option", "label", (isTrue(value)?"Clocks Synced":"Clocks Unsynced"));
-				return value;
-			}
-		} }).addClass("ui-button-small");
+	var toggleButton = function(key, trueText, falseText) {
+		var button = $("<label/><input type='checkbox'/>").addClass("ui-button-small");
+		var id = _crgScoreBoard.newUUID(true);
+		button.first().attr("for", id);
+		var input = button.last().attr("id", id).button();
+		input.change(function(e) { WS.Set(key, input.prop("checked")); });
+		WS.Register(key, function(k, v) {
+			input.button("option", "label", isTrue(v)?trueText:falseText)
+				.prop("checked", isTrue(v))
+				.button("refresh");
+		});
+		return button;
+	}
 
-	var forceServedButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)").$sbControl(forceServedButton, { sbcontrol: {
-			button: true
-		}, sbelement: {
-			convert: function(value) {
-				forceServedButton.filter("input:checkbox")
-					.button("option", "label", (isTrue(value)?"Assume Penalties Served":"Track Penalty Serving"));
-				return value;
-			}
-		} }).addClass("ui-button-small");
+	var syncClocksButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)", "Clocks Synced", "Clocks Unsynced");
+	var forceServedButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)", "Assume Penalties Served", "Track Penalty Serving");
+	var swapTeamsButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)", "Team sides swapped", "Team sides normal");
+	swapTeamsButton.attr("ApplyPreview", "SwapTeams");
 
-	var swapTeamsButton = $("<label/><input type='checkbox'/>");
-	$sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)").$sbControl(swapTeamsButton, { sbcontrol: {
-			button: true
-		}, sbelement: {
-			convert: function(value) {
-				swapTeamsButton.filter("input:checkbox")
-					.button("option", "label", (isTrue(value)?"Team sides swapped":"Team sides normal"));
-				return value;
+	var WSControl = function(key, element) {
+		element.change(function() { WS.Set(key, element.val()); });
+		WS.Register(key, function(k, v) { element.val(v); });
+		return element;
+	}
+
+	var clockAfterTimeout = $("<label>Clock shown after Timeout: </label>").add(WSControl("ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)",
+				$("<select>")
+				.append("<option value='Lineup'>Lineup</option>")
+				.append("<option value='Timeout'>Timeout</option>")));
+
+	var boxStyle = $("<label>Box Style: </label>").add(WSControl("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BoxStyle)",
+				$("<select>").attr("ApplyPreview", "BoxStyle")
+				.append("<option value=''>Rounded</option>")
+				.append("<option value='box_flat'>Flat</option>")
+				.append("<option value='box_flat_bright'>Flat & Bright</option>")));
+	var sidePadding = $("<label>Side Padding: </label>").add(WSControl("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SidePadding)",
+				$("<select>").attr("ApplyPreview", "SidePadding")
+				.append("<option value=''>None</option>")
+				.append("<option value='2'>2%</option>")
+				.append("<option value='4'>4%</option>")
+				.append("<option value='6'>6%</option>")
+				.append("<option value='8'>8%</option>")
+				.append("<option value='10'>10%</option>")));
+
+	var mediaSelect = function(key, format, type, humanName) {
+		var select = $("<select>").append($("<option value=''>No " + humanName + "</option>"));
+		WS.Register("ScoreBoard.Media.Format(" + format + ").Type(" + type + ").File(*).Name", function(k, v) {
+			select.children("[value='"+k.File+"']").remove();
+			if (v != null) {
+				var option = $("<option>").attr("name", v).val("/" + format + "/" + type + "/" + k.File).text(v);
+				_windowFunctions.appendAlphaSortedByAttr(select, option, "name", 1);
+				select.val(WS.state[key]);
 			}
-		} }).addClass("ui-button-small");
-	var boxStyle = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_BoxStyle)").$sbControl("<label>Box Style: </label><select>", { sbelement: {
-		prependOptions: [
-			{ text: "Rounded", value: "" },
-			{ text: "Flat", value: "box_flat" },
-			{ text: "Flat & Bright", value: "box_flat_bright" }
-		]}});
-	var sidePadding = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SidePadding)").$sbControl("<label>Side Padding: </label><select>", { sbelement: {
-		prependOptions: [
-			{ text: "None", value: "" },
-			{ text: "2%", value: "2" },
-			{ text: "4%", value: "4" },
-			{ text: "6%", value: "6" },
-			{ text: "8%", value: "8" },
-			{ text: "10%", value: "10" }
-		]}});
-	var imageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Image)").$sbControl("<label>Image View: </label><select>", { sbelement: {
-			optionParent: "ScoreBoard.Media.Format(images).Type(fullscreen)",
-			optionChildName: "File",
-			optionNameElement: "Name",
-			optionValueElement: "Src",
-			firstOption: { text: "No Image", value: "" }
-		} });
-	var videoViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)").$sbControl("<label>Video View: </label><select>", { sbelement: {
-			optionParent: "ScoreBoard.Media.Format(videos).Type(fullscreen)",
-			optionChildName: "File",
-			optionNameElement: "Name",
-			optionValueElement: "Src",
-			firstOption: { text: "No Video", value: "" }
-		} });
-	var customPageViewSelect = $sb("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)").$sbControl("<label>Custom Page View: </label><select>", { sbelement: {
-			optionParent: "ScoreBoard.Media.Format(customhtml).Type(fullscreen)",
-			optionChildName: "File",
-			optionNameElement: "Name",
-			optionValueElement: "Src",
-			firstOption: { text: "No Page", value: "" }
-		} });
+		});
+		WSControl(key, select);
+		return select;
+	}
+
+	var imageViewSelect = $("<label>Image View: </label>")
+		.add(mediaSelect("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Image)", "images", "fullscreen", "Image"))
+		.attr("ApplyPreview", "Image");
+	var videoViewSelect = $("<label>Video View: </label>")
+		.add(mediaSelect("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)", "videos", "fullscreen", "Video"))
+		.attr("ApplyPreview", "Video");
+	var customPageViewSelect = $("<label>Custom Page View: </label>")
+		.add(mediaSelect("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)", "customhtml", "fullscreen", "Page"))
+		.attr("ApplyPreview", "CustomHtml");
 
 	var optionsTable = $("<table/>")
 		.addClass(type)
@@ -1616,29 +1609,26 @@ function createScoreBoardViewPreviewRows(table, type) {
 	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
 		.find("td").addClass("ScoreBoardOptions Footer")
 		.first().append(forceServedButton);
-	
+
 }
 
 function createIntermissionControlDialog() {
 	var table = $("<table>").addClass("IntermissionControlDialog");
 
 	var fields = [
-		{ id: "ScoreBoard.Intermission.PreGame", display: "Pre Game", type: "text" },
-		{ id: "ScoreBoard.Intermission.Intermission", display: "Intermission", type: "text" },
-		{ id: "ScoreBoard.Intermission.Unofficial", display: "Unofficial Score", type: "text" },
-		{ id: "ScoreBoard.Intermission.Official", display: "Official Score", type: "text" },
+	{ id: "ScoreBoard.Intermission.PreGame", display: "Pre Game"},
+	{ id: "ScoreBoard.Intermission.Intermission", display: "Intermission"},
+	{ id: "ScoreBoard.Intermission.Unofficial", display: "Unofficial Score"},
+	{ id: "ScoreBoard.Intermission.Official", display: "Official Score"},
 	];
 	$.each( fields, function(i, field) {
 		var path = "ScoreBoard.Settings.Setting(" + field.id + ")";
 		var row = $("<tr>").appendTo(table);
 		$("<td>").addClass("Name").text(field.display).appendTo(row);
-		var options = {};
-		if (field.type == "time") {
-			options.sbelement = { convert: _timeConversions.msToMinSec };
-			options.sbcontrol = { convert: _timeConversions.minSecToMs };
-		}
-		$sb(path).$sbControl($("<input>").attr("type", "text"), options)
+		var input = $("<input>").attr("type", "text").val(WS.state[path])
+			.bind("input", function(e) { WS.Set(path, e.target.value); })
 			.appendTo($("<td>").addClass("Value").appendTo(row));
+		WS.Register(path, function(k, v) { input.val(v); } );
 	});
 
 	return $("<div>").append(table).dialog({
