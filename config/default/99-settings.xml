@@ -10,6 +10,7 @@
 			<Setting Id="ScoreBoard.Operator_Default.ReplaceButton" empty="true"><![CDATA[]]></Setting>
 			<Setting Id="ScoreBoard.Clock.Sync"><![CDATA[true]]></Setting>
 			<Setting Id="ScoreBoard.ClockAfterTimeout"><![CDATA[Lineup]]></Setting>
+			<Setting Id="ScoreBoard.Penalties.ForceServed"><![CDATA[false]]></Setting>
 			<Setting Id="ScoreBoard.Intermission.PreGame"><![CDATA[Time To Derby]]></Setting>
 			<Setting Id="ScoreBoard.Intermission.Intermission"><![CDATA[Intermission]]></Setting>
 			<Setting Id="ScoreBoard.Intermission.Unofficial"><![CDATA[Unofficial Score]]></Setting>
