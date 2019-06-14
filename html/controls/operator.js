@@ -1801,7 +1801,7 @@ function createTeamsTab() {
 
 		// Treat as a tab-seperated roster.
 		var knownNumbers = {};
-		team.find('Skater Number').map( function(_, n) {
+		teamTable.find('Skater Number').map( function(_, n) {
 			n = $(n)
 				knownNumbers[n.text()] = n.parent().attr("Id");
 		});
