@@ -90,7 +90,7 @@ function login(name) {
 	$("#operatorId").text(name);
 	if (window.history.replaceState)
 		window.history.replaceState(null, "", "?operator="+$("#operatorId").text());
-	_crgKeyControls.setupKeyControls($sb("Pages.Page(operator.html).Operator("+$("#operatorId").text()+")"));
+	_crgKeyControls.setupKeyControls(name);
 	setOperatorSettings(name);
 }
 
@@ -1387,42 +1387,6 @@ function createTimeDialog(clock) {
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
 }
-
-var timeSetWarningAck = false;
-var timeSetWarningRefocusing = false;
-function createTimeSetWarningDialog(source) {
-	if (timeSetWarningAck || timeSetWarningRefocusing )
-		return;
-	var dialog = $("<div>");
-	$("<p>").text("Warning: key control is still enabled while entering the time!")
-		.appendTo(dialog);
-	$("<p>").html("Any keys you press while entering the time <b>will affect</b> any buttons they are assigned to!")
-		.appendTo(dialog);
-	$("<p>").html("If this is a problem for you, edit the time using the time dialog instead,<br>by clicking on the time display itself.")
-		.appendTo(dialog);
-	dialog.dialog({
-		title: "Caution",
-		modal: true,
-		width: "700px",
-		close: function() {
-			timeSetWarningRefocusing = true;
-			dialog.dialog("destroy").remove();
-			source.focus();
-			timeSetWarningRefocusing = false;
-		},
-		buttons: [
-			{
-				text: "Don't remind me again",
-				click: function() { timeSetWarningAck = true; $(this).dialog("close"); }
-			},
-			{
-				text: "Ok",
-				click: function() { $(this).dialog("close"); }
-			}
-		]
-	});
-}
-
 
 //////////////////////
 // ScoreBoard View tab

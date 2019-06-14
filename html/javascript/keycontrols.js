@@ -9,7 +9,6 @@
  */
 
 
-//FIXME - need to allow setting up groups, maybe custom class to indicate grouping, so per-tab keycontrols are possible
 _crgKeyControls = {
 	/* This selector should be used to match key control buttons. */
 	keySelector: ":button.KeyControl,label.KeyControl",
@@ -18,8 +17,8 @@ _crgKeyControls = {
 	 * This finds all button-type elements with the class KeyControl
 	 * and calls setupKeyControl, using the given controlParent.
 	 */
-	setupKeyControls: function(controlParent) {
-		_crgKeyControls.setupKeyControl($(_crgKeyControls.keySelector), controlParent);
+	setupKeyControls: function(operator) {
+		_crgKeyControls.setupKeyControl($(_crgKeyControls.keySelector), operator);
 	},
 	/* Destroy all key control buttons.
 	 * This finds all button-type elements with the class KeyControl
@@ -46,7 +45,8 @@ _crgKeyControls = {
 	 * the span.Indicator element that stores the control key has class Key
 	 * when there is a control key the button has class HasControlKey
 	 */
-	setupKeyControl: function(button, controlParent) {
+	setupKeyControl: function(button, operator) {
+		_crgKeyControls._start(operator);
 		_crgKeyControls.destroyKeyControl(button)
 			.addClass("KeyControl")
 			.bind("mouseenter mouseleave", _crgKeyControls._hoverFunction)
@@ -57,17 +57,10 @@ _crgKeyControls = {
 			.end()
 			.each(function() {
 				var button = $(this);
-				var key = controlParent.$sb("KeyControl("+button.attr("id")+").Key");
-				key.$sbElement(button.find("span.Key"));
-				var contentChange = function(event,value) {
-					button.toggleClass("HasControlKey", (value?true:false))
-						.find("span.Key")
-						.attr("data-keycontrol", String(value?value.charCodeAt(0):""));
-				};
-				key.$sbBindAndRun("sbchange", contentChange);
-				button.data("_crgKeyControls:unbind", function() { key.unbind("sbchange", contentChange); });
-				button.data("_crgKeyControls:Key", key);
-				_crgKeyControls._start();
+				var prop = "ScoreBoard.Settings.Setting(ScoreBoard.Operator__" + operator + ".KeyControl." + button.attr("id") + ")";
+				var key = WS.state[prop];
+				button.find("span.Key").text(key);
+				button.attr("_crgKeyControls_prop", prop)
 			});
 		return button;
 	},
@@ -80,8 +73,7 @@ _crgKeyControls = {
 	 * Note this does not remove the KeyControl class from the button.
 	 */
 	destroyKeyControl: function(button) {
-		button.each(function() { try { $(this).data("_crgKeyControls:unbind")(); } catch(err) { } });
-		button.removeData("_crgKeyControls:unbind").removeData("_crgKeyControls:Key");
+		button.attr("_crgKeyControls_prop", false);
 		button.unbind("mouseenter mouseleave", _crgKeyControls._hoverFunction);
 		button.find("span.Indicator").remove();
 		return button;
@@ -108,17 +100,27 @@ _crgKeyControls = {
 		_crgKeyControls._conditions.push(condition);
 	},
 	_conditions: [ function() { return !$("div.MultipleKeyAssignDialog").length; },
-		function() { return !$("#TeamTimeTab.ui-tabs-hide").length;} //disable keys when TeamTimeTab is hidden.
+	function() { return !$("#TeamTimeTab.ui-tabs-hide").length;} //disable keys when TeamTimeTab is hidden.
 	],
 
-	_start: function() {
+	_start: function(operator) {
+		_crgKeyControls.operator = operator;
 		if (!_crgKeyControls._keyControlStarted) {
 			$(document).keypress(_crgKeyControls._keyControlPress);
 			$(document).keydown(_crgKeyControls._keyControlDown);
+
+			WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.*)", function(k, v) {
+				if (!k.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator__" + _crgKeyControls.operator + ".KeyControl.")) return;
+				var button = $("#" + k.substring(k.lastIndexOf(".") + 1, k.length - 1));
+				button.toggleClass("HasControlKey", (v?true:false))
+					.find("span.Key").text(v)
+					.attr("data-keycontrol", String(v?v.charCodeAt(0):""));
+			});
 			_crgKeyControls._keyControlStarted = true;
 		}
 	},
 	_keyControlStarted: false,
+	_operator: "",
 
 	_checkConditions: function() {
 		var ok = true;
@@ -184,17 +186,18 @@ _crgKeyControls = {
 
 		// Clear control key from button being hovered over
 		switch (event.which) {
-		case 8: // Backspace
-		case 46: // Delete
-			_crgKeyControls._clearKey($(_crgKeyControls.keySelector).filter(".Editing.hover"));
+			case 8: // Backspace
+			case 46: // Delete
+				_crgKeyControls._clearKey($(_crgKeyControls.keySelector).filter(".Editing.hover"));
 		}
 	},
 	_clearKey: function(targets) { _crgKeyControls._setKey(targets, ""); },
 	_setKey: function(targets, key) {
 		targets.each(function() {
-			var sbKey = $(this).data("_crgKeyControls:Key");
-			if (sbKey)
-				sbKey.$sbSet(key);
+			var prop = $(this).attr("_crgKeyControls_prop");
+			if (prop) {
+				WS.Set(prop, key?key:null);
+			}
 		});
 	},
 	_showMultipleKeyAssignDialog: function(existing, target, key) {
