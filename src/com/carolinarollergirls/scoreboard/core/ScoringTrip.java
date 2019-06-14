@@ -24,6 +24,7 @@ public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip
         public Object getDefaultValue() { return defaultValue; }
     }
     public enum Command implements CommandProperty {
+        INSERT_BEFORE,
         REMOVE;
         
         @Override
