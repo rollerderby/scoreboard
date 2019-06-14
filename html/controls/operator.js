@@ -1833,10 +1833,10 @@ function createTeamsTab() {
 			newSkaterButton.click();
 	});
 	newSkaterFlags.append($("<option>").attr("value", "").text("Skater"));
+	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Not Skating"));
 	newSkaterFlags.append($("<option>").attr("value", "C").text("Captain"));
 	newSkaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
 	newSkaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
-	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Not Skating"));
 	var pasteHandler = function(e){
 		var text = e.originalEvent.clipboardData.getData("text");
 		var lines = text.split("\n");
@@ -1920,10 +1920,10 @@ function createTeamsTab() {
 				});
 				var skaterFlags = $("<select>").appendTo(skaterRow.children("td.Flags"));
 				skaterFlags.append($("<option>").attr("value", "").text("Skater"));
+				skaterFlags.append($("<option>").attr("value", "ALT").text("Not Skating"));
 				skaterFlags.append($("<option>").attr("value", "C").text("Captain"));
 				skaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
 				skaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
-				skaterFlags.append($("<option>").attr("value", "ALT").text("Not Skating"));
 				skaterFlags.change(function() {
 					WS.Set(prefix + ".Flags", skaterFlags.val());
 				});
