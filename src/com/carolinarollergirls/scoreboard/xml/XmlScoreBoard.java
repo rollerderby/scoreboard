@@ -270,7 +270,6 @@ public class XmlScoreBoard {
         reloadScoreBoardViewers = new ReloadScoreBoardViewers();
         reloadScoreBoardViewers.setXmlScoreBoard(this);
         new OpenXmlDocumentManager("Pages").setXmlScoreBoard(this);
-        new TwitterXmlDocumentManager().setXmlScoreBoard(this);
     }
 
     protected void startAutoSave() {

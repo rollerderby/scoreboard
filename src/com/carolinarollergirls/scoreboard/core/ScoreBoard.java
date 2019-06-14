@@ -26,7 +26,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public void postAutosaveUpdate();
 
     public Timeout getCurrentTimeout();
-    
+
     /**
      * Id of Team who called Timeout.
      *
@@ -65,7 +65,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public boolean isInJam();
     public Jam getUpcomingJam();
-    
+
     // update the references to current/upcoming/just ended TeamJams
     public void updateTeamJams();
 
@@ -132,6 +132,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     }
     public enum Child implements AddRemoveProperty {
         SETTINGS(Settings.class),
+        TWITTER(Twitter.class),
         RULESETS(Rulesets.class),
         PENALTY_CODES(PenaltyCodesManager.class),
         MEDIA(Media.class),
@@ -161,7 +162,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         CLOCK_REPLACE,
         START_OVERTIME,
         OFFICIAL_TIMEOUT;
-        
+
         @Override
         public Class<Boolean> getType() { return Boolean.class; }
     }

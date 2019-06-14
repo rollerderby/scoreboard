@@ -38,6 +38,7 @@ import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
+import com.carolinarollergirls.scoreboard.core.Twitter;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements ScoreBoard {
     public ScoreBoardImpl() {
@@ -62,6 +63,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         addWriteProtection(Child.PENALTY_CODES);
         add(Child.MEDIA, new MediaImpl(this, ScoreBoardManager.getDefaultPath()));
         addWriteProtection(Child.MEDIA);
+        add(Child.TWITTER, new TwitterImpl(this));
+        addWriteProtection(Child.TWITTER);
         getTeam(Team.ID_1);
         getTeam(Team.ID_2);
         addWriteProtection(Child.TEAM);
@@ -163,6 +166,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             if (prop == Child.CLOCK) { return new ClockImpl(this, id); }
             if (prop == Child.TEAM) { return new TeamImpl(this, id); }
             if (prop == Child.PREPARED_TEAM) { return new PreparedTeamImpl(this, id); }
+            if (prop == Child.TWITTER) { return new TwitterImpl(this); }
             if (prop == Period.NChild.JAM) { return new JamImpl(this, Integer.parseInt(id)); }
             if (prop == NChild.PERIOD) {
                 int num = Integer.parseInt(id);
@@ -215,6 +219,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             requestBatchStart();
             //Button may have a label from autosave but undo will not work after restart
             Button.UNDO.setLabel(ACTION_NONE);
+            ((Twitter)get(Child.TWITTER, "")).postAutosaveUpdate();
             requestBatchEnd();
         }
     }
