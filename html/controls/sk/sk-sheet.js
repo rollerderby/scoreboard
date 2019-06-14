@@ -268,6 +268,9 @@ function setupTripEditor(p, j, teamId, t) {
 		}
 		tripEditor.dialog('close');
 	});
+	tripEditor.find('#insert_before').unbind("click").click(function() {
+		WS.Set(prefix+'InsertBefore', true);
+	});
 	tripEditor.find('#remove').click(function() {
 		WS.Set(prefix+'Remove', true);
 		tripEditor.dialog('close');
@@ -294,13 +297,14 @@ function prepareTripEditor() {
 
 		tripEditor.append($('<table>')
 				.append($('<tr>')
-						.append($('<td colspan="2">')
+						.append($('<td colspan="3">')
 								.append($('<input type="number" min="0">').attr('id', 'score'))
 								.append($('<input type="checkbox">').attr('id', 'afterSP'))
 								.append($('<span>').addClass('Infotext').text('SP in this or prior trip'))))
-				.append($('<tr>')
-						.append($('<td width="50%">').append($('<button>').attr('id','submit').text('Submit')))
-						.append($('<td width="50%">').append($('<button>').attr('id','remove').text('Remove')))));
+				.append($('<tr class="buttons">')
+						.append($('<td width="30%">').append($('<button>').attr('id','submit').text('Submit')))
+						.append($('<td width="40%">').append($('<button>').attr('id','insert_before').text('Insert Before')))
+						.append($('<td width="30%">').append($('<button>').attr('id','remove').text('Remove')))));
 	}
 }
 

@@ -55,7 +55,16 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     
     @Override
     public void execute(CommandProperty prop) {
-        if (prop == Command.REMOVE) { unlink(); }
+        switch ((Command)prop) {
+            case REMOVE:
+                unlink();
+                break;
+            case INSERT_BEFORE:
+                requestBatchStart();
+                parent.add(ownType, new ScoringTripImpl((TeamJam)parent, getNumber()));
+                requestBatchEnd();
+                break;
+        }
     }
     
     @Override
