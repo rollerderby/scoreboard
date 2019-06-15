@@ -11,10 +11,12 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
+import com.carolinarollergirls.scoreboard.core.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Skater.NChild;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.impl.PreparedTeamImpl.PreparedTeamSkaterImpl;
 import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 
@@ -208,5 +210,17 @@ public class SkaterImplTests {
         assertEquals(Role.INELIGIBLE, skater.getBaseRole());
         penalty.unlink();
         assertEquals(Role.BENCH, skater.getBaseRole());
+    }
+
+    @Test
+    public void alt_prepared_skater_not_in_game() {
+        PreparedTeamSkater pts = new PreparedTeamSkaterImpl(null, "1234");
+        pts.set(PreparedTeamSkater.Value.NUMBER, "1");
+        pts.set(PreparedTeamSkater.Value.NAME, "Uno");
+        pts.set(PreparedTeamSkater.Value.FLAGS, "ALT");
+        skater = new SkaterImpl(team, pts);
+
+        assertEquals(Role.NOT_IN_GAME, skater.getBaseRole());
+        assertEquals(Role.NOT_IN_GAME, skater.getRole());
     }
 }

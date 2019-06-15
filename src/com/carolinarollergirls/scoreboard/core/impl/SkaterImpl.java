@@ -39,10 +39,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
         super(t, Value.ID, pts.getId(),
                 Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
         team = t;
+        initialize();
         setName((String)pts.get(PreparedTeamSkater.Value.NAME));
         setNumber((String)pts.get(PreparedTeamSkater.Value.NUMBER));
         setFlags((String)pts.get(PreparedTeamSkater.Value.FLAGS));
-        initialize();
     }
     private void initialize() {
         set(Value.BASE_ROLE, Role.BENCH);
