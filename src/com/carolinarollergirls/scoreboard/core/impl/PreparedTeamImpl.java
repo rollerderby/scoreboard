@@ -29,7 +29,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl implements Pre
       return null;
     }
   }
-  public class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl implements PreparedTeamSkater {
+  public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl implements PreparedTeamSkater {
     PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
       super(parent, Value.ID, id, PreparedTeam.Child.SKATER, PreparedTeamSkater.class, Value.class);
     }
