@@ -30,6 +30,7 @@ body:not(.AllowSelect) .SK {
 .SK.Period .Narrow, .Period .SmallHead { width: 14px; }
 .SK.Period #head { font-size: 200%; }
 .SK.Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; }
+.SK.Period .GameTotal, .SK.Period .JamTotal,.SK.Period .Lost, .SK.Period .Trip2 { border-left-width: 2px; }
 .SK.Period .GameTotal { background-color: #d3ecb6; }
 
 #TripEditor input[type="number"] { width: 50px; }
