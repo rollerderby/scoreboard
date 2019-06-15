@@ -92,6 +92,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         } else if (prop == Value.NO_MORE_JAM) {
             if (isInJam() || !isInPeriod()) { return false; }
             if (!getRulesets().getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { return false; }
+            if (getClock(Clock.ID_PERIOD).isTimeAtStart()) { return false; }
             Jam lastJam = getCurrentPeriod().getCurrentJam();
             long pcRemaining = getClock(Clock.ID_PERIOD).getMaximumTime() - lastJam.getPeriodClockElapsedEnd();
             if (pcRemaining >= getRulesets().getLong(Rule.LINEUP_DURATION)) { return false; }

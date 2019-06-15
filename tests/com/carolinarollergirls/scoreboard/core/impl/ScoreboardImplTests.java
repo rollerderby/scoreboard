@@ -1382,6 +1382,34 @@ public class ScoreboardImplTests {
     }
 
     @Test
+    public void testP2StartLineupAfter() {
+        // jam ended after 30s mark, no more jams.
+        assertTrue(pc.isCountDirectionDown());
+        sb.startJam();
+        pc.setTime(2000);
+        sb.stopJamTO();
+        assertTrue((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
+        assertTrue(pc.isRunning());
+        assertTrue(lc.isRunning());
+        assertFalse(ic.isRunning());
+
+        // End of jam, start intermission.
+        advance(2000);
+        assertFalse(pc.isRunning());
+        assertFalse(lc.isRunning());
+        assertTrue(ic.isRunning());
+
+        // End intermission, go to lineup.
+        ic.setTime(1000);
+        advance(2000);
+        sb.stopJamTO();
+        assertFalse((Boolean)sb.get(ScoreBoard.Value.NO_MORE_JAM));
+        assertFalse(pc.isRunning());
+        assertTrue(lc.isRunning());
+        assertFalse(ic.isRunning());
+    }
+
+    @Test
     public void testTimeoutsThatDontAlwaysStopPc() {
         sb.getRulesets().set(Rule.STOP_PC_ON_TO, "false");
         sb.getRulesets().set(Rule.STOP_PC_ON_OTO, "false");
