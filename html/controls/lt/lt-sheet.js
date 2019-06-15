@@ -25,6 +25,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 				'ScoreBoard.Jam(*).TeamJam(' + teamId + ').StarPass',
 				'ScoreBoard.Jam(*).TeamJam(' + teamId + ').Fielding(*)']);
 		WS.Register(['ScoreBoard.Period(*).Number', 'ScoreBoard.Period(*).Jam(*).Number',
+				'ScoreBoard.Period(*).Jam(*).StarPass',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').NoPivot',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(*)',
