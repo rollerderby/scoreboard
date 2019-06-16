@@ -22,9 +22,13 @@ div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: 
 .LT.Period thead td { font-size: 95%; background-color: #cccccc; color: #333333; }
 .LT.Period td { text-align: center; vertical-align: middle; }
 .LT.Period tbody tr { background-color: #FFF; }
-.LT.Period tbody tr:nth-child(4n+0), .LT.Period tr:nth-child(4n-1) { background-color: #e7f3ff; }
+.LT.Period.Forewards tbody tr:nth-child(even) { background-color: #e7f3ff; }
+.LT.Period.Backwards tbody tr:nth-last-child(even) { background-color: #e7f3ff; }
 .LT.Period tbody tr .Darker { background-color: #e7f3ff; }
-.LT.Period tbody tr:nth-child(4n+0) .Darker, .LT.Period tr:nth-child(4n-1) .Darker { background-color: #cee7ff; }
+.LT.Period.Forewards tbody tr:nth-child(even) .Darker { background-color: #cee7ff; }
+.LT.Period.Backwards tbody tr:nth-last-child(even) .Darker { background-color: #cee7ff; }
+.LT.Period.Backwards tr.SP td { border-bottom-style: dotted; }
+.LT.Period.Forwards tr.SP td { border-top-style: dotted; }
 .LT.Period tbody .Box { background-color: #b6daff; }
 .LT.Period .JamNumber { width: 30px;}
 .LT.Period .NP { width: 25px; }

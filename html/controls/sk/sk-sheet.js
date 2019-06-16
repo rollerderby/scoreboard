@@ -74,7 +74,15 @@ function prepareSkSheetTable(element, teamId, mode) {
 		var jamRow = je[0];
 		var spRow = je[1];
 		if (k == prefix + 'StarPass') {
-			spRow.toggleClass('Hide', !isTrue(v));
+			if (isTrue(v)) {
+				if (mode == 'operator') {
+					jamRow.before(spRow);
+				} else {
+					jamRow.after(spRow);
+				}
+			} else {
+				spRow.detach();
+			}
 		}
 
 		// Everything after here is team specific.
@@ -186,9 +194,9 @@ function prepareSkSheetTable(element, teamId, mode) {
 			var table = $('<table cellpadding="0" cellspacing="0" border="1">')
 				.addClass('SK Period').attr('nr', nr);
 			if (mode == 'operator') {
-				table.prependTo(element);
+				table.prependTo(element).addClass("Backwards");
 			} else {
-				table.appendTo(element);
+				table.appendTo(element).addClass("Forwards");
 			}
 			if (mode != 'operator') {
 				var header = $('<thead><tr>').appendTo(table);
@@ -237,11 +245,11 @@ function prepareSkSheetTable(element, teamId, mode) {
 				$('<td>').addClass('GameTotal').appendTo(jamRow);
 			}
 
-			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
+			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP');
 			if (mode == 'operator') {
-				table.prepend(jamRow).prepend(spRow);
+				table.prepend(jamRow)
 			} else {
-				table.append(jamRow).append(spRow);
+				table.append(jamRow);
 			}
 			jamElements[p][nr] = [jamRow, spRow];
 
