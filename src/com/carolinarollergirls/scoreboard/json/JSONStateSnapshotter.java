@@ -22,7 +22,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
     }
 
     @Override
-    public void sendUpdates(Map<String, Object> state, Set<String> changed) {
+    public synchronized void sendUpdates(Map<String, Object> state, Set<String> changed) {
         if (state.get("ScoreBoard.CurrentPeriodNumber") != "0") {
             // If the jam has just ended or the score is now official, write out a file.
             if ((inJam && !bool(state.get("ScoreBoard.Clock(Jam).Running")))

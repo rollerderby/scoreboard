@@ -21,6 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
+import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
@@ -49,9 +50,18 @@ public class ScoreBoardManager {
         registerScoreBoardViewer(new ScoreBoardMetricsCollector(scoreBoard).register());
         registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
 
-        //FIXME - not the best way to load autosave doc.
-        scoreBoard.getXmlScoreBoard().load();
+        File autoSaveDir = new File(getDefaultPath(), "config/autosave");
+        if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
+            try {
+                printMessage("No autosave to load from, using default.json");
+                AutoSaveJSONState.loadFile(scoreBoard, new File(getDefaultPath(), "config/default.json"));
+            } catch (Exception e) {
+              doExit("Error loading default configuration", e);
+            }
+        }
         scoreBoard.postAutosaveUpdate();
+
+        new AutoSaveJSONState(jsm, autoSaveDir);
     }
 
     public static void stop() {
