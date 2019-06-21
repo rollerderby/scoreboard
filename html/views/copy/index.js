@@ -1,9 +1,4 @@
 (function () {
-	$('head').append('<link rel="stylesheet" href="roster-sheet.css" type="text/css" />');
-	$('head').append('<link rel="stylesheet" href="/controls/sk/sk-sheet.css" type="text/css" />');
-	$('head').append('<link rel="stylesheet" href="/controls/plt/plt-input.css" type="text/css" />');
-	$('head').append('<link rel="stylesheet" href="/controls/lt/lt-sheet.css" type="text/css" />');
-
 	prepareRosterSheetTable($('#roster1'), 1, 'copyToStatsbook');
 	prepareRosterSheetTable($('#roster2'), 2, 'copyToStatsbook');
 

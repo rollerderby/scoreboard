@@ -296,4 +296,4 @@ function setDefinition(key, value, inherited) {
 		def.find(".value .override").show();
 	}
 }
-//# sourceURL=controls\rulesets.js
+//# sourceURL=settings\rulesets\index.js

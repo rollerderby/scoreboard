@@ -9,9 +9,9 @@ $(function() {
     WS.Set("ScoreBoard.Twitter.AuthUrl", "");
     WS.Register("ScoreBoard.Twitter.AuthUrl", function(k, v) {
       if (v == "") {
-        window.location.replace("/controls/twitter.html");
+        window.location.replace("/settings/twitter");
       }
     });
   });
 });
-//# sourceURL=controls\twitter_auth.js
+//# sourceURL=settings\twitter\auth.js

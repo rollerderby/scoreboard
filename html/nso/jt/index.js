@@ -74,4 +74,4 @@ function setupPeriodTimePage() {
 function toTime(k, v) {
 	return _timeConversions.msToMinSecNoZero(v);
 }
-//# sourceURL=controls\mobile.js
+//# sourceURL=controls\jt\index.js

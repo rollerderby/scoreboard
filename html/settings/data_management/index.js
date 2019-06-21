@@ -157,4 +157,4 @@ function createUploadMediaDialog(format, type) {
 	}).change();
 }
 
-//# sourceURL=controls\media_management.js
+//# sourceURL=settings\data_management\index.js
