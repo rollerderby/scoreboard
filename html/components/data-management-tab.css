@@ -1,0 +1,6 @@
+#DataManagement table { width: 100%; border-spacing: 1px 0px; }
+#DataManagement table tr>td { text-align: center; background: #eee; }
+#DataManagement table tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
+#DataManagement table tr.Content>td:first-of-type { border-radius: 0px 0px 0px 12px; }
+#DataManagement table tr.Content>td:last-of-type { border-radius: 0px 0px 12px 0px; }
+#DataManagement table tr.Content>td:only-of-type { border-radius: 0px 0px 12px 12px; }

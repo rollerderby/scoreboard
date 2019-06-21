@@ -87,5 +87,18 @@ _crgUtils = {
 		});
 	},
 
+	createRowTable: function(n, r) {
+		var table = $("<table>").css("width", "100%").addClass("RowTable");
+		var w = (100 / n) + "%";
+		r = r || 1;
+		while (0 < r--) {
+			var count = n;
+			var row = $("<tr>").appendTo(table);
+			while (0 < count--)
+				$("<td>").css("width", w).appendTo(row);
+		}
+		return table;
+	}
+
 };
-//# sourceURL=utils.js
+//# sourceURL=javascript\utils.js
