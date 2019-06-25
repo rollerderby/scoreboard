@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html><head><title>CRG ScoreBoard: Media Management</title>
+<html><head><title>CRG ScoreBoard: Up-/Download</title>
 
 <!--
  Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
@@ -11,70 +11,17 @@
 -->
 
 <script type="text/javascript" src="/external/jquery/jquery.js"></script>
-
 <script type="text/javascript" src="/json/core.js"></script>
+<script type="text/javascript" src="/javascript/utils.js"></script>
+<script type="text/javascript" src="/components/data-management-tab.js"></script>
+
+<link rel="stylesheet" href="/components/data-management-tab.css" type="text/css" />
 
 </head>
 
 <body>
 
 <div id="tabsDiv">
-	<ul id="tabBar">
-		<li><a href="#images">Image</a></li>
-		<li><a href="#videos">Video</a></li>
-		<li><a href="#customhtml">Custom Page</a></li>
-	</ul>
-</div>
-
-<div class="TabTemplate">
-	<div class="Type"></div>
-</div>
-
-<table class="TypeTemplate Show">
-	<col/><col/><col/><col/>
-	<thead>
-		<tr class="Type">
-			<th colspan="4" class="Type">
-				<button class="Show">Show</button>
-				<button class="Hide">Hide</button>
-				<a class="Type">
-					<span class="Label">Type:</span>
-					<span class="Type"></span>
-				</a>
-				<button class="Upload Right">Upload</button>
-			</th>
-		</tr>
-		<tr class="Controls">
-			<th class="Remove"></th>
-			<th class="Name">Name</th>
-			<th class="Src">Source</th>
-			<th class="Preview"></th>
-		</tr>
-	</thead>
-	<tbody>
-		<tr class="ItemTemplate">
-			<td class="Remove"><button class="Remove">Remove</button></td>
-			<td class="Name"><input class="Name" type="text"/></td>
-			<td class="Src"><span class="Src"/></td>
-			<td class="Preview"></td>
-		</tr>
-	</tbody>
-</table>
-
-<div class="RemoveMediaDialog DialogTemplate">
-	<p>Media file : <a class="File"></a></p>
-	<p class="Warning">
-		This will delete the media file from your system.
-		You cannot undo this operation.
-	</p>
-	<p class="Confirm">Are you sure?</p>
-	<p class="Status"></p>
-</div>
-
-<div class="UploadMediaDialog DialogTemplate">
-	<p><div class="Upload"></div></p>
-	<p><a class="File">File:</a><input class="File" type="file" multiple/></p>
-	<p><a class="Status"></a></p>
 </div>
 
 </body>

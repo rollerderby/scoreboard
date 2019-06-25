@@ -16,7 +16,7 @@ $(function() {
 	createTeamTimeTab(createTab("Team/Time", "TeamTimeTab"));
 	createScoreBoardViewTab(createTab("ScoreBoard View", "ScoreBoardViewTab"));
 	createTeamsTab(createTab("Teams", "TeamsTab"));
-	createSaveLoadTab(createTab("Save/Load", "SaveLoadTab"));
+	createDataManagementTab(createTab("Up-/Download", "DataManagementTab"));
 	// Only connect after any registrations from the above are in place.
 	// This avoids repeating work on the initial load.
 	WS.AutoRegister();
