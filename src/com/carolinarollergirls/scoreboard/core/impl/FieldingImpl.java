@@ -88,7 +88,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
 
     @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == Child.BOX_TRIP) { 
+        if (prop == Child.BOX_TRIP) {
             if (((BoxTrip)item).isCurrent()) {
                 set(Value.CURRENT_BOX_TRIP, item);
             }
@@ -104,16 +104,18 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             updateBoxTripSymbols();
         }
     }
-    
+
     @Override
     public void execute(CommandProperty prop) {
         if (prop == Command.ADD_BOX_TRIP && getSkater() != null) {
+            requestBatchStart();
             BoxTrip bt = new BoxTripImpl(this);
             if (!isCurrent()) {
-                bt.end();
+                bt.endPastTrip();
             }
             getTeamJam().getTeam().add(Team.Child.BOX_TRIP, bt);
             add(Child.BOX_TRIP, bt);
+            requestBatchEnd();
         }
     }
 
@@ -124,8 +126,9 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
 
     @Override
     public boolean isCurrent() {
-        return (teamJam.isRunningOrUpcoming() && !teamJam.getTeam().hasFieldingAdvancePending()) 
-                || teamJam.isRunningOrEnded() && teamJam.getTeam().hasFieldingAdvancePending(); }
+        return (teamJam.isRunningOrUpcoming() && !teamJam.getTeam().hasFieldingAdvancePending())
+               || teamJam.isRunningOrEnded() && teamJam.getTeam().hasFieldingAdvancePending();
+    }
 
     @Override
     public Role getCurrentRole() { return getPosition().getFloorPosition().getRole(teamJam); }
@@ -152,7 +155,8 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             public int compare(BoxTrip b1, BoxTrip b2) {
                 if (b1 == b2) { return 0; }
                 if (b1 == null) { return 1; }
-                return b1.compareTo(b2); }
+                return b1.compareTo(b2);
+            }
         });
         StringBuilder beforeSP = new StringBuilder();
         StringBuilder afterSP = new StringBuilder();
@@ -185,11 +189,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 }
             }
             if (this == trip.getEndFielding()) {
-                if (trip.endedBetweenJams()) {
-                    typeJam = 0;
-                    typeBeforeSP = 0;
-                    typeAfterSP = 0;
-                } else if (trip.endedAfterSP()) {
+                if (trip.endedAfterSP()) {
                     typeJam += 3;
                     typeAfterSP += 3;
                 } else {

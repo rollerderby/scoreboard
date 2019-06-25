@@ -362,11 +362,9 @@ function prepareFieldingEditor(teamId) {
 					+ (afterSP?' after SP':''));
 		}
 		if (['EndJamNumber', 'EndBetweenJams', 'EndAfterSP'].includes(key)) {
-			var between = isTrue(WS.state[prefix+'EndBetweenJams']);
 			var afterSP = isTrue(WS.state[prefix+'EndAfterSP']);
 			var jam = WS.state[prefix+'EndJamNumber'];
-			row.find('.tripEndText').text((between?' Before ':' ') + (jam == 0 ? 'ongoing' : 'Jam ' + jam) 
-					+ (afterSP?' after SP ':' '));
+			row.find('.tripEndText').text((jam == 0 ? 'ongoing' : 'Jam ' + jam) + (afterSP?' after SP ':' '));
 		}
 		if (key == 'Fielding') {
 			row.addClass(v);

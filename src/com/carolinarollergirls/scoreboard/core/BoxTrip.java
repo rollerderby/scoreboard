@@ -10,6 +10,7 @@ public interface BoxTrip extends ScoreBoardEventProvider {
     public int compareTo(BoxTrip other);
     
     public void end();
+    public void endPastTrip();
     
     public Team getTeam();
     
@@ -19,7 +20,6 @@ public interface BoxTrip extends ScoreBoardEventProvider {
     public boolean startedBetweenJams();
     public boolean startedAfterSP();
     public Fielding getEndFielding();
-    public boolean endedBetweenJams();
     public boolean endedAfterSP();
     
     public enum Value implements PermanentProperty {
@@ -32,7 +32,6 @@ public interface BoxTrip extends ScoreBoardEventProvider {
         START_AFTER_S_P(Boolean.class, false),
         END_FIELDING(Fielding.class, null),
         END_JAM_NUMBER(Integer.class, 0),
-        END_BETWEEN_JAMS(Boolean.class, false),
         END_AFTER_S_P(Boolean.class, false),
         WALLTIME_START(Long.class, 0L),
         WALLTIME_END(Long.class, 0L),
