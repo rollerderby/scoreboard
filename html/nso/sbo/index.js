@@ -14,6 +14,7 @@ $.fx.interval = 33;
 
 $(function() {
 	createTeamTimeTab(createTab("Team/Time", "TeamTimeTab"));
+	createRulesetsTab(createTab('Rulesets', 'RulesetsTab'))
 	createScoreBoardViewTab(createTab("ScoreBoard View", "ScoreBoardViewTab"));
 	createTeamsTab(createTab("Teams", "TeamsTab"));
 	createDataManagementTab(createTab("Up-/Download", "DataManagementTab"));
