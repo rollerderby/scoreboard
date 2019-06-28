@@ -1,3 +1,4 @@
+#Teams { width: 100%; }
 #Teams>tbody>tr>td { text-align: center; }
 #Teams>tbody>tr.Selection>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
 #Teams>tbody>tr.Selection.NoneSelected>td { border-radius: 12px; }

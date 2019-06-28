@@ -1,3 +1,4 @@
+#ScoreBoardView>table { width: 100%; border-spacing: 0px; }
 #ScoreBoardView.UsePreview>tbody>tr.View { display: none; }
 #ScoreBoardView:not(.UsePreview)>tbody>tr.Preview { display: none; }
 #ScoreBoardView>tbody>tr>td { text-align: center; width: 100%; background: #eee; }
