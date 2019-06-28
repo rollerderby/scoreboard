@@ -5,6 +5,7 @@ function createDataManagementTab(tab) {
 	createTab('Image', 'images');
 	createTab('Video', 'videos');
 	createTab('Custom Page', 'customhtml');
+	createGameDataTab(createTab('Game Data', 'gameData'));
 	createSaveLoadTab(createTab('ScoreBoard Data', 'saveLoad'));
 	tab.tabs();
 
@@ -176,6 +177,18 @@ function createDataManagementTab(tab) {
 			}
 			div.dialog("option", "buttons", buttonsUploadClose);
 		}).change();
+	}
+	
+	function createGameDataTab(tab) {
+		var iframe = $('<iframe src="/game-data">').attr('id', 'GameData');
+		tab.append($('<table>')
+				.append($('<td>').addClass('Info').text('To download, right-click and Save - to view JSON, left-click'))
+				.append($('<td>').addClass('Reload').append($('<button>').text('Reload').button().click(function() {
+					iframe.attr('src', '/game-data');
+				}))))
+			.append(iframe);
+		
+		
 	}
 
 	function createSaveLoadTab(tab) {

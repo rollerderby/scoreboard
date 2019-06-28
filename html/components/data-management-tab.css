@@ -1,9 +1,14 @@
-#SaveLoad table { width: 100%; border-spacing: 1px 0px; }
-#SaveLoad table tr>td { text-align: center; background: #eee; }
-#SaveLoad table tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
-#SaveLoad table tr.Content>td:first-of-type { border-radius: 0px 0px 0px 12px; }
-#SaveLoad table tr.Content>td:last-of-type { border-radius: 0px 0px 12px 0px; }
-#SaveLoad table tr.Content>td:only-of-type { border-radius: 0px 0px 12px 12px; }
+#DataManagementTab #saveLoad table { width: 100%; border-spacing: 1px 0px; }
+#DataManagementTab #saveLoad table tr>td { text-align: center; background: #eee; }
+#DataManagementTab #saveLoad table tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
+#DataManagementTab #saveLoad table tr.Content>td:first-of-type { border-radius: 0px 0px 0px 12px; }
+#DataManagementTab #saveLoad table tr.Content>td:last-of-type { border-radius: 0px 0px 12px 0px; }
+#DataManagementTab #saveLoad table tr.Content>td:only-of-type { border-radius: 0px 0px 12px 12px; }
+
+#DataManagementTab #GameData { width: 100%; height: 70vh; }
+#DataManagementTab #gameData table { background: #ddd; font-size: 125%; font-weight: bold; } 
+#DataManagementTab #gameData .Info { width: 90%; }
+#DataManagementTab #gameData .Reload { width: 10%; text-align: right; }
 
 /* Tab divs */
 #DataManagementTab #tabsDiv>div { padding: 0px; }
