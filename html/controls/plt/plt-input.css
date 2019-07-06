@@ -49,7 +49,7 @@ body:not(.AllowSelect) .PLT {
 .PLT.Team .Warn2, .PLT.Team .Warn2 .Box0 { background-color: #ff9010; }
 .PLT.Team .Warn2:nth-child(4n+0), .PLT.Team .Warn2:nth-child(4n-1),
 .PLT.Team .Warn2:nth-child(4n+0) .Box0, .PLT.Team .Warn2:nth-child(4n-1) .Box0 { background-color: #e87800; }
-.PLT.Team .Warn3, .PLT.Team .Warn3 .Box0 { background-color: #ff2020; }
+.PLT.Team .Warn3, .PLT.Team .Warn3 .Box0 { background-color: #ff2828; }
 .PLT.Team .Warn3:nth-child(4n+0), .PLT.Team .Warn3:nth-child(4n-1),
 .PLT.Team .Warn3:nth-child(4n+0) .Box0, .PLT.Team .Warn3:nth-child(4n-1) .Box0 { background-color: #e80808; }
 
