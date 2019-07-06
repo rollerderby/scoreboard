@@ -17,7 +17,7 @@ $(function() {
 	createRulesetsTab(createTab('Rulesets', 'RulesetsTab'))
 	createScoreBoardSettingsTab(createTab("Settings", "ScoreBoardSettingsTab"));
 	createTeamsTab(createTab("Teams", "TeamsTab"));
-	createDataManagementTab(createTab("Up-/Download", "DataManagementTab"));
+	createDataManagementTab(createTab("Up/Download", "DataManagementTab"));
 	// Only connect after any registrations from the above are in place.
 	// This avoids repeating work on the initial load.
 	WS.AutoRegister();
