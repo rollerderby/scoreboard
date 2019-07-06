@@ -34,8 +34,8 @@ function createDataManagementTab(tab) {
 			.append($('<tr>').addClass('Controls')
 				.append($('<th>').addClass('Remove'))
 				.append($('<th>').addClass('Name').text('Name'))
-				.append($('<th>').addClass('Src').text('Source'))
-				.append($('<th>').addClass('Preview'))))
+				.append($('<th>').addClass('Preview'))
+				.append($('<th>').addClass('Download'))))
 		.append($('<tbody>'));
 	
 	WS.Register("ScoreBoard.Media.Format(*).Type(*)" , function(k, v) {
@@ -59,8 +59,8 @@ function createDataManagementTab(tab) {
 	var itemTemplate = $('<tr>').addClass('Item')
 		.append($('<td>').addClass('Remove').append($('<button>').addClass('Remove').text('Remove').button()))
 		.append($('<td>').addClass('Name').append($('<input type="text">').addClass('Name')))
-		.append($('<td>').addClass('Src').append($('<span>').addClass('Src')))
-		.append($('<td>').addClass('Preview'));
+		.append($('<td>').addClass('Preview'))
+		.append($('<td>').addClass('Download').append($('<a download>').addClass('Download').text('Download').button()));
 	
 	WS.Register("ScoreBoard.Media.Format(*).Type(*).File(*).Name", function(k, v) {
 		var table = tab.find(">#"+k.Format+">div.Type>table.Type[type="+k.Type+"]");
@@ -73,7 +73,7 @@ function createDataManagementTab(tab) {
 		newRow.find("td.Name>input").val(v).change(function(e) {
 			WS.Set("ScoreBoard.Media.Format("+k.Format+").Type("+k.Type+").File("+k.File+").Name", e.target.value)
 		});
-		newRow.find("td.Src>span").text(k.File);
+		newRow.find("td.Download>a").attr('href', "/"+k.Format+"/"+k.Type+"/" + k.File);
 		var previewElement = "<iframe>";
 		if (k.Format == "images") {
 			previewElement = "<img>";
@@ -199,8 +199,6 @@ function createDataManagementTab(tab) {
 			.appendTo($("<td>").appendTo($("<tr>").appendTo(table)));
 		$("<tr>").addClass("Name").appendTo(sbDownloadTable)
 			.append("<td colspan='4'>Download ScoreBoard JSON</td>");
-		$("<tr>").addClass("Instruction").appendTo(sbDownloadTable)
-			.append("<td colspan='4'>To download, right-click and Save - to view JSON, left-click</td>");
 		var contentRow = $("<tr>").addClass("Content").appendTo(sbDownloadTable);
 	
 		var links = [
@@ -208,9 +206,9 @@ function createDataManagementTab(tab) {
 		{ name: "Teams", url: "teams.json?path=ScoreBoard.PreparedTeam" }
 		];
 		$.each( links, function() {
-			$("<td><a/></td>").appendTo(contentRow)
-				.children("a").html(this.name)
-				.attr({ href: "/SaveJSON/"+this.url, target: "_blank" });
+			$("<td><a download/></td>").appendTo(contentRow)
+				.children("a").text(this.name).button()
+				.attr('href', '/SaveJSON/'+this.url);
 		});
 		var allDataA = contentRow.find(">td:eq(0)>a");
 		var updateAllUrl = function() {
