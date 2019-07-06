@@ -122,14 +122,6 @@ public class JettyServletScoreBoardController {
         c.addFilter(mf, "/*", 1);
         c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), "html")).getPath());
 
-        sh = new ServletHolder("game-data", new DefaultServlet());
-        sh.setInitParameter("cacheControl", "no-cache");
-        sh.setInitParameter("etags", "true");
-        sh.setInitParameter("resourceBase", (new File(ScoreBoardManager.getDefaultPath(), "game-data")).getPath());
-        sh.setInitParameter("dirAllowed", "true");
-        sh.setInitParameter("pathInfoOnly", "true");
-        c.addServlet(sh, "/game-data/*");
-        
         HttpServlet sjs = new SaveJsonScoreBoard(jsm);
         c.addServlet(new ServletHolder(sjs), "/SaveJSON/*");
 

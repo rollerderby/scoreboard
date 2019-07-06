@@ -52,7 +52,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
         + " P" + period
         + ".json";
         name = name.replaceAll("[^a-zA-Z0-9\\.\\- ]", "_");
-        File file = new File(new File(directory, "game-data"), name);
+        File file = new File(new File(directory, "html/game-data/json"), name);
         file.getParentFile().mkdirs();
 
         // The state includes secrets (Twitter auth) and
