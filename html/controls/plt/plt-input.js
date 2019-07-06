@@ -157,6 +157,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 					p++;
 				}
 			}
+			tbody.find('.Skater.Penalty[id=' + k.Skater + ']').attr('role', v);
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Role').removeClass('OnTrack');
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .'+v).addClass('OnTrack');
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Number')
@@ -292,7 +293,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			return;
 		}
 
-		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).attr('number', number);
+		var p = $('<tr>').addClass('Skater Penalty').attr('id', id).attr('number', number).attr('role', role);
 		var j = $('<tr>').addClass('Skater Jam').attr('id', id);
 
 		if (mode == 'lt' || mode == 'plt') {
