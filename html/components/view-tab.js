@@ -119,7 +119,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.add(mediaSelect("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_Video)", "videos", "fullscreen", "Video"))
 		.attr("ApplyPreview", "Video");
 	var customPageViewSelect = $("<label>Custom Page View: </label>")
-		.add(mediaSelect("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)", "customhtml", "fullscreen", "Page"))
+		.add(mediaSelect("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CustomHtml)", "custom", "view", "Page"))
 		.attr("ApplyPreview", "CustomHtml");
 
 	var optionsTable = $("<table/>")

@@ -4,7 +4,7 @@ function createDataManagementTab(tab) {
 
 	createTab('Image', 'images');
 	createTab('Video', 'videos');
-	createTab('Custom Page', 'customhtml');
+	createTab('Custom Screens', 'custom');
 	createGameDataTab(createTab('Game Data', 'gameData'));
 	createSaveLoadTab(createTab('ScoreBoard Data', 'saveLoad'));
 	tab.tabs();
