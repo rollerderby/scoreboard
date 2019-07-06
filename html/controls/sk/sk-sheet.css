@@ -22,9 +22,13 @@ body:not(.AllowSelect) .SK {
 .SK.Period .SmallHead>div { font-size: 75%; transform: rotate(270deg); }
 .SK.Period td { text-align: center; vertical-align: middle; }
 .SK.Period tr { background-color: #FFF; }
-.SK.Period tr:nth-child(4n+0), .SK.Period tr:nth-child(4n-1) { background-color: #e9f6da; }
+.SK.Period.Forwards tr:nth-child(even) { background-color: #e9f6da; }
+.SK.Period.Backwards tr:nth-last-child(even) { background-color: #e9f6da; }
 .SK.Period tr .Darker { background-color: #e9f6da; }
-.SK.Period tr:nth-child(4n+0) .Darker, .SK.Period tr:nth-child(4n-1) .Darker { background-color: #d3ecb6; }
+.SK.Period.Forwards tr:nth-child(even) .Darker { background-color: #d3ecb6; }
+.SK.Period.Backwards tr:nth-last-child(even) .Darker { background-color: #d3ecb6; }
+.SK.Period.Backwards tr.SP td { border-bottom-style: dotted; }
+.SK.Period.Forwards tr.SP td { border-top-style: dotted; }
 .SK.Period .JamNumber { width: 30px; }
 .SK.Period .Jammer { width: 50px; }
 .SK.Period .Narrow, .Period .SmallHead { width: 14px; }

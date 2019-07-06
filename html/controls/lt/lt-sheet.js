@@ -84,7 +84,15 @@ function prepareLtSheetTable(element, teamId, mode) {
 		var jamRow = je[0];
 		var spRow = je[1];
 		if (k == prefix + 'StarPass') {
-			spRow.toggleClass('Hide', !isTrue(v));
+			if (isTrue(v)) {
+				if (mode == 'operator') {
+					jamRow.before(spRow);
+				} else {
+					jamRow.after(spRow);
+				}
+			} else {
+				spRow.detach();
+			}
 		}
 
 		// Everything after here is team specific.
@@ -124,9 +132,9 @@ function prepareLtSheetTable(element, teamId, mode) {
 			var table = $('<table cellpadding="0" cellspacing="0" border="1">')
 				.addClass('Period LT').attr('nr', nr);
 			if (mode == 'plt') {
-				table.prependTo(element);
+				table.prependTo(element).addClass("Backwards");
 			} else {
-				table.appendTo(element);
+				table.appendTo(element).addClass("Forewards");
 			}
 			if (mode != 'plt') {
 				$('<div class="LT">').html('<span class ="Team">' + teamName + '</span> P' + nr)
@@ -167,7 +175,6 @@ function prepareLtSheetTable(element, teamId, mode) {
 
 				});
 				jamRow.prependTo(body);
-				$('<tr>').addClass('Hide').prependTo(body); // even number of rows needed for coloring to fit
 			}
 		}
 	}
@@ -199,7 +206,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 				}
 			});
 
-			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP Hide');
+			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP');
 			spRow.children('.Jammer').insertBefore(spRow.children('.Blocker1'));
 			spRow.children('.BoxJammer').insertAfter(spRow.children('.Jammer'));
 			spRow.children('.BoxJammer_3').insertAfter(spRow.children('.Jammer'));
@@ -213,9 +220,9 @@ function prepareLtSheetTable(element, teamId, mode) {
 			jamElements[p][nr] = [jamRow, spRow];
 
 			if (mode=='plt') {
-				table.find('#upcoming').after(jamRow).after(spRow);
+				table.find('#upcoming').after(jamRow);
 			} else {
-				table.append(jamRow).append(spRow);
+				table.append(jamRow);
 			}
 		}
 	}
