@@ -69,25 +69,11 @@ public class LoadJsonScoreBoard extends HttpServlet {
     }
 
     protected void handleJSON(HttpServletRequest request, HttpServletResponse response, JSONObject json) throws IOException {
-        List<ScoreBoardJSONSetter.JSONSet> jsl = new ArrayList<>();
-
-        JSONObject state = json.getJSONObject("state");
-        for (String key: state.keySet()) {
-            Object value = state.get(key);
-            String v;
-            if (value == JSONObject.NULL) {
-                v = null;
-            } else {
-                v = value.toString();
-            }
-            jsl.add(new ScoreBoardJSONSetter.JSONSet(key, v, Flag.FROM_AUTOSAVE));
-        }
-
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
             scoreBoard.reset();
-            ScoreBoardJSONSetter.set(scoreBoard, jsl);
+            ScoreBoardJSONSetter.set(scoreBoard, json);
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
-            ScoreBoardJSONSetter.set(scoreBoard, jsl);
+            ScoreBoardJSONSetter.set(scoreBoard, json);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge");
         }

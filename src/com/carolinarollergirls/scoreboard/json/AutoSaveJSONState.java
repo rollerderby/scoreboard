@@ -121,35 +121,21 @@ public class AutoSaveJSONState implements Runnable {
                 continue;
             }
             try {
-              loadFile(scoreBoard, f);
+                loadFile(scoreBoard, f);
                 ScoreBoardManager.printMessage("Loaded auto-saved scoreboard from "+f.getPath());
                 return true;
-              } catch ( Exception e ) {
+            } catch ( Exception e ) {
                 ScoreBoardManager.printMessage("Could not load auto-saved scoreboard XML file "+f.getPath()+" : "+e.getMessage());
                 e.printStackTrace();
-              }
             }
+        }
 
         return false;
     }
- 
-    public static void loadFile(ScoreBoard scoreBoard, File f) throws Exception{
-      JSONObject json = new JSONObject(FileUtils.readFileToString(f, "utf-8"));
 
-      List<ScoreBoardJSONSetter.JSONSet> jsl = new ArrayList<>();
-      JSONObject state = json.getJSONObject("state");
-      for (String key: state.keySet()) {
-        Object value = state.get(key);
-        String v;
-        if (value == JSONObject.NULL) {
-          v = null;
-        } else {
-          v = value.toString();
-        }
-        jsl.add(new ScoreBoardJSONSetter.JSONSet(key, v, Flag.FROM_AUTOSAVE));
-      }
-
-      ScoreBoardJSONSetter.set(scoreBoard, jsl);
+    public static void loadFile(ScoreBoard scoreBoard, File f) throws Exception {
+        JSONObject json = new JSONObject(FileUtils.readFileToString(f, "utf-8"));
+        ScoreBoardJSONSetter.set(scoreBoard, json);
     }
 
     private File dir;
