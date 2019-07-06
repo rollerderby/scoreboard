@@ -195,13 +195,17 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 					if (penaltyPeriod == statsbookPeriod) {
 						penaltyBox.text(code);
 					} else {
-						penaltyBox.html('&nbsp;');
+						penaltyBox.html('');  // &nbsp; would confuse the forumla to calculate number of penalties.
 					}
 				} else {
 					penaltyBox.text(code);
 				}
 			} else {
-				penaltyBox.html('&nbsp;');
+				if (mode == 'copyToStatsbook') {
+					penaltyBox.html('');
+				} else {
+					penaltyBox.html('&nbsp;');
+				}
 			}
 		}
 
@@ -216,12 +220,16 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 				if (penaltyPeriod == statsbookPeriod) {
 					jamBox.text(penaltyJam);
 				} else {
-					jamBox.html('&nbsp;');
+					jamBox.html('');
 				}
 			} else if (penaltyJam != null) {
 				jamBox.text(penaltyPeriod + '-' + penaltyJam);
 			} else {
-				jamBox.html('&nbsp');
+				if (mode == 'copyToStatsbook') {
+					jamBox.html('');
+				} else {
+					jamBox.html('&nbsp;');
+				}
 			}
 		}
 

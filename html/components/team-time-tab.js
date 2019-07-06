@@ -492,6 +492,7 @@ function createTeamTable() {
 
 		var names = nameA.add(altNameA);
 		WS.Register(prefix + ".Color(*)", function(k, v) {
+			v = v || "";
 			switch (k.Color) {
 				case "operator_fg":
 					names.css("color", v);

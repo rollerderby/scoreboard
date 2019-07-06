@@ -86,7 +86,8 @@ $(function() {
     if (event.which == 13) // Pressed Enter
       $("p.AddConditionalTweet button.Add").click();
   });
-  WS.Register(["ScoreBoard.Twitter.ConditionalTweet("], function(k, v) {
+	WS.Register(["ScoreBoard.Twitter.ConditionalTweet(*).Condition",
+			"ScoreBoard.Twitter.ConditionalTweet(*).Tweet"], function(k, v) {
     var id = k.ConditionalTweet;
     if (v == null) {
       $("#ConditionalTweets>tbody>tr[conditionId='"+ id +"']").remove();
