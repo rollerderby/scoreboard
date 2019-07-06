@@ -1,5 +1,5 @@
-function createScoreBoardViewTab(tab) {
-	var table = $("<table>").attr("id", "ScoreBoardView").appendTo(tab);
+function createScoreBoardSettingsTab(tab) {
+	var table = $("<table>").attr("id", "ScoreBoardSettings").appendTo(tab);
 	
 	var usePreviewButton = $("<label for='UsePreviewButton'/><input type='checkbox' id='UsePreviewButton'/>");
 	usePreviewButton.last().button();

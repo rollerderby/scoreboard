@@ -15,7 +15,7 @@ $.fx.interval = 33;
 $(function() {
 	createTeamTimeTab(createTab("Team/Time", "TeamTimeTab"));
 	createRulesetsTab(createTab('Rulesets', 'RulesetsTab'))
-	createScoreBoardViewTab(createTab("ScoreBoard View", "ScoreBoardViewTab"));
+	createScoreBoardSettingsTab(createTab("Settings", "ScoreBoardSettingsTab"));
 	createTeamsTab(createTab("Teams", "TeamsTab"));
 	createDataManagementTab(createTab("Up-/Download", "DataManagementTab"));
 	// Only connect after any registrations from the above are in place.
