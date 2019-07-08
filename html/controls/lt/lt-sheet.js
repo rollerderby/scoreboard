@@ -85,7 +85,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 		var spRow = je[1];
 		if (k == prefix + 'StarPass') {
 			if (isTrue(v)) {
-				if (mode == 'operator') {
+				if (mode == 'plt') {
 					jamRow.before(spRow);
 				} else {
 					jamRow.after(spRow);
