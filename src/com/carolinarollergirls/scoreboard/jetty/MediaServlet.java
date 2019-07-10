@@ -22,6 +22,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -32,18 +33,19 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 
-public class MediaServlet extends DefaultScoreBoardControllerServlet {
-    public MediaServlet() {
+public class MediaServlet extends HttpServlet {
+    public MediaServlet(ScoreBoard sb, String dir) {
+        scoreBoard = sb;
+        htmlDirName = dir;
     }
 
     @Override
-    public String getPath() { return "/Media"; }
-
-    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        super.doPost(request, response);
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Expires", "-1");
+        response.setCharacterEncoding("UTF-8");
 
         if (request.getPathInfo().equals("/upload")) {
             upload(request, response);
@@ -52,13 +54,6 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
         }
-    }
-
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        super.doGet(request, response);
-
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
     }
 
     protected void upload(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
@@ -136,7 +131,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
 
     protected File getTypeDir(String media, String type) throws FileNotFoundException,IllegalArgumentException {
         if (scoreBoard.getMedia().getFormat(media) == null ||
-        	scoreBoard.getMedia().getFormat(media).getType(type) == null) {
+                scoreBoard.getMedia().getFormat(media).getType(type) == null) {
             throw new IllegalArgumentException("Invalid media '"+media+"' or type '"+type+"'");
         }
 
@@ -181,7 +176,14 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
         }
     }
 
-    protected String htmlDirName = ScoreBoardManager.getDefaultPath() + File.separator + "html";
+    protected void setTextResponse(HttpServletResponse response, int code, String text) throws IOException {
+        response.setContentType("text/plain");
+        response.getWriter().print(text);
+        response.setStatus(code);
+    }
+
+    protected String htmlDirName;
+    protected ScoreBoard scoreBoard;
 
     public static final String zipExtRegex = "^.*[.][zZ][iI][pP]$";
 }
