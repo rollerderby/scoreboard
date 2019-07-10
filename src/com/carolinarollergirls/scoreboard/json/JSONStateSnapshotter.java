@@ -69,6 +69,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
             }
         }
 
+        File tmp = null;
         FileWriter out = null;
         try {
             // Put inside a "state" entry to match the WS.
@@ -80,14 +81,19 @@ public class JSONStateSnapshotter implements JSONStateListener {
                           .putObject("state", cleanedState)
                           .end()
                           .finish();
-
-            out = new FileWriter(file);
+            tmp = File.createTempFile(file.getName(), ".tmp", directory);
+            out = new FileWriter(tmp);
             out.write(json);
+            out.close();
+            tmp.renameTo(file); // This is atomic.
         } catch (Exception e) {
             ScoreBoardManager.printMessage("Error writing JSON snapshot: " + e.getMessage());
         } finally {
             if (out != null) {
                 try { out.close(); } catch (Exception e) { }
+            }
+            if (tmp != null ) {
+                try { tmp.delete(); } catch (Exception e) { }
             }
         }
         timer.observeDuration();
