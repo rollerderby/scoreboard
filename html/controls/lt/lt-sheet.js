@@ -248,6 +248,7 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 	var skaterField = fieldingEditor.find('#skater').val(WS.state[prefix+'Skater']);
 	var notFieldedField = fieldingEditor.find('#notFielded').attr('checked', isTrue(WS.state[prefix+'NotFielded']));
 	var sitFor3Field = fieldingEditor.find('#sitFor3').attr('checked', isTrue(WS.state[prefix+'SitFor3']));
+	var annotationField = fieldingEditor.find('#annotation').val(WS.state[prefix+'Annotation']);
 	fieldingEditor.find('.BoxTrip').addClass('Hide');
 	fieldingEditor.find('.'+WS.state[prefix+'Id']).removeClass('Hide');
 	fieldingEditor.find('#addTrip, #submit').unbind('click');
@@ -258,6 +259,7 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 		WS.Set(prefix+'Skater', skaterField.val());
 		WS.Set(prefix+'NotFielded', notFieldedField.attr('checked') != null);
 		WS.Set(prefix+'SitFor3', sitFor3Field.attr('checked') != null);
+		WS.Set(prefix+'Annotation', annotationField.val());
 		fieldingEditor.dialog('close');
 	});
 	
@@ -271,27 +273,38 @@ function prepareFieldingEditor(teamId) {
 
 	function initialize() {
 		var table = $('<table>').appendTo($('#FieldingEditor'));
+		
 		var row = $('<tr>').addClass('Skater').appendTo(table);
 		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown'))).appendTo(row);
 		var notFieldedField = $('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded')).appendTo(row).children('button');
 		notFieldedField.click(function(){notFieldedField.attr('checked', notFieldedField.attr('checked') == null);});
 		var sitFor3Field = $('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3')).appendTo(row).children('button');
 		sitFor3Field.click(function(){sitFor3Field.attr('checked', sitFor3Field.attr('checked') == null);});
+		
+		row = $('<tr>').addClass('Skater').appendTo(table);
+		$('<td>').attr('colspan', '3')
+			.append($('<input type="text">').attr('size', '40').attr('id', 'annotation'))
+			//.append($('button').attr('id', 'setAnnotation').text('Set').button())
+			.appendTo(row);
+		
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').attr('colspan', '2').text('Box Trips').appendTo(row);
 		$('<td>').appendTo(row);
+		
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').text('Start').appendTo(row);
 		$('<td>').text('End').appendTo(row);
 		$('<td>').appendTo(row);
+		
 		row = $('<tr>').attr('id', 'tripFooter').appendTo(table);
-		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip')).appendTo(row);
-		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'abort').text('Abort')).click(function() {
+		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip').button()).appendTo(row);
+		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'abort').text('Abort').button()).click(function() {
 			fieldingEditor.dialog('close');
 		}).appendTo(row);
-		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'submit').text('Submit')).appendTo(row);
+		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'submit').text('Submit').button()).appendTo(row);
 
-		WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function(k,v) { processSkater(k,v); })
+		WS.Register(['ScoreBoard.Team('+teamId+').Skater(*).Role',
+			'ScoreBoard.Team('+teamId+').Skater(*).Number'], function(k,v) { processSkater(k,v); })
 		WS.Register(['ScoreBoard.Team('+teamId+').BoxTrip'], function(k,v) { processBoxTrip(k,v); })
 
 		fieldingEditor = $('#FieldingEditor').dialog({
@@ -299,21 +312,19 @@ function prepareFieldingEditor(teamId) {
 			closeOnEscape: false,
 			title: 'Fielding Editor',
 			autoOpen: false,
-			width: '500px',
+			width: '450px',
 		});
 	}		
 	
 	function processSkater(k, v) {
-		if (k.Skater == null || k.parts[3] != "Number") return;
-
 		var role = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Role'];
 		var number = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Number'];
 		var playing = (role != null && role != 'NotInGame'); 
 
 		var option = $("#FieldingEditor #skater option[value='"+k.Skater+"']");
 		var inserted = false;
-		if (v != null && option.length == 0) {
-			var option = $('<option>').attr('value', k.Skater).text(v);
+		if (number != null && option.length == 0) {
+			var option = $('<option>').attr('value', k.Skater).text(number);
 			$('#FieldingEditor #skater').children().each(function (idx, s) {
 				if (s.text > number && idx > 0) {
 					$(s).before(option);
@@ -337,19 +348,19 @@ function prepareFieldingEditor(teamId) {
 		var row = $('#FieldingEditor .BoxTrip[id='+k.BoxTrip+']');
 		if (v != null && row.length == 0) {
 			row = $('<tr>').addClass('BoxTrip').attr('id', k.BoxTrip).insertBefore('#FieldingEditor #tripFooter');
-			$('<td>').append($('<button>').addClass('tripModify').text('-').click(function() {
+			$('<td>').append($('<button>').addClass('tripModify').text('-').button().click(function() {
 				WS.Set(prefix+'StartEarlier', true);
 			})).append($('<span>').addClass('tripStartText'))
-			.append($('<button>').addClass('tripModify').text('+').click(function() {
+			.append($('<button>').addClass('tripModify').text('+').button().click(function() {
 				WS.Set(prefix+'StartLater', true);
 			})).appendTo(row);
-			$('<td>').append($('<button>').addClass('tripModify').text('-').click(function() {
+			$('<td>').append($('<button>').addClass('tripModify').text('-').button().click(function() {
 				WS.Set(prefix+'EndEarlier', true);
 			})).append($('<span>').addClass('tripEndText').text('ongoing'))
-			.append($('<button>').addClass('tripModify').text('+').click(function() {
+			.append($('<button>').addClass('tripModify').text('+').button().click(function() {
 				WS.Set(prefix+'EndLater', true);
 			})).appendTo(row);
-			$('<td>').addClass('Col3').append($('<button>').addClass('tripRemove').text('Remove').click(function() {
+			$('<td>').addClass('Col3').append($('<button>').addClass('tripRemove').text('Remove').button().click(function() {
 				WS.Set(prefix+'Delete', true);
 			})).appendTo(row);
 		}

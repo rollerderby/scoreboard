@@ -37,6 +37,7 @@ div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: 
 
 #FieldingEditor .tripHeader { text-align: center; font-size: 95%; background-color: #222; color: #FFF; }
 #FieldingEditor .ButtonCell { text-align: center; }
+#FieldingEditor .ui-button { font-size: 75%; }
 
 #FieldingEditor .BoxTrip>td, #FieldingEditor .Skater>td { padding: 0.5em 0em; }
 

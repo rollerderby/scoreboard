@@ -34,7 +34,7 @@ body:not(.AllowSelect) .PLT {
 .PLT.Team tr { background-color: #FFF; height: 22px; }
 .PLT.Team tr:nth-child(4n+0), .PLT.Team tr:nth-child(4n-1) { background-color: #FFE8FF; }
 .PLT.Team .Role { background-color: #FFF; }
-.PLT.Team tr:nth-child(4n-1) .Role:not(.OnTrack), .PLT.Team .Advance:not(.Active) { background-color: #e7f3ff; }
+.PLT.Team tr:nth-child(4n-1) .Role:not(.OnTrack), .PLT.Team tr:nth-child(4n-1) .Advance:not(.Active) { background-color: #e7f3ff; }
 .PLT.Team .Sitting, .PLT.Team .Trips { background-color: #e7f3ff; }
 .PLT.Team tr:nth-child(4n-1) .Sitting:not(.inBox), .PLT.Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
 .PLT.Team .Number { font-weight: bold; background-color: #f4f4f4; }
@@ -55,17 +55,21 @@ body:not(.AllowSelect) .PLT {
 
 .PLT.Team .Unserved { background-color: #0FF; }
 .PLT.Team .Serving { background-color: #70ff70; }
-.PLT.Team .OnTrack { background-color: #70ff70; }
-.PLT.Team tr[role='Pivot'] .OnTrack { background-color: #00ee00; }
-.PLT.Team tr[role='Jammer'] .OnTrack { background-color: #00cc00; }
+.PLT.Team .OnTrack:not(.Advance) { background-color: #70ff70; }
+.PLT.Team tr[role='Pivot'] .OnTrack:not(.Advance) { background-color: #00ee00; }
+.PLT.Team tr[role='Jammer'] .OnTrack:not(.Advance) { background-color: #00cc00; }
 .PLT.Team .inBox { background-color: #ff4040; }
-.PLT.Team .Advance { border: none; }
-.PLT.Team .Advance.Active { background-color: #ff9010;  vertical-align: bottom; }
+.PLT.Team .Advance { }
+.PLT.Team .Advance.Active { border: none; background-color: #ff9010;  vertical-align: bottom; }
 .PLT.Team tr:nth-child(6n+1) .Advance.Active::after { content: "Go To"; }
 .PLT.Team tr:nth-child(6n+3) .Advance.Active::after { content: "Next Jam"; }
+.PLT.Team .Advance:not(.Active).OnTrack::after { content: "..."; }
 
 #PenaltyEditor .Codes>div { float: left; width: 150px; height: 90px; margin: 10px; border: 1px solid black; font-weight: bold; }
 #PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; }
 #PenaltyEditor .Codes>div div { text-align: center; }
 #PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; }
 #PenaltyEditor .Codes>div .Description { font-size: 0.75em; }
+
+#AnnotationEditor .Hide { display: none; }
+#AnnotationEditor .ui-button { font-size: 75%; }

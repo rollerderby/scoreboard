@@ -162,6 +162,8 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .'+v).addClass('OnTrack');
 			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Number')
 				.toggleClass('OnTrack', v == 'Jammer' || v == 'Pivot' || v == 'Blocker');
+			tbody.find('.Skater.Penalty[id=' + k.Skater + '] .Advance')
+			.toggleClass('OnTrack', v == 'Jammer' || v == 'Pivot' || v == 'Blocker');
 		} else if (field == 'PenaltyBox') {
 			element.find('.Skater.Penalty[id=' + k.Skater + '] .Sitting').toggleClass('inBox', isTrue(v));
 		} else if (mode != 'lt'){
@@ -273,6 +275,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		if (field == "Served" || field == "") {
 			jamBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
 			penaltyBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
+			codeRow.children('.Sitting').toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
 		}
 	}
 
@@ -338,9 +341,16 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			p.append(boxCell);
 			
 			var advanceCell = $('<td>').addClass('Advance').attr('rowspan', 2).click(function() {
-				WS.Set('ScoreBoard.Team('+t+').AdvanceFieldings', true);
+				if (isTrue(WS.state['ScoreBoard.Team('+t+').FieldingAdvancePending'])) {
+					WS.Set('ScoreBoard.Team('+t+').AdvanceFieldings', true);
+				} else if (advanceCell.hasClass('OnTrack')) {
+					openAnnotationEditor(t, id);
+				}
 			});
 			if (isTrue(WS.state['ScoreBoard.Team('+t+').FieldingAdvancePending'])) { advanceCell.addClass('Active'); }
+			if (role == 'Jammer' || role == 'Pivot' || role == 'Blocker') {
+				advanceCell.addClass('OnTrack');
+			}
 			p.append(advanceCell);
 		}
 		if (mode == 'plt' || mode == 'pt') {
@@ -597,6 +607,115 @@ function preparePenaltyEditor() {
 		}
 		if (p >= WS.state['ScoreBoard.CurrentPeriodNumber']) {
 			$('<option>').attr('value', WS.state['ScoreBoard.UpcomingJam']).text(max+1).appendTo(select);
+		}
+	}
+}
+
+var annotationEditor;
+
+function openAnnotationEditor(teamId, skaterId) {
+	var prefix = 'ScoreBoard.Team('+teamId+').Skater('+skaterId+').';
+	var skaterNumber = WS.state[prefix + 'Number'];
+	var position = WS.state[prefix + 'Position'].slice(2);
+	var annotationPath = ').TeamJam('+teamId+').Fielding(' + position + ').Annotation';
+	if (isTrue(WS.state['ScoreBoard.InJam'])) {
+		annotationPath = 'ScoreBoard.Period(' + WS.state['ScoreBoard.CurrentPeriodNumber'] +
+		').Jam(' + WS.state['ScoreBoard.Period('+WS.state['ScoreBoard.CurrentPeriodNumber']+').CurrentJamNumber']
+		+ annotationPath;
+	} else {
+		annotationPath = 'ScoreBoard.Jam(' + WS.state['ScoreBoard.UpcomingJamNumber'] + annotationPath;
+	}
+	annotationEditor.data('skaterNumber', skaterNumber);
+	annotationEditor.data('position', position);
+	annotationEditor.find('#subDropdown').val(skaterId);
+	annotationEditor.find('#annotation').val(WS.state[annotationPath]);
+	annotationEditor.find('.Box').toggleClass('Hide', !isTrue(WS.state[prefix + 'PenaltyBox']));
+	annotationEditor.dialog('open');
+}
+
+function prepareAnnotationEditor(teamId) {
+	$(initialize);
+	
+	var subDropdown = $('<select>').attr('id', 'subDropdown');
+	var annotationField = $('<input type="text">').attr('size', '35').attr('id', 'annotation');
+	var jamPrefix;
+	
+	function initialize() {
+		var table = $('<table>').appendTo($('#AnnotationEditor'));
+		var row = $('<tr>').addClass('Box').appendTo(table);
+		$('<td>').append(subDropdown)
+				.append($('<button>').text('Substitute').button().click(function() {
+					var prefix = jamPrefix + annotationEditor.data('position') + ').';
+					WS.Set(prefix + 'Skater', subDropdown.val());
+					WS.Set(prefix + 'Annotation', 'Substitute for #' + annotationEditor.data('skaterNumber'));
+					annotationEditor.dialog('close');
+				})).appendTo(row);
+		$('<td>').append($('<button>').text('Self Report').button().click(function() { leaveBox('Self Report');})).appendTo(row);
+		$('<td>').append($('<button>').text('Penalty Revoked').button().click(function() { leaveBox('Penalty Revoked');})).appendTo(row);
+		
+		row = $('<tr>').appendTo(table);
+		$('<td>').attr('colspan', '3').append(annotationField).append($('<button>').text('Set').button().click(function() {
+			var prefix = jamPrefix + annotationEditor.data('position') + ').';
+			WS.Set(prefix + 'Annotation', annotationField.val());
+			annotationEditor.dialog('close');
+			})).appendTo(row);
+		
+		WS.Register(['ScoreBoard.CurrentPeriodNumber', 'ScoreBoard.UpcomingJamNumber',
+			'ScoreBoard.Period(*).CurrentJamNumber']);
+		WS.Register(['ScoreBoard.InJam'], function(k, v) {
+			if (isTrue(v)) {
+				jamPrefix = 'ScoreBoard.Period(' + WS.state['ScoreBoard.CurrentPeriodNumber'] +
+				').Jam(' + WS.state['ScoreBoard.Period('+WS.state['ScoreBoard.CurrentPeriodNumber']+').CurrentJamNumber']
+				+ ').TeamJam('+teamId+').Fielding(';
+			} else {
+				jamPrefix = 'ScoreBoard.Jam(' + WS.state['ScoreBoard.UpcomingJamNumber'] + ').TeamJam('+teamId+').Fielding(';
+			}
+		});
+
+		WS.Register(['ScoreBoard.Team('+teamId+').Skater(*).Role',
+			'ScoreBoard.Team('+teamId+').Skater(*).Number'], function(k,v) { processSkater(k,v); })
+
+		annotationEditor = $('#AnnotationEditor').dialog({
+			modal: true,
+			closeOnEscape: false,
+			title: 'Annotation Editor',
+			autoOpen: false,
+			width: '500px',
+		});
+	}	
+	
+	function leaveBox(annotation) {
+		if (annotationField.val() != '') {
+			annotation = '; ' + annotation;
+		}
+		annotationField.val(annotationField.val() + annotation);
+		var prefix = jamPrefix + annotationEditor.data('position') + ').';
+		WS.Set(prefix + 'Annotation', annotationField.val());
+		WS.Set(prefix + 'PenaltyBox', false);
+		annotationEditor.dialog('close');
+	}
+	
+	function processSkater(k, v) {
+		var role = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Role'];
+		var number = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Number'];
+		var playing = (role != null && role != 'NotInGame'); 
+
+		var option = $("#AnnotationEditor #subDropdown option[value='"+k.Skater+"']");
+		var inserted = false;
+		if (number != null && option.length == 0) {
+			var option = $('<option>').attr('value', k.Skater).text(number);
+			$('#AnnotationEditor #subDropdown').children().each(function (idx, s) {
+				if (s.text > number && idx > 0) {
+					$(s).before(option);
+					inserted = true;
+					return false;
+				}
+			});
+			if (!inserted) option.appendTo($('#AnnotationEditor #subDropdown'));
+		} else if (!playing) {
+			option.remove();
+		} else {
+			option.text(number);
 		}
 	}
 }
