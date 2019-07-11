@@ -251,18 +251,7 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 	var annotationField = fieldingEditor.find('#annotation').val(WS.state[prefix+'Annotation']);
 	fieldingEditor.find('.BoxTrip').addClass('Hide');
 	fieldingEditor.find('.'+WS.state[prefix+'Id']).removeClass('Hide');
-	fieldingEditor.find('#addTrip, #submit').unbind('click');
-	fieldingEditor.find('#addTrip').click(function() {
-		WS.Set(prefix+'AddBoxTrip', true);
-	});
-	fieldingEditor.find('#submit').click(function() {
-		WS.Set(prefix+'Skater', skaterField.val());
-		WS.Set(prefix+'NotFielded', notFieldedField.attr('checked') != null);
-		WS.Set(prefix+'SitFor3', sitFor3Field.attr('checked') != null);
-		WS.Set(prefix+'Annotation', annotationField.val());
-		fieldingEditor.dialog('close');
-	});
-	
+	fieldingEditor.data('prefix', prefix);
 	fieldingEditor.dialog('open');
 }
 
@@ -275,17 +264,26 @@ function prepareFieldingEditor(teamId) {
 		var table = $('<table>').appendTo($('#FieldingEditor'));
 		
 		var row = $('<tr>').addClass('Skater').appendTo(table);
-		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown'))).appendTo(row);
-		var notFieldedField = $('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded')).appendTo(row).children('button');
-		notFieldedField.click(function(){notFieldedField.attr('checked', notFieldedField.attr('checked') == null);});
-		var sitFor3Field = $('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3')).appendTo(row).children('button');
-		sitFor3Field.click(function(){sitFor3Field.attr('checked', sitFor3Field.attr('checked') == null);});
+		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown')).change(function() {
+			WS.Set(fieldingEditor.data('prefix')+'Skater', $(this).val());
+		})).appendTo(row);
+		$('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded').click(function() {
+			var check = $(this).attr('checked') == null;
+			$(this).attr('checked', check);
+			WS.Set(fieldingEditor.data('prefix')+'NotFielded', check);
+		})).appendTo(row)
+		$('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3').click(function() {
+			var check = $(this).attr('checked') == null;
+			$(this).attr('checked', check);
+			WS.Set(fieldingEditor.data('prefix')+'SitFor3', check);
+		})).appendTo(row);
 		
 		row = $('<tr>').addClass('Skater').appendTo(table);
 		$('<td>').attr('colspan', '3')
-			.append($('<input type="text">').attr('size', '40').attr('id', 'annotation'))
-			//.append($('button').attr('id', 'setAnnotation').text('Set').button())
-			.appendTo(row);
+			.append($('<input type="text">').attr('size', '35').attr('id', 'annotation'))
+			.append($('<button>').attr('id', 'setAnnotation').text('Set').button().click(function() {
+				WS.Set(fieldingEditor.data('prefix')+'Annotation', fieldingEditor.find('#annotation').val());
+			})).appendTo(row);
 		
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').attr('colspan', '2').text('Box Trips').appendTo(row);
@@ -297,11 +295,13 @@ function prepareFieldingEditor(teamId) {
 		$('<td>').appendTo(row);
 		
 		row = $('<tr>').attr('id', 'tripFooter').appendTo(table);
-		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip').button()).appendTo(row);
-		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'abort').text('Abort').button()).click(function() {
+		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip').button().click(function() {
+			WS.Set(fieldingEditor.data('prefix')+'AddBoxTrip', true);
+		})).appendTo(row);
+		$('<td>').appendTo(row);
+		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'close').text('Close').button()).click(function() {
 			fieldingEditor.dialog('close');
 		}).appendTo(row);
-		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'submit').text('Submit').button()).appendTo(row);
 
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater(*).Role',
 			'ScoreBoard.Team('+teamId+').Skater(*).Number'], function(k,v) { processSkater(k,v); })

@@ -231,7 +231,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
     public void end() {
         set(Value.IS_CURRENT, false);
         set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
-        if (getTeam().hasFieldingAdvancePending()) {
+        if (getTeam().hasFieldingAdvancePending() && getCurrentFielding().getTeamJam().isRunningOrUpcoming()) {
             getCurrentFielding().setSkater(null);
             remove(Child.FIELDING, getCurrentFielding());
         }
