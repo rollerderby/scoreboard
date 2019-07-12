@@ -11,9 +11,6 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +25,6 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 
 public class LoadJsonScoreBoard extends HttpServlet {
