@@ -1,15 +1,15 @@
-initialize();
 var rulesets = {};
+var activeRuleset = null;
 var definitions = {};
-var knownRulesets = {};
+initialize();
 
-function loadRulesets(displayId) {
+function loadRulesets() {
 	var rs = $(".rulesets div");
 	$("#new_parent").empty();
 	rs.empty();
 	rs.append(displayRulesetTree(""));
-	if (displayId != null) {
-		displayRuleset(displayId);
+	if (activeRuleset != null) {
+		displayRuleset(activeRuleset.Id);
 	}
 }
 
@@ -116,24 +116,16 @@ function loadDefinitions() {
 }
 
 function initialize() {
-	WS.Connect();
-	WS.AutoRegister();
-
 	WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {triggerBatchFunc: function() {
 		definitions = {};
 		for (var prop in WS.state) {
-			if (WS.state[prop] == null) {
-				continue;
-			}
-			var re = /ScoreBoard.Rulesets.RuleDefinition\(((\w+)\.(\w+))\).(\w+)/;
-			var m = prop.match(re);
-			if (m != null) {
-				var key = m[4];
-				definitions[m[1]] = definitions[m[1]] || {};
-				definitions[m[1]][key] = WS.state[prop];
-				definitions[m[1]]['Fullname'] = m[1];
-				definitions[m[1]]['Group'] = m[2];
-				definitions[m[1]]['Name'] = m[3];
+			var k = WS._enrichProp(prop)
+			if (k.RuleDefinition) {
+				definitions[k.RuleDefinition] = definitions[k.RuleDefinition] || {};
+				definitions[k.RuleDefinition][k.field] = WS.state[prop];
+				definitions[k.RuleDefinition]['Fullname'] = k.RuleDefinition;
+				definitions[k.RuleDefinition]['Group'] = k.RuleDefinition.split(".")[0];
+				definitions[k.RuleDefinition]['Name'] = k.RuleDefinition.split(".")[1];
 			}
 		}
 		loadDefinitions();
@@ -143,20 +135,15 @@ function initialize() {
 	WS.Register(['ScoreBoard.Rulesets.RuleDefinition', 'ScoreBoard.Rulesets.Ruleset'], {triggerBatchFunc: function() {
 		rulesets = {};
 		for (var prop in WS.state) {
-			if (WS.state[prop] == null) {
-				continue;
-			}
-			re = /ScoreBoard.Rulesets.Ruleset\(([^)]+)\)\.(\w+)(?:\(([^)]+)\))?/;
-			m = prop.match(re);
-			if (m != null) {
-				rulesets[m[1]] = rulesets[m[1]] || {Rules: {}};
-				var key = m[2];
-				if (key == "Rule") {
-					rulesets[m[1]].Rules[m[3]] = WS.state[prop]
+			var k = WS._enrichProp(prop)
+			if (k.Rulesets != null && k.Ruleset != null) {
+				rulesets[k.Ruleset] = rulesets[k.Ruleset] || {Rules: {}};
+				if (k.field == "Rule") {
+					rulesets[k.Ruleset].Rules[k.Rule] = WS.state[prop]
 				} else {
-					rulesets[m[1]][key] = WS.state[prop];
+					rulesets[k.Ruleset][k.field] = WS.state[prop];
 				}
-				rulesets[m[1]].Immutable = (m[1] == "00000000-0000-0000-0000-000000000000");
+				rulesets[k.Ruleset].Immutable = (k.Ruleset == "00000000-0000-0000-0000-000000000000");
 			}
 		}
  
@@ -173,17 +160,7 @@ function initialize() {
 				pid = rulesets[pid].ParentId;
 			}
 		});
-		var toLoad = null;
-		if (!$.isEmptyObject(knownRulesets)) {
-			// A new ruleset was added by us, find it and display it.
-			$.each(rulesets, function(id) {
-				if (!knownRulesets[id]) {
-					toLoad = id;;
-				}
-			});
-			knownRulesets = {};
-		}
-		loadRulesets(toLoad);
+		loadRulesets();
 	}});
 
 
@@ -191,6 +168,9 @@ function initialize() {
 	$(".Delete").click(Delete);
 	$(".Update").click(Update);
 	$(".Cancel").click(Cancel);
+
+	WS.Connect();
+	WS.AutoRegister();
 }
 
 function definitionOverride(e) {
@@ -206,48 +186,41 @@ function definitionOverride(e) {
 }
 
 function displayRuleset(id) {
-	$.each(rulesets, function(idx, rs) {
-		if (rs.Id == id) {
-			activeRuleset = rs;
-			var definitions = $(".definitions");
+	var rs = rulesets[id];
+	if (!rs) return;
+	activeRuleset = rs;
+	var definitions = $(".definitions");
 
-			$("#name").val(rs.Name);
+	$("#name").val(rs.Name);
 
-			if (!rs.Immutable)
-				$(".definition *").prop("disabled", rs.Immutable);
+	if (!rs.Immutable)
+		$(".definition *").prop("disabled", rs.Immutable);
 
-			$.each(rs.Inherited, function(key, val) {
-				setDefinition(key, val, true);
-			});
-			$.each(rs.Rules, function(key, val) {
-				setDefinition(key, val, false);
-			});
-
-			if (rs.Immutable) {
-				$(".definition *").prop("disabled", rs.Immutable);
-				$(".Update, .Delete").hide();
-			} else {
-				$(".Update, .Delete").show();
-			}
-			definitions.show();
-		}
+	$.each(rs.Inherited, function(key, val) {
+		setDefinition(key, val, true);
 	});
+	$.each(rs.Rules, function(key, val) {
+		setDefinition(key, val, false);
+	});
+
+	if (rs.Immutable) {
+		$(".definition *").prop("disabled", rs.Immutable);
+		$(".Update, .Delete").hide();
+	} else {
+		$(".Update, .Delete").show();
+	}
+	definitions.show();
 }
 
 function New() {
-	// Note what rulesets we know about so we can determine
-	// the id of the new one when we get an update.
-	knownRulesets = {};
-	$.each(rulesets, function(id) {
-		knownRulesets[id] = true;
-	});
 	var uuid;
 	do {
 		uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
-	} while (knownRulesets[uuid]);
+	} while (rulesets[uuid]);
 	WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", $("#new_name").val());
 	WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").ParentId", $("#new_parent").val());
 	$("#new_name").val("");
+	activeRuleset = uuid;
 }
 
 function Update() {
