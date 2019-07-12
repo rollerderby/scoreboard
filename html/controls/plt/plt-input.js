@@ -430,6 +430,7 @@ function openPenaltyEditor(t, id, which) {
 		}
 	}
 	$('#PenaltyEditor #served').toggleClass('checked', wasServed);
+	$('#PenaltyEditor .set').toggleClass('Hide', isNew);
 	while (!isNaN(penaltyNumber) && penaltyNumber > 1 &&
 			WS.state[prefix + '.Penalty(' + (penaltyNumber-1) + ').Code'] == null) {
 		penaltyNumber--;
@@ -461,13 +462,13 @@ function preparePenaltyEditor() {
 			.append($('<select>').addClass('Period')).append($('<button>').addClass('period_plus').text('+1').button()).appendTo(tr);
 		$('<td width="35%">').append($('<span>').text('Jam: ')).append($('<button>').addClass('jam_minus').text('-1').button())
 			.append($('<select>').addClass('Jam')).append($('<button>').addClass('jam_plus').text('+1').button()).appendTo(tr);
-		$('<td width="15%">').append($('<button>').addClass('set').text('Set Jam').button()).appendTo(tr);
+		$('<td width="15%">').append($('<button>').addClass('set Hide').text('Set Period/Jam').button()).appendTo(tr);
 		$('<td width="15%">').append($('<button>').addClass('clear').text('Clear').button()).appendTo(tr);
 		
 		var tr2 = $('<tr>').appendTo(topTable);
 		$('<td>').append($('<button>').text('Served').attr('id', 'served').button().click(function() {
-			var active = $(this).hasClass('checked');
-			$(this).toggleClass('checked', !active);
+			var active = !$(this).hasClass('checked');
+			$(this).toggleClass('checked', active);
 			if (!isTrue(penaltyEditor.data('new'))) {
 				var teamId = penaltyEditor.data('team');
 				var skaterId = penaltyEditor.data('skater');
@@ -663,8 +664,8 @@ function prepareAnnotationEditor(teamId) {
 					WS.Set(prefix + 'Annotation', 'Substitute for #' + annotationEditor.data('skaterNumber'));
 					annotationEditor.dialog('close');
 				})).appendTo(row);
-		$('<td>').append($('<button>').text('Self Report').button().click(function() { leaveBox('Self Report');})).appendTo(row);
-		$('<td>').append($('<button>').text('Penalty Revoked').button().click(function() { leaveBox('Penalty Revoked');})).appendTo(row);
+		$('<td>').append($('<button>').text('No Penalty').button().click(function() { leaveBox('No Penalty');})).appendTo(row);
+		$('<td>').append($('<button>').text('Penalty Overturned').button().click(function() { leaveBox('Penalty Overturned');})).appendTo(row);
 		
 		row = $('<tr>').appendTo(table);
 		$('<td>').attr('colspan', '3').append(annotationField).append($('<button>').text('Set').button().click(function() {

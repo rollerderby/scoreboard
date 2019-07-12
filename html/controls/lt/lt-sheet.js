@@ -249,6 +249,7 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 	var notFieldedField = fieldingEditor.find('#notFielded').attr('checked', isTrue(WS.state[prefix+'NotFielded']));
 	var sitFor3Field = fieldingEditor.find('#sitFor3').attr('checked', isTrue(WS.state[prefix+'SitFor3']));
 	var annotationField = fieldingEditor.find('#annotation').val(WS.state[prefix+'Annotation']);
+	fieldingEditor.find('#notFielded').toggleClass('Hide', isTrue(upcoming));
 	fieldingEditor.find('.BoxTrip').addClass('Hide');
 	fieldingEditor.find('.'+WS.state[prefix+'Id']).removeClass('Hide');
 	fieldingEditor.data('prefix', prefix);

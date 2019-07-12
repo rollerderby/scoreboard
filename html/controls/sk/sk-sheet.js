@@ -265,7 +265,7 @@ function setupTripEditor(p, j, teamId, t) {
 
 	tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t==1?'Initial':t));
 	var scoreField = tripEditor.find('#score').val(WS.state[prefix+'Score']);
-	var afterSPField = tripEditor.find('#afterSP').prop('checked', isTrue(WS.state[prefix+'AfterSP']));
+	var afterSPField = tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
 	tripEditor.data('prefix', prefix);
 	tripEditor.dialog('open');
 }
@@ -287,29 +287,31 @@ function prepareTripEditor() {
 
 		tripEditor.append($('<table>')
 				.append($('<tr>')
-						.append($('<td colspan="3">')
+						.append($('<td>')
 								.append($('<input type="number" min="0">').attr('id', 'score').keydown(function(event) {
-									if (event.which == 13) tripEditor.find('#submit').click(); }).change(function() {
+									if (event.which == 13 && $(this).val() == '') {
+										WS.Set(tripEditor.data('prefix')+'Remove', true);
+										tripEditor.dialog('close');
+									}
+									}).change(function() {
 										WS.Set(tripEditor.data('prefix')+'Score', $(this).val());
-									}))
+									})))
+						.append($('<td colspan="2">')
 								.append($('<button>').attr('id', 'afterSP').text('SP in this or prior trip').button().click(function() {
 									var check = !$(this).hasClass('checked');
 									$(this).toggleClass('checked', check);
 									WS.Set(tripEditor.data('prefix')+'AfterSP', check);
 								}))))
 				.append($('<tr class="buttons">')
-						.append($('<td width="30%">').append($('<button>').attr('id','submit').text('Submit').button().click(function() {
-							if (tripEditor.find('#score').val() == '') {
-								WS.Set(tripEditor.data('prefix')+'Remove', true);
-							}
+						.append($('<td>').append($('<button>').attr('id','submit').text('Close').button().click(function() {
 							tripEditor.dialog('close');
 						})))
-						.append($('<td width="40%">').append($('<button>').attr('id','insert_before').text('Insert Before').button().click(function() {
-							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
-						})))
-						.append($('<td width="30%">').append($('<button>').attr('id','remove').text('Remove').button().click(function() {
+						.append($('<td>').append($('<button>').attr('id','remove').text('Remove').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'Remove', true);
 							tripEditor.dialog('close');
+						})))
+						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Before').button().click(function() {
+							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
 						})))));
 	}
 }
