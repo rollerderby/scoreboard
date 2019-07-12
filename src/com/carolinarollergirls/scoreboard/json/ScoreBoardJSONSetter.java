@@ -22,7 +22,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;

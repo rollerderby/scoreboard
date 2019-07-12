@@ -16,8 +16,6 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;

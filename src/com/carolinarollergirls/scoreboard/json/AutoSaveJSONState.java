@@ -9,9 +9,7 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.jr.ob.JSON;
@@ -20,7 +18,6 @@ import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 
 public class AutoSaveJSONState implements Runnable {
 
