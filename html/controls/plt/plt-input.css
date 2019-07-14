@@ -20,6 +20,7 @@ body:not(.AllowSelect) .PLT {
 	width: 99%;
 	top: 0%;
 }
+.PLT.Team .Hide { display: none; }
 /* Colors are the same as the operator controls, so per-team colours look the same on both. */
 .PLT.Team thead td { font-size: 1em; font-weight: bold; background-color: #cccccc; color: #333333; }
 .PLT.Team #StarPass { background-color: #cee7ff; font-weight: normal; }
@@ -36,7 +37,7 @@ body:not(.AllowSelect) .PLT {
 .PLT.Team .Role { background-color: #FFF; }
 .PLT.Team tr:nth-child(4n-1) .Role:not(.OnTrack), .PLT.Team tr:nth-child(4n-1) .Advance:not(.Active) { background-color: #e7f3ff; }
 .PLT.Team .Sitting, .PLT.Team .Trips { background-color: #e7f3ff; }
-.PLT.Team tr:nth-child(4n-1) .Sitting:not(.inBox), .PLT.Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
+.PLT.Team tr:nth-child(4n-1) .Sitting:not(.inBox):not(.Unserved), .PLT.Team tr:nth-child(4n-1) .Trips { background-color: #cee7ff; }
 .PLT.Team .Number { font-weight: bold; background-color: #f4f4f4; }
 .PLT.Team tr:nth-child(4n-1) .Number:not(.OnTrack) { background-color: #E8E8E8; }
 .PLT.Team .Box0 { background-color: #ffd0ff; }

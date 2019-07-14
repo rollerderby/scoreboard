@@ -40,12 +40,10 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		if (mode == 'plt' || mode == 'pt') {
 			$('<td>').text('#').appendTo(thead);
 		}
-		if (mode != 'lt') {
-			$('<td>').attr('colspan', '9').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
-			$('<td>').text('FO_Ex').appendTo(thead);
-		}
+		$('<td>').attr('colspan', '9').attr('id', 'head').text('Team ' + teamId).toggleClass('Hide', mode == 'lt').appendTo(thead);
+		$('<td>').text('FO_Ex').toggleClass('Hide', mode == 'lt').appendTo(thead);
 		totalPenalties = $('<td>').attr('id', 'totalPenalties').text('Σ 0');
-		if (mode == 'plt' || mode == 'pt') {
+		if (mode != 'copyToStatsbook') {
 			totalPenalties.appendTo(thead);
 		}
 		tbody = $('<tbody>').appendTo(table);
@@ -131,12 +129,10 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 			// New skater, or number has been updated.
 			makeSkaterRows(t, k.Skater, v);
-			if (mode != 'lt') {
-				for (var i = 1; i <= 9; i++) {
-					displayPenalty(t, k.Skater, i, null);
-				}
-				displayPenalty(t, k.Skater, 0, null);
+			for (var i = 1; i <= 9; i++) {
+				displayPenalty(t, k.Skater, i, null);
 			}
+			displayPenalty(t, k.Skater, 0, null);
 		} else if (field == 'Role') {
 			if (mode != 'copyToStatsbook' && v == 'NotInGame') {
 				tbody.children('.Skater.Penalty[id=' + k.Skater + ']').children('.Total').each( function(idx, elem) {
@@ -166,7 +162,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			.toggleClass('OnTrack', v == 'Jammer' || v == 'Pivot' || v == 'Blocker');
 		} else if (field == 'PenaltyBox') {
 			element.find('.Skater.Penalty[id=' + k.Skater + '] .Sitting').toggleClass('inBox', isTrue(v));
-		} else if (mode != 'lt'){
+		} else {
 			// Look for penalty
 			if (k.Penalty == null) return
 			displayPenalty(t, k.Skater, k.Penalty, k);
@@ -275,7 +271,11 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		if (field == "Served" || field == "") {
 			jamBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
 			penaltyBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
-			codeRow.children('.Sitting').toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
+			var anyUnserved = false;
+			codeRow.children('.Box:not(.Box0)').each(function (idx, elem) {
+				anyUnserved = anyUnserved || ($(elem).hasClass('Unserved'));
+			});
+			codeRow.children('.Sitting').toggleClass("Unserved", anyUnserved);
 		}
 	}
 
@@ -360,18 +360,16 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			}
 			p.append(numberCell);
 		}
-		if (mode != 'lt') {
-			$.each(new Array(9), function (idx) {
-				var c = idx + 1;
-				p.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
-				j.append($('<td>').addClass('Box Box' + c).html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
-			});
-	
-			p.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
-			j.append($('<td>').addClass('Box Box0').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
-			if (mode != 'copyToStatsbook') {
-				p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
-			}
+		$.each(new Array(9), function (idx) {
+			var c = idx + 1;
+			p.append($('<td>').addClass('Box Box' + c).toggleClass('Hide', mode == 'lt').html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
+			j.append($('<td>').addClass('Box Box' + c).toggleClass('Hide', mode == 'lt').html('&nbsp;').click(function () { openPenaltyEditor(t, id, c); }));
+		});
+
+		p.append($('<td>').addClass('Box Box0').toggleClass('Hide', mode == 'lt').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
+		j.append($('<td>').addClass('Box Box0').toggleClass('Hide', mode == 'lt').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
+		if (mode != 'copyToStatsbook') {
+			p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
 		}
 		
 		var inserted = false;
