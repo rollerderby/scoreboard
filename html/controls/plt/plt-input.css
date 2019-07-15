@@ -71,9 +71,10 @@ body:not(.AllowSelect) .PLT {
 #PenaltyEditor .Codes>div div { text-align: center; }
 #PenaltyEditor .Codes>div .Code { font-size: 1.2em; background-color: #FAA; color: #000; }
 #PenaltyEditor .Codes>div .Description { font-size: 0.75em; }
-#PenaltyEditor .ui-button { font-size: 75%; }
+#PenaltyEditor .ui-button.small { font-size: 75%; }
 #PenaltyEditor .ui-button.checked { background: #3f3; }
 #PenaltyEditor .Hide { display: none; }
+#PenaltyEditor td { text-align: center; }
 
 #AnnotationEditor .Hide { display: none; }
 #AnnotationEditor .ui-button { font-size: 75%; }

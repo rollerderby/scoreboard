@@ -286,6 +286,10 @@ function prepareFieldingEditor(teamId) {
 				WS.Set(fieldingEditor.data('prefix')+'Annotation', fieldingEditor.find('#annotation').val());
 			})).appendTo(row);
 		
+		row = $('<tr>').addClass('Skater').appendTo(table);
+		$('<td>').append($('<button>').text('No Penalty').button().click(function() { appendAnnotation('No Penalty');})).appendTo(row);
+		$('<td>').append($('<button>').text('Penalty Overturned').button().click(function() { appendAnnotation('Penalty Overturned');})).appendTo(row);
+		
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').attr('colspan', '2').text('Box Trips').appendTo(row);
 		$('<td>').appendTo(row);
@@ -315,29 +319,25 @@ function prepareFieldingEditor(teamId) {
 			autoOpen: false,
 			width: '450px',
 		});
-	}		
+	}
+	
+	function appendAnnotation(annotation) {
+		var annotationField = fieldingEditor.find('#annotation');
+		if (annotationField.val() != '') {
+			annotation = '; ' + annotation;
+		}
+		annotationField.val(annotationField.val() + annotation);
+		WS.Set(fieldingEditor.data('prefix') + 'Annotation', annotationField.val());
+	}
 	
 	function processSkater(k, v) {
-		var role = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Role'];
-		var number = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Number'];
-		var playing = (role != null && role != 'NotInGame'); 
-
-		var option = $("#FieldingEditor #skater option[value='"+k.Skater+"']");
-		var inserted = false;
-		if (number != null && option.length == 0) {
-			var option = $('<option>').attr('value', k.Skater).text(number);
-			$('#FieldingEditor #skater').children().each(function (idx, s) {
-				if (s.text > number && idx > 0) {
-					$(s).before(option);
-					inserted = true;
-					return false;
-				}
-			});
-			if (!inserted) option.appendTo($('#FieldingEditor #skater'));
-		} else if (!playing) {
-			option.remove();
-		} else {
-			option.text(number);
+		var select = $('#FieldingEditor #skater');
+		select.children('[value="'+k.Skater+'"]').remove();
+		var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
+		if (v != null && WS.state[prefix + 'Role'] != 'NotInGame') {
+			var number = WS.state[prefix + 'Number'];
+			var option = $('<option>').attr('number', number).val(k.Skater).text(number);
+			_windowFunctions.appendAlphaSortedByAttr(select, option, 'number', 1);
 		}
 	}
 	

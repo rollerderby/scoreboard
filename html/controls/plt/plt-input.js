@@ -427,6 +427,7 @@ function openPenaltyEditor(t, id, which) {
 			isNew = false;
 		}
 	}
+	$('#PenaltyEditor .clear').button();
 	$('#PenaltyEditor #served').toggleClass('checked', wasServed);
 	$('#PenaltyEditor .set').toggleClass('Hide', isNew);
 	while (!isNaN(penaltyNumber) && penaltyNumber > 1 &&
@@ -454,17 +455,19 @@ function preparePenaltyEditor() {
 
 	function initialize() {
 		
-		var topTable = $('<table width="100%">').appendTo($('#PenaltyEditor'));
+		var topTable = $('<table>').appendTo($('#PenaltyEditor'));
 		var tr = $('<tr>').appendTo(topTable);
-		$('<td width="35%">').append($('<span>').text('Period: ')).append($('<button>').addClass('period_minus').text('-1').button())
-			.append($('<select>').addClass('Period')).append($('<button>').addClass('period_plus').text('+1').button()).appendTo(tr);
-		$('<td width="35%">').append($('<span>').text('Jam: ')).append($('<button>').addClass('jam_minus').text('-1').button())
-			.append($('<select>').addClass('Jam')).append($('<button>').addClass('jam_plus').text('+1').button()).appendTo(tr);
-		$('<td width="15%">').append($('<button>').addClass('set Hide').text('Set Period/Jam').button()).appendTo(tr);
-		$('<td width="15%">').append($('<button>').addClass('clear').text('Clear').button()).appendTo(tr);
+		$('<td>').append($('<span>').text('Period: ')).append($('<button>').addClass('period_minus small').text('-1').button())
+			.append($('<select>').addClass('Period')).append($('<button>').addClass('period_plus small').text('+1').button()).appendTo(tr);
+		$('<td>').append($('<span>').text('Jam: ')).append($('<button>').addClass('jam_minus small').text('-1').button())
+			.append($('<select>').addClass('Jam')).append($('<button>').addClass('jam_plus small').text('+1').button()).appendTo(tr);
+		$('<td>').append($('<button>').addClass('set Hide').text('Set Period/Jam').button()).appendTo(tr);
 		
-		var tr2 = $('<tr>').appendTo(topTable);
-		$('<td>').append($('<button>').text('Served').attr('id', 'served').button().click(function() {
+		$('<div>').addClass('Codes').appendTo($('#PenaltyEditor'));
+
+		var bottomTable = $('<table width="100%">').appendTo($('#PenaltyEditor'));
+		var tr2 = $('<tr>').appendTo(bottomTable);
+		$('<td width="50%">').append($('<button>').text('Served').attr('id', 'served').button().click(function() {
 			var active = !$(this).hasClass('checked');
 			$(this).toggleClass('checked', active);
 			if (!isTrue(penaltyEditor.data('new'))) {
@@ -476,7 +479,7 @@ function preparePenaltyEditor() {
 				penaltyEditor.dialog('close');
 			}
 		})).appendTo(tr2);
-		$('<div>').addClass('Codes').appendTo($('#PenaltyEditor'));
+		$('<td width="50%">').append($('<button>').addClass('clear').text('Delete').button()).appendTo(tr2);
 
 		WS.Register(['ScoreBoard.PenaltyCodes.Code'], penaltyCode);
 		WS.Register(['ScoreBoard.Rulesets.CurrentRule(Period.Number)'], function (k, v) { setupPeriodSelect(v); });
@@ -708,26 +711,13 @@ function prepareAnnotationEditor(teamId) {
 	}
 	
 	function processSkater(k, v) {
-		var role = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Role'];
-		var number = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Number'];
-		var playing = (role != null && role != 'NotInGame'); 
-
-		var option = $("#AnnotationEditor #subDropdown option[value='"+k.Skater+"']");
-		var inserted = false;
-		if (number != null && option.length == 0) {
-			var option = $('<option>').attr('value', k.Skater).text(number);
-			$('#AnnotationEditor #subDropdown').children().each(function (idx, s) {
-				if (s.text > number && idx > 0) {
-					$(s).before(option);
-					inserted = true;
-					return false;
-				}
-			});
-			if (!inserted) option.appendTo($('#AnnotationEditor #subDropdown'));
-		} else if (!playing) {
-			option.remove();
-		} else {
-			option.text(number);
+		var select = $('#AnnotationEditor #subDropdown');
+		select.children('[value="'+k.Skater+'"]').remove();
+		var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
+		if (v != null && WS.state[prefix + 'Role'] != 'NotInGame') {
+			var number = WS.state[prefix + 'Number'];
+			var option = $('<option>').attr('number', number).val(k.Skater).text(number);
+			_windowFunctions.appendAlphaSortedByAttr(select, option, 'number');
 		}
 	}
 }
