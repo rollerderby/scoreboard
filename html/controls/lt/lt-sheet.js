@@ -281,9 +281,8 @@ function prepareFieldingEditor(teamId) {
 		
 		row = $('<tr>').addClass('Skater').appendTo(table);
 		$('<td>').attr('colspan', '3')
-			.append($('<input type="text">').attr('size', '35').attr('id', 'annotation'))
-			.append($('<button>').attr('id', 'setAnnotation').text('Set').button().click(function() {
-				WS.Set(fieldingEditor.data('prefix')+'Annotation', fieldingEditor.find('#annotation').val());
+			.append($('<input type="text">').attr('size', '40').attr('id', 'annotation').change(function() {
+				WS.Set(fieldingEditor.data('prefix')+'Annotation', $(this).val());
 			})).appendTo(row);
 		
 		row = $('<tr>').addClass('Skater').appendTo(table);

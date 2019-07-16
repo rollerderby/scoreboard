@@ -652,7 +652,7 @@ function prepareAnnotationEditor(teamId) {
 	$(initialize);
 	
 	var subDropdown = $('<select>').attr('id', 'subDropdown');
-	var annotationField = $('<input type="text">').attr('size', '35').attr('id', 'annotation');
+	var annotationField = $('<input type="text">').attr('size', '40').attr('id', 'annotation');
 	var jamPrefix;
 	
 	function initialize() {
@@ -669,9 +669,9 @@ function prepareAnnotationEditor(teamId) {
 		$('<td>').append($('<button>').text('Penalty Overturned').button().click(function() { leaveBox('Penalty Overturned');})).appendTo(row);
 		
 		row = $('<tr>').appendTo(table);
-		$('<td>').attr('colspan', '3').append(annotationField).append($('<button>').text('Set').button().click(function() {
+		$('<td>').attr('colspan', '3').append(annotationField.change(function() {
 			var prefix = jamPrefix + annotationEditor.data('position') + ').';
-			WS.Set(prefix + 'Annotation', annotationField.val());
+			WS.Set(prefix + 'Annotation', $(this).val());
 			annotationEditor.dialog('close');
 			})).appendTo(row);
 		
