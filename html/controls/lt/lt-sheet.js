@@ -120,6 +120,8 @@ function prepareLtSheetTable(element, teamId, mode) {
 						setBoxTripSymbols(jamRow, '.Box'+k.Fielding, v);
 					} else if (k.BoxTripSymbolsAfterSP != null) {
 						if (isTrue(WS.state[prefix+'StarPass'])) { setBoxTripSymbols(spRow, '.Box'+k.Fielding, v); }
+					} else if (k.Annotation != null) {
+						jamRow.children('.'+k.Fielding).toggleClass('hasAnnotation', v!= null && v != '');
 					}
 				}
 				break;
