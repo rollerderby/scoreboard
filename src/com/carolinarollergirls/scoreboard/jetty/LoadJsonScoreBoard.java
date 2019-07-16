@@ -34,8 +34,6 @@ public class LoadJsonScoreBoard extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        super.doPost(request, response);
-
         try {
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -64,12 +62,20 @@ public class LoadJsonScoreBoard extends HttpServlet {
         }
     }
 
-    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, JSONObject json) throws IOException {
+    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, final JSONObject json) throws IOException {
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
-            scoreBoard.reset();
-            ScoreBoardJSONSetter.set(scoreBoard, json);
+            scoreBoard.runInBatch(new Runnable() {
+                public void run() {
+                    scoreBoard.reset();
+                    ScoreBoardJSONSetter.set(scoreBoard, json);
+                }
+            });
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
-            ScoreBoardJSONSetter.set(scoreBoard, json);
+            scoreBoard.runInBatch(new Runnable() {
+                public void run() {
+                    ScoreBoardJSONSetter.set(scoreBoard, json);
+                }
+            });
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge");
         }

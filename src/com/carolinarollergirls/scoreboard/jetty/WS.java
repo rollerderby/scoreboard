@@ -123,26 +123,34 @@ public class WS extends WebSocketServlet {
                     String f = json.getString("flag");
                     if ("reset".equals(f)) { flag = Flag.RESET; }
                     if ("change".equals(f)) { flag = Flag.CHANGE; }
-                    ScoreBoardJSONSetter.JSONSet js = new ScoreBoardJSONSetter.JSONSet(key, v, flag);
-                    ScoreBoardJSONSetter.set(sb, Collections.singletonList(js));
+                    final ScoreBoardJSONSetter.JSONSet js = new ScoreBoardJSONSetter.JSONSet(key, v, flag);
+                    sb.runInBatch(new Runnable() {
+                        public void run() {
+                            ScoreBoardJSONSetter.set(sb, Collections.singletonList(js));
+                        }
+                    });
                 } else if (action.equals("StartNewGame")) {
-                    JSONObject data = json.getJSONObject("data");
-                    PreparedTeam t1 = sb.getPreparedTeam(data.getString("Team1"));
-                    PreparedTeam t2 = sb.getPreparedTeam(data.getString("Team2"));
-                    String rs = data.getString("Ruleset");
-                    sb.reset();
-                    sb.getRulesets().setCurrentRuleset(rs);
-                    sb.getTeam(Team.ID_1).loadPreparedTeam(t1);
-                    sb.getTeam(Team.ID_2).loadPreparedTeam(t2);
+                    final JSONObject data = json.getJSONObject("data");
+                    sb.runInBatch(new Runnable() {
+                        public void run() {
+                            PreparedTeam t1 = sb.getPreparedTeam(data.getString("Team1"));
+                            PreparedTeam t2 = sb.getPreparedTeam(data.getString("Team2"));
+                            String rs = data.getString("Ruleset");
+                            sb.reset();
+                            sb.getRulesets().setCurrentRuleset(rs);
+                            sb.getTeam(Team.ID_1).loadPreparedTeam(t1);
+                            sb.getTeam(Team.ID_2).loadPreparedTeam(t2);
 
-                    String intermissionClock = data.optString("IntermissionClock", null);
-                    if (intermissionClock != null) {
-                        Long ic_time = new Long(intermissionClock);
-                        ic_time = ic_time - (ic_time % 1000);
-                        Clock c = sb.getClock(Clock.ID_INTERMISSION);
-                        c.setMaximumTime(ic_time);
-                        c.restart();
-                    }
+                            String intermissionClock = data.optString("IntermissionClock", null);
+                            if (intermissionClock != null) {
+                                Long ic_time = new Long(intermissionClock);
+                                ic_time = ic_time - (ic_time % 1000);
+                                Clock c = sb.getClock(Clock.ID_INTERMISSION);
+                                c.setMaximumTime(ic_time);
+                                c.restart();
+                            }
+                        }
+                    });
                 } else if (action.equals("Ping")) {
                     send(new JSONObject().put("Pong", ""));
                 } else {
@@ -215,13 +223,13 @@ public class WS extends WebSocketServlet {
         private void sendWSUpdatesForPaths(PathTrie watchedPaths, Set<String> changed) {
             Map<String, Object> updates = new HashMap<>();
             for (String k: changed) {
-              if (watchedPaths.covers(k)) {
-                if (state.get(k) == null) {
-                  updates.put(k, JSONObject.NULL);
-                } else {
-                  updates.put(k, state.get(k));
+                if (watchedPaths.covers(k)) {
+                    if (state.get(k) == null) {
+                        updates.put(k, JSONObject.NULL);
+                    } else {
+                        updates.put(k, state.get(k));
+                    }
                 }
-              }
             }
             if (updates.size() == 0) {
                 return;
