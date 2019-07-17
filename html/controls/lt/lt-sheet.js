@@ -252,6 +252,7 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 	var sitFor3Field = fieldingEditor.find('#sitFor3').attr('checked', isTrue(WS.state[prefix+'SitFor3']));
 	var annotationField = fieldingEditor.find('#annotation').val(WS.state[prefix+'Annotation']);
 	fieldingEditor.find('#notFielded').toggleClass('Hide', isTrue(upcoming));
+	fieldingEditor.find('.BoxTripComments').toggleClass('Hide', WS.state[prefix + 'CurrentBoxTrip'] == '');
 	fieldingEditor.find('.BoxTrip').addClass('Hide');
 	fieldingEditor.find('.'+WS.state[prefix+'Id']).removeClass('Hide');
 	fieldingEditor.data('prefix', prefix);
@@ -287,7 +288,7 @@ function prepareFieldingEditor(teamId) {
 				WS.Set(fieldingEditor.data('prefix')+'Annotation', $(this).val());
 			})).appendTo(row);
 		
-		row = $('<tr>').addClass('Skater').appendTo(table);
+		row = $('<tr>').addClass('Skater BoxTripComments').appendTo(table);
 		$('<td>').append($('<button>').text('No Penalty').button().click(function() { appendAnnotation('No Penalty');})).appendTo(row);
 		$('<td>').append($('<button>').text('Penalty Overturned').button().click(function() { appendAnnotation('Penalty Overturned');})).appendTo(row);
 		
@@ -378,15 +379,15 @@ function prepareFieldingEditor(teamId) {
 		if (['StartJamNumber', 'StartBetweenJams', 'StartAfterSP'].includes(key)) {
 			var between = isTrue(WS.state[prefix+'StartBetweenJams']);
 			var afterSP = isTrue(WS.state[prefix+'StartAfterSP']);
-			row.find('.tripStartText').text((between?'Before ':'') + 'Jam ' + WS.state[prefix+'StartJamNumber']
-					+ (afterSP?' after SP':''));
+			row.find('.tripStartText').text((between ? 'Before ' : '') + 'Jam ' + WS.state[prefix+'StartJamNumber']
+					+ (afterSP ? ' after SP' : ''));
 		}
 		if (['EndJamNumber', 'EndBetweenJams', 'EndAfterSP'].includes(key)) {
 			var between = isTrue(WS.state[prefix+'EndBetweenJams']);
 			var afterSP = isTrue(WS.state[prefix+'EndAfterSP']);
 			var jam = WS.state[prefix+'EndJamNumber'];
-			row.find('.tripEndText').text((between?' Before ':' ') + (jam == 0 ? 'ongoing' : 'Jam ' + jam) 
-					+ (afterSP?' after SP ':' '));
+			row.find('.tripEndText').text((between ? ' After ' : ' ') + (jam == 0 ? 'ongoing' : 'Jam ' + jam) 
+					+ (afterSP && !between ? ' after SP ' : ' '));
 		}
 		if (key == 'Fielding') {
 			row.addClass(v);

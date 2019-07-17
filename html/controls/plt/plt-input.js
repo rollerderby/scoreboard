@@ -632,19 +632,21 @@ function openAnnotationEditor(teamId, skaterId) {
 	var prefix = 'ScoreBoard.Team('+teamId+').Skater('+skaterId+').';
 	var skaterNumber = WS.state[prefix + 'Number'];
 	var position = WS.state[prefix + 'Position'].slice(2);
-	var annotationPath = ').TeamJam('+teamId+').Fielding(' + position + ').Annotation';
+	var fieldingPrefix = ').TeamJam('+teamId+').Fielding(' + position + ').';
 	if (isTrue(WS.state['ScoreBoard.InJam'])) {
-		annotationPath = 'ScoreBoard.Period(' + WS.state['ScoreBoard.CurrentPeriodNumber'] +
+		fieldingPrefix = 'ScoreBoard.Period(' + WS.state['ScoreBoard.CurrentPeriodNumber'] +
 		').Jam(' + WS.state['ScoreBoard.Period('+WS.state['ScoreBoard.CurrentPeriodNumber']+').CurrentJamNumber']
-		+ annotationPath;
+		+ fieldingPrefix;
 	} else {
-		annotationPath = 'ScoreBoard.Jam(' + WS.state['ScoreBoard.UpcomingJamNumber'] + annotationPath;
+		fieldingPrefix = 'ScoreBoard.Jam(' + WS.state['ScoreBoard.UpcomingJamNumber'] + fieldingPrefix;
 	}
 	annotationEditor.data('skaterNumber', skaterNumber);
 	annotationEditor.data('position', position);
 	annotationEditor.find('#subDropdown').val(skaterId);
-	annotationEditor.find('#annotation').val(WS.state[annotationPath]);
-	annotationEditor.find('.Box').toggleClass('Hide', !isTrue(WS.state[prefix + 'PenaltyBox']));
+	annotationEditor.find('#annotation').val(WS.state[fieldingPrefix + 'Annotation']);
+	annotationEditor.find('.Box').toggleClass('Hide', WS.state[fieldingPrefix + 'CurrentBoxTrip'] == '');
+	annotationEditor.find('.Box .Current').toggleClass('Hide', !isTrue(WS.state[prefix + 'PenaltyBox']))
+	annotationEditor.find('.Box .Past').toggleClass('Hide', isTrue(WS.state[prefix + 'PenaltyBox']))
 	annotationEditor.dialog('open');
 }
 
@@ -658,8 +660,12 @@ function prepareAnnotationEditor(teamId) {
 	function initialize() {
 		var table = $('<table>').appendTo($('#AnnotationEditor'));
 		var row = $('<tr>').addClass('Box').appendTo(table);
-		$('<td>').append(subDropdown)
-				.append($('<button>').text('Substitute').button().click(function() {
+		$('<td>').append($('<button>').addClass('Past').text('Unend Box Trip').button().click(function() {
+					var prefix = jamPrefix + annotationEditor.data('position') + ').';
+					WS.Set(prefix + 'UnendBoxTrip', true);
+				}))
+				.append(subDropdown.addClass('Current'))
+				.append($('<button>').addClass('Current').text('Substitute').button().click(function() {
 					var prefix = jamPrefix + annotationEditor.data('position') + ').';
 					WS.Set(prefix + 'Skater', subDropdown.val());
 					WS.Set(prefix + 'Annotation', 'Substitute for #' + annotationEditor.data('skaterNumber'));
