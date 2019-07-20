@@ -240,6 +240,7 @@
 				<exclude name="html/images/sponsor_banner/*" />
 				<include name="html/images/teamlogo" />
 				<include name="html/images/sponsor_banner" />
+				<exclude name="html/game-data/json/*" />
 				<include name="lib/crg-scoreboard.jar" />
 				<include name="config/crg.scoreboard.properties" />
 				<include name="config/penalties/**" />

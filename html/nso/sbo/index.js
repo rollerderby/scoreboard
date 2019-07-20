@@ -13,6 +13,7 @@ $.fx.interval = 33;
 
 
 $(function() {
+	var activeTab = location.hash;
 	createTeamTimeTab(createTab("Team/Time", "TeamTimeTab"));
 	createRulesetsTab(createTab('Rulesets', 'RulesetsTab'))
 	createScoreBoardSettingsTab(createTab("Settings", "ScoreBoardSettingsTab"));
@@ -25,6 +26,10 @@ $(function() {
 
 	$("#tabsDiv").tabs();
 
+	if (activeTab) {
+		$('a[href=\'' + activeTab + '\']').click();
+	}
+	
 	// FIXME - is there better way to avoid key controls when a dialog is visible?
 	_crgKeyControls.addCondition(function() { return !$("body>div.ui-dialog").is(":visible"); });
 	// FIXME - maybe use something else to check if user is typing into a text input...
@@ -101,7 +106,9 @@ function logout() {
 }
 
 function createTab(title, tabId) {
-	if (typeof title == "string") title = $("<a>").html(title);
+	if (typeof title == "string") title = $("<a>").html(title).click(function() {
+		location.hash = '#'+tabId;
+	});
 	$("<li>").append(title.attr("href", "#"+tabId)).appendTo("#tabsDiv>ul");
 	return $("<div>").attr("id", tabId).addClass("TabContent")
 		.appendTo("#tabsDiv");

@@ -62,26 +62,38 @@ function createDataManagementTab(tab) {
 		.append($('<td>').addClass('Preview'))
 		.append($('<td>').addClass('Download').append($('<a download>').addClass('Download').text('Download').button()));
 	
-	WS.Register("ScoreBoard.Media.Format(*).Type(*).File(*).Name", function(k, v) {
-		var table = tab.find(">#"+k.Format+">div.Type>table.Type[type="+k.Type+"]");
-		table.find("tr.Item[file='"+k.File+"']").remove();
+	var itemTemplateNoPreview = $('<tr>').addClass('Item')
+		.append($('<td>').addClass('Remove').append($('<button>').addClass('Remove').text('Remove').button()))
+		.append($('<td>').attr('colspan', '2').addClass('Src'))
+		.append($('<td>').addClass('Download').append($('<a download>').addClass('Download').text('Download').button()));
+	
+	WS.Register('ScoreBoard.Media.Format(*).Type(*).File(*).Name', function(k, v) {
+		var table = tab.find('>#'+k.Format+'>div.Type>table.Type[type='+k.Type+']');
+		table.find('tr.Item[file="'+k.File+'"]').remove();
 		if (v == null) {
 			return;
 		}
-		var newRow = itemTemplate.clone(true).attr("name", v).attr("file", k.File);
-		newRow.find("button.Remove").click(function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
-		newRow.find("td.Name>input").val(v).change(function(e) {
-			WS.Set("ScoreBoard.Media.Format("+k.Format+").Type("+k.Type+").File("+k.File+").Name", e.target.value)
-		});
-		newRow.find("td.Download>a").attr('href', "/"+k.Format+"/"+k.Type+"/" + k.File);
-		var previewElement = "<iframe>";
-		if (k.Format == "images") {
-			previewElement = "<img>";
-		} else if (k.Format == "videos") {
-			previewElement = "<video>";
+		var newRow;
+		if (k.Format == 'game-data') {
+			newRow = itemTemplateNoPreview.clone(true);
+		} else {
+			newRow = itemTemplate.clone(true);
 		}
-		$(previewElement).attr("src", "/"+k.Format+"/"+k.Type+"/" + k.File).appendTo(newRow.find("td.Preview"));
-		_windowFunctions.appendAlphaSortedByAttr(table.children("tbody"), newRow, "name", 1);
+		newRow.attr('name', v).attr('file', k.File);
+		newRow.find('button.Remove').click(function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
+		newRow.find('td.Name>input').val(v).change(function(e) {
+			WS.Set('ScoreBoard.Media.Format('+k.Format+').Type('+k.Type+').File('+k.File+').Name', e.target.value)
+		});
+		newRow.find('td.Src').text(k.File);
+		newRow.find('td.Download>a').attr('href', '/'+k.Format+'/'+k.Type+'/' + k.File);
+		var previewElement = '<iframe>';
+		if (k.Format == 'images') {
+			previewElement = '<img>';
+		} else if (k.Format == 'videos') {
+			previewElement = '<video>';
+		}
+		$(previewElement).attr('src', '/'+k.Format+'/'+k.Type+'/' + k.File).appendTo(newRow.find('td.Preview'));
+		_windowFunctions.appendAlphaSortedByAttr(table.children('tbody'), newRow, 'name', 1);
 	});
 	
 	var removeDialogTemplate = $('<div>').addClass('RemoveMediaDialog')
