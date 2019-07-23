@@ -142,19 +142,15 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     @Override
     public void startJam() {
         synchronized (coreLock) {
-            requestBatchStart();
             set(Value.RUNNING, true);
             set(Value.CURRENT_JAM, getCurrentJam().getNext());
             getCurrentJam().start();
-            requestBatchEnd();
         }
     }
     @Override
     public void stopJam() {
         synchronized (coreLock) {
-            requestBatchStart();
             getCurrentJam().stop();
-            requestBatchEnd();
         }
     }
 

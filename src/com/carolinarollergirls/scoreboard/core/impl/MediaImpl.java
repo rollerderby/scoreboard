@@ -69,23 +69,31 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
                     String format = dir.getName(dir.getNameCount() - 2).toString();
                     String type = dir.getName(dir.getNameCount() - 1).toString();
 
-                    for (WatchEvent<?> event: key.pollEvents()) {
-                        WatchEvent.Kind<?> kind = event.kind();
-                        if (kind == OVERFLOW) {
-                            mediaTypeRefresh(format, type);
-                            continue;
-                        }
-                        Path filename = (Path)event.context();
-                        if (kind == ENTRY_CREATE) {
-                            // Ignore directories.
-                            if (dir.resolve(filename).toFile().isFile()) {
-                                mediaFileCreated(format, type, filename.toString());
+                    synchronized (coreLock) {
+                        try {
+                            requestBatchStart();
+
+                            for (WatchEvent<?> event: key.pollEvents()) {
+                                WatchEvent.Kind<?> kind = event.kind();
+                                if (kind == OVERFLOW) {
+                                    mediaTypeRefresh(format, type);
+                                    continue;
+                                }
+                                Path filename = (Path)event.context();
+                                if (kind == ENTRY_CREATE) {
+                                    // Ignore directories.
+                                    if (dir.resolve(filename).toFile().isFile()) {
+                                        mediaFileCreated(format, type, filename.toString());
+                                    }
+                                } else if (kind == ENTRY_DELETE) {
+                                    mediaFileDeleted(format, type, filename.toString());
+                                }
                             }
-                        } else if (kind == ENTRY_DELETE) {
-                            mediaFileDeleted(format, type, filename.toString());
+                            key.reset();
+                        } finally {
+                            requestBatchEnd();
                         }
                     }
-                    key.reset();
                 }
             }
         };
@@ -130,7 +138,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 
     private void mediaFileDeleted(String format, String type, String id) {
         synchronized (coreLock) {
-            MediaType mt = getFormat(format).getType(type); 
+            MediaType mt = getFormat(format).getType(type);
             mt.removeFile(mt.getFile(id));
         }
     }

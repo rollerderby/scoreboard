@@ -91,12 +91,10 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     @Override
     public void setCurrentRuleset(String id) {
         synchronized (coreLock) {
-            requestBatchStart();
             Ruleset rs = getRuleset(id);
             setCurrentRulesetRecurse(id);
             set(Value.CURRENT_RULESET_ID, rs.getId());
             set(Value.CURRENT_RULESET_NAME, rs.getName());
-            requestBatchEnd();
         }
     }
 
@@ -195,12 +193,10 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         @Override
         public void setAll(Collection<ValueWithId> s) {
             synchronized (coreLock) {
-                requestBatchStart();
                 removeAll(Child.RULE);
                 for (ValueWithId r : s) {
                     add(Child.RULE, r);
                 }
-                requestBatchEnd();
             }
         }
     }

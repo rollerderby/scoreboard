@@ -21,6 +21,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.impl.MediaImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public class MediaImplTests {
@@ -90,8 +91,14 @@ public class MediaImplTests {
         dir.newFile("html/images/teamlogo/new.png");
         ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
+        assertEquals(BatchEvent.START, e.getProperty());
+        e = collectedEvents.poll(1, TimeUnit.SECONDS);
+        assertNotNull(e);
         assertEquals(MediaType.Child.FILE, e.getProperty());
         assertNotNull(media.getFormat("images").getType("teamlogo").getFile("new.png"));
+        e = collectedEvents.poll(1, TimeUnit.SECONDS);
+        assertNotNull(e);
+        assertEquals(BatchEvent.END, e.getProperty());
     }
 
 }

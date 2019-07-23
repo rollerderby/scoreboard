@@ -113,6 +113,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         scoreBoardChange(new ScoreBoardEvent(this, BatchEvent.END, Boolean.TRUE, Boolean.TRUE));
     }
 
+    @Override
     public void runInBatch(Runnable r) {
         requestBatchStart();
         try {
@@ -336,13 +337,11 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) { return value; }
     protected void _valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        requestBatchStart();
         if (prop == idProperty) {
             elements.get(providerClass).put((String)value, this);
         }
         scoreBoardChange(new ScoreBoardEvent(this, prop, value, last));
         valueChanged(prop, value, last, flag);
-        requestBatchEnd();
     }
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {}
 
@@ -442,7 +441,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
     }
     protected void _itemRemoved(AddRemoveProperty prop, ValueWithId item) {
-        requestBatchStart();
         if (item instanceof ScoreBoardEventProvider) {
             ((ScoreBoardEventProvider)item).removeScoreBoardListener(this);
         }
@@ -465,7 +463,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
         scoreBoardChange(new ScoreBoardEvent(this, prop, item, true));
         itemRemoved(prop, item);
-        requestBatchEnd();
     }
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {}
     @Override

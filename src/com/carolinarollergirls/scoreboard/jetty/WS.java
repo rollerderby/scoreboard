@@ -125,6 +125,7 @@ public class WS extends WebSocketServlet {
                     if ("change".equals(f)) { flag = Flag.CHANGE; }
                     final ScoreBoardJSONSetter.JSONSet js = new ScoreBoardJSONSetter.JSONSet(key, v, flag);
                     sb.runInBatch(new Runnable() {
+                        @Override
                         public void run() {
                             ScoreBoardJSONSetter.set(sb, Collections.singletonList(js));
                         }
@@ -132,6 +133,7 @@ public class WS extends WebSocketServlet {
                 } else if (action.equals("StartNewGame")) {
                     final JSONObject data = json.getJSONObject("data");
                     sb.runInBatch(new Runnable() {
+                        @Override
                         public void run() {
                             PreparedTeam t1 = sb.getPreparedTeam(data.getString("Team1"));
                             PreparedTeam t2 = sb.getPreparedTeam(data.getString("Team2"));

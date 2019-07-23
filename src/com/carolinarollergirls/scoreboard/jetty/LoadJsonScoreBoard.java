@@ -65,6 +65,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
     protected void handleJSON(HttpServletRequest request, HttpServletResponse response, final JSONObject json) throws IOException {
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
             scoreBoard.runInBatch(new Runnable() {
+                @Override
                 public void run() {
                     scoreBoard.reset();
                     ScoreBoardJSONSetter.set(scoreBoard, json);
@@ -72,6 +73,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
             });
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
             scoreBoard.runInBatch(new Runnable() {
+                @Override
                 public void run() {
                     ScoreBoardJSONSetter.set(scoreBoard, json);
                 }
