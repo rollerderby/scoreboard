@@ -7,6 +7,8 @@
 	
 	preparePenaltyEditor();
 	
+	prepareAnnotationEditor(teamId);
+	
 	prepareFieldingEditor(teamId);
 
 	WS.AutoRegister();

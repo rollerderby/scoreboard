@@ -667,17 +667,17 @@ function createTeamTable() {
 			.attr("id", "Team"+team+"NoPivot").addClass("KeyControl").button().appendTo(starPassTd);
 
 		var makeSkaterDropdown = function(pos, elem, sort) {
-			var select = $("<select>").append($("<option value=''>?</option>"));
-			WS.Register([prefix + ".Skater(*).Number", prefix + ".Skater(*).Role"], function(k, v) {
-				select.children("[value='"+k.Skater+"']").remove();
-				if (v != null && WS.state[prefix + ".Skater("+k.Skater+").Role"] != "NotInGame") {
-					var number = WS.state[prefix + ".Skater("+k.Skater+").Number"];
-					var option = $("<option>").attr("number", number).val(k.Skater).text(number);
-					_windowFunctions.appendAlphaSortedByAttr(select, option, "number", 1);
-					select.val(WS.state[prefix + ".Position("+pos+").Skater"]);
+			var select = $('<select>').append($('<option value="">?</option>'));
+			WS.Register([prefix + '.Skater(*).Number', prefix + '.Skater(*).Role'], function(k, v) {
+				select.children('[value="'+k.Skater+'"]').remove();
+				if (v != null && WS.state[prefix + '.Skater('+k.Skater+').Role'] != 'NotInGame') {
+					var number = WS.state[prefix + '.Skater('+k.Skater+').Number'];
+					var option = $('<option>').attr('number', number).val(k.Skater).text(number);
+					_windowFunctions.appendAlphaSortedByAttr(select, option, 'number', 1);
+					select.val(WS.state[prefix + '.Position('+pos+').Skater']);
 				}
 			});
-			WSControl(prefix + ".Position("+pos+").Skater", select);
+			WSControl(prefix + '.Position('+pos+').Skater', select);
 			return select;
 		};
 

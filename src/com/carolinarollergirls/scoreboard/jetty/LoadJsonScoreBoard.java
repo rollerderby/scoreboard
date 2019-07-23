@@ -11,9 +11,6 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.IOException;
 import java.io.InputStream;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +25,6 @@ import org.json.JSONObject;
 import org.json.JSONException;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 
 public class LoadJsonScoreBoard extends HttpServlet {
@@ -69,25 +65,11 @@ public class LoadJsonScoreBoard extends HttpServlet {
     }
 
     protected void handleJSON(HttpServletRequest request, HttpServletResponse response, JSONObject json) throws IOException {
-        List<ScoreBoardJSONSetter.JSONSet> jsl = new ArrayList<>();
-
-        JSONObject state = json.getJSONObject("state");
-        for (String key: state.keySet()) {
-            Object value = state.get(key);
-            String v;
-            if (value == JSONObject.NULL) {
-                v = null;
-            } else {
-                v = value.toString();
-            }
-            jsl.add(new ScoreBoardJSONSetter.JSONSet(key, v, Flag.FROM_AUTOSAVE));
-        }
-
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
             scoreBoard.reset();
-            ScoreBoardJSONSetter.set(scoreBoard, jsl);
+            ScoreBoardJSONSetter.set(scoreBoard, json);
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
-            ScoreBoardJSONSetter.set(scoreBoard, jsl);
+            ScoreBoardJSONSetter.set(scoreBoard, json);
         } else {
             response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge");
         }

@@ -51,7 +51,8 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
         public Class<? extends ValueWithId> getType() { return type; }
     }
     public enum Command implements CommandProperty {
-        ADD_BOX_TRIP;
+        ADD_BOX_TRIP,
+        UNEND_BOX_TRIP;
         
         @Override
         public Class<Boolean> getType() { return Boolean.class; }

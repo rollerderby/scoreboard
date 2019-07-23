@@ -24,7 +24,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
-import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
@@ -79,11 +78,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         .addIndirectSource(this, Value.CURRENT_PERIOD, Period.Child.TIMEOUT);
         reset();
         addInPeriodListeners();
-        xmlScoreBoard = new XmlScoreBoard(this);
     }
-
-    @Override
-    public XmlScoreBoard getXmlScoreBoard() { return xmlScoreBoard; }
 
     @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
@@ -712,8 +707,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     protected boolean replacePending = false;
 
     protected Timeout noTimeoutDummy;
-
-    protected XmlScoreBoard xmlScoreBoard;
 
     protected ScoreBoardListener periodEndListener = new ScoreBoardListener() {
         @Override

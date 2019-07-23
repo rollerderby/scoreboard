@@ -89,7 +89,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == Child.BOX_TRIP) { 
-            if (((BoxTrip)item).isCurrent()) {
+            if (((BoxTrip)item).isCurrent() || getCurrentBoxTrip() == null) {
                 set(Value.CURRENT_BOX_TRIP, item);
             }
             updateBoxTripSymbols();
@@ -108,12 +108,15 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     @Override
     public void execute(CommandProperty prop) {
         if (prop == Command.ADD_BOX_TRIP && getSkater() != null) {
+            requestBatchStart();
             BoxTrip bt = new BoxTripImpl(this);
-            if (!isCurrent()) {
-                bt.end();
-            }
+            bt.end();
             getTeamJam().getTeam().add(Team.Child.BOX_TRIP, bt);
             add(Child.BOX_TRIP, bt);
+            requestBatchEnd();
+        }
+        if (prop == Command.UNEND_BOX_TRIP && getCurrentBoxTrip() != null && !getCurrentBoxTrip().isCurrent()) {
+            getCurrentBoxTrip().unend();
         }
     }
 
@@ -185,14 +188,10 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 }
             }
             if (this == trip.getEndFielding()) {
-                if (trip.endedBetweenJams()) {
-                    typeJam = 0;
-                    typeBeforeSP = 0;
-                    typeAfterSP = 0;
-                } else if (trip.endedAfterSP()) {
+                if (trip.endedAfterSP()) {
                     typeJam += 3;
                     typeAfterSP += 3;
-                } else {
+                } else if (!trip.endedBetweenJams()) {
                     typeJam += 3;
                     typeBeforeSP += 3;
                     typeAfterSP = 0;

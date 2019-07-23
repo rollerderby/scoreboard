@@ -16,11 +16,10 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
+import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
@@ -43,15 +42,25 @@ public class ScoreBoardManager {
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
-        registerScoreBoardController(new JettyServletScoreBoardController(scoreBoard, jsm));
+        new JettyServletScoreBoardController(scoreBoard, jsm);
 
         // Viewers.
-        registerScoreBoardViewer(new ScoreBoardMetricsCollector(scoreBoard).register());
-        registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
+        new ScoreBoardMetricsCollector(scoreBoard).register();
+        new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath());
 
-        //FIXME - not the best way to load autosave doc.
-        scoreBoard.getXmlScoreBoard().load();
+        File autoSaveDir = new File(getDefaultPath(), "config/autosave");
+        if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
+            try {
+                printMessage("No autosave to load from, using default.json");
+                AutoSaveJSONState.loadFile(scoreBoard, new File(getDefaultPath(), "config/default.json"));
+            } catch (Exception e) {
+              doExit("Error loading default configuration", e);
+            }
+        }
         scoreBoard.postAutosaveUpdate();
+
+        // Only start auto-saves once everything is loaded in.
+        new AutoSaveJSONState(jsm, autoSaveDir);
     }
 
     public static void stop() {
@@ -75,18 +84,6 @@ public class ScoreBoardManager {
     public static String getProperty(String key) { return properties.getProperty(key); }
     public static String getProperty(String key, String dflt) { return properties.getProperty(key, dflt); }
 
-
-    public static Object getScoreBoardController(String key) { return controllers.get(key); }
-
-    public static Object getScoreBoardViewer(String key) { return viewers.get(key); }
-
-    public static void registerScoreBoardController(Object sbC) {
-        controllers.put(sbC.getClass().getName(), sbC);
-    }
-
-    public static void registerScoreBoardViewer(Object sbV) {
-        viewers.put(sbV.getClass().getName(), sbV);
-    }
 
     public static void doExit(String err) { doExit(err, null); }
     public static void doExit(String err, Exception ex) {
@@ -154,8 +151,6 @@ public class ScoreBoardManager {
 
     private static Properties properties = new Properties();
     private static Map<String,String> properties_overrides = new HashMap<>();
-    private static Map<String,Object> controllers = new ConcurrentHashMap<>();
-    private static Map<String,Object> viewers = new ConcurrentHashMap<>();
 
     private static ScoreBoard scoreBoard;
     private static Logger logger = null;

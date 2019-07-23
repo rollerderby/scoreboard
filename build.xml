@@ -244,7 +244,7 @@
 				<include name="lib/crg-scoreboard.jar" />
 				<include name="config/crg.scoreboard.properties" />
 				<include name="config/penalties/**" />
-				<include name="config/default/**" />
+				<include name="config/default.json" />
 			</zipfileset>
 			<zipfileset dir="${version.dest.dir}" prefix="${zip.prefix}/html/" filemode="755" >
 				<include name="${version.release.file}" />
