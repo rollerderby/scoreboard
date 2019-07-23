@@ -12,7 +12,7 @@ import java.util.Set;
 import org.junit.Before;
 import org.junit.Test;
 
-public class JSONStateManagerTest {
+public class JSONStateManagerTests {
     private JSONStateManager jsm;
     private TestListener listener;
 
