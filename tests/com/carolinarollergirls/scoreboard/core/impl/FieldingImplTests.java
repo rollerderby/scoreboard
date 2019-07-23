@@ -130,7 +130,7 @@ public class FieldingImplTests {
        assertEquals(1, f1.getAll(Fielding.Child.BOX_TRIP).size());
        assertEquals(1, f2.getAll(Fielding.Child.BOX_TRIP).size());
 
-        // And remed again.
+        // And removed again.
        s.setPenaltyBox(false);
        assertEquals(1, f1.getAll(Fielding.Child.BOX_TRIP).size());
        assertEquals(0, f2.getAll(Fielding.Child.BOX_TRIP).size());

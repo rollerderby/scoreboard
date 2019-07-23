@@ -41,11 +41,15 @@ function prepareLtSheetTable(element, teamId, mode) {
 				}
 			});
 
-			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).Number', 'ScoreBoard.Team('+teamId+').Position(*).CurrentBoxSymbols'], function(k, v) {
+			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).Number',
+				'ScoreBoard.Team('+teamId+').Position(*).CurrentBoxSymbols',
+				'ScoreBoard.Team('+teamId+').Position(*).Annotation'], function(k, v) {
 				if (k.field == "Number") {
 					element.find("#upcoming .Skater."+k.Position).text(v);
 				} else if (k.field == "CurrentBoxSymbols") {
 					element.find("#upcoming .Box.Box"+k.Position).text(v);
+				} else if (k.field == "Annotation") {
+					element.find("#upcoming .Skater."+k.Position).toggleClass('hasAnnotation', v != '');
 				}
 			});
 		}
