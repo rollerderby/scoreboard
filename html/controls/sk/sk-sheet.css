@@ -40,3 +40,5 @@ body:not(.AllowSelect) .SK {
 #TripEditor input[type="number"] { width: 50px; }
 #TripEditor td { padding-bottom: 0.5em; }
 #TripEditor .buttons td { text-align: center; }
+#TripEditor .ui-button { font-size: 75%; }
+#TripEditor .ui-button.checked { background: #3f3; }

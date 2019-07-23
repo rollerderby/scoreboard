@@ -41,11 +41,15 @@ function prepareLtSheetTable(element, teamId, mode) {
 				}
 			});
 
-			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).Number', 'ScoreBoard.Team('+teamId+').Position(*).CurrentBoxSymbols'], function(k, v) {
+			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).Number',
+				'ScoreBoard.Team('+teamId+').Position(*).CurrentBoxSymbols',
+				'ScoreBoard.Team('+teamId+').Position(*).Annotation'], function(k, v) {
 				if (k.field == "Number") {
 					element.find("#upcoming .Skater."+k.Position).text(v);
 				} else if (k.field == "CurrentBoxSymbols") {
 					element.find("#upcoming .Box.Box"+k.Position).text(v);
+				} else if (k.field == "Annotation") {
+					element.find("#upcoming .Skater."+k.Position).toggleClass('hasAnnotation', v != '');
 				}
 			});
 		}
@@ -120,6 +124,8 @@ function prepareLtSheetTable(element, teamId, mode) {
 						setBoxTripSymbols(jamRow, '.Box'+k.Fielding, v);
 					} else if (k.BoxTripSymbolsAfterSP != null) {
 						if (isTrue(WS.state[prefix+'StarPass'])) { setBoxTripSymbols(spRow, '.Box'+k.Fielding, v); }
+					} else if (k.Annotation != null) {
+						jamRow.children('.'+k.Fielding).toggleClass('hasAnnotation', v!= null && v != '');
 					}
 				}
 				break;
@@ -248,19 +254,12 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
 	var skaterField = fieldingEditor.find('#skater').val(WS.state[prefix+'Skater']);
 	var notFieldedField = fieldingEditor.find('#notFielded').attr('checked', isTrue(WS.state[prefix+'NotFielded']));
 	var sitFor3Field = fieldingEditor.find('#sitFor3').attr('checked', isTrue(WS.state[prefix+'SitFor3']));
+	var annotationField = fieldingEditor.find('#annotation').val(WS.state[prefix+'Annotation']);
+	fieldingEditor.find('#notFielded').toggleClass('Hide', isTrue(upcoming));
+	fieldingEditor.find('.BoxTripComments').toggleClass('Hide', WS.state[prefix + 'CurrentBoxTrip'] == '');
 	fieldingEditor.find('.BoxTrip').addClass('Hide');
 	fieldingEditor.find('.'+WS.state[prefix+'Id']).removeClass('Hide');
-	fieldingEditor.find('#addTrip, #submit').unbind('click');
-	fieldingEditor.find('#addTrip').click(function() {
-		WS.Set(prefix+'AddBoxTrip', true);
-	});
-	fieldingEditor.find('#submit').click(function() {
-		WS.Set(prefix+'Skater', skaterField.val());
-		WS.Set(prefix+'NotFielded', notFieldedField.attr('checked') != null);
-		WS.Set(prefix+'SitFor3', sitFor3Field.attr('checked') != null);
-		fieldingEditor.dialog('close');
-	});
-	
+	fieldingEditor.data('prefix', prefix);
 	fieldingEditor.dialog('open');
 }
 
@@ -271,27 +270,52 @@ function prepareFieldingEditor(teamId) {
 
 	function initialize() {
 		var table = $('<table>').appendTo($('#FieldingEditor'));
+		
 		var row = $('<tr>').addClass('Skater').appendTo(table);
-		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown'))).appendTo(row);
-		var notFieldedField = $('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded')).appendTo(row).children('button');
-		notFieldedField.click(function(){notFieldedField.attr('checked', notFieldedField.attr('checked') == null);});
-		var sitFor3Field = $('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3')).appendTo(row).children('button');
-		sitFor3Field.click(function(){sitFor3Field.attr('checked', sitFor3Field.attr('checked') == null);});
+		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown')).change(function() {
+			WS.Set(fieldingEditor.data('prefix')+'Skater', $(this).val());
+		})).appendTo(row);
+		$('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded').click(function() {
+			var check = $(this).attr('checked') == null;
+			$(this).attr('checked', check);
+			WS.Set(fieldingEditor.data('prefix')+'NotFielded', check);
+		})).appendTo(row)
+		$('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3').click(function() {
+			var check = $(this).attr('checked') == null;
+			$(this).attr('checked', check);
+			WS.Set(fieldingEditor.data('prefix')+'SitFor3', check);
+		})).appendTo(row);
+		
+		row = $('<tr>').addClass('Skater').appendTo(table);
+		$('<td>').attr('colspan', '3')
+			.append($('<input type="text">').attr('size', '40').attr('id', 'annotation').change(function() {
+				WS.Set(fieldingEditor.data('prefix')+'Annotation', $(this).val());
+			})).appendTo(row);
+		
+		row = $('<tr>').addClass('Skater BoxTripComments').appendTo(table);
+		$('<td>').append($('<button>').text('No Penalty').button().click(function() { appendAnnotation('No Penalty');})).appendTo(row);
+		$('<td>').append($('<button>').text('Penalty Overturned').button().click(function() { appendAnnotation('Penalty Overturned');})).appendTo(row);
+		
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').attr('colspan', '2').text('Box Trips').appendTo(row);
 		$('<td>').appendTo(row);
+		
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').text('Start').appendTo(row);
 		$('<td>').text('End').appendTo(row);
 		$('<td>').appendTo(row);
+		
 		row = $('<tr>').attr('id', 'tripFooter').appendTo(table);
-		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip')).appendTo(row);
-		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'abort').text('Abort')).click(function() {
+		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip').button().click(function() {
+			WS.Set(fieldingEditor.data('prefix')+'AddBoxTrip', true);
+		})).appendTo(row);
+		$('<td>').appendTo(row);
+		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'close').text('Close').button()).click(function() {
 			fieldingEditor.dialog('close');
 		}).appendTo(row);
-		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'submit').text('Submit')).appendTo(row);
 
-		WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function(k,v) { processSkater(k,v); })
+		WS.Register(['ScoreBoard.Team('+teamId+').Skater(*).Role',
+			'ScoreBoard.Team('+teamId+').Skater(*).Number'], function(k,v) { processSkater(k,v); })
 		WS.Register(['ScoreBoard.Team('+teamId+').BoxTrip'], function(k,v) { processBoxTrip(k,v); })
 
 		fieldingEditor = $('#FieldingEditor').dialog({
@@ -299,33 +323,27 @@ function prepareFieldingEditor(teamId) {
 			closeOnEscape: false,
 			title: 'Fielding Editor',
 			autoOpen: false,
-			width: '500px',
+			width: '450px',
 		});
-	}		
+	}
+	
+	function appendAnnotation(annotation) {
+		var annotationField = fieldingEditor.find('#annotation');
+		if (annotationField.val() != '') {
+			annotation = '; ' + annotation;
+		}
+		annotationField.val(annotationField.val() + annotation);
+		WS.Set(fieldingEditor.data('prefix') + 'Annotation', annotationField.val());
+	}
 	
 	function processSkater(k, v) {
-		if (k.Skater == null || k.parts[3] != "Number") return;
-
-		var role = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Role'];
-		var number = WS.state['ScoreBoard.Team('+teamId+').Skater('+k.Skater+').Number'];
-		var playing = (role != null && role != 'NotInGame'); 
-
-		var option = $("#FieldingEditor #skater option[value='"+k.Skater+"']");
-		var inserted = false;
-		if (v != null && option.length == 0) {
-			var option = $('<option>').attr('value', k.Skater).text(v);
-			$('#FieldingEditor #skater').children().each(function (idx, s) {
-				if (s.text > number && idx > 0) {
-					$(s).before(option);
-					inserted = true;
-					return false;
-				}
-			});
-			if (!inserted) option.appendTo($('#FieldingEditor #skater'));
-		} else if (!playing) {
-			option.remove();
-		} else {
-			option.text(number);
+		var select = $('#FieldingEditor #skater');
+		select.children('[value="'+k.Skater+'"]').remove();
+		var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
+		if (v != null && WS.state[prefix + 'Role'] != 'NotInGame') {
+			var number = WS.state[prefix + 'Number'];
+			var option = $('<option>').attr('number', number).val(k.Skater).text(number);
+			_windowFunctions.appendAlphaSortedByAttr(select, option, 'number', 1);
 		}
 	}
 	
@@ -337,19 +355,19 @@ function prepareFieldingEditor(teamId) {
 		var row = $('#FieldingEditor .BoxTrip[id='+k.BoxTrip+']');
 		if (v != null && row.length == 0) {
 			row = $('<tr>').addClass('BoxTrip').attr('id', k.BoxTrip).insertBefore('#FieldingEditor #tripFooter');
-			$('<td>').append($('<button>').addClass('tripModify').text('-').click(function() {
+			$('<td>').append($('<button>').addClass('tripModify').text('-').button().click(function() {
 				WS.Set(prefix+'StartEarlier', true);
 			})).append($('<span>').addClass('tripStartText'))
-			.append($('<button>').addClass('tripModify').text('+').click(function() {
+			.append($('<button>').addClass('tripModify').text('+').button().click(function() {
 				WS.Set(prefix+'StartLater', true);
 			})).appendTo(row);
-			$('<td>').append($('<button>').addClass('tripModify').text('-').click(function() {
+			$('<td>').append($('<button>').addClass('tripModify').text('-').button().click(function() {
 				WS.Set(prefix+'EndEarlier', true);
 			})).append($('<span>').addClass('tripEndText').text('ongoing'))
-			.append($('<button>').addClass('tripModify').text('+').click(function() {
+			.append($('<button>').addClass('tripModify').text('+').button().click(function() {
 				WS.Set(prefix+'EndLater', true);
 			})).appendTo(row);
-			$('<td>').addClass('Col3').append($('<button>').addClass('tripRemove').text('Remove').click(function() {
+			$('<td>').addClass('Col3').append($('<button>').addClass('tripRemove').text('Remove').button().click(function() {
 				WS.Set(prefix+'Delete', true);
 			})).appendTo(row);
 		}
@@ -365,15 +383,15 @@ function prepareFieldingEditor(teamId) {
 		if (['StartJamNumber', 'StartBetweenJams', 'StartAfterSP'].includes(key)) {
 			var between = isTrue(WS.state[prefix+'StartBetweenJams']);
 			var afterSP = isTrue(WS.state[prefix+'StartAfterSP']);
-			row.find('.tripStartText').text((between?'Before ':'') + 'Jam ' + WS.state[prefix+'StartJamNumber']
-					+ (afterSP?' after SP':''));
+			row.find('.tripStartText').text((between ? 'Before ' : '') + 'Jam ' + WS.state[prefix+'StartJamNumber']
+					+ (afterSP ? ' after SP' : ''));
 		}
 		if (['EndJamNumber', 'EndBetweenJams', 'EndAfterSP'].includes(key)) {
 			var between = isTrue(WS.state[prefix+'EndBetweenJams']);
 			var afterSP = isTrue(WS.state[prefix+'EndAfterSP']);
 			var jam = WS.state[prefix+'EndJamNumber'];
-			row.find('.tripEndText').text((between?' Before ':' ') + (jam == 0 ? 'ongoing' : 'Jam ' + jam) 
-					+ (afterSP?' after SP ':' '));
+			row.find('.tripEndText').text((between ? ' After ' : ' ') + (jam == 0 ? 'ongoing' : 'Jam ' + jam) 
+					+ (afterSP && !between ? ' after SP ' : ' '));
 		}
 		if (key == 'Fielding') {
 			row.addClass(v);

@@ -8,8 +8,8 @@
 	
 	prepareLtSheetTable($('#sheet'), teamId, 'plt');
 	
-	preparePenaltyEditor();
-	
+	prepareAnnotationEditor(teamId);
+
 	prepareFieldingEditor(teamId);
 
 	WS.AutoRegister();

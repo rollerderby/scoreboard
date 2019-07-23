@@ -29,6 +29,7 @@ public interface Position extends ScoreBoardEventProvider {
         ID(String.class, ""),
         CURRENT_FIELDING(Fielding.class, null),
         CURRENT_BOX_SYMBOLS(String.class, ""),
+        ANNOTATION(String.class, ""),
         SKATER(Skater.class, null),
         NAME(String.class, ""),
         NUMBER(String.class, ""),
