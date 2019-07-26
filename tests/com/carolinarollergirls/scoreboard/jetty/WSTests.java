@@ -6,7 +6,7 @@ import static org.junit.Assert.assertFalse;
 import org.junit.Before;
 import org.junit.Test;
 
-public class WSTest {
+public class WSTests {
     private WS.PathTrie pt;
 
     @Before
