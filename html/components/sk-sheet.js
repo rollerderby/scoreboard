@@ -246,6 +246,8 @@ function prepareSkSheetTable(element, teamId, mode) {
 			}
 
 			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP');
+			jamRow.children('.Jammer').click(function() { showSkaterSelector(prefix+'Fielding(Jammer).Skater', teamId); });
+			spRow.children('.Jammer').click(function() { showSkaterSelector(prefix+'Fielding(Pivot).Skater', teamId); });
 			if (mode == 'operator') {
 				table.prepend(jamRow)
 			} else {
@@ -314,6 +316,50 @@ function prepareTripEditor() {
 							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
 						})))));
 	}
+}
+
+function showSkaterSelector(element, teamId) {
+	$('#skaterSelector .skaterSelect').addClass('Hide');
+	$('#skaterSelector #skaterSelect'+teamId).removeClass('Hide');
+	console.log(element +'='+ WS.state[element]);
+	$('#skaterSelector #skaterSelect'+teamId).val(WS.state[element]);
+	$('#skaterSelector').data('element', element).dialog('open');
+}
+
+function prepareSkaterSelector() {
+	
+	'use strict';
+	
+	var selects = [];
+
+	var selectorDialog = $('#skaterSelector').dialog({
+		modal: true,
+		closeOnEscape: false,
+		title: 'Skater Selector',
+		autoOpen: false,
+		width: '200px',
+	});
+
+	$.each(['1','2'], function() {
+		selects[String(this)] = $('<select>').attr('id', 'skaterSelect'+String(this)).addClass('skaterSelect').append($('<option>').attr('value', '').text('None/Unknown')).change(function() {
+			WS.Set(selectorDialog.data('element'), $(this).val());
+			selectorDialog.dialog('close');
+		});
+	});
+
+	selectorDialog.append(selects['1']).append(selects['2']);
+	
+	WS.Register(['ScoreBoard.Team(*).Skater(*).Number', 'ScoreBoard.Team(*).Skater(*).Role'], function(k, v) {
+		selects[k.Team].children('[value="'+k.Skater+'"]').remove();
+		var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
+		if (v != null && WS.state[prefix + 'Role'] != 'NotInGame') {
+			var number = WS.state[prefix + 'Number'];
+			var option = $('<option>').attr('number', number).val(k.Skater).text(number);
+			_windowFunctions.appendAlphaSortedByAttr(selects[k.Team], option, 'number', 1);
+		}
+	});
+
+	WS.Register(['ScoreBoard.Period(*).Jam(*).TeamJam(*).Fielding(*).Skater']);
 }
 
 //# sourceURL=controls\sk\sk-sheet.js
