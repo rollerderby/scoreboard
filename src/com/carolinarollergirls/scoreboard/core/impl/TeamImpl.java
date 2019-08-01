@@ -95,6 +95,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             };
             tripScoreTimer.schedule(tripScoreTimerTask, 4000);
         }
+        if (prop == Value.NO_INITIAL && flag != Flag.COPY) {
+            if (!(Boolean)value && (Boolean)last) {
+                execute(Command.ADD_TRIP);
+            } else if ((Boolean)value && !(Boolean)last && getCurrentTrip().getNumber() == 2
+                    && (Integer)get(Value.JAM_SCORE) == 0) {
+                execute(Command.REMOVE_TRIP);
+            }
+        }
         return value;
     }
     @Override

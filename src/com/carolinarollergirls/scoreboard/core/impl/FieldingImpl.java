@@ -88,7 +88,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         if (prop == Value.NOT_FIELDED && getPosition().getFloorPosition() == FloorPosition.PIVOT) {
             teamJam.setNoPivot((Boolean)value);
         }
-        if (prop == Value.SKATER && value != null && isInBox()) {
+        if (prop == Value.SKATER && value != null && isInBox() && flag != Flag.FROM_AUTOSAVE) {
             for (Penalty p : ((Skater)value).getUnservedPenalties()) {
                 getCurrentBoxTrip().add(BoxTrip.Child.PENALTY, p);
             }

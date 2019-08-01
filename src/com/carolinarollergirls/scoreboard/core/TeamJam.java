@@ -55,7 +55,7 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
         LOST(Boolean.class, false),
         LEAD(Boolean.class, false),
         CALLOFF(Boolean.class, false),
-        NO_INITIAL(Boolean.class, false),
+        NO_INITIAL(Boolean.class, true),
         INJURY(Boolean.class, false),
         DISPLAY_LEAD(Boolean.class, false),
         STAR_PASS(Boolean.class, false),
