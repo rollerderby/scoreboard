@@ -31,8 +31,10 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         initReferences();
         add(Child.FIELDING, f);
         f.updateBoxTripSymbols();
-        for (Penalty p : f.getSkater().getUnservedPenalties()) {
-            add(Child.PENALTY, p);
+        if (f.getSkater() != null) {
+            for (Penalty p : f.getSkater().getUnservedPenalties()) {
+                add(Child.PENALTY, p);
+            }
         }
     }
 
