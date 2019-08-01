@@ -15,7 +15,6 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 
 public class PositionImpl extends ScoreBoardEventProviderImpl implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
@@ -40,23 +39,6 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
         }
     }
     
-    @Override
-    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.SKATER && floorPosition == FloorPosition.PIVOT && flag != Flag.COPY) {
-            // can't set here as Skater hasn't been set yet so NoNamedPivot can't be set properly
-            // but also can't detect that change came from UI in valueChanged() thus this flag
-            setNoPivot = true;
-        }
-        return value;
-    }
-    @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.SKATER && setNoPivot) {
-            getTeam().set(Team.Value.NO_NAMED_PIVOT, value == null);
-            setNoPivot = false;
-        }
-    }
-
     @Override
     public Team getTeam() { return (Team)parent; }
 
@@ -89,6 +71,4 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
     public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }
 
     protected FloorPosition floorPosition;
-    
-    private boolean setNoPivot = false;
 }

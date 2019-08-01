@@ -197,7 +197,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
 			if (mode != 'copyToStatsbook') {
 				$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
-				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoNamedPivot', $(this).text() == ""); }).appendTo(jamRow);
+				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
 			}
 			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 				var pos = String(this);

@@ -31,9 +31,6 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             add(Child.FIELDING, new FieldingImpl(this, (Position)p));
         }
         addWriteProtection(Child.FIELDING);
-        setRecalculated(Value.NO_PIVOT).addSource(this, Value.NO_NAMED_PIVOT)
-            .addSource(getFielding(FloorPosition.PIVOT), Fielding.Value.SKATER)
-            .addSource(getFielding(FloorPosition.PIVOT), Fielding.Value.NOT_FIELDED);
         getOrCreate(NChild.SCORING_TRIP, 1);
     }
 
@@ -79,13 +76,6 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
                 return last;
             }
         }
-        if (prop == Value.NO_NAMED_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() == null) {
-            return true;
-        }
-        if (prop == Value.NO_PIVOT) {
-            return (Boolean)get(Value.NO_NAMED_PIVOT) && (getFielding(FloorPosition.PIVOT).getSkater() != null
-                    || (Boolean)getFielding(FloorPosition.PIVOT).get(Fielding.Value.NOT_FIELDED));
-        }
         if (value instanceof Integer && prop != Value.OS_OFFSET && (Integer)value < 0) { return 0; }
         return value;
     }
@@ -110,7 +100,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
                 ((ScoringTrip)last).set(ScoringTrip.Value.CURRENT, false);
             }
         }
-        if (prop == Value.NO_NAMED_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() != null &&
+        if (prop == Value.NO_PIVOT && getFielding(FloorPosition.PIVOT).getSkater() != null &&
                 getFielding(FloorPosition.PIVOT).isCurrent()) {
             getFielding(FloorPosition.PIVOT).getSkater().setRole(FloorPosition.PIVOT.getRole(this));
         }
@@ -201,9 +191,9 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public ScoringTrip getStarPassTrip() { return (ScoringTrip)get(Value.STAR_PASS_TRIP); }
     
     @Override
-    public boolean hasNoNamedPivot() { return (Boolean)get(Value.NO_NAMED_PIVOT); }
+    public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
     @Override
-    public void setNoNamedPivot(boolean np) { set(Value.NO_NAMED_PIVOT, np); }
+    public void setNoPivot(boolean np) { set(Value.NO_PIVOT, np); }
 
     @Override
     public Fielding getFielding (FloorPosition fp) { return (Fielding)get(Child.FIELDING, fp.toString()); }
