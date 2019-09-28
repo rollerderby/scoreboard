@@ -17,11 +17,11 @@ public class ClockConversion {
                 par = Long.parseLong(parPad.substring(0, 3));
             }
 
-            return new Long(((sec + (min * 60)) * 1000) + par);
+            return ((sec + (min * 60)) * 1000) + par;
         }
 
         try {
-            return new Long(Long.parseLong(v));
+            return Long.parseLong(v);
         } catch (Exception e) {
             return null;
         }

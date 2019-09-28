@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.rules;
 
 public class BooleanRule extends RuleDefinition {
     public BooleanRule(String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
-        super(Type.BOOLEAN, fullname, description, new Boolean(defaultValue));
+        super(Type.BOOLEAN, fullname, description, Boolean.valueOf(defaultValue));
 
         values.put(Value.TRUE_VALUE, trueValue);
         values.put(Value.FALSE_VALUE, falseValue);
@@ -11,7 +11,7 @@ public class BooleanRule extends RuleDefinition {
     @Override
     public boolean isValueValid(String v) {
         try {
-            new Boolean(v);
+            Boolean.valueOf(v);
             return true;
         } catch (Exception e) {
             return false;
@@ -23,7 +23,7 @@ public class BooleanRule extends RuleDefinition {
             return "";
         }
 
-        return new Boolean(v.toString()) ? getTrueValue() : getFalseValue();
+        return Boolean.valueOf(v.toString()) ? getTrueValue() : getFalseValue();
     }
 
     public String getTrueValue() {
