@@ -8,6 +8,7 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
@@ -38,7 +39,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == Value.PENALTY_BOX && flag != Flag.FROM_AUTOSAVE) {
             if ((Boolean)value && (getCurrentBoxTrip() == null || !getCurrentBoxTrip().isCurrent())) {
-                if (getSkater() == null) {
+                if ((Boolean)get(Value.NOT_FIELDED)) {
                     return false;
                 } else {
                     getTeamJam().getTeam().add(Team.Child.BOX_TRIP, new BoxTripImpl(this));
@@ -55,7 +56,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 getCurrentBoxTrip().end();
             }
         }
-        if (prop == Value.NOT_FIELDED && getSkater() != null) { return false; }
+        if (prop == Value.NOT_FIELDED && (getSkater() != null || getAll(Child.BOX_TRIP).size() > 0)) { return false; }
         if (prop == Value.SKATER_NUMBER) {
             if (getSkater() != null) {
                 return getSkater().getNumber();
@@ -84,6 +85,14 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 getSkater().updateEligibility();
             }
         }
+        if (prop == Value.NOT_FIELDED && getPosition().getFloorPosition() == FloorPosition.PIVOT) {
+            teamJam.setNoPivot((Boolean)value);
+        }
+        if (prop == Value.SKATER && value != null && isInBox() && flag != Flag.FROM_AUTOSAVE) {
+            for (Penalty p : ((Skater)value).getUnservedPenalties()) {
+                getCurrentBoxTrip().add(BoxTrip.Child.PENALTY, p);
+            }
+        }
     }
 
     @Override
@@ -107,7 +116,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     
     @Override
     public void execute(CommandProperty prop) {
-        if (prop == Command.ADD_BOX_TRIP && getSkater() != null) {
+        if (prop == Command.ADD_BOX_TRIP && !(Boolean)get(Value.NOT_FIELDED)) {
             requestBatchStart();
             BoxTrip bt = new BoxTripImpl(this);
             bt.end();

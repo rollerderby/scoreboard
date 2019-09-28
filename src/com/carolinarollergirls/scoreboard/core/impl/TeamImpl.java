@@ -57,7 +57,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         setCopy(Value.INJURY, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.INJURY, false);
         setCopy(Value.NO_INITIAL, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.NO_INITIAL, false);
         setCopy(Value.DISPLAY_LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.DISPLAY_LEAD, false);
-        setCopy(Value.NO_NAMED_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_NAMED_PIVOT, false);
         setCopy(Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_PIVOT, false);
         setCopy(Value.STAR_PASS, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS, false);
         setCopy(Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS_TRIP, false);
@@ -95,6 +94,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 }
             };
             tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+        }
+        if (prop == Value.NO_INITIAL && flag != Flag.COPY) {
+            if (!(Boolean)value && (Boolean)last) {
+                execute(Command.ADD_TRIP);
+            } else if ((Boolean)value && !(Boolean)last && getCurrentTrip().getNumber() == 2
+                    && (Integer)get(Value.JAM_SCORE) == 0) {
+                execute(Command.REMOVE_TRIP);
+            }
         }
         return value;
     }
@@ -466,7 +473,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             requestBatchStart();
             if (s.getFielding(tj) != null && 
                     s.getFielding(tj).getPosition() == getPosition(FloorPosition.PIVOT)) {
-                tj.setNoNamedPivot(r != Role.PIVOT);
+                tj.setNoPivot(r != Role.PIVOT);
                 if ((r == Role.BLOCKER || r == Role.PIVOT) &&
                         ((tj.isRunningOrEnded() && hasFieldingAdvancePending()) ||
                                 (tj.isRunningOrUpcoming() && !hasFieldingAdvancePending()))) {
@@ -476,7 +483,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             if (s.getFielding(tj) == null || s.getRole(tj) != r) {
                 Fielding f = getAvailableFielding(r, tj);
                 if (r == Role.PIVOT && f != null) {
-                    if (f.getSkater() != null && (tj.hasNoNamedPivot() || s.getRole(tj) == Role.BLOCKER)) {
+                    if (f.getSkater() != null && (tj.hasNoPivot() || s.getRole(tj) == Role.BLOCKER)) {
                         // If we are moving a blocker to pivot, move the previous pivot to blocker
                         // If we are replacing a blocker from the pivot spot,
                         //  see if we have a blocker spot available for them instead
@@ -489,7 +496,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                         f2.setSkater(f.getSkater());
                     }
                     f.setSkater(s);
-                    tj.setNoNamedPivot(false);
+                    tj.setNoPivot(false);
                 } else if (f != null) { 
                     f.setSkater(s);
                 } else { 
@@ -537,7 +544,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     nextReplacedBlocker = FloorPosition.BLOCKER3;
                     break;
                 case BLOCKER3:
-                    nextReplacedBlocker = (tj.hasNoNamedPivot() && !tj.isStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
+                    nextReplacedBlocker = (tj.hasNoPivot() && !tj.isStarPass()) ? FloorPosition.PIVOT : FloorPosition.BLOCKER1;
                     break;
                 case PIVOT:
                     nextReplacedBlocker = FloorPosition.BLOCKER1;
@@ -577,7 +584,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
 
     @Override
-    public boolean hasNoNamedPivot() { return (Boolean)get(Value.NO_NAMED_PIVOT); }
+    public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
     
