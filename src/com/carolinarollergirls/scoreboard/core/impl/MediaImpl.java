@@ -9,12 +9,16 @@ package com.carolinarollergirls.scoreboard.core.impl;
  */
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.FileSystems;
+import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.SimpleFileVisitor;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
@@ -35,7 +39,8 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         this.path = path;
         addFormat("images", "fullscreen", "sponsor_banner", "teamlogo");
         addFormat("videos", "fullscreen");
-        addFormat("customhtml", "fullscreen");
+        addFormat("custom", "nso", "settings", "view", "overlay");
+        addFormat("game-data", "json");
 
         // Create directories and register with inotify.
         try {
@@ -81,10 +86,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
                                 }
                                 Path filename = (Path)event.context();
                                 if (kind == ENTRY_CREATE) {
-                                    // Ignore directories.
-                                    if (dir.resolve(filename).toFile().isFile()) {
-                                        mediaFileCreated(format, type, filename.toString());
-                                    }
+                                    mediaFileCreated(format, type, filename.toString());
                                 } else if (kind == ENTRY_DELETE) {
                                     mediaFileDeleted(format, type, filename.toString());
                                 }
@@ -104,17 +106,15 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         synchronized (coreLock) {
             Path p = path.resolve(format).resolve(type);
             Collection<? extends ValueWithId> files = getFormat(format).getType(type).getAll(MediaType.Child.FILE);
-            // Remove any files that aren't there or aren't files any more.
+            // Remove any files that aren't there any more.
             for (ValueWithId fn : files) {
-                if (!p.resolve(fn.getId()).toFile().isFile()) {
+                if (!p.resolve(fn.getId()).toFile().exists()) {
                     mediaFileDeleted(format, type, fn.getId());
                 }
             }
             // Add any files that are there.
             for (File f : p.toFile().listFiles()) {
-                if (f.isFile()) {
-                    mediaFileCreated(format, type, f.getName());
-                }
+                mediaFileCreated(format, type, f.getName());
             }
         }
     }
@@ -160,7 +160,21 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
                 // Check the directory is one the user is meant to be able to change.
                 if (getFormat(format).getType(type) != null) {
                     // Delete the file, and let inotify take care of handling the change.
-                    return Files.deleteIfExists(path.resolve(format).resolve(type).resolve(id));
+                    Files.walkFileTree(path.resolve(format).resolve(type).resolve(id),
+                            new SimpleFileVisitor<Path>() {
+                        @Override
+                        public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
+                            Files.delete(file);
+                            return FileVisitResult.CONTINUE;
+                        }
+
+                        @Override
+                        public FileVisitResult postVisitDirectory(Path dir, IOException exc) throws IOException {
+                            Files.delete(dir);
+                            return FileVisitResult.CONTINUE;
+                        }
+                     });
+                    return true;
                 }
                 return false;
             } catch (Exception e) {

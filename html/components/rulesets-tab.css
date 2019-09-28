@@ -1,0 +1,69 @@
+#RulesetsTab .rulesets {
+	display: inline-block;
+	vertical-align:top;
+	width: 20%;
+	height: 85vh;
+	border-right: 1px solid black;
+	overflow: hidden;
+}
+
+#RulesetsTab .definitions {
+	display: inline-block;
+	vertical-align:top;
+	padding-left: 1%;
+	width: 78%;
+	overflow: auto;
+}
+
+#RulesetsTab table { width: 100%; }
+#RulesetsTab th { text-align: left; }
+#RulesetsTab #new_parent, #new_name { width: 99%; }
+
+#RulesetsTab .rules { padding-top: 10px; }
+#RulesetsTab .definitions .section { width: 100%; clear: both; }
+#RulesetsTab .definitions .section .header { background-color: lightgray; font-weight: bold; margin-top: 2px; }
+#RulesetsTab .definitions .section .definition { width: 100%; height: 1em; clear: both; padding: 0px; margin: 0px; }
+#RulesetsTab .definitions .section .definition div { float: left; }
+#RulesetsTab .definitions .section .definition .name { width: 40%; display: inline-block; position: relative; }
+#RulesetsTab .definitions .section .definition .value { width: 60%; }
+#RulesetsTab .definitions .section:not(.folded) .header:before {content: "-- "; }
+#RulesetsTab .definitions .section.folded .header:before {content: "+ "; }
+#RulesetsTab .definitions .section.folded .definition { display:none; }
+
+#RulesetsTab .tooltiptext { 
+	visibility: hidden; 
+	background-color: black; 
+	color: #fff; 
+	text-align: center; 
+	padding: 5px; 
+	border-radius: 6px; 
+	bottom: 100%; 
+	left: 10%; 
+	width: 80%; 
+	position: absolute; 
+	z-index: 1;
+}
+#RulesetsTab .definitions .section .definition .name:hover .tooltiptext { visibility: visible; }
+#RulesetsTab .tooltiptext::after { 
+	content: " "; 
+	position: absolute; 
+	top: 100%; 
+	left: 10%; 
+	margin-left: -5px;
+	border-width: 5px; 
+	border-style: solid; 
+	border-color: black transparent transparent transparent; 
+}
+
+#RulesetsTab h1 {
+	font-size: 12pt;
+	padding-left: 10px;
+}
+
+#RulesetsTab ul {
+	padding-left: 5px;
+}
+
+#RulesetsTab li {
+	list-style-type: none;
+}

@@ -148,6 +148,7 @@ public class MediaServlet extends DefaultScoreBoardControllerServlet {
 
     protected File createFile(File typeDir, FileItem item) throws IOException,FileNotFoundException {
         File f = new File(typeDir, item.getName());
+        f.getParentFile().mkdirs();
         FileOutputStream fos = null;
         InputStream is = item.getInputStream();
         try {

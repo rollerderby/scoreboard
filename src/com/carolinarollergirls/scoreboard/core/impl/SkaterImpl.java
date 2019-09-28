@@ -64,7 +64,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     
     @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.ROLE && flag != Flag.INTERNAL) {
+        if (prop == Value.ROLE && flag != Flag.INTERNAL && flag != Flag.FROM_AUTOSAVE) {
             team.field(this, (Role)value);
             return last;
         }

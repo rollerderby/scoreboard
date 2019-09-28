@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -91,6 +93,7 @@ public class PositionImplTests {
     @Test
     public void doesnt_set_penalty_with_no_skater() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
+        jammer.getCurrentFielding().set(Fielding.Value.NOT_FIELDED, true);
         jammer.setPenaltyBox(true);
 
         assertFalse(jammer.isPenaltyBox());

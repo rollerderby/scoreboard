@@ -436,8 +436,9 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             if (children.get(prop).get(id) == item) {
                 children.get(prop).remove(id);
                 _itemRemoved(prop, item);
+                return true;
             }
-            return true;
+            return false;
         }
     }
     protected void _itemRemoved(AddRemoveProperty prop, ValueWithId item) {
