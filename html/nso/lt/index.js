@@ -9,7 +9,10 @@
 
 	prepareFieldingEditor(teamId);
 
+	prepareOptionsDialog(teamId);
+	
 	WS.AutoRegister();
 	WS.Connect();
 
+	if (!teamId) { openOptionsDialog(); }
 })();

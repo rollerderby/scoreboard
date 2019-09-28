@@ -78,3 +78,6 @@ body:not(.AllowSelect) .PLT {
 
 #AnnotationEditor .Hide { display: none; }
 #AnnotationEditor .ui-button { font-size: 75%; }
+
+#OptionsDialog table { text-align: center; margin-left: auto; margin-right: auto;}
+#OptionsDialog .selected { background: #3f3; }

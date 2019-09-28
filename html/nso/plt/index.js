@@ -1,5 +1,6 @@
 (function () {
 	var teamId = _windowFunctions.getParam("team");
+	
 
 	preparePltInputTable($('#input'), teamId, 'plt');
 	
@@ -11,6 +12,10 @@
 	
 	prepareFieldingEditor(teamId);
 
+	prepareOptionsDialog(teamId);
+	
 	WS.AutoRegister();
 	WS.Connect();
+	
+	if (!teamId) { openOptionsDialog(); }
 })();
