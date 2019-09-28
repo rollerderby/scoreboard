@@ -21,8 +21,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -67,7 +67,7 @@ public class JettyServletScoreBoardController {
     }
 
     protected void init(String host, int port) {
-        SocketConnector sC = new SocketConnector();
+        SelectChannelConnector sC = new SelectChannelConnector();
         sC.setHost(host);
         sC.setPort(port);
         Server server = new Server();
