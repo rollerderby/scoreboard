@@ -25,7 +25,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		var thead = $('<tr>').appendTo($('<thead>').appendTo(table));
 		if (mode == 'plt' || mode == 'lt') {
 			if (mode == 'lt') {
-				$('<td>').attr('colspan', '5').attr('id', 'head').text('Team ' + teamId).appendTo(thead);
+				$('<td>').attr('colspan', '5').attr('id', 'head').text('Team ' + teamId).click(openOptionsDialog).appendTo(thead);
 			} else {
 				$('<td>').text('Bench').appendTo(thead);
 				$('<td>').text('Jammer').appendTo(thead);
@@ -40,7 +40,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		if (mode == 'plt' || mode == 'pt') {
 			$('<td>').text('#').appendTo(thead);
 		}
-		$('<td>').attr('colspan', '9').attr('id', 'head').text('Team ' + teamId).toggleClass('Hide', mode == 'lt').appendTo(thead);
+		$('<td>').attr('colspan', '9').attr('id', 'head').text('Team ' + teamId).toggleClass('Hide', mode == 'lt').click(openOptionsDialog).appendTo(thead);
 		$('<td>').text('FO_Ex').toggleClass('Hide', mode == 'lt').appendTo(thead);
 		totalPenalties = $('<td>').attr('id', 'totalPenalties').text('Σ 0');
 		if (mode != 'copyToStatsbook') {
@@ -726,5 +726,42 @@ function prepareAnnotationEditor(teamId) {
 			_windowFunctions.appendAlphaSortedByAttr(select, option, 'number');
 		}
 	}
+}
+
+var optionsDialog;
+
+function openOptionsDialog() {
+	optionsDialog.dialog('open');
+}
+
+function prepareOptionsDialog(teamId) {
+	var table = $('<table>').appendTo($('#OptionsDialog'));
+	$('<tr>').append($('<th>').text('Select Team')).appendTo(table);
+	$.each( [ '1', '2' ], function() {
+		var tId = String(this);
+		var row = $('<tr>').addClass('selectTeam'+tId).appendTo(table);
+		$('<td>').append($('<button>').addClass('name').toggleClass('selected', tId === teamId).button().click(function() {
+			if (tId !== teamId) {
+				window.location.href = window.location.href.replace( /[\?#].*|$/, '?team='+tId );
+			} else {
+				optionsDialog.dialog('close');
+			}
+		})).appendTo(row);
+	});
+
+	WS.Register(['ScoreBoard.Team(*).Name', 'ScoreBoard.Team(*).AlternateName(operator)'], function(k, v) {
+		var displayName = 'Team ' + k.Team + ': ' + WS.state['ScoreBoard.Team('+k.Team+').Name'];
+		var altName = WS.state['ScoreBoard.Team('+k.Team+').AlternateName(operator)'];
+		if (altName != null) { displayName = displayName + ' / ' + altName; }
+		$('.selectTeam'+k.Team+' .name span').text(displayName);
+	});
+	
+	optionsDialog = $('#OptionsDialog').dialog({
+		modal: true,
+		closeOnEscape: true,
+		title: 'Option Editor',
+		width: '500px',
+		autoOpen: false,
+	});
 }
 //# sourceURL=controls\plt\plt-input.js
