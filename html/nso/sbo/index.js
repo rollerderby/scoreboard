@@ -14,10 +14,9 @@ $.fx.interval = 33;
 
 $(function() {
 	createTeamTimeTab(createTab("Team/Time", "TeamTimeTab"));
-	createRulesetsTab(createTab('Rulesets', 'RulesetsTab'))
 	createScoreBoardSettingsTab(createTab("Settings", "ScoreBoardSettingsTab"));
 	createTeamsTab(createTab("Teams", "TeamsTab"));
-	createDataManagementTab(createTab("Up/Download", "DataManagementTab"));
+	createSaveLoadTab(createTab('Save/Load', 'saveLoad'))
 	// Only connect after any registrations from the above are in place.
 	// This avoids repeating work on the initial load.
 	WS.AutoRegister();
