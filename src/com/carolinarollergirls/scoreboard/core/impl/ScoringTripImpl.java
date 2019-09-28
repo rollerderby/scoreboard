@@ -60,9 +60,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
                 unlink();
                 break;
             case INSERT_BEFORE:
-                requestBatchStart();
                 parent.add(ownType, new ScoringTripImpl((TeamJam)parent, getNumber()));
-                requestBatchEnd();
                 break;
         }
     }

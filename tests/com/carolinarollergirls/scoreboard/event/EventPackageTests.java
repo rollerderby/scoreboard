@@ -151,7 +151,6 @@ public class EventPackageTests {
         assertEquals(child2, root.get(TestScoreBoardEventProvider.Child.MULTIPLE, child2.getId()));
         
         child2.unlink();
-        ((ScoreBoardEventProviderImpl) root).requestBatchEnd();
         assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
         assertEquals(1, collectedEvents.size());
         assertEquals(4, ((TestScoreBoardEventProviderImpl)root).itemsAdded);
@@ -683,9 +682,5 @@ public class EventPackageTests {
         
         child.set(TestScoreBoardEventProvider.Value.REFERENCE, root);
         assertEquals(-5, child.get(TestScoreBoardEventProvider.Value.RECALCULATED));
-        
-        //there are unbalanced batches in here somewhere. Since #350 will eliminate them,
-        // it's not worth the effort of debugging
-        ((TestScoreBoardEventProviderImpl) root).requestBatchStart();
     }
 }

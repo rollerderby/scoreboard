@@ -225,7 +225,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void stopJam() {
         synchronized (coreLock) {
-            requestBatchStart();
             if (isDisplayLead() && !scoreBoard.getClock(Clock.ID_JAM).isTimeAtEnd()) {
                 set(Value.CALLOFF, true);
             }
@@ -264,7 +263,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             for (ValueWithId s : getAll(Child.SKATER)) {
                 ((Skater)s).updateEligibility();
             }
-            requestBatchEnd();
         }
     }
     
@@ -305,9 +303,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void setAlternateName(String i, String n) {
         synchronized (coreLock) {
-            requestBatchStart();
             add(Child.ALTERNATE_NAME, new ValWithId(i, n));
-            requestBatchEnd();
         }
     }
     @Override
@@ -318,9 +314,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void setColor(String i, String c) {
         synchronized (coreLock) {
-            requestBatchStart();
             add(Child.COLOR, new ValWithId(i, c));
-            requestBatchEnd();
         }
     }
     @Override
@@ -335,7 +329,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void loadPreparedTeam(PreparedTeam pt) {
         synchronized (coreLock) {
-            requestBatchStart();
             setLogo((String)pt.get(PreparedTeam.Value.LOGO));
             setName((String)pt.get(PreparedTeam.Value.NAME));
             for (ValueWithId v : pt.getAll(PreparedTeam.Child.ALTERNATE_NAME)) {
@@ -347,7 +340,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             for (ValueWithId v : pt.getAll(PreparedTeam.Child.SKATER)) {
                 addSkater(new SkaterImpl(this, (PreparedTeamSkater)v));
             }
-            requestBatchEnd();
         }
     }
 
@@ -377,7 +369,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void updateTeamJams() {
         synchronized (coreLock) {
-            requestBatchStart();
             set(Value.RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(getId()), Flag.INTERNAL);
             set(Value.RUNNING_OR_UPCOMING_TEAM_JAM,
                     scoreBoard.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext(), Flag.INTERNAL);
@@ -385,7 +376,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             for (ValueWithId p : getAll(Child.POSITION)) {
                 ((Position)p).updateCurrentFielding();
             }
-            requestBatchEnd();
         }
     }
 
@@ -470,7 +460,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void field(Skater s, Role r, TeamJam tj) {
         synchronized (coreLock) {
             if (s == null) { return; }
-            requestBatchStart();
             if (s.getFielding(tj) != null && 
                     s.getFielding(tj).getPosition() == getPosition(FloorPosition.PIVOT)) {
                 tj.setNoPivot(r != Role.PIVOT);
@@ -503,7 +492,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     s.remove(Skater.Child.FIELDING, s.getFielding(tj));
                 }
             }
-            requestBatchEnd();
         }
     }
     private Fielding getAvailableFielding(Role r, TeamJam tj) {

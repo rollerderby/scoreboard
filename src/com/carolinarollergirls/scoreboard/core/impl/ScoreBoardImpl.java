@@ -212,11 +212,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     @Override
     public void postAutosaveUpdate() {
         synchronized(coreLock) {
-            requestBatchStart();
             //Button may have a label from autosave but undo will not work after restart
             Button.UNDO.setLabel(ACTION_NONE);
             ((Twitter)get(Child.TWITTER, "")).postAutosaveUpdate();
-            requestBatchEnd();
         }
     }
 
@@ -278,7 +276,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             }
             createSnapshot(ACTION_OVERTIME);
 
-            requestBatchStart();
             _endTimeout(false);
             setInOvertime(true);
             setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
@@ -287,7 +284,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 lc.setMaximumTime(otLineupTime);
             }
             _startLineup();
-            requestBatchEnd();
         }
     }
 
@@ -355,7 +351,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             Clock tc = getClock(Clock.ID_TIMEOUT);
             Clock pc = getClock(Clock.ID_PERIOD);
 
-            requestBatchStart();
             if (!getCurrentTimeout().isRunning()) {
                 timeout();
             }
@@ -382,14 +377,12 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                     pc.start();
                 }
             }
-            requestBatchEnd();
         }
     }
     private void _preparePeriod() {
         Clock pc = getClock(Clock.ID_PERIOD);
         Clock jc = getClock(Clock.ID_JAM);
 
-        requestBatchStart();
         set(Value.CURRENT_PERIOD, getOrCreatePeriod(getCurrentPeriodNumber()+1));
         if (getRulesets().getBoolean(Rule.JAM_NUMBER_PER_PERIOD)) {
             getUpcomingJam().set(IValue.NUMBER, 1, Flag.INTERNAL);
@@ -398,27 +391,23 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         }
         pc.resetTime();
         jc.resetTime();
-        requestBatchEnd();
     }
     private void _possiblyEndPeriod() {
         Clock pc = getClock(Clock.ID_PERIOD);
         Clock tc = getClock(Clock.ID_TIMEOUT);
 
         if (pc.isTimeAtEnd() && !pc.isRunning() && !isInJam() && !tc.isRunning()) {
-            requestBatchStart();
             setLabels(ACTION_START_JAM, ACTION_LINEUP, ACTION_TIMEOUT);
             setInPeriod(false);
             setOfficialScore(false);
             _endLineup();
             _startIntermission();
-            requestBatchEnd();
         }
     }
     private void _startJam() {
         Clock pc = getClock(Clock.ID_PERIOD);
         Clock jc = getClock(Clock.ID_JAM);
 
-        requestBatchStart();
         _endIntermission(false);
         _endTimeout(false);
         _endLineup();
@@ -430,7 +419,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         getTeam(Team.ID_1).startJam();
         getTeam(Team.ID_2).startJam();
-        requestBatchEnd();
     }
     private void _endJam() {
         Clock pc = getClock(Clock.ID_PERIOD);
@@ -438,7 +426,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         if (!isInJam()) { return; }
 
-        requestBatchStart();
         jc.stop();
         getCurrentPeriod().stopJam();
         // Order is crucial here. 
@@ -454,35 +441,28 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         } else {
             _possiblyEndPeriod();
         }
-        requestBatchEnd();
     }
     private void _startLineup() {
         Clock lc = getClock(Clock.ID_LINEUP);
 
-        requestBatchStart();
         _endIntermission(false);
         setInPeriod(true);
         lc.changeNumber(1);
         lc.restart();
-        requestBatchEnd();
     }
     private void _endLineup() {
         Clock lc = getClock(Clock.ID_LINEUP);
 
-        requestBatchStart();
         lc.stop();
-        requestBatchEnd();
     }
     private void _startTimeout() {
         Clock pc = getClock(Clock.ID_PERIOD);
         Clock tc = getClock(Clock.ID_TIMEOUT);
 
-        requestBatchStart();
         if (getCurrentTimeout().isRunning()) {
             if (tc.getTimeElapsed() < 1000L) {
                 // This is almost surely an accidental double press
                 // ignore as it messes up stats and makes undo impossible
-                requestBatchEnd();
                 return;
             }
             //end the previous timeout before starting a new one
@@ -500,7 +480,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         getCurrentTimeout().getParent().add(Period.Child.TIMEOUT, getCurrentTimeout());
         tc.changeNumber(1);
         tc.restart();
-        requestBatchEnd();
     }
     private void _endTimeout(boolean timeoutFollows) {
         Clock tc = getClock(Clock.ID_TIMEOUT);
@@ -508,7 +487,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         if (!getCurrentTimeout().isRunning()) { return; }
 
-        requestBatchStart();
         if (!getSettings().get(SETTING_CLOCK_AFTER_TIMEOUT).equals(Clock.ID_TIMEOUT)) {
             tc.stop();
         }
@@ -526,12 +504,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 }
             }
         }
-        requestBatchEnd();
     }
     private void _startIntermission() {
         Clock ic = getClock(Clock.ID_INTERMISSION);
 
-        requestBatchStart();
         long duration = 0;
         String[] sequence = getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",");
         int number = Math.min(getCurrentPeriodNumber(), sequence.length);
@@ -540,7 +516,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         }
         ic.setMaximumTime(duration);
         ic.restart();
-        requestBatchEnd();
     }
     private void _endIntermission(boolean force) {
         Clock ic = getClock(Clock.ID_INTERMISSION);
@@ -548,7 +523,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
         if (!ic.isRunning() && !force && getCurrentPeriodNumber() > 0) { return; }
 
-        requestBatchStart();
         ic.stop();
         if (getCurrentPeriodNumber() == 0 || 
                 (ic.getTimeRemaining() < ic.getTimeElapsed() 
@@ -558,7 +532,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             //Always start period 1 as there is no previous period to extend.
             _preparePeriod();
         }
-        requestBatchEnd();
     }
     private void _possiblyAutostart() {
         Clock pc = getClock(Clock.ID_PERIOD);
@@ -571,7 +544,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 getRulesets().getLong(Rule.OVERTIME_LINEUP_DURATION) :
                     getRulesets().getLong(Rule.LINEUP_DURATION));
 
-        requestBatchStart();
         if (lc.getTimeElapsed() >= triggerTime) {
             if (Boolean.parseBoolean(getRulesets().get(Rule.AUTO_START_JAM))) {
                 startJam();
@@ -582,7 +554,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 tc.elapseTime(bufferTime);
             }
         }
-        requestBatchEnd();
     }
 
 
@@ -627,15 +598,12 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
     protected void finishReplace() {
         if (!replacePending) { return; }
-        requestBatchStart();
         ScoreBoardClock.getInstance().start(true);
         replacePending = false;
-        requestBatchEnd();
     }
     @Override
     public void clockUndo(boolean replace) {
         synchronized (coreLock) {
-            requestBatchStart();
             if (replacePending) {
                 createSnapshot(ACTION_NO_REPLACE);
                 finishReplace();
@@ -649,7 +617,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                     ScoreBoardClock.getInstance().start(true);
                 }
             }
-            requestBatchEnd();
         }
     }
 
@@ -722,10 +689,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             Clock jc = getClock(Clock.ID_JAM);
             if (jc.isTimeAtEnd() && getRulesets().getBoolean(Rule.AUTO_END_JAM)) {
                 //clock has run down naturally
-                requestBatchStart();
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
                 _endJam();
-                requestBatchEnd();
             }
         }
     };

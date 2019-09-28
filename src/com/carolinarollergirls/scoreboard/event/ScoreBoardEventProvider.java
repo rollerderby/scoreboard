@@ -22,7 +22,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBoardEventProvider> {
     /**
-     * This should be the frontend string for the Child enum value corresponding to this type 
+     * This should be the frontend string for the Child enum value corresponding to this type
      * in its parent element
      */
     public String getProviderName();
@@ -59,10 +59,15 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public boolean set(PermanentProperty prop, Object value);
     /*
      * return value indicates if value was changed
-     * Change flag for Integer and Long values is implemented to add the given 
+     * Change flag for Integer and Long values is implemented to add the given
      * value to the previous one. Other flags need to be implemented in overrides.
      */
     public boolean set(PermanentProperty prop, Object value, Flag flag);
+
+    /**
+     * Run the given function inside a batch, to combine any resultant events.
+     */
+    public void runInBatch(Runnable r);
 
     /**
      * If create is implemented for the respective type, this function will resort to that,
@@ -89,7 +94,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public void removeAll(AddRemoveProperty prop);
     /**
      * Must call an appropriate constructor for all children that are themselves a
-     * ScoreBoardEventProvider and can be created from the frontend or autosave 
+     * ScoreBoardEventProvider and can be created from the frontend or autosave
      */
     public ValueWithId create(AddRemoveProperty prop, String id);
     public Integer getMinNumber(NumberedProperty prop);
