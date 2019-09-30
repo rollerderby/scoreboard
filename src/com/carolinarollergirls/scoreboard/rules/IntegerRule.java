@@ -3,7 +3,7 @@ package com.carolinarollergirls.scoreboard.rules;
 
 public class IntegerRule extends RuleDefinition {
     public IntegerRule(String fullname, String description, int defaultValue) {
-        super(Type.INTEGER, fullname, description, new Integer(defaultValue));
+        super(Type.INTEGER, fullname, description, defaultValue);
     }
 
     @Override

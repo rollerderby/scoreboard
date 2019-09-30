@@ -145,7 +145,7 @@ public class WS extends WebSocketServlet {
 
                             String intermissionClock = data.optString("IntermissionClock", null);
                             if (intermissionClock != null) {
-                                Long ic_time = new Long(intermissionClock);
+                                Long ic_time = Long.valueOf(intermissionClock);
                                 ic_time = ic_time - (ic_time % 1000);
                                 Clock c = sb.getClock(Clock.ID_INTERMISSION);
                                 c.setMaximumTime(ic_time);
