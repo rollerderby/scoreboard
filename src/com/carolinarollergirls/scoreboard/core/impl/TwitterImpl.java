@@ -173,7 +173,6 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
         public void onException(TwitterException te, TwitterMethod method) {
             te.printStackTrace();
             synchronized(coreLock) {
-                resetTwitter();
                 set(Value.ERROR, "Twitter Exception for " + method + ": "+ te.getMessage());
             }
         }
@@ -182,6 +181,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
         public void gotOAuthRequestToken(RequestToken token) {
             synchronized(coreLock) {
                 requestToken = token;
+                resetTwitter();
                 set(Value.AUTH_URL, requestToken.getAuthorizationURL());
             }
         }
@@ -201,6 +201,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
         public void updatedStatus(Status status) {
             synchronized(coreLock) {
                 set(Value.STATUS, status.getText());
+                set(Value.ERROR, "");
             }
         }
     }

@@ -147,7 +147,7 @@
 			</classpath>
 			<formatter type="brief" usefile="false" />
 				<batchtest>
-					<fileset dir="${test.src.dir}" includes="**/*Test*.java" />
+					<fileset dir="${test.src.dir}" includes="**/*Tests.java" />
 				</batchtest>
 		</junit>
 	</target>
@@ -240,10 +240,11 @@
 				<exclude name="html/images/sponsor_banner/*" />
 				<include name="html/images/teamlogo" />
 				<include name="html/images/sponsor_banner" />
+				<exclude name="html/game-data/json/*" />
 				<include name="lib/crg-scoreboard.jar" />
 				<include name="config/crg.scoreboard.properties" />
 				<include name="config/penalties/**" />
-				<include name="config/default/**" />
+				<include name="config/default.json" />
 			</zipfileset>
 			<zipfileset dir="${version.dest.dir}" prefix="${zip.prefix}/html/" filemode="755" >
 				<include name="${version.release.file}" />

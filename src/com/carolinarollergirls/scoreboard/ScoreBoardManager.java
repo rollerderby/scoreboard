@@ -9,18 +9,14 @@ package com.carolinarollergirls.scoreboard;
  */
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
+import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
@@ -32,10 +28,9 @@ public class ScoreBoardManager {
         void log(String msg);
     }
 
-    public static void start() {
+    public static void start(String host, int port) {
         setSystemProperties();
         loadVersion();
-        loadProperties();
 
         scoreBoard = new ScoreBoardImpl();
 
@@ -44,15 +39,25 @@ public class ScoreBoardManager {
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
-        registerScoreBoardController(new JettyServletScoreBoardController(scoreBoard, jsm));
+        new JettyServletScoreBoardController(scoreBoard, jsm, host, port);
 
         // Viewers.
-        registerScoreBoardViewer(new ScoreBoardMetricsCollector(scoreBoard).register());
-        registerScoreBoardViewer(new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath()));
+        new ScoreBoardMetricsCollector(scoreBoard).register();
+        new JSONStateSnapshotter(jsm, ScoreBoardManager.getDefaultPath());
 
-        //FIXME - not the best way to load autosave doc.
-        scoreBoard.getXmlScoreBoard().load();
+        File autoSaveDir = new File(getDefaultPath(), "config/autosave");
+        if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
+            try {
+                printMessage("No autosave to load from, using default.json");
+                AutoSaveJSONState.loadFile(scoreBoard, new File(getDefaultPath(), "config/default.json"));
+            } catch (Exception e) {
+              doExit("Error loading default configuration", e);
+            }
+        }
         scoreBoard.postAutosaveUpdate();
+
+        // Only start auto-saves once everything is loaded in.
+        new AutoSaveJSONState(jsm, autoSaveDir);
     }
 
     public static void stop() {
@@ -66,24 +71,6 @@ public class ScoreBoardManager {
         }
     }
 
-
-    public static Properties getProperties() { return new Properties(properties); }
-
-    public static String getProperty(String key) { return properties.getProperty(key); }
-    public static String getProperty(String key, String dflt) { return properties.getProperty(key, dflt); }
-
-
-    public static Object getScoreBoardController(String key) { return controllers.get(key); }
-
-    public static Object getScoreBoardViewer(String key) { return viewers.get(key); }
-
-    public static void registerScoreBoardController(Object sbC) {
-        controllers.put(sbC.getClass().getName(), sbC);
-    }
-
-    public static void registerScoreBoardViewer(Object sbV) {
-        viewers.put(sbV.getClass().getName(), sbV);
-    }
 
     public static void doExit(String err) { doExit(err, null); }
     public static void doExit(String err, Exception ex) {
@@ -116,43 +103,9 @@ public class ScoreBoardManager {
         printMessage("Carolina Rollergirls Scoreboard version "+Version.get());
     }
 
-    private static void loadProperties() {
-        InputStream is = ScoreBoardManager.class.getClassLoader().getResourceAsStream(PROPERTIES_FILE_NAME);
-
-        if (null == is) {
-            try {
-                is = new FileInputStream(new File(new File(defaultPath, PROPERTIES_DIR_NAME), PROPERTIES_FILE_NAME));
-            } catch ( FileNotFoundException fnfE ) {
-                doExit("Could not find properties file " + PROPERTIES_FILE_NAME);
-            }
-        }
-
-        try {
-            properties.load(is);
-        } catch ( Exception e ) {
-            doExit("Could not load " + PROPERTIES_FILE_NAME + " file : " + e.getMessage(), e);
-        }
-
-        for (String key : properties_overrides.keySet()) {
-            properties.put(key, properties_overrides.get(key));
-        }
-
-        try { is.close(); }
-        catch ( IOException ioE ) { }
-    }
-
     public static void setLogger(Logger l) { logger = l; }
     public static File getDefaultPath() { return defaultPath; }
     public static void setDefaultPath(File f) { defaultPath = f; }
-    public static void setPropertyOverride(String key, String value) {
-        properties_overrides.put(key, value);
-        properties.put(key, value);
-    }
-
-    private static Properties properties = new Properties();
-    private static Map<String,String> properties_overrides = new HashMap<>();
-    private static Map<String,Object> controllers = new ConcurrentHashMap<>();
-    private static Map<String,Object> viewers = new ConcurrentHashMap<>();
 
     private static ScoreBoard scoreBoard;
     private static Logger logger = null;
@@ -162,7 +115,4 @@ public class ScoreBoardManager {
     public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
     public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
     public static final String VERSION_RELEASE_KEY = "release";
-
-    public static final String PROPERTIES_DIR_NAME = "config";
-    public static final String PROPERTIES_FILE_NAME = "crg.scoreboard.properties";
 }

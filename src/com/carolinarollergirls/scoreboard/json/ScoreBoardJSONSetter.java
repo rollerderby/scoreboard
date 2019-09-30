@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONObject;
+
 import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
@@ -20,7 +22,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
@@ -31,9 +32,25 @@ import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 public class ScoreBoardJSONSetter {
 
     // Make a list of sets to a scoreboard, with JSON paths to fields.
-    public static void set(ScoreBoard sb, List<JSONSet> js) {
+    public static void set(ScoreBoard sb, JSONObject json) {
+        List<JSONSet> jsl = new ArrayList<>();
+        JSONObject state = json.getJSONObject("state");
+        for (String key: state.keySet()) {
+            Object value = state.get(key);
+            String v;
+            if (value == JSONObject.NULL) {
+                v = null;
+            } else {
+                v = value.toString();
+            }
+            jsl.add(new JSONSet(key, v, Flag.FROM_AUTOSAVE));
+        }
+        set(sb, jsl);
+    }
+
+    public static void set(ScoreBoard sb, List<JSONSet> jsl) {
         List<ValueSet> postponedSets = new ArrayList<>();
-        for(JSONSet s : js) {
+        for(JSONSet s : jsl) {
             Matcher m = pathElementPattern.matcher(s.path);
             if (m.matches() && m.group("name").equals("ScoreBoard") &&
                     m.group("id") == null && m.group("remainder") != null) {

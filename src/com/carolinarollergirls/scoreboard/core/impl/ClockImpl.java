@@ -261,10 +261,8 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     @Override
     public void restart() {
         synchronized (coreLock) {
-            requestBatchStart();
             resetTime();
             start();
-            requestBatchEnd();
         }
     }
 

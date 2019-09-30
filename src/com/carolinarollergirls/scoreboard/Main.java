@@ -25,7 +25,7 @@ public class Main implements ScoreBoardManager.Logger {
     public Main(String argv[]) {
         parseArgv(argv);
         ScoreBoardManager.setLogger(this);
-        ScoreBoardManager.start();
+        ScoreBoardManager.start(host, port);
         if (guiFrameText != null) {
             guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
         }
@@ -43,19 +43,15 @@ public class Main implements ScoreBoardManager.Logger {
     private void parseArgv(String[] argv) {
         boolean gui = false;
 
-
         for(String arg : argv) {
             if(arg.equals("--gui") || arg.equals("-g")) {
                 gui = true;
-            }
-
-            else if(arg.equals("--nogui") || arg.equals("-G")) {
+            } else if(arg.equals("--nogui") || arg.equals("-G")) {
                 gui = false;
-            }
-
-            else if(arg.startsWith("--port=") || arg.startsWith("-p=")) {
-                String port = arg.split("=")[1];
-                ScoreBoardManager.setPropertyOverride("com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController.port", port);
+            } else if(arg.startsWith("--port=") || arg.startsWith("-p=")) {
+                port = Integer.parseInt(arg.split("=")[1]);
+            } else if(arg.startsWith("--host") || arg.startsWith("-h=")) {
+                host = arg.split("=")[1];
             }
         }
 
@@ -93,4 +89,7 @@ public class Main implements ScoreBoardManager.Logger {
     private JFrame guiFrame = null;
     private JTextArea guiMessages = null;
     private JLabel guiFrameText = null;
+
+    private String host = null;
+    private int port = 8000;
 }

@@ -11,25 +11,18 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.IOException;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.carolinarollergirls.scoreboard.utils.Version;
 
-public class ScoreBoardVersionServlet extends DefaultScoreBoardControllerServlet {
-    @Override
-    public String getPath() { return "/version"; }
-
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        super.doPost(request, response);
-        response.sendError(HttpServletResponse.SC_NOT_FOUND);
-    }
-
+public class ScoreBoardVersionServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        super.doGet(request, response);
-
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Expires", "-1");
+        response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
         response.getWriter().println(Version.get());
         response.setStatus(HttpServletResponse.SC_OK);

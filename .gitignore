@@ -13,6 +13,9 @@ html/images/fullscreen
 !html/images/fullscreen/overlay.png
 html/videos/fullscreen
 !html/videos/fullscreen/American Flag.webm
+html/game-data
+html/custom
+!html/custom/view/example.html
 GameData
 android/.gradle/
 android/assets/

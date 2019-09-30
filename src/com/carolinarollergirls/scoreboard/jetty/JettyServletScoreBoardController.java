@@ -16,14 +16,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.net.URL;
-import java.util.Enumeration;
 import java.util.Iterator;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.bio.SocketConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
+import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -35,16 +34,16 @@ import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 
 
 public class JettyServletScoreBoardController {
-    public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm) {
+    public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm, String host, int port) {
         scoreBoard = sb;
         this.jsm = jsm;
 
-        init();
+        init(host, port);
 
         ScoreBoardManager.printMessage("");
         ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
         ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-        if (port == DEFAULT_PORT) {
+        if (port == 8000) {
             ScoreBoardManager.printMessage("Double-click/open the 'start.html' file, or");
         }
         ScoreBoardManager.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
@@ -67,27 +66,12 @@ public class JettyServletScoreBoardController {
         ScoreBoardManager.printMessage("");
     }
 
-    protected void init() {
-        port = DEFAULT_PORT;
-        try {
-            port = Integer.parseInt(ScoreBoardManager.getProperty(PROPERTY_PORT_KEY));
-        } catch ( Exception e ) {
-            ScoreBoardManager.printMessage("No server port defined, using default " + DEFAULT_PORT);
-        }
-
-        Server server;
-
-        String localhost = ScoreBoardManager.getProperty(PROPERTY_LOCALHOST_KEY);
-        if (null != localhost && Boolean.parseBoolean(localhost)) {
-            ScoreBoardManager.printMessage("ScoreBoard configured to listen ONLY on localhost interface.");
-            SocketConnector sC = new SocketConnector();
-            sC.setHost("localhost");
-            sC.setPort(port);
-            server = new Server();
-            server.addConnector(sC);
-        } else {
-            server = new Server(port);
-        }
+    protected void init(String host, int port) {
+        SelectChannelConnector sC = new SelectChannelConnector();
+        sC.setHost(host);
+        sC.setPort(port);
+        Server server = new Server();
+        server.addConnector(sC);
 
         server.setSendDateHeader(true);
         ContextHandlerCollection contexts = new ContextHandlerCollection();
@@ -128,27 +112,11 @@ public class JettyServletScoreBoardController {
         HttpServlet ljs = new LoadJsonScoreBoard(scoreBoard);
         c.addServlet(new ServletHolder(ljs), "/LoadJSON/*");
 
-        Enumeration<?> keys = ScoreBoardManager.getProperties().propertyNames();
+        HttpServlet sbvs = new ScoreBoardVersionServlet();
+        c.addServlet(new ServletHolder(sbvs), "/version");
 
-        while (keys.hasMoreElements()) {
-            String key = keys.nextElement().toString();
-            if (!key.startsWith(PROPERTY_SERVLET_KEY)) {
-                continue;
-            }
-
-            String servlet = ScoreBoardManager.getProperty(key);
-
-            try {
-                ScoreBoardControllerServlet sbcS = (ScoreBoardControllerServlet)Class.forName(servlet).newInstance();
-                sbcS.setScoreBoard(scoreBoard);
-                c = new ServletContextHandler(contexts, sbcS.getPath());
-                c.addFilter(mf, "/*", 1);
-                c.addServlet(new ServletHolder(sbcS), "/*");
-            } catch ( Exception e ) {
-                ScoreBoardManager.printMessage("Could not create Servlet " + servlet + " : " + e.getMessage());
-                e.printStackTrace();
-            }
-        }
+        HttpServlet ms = new MediaServlet(scoreBoard, new File(ScoreBoardManager.getDefaultPath(), "html").getPath());
+        c.addServlet(new ServletHolder(ms), "/Media/*");
 
         try {
             server.start();
@@ -159,14 +127,7 @@ public class JettyServletScoreBoardController {
 
     protected ScoreBoard scoreBoard;
     protected JSONStateManager jsm;
-    protected int port;
     protected UrlsServlet urlsServlet;
     protected WS ws;
     protected MetricsServlet metricsServlet;
-
-    public static final int DEFAULT_PORT = 8000;
-
-    public static final String PROPERTY_LOCALHOST_KEY = JettyServletScoreBoardController.class.getName() + ".localhost";
-    public static final String PROPERTY_PORT_KEY = JettyServletScoreBoardController.class.getName() + ".port";
-    public static final String PROPERTY_SERVLET_KEY = JettyServletScoreBoardController.class.getName() + ".servlet";
 }

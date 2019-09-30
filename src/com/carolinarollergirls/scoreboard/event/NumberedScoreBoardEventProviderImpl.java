@@ -83,11 +83,9 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
     public void moveToNumber(int num)  {
         synchronized (coreLock) {
             if (num == getNumber()) { return; }
-            requestBatchStart();
             unlinkNeighbors();
             setNeighbors(num);
             set(IValue.NUMBER, num);
-            requestBatchEnd();
         }
     }
     

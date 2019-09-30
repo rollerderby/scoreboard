@@ -10,6 +10,7 @@ public interface BoxTrip extends ScoreBoardEventProvider {
     public int compareTo(BoxTrip other);
     
     public void end();
+    public void unend();
     
     public Team getTeam();
     

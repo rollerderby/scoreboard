@@ -18,7 +18,7 @@ public enum FloorPosition {
         if (role == Role.PIVOT && teamJam.isStarPass()) {
             return Role.JAMMER;
         } else if (role == Role.JAMMER && teamJam.isStarPass() ||
-                role == Role.PIVOT && teamJam.hasNoNamedPivot()) {
+                role == Role.PIVOT && teamJam.hasNoPivot()) {
             return Role.BLOCKER;
         } else {
             return role; 

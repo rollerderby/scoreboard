@@ -9,12 +9,10 @@ import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -81,17 +79,12 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                         (this == ((Period)parent).getCurrentJam())) {
                     break;
                 }
-                requestBatchStart();
                 unlink();
                 scoreBoard.updateTeamJams();
-                ((ScoreBoardEventProviderImpl) parent).scoreBoardChange(
-                        new ScoreBoardEvent(this, BatchEvent.END, Boolean.TRUE, Boolean.TRUE));
                 break;
             case INSERT_BEFORE:
-                requestBatchStart();
                 parent.add(ownType, new JamImpl(parent, getNumber()));
                 scoreBoard.updateTeamJams();
-                requestBatchEnd();
                 break;
             }
         }
@@ -123,21 +116,17 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     @Override
     public void start() {
         synchronized (coreLock) {
-            requestBatchStart();
             setPeriodClockElapsedStart(scoreBoard.getClock(Clock.ID_PERIOD).getTimeElapsed());
             setWalltimeStart(ScoreBoardClock.getInstance().getCurrentWalltime());
-            requestBatchEnd();
         }
     }
     @Override
     public void stop() {
         synchronized (coreLock) {
-            requestBatchStart();
             set(Value.DURATION, scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
             set(Value.PERIOD_CLOCK_ELAPSED_END, scoreBoard.getClock(Clock.ID_PERIOD).getTimeElapsed());
             set(Value.PERIOD_CLOCK_DISPLAY_END, scoreBoard.getClock(Clock.ID_PERIOD).getTime());
             set(Value.WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
-            requestBatchEnd();
         }
     }
 
