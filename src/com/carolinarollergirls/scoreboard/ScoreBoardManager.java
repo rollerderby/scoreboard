@@ -24,6 +24,7 @@ import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
+import com.carolinarollergirls.scoreboard.utils.Version;
 import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
 
 public class ScoreBoardManager {
@@ -55,10 +56,6 @@ public class ScoreBoardManager {
     }
 
     public static void stop() {
-    }
-
-    public static String getVersion() {
-        return versionRelease;
     }
 
     public static void printMessage(String msg) {
@@ -115,8 +112,8 @@ public class ScoreBoardManager {
             doExit("Could not load version release properties file '"+VERSION_RELEASE_PROPERTIES_NAME+"'", ioE);
         }
         try { releaseIs.close(); } catch ( Exception e ) { }
-        versionRelease = versionProperties.getProperty(VERSION_RELEASE_KEY);
-        printMessage("Carolina Rollergirls Scoreboard version "+getVersion());
+        Version.set(versionProperties.getProperty(VERSION_RELEASE_KEY));
+        printMessage("Carolina Rollergirls Scoreboard version "+Version.get());
     }
 
     private static void loadProperties() {
@@ -159,8 +156,6 @@ public class ScoreBoardManager {
 
     private static ScoreBoard scoreBoard;
     private static Logger logger = null;
-
-    private static String versionRelease = "";
 
     private static File defaultPath = new File(".");
 

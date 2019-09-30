@@ -32,9 +32,9 @@ import org.jdom.output.Format;
 import org.jdom.output.XMLOutputter;
 import org.jdom.xpath.XPath;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
+import com.carolinarollergirls.scoreboard.utils.Version;
 
 public class XmlDocumentEditor {
     public XmlDocumentEditor() { }
@@ -395,7 +395,7 @@ public class XmlDocumentEditor {
     }
 
     public Document setVersion(Document doc) {
-        doc.getRootElement().setAttribute("Version", ScoreBoardManager.getVersion());
+        doc.getRootElement().setAttribute("Version", Version.get());
         return doc;
     }
 

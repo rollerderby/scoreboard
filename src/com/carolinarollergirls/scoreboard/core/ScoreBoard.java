@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
@@ -17,6 +16,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
+import com.carolinarollergirls.scoreboard.utils.Version;
 import com.carolinarollergirls.scoreboard.xml.XmlScoreBoard;
 
 public interface ScoreBoard extends ScoreBoardEventProvider {
@@ -110,7 +110,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public XmlScoreBoard getXmlScoreBoard();
 
     public enum Value implements PermanentProperty {
-        VERSION(String.class, ScoreBoardManager.getVersion()),
+        VERSION(String.class, Version.get()),
         CURRENT_PERIOD_NUMBER(Integer.class, 0),
         CURRENT_PERIOD(Period.class, null),
         UPCOMING_JAM(Jam.class, null),
