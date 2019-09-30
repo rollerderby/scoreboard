@@ -16,7 +16,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
-import com.carolinarollergirls.scoreboard.utils.Version;
 
 public interface ScoreBoard extends ScoreBoardEventProvider {
     /** Reset the ScoreBoard. */
@@ -107,7 +106,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public Media getMedia();
 
     public enum Value implements PermanentProperty {
-        VERSION(String.class, Version.get()),
+        VERSION(String.class, "unset"),
         CURRENT_PERIOD_NUMBER(Integer.class, 0),
         CURRENT_PERIOD(Period.class, null),
         UPCOMING_JAM(Jam.class, null),
