@@ -12,7 +12,7 @@ import java.util.Set;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 
 public class JSONStateSnapshotter implements JSONStateListener {
 
@@ -87,7 +87,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
             out.close();
             tmp.renameTo(file); // This is atomic.
         } catch (Exception e) {
-            ScoreBoardManager.printMessage("Error writing JSON snapshot: " + e.getMessage());
+            Logger.printMessage("Error writing JSON snapshot: " + e.getMessage());
         } finally {
             if (out != null) {
                 try { out.close(); } catch (Exception e) { }

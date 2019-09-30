@@ -10,6 +10,8 @@ package com.carolinarollergirls.scoreboard;
 
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
@@ -17,20 +19,86 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-public class Main implements ScoreBoardManager.Logger {
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
+import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
+import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
+import com.carolinarollergirls.scoreboard.utils.Logger;
+import com.carolinarollergirls.scoreboard.utils.Version;
+import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
+
+public class Main extends Logger {
     public static void main(String argv[]) {
         new Main(argv);
     }
 
     public Main(String argv[]) {
         parseArgv(argv);
-        ScoreBoardManager.setLogger(this);
-        ScoreBoardManager.start(host, port);
+        setLogger(this);
+        start();
         if (guiFrameText != null) {
             guiFrameText.setText("ScoreBoard status: running (close this window to exit scoreboard)");
         }
     }
 
+    public void start() {
+        setSystemProperties();
+        try {
+            if (!Version.load()) { stop(null); }
+        } catch(IOException e) {
+            stop(e);
+        }
+
+        scoreBoard = new ScoreBoardImpl();
+
+        // JSON updates.
+        JSONStateManager jsm = new JSONStateManager();
+        new ScoreBoardJSONListener(scoreBoard, jsm);
+
+        // Controllers.
+        new JettyServletScoreBoardController(scoreBoard, jsm, host, port);
+
+        // Viewers.
+        new ScoreBoardMetricsCollector(scoreBoard).register();
+        new JSONStateSnapshotter(jsm, BasePath.get());
+
+        File autoSaveDir = new File(BasePath.get(), "config/autosave");
+        if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
+            try {
+                Logger.printMessage("No autosave to load from, using default.json");
+                AutoSaveJSONState.loadFile(scoreBoard, new File(BasePath.get(), "config/default.json"));
+            } catch (Exception e) {
+              Logger.printMessage("Error loading default configuration");
+              stop(e);
+            }
+        }
+        scoreBoard.postAutosaveUpdate();
+
+        // Only start auto-saves once everything is loaded in.
+        new AutoSaveJSONState(jsm, autoSaveDir);
+    }
+
+    private void setSystemProperties() {
+        System.getProperties().setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
+    }
+
+    public static void doExit(String err) { doExit(err, null); }
+    public static void doExit(String err, Exception ex) {
+    }
+    
+    private void stop(Exception ex) {
+        if (ex != null) {
+            ex.printStackTrace();
+        }
+        Logger.printMessage("Fatal error.   Exiting in 15 seconds.");
+        try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
+        System.exit(1);
+    }
+    
     @Override
     public void log(String msg) {
         if (guiMessages != null) {
@@ -59,9 +127,6 @@ public class Main implements ScoreBoardManager.Logger {
             createGui();
         }
     }
-
-
-
 
     private void createGui() {
         if (guiFrame != null) {
@@ -92,4 +157,6 @@ public class Main implements ScoreBoardManager.Logger {
 
     private String host = null;
     private int port = 8000;
+
+    private static ScoreBoard scoreBoard;
 }

@@ -25,7 +25,6 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.utils.Version;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Media;
@@ -63,7 +62,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         addWriteProtection(Child.RULESETS);
         add(Child.PENALTY_CODES, new PenaltyCodesManager(this));
         addWriteProtection(Child.PENALTY_CODES);
-        add(Child.MEDIA, new MediaImpl(this, ScoreBoardManager.getDefaultPath()));
+        add(Child.MEDIA, new MediaImpl(this));
         addWriteProtection(Child.MEDIA);
         add(Child.TWITTER, new TwitterImpl(this));
         addWriteProtection(Child.TWITTER);

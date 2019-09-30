@@ -10,8 +10,6 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import javax.servlet.Servlet;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardController;
-
-public interface ScoreBoardControllerServlet extends ScoreBoardController,Servlet {
+public interface ScoreBoardControllerServlet extends Servlet {
     public String getPath();
 }

@@ -28,9 +28,10 @@ import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 
 
 public class JettyServletScoreBoardController {
@@ -40,30 +41,30 @@ public class JettyServletScoreBoardController {
 
         init(host, port);
 
-        ScoreBoardManager.printMessage("");
-        ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-        ScoreBoardManager.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+        Logger.printMessage("");
+        Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+        Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
         if (port == 8000) {
-            ScoreBoardManager.printMessage("Double-click/open the 'start.html' file, or");
+            Logger.printMessage("Double-click/open the 'start.html' file, or");
         }
-        ScoreBoardManager.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
-        ScoreBoardManager.printMessage("	http://localhost:"+port);
+        Logger.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
+        Logger.printMessage("	http://localhost:"+port);
         try {
             Iterator<URL> urls = urlsServlet.getUrls().iterator();
             if (urls.hasNext()) {
-                ScoreBoardManager.printMessage("or try one of these URLs:");
+                Logger.printMessage("or try one of these URLs:");
             }
             while (urls.hasNext()) {
-                ScoreBoardManager.printMessage("	"+urls.next().toString());
+                Logger.printMessage("	"+urls.next().toString());
             }
         } catch ( MalformedURLException muE ) {
-            ScoreBoardManager.printMessage("Internal error: malformed URL from Server Connector: "+muE.getMessage());
+            Logger.printMessage("Internal error: malformed URL from Server Connector: "+muE.getMessage());
         } catch ( SocketException sE ) {
-            ScoreBoardManager.printMessage("Internal error: socket exception from Server Connector: "+sE.getMessage());
+            Logger.printMessage("Internal error: socket exception from Server Connector: "+sE.getMessage());
         }
-        ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        ScoreBoardManager.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        ScoreBoardManager.printMessage("");
+        Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        Logger.printMessage("");
     }
 
     protected void init(String host, int port) {
@@ -104,7 +105,7 @@ public class JettyServletScoreBoardController {
         sh.setInitParameter("etags", "true");
         c.addServlet(sh, "/*");
         c.addFilter(mf, "/*", 1);
-        c.setResourceBase((new File(ScoreBoardManager.getDefaultPath(), "html")).getPath());
+        c.setResourceBase((new File(BasePath.get(), "html")).getPath());
 
         HttpServlet sjs = new SaveJsonScoreBoard(jsm);
         c.addServlet(new ServletHolder(sjs), "/SaveJSON/*");
@@ -115,7 +116,7 @@ public class JettyServletScoreBoardController {
         HttpServlet sbvs = new ScoreBoardVersionServlet();
         c.addServlet(new ServletHolder(sbvs), "/version");
 
-        HttpServlet ms = new MediaServlet(scoreBoard, new File(ScoreBoardManager.getDefaultPath(), "html").getPath());
+        HttpServlet ms = new MediaServlet(scoreBoard, new File(BasePath.get(), "html").getPath());
         c.addServlet(new ServletHolder(ms), "/Media/*");
 
         try {

@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.io.File;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.Rule;
@@ -22,12 +23,15 @@ import com.carolinarollergirls.scoreboard.core.Media.MediaType;
 import com.carolinarollergirls.scoreboard.core.impl.MediaImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public class MediaImplTests {
 
     private Media media;
     private File init;
+    
+    private File oldDir;
 
     private BlockingQueue<ScoreBoardEvent> collectedEvents;
     private ScoreBoard sbMock;
@@ -53,11 +57,18 @@ public class MediaImplTests {
         dir.newFolder("html", "images", "teamlogo");
         init = dir.newFile("html/images/teamlogo/init.png");
 
-        media = new MediaImpl(sbMock, dir.getRoot());
+        oldDir = BasePath.get();
+        BasePath.set(dir.getRoot());
+        media = new MediaImpl(sbMock);
         media.addScoreBoardListener(listener);
     }
 
-    @Test
+    @After
+    public void tearDown() throws Exception {
+        BasePath.set(oldDir);
+    }
+
+   @Test
     public void testFilesAddedAtStartup() {
         Media.MediaType mt = media.getFormat("images").getType("teamlogo");
         assertNotNull(mt);

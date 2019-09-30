@@ -15,7 +15,6 @@ import java.util.regex.Pattern;
 
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
@@ -24,6 +23,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 /**
@@ -56,7 +56,7 @@ public class ScoreBoardJSONSetter {
                     m.group("id") == null && m.group("remainder") != null) {
                 set(sb, m.group("remainder"), s.value, s.flag, postponedSets);
             } else {
-                ScoreBoardManager.printMessage("Illegal path: " + s.path);
+                Logger.printMessage("Illegal path: " + s.path);
             }
         }
         for (ValueSet vs : postponedSets) {
@@ -93,12 +93,12 @@ public class ScoreBoardJSONSetter {
                     p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, elementId, value));
                 }
             } catch (Exception e) {
-                ScoreBoardManager.printMessage("Exception handling update for " + p.getProviderName() +
+                Logger.printMessage("Exception handling update for " + p.getProviderName() +
                                                "(" + p.getProviderId() + ")." + name + "(" + elementId + ") - " + value + ": " + e.toString());
                 e.printStackTrace();
             }
         } else {
-            ScoreBoardManager.printMessage("Illegal path element: " + path);
+            Logger.printMessage("Illegal path element: " + path);
         }
     }
 

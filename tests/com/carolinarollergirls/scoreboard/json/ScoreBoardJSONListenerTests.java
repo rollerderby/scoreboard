@@ -14,7 +14,6 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Role;
@@ -29,6 +28,7 @@ import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -51,8 +51,8 @@ public class ScoreBoardJSONListenerTests {
 
     @Before
     public void setUp() throws Exception {
-        oldDir = ScoreBoardManager.getDefaultPath();
-        ScoreBoardManager.setDefaultPath(dir.getRoot());
+        oldDir = BasePath.get();
+        BasePath.set(dir.getRoot());
         dir.newFolder("config", "penalties");
         Files.copy(oldDir.toPath().resolve("config/penalties/wftda2018.json"),
                 dir.getRoot().toPath().resolve("config/penalties/wftda2018.json"));
@@ -76,7 +76,7 @@ public class ScoreBoardJSONListenerTests {
         advance(0);
         assertEquals("foo", state.get("ScoreBoard.Settings.Setting(teardownTest)"));
         ScoreBoardClock.getInstance().start(false);
-        ScoreBoardManager.setDefaultPath(oldDir);
+        BasePath.set(oldDir);
     }
 
     private void advance(long time_ms) {
