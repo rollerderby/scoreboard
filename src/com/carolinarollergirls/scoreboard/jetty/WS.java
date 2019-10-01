@@ -90,7 +90,7 @@ public class WS extends WebSocketServlet {
                 Map<String, Object> json = JSON.std.mapFrom(message_data);
                 String action = (String)json.get("action");
                 if (!hasPermission(action)) {
-                    json = new HashMap<String, Object>();
+                    json = new HashMap<>();
                     json.put("authorization", "Not authorized for " + action);
                     send(json);
                     return;
@@ -154,7 +154,7 @@ public class WS extends WebSocketServlet {
                         }
                     });
                 } else if (action.equals("Ping")) {
-                    json = new HashMap<String, Object>();
+                    json = new HashMap<>();
                     json.put("Pong", "");
                     send(json);
                 } else {
@@ -193,7 +193,7 @@ public class WS extends WebSocketServlet {
             id = UUID.randomUUID();
             jsm.register(this);
 
-            Map<String, Object> json = new HashMap<String, Object>();
+            Map<String, Object> json = new HashMap<>();
             json.put("id", id);
             send(json);
         }
@@ -205,7 +205,7 @@ public class WS extends WebSocketServlet {
         }
 
         public void sendError(String message) {
-            Map<String, Object> json = new HashMap<String, Object>();
+            Map<String, Object> json = new HashMap<>();
             json.put("error", message);
             send(json);
         }
@@ -228,7 +228,7 @@ public class WS extends WebSocketServlet {
             if (updates.size() == 0) {
                 return;
             }
-            Map<String, Object> json = new HashMap<String, Object>();
+            Map<String, Object> json = new HashMap<>();
             json.put("state", updates);
             send(json);
             updates.clear();
