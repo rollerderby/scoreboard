@@ -98,7 +98,7 @@
 			verbose="${compile.verbose}"
 			nowarn="${compile.nowarn}"
 			includeAntRuntime="false"
-			includes="${src.dir}/com/carolinarollergirls/scoreboard/** json/**" >
+			includes="${src.dir}/com/carolinarollergirls/scoreboard/**" >
 
 			<compilerarg value="-Xlint:all"/>
 			<compilerarg value="-Xlint:-serial"/>

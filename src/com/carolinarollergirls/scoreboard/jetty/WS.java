@@ -15,6 +15,7 @@ import io.prometheus.client.Histogram;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.TreeSet;
 import java.util.Set;
 import java.util.Map;
@@ -24,12 +25,10 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.jr.ob.JSON;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.eclipse.jetty.websocket.WebSocketServlet;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
@@ -88,20 +87,20 @@ public class WS extends WebSocketServlet {
         public synchronized void onMessage(String message_data) {
             messagesReceived.inc();
             try {
-                JSONObject json = new JSONObject(message_data);
-                String action = json.getString("action");
+                Map<String, Object> json = JSON.std.mapFrom(message_data);
+                String action = (String)json.get("action");
                 if (!hasPermission(action)) {
-                    json = new JSONObject();
+                    json = new HashMap<String, Object>();
                     json.put("authorization", "Not authorized for " + action);
                     send(json);
                     return;
                 }
                 if (action.equals("Register")) {
-                    JSONArray jsonPaths = json.optJSONArray("paths");
+                    List<?> jsonPaths = (List<?>)json.get("paths");
                     if (jsonPaths != null) {
                         Set<String> newPaths = new TreeSet<>();
-                        for (int i = 0; i < jsonPaths.length(); i++) {
-                            newPaths.add(jsonPaths.getString(i));
+                        for (Object p : jsonPaths) {
+                          newPaths.add((String)p);
                         }
                         // Send on updates for the newly registered paths.
                         PathTrie pt = new PathTrie();
@@ -110,17 +109,17 @@ public class WS extends WebSocketServlet {
                         this.paths.addAll(newPaths);
                     }
                 } else if (action.equals("Set")) {
-                    String key = json.getString("key");
+                    String key = (String)json.get("key");
                     Object value = json.get("value");
                     String v;
-                    if (value == JSONObject.NULL) {
+                    if (value == null) {
                         // Null deletes the setting.
                         v = null;
                     } else {
                         v = value.toString();
                     }
                     Flag flag = null;
-                    String f = json.getString("flag");
+                    String f = (String)json.get("flag");
                     if ("reset".equals(f)) { flag = Flag.RESET; }
                     if ("change".equals(f)) { flag = Flag.CHANGE; }
                     final ScoreBoardJSONSetter.JSONSet js = new ScoreBoardJSONSetter.JSONSet(key, v, flag);
@@ -131,19 +130,20 @@ public class WS extends WebSocketServlet {
                         }
                     });
                 } else if (action.equals("StartNewGame")) {
-                    final JSONObject data = json.getJSONObject("data");
+                    @SuppressWarnings("unchecked")
+                    final Map<String, Object> data = (Map<String, Object>)json.get("data");
                     sb.runInBatch(new Runnable() {
                         @Override
                         public void run() {
-                            PreparedTeam t1 = sb.getPreparedTeam(data.getString("Team1"));
-                            PreparedTeam t2 = sb.getPreparedTeam(data.getString("Team2"));
-                            String rs = data.getString("Ruleset");
+                            PreparedTeam t1 = sb.getPreparedTeam((String)data.get("Team1"));
+                            PreparedTeam t2 = sb.getPreparedTeam((String)data.get("Team2"));
+                            String rs = (String)data.get("Ruleset");
                             sb.reset();
                             sb.getRulesets().setCurrentRuleset(rs);
                             sb.getTeam(Team.ID_1).loadPreparedTeam(t1);
                             sb.getTeam(Team.ID_2).loadPreparedTeam(t2);
 
-                            String intermissionClock = data.optString("IntermissionClock", null);
+                            String intermissionClock = (String)data.get("IntermissionClock");
                             if (intermissionClock != null) {
                                 Long ic_time = Long.valueOf(intermissionClock);
                                 ic_time = ic_time - (ic_time % 1000);
@@ -154,20 +154,26 @@ public class WS extends WebSocketServlet {
                         }
                     });
                 } else if (action.equals("Ping")) {
-                    send(new JSONObject().put("Pong", ""));
+                    json = new HashMap<String, Object>();
+                    json.put("Pong", "");
+                    send(json);
                 } else {
                     sendError("Unknown Action '" + action + "'");
                 }
-            } catch (JSONException je) {
-                Logger.printMessage("Error parsing JSON message: " + je);
+            } catch (Exception je) {
+                Logger.printMessage("Error handling JSON message: " + je);
                 je.printStackTrace();
             }
         }
 
-        public void send(JSONObject json) {
+        public void send(Map<String, Object> json) {
             Histogram.Timer timer = messagesSentDuration.startTimer();
             try {
-                connection.sendMessage(json.toString());
+                connection.sendMessage(JSON.std
+                    .with(JSON.Feature.WRITE_NULL_PROPERTIES)
+                    .composeString()
+                    .addObject(json)
+                    .finish());
             } catch (Exception e) {
                 Logger.printMessage("Error sending JSON update: " + e);
                 e.printStackTrace();
@@ -187,14 +193,9 @@ public class WS extends WebSocketServlet {
             id = UUID.randomUUID();
             jsm.register(this);
 
-            try {
-                JSONObject json = new JSONObject();
-                json.put("id", id);
-                send(json);
-            } catch (JSONException je) {
-                Logger.printMessage("Error sending ID to client: " + je);
-                je.printStackTrace();
-            }
+            Map<String, Object> json = new HashMap<String, Object>();
+            json.put("id", id);
+            send(json);
         }
 
         @Override
@@ -204,14 +205,9 @@ public class WS extends WebSocketServlet {
         }
 
         public void sendError(String message) {
-            try {
-                JSONObject json = new JSONObject();
-                json.put("error", message);
-                send(json);
-            } catch (JSONException je) {
-                Logger.printMessage("Error sending error to client: " + je);
-                je.printStackTrace();
-            }
+            Map<String, Object> json = new HashMap<String, Object>();
+            json.put("error", message);
+            send(json);
         }
 
         // State changes from JSONStateManager.
@@ -226,25 +222,16 @@ public class WS extends WebSocketServlet {
             Map<String, Object> updates = new HashMap<>();
             for (String k: changed) {
                 if (watchedPaths.covers(k)) {
-                    if (state.get(k) == null) {
-                        updates.put(k, JSONObject.NULL);
-                    } else {
-                        updates.put(k, state.get(k));
-                    }
+                    updates.put(k, state.get(k));
                 }
             }
             if (updates.size() == 0) {
                 return;
             }
-            try {
-                JSONObject json = new JSONObject();
-                json.put("state", new JSONObject(updates));
-                send(json);
-                updates.clear();
-            } catch (JSONException e) {
-                Logger.printMessage("Error sending updates to client: " + e);
-                e.printStackTrace();
-            }
+            Map<String, Object> json = new HashMap<String, Object>();
+            json.put("state", updates);
+            send(json);
+            updates.clear();
         }
 
         protected UUID id;

@@ -9,15 +9,19 @@ import java.text.SimpleDateFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import org.apache.commons.io.FileUtils;
-import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.utils.Logger;
+
 
 public class AutoSaveJSONState implements Runnable {
 
@@ -131,8 +135,11 @@ public class AutoSaveJSONState implements Runnable {
     }
 
     public static void loadFile(ScoreBoard scoreBoard, File f) throws Exception {
-        JSONObject json = new JSONObject(FileUtils.readFileToString(f, "utf-8"));
-        ScoreBoardJSONSetter.set(scoreBoard, json);
+        Map<String, Object> map = JSON.std.mapFrom(f);
+        @SuppressWarnings("unchecked")
+        Map<String, Object> state = (Map<String, Object>)map.get("state");
+
+        ScoreBoardJSONSetter.set(scoreBoard, state);
     }
 
     private File dir;
