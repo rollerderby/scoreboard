@@ -86,10 +86,6 @@ public class Main extends Logger {
         System.getProperties().setProperty("twitter4j.loggerFactory", "twitter4j.internal.logging.NullLoggerFactory");
     }
 
-    public static void doExit(String err) { doExit(err, null); }
-    public static void doExit(String err, Exception ex) {
-    }
-    
     private void stop(Exception ex) {
         if (ex != null) {
             ex.printStackTrace();
