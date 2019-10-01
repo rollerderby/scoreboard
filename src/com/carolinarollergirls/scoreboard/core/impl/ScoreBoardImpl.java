@@ -24,7 +24,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.utils.Version;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Media;
@@ -46,6 +46,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     protected void setupScoreBoard() {
+        set(Value.VERSION, Version.get());
+        addWriteProtection(Value.VERSION);
         setCopy(Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD, IValue.NUMBER, true);
         setCopy(Value.IN_PERIOD, this, Value.CURRENT_PERIOD, Period.Value.RUNNING, false);
         setCopy(Value.UPCOMING_JAM_NUMBER, this, Value.UPCOMING_JAM, IValue.NUMBER, true);
@@ -60,7 +62,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         addWriteProtection(Child.RULESETS);
         add(Child.PENALTY_CODES, new PenaltyCodesManager(this));
         addWriteProtection(Child.PENALTY_CODES);
-        add(Child.MEDIA, new MediaImpl(this, ScoreBoardManager.getDefaultPath()));
+        add(Child.MEDIA, new MediaImpl(this));
         addWriteProtection(Child.MEDIA);
         add(Child.TWITTER, new TwitterImpl(this));
         addWriteProtection(Child.TWITTER);

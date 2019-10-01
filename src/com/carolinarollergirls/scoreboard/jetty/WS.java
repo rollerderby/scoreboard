@@ -31,7 +31,6 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -40,6 +39,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 
 public class WS extends WebSocketServlet {
 
@@ -159,7 +159,7 @@ public class WS extends WebSocketServlet {
                     sendError("Unknown Action '" + action + "'");
                 }
             } catch (JSONException je) {
-                ScoreBoardManager.printMessage("Error parsing JSON message: " + je);
+                Logger.printMessage("Error parsing JSON message: " + je);
                 je.printStackTrace();
             }
         }
@@ -169,7 +169,7 @@ public class WS extends WebSocketServlet {
             try {
                 connection.sendMessage(json.toString());
             } catch (Exception e) {
-                ScoreBoardManager.printMessage("Error sending JSON update: " + e);
+                Logger.printMessage("Error sending JSON update: " + e);
                 e.printStackTrace();
                 messagesSentFailures.inc();
             } finally {
@@ -192,7 +192,7 @@ public class WS extends WebSocketServlet {
                 json.put("id", id);
                 send(json);
             } catch (JSONException je) {
-                ScoreBoardManager.printMessage("Error sending ID to client: " + je);
+                Logger.printMessage("Error sending ID to client: " + je);
                 je.printStackTrace();
             }
         }
@@ -209,7 +209,7 @@ public class WS extends WebSocketServlet {
                 json.put("error", message);
                 send(json);
             } catch (JSONException je) {
-                ScoreBoardManager.printMessage("Error sending error to client: " + je);
+                Logger.printMessage("Error sending error to client: " + je);
                 je.printStackTrace();
             }
         }
@@ -242,7 +242,7 @@ public class WS extends WebSocketServlet {
                 send(json);
                 updates.clear();
             } catch (JSONException e) {
-                ScoreBoardManager.printMessage("Error sending updates to client: " + e);
+                Logger.printMessage("Error sending updates to client: " + e);
                 e.printStackTrace();
             }
         }

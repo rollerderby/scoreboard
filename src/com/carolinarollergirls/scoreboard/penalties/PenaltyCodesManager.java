@@ -6,7 +6,6 @@ import java.io.Reader;
 import java.util.Collection;
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -14,6 +13,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.fasterxml.jackson.jr.ob.JSON;
@@ -52,8 +52,7 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
     }
 
     public PenaltyCodesDefinition loadFromJSON(String file) {
-        File folder = ScoreBoardManager.getDefaultPath();
-        File penaltyFile = new File(folder,file);
+        File penaltyFile = new File(BasePath.get(), file);
         try(Reader reader = new FileReader(penaltyFile)) {
             return JSON.std.beanFrom(PenaltyCodesDefinition.class, reader);
         } catch (Exception e) {

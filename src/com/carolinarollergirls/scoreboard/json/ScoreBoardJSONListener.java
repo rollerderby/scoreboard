@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.json;
 
 import java.util.LinkedList;
 import java.util.List;
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
@@ -21,6 +20,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 /**
@@ -57,10 +57,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                         update(getPath(p), prop, v);
                     }
                 } else {
-                    ScoreBoardManager.printMessage(provider + " update of unknown kind.	prop: " + PropertyConversion.toFrontend(prop) + ", v: " + v);
+                    Logger.printMessage(provider + " update of unknown kind.	prop: " + PropertyConversion.toFrontend(prop) + ", v: " + v);
                 }
             } catch (Exception e) {
-                ScoreBoardManager.printMessage("Error!  " + e.getMessage());
                 e.printStackTrace();
             } finally {
                 if (batch == 0) {

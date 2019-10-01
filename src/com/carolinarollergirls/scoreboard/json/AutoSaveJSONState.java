@@ -16,8 +16,8 @@ import com.fasterxml.jackson.jr.ob.JSON;
 import org.apache.commons.io.FileUtils;
 import org.json.JSONObject;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 
 public class AutoSaveJSONState implements Runnable {
 
@@ -28,7 +28,7 @@ public class AutoSaveJSONState implements Runnable {
         try {
             FileUtils.forceMkdir(dir);
         } catch ( IOException ioE ) {
-            ScoreBoardManager.printMessage("WARNING: Unable to create auto-save directory '"+dir+"' : "+ioE.getMessage());
+            Logger.printMessage("WARNING: Unable to create auto-save directory '"+dir+"' : "+ioE.getMessage());
             return;
         }
         backupAutoSavedFiles();
@@ -50,7 +50,7 @@ public class AutoSaveJSONState implements Runnable {
             }
             writeAutoSave(getFile(0));
         } catch ( Exception e ) {
-            ScoreBoardManager.printMessage("WARNING: Unable to auto-save scoreboard : "+e.getMessage());
+            Logger.printMessage("WARNING: Unable to auto-save scoreboard : "+e.getMessage());
         }
         timer.observeDuration();
     }
@@ -72,7 +72,7 @@ public class AutoSaveJSONState implements Runnable {
             out.close();
             tmp.renameTo(file); // This is atomic.
         } catch (Exception e) {
-            ScoreBoardManager.printMessage("Error writing JSON autosave: " + e.getMessage());
+            Logger.printMessage("Error writing JSON autosave: " + e.getMessage());
         } finally {
             if (out != null) {
                 try { out.close(); } catch (Exception e) { }
@@ -88,7 +88,7 @@ public class AutoSaveJSONState implements Runnable {
         File mainBackupDir = new File(dir, "backup");
         File backupDir = new File(mainBackupDir, dateFormat.format(new Date()));
         if (backupDir.exists()) {
-            ScoreBoardManager.printMessage("Could not back up auto-save files, backup directory already exists");
+            Logger.printMessage("Could not back up auto-save files, backup directory already exists");
         } else {
             int n = 0;
             do {
@@ -97,7 +97,7 @@ public class AutoSaveJSONState implements Runnable {
                     try {
                         FileUtils.copyFileToDirectory(from, backupDir, true);
                     } catch ( Exception e ) {
-                        ScoreBoardManager.printMessage("Could not back up auto-save file '"+from.getName()+"' : "+e.getMessage());
+                        Logger.printMessage("Could not back up auto-save file '"+from.getName()+"' : "+e.getMessage());
                     }
                 }
             } while (n++ < AUTOSAVE_FILES);
@@ -119,10 +119,10 @@ public class AutoSaveJSONState implements Runnable {
             }
             try {
                 loadFile(scoreBoard, f);
-                ScoreBoardManager.printMessage("Loaded auto-saved scoreboard from "+f.getPath());
+                Logger.printMessage("Loaded auto-saved scoreboard from "+f.getPath());
                 return true;
             } catch ( Exception e ) {
-                ScoreBoardManager.printMessage("Could not load auto-saved scoreboard XML file "+f.getPath()+" : "+e.getMessage());
+                Logger.printMessage("Could not load auto-saved scoreboard XML file "+f.getPath()+" : "+e.getMessage());
                 e.printStackTrace();
             }
         }

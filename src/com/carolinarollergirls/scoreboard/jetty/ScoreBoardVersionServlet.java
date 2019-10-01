@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
+import com.carolinarollergirls.scoreboard.utils.Version;
 
 public class ScoreBoardVersionServlet extends HttpServlet {
     @Override
@@ -24,7 +24,7 @@ public class ScoreBoardVersionServlet extends HttpServlet {
         response.setHeader("Expires", "-1");
         response.setCharacterEncoding("UTF-8");
         response.setContentType("text/plain");
-        response.getWriter().println(ScoreBoardManager.getVersion());
+        response.getWriter().println(Version.get());
         response.setStatus(HttpServletResponse.SC_OK);
     }
 }

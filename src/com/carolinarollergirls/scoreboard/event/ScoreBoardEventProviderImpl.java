@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.carolinarollergirls.scoreboard.ScoreBoardManager;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
@@ -32,6 +31,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -279,7 +279,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
                 return getElement(type, sValue);
             }
             if (type != String.class) {
-                ScoreBoardManager.printMessage("Conversion to " + type.getSimpleName()
+                Logger.printMessage("Conversion to " + type.getSimpleName()
                                                + " used by " + PropertyConversion.toFrontend(prop)
                                                + " missing in ScoreBoardEventProvider.valueFromString()");
                 return prop.getDefaultValue();

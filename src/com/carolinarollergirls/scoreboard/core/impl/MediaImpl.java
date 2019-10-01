@@ -28,11 +28,12 @@ import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
 
 public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
-    public MediaImpl(ScoreBoard parent, File path) {
+    public MediaImpl(ScoreBoard parent) {
         super(parent, null, "", ScoreBoard.Child.MEDIA, Media.class, Child.class);
-        setup(path.toPath().resolve("html"));
+        setup(BasePath.get().toPath().resolve("html"));
     }
 
     private void setup(Path path) {

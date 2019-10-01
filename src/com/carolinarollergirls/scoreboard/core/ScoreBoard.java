@@ -106,6 +106,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public Media getMedia();
 
     public enum Value implements PermanentProperty {
+        VERSION(String.class, "unset"),
         CURRENT_PERIOD_NUMBER(Integer.class, 0),
         CURRENT_PERIOD(Period.class, null),
         UPCOMING_JAM(Jam.class, null),
