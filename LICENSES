@@ -44,8 +44,3 @@ These packages use an "Apache-like" license:
 Jaxen (jaxen-*.jar)
 https://github.com/jaxen-xpath/jaxen
 "Apache-like license":
-
-JDOM (jdom-*.jar)
-http://jdom.org/index.html
-"Apache-style open source license":
-http://jdom.org/docs/faq.html#a0030
