@@ -10,20 +10,18 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import com.fasterxml.jackson.jr.ob.JSON;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
-import org.apache.commons.io.IOUtils;
-import org.json.JSONObject;
-import org.json.JSONException;
-
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 
@@ -46,10 +44,11 @@ public class LoadJsonScoreBoard extends HttpServlet {
                 FileItemStream item = items.next();
                 if (!item.isFormField()) {
                     InputStream stream = item.openStream();
-                    String data = IOUtils.toString(stream, "utf-8");
-                    JSONObject json = new JSONObject(data);
+                    Map<String, Object> map = JSON.std.mapFrom(stream);
                     stream.close();
-                    handleJSON(request, response, json);
+                    @SuppressWarnings("unchecked")
+                    Map<String, Object> state = (Map<String, Object>)map.get("state");
+                    handleJSON(request, response, state);
                     return;
                 }
             }
@@ -57,25 +56,23 @@ public class LoadJsonScoreBoard extends HttpServlet {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No JSON uploaded");
         } catch ( FileUploadException fuE ) {
             response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
-        } catch ( JSONException jE ) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, jE.getMessage());
         }
     }
 
-    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, final JSONObject json) throws IOException {
+    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, final Map<String, Object> state) throws IOException {
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
             scoreBoard.runInBatch(new Runnable() {
                 @Override
                 public void run() {
                     scoreBoard.reset();
-                    ScoreBoardJSONSetter.set(scoreBoard, json);
+                    ScoreBoardJSONSetter.set(scoreBoard, state);
                 }
             });
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
             scoreBoard.runInBatch(new Runnable() {
                 @Override
                 public void run() {
-                    ScoreBoardJSONSetter.set(scoreBoard, json);
+                    ScoreBoardJSONSetter.set(scoreBoard, state);
                 }
             });
         } else {

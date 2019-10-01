@@ -10,10 +10,9 @@ package com.carolinarollergirls.scoreboard.json;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.json.JSONObject;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
@@ -32,20 +31,19 @@ import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 public class ScoreBoardJSONSetter {
 
     // Make a list of sets to a scoreboard, with JSON paths to fields.
-    public static void set(ScoreBoard sb, JSONObject json) {
+    public static void set(ScoreBoard sb, Map<String, Object> state) {
         List<JSONSet> jsl = new ArrayList<>();
-        JSONObject state = json.getJSONObject("state");
         for (String key: state.keySet()) {
             Object value = state.get(key);
             String v;
-            if (value == JSONObject.NULL) {
+            if (value == null) {
                 v = null;
             } else {
                 v = value.toString();
             }
             jsl.add(new JSONSet(key, v, Flag.FROM_AUTOSAVE));
         }
-        set(sb, jsl);
+        ScoreBoardJSONSetter.set(sb, jsl);
     }
 
     public static void set(ScoreBoard sb, List<JSONSet> jsl) {
