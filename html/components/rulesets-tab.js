@@ -129,19 +129,20 @@ function createRulesetsTab(tab) {
 					.append($('<tr>')
 						.append($('<td>').text('Parent:'))
 						.append($('<td>').append($('<select>').attr('id', 'new_parent'))))
-				.append($('<tr>').append($('<td>').attr('colspan', '2')
-						.append($('<button>').addClass('New').text('Create').click(New))))));
+				.append($('<tr>').append($('<td>').addClass('new').attr('colspan', '2')
+						.append($('<button>').addClass('New').text('Create').click(New).button())))));
 		tab.append($('<div>').addClass('definitions')
-			.append($('<p>')
-					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel))
-					.append($('<button>').addClass('Update').text('Update').click(Update))
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete)))
-			.append($('<input type="text">').attr('id', 'name').attr('size', '40'))
+			.append($('<div>').addClass('buttons top')
+					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
+					.append($('<button>').addClass('Update').text('Update').click(Update).button())
+					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button()))
+			.append($('<span>').text('Name: '))
+				.append($('<input type="text">').attr('id', 'name').attr('size', '40'))
 			.append($('<div>').addClass('rules'))
-			.append($('<p>')
-					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel))
-					.append($('<button>').addClass('Update').text('Update').click(Update))
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete))));
+			.append($('<div>').addClass('buttons bottom')
+					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
+					.append($('<button>').addClass('Update').text('Update').click(Update).button())
+					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())));
 		tab.children('.definitions').hide();
 		
 		WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {triggerBatchFunc: function() {
