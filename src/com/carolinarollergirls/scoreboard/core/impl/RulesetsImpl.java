@@ -8,13 +8,14 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-import java.util.Collection;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -27,6 +28,14 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         initialize();
         addWriteProtection(Child.RULE_DEFINITION);
         reset();
+    }
+    
+    @Override
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+        if (prop == Value.CURRENT_RULESET) {
+            setCurrentRulesetRecurse(((Ruleset)value).getId());
+        }
+        return value;
     }
 
     @Override
@@ -66,6 +75,8 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     }
 
     private void initialize() {
+        setCopy(Value.CURRENT_RULESET_ID, this, Value.CURRENT_RULESET, Ruleset.Value.ID, true);
+        setCopy(Value.CURRENT_RULESET_NAME, this, Value.CURRENT_RULESET, Ruleset.Value.NAME, true);
         RulesetImpl root = new RulesetImpl(this, "WFTDA Sanctioned", null, ROOT_ID);
         for (Rule r : Rule.values()) {
             r.getRuleDefinition().setParent(this);
@@ -91,10 +102,19 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     @Override
     public void setCurrentRuleset(String id) {
         synchronized (coreLock) {
-            Ruleset rs = getRuleset(id);
-            setCurrentRulesetRecurse(id);
-            set(Value.CURRENT_RULESET_ID, rs.getId());
-            set(Value.CURRENT_RULESET_NAME, rs.getName());
+            set(Value.CURRENT_RULESET, getRuleset(id));
+        }
+    }
+    @Override
+    public void refreshRuleset(String id) {
+        synchronized(coreLock) {
+            for (String tId = getCurrentRulesetId(); tId != ROOT_ID; tId = getRuleset(tId).getParentRulesetId()) {
+                if (tId.equals(id)) {
+                    setCurrentRulesetRecurse(getCurrentRulesetId());
+                    scoreBoardChange(new ScoreBoardEvent(this, Value.CURRENT_RULESET, get(Value.CURRENT_RULESET), get(Value.CURRENT_RULESET)));
+                    break;
+                }
+            }
         }
     }
 
@@ -177,6 +197,14 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
                 }
             }
         }
+        
+        @Override
+        protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+            if (prop == Value.NAME && !last.equals("")) {
+                ((Rulesets)parent).refreshRuleset(getId());
+            }
+            return value;
+        }
 
         @Override
         public String get(Rule r) { return get(Child.RULE, r.toString()).getValue(); }
@@ -189,15 +217,5 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         public String getParentRulesetId() { return (String)get(Value.PARENT_ID); }
         @Override
         public void setParentRulesetId(String p) { set(Value.PARENT_ID, p); }
-
-        @Override
-        public void setAll(Collection<ValueWithId> s) {
-            synchronized (coreLock) {
-                removeAll(Child.RULE);
-                for (ValueWithId r : s) {
-                    add(Child.RULE, r);
-                }
-            }
-        }
     }
 }

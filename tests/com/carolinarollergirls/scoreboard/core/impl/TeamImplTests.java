@@ -3,10 +3,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import static org.junit.Assert.*;
 
 import java.util.LinkedList;
-import java.util.HashSet;
 import java.util.Queue;
-import java.util.Set;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -18,12 +15,12 @@ import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -491,10 +488,8 @@ public class TeamImplTests {
     @Test
     public void testRulesetChange() {
         Rulesets.Ruleset child = sb.getRulesets().addRuleset("child", RulesetsImpl.ROOT_ID, "id");
-        Set<ValueWithId> s = new HashSet<>();
-        s.add(new ValWithId(Rule.NUMBER_TIMEOUTS.toString(), "1"));
-        s.add(new ValWithId(Rule.NUMBER_REVIEWS.toString(), "0"));
-        child.setAll(s);
+        child.add(Ruleset.Child.RULE, new ValWithId(Rule.NUMBER_TIMEOUTS.toString(), "1"));
+        child.add(Ruleset.Child.RULE, new ValWithId(Rule.NUMBER_REVIEWS.toString(), "0"));
 
         sb.getRulesets().setCurrentRuleset("id");
         assertEquals(1, team.getTimeouts());

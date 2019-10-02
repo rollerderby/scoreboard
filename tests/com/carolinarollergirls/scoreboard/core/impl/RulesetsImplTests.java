@@ -11,12 +11,8 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
-
-import java.util.HashSet;
-import java.util.Set;
 
 public class RulesetsImplTests {
 
@@ -43,9 +39,7 @@ public class RulesetsImplTests {
         assertEquals(rootId, rulesets.getCurrentRulesetId());
         assertEquals("WFTDA Sanctioned", rulesets.getCurrentRulesetName());
 
-        Set<ValueWithId> s = new HashSet<>();
-        s.add(new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
-        child.setAll(s);
+        child.add(Ruleset.Child.RULE, new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
         rulesets.setCurrentRuleset(id1);
         assertEquals(5, rulesets.getInt(Rule.NUMBER_PERIODS));
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
@@ -71,9 +65,7 @@ public class RulesetsImplTests {
         assertEquals(rootId, child.getParentRulesetId());
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
 
-        Set<ValueWithId> s = new HashSet<>();
-        s.add(new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
-        child.setAll(s);
+        child.add(Ruleset.Child.RULE, new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
         rulesets.setCurrentRuleset(id1);
         assertEquals(60000, rulesets.getLong(Rule.PERIOD_DURATION));
         assertEquals(60000, sb.getClock(Clock.ID_PERIOD).getTime());

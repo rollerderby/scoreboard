@@ -22,6 +22,7 @@
 
 #RulesetsTab .rulesets a { color: #333333; }
 #RulesetsTab .rulesets .new { text-align: center; }
+#RulesetsTab .rulesets .current > div { text-align: center; }
 #RulesetsTab .rules { padding-top: 5px; }
 #RulesetsTab .definitions .buttons { background-color: #ccc; padding: 3px 20px; }
 #RulesetsTab .definitions .buttons.top { border-radius: 12px 12px 0px 0px; margin-bottom: 5px; }

@@ -22,7 +22,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
-import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.utils.Version;
 import com.carolinarollergirls.scoreboard.core.Clock;
@@ -76,8 +75,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         getClock(Clock.ID_INTERMISSION);
         addWriteProtection(Child.CLOCK);
         setRecalculated(Value.NO_MORE_JAM).addSource(this, Value.IN_JAM).addSource(this, Value.IN_PERIOD)
-        .addSource(getRulesets(), Rulesets.Value.CURRENT_RULESET_ID)
-        .addIndirectSource(this, Value.CURRENT_PERIOD, Period.Child.TIMEOUT);
+            .addSource(getRulesets(), Rulesets.Value.CURRENT_RULESET)
+            .addIndirectSource(this, Value.CURRENT_PERIOD, Period.Child.TIMEOUT);
         reset();
         addInPeriodListeners();
     }
@@ -510,13 +509,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     private void _startIntermission() {
         Clock ic = getClock(Clock.ID_INTERMISSION);
 
-        long duration = 0;
-        String[] sequence = getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",");
-        int number = Math.min(getCurrentPeriodNumber(), sequence.length);
-        if (number > 0) {
-            duration = ClockConversion.fromHumanReadable(sequence[number-1]);
-        }
-        ic.setMaximumTime(duration);
+        ic.setMaximumTime(0); // will be calculated from Ruleset
         ic.restart();
     }
     private void _endIntermission(boolean force) {

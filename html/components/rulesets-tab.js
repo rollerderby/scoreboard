@@ -5,10 +5,12 @@ function createRulesetsTab(tab) {
 	initialize();
 
 	function loadRulesets() {
-		var rs = tab.find(">.rulesets>div");
+		var rs = tab.find(">.rulesets>.tree");
 		tab.find("#new_parent").empty();
+		tab.find("#current_rs").empty();
 		rs.empty();
 		rs.append(displayRulesetTree(""));
+		tab.find("#current_rs").val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
 		if (activeRuleset != null) {
 			displayRuleset(activeRuleset.Id);
 		}
@@ -24,7 +26,8 @@ function createRulesetsTab(tab) {
 					$("<option>")
 						.prop("value", val.Id)
 						.append(val.Name)
-						.appendTo(tab.find("#new_parent"));
+						.appendTo(tab.find("#new_parent"))
+						.clone().appendTo(tab.find("#current_rs"));
 					$("<li>")
 						.append(
 							$("<a>")
@@ -119,7 +122,7 @@ function createRulesetsTab(tab) {
 	function initialize() {
 		tab.append($('<div>').addClass('rulesets')
 			.append($('<h1>').text('Rulesets'))
-			.append($('<div>')).append($('<br>')).append($('<br>'))
+			.append($('<div>').addClass('tree')).append($('<br>'))
 			.append($('<table>')
 				.append($('<tr>')
 					.append($('<th>').attr('colspan', '2').text('New Ruleset')))
@@ -130,7 +133,12 @@ function createRulesetsTab(tab) {
 						.append($('<td>').text('Parent:'))
 						.append($('<td>').append($('<select>').attr('id', 'new_parent'))))
 				.append($('<tr>').append($('<td>').addClass('new').attr('colspan', '2')
-						.append($('<button>').addClass('New').text('Create').click(New).button())))));
+						.append($('<button>').addClass('New').text('Create').click(New).button()))))
+			.append($('<br>'))
+			.append($('<div>').addClass('current')
+				.append($('<h1>').text('Current Ruleset'))
+				.append($('<div>').append($('<select>').attr('id', 'current_rs')).change(Change))
+				));
 		tab.append($('<div>').addClass('definitions')
 			.append($('<div>').addClass('buttons top')
 					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
@@ -191,6 +199,10 @@ function createRulesetsTab(tab) {
 			});
 			loadRulesets();
 		}});
+		
+		WS.Register(['ScoreBoard.Rulesets.CurrentRulesetId'], function(k, v) {
+			tab.find('#current_rs').val(v);
+		});
 	}
 
 	function definitionOverride(e) {
@@ -247,7 +259,6 @@ function createRulesetsTab(tab) {
 	function Update() {
 		tab.children(".definitions").hide();
 		if (!activeRuleset.immutable) {
-			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Name", tab.find("#name").val());
 			$.each(definitions, function(idx, val) {
 				var def = $(".definition[fullname='" + val.Fullname + "']");
 				var value = null;
@@ -261,6 +272,7 @@ function createRulesetsTab(tab) {
 				}
 				WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
 			});
+			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Name", tab.find("#name").val());
 		}
 	}
 
@@ -273,6 +285,10 @@ function createRulesetsTab(tab) {
 
 	function Cancel() {
 		tab.children(".definitions").hide();
+	}
+	
+	function Change() {
+		WS.Set('ScoreBoard.Rulesets.CurrentRuleset', tab.find('#current_rs').val());
 	}
 
 	function setDefinition(key, value, inherited) {
