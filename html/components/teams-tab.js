@@ -314,6 +314,7 @@ function createTeamsTab(tab) {
 		removeTeam.button("option", "disabled", isCurrentTeam() || teamId == "");
 		skatersTable.addClass("Empty");
 		skatersTable.children("tbody").empty();
+		updateSkaterCount();  // In case there's no skaters.
 		alternameNameDialog.attr("prefix", getPrefix());
 		alternameNameDialog.find("tbody").empty();
 		colorsDialog.attr("prefix", getPrefix());
