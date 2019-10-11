@@ -143,14 +143,16 @@ function createRulesetsTab(tab) {
 			.append($('<div>').addClass('buttons top')
 					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
 					.append($('<button>').addClass('Update').text('Update').click(Update).button())
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button()))
+					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())
+					.append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.')))
 			.append($('<span>').text('Name: '))
 				.append($('<input type="text">').attr('id', 'name').attr('size', '40'))
 			.append($('<div>').addClass('rules'))
 			.append($('<div>').addClass('buttons bottom')
 					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
 					.append($('<button>').addClass('Update').text('Update').click(Update).button())
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())));
+					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())
+					.append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.'))));
 		tab.children('.definitions').hide();
 		
 		WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {triggerBatchFunc: function() {
@@ -198,11 +200,22 @@ function createRulesetsTab(tab) {
 				}
 			});
 			loadRulesets();
+			markEffectiveRulesets();
 		}});
 		
 		WS.Register(['ScoreBoard.Rulesets.CurrentRulesetId'], function(k, v) {
 			tab.find('#current_rs').val(v);
+			markEffectiveRulesets();
 		});
+	}
+	
+	function markEffectiveRulesets() {
+		$.each(rulesets, function(idx, rs) { rs.Effective = false; });
+		var id = WS.state['ScoreBoard.Rulesets.CurrentRulesetId'];
+		while (rulesets[id]) {
+			rulesets[id].Effective = true;
+			id = rulesets[id].ParentId;
+		}
 	}
 
 	function definitionOverride(e) {
@@ -238,9 +251,13 @@ function createRulesetsTab(tab) {
 
 		if (rs.Immutable) {
 			definitions.find(".definition *").prop("disabled", rs.Immutable);
-			definitions.find(".Update, .Delete").hide();
+			definitions.find(".Update, .Delete, .EditNote").hide();
+		} else if (rs.Effective) {
+			definitions.find(".Update, .EditNote").show();
+			definitions.find(".Delete").hide();
 		} else {
 			definitions.find(".Update, .Delete").show();
+			definitions.find(".EditNote").hide();
 		}
 		definitions.show();
 	}

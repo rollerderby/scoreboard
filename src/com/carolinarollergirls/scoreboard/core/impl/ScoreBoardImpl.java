@@ -509,7 +509,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     private void _startIntermission() {
         Clock ic = getClock(Clock.ID_INTERMISSION);
 
-        ic.setMaximumTime(0); // will be calculated from Ruleset
+        ic.setMaximumTime(ic.getCurrentIntermissionTime());
         ic.restart();
     }
     private void _endIntermission(boolean force) {

@@ -28,6 +28,7 @@
 #RulesetsTab .definitions .buttons.top { border-radius: 12px 12px 0px 0px; margin-bottom: 5px; }
 #RulesetsTab .definitions .buttons.bottom { border-radius: 0px 0px 12px 12px; margin-top: 2px; }
 #RulesetsTab .definitions .buttons button { margin-left: 10px;}
+#RulesetsTab .definitions .buttons span { margin-left: 5px;}
 #RulesetsTab .definitions .section { width: 100%; clear: both; background-color: #eee; }
 #RulesetsTab .definitions .section .header { background-color: #ccc; font-weight: bold; margin-top: 2px; cursor: pointer; }
 #RulesetsTab .definitions .section .definition { width: 100%; height: 1.3em; clear: both; }

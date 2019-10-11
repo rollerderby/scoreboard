@@ -63,15 +63,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         if (prop == Value.INVERTED_TIME) {
             return getMaximumTime() - getTime();
         }
-        if (prop == Value.MAXIMUM_TIME && getId() == ID_INTERMISSION) {
-            long duration = DEFAULT_MAXIMUM_TIME;
-            String[] sequence = getScoreBoard().getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",");
-            int number = Math.min(getScoreBoard().getCurrentPeriodNumber(), sequence.length);
-            if (number > 0) {
-                duration = ClockConversion.fromHumanReadable(sequence[number-1]);
-            }
-            value = duration;
-        }
         if (prop == Value.MAXIMUM_TIME && (Long)value < getMinimumTime()) {
             return getMinimumTime();
         }
@@ -141,6 +132,8 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             setMinimumTime(DEFAULT_MINIMUM_TIME);
             if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
                 setMaximumTime(ClockConversion.fromHumanReadable(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".Duration").getValue()));
+            } else if (getId().equals(ID_INTERMISSION)) {
+                setMaximumTime(getCurrentIntermissionTime());
             } else if (getId().equals(ID_LINEUP) && isCountDirectionDown()) {
                 if (getScoreBoard().isInOvertime()) {
                     setMaximumTime(r.getLong(Rule.OVERTIME_LINEUP_DURATION));
@@ -295,6 +288,17 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     }
 
+    @Override
+    public long getCurrentIntermissionTime()  {
+        long duration = DEFAULT_MAXIMUM_TIME;
+        String[] sequence = getScoreBoard().getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",");
+        int number = Math.min(getScoreBoard().getCurrentPeriodNumber(), sequence.length);
+        if (number > 0) {
+            duration = ClockConversion.fromHumanReadable(sequence[number-1]);
+        }
+        return duration;
+    }
+        
     protected boolean isSyncTime() {
         return Boolean.parseBoolean(getScoreBoard().getSettings().get(SETTING_SYNC));
     }
