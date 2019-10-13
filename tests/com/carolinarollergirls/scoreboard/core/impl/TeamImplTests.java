@@ -182,6 +182,7 @@ public class TeamImplTests {
         sb.stopJamTO();
         sb.startJam();
         advance(sb.getRulesets().getLong(Rule.PERIOD_DURATION));
+        sb.stopJamTO();
         advance(15*60*1000);
         sb.startJam();
         team.setRetainedOfficialReview(true);

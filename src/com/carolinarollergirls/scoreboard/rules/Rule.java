@@ -29,7 +29,7 @@ public enum Rule {
     AUTO_START(new BooleanRule("Automate.AutoStart", "When the Linup time plus AutoStartBuffer has elapsed start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled")),
     AUTO_START_BUFFER(new TimeRule("Automate.AutoStartType", "How long to wait after end of lineup before auto start is triggered.", "0:02")),
     AUTO_START_JAM(new BooleanRule("Automate.AutoStartBuffer", "What to start after lineup is up", false, "Jam", "Timeout")),
-    AUTO_END_JAM(new BooleanRule("Automate.AutoEndJam", "End a jam, when the jam clock has run down", true, "Enabled", "Disabled")),
+    AUTO_END_JAM(new BooleanRule("Automate.AutoEndJam", "End a jam, when the jam clock has run down", false, "Enabled", "Disabled")),
     AUTO_END_TTO(new BooleanRule("Automate.AutoEndTTO", "End a team timeout, after it's defined duration has elapsed", false, "Enabled", "Disabled")),
 
     NUMBER_TIMEOUTS(new IntegerRule("Team.Timeouts", "How many timeouts each team is granted per game or period", 3)),

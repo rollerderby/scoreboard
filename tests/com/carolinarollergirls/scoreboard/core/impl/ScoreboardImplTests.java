@@ -1184,7 +1184,8 @@ public class ScoreboardImplTests {
     }
 
     @Test
-    public void testJamClockEnd_pcRemaining() {
+    public void testJamClockEnd_autoEndEnabled() {
+        sb.getRulesets().set(Rule.AUTO_END_JAM, "true");
         sb.startJam();
         String prevUndoLabel = Button.UNDO.getLabel();
         assertTrue(pc.isRunning());
@@ -1209,7 +1210,6 @@ public class ScoreboardImplTests {
 
     @Test
     public void testJamClockEnd_autoEndDisabled() {
-        sb.getRulesets().set(Rule.AUTO_END_JAM, "false");
         sb.startJam();
         String prevStartLabel = Button.START.getLabel();
         String prevStopLabel = Button.STOP.getLabel();
