@@ -308,12 +308,11 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     @Override
     public void stopJamTO() {
         synchronized (coreLock) {
-            Clock jc = getClock(Clock.ID_JAM);
             Clock lc = getClock(Clock.ID_LINEUP);
             Clock tc = getClock(Clock.ID_TIMEOUT);
             Clock ic = getClock(Clock.ID_INTERMISSION);
 
-            if (jc.isRunning()) {
+            if (isInJam()) {
                 createSnapshot(ACTION_STOP_JAM);
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
                 _endJam();
