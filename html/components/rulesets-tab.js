@@ -206,6 +206,14 @@ function createRulesetsTab(tab) {
 		WS.Register(['ScoreBoard.Rulesets.CurrentRulesetId'], function(k, v) {
 			tab.find('#current_rs').val(v);
 			markEffectiveRulesets();
+			var definitions = tab.children(".definitions");
+			if (activeRuleset.Effective) {
+				definitions.find(".Update, .EditNote").show();
+				definitions.find(".Delete").hide();
+			} else {
+				definitions.find(".Update, .Delete").show();
+				definitions.find(".EditNote").hide();
+			}
 		});
 	}
 	
@@ -250,12 +258,15 @@ function createRulesetsTab(tab) {
 		});
 
 		if (rs.Immutable) {
+			tab.find("#name").attr('readonly', true);
 			definitions.find(".definition *").prop("disabled", rs.Immutable);
 			definitions.find(".Update, .Delete, .EditNote").hide();
 		} else if (rs.Effective) {
+			tab.find("#name").removeAttr('readonly');
 			definitions.find(".Update, .EditNote").show();
 			definitions.find(".Delete").hide();
 		} else {
+			tab.find("#name").removeAttr('readonly');
 			definitions.find(".Update, .Delete").show();
 			definitions.find(".EditNote").hide();
 		}
@@ -267,7 +278,9 @@ function createRulesetsTab(tab) {
 		do {
 			uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
 		} while (rulesets[uuid]);
-		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", tab.find("#new_name").val());
+		var newName = tab.find("#new_name").val();
+		if (newName.trim() === '') { newName = 'Unnamed'; }
+		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", newName);
 		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").ParentId", tab.find("#new_parent").val());
 		$("#new_name").val("");
 		activeRuleset = uuid;
@@ -289,7 +302,9 @@ function createRulesetsTab(tab) {
 				}
 				WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
 			});
-			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Name", tab.find("#name").val());
+			var newName = tab.find("#name").val();
+			if (newName.trim() === '') { newName = 'Unnamed'; }
+			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Name", newName);
 		}
 	}
 
