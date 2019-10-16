@@ -1232,6 +1232,11 @@ public class ScoreboardImplTests {
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
         checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, prevUndoLabel);
+        
+        advance(sb.getRulesets().getLong(Rule.PERIOD_DURATION));
+        sb.stopJamTO();
+        
+        assertFalse(lc.isRunning());
     }
 
     @Test
