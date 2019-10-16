@@ -108,7 +108,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     @Override
     public void refreshRuleset(String id) {
         synchronized(coreLock) {
-            for (String tId = getCurrentRulesetId(); tId != ROOT_ID; tId = getRuleset(tId).getParentRulesetId()) {
+            for (String tId = getCurrentRulesetId(); !ROOT_ID.equals(tId); tId = getRuleset(tId).getParentRulesetId()) {
                 if (tId.equals(id)) {
                     setCurrentRulesetRecurse(getCurrentRulesetId());
                     scoreBoardChange(new ScoreBoardEvent(this, Value.CURRENT_RULESET, get(Value.CURRENT_RULESET), get(Value.CURRENT_RULESET)));

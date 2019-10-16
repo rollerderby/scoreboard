@@ -258,15 +258,15 @@ function createRulesetsTab(tab) {
 		});
 
 		if (rs.Immutable) {
-			tab.find("#name").attr('readonly', true);
+			tab.find("#name").attr('disabled', true);
 			definitions.find(".definition *").prop("disabled", rs.Immutable);
 			definitions.find(".Update, .Delete, .EditNote").hide();
 		} else if (rs.Effective) {
-			tab.find("#name").removeAttr('readonly');
+			tab.find("#name").removeAttr('disabled');
 			definitions.find(".Update, .EditNote").show();
 			definitions.find(".Delete").hide();
 		} else {
-			tab.find("#name").removeAttr('readonly');
+			tab.find("#name").removeAttr('disabled');
 			definitions.find(".Update, .Delete").show();
 			definitions.find(".EditNote").hide();
 		}
@@ -274,12 +274,12 @@ function createRulesetsTab(tab) {
 	}
 
 	function New() {
+		var newName = tab.find("#new_name").val();
+		if (newName.trim() === '') { return; }
 		var uuid;
 		do {
 			uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
 		} while (rulesets[uuid]);
-		var newName = tab.find("#new_name").val();
-		if (newName.trim() === '') { newName = 'Unnamed'; }
 		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", newName);
 		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").ParentId", tab.find("#new_parent").val());
 		$("#new_name").val("");
@@ -303,8 +303,8 @@ function createRulesetsTab(tab) {
 				WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
 			});
 			var newName = tab.find("#name").val();
-			if (newName.trim() === '') { newName = 'Unnamed'; }
-			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Name", newName);
+			if (newName.trim() === '') { newName = WS.state['ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name']; }
+			WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name', newName);
 		}
 	}
 
