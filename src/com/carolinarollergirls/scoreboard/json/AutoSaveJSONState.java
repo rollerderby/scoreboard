@@ -3,8 +3,10 @@ package com.carolinarollergirls.scoreboard.json;
 import io.prometheus.client.Histogram;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -58,7 +60,7 @@ public class AutoSaveJSONState implements Runnable {
 
     private void writeAutoSave(File file) {
         File tmp = null;
-        FileWriter out = null;
+        OutputStreamWriter out = null;
         try {
             String json = JSON.std
                           .with(JSON.Feature.PRETTY_PRINT_OUTPUT)
@@ -68,7 +70,7 @@ public class AutoSaveJSONState implements Runnable {
                           .end()
                           .finish();
             tmp = File.createTempFile(file.getName(), ".tmp", dir);
-            out = new FileWriter(tmp);
+            out = new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8);
             out.write(json);
             out.close();
             tmp.renameTo(file); // This is atomic.
