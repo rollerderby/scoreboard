@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.Collection;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
@@ -21,6 +20,7 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public void reset();
 
     public void setCurrentRuleset(String id);
+    public void refreshRuleset(String id);
 
     // Get information from current ruleset.
     public String get(Rule r);
@@ -41,6 +41,7 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public Ruleset addRuleset(String name, String parentId, String id);
 
     public enum Value implements PermanentProperty {
+        CURRENT_RULESET(Ruleset.class, null),
         CURRENT_RULESET_ID(String.class, ""),
         CURRENT_RULESET_NAME(String.class, "");
 
@@ -70,9 +71,6 @@ public interface Rulesets extends ScoreBoardEventProvider {
         public void setName(String n);
         public String getParentRulesetId();
         public void setParentRulesetId(String id);
-
-        // A missing entry means no override for that rule.
-        public void setAll(Collection<ValueWithId> s);
 
         public enum Value implements PermanentProperty {
             ID(String.class, ""),

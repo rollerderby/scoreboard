@@ -77,6 +77,8 @@ public interface Clock extends ScoreBoardEventProvider {
     public boolean isCountDirectionDown();
     public void setCountDirectionDown(boolean down);
 
+    public long getCurrentIntermissionTime();
+    
     public static interface ClockSnapshot {
         public String getId();
         public int getNumber();

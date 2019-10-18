@@ -5,10 +5,12 @@ function createRulesetsTab(tab) {
 	initialize();
 
 	function loadRulesets() {
-		var rs = tab.find(">.rulesets>div");
+		var rs = tab.find(">.rulesets>.tree");
 		tab.find("#new_parent").empty();
+		tab.find("#current_rs").empty();
 		rs.empty();
 		rs.append(displayRulesetTree(""));
+		tab.find("#current_rs").val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
 		if (activeRuleset != null) {
 			displayRuleset(activeRuleset.Id);
 		}
@@ -24,7 +26,8 @@ function createRulesetsTab(tab) {
 					$("<option>")
 						.prop("value", val.Id)
 						.append(val.Name)
-						.appendTo(tab.find("#new_parent"));
+						.appendTo(tab.find("#new_parent"))
+						.clone().appendTo(tab.find("#current_rs"));
 					$("<li>")
 						.append(
 							$("<a>")
@@ -119,7 +122,7 @@ function createRulesetsTab(tab) {
 	function initialize() {
 		tab.append($('<div>').addClass('rulesets')
 			.append($('<h1>').text('Rulesets'))
-			.append($('<div>')).append($('<br>')).append($('<br>'))
+			.append($('<div>').addClass('tree')).append($('<br>'))
 			.append($('<table>')
 				.append($('<tr>')
 					.append($('<th>').attr('colspan', '2').text('New Ruleset')))
@@ -130,19 +133,26 @@ function createRulesetsTab(tab) {
 						.append($('<td>').text('Parent:'))
 						.append($('<td>').append($('<select>').attr('id', 'new_parent'))))
 				.append($('<tr>').append($('<td>').addClass('new').attr('colspan', '2')
-						.append($('<button>').addClass('New').text('Create').click(New).button())))));
+						.append($('<button>').addClass('New').text('Create').click(New).button()))))
+			.append($('<br>'))
+			.append($('<div>').addClass('current')
+				.append($('<h1>').text('Current Ruleset'))
+				.append($('<div>').append($('<select>').attr('id', 'current_rs')).change(Change))
+				));
 		tab.append($('<div>').addClass('definitions')
 			.append($('<div>').addClass('buttons top')
 					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
 					.append($('<button>').addClass('Update').text('Update').click(Update).button())
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button()))
+					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())
+					.append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.')))
 			.append($('<span>').text('Name: '))
 				.append($('<input type="text">').attr('id', 'name').attr('size', '40'))
 			.append($('<div>').addClass('rules'))
 			.append($('<div>').addClass('buttons bottom')
 					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
 					.append($('<button>').addClass('Update').text('Update').click(Update).button())
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())));
+					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())
+					.append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.'))));
 		tab.children('.definitions').hide();
 		
 		WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {triggerBatchFunc: function() {
@@ -190,7 +200,30 @@ function createRulesetsTab(tab) {
 				}
 			});
 			loadRulesets();
+			markEffectiveRulesets();
 		}});
+		
+		WS.Register(['ScoreBoard.Rulesets.CurrentRulesetId'], function(k, v) {
+			tab.find('#current_rs').val(v);
+			markEffectiveRulesets();
+			var definitions = tab.children(".definitions");
+			if (activeRuleset.Effective) {
+				definitions.find(".Update, .EditNote").show();
+				definitions.find(".Delete").hide();
+			} else {
+				definitions.find(".Update, .Delete").show();
+				definitions.find(".EditNote").hide();
+			}
+		});
+	}
+	
+	function markEffectiveRulesets() {
+		$.each(rulesets, function(idx, rs) { rs.Effective = false; });
+		var id = WS.state['ScoreBoard.Rulesets.CurrentRulesetId'];
+		while (rulesets[id]) {
+			rulesets[id].Effective = true;
+			id = rulesets[id].ParentId;
+		}
 	}
 
 	function definitionOverride(e) {
@@ -225,20 +258,29 @@ function createRulesetsTab(tab) {
 		});
 
 		if (rs.Immutable) {
+			tab.find("#name").attr('disabled', true);
 			definitions.find(".definition *").prop("disabled", rs.Immutable);
-			definitions.find(".Update, .Delete").hide();
+			definitions.find(".Update, .Delete, .EditNote").hide();
+		} else if (rs.Effective) {
+			tab.find("#name").removeAttr('disabled');
+			definitions.find(".Update, .EditNote").show();
+			definitions.find(".Delete").hide();
 		} else {
+			tab.find("#name").removeAttr('disabled');
 			definitions.find(".Update, .Delete").show();
+			definitions.find(".EditNote").hide();
 		}
 		definitions.show();
 	}
 
 	function New() {
+		var newName = tab.find("#new_name").val();
+		if (newName.trim() === '') { return; }
 		var uuid;
 		do {
 			uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
 		} while (rulesets[uuid]);
-		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", tab.find("#new_name").val());
+		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", newName);
 		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").ParentId", tab.find("#new_parent").val());
 		$("#new_name").val("");
 		activeRuleset = uuid;
@@ -247,7 +289,6 @@ function createRulesetsTab(tab) {
 	function Update() {
 		tab.children(".definitions").hide();
 		if (!activeRuleset.immutable) {
-			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Name", tab.find("#name").val());
 			$.each(definitions, function(idx, val) {
 				var def = $(".definition[fullname='" + val.Fullname + "']");
 				var value = null;
@@ -261,6 +302,9 @@ function createRulesetsTab(tab) {
 				}
 				WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
 			});
+			var newName = tab.find("#name").val();
+			if (newName.trim() === '') { newName = WS.state['ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name']; }
+			WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name', newName);
 		}
 	}
 
@@ -273,6 +317,10 @@ function createRulesetsTab(tab) {
 
 	function Cancel() {
 		tab.children(".definitions").hide();
+	}
+	
+	function Change() {
+		WS.Set('ScoreBoard.Rulesets.CurrentRuleset', tab.find('#current_rs').val());
 	}
 
 	function setDefinition(key, value, inherited) {
