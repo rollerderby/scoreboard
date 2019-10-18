@@ -32,12 +32,12 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      */
     public Class<? extends ScoreBoardEventProvider> getProviderClass();
     /**
-     * Id to be used in order to identify this element amongst its siblings in XML and JSON.
+     * Id to be used in order to identify this element amongst its siblings.
      *  (Could e.g. be a Period/Jam/etc number or a UUID.)
      */
     public String getProviderId();
     /**
-     * The parent element in the XML and JSON representation
+     * The parent element.
      */
     public ScoreBoardEventProvider getParent();
     /**
