@@ -172,7 +172,7 @@ function createGameControlDialog() {
 					parts[0], parts[1]);
 			if (StartTime < now)
 				StartTime = addDays(StartTime, 1);
-			IntermissionClock = StartTime - now;
+			IntermissionClock = "" + (StartTime - now);
 		}
 		var game = {
 			Team1: adhocGame.find("select.Team1").val(),
