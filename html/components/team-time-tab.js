@@ -30,6 +30,12 @@ function setClockControls(value) {
 	$("#TeamTime").find("tr.Control").toggleClass("Show", value);
 }
 
+function setTabBar(value) {
+	$("#ShowTabBarButton").prop("checked", value);
+	$("label.ShowTabBarButton").toggleClass("ui-state-active", value);
+	$("#tabBar").toggle(value);
+}
+
 function setReplaceButton(value) {
 	$("#EnableReplaceButton").prop("checked", value);
 	$("label.EnableReplaceButton").toggleClass("ui-state-active", value);
@@ -87,6 +93,20 @@ function createMetaControlTable() {
 			var operator = $("#operatorId").text();
 			if (operator) {
 				WS.Set("ScoreBoard.Settings.Setting(ScoreBoard.Operator__"+operator+".StartStopButtons)", value);
+			}
+		});
+
+	$("<label>").addClass("ShowTabBarButton").text("Show Tab Bar").attr("for", "ShowTabBarButton")
+		.appendTo(buttonsTd);
+	$("<input type='checkbox'>").attr("id", "ShowTabBarButton")
+		.appendTo(buttonsTd)
+		.button()
+		.click(function() {
+			var value = this.checked;
+			setTabBar(value);
+			var operator = $("#operatorId").text();
+			if (operator) {
+				WS.Set("ScoreBoard.Settings.Setting(ScoreBoard.Operator__"+operator+".TabBar)", value);
 			}
 		});
 

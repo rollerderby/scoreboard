@@ -8,6 +8,7 @@
     "ScoreBoard.Settings.Setting(Overlay.Interactive.Score)" : "On",
     "ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)" : "On",
     "ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.StartStopButtons)" : "false",
+    "ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.TabBar)" : "true",
     "ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.ReplaceButton)" : "false",
     "ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)" : "true",
     "ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)" : "Lineup",
