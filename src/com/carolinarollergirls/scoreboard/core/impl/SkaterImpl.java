@@ -115,6 +115,9 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
         if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
             updateEligibility();
+        } else if (prop == NChild.PENALTY && !((Penalty)item).isServed() && getRole() == Role.JAMMER
+                && !getCurrentFielding().getTeamJam().getOtherTeam().isLead()) {
+            getTeam().set(Team.Value.LOST, true);
         } else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
             set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
         } else if (prop == Child.FIELDING && team.hasFieldingAdvancePending() &&

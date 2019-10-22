@@ -103,6 +103,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 execute(Command.REMOVE_TRIP);
             }
         }
+        if (prop == Value.INJURY && flag != Flag.COPY && (Boolean)value) {
+            set(Value.CALLOFF, false);
+        }
+        if (prop == Value.CALLOFF && flag != Flag.COPY && (Boolean)value) {
+            set(Value.INJURY, false);
+        }
         return value;
     }
     @Override
@@ -137,6 +143,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         case ADD_TRIP:
             tripScoreTimerTask.cancel();
             getRunningOrEndedTeamJam().addScoringTrip();
+            if (!isLead() && !getScoreBoard().getTeam(Team.ID_1.equals(getId()) ? Team.ID_2 : Team.ID_1).isLead()) {
+                set(Value.LOST, true);
+            }
             break;
         case REMOVE_TRIP:
             tripScoreTimerTask.cancel();
