@@ -416,8 +416,9 @@ function createTeamTable() {
 	var scoreRow = row.clone().addClass("Score").appendTo(table);
 	var speedScoreRow = row.clone().addClass("SpeedScore").appendTo(table);
 	var timeoutRow = row.clone().addClass("Timeout").appendTo(table);
-	var jammer1Row = row.clone().addClass("Jammer").appendTo(table);
-	var jammer2Row = row.clone().addClass("Jammer").appendTo(table);
+	var flagsRow = row.clone().appendTo(table);
+	var jammerRow = row.clone().addClass("Jammer").appendTo(table);
+	var pivotRow = row.clone().addClass("Pivot").appendTo(table);
 
 	$.each( [ "1", "2" ], function() {
 		var team = String(this);
@@ -428,8 +429,9 @@ function createTeamTable() {
 		var scoreTr = _crgUtils.createRowTable(3).appendTo($("<td>").appendTo(scoreRow)).find("tr");
 		var speedScoreTr = _crgUtils.createRowTable(4).appendTo($("<td>").appendTo(speedScoreRow)).find("tr");
 		var timeoutTr = _crgUtils.createRowTable(6).appendTo($("<td>").appendTo(timeoutRow)).find("tr");
-		var jammer1Tr = _crgUtils.createRowTable(2).appendTo($("<td>").appendTo(jammer1Row)).find("tr");
-		var jammer2Tr = _crgUtils.createRowTable(2).appendTo($("<td>").appendTo(jammer2Row)).find("tr");
+		var flagsTr = _crgUtils.createRowTable(2).appendTo($("<td>").appendTo(flagsRow)).find("tr");
+		var jammerTr = _crgUtils.createRowTable(1).appendTo($("<td>").appendTo(jammerRow)).find("tr");
+		var pivotTr = _crgUtils.createRowTable(1).appendTo($("<td>").appendTo(pivotRow)).find("tr");
 
 		var nameTd = nameTr.children("td:eq("+(first?1:0)+")").addClass("Name");
 		var nameDisplayDiv = $("<div>").appendTo(nameTd);
@@ -648,7 +650,7 @@ function createTeamTable() {
 			otoButton.wrap("<div></div>");
 		}
 
-		var leadJammerTd = jammer1Tr.children("td:eq("+(first?"0":"1")+")").css("direction", "ltr");
+		var leadJammerTd = flagsTr.children("td:eq("+(first?"1":"0")+")").css("direction", "ltr");
 		WSActiveButton(prefix + ".Lost", $("<button>")).text("Lost")
 			.attr("id", "Team"+team+"Lost").addClass("KeyControl").button().appendTo(leadJammerTd);
 		WSActiveButton(prefix + ".Lead", $("<button>")).text("Lead")
@@ -662,37 +664,52 @@ function createTeamTable() {
 
 		leadJammerTd.buttonset();
 
-		var starPassTd = jammer2Tr.children("td:eq("+(first?"0":"1")+")").css("direction", "ltr");
+		var starPassTd = flagsTr.children("td:eq("+(first?"0":"1")+")").css("direction", "ltr");
 		var starPassButton = WSActiveButton(prefix + ".StarPass", $("<button>")).text("Star Pass")
 			.attr("id", "Team"+team+"StarPass").addClass("KeyControl").button().appendTo(starPassTd);
 		var noPivotButton = WSActiveButton(prefix + ".NoPivot", $("<button>")).text("No Pivot")
 			.attr("id", "Team"+team+"NoPivot").addClass("KeyControl").button().appendTo(starPassTd);
 				
-		var makeSkaterDropdown = function(pos, elem, sort) {
-			var select = $('<select>').append($('<option value="">?</option>'));
+		var makeSkaterSelector = function(pos) {
+			var container = $('<span class="skaterSelector">')
+
+			var none = $('<button>').text("?").attr("skater", "").button();
+			container.append(none).buttonset();
+			none.click(function(){WS.Set(prefix + '.Position('+pos+').Skater', "") });
+
+			function setValue(v) {
+				container.children().removeClass("Active");
+				v = v || "";
+				container.children('[skater="'+v+'"]').addClass("Active");
+			}
 			WS.Register([prefix + '.Skater(*).Number', prefix + '.Skater(*).Role'], function(k, v) {
-				select.children('[value="'+k.Skater+'"]').remove();
+				container.children('[skater="'+k.Skater+'"]').remove();
 				if (v != null && WS.state[prefix + '.Skater('+k.Skater+').Role'] != 'NotInGame') {
 					var number = WS.state[prefix + '.Skater('+k.Skater+').Number'];
-					var option = $('<option>').attr('number', number).val(k.Skater).text(number);
-					_windowFunctions.appendAlphaSortedByAttr(select, option, 'number', 1);
-					select.val(WS.state[prefix + '.Position('+pos+').Skater']);
+					var button = $('<button>').attr('number', number).attr('skater', k.Skater).text(number)
+							.click(function() {
+						WS.Set(prefix + '.Position('+pos+').Skater', k.Skater);
+					}).button();
+					_windowFunctions.appendAlphaSortedByAttr(container, button, 'number', 1);
 				}
+				setValue(WS.state[prefix + '.Position('+pos+').Skater']);
 			});
-			WSControl(prefix + '.Position('+pos+').Skater', select);
-			return select;
+			WS.Register(prefix + '.Position('+pos+').Skater', function(k, v) {
+				setValue(v);
+			});
+			return container;
 		};
 
-		var jammerSelectTd = jammer1Tr.children("td:eq("+(first?"1":"0")+")").addClass("Jammer");
+		var jammerSelectTd = jammerTr.children("td");
 		$('<span>').text('Jammer:').appendTo(jammerSelectTd);
-		makeSkaterDropdown("Jammer").appendTo(jammerSelectTd);
+		makeSkaterSelector("Jammer").appendTo(jammerSelectTd);
 
 		WSActiveButton(prefix + ".Position(Jammer).PenaltyBox", $("<button>")).text("Box")
 			.attr("id", "Team"+team+"JammerBox").addClass("KeyControl Box").button().appendTo(jammerSelectTd);
 
-		var pivotSelectTd = jammer2Tr.children("td:eq("+(first?"1":"0")+")").addClass("Pivot");
+		var pivotSelectTd = pivotTr.children("td");
 		$('<span>').text('Piv/4th Bl:').appendTo(pivotSelectTd);
-		makeSkaterDropdown("Pivot").appendTo(pivotSelectTd);
+		makeSkaterSelector("Pivot").appendTo(pivotSelectTd);
 
 		WSActiveButton(prefix + ".Position(Pivot).PenaltyBox", $("<button>")).text("Box")
 			.attr("id", "Team"+team+"PivotBox").addClass("KeyControl Box").button().appendTo(pivotSelectTd);
