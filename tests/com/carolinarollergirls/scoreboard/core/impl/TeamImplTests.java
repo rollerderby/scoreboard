@@ -15,6 +15,7 @@ import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
@@ -475,6 +476,56 @@ public class TeamImplTests {
         team.execute(Team.Command.ADVANCE_FIELDINGS);
         
         assertEquals(Role.PIVOT, skater1.getRole());
+    }
+    
+    @Test
+    public void testLostOnJammerPenalty() {
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+        Skater skater1 = new SkaterImpl(team, "S1");
+        team.addSkater(skater1);
+        team.field(skater1, Role.JAMMER);
+        sb.startJam();
+        
+        skater1.getOrCreate(Skater.NChild.PENALTY, "1");
+        assertTrue(team.isLost());
+    }
+    
+    @Test
+    public void testLostOnEligibleEndOfInitial() {
+        sb.startJam();
+        team.execute(Team.Command.ADD_TRIP);
+        assertTrue(team.isLost());
+    }
+    
+    @Test
+    public void testNoLostOnIneligibleEndOfInitial() {
+        sb.startJam();
+        sb.getTeam(Team.ID_2).set(Team.Value.LEAD, true);
+        team.execute(Team.Command.ADD_TRIP);
+        assertFalse(team.isLost());
+    }
+    
+    @Test
+    public void testCalloffAndInjuryUnsetEachOther() {
+        sb.startJam();
+        team.set(Team.Value.LEAD, true);
+        advance(15000);
+        sb.stopJamTO();
+        assertTrue(team.isCalloff());
+        assertFalse(team.isInjury());
+        
+        team.set(Team.Value.INJURY, true);
+        assertTrue(team.isInjury());
+        assertFalse(team.isCalloff());
+        
+        team.set(Team.Value.CALLOFF, true);
+        assertTrue(team.isCalloff());
+        assertFalse(team.isInjury());
+        
+        //check they can be set simultaneous on the SK sheet
+        team.getRunningOrEndedTeamJam().set(TeamJam.Value.INJURY, true);
+        assertTrue(team.isCalloff());
+        assertTrue(team.isInjury());
     }
 
     public void testReset() {

@@ -62,6 +62,9 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             if (getCurrentScoringTrip() == null) { return true; }
             return getCurrentScoringTrip().getNumber() == 1;
         }
+        if (prop ==Value.LOST && getJam().isOvertimeJam()) {
+            return false;
+        }
         if (prop == Value.DISPLAY_LEAD) {
             return isLead() && !isLost();
         }
