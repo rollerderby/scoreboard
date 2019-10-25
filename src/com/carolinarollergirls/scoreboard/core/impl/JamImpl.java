@@ -89,6 +89,9 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             }
         }
     }
+    
+    @Override
+    public boolean isOvertimeJam() { return (Boolean)get(Value.OVERTIME); }
 
     @Override
     public long getDuration() { return (Long)get(Value.DURATION); }

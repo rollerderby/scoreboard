@@ -10,6 +10,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public void setParent(ScoreBoardEventProvider p);
 
+    public boolean isOvertimeJam();
+    
     public long getDuration();
     public long getPeriodClockElapsedStart();
     public long getPeriodClockElapsedEnd();
@@ -24,6 +26,7 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public enum Value implements PermanentProperty {
         PERIOD_NUMBER(Integer.class, 0),
         STAR_PASS(Boolean.class, false), //true, if either team had an SP
+        OVERTIME(Boolean.class, false),
         DURATION(Long.class, 0L),
         PERIOD_CLOCK_ELAPSED_START(Long.class, 0L),
         PERIOD_CLOCK_ELAPSED_END(Long.class, 0L),

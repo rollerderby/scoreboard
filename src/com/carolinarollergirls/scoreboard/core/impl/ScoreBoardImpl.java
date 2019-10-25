@@ -110,10 +110,17 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
     @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.IN_OVERTIME && !(Boolean)value) {
-            Clock lc = getClock(Clock.ID_LINEUP);
-            if (lc.isCountDirectionDown()) {
-                lc.setMaximumTime(getRulesets().getLong(Rule.LINEUP_DURATION));
+        if (prop == Value.IN_OVERTIME) {
+            if (isInJam()) {
+                getCurrentPeriod().getCurrentJam().set(Jam.Value.OVERTIME, value);
+            } else {
+                getUpcomingJam().set(Jam.Value.OVERTIME, value);
+            }
+            if (!(Boolean)value) {
+                Clock lc = getClock(Clock.ID_LINEUP);
+                if (lc.isCountDirectionDown()) {
+                    lc.setMaximumTime(getRulesets().getLong(Rule.LINEUP_DURATION));
+                }
             }
         } else if (prop == Value.UPCOMING_JAM) {
             removeAll(Period.NChild.JAM);

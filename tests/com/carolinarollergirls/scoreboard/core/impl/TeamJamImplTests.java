@@ -7,6 +7,8 @@ import java.util.Queue;
 
 import org.junit.Before;
 import org.junit.Test;
+
+import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Team;
@@ -65,4 +67,10 @@ public class TeamJamImplTests {
         assertTrue(tj.isStarPass());
     }
 
+    @Test
+    public void testNoLostInOvertime() {
+        tj.getJam().set(Jam.Value.OVERTIME, true);
+        tj.set(TeamJam.Value.LOST, true);
+        assertFalse(tj.isLost());
+    }
 }
