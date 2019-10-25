@@ -3,7 +3,9 @@ package com.carolinarollergirls.scoreboard.json;
 import io.prometheus.client.Histogram;
 
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.Map;
@@ -25,14 +27,14 @@ public class JSONStateSnapshotter implements JSONStateListener {
     public synchronized void sendUpdates(Map<String, Object> state, Set<String> changed) {
         if (state.get("ScoreBoard.CurrentPeriodNumber") != "0") {
             // If the jam has just ended or the score is now official, write out a file.
-            if ((inJam && !bool(state.get("ScoreBoard.Clock(Jam).Running")))
+            if ((inJam && !bool(state.get("ScoreBoard.InJam")))
                     || (!officialScore && bool(state.get("ScoreBoard.OfficialScore")))) {
                 writeFile(state);
             }
         }
 
         officialScore = bool(state.get("ScoreBoard.OfficialScore"));
-        inJam = bool(state.get("ScoreBoard.Clock(Jam).Running"));
+        inJam = bool(state.get("ScoreBoard.InJam"));
     }
 
     public void writeFile(Map<String, Object> state) {
@@ -49,10 +51,10 @@ public class JSONStateSnapshotter implements JSONStateListener {
         String name = new SimpleDateFormat("yyyy-MM-dd HH_mm_ss").format(startTime)
         + " - " + state.get("ScoreBoard.Team(1).Name")
         + " vs " + state.get("ScoreBoard.Team(2).Name")
-        + " P" + period
-        + ".json";
+        + " P" + period;
         name = name.replaceAll("[^a-zA-Z0-9\\.\\- ]", "_");
-        File file = new File(new File(directory, "html/game-data/json"), name);
+        File file = new File(new File(directory, "html/game-data/json"), name + ".json");
+        File prev = new File(new File(directory, "html/game-data/json"), name + "_prev.json");
         file.getParentFile().mkdirs();
 
         // The state includes secrets (Twitter auth) and
@@ -70,7 +72,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
         }
 
         File tmp = null;
-        FileWriter out = null;
+        OutputStreamWriter out = null;
         try {
             // Put inside a "state" entry to match the WS.
             // Use a TreeMap so output is sorted.
@@ -82,10 +84,14 @@ public class JSONStateSnapshotter implements JSONStateListener {
                           .end()
                           .finish();
             tmp = File.createTempFile(file.getName(), ".tmp", directory);
-            out = new FileWriter(tmp);
+            out = new OutputStreamWriter(new FileOutputStream(tmp), StandardCharsets.UTF_8);
             out.write(json);
             out.close();
-            tmp.renameTo(file); // This is atomic.
+            prev.delete();
+            file.renameTo(prev);
+            if (tmp.renameTo(file)) {
+                prev.delete();
+            }
         } catch (Exception e) {
             Logger.printMessage("Error writing JSON snapshot: " + e.getMessage());
         } finally {
