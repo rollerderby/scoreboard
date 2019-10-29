@@ -18,6 +18,9 @@ $(function() {
 	createScoreBoardSettingsTab(createTab("Settings", "ScoreBoardSettingsTab"));
 	createTeamsTab(createTab("Teams", "TeamsTab"));
 	createDataManagementTab(createTab("Up/Download", "DataManagementTab"));
+	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.*)", function(k, v) {
+		setOperatorSettings(_windowFunctions.getParam("operator"));
+	});
 	// Only connect after any registrations from the above are in place.
 	// This avoids repeating work on the initial load.
 	WS.AutoRegister();
@@ -48,17 +51,26 @@ $(function() {
 });
 
 function setOperatorSettings(op) {
+	var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + op + '.';
+	// Default settings are intentionally separate from settings of the default operator
+	// This ensures users logging in for the first time always get the former and not whatever
+	// the latter currently happens to be.
+	var defPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.';
 	var prefix;
-	if (op !== "") {
-		prefix = "ScoreBoard.Settings.Setting(ScoreBoard.Operator__"+ op + ".";
+	if (op !== '') {
+		$.each(['StartStopButtons', 'ReplaceButton', 'TabBar'], function() {
+			var setting = String(this);
+			if (WS.state[opPrefix+setting+')'] === undefined) {
+				WS.Set(opPrefix+setting+')', WS.state[defPrefix+setting+')']);
+			}
+		})
+		prefix = opPrefix;
 	} else {
-		// Default settings are intentionally separate from settings of the default operator
-		// This ensures users logging in for the first time always get the former and not whatever
-		// the latter currently happens to be.
-		prefix = "ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.";
+		prefix = defPrefix;
 	}
 	setClockControls(isTrue(WS.state[prefix+"StartStopButtons)"]));
 	setReplaceButton(isTrue(WS.state[prefix+"ReplaceButton)"]));
+	setTabBar(isTrue(WS.state[prefix+'TabBar)']));
 }
 
 // FIXME - this is done after the team/time panel is loaded,
@@ -68,14 +80,10 @@ function setOperatorSettings(op) {
 function initialLogin() {
 	var operator = _windowFunctions.getParam("operator");
 	if (operator) {
-		setOperatorSettings("");
 		login(operator);
 	} else {
 		logout();
 	}
-	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.*)", function(k, v) {
-		setOperatorSettings(_windowFunctions.getParam("operator"));
-	});
 }
 
 function login(name) {
