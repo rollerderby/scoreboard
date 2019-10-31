@@ -57,10 +57,10 @@ _crgKeyControls = {
 			.end()
 			.each(function() {
 				var button = $(this);
-				var prop = "ScoreBoard.Settings.Setting(ScoreBoard.Operator__" + operator + ".KeyControl." + button.attr("id") + ")";
+				var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.KeyControl.' + button.attr('id') + ')';
 				var key = WS.state[prop];
-				button.find("span.Key").text(key);
-				button.attr("_crgKeyControls_prop", prop)
+				button.attr('_crgKeyControls_prop', prop).toggleClass("HasControlKey", (key?true:false));
+				button.find('span.Key').attr('data-keycontrol', String(key?key.charCodeAt(0):'')).text(key);
 			});
 		return button;
 	},

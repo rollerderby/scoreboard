@@ -712,10 +712,6 @@ function createTeamTable() {
 								WS.Set(prefix + '.Position('+pos+').Skater', k.Skater);
 						}).button();
 						_crgKeyControls.setupKeyControl(button, _crgKeyControls.operator);
-						var key = WS.state[button.attr('_crgKeyControls_prop')];
-						button.toggleClass('HasControlKey', (key?true:false))
-							.find('span.Key').text(key?key:'')
-							.attr('data-keycontrol', String(key?key.charCodeAt(0):''));
 					_windowFunctions.appendAlphaSortedByAttr(container, button, 'number', 1);
 				}
 				setValue(WS.state[prefix + '.Position('+pos+').Skater']);
