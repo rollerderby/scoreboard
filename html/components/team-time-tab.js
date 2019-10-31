@@ -693,7 +693,7 @@ function createTeamTable() {
 		var makeSkaterSelector = function(pos) {
 			var container = $('<span class="skaterSelector">')
 
-			var none = $('<button>').text("?").attr("skater", "").button();
+			var none = $('<button>').text("?").attr("skater", "").attr('id', 'Team'+team+pos+'None').addClass('KeyControl').button();
 			container.append(none).buttonset();
 			none.click(function(){WS.Set(prefix + '.Position('+pos+').Skater', "") });
 
@@ -706,10 +706,12 @@ function createTeamTable() {
 				container.children('[skater="'+k.Skater+'"]').remove();
 				if (v != null && WS.state[prefix + '.Skater('+k.Skater+').Role'] != 'NotInGame') {
 					var number = WS.state[prefix + '.Skater('+k.Skater+').Number'];
-					var button = $('<button>').attr('number', number).attr('skater', k.Skater).text(number)
+					var button = $('<button>').attr('number', number).attr('skater', k.Skater)
+							.attr('id', 'Team'+team+pos+k.Skater).addClass('KeyControl').text(number)
 							.click(function() {
-						WS.Set(prefix + '.Position('+pos+').Skater', k.Skater);
-					}).button();
+								WS.Set(prefix + '.Position('+pos+').Skater', k.Skater);
+						}).button();
+						_crgKeyControls.setupKeyControl(button, _crgKeyControls.operator);
 					_windowFunctions.appendAlphaSortedByAttr(container, button, 'number', 1);
 				}
 				setValue(WS.state[prefix + '.Position('+pos+').Skater']);
