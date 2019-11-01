@@ -125,8 +125,6 @@ public class SkaterImplTests {
         assertEquals(3, penaltytwo.getJamNumber());
     }
 
-
-
     @Test
     public void remove_penalty() {
         Penalty p1 = (Penalty)skater.getOrCreate(NChild.PENALTY, "1");
@@ -210,6 +208,19 @@ public class SkaterImplTests {
         assertEquals(Role.INELIGIBLE, skater.getBaseRole());
         penalty.unlink();
         assertEquals(Role.BENCH, skater.getBaseRole());
+    }
+
+    @Test
+    public void penalty_between_jams_fields_skater() {
+        team.field(skater, Role.BLOCKER);
+        sb.startJam();
+        sb.stopJamTO();
+        
+        Penalty p = (Penalty)skater.getOrCreate(NChild.PENALTY, "1");
+        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(1));
+        p.set(Penalty.Value.CODE, "C");
+
+        assertEquals(Role.BLOCKER, skater.getRole(team.getRunningOrUpcomingTeamJam()));
     }
 
     @Test
