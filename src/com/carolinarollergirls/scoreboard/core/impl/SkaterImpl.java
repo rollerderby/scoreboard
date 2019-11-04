@@ -113,16 +113,23 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     }
     @Override
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
-            updateEligibility();
-        } else if (prop == NChild.PENALTY && !((Penalty)item).isServed() && getRole() == Role.JAMMER
-                && !getCurrentFielding().getTeamJam().getOtherTeam().isLead()) {
-            getTeam().set(Team.Value.LOST, true);
-        } else if (prop == Child.FIELDING && ((Fielding)item).isCurrent()) {
-            set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
-        } else if (prop == Child.FIELDING && team.hasFieldingAdvancePending() &&
-                ((Fielding)item).getTeamJam().isRunningOrEnded()) {
-            setRole(((Fielding)item).getCurrentRole());
+        if (prop == NChild.PENALTY) {
+            Penalty p = (Penalty)item;
+            if (FO_EXP_ID.equals(p.getProviderId())) {
+                updateEligibility();
+            } 
+            if (!p.isServed() && getRole() == Role.JAMMER && getCurrentFielding() != null
+                    && !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && scoreBoard.isInJam()) {
+                getTeam().set(Team.Value.LOST, true);
+            } 
+            if (!p.isServed() && !getScoreBoard().isInJam()) {
+                getTeam().field(this, getRole(getTeam().getRunningOrEndedTeamJam()), getTeam().getRunningOrUpcomingTeamJam());
+            }
+        } else if (prop == Child.FIELDING) {
+            Fielding f = (Fielding)item;
+            if (f.isCurrent()) {
+                set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
+            }
         }
     }
     @Override
