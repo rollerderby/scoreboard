@@ -117,18 +117,18 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             Penalty p = (Penalty)item;
             if (FO_EXP_ID.equals(p.getProviderId())) {
                 updateEligibility();
-            } else if (!p.isServed() && getRole() == Role.JAMMER && getCurrentFielding() != null
-                    && !getCurrentFielding().getTeamJam().getOtherTeam().isLead()) {
+            } 
+            if (!p.isServed() && getRole() == Role.JAMMER && getCurrentFielding() != null
+                    && !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && scoreBoard.isInJam()) {
                 getTeam().set(Team.Value.LOST, true);
-            } else if (!p.isServed() && !getScoreBoard().isInJam()) {
+            } 
+            if (!p.isServed() && !getScoreBoard().isInJam()) {
                 getTeam().field(this, getRole(getTeam().getRunningOrEndedTeamJam()), getTeam().getRunningOrUpcomingTeamJam());
             }
         } else if (prop == Child.FIELDING) {
             Fielding f = (Fielding)item;
             if (f.isCurrent()) {
                 set(Value.CURRENT_FIELDING, item, Flag.INTERNAL);
-            } else if (team.hasFieldingAdvancePending() && f.getTeamJam().isRunningOrEnded()) {
-                setRole(f.getCurrentRole());
             }
         }
     }
