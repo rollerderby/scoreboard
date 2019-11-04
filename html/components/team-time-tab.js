@@ -893,6 +893,8 @@ function createPeriodDialog() {
 }
 
 function createJamDialog() {
+	var currentPeriod;
+	var nextJam;
 	var dialog = $("<div>").addClass("NumberDialog");
 	var tableTemplate = $("<table>").addClass("Period");
 	var headers = $("<tr><td/><td/><td/><td/><td/><td/></tr>").appendTo(tableTemplate);
@@ -904,7 +906,13 @@ function createJamDialog() {
 		.appendTo(headers.children("td:eq(2)").addClass("Title"));
 	$("<a>").text("PC at end").addClass("Title")
 		.appendTo(headers.children("td:eq(3)").addClass("Title"));
-	var currentPeriod;
+	var footer = $('<tr><td colspan="4"></td><td></td><td></td>')
+		.addClass("Jam").attr("nr", 999).appendTo(tableTemplate);
+	$('<span>').text('Upcoming').appendTo(footer.children('td:eq(0)'));
+	$('<button>').text('Insert Before').button().click(function () {
+		console.log('ScoreBoard.Jam(' + nextJam + ').InsertBefore');
+		WS.Set('ScoreBoard.Jam(' + nextJam + ').InsertBefore', true);
+	}).appendTo(footer.children('td:eq(2)'));
 
 	WS.Register([
 			'ScoreBoard.Period(*).Jam(*).Duration',
@@ -919,7 +927,7 @@ function createJamDialog() {
 
 				var table = dialog.find("table.Period[nr="+per+"]");
 				if (table.length == 0 && v != null) {
-					table = tableTemplate.clone().attr("nr", per).appendTo(dialog);
+					table = tableTemplate.clone(true).attr("nr", per).appendTo(dialog);
 					if (per == currentPeriod) {
 						table.addClass('Show');
 					}
@@ -981,7 +989,11 @@ function createJamDialog() {
 		currentPeriod = v;
 		dialog.find("table.Period.Show").removeClass("Show");
 		dialog.find("table.Period[nr="+v+"]").addClass("Show");
-	})
+	});
+	
+	WS.Register(['ScoreBoard.Jam(*).Number'], function(k, v) {
+		nextJam = v;
+	});
 
 	return dialog.dialog({
 		title: "Jams",
