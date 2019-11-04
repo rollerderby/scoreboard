@@ -771,9 +771,15 @@ function createTimeTable() {
 				it.toggleClass("CountUp", !isTrue(v));
 			});
 		}
-		WS.Register(prefix + ".Running", function(k, v) {
-			nameTd.toggleClass("Running", isTrue(v));
-		});
+		if (clock === 'Jam') {
+			WS.Register('ScoreBoard.InJam', function(k, v) {
+				nameTd.toggleClass("Running", isTrue(v));
+			});
+		} else {
+			WS.Register(prefix + ".Running", function(k, v) {
+				nameTd.toggleClass("Running", isTrue(v));
+			});
+		}
 		WS.Register("ScoreBoard.NoMoreJam", function(k, v) {
 			nameTd.toggleClass("NoMoreJam", isTrue(v));
 		});
