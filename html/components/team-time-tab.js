@@ -910,7 +910,6 @@ function createJamDialog() {
 		.addClass("Jam").attr("nr", 999).appendTo(tableTemplate);
 	$('<span>').text('Upcoming').appendTo(footer.children('td:eq(0)'));
 	$('<button>').text('Insert Before').button().click(function () {
-		console.log('ScoreBoard.Jam(' + nextJam + ').InsertBefore');
 		WS.Set('ScoreBoard.Jam(' + nextJam + ').InsertBefore', true);
 	}).appendTo(footer.children('td:eq(2)'));
 
@@ -992,7 +991,9 @@ function createJamDialog() {
 	});
 	
 	WS.Register(['ScoreBoard.Jam(*).Number'], function(k, v) {
-		nextJam = v;
+		if (v != null) {
+			nextJam = v;
+		}
 	});
 
 	return dialog.dialog({
