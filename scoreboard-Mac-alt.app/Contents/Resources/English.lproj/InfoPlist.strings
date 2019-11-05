@@ -1,4 +1,0 @@
-CFBundleName = "scoreboard";
-CFBundleShortVersionString = "1.0";
-CFBundleGetInfoString = "scoreboard version 1.0 Copyright 2011 Mr Temper";
-NSHumanReadableCopyright = "Copyright 2011 Mr Temper.";
