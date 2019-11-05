@@ -83,8 +83,17 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                 scoreBoard.updateTeamJams();
                 break;
             case INSERT_BEFORE:
-                parent.add(ownType, new JamImpl(parent, getNumber()));
-                scoreBoard.updateTeamJams();
+                if (parent instanceof Period) {
+                    parent.add(ownType, new JamImpl(parent, getNumber()));
+                    scoreBoard.updateTeamJams();
+                } else if (!scoreBoard.isInJam()) {
+                    Period currentPeriod = scoreBoard.getCurrentPeriod();
+                    Jam newJam = new JamImpl(currentPeriod, getNumber());
+                    currentPeriod.add(ownType, newJam);
+                    currentPeriod.set(Period.Value.CURRENT_JAM, newJam);
+                    set(IValue.NUMBER, 1, Flag.CHANGE);
+                    scoreBoard.updateTeamJams();
+                }
                 break;
             }
         }
