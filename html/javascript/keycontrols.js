@@ -60,7 +60,7 @@ _crgKeyControls = {
 				var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.KeyControl.' + button.attr('id') + ')';
 				var key = WS.state[prop];
 				button.attr('_crgKeyControls_prop', prop).toggleClass("HasControlKey", (key?true:false));
-				button.find('span.Key').attr('data-keycontrol', String(key?key.charCodeAt(0):'')).text(key);
+				button.find('span.Key').attr('data-keycontrol', String(key?key.charCodeAt(0):'')).text(key?key:'');
 			});
 		return button;
 	},
@@ -113,7 +113,7 @@ _crgKeyControls = {
 				if (!k.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator__" + _crgKeyControls.operator + ".KeyControl.")) return;
 				var button = $("#" + k.substring(k.lastIndexOf(".") + 1, k.length - 1));
 				button.toggleClass("HasControlKey", (v?true:false))
-					.find("span.Key").text(v)
+					.find("span.Key").text(v?v:'')
 					.attr("data-keycontrol", String(v?v.charCodeAt(0):""));
 			});
 			_crgKeyControls._keyControlStarted = true;
