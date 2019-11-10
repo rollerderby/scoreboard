@@ -5,6 +5,7 @@ function toggleButton(key, trueText, falseText) {
 	button.first().attr("for", id);
 	var input = button.last().attr("id", id).button();
 	input.change(function(e) { WS.Set(key, input.prop("checked")); });
+	input.button("option", "label", falseText);
 	WS.Register(key, function(k, v) {
 		input.button("option", "label", isTrue(v)?trueText:falseText)
 			.prop("checked", isTrue(v))
