@@ -15,6 +15,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.utils.Version;
 
 public class BoxTripImplTests {
 

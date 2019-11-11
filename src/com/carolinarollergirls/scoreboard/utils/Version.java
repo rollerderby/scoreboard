@@ -3,6 +3,9 @@ package com.carolinarollergirls.scoreboard.utils;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Version {
     public static boolean load() throws IOException {
@@ -19,14 +22,20 @@ public class Version {
             throw ioE;
         }
         try { releaseIs.close(); } catch ( Exception e ) { }
-        versionRelease = versionProperties.getProperty(VERSION_RELEASE_KEY);
+        Map<String, String> m = new HashMap<>();
+        m.put(VERSION_RELEASE_KEY, "unset");
+        for (String k : versionProperties.stringPropertyNames()) {
+          m.put(k, versionProperties.getProperty(k));
+        }
+        props = Collections.unmodifiableMap(m);
         Logger.printMessage("Carolina Rollergirls Scoreboard version "+Version.get());
         return true;
     }
 
-    public static String get() { return versionRelease; }
+    public static String get() { return props.get(VERSION_RELEASE_KEY); }
+    public static Map<String, String> getAll() { return props; }
 
-    private static String versionRelease = "unset";
+    private static Map<String, String> props = new HashMap<>();
 
     public static final String VERSION_PATH = "com/carolinarollergirls/scoreboard/version";
     public static final String VERSION_RELEASE_PROPERTIES_NAME = VERSION_PATH+"/release.properties";
