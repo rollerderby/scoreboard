@@ -92,6 +92,8 @@ function createScoreBoardViewPreviewRows(table, type) {
 	var forceServedButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)", "Assume Penalties Served", "Track Penalty Serving");
 	var swapTeamsButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)", "Team sides swapped", "Team sides normal");
 	swapTeamsButton.attr("ApplyPreview", "SwapTeams");
+	var hideLogosButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_HideLogos)", "Hide Logos", "Show Logos");
+	hideLogosButton.attr("ApplyPreview", "HideLogos");
 
 	var clockAfterTimeout = $("<label>Clock shown after Timeout: </label>").add(WSControl("ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)",
 				$("<select>")
@@ -144,7 +146,8 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.next().append(customPageViewSelect);
 	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
 		.find("td").addClass("ScoreBoardOptions Footer")
-		.first().append(forceServedButton);
+		.first().append(forceServedButton)
+		.next().append(hideLogosButton);
 
 }
 

@@ -141,14 +141,14 @@ body.box_flat .Box.FlatTop {
 .Team:not(.HasName)>.Name {
 	opacity: 0;
 }
-.Team:not(.HasLogo)>.Logo {
+.Team:not(.HasLogo)>.Logo, .Team.HideLogos>.Logo {
 	opacity: 0;
 }
 .Team.HasName>.Name {
 	height: 30%;
 	font-size: 33vh;
 }
-.Team.HasName.HasLogo>.Name {
+.Team.HasName.HasLogo:not(.HideLogos)>.Name {
 	height: 10%;
 	font-size: 10vh;
 }
@@ -163,11 +163,11 @@ body.box_flat .Box.FlatTop {
 }
 .Team.Left>.Logo { left: 0%; }
 .Team.Right>.Logo { right: 0%; }
-.Team.HasName.HasLogo>.Logo {
+.Team.HasName.HasLogo:not(.HideLogos)>.Logo {
 	top: 10%;
 	height: 20%;
 }
-.Team.HasLogo>.Logo {
+.Team.HasLogo:not(.HideLogos)>.Logo {
 	top: 0%;
 	height: 30%;
 }

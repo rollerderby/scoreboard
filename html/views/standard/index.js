@@ -7,12 +7,20 @@ function initialize() {
 
 	// Set Styles
 	var view = "View";
-	if (_windowFunctions.checkParam("preview", "true"))
+	if (_windowFunctions.checkParam("preview", "true")) {
 		view = "Preview";
+	}
 	WS.Register( "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_SwapTeams)", function (k, v) {
 		$(".Team1").toggleClass("Left", !isTrue(v)).toggleClass("Right", isTrue(v));
 		$(".Team2").toggleClass("Left", isTrue(v)).toggleClass("Right", !isTrue(v));
 		$(".Team").toggleClass("Swapped", isTrue(v));
+	});
+	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard." + view + "_HideLogos)", function (k, v) {
+		$(".Team1").toggleClass("HideLogos", isTrue(v));
+		$(".Team2").toggleClass("HideLogos", isTrue(v));
+		// Update autofit of the names.
+		logoUpdate(".Team(1)");
+		logoUpdate(".Team(2)");
 	});
 
 	WS.Register( "ScoreBoard.Settings.Setting(ScoreBoard." + view + "_CurrentView)", function(k, v) {
