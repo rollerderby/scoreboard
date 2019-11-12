@@ -23,6 +23,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.utils.Version;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
@@ -45,8 +46,11 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     protected void setupScoreBoard() {
-        set(Value.VERSION, Version.get());
-        addWriteProtection(Value.VERSION);
+        removeAll(Child.VERSION);
+        for (Map.Entry<String,String> entry : Version.getAll().entrySet()) {
+            add(Child.VERSION, new ValWithId(entry.getKey(), entry.getValue()));
+        }
+        addWriteProtection(Child.VERSION);
         setCopy(Value.CURRENT_PERIOD_NUMBER, this, Value.CURRENT_PERIOD, IValue.NUMBER, true);
         setCopy(Value.IN_PERIOD, this, Value.CURRENT_PERIOD, Period.Value.RUNNING, false);
         setCopy(Value.UPCOMING_JAM_NUMBER, this, Value.UPCOMING_JAM, IValue.NUMBER, true);
