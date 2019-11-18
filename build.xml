@@ -231,8 +231,7 @@
 				<include name="COPYING-AL" />
 				<include name="LICENSES" />
 				<include name="scoreboard-Windows.exe" />
-				<include name="scoreboard-Mac.app/**" />
-				<include name="scoreboard-Linux.sh" />
+				<include name="scoreboard.sh" />
 				<include name="start.html" />
 				<include name="html/**" />
 				<exclude name="html/stream/*" />
