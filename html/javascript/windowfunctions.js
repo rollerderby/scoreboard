@@ -39,6 +39,15 @@ _windowFunctions = {
 	},
 	checkParam: function(param, value) { return value == _windowFunctions.getParam(param); },
 
+	/* Zoom for mobile views */
+	configureZoom: function() {
+		if (!_windowFunctions.checkParam("zoomable", 1)) {
+			$('head').append('<meta name="viewport" content="width=device-width, user-scalable=no">');
+		} else {
+			$('head meta[name=viewport]').remove();
+		}
+	},
+
 	/* DOM element sorting
 	 *
 	 * This inserts the provided newChild directly under the parent,

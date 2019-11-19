@@ -4,6 +4,9 @@
 	
 	preparePenaltyEditor();
 
+	prepareOptionsDialog("", true);
+	_windowFunctions.configureZoom();
+
 	WS.AutoRegister();
 	WS.Connect();
 
