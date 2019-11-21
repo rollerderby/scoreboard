@@ -28,13 +28,28 @@ public class JSONStateSnapshotter implements JSONStateListener {
         if (state.get("ScoreBoard.CurrentPeriodNumber") != "0") {
             // If the jam has just ended or the score is now official, write out a file.
             if ((inJam && !bool(state.get("ScoreBoard.InJam")))
-                    || (!officialScore && bool(state.get("ScoreBoard.OfficialScore")))) {
+                    || (bool(state.get("ScoreBoard.OfficialScore"))
+                            && !bool(state.get("ScoreBoard.StatsLocked"))
+                            && containsRelevantUpdate(changed))) {
                 writeFile(state);
             }
         }
 
-        officialScore = bool(state.get("ScoreBoard.OfficialScore"));
         inJam = bool(state.get("ScoreBoard.InJam"));
+    }
+    
+    private boolean containsRelevantUpdate(Set<String> keys) {
+        for (String key : keys) {
+            if (!key.startsWith("ScoreBoard.Clock")
+                    && !key.startsWith("ScoreBoard.Twitter.")
+                    && !key.startsWith("ScoreBoard.Media." )
+                    && !key.startsWith("ScoreBoard.Settings." )
+                    && !key.startsWith("ScoreBoard.Rulesets." )
+                    && !key.startsWith("ScoreBoard.PreparedTeams(" )) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public void writeFile(Map<String, Object> state) {
@@ -58,7 +73,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
         file.getParentFile().mkdirs();
 
         // The state includes secrets (Twitter auth) and
-        // details not relevant to one particular game (e.g. preapred teams)
+        // details not relevant to one particular game (e.g. prepared teams)
         // so trim things down.
         Map<String, Object> cleanedState = new TreeMap<>(state);
         for (Iterator<String> it = cleanedState.keySet().iterator(); it.hasNext(); ) {
@@ -110,7 +125,6 @@ public class JSONStateSnapshotter implements JSONStateListener {
     }
 
     private boolean inJam = false;
-    private boolean officialScore = false;
     private File directory;
 
     private static final Histogram updateStateDuration = Histogram.build()

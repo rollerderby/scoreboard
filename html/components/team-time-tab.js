@@ -145,6 +145,8 @@ function createMetaControlTable() {
 
 	var confirmedButton = toggleButton("ScoreBoard.OfficialScore", "Official Score", "Unofficial Score");
 	confirmedButton.appendTo(periodEndTd);
+	var statsLockedButton = toggleButton("ScoreBoard.StatsLocked", "Stats Locked", "Writing Stats");
+	statsLockedButton.appendTo(periodEndTd);
 	var periodEndTimeoutDialog = createPeriodEndTimeoutDialog(periodEndTd);
 	$("<button>").addClass("PeriodEndTimeout").text("Timeout before Period End")
 		.appendTo(periodEndTd)

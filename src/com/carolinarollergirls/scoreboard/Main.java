@@ -56,7 +56,7 @@ public class Main extends Logger {
         scoreBoard = new ScoreBoardImpl();
 
         // JSON updates.
-        JSONStateManager jsm = new JSONStateManager();
+        final JSONStateManager jsm = new JSONStateManager();
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
@@ -66,17 +66,22 @@ public class Main extends Logger {
         new ScoreBoardMetricsCollector(scoreBoard).register();
         new JSONStateSnapshotter(jsm, BasePath.get());
 
-        File autoSaveDir = new File(BasePath.get(), "config/autosave");
-        if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
-            try {
-                Logger.printMessage("No autosave to load from, using default.json");
-                AutoSaveJSONState.loadFile(scoreBoard, new File(BasePath.get(), "config/default.json"));
-            } catch (Exception e) {
-              Logger.printMessage("Error loading default configuration");
-              stop(e);
+        final File autoSaveDir = new File(BasePath.get(), "config/autosave");
+        scoreBoard.runInBatch(new Runnable() {
+            @Override
+            public void run() {
+                if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
+                    try {
+                        Logger.printMessage("No autosave to load from, using default.json");
+                        AutoSaveJSONState.loadFile(scoreBoard, new File(BasePath.get(), "config/default.json"));
+                    } catch (Exception e) {
+                      Logger.printMessage("Error loading default configuration");
+                      stop(e);
+                    }
+                }
+                scoreBoard.postAutosaveUpdate();
             }
-        }
-        scoreBoard.postAutosaveUpdate();
+        });
 
         // Only start auto-saves once everything is loaded in.
         new AutoSaveJSONState(jsm, autoSaveDir);

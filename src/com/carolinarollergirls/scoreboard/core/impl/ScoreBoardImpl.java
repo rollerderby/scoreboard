@@ -208,6 +208,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             setInPeriod(false);
             setInOvertime(false);
             setOfficialScore(false);
+            set(Value.STATS_LOCKED, false);
             snapshot = null;
             replacePending = false;
 

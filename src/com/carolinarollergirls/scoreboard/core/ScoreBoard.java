@@ -118,7 +118,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         CURRENT_TIMEOUT(Timeout.class, null),
         TIMEOUT_OWNER(TimeoutOwner.class, null),
         OFFICIAL_REVIEW(Boolean.class, false),
-        NO_MORE_JAM(Boolean.class, false);
+        NO_MORE_JAM(Boolean.class, false),
+        STATS_LOCKED(Boolean.class, false);
 
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
