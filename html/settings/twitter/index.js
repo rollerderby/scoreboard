@@ -7,7 +7,7 @@ $(function() {
   }).button();
 
   $("button.Login").click(function() {
-    WS.Set("ScoreBoard.Twitter.CallbackUrl", window.location.protocol+"//"+window.location.host+"/settings/twitter/auth.html");
+    WS.Set("ScoreBoard.Twitter.CallbackUrl", window.location.protocol+"//"+window.location.host+"/controls/twitter_auth.html");
     WS.Set("ScoreBoard.Twitter.Login", true);
   }).button();
   WS.Register(["ScoreBoard.Twitter.AuthUrl"], function(k, v) {
