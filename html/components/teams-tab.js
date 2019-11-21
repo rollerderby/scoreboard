@@ -82,6 +82,7 @@ function createTeamsTab(tab) {
 			var option = $("<option>").attr("name", v).attr("value", k.File).text(v);
 			_windowFunctions.appendAlphaSortedByAttr(logoSelect, option, "name", 1);
 			logoSelect.val(val);
+			logoSelect.change();
 		}
 	});
 	$("<input type='file' id='teamLogoUpload'>").fileupload({
