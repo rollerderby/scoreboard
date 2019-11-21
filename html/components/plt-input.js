@@ -43,7 +43,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		$('<td>').attr('colspan', '9').attr('id', 'head').text('Team ' + teamId).toggleClass('Hide', mode == 'lt').click(openOptionsDialog).appendTo(thead);
 		$('<td>').text('FO_Ex').toggleClass('Hide', mode == 'lt').appendTo(thead);
 		totalPenalties = $('<td>').attr('id', 'totalPenalties').text('Σ 0');
-		if (mode != 'copyToStatsbook') {
+		if (mode != 'copyToStatsbook' && mode != 'lt') {
 			totalPenalties.appendTo(thead);
 		}
 		tbody = $('<tbody>').appendTo(table);
@@ -368,7 +368,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 		p.append($('<td>').addClass('Box Box0').toggleClass('Hide', mode == 'lt').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
 		j.append($('<td>').addClass('Box Box0').toggleClass('Hide', mode == 'lt').html('&nbsp;').click(function () { openPenaltyEditor(t, id, 0); }));
-		if (mode != 'copyToStatsbook') {
+		if (mode != 'copyToStatsbook' && mode != 'lt') {
 			p.append($('<td>').attr('rowspan', 2).addClass('Total').text('0'));
 		}
 		
