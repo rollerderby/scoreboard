@@ -1253,6 +1253,7 @@ function createTimeDialog(clock) {
 		$("<button>").text("Set").addClass("Set").button().appendTo(rowTable.find("tr:eq(1)>td:eq(1)"))
 			.click(function() {
 				WS.Set(prefix + "." + e, _timeConversions.minSecToMs(input.val()));
+				input.val("");
 			});
 	});
 	$("<tr><td/><td/><td/></tr>").insertAfter(table.find("tr.Time table tr:eq(0)"));
