@@ -29,7 +29,6 @@ public class JSONStateSnapshotter implements JSONStateListener {
             // If the jam has just ended or the score is now official, write out a file.
             if ((inJam && !bool(state.get("ScoreBoard.InJam")))
                     || (bool(state.get("ScoreBoard.OfficialScore"))
-                            && !bool(state.get("ScoreBoard.StatsLocked"))
                             && containsRelevantUpdate(changed))) {
                 writeFile(state);
             }
