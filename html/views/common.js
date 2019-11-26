@@ -11,14 +11,17 @@ function jammer(k, v) {
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
 	if (jammerName == null || jammerName == "") {
-		jammerName = (leadJammer && inJam) ? "Lead" : "";
+		jammerName = leadJammer ? "Lead" : "";
 	if (pivotName == null)
 		pivotName = "";
 	}
 
 	var jn = !starPass ? jammerName : pivotName;
+	if (!inJam) {
+		jn = "";  // When no clocks are running, do not show jammer names.
+	};
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
-	$(".Team" + id).toggleClass("HasJammerName", (jn != "" && jn != null));
+	$(".Team" + id).toggleClass("HasJammerName", (jn != ""));
 	return jn
 }
 
