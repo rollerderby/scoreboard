@@ -69,9 +69,13 @@ public class ScoreBoardJSONSetter {
             String elementId = m.group("id");
             String remainder = m.group("remainder");
             if (elementId == null) { elementId = ""; }
+            String readable = p.getProviderName() + "(" + p.getProviderId() + ")." + name + "(" + elementId + ")";
             try {
                 Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
-                if (prop == null) { throw new IllegalArgumentException("Unknown property"); }
+                if (prop == null) {
+                      Logger.printMessage("Unknown property " + readable);
+                      return;
+                }
 
                 if (prop == IValue.ID) {
                     p.set((PermanentProperty) prop, p.valueFromString((PermanentProperty) prop, value, flag), flag);
@@ -84,15 +88,19 @@ public class ScoreBoardJSONSetter {
                         p.execute((CommandProperty)prop);
                     }
                 } else if (remainder != null) {
-                    set((ScoreBoardEventProvider)p.getOrCreate((AddRemoveProperty)prop, elementId), remainder, value, flag, postponedSets);
+                    Object o = p.getOrCreate((AddRemoveProperty)prop, elementId);
+                    if (o == null) {
+                        Logger.printMessage("Could not get or create property " + readable);
+                        return;
+                    }
+                    set((ScoreBoardEventProvider)o, remainder, value, flag, postponedSets);
                 } else if (value == null) {
                     p.remove((AddRemoveProperty)prop, elementId);
                 } else {
                     p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, elementId, value));
                 }
             } catch (Exception e) {
-                Logger.printMessage("Exception handling update for " + p.getProviderName() +
-                                               "(" + p.getProviderId() + ")." + name + "(" + elementId + ") - " + value + ": " + e.toString());
+                Logger.printMessage("Exception handling update for " + readable + " - " + value + ": " + e.toString());
                 e.printStackTrace();
             }
         } else {
