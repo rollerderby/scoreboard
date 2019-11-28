@@ -25,7 +25,7 @@ public class JSONStateManager {
     }
 
     public synchronized void unregister(JSONStateListener source) {
-        sources.get(source).shutdown();
+        sources.get(source).shutdownNow();
         sources.remove(source);
     }
 
