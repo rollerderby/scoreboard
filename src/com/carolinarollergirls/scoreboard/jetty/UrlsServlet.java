@@ -9,18 +9,15 @@ package com.carolinarollergirls.scoreboard.jetty;
  */
 
 import java.io.IOException;
-import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -34,14 +31,31 @@ import org.eclipse.jetty.server.Server;
 public class UrlsServlet extends HttpServlet {
     public UrlsServlet(Server s) { server = s; }
 
-    public List<URL> getUrls() throws MalformedURLException,SocketException {
-        List<URL> urls = new ArrayList<>();
-        Iterator<Connector> connectors = Arrays.asList(server.getConnectors()).iterator();
-        while (connectors.hasNext()) {
-            Connector c = connectors.next();
+    public Set<String> getUrls() throws MalformedURLException,SocketException {
+        Set<String> urls = new TreeSet<>();
+        for (Connector c : server.getConnectors()) {
             addURLs(urls, c.getHost(), c.getLocalPort());
         }
         return urls;
+    }
+
+    protected void addURLs(Set<String> urls, String host, int port) throws MalformedURLException,SocketException {
+      if (null == host) {
+        for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+            for (InetAddress addr : Collections.list(iface.getInetAddresses())) {
+                if (!addr.isLoopbackAddress()) {
+                    urls.add(new URL("http", addr.getHostAddress(), port, "/").toString());
+                }
+            }
+        }
+      } else {
+          urls.add(new URL("http", host, port, "/").toString());
+          try {
+              // Get the IP address of the given host.
+              urls.add(new URL("http", InetAddress.getByName(host).getHostAddress(), port, "/").toString());
+          } catch ( UnknownHostException uhE ) {
+          }
+      }
     }
 
     @Override
@@ -52,57 +66,14 @@ public class UrlsServlet extends HttpServlet {
 
         try {
             response.setContentType("text/plain");
-            Iterator<URL> urls = getUrls().iterator();
-            while (urls.hasNext()) {
-                response.getWriter().println(urls.next().toString());
+            for (String u : getUrls()) {
+                response.getWriter().println(u);
             }
             response.setStatus(HttpServletResponse.SC_OK);
         } catch ( MalformedURLException muE ) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse internal URL : "+muE.getMessage());
         } catch ( SocketException sE ) {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Socket Exception : "+sE.getMessage());
-        }
-    }
-
-    protected void addURLs(List<URL> urls, String host, int port) throws MalformedURLException,SocketException {
-        if (null == host) {
-            addInterfaces(urls, port);
-        } else {
-            addHost(urls, host, port);
-        }
-    }
-
-    protected void addInterfaces(List<URL> urls, int port) throws MalformedURLException,SocketException {
-        Iterator<NetworkInterface> ifaces = Collections.list(NetworkInterface.getNetworkInterfaces()).iterator();
-        while (ifaces.hasNext()) {
-            Iterator<InetAddress> addrs = Collections.list(ifaces.next().getInetAddresses()).iterator();
-            while (addrs.hasNext()) {
-                InetAddress addr = addrs.next();
-                if (addr instanceof Inet4Address) {
-                    addHost(urls, addr.getHostAddress(), port);
-                }
-            }
-        }
-    }
-
-    protected void addHost(List<URL> urls, String host, int port) throws MalformedURLException {
-        try {
-            InetAddress addr = InetAddress.getByName(host);
-            if (addr.isLoopbackAddress()) {
-                return;
-            }
-            String hostname = addr.getHostName();
-            String hostaddr = addr.getHostAddress();
-            if (!hostaddr.equals(hostname)) {
-                String shortname = hostname.replaceAll("[.].*$", "");
-                if (!hostname.equals(shortname)) {
-                    urls.add(new URL("http", shortname, port, "/"));
-                }
-                urls.add(new URL("http", hostname, port, "/"));
-            }
-            urls.add(new URL("http", hostaddr, port, "/"));
-        } catch ( UnknownHostException uhE ) {
-            urls.add(new URL("http", host, port, "/"));
         }
     }
 

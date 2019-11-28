@@ -15,8 +15,7 @@ import io.prometheus.client.hotspot.DefaultExports;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.net.URL;
-import java.util.Iterator;
+import java.util.Set;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
@@ -50,12 +49,12 @@ public class JettyServletScoreBoardController {
         Logger.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
         Logger.printMessage("	http://localhost:"+port);
         try {
-            Iterator<URL> urls = urlsServlet.getUrls().iterator();
-            if (urls.hasNext()) {
+            Set<String> urls = urlsServlet.getUrls();
+            if (!urls.isEmpty()) {
                 Logger.printMessage("or try one of these URLs:");
             }
-            while (urls.hasNext()) {
-                Logger.printMessage("	"+urls.next().toString());
+            for (String u : urls) {
+                Logger.printMessage("	"+u);
             }
         } catch ( MalformedURLException muE ) {
             Logger.printMessage("Internal error: malformed URL from Server Connector: "+muE.getMessage());
