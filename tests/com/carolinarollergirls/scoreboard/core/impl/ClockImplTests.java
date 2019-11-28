@@ -64,9 +64,8 @@ public class ClockImplTests {
     public void testDefaults() {
         assertEquals(0, clock.getNumber());
 
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getMinimumTime());
         assertEquals(ClockImpl.DEFAULT_MAXIMUM_TIME, clock.getMaximumTime());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
+        assertEquals(0, clock.getTime());
 
         assertEquals(ID, clock.getId());
         assertEquals(ID, clock.getName());
@@ -90,7 +89,6 @@ public class ClockImplTests {
         clock.reset();
 
         assertFalse(clock.isCountDirectionDown());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getMinimumTime());
         assertEquals(ClockImpl.DEFAULT_MAXIMUM_TIME, clock.getMaximumTime());
         assertEquals(0, clock.getNumber());
         assertTrue(clock.isTimeAtStart());
@@ -107,14 +105,14 @@ public class ClockImplTests {
         clock.reset();
         assertFalse(clock.isRunning());
         assertEquals(0, clock.getNumber());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
+        assertEquals(0, clock.getTime());
 
         //if IDs don't match no restore should be done
         snapshot.id = "OTHER";
         clock.restoreSnapshot(snapshot);
         assertFalse(clock.isRunning());
         assertEquals(0, clock.getNumber());
-        assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, clock.getTime());
+        assertEquals(0, clock.getTime());
 
         snapshot.id = ID;
         clock.restoreSnapshot(snapshot);
@@ -239,56 +237,6 @@ public class ClockImplTests {
     }
 
     @Test
-    public void testSetMinimumTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_TIME, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_TIME, listener));
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
-
-        clock.setMaximumTime(ClockImpl.DEFAULT_MINIMUM_TIME);
-        collectedEvents.clear();
-        clock.setMinimumTime(1000);
-
-        // validate constraint: max > min
-        assertEquals(1000, clock.getMinimumTime());
-        assertEquals(1000, clock.getMaximumTime());
-        assertEquals(1000, clock.getTime());
-
-        assertEquals(3, collectedEvents.size());
-        ScoreBoardEvent event;
-        while (!collectedEvents.isEmpty()) {
-            event = collectedEvents.poll();
-            assertEquals(1000, (long)event.getValue());
-            assertEquals(ClockImpl.DEFAULT_MINIMUM_TIME, (long)event.getPreviousValue());
-        }
-    }
-
-    @Test
-    public void testSetMinimumTime2() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_TIME, listener));
-
-        clock.setMaximumTime(2000);
-        clock.setMinimumTime(2000);
-        clock.setMinimumTime(1000);
-
-        // validate constraint: reducing min time doesn't reset max or current time
-        assertEquals(1000, clock.getMinimumTime());
-        assertEquals(2000, clock.getMaximumTime());
-        assertEquals(2000, clock.getTime());
-    }
-
-    @Test
-    public void testSetMinimumTime3() {
-        clock.setMaximumTime(2000);
-        clock.setMinimumTime(1000);
-
-        // validate constraint: time cannot be less than min time
-        assertEquals(1000, clock.getMinimumTime());
-        assertEquals(2000, clock.getMaximumTime());
-        assertEquals(1000, clock.getTime());
-
-    }
-
-    @Test
     public void testSetMaximumTime() {
         clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MAXIMUM_TIME, listener));
 
@@ -297,8 +245,7 @@ public class ClockImplTests {
 
         clock.setMaximumTime(5000);
 
-        // validate constraint: increase max time doesn't reset min or current time
-        assertEquals(0, clock.getMinimumTime());
+        // validate constraint: increase max time doesn't reset current time
         assertEquals(5000, clock.getMaximumTime());
         assertEquals(0, clock.getTime());
 
@@ -326,13 +273,11 @@ public class ClockImplTests {
 
     @Test
     public void testSetMaximumTime2() {
-        clock.setMinimumTime(2000);
-        clock.setMaximumTime(1000);
+        clock.setMaximumTime(-1000);
 
         // validate constraint: cannot set a max that is < min
-        assertEquals(2000, clock.getMinimumTime());
-        assertEquals(2000, clock.getMaximumTime());
-        assertEquals(2000, clock.getTime());
+        assertEquals(0, clock.getMaximumTime());
+        assertEquals(0, clock.getTime());
     }
 
     @Test
@@ -344,7 +289,6 @@ public class ClockImplTests {
 
         clock.changeMaximumTime(2000);
 
-        assertEquals(0, clock.getMinimumTime());
         assertEquals(3000, clock.getMaximumTime());
         assertEquals(0, clock.getTime());
         assertEquals(1, collectedEvents.size());
@@ -354,31 +298,10 @@ public class ClockImplTests {
     }
 
     @Test
-    public void testChangeMinimumTime() {
-        clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.MINIMUM_TIME, listener));
-
-        clock.setMaximumTime(5000);
-        clock.setMinimumTime(5000);
-        collectedEvents.clear();
-
-        clock.changeMinimumTime(2000);
-
-        assertEquals(7000, clock.getMinimumTime());
-        assertEquals(7000, clock.getMaximumTime());
-        assertEquals(7000, clock.getTime());
-
-        assertEquals(1, collectedEvents.size());
-        ScoreBoardEvent event = collectedEvents.poll();
-        assertEquals(7000, (long)event.getValue());
-        assertEquals(5000, (long)event.getPreviousValue());
-    }
-
-    @Test
     public void testChangeTime() {
         clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
 
         clock.setMaximumTime(5000);
-        clock.setMinimumTime(1000);
         collectedEvents.clear();
 
         clock.setTime(2000);
@@ -387,7 +310,7 @@ public class ClockImplTests {
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
         assertEquals(2000, (long)event.getValue());
-        assertEquals(1000, (long)event.getPreviousValue());
+        assertEquals(0, (long)event.getPreviousValue());
 
         clock.setTime(6000);
         assertEquals(5000, clock.getTime());
@@ -395,20 +318,21 @@ public class ClockImplTests {
         assertEquals(1, collectedEvents.size());
         assertEquals(5000, (long)collectedEvents.poll().getValue());
 
-        clock.setTime(400);
-        assertEquals(1000, clock.getTime());
-        assertEquals(4000, clock.getInvertedTime());
+        clock.setTime(-600);
+        assertEquals(0, clock.getTime());
+        assertEquals(5000, clock.getInvertedTime());
         assertEquals(1, collectedEvents.size());
         clock.start();
         collectedEvents.clear();
 
         clock.timerTick(200);
-        assertEquals(1200, clock.getTime());
-        assertEquals(3800, clock.getInvertedTime());
+        assertEquals(200, clock.getTime());
+        assertEquals(4800, clock.getInvertedTime());
         assertEquals(0, collectedEvents.size());
 
         clock.timerTick(-201);
-        assertEquals(999, clock.getTime());
+        assertEquals(-1, clock.getTime());
+        assertEquals(5001, clock.getInvertedTime());
         assertEquals(1, collectedEvents.size());
 
         clock.setCountDirectionDown(true);
@@ -425,30 +349,30 @@ public class ClockImplTests {
 
         clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.INVERTED_TIME, listener));
         clock.changeTime(-5000);
-        assertEquals(1000, clock.getTime());
-        assertEquals(4000, clock.getInvertedTime());
+        assertEquals(0, clock.getTime());
+        assertEquals(5000, clock.getInvertedTime());
         assertEquals(2, collectedEvents.size());
         Boolean firstEventInverted;
         event = collectedEvents.poll();
         if (event.getProperty() == Clock.Value.TIME) {
             firstEventInverted = false;
-            assertEquals(1000, (long)event.getValue());
+            assertEquals(0, (long)event.getValue());
             assertEquals(3200, (long)event.getPreviousValue());
         } else {
             firstEventInverted = true;
-            assertEquals(4000, (long)event.getValue());
+            assertEquals(5000, (long)event.getValue());
             assertEquals(1800, (long)event.getPreviousValue());
         }
         event = collectedEvents.poll();
         if (firstEventInverted) {
-            assertEquals(1000, (long)event.getValue());
+            assertEquals(0, (long)event.getValue());
             assertEquals(3200, (long)event.getPreviousValue());
         } else {
-            assertEquals(4000, (long)event.getValue());
+            assertEquals(5000, (long)event.getValue());
             assertEquals(1800, (long)event.getPreviousValue());
         }
 
-        clock.changeTime(4100);
+        clock.changeTime(5100);
         assertEquals(5100, clock.getTime());
         assertEquals(-100, clock.getInvertedTime());
     }
@@ -526,14 +450,13 @@ public class ClockImplTests {
     public void testResetTime() {
         clock.addScoreBoardListener(new ConditionalScoreBoardListener(clock, Clock.Value.TIME, listener));
         clock.setMaximumTime(5000);
-        clock.setMinimumTime(1000);
 
         clock.setTime(3000);
 
         clock.resetTime();
 
-        assertEquals(1000, clock.getTime());
-        assertEquals(3, collectedEvents.size());
+        assertEquals(0, clock.getTime());
+        assertEquals(2, collectedEvents.size());
 
         clock.setTime(3000);
         clock.setCountDirectionDown(true);

@@ -61,9 +61,6 @@ public interface Clock extends ScoreBoardEventProvider {
      * @return The time until the clock reaches its maximum or zero (in ms). This is the inverse of getTimeElapsed.
      */
     public long getTimeRemaining();
-    public long getMinimumTime();
-    public void setMinimumTime(long ms);
-    public void changeMinimumTime(long ms);
     public long getMaximumTime();
     public void setMaximumTime(long ms);
     public void changeMaximumTime(long ms);
@@ -92,7 +89,6 @@ public interface Clock extends ScoreBoardEventProvider {
         NUMBER(Integer.class, 0),
         TIME(Long.class, 0L),
         INVERTED_TIME(Long.class, 0L),
-        MINIMUM_TIME(Long.class, 0L),
         MAXIMUM_TIME(Long.class, 0L),
         DIRECTION(Boolean.class, false),
         RUNNING(Boolean.class, false);

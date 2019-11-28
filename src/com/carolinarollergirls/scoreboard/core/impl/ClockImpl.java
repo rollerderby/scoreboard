@@ -35,8 +35,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         } else {
             values.put(Value.NUMBER, 0);
         }
-        setRecalculated(Value.TIME).addSource(this, Value.MAXIMUM_TIME).addSource(this, Value.MINIMUM_TIME);
-        setRecalculated(Value.MAXIMUM_TIME).addSource(this, Value.MINIMUM_TIME);
+        setRecalculated(Value.TIME).addSource(this, Value.MAXIMUM_TIME);
         setRecalculated(Value.INVERTED_TIME).addSource(this, Value.MAXIMUM_TIME).addSource(this, Value.TIME);
 
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET, rulesetChangeListener));
@@ -56,15 +55,15 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             if ((flag == Flag.RESET && isCountDirectionDown()) || (Long)value > getMaximumTime() + 500 && (!isCountDirectionDown() || flag != Flag.RECALCULATE)) {
                 return getMaximumTime();
             }
-            if ((flag == Flag.RESET && !isCountDirectionDown()) || (Long)value < getMinimumTime() - 500) {
-                return getMinimumTime();
+            if ((flag == Flag.RESET && !isCountDirectionDown()) || (Long)value < 0 - 500) {
+                return Long.valueOf(0);
             }
         }
         if (prop == Value.INVERTED_TIME) {
             return getMaximumTime() - getTime();
         }
-        if (prop == Value.MAXIMUM_TIME && (Long)value < getMinimumTime()) {
-            return getMinimumTime();
+        if (prop == Value.MAXIMUM_TIME && (Long)value < 0) {
+            return Long.valueOf(0);
         }
         if (prop == Value.NUMBER && (Integer)value < 0) {
             return 0;
@@ -129,7 +128,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
             setCountDirectionDown(Boolean.parseBoolean(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".ClockDirection").getValue()));
-            setMinimumTime(DEFAULT_MINIMUM_TIME);
             if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
                 setMaximumTime(ClockConversion.fromHumanReadable(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".Duration").getValue()));
             } else if (getId().equals(ID_INTERMISSION)) {
@@ -217,12 +215,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     }
 
     @Override
-    public long getMinimumTime() { return (Long)get(Value.MINIMUM_TIME); }
-    @Override
-    public void setMinimumTime(long ms) { set(Value.MINIMUM_TIME, ms); }
-    @Override
-    public void changeMinimumTime(long change) { set(Value.MINIMUM_TIME, change, Flag.CHANGE); }
-    @Override
     public long getMaximumTime() { return (Long)get(Value.MAXIMUM_TIME); }
     @Override
     public void setMaximumTime(long ms) { set(Value.MAXIMUM_TIME, ms); }
@@ -234,7 +226,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
             if (isCountDirectionDown()) {
                 return t == getMaximumTime();
             } else {
-                return t == getMinimumTime();
+                return t == 0;
             }
         }
     }
@@ -244,7 +236,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public boolean isTimeAtEnd(long t) {
         synchronized (coreLock) {
             if (isCountDirectionDown()) {
-                return t == getMinimumTime();
+                return t == 0;
             } else {
                 return t == getMaximumTime();
             }
@@ -308,7 +300,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 
     public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
-    public static final long DEFAULT_MINIMUM_TIME = 0;
     public static final long DEFAULT_MAXIMUM_TIME = 24 * 60 * 60 * 1000; // 1 day for long time to derby
     public static final boolean DEFAULT_DIRECTION = false;   // up
 
