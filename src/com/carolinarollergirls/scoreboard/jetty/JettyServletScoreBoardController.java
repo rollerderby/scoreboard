@@ -85,10 +85,10 @@ public class JettyServletScoreBoardController {
         HashSessionManager manager = new HashSessionManager();
         manager.setHttpOnly(true);
         manager.setSessionCookie("CRG_SCOREBOARD");
-        // No tournament lasts more than a week, so this
-        // allows plenty of time for a device to be setup in advance
-        // and only used as a backup at the end of the tournament.
-        manager.setMaxCookieAge(14 * 86400);
+        // No tournament lasts more than a week, so this allows plenty of time
+        // for a device to be setup in advance and then only used as a backup
+        // on the last day of the tournament.
+        manager.setMaxCookieAge(14*86400);
         SessionHandler sessions = new SessionHandler(manager);
         sch.setSessionHandler(sessions);
 
@@ -102,6 +102,12 @@ public class JettyServletScoreBoardController {
         }
         sch.addFilter(mf, "/*", 1);
 
+        sch.setResourceBase((new File(BasePath.get(), "html")).getPath());
+        ServletHolder sh = new ServletHolder(new DefaultServlet());
+        sh.setInitParameter("cacheControl", "no-cache");
+        sh.setInitParameter("etags", "true");
+        sch.addServlet(sh, "/*");
+
         urlsServlet = new UrlsServlet(server);
         sch.addServlet(new ServletHolder(urlsServlet), "/urls/*");
 
@@ -112,25 +118,17 @@ public class JettyServletScoreBoardController {
         metricsServlet = new MetricsServlet();
         sch.addServlet(new ServletHolder(metricsServlet), "/metrics");
 
-        ServletContextHandler c = new ServletContextHandler(contexts, "/");
-        ServletHolder sh = new ServletHolder(new DefaultServlet());
-        sh.setInitParameter("cacheControl", "no-cache");
-        sh.setInitParameter("etags", "true");
-        c.addServlet(sh, "/*");
-        c.addFilter(mf, "/*", 1);
-        c.setResourceBase((new File(BasePath.get(), "html")).getPath());
-
         HttpServlet sjs = new SaveJsonScoreBoard(jsm);
-        c.addServlet(new ServletHolder(sjs), "/SaveJSON/*");
+        sch.addServlet(new ServletHolder(sjs), "/SaveJSON/*");
 
         HttpServlet ljs = new LoadJsonScoreBoard(scoreBoard);
-        c.addServlet(new ServletHolder(ljs), "/LoadJSON/*");
+        sch.addServlet(new ServletHolder(ljs), "/LoadJSON/*");
 
         HttpServlet sbvs = new ScoreBoardVersionServlet();
-        c.addServlet(new ServletHolder(sbvs), "/version");
+        sch.addServlet(new ServletHolder(sbvs), "/version");
 
         HttpServlet ms = new MediaServlet(scoreBoard, new File(BasePath.get(), "html").getPath());
-        c.addServlet(new ServletHolder(ms), "/Media/*");
+        sch.addServlet(new ServletHolder(ms), "/Media/*");
 
         try {
             server.start();
