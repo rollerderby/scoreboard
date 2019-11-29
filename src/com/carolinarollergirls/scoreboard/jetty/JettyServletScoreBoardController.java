@@ -122,9 +122,6 @@ public class JettyServletScoreBoardController {
         HttpServlet ljs = new LoadJsonScoreBoard(scoreBoard);
         sch.addServlet(new ServletHolder(ljs), "/LoadJSON/*");
 
-        HttpServlet sbvs = new ScoreBoardVersionServlet();
-        sch.addServlet(new ServletHolder(sbvs), "/version");
-
         HttpServlet ms = new MediaServlet(scoreBoard, new File(BasePath.get(), "html").getPath());
         sch.addServlet(new ServletHolder(ms), "/Media/*");
     }

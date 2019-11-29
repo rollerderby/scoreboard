@@ -84,11 +84,11 @@ public class WS extends WebSocketServlet {
             this.jsm = jsm;
             remoteAddr = request.getRemoteAddr();
             HttpSession session = request.getSession();
-            // The session id is a secret, so expose a non-secret id to the user.
-            id = (String)session.getAttribute("publicId");
-            if (id == null) {
-              id = HumanIdGenerator.generate();
-              session.setAttribute("publicId", id);
+            // The session id is a secret, so expose a non-secret to the user.
+            name = (String)session.getAttribute("publicName");
+            if (name == null) {
+              name = HumanIdGenerator.generate();
+              session.setAttribute("publicName", name);
             }
         }
 
@@ -202,7 +202,10 @@ public class WS extends WebSocketServlet {
             jsm.register(this);
 
             Map<String, Object> json = new HashMap<>();
-            json.put("id", id);
+            Map<String, Object> state = new HashMap<>();
+            // Inject some of our own WS-specific information.
+            state.put("WS.Name", name); 
+            json.put("state", state);
             send(json);
         }
 
@@ -242,7 +245,7 @@ public class WS extends WebSocketServlet {
             updates.clear();
         }
 
-        protected String id;
+        protected String name;
         protected String remoteAddr;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;

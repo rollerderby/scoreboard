@@ -3,6 +3,7 @@
 
 <script type="text/javascript" src="/external/jquery/jquery.js"></script>
 <script type="text/javascript" src="/external/jquery-ui/jquery-ui.js"></script>
+<script type="text/javascript" src="/json/core.js"></script>
 <link rel="stylesheet" href="external/jquery-ui/css/default/jquery-ui.css" />
 <link rel="stylesheet" href="external/fontawesome/css/font-awesome.min.css" />
 
@@ -10,7 +11,6 @@
 
 $(function() {
 
-	$.get("/version", function(data) { $("#version").html(data); });
 	$.get("/urls", function(data) {
 		var urls = data.trim();
 		if (!urls)
@@ -20,11 +20,9 @@ $(function() {
 				$("<a>").attr("href", e).text(e).appendTo("#URLs").wrap("<li>");
 			});
 	});
+	WS.AutoRegister();
+	WS.Connect();
 });
-
-function showOverlays() {
-	$("#OverlayDialog").dialog("open");
-}
 
 </script>
 
@@ -34,9 +32,6 @@ function showOverlays() {
 
   a, a:hover, a:visited, a:active { color: darkblue; text-decoration: none; }
   a:hover                       { text-decoration: underline; color: red; cursor: pointer; }
-
-  #OverlayDialog a           { color: blue; text-decoration: underline; }
-  
 
   table                         { margin: 0; }
   td, th                        { vertical-align: top; width: 25%; }
@@ -139,8 +134,8 @@ function showOverlays() {
               <p>To access this scoreboard from other computers on this network, try one of these URLs:</p>
 
               <ul id="URLs"></ul>
+              <p>Client Name: <span sbContext="WS" sbDisplay="Name"></span></p>
             </div>
-
         </div>
       </div><!-- column -->
       <div style="clear: both;"></div>
@@ -149,7 +144,7 @@ function showOverlays() {
   <div class="row footer">
 
     <center>
-      <p>Version: <a id="version"></a></p>
+      <p>Version: <a sbContext="ScoreBoard" sbDisplay="Version(release)"></a></p>
     </center>
 
     <p><b>Scoreboard Wiki:</b></p>
