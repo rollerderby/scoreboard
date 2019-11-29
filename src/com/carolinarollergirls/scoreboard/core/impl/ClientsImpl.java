@@ -13,6 +13,7 @@ import java.util.UUID;
 import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -28,6 +29,16 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
                 if (((Device)d).get(Device.Value.SESSION_ID_SECRET).equals(sessionId)) {
                    return (Device)d;
                 }
+            }
+            return null;
+        }
+    }
+
+    @Override
+    public ValueWithId create(AddRemoveProperty prop, String id) {
+        synchronized (coreLock) {
+            if (prop == Child.DEVICE) {
+              return new DeviceImpl(this, id);
             }
             return null;
         }
@@ -58,8 +69,12 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     public class DeviceImpl extends ScoreBoardEventProviderImpl implements Device {
         DeviceImpl(Clients parent, String id, String sessionId) {
             super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class, Child.class);
+            // TODO: Make all of this write protected from the WS, while keeping
+            // auto-saves working.
             set(Value.SESSION_ID_SECRET, sessionId);
-            addWriteProtection(Value.SESSION_ID_SECRET);
+        }
+        protected DeviceImpl(Clients parent, String id) {
+            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class, Child.class);
         }
         @Override
         public String getAttribute(String name) {
