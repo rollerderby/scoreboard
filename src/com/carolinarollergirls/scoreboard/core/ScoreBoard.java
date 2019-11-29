@@ -106,6 +106,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Media getMedia();
 
+    public Clients getClients();
+
     public enum Value implements PermanentProperty {
         CURRENT_PERIOD_NUMBER(Integer.class, 0),
         CURRENT_PERIOD(Period.class, null),
@@ -135,6 +137,7 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
         RULESETS(Rulesets.class),
         PENALTY_CODES(PenaltyCodesManager.class),
         MEDIA(Media.class),
+        CLIENTS(Clients.class),
         CLOCK(Clock.class),
         TEAM(Team.class),
         PREPARED_TEAM(PreparedTeam.class);

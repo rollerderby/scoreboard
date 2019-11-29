@@ -60,7 +60,7 @@ public class Main extends Logger {
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
-        new JettyServletScoreBoardController(scoreBoard, jsm, host, port);
+        JettyServletScoreBoardController jetty = new JettyServletScoreBoardController(scoreBoard, jsm, host, port);
 
         // Viewers.
         new ScoreBoardMetricsCollector(scoreBoard).register();
@@ -85,6 +85,7 @@ public class Main extends Logger {
 
         // Only start auto-saves once everything is loaded in.
         new AutoSaveJSONState(jsm, autoSaveDir);
+        jetty.start();
     }
 
     private void setSystemProperties() {

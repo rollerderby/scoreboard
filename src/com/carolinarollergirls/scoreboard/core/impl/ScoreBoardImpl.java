@@ -25,6 +25,7 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.utils.Version;
+import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Media;
@@ -67,6 +68,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         addWriteProtection(Child.PENALTY_CODES);
         add(Child.MEDIA, new MediaImpl(this));
         addWriteProtection(Child.MEDIA);
+        add(Child.CLIENTS, new ClientsImpl(this));
+        addWriteProtection(Child.CLIENTS);
         add(Child.TWITTER, new TwitterImpl(this));
         addWriteProtection(Child.TWITTER);
         getTeam(Team.ID_1);
@@ -642,6 +645,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
     @Override
     public Media getMedia() { return (Media)get(Child.MEDIA, ""); }
+
+    @Override
+    public Clients getClients() { return (Clients)get(Child.CLIENTS, ""); }
 
     @Override
     public Clock getClock(String id) { return (Clock)getOrCreate(Child.CLOCK, id); }

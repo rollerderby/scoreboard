@@ -22,8 +22,6 @@ import javax.servlet.ServletException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
-import org.eclipse.jetty.server.session.HashSessionIdManager;
-import org.eclipse.jetty.server.session.HashSessionManager;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -73,7 +71,7 @@ public class JettyServletScoreBoardController {
         SelectChannelConnector sC = new SelectChannelConnector();
         sC.setHost(host);
         sC.setPort(port);
-        Server server = new Server();
+        server = new Server();
         server.addConnector(sC);
 
         server.setSendDateHeader(true);
@@ -82,7 +80,7 @@ public class JettyServletScoreBoardController {
 
         ServletContextHandler sch = new ServletContextHandler(contexts, "/");
 
-        HashSessionManager manager = new HashSessionManager();
+        ScoreBoardSessionManager manager = new ScoreBoardSessionManager(scoreBoard);
         manager.setHttpOnly(true);
         manager.setSessionCookie("CRG_SCOREBOARD");
         // No tournament lasts more than a week, so this allows plenty of time
@@ -129,7 +127,9 @@ public class JettyServletScoreBoardController {
 
         HttpServlet ms = new MediaServlet(scoreBoard, new File(BasePath.get(), "html").getPath());
         sch.addServlet(new ServletHolder(ms), "/Media/*");
+    }
 
+    public void start() {
         try {
             server.start();
         } catch ( Exception e ) {
@@ -138,6 +138,7 @@ public class JettyServletScoreBoardController {
     }
 
     protected ScoreBoard scoreBoard;
+    protected Server server;
     protected JSONStateManager jsm;
     protected UrlsServlet urlsServlet;
     protected WS ws;

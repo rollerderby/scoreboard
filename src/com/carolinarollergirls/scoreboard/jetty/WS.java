@@ -85,9 +85,9 @@ public class WS extends WebSocketServlet {
             remoteAddr = request.getRemoteAddr();
             HttpSession session = request.getSession();
             // The session id is a secret, so expose a non-secret id to the user.
-            id = (UUID)session.getAttribute("publicId");
+            id = (String)session.getAttribute("publicId");
             if (id == null) {
-              id = UUID.randomUUID();
+              id = UUID.randomUUID().toString();
               session.setAttribute("publicId", id);
             }
         }
@@ -242,7 +242,7 @@ public class WS extends WebSocketServlet {
             updates.clear();
         }
 
-        protected UUID id;
+        protected String id;
         protected String remoteAddr;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
