@@ -22,6 +22,9 @@ import javax.servlet.ServletException;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
 import org.eclipse.jetty.server.nio.SelectChannelConnector;
+import org.eclipse.jetty.server.session.HashSessionIdManager;
+import org.eclipse.jetty.server.session.HashSessionManager;
+import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -78,6 +81,17 @@ public class JettyServletScoreBoardController {
         server.setHandler(contexts);
 
         ServletContextHandler sch = new ServletContextHandler(contexts, "/");
+
+        HashSessionManager manager = new HashSessionManager();
+        manager.setHttpOnly(true);
+        manager.setSessionCookie("CRG_SCOREBOARD");
+        // No tournament lasts more than a week, so this
+        // allows plenty of time for a device to be setup in advance
+        // and only used as a backup at the end of the tournament.
+        manager.setMaxCookieAge(14 * 86400);
+        SessionHandler sessions = new SessionHandler(manager);
+        sch.setSessionHandler(sessions);
+
         FilterHolder mf;
         try {
             // Only keep the first two path components.
