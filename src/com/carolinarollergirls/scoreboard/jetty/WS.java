@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.TreeSet;
 import java.util.Set;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,6 +38,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
+import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 
 public class WS extends WebSocketServlet {
@@ -87,7 +87,7 @@ public class WS extends WebSocketServlet {
             // The session id is a secret, so expose a non-secret id to the user.
             id = (String)session.getAttribute("publicId");
             if (id == null) {
-              id = UUID.randomUUID().toString();
+              id = HumanIdGenerator.generate();
               session.setAttribute("publicId", id);
             }
         }
