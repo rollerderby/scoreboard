@@ -71,7 +71,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
         File prev = new File(new File(directory, "html/game-data/json"), name + "_prev.json");
         file.getParentFile().mkdirs();
 
-        // The state includes secrets (Twitter auth) and
+        // The state includes secrets (sessions&Twitter auth) and
         // details not relevant to one particular game (e.g. prepared teams)
         // so trim things down.
         Map<String, Object> cleanedState = new TreeMap<>(state);
@@ -80,7 +80,9 @@ public class JSONStateSnapshotter implements JSONStateListener {
             if (key.startsWith("ScoreBoard.Twitter.")
                     || key.startsWith("ScoreBoard.Media." )
                     || key.startsWith("ScoreBoard.Settings." )
-                    || key.startsWith("ScoreBoard.PreparedTeams(" )) {
+                    || key.startsWith("ScoreBoard.Clients." )
+                    || key.startsWith("ScoreBoard.PreparedTeams(" )
+                    || key.endsWith("Secret")) {
                 it.remove();
             }
         }

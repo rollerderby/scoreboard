@@ -229,7 +229,7 @@ public class WS extends WebSocketServlet {
         private void sendWSUpdatesForPaths(PathTrie watchedPaths, Set<String> changed) {
             Map<String, Object> updates = new HashMap<>();
             for (String k: changed) {
-                if (watchedPaths.covers(k)) {
+                if (watchedPaths.covers(k) && !k.endsWith("Secret")) {
                     updates.put(k, state.get(k));
                 }
             }

@@ -44,9 +44,13 @@ public class SaveJsonScoreBoard extends HttpServlet {
             }
         }
         // Users may use saves rather than the game-data on disk
-        // to share with the world, so ellide the secret.
-        if (state.containsKey("ScoreBoard.Twitter.AccessTokenSecret")) {
-            state.put("ScoreBoard.Twitter.AccessTokenSecret", "<removed>");
+        // to share with the world, so remove secrets.
+        Iterator<String> it = state.keySet().iterator();
+        while (it.hasNext())
+        {
+            if(it.next().endsWith("Secret")) {
+                it.remove();
+            }
         }
 
         if (state.isEmpty()) {
