@@ -24,6 +24,7 @@ import java.util.UUID;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 import org.eclipse.jetty.websocket.WebSocket;
@@ -54,7 +55,7 @@ public class WS extends WebSocketServlet {
 
     @Override
     public WebSocket doWebSocketConnect(HttpServletRequest request, String arg1) {
-        return new Conn(jsm);
+        return new Conn(jsm, request);
     }
 
 
@@ -79,8 +80,16 @@ public class WS extends WebSocketServlet {
         @SuppressWarnings("hiding")
         private JSONStateManager jsm;
 
-        public Conn(JSONStateManager jsm) {
+        public Conn(JSONStateManager jsm, HttpServletRequest request) {
             this.jsm = jsm;
+            remoteAddr = request.getRemoteAddr();
+            HttpSession session = request.getSession();
+            // The session id is a secret, so expose a non-secret id to the user.
+            id = (UUID)session.getAttribute("publicId");
+            if (id == null) {
+              id = UUID.randomUUID();
+              session.setAttribute("publicId", id);
+            }
         }
 
         @Override
@@ -190,7 +199,6 @@ public class WS extends WebSocketServlet {
             // when there is broad registration.
             conn.setMaxTextMessageSize(1024 * 1024);
             this.connection = conn;
-            id = UUID.randomUUID();
             jsm.register(this);
 
             Map<String, Object> json = new HashMap<>();
@@ -235,6 +243,7 @@ public class WS extends WebSocketServlet {
         }
 
         protected UUID id;
+        protected String remoteAddr;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
     }
