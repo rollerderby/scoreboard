@@ -40,10 +40,10 @@ public interface Clients extends ScoreBoardEventProvider {
             ID(String.class, ""),            
             DEVICE(Device.class, null),
             REMOTE_ADDR(String.class, ""),
-            CREATED(Long.class, 0),
-            WROTE(Long.class, 0),
+            PLATFORM(String.class, ""),
             SOURCE(String.class, ""),
-            PLATFORM(String.class, "");
+            CREATED(Long.class, 0),
+            WROTE(Long.class, 0);
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
             private final Class<?> type;
@@ -70,6 +70,9 @@ public interface Clients extends ScoreBoardEventProvider {
             ID(String.class, ""),
             SESSION_ID_SECRET(String.class, ""),   // The cookie.
             NAME(String.class, ""),                // A human-readable name.
+            REMOTE_ADDR(String.class, ""),
+            PLATFORM(String.class, ""),
+            COMMENT(String.class, ""),
             CREATED(Long.class, 0),
             WROTE(Long.class, 0),
             ACCESSED(Long.class, 0);

@@ -27,21 +27,23 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         // WS connections do not persist across processes, so
         // anything from the auto-save is stale.
         removeAll(Child.CLIENT);
-        for (ValueWithId d : getAll(Child.DEVICE)) {
-            ((Device)d).removeAll(Device.Child.CLIENT);
-        }
     }
 
     @Override
     public Client addClient(String deviceId, String remoteAddr, String source, String platform) {
         synchronized (coreLock) {
             ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
-            c.set(Client.Value.DEVICE, (Device)get(Child.DEVICE, deviceId));
-            c.set(Client.Value.REMOTE_ADDR, remoteAddr);
+            Device d = (Device)get(Child.DEVICE, deviceId);
+            c.set(Client.Value.DEVICE, d);
             c.set(Client.Value.SOURCE, source);
+            c.set(Client.Value.REMOTE_ADDR, remoteAddr);
+            d.set(Device.Value.REMOTE_ADDR, remoteAddr);
             c.set(Client.Value.PLATFORM, platform);
-            c.set(Client.Value.CREATED, System.currentTimeMillis());
             add(Child.CLIENT, c);
+            if (platform != null) {
+              d.set(Device.Value.PLATFORM, platform);
+            }
+            c.set(Client.Value.CREATED, System.currentTimeMillis());
             return c;
         }
     }
@@ -76,8 +78,8 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
             Device d = getDevice(sessionId);
             if (d == null) {
                 d = new DeviceImpl(this, UUID.randomUUID().toString());
-                // TODO: Make all of this write protected from the WS, while keeping
-                // auto-saves working.
+                // TODO: Make all of this (except Comment) write protected
+                // from the WS, while keeping auto-saves working.
                 d.set(Device.Value.SESSION_ID_SECRET, sessionId);
                 d.access();
                 d.set(Device.Value.CREATED, d.get(Device.Value.ACCESSED));
@@ -123,7 +125,6 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     public class DeviceImpl extends ScoreBoardEventProviderImpl implements Device {
         protected DeviceImpl(Clients parent, String id) {
             super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class, Child.class);
-            setInverseReference(Child.CLIENT, Client.Value.DEVICE);
         }
 
         @Override

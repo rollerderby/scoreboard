@@ -6,14 +6,21 @@ $(function() {
   function getDeviceTbody(id) {
     var tbody = deviceTable.children("[deviceId='"+ id +"']");
     if (tbody.length == 0) {
-      var name = WS.state["ScoreBoard.Clients.Device(" + id + ").Name"];
+      var prefix = "ScoreBoard.Clients.Device(" + id + ")";
+      var name = WS.state[prefix + ".Name"];
       tbody = $("<tbody>").attr("deviceId", id).attr("name", name)
         .append($("<tr>").append("<td class='Name' rowspan='0'>")
-          .append("<td class='Blank'>").append("<td class='Blank'>").append("<td class='Blank'>")
+          .append("<td class='Comment'>")
+          .append("<td class='Hardware'>")
+          .append("<td class='RemoteAddr'>")
           .append("<td class='LastSeen' rowspan='0'>")
           .append("<td class='LastWrite'>")
           .append("<td class='Created'>"));
       _windowFunctions.appendAlphaSortedByAttr(deviceTable, tbody, "name", 1)
+
+      tbody.find('td.Comment').append($("<input type='text'>").change(function() {
+        WS.Set(prefix + ".Comment", this.value);
+      }));
     }
     return tbody;
   }
@@ -34,6 +41,12 @@ $(function() {
       case "Name":
         tr.children("td.Name").text(v);
         break;
+      case "RemoteAddr":
+        tr.children(".RemoteAddr").text(v);
+        break;
+      case "Platform":
+        tr.children(".Hardware").text(v);
+        break;
       case "Accessed":
         updateAge(tr.children("td.LastSeen").attr("age", v).attr("title", new Date(v)));
         break;
@@ -42,6 +55,9 @@ $(function() {
         break;
       case "Created":
         updateAge(tr.children("td.Created").attr("age", v).attr("title", new Date(v)));
+        break;
+      case "Comment":
+        tr.children(".Comment").children("input").val(v);
         break;
     }
   });
@@ -67,11 +83,11 @@ $(function() {
     }
 
     switch (k.field) {
-      case "RemoteAddr":
-        tr.children(".RemoteAddr").text(v);
-        break;
       case "Source":
         tr.children(".Source").text(v);
+        break;
+      case "RemoteAddr":
+        tr.children(".RemoteAddr").text(v);
         break;
       case "Platform":
         tr.children(".Hardware").text(v);
