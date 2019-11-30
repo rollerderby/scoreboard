@@ -10,8 +10,8 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import javax.servlet.http.HttpServletRequest;
 
-import  org.eclipse.jetty.server.session.AbstractSessionManager;
-import  org.eclipse.jetty.server.session.AbstractSession;
+import org.eclipse.jetty.server.session.AbstractSessionManager;
+import org.eclipse.jetty.server.session.AbstractSession;
 
 
 import com.carolinarollergirls.scoreboard.core.Clients;
@@ -31,7 +31,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
       if (d == null) {
         return null;
       }
-      return new Session(this, sessionId, d);
+      return (AbstractSession)d.getOrAddSession(new Session(this, sessionId));
     }
  
     @Override
@@ -41,7 +41,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
 
     @Override
     protected void addSession(AbstractSession session) {
-      clients.getOrAddDevice(session.getId());
+      clients.getOrAddDevice(session.getId(), session);
     }
  
     @Override
@@ -59,14 +59,10 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
     protected class Session extends AbstractSession {
         protected Session(ScoreBoardSessionManager manager, HttpServletRequest request) {
             super(manager, request);
-            device = clients.getOrAddDevice(getId());
         }
    
-        protected Session(ScoreBoardSessionManager manager, String sessionId, Device d) {
-            super(manager, d.getCreated(), System.currentTimeMillis(), sessionId);
-            device = d;
+        protected Session(ScoreBoardSessionManager manager, String sessionId) {
+            super(manager, 0, System.currentTimeMillis(), sessionId);
         }
-
-        Device device;
     }
 }

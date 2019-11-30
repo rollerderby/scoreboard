@@ -64,6 +64,7 @@ public class JettyServletScoreBoardController {
         manager.setHttpOnly(true);
         manager.setSessionCookie("CRG_SCOREBOARD");
         manager.setMaxCookieAge(COOKIE_DURATION_SECONDS);
+        manager.setRefreshCookieAge(3600);
         SessionHandler sessions = new SessionHandler(manager);
         sch.setSessionHandler(sessions);
 

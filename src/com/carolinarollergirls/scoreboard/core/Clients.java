@@ -27,7 +27,7 @@ public interface Clients extends ScoreBoardEventProvider {
     public void postAutosaveUpdate();
 
     public Device getDevice(String sessionId);
-    public Device getOrAddDevice(String sessionId);
+    public Device getOrAddDevice(String sessionId, Object session);
     public int gcOldDevices(long threshold);
 
     public Client addClient(String deviceId, String remoteAddr, String source);
@@ -56,6 +56,10 @@ public interface Clients extends ScoreBoardEventProvider {
         public String getName();
         public long getCreated();
         public void access();
+
+        // This is in-memory only, as session objects need to be shared across
+        // requests so we don't refresh cookies in every single HTTP response.
+        public Object getOrAddSession(Object session);
  
         public enum Value implements PermanentProperty {
             ID(String.class, ""),
