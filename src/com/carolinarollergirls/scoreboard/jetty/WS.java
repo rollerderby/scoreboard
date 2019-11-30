@@ -203,10 +203,16 @@ public class WS extends WebSocketServlet {
             conn.setMaxTextMessageSize(1024 * 1024);
             connection = conn;
             jsm.register(this);
+            String source = request.getParameter("source");
+            if (source == null) {
+              source = "CUSTOM CLIENT";
+            }
+            String platform = request.getParameter("platform");
+            if (platform == null) {
+              platform = request.getHeader("User-Agent");
+            }
             sbClient = sb.getClients().addClient(device.getId(),
-                request.getRemoteAddr(),
-                request.getParameter("source"),
-                request.getParameter("platform"));
+                request.getRemoteAddr(), source, platform);
             device.access();
 
             Map<String, Object> json = new HashMap<>();

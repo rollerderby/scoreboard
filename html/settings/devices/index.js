@@ -11,7 +11,7 @@ $(function() {
       tbody = $("<tbody>").attr("deviceId", id).attr("name", name)
         .append($("<tr>").append("<td class='Name' rowspan='0'>")
           .append("<td class='Comment'>")
-          .append("<td class='Hardware'>")
+          .append("<td class='Platform'>")
           .append("<td class='RemoteAddr'>")
           .append("<td class='LastSeen' rowspan='0'>")
           .append("<td class='LastWrite'>")
@@ -45,7 +45,7 @@ $(function() {
         tr.children(".RemoteAddr").text(v);
         break;
       case "Platform":
-        tr.children(".Hardware").text(v);
+        tr.children(".Platform").text(v);
         break;
       case "Accessed":
         updateAge(tr.children("td.LastSeen").attr("age", v).attr("title", new Date(v)));
@@ -75,7 +75,7 @@ $(function() {
       var created = WS.state["ScoreBoard.Clients.Client(" + id + ").Created"];
       tr = $("<tr>").attr("clientId", id).attr("created", created)
         .append("<td class='Source'>")
-        .append("<td class='Hardware'>")
+        .append("<td class='Platform'>")
         .append("<td class='RemoteAddr'>")
         .append("<td class='LastWrite'>")
         .append("<td class='Created'>");
@@ -90,7 +90,7 @@ $(function() {
         tr.children(".RemoteAddr").text(v);
         break;
       case "Platform":
-        tr.children(".Hardware").text(v);
+        tr.children(".Platform").text(v);
         break;
       case "Wrote":
         updateAge(tr.children("td.LastWrite").attr("age", v).attr("title", new Date(v)));
