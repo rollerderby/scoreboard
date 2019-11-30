@@ -9,7 +9,7 @@ $(function() {
       var name = WS.state["ScoreBoard.Clients.Device(" + id + ").Name"];
       tbody = $("<tbody>").attr("deviceId", id).attr("name", name)
         .append($("<tr>").append("<td class='Name' rowspan='0'>")
-          .append("<td class='Blank'>").append("<td class='Blank'>")
+          .append("<td class='Blank'>").append("<td class='Blank'>").append("<td class='Blank'>")
           .append("<td class='LastSeen' rowspan='0'>")
           .append("<td class='LastWrite'>")
           .append("<td class='Created'>"));
@@ -59,6 +59,7 @@ $(function() {
       var created = WS.state["ScoreBoard.Clients.Client(" + id + ").Created"];
       tr = $("<tr>").attr("clientId", id).attr("created", created)
         .append("<td class='Source'>")
+        .append("<td class='Hardware'>")
         .append("<td class='RemoteAddr'>")
         .append("<td class='LastWrite'>")
         .append("<td class='Created'>");
@@ -71,6 +72,9 @@ $(function() {
         break;
       case "Source":
         tr.children(".Source").text(v);
+        break;
+      case "Platform":
+        tr.children(".Hardware").text(v);
         break;
       case "Wrote":
         updateAge(tr.children("td.LastWrite").attr("age", v).attr("title", new Date(v)));

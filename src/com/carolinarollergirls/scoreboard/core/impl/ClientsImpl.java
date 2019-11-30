@@ -26,18 +26,20 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     public void postAutosaveUpdate() {
         // WS connections do not persist across processes, so
         // anything from the auto-save is stale.
+        removeAll(Child.CLIENT);
         for (ValueWithId d : getAll(Child.DEVICE)) {
             ((Device)d).removeAll(Device.Child.CLIENT);
         }
     }
 
     @Override
-    public Client addClient(String deviceId, String remoteAddr, String source) {
+    public Client addClient(String deviceId, String remoteAddr, String source, String platform) {
         synchronized (coreLock) {
             ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
-            c.set(Client.Value.DEVICE, get(Child.DEVICE, deviceId));
+            c.set(Client.Value.DEVICE, (Device)get(Child.DEVICE, deviceId));
             c.set(Client.Value.REMOTE_ADDR, remoteAddr);
             c.set(Client.Value.SOURCE, source);
+            c.set(Client.Value.PLATFORM, platform);
             c.set(Client.Value.CREATED, System.currentTimeMillis());
             add(Child.CLIENT, c);
             return c;

@@ -9,7 +9,9 @@ table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Device
 .Devices tbody:nth-child(even) { background-color: #cee7ff; }
 
 .Devices td, .Devices th { padding: .4ex; }
-.Devices .RemoteAddr, .Devices .Created, .Devices .LastSeen, .Devices .LastWrite { text-align: right; }
+.Devices .Created, .Devices .LastSeen, .Devices .LastWrite { text-align: right; }
+.Devices .Hardware { text-align: center; }
+.Devices .RemoteAddr { text-align: left; }  /* Have all the 192.168s line up. */
 .Devices .Blank { border-style: dotted; }
 
 /* Hide LastSeen for a device if it has active clients. */

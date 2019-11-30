@@ -205,7 +205,8 @@ public class WS extends WebSocketServlet {
             jsm.register(this);
             sbClient = sb.getClients().addClient(device.getId(),
                 request.getRemoteAddr(),
-                request.getParameter("source"));
+                request.getParameter("source"),
+                request.getParameter("platform"));
             device.access();
 
             Map<String, Object> json = new HashMap<>();

@@ -30,7 +30,7 @@ public interface Clients extends ScoreBoardEventProvider {
     public Device getOrAddDevice(String sessionId, Object session);
     public int gcOldDevices(long threshold);
 
-    public Client addClient(String deviceId, String remoteAddr, String source);
+    public Client addClient(String deviceId, String remoteAddr, String source, String platform);
 
     // An active websocket client.
     public static interface Client extends ScoreBoardEventProvider {
@@ -42,7 +42,8 @@ public interface Clients extends ScoreBoardEventProvider {
             REMOTE_ADDR(String.class, ""),
             CREATED(Long.class, 0),
             WROTE(Long.class, 0),
-            SOURCE(String.class, "");
+            SOURCE(String.class, ""),
+            PLATFORM(String.class, "");
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
             private final Class<?> type;
