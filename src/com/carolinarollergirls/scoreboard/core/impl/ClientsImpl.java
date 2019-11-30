@@ -79,6 +79,20 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         }
     }
 
+    @Override
+    public int gcOldDevices(long gcBefore) {
+        synchronized (coreLock) {
+            int removed = 0;
+            for (ValueWithId d : getAll(Child.DEVICE)) {
+                if ((Long)((Device)d).get(Device.Value.ACCESSED) < gcBefore) {
+                   remove(Child.DEVICE, d.getId());
+                   removed++;
+                }
+            }
+            return removed;
+        }
+    }
+
     public class ClientImpl extends ScoreBoardEventProviderImpl implements Client {
         ClientImpl(Clients parent, String id) {
             super(parent, Value.ID, id, Clients.Child.CLIENT, Client.class, Value.class);

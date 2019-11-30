@@ -36,6 +36,7 @@ import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 
 
+
 public class JettyServletScoreBoardController {
     public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm, String host, int port) {
         scoreBoard = sb;
@@ -62,10 +63,7 @@ public class JettyServletScoreBoardController {
         ScoreBoardSessionManager manager = new ScoreBoardSessionManager(scoreBoard);
         manager.setHttpOnly(true);
         manager.setSessionCookie("CRG_SCOREBOARD");
-        // No tournament lasts more than a week, so this allows plenty of time
-        // for a device to be setup in advance and then only used as a backup
-        // on the last day of the tournament.
-        manager.setMaxCookieAge(14*86400);
+        manager.setMaxCookieAge(COOKIE_DURATION_SECONDS);
         SessionHandler sessions = new SessionHandler(manager);
         sch.setSessionHandler(sessions);
 
@@ -136,6 +134,17 @@ public class JettyServletScoreBoardController {
         Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         Logger.printMessage("");
+
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                int removed = scoreBoard.getClients().gcOldDevices(
+                        System.currentTimeMillis() - COOKIE_DURATION_SECONDS * 1000);
+                if (removed > 0) {
+                    Logger.printMessage("Garbage collected " +  removed + " old device(s)." );
+                }
+          }
+        }, 0, 3600, TimeUnit.SECONDS);
     }
 
     protected ScoreBoard scoreBoard;
@@ -146,4 +155,12 @@ public class JettyServletScoreBoardController {
     protected UrlsServlet urlsServlet;
     protected WS ws;
     protected MetricsServlet metricsServlet;
+
+    // No tournament lasts more than a week, so this allows plenty of time for
+    // a device to be setup in advance and then only used as a backup on the
+    // last day of the tournament. WFTDA/MRDA/JRDA allow 2 weeks to submit
+    // stats after a sanctioned game, so this is also sufficient time to keep
+    // things around in case it happens to help with forensics if something odd
+    // is found while preparing the statsbook.
+    protected static final int COOKIE_DURATION_SECONDS = 86400 * 15;
 }

@@ -28,6 +28,7 @@ public interface Clients extends ScoreBoardEventProvider {
 
     public Device getDevice(String sessionId);
     public Device getOrAddDevice(String sessionId);
+    public int gcOldDevices(long threshold);
 
     public Client addClient(String deviceId, String remoteAddr, String source);
 
