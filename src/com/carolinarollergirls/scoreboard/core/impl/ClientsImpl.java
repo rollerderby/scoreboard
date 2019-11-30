@@ -24,16 +24,18 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     }
 
     public void postAutosaveUpdate() {
-         // WS connections do not persist across startup, so
-         // anything from the auto-save is stale.
-         removeAll(Child.CLIENT);
+        // WS connections do not persist across processes, so
+        // anything from the auto-save is stale.
+        for (ValueWithId d : getAll(Child.DEVICE)) {
+            ((Device)d).removeAll(Device.Child.CLIENT);
+        }
     }
 
     @Override
     public Client addClient(String deviceId, String remoteAddr, String source) {
         synchronized (coreLock) {
             ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
-            c.set(Client.Value.DEVICE_ID, deviceId);
+            c.set(Client.Value.DEVICE, get(Child.DEVICE, deviceId));
             c.set(Client.Value.REMOTE_ADDR, remoteAddr);
             c.set(Client.Value.SOURCE, source);
             c.set(Client.Value.CREATED, System.currentTimeMillis());
@@ -71,7 +73,12 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         synchronized (coreLock) {
             Device d = getDevice(sessionId);
             if (d == null) {
-                d = new DeviceImpl(this, UUID.randomUUID().toString(), sessionId);
+                d = new DeviceImpl(this, UUID.randomUUID().toString());
+                // TODO: Make all of this write protected from the WS, while keeping
+                // auto-saves working.
+                d.set(Device.Value.SESSION_ID_SECRET, sessionId);
+                d.access();
+                d.set(Device.Value.CREATED, d.get(Device.Value.ACCESSED));
                 d.set(Device.Value.NAME, HumanIdGenerator.generate());
                 d.getOrAddSession(session);
                 add(Child.DEVICE, d);
@@ -97,20 +104,24 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     public class ClientImpl extends ScoreBoardEventProviderImpl implements Client {
         ClientImpl(Clients parent, String id) {
             super(parent, Value.ID, id, Clients.Child.CLIENT, Client.class, Value.class);
+            setInverseReference(Value.DEVICE, Device.Child.CLIENT);
         }
+
+        @Override
+        public void write() {
+            synchronized (coreLock) {
+                long now = System.currentTimeMillis();
+                set(Value.WROTE, now);
+                ((Device)get(Value.DEVICE)).set(Device.Value.WROTE, now);
+            }
+        }
+
     }
 
     public class DeviceImpl extends ScoreBoardEventProviderImpl implements Device {
-        DeviceImpl(Clients parent, String id, String sessionId) {
-            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class);
-            // TODO: Make all of this write protected from the WS, while keeping
-            // auto-saves working.
-            set(Value.SESSION_ID_SECRET, sessionId);
-            access();
-            set(Value.CREATED, (Long)get(Value.ACCESSED));
-        }
         protected DeviceImpl(Clients parent, String id) {
-            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class);
+            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class, Child.class);
+            setInverseReference(Child.CLIENT, Client.Value.DEVICE);
         }
 
         @Override

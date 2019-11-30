@@ -113,6 +113,7 @@ public class WS extends WebSocketServlet {
                         this.paths.addAll(newPaths);
                     }
                 } else if (action.equals("Set")) {
+                    sbClient.write();
                     String key = (String)json.get("key");
                     Object value = json.get("value");
                     String v;
@@ -134,6 +135,7 @@ public class WS extends WebSocketServlet {
                         }
                     });
                 } else if (action.equals("StartNewGame")) {
+                    sbClient.write();
                     @SuppressWarnings("unchecked")
                     final Map<String, Object> data = (Map<String, Object>)json.get("data");
                     sb.runInBatch(new Runnable() {
@@ -211,10 +213,10 @@ public class WS extends WebSocketServlet {
             // Inject some of our own WS-specific information.
             // Session id is not included, as that's the secret cookie which
             // is meant to be httpOnly.
-            state.put("WS.DeviceName", device.getName());
-            state.put("WS.DeviceId", device.getId());
-            state.put("WS.ClientId", sbClient.getId());
-            state.put("WS.ClientRemoteAddress", request.getRemoteAddr());
+            state.put("WS.Device.Id", device.getId());
+            state.put("WS.Device.Name", device.getName());
+            state.put("WS.Client.Id", sbClient.getId());
+            state.put("WS.Client.RemoteAddress", request.getRemoteAddr());
             json.put("state", state);
             send(json);
         }

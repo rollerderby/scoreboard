@@ -34,11 +34,14 @@ public interface Clients extends ScoreBoardEventProvider {
 
     // An active websocket client.
     public static interface Client extends ScoreBoardEventProvider {
+        public void write();
+
         public enum Value implements PermanentProperty {
             ID(String.class, ""),            
-            DEVICE_ID(String.class, ""),
+            DEVICE(Device.class, null),
             REMOTE_ADDR(String.class, ""),
             CREATED(Long.class, 0),
+            WROTE(Long.class, 0),
             SOURCE(String.class, "");
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
@@ -55,6 +58,7 @@ public interface Clients extends ScoreBoardEventProvider {
     public static interface Device extends ScoreBoardEventProvider {
         public String getName();
         public long getCreated();
+
         public void access();
 
         // This is in-memory only, as session objects need to be shared across
@@ -66,6 +70,7 @@ public interface Clients extends ScoreBoardEventProvider {
             SESSION_ID_SECRET(String.class, ""),   // The cookie.
             NAME(String.class, ""),                // A human-readable name.
             CREATED(Long.class, 0),
+            WROTE(Long.class, 0),
             ACCESSED(Long.class, 0);
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
@@ -75,6 +80,14 @@ public interface Clients extends ScoreBoardEventProvider {
             public Class<?> getType() { return type; }
             @Override
             public Object getDefaultValue() { return defaultValue; }
+        }
+        public enum Child implements AddRemoveProperty {
+            CLIENT(Client.class);
+
+            private Child(Class<? extends ValueWithId> t) { type = t; }
+            private final Class<? extends ValueWithId> type;
+            @Override
+            public Class<? extends ValueWithId> getType() { return type; }
         }
     }
 }

@@ -11,6 +11,7 @@ $(function() {
         .append($("<tr>").append("<td class='Name' rowspan='0'>")
           .append("<td class='Blank'>").append("<td class='Blank'>")
           .append("<td class='LastSeen' rowspan='0'>")
+          .append("<td class='LastWrite'>")
           .append("<td class='Created'>"));
       _windowFunctions.appendAlphaSortedByAttr(deviceTable, tbody, "name", 1)
     }
@@ -19,6 +20,9 @@ $(function() {
 
 	WS.Register(["ScoreBoard.Clients.Device(*)"], function(k, v) {
     var id = k.Device;
+    if (k.field == "Client") {
+      return;
+    }
     if (v == null) {
       deviceTable.children("tbody[deviceId='"+ id +"']").remove();
       return;
@@ -33,6 +37,9 @@ $(function() {
       case "Accessed":
         updateAge(tr.children("td.LastSeen").attr("age", v).attr("title", new Date(v)));
         break;
+      case "Wrote":
+        updateAge(tr.children("td.LastWrite").attr("age", v).attr("title", new Date(v)));
+        break;
       case "Created":
         updateAge(tr.children("td.Created").attr("age", v).attr("title", new Date(v)));
         break;
@@ -46,13 +53,14 @@ $(function() {
       return;
     }
 
-    var tbody = getDeviceTbody(WS.state["ScoreBoard.Clients.Client(" + id + ").DeviceId"]);
+    var tbody = getDeviceTbody(WS.state["ScoreBoard.Clients.Client(" + id + ").Device"]);
     var tr = tbody.children("tr[clientId='"+ id +"']");
     if (tr.length == 0) {
       var created = WS.state["ScoreBoard.Clients.Client(" + id + ").Created"];
       tr = $("<tr>").attr("clientId", id).attr("created", created)
         .append("<td class='Source'>")
         .append("<td class='RemoteAddr'>")
+        .append("<td class='LastWrite'>")
         .append("<td class='Created'>");
         _windowFunctions.appendAlphaSortedByAttr(tbody, tr, "created", 1)
     }
@@ -63,6 +71,9 @@ $(function() {
         break;
       case "Source":
         tr.children(".Source").text(v);
+        break;
+      case "Wrote":
+        updateAge(tr.children("td.LastWrite").attr("age", v).attr("title", new Date(v)));
         break;
       case "Created":
         updateAge(tr.children("td.Created").attr("age", v).attr("title", new Date(v)));
@@ -75,7 +86,11 @@ $(function() {
     if (!now) {
       now = new Date().getTime();
     }
-    var t = (now - e.attr("age")) / 1000;
+    var age = e.attr("age");
+    if (age == 0) {
+      return;
+    }
+    var t = (now - age) / 1000;
     if (t < 60) {
       e.text(Math.floor(t) + "s");
     } else if (t < 3600) {
