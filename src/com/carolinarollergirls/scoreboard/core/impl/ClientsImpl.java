@@ -30,11 +30,12 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     }
 
     @Override
-    public Client addClient(String deviceId, String remoteAddr) {
+    public Client addClient(String deviceId, String remoteAddr, String source) {
         synchronized (coreLock) {
             ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
             c.set(Client.Value.DEVICE_ID, deviceId);
             c.set(Client.Value.REMOTE_ADDR, remoteAddr);
+            c.set(Client.Value.SOURCE, source);
             add(Child.CLIENT, c);
             return c;
         }

@@ -29,14 +29,15 @@ public interface Clients extends ScoreBoardEventProvider {
     public Device getDevice(String sessionId);
     public Device getOrAddDevice(String sessionId);
 
-    public Client addClient(String deviceId, String remoteAddr);
+    public Client addClient(String deviceId, String remoteAddr, String source);
 
     // An active websocket client.
     public static interface Client extends ScoreBoardEventProvider {
         public enum Value implements PermanentProperty {
             ID(String.class, ""),            
             DEVICE_ID(String.class, ""),
-            REMOTE_ADDR(String.class, "");
+            REMOTE_ADDR(String.class, ""),
+            SOURCE(String.class, "");
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
             private final Class<?> type;

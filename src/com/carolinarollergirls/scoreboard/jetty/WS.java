@@ -83,9 +83,8 @@ public class WS extends WebSocketServlet {
 
         public Conn(JSONStateManager jsm, HttpServletRequest request) {
             this.jsm = jsm;
-            remoteAddr = request.getRemoteAddr() + ":" + request.getRemotePort();
-            session = request.getSession();
-            device = sb.getClients().getDevice(session.getId());
+            this.request = request;
+            device = sb.getClients().getDevice(request.getSession().getId());
         }
 
         @Override
@@ -196,7 +195,9 @@ public class WS extends WebSocketServlet {
             conn.setMaxTextMessageSize(1024 * 1024);
             connection = conn;
             jsm.register(this);
-            sbClient = sb.getClients().addClient(device.getId(), remoteAddr);
+            sbClient = sb.getClients().addClient(device.getId(),
+                request.getRemoteAddr() + ":" + request.getRemotePort(),
+                request.getParameter("source"));
 
             Map<String, Object> json = new HashMap<>();
             Map<String, Object> state = new HashMap<>();
@@ -249,8 +250,7 @@ public class WS extends WebSocketServlet {
 
         protected Client sbClient;
         protected Device device;
-        protected HttpSession session;
-        protected String remoteAddr;
+        protected HttpServletRequest request;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
     }
