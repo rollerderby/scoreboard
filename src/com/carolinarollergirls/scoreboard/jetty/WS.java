@@ -202,7 +202,7 @@ public class WS extends WebSocketServlet {
             connection = conn;
             jsm.register(this);
             sbClient = sb.getClients().addClient(device.getId(),
-                request.getRemoteAddr() + ":" + request.getRemotePort(),
+                request.getRemoteAddr(),
                 request.getParameter("source"));
             device.access();
 
@@ -214,6 +214,7 @@ public class WS extends WebSocketServlet {
             state.put("WS.DeviceName", device.getName());
             state.put("WS.DeviceId", device.getId());
             state.put("WS.ClientId", sbClient.getId());
+            state.put("WS.ClientRemoteAddress", request.getRemoteAddr());
             json.put("state", state);
             send(json);
         }

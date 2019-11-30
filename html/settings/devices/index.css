@@ -10,6 +10,7 @@ table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Device
 
 .Devices td, .Devices th { padding: .4ex; }
 .Devices .RemoteAddr, .Devices .Created, .Devices .LastSeen { text-align: right; }
+.Devices .Blank { border-style: dotted; }
 
 /* Hide LastSeen for a device if it has active clients. */
 .Devices tbody tr:first-child:not(:only-child) .LastSeen { font-size: 0;}

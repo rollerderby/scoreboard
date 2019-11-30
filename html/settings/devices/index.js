@@ -81,7 +81,7 @@ $(function() {
     } else if (t < 3600) {
       e.text(Math.floor(t / 60) + "m");
     } else if (t < 86400) {
-      e.text(Math.floor(t / 3600) + "m");
+      e.text(Math.floor(t / 3600) + "h");
     } else {
       e.text(Math.floor(t / 86400) + "d");
     }

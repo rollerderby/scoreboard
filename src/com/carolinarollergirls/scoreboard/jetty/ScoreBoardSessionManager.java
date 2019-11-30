@@ -8,16 +8,7 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.TreeSet;
-import java.util.Set;
-import java.util.Map;
-
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 import  org.eclipse.jetty.server.session.AbstractSessionManager;
 import  org.eclipse.jetty.server.session.AbstractSession;

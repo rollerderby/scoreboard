@@ -135,7 +135,11 @@ $(function() {
               <p>To access this scoreboard from other computers on this network, try one of these URLs:</p>
 
               <ul id="URLs"></ul>
-              <p>Device Name: <span sbContext="WS" sbDisplay="DeviceName"></span></p>
+              <p>Information about your device:
+                <ul>
+                  <li>Name: <span sbContext="WS" sbDisplay="DeviceName"></span></li>
+                  <li>Address: <span sbContext="WS" sbDisplay="ClientRemoteAddress"></span></li>
+                </ul>
             </div>
         </div>
       </div><!-- column -->
