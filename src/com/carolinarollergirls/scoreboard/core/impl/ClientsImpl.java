@@ -36,6 +36,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
             c.set(Client.Value.DEVICE_ID, deviceId);
             c.set(Client.Value.REMOTE_ADDR, remoteAddr);
             c.set(Client.Value.SOURCE, source);
+            c.set(Client.Value.CREATED, System.currentTimeMillis());
             add(Child.CLIENT, c);
             return c;
         }
@@ -90,6 +91,8 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
             // TODO: Make all of this write protected from the WS, while keeping
             // auto-saves working.
             set(Value.SESSION_ID_SECRET, sessionId);
+            access();
+            set(Value.CREATED, (Long)get(Value.ACCESSED));
         }
         protected DeviceImpl(Clients parent, String id) {
             super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class);
@@ -99,6 +102,20 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         public String getName() {
             synchronized (coreLock) {
                 return (String)get(Value.NAME);
+            }
+        }
+
+        @Override
+        public long getCreated() {
+            synchronized (coreLock) {
+                return (Long)get(Value.CREATED);
+            }
+        }
+
+        @Override
+        public void access() {
+            synchronized (coreLock) {
+                set(Value.ACCESSED, System.currentTimeMillis());
             }
         }
     }

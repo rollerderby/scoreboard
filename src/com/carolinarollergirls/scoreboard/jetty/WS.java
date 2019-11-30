@@ -161,6 +161,12 @@ public class WS extends WebSocketServlet {
                     json = new HashMap<>();
                     json.put("Pong", "");
                     send(json);
+
+                    // This is usually only every 30s, so often enough
+                    // to cover us if our process is terminated uncleanly
+                    // without having to build something just for it
+                    // or risking an update loop.
+                    device.access();
                 } else {
                     sendError("Unknown Action '" + action + "'");
                 }
@@ -198,6 +204,7 @@ public class WS extends WebSocketServlet {
             sbClient = sb.getClients().addClient(device.getId(),
                 request.getRemoteAddr() + ":" + request.getRemotePort(),
                 request.getParameter("source"));
+            device.access();
 
             Map<String, Object> json = new HashMap<>();
             Map<String, Object> state = new HashMap<>();
@@ -216,6 +223,8 @@ public class WS extends WebSocketServlet {
             connectionsActive.dec();
             jsm.unregister(this);
             sbClient.unlink();
+
+            device.access();
         }
 
         public void sendError(String message) {

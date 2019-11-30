@@ -72,7 +72,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
         }
    
         protected Session(ScoreBoardSessionManager manager, String sessionId, Device d) {
-            super(manager, 0, System.currentTimeMillis(), sessionId);
+            super(manager, d.getCreated(), System.currentTimeMillis(), sessionId);
             device = d;
         }
 

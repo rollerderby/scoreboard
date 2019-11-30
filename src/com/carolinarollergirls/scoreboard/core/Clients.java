@@ -37,6 +37,7 @@ public interface Clients extends ScoreBoardEventProvider {
             ID(String.class, ""),            
             DEVICE_ID(String.class, ""),
             REMOTE_ADDR(String.class, ""),
+            CREATED(Long.class, 0),
             SOURCE(String.class, "");
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
@@ -52,11 +53,15 @@ public interface Clients extends ScoreBoardEventProvider {
     // A device is a HTTP cookie.
     public static interface Device extends ScoreBoardEventProvider {
         public String getName();
+        public long getCreated();
+        public void access();
  
         public enum Value implements PermanentProperty {
             ID(String.class, ""),
             SESSION_ID_SECRET(String.class, ""),   // The cookie.
-            NAME(String.class, "");                // A human-readable name.
+            NAME(String.class, ""),                // A human-readable name.
+            CREATED(Long.class, 0),
+            ACCESSED(Long.class, 0);
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
             private final Class<?> type;

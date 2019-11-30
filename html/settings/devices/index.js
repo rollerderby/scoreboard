@@ -9,8 +9,9 @@ $(function() {
       var name = WS.state["ScoreBoard.Clients.Device(" + id + ").Name"];
       tbody = $("<tbody>").attr("deviceId", id).attr("name", name)
         .append($("<tr>").append("<td class='Name' rowspan='0'>")
-        .append("<td class='Created'>&nbsp;</td>")
-        .append("<td>").append("<td>"));
+          .append("<td class='Blank'>").append("<td class='Blank'>")
+          .append("<td class='LastSeen' rowspan='0'>")
+          .append("<td class='Created'>"));
       _windowFunctions.appendAlphaSortedByAttr(deviceTable, tbody, "name", 1)
     }
     return tbody;
@@ -23,11 +24,17 @@ $(function() {
       return;
     }
 
-    var tbody = getDeviceTbody(id);
+    var tr = getDeviceTbody(id).children().first();
 
     switch (k.field) {
       case "Name":
-        tbody.find("td.Name").text(v);
+        tr.children("td.Name").text(v);
+        break;
+      case "Accessed":
+        updateAge(tr.children("td.LastSeen").attr("age", v).attr("title", new Date(v)));
+        break;
+      case "Created":
+        updateAge(tr.children("td.Created").attr("age", v).attr("title", new Date(v)));
         break;
     }
   });
@@ -42,11 +49,12 @@ $(function() {
     var tbody = getDeviceTbody(WS.state["ScoreBoard.Clients.Client(" + id + ").DeviceId"]);
     var tr = tbody.children("tr[clientId='"+ id +"']");
     if (tr.length == 0) {
-      tr = $("<tr>").attr("clientId", id)
+      var created = WS.state["ScoreBoard.Clients.Client(" + id + ").Created"];
+      tr = $("<tr>").attr("clientId", id).attr("created", created)
         .append("<td class='Source'>")
         .append("<td class='RemoteAddr'>")
         .append("<td class='Created'>");
-        _windowFunctions.appendAlphaSortedByAttr(tbody, tr, "clientId", 1)
+        _windowFunctions.appendAlphaSortedByAttr(tbody, tr, "created", 1)
     }
 
     switch (k.field) {
@@ -56,9 +64,35 @@ $(function() {
       case "Source":
         tr.children(".Source").text(v);
         break;
+      case "Created":
+        updateAge(tr.children("td.Created").attr("age", v).attr("title", new Date(v)));
+        break;
 
     }
   });
+
+  function updateAge(e, now) {
+    if (!now) {
+      now = new Date().getTime();
+    }
+    var t = (now - e.attr("age")) / 1000;
+    if (t < 60) {
+      e.text(Math.floor(t) + "s");
+    } else if (t < 3600) {
+      e.text(Math.floor(t / 60) + "m");
+    } else if (t < 86400) {
+      e.text(Math.floor(t / 3600) + "m");
+    } else {
+      e.text(Math.floor(t / 86400) + "d");
+    }
+  }
+
+  setInterval(function(){
+    var now = new Date().getTime()
+    $.each(deviceTable.find("td[age]"), function(e) {
+      updateAge($(this), now);
+    });
+  }, 1000);
 
 
   WS.AutoRegister();
