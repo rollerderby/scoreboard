@@ -34,11 +34,12 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.Clients.Client;
+import com.carolinarollergirls.scoreboard.core.Clients.Device;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
-import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 
 public class WS extends WebSocketServlet {
@@ -82,14 +83,9 @@ public class WS extends WebSocketServlet {
 
         public Conn(JSONStateManager jsm, HttpServletRequest request) {
             this.jsm = jsm;
-            remoteAddr = request.getRemoteAddr();
-            HttpSession session = request.getSession();
-            // The session id is a secret, so expose a non-secret to the user.
-            name = (String)session.getAttribute("publicName");
-            if (name == null) {
-              name = HumanIdGenerator.generate();
-              session.setAttribute("publicName", name);
-            }
+            remoteAddr = request.getRemoteAddr() + ":" + request.getRemotePort();
+            session = request.getSession();
+            device = sb.getClients().getDevice(session.getId());
         }
 
         @Override
@@ -198,13 +194,18 @@ public class WS extends WebSocketServlet {
             // Some messages can be bigger than the 16k default
             // when there is broad registration.
             conn.setMaxTextMessageSize(1024 * 1024);
-            this.connection = conn;
+            connection = conn;
             jsm.register(this);
+            sbClient = sb.getClients().addClient(device.getId(), remoteAddr);
 
             Map<String, Object> json = new HashMap<>();
             Map<String, Object> state = new HashMap<>();
             // Inject some of our own WS-specific information.
-            state.put("WS.Name", name); 
+            // Session id is not included, as that's the secret cookie which
+            // is meant to be httpOnly.
+            state.put("WS.DeviceName", device.getName());
+            state.put("WS.DeviceId", device.getId());
+            state.put("WS.ClientId", sbClient.getId());
             json.put("state", state);
             send(json);
         }
@@ -213,6 +214,7 @@ public class WS extends WebSocketServlet {
         public void onClose(int closeCode, String message) {
             connectionsActive.dec();
             jsm.unregister(this);
+            sbClient.unlink();
         }
 
         public void sendError(String message) {
@@ -245,7 +247,9 @@ public class WS extends WebSocketServlet {
             updates.clear();
         }
 
-        protected String name;
+        protected Client sbClient;
+        protected Device device;
+        protected HttpSession session;
         protected String remoteAddr;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;

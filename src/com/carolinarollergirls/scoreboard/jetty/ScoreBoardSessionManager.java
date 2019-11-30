@@ -76,15 +76,6 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
             device = d;
         }
 
-        @Override
-        public Object getAttribute(String name) {
-            return device.getAttribute(name);
-        }
-        @Override
-        public void setAttribute(String name, Object value) {
-            device.setAttribute(name, (String)value);
-        }
-
         Device device;
     }
 }

@@ -24,9 +24,12 @@ public interface Clients extends ScoreBoardEventProvider {
         @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
+    public void postAutosaveUpdate();
 
-    public Device getDevice(String deviceId);
-    public Device getOrAddDevice(String deviceId);
+    public Device getDevice(String sessionId);
+    public Device getOrAddDevice(String sessionId);
+
+    public Client addClient(String deviceId, String remoteAddr);
 
     // An active websocket client.
     public static interface Client extends ScoreBoardEventProvider {
@@ -47,12 +50,12 @@ public interface Clients extends ScoreBoardEventProvider {
  
     // A device is a HTTP cookie.
     public static interface Device extends ScoreBoardEventProvider {
-        public String getAttribute(String name);
-        public void setAttribute(String name, String value);
+        public String getName();
  
         public enum Value implements PermanentProperty {
             ID(String.class, ""),
-            SESSION_ID_SECRET(String.class, "");   // The cookie.
+            SESSION_ID_SECRET(String.class, ""),   // The cookie.
+            NAME(String.class, "");                // A human-readable name.
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
             private final Class<?> type;
@@ -61,15 +64,6 @@ public interface Clients extends ScoreBoardEventProvider {
             public Class<?> getType() { return type; }
             @Override
             public Object getDefaultValue() { return defaultValue; }
-        }
-
-        public enum Child implements AddRemoveProperty {
-            ATTRIBUTES(ValWithId.class);
-
-            private Child(Class<? extends ValueWithId> t) { type = t; }
-            private final Class<? extends ValueWithId> type;
-            @Override
-            public Class<? extends ValueWithId> getType() { return type; }
         }
     }
 }

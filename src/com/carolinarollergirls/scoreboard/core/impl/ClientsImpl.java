@@ -15,11 +15,41 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients {
     public ClientsImpl(ScoreBoard parent) {
         super(parent, null, "", ScoreBoard.Child.CLIENTS, Clients.class, Child.class);
+    }
+
+    public void postAutosaveUpdate() {
+         // WS connections do not persist across startup, so
+         // anything from the auto-save is stale.
+         removeAll(Child.CLIENT);
+    }
+
+    @Override
+    public Client addClient(String deviceId, String remoteAddr) {
+        synchronized (coreLock) {
+            ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
+            c.set(Client.Value.DEVICE_ID, deviceId);
+            c.set(Client.Value.REMOTE_ADDR, remoteAddr);
+            add(Child.CLIENT, c);
+            return c;
+        }
+    }
+
+    @Override
+    public ValueWithId create(AddRemoveProperty prop, String id) {
+        synchronized (coreLock) {
+            if (prop == Child.DEVICE) {
+              return new DeviceImpl(this, id);
+            } else if (prop == Child.CLIENT) {
+              return new ClientImpl(this, id);
+            }
+            return null;
+        }
     }
 
     @Override
@@ -35,60 +65,39 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) {
-        synchronized (coreLock) {
-            if (prop == Child.DEVICE) {
-              return new DeviceImpl(this, id);
-            }
-            return null;
-        }
-    }
-
-    @Override
     public Device getOrAddDevice(String sessionId) {
         synchronized (coreLock) {
             Device d = getDevice(sessionId);
             if (d == null) {
                 d = new DeviceImpl(this, UUID.randomUUID().toString(), sessionId);
                 add(Child.DEVICE, d);
+                d.set(Device.Value.NAME, HumanIdGenerator.generate());
             }
             return d;
         }
     }
 
     public class ClientImpl extends ScoreBoardEventProviderImpl implements Client {
-        ClientImpl(Clients parent, String id, String deviceId, String remoteAddr) {
+        ClientImpl(Clients parent, String id) {
             super(parent, Value.ID, id, Clients.Child.CLIENT, Client.class, Value.class);
-            set(Value.DEVICE_ID, deviceId);
-            addWriteProtection(Value.DEVICE_ID);
-            set(Value.REMOTE_ADDR, remoteAddr);
-            addWriteProtection(Value.REMOTE_ADDR);
         }
     }
 
     public class DeviceImpl extends ScoreBoardEventProviderImpl implements Device {
         DeviceImpl(Clients parent, String id, String sessionId) {
-            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class, Child.class);
+            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class);
             // TODO: Make all of this write protected from the WS, while keeping
             // auto-saves working.
             set(Value.SESSION_ID_SECRET, sessionId);
         }
         protected DeviceImpl(Clients parent, String id) {
-            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class, Child.class);
+            super(parent, Value.ID, id, Clients.Child.DEVICE, Device.class, Value.class);
         }
+
         @Override
-        public String getAttribute(String name) {
+        public String getName() {
             synchronized (coreLock) {
-                ValueWithId v = get(Child.ATTRIBUTES, name);
-                if (v == null) {
-                   return null;
-                }
-                return v.getValue();
-            }
-        }
-        public void setAttribute(String name, String value) {
-            synchronized (coreLock) {
-                add(Child.ATTRIBUTES, new ValWithId(name, value));
+                return (String)get(Value.NAME);
             }
         }
     }
