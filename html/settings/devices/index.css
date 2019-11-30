@@ -1,0 +1,13 @@
+table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Devices th {
+	border-collapse: collapse;
+	border-color:#777;
+  border: 1px;
+  border-style: solid;
+}
+
+.Devices tbody:nth-child(odd) { background-color: #e7f3ff; }
+.Devices tbody:nth-child(even) { background-color: #cee7ff; }
+
+
+.Devices td, .Devices th { padding: .2ex; }
+.Devices .RemoteAddr { text-align: right; }
