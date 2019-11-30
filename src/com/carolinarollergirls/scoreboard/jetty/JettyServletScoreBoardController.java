@@ -15,7 +15,9 @@ import io.prometheus.client.hotspot.DefaultExports;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.SocketException;
-import java.util.Set;
+import java.util.Iterator;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.ServletException;
 
@@ -38,36 +40,13 @@ public class JettyServletScoreBoardController {
     public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm, String host, int port) {
         scoreBoard = sb;
         this.jsm = jsm;
+        this.host = host;
+        this.port = port;
 
-        init(host, port);
-
-        Logger.printMessage("");
-        Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-        Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-        if (port == 8000) {
-            Logger.printMessage("Double-click/open the 'start.html' file, or");
-        }
-        Logger.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
-        Logger.printMessage("	http://localhost:"+port);
-        try {
-            Set<String> urls = urlsServlet.getUrls();
-            if (!urls.isEmpty()) {
-                Logger.printMessage("or try one of these URLs:");
-            }
-            for (String u : urls) {
-                Logger.printMessage("	"+u);
-            }
-        } catch ( MalformedURLException muE ) {
-            Logger.printMessage("Internal error: malformed URL from Server Connector: "+muE.getMessage());
-        } catch ( SocketException sE ) {
-            Logger.printMessage("Internal error: socket exception from Server Connector: "+sE.getMessage());
-        }
-        Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-        Logger.printMessage("");
+        init();
     }
 
-    protected void init(String host, int port) {
+    protected void init() {
         SelectChannelConnector sC = new SelectChannelConnector();
         sC.setHost(host);
         sC.setPort(port);
@@ -132,11 +111,38 @@ public class JettyServletScoreBoardController {
         } catch ( Exception e ) {
             throw new RuntimeException("Could not start server : "+e.getMessage());
         }
+
+        Logger.printMessage("");
+        Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+        Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+        if (port == 8000) {
+            Logger.printMessage("Double-click/open the 'start.html' file, or");
+        }
+        Logger.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
+        Logger.printMessage("	http://"+(host != null ? host : "localhost")+":"+port);
+        try {
+            Iterator<String> urls = urlsServlet.getUrls().iterator();
+            if (urls.hasNext()) {
+                Logger.printMessage("or try one of these URLs:");
+            }
+            while (urls.hasNext()) {
+                Logger.printMessage("	"+urls.next().toString());
+            }
+        } catch ( MalformedURLException muE ) {
+            Logger.printMessage("Internal error: malformed URL from Server Connector: "+muE.getMessage());
+        } catch ( SocketException sE ) {
+            Logger.printMessage("Internal error: socket exception from Server Connector: "+sE.getMessage());
+        }
+        Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+        Logger.printMessage("");
     }
 
     protected ScoreBoard scoreBoard;
     protected Server server;
     protected JSONStateManager jsm;
+    protected String host;
+    protected int port;
     protected UrlsServlet urlsServlet;
     protected WS ws;
     protected MetricsServlet metricsServlet;
