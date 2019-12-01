@@ -75,7 +75,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     }
 
     @Override
-    public Device getOrAddDevice(String sessionId, Object session) {
+    public Device getOrAddDevice(String sessionId) {
         synchronized (coreLock) {
             Device d = getDevice(sessionId);
             if (d == null) {
@@ -87,7 +87,6 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
                 d.access();
                 d.set(Device.Value.CREATED, d.get(Device.Value.ACCESSED));
                 d.set(Device.Value.NAME, HumanIdGenerator.generate());
-                d.getOrAddSession(session);
                 add(Child.DEVICE, d);
                 requestBatchEnd();
             }
@@ -153,17 +152,5 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
                 set(Value.ACCESSED, System.currentTimeMillis());
             }
         }
-
-        @Override
-        public Object getOrAddSession(Object session) {
-            synchronized (coreLock) {
-                 if (this.session == null) {
-                   this.session = session;
-                 }
-                return this.session;
-            }
-        }
-
-        Object session;
     }
 }

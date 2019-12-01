@@ -31,7 +31,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
       if (d == null) {
         return null;
       }
-      return (AbstractSession)d.getOrAddSession(new Session(this, sessionId));
+      return new Session(this, sessionId);
     }
  
     @Override
@@ -41,7 +41,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
 
     @Override
     protected void addSession(AbstractSession session) {
-      clients.getOrAddDevice(session.getId(), session);
+      clients.getOrAddDevice(session.getId());
     }
  
     @Override
