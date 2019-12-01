@@ -32,6 +32,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     @Override
     public Client addClient(String deviceId, String remoteAddr, String source, String platform) {
         synchronized (coreLock) {
+            requestBatchStart();
             ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
             Device d = (Device)get(Child.DEVICE, deviceId);
             c.set(Client.Value.DEVICE, d);
@@ -44,6 +45,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
               d.set(Device.Value.PLATFORM, platform);
             }
             c.set(Client.Value.CREATED, System.currentTimeMillis());
+            requestBatchEnd();
             return c;
         }
     }
@@ -77,6 +79,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         synchronized (coreLock) {
             Device d = getDevice(sessionId);
             if (d == null) {
+                requestBatchStart();
                 d = new DeviceImpl(this, UUID.randomUUID().toString());
                 // TODO: Make all of this (except Comment) write protected
                 // from the WS, while keeping auto-saves working.
@@ -86,6 +89,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
                 d.set(Device.Value.NAME, HumanIdGenerator.generate());
                 d.getOrAddSession(session);
                 add(Child.DEVICE, d);
+                requestBatchEnd();
             }
             return d;
         }
@@ -95,12 +99,14 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     public int gcOldDevices(long gcBefore) {
         synchronized (coreLock) {
             int removed = 0;
+            requestBatchStart();
             for (ValueWithId d : getAll(Child.DEVICE)) {
                 if ((Long)((Device)d).get(Device.Value.ACCESSED) < gcBefore) {
                    remove(Child.DEVICE, d.getId());
                    removed++;
                 }
             }
+            requestBatchEnd();
             return removed;
         }
     }

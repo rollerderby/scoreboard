@@ -9,11 +9,12 @@ $(function() {
       var prefix = "ScoreBoard.Clients.Device(" + id + ")";
       var name = WS.state[prefix + ".Name"];
       tbody = $("<tbody>").attr("deviceId", id).attr("name", name)
-        .append($("<tr>").append("<td class='Name' rowspan='0'>")
+        .append($("<tr>").append("<td class='Name' rowspan='1'>")
           .append("<td class='Comment'>")
           .append("<td class='Platform'>")
           .append("<td class='RemoteAddr'>")
-          .append("<td class='LastSeen' rowspan='0'>")
+          .append("<td class='LastSeenActive' rowspan='1'>0s</td>")
+          .append("<td class='LastSeenInactive' rowspan='1'>")
           .append("<td class='LastWrite'>")
           .append("<td class='Created'>"));
       _windowFunctions.appendAlphaSortedByAttr(deviceTable, tbody, "name", 1)
@@ -35,7 +36,8 @@ $(function() {
       return;
     }
 
-    var tr = getDeviceTbody(id).children().first();
+    var tbody = getDeviceTbody(id);
+    var tr = tbody.children().first();
 
     switch (k.field) {
       case "Name":
@@ -48,16 +50,18 @@ $(function() {
         tr.children(".Platform").text(v);
         break;
       case "Accessed":
-        updateAge(tr.children("td.LastSeen").attr("age", v).attr("title", new Date(v)));
+        updateAge(tr.children("td.LastSeenInactive").attr("age", v).attr("title", new Date(v)));
         break;
       case "Wrote":
         updateAge(tr.children("td.LastWrite").attr("age", v).attr("title", new Date(v)));
+        tbody.toggleClass("HasWritten", v != 0);
         break;
       case "Created":
         updateAge(tr.children("td.Created").attr("age", v).attr("title", new Date(v)));
         break;
       case "Comment":
         tr.children(".Comment").children("input").val(v);
+        tbody.toggleClass("HasComment", v != "");
         break;
     }
   });
@@ -65,7 +69,12 @@ $(function() {
 	WS.Register(["ScoreBoard.Clients.Client(*)"], function(k, v) {
     var id = k.Client;
     if (v == null) {
-      deviceTable.find("tr[clientId='"+ id +"']").remove();
+      var tr = deviceTable.find("tr[clientId='"+ id +"']");
+      if (tr.siblings().length == 1) {
+        tr.parent().removeClass("HasClients");
+      }
+      tr.siblings().first().children("[rowspan]").attr("rowspan", tr.siblings().length);
+      tr.remove();
       return;
     }
 
@@ -79,7 +88,9 @@ $(function() {
         .append("<td class='RemoteAddr'>")
         .append("<td class='LastWrite'>")
         .append("<td class='Created'>");
-        _windowFunctions.appendAlphaSortedByAttr(tbody, tr, "created", 1)
+        _windowFunctions.appendAlphaSortedByAttr(tbody, tr, "created", 1);
+        tr.siblings().first().children("[rowspan]").attr("rowspan", tr.siblings().length + 1);
+        tbody.addClass("HasClients");
     }
 
     switch (k.field) {
