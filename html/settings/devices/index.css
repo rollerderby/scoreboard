@@ -6,12 +6,10 @@ table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Device
 }
 
 .Devices thead { background-color: #aaaaaa; }
-
-.Devices tbody:nth-child(odd), .Devices tbody:nth-child(odd) input { background-color: #dddddd; }
-.Devices tbody:nth-child(even), .Devices tbody:nth-child(even) input { background-color: #f0f0f0; }
-
-.Devices tbody.HasClients:nth-child(odd) { background-color: #adddad; }
-.Devices tbody.HasClients:nth-child(even) { background-color: #d0f0d0; }
+.Devices tbody { background-color: #f0f0f0; }
+.Devices tbody:not(.HasComment) .Comment input { background-color: #eeeeee; }
+.Devices tbody.HasClients .LastSeenActive { background-color: #adddad; }
+.Devices tbody.HasWritten .LastWrite { background-color: #ddddad; }
 
 .Devices td, .Devices th { padding: .4ex; }
 .Devices .Created, .Devices .LastSeenActive, .Devices .LastSeenInactive, .Devices .LastWrite { text-align: right; }
@@ -22,3 +20,11 @@ table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Device
 .Devices tbody.HasClients .LastSeenInactive { display: none; }
 .Devices tbody:not(.HasClients) .LastSeenActive { display: none; }
 
+.Devices tbody { display: none; }
+.Devices.ShowWriters tbody.HasWritten { display: table-row-group; }
+.Devices.ShowActive tbody.HasClients { display: table-row-group; }
+.Devices.ShowInactive tbody:not(.HasClients) { display: table-row-group; }
+.Devices.ShowComments tbody.HasComment { display: table-row-group; }
+
+.Buttons .ui-button-text { font-size: 80%; line-height: 1em; }
+.Buttons { padding: 1ex; }

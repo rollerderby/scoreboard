@@ -31,7 +31,7 @@ var WS = {
 		}
 		if (!platform) {
 			platform += window.screen.width + "x" + window.screen.height + " ";
-			if (navigator.maxTouchPoints) {
+			if (navigator.maxTouchPoints != undefined) {
 				platform += (navigator.maxTouchPoints > 0)?"Touchscreen ":"NotTouchscreen; ";
 			}
 		}

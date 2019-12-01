@@ -1,7 +1,21 @@
 $(function() {
 
-
   var deviceTable = $(".Devices");
+  var buttons = $(".Buttons");
+
+  $.each(["Comments", "Writers", "Active", "Inactive"], function(_, i) {
+    $("<label>").text(i).attr("for", "Show"+i+"Button")
+      .appendTo(buttons);
+    $("<input type='checkbox'>").attr("id", "Show"+i+"Button")
+      .appendTo(buttons).button()
+      .change(function() {
+        deviceTable.toggleClass("Show"+i, this.checked);
+      });
+  });
+  $.each(["Comments", "Writers", "Active"], function(_, i) {
+    buttons.children("#Show"+i+"Button").click();
+  });
+
 
   function getDeviceTbody(id) {
     var tbody = deviceTable.children("[deviceId='"+ id +"']");
@@ -145,4 +159,4 @@ $(function() {
   WS.Connect();
 });
 
-//# sourceURL=settings\client\index.js
+//# sourceURL=settings\devices\index.js
