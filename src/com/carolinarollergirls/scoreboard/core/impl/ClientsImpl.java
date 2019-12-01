@@ -14,6 +14,7 @@ import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -23,30 +24,32 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         super(parent, null, "", ScoreBoard.Child.CLIENTS, Clients.class, Child.class);
     }
 
-    public void postAutosaveUpdate() {
-        // WS connections do not persist across processes, so
-        // anything from the auto-save is stale.
-        removeAll(Child.CLIENT);
-    }
-
     @Override
     public Client addClient(String deviceId, String remoteAddr, String source, String platform) {
         synchronized (coreLock) {
             requestBatchStart();
             ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
             Device d = (Device)get(Child.DEVICE, deviceId);
-            c.set(Client.Value.DEVICE, d);
-            c.set(Client.Value.SOURCE, source);
-            c.set(Client.Value.REMOTE_ADDR, remoteAddr);
-            d.set(Device.Value.REMOTE_ADDR, remoteAddr);
-            c.set(Client.Value.PLATFORM, platform);
-            add(Child.CLIENT, c);
+            c.set(Client.Value.DEVICE, d, Flag.INTERNAL);
+            c.set(Client.Value.SOURCE, source, Flag.INTERNAL);
+            c.set(Client.Value.REMOTE_ADDR, remoteAddr, Flag.INTERNAL);
+            d.set(Device.Value.REMOTE_ADDR, remoteAddr, Flag.INTERNAL);
+            c.set(Client.Value.PLATFORM, platform, Flag.INTERNAL);
+            add(Child.CLIENT, c, Flag.INTERNAL);
             if (platform != null) {
-              d.set(Device.Value.PLATFORM, platform);
+              d.set(Device.Value.PLATFORM, platform, Flag.INTERNAL);
             }
-            c.set(Client.Value.CREATED, System.currentTimeMillis());
+            c.set(Client.Value.CREATED, System.currentTimeMillis(), Flag.INTERNAL);
             requestBatchEnd();
             return c;
+        }
+    }
+
+    @Override
+    public void removeClient(Client c) {
+        synchronized (coreLock) {
+            c.set(Client.Value.DEVICE, null, Flag.INTERNAL);
+            remove(Child.CLIENT, c, Flag.INTERNAL);
         }
     }
 
@@ -55,8 +58,6 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         synchronized (coreLock) {
             if (prop == Child.DEVICE) {
               return new DeviceImpl(this, id);
-            } else if (prop == Child.CLIENT) {
-              return new ClientImpl(this, id);
             }
             return null;
         }
@@ -81,13 +82,11 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
             if (d == null) {
                 requestBatchStart();
                 d = new DeviceImpl(this, UUID.randomUUID().toString());
-                // TODO: Make all of this (except Comment) write protected
-                // from the WS, while keeping auto-saves working.
-                d.set(Device.Value.SESSION_ID_SECRET, sessionId);
+                d.set(Device.Value.SESSION_ID_SECRET, sessionId, Flag.INTERNAL);
                 d.access();
-                d.set(Device.Value.CREATED, d.get(Device.Value.ACCESSED));
-                d.set(Device.Value.NAME, HumanIdGenerator.generate());
-                add(Child.DEVICE, d);
+                d.set(Device.Value.CREATED, d.get(Device.Value.ACCESSED), Flag.INTERNAL);
+                d.set(Device.Value.NAME, HumanIdGenerator.generate(), Flag.INTERNAL);
+                add(Child.DEVICE, d, Flag.INTERNAL);
                 requestBatchEnd();
             }
             return d;
@@ -101,13 +100,18 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
             requestBatchStart();
             for (ValueWithId d : getAll(Child.DEVICE)) {
                 if ((Long)((Device)d).get(Device.Value.ACCESSED) < gcBefore) {
-                   remove(Child.DEVICE, d.getId());
+                   remove(Child.DEVICE, d.getId(), Flag.INTERNAL);
                    removed++;
                 }
             }
             requestBatchEnd();
             return removed;
         }
+    }
+
+    @Override
+    public boolean isWritable(Property prop, Flag flag) {
+      return true;
     }
 
     public class ClientImpl extends ScoreBoardEventProviderImpl implements Client {
@@ -120,11 +124,15 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         public void write() {
             synchronized (coreLock) {
                 long now = System.currentTimeMillis();
-                set(Value.WROTE, now);
-                ((Device)get(Value.DEVICE)).set(Device.Value.WROTE, now);
+                set(Value.WROTE, now, Flag.INTERNAL);
+                ((Device)get(Value.DEVICE)).set(Device.Value.WROTE, now, Flag.INTERNAL);
             }
         }
 
+        @Override
+        public boolean isWritable(Property prop, Flag flag) {
+          return flag != Flag.FROM_AUTOSAVE && flag != null;
+        }
     }
 
     public class DeviceImpl extends ScoreBoardEventProviderImpl implements Device {
@@ -140,17 +148,15 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         }
 
         @Override
-        public long getCreated() {
+        public void access() {
             synchronized (coreLock) {
-                return (Long)get(Value.CREATED);
+                set(Value.ACCESSED, System.currentTimeMillis(), Flag.INTERNAL);
             }
         }
 
         @Override
-        public void access() {
-            synchronized (coreLock) {
-                set(Value.ACCESSED, System.currentTimeMillis());
-            }
+        public boolean isWritable(Property prop, Flag flag) {
+          return true;
         }
     }
 }

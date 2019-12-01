@@ -24,13 +24,13 @@ public interface Clients extends ScoreBoardEventProvider {
         @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
-    public void postAutosaveUpdate();
 
     public Device getDevice(String sessionId);
     public Device getOrAddDevice(String sessionId);
     public int gcOldDevices(long threshold);
 
     public Client addClient(String deviceId, String remoteAddr, String source, String platform);
+    public void removeClient(Client c);
 
     // An active websocket client.
     public static interface Client extends ScoreBoardEventProvider {
@@ -58,7 +58,6 @@ public interface Clients extends ScoreBoardEventProvider {
     // A device is a HTTP cookie.
     public static interface Device extends ScoreBoardEventProvider {
         public String getName();
-        public long getCreated();
 
         public void access();
 

@@ -86,11 +86,13 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
     public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
     //returns true, if a value was either changed or added
+    public boolean add(AddRemoveProperty prop, ValueWithId item, Flag flag);
     public boolean add(AddRemoveProperty prop, ValueWithId item);
     //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, String id);
-    //returns true, if a value was removed
+    public boolean remove(AddRemoveProperty prop, String id, Flag flag);
     public boolean remove(AddRemoveProperty prop, ValueWithId item);
+    public boolean remove(AddRemoveProperty prop, ValueWithId item, Flag flag);
     public void removeAll(AddRemoveProperty prop);
     /**
      * Must call an appropriate constructor for all children that are themselves a

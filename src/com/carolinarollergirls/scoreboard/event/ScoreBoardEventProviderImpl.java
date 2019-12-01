@@ -63,7 +63,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
                 }
             }
         }
-        set(idProperty, id);
+        set(idProperty, id, Flag.INTERNAL);
         addWriteProtection(idProp);
     }
 
@@ -393,9 +393,11 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
     }
     @Override
-    public boolean add(AddRemoveProperty prop, ValueWithId item) {
+    public boolean add(AddRemoveProperty prop, ValueWithId item) { return add(prop, item, null); }
+    @Override
+    public boolean add(AddRemoveProperty prop, ValueWithId item, Flag flag) {
         synchronized (coreLock) {
-            if (item == null || !isWritable(prop, null)) { return false; }
+            if (item == null || !isWritable(prop, flag)) { return false; }
             if (item != null && !prop.getType().isAssignableFrom(item.getClass())) { return false; }
             Map<String, ValueWithId> map = children.get(prop);
             String id = item.getId();
@@ -424,11 +426,15 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     @Override
     public ValueWithId create(AddRemoveProperty prop, String id) { return null; }
     @Override
-    public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id)); }
+    public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id), null); }
     @Override
-    public boolean remove(AddRemoveProperty prop, ValueWithId item) {
+    public boolean remove(AddRemoveProperty prop, String id, Flag flag) { return remove(prop, get(prop, id), flag); }
+    @Override
+    public boolean remove(AddRemoveProperty prop, ValueWithId item) { return remove(prop, item, null); }
+    @Override
+    public boolean remove(AddRemoveProperty prop, ValueWithId item, Flag flag) {
         synchronized (coreLock) {
-            if (item == null || !isWritable(prop, null)) { return false; }
+            if (item == null || !isWritable(prop, flag)) { return false; }
             String id = item.getId();
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
                 id = ((ScoreBoardEventProvider)item).getProviderId();

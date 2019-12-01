@@ -230,7 +230,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             //Button may have a label from autosave but undo will not work after restart
             Button.UNDO.setLabel(ACTION_NONE);
             ((Twitter)get(Child.TWITTER, "")).postAutosaveUpdate();
-            ((Clients)get(Child.CLIENTS, "")).postAutosaveUpdate();
         }
     }
 

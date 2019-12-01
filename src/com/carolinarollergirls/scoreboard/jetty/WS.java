@@ -232,7 +232,7 @@ public class WS extends WebSocketServlet {
         public void onClose(int closeCode, String message) {
             connectionsActive.dec();
             jsm.unregister(this);
-            sbClient.unlink();
+            sb.getClients().removeClient(sbClient);
 
             device.access();
         }
