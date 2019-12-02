@@ -15,6 +15,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -83,8 +84,9 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
                 requestBatchStart();
                 d = new DeviceImpl(this, UUID.randomUUID().toString());
                 d.set(Device.Value.SESSION_ID_SECRET, sessionId, Flag.INTERNAL);
-                d.access();
-                d.set(Device.Value.CREATED, d.get(Device.Value.ACCESSED), Flag.INTERNAL);
+                long now = System.currentTimeMillis();
+                d.set(Device.Value.CREATED, now, Flag.INTERNAL);
+                d.set(Device.Value.ACCESSED, now, Flag.INTERNAL);
                 d.set(Device.Value.NAME, HumanIdGenerator.generate(), Flag.INTERNAL);
                 add(Child.DEVICE, d, Flag.INTERNAL);
                 requestBatchEnd();
@@ -111,7 +113,17 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
 
     @Override
     public boolean isWritable(Property prop, Flag flag) {
-      return true;
+        // This file is security-related so needs more power and certainty than what
+        // the existing system which is more suitable for accident prevention provides.
+        return flag != null || true;
+    }
+
+
+    @Override
+    public boolean remove(AddRemoveProperty prop, ValueWithId item, Flag flag) {
+        // Do not allow removal from WS or autosave.
+        if (flag != Flag.INTERNAL) return false;
+        return super.remove(prop, item, flag);
     }
 
     public class ClientImpl extends ScoreBoardEventProviderImpl implements Client {
@@ -131,7 +143,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
 
         @Override
         public boolean isWritable(Property prop, Flag flag) {
-          return flag != Flag.FROM_AUTOSAVE && flag != null;
+          return (flag != Flag.FROM_AUTOSAVE && flag != null);
         }
     }
 
@@ -156,7 +168,22 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
 
         @Override
         public boolean isWritable(Property prop, Flag flag) {
-          return true;
+            if (prop == Value.COMMENT) return true;
+            return flag != null;
+        }
+
+        @Override
+        protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+            if ((flag == Flag.FROM_AUTOSAVE || flag == null) && prop != Value.COMMENT) {
+               // Only allow changing values from WS/load if they didn't already have one.
+               if (last instanceof String && !prop.getDefaultValue().equals(last)) {
+                 return last;
+               }
+               if (last != prop.getDefaultValue()) {
+                 return last;
+               }
+            }
+            return value;
         }
     }
 }

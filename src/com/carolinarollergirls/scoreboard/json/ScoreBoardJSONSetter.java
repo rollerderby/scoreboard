@@ -88,16 +88,16 @@ public class ScoreBoardJSONSetter {
                         p.execute((CommandProperty)prop);
                     }
                 } else if (remainder != null) {
-                    Object o = p.getOrCreate((AddRemoveProperty)prop, elementId);
+                    Object o = p.getOrCreate((AddRemoveProperty)prop, elementId, flag);
                     if (o == null) {
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
                     }
                     set((ScoreBoardEventProvider)o, remainder, value, flag, postponedSets);
                 } else if (value == null) {
-                    p.remove((AddRemoveProperty)prop, elementId);
+                    p.remove((AddRemoveProperty)prop, elementId, flag);
                 } else {
-                    p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, elementId, value));
+                    p.add((AddRemoveProperty)prop, p.childFromString((AddRemoveProperty)prop, elementId, value), flag);
                 }
             } catch (Exception e) {
                 Logger.printMessage("Exception handling update for " + readable + " - " + value + ": " + e.toString());

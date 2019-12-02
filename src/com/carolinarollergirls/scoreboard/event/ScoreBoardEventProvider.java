@@ -80,6 +80,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      */
     public ValueWithId get(AddRemoveProperty prop, String id);
     public ValueWithId get(NumberedProperty prop, Integer num);
+    public ValueWithId getOrCreate(AddRemoveProperty prop, String id, Flag flag);
     public ValueWithId getOrCreate(AddRemoveProperty prop, String id);
     public ValueWithId getOrCreate(NumberedProperty prop, Integer num);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);

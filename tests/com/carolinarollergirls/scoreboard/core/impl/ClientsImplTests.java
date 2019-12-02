@@ -69,7 +69,8 @@ public class ClientsImplTests {
       assertNotEquals(c.get(Client.Value.PLATFORM), d.get(Device.Value.SESSION_ID_SECRET));
 
 
-      d.set(Device.Value.ACCESSED, 0L);
+      // TODO: Boxing is weird here.
+      d.set(Device.Value.ACCESSED, 0L, Flag.INTERNAL);
       assertEquals(0L, d.get(Device.Value.ACCESSED));
       d.access();
       assertNotEquals(0, d.get(Device.Value.ACCESSED));
@@ -106,7 +107,7 @@ public class ClientsImplTests {
       assertNotEquals(0, d.get(Device.Value.WROTE));
 
 
-      d.set(Device.Value.COMMENT, "comment");
+      d.set(Device.Value.COMMENT, "comment", Flag.INTERNAL);
       assertEquals("comment", d.get(Device.Value.COMMENT));
     }
 
@@ -151,9 +152,9 @@ public class ClientsImplTests {
       save.put("ScoreBoard.Clients.Client("+c.getId()+").RemoteAddr", "c1r2");
       save.put("ScoreBoard.Clients.Client("+c.getId()+").Wrote", 0);
       // Try to remove existing device and client.
-      //save.put("ScoreBoard.Clients.Device("+d.getId()+")", null);
+      save.put("ScoreBoard.Clients.Device("+d.getId()+")", null);
       save.put("ScoreBoard.Clients.Device("+d.getId()+").Client("+c2.getId()+")", null);
-      //save.put("ScoreBoard.Clients.Client("+c2.getId()+")", null);
+      save.put("ScoreBoard.Clients.Client("+c2.getId()+")", null);
       // Try to add a client.
       save.put("ScoreBoard.Clients.Client(abc).Id", "abc");
       save.put("ScoreBoard.Clients.Client(abc).Device", d.getId());
@@ -183,12 +184,14 @@ public class ClientsImplTests {
       assertEquals(2, clients.getAll(Clients.Child.DEVICE).size());
 
       
-      // Only comment is updated of device settings.
+      // Comment is allowed to be updated of the device settings,
+      // as anyone can do that from the WS.
+      // Remote was empty, so we take a value.
       assertEquals("d1c", d.get(Device.Value.COMMENT));
-//    assertEquals("", d.get(Device.Value.REMOTE_ADDR));
-//    assertNotEquals(0, d.get(Device.Value.ACCESSED));
-//    assertNotEquals(0, d.get(Device.Value.WROTE));
-//    assertEquals("d1s", d.get(Device.Value.SESSION_ID_SECRET));
+      assertEquals("c2r", d.get(Device.Value.REMOTE_ADDR));
+      assertNotEquals(0, (long)d.get(Device.Value.ACCESSED));
+      assertNotEquals(0, (long)d.get(Device.Value.WROTE));
+      assertEquals("d1s", d.get(Device.Value.SESSION_ID_SECRET));
       // New device has settings from save.
       assertEquals("d2c", d2.get(Device.Value.COMMENT));
       assertEquals("d2r", d2.get(Device.Value.REMOTE_ADDR));

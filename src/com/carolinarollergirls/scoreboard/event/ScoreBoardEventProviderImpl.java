@@ -362,12 +362,14 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     @Override
     public ValueWithId get(NumberedProperty prop, Integer num) { return get(prop, String.valueOf(num)); }
     @Override
-    public ValueWithId getOrCreate(AddRemoveProperty prop, String id) {
+    public ValueWithId getOrCreate(AddRemoveProperty prop, String id) { return getOrCreate(prop, id, null); }
+    @Override
+    public ValueWithId getOrCreate(AddRemoveProperty prop, String id, Flag flag) {
         synchronized (coreLock) {
             ValueWithId result = get(prop, id);
             if (result == null) {
                 result = create(prop, id);
-                add(prop, result);
+                add(prop, result, flag);
             }
             return result;
         }
