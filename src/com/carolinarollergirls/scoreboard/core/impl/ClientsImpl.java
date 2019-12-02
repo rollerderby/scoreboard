@@ -8,17 +8,17 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import java.util.Objects;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
-import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients {
     public ClientsImpl(ScoreBoard parent) {
@@ -176,11 +176,8 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
             if ((flag == Flag.FROM_AUTOSAVE || flag == null) && prop != Value.COMMENT) {
                // Only allow changing values from WS/load if they didn't already have one.
-               if (last instanceof String && !prop.getDefaultValue().equals(last)) {
-                 return last;
-               }
-               if (last != prop.getDefaultValue()) {
-                 return last;
+               if (!Objects.equals(last, prop.getDefaultValue())) {
+                   return last;
                }
             }
             return value;

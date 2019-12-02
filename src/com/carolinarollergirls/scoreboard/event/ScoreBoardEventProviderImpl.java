@@ -60,6 +60,12 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             for (Property prop : propertySet.getEnumConstants()) {
                 if (prop instanceof AddRemoveProperty) {
                     children.put((AddRemoveProperty)prop, new HashMap<String, ValueWithId>());
+                } else if (prop instanceof PermanentProperty) {
+                    Object def = ((PermanentProperty)prop).getDefaultValue();
+                    if (def != null && !prop.getType().isAssignableFrom(def.getClass())) {
+                        throw new IllegalStateException("Property " + prop + " with class " + prop.getType().getName() +
+                            " cannot be assigned to by its default value of type " + def.getClass().getName());
+                    }
                 }
             }
         }
@@ -304,8 +310,14 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             for (Class<? extends Property> pc : properties) {
                 if (pc.isAssignableFrom(prop.getClass())) { foreign = false; break; }
             }
-            if (foreign) { return false; }
-            if (value != null && !prop.getType().isAssignableFrom(value.getClass())) { return false; }
+            if (foreign) {
+                throw new IllegalArgumentException(prop.getClass().getName() +
+                    " is not a property of " + this.getClass().getName());
+            }
+            if (value != null && !prop.getType().isAssignableFrom(value.getClass())) {
+                throw new IllegalArgumentException("Property " + prop + " with class " + prop.getType().getName() +
+                    " cannot be assigned to by " +  value.getClass().getName());
+            }
             if (prop == idProperty && flag == Flag.FROM_AUTOSAVE) {
                 // register ID as an alias so other elements from autosave are properly redirected
                 elements.get(providerClass).put((String) value, this);

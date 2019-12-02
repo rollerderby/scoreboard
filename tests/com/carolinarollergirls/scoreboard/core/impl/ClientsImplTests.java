@@ -45,7 +45,7 @@ public class ClientsImplTests {
       assertEquals(d, clients.getDevice("S1"));
       assertNotEquals("", d.getName());
       assertNotEquals("", d.get(Device.Value.SESSION_ID_SECRET));
-      assertEquals(0, d.get(Device.Value.WROTE));
+      assertEquals(0L, d.get(Device.Value.WROTE));
       assertNotEquals(0, d.get(Device.Value.CREATED));
       assertEquals(d.get(Device.Value.ACCESSED), d.get(Device.Value.CREATED));
 
@@ -53,7 +53,7 @@ public class ClientsImplTests {
           "remoteaddr", "source", "platform");
       assertEquals(d, c.get(Client.Value.DEVICE));
       assertNotEquals(0, c.get(Client.Value.CREATED));
-      assertEquals(0, c.get(Client.Value.WROTE));
+      assertEquals(0L, c.get(Client.Value.WROTE));
       assertEquals("remoteaddr", c.get(Client.Value.REMOTE_ADDR));
       assertEquals("platform", c.get(Client.Value.PLATFORM));
       assertEquals("source", c.get(Client.Value.SOURCE));
@@ -69,7 +69,6 @@ public class ClientsImplTests {
       assertNotEquals(c.get(Client.Value.PLATFORM), d.get(Device.Value.SESSION_ID_SECRET));
 
 
-      // TODO: Boxing is weird here.
       d.set(Device.Value.ACCESSED, 0L, Flag.INTERNAL);
       assertEquals(0L, d.get(Device.Value.ACCESSED));
       d.access();
@@ -86,7 +85,7 @@ public class ClientsImplTests {
       assertEquals(c2, d.get(Device.Child.CLIENT, c2.getId()));
       assertEquals(2, d.getAll(Device.Child.CLIENT).size());
       assertNotEquals(0, c2.get(Client.Value.CREATED));
-      assertEquals(0, c2.get(Client.Value.WROTE));
+      assertEquals(0L, c2.get(Client.Value.WROTE));
       assertEquals("remoteaddr2", c2.get(Client.Value.REMOTE_ADDR));
       assertEquals(null, c2.get(Client.Value.PLATFORM));
       assertEquals("source2", c2.get(Client.Value.SOURCE));

@@ -14,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
+import com.carolinarollergirls.scoreboard.core.Jam;
 
 public class EventPackageTests {
 
@@ -682,5 +683,15 @@ public class EventPackageTests {
         
         child.set(TestScoreBoardEventProvider.Value.REFERENCE, root);
         assertEquals(-5, child.get(TestScoreBoardEventProvider.Value.RECALCULATED));
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThrowsOnSettingPropertyFromDifferentClass() {
+        root.set(Jam.Value.DURATION, 0);
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testThrowsOnSettingValueOfUnassignableType() {
+        root.set(TestScoreBoardEventProvider.Value.INT, 0L);
     }
 }

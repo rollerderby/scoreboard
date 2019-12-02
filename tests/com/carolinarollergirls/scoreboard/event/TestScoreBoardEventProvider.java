@@ -10,8 +10,8 @@ public interface TestScoreBoardEventProvider extends ScoreBoardEventProvider {
     public enum Value implements PermanentProperty {
         INT(Integer.class, 0),
         ID(String.class, ""),
-        RO_INDIRECT_COPY(Integer.class, ""),
-        RW_INDIRECT_COPY(Integer.class, ""),
+        RO_INDIRECT_COPY(Integer.class, 0),
+        RW_INDIRECT_COPY(Integer.class, 0),
         RECALCULATED(Integer.class, 0),
         REFERENCE(TestScoreBoardEventProvider.class, null);
 
