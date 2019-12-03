@@ -100,11 +100,12 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         synchronized (coreLock) {
             int removed = 0;
             requestBatchStart();
-            for (ValueWithId d : getAll(Child.DEVICE)) {
-                if ((Long)((Device)d).get(Device.Value.ACCESSED) < gcBefore) {
-                   remove(Child.DEVICE, d.getId(), Flag.INTERNAL);
-                   removed++;
-                }
+            for (ValueWithId i : getAll(Child.DEVICE)) {
+                Device d = (Device)i;
+                if ((Long)d.get(Device.Value.ACCESSED) > gcBefore) continue;
+                if (!((String)d.get(Device.Value.COMMENT)).isEmpty()) continue;
+                 remove(Child.DEVICE, d.getId(), Flag.INTERNAL);
+                 removed++;
             }
             requestBatchEnd();
             return removed;

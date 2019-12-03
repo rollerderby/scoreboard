@@ -202,6 +202,23 @@ public class ClientsImplTests {
 
     @Test
     public void testGCOldDevices() {
+      Device d = clients.getOrAddDevice("S1");
+      assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
+      d.access();
+
+      long accessed = (long)d.get(Device.Value.ACCESSED);
+      // Still has comment.
+      d.set(Device.Value.COMMENT, "c");
+      clients.gcOldDevices(accessed+1);
+      assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
+
+      // Still below threshold.
+      d.set(Device.Value.COMMENT, "");
+      clients.gcOldDevices(accessed-1);
+      assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
+
+      clients.gcOldDevices(accessed+1);
+      assertEquals(0, clients.getAll(Clients.Child.DEVICE).size());
     }
 
     @Test
