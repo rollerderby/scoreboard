@@ -29,14 +29,14 @@ public class JSONStateSnapshotter implements JSONStateListener {
             // If the jam has just ended or the score is now official, write out a file.
             if ((inJam && !bool(state.get("ScoreBoard.InJam")))
                     || (bool(state.get("ScoreBoard.OfficialScore"))
-                            && containsRelevantUpdate(changed))) {
+                        && containsRelevantUpdate(changed))) {
                 writeFile(state);
             }
         }
 
         inJam = bool(state.get("ScoreBoard.InJam"));
     }
-    
+
     private boolean containsRelevantUpdate(Set<String> keys) {
         for (String key : keys) {
             if (!key.startsWith("ScoreBoard.Clock")

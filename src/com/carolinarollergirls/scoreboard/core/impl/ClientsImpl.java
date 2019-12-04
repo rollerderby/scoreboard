@@ -38,7 +38,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
             c.set(Client.Value.PLATFORM, platform, Flag.INTERNAL);
             add(Child.CLIENT, c, Flag.INTERNAL);
             if (platform != null) {
-              d.set(Device.Value.PLATFORM, platform, Flag.INTERNAL);
+                d.set(Device.Value.PLATFORM, platform, Flag.INTERNAL);
             }
             c.set(Client.Value.CREATED, System.currentTimeMillis(), Flag.INTERNAL);
             requestBatchEnd();
@@ -58,7 +58,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     public ValueWithId create(AddRemoveProperty prop, String id) {
         synchronized (coreLock) {
             if (prop == Child.DEVICE) {
-              return new DeviceImpl(this, id);
+                return new DeviceImpl(this, id);
             }
             return null;
         }
@@ -69,7 +69,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         synchronized (coreLock) {
             for (ValueWithId d : getAll(Child.DEVICE)) {
                 if (((Device)d).get(Device.Value.SESSION_ID_SECRET).equals(sessionId)) {
-                   return (Device)d;
+                    return (Device)d;
                 }
             }
             return null;
@@ -102,10 +102,10 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
             requestBatchStart();
             for (ValueWithId i : getAll(Child.DEVICE)) {
                 Device d = (Device)i;
-                if ((Long)d.get(Device.Value.ACCESSED) > gcBefore) continue;
-                if (!((String)d.get(Device.Value.COMMENT)).isEmpty()) continue;
-                 remove(Child.DEVICE, d.getId(), Flag.INTERNAL);
-                 removed++;
+                if ((Long)d.get(Device.Value.ACCESSED) > gcBefore) { continue; }
+                if (!((String)d.get(Device.Value.COMMENT)).isEmpty()) { continue; }
+                remove(Child.DEVICE, d.getId(), Flag.INTERNAL);
+                removed++;
             }
             requestBatchEnd();
             return removed;
@@ -116,14 +116,15 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     public boolean isWritable(Property prop, Flag flag) {
         // This file is security-related so needs more power and certainty than what
         // the existing system which is more suitable for accident prevention provides.
-        return flag != null || true;
+        if (!super.isWritable(prop, flag)) { return false; }
+        return !(flag == null || flag == Flag.RESET || flag == Flag.CHANGE);
     }
 
 
     @Override
     public boolean remove(AddRemoveProperty prop, ValueWithId item, Flag flag) {
         // Do not allow removal from WS or autosave.
-        if (flag != Flag.INTERNAL) return false;
+        if (flag != Flag.INTERNAL) { return false; }
         return super.remove(prop, item, flag);
     }
 
@@ -144,7 +145,8 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
 
         @Override
         public boolean isWritable(Property prop, Flag flag) {
-          return (flag != Flag.FROM_AUTOSAVE && flag != null);
+            if (!super.isWritable(prop, flag)) { return false; }
+            return !(flag == Flag.FROM_AUTOSAVE || flag == null || flag == Flag.RESET || flag == Flag.CHANGE);
         }
     }
 
@@ -169,17 +171,18 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
 
         @Override
         public boolean isWritable(Property prop, Flag flag) {
-            if (prop == Value.COMMENT) return true;
-            return flag != null;
+            if (!super.isWritable(prop, flag)) { return false; }
+            if (prop == Value.COMMENT) { return true; }
+            return !(flag == null || flag == Flag.RESET || flag == Flag.CHANGE);
         }
 
         @Override
         protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
             if ((flag == Flag.FROM_AUTOSAVE || flag == null) && prop != Value.COMMENT) {
-               // Only allow changing values from WS/load if they didn't already have one.
-               if (!Objects.equals(last, prop.getDefaultValue())) {
-                   return last;
-               }
+                // Only allow changing values from WS/load if they didn't already have one.
+                if (!Objects.equals(last, prop.getDefaultValue())) {
+                    return last;
+                }
             }
             return value;
         }

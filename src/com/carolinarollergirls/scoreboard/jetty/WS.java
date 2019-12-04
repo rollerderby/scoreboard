@@ -104,7 +104,7 @@ public class WS extends WebSocketServlet {
                     if (jsonPaths != null) {
                         Set<String> newPaths = new TreeSet<>();
                         for (Object p : jsonPaths) {
-                          newPaths.add((String)p);
+                            newPaths.add((String)p);
                         }
                         // Send on updates for the newly registered paths.
                         PathTrie pt = new PathTrie();
@@ -182,10 +182,10 @@ public class WS extends WebSocketServlet {
             Histogram.Timer timer = messagesSentDuration.startTimer();
             try {
                 connection.sendMessage(JSON.std
-                    .with(JSON.Feature.WRITE_NULL_PROPERTIES)
-                    .composeString()
-                    .addObject(json)
-                    .finish());
+                                       .with(JSON.Feature.WRITE_NULL_PROPERTIES)
+                                       .composeString()
+                                       .addObject(json)
+                                       .finish());
             } catch (Exception e) {
                 Logger.printMessage("Error sending JSON update: " + e);
                 e.printStackTrace();
@@ -205,14 +205,14 @@ public class WS extends WebSocketServlet {
             jsm.register(this);
             String source = request.getParameter("source");
             if (source == null) {
-              source = "CUSTOM CLIENT";
+                source = "CUSTOM CLIENT";
             }
             String platform = request.getParameter("platform");
             if (platform == null) {
-              platform = request.getHeader("User-Agent");
+                platform = request.getHeader("User-Agent");
             }
             sbClient = sb.getClients().addClient(device.getId(),
-                request.getRemoteAddr(), source, platform);
+                                                 request.getRemoteAddr(), source, platform);
             device.access();
 
             Map<String, Object> json = new HashMap<>();

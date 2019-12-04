@@ -73,8 +73,8 @@ public class ScoreBoardJSONSetter {
             try {
                 Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
                 if (prop == null) {
-                      Logger.printMessage("Unknown property " + readable);
-                      return;
+                    Logger.printMessage("Unknown property " + readable);
+                    return;
                 }
 
                 if (prop == IValue.ID) {

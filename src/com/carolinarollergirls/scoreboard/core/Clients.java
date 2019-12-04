@@ -37,7 +37,7 @@ public interface Clients extends ScoreBoardEventProvider {
         public void write();
 
         public enum Value implements PermanentProperty {
-            ID(String.class, ""),            
+            ID(String.class, ""),
             DEVICE(Device.class, null),
             REMOTE_ADDR(String.class, ""),
             PLATFORM(String.class, ""),
@@ -54,7 +54,7 @@ public interface Clients extends ScoreBoardEventProvider {
             public Object getDefaultValue() { return defaultValue; }
         }
     }
- 
+
     // A device is a HTTP cookie.
     public static interface Device extends ScoreBoardEventProvider {
         public String getName();

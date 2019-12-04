@@ -27,23 +27,23 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
 
     @Override
     public AbstractSession getSession(String sessionId) {
-      Device d = clients.getDevice(sessionId);
-      if (d == null) {
-        return null;
-      }
-      return new Session(this, sessionId);
+        Device d = clients.getDevice(sessionId);
+        if (d == null) {
+            return null;
+        }
+        return new Session(this, sessionId);
     }
- 
+
     @Override
     protected AbstractSession newSession(HttpServletRequest request) {
-      return new Session(this, request);
+        return new Session(this, request);
     }
 
     @Override
     protected void addSession(AbstractSession session) {
-      clients.getOrAddDevice(session.getId());
+        clients.getOrAddDevice(session.getId());
     }
- 
+
     @Override
     protected void invalidateSessions() {
         // Our session objects are created per request, so nothing to cleanup on shutdown.
@@ -51,7 +51,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
 
     @Override
     protected boolean removeSession(String id) {
-      throw new RuntimeException("Not implemented");
+        throw new RuntimeException("Not implemented");
     }
 
     private Clients clients;
@@ -60,7 +60,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
         protected Session(ScoreBoardSessionManager manager, HttpServletRequest request) {
             super(manager, request);
         }
-   
+
         protected Session(ScoreBoardSessionManager manager, String sessionId) {
             super(manager, 0, System.currentTimeMillis(), sessionId);
         }

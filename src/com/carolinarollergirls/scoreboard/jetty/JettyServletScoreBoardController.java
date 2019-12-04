@@ -142,11 +142,11 @@ public class JettyServletScoreBoardController {
             @Override
             public void run() {
                 int removed = scoreBoard.getClients().gcOldDevices(
-                        System.currentTimeMillis() - COOKIE_DURATION_SECONDS * 1000);
+                                  System.currentTimeMillis() - COOKIE_DURATION_SECONDS * 1000);
                 if (removed > 0) {
                     Logger.printMessage("Garbage collected " +  removed + " old device(s)." );
                 }
-          }
+            }
         }, 0, 3600, TimeUnit.SECONDS);
     }
 
