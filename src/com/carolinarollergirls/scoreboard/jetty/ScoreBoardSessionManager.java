@@ -46,7 +46,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
  
     @Override
     protected void invalidateSessions() {
-      throw new RuntimeException("Not implemented");
+        // Our session objects are created per request, so nothing to cleanup on shutdown.
     }
 
     @Override
