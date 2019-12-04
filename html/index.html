@@ -20,6 +20,14 @@ $(function() {
 				$("<a>").attr("href", e).text(e).appendTo("#URLs").wrap("<li>");
 			});
 	});
+	WS.Register(["WS.Device.Id", "WS.Device.Name", "ScoreBoard.Clients.Device(*).Comment"], function(k, v) {
+		var name = WS.state["WS.Device.Name"];
+		var comment = WS.state["ScoreBoard.Clients.Device(" + WS.state["WS.Device.Id"] + ").Comment"];
+		if (comment) {
+			name += " (" + comment + ")";
+		}
+		$("#deviceName").text(name);
+	});
 	WS.AutoRegister();
 	WS.Connect();
 });
@@ -137,7 +145,7 @@ $(function() {
               <ul id="URLs"></ul>
               <p>Information about your device:
                 <ul>
-                  <li>Name: <span sbContext="WS" sbDisplay="Device.Name"></span></li>
+                  <li>Name: <span id="deviceName"></span></li>
                   <li>Address: <span sbContext="WS" sbDisplay="Client.RemoteAddress"></span></li>
                 </ul>
             </div>

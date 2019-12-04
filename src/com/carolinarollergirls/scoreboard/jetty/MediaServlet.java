@@ -43,6 +43,8 @@ public class MediaServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+        scoreBoard.getClients().getDevice(request.getSession().getId()).write();
+
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");
         response.setCharacterEncoding("UTF-8");

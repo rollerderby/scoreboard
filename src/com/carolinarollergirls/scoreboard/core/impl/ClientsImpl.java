@@ -87,13 +87,34 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
                 long now = System.currentTimeMillis();
                 d.set(Device.Value.CREATED, now, Flag.INTERNAL);
                 d.set(Device.Value.ACCESSED, now, Flag.INTERNAL);
-                d.set(Device.Value.NAME, HumanIdGenerator.generate(), Flag.INTERNAL);
+                // Try to find an unused name, fallback to a UUID.
+                String name = UUID.randomUUID().toString();
+                for (int i = 0; i < 10; i++) {
+                    String n = HumanIdGenerator.generate();
+                    if (getDeviceByName(n) == null) {
+                        name = n;
+                        break;
+                    }
+                }
+                d.set(Device.Value.NAME, name, Flag.INTERNAL);
                 add(Child.DEVICE, d, Flag.INTERNAL);
                 requestBatchEnd();
             }
             return d;
         }
     }
+
+    protected Device getDeviceByName(String name) {
+        synchronized (coreLock) {
+            for (ValueWithId d : getAll(Child.DEVICE)) {
+                if (((Device)d).get(Device.Value.NAME).equals(name)) {
+                    return (Device)d;
+                }
+            }
+            return null;
+        }
+    }
+
 
     @Override
     public int gcOldDevices(long gcBefore) {
@@ -166,6 +187,14 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         public void access() {
             synchronized (coreLock) {
                 set(Value.ACCESSED, System.currentTimeMillis(), Flag.INTERNAL);
+            }
+        }
+
+        @Override
+        public void write() {
+            synchronized (coreLock) {
+                long now = System.currentTimeMillis();
+                set(Value.WROTE, now, Flag.INTERNAL);
             }
         }
 

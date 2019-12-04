@@ -60,6 +60,7 @@ public interface Clients extends ScoreBoardEventProvider {
         public String getName();
 
         public void access();
+        public void write();
 
         public enum Value implements PermanentProperty {
             ID(String.class, ""),
