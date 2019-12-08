@@ -1229,11 +1229,10 @@ function createTimeDialog(clock) {
 	var table = $("<table>").appendTo(dialog).addClass("TimeDialog");
 	var row = $("<tr><td/></tr>");
 	row.clone().appendTo(table).addClass("Time");
-	row.clone().appendTo(table).addClass("MinimumTime");
 	row.clone().appendTo(table).addClass("MaximumTime");
 	row.clone().appendTo(table).addClass("Direction");
 
-	$.each( [ "Time", "MinimumTime", "MaximumTime" ], function(_, e) {
+	$.each( [ "Time", "MaximumTime" ], function(_, e) {
 		var rowTable = _crgUtils.createRowTable(3).appendTo(table.find("tr."+this+">td"));
 		rowTable.find("tr:eq(0)").before("<tr><td colspan='3'/></tr>");
 
