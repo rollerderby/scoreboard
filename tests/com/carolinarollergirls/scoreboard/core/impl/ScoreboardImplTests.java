@@ -88,6 +88,7 @@ public class ScoreboardImplTests {
     @After
     public void tearDown() throws Exception {
         ScoreBoardClock.getInstance().start(false);
+        sb.reset();
         // Check all started batches were ended.
         assertEquals(0, batchLevel);
     }
@@ -974,6 +975,24 @@ public class ScoreboardImplTests {
         assertFalse(sb.isInOvertime());
         assertTrue(sb.isInPeriod());
         checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_STOP_JAM, ScoreBoard.ACTION_TIMEOUT, ScoreBoard.ACTION_NONE);
+    }
+
+    @Test
+    public void testClockUndoWithClockSync() {
+        sb.getSettings().set(Clock.SETTING_SYNC, "True");
+        sb.startJam();
+        assertEquals(0, jc.getInvertedTime());
+        assertEquals(0, pc.getInvertedTime());
+        assertEquals(120000, jc.getTime());
+        assertEquals(1800000, pc.getTime());
+        advance(600);
+        sb.clockUndo(false);
+
+
+        assertEquals(0, jc.getInvertedTime());
+        assertEquals(0, pc.getInvertedTime());
+        assertEquals(120000, jc.getTime());
+        assertEquals(1800000, pc.getTime());
     }
 
     @Test
