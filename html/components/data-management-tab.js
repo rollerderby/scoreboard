@@ -57,15 +57,15 @@ function createDataManagementTab(tab) {
 	});
 
 	var itemTemplate = $('<tr>').addClass('Item')
-		.append($('<td>').addClass('Remove').append($('<button>').addClass('Remove').text('Remove').button()))
+		.append($('<td>').addClass('Remove').append($('<button>').addClass('Remove')))
 		.append($('<td>').addClass('Name').append($('<input type="text">').addClass('Name')))
 		.append($('<td>').addClass('Preview'))
-		.append($('<td>').addClass('Download').append($('<a download>').addClass('Download').text('Download').button()));
+		.append($('<td>').addClass('Download').append($('<a download>').addClass('Download')));
 	
 	var itemTemplateNoPreview = $('<tr>').addClass('Item')
-		.append($('<td>').addClass('Remove').append($('<button>').addClass('Remove').text('Remove').button()))
+		.append($('<td>').addClass('Remove').append($('<button>').addClass('Remove')))
 		.append($('<td>').attr('colspan', '2').addClass('Src'))
-		.append($('<td>').addClass('Download').append($('<a download>').addClass('Download').text('Download').button()));
+		.append($('<td>').addClass('Download').append($('<a download>').addClass('Download')));
 	
 	WS.Register('ScoreBoard.Media.Format(*).Type(*).File(*).Name', function(k, v) {
 		var table = tab.find('>#'+k.Format+'>div.Type>table.Type[type='+k.Type+']');
@@ -80,12 +80,12 @@ function createDataManagementTab(tab) {
 			newRow = itemTemplate.clone(true);
 		}
 		newRow.attr('name', v).attr('file', k.File);
-		newRow.find('button.Remove').click(function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
+		newRow.find('button.Remove').text('Remove').button().click(function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
 		newRow.find('td.Name>input').val(v).change(function(e) {
 			WS.Set('ScoreBoard.Media.Format('+k.Format+').Type('+k.Type+').File('+k.File+').Name', e.target.value)
 		});
 		newRow.find('td.Src').text(k.File);
-		newRow.find('td.Download>a').attr('href', '/'+k.Format+'/'+k.Type+'/' + k.File);
+		newRow.find('td.Download>a').attr('href', '/'+k.Format+'/'+k.Type+'/' + k.File).text('Download').button();
 		var previewElement = '<iframe>';
 		if (k.Format == 'images') {
 			previewElement = '<img>';
@@ -191,18 +191,6 @@ function createDataManagementTab(tab) {
 		}).change();
 	}
 	
-	function createGameDataTab(tab) {
-		var iframe = $('<iframe src="/game-data">').attr('id', 'GameData');
-		tab.append($('<table>')
-				.append($('<td>').addClass('Info').text('To download, right-click and Save - to view JSON, left-click'))
-				.append($('<td>').addClass('Reload').append($('<button>').text('Reload').button().click(function() {
-					iframe.attr('src', '/game-data');
-				}))))
-			.append(iframe);
-		
-		
-	}
-
 	function createSaveLoadTab(tab) {
 		var table = $("<table>").attr("id", "SaveLoad").appendTo(tab);
 		
