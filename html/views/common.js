@@ -2,10 +2,8 @@
 function jammer(k, v) {
 	id = getTeamId(k);
 	var prefix = "ScoreBoard.Team(" + id + ").";
-	var jammerId = WS.state[prefix + "Position(Jammer).Skater"];
-	var jammerName = WS.state[prefix + "Skater(" + jammerId + ").Name"];
-	var pivotId = WS.state[prefix + "Position(Pivot).Skater"];
-	var pivotName = WS.state[prefix + "Skater(" + pivotId + ").Name"];
+	var jammerName = WS.state[prefix + "Position(Jammer).Name"];
+	var pivotName = WS.state[prefix + "Position(Pivot).Name"];
 	var leadJammer = isTrue(WS.state[prefix + "DisplayLead"]);
 	var starPass = isTrue(WS.state[prefix + "StarPass"]);
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
