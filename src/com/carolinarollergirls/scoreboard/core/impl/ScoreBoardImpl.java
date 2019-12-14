@@ -568,22 +568,19 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
-        if (getCurrentPeriod() != snapshot.getCurrentPeriod() &&
-                getCurrentPeriod().getAll(Period.NChild.JAM).size() > 0) {
-            Jam movedJam = (Jam) getCurrentPeriod().getFirst(Period.NChild.JAM);
-            getCurrentPeriod().remove(Period.NChild.JAM, movedJam);
-            movedJam.setParent(this);
-            set(Value.UPCOMING_JAM, movedJam);
+        if (getCurrentPeriod() != snapshot.getCurrentPeriod()) {
+            if (getCurrentPeriod().getAll(Period.NChild.JAM).size() > 0) {
+                // We're undoing a period advancement. Move the upcoming Jam
+                // (and any associated Fieldings) back out before deleting the period.
+                Jam movedJam = (Jam) getCurrentPeriod().getFirst(Period.NChild.JAM);
+                getCurrentPeriod().remove(Period.NChild.JAM, movedJam);
+                movedJam.setParent(this);
+                set(Value.UPCOMING_JAM, movedJam);
+            }
             getCurrentPeriod().unlink();
+            set(Value.CURRENT_PERIOD, snapshot.getCurrentPeriod());
         }
-        set(Value.CURRENT_PERIOD, snapshot.getCurrentPeriod());
         getCurrentPeriod().restoreSnapshot(snapshot.getPeriodSnapshot());
-        for (ValueWithId clock : getAll(Child.CLOCK)) {
-            ((Clock)clock).restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
-        }
-        for (ValueWithId team : getAll(Child.TEAM)) {
-            ((Team)team).restoreSnapshot(snapshot.getTeamSnapshot(team.getId()));
-        }
         if (getCurrentTimeout() != snapshot.getCurrentTimeout() && getCurrentTimeout() != noTimeoutDummy) {
             getCurrentTimeout().unlink();
         }
@@ -594,6 +591,12 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         setInOvertime(snapshot.inOvertime());
         set(Value.IN_JAM, snapshot.inJam());
         setInPeriod(snapshot.inPeriod());
+        for (ValueWithId clock : getAll(Child.CLOCK)) {
+            ((Clock)clock).restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
+        }
+        for (ValueWithId team : getAll(Child.TEAM)) {
+            ((Team)team).restoreSnapshot(snapshot.getTeamSnapshot(team.getId()));
+        }
         for (Button button : Button.values()) {
             button.setLabel(snapshot.getLabels().get(button));
         }

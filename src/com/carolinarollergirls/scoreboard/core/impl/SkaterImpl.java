@@ -170,6 +170,13 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             remove(Child.FIELDING, getCurrentFielding());
         }
     }
+    
+    @Override
+    public void updateFielding(TeamJam teamJam) {
+        set(Skater.Value.CURRENT_FIELDING, getFielding(teamJam));
+        setRole(getRole(teamJam));
+        updateEligibility();
+    };
 
     @Override
     public Position getPosition() { return (Position)get(Value.POSITION); }
@@ -256,44 +263,5 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     @Override
     public boolean hasUnservedPenalties() { return getUnservedPenalties().size() > 0; }
 
-    @Override
-    public SkaterSnapshot snapshot() {
-        synchronized (coreLock) {
-            return new SkaterSnapshotImpl(this);
-        }
-    }
-    @Override
-    public void restoreSnapshot(SkaterSnapshot s) {
-        synchronized (coreLock) {
-            if (s.getId() != getId()) {	return; }
-            setPosition(s.getPosition());
-            setRole(s.getRole());
-            setBaseRole(s.getBaseRole());
-        }
-    }
-
     protected Team team;
-
-    public static class SkaterSnapshotImpl implements SkaterSnapshot {
-        private SkaterSnapshotImpl(Skater skater) {
-            id = skater.getId();
-            position = skater.getPosition();
-            role = skater.getRole();
-            baseRole = skater.getBaseRole();
-        }
-
-        @Override
-        public String getId( ) { return id; }
-        @Override
-        public Position getPosition() { return position; }
-        @Override
-        public Role getRole() { return role; }
-        @Override
-        public Role getBaseRole() { return baseRole; }
-
-        protected String id;
-        protected Position position;
-        protected Role role;
-        protected Role baseRole;
-    }
 }

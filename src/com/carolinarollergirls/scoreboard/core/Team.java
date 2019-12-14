@@ -8,8 +8,6 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import java.util.Map;
-
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -48,7 +46,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public TeamJam getRunningOrUpcomingTeamJam();
     public TeamJam getRunningOrEndedTeamJam();
-    public TeamJam getLastEndedTeamJam();
     public void updateTeamJams();
 
     public int getScore();
@@ -92,7 +89,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
         LOGO(String.class, ""),
         RUNNING_OR_UPCOMING_TEAM_JAM(TeamJam.class, null),
         RUNNING_OR_ENDED_TEAM_JAM(TeamJam.class, null),
-        LAST_ENDED_TEAM_JAM(TeamJam.class, null),
         FIELDING_ADVANCE_PENDING(Boolean.class, false),
         CURRENT_TRIP(ScoringTrip.class, null),
         SCORE(Integer.class, 0),
@@ -161,7 +157,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public static interface TeamSnapshot {
         public String getId();
-        public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots();
-        public Skater.SkaterSnapshot getSkaterSnapshot(String skater);
+        public boolean getFieldingAdvancePending();
     }
 }

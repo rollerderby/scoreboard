@@ -204,7 +204,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             setLogo(DEFAULT_LOGO);
             set(Value.RUNNING_OR_UPCOMING_TEAM_JAM, null);
             set(Value.RUNNING_OR_ENDED_TEAM_JAM, null);
-            set(Value.LAST_ENDED_TEAM_JAM, null);
             set(Value.FIELDING_ADVANCE_PENDING, false);
 
             for (ValueWithId p : getAll(Child.POSITION)) {
@@ -227,7 +226,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void startJam() {
         synchronized (coreLock) {
             advanceFieldings(); // if this hasn't been manually triggered between jams, do it now
-            updateTeamJams();
         }
     }
 
@@ -239,9 +237,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
             getCurrentTrip().set(ScoringTrip.Value.CURRENT, false);
             
-            updateTeamJams();
-            
             set(Value.FIELDING_ADVANCE_PENDING, true);
+            
+            updateTeamJams();
             
             Map<Skater, Role> toField = new HashMap<>();
             TeamJam upcomingTJ = getRunningOrUpcomingTeamJam();
@@ -276,16 +274,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
     
     private void advanceFieldings() {
-        if(!hasFieldingAdvancePending()) { return; }
-        
         set(Value.FIELDING_ADVANCE_PENDING, false);
-        
-        for (ValueWithId v : getAll(Child.SKATER)) {
-            Skater s = (Skater)v;
-            s.set(Skater.Value.CURRENT_FIELDING, s.getFielding(getRunningOrUpcomingTeamJam()));
-            s.setRole(s.getRole(getRunningOrUpcomingTeamJam()));
-            s.updateEligibility();
-        }
+        updateTeamJams();
     }
 
     @Override
@@ -298,10 +288,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void restoreSnapshot(TeamSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
-            for (ValueWithId skater : getAll(Child.SKATER)) {
-                ((Skater)skater).restoreSnapshot(s.getSkaterSnapshot(skater.getId()));
-            }
+            set(Value.FIELDING_ADVANCE_PENDING, s.getFieldingAdvancePending());
             updateTeamJams();
+            if (scoreBoard.isInJam()) {
+                set(Value.CALLOFF, false);
+                set(Value.INJURY, false);
+            }
         }
     }
 
@@ -374,16 +366,16 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public TeamJam getRunningOrEndedTeamJam() { return (TeamJam)get(Value.RUNNING_OR_ENDED_TEAM_JAM); }
     @Override
-    public TeamJam getLastEndedTeamJam() { return (TeamJam)get(Value.LAST_ENDED_TEAM_JAM); }
-    @Override
     public void updateTeamJams() {
         synchronized (coreLock) {
             set(Value.RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(getId()), Flag.INTERNAL);
             set(Value.RUNNING_OR_UPCOMING_TEAM_JAM,
                     scoreBoard.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext(), Flag.INTERNAL);
-            set(Value.LAST_ENDED_TEAM_JAM, getRunningOrUpcomingTeamJam().getPrevious(), Flag.INTERNAL);
             for (ValueWithId p : getAll(Child.POSITION)) {
                 ((Position)p).updateCurrentFielding();
+            }
+            for (ValueWithId v : getAll(Child.SKATER)) {
+                ((Skater)v).updateFielding(hasFieldingAdvancePending() ? getRunningOrEndedTeamJam() : getRunningOrUpcomingTeamJam());
             }
         }
     }
@@ -597,20 +589,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public static class TeamSnapshotImpl implements TeamSnapshot {
         private TeamSnapshotImpl(Team team) {
             id = team.getId();
-            skaterSnapshots = new HashMap<>();
-            for (ValueWithId skater : team.getAll(Child.SKATER)) {
-                skaterSnapshots.put(skater.getId(), ((Skater)skater).snapshot());
-            }
+            fieldingAdvancePending = team.hasFieldingAdvancePending();
         }
 
         @Override
         public String getId() { return id; }
         @Override
-        public Map<String, Skater.SkaterSnapshot> getSkaterSnapshots() { return skaterSnapshots; }
-        @Override
-        public Skater.SkaterSnapshot getSkaterSnapshot(String skater) { return skaterSnapshots.get(skater); }
+        public boolean getFieldingAdvancePending() { return fieldingAdvancePending; }
 
         protected String id;
-        protected Map<String, Skater.SkaterSnapshot> skaterSnapshots;
+        protected boolean fieldingAdvancePending;
     }
 }
