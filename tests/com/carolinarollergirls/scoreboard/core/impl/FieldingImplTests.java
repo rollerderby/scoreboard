@@ -117,7 +117,7 @@ public class FieldingImplTests {
        sb.stopJamTO();
        s.setPenaltyBox(false);
        // Box trip from ended jam remains.
-       Fielding f1 = s.getFielding(t.getLastEndedTeamJam());
+       Fielding f1 = s.getFielding(t.getRunningOrUpcomingTeamJam().getPrevious());
        assertEquals(1, f1.getAll(Fielding.Child.BOX_TRIP).size());
 
         t.execute(Team.Command.ADVANCE_FIELDINGS);

@@ -528,6 +528,7 @@ public class TeamImplTests {
         assertTrue(team.isInjury());
     }
 
+    @Test
     public void testReset() {
         team.set(Team.Value.FIELDING_ADVANCE_PENDING, true);
         assertEquals(true, team.hasFieldingAdvancePending());
@@ -545,5 +546,80 @@ public class TeamImplTests {
         sb.getRulesets().setCurrentRuleset("id");
         assertEquals(1, team.getTimeouts());
         assertEquals(0, team.getOfficialReviews());
+    }
+    
+    @Test
+    public void testUnStart() {
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+        Skater skater1 = new SkaterImpl(team, "S1");
+        team.addSkater(skater1);
+        team.field(skater1, Role.JAMMER);
+
+        sb.startJam();
+
+        assertEquals(skater1, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
+        assertEquals(Role.JAMMER, skater1.getRole());
+
+        sb.clockUndo(false);
+        
+        assertEquals(skater1, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
+        assertEquals(Role.JAMMER, skater1.getRole());
+    }
+    
+    @Test
+    public void testUnStop() {
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+        Skater skater1 = new SkaterImpl(team, "S1");
+        team.addSkater(skater1);
+        team.field(skater1, Role.JAMMER);
+        sb.startJam();
+        team.set(Team.Value.LEAD, true);
+        
+        assertEquals(skater1, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
+        assertEquals(Role.JAMMER, skater1.getRole());
+        assertFalse(team.isCalloff());
+
+        sb.stopJamTO();
+
+        assertEquals(null, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
+        assertEquals(Role.JAMMER, skater1.getRole());
+        assertTrue(team.isCalloff());
+       
+        sb.clockUndo(false);
+        
+        assertEquals(skater1, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
+        assertEquals(Role.JAMMER, skater1.getRole());
+        assertFalse(team.isCalloff());
+    }
+    
+    @Test
+    public void testUnStopAfterAdvance() {
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+        Skater skater1 = new SkaterImpl(team, "S1");
+        team.addSkater(skater1);
+        team.field(skater1, Role.JAMMER);
+        sb.startJam();
+        
+        assertEquals(skater1, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
+        assertEquals(Role.JAMMER, skater1.getRole());
+
+        sb.stopJamTO();
+        team.execute(Team.Command.ADVANCE_FIELDINGS);
+
+        assertEquals(null, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(null, skater1.getPosition());
+        assertEquals(Role.BENCH, skater1.getRole());
+       
+        sb.clockUndo(false);
+        
+        assertEquals(skater1, team.getPosition(FloorPosition.JAMMER).getSkater());
+        assertEquals(team.getPosition(FloorPosition.JAMMER), skater1.getPosition());
+        assertEquals(Role.JAMMER, skater1.getRole());
     }
 }

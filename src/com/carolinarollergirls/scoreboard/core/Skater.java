@@ -19,9 +19,6 @@ import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
-    public SkaterSnapshot snapshot();
-    public void restoreSnapshot(SkaterSnapshot s);
-
     public int compareTo(Skater other);
 
     public Team getTeam();
@@ -32,6 +29,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public Fielding getFielding(TeamJam teamJam);
     public Fielding getCurrentFielding();
     public void removeCurrentFielding();
+    public void updateFielding(TeamJam teamJam);
     public Position getPosition();
     public void setPosition(Position position);
     public Role getRole();
@@ -87,11 +85,4 @@ public interface Skater extends ScoreBoardEventProvider {
     }
 
     public static final String FO_EXP_ID = "0";
-
-    public static interface SkaterSnapshot	{
-        public String getId();
-        public Position getPosition();
-        public Role getRole();
-        public Role getBaseRole();
-    }
 }
