@@ -570,6 +570,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
         if (getCurrentPeriod() != snapshot.getCurrentPeriod()) {
             if (getCurrentPeriod().getAll(Period.NChild.JAM).size() > 0) {
+                // We're undoing a period advancement. Move the upcoming Jam
+                // (and any associated Fieldings) back out before deleting the period.
                 Jam movedJam = (Jam) getCurrentPeriod().getFirst(Period.NChild.JAM);
                 getCurrentPeriod().remove(Period.NChild.JAM, movedJam);
                 movedJam.setParent(this);

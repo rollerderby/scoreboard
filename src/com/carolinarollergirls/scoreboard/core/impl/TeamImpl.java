@@ -288,8 +288,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void restoreSnapshot(TeamSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) {	return; }
-            boolean ended = s.getFieldingAdvancePending();
-            set(Value.FIELDING_ADVANCE_PENDING, ended);
+            set(Value.FIELDING_ADVANCE_PENDING, s.getFieldingAdvancePending());
             updateTeamJams();
             if (scoreBoard.isInJam()) {
                 set(Value.CALLOFF, false);
