@@ -193,6 +193,16 @@ body.box_flat .Box.FlatTop {
 .Team.Left>.JamScore { left: 39.5%; }
 .Team.Right>.JamScore { right: 39.5%; }
 
+.Team>.StarPass {
+	position: absolute;
+	width: 9%;
+	height: 8%;
+	top: 31%;
+	font-size: 9vh;
+}
+.Team.Left>.StarPass { left: 39.5%; }
+.Team.Right>.StarPass { right: 39.5%; }
+
 .DotTimeouts { position: absolute; height: 14%; width: 3%; top: 31% }
 .DotOfficialReviews { position: absolute; height: 5%; width: 3%; top: 46% }
 .Team.Left>.DotTimeouts, .Team.Left>.DotOfficialReviews { left: 0.5%; }

@@ -143,8 +143,15 @@ function toTime(k, v) {
 	return _timeConversions.msToMinSecNoZero(v);
 }
 
-function toInitial(k, v) {
-	return v == null ? '' : v.substring(0, 1);
+function toJamScore(k, v) {
+	var prefix = "ScoreBoard.Team(" + getTeamId(k) + ").";
+	var jamScore = WS.state[prefix + "JamScore"];
+	var noInitial = isTrue(WS.state[prefix + "NoInitial"]);
+	return noInitial ? '_' : jamScore;
+}
+
+function toSP(k, v) {
+	return isTrue(v) ? 'SP' : '';
 }
 
 function clockRunner(k,v) {
