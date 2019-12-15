@@ -78,6 +78,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public boolean isDisplayLead();
     public boolean isStarPass();
     public boolean hasNoPivot();
+    
+    public Team getOtherTeam();
 
 
     public static final String ID_1 = "1";

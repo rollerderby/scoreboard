@@ -117,10 +117,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             if (getCurrentTrip().getNumber() == 1) {
                 getRunningOrEndedTeamJam().addScoringTrip();
             }
-            String otherId = getId().equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
-            Team otherTeam = getScoreBoard().getTeam(otherId);
-            if (otherTeam.isLead()) {
-                otherTeam.set(Value.LEAD, false);
+            if (getOtherTeam().isLead()) {
+                getOtherTeam().set(Value.LEAD, false);
             }
         } else if (prop == Value.STAR_PASS) {
             if (getPosition(FloorPosition.JAMMER).getSkater() != null) {
@@ -232,7 +230,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void stopJam() {
         synchronized (coreLock) {
-            if (isDisplayLead() && !scoreBoard.getClock(Clock.ID_JAM).isTimeAtEnd()) {
+            if (isDisplayLead() && !scoreBoard.getClock(Clock.ID_JAM).isTimeAtEnd() && !isInjury() && !getOtherTeam().isInjury()) {
                 set(Value.CALLOFF, true);
             }
             getCurrentTrip().set(ScoringTrip.Value.CURRENT, false);
@@ -575,6 +573,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
 
+    @Override
+    public Team getOtherTeam() {
+        String otherId = getId().equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
+        return getScoreBoard().getTeam(otherId);
+    }
+    
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
     
     private Timer tripScoreTimer = new Timer();
