@@ -527,6 +527,24 @@ public class TeamImplTests {
         assertTrue(team.isCalloff());
         assertTrue(team.isInjury());
     }
+    
+    @Test
+    public void testNoCalloffOnInj() {
+        sb.startJam();
+        team.set(Team.Value.LEAD, true);
+        advance(17000);
+        team.set(Team.Value.INJURY, true);
+        
+        assertFalse(sb.isInJam());
+        assertTrue(team.isInjury());
+        assertFalse(team.isCalloff());
+        
+        sb.startJam();
+        team.set(Team.Value.LEAD, true);
+        advance(20000);
+        team.getOtherTeam().set(Team.Value.INJURY, true);
+        assertFalse(team.isCalloff());
+    }
 
     @Test
     public void testReset() {
