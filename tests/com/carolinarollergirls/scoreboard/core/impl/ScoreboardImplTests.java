@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.UUID;
 
 import org.junit.After;
 import org.junit.Before;
@@ -15,11 +16,14 @@ import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Team.Value;
 import com.carolinarollergirls.scoreboard.core.Timeout;
+import com.carolinarollergirls.scoreboard.core.Skater.NChild;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.Button;
 import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl.ScoreBoardSnapshot;
@@ -1756,6 +1760,31 @@ public class ScoreboardImplTests {
         sb.startJam();
         assertEquals(4, sb.getCurrentPeriod().getAll(Period.NChild.JAM).size());
         assertEquals(4, sb.getCurrentPeriod().getCurrentJam().getNumber());
+    }
+    
+    @Test
+    public void testPenaltiesMovedOnPeriodDelete() {
+        Team team = sb.getTeam(Team.ID_1);
+        Skater skater = new SkaterImpl(team, UUID.randomUUID().toString());
+                
+        fastForwardJams(2);
+        
+        Penalty penalty = (Penalty)skater.getOrCreate(NChild.PENALTY, "1");
+        penalty.set(Penalty.Value.JAM, sb.getCurrentPeriod().getCurrentJam());
+        penalty.set(Penalty.Value.CODE, "C");
+        
+        fastForwardPeriod();
+        ic.setTime(0);
+        fastForwardJams(2);
+        
+        Period p2 = sb.getCurrentPeriod();
+        assertEquals(2, p2.getNumber());
+        assertEquals(p2.getPrevious(), penalty.getJam().getParent());
+        
+        p2.getPrevious().unlink();
+        
+        assertEquals(1, p2.getNumber());
+        assertEquals(p2.getFirst(Period.NChild.JAM), penalty.getJam());
     }
     
     @Test

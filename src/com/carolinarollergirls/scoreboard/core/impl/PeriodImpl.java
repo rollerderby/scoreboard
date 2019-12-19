@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import com.carolinarollergirls.scoreboard.core.Jam;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Timeout;
@@ -99,10 +100,17 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     @Override
     public void unlink(boolean neighborsRemoved) {
         if (!neighborsRemoved && getAll(NChild.JAM).size() > 0) {
-            if (getFirst(NChild.JAM).getPrevious() != null) {
-                ((Jam) getFirst(NChild.JAM).getPrevious()).setNext((Jam) getLast(NChild.JAM).getNext());
-            } else if (getLast(NChild.JAM).getNext() != null) {
-                ((Jam) getLast(NChild.JAM).getNext()).setPrevious(null);
+            Jam prevJam = (Jam) getFirst(NChild.JAM).getPrevious();
+            Jam nextJam = (Jam) getLast(NChild.JAM).getNext();
+            if (prevJam != null) {
+                prevJam.setNext(nextJam);
+            } else if (nextJam != null) {
+                nextJam.setPrevious(null);
+            }
+            for (ValueWithId j : getAll(NChild.JAM)) {
+                for (ValueWithId p : ((Jam)j).getAll(Jam.Child.PENALTY)) {
+                    ((Penalty)p).set(Penalty.Value.JAM, nextJam);
+                }
             }
         }
         super.unlink(neighborsRemoved);
