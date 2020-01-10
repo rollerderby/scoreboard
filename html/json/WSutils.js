@@ -17,9 +17,9 @@ function toggleButton(key, trueText, falseText) {
 function mediaSelect(key, format, type, humanName) {
 	var select = $("<select>").append($("<option value=''>No " + humanName + "</option>"));
 	WS.Register("ScoreBoard.Media.Format(" + format + ").Type(" + type + ").File(*).Name", function(k, v) {
-		select.children("[value='"+k.File+"']").remove();
+		select.children("[value='" + escape("/" + format + "/" + type + "/" + k.File) + "']").remove();
 		if (v != null) {
-			var option = $("<option>").attr("name", v).val("/" + format + "/" + type + "/" + k.File).text(v);
+			var option = $("<option>").attr("name", v).val(escape("/" + format + "/" + type + "/" + k.File)).text(v);
 			_windowFunctions.appendAlphaSortedByAttr(select, option, "name", 1);
 			select.val(WS.state[key]);
 		}
