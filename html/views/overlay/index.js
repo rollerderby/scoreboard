@@ -101,9 +101,7 @@ function initialize() {
 	});
 
 	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)' ], function(k,v) {
-		if (k == 'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)') {
-			$('#VIDEO-BG').css('backgroundColor', v || 'transparent');
-		}
+		$('body').css('backgroundColor', v || 'transparent');
 	});
 
 	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)' ], function(k,v) {
