@@ -296,7 +296,7 @@ function createPeriodEndTimeoutDialog(td) {
 	WS.Register("ScoreBoard.Clock(Period).Running");
 	var checkTimeFunction = function(v) {
 		if (!applying) return;
-		var currentSecs = Number(_timeConversions.msToSeconds(v));
+		var currentSecs = Number(_timeConversions.msToSeconds(v, isTrue(WS.state['ScoreBoard.Clock(Period).Direction'])));
 		var targetSecs = Number(waitDiv.find("span.TargetSeconds").text());
 		if (currentSecs > targetSecs) {
 			return;
@@ -764,7 +764,7 @@ function createTimeTable() {
 		if (clock == "Period" || clock == "Jam") {
 			var it = $("<a>").appendTo(nameTd).addClass("InvertedTime");
 			WS.Register(prefix +".InvertedTime", function(k, v) {
-				it.text(_timeConversions.msToMinSec(v));
+				it.text(_timeConversions.msToMinSec(v, !isTrue(WS.state[prefix+'.Direction'])));
 			});
 			WS.Register(prefix +".Direction", function(k, v) {
 				it.toggleClass("CountDown", isTrue(v));
@@ -815,7 +815,7 @@ function createTimeTable() {
 			.appendTo(timeTr.children("td:eq(0)").addClass("Button"));
 		var time = $("<a>").appendTo(timeTr.children("td:eq(1)").addClass("Time"));
 		WS.Register(prefix +".Time", function(k, v) {
-			time.text(_timeConversions.msToMinSec(v));
+			time.text(_timeConversions.msToMinSec(v, isTrue(WS.state[prefix+'.Direction'])));
 		});
 		var timeDialog = createTimeDialog(clock);
 		timeTr.children("td:eq(1)").click(function() { timeDialog.dialog("open"); });
@@ -883,9 +883,9 @@ function createPeriodDialog() {
 				}
 				if (v != null) {
 					if (key == "CurrentJamNumber") { row.children("td.Jams").text(v); }
-					if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.children("td.Duration").text(_timeConversions.msToMinSec(v)); }
+					if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.children("td.Duration").text(_timeConversions.msToMinSec(v, true)); }
 					if (key == "Running" && isTrue(v)) { row.children("td.Duration").text("running"); }
-					if (key == "Running" && !isTrue(v)) { row.children("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'])); }
+					if (key == "Running" && !isTrue(v)) { row.children("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'], true)); }
 				}
 			});
 
@@ -977,14 +977,14 @@ function createJamDialog() {
 						if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
 							row.children("td.Duration").text("running");
 						} else {
-							row.children("td.Duration").text(_timeConversions.msToMinSec(v));
+							row.children("td.Duration").text(_timeConversions.msToMinSec(v, true));
 						}
 					}
 					if (key == 'PeriodClockDisplayEnd') {
 						if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
 							row.children("td.PC").text("running");
 						} else {
-							row.children("td.PC").text(_timeConversions.msToMinSec(v));
+							row.children("td.PC").text(_timeConversions.msToMinSec(v, isTrue(WS.state['ScoreBoard.Clock(Period).Direction'])));
 						}
 					}
 				}
@@ -1145,10 +1145,11 @@ function createTimeoutDialog() {
 		}
 		if (v != null && row.length == 0) {
 			var jam = Number(WS.state[prefix+'.PrecedingJamNumber']);
-			var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix+'.Duration']);
+			var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' :	_timeConversions.msToMinSec(WS.state[prefix+'.Duration'], true);
 			var pc = _timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
-					WS.state['ScoreBoard.Clock(Period).Time'] :
-					WS.state[prefix+'.PeriodClockEnd']);
+						WS.state['ScoreBoard.Clock(Period).Time'] :
+						WS.state[prefix+'.PeriodClockEnd'],
+					isTrue(WS.state[prefix+'.Direction']));
 			var type = WS.state[prefix+'.Owner'] + '.' + WS.state[prefix+'.Review'];
 			var review = isTrue(WS.state[prefix+'.Review']);
 			var retained = isTrue(WS.state[prefix+'.RetainedReview']);
@@ -1193,14 +1194,15 @@ function createTimeoutDialog() {
 			case 'Running':
 			case 'PeriodClockEnd':
 				row.find('.PerClock').text(_timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
-							WS.state['ScoreBoard.Clock(Period).Time'] :
-							WS.state[prefix+'.PeriodClockEnd']));
+								WS.state['ScoreBoard.Clock(Period).Time'] :
+								WS.state[prefix+'.PeriodClockEnd'],
+							isTrue(WS.state[prefix+'.Direction'])));
 				break;
 			case 'Running':
 			case 'Duration':
 				row.find('.Duration').text(isTrue(WS.state[prefix+'.Running']) ?
 						'Running' :
-						_timeConversions.msToMinSec(WS.state[prefix+'.Duration']));
+						_timeConversions.msToMinSec(WS.state[prefix+'.Duration'], true));
 				break;
 			case 'Review':
 				row.find('.Retained button').toggleClass('Hide', !isTrue(v));
@@ -1240,7 +1242,7 @@ function createTimeDialog(clock) {
 			.appendTo(rowTable.find("tr:eq(0)>td").addClass("Title"));
 		var time = $("<a>").addClass("Time").appendTo(rowTable.find("tr:eq(0)>td"));
 		WS.Register(prefix + "." + e, function(k, v) {
-			time.text(_timeConversions.msToMinSec(v))
+			time.text(_timeConversions.msToMinSec(v, isTrue(WS.state[prefix + '.Direction'])))
 		});
 		$("<button>").text("-sec").button()
 			.click(function() { WS.Set(prefix + "." + e, -1000, "change");})

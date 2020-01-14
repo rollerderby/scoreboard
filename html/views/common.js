@@ -140,7 +140,8 @@ function toClockInitialNumber(k, v) {
 }
 
 function toTime(k, v) {
-	return _timeConversions.msToMinSecNoZero(v);
+	var isCountDown = isTrue(WS.state['ScoreBoard.Clock(' + k.Clock + ').Direction']);
+	return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
 
 function toJamScore(k, v) {
@@ -173,12 +174,8 @@ function clockRunner(k,v) {
 
 
 // Show Clocks
-WS.Register( [
-	"ScoreBoard.Clock(Period).Running",
-	"ScoreBoard.Clock(Jam).Running",
-	"ScoreBoard.Clock(Lineup).Running",
-	"ScoreBoard.Clock(Timeout).Running",
-	"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); } );
+WS.Register( 'ScoreBoard.Clock(*).Running', function(k, v) { clockRunner(k,v); } );
+WS.Register( 'ScoreBoard.Clock(*).Direction');
 
 WS.Register( 'ScoreBoard.Rulesets.CurrentRule(Period.Number)' );
 WS.Register( 'ScoreBoard.InJam' );
