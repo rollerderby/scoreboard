@@ -66,22 +66,11 @@ function createTeamsTab(tab) {
 		WS.Set(getPrefix() + ".Name", teamName.val());
 	});
 	var waitingOnUpload = "";
-	var logoSelect = $("<select>").append($("<option value=''>No Logo</option>"))
-		.appendTo(controlTable.find("td:eq(1)"));
-	logoSelect.change(function() {
-		WS.Set(getPrefix() + ".Logo", logoSelect.val() == "" ? "": "/images/teamlogo/" + logoSelect.val())
-	});
+	var logoSelect = mediaSelect(getPrefix() + '.Logo', 'images', 'teamlogo', 'Logo').appendTo(controlTable.find("td:eq(1)"));
 	WS.Register("ScoreBoard.Media.Format(images).Type(teamlogo).File(*).Name", function(k, v) {
-		var val = logoSelect.val();	// Record this before we potentially remove and re-add it.
-		if (v != null) {
-			if (waitingOnUpload == k.File) {
-				val = k.File;
-				waitingOnUpload = "";
-			}
-			logoSelect.children("[value='"+k.File+"']").remove();
-			var option = $("<option>").attr("name", v).attr("value", k.File).text(v);
-			_windowFunctions.appendAlphaSortedByAttr(logoSelect, option, "name", 1);
-			logoSelect.val(val);
+		if (v != null && waitingOnUpload == k.File) {
+			waitingOnUpload = '';
+			logoSelect.val(escape('/images/teamlogo/' + k.File));
 			logoSelect.change();
 		}
 	});
