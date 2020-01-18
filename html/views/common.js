@@ -147,7 +147,7 @@ function toJamScore(k, v) {
 	var prefix = "ScoreBoard.Team(" + getTeamId(k) + ").";
 	var jamScore = WS.state[prefix + "JamScore"];
 	var noInitial = isTrue(WS.state[prefix + "NoInitial"]);
-	return noInitial ? '_' : jamScore;
+	return (noInitial && !jamScore) ? '_' : jamScore;
 }
 
 function toSP(k, v) {
