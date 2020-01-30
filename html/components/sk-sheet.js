@@ -314,6 +314,7 @@ function prepareTripEditor() {
 						})))
 						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Before').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
+							tripEditor.dialog('close');
 						})))));
 	}
 }
