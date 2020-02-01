@@ -28,7 +28,8 @@ function initialize() {
 	WS.Register( [
 			'ScoreBoard.Team(*).Skater(*).Name',
 			'ScoreBoard.Team(*).Skater(*).Number',
-			'ScoreBoard.Team(*).Skater(*).Flags' ], function(k,v) {
+			'ScoreBoard.Team(*).Skater(*).Flags',
+			'ScoreBoard.Team(*).Skater(*).Role'], function(k,v) {
 				var me = '.RosterTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
 				var mb = '.PenaltyTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
 				if (v == null) {
@@ -38,18 +39,27 @@ function initialize() {
 				}
 				ensureSkaterExists(k.Skater, k.Team);
 
-				if(k.field == 'Number')	{ updateSkaterNumber(me,mb,v); }
-				if(k.field == 'Flags') {
+				if (k.field == 'Flags') {
 					$('.'+k.field, me).attr('data-flag', v);
 					$(mb).attr('data-flag', v);
-				} else if (v == "") {
-					c = $('.'+k.field, me).html('&nbsp;');
-					c = $('.'+k.field, mb).html('&nbsp;');
+				} else if (k.field == 'Role') {
+					// Hide skater row in penalties panel only
+					if (v == 'NotInGame') {
+						$(mb).addClass('NoShow');
+					} else {
+						$(mb).removeClass('NoShow');
+					}
+					updateSort(mb);
 				} else {
-					c = $('.'+k.field, me).text(v);
-					c = $('.'+k.field, mb).text(v);
+					// Name or Number, replace empty string with nbsp
+					$('.'+k.field, me).text(v == '' ? '\xa0' : v);
+					$('.'+k.field, mb).text(v == '' ? '\xa0' : v);
+					if (k.field == 'Number') {
+						updateSort(me);
+						updateSort(mb);
+					}
 				}
-			});
+	});
 
 	WS.Register( 'ScoreBoard.Team(*).Skater(*).Penalty(*).Code', function(k,v) {
 		if (k.Penalty == 0) {
@@ -178,12 +188,13 @@ function ensureSkaterExists(skaterId, team) {
 	}
 }
 
-function updateSkaterNumber(me,mb,v) {
-	sv = v;
-	if(v == '' || v == '-' || v == null) { sv = 'ZZZB'; v = '-'; }
-	$('.Number',me).parent().attr('data-sort', sv);
-	$('.Number',mb).parent().attr('data-sort', sv);
-	$(me).parent().sortDivs(); $(mb).parent().sortDivs();
+function updateSort(sel) {
+	var skaterRow = $(sel);
+	var n = $('.Number', sel).text();
+	var sortValue = (skaterRow.hasClass('NoShow') ? '1' : '0')
+			+ (n == '' || n == '-' || n == null ? 'ZZZZZZ' : n);
+	skaterRow.attr('data-sort', sortValue);
+	skaterRow.parent().sortDivs();
 }
 
 function createPenalty(mb, pnum, v) {
