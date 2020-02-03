@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam.PreparedTeamSkater;
@@ -84,16 +85,24 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             Timeout t = scoreBoard.getCurrentTimeout(); 
             return t.isRunning() && this == t.getOwner() && t.isReview();
         }
-        if (prop == Value.TRIP_SCORE && flag != Flag.COPY && scoreBoard.isInJam() && (Integer)value > 0) {
-            tripScoreTimerTask.cancel();
-            tripScoreTimer.purge();
-            tripScoreTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    execute(Command.ADD_TRIP);
-                }
-            };
-            tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+        if (prop == Value.TRIP_SCORE && flag != Flag.COPY && (Integer)value > 0) {
+            // If points arrive during an initial trip and we are not in overtime, assign the points to the first scoring trip instead.
+            if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
+                execute(Command.ADD_TRIP);
+                getCurrentTrip().set(ScoringTrip.Value.POINTS_WITHOUT_TRIP,true);
+            }
+            
+            if (scoreBoard.isInJam()) {
+                tripScoreTimerTask.cancel();
+                tripScoreTimer.purge();
+                tripScoreTimerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        execute(Command.ADD_TRIP);
+                    }
+                };
+                tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+            }
         }
         if (prop == Value.NO_INITIAL && flag != Flag.COPY) {
             if (!(Boolean)value && (Boolean)last) {
@@ -572,13 +581,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     @Override
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
-
+    
     @Override
     public Team getOtherTeam() {
         String otherId = getId().equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
         return getScoreBoard().getTeam(otherId);
     }
-    
+            
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
     
     private Timer tripScoreTimer = new Timer();
