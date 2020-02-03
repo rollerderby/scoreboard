@@ -190,9 +190,22 @@ function ensureSkaterExists(skaterId, team) {
 
 function updateSort(sel) {
 	var skaterRow = $(sel);
+	var sortValue;
+	// First, sort invisible rows to the end, so they don't interfere with alternating row color
+	if (skaterRow.hasClass('NoShow')) {
+		sortValue = '1';
+	} else {
+		sortValue = '0';
+	}
+
+	// Second, sort by number with missing numbers at the end
 	var n = $('.Number', sel).text();
-	var sortValue = (skaterRow.hasClass('NoShow') ? '1' : '0')
-			+ (n == '' || n == '-' || n == null ? 'ZZZZZZ' : n);
+	if (n == '' || n == '-' || n == null) {
+		sortValue += 'ZZZZZZ';
+	} else {
+		sortValue += n;
+	}
+
 	skaterRow.attr('data-sort', sortValue);
 	skaterRow.parent().sortDivs();
 }
