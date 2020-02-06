@@ -85,6 +85,9 @@ _crgUtils = {
 				dialog.dialog("destroy");
 			}
 		});
+		// If we're in period 2, the dialog can end up off screen once all the
+		// SK rows finish loading. This ensures the dialog stays up top.
+		dialog.dialog("widget").css({"top": "5em", "position": "fixed"});
 	},
 
 	createRowTable: function(n, r) {
