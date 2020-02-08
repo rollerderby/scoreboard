@@ -20,6 +20,7 @@ function jammer(k, v) {
 	};
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
 	$(".Team" + id).toggleClass("HasJammerName", (jn != ""));
+	$(".Team" + id).toggleClass("IsStarPass", (starPass != false));
 	return jn
 }
 
@@ -132,7 +133,7 @@ function toClockInitialNumber(k, v) {
 			if (name != null && number != null)
 				ret = name.substring(0, 1) + number;
 
-			if (name == 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1) 
+			if (name == 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1)
 				ret = 'Game';
 		}
 	});
