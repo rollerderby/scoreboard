@@ -98,6 +98,7 @@ body.box_flat.bright .Box {
 .Red {
 	background: -moz-linear-gradient(top, #FF4040, #A04040 100%);
 	background: -webkit-gradient(linear, 0 0, 0 100%, from(#FF4040), color-stop(100%, #A04040));
+	color: #FFFFFF;
 }
 
 body.box_flat .Box.Red {
