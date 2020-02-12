@@ -10,14 +10,13 @@ import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class TimeoutImpl extends ScoreBoardEventProviderImpl implements Timeout {
     public TimeoutImpl(Period p, String id) {
-        super(p, Value.ID, id, Period.Child.TIMEOUT, Timeout.class, Value.class, Command.class);
+        super(p, id, Period.Child.TIMEOUT, Timeout.class, Value.class, Command.class);
         initReferences();
         if (id == "noTimeout") {
             set(Value.RUNNING, false);
@@ -29,7 +28,7 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl implements Timeout 
         }
     }
     public TimeoutImpl(Jam precedingJam) {
-        super(precedingJam.getParent(), Value.ID, UUID.randomUUID().toString(),
+        super(precedingJam.getParent(), UUID.randomUUID().toString(),
                 Period.Child.TIMEOUT, Timeout.class, Value.class, Command.class);
         initReferences();
         set(Value.PRECEDING_JAM, precedingJam);

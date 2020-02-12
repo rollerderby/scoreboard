@@ -81,16 +81,19 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public ValueWithId get(AddRemoveProperty prop, String id);
     public ValueWithId get(NumberedProperty prop, Integer num);
     public ValueWithId getOrCreate(AddRemoveProperty prop, String id);
+    public ValueWithId getOrCreate(AddRemoveProperty prop, String id, Flag flag);
     public ValueWithId getOrCreate(NumberedProperty prop, Integer num);
     public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
     public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
     public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
     //returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
+    public boolean add(AddRemoveProperty prop, ValueWithId item, Flag flag);
     //returns true, if a value was removed
     public boolean remove(AddRemoveProperty prop, String id);
-    //returns true, if a value was removed
+    public boolean remove(AddRemoveProperty prop, String id, Flag flag);
     public boolean remove(AddRemoveProperty prop, ValueWithId item);
+    public boolean remove(AddRemoveProperty prop, ValueWithId item, Flag flag);
     public void removeAll(AddRemoveProperty prop);
     /**
      * Must call an appropriate constructor for all children that are themselves a
@@ -109,6 +112,22 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public ScoreBoard getScoreBoard();
 
     public ScoreBoardEventProvider getElement(Class<?> type, String id);
+
+    public enum IValue implements PermanentProperty {
+        ID(String.class, ""),
+        READONLY(Boolean.class, false),
+        NUMBER(Integer.class, 0),
+        PREVIOUS(OrderedScoreBoardEventProvider.class, null),
+        NEXT(OrderedScoreBoardEventProvider.class, null);
+
+        private IValue(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+        private final Class<?> type;
+        private final Object defaultValue;
+        @Override
+        public Class<?> getType() { return type; }
+        @Override
+        public Object getDefaultValue() { return defaultValue; }
+    }
 
     public enum Flag {
         CHANGE,

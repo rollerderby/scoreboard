@@ -350,11 +350,11 @@ function prepareSkaterSelector() {
 
 	selectorDialog.append(selects['1']).append(selects['2']);
 	
-	WS.Register(['ScoreBoard.Team(*).Skater(*).Number', 'ScoreBoard.Team(*).Skater(*).Role'], function(k, v) {
+	WS.Register(['ScoreBoard.Team(*).Skater(*).RosterNumber', 'ScoreBoard.Team(*).Skater(*).Role'], function(k, v) {
 		selects[k.Team].children('[value="'+k.Skater+'"]').remove();
 		var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
 		if (v != null && WS.state[prefix + 'Role'] != 'NotInGame') {
-			var number = WS.state[prefix + 'Number'];
+			var number = WS.state[prefix + 'RosterNumber'];
 			var option = $('<option>').attr('number', number).val(k.Skater).text(number);
 			_windowFunctions.appendAlphaSortedByAttr(selects[k.Team], option, 'number', 1);
 		}

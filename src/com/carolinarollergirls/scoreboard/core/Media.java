@@ -72,7 +72,6 @@ public interface Media extends ScoreBoardEventProvider {
         public String getSrc();
 
         public enum Value implements PermanentProperty {
-            ID(String.class, ""),
             SRC(String.class, ""),
             NAME(String.class, "");
 

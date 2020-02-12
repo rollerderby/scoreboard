@@ -26,7 +26,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public ClockImpl(ScoreBoard sb, String i) {
-        super (sb, Value.ID, i, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
+        super (sb, i, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
         //initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
             setCopy(Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD_NUMBER, true);

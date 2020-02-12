@@ -7,7 +7,6 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -17,11 +16,11 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip {
     public BoxTripImpl(Team t, String id) {
-        super(t, Value.ID, id, Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class, Command.class);
+        super(t, id, Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class, Command.class);
         initReferences();
     }
     public BoxTripImpl(Fielding f) {
-        super(f.getTeamJam().getTeam(), Value.ID, UUID.randomUUID().toString(), Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class, Command.class);
+        super(f.getTeamJam().getTeam(), UUID.randomUUID().toString(), Team.Child.BOX_TRIP, BoxTrip.class, Value.class, Child.class, Command.class);
         set(Value.WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(Value.START_AFTER_S_P, f.getTeamJam().isStarPass() && f.isCurrent());
         set(Value.START_BETWEEN_JAMS, !scoreBoard.isInJam() && !getTeam().hasFieldingAdvancePending() && f.isCurrent());

@@ -18,10 +18,10 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 
 public class PositionImpl extends ScoreBoardEventProviderImpl implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
-        super(t, Value.ID, t.getId() + "_" + fp.toString(), Team.Child.POSITION, Position.class, Value.class, Command.class);
+        super(t, t.getId() + "_" + fp.toString(), Team.Child.POSITION, Position.class, Value.class, Command.class);
         floorPosition = fp;
         setCopy(Value.NAME, this, Value.SKATER, Skater.Value.NAME, true);
-        setCopy(Value.NUMBER, this, Value.SKATER, Skater.Value.NUMBER, true);
+        setCopy(Value.ROSTER_NUMBER, this, Value.SKATER, Skater.Value.ROSTER_NUMBER, true);
         setCopy(Value.FLAGS, this, Value.SKATER, Skater.Value.FLAGS, true);
         setCopy(Value.SKATER, this, Value.CURRENT_FIELDING, Fielding.Value.SKATER, false);
         setCopy(Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false);

@@ -30,14 +30,13 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i) {
-        super(t, Value.ID, (i == null ? UUID.randomUUID().toString() : i),
+        super(t, (i == null ? UUID.randomUUID().toString() : i),
                 Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
         team = t;
         initialize();
     }
     public SkaterImpl(Team t, PreparedTeamSkater pts) {
-        super(t, Value.ID, pts.getId(),
-                Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
+        super(t, pts.getId(), Team.Child.SKATER, Skater.class, Value.class, Child.class, NChild.class);
         team = t;
         initialize();
         setName((String)pts.get(PreparedTeamSkater.Value.NAME));
@@ -150,9 +149,9 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public void setName(String n) { set(Value.NAME, n); }
 
     @Override
-    public String getNumber() { return (String)get(Value.NUMBER); }
+    public String getNumber() { return (String)get(Value.ROSTER_NUMBER); }
     @Override
-    public void setNumber(String n) { set(Value.NUMBER, n); }
+    public void setNumber(String n) { set(Value.ROSTER_NUMBER, n); }
 
     @Override
     public Fielding getFielding(TeamJam teamJam) {

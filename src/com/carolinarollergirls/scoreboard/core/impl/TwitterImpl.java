@@ -36,7 +36,7 @@ import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
 public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter {
     public TwitterImpl(ScoreBoard sb) {
-        super(sb, null, "", ScoreBoard.Child.TWITTER, Twitter.class, Value.class, Child.class, Command.class);
+        super(sb, "", ScoreBoard.Child.TWITTER, Twitter.class, Value.class, Child.class, Command.class);
 
         formatSpecifierViewer = new FormatSpecifierViewer(sb);
         int i = 0;
@@ -208,7 +208,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
 
     public class ConditionalTweetImpl extends ScoreBoardEventProviderImpl implements ConditionalTweet {
         public ConditionalTweetImpl(Twitter t, String id) {
-            super(t, Value.ID, id, Twitter.Child.CONDITIONAL_TWEET, ConditionalTweet.class, Value.class);
+            super(t, id, Twitter.Child.CONDITIONAL_TWEET, ConditionalTweet.class, Value.class);
         }
 
         @Override
@@ -238,7 +238,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
 
     public class FormatSpecifierImpl extends ScoreBoardEventProviderImpl implements FormatSpecifier {
         public FormatSpecifierImpl(Twitter t, String id) {
-            super(t, Value.ID, id, Twitter.Child.FORMAT_SPECIFIER, FormatSpecifier.class, Value.class);
+            super(t, id, Twitter.Child.FORMAT_SPECIFIER, FormatSpecifier.class, Value.class);
         }
     }
 

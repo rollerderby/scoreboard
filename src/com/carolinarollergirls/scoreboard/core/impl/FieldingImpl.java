@@ -26,7 +26,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         this.teamJam = teamJam;
         set(Value.POSITION, position);
         addWriteProtection(Value.POSITION);
-        setRecalculated(Value.SKATER_NUMBER).addIndirectSource(this, Value.SKATER, Skater.Value.NUMBER).addSource(this, Value.NOT_FIELDED);
+        setRecalculated(Value.SKATER_NUMBER).addIndirectSource(this, Value.SKATER, Skater.Value.ROSTER_NUMBER).addSource(this, Value.NOT_FIELDED);
         setInverseReference(Child.BOX_TRIP, BoxTrip.Child.FIELDING);
         setInverseReference(Value.SKATER, Skater.Child.FIELDING);
         setRecalculated(Value.NOT_FIELDED).addSource(this, Value.SKATER);

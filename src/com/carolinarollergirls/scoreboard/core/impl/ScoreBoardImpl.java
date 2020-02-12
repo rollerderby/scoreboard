@@ -12,7 +12,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -41,7 +40,7 @@ import com.carolinarollergirls.scoreboard.core.Twitter;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements ScoreBoard {
     public ScoreBoardImpl() {
-        super(null, null, "", null, ScoreBoard.class, Value.class, Child.class, NChild.class, Period.NChild.class, Command.class);
+        super(null, "", null, ScoreBoard.class, Value.class, Child.class, NChild.class, Period.NChild.class, Command.class);
         setupScoreBoard();
     }
 

@@ -8,11 +8,11 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl
         implements TestScoreBoardEventProvider {
     public TestScoreBoardEventProviderImpl() {
-        super(null, Value.ID, "", null, TestScoreBoardEventProvider.class, Value.class, Child.class, NChild.class, Command.class);
+        super(null, "", null, TestScoreBoardEventProvider.class, Value.class, Child.class, NChild.class, Command.class);
         setupReferences();
     }
     public TestScoreBoardEventProviderImpl(TestScoreBoardEventProvider parent, String id, AddRemoveProperty type) {
-        super(parent, Value.ID, id, type, TestScoreBoardEventProvider.class, Value.class, Child.class, NChild.class, Command.class);
+        super(parent, id, type, TestScoreBoardEventProvider.class, Value.class, Child.class, NChild.class, Command.class);
         setupReferences();
     }
 

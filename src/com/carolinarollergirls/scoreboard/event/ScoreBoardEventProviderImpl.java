@@ -23,7 +23,6 @@ import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider.IValue;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
@@ -38,7 +37,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProvider,ScoreBoardListener {
     @SafeVarargs
     @SuppressWarnings("varargs")  // @SafeVarargs isn't working for some reason.
-    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, PermanentProperty idProp, String id,
+    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id,
                                           AddRemoveProperty type, Class<? extends ScoreBoardEventProvider> ownClass, Class<? extends Property>... props) {
         this.parent = parent;
         if (parent != null) {
@@ -46,7 +45,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         } else if (this instanceof ScoreBoard) {
             scoreBoard = (ScoreBoard)this;
         }
-        idProperty = idProp;
         ownType = type;
         if (type == null) {
             providerName = "ScoreBoard";
@@ -55,25 +53,28 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
         this.providerClass = ownClass;
         if (elements.get(ownClass) == null) { elements.put(ownClass, new HashMap<String, ScoreBoardEventProvider>()); }
-        properties = Arrays.asList(props);
+        properties = Arrays.asList(Arrays.copyOf(props, props.length+1));
+        properties.set(props.length, IValue.class);
         for (Class<? extends Property> propertySet : properties) {
             for (Property prop : propertySet.getEnumConstants()) {
                 if (prop instanceof AddRemoveProperty) {
                     children.put((AddRemoveProperty)prop, new HashMap<String, ValueWithId>());
+                } else if (prop instanceof PermanentProperty) {
+                    Object def = ((PermanentProperty)prop).getDefaultValue();
+                    if (def != null && !prop.getType().isAssignableFrom(def.getClass())) {
+                        throw new IllegalStateException("Property " + prop + " with class " + prop.getType().getName() +
+                                                        " cannot be assigned to by its default value of type " + def.getClass().getName());
+                    }
                 }
             }
         }
-        set(idProperty, id);
-        addWriteProtection(idProp);
+        set(IValue.ID, id, Flag.INTERNAL);
+        addWriteProtection(IValue.ID);
     }
 
     @Override
     public String getId() {
-        if (idProperty == null) {
-            return "";
-        } else {
-            return String.valueOf(get(idProperty));
-        }
+        return String.valueOf(get(IValue.ID));
     }
     @Override
     public String getProviderName() { return providerName; }
@@ -184,10 +185,20 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         writeProtectionOverride.put(prop, override);
     }
     public boolean isWritable(Property prop, Flag flag) {
+        if ((Boolean)get(IValue.READONLY)) { return false; }
         if (!writeProtectionOverride.containsKey(prop)) { return true; }
         if (writeProtectionOverride.get(prop) == null) { return false; }
         if (writeProtectionOverride.get(prop) == flag) { return true; }
         return false;
+    }
+    public boolean isWritable(AddRemoveProperty prop, String id, Flag flag) {
+        if (ScoreBoardEventProvider.class.isAssignableFrom(prop.getType())) {
+            ScoreBoardEventProvider oldItem = (ScoreBoardEventProvider) get(prop, id);
+            if (oldItem != null && (Boolean)oldItem.get(IValue.READONLY)) {
+                return false;
+            }
+        }
+        return isWritable(prop, flag);
     }
 
     /**
@@ -280,8 +291,8 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             }
             if (type != String.class) {
                 Logger.printMessage("Conversion to " + type.getSimpleName()
-                                               + " used by " + PropertyConversion.toFrontend(prop)
-                                               + " missing in ScoreBoardEventProvider.valueFromString()");
+                                    + " used by " + PropertyConversion.toFrontend(prop)
+                                    + " missing in ScoreBoardEventProvider.valueFromString()");
                 return prop.getDefaultValue();
             }
             return sValue;
@@ -304,9 +315,15 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             for (Class<? extends Property> pc : properties) {
                 if (pc.isAssignableFrom(prop.getClass())) { foreign = false; break; }
             }
-            if (foreign) { return false; }
-            if (value != null && !prop.getType().isAssignableFrom(value.getClass())) { return false; }
-            if (prop == idProperty && flag == Flag.FROM_AUTOSAVE) {
+            if (foreign) { 
+                throw new IllegalArgumentException(prop.getClass().getName() +
+                        " is not a property of " + this.getClass().getName());
+            }
+            if (value != null && !prop.getType().isAssignableFrom(value.getClass())) { 
+                throw new IllegalArgumentException("Property " + prop + " with class " + prop.getType().getName() +
+                        " cannot be assigned to by " +  value.getClass().getName());
+            }
+            if (prop == IValue.ID && flag == Flag.FROM_AUTOSAVE) {
                 // register ID as an alias so other elements from autosave are properly redirected
                 elements.get(providerClass).put((String) value, this);
                 return false;
@@ -337,7 +354,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) { return value; }
     protected void _valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == idProperty) {
+        if (prop == IValue.ID) {
             elements.get(providerClass).put((String)value, this);
         }
         scoreBoardChange(new ScoreBoardEvent(this, prop, value, last));
@@ -362,12 +379,14 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     @Override
     public ValueWithId get(NumberedProperty prop, Integer num) { return get(prop, String.valueOf(num)); }
     @Override
-    public ValueWithId getOrCreate(AddRemoveProperty prop, String id) {
+    public ValueWithId getOrCreate(AddRemoveProperty prop, String id) { return getOrCreate(prop, id, null); }
+    @Override
+    public ValueWithId getOrCreate(AddRemoveProperty prop, String id, Flag flag) {
         synchronized (coreLock) {
             ValueWithId result = get(prop, id);
             if (result == null) {
                 result = create(prop, id);
-                add(prop, result);
+                add(prop, result, flag);
             }
             return result;
         }
@@ -393,10 +412,15 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
     }
     @Override
-    public boolean add(AddRemoveProperty prop, ValueWithId item) {
+    public boolean add(AddRemoveProperty prop, ValueWithId item) { return add(prop, item, null); }
+    @Override
+    public boolean add(AddRemoveProperty prop, ValueWithId item, Flag flag) {
         synchronized (coreLock) {
-            if (item == null || !isWritable(prop, null)) { return false; }
-            if (item != null && !prop.getType().isAssignableFrom(item.getClass())) { return false; }
+            if (item == null || !isWritable(prop, item.getId(), flag)) { return false; }
+            if (!prop.getType().isAssignableFrom(item.getClass())) { 
+                throw new IllegalArgumentException("Property " + prop + " with class " + prop.getType().getName() +
+                    " cannot be assigned to by " +  item.getClass().getName());
+            }
             Map<String, ValueWithId> map = children.get(prop);
             String id = item.getId();
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
@@ -424,11 +448,15 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     @Override
     public ValueWithId create(AddRemoveProperty prop, String id) { return null; }
     @Override
-    public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id)); }
+    public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id), null); }
     @Override
-    public boolean remove(AddRemoveProperty prop, ValueWithId item) {
+    public boolean remove(AddRemoveProperty prop, String id, Flag flag) { return remove(prop, get(prop, id), flag); }
+    @Override
+    public boolean remove(AddRemoveProperty prop, ValueWithId item) { return remove(prop, item, null); }
+    @Override
+    public boolean remove(AddRemoveProperty prop, ValueWithId item, Flag flag) {
         synchronized (coreLock) {
-            if (item == null || !isWritable(prop, null)) { return false; }
+            if (item == null || !isWritable(prop, flag)) { return false; }
             String id = item.getId();
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider)item).getParent() == this) {
                 id = ((ScoreBoardEventProvider)item).getProviderId();
@@ -501,7 +529,6 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     protected AddRemoveProperty ownType;
     protected String providerName;
     protected Class<? extends ScoreBoardEventProvider> providerClass;
-    protected PermanentProperty idProperty;
 
     protected List<Class<? extends Property>> properties;
 

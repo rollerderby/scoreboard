@@ -28,10 +28,10 @@ public class InverseReferenceUpdateListener extends ConditionalScoreBoardListene
             }
         } else if (remoteProperty instanceof AddRemoveProperty) {
             if (lastRemote != null) {
-                lastRemote.remove((AddRemoveProperty)remoteProperty, e.getProvider());
+                lastRemote.remove((AddRemoveProperty)remoteProperty, e.getProvider(), Flag.INVERSE_REFERENCE);
             }
             if (newRemote != null) {
-                newRemote.add((AddRemoveProperty)remoteProperty, e.getProvider());
+                newRemote.add((AddRemoveProperty)remoteProperty, e.getProvider(), Flag.INVERSE_REFERENCE);
             }
         }
     }

@@ -41,7 +41,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
-        super(sb, Value.ID, i, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class, Command.class);
+        super(sb, i, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class, Command.class);
         for (FloorPosition fp : FloorPosition.values()) {
             add(Child.POSITION, new PositionImpl(this, fp));
         }
