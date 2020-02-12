@@ -108,8 +108,8 @@ function prepareSkSheetTable(element, teamId, mode) {
 				}
 				break;
 
-			case 'Calloff': case 'Injury': case 'NoInitial': case 'StarPass':
-			case 'ScoringTrip(1).AfterSP': case 'Fielding(Pivot).SkaterNumber':
+			case 'Calloff': case 'Injury': case 'StarPass':
+			case 'Fielding(Pivot).SkaterNumber':
 				var row = jamRow;
 				var otherRow = spRow;
 				if (isTrue(WS.state[prefix+'StarPass'])) {
@@ -118,40 +118,47 @@ function prepareSkSheetTable(element, teamId, mode) {
 				}
 				row.find('.Calloff').text(isTrue(WS.state[prefix+'Calloff'])?'X':'');
 				row.find('.Injury').text(isTrue(WS.state[prefix+'Injury'])?'X':'');
-				row.find('.NoInitial').text(isTrue(WS.state[prefix+'NoInitial'])?'X':'');
 				otherRow.find('.Calloff').text('');
 				otherRow.find('.Injury').text('');
-				otherRow.find('.NoInitial').text(isTrue(WS.state[prefix+'ScoringTrip(1).AfterSP'])?'X':'');
 				spRow.find('.JamNumber').text(isTrue(WS.state[prefix+'StarPass'])?'SP':'SP*');
 				spRow.find('.Jammer').text(isTrue(WS.state[prefix+'StarPass']) ? WS.state[prefix+'Fielding(Pivot).SkaterNumber'] : '');
 				break;
 
-			 case 'ScoringTrip(1).Score': case 'ScoringTrip(2).Score':
-			 case 'ScoringTrip(2).AfterSP': case 'ScoringTrip(2).Current':
+			case 'ScoringTrip(1).AfterSP': case 'ScoringTrip(1).Score': case 'ScoringTrip(2).Score':
+			case 'ScoringTrip(2).AfterSP': case 'ScoringTrip(2).Current': case 'NoInitial':
 				var trip1Score = WS.state[prefix+'ScoringTrip(1).Score'];
+				var trip1AfterSP = isTrue(WS.state[prefix+'ScoringTrip(1).AfterSP']);
 				var trip2Score = WS.state[prefix+'ScoringTrip(2).Score'];
 				var trip2Current = isTrue(WS.state[prefix+'ScoringTrip(2).Current']);
+				var trip2AfterSP = isTrue(WS.state[prefix+'ScoringTrip(2).AfterSP']);
+				var noInitial = isTrue(WS.state[prefix+'NoInitial']);
 				var scoreText = '';
+				var otherScoreText = '';
 				if (trip2Score == 0 && trip2Current) {
 					trip2Score = '.';
 				}
 				if (trip1Score > 0) {
 					if (trip2Score == null) {
 						scoreText = trip1Score + ' + NI';
-					} else {
+					} else if (trip1AfterSP == trip2AfterSP) {
 						scoreText = trip1Score + ' + ' + trip2Score;
+					} else {
+						scoreText = trip2Score;
+						otherScoreText = trip1Score + ' + SP';
 					}
 				} else if (trip2Score != null) {
 					scoreText = trip2Score; 
 				}
 				var row = jamRow;
 				var otherRow = spRow;
-				if (isTrue(WS.state[prefix+'ScoringTrip(2).AfterSP'])) {
+				if (trip2AfterSP || (trip2Score == null && trip1AfterSP)) {
 					row = spRow;
 					otherRow = jamRow;
 				}
 				row.find('.Trip2').text(scoreText);
-				otherRow.find('.Trip2').text('');
+				otherRow.find('.Trip2').text(otherScoreText);
+				jamRow.find('.NoInitial').text(trip1AfterSP || noInitial?'X':'');
+				spRow.find('.NoInitial').text(trip1AfterSP && noInitial?'X':'');
 				break;
 
 			 default:
