@@ -11,6 +11,7 @@ public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip
         SCORE(Integer.class, 0),
         AFTER_S_P(Boolean.class, false),
         CURRENT(Boolean.class, false),
+        POINTS_WITHOUT_TRIP(Boolean.class, false),
         DURATION(Long.class, 0L),
         JAM_CLOCK_START(Long.class, 0L),
         JAM_CLOCK_END(Long.class, 0L);

@@ -71,7 +71,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         addWriteProtectionOverride(Value.OFFICIAL_REVIEWS, Flag.INTERNAL);
         addWriteProtectionOverride(Value.LAST_REVIEW, Flag.INTERNAL);
         setCopy(Value.RETAINED_OFFICIAL_REVIEW, this, Value.LAST_REVIEW, Timeout.Value.RETAINED_REVIEW, false);
-
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET, rulesetChangeListener));
     }
 
