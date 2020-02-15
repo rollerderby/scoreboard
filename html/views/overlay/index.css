@@ -156,10 +156,10 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 
 .TeamBox .Team1.HasJammerName .Team	{ border-radius: 8px 0 0 0; }
 .TeamBox .Team1.IsStarPass .Team { border-radius: 8px 0 0 0; }
-.TeamBox .Team1.HasJammerName .Starpass	{ border-radius: 0 0.1px 0 0; }
+.TeamBox .Team1.HasJammerName .Starpass	{ border-radius: 0;border-right: 2px solid #666}
 .TeamBox .Team2.HasJammerName .Team	{ border-radius: 0 0 0 8px; }
 .TeamBox .Team2.IsStarPass .Team	{ border-radius: 0 0 0 8px; }
-.TeamBox .Team2.HasJammerName .Starpass	{ border-radius: 0 0.1px 0 0; }
+.TeamBox .Team2.HasJammerName .Starpass	{ border-radius: 0; border-right: 2px solid #666}
 
 .Team1 .Starpass{ border-radius: 0 8px 0px 0; }
 .Team2 .Starpass{ border-radius: 0 0px 8px 0; }
