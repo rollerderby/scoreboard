@@ -42,5 +42,6 @@ body:not(.AllowSelect) .SK {
 #TripEditor .buttons td { text-align: center; }
 #TripEditor .ui-button { font-size: 75%; }
 #TripEditor .ui-button.checked { background: #3f3; }
+#TripEditor .Hide { display: none; }
 
 #skaterSelector .Hide { display: none; }

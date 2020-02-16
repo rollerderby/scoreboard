@@ -264,11 +264,16 @@ var tripEditor;
 
 function setupTripEditor(p, j, teamId, t) {
 	var prefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+t+').';
+	var initialPrefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip(1).';
 
 	tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t==1?'Initial':t));
-	var scoreField = tripEditor.find('#score').val(WS.state[prefix+'Score']);
-	var afterSPField = tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
+	tripEditor.find('#score').val(WS.state[prefix+'Score']);
+	tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
+	tripEditor.find("#initialTripWarning").toggleClass("Hide", !(t == 2 && WS.state[initialPrefix+'Score'] > 0));
+	tripEditor.find('#initialScore').text(WS.state[initialPrefix+'Score']);
+
 	tripEditor.data('prefix', prefix);
+	tripEditor.data('initialPrefix', initialPrefix);
 	tripEditor.dialog('open');
 }
 
@@ -315,7 +320,18 @@ function prepareTripEditor() {
 						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Before').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
 							tripEditor.dialog('close');
-						})))));
+						}))))
+			.append($('<tr id="initialTripWarning">').append($('<td colspan="3">')
+				.append('<hr>')
+				.append('There is an initial trip with a score of ')
+				.append('<span id="initialScore">')
+				.append('.<br/> If you meant to press Trip +1 when the initial trip was completed you can ')
+				.append($('<button>').attr('id','insert_initial').text('Insert Before Trip 1').button().click(function() {
+					WS.Set(tripEditor.data('initialPrefix')+'InsertBefore', true);
+					tripEditor.dialog('close');
+				}))
+				.append('to correct it.')))
+		);
 	}
 }
 
