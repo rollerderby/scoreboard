@@ -45,20 +45,22 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 .Box 			{ float: left; margin: 0; padding: 0; position: relative; display: block; }
 
 /* Team Boxes */
-.Team .Name 		{ width: 64%; padding-left: 1%;
-                  border-left: 2px solid #666;  }
-.Team .Score		{ width: 18%; text-align: right; padding-right: .1em ; font-size: 90%; }
-.Team .Mini		{ width: 8%; font-size: 45%; line-height: 99%; padding-top: 2px; }
+.Teambox .Indicator		{ width: 4%; height: 100%; font-size: 45%;  float: left; text-align: center;}
+.Teambox .Indicator .Lead		{ opacity: 0; height: 100%; }
+.Teambox .Indicator .HasLead	{ opacity: 1; }
+.TeamBox .IsStarPass .Lead{ display: none; }
 
-.Team .Mini .LeadJammer,
+.Team .Name { width: 67%; padding-left: 2%;  border-left: 2px solid #666;  }
+.Team .Score { width: 18%; text-align: right; padding-right: .1em ; font-size: 90%; }
+.Team .Mini	{ width: 8%; font-size: 45%; line-height: 99%; padding-top: 12px; }
 .Team .Mini .JamScore	{ width: 100%; text-align: center; }
 
 .Team .Lead		{ opacity: .2; }
 .Team .HasLead		{ opacity: 1; color: red; }
 
-.Team .DotTimeouts	{ width: 3%; }
+.Team .DotTimeouts	{ width: 3%; padding-top: 2px}
 
-.Dot 			{ width: .3vw; height: .3vw; margin: .1vw 0 0 0; }
+.Dot 			{ width: .15em; height: .15em; margin: .05em 0 0 0; }
 .Dot, .Dot.Active 	{ border-radius: 100%; }
 
 .Dot 			{ background: #333; }
@@ -131,7 +133,7 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 .TeamBox .Team				{ float: left; -webkit-transition: border-radius 1s; }
 .TeamBox .JammerBox			{ float: left; -webkit-transition: margin-left 2s; }
 
-.TeamBox .Team				    { width: 50%; }
+.TeamBox .Team				    { width: 52%; }
 
 .JammerNameBox		{ width: 40%}
 
@@ -142,24 +144,22 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 .TeamBox .JammerBox .JammerName,
 .TeamBox .Team .Name			{ text-align: left; overflow: hidden; font-size: 80%; }
 
-.TeamBox .Team .Indicator		{ width: .5em; height: 100%; }
+.TeamBox .Team .Indicator		{ width: .5em; height: 100%;}
 .TeamBox .JammerBox .JammerName		{ font-size: 50%; margin-left: 1vw; height: 100%; }
-.Starpass { font-size: 50%; text-align: center; width: 2.2vw; float: left;}
 .JammerNameBox .StarPass { background: #333; color: white;}
 .TeamBox .Team      { border-right: 2px solid #333; }
 
-.TeamBox .Team1	.Team			{ border-radius: 8px 8px 0 0; }
-.TeamBox .Team2	.Team			{ border-radius: 0 0 8px 8px; }
+.TeamBox .Team1	.Team			{ border-radius: 0 8px 0 0; }
+.TeamBox .Team2	.Team			{ border-radius: 0 0 8px 0; }
+
+.TeamBox .Team1	.Indicator			{ border-radius: 8px 0 0 0; }
+.TeamBox .Team2	.Indicator			{ border-radius: 0 0 0 8px; }
 
 .TeamBox .Team1 .JammerBox		{ border-radius: 0 8px 8px 0; }
 .TeamBox .Team2 .JammerBox		{ border-radius: 0 8px 8px 0; }
 
-.TeamBox .Team1.HasJammerName .Team	{ border-radius: 8px 0 0 0; }
-.TeamBox .Team1.IsStarPass .Team { border-radius: 8px 0 0 0; }
-.TeamBox .Team1.HasJammerName .Starpass	{ border-radius: 0;border-right: 2px solid #666}
-.TeamBox .Team2.HasJammerName .Team	{ border-radius: 0 0 0 8px; }
-.TeamBox .Team2.IsStarPass .Team	{ border-radius: 0 0 0 8px; }
-.TeamBox .Team2.HasJammerName .Starpass	{ border-radius: 0; border-right: 2px solid #666}
+.TeamBox .Team1.HasJammerName .Team	{ border-radius: 0; }
+.TeamBox .Team2.HasJammerName .Team	{ border-radius: 0 ; }
 
 .Team1 .Starpass{ border-radius: 0 8px 0px 0; }
 .Team2 .Starpass{ border-radius: 0 0px 8px 0; }

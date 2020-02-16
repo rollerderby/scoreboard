@@ -9,7 +9,7 @@ function jammer(k, v) {
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
 	if (jammerName == null || jammerName == "") {
-		jammerName = leadJammer ? "Lead" : "";
+		jammerName = leadJammer ? "" : "";
 	if (pivotName == null)
 		pivotName = "";
 	}
@@ -62,7 +62,7 @@ function smallDescriptionUpdate(k, v) {
 	var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
 	var ret = '';
 
-	console.log(lc,tc,to,or,lcn,tcn);
+	// console.log(lc,tc,to,or,lcn,tcn);
 
 	$.each(["1", "2"], function (idx, id) {
 		tto = WS.state["ScoreBoard.Team(" + id + ").Timeouts"];
