@@ -7,6 +7,7 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> implements Penalty {
@@ -59,6 +60,13 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
                 }
             }
             moveToNumber(newPos);
+            
+            if (newPos == scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) {
+                Penalty fo = (Penalty) parent.get(Skater.NChild.PENALTY, Skater.FO_EXP_ID);
+                if (fo != null && fo.get(Value.CODE) == "FO") {
+                    fo.set(Value.JAM, value);
+                }
+            }
         }
         if (prop == Value.CODE && value == null) {
             unlink();
