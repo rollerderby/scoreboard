@@ -48,7 +48,7 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 .Teambox .Indicator		{ width: 4%; height: 100%; font-size: 45%;  float: left; text-align: center;}
 .Teambox .Indicator .Lead		{ opacity: 0; height: 100%; }
 .Teambox .Indicator .HasLead	{ opacity: 1; }
-.TeamBox .IsStarPass .Lead{ display: none; }
+.TeamBox .starPass .Lead{ display: none; }
 
 .Team .Name { width: 67%; padding-left: 2%;  border-left: 2px solid #666;  }
 .Team .Score { width: 18%; text-align: right; padding-right: .1em ; font-size: 90%; }
@@ -160,9 +160,6 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 
 .TeamBox .Team1.HasJammerName .Team	{ border-radius: 0; }
 .TeamBox .Team2.HasJammerName .Team	{ border-radius: 0 ; }
-
-.Team1 .Starpass{ border-radius: 0 8px 0px 0; }
-.Team2 .Starpass{ border-radius: 0 0px 8px 0; }
 
 .ShowJammers[Clock="Jam"] .TeamBox .Team1 .Team { border-radius: 8px 0 0 0; }
 .ShowJammers[Clock="Jam"] .TeamBox .Team2 .Team { border-radius: 0 0 0 8px; }
