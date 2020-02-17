@@ -76,38 +76,10 @@ function initialize() {
 		createPenalty(sel, k.Penalty, v);
 	} );
 
-	WS.Register( ['ScoreBoard.Team(*).Color(overlay_bg)',
-			'ScoreBoard.Team(*).Color(overlay_fg)' ], function(k,v) {
-		var style;
-		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
-		if(style) {
-			var ns,r,ns2;
-			var rule;
-			// chrome seems to like things in lowercase
-			var rd = '#sb .colourteam'+k.Team;
 
-			if(k.Color == 'overlay_bg') { ns = 'background'; ns2 = 'background-color'; }
-			if(k.Color == 'overlay_fg') ns = 'color';
-
-			for(var r=0; r<style.rules.length ; r++ ) {
-				var dd = style.rules[r];
-				if(dd.selectorText == rd && dd.style[0] == ns) {
-					style.deleteRule(r);
-				}
-			}
-
-			for(var r=0; r<style.rules.length ; r++ ) {
-				var dd = style.rules[r];
-				if(dd.selectorText == rd && dd.style[9] == ns2) {
-					style.deleteRule(r);
-				}
-			}
-			if(v != null) {
-				style.addRule(rd, ns + ': ' + v);
-				style.addRule(rd, c + ': ' + 'center');
-			}
-
-		}
+	WS.Register( ['ScoreBoard.Team(*).Color'], function(k,v) {
+		 $(document).find('.ColourTeam'+k.Team).css('color',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_fg)'] || '');
+		 $(document).find('.ColourTeam'+k.Team).css('background',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_bg)'] || '');
 	});
 
 	WS.Register( 'ScoreBoard.Team(*).Logo', function(k,v) {
