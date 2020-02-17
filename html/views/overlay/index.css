@@ -135,8 +135,6 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 
 .TeamBox .Team				    { width: 52%; }
 
-.JammerNameBox		{ width: 40%}
-
 .TeamBox .JammerWrapper		{ overflow: none; position: relative; }
 
 .TeamBox .JammerBox			{ width: 100%; }
@@ -146,7 +144,6 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 
 .TeamBox .Team .Indicator		{ width: .5em; height: 100%;}
 .TeamBox .JammerBox .JammerName		{ font-size: 50%; margin-left: 1vw; height: 100%; }
-.JammerNameBox .StarPass { background: #333; color: white;}
 .TeamBox .Team      { border-right: 2px solid #333; }
 
 .TeamBox .Team1	.Team			{ border-radius: 0 8px 0 0; }
