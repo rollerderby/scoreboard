@@ -20,7 +20,7 @@ function jammer(k, v) {
 	};
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
 	$(".Team" + id).toggleClass("HasJammerName", (jn != ""));
-	$(".Team" + id).toggleClass("starPass", (starPass != false));
+	$(".Team" + id).toggleClass("starPass", starPass);
 	return jn
 }
 
