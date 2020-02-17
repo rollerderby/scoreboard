@@ -38,7 +38,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
         if (prop == IValue.NEXT && getNumber() == 0) { return null; }
-        if (prop == IValue.PREVIOUS && getNumber() == 1) { return null; }
+        if (prop == IValue.PREVIOUS && value != null && ((Penalty)value).getNumber() == 0) { return null; }
         if (prop == Value.SERVED) { return (get(Value.BOX_TRIP) != null || (Boolean)get(Value.FORCE_SERVED)); }
         return value;
     }

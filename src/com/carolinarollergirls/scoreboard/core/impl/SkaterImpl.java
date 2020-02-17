@@ -145,8 +145,15 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     }
     @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
-        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
-            updateEligibility();
+        if (prop == NChild.PENALTY) {
+            if (FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
+                updateEligibility();
+            } else if (get(NChild.PENALTY, scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) == null) {
+                Penalty fo = getPenalty(FO_EXP_ID);
+                if (fo != null && fo.get(Penalty.Value.CODE) == "FO") {
+                    fo.unlink();
+                }
+            }
         } else if (prop == Child.FIELDING && getCurrentFielding() == item) {
             set(Value.CURRENT_FIELDING, null, Flag.INTERNAL);
         }
