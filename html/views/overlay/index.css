@@ -242,9 +242,9 @@ html > body div.Wrapper .FloatRight 	{ float: right !important; right: 0; }
 
 
 .RosterTeam .Team .Skater:nth-child(1) .Number, .RosterTeam .Team .Skater:nth-child(2) .Number,
-.RosterTeam .Team .Skater:nth-child(1), .RosterTeam .Team .Skater:nth-child(2) { border-radius: 10px 10px 0 0; }
+.RosterTeam .Team .Skater:nth-child(1), .RosterTeam .Team .Skater:nth-child(2) { border-radius: 10px 0 0 0; }
 .RosterTeam .Team .Skater:nth-last-child(1) .Number, .RosterTeam .Team .Skater:nth-last-child(2) .Number,
-.RosterTeam .Team .Skater:nth-last-child(1), .RosterTeam .Team .Skater:nth-last-child(2) { border-radius: 0 0 10px 10px; }
+.RosterTeam .Team .Skater:nth-last-child(1), .RosterTeam .Team .Skater:nth-last-child(2) { border-radius: 0 0 0 10px; }
 
 .PenaltyTeam .SortBox { border-radius: 10px; }
 .PenaltyTeam .NoShow { display: none; }
