@@ -140,6 +140,7 @@ function toClockInitialNumber(k, v) {
 }
 
 function toTime(k, v) {
+	k = WS._enrichProp(k);
 	var isCountDown = isTrue(WS.state['ScoreBoard.Clock(' + k.Clock + ').Direction']);
 	return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
