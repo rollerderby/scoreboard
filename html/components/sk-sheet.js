@@ -159,6 +159,12 @@ function prepareSkSheetTable(element, teamId, mode) {
 				otherRow.find('.Trip2').text(otherScoreText);
 				jamRow.find('.NoInitial').text(trip1AfterSP || noInitial?'X':'');
 				spRow.find('.NoInitial').text(trip1AfterSP && noInitial?'X':'');
+				if (isTrue(WS.state[prefix+'ScoringTrip(2).PointsWithoutTrip'])){
+					row.find('.Trip2').addClass('noTripAlert');
+				}
+				if (trip2Score == null) {
+					row.find('.Trip2').removeClass('noTripAlert');
+				}
 				break;
 
 			 default:
