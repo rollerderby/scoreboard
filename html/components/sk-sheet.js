@@ -23,6 +23,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 		WS.Register(['ScoreBoard.Period(*).Number',
 				'ScoreBoard.Period(*).Jam(*).Number',
 				'ScoreBoard.Period(*).Jam(*).StarPass',
+				'ScoreBoard.Period(*).Jam(*).Overtime',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
@@ -36,7 +37,8 @@ function prepareSkSheetTable(element, teamId, mode) {
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).SkaterNumber',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Current',
-				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score'
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).PointsWithoutTrip'
 		], handleUpdate);
 	}
 
@@ -147,7 +149,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 						otherScoreText = trip1Score + ' + SP';
 					}
 				} else if (trip2Score != null) {
-					scoreText = trip2Score; 
+					scoreText = trip2Score; 					
 				}
 				var row = jamRow;
 				var otherRow = spRow;
@@ -166,7 +168,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 					row.find('.Trip2').removeClass('noTripAlert');
 				}
 				break;
-
+				
 			 default:
 				if (k.parts[4] == 'ScoringTrip' && k.ScoringTrip >= 3 && k.ScoringTrip < 10) {
 					var t = k.ScoringTrip;
