@@ -1,5 +1,5 @@
 
-function jammer(k, v) {
+function jammer(k, v, ov) {
 	id = getTeamId(k);
 	var prefix = "ScoreBoard.Team(" + id + ").";
 	var jammerName = WS.state[prefix + "Position(Jammer).Name"];
@@ -9,7 +9,7 @@ function jammer(k, v) {
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
 	if (jammerName == null || jammerName == "") {
-		jammerName = leadJammer ? "Lead" : "";
+		if(!ov)	jammerName = leadJammer ? "Lead" : "";
 	if (pivotName == null)
 		pivotName = "";
 	}
