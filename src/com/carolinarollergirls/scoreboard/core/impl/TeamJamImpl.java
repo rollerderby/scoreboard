@@ -175,7 +175,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     @Override
     public void addScoringTrip() { getOrCreate(NChild.SCORING_TRIP, getCurrentScoringTrip().getNumber() + 1); }
     @Override
-    public void removeScoringTrip() { if (getAll(NChild.SCORING_TRIP).size() > 1) { getCurrentScoringTrip().unlink(); }}
+    public void removeScoringTrip() { getCurrentScoringTrip().execute(ScoringTrip.Command.REMOVE); }
 
     @Override
     public boolean isLost() { return (Boolean)get(Value.LOST); }

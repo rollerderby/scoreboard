@@ -68,6 +68,22 @@ public class TeamJamImplTests {
     }
 
     @Test
+    public void testRemoveInitialWhenItIsTheOnlyTrip() {
+        tj.getCurrentScoringTrip().set(ScoringTrip.Value.SCORE, 2);
+        assertEquals(1, tj.getCurrentScoringTrip().getNumber());
+        tj.removeScoringTrip();
+        // Score is now zero, but trip remains.
+        assertEquals(0, tj.getJamScore());
+        assertEquals(1, tj.getCurrentScoringTrip().getNumber());
+
+
+        tj.getCurrentScoringTrip().set(ScoringTrip.Value.SCORE, 2);
+        tj.getCurrentScoringTrip().execute(ScoringTrip.Command.REMOVE);
+        assertEquals(0, tj.getJamScore());
+        assertEquals(1, tj.getCurrentScoringTrip().getNumber());
+    }
+
+    @Test
     public void testNoLostInOvertime() {
         tj.getJam().set(Jam.Value.OVERTIME, true);
         tj.set(TeamJam.Value.LOST, true);

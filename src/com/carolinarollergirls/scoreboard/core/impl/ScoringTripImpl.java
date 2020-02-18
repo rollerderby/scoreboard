@@ -57,7 +57,13 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     public void execute(CommandProperty prop) {
         switch ((Command)prop) {
             case REMOVE:
-                unlink();
+                if (getParent().getAll(TeamJam.NChild.SCORING_TRIP).size() > 1) {
+                    unlink();
+                } else {
+                    // We cannot remove the initial trip when it is the only trip, so set its score to 0.
+                    set(Value.SCORE, 0);
+                    set(Value.JAM_CLOCK_END, 0L);
+                }
                 break;
             case INSERT_BEFORE:
                 parent.add(ownType, new ScoringTripImpl((TeamJam)parent, getNumber()));
