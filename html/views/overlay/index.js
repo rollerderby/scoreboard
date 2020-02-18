@@ -25,46 +25,6 @@ function initialize() {
 			'ScoreBoard.Period(*).Jam(*).TeamJam(*).Lead',
 			'ScoreBoard.Period(*).Jam(*).TeamJam(*).Lost'], function(k,v) { jamData(k,v); } );
 
-	WS.Register( ['ScoreBoard.Team(*).DisplayLead'], function(k,v) {
-		var starPass = isTrue(WS.state['ScoreBoard.Team(' + k.Team + ').StarPass']);
-		 $(".Team" + k.Team + " .Lead").toggleClass("HasLead", (v && !starPass));
-	});
-
-	WS.Register( ['ScoreBoard.Team(*).Position(Jammer).Name'], function(k,v) {
-		var starPass = isTrue(WS.state['ScoreBoard.Team(' + k.Team + ').StarPass']);
-		var inJam = isTrue(WS.state['ScoreBoard.InJam']);
-		if(!starPass)	 {
-			if(inJam) $('.Team' + k.Team).toggleClass('HasJammerName', (v != ''));
-			 $('#jammer'+k.Team).text(v)
-		}
-	});
-
-	WS.Register( ['ScoreBoard.Team(*).Position(Pivot).Name'], function(k,v) {
-		var starPass = isTrue(WS.state['ScoreBoard.Team(' + k.Team + ').StarPass']);
-		if(starPass)	 {
-			$('#jammer'+k.Team).text(v)}
-	});
-
-	WS.Register( ['ScoreBoard.Team(*).StarPass'], function(k,v) {
-		var prefix = "ScoreBoard.Team(" + k.Team + ").";
-		var jammerName = WS.state[prefix + "Position(Jammer).Name"];
-		var pivotName = WS.state[prefix + "Position(Pivot).Name"];
-		if(v) {
-			 $('.Team' + k.Team).toggleClass('HasJammerName', (pivotName != ''));
-			 $('#jammer'+k.Team).text(pivotName);
-			}
-			else {
-					$('#jammer'+k.Team).text(jammerName);
-			}
-			$(".Team" + k.Team).toggleClass("starPass", v);
-	});
-
-	WS.Register( ['ScoreBoard.InJam'], function(k,v) {
-		var jammerName1 = WS.state["ScoreBoard.Team(1).Position(Jammer).Name"];
-		var jammerName2 = WS.state["ScoreBoard.Team(2).Position(Jammer).Name"];
-		$('.Team1').toggleClass('HasJammerName', (jammerName1 != ''));
-		$('.Team2').toggleClass('HasJammerName', (jammerName2 != ''));
-	});
 	WS.Register( [
 			'ScoreBoard.Team(*).Skater(*).Name',
 			'ScoreBoard.Team(*).Skater(*).Number',
@@ -191,7 +151,26 @@ function initialize() {
 			setTimeout(function() { $('body').removeClass('preload'); }, 1000);
 }
 
+function jammer_ov(k, v) {
+	id = getTeamId(k);
+	var prefix = "ScoreBoard.Team(" + id + ").";
+	var jammerName = WS.state[prefix + "Position(Jammer).Name"];
+	var pivotName = WS.state[prefix + "Position(Pivot).Name"];
+	var leadJammer = isTrue(WS.state[prefix + "DisplayLead"]);
+	var starPass = isTrue(WS.state[prefix + "StarPass"]);
+	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
+	if (pivotName == null)	pivotName = "";
+
+	var jn = !starPass ? jammerName : pivotName;
+	if (!inJam) {
+		jn = "";  // When no clocks are running, do not show jammer names.
+	};
+	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
+	$(".Team" + id).toggleClass("HasJammerName", (jn != ""));
+	$(".Team" + id + " .Lead").toggleClass("HasStarPass", starPass);
+	return jn
+}
 
 function ensureSkaterExists(skaterId, team) {
 	if ($('.PenaltyTeam' + team + ' .Team' + team + ' .Skater[data-skaterId=' + skaterId + ']').length == 0) {
