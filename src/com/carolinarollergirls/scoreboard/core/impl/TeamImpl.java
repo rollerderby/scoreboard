@@ -84,16 +84,18 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             Timeout t = scoreBoard.getCurrentTimeout(); 
             return t.isRunning() && this == t.getOwner() && t.isReview();
         }
-        if (prop == Value.TRIP_SCORE && flag != Flag.COPY && scoreBoard.isInJam() && (Integer)value > 0) {
+        if (prop == Value.TRIP_SCORE && flag != Flag.COPY) {
             tripScoreTimerTask.cancel();
-            tripScoreTimer.purge();
-            tripScoreTimerTask = new TimerTask() {
-                @Override
-                public void run() {
-                    execute(Command.ADD_TRIP);
-                }
-            };
-            tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+            if (scoreBoard.isInJam() && (Integer)value > 0) {
+                tripScoreTimer.purge();
+                tripScoreTimerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        execute(Command.ADD_TRIP);
+                    }
+                };
+                tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+            }
         }
         if (prop == Value.NO_INITIAL && flag != Flag.COPY) {
             if (!(Boolean)value && (Boolean)last) {
@@ -146,8 +148,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
             break;
         case REMOVE_TRIP:
-            tripScoreTimerTask.cancel();
-            getRunningOrEndedTeamJam().removeScoringTrip();
+            if (!tripScoreTimerTask.cancel()) {
+                getRunningOrEndedTeamJam().removeScoringTrip();
+            }
             break;
         case ADVANCE_FIELDINGS:
             advanceFieldings();
