@@ -249,7 +249,14 @@ public class SkaterImplTests {
         
         assertEquals(sb.getOrCreatePeriod(1).getJam(5), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.JAM));
         assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.CODE));
-    }
+        
+        skater.getPenalty(Skater.FO_EXP_ID).set(Penalty.Value.CODE, "B");
+
+        p2.set(Penalty.Value.CODE, null);
+        
+        assertNull(skater.get(NChild.PENALTY, sb.getRulesets().getInt(Rule.FO_LIMIT)));
+        assertEquals("B", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.CODE));
+}
 
     @Test
     public void penalty_between_jams_fields_skater() {
