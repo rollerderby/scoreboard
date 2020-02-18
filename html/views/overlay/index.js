@@ -32,8 +32,9 @@ function initialize() {
 
 	WS.Register( ['ScoreBoard.Team(*).Position(Jammer).Name'], function(k,v) {
 		var starPass = isTrue(WS.state['ScoreBoard.Team(' + k.Team + ').StarPass']);
+		var inJam = isTrue(WS.state['ScoreBoard.InJam']);
 		if(!starPass)	 {
-			 $('.Team' + k.Team).toggleClass('HasJammerName', (v != ''));
+			if(inJam) $('.Team' + k.Team).toggleClass('HasJammerName', (v != ''));
 			 $('#jammer'+k.Team).text(v)
 		}
 	});
@@ -41,7 +42,6 @@ function initialize() {
 	WS.Register( ['ScoreBoard.Team(*).Position(Pivot).Name'], function(k,v) {
 		var starPass = isTrue(WS.state['ScoreBoard.Team(' + k.Team + ').StarPass']);
 		if(starPass)	 {
-			$('.Team' + k.Team).toggleClass('HasJammerName', (v != ''));
 			$('#jammer'+k.Team).text(v)}
 	});
 
@@ -50,6 +50,7 @@ function initialize() {
 		var jammerName = WS.state[prefix + "Position(Jammer).Name"];
 		var pivotName = WS.state[prefix + "Position(Pivot).Name"];
 		if(v) {
+			 $('.Team' + k.Team).toggleClass('HasJammerName', (pivotName != ''));
 			 $('#jammer'+k.Team).text(pivotName);
 			}
 			else {
@@ -58,6 +59,12 @@ function initialize() {
 			$(".Team" + k.Team).toggleClass("starPass", v);
 	});
 
+	WS.Register( ['ScoreBoard.InJam'], function(k,v) {
+		var jammerName1 = WS.state["ScoreBoard.Team(1).Position(Jammer).Name"];
+		var jammerName2 = WS.state["ScoreBoard.Team(2).Position(Jammer).Name"];
+		$('.Team1').toggleClass('HasJammerName', (jammerName1 != ''));
+		$('.Team2').toggleClass('HasJammerName', (jammerName2 != ''));
+	});
 	WS.Register( [
 			'ScoreBoard.Team(*).Skater(*).Name',
 			'ScoreBoard.Team(*).Skater(*).Number',
