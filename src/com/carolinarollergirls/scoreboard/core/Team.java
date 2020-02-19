@@ -51,6 +51,9 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public int getScore();
 
     public ScoringTrip getCurrentTrip();
+    
+    //returns true if an advancement was pending
+    public boolean cancelTripAdvancement();
 
     public int getTimeouts();
     public int getOfficialReviews();

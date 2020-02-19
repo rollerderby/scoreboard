@@ -387,6 +387,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     @Override
     public ScoringTrip getCurrentTrip() { return (ScoringTrip)get(Value.CURRENT_TRIP); }
+    
+    @Override
+    public boolean cancelTripAdvancement() { return tripScoreTimerTask.cancel(); }
 
     @Override
     public boolean inTimeout() { return (Boolean)get(Value.IN_TIMEOUT); }

@@ -219,8 +219,34 @@ public class TeamImplTests {
         
         team.set(Team.Value.TRIP_SCORE, -1, Flag.CHANGE);
         assertEquals(3, team.getScore());
+        
+        assertFalse(team.cancelTripAdvancement());
+        
+        sb.startJam();
+        team.set(Team.Value.TRIP_SCORE, 3);
+
+        assertTrue(team.cancelTripAdvancement());
     }
 
+    @Test
+    public void testCancelTripAdvancement() {
+        sb.startJam();
+        team.set(Team.Value.TRIP_SCORE, 1);
+        team.set(Team.Value.TRIP_SCORE, -1, Flag.CHANGE);
+
+        assertFalse(team.cancelTripAdvancement());
+        
+        team.execute(Team.Command.ADD_TRIP);
+        team.set(Team.Value.TRIP_SCORE, 1);
+        
+        assertEquals(2, team.getCurrentTrip().getNumber());
+        
+        team.execute(Team.Command.REMOVE_TRIP);
+
+        assertFalse(team.cancelTripAdvancement());
+        assertEquals(2, team.getCurrentTrip().getNumber());
+    }
+    
     @Test
     public void testDisplayLead() {
         assertFalse(team.isLost());
