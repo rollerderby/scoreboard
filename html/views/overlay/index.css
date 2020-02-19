@@ -312,11 +312,11 @@ div.PanelWrapperTop    .AnimatedPanel.PanelHideTop.show	{ -webkit-transform: tra
 
 .AnimatedPanel.Show img  { height: 200px; }
 
-.PenaltyTeam.AnimatedPanel.Show img.TeamLogo  { height: 140px; }
+.PenaltyTeam.AnimatedPanel.Show img.TeamLogo  { height: 164px; }
 .RosterTeam.AnimatedPanel.Show  img.TeamLogo  { height: 164px; }
 
 .PanelWrapperCenter .AnimatedPanel.LowerPart { margin-top: 10em; }
 .PanelWrapperCenter .RosterTeam.AnimatedPanel.LowerPart { margin-top: 10.5em; }
-.PanelWrapperCenter .PenaltyTeam.AnimatedPanel.LowerPart { margin-top: 9em; }
+.PanelWrapperCenter .PenaltyTeam.AnimatedPanel.LowerPart { margin-top: 10.5em; }
 
 div.AnimatedPanel.AnimationDelay { -webkit-transition: -webkit-transform 1s ease-in-out .3s; }
