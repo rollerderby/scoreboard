@@ -36,7 +36,8 @@ function prepareSkSheetTable(element, teamId, mode) {
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).SkaterNumber',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Current',
-				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score'
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score',
+				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Annotation'
 		], handleUpdate);
 	}
 
@@ -124,13 +125,16 @@ function prepareSkSheetTable(element, teamId, mode) {
 				spRow.find('.Jammer').text(isTrue(WS.state[prefix+'StarPass']) ? WS.state[prefix+'Fielding(Pivot).SkaterNumber'] : '');
 				break;
 
-			case 'ScoringTrip(1).AfterSP': case 'ScoringTrip(1).Score': case 'ScoringTrip(2).Score':
-			case 'ScoringTrip(2).AfterSP': case 'ScoringTrip(2).Current': case 'NoInitial':
+			case 'ScoringTrip(1).AfterSP': case 'ScoringTrip(1).Score': case 'ScoringTrip(1).Annotation':
+			case 'ScoringTrip(2).AfterSP': case 'ScoringTrip(2).Score': case 'ScoringTrip(2).Annotation':
+			case 'ScoringTrip(2).Current': case 'NoInitial':
 				var trip1Score = WS.state[prefix+'ScoringTrip(1).Score'];
 				var trip1AfterSP = isTrue(WS.state[prefix+'ScoringTrip(1).AfterSP']);
+				var trip1HasAnnotation = WS.state[prefix+'ScoringTrip(1).Annotation'] != '';
 				var trip2Score = WS.state[prefix+'ScoringTrip(2).Score'];
 				var trip2Current = isTrue(WS.state[prefix+'ScoringTrip(2).Current']);
 				var trip2AfterSP = isTrue(WS.state[prefix+'ScoringTrip(2).AfterSP']);
+				var trip2HasAnnotation = trip2Score != null && WS.state[prefix+'ScoringTrip(2).Annotation'] != '';
 				var noInitial = isTrue(WS.state[prefix+'NoInitial']);
 				var scoreText = '';
 				var otherScoreText = '';
@@ -155,10 +159,12 @@ function prepareSkSheetTable(element, teamId, mode) {
 					row = spRow;
 					otherRow = jamRow;
 				}
-				row.find('.Trip2').text(scoreText);
-				otherRow.find('.Trip2').text(otherScoreText);
-				jamRow.find('.NoInitial').text(trip1AfterSP || noInitial?'X':'');
-				spRow.find('.NoInitial').text(trip1AfterSP && noInitial?'X':'');
+				row.find('.Trip2').toggleClass('hasAnnotation', trip2HasAnnotation).text(scoreText);
+				otherRow.find('.Trip2').removeClass('hasAnnotation').text(otherScoreText);
+				jamRow.find('.NoInitial').toggleClass('hasAnnotation', trip1HasAnnotation && !trip1AfterSP)
+					.text(trip1AfterSP || noInitial?'X':'');
+				spRow.find('.NoInitial').toggleClass('hasAnnotation', trip1HasAnnotation && trip1AfterSP)
+					.text(trip1AfterSP && noInitial?'X':'');
 				break;
 
 			 default:
@@ -172,24 +178,30 @@ function prepareSkSheetTable(element, teamId, mode) {
 					}
 					var score = WS.state[prefix+'ScoringTrip('+t+').Score'];
 					var current = isTrue(WS.state[prefix+'ScoringTrip('+t+').Current']);
-					row.find('.Trip'+t).text(score == null ? '' : current && score == 0 ? '.' : score);
-					otherRow.find('.Trip'+t).text('');
+					var hasAnnotation = WS.state[prefix+'ScoringTrip('+t+').Annotation'] != '';
+					row.find('.Trip'+t).toggleClass('hasAnnotation', hasAnnotation)
+						.text(score == null ? '' : current && score == 0 ? '.' : score);
+					otherRow.find('.Trip'+t).removeClass('hasAnnotation').text('');
 				} else if (k.parts[4] == 'ScoringTrip' && k.ScoringTrip >= 10) {
 					var scoreBeforeSP = '';
 					var scoreAfterSP = '';
 					var t = 10;
+					var annotationBeforeSP = false;
+					var annotationAfterSP = false;
 					while (true) {
 						var tripScore = WS.state[prefix+'ScoringTrip('+t+').Score'];
 						if (tripScore == null) break;
 						if (isTrue(WS.state[prefix+'ScoringTrip('+t+').AfterSP'])) {
 							scoreAfterSP = scoreAfterSP=='' ? tripScore : scoreAfterSP + " + " + tripScore;
+							annotationAfterSP = annotationAfterSP || WS.state[prefix+'ScoringTrip('+t+').Annotation'] != '';
 						} else {
 							scoreBeforeSP = scoreBeforeSP=='' ? tripScore : scoreBeforeSP + " + " + tripScore;
+							annotationBeforeSP = annotationBeforeSP || WS.state[prefix+'ScoringTrip('+t+').Annotation'] != '';
 						}
 						t++;
 					}
-					jamRow.find('.Trip10').text(scoreBeforeSP);
-					spRow.find('.Trip10').text(scoreAfterSP);
+					jamRow.find('.Trip10').toggleClass('hasAnnotation', annotationBeforeSP).text(scoreBeforeSP);
+					spRow.find('.Trip10').toggleClass('hasAnnotation', annotationAfterSP).text(scoreAfterSP);
 				}
 
 		}
@@ -273,8 +285,13 @@ function setupTripEditor(p, j, teamId, t) {
 	var prefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+t+').';
 
 	tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t==1?'Initial':t));
-	var scoreField = tripEditor.find('#score').val(WS.state[prefix+'Score']);
-	var afterSPField = tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
+	tripEditor.find('#score').val(WS.state[prefix+'Score']);
+	tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
+	var annotation = WS.state[prefix+'Annotation'] || '';
+	tripEditor.find('input#annotation').val(annotation);
+	tripEditor.find('span#annotation').text(annotation);
+	tripEditor.find('.edit.Annotation').toggleClass('Hide', annotation !== '');
+	tripEditor.find('.read.Annotation').toggleClass('Hide', annotation === '');
 	tripEditor.data('prefix', prefix);
 	tripEditor.dialog('open');
 }
@@ -291,7 +308,7 @@ function prepareTripEditor() {
 			closeOnEscape: false,
 			title: 'Trip Editor',
 			autoOpen: false,
-			width: '300px',
+			width: '450px',
 		});
 
 		tripEditor.append($('<table>')
@@ -306,10 +323,36 @@ function prepareTripEditor() {
 										WS.Set(tripEditor.data('prefix')+'Score', $(this).val());
 									})))
 						.append($('<td colspan="2">')
-								.append($('<button>').attr('id', 'afterSP').text('SP in this or prior trip').button().click(function() {
+								.append($('<button>').attr('id', 'afterSP').text('After SP').button().click(function() {
 									var check = !$(this).hasClass('checked');
 									$(this).toggleClass('checked', check);
 									WS.Set(tripEditor.data('prefix')+'AfterSP', check);
+								}))))
+				.append($('<tr>').addClass('head Annotation')
+						.append($('<td>').addClass('header').text('Notes: '))
+						.append($('<td>')
+								.append($('<button>').addClass('read Annotation').text('Edit').button().click(function() {
+									tripEditor.find('.edit.Annotation').removeClass('Hide');
+									tripEditor.find('.read.Annotation').addClass('Hide');
+								}))
+								.append($('<button>').addClass('edit Annotation').text('Lock').button().click(function() {
+									tripEditor.find('.edit.Annotation').addClass('Hide');
+									tripEditor.find('.read.Annotation').removeClass('Hide');
+								}))
+						)
+						.append($('<td>').append($('<button>').text('Clear').button().click(function() {
+								WS.Set(tripEditor.data('prefix')+'Annotation', '');
+								tripEditor.find('input#annotation').val('');
+								tripEditor.find('.edit.Annotation').removeClass('Hide');
+								tripEditor.find('.read.Annotation').addClass('Hide');
+							}))))
+				.append($('<tr>').addClass('read Annotation')
+						.append($('<td>').attr('colspan', '3').append($('<span>').attr('id', 'annotation'))))
+				.append($('<tr>').addClass('edit Annotation')
+						.append($('<td>').attr('colspan', '3')
+								.append($('<input type="text">').attr('size', '40').attr('id', 'annotation').change(function() {
+									WS.Set(tripEditor.data('prefix')+'Annotation', $(this).val());
+									tripEditor.find('span#annotation').text($(this).val())
 								}))))
 				.append($('<tr class="buttons">')
 						.append($('<td>').append($('<button>').attr('id','submit').text('Close').button().click(function() {
@@ -322,7 +365,8 @@ function prepareTripEditor() {
 						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Before').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
 							tripEditor.dialog('close');
-						})))));
+						}))))
+		);
 	}
 }
 
