@@ -126,6 +126,20 @@ function prepareSkSheetTable(element, teamId, mode) {
 				spRow.find('.Jammer').text(isTrue(WS.state[prefix+'StarPass']) ? WS.state[prefix+'Fielding(Pivot).SkaterNumber'] : '');
 				break;
 
+			case 'ScoringTrip(2).PointsWithoutTrip':
+				var row = jamRow;
+				var otherRow = spRow;
+				if (trip2AfterSP || (trip2Score == null && trip1AfterSP)) {
+					row = spRow;
+					otherRow = jamRow;
+				}
+				if (isTrue(WS.state[prefix+'ScoringTrip(2).PointsWithoutTrip'])){
+					row.find('.Trip2').addClass('noTripAlert');
+				} else {
+					row.find('.Trip2').removeClass('noTripAlert');
+				}
+				break;
+				
 			case 'ScoringTrip(1).AfterSP': case 'ScoringTrip(1).Score': case 'ScoringTrip(2).Score':
 			case 'ScoringTrip(2).AfterSP': case 'ScoringTrip(2).Current': case 'NoInitial':
 				var trip1Score = WS.state[prefix+'ScoringTrip(1).Score'];
@@ -161,12 +175,6 @@ function prepareSkSheetTable(element, teamId, mode) {
 				otherRow.find('.Trip2').text(otherScoreText);
 				jamRow.find('.NoInitial').text(trip1AfterSP || noInitial?'X':'');
 				spRow.find('.NoInitial').text(trip1AfterSP && noInitial?'X':'');
-				if (isTrue(WS.state[prefix+'ScoringTrip(2).PointsWithoutTrip'])){
-					row.find('.Trip2').addClass('noTripAlert');
-				}
-				if (trip2Score == null) {
-					row.find('.Trip2').removeClass('noTripAlert');
-				}
 				break;
 				
 			 default:
