@@ -152,8 +152,7 @@ function initialize() {
 }
 
 function jammer_ov(k, v) {
-	var jn=	jammer(k,v,true);
-	return jn;
+	return	jammer(k,v,true);
 }
 
 function ensureSkaterExists(skaterId, team) {
