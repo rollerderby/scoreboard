@@ -41,16 +41,10 @@ body:not(.AllowSelect) .SK {
 
 #TripEditor input[type="number"] { width: 50px; }
 #TripEditor table { width: 100%; }
-#TripEditor td { padding: 0.25em; text-align: center; width: 33%; background: #ccc; }
+#TripEditor td { padding: 0.25em; text-align: center; width: 33%; }
 #TripEditor .header { font-weight: bold; }
-#TripEditor .Annotation.read>td { text-align: left; padding: 0.5em; }
-#TripEditor .Annotation.head>td { border-top: 2px solid white; }
-#TripEditor .Annotation.head>td:first-of-type { border-radius: 12px 0px 0px 0px; }
-#TripEditor .Annotation.head>td:last-of-type { border-radius: 0px 12px 0px 0px; }
-#TripEditor .Annotation.edit>td { border-radius: 0px 0px 12px 12px; border-bottom: 2px solid white; }
-#TripEditor .Annotation.read>td { border-radius: 0px 0px 12px 12px; border-bottom: 2px solid white; }
-#TripEditor tr:not(.Annotation)>td:first-of-type { border-radius: 12px 0px 0px 12px; }
-#TripEditor tr:not(.Annotation)>td:last-of-type { border-radius: 0px 12px 12px 0px; }
+#TripEditor .Annotation.read>td { text-align: left; }
+#TripEditor .close>td { text-align: right; }
 #TripEditor .ui-button { font-size: 75%; }
 #TripEditor .ui-button.checked { background: #3f3; }
 #TripEditor .Hide { display: none; }

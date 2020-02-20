@@ -288,10 +288,10 @@ function setupTripEditor(p, j, teamId, t) {
 	tripEditor.find('#score').val(WS.state[prefix+'Score']);
 	tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
 	var annotation = WS.state[prefix+'Annotation'] || '';
-	tripEditor.find('input#annotation').val(annotation);
+	tripEditor.find('textarea#annotation').val(annotation);
 	tripEditor.find('span#annotation').text(annotation);
-	tripEditor.find('.edit.Annotation').toggleClass('Hide', annotation !== '');
-	tripEditor.find('.read.Annotation').toggleClass('Hide', annotation === '');
+	tripEditor.find('.edit.Annotation').addClass('Hide');
+	tripEditor.find('.read.Annotation').removeClass('Hide');
 	tripEditor.data('prefix', prefix);
 	tripEditor.dialog('open');
 }
@@ -308,7 +308,7 @@ function prepareTripEditor() {
 			closeOnEscape: false,
 			title: 'Trip Editor',
 			autoOpen: false,
-			width: '450px',
+			width: '300px',
 		});
 
 		tripEditor.append($('<table>')
@@ -322,48 +322,43 @@ function prepareTripEditor() {
 									}).change(function() {
 										WS.Set(tripEditor.data('prefix')+'Score', $(this).val());
 									})))
-						.append($('<td colspan="2">')
+						.append($('<td>')
 								.append($('<button>').attr('id', 'afterSP').text('After SP').button().click(function() {
 									var check = !$(this).hasClass('checked');
 									$(this).toggleClass('checked', check);
 									WS.Set(tripEditor.data('prefix')+'AfterSP', check);
 								}))))
-				.append($('<tr>').addClass('head Annotation')
-						.append($('<td>').addClass('header').text('Notes: '))
-						.append($('<td>')
-								.append($('<button>').addClass('read Annotation').text('Edit').button().click(function() {
-									tripEditor.find('.edit.Annotation').removeClass('Hide');
-									tripEditor.find('.read.Annotation').addClass('Hide');
-								}))
-								.append($('<button>').addClass('edit Annotation').text('Lock').button().click(function() {
-									tripEditor.find('.edit.Annotation').addClass('Hide');
-									tripEditor.find('.read.Annotation').removeClass('Hide');
-								}))
-						)
-						.append($('<td>').append($('<button>').text('Clear').button().click(function() {
-								WS.Set(tripEditor.data('prefix')+'Annotation', '');
-								tripEditor.find('input#annotation').val('');
-								tripEditor.find('.edit.Annotation').removeClass('Hide');
-								tripEditor.find('.read.Annotation').addClass('Hide');
-							}))))
-				.append($('<tr>').addClass('read Annotation')
-						.append($('<td>').attr('colspan', '3').append($('<span>').attr('id', 'annotation'))))
-				.append($('<tr>').addClass('edit Annotation')
-						.append($('<td>').attr('colspan', '3')
-								.append($('<input type="text">').attr('size', '40').attr('id', 'annotation').change(function() {
-									WS.Set(tripEditor.data('prefix')+'Annotation', $(this).val());
-									tripEditor.find('span#annotation').text($(this).val())
-								}))))
 				.append($('<tr class="buttons">')
-						.append($('<td>').append($('<button>').attr('id','submit').text('Close').button().click(function() {
-							tripEditor.dialog('close');
-						})))
 						.append($('<td>').append($('<button>').attr('id','remove').text('Remove').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'Remove', true);
 							tripEditor.dialog('close');
 						})))
 						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Before').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
+							tripEditor.dialog('close');
+						}))))
+				.append($('<tr>').append($('<td>').attr('colspan', '3').append($('<hr>'))))
+				.append($('<tr>').addClass('head Annotation')
+						.append($('<td>').addClass('header').text('Notes: '))
+						.append($('<td>').append($('<button>').addClass('read Annotation').text('Edit').button().click(function() {
+									tripEditor.find('.edit.Annotation').removeClass('Hide');
+									tripEditor.find('.read.Annotation').addClass('Hide');
+									tripEditor.find('textarea#annotation').focus();
+								}))))
+				.append($('<tr>').addClass('read Annotation')
+						.append($('<td>').attr('colspan', '3').append($('<span>').attr('id', 'annotation'))))
+				.append($('<tr>').addClass('edit Annotation')
+						.append($('<td>').attr('colspan', '3')
+								.append($('<textarea>').attr('cols', '25').attr('rows', '4').attr('id', 'annotation').change(function() {
+									WS.Set(tripEditor.data('prefix')+'Annotation', $(this).val());
+									tripEditor.find('span#annotation').text($(this).val());
+									tripEditor.find('#clearAnn').toggleClass('Hide', $(this).val() === '');
+								}).focusout(function(){
+									tripEditor.find('.edit.Annotation').addClass('Hide');
+									tripEditor.find('.read.Annotation').removeClass('Hide');
+								}))))
+				.append($('<tr class="buttons close">')
+						.append($('<td colspan="2">').append($('<hr>')).append($('<button>').attr('id','submit').text('Close').button().click(function() {
 							tripEditor.dialog('close');
 						}))))
 		);
