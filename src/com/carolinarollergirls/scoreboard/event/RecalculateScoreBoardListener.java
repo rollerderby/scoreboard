@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
 public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListener {
     RecalculateScoreBoardListener(ScoreBoardEventProvider targetElement, PermanentProperty targetProperty) {
@@ -14,7 +14,7 @@ public class RecalculateScoreBoardListener implements UnlinkableScoreBoardListen
 
     @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
-        targetElement.set(targetProperty, targetElement.get(targetProperty), Flag.RECALCULATE);
+        targetElement.set(targetProperty, targetElement.get(targetProperty), Source.RECALCULATE);
     }
     
     public RecalculateScoreBoardListener addSource(ScoreBoardEventProvider element, Property property) {

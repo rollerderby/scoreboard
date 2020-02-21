@@ -35,6 +35,7 @@ import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
@@ -126,7 +127,7 @@ public class WS extends WebSocketServlet {
                     sb.runInBatch(new Runnable() {
                         @Override
                         public void run() {
-                            ScoreBoardJSONSetter.set(sb, Collections.singletonList(js));
+                            ScoreBoardJSONSetter.set(sb, Collections.singletonList(js), Source.WS);
                         }
                     });
                 } else if (action.equals("StartNewGame")) {

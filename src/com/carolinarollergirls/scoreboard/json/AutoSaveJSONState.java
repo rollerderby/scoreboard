@@ -19,6 +19,7 @@ import com.fasterxml.jackson.jr.ob.JSON;
 import org.apache.commons.io.FileUtils;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 
 
@@ -121,7 +122,7 @@ public class AutoSaveJSONState implements Runnable {
                 continue;
             }
             try {
-                loadFile(scoreBoard, f);
+                loadFile(scoreBoard, f, Source.AUTOSAVE);
                 Logger.printMessage("Loaded auto-saved scoreboard from "+f.getPath());
                 return true;
             } catch ( Exception e ) {
@@ -133,12 +134,12 @@ public class AutoSaveJSONState implements Runnable {
         return false;
     }
 
-    public static void loadFile(ScoreBoard scoreBoard, File f) throws Exception {
+    public static void loadFile(ScoreBoard scoreBoard, File f, Source source) throws Exception {
         Map<String, Object> map = JSON.std.mapFrom(f);
         @SuppressWarnings("unchecked")
         Map<String, Object> state = (Map<String, Object>)map.get("state");
 
-        ScoreBoardJSONSetter.set(scoreBoard, state);
+        ScoreBoardJSONSetter.set(scoreBoard, state, source);
     }
 
     private File dir;

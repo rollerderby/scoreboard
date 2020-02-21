@@ -9,9 +9,9 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class TimeoutImpl extends ScoreBoardEventProviderImpl implements Timeout {
@@ -20,99 +20,85 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl implements Timeout 
         initReferences();
         if (id == "noTimeout") {
             set(Value.RUNNING, false);
-            addWriteProtection(Value.RUNNING);
-            addWriteProtection(Value.OWNER);
-            addWriteProtection(Value.REVIEW);
-            addWriteProtection(Value.RETAINED_REVIEW);
-            addWriteProtection(Value.PRECEDING_JAM);
+            set(IValue.READONLY, true);
         }
     }
+
     public TimeoutImpl(Jam precedingJam) {
-        super(precedingJam.getParent(), UUID.randomUUID().toString(),
-                Period.Child.TIMEOUT, Timeout.class, Value.class, Command.class);
+        super(precedingJam.getParent(), UUID.randomUUID().toString(), Period.Child.TIMEOUT, Timeout.class, Value.class,
+                Command.class);
         initReferences();
         set(Value.PRECEDING_JAM, precedingJam);
         set(Value.WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(Value.PERIOD_CLOCK_ELAPSED_START, scoreBoard.getClock(Clock.ID_PERIOD).getTimeElapsed());
     }
-    
+
     private void initReferences() {
         set(Value.OWNER, Owners.NONE);
         setInverseReference(Value.PRECEDING_JAM, Jam.Child.TIMEOUTS_AFTER);
         setCopy(Value.PRECEDING_JAM_NUMBER, this, Value.PRECEDING_JAM, IValue.NUMBER, true);
     }
-    
+
     @Override
     public int compareTo(Timeout other) {
         int result = 0;
         if (get(Value.PRECEDING_JAM) != null && other.get(Value.PRECEDING_JAM) != null) {
-            result = ((Jam)get(Value.PRECEDING_JAM)).compareTo((Jam)other.get(Value.PRECEDING_JAM));
+            result = ((Jam) get(Value.PRECEDING_JAM)).compareTo((Jam) other.get(Value.PRECEDING_JAM));
         }
-        if (result == 0) {
-            result = (int) ((Long)get(Value.WALLTIME_START) - (Long)other.get(Value.WALLTIME_START));
-        }
+        if (result == 0) { result = (int) ((Long) get(Value.WALLTIME_START) - (Long) other.get(Value.WALLTIME_START)); }
         return result;
     }
-    
+
     @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+    protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == Value.OWNER) {
-            if (last instanceof Team) {
-                ((Team) last).remove(Team.Child.TIME_OUT, this);
-            }
-            if (value instanceof Team) {
-                ((Team) value).add(Team.Child.TIME_OUT, this);
-            }
+            if (last instanceof Team) { ((Team) last).remove(Team.Child.TIME_OUT, this); }
+            if (value instanceof Team) { ((Team) value).add(Team.Child.TIME_OUT, this); }
             if (get(Value.PRECEDING_JAM) == scoreBoard.getCurrentPeriod().getCurrentJam()) {
-                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM), Flag.RECALCULATE);
+                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM),
+                        Source.RECALCULATE);
             }
         }
         if (prop == Value.REVIEW && getOwner() instanceof Team) {
-            ((Team)getOwner()).recountTimeouts();
+            ((Team) getOwner()).recountTimeouts();
             if (get(Value.PRECEDING_JAM) == scoreBoard.getCurrentPeriod().getCurrentJam()) {
-                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM), Flag.RECALCULATE);
+                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM),
+                        Source.RECALCULATE);
             }
         }
-        if (prop == Value.RETAINED_REVIEW && getOwner() instanceof Team) {
-            ((Team)getOwner()).recountTimeouts();
-        }
+        if (prop == Value.RETAINED_REVIEW && getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
         if (prop == Value.PRECEDING_JAM) {
-            if (value != null && ((Jam)value).getParent() != getParent()) {
+            if (value != null && ((Jam) value).getParent() != getParent()) {
                 getParent().remove(Period.Child.TIMEOUT, this);
-                parent = ((Jam)value).getParent();
+                parent = ((Jam) value).getParent();
                 getParent().add(Period.Child.TIMEOUT, this);
             }
-            if (getOwner() instanceof Team) {
-                ((Team) getOwner()).recountTimeouts();
-            }
-            if (value == scoreBoard.getCurrentPeriod().getCurrentJam() ||
-                    last == scoreBoard.getCurrentPeriod().getCurrentJam()) {
-                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM), Flag.RECALCULATE);
+            if (getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
+            if (value == scoreBoard.getCurrentPeriod().getCurrentJam()
+                    || last == scoreBoard.getCurrentPeriod().getCurrentJam()) {
+                scoreBoard.set(ScoreBoard.Value.NO_MORE_JAM, scoreBoard.get(ScoreBoard.Value.NO_MORE_JAM),
+                        Source.RECALCULATE);
             }
         }
     }
 
     @Override
-    protected void unlink(boolean neighborsRemoved) {
-        if (get(Value.OWNER) instanceof Team) {
-            ((Team)get(Value.OWNER)).remove(Team.Child.TIME_OUT, this);
-        }
-        super.unlink(neighborsRemoved);
+    public void delete(Source source) {
+        if (get(Value.OWNER) instanceof Team) { ((Team) get(Value.OWNER)).remove(Team.Child.TIME_OUT, this); }
+        super.delete(source);
     }
-    
+
     @Override
-    public void execute(CommandProperty prop) {
+    public void execute(CommandProperty prop, Source source) {
         synchronized (coreLock) {
-            switch((Command)prop) {
+            switch ((Command) prop) {
             case DELETE:
-                if (!isRunning()) {
-                    unlink();
-                }
+                if (!isRunning()) { delete(source); }
                 break;
             }
         }
     }
-    
+
     @Override
     public void stop() {
         set(Value.RUNNING, false);
@@ -123,11 +109,14 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl implements Timeout 
     }
 
     @Override
-    public TimeoutOwner getOwner() { return (TimeoutOwner)get(Value.OWNER); }
+    public TimeoutOwner getOwner() { return (TimeoutOwner) get(Value.OWNER); }
+
     @Override
-    public boolean isReview() { return (Boolean)get(Value.REVIEW); }
+    public boolean isReview() { return (Boolean) get(Value.REVIEW); }
+
     @Override
-    public boolean isRetained() { return (Boolean)get(Value.RETAINED_REVIEW); }
+    public boolean isRetained() { return (Boolean) get(Value.RETAINED_REVIEW); }
+
     @Override
-    public boolean isRunning() { return (Boolean)get(Value.RUNNING); }
+    public boolean isRunning() { return (Boolean) get(Value.RUNNING); }
 }
