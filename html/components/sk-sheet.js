@@ -282,17 +282,23 @@ function prepareSkSheetTable(element, teamId, mode) {
 var tripEditor;
 
 function setupTripEditor(p, j, teamId, t) {
+	while (t > 1 && WS.state['ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+(t-1)+').Score'] === undefined) { t--; }
+	if (t < 1) { t = 1; }
+	
 	var prefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+t+').';
 
-	tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t==1?'Initial':t));
+	tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t===1?'Initial':t));
 	tripEditor.find('#score').val(WS.state[prefix+'Score']);
 	tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
 	var annotation = WS.state[prefix+'Annotation'] || '';
-	tripEditor.find('textarea#annotation').val(annotation);
-	tripEditor.find('span#annotation').text(annotation);
-	tripEditor.find('.edit.Annotation').addClass('Hide');
-	tripEditor.find('.read.Annotation').removeClass('Hide');
+	tripEditor.find('#annotation').val(annotation);
+	tripEditor.find('#prev').toggleClass('Hide', t === 1);
+	tripEditor.find('#next').toggleClass('Hide', WS.state[prefix+'Score'] === undefined);
 	tripEditor.data('prefix', prefix);
+	tripEditor.data('team', teamId);
+	tripEditor.data('period', p);
+	tripEditor.data('jam', j);
+	tripEditor.data('trip', t);
 	tripEditor.dialog('open');
 }
 
@@ -329,36 +335,39 @@ function prepareTripEditor() {
 									WS.Set(tripEditor.data('prefix')+'AfterSP', check);
 								}))))
 				.append($('<tr class="buttons">')
-						.append($('<td>').append($('<button>').attr('id','remove').text('Remove').button().click(function() {
+						.append($('<td>').append($('<button>').attr('id','remove').text('Remove Trip').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'Remove', true);
 							tripEditor.dialog('close');
 						})))
-						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Before').button().click(function() {
+						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Trip').button().click(function() {
 							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
 							tripEditor.dialog('close');
+							setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip'));
+							tripEditor.find('#score').val(0); // the update of the popup may run before the WS is updated
 						}))))
-				.append($('<tr>').append($('<td>').attr('colspan', '3').append($('<hr>'))))
-				.append($('<tr>').addClass('head Annotation')
+				.append($('<tr>').append($('<td>').attr('colspan', '2').append($('<hr>'))))
+				.append($('<tr>').addClass('Annotation')
 						.append($('<td>').addClass('header').text('Notes: '))
-						.append($('<td>').append($('<button>').addClass('read Annotation').text('Edit').button().click(function() {
-									tripEditor.find('.edit.Annotation').removeClass('Hide');
-									tripEditor.find('.read.Annotation').addClass('Hide');
-									tripEditor.find('textarea#annotation').focus();
-								}))))
-				.append($('<tr>').addClass('read Annotation')
-						.append($('<td>').attr('colspan', '3').append($('<span>').attr('id', 'annotation'))))
-				.append($('<tr>').addClass('edit Annotation')
-						.append($('<td>').attr('colspan', '3')
+						.append($('<td>').append($('<button>').text('Clear Notes').button().click(function() {
+							tripEditor.find('#annotation').val('');
+						}))))
+				.append($('<tr>').addClass('Annotation')
+						.append($('<td>').attr('colspan', '2')
 								.append($('<textarea>').attr('cols', '25').attr('rows', '4').attr('id', 'annotation').change(function() {
 									WS.Set(tripEditor.data('prefix')+'Annotation', $(this).val());
-									tripEditor.find('span#annotation').text($(this).val());
-									tripEditor.find('#clearAnn').toggleClass('Hide', $(this).val() === '');
-								}).focusout(function(){
-									tripEditor.find('.edit.Annotation').addClass('Hide');
-									tripEditor.find('.read.Annotation').removeClass('Hide');
 								}))))
-				.append($('<tr class="buttons close">')
-						.append($('<td colspan="2">').append($('<hr>')).append($('<button>').attr('id','submit').text('Close').button().click(function() {
+				.append($('<tr>').append($('<td>').attr('colspan', '2').append($('<hr>'))))
+				.append($('<tr class="buttons nav">')
+						.append($('<td>')
+								.append($('<button>').text('⬅ Prev').attr('id', 'prev').button().click(function() {
+									tripEditor.dialog('close');
+									setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') - 1);
+								}))
+								.append($('<button>').text('Next ➡').attr('id', 'next').button().click(function() {
+									tripEditor.dialog('close');
+									setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') + 1);
+								})))
+						.append($('<td>').addClass('close').append($('<button>').attr('id','close').text('Close').button().click(function() {
 							tripEditor.dialog('close');
 						}))))
 		);
