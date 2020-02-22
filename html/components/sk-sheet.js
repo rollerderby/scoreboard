@@ -192,10 +192,10 @@ function prepareSkSheetTable(element, teamId, mode) {
 						var tripScore = WS.state[prefix+'ScoringTrip('+t+').Score'];
 						if (tripScore == null) break;
 						if (isTrue(WS.state[prefix+'ScoringTrip('+t+').AfterSP'])) {
-							scoreAfterSP = scoreAfterSP=='' ? tripScore : scoreAfterSP + " + " + tripScore;
+							scoreAfterSP = scoreAfterSP==='' ? tripScore : scoreAfterSP + " + " + tripScore;
 							annotationAfterSP = annotationAfterSP || WS.state[prefix+'ScoringTrip('+t+').Annotation'] != '';
 						} else {
-							scoreBeforeSP = scoreBeforeSP=='' ? tripScore : scoreBeforeSP + " + " + tripScore;
+							scoreBeforeSP = scoreBeforeSP==='' ? tripScore : scoreBeforeSP + " + " + tripScore;
 							annotationBeforeSP = annotationBeforeSP || WS.state[prefix+'ScoringTrip('+t+').Annotation'] != '';
 						}
 						t++;
@@ -292,8 +292,8 @@ function setupTripEditor(p, j, teamId, t) {
 	tripEditor.find('#afterSP').toggleClass('checked', isTrue(WS.state[prefix+'AfterSP']));
 	var annotation = WS.state[prefix+'Annotation'] || '';
 	tripEditor.find('#annotation').val(annotation);
-	tripEditor.find('#prev').toggleClass('Hide', t === 1);
-	tripEditor.find('#next').toggleClass('Hide', WS.state[prefix+'Score'] === undefined);
+	tripEditor.find('#prev').toggleClass('Invisible', t === 1);
+	tripEditor.find('#next').toggleClass('Invisible', WS.state[prefix+'Score'] === undefined);
 	tripEditor.data('prefix', prefix);
 	tripEditor.data('team', teamId);
 	tripEditor.data('period', p);
