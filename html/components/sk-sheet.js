@@ -23,7 +23,6 @@ function prepareSkSheetTable(element, teamId, mode) {
 		WS.Register(['ScoreBoard.Period(*).Number',
 				'ScoreBoard.Period(*).Jam(*).Number',
 				'ScoreBoard.Period(*).Jam(*).StarPass',
-				'ScoreBoard.Period(*).Jam(*).Overtime',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
@@ -38,11 +37,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Current',
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score',
-<<<<<<< HEAD
-				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).PointsWithoutTrip'
-=======
 				'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Annotation'
->>>>>>> scoring-annotations
 		], handleUpdate);
 	}
 
