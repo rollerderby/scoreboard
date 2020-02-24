@@ -278,7 +278,6 @@ public class StatsImplTests {
         // Add some points without adding a trip or lead.
         team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
         assertEquals(2, tj.getCurrentScoringTrip().getNumber());
-        assertEquals(true, tj.getCurrentScoringTrip().get(ScoringTrip.Value.POINTS_WITHOUT_TRIP));
         
         sb.stopJamTO();
         advance(1000);
@@ -292,7 +291,6 @@ public class StatsImplTests {
         // Add some points between jams without adding a trip or lead.
         team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
         assertEquals(2, tj.getCurrentScoringTrip().getNumber());
-        assertEquals(true, tj.getCurrentScoringTrip().get(ScoringTrip.Value.POINTS_WITHOUT_TRIP));
         
         sb.startJam();
         sb.setInOvertime(true);
