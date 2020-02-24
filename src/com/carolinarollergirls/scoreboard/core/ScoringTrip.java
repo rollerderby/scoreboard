@@ -14,7 +14,8 @@ public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip
         POINTS_WITHOUT_TRIP(Boolean.class, false),
         DURATION(Long.class, 0L),
         JAM_CLOCK_START(Long.class, 0L),
-        JAM_CLOCK_END(Long.class, 0L);
+        JAM_CLOCK_END(Long.class, 0L),
+        ANNOTATION(String.class, "");
 
         private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
         private final Class<?> type;
