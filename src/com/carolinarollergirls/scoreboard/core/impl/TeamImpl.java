@@ -87,8 +87,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         if (prop == Value.TRIP_SCORE && flag != Flag.COPY && (Integer)value > 0) {
             // If points arrive during an initial trip and we are not in overtime, assign the points to the first scoring trip instead.
             if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
-                execute(Command.ADD_TRIP);
                 getCurrentTrip().set(ScoringTrip.Value.ANNOTATION,"Points were added without Trip +1\n" + get(ScoringTrip.Value.ANNOTATION));
+                execute(Command.ADD_TRIP);
             }
             
             if (scoreBoard.isInJam()) {
