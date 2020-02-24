@@ -8,10 +8,10 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.HashMap;
 
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Clock;
@@ -28,14 +28,14 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Timeout;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -70,7 +70,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         addWriteProtectionOverride(Value.OFFICIAL_REVIEWS, Flag.INTERNAL);
         addWriteProtectionOverride(Value.LAST_REVIEW, Flag.INTERNAL);
         setCopy(Value.RETAINED_OFFICIAL_REVIEW, this, Value.LAST_REVIEW, Timeout.Value.RETAINED_REVIEW, false);
-
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET, rulesetChangeListener));
     }
 
@@ -86,15 +85,25 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         }
         if (prop == Value.TRIP_SCORE && flag != Flag.COPY) {
             tripScoreTimerTask.cancel();
-            if (scoreBoard.isInJam() && (Integer)value > 0) {
-                tripScoreTimer.purge();
-                tripScoreTimerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        execute(Command.ADD_TRIP);
-                    }
-                };
-                tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+            if ((Integer) value > 0) {
+                // If points arrive during an initial trip and we are not in overtime, assign
+                // the points to the first scoring trip instead.
+                if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
+                    getCurrentTrip().set(ScoringTrip.Value.ANNOTATION,
+                            "Points were added without Trip +1\n" + get(ScoringTrip.Value.ANNOTATION));
+                    execute(Command.ADD_TRIP);
+                }
+
+                if (scoreBoard.isInJam()) {
+                    tripScoreTimer.purge();
+                    tripScoreTimerTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            execute(Command.ADD_TRIP);
+                        }
+                    };
+                    tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+                }
             }
         }
         if (prop == Value.NO_INITIAL && flag != Flag.COPY) {
@@ -388,7 +397,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public ScoringTrip getCurrentTrip() { return (ScoringTrip)get(Value.CURRENT_TRIP); }
     
-    @Override
     public boolean cancelTripAdvancement() { return tripScoreTimerTask.cancel(); }
 
     @Override
@@ -578,13 +586,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     @Override
     public boolean hasNoPivot() { return (Boolean)get(Value.NO_PIVOT); }
-
+    
     @Override
     public Team getOtherTeam() {
         String otherId = getId().equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
         return getScoreBoard().getTeam(otherId);
     }
-    
+            
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
     
     private Timer tripScoreTimer = new Timer();
