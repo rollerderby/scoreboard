@@ -1,5 +1,5 @@
 
-function jammer(k, v) {
+function jammer(k, v, ov) {
 	id = getTeamId(k);
 	var prefix = "ScoreBoard.Team(" + id + ").";
 	var jammerName = WS.state[prefix + "Position(Jammer).Name"];
@@ -9,9 +9,8 @@ function jammer(k, v) {
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
 	if (jammerName == null || jammerName == "") {
-		jammerName = leadJammer ? "Lead" : "";
-	if (pivotName == null)
-		pivotName = "";
+		jammerName = (leadJammer && !ov) ? "Lead" : "";
+		if (pivotName == null) {pivotName = "";}
 	}
 
 	var jn = !starPass ? jammerName : pivotName;
@@ -20,6 +19,7 @@ function jammer(k, v) {
 	};
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
 	$(".Team" + id).toggleClass("HasJammerName", (jn != ""));
+	$(".Team" + id + " .Lead").toggleClass("HasStarPass", starPass);
 	return jn
 }
 
@@ -60,8 +60,6 @@ function smallDescriptionUpdate(k, v) {
 	var lcn = WS.state["ScoreBoard.Clock(Lineup).Name"];
 	var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
 	var ret = '';
-
-	console.log(lc,tc,to,or,lcn,tcn);
 
 	$.each(["1", "2"], function (idx, id) {
 		tto = WS.state["ScoreBoard.Team(" + id + ").Timeouts"];
@@ -132,7 +130,7 @@ function toClockInitialNumber(k, v) {
 			if (name != null && number != null)
 				ret = name.substring(0, 1) + number;
 
-			if (name == 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1) 
+			if (name == 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1)
 				ret = 'Game';
 		}
 	});
