@@ -9,7 +9,7 @@ function jammer(k, v, ov) {
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
 	if (jammerName == null || jammerName == "") {
-		if (!ov) {jammerName = leadJammer ? "Lead" : "";}
+		jammerName = (leadJammer && !ov) ? "Lead" : "";
 		if (pivotName == null) {pivotName = "";}
 	}
 
