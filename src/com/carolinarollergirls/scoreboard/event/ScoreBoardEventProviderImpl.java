@@ -114,11 +114,13 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
 
     @Override
     public void runInBatch(Runnable r) {
-        requestBatchStart();
-        try {
-            r.run();
-        } finally {
-            requestBatchEnd();
+        synchronized (coreLock) {
+            requestBatchStart();
+            try {
+                r.run();
+            } finally {
+                requestBatchEnd();
+            }
         }
     }
 
