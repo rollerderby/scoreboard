@@ -183,7 +183,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     @Override
     public void removeRuleset(String id) { remove(Child.RULESET, id); }
 
-    public static final String ROOT_ID = "00000000-0000-0000-0000-000000000000";
+    public static final String ROOT_ID = "WFTDARuleset";
 
     public class RulesetImpl extends ScoreBoardEventProviderImpl implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, String parentId, String id) {
