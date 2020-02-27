@@ -27,6 +27,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     public SkaterImpl(Team t, String i) {
@@ -116,6 +117,16 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             Penalty p = (Penalty) item;
             if (FO_EXP_ID.equals(p.getProviderId())) {
                 updateEligibility();
+            } 
+            if (p.getNumber() == scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) {
+                Penalty fo = getPenalty(FO_EXP_ID);
+                if (fo == null) {
+                    fo = (Penalty)getOrCreate(NChild.PENALTY, 0);
+                    fo.set(Penalty.Value.CODE, "FO");
+                }
+                if (fo.get(Penalty.Value.CODE) == "FO") {
+                    fo.set(Penalty.Value.JAM, p.getJam());
+                }
             }
             if (!p.isServed() && getRole() == Role.JAMMER && getCurrentFielding() != null
                     && !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && scoreBoard.isInJam()) {
@@ -134,8 +145,15 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     }
     @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
-        if (prop == NChild.PENALTY && FO_EXP_ID.equals(((Penalty) item).getProviderId())) {
-            updateEligibility();
+        if (prop == NChild.PENALTY) {
+            if (FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
+                updateEligibility();
+            } else if (get(NChild.PENALTY, scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) == null) {
+                Penalty fo = getPenalty(FO_EXP_ID);
+                if (fo != null && fo.get(Penalty.Value.CODE) == "FO") {
+                    fo.delete();
+                }
+            }
         } else if (prop == Child.FIELDING && getCurrentFielding() == item) {
             set(Value.CURRENT_FIELDING, null);
         }

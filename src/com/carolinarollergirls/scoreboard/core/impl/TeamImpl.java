@@ -71,7 +71,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         addWriteProtectionOverride(Value.OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(Value.LAST_REVIEW, Source.ANY_INTERNAL);
         setCopy(Value.RETAINED_OFFICIAL_REVIEW, this, Value.LAST_REVIEW, Timeout.Value.RETAINED_REVIEW, false);
-
         sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET,
                 rulesetChangeListener));
     }
@@ -86,14 +85,24 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             Timeout t = scoreBoard.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && t.isReview();
         }
-        if (prop == Value.TRIP_SCORE && source != Source.COPY && scoreBoard.isInJam() && (Integer) value > 0) {
-            tripScoreTimerTask.cancel();
-            tripScoreTimer.purge();
-            tripScoreTimerTask = new TimerTask() {
-                @Override
-                public void run() { execute(Command.ADD_TRIP); }
-            };
-            tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+        if (prop == Value.TRIP_SCORE && source != Source.COPY && (Integer) value > 0) {
+            // If points arrive during an initial trip and we are not in overtime, assign the points to the first scoring trip instead.
+            if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
+                getCurrentTrip().set(ScoringTrip.Value.ANNOTATION,"Points were added without Trip +1\n" + get(ScoringTrip.Value.ANNOTATION));
+                execute(Command.ADD_TRIP);
+            }
+            
+            if (scoreBoard.isInJam()) {
+                tripScoreTimerTask.cancel();
+                tripScoreTimer.purge();
+                tripScoreTimerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        execute(Command.ADD_TRIP);
+                    }
+                };
+                tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+            }
         }
         if (prop == Value.NO_INITIAL && source != Source.COPY) {
             if (!(Boolean) value && (Boolean) last) {
