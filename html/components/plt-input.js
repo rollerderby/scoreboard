@@ -72,7 +72,15 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		WS.Register(['ScoreBoard.Period(*).Jam(*).Id']);
 		WS.Register(['ScoreBoard.CurrentPeriodNumber']);
 		WS.Register(['ScoreBoard.UpcomingJam']);
-		WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)']);
+		if (mode == 'plt' || mode == 'lt') {
+			prepareUseLTDialog();
+			WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)'], function(k, v) {
+				if (!isTrue(v)) {
+					useLTDialog.dialog('open');
+			}});
+		} else {
+			WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
+		}
 	}
 
 	function updatePeriod(k, v) {
@@ -397,7 +405,7 @@ function openPenaltyEditor(t, id, which) {
 	
 	var penaltyNumber = which;
 	var penaltyId = null;
-	var wasServed = isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)']);
+	var wasServed = !isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
 
 	$('#PenaltyEditor .Codes>div').removeClass('Active');
 
@@ -788,6 +796,26 @@ function prepareOptionsDialog(teamId, onlySettings) {
 		title: 'Option Editor',
 		buttons: [{ text: "Save", click: setURL }],
 		width: '500px',
+		autoOpen: false,
+	});
+}
+
+var useLTDialog;
+
+function prepareUseLTDialog() {
+	
+	
+	useLTDialog = $('#UseLTDialog')
+		.text('Use of Lineup Tracking is disabled.')
+		.dialog({
+		modal: true,
+		closeOnEscape: true,
+		title: 'Use Lineup Tracking',
+		buttons: [{ text: "Enable", click: function() {
+			WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', true);
+			useLTDialog.dialog('close');
+		}}],
+		width: '300px',
 		autoOpen: false,
 	});
 }
