@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam.PreparedTeamSkater;
@@ -411,21 +412,37 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         int toCount = scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS);
         int revCount = scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
         int retainsLeft = scoreBoard.getRulesets().getInt(Rule.NUMBER_RETAINS);
+        boolean rdclPerHalfRules = scoreBoard.getRulesets().getBoolean(Rule.RDCL_PER_HALF_RULES);
+        boolean otherHalfToUnused = rdclPerHalfRules;
         Timeout lastReview = null;
 
         for (ValueWithId v : getAll(Child.TIME_OUT)) {
             Timeout t = (Timeout) v;
+            boolean isThisRdclHalf = false;
+            if (rdclPerHalfRules) {
+                boolean gameIsSecondHalf = scoreBoard.getCurrentPeriodNumber() > 2;
+                boolean tIsSecondHalf = ((Period) t.getParent()).getNumber() > 2;
+                isThisRdclHalf = (gameIsSecondHalf == tIsSecondHalf);
+            }
             if (t.isReview()) {
-                if (!revPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod()) {
+                if (!revPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod() || isThisRdclHalf) {
                     if (retainsLeft > 0 && t.isRetained()) {
                         retainsLeft--;
-                    } else if (revCount > 0) { revCount--; }
-                    if (lastReview == null || t.compareTo(lastReview) > 0) { lastReview = t; }
+                    } else if (revCount > 0) {
+                        revCount--;
+                    }
+                    if (lastReview == null || t.compareTo(lastReview) > 0) {
+                        lastReview = t;
+                    }
                 }
             } else {
-                if (toCount > 0 && (!toPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod())) { toCount--; }
+                if (toCount > 0 && (!toPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod())) {
+                    toCount--;
+                    otherHalfToUnused = otherHalfToUnused && !isThisRdclHalf;
+                }
             }
         }
+        if (otherHalfToUnused) { toCount--; }
         set(Value.TIMEOUTS, toCount);
         set(Value.OFFICIAL_REVIEWS, revCount);
         set(Value.LAST_REVIEW, lastReview);
