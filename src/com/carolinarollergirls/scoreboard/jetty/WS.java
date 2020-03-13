@@ -8,38 +8,41 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import io.prometheus.client.Counter;
-import io.prometheus.client.Gauge;
-import io.prometheus.client.Histogram;
-
 import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TreeSet;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.jr.ob.JSON;
 import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
+import com.carolinarollergirls.scoreboard.core.Jam;
+import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
-import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 import com.carolinarollergirls.scoreboard.utils.Logger;
+import com.fasterxml.jackson.jr.ob.JSON;
+
+import io.prometheus.client.Counter;
+import io.prometheus.client.Gauge;
+import io.prometheus.client.Histogram;
 
 public class WS extends WebSocketServlet {
 
@@ -49,7 +52,8 @@ public class WS extends WebSocketServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         getServletContext().getNamedDispatcher("default").forward(request, response);
     }
 
@@ -58,7 +62,6 @@ public class WS extends WebSocketServlet {
         return new Conn(jsm);
     }
 
-
     private ScoreBoard sb;
     private JSONStateManager jsm;
 
@@ -66,14 +69,15 @@ public class WS extends WebSocketServlet {
         return true;
     }
 
-    private static final Gauge connectionsActive = Gauge.build()
-            .name("crg_websocket_active_connections").help("Current WebSocket connections").register();
-    private static final Counter messagesReceived = Counter.build()
-            .name("crg_websocket_messages_received").help("Number of WebSocket messages received").register();
+    private static final Gauge connectionsActive = Gauge.build().name("crg_websocket_active_connections")
+            .help("Current WebSocket connections").register();
+    private static final Counter messagesReceived = Counter.build().name("crg_websocket_messages_received")
+            .help("Number of WebSocket messages received").register();
     private static final Histogram messagesSentDuration = Histogram.build()
-            .name("crg_websocket_messages_sent_duration_seconds").help("Time spent sending WebSocket messages").register();
-    private static final Counter messagesSentFailures = Counter.build()
-            .name("crg_websocket_messages_sent_failed").help("Number of WebSocket messages we failed to send").register();
+            .name("crg_websocket_messages_sent_duration_seconds").help("Time spent sending WebSocket messages")
+            .register();
+    private static final Counter messagesSentFailures = Counter.build().name("crg_websocket_messages_sent_failed")
+            .help("Number of WebSocket messages we failed to send").register();
 
     public class Conn implements OnTextMessage, JSONStateListener {
         private Connection connection;
@@ -89,7 +93,7 @@ public class WS extends WebSocketServlet {
             messagesReceived.inc();
             try {
                 Map<String, Object> json = JSON.std.mapFrom(message_data);
-                String action = (String)json.get("action");
+                String action = (String) json.get("action");
                 if (!hasPermission(action)) {
                     json = new HashMap<>();
                     json.put("authorization", "Not authorized for " + action);
@@ -97,11 +101,11 @@ public class WS extends WebSocketServlet {
                     return;
                 }
                 if (action.equals("Register")) {
-                    List<?> jsonPaths = (List<?>)json.get("paths");
+                    List<?> jsonPaths = (List<?>) json.get("paths");
                     if (jsonPaths != null) {
                         Set<String> newPaths = new TreeSet<>();
                         for (Object p : jsonPaths) {
-                          newPaths.add((String)p);
+                            newPaths.add((String) p);
                         }
                         // Send on updates for the newly registered paths.
                         PathTrie pt = new PathTrie();
@@ -110,7 +114,7 @@ public class WS extends WebSocketServlet {
                         this.paths.addAll(newPaths);
                     }
                 } else if (action.equals("Set")) {
-                    String key = (String)json.get("key");
+                    String key = (String) json.get("key");
                     Object value = json.get("value");
                     String v;
                     if (value == null) {
@@ -120,7 +124,7 @@ public class WS extends WebSocketServlet {
                         v = value.toString();
                     }
                     Flag flag = null;
-                    String f = (String)json.get("flag");
+                    String f = (String) json.get("flag");
                     if ("reset".equals(f)) { flag = Flag.RESET; }
                     if ("change".equals(f)) { flag = Flag.CHANGE; }
                     final ScoreBoardJSONSetter.JSONSet js = new ScoreBoardJSONSetter.JSONSet(key, v, flag);
@@ -132,25 +136,74 @@ public class WS extends WebSocketServlet {
                     });
                 } else if (action.equals("StartNewGame")) {
                     @SuppressWarnings("unchecked")
-                    final Map<String, Object> data = (Map<String, Object>)json.get("data");
+                    final Map<String, Object> data = (Map<String, Object>) json.get("data");
                     sb.runInBatch(new Runnable() {
                         @Override
                         public void run() {
-                            PreparedTeam t1 = sb.getPreparedTeam((String)data.get("Team1"));
-                            PreparedTeam t2 = sb.getPreparedTeam((String)data.get("Team2"));
-                            String rs = (String)data.get("Ruleset");
+                            PreparedTeam t1 = sb.getPreparedTeam((String) data.get("Team1"));
+                            PreparedTeam t2 = sb.getPreparedTeam((String) data.get("Team2"));
+                            String rs = (String) data.get("Ruleset");
                             sb.reset();
                             sb.getRulesets().setCurrentRuleset(rs);
                             sb.getTeam(Team.ID_1).loadPreparedTeam(t1);
                             sb.getTeam(Team.ID_2).loadPreparedTeam(t2);
 
-                            String intermissionClock = (String)data.get("IntermissionClock");
-                            if (intermissionClock != null) {
-                                Long ic_time = Long.valueOf(intermissionClock);
-                                ic_time = ic_time - (ic_time % 1000);
-                                Clock c = sb.getClock(Clock.ID_INTERMISSION);
-                                c.setMaximumTime(ic_time);
-                                c.restart();
+                            if ((Boolean) data.get("Advance")) {
+                                sb.startJam();
+                                sb.timeout();
+                                for (int i = 0; i < (Integer) data.get("TO1"); i++) {
+                                    sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
+                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    sb.timeout();
+                                }
+                                for (int i = 0; i < (Integer) data.get("TO2"); i++) {
+                                    sb.setTimeoutType(sb.getTeam(Team.ID_2), false);
+                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    sb.timeout();
+                                }
+                                for (int i = 0; i < (Integer) data.get("OR1"); i++) {
+                                    sb.setTimeoutType(sb.getTeam(Team.ID_1), true);
+                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    sb.timeout();
+                                }
+                                for (int i = 0; i < (Integer) data.get("OR2"); i++) {
+                                    sb.setTimeoutType(sb.getTeam(Team.ID_2), true);
+                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    sb.timeout();
+                                }
+                                sb.setTimeoutType(Timeout.Owners.OTO, false);
+                                sb.getTeam(Team.ID_1).set(Team.Value.TRIP_SCORE, data.get("Points1"));
+                                sb.getTeam(Team.ID_2).set(Team.Value.TRIP_SCORE, data.get("Points2"));
+                                int period = (Integer) data.get("Period");
+                                int jam = (Integer) data.get("Jam");
+                                if (jam == 0 && period > 1) {
+                                    sb.getClock(Clock.ID_PERIOD)
+                                            .elapseTime(sb.getClock(Clock.ID_PERIOD).getMaximumTime());
+                                    sb.stopJamTO();
+                                    sb.getClock(Clock.ID_INTERMISSION)
+                                            .elapseTime(sb.getClock(Clock.ID_INTERMISSION).getMaximumTime());
+                                    for (int i = 2; i < period; i++) {
+                                        sb.getCurrentPeriod().execute(Period.Command.INSERT_BEFORE);
+                                    }
+                                } else {
+                                    for (int i = 1; i < period; i++) {
+                                        sb.getCurrentPeriod().execute(Period.Command.INSERT_BEFORE);
+                                    }
+                                    for (int i = 1; i < jam; i++) {
+                                        sb.getCurrentPeriod().getCurrentJam().execute(Jam.Command.INSERT_BEFORE);
+                                    }
+                                    sb.getClock(Clock.ID_PERIOD)
+                                            .setTime(Long.valueOf((String) data.get("PeriodClock")));
+                                }
+                            } else {
+                                String intermissionClock = (String) data.get("IntermissionClock");
+                                if (intermissionClock != null) {
+                                    Long ic_time = Long.valueOf(intermissionClock);
+                                    ic_time = ic_time - (ic_time % 1000);
+                                    Clock c = sb.getClock(Clock.ID_INTERMISSION);
+                                    c.setMaximumTime(ic_time);
+                                    c.restart();
+                                }
                             }
                         }
                     });
@@ -170,11 +223,8 @@ public class WS extends WebSocketServlet {
         public void send(Map<String, Object> json) {
             Histogram.Timer timer = messagesSentDuration.startTimer();
             try {
-                connection.sendMessage(JSON.std
-                    .with(JSON.Feature.WRITE_NULL_PROPERTIES)
-                    .composeString()
-                    .addObject(json)
-                    .finish());
+                connection.sendMessage(
+                        JSON.std.with(JSON.Feature.WRITE_NULL_PROPERTIES).composeString().addObject(json).finish());
             } catch (Exception e) {
                 Logger.printMessage("Error sending JSON update: " + e);
                 e.printStackTrace();
@@ -221,7 +271,7 @@ public class WS extends WebSocketServlet {
 
         private void sendWSUpdatesForPaths(PathTrie watchedPaths, Set<String> changed) {
             Map<String, Object> updates = new HashMap<>();
-            for (String k: changed) {
+            for (String k : changed) {
                 if (watchedPaths.covers(k)) {
                     updates.put(k, state.get(k));
                 }
@@ -245,7 +295,7 @@ public class WS extends WebSocketServlet {
         Map<String, PathTrie> trie = new HashMap<>();
 
         public void addAll(Set<String> c) {
-            for (String p: c) {
+            for (String p : c) {
                 add(p);
             }
         }
@@ -279,8 +329,9 @@ public class WS extends WebSocketServlet {
                 if (head.trie.containsKey("*)")) {
                     int j;
                     // id captured by * might contain . and thus be split - find the end
-                    for (j = i; j < p.length && !p[j].endsWith(")"); j++);
-                    if (head.trie.get("*)")._covers(p, j+1)) {
+                    for (j = i; j < p.length && !p[j].endsWith(")"); j++)
+                        ;
+                    if (head.trie.get("*)")._covers(p, j + 1)) {
                         return true;
                     }
                 }
