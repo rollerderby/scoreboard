@@ -86,23 +86,27 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             Timeout t = scoreBoard.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && t.isReview();
         }
-        if (prop == Value.TRIP_SCORE && source != Source.COPY && (Integer) value > 0) {
-            // If points arrive during an initial trip and we are not in overtime, assign the points to the first scoring trip instead.
-            if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
-                getCurrentTrip().set(ScoringTrip.Value.ANNOTATION,"Points were added without Trip +1\n" + get(ScoringTrip.Value.ANNOTATION));
-                execute(Command.ADD_TRIP);
-            }
-            
-            if (scoreBoard.isInJam()) {
-                tripScoreTimerTask.cancel();
-                tripScoreTimer.purge();
-                tripScoreTimerTask = new TimerTask() {
-                    @Override
-                    public void run() {
-                        execute(Command.ADD_TRIP);
-                    }
-                };
-                tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+        if (prop == Value.TRIP_SCORE && source != Source.COPY) {
+            tripScoreTimerTask.cancel();
+            if ((Integer) value > 0) {
+                // If points arrive during an initial trip and we are not in overtime, assign
+                // the points to the first scoring trip instead.
+                if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
+                    getCurrentTrip().set(ScoringTrip.Value.ANNOTATION,
+                            "Points were added without Trip +1\n" + get(ScoringTrip.Value.ANNOTATION));
+                    execute(Command.ADD_TRIP);
+                }
+
+                if (scoreBoard.isInJam()) {
+                    tripScoreTimer.purge();
+                    tripScoreTimerTask = new TimerTask() {
+                        @Override
+                        public void run() {
+                            execute(Command.ADD_TRIP);
+                        }
+                    };
+                    tripScoreTimer.schedule(tripScoreTimerTask, 4000);
+                }
             }
         }
         if (prop == Value.NO_INITIAL && source != Source.COPY) {
@@ -149,8 +153,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
             break;
         case REMOVE_TRIP:
-            tripScoreTimerTask.cancel();
-            getRunningOrEndedTeamJam().removeScoringTrip();
+            if (!tripScoreTimerTask.cancel()) {
+                getRunningOrEndedTeamJam().removeScoringTrip();
+            }
             break;
         case ADVANCE_FIELDINGS:
             advanceFieldings();
@@ -387,6 +392,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public ScoringTrip getCurrentTrip() { return (ScoringTrip) get(Value.CURRENT_TRIP); }
 
+    public boolean cancelTripAdvancement() { return tripScoreTimerTask.cancel(); }
+
     @Override
     public boolean inTimeout() { return (Boolean) get(Value.IN_TIMEOUT); }
 
@@ -605,7 +612,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     private Timer tripScoreTimer = new Timer();
     private TimerTask tripScoreTimerTask = new TimerTask() {
         @Override
-        public void run() {} // dummy, so the variable is not null at the first score entry
+        public void run() {} // dummy, so the variable is not
+                             // null at the first score entry
     };
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";

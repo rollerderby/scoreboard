@@ -51,7 +51,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public int getScore();
 
     public ScoringTrip getCurrentTrip();
-
+    
     public int getTimeouts();
     public int getOfficialReviews();
 
