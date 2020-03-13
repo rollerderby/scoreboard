@@ -14,8 +14,8 @@ extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoard
         this.subId = subId;
         setRecalculated(IValue.PREVIOUS).addSource(parent, IValue.PREVIOUS);
         setRecalculated(IValue.NEXT).addSource(parent, IValue.NEXT);
-        set(IValue.PREVIOUS, null); //recalculate
-        set(IValue.NEXT, null); //recalculate
+        set(IValue.PREVIOUS, null, Source.RECALCULATE);
+        set(IValue.NEXT, null, Source.RECALCULATE);
         setCopy(IValue.NUMBER, parent, IValue.NUMBER, true);
     }
 
@@ -23,22 +23,22 @@ extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoard
     public String getProviderId() { return subId; }
 
     @Override
-    protected Object _computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == IValue.PREVIOUS && flag != Flag.INVERSE_REFERENCE) {
+    protected Object _computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == IValue.PREVIOUS && source != Source.INVERSE_REFERENCE) {
             if (((OrderedScoreBoardEventProvider<?>) parent).hasPrevious()) {
                 return ((OrderedScoreBoardEventProvider<?>) getParent()).getPrevious().get(ownType, subId);
             } else {
                 return null;
             }
         }
-        if (prop == IValue.NEXT && flag != Flag.INVERSE_REFERENCE) {
+        if (prop == IValue.NEXT && source != Source.INVERSE_REFERENCE) {
             if (((OrderedScoreBoardEventProvider<?>) parent).hasNext()) {
                 return ((OrderedScoreBoardEventProvider<?>) getParent()).getNext().get(ownType, subId);
             } else {
                 return null;
             }
         }
-        return super._computeValue(prop, value, last, flag);
+        return super._computeValue(prop, value, last, source, flag);
     }
 
     @SuppressWarnings("hiding")

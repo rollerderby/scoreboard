@@ -9,7 +9,7 @@ public abstract class OrderedScoreBoardEventProviderImpl<T extends OrderedScoreB
     @SuppressWarnings("varargs")  // @SafeVarargs isn't working for some reason.
     public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, 
             AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
-        super(parent, IValue.ID, id, type, ownClass, append(props, IValue.class));
+        super(parent, id, type, ownClass, props);
         addScoreBoardListener(new InverseReferenceUpdateListener(this, IValue.PREVIOUS, IValue.NEXT));
         addScoreBoardListener(new InverseReferenceUpdateListener(this, IValue.NEXT, IValue.PREVIOUS));
     }
@@ -27,12 +27,4 @@ public abstract class OrderedScoreBoardEventProviderImpl<T extends OrderedScoreB
     public T getNext() { return (T)get(IValue.NEXT); }
     @Override
     public boolean hasNext() { return getNext() != null; }
-
-    static <U> U[] append(U[] arr, U lastElement) {
-        final int N = arr.length;
-        arr = java.util.Arrays.copyOf(arr, N+1);
-        arr[N] = lastElement;
-        return arr;
-    }
-
 }

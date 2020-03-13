@@ -17,7 +17,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
 public class PreparedTeamImpl extends ScoreBoardEventProviderImpl implements PreparedTeam {
   PreparedTeamImpl(ScoreBoard parent, String id) {
-    super(parent, Value.ID, id, ScoreBoard.Child.PREPARED_TEAM, PreparedTeam.class, Value.class, Child.class);
+    super(parent, id, ScoreBoard.Child.PREPARED_TEAM, PreparedTeam.class, Value.class, Child.class);
   }
 
   @Override
@@ -31,7 +31,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl implements Pre
   }
   public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl implements PreparedTeamSkater {
     PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
-      super(parent, Value.ID, id, PreparedTeam.Child.SKATER, PreparedTeamSkater.class, Value.class);
+      super(parent, id, PreparedTeam.Child.SKATER, PreparedTeamSkater.class, Value.class);
     }
   }
 }

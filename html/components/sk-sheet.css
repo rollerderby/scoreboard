@@ -36,11 +36,20 @@ body:not(.AllowSelect) .SK {
 .SK.Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; }
 .SK.Period .GameTotal, .SK.Period .JamTotal,.SK.Period .Lost, .SK.Period .Trip2 { border-left-width: 2px; }
 .SK.Period .GameTotal { background-color: #d3ecb6; }
+.SK.Period .hasAnnotation { position: relative; }
+.SK.Period .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; }
 
 #TripEditor input[type="number"] { width: 50px; }
-#TripEditor td { padding-bottom: 0.5em; }
-#TripEditor .buttons td { text-align: center; }
+#TripEditor table { width: 100%; }
+#TripEditor td { padding: 0.25em; text-align: center; width: 33%; }
+#TripEditor td.close { text-align: right; }
+#TripEditor .header { font-weight: bold; }
 #TripEditor .ui-button { font-size: 75%; }
 #TripEditor .ui-button.checked { background: #3f3; }
+#TripEditor .Hide { display: none; }
+#TripEditor .Invisible { visibility: hidden; }
 
 #skaterSelector .Hide { display: none; }
+
+.SK.Period .noTripAlert { position: relative; }
+.SK.Period .noTripAlert::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; }

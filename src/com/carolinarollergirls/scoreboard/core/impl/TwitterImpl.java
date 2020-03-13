@@ -36,7 +36,7 @@ import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
 public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter {
     public TwitterImpl(ScoreBoard sb) {
-        super(sb, null, "", ScoreBoard.Child.TWITTER, Twitter.class, Value.class, Child.class, Command.class);
+        super(sb, "", ScoreBoard.Child.TWITTER, Twitter.class, Value.class, Child.class, Command.class);
 
         formatSpecifierViewer = new FormatSpecifierViewer(sb);
         int i = 0;
@@ -75,7 +75,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
     }
 
     @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+    protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (!initilized) { return; }
         if (prop == Value.OAUTH_VERIFIER && value != null && !((String)value).isEmpty()) {
             twitter.getOAuthAccessTokenAsync(requestToken, (String) value);
@@ -86,7 +86,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
     }
 
     @Override
-    public void execute(CommandProperty prop) {
+    public void execute(CommandProperty prop, Source source) {
         switch((Command)prop) {
         case LOGIN:
             twitter.getOAuthRequestTokenAsync((String)get(Value.CALLBACK_URL));
@@ -125,7 +125,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
     }
 
     @Override
-    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item) {
+    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
         if (prop == Child.CONDITIONAL_TWEET) {
             removeConditionalListener(item.getId());
         }
@@ -208,11 +208,11 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
 
     public class ConditionalTweetImpl extends ScoreBoardEventProviderImpl implements ConditionalTweet {
         public ConditionalTweetImpl(Twitter t, String id) {
-            super(t, Value.ID, id, Twitter.Child.CONDITIONAL_TWEET, ConditionalTweet.class, Value.class);
+            super(t, id, Twitter.Child.CONDITIONAL_TWEET, ConditionalTweet.class, Value.class);
         }
 
         @Override
-        protected void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+        protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
             if (prop == Value.TWEET || prop == Value.CONDITION) {
                 removeConditionalListener(getId());
                 if (!getTweet().isEmpty() && !getCondition().isEmpty()) {
@@ -238,7 +238,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
 
     public class FormatSpecifierImpl extends ScoreBoardEventProviderImpl implements FormatSpecifier {
         public FormatSpecifierImpl(Twitter t, String id) {
-            super(t, Value.ID, id, Twitter.Child.FORMAT_SPECIFIER, FormatSpecifier.class, Value.class);
+            super(t, id, Twitter.Child.FORMAT_SPECIFIER, FormatSpecifier.class, Value.class);
         }
     }
 

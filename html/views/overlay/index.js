@@ -27,7 +27,7 @@ function initialize() {
 
 	WS.Register( [
 			'ScoreBoard.Team(*).Skater(*).Name',
-			'ScoreBoard.Team(*).Skater(*).Number',
+			'ScoreBoard.Team(*).Skater(*).RosterNumber',
 			'ScoreBoard.Team(*).Skater(*).Flags',
 			'ScoreBoard.Team(*).Skater(*).Role'], function(k,v) {
 				var me = '.RosterTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
@@ -54,7 +54,7 @@ function initialize() {
 					// Name or Number, replace empty string with nbsp
 					$('.'+k.field, me).text(v == '' ? '\xa0' : v);
 					$('.'+k.field, mb).text(v == '' ? '\xa0' : v);
-					if (k.field == 'Number') {
+					if (k.field == 'RosterNumber') {
 						updateSort(me);
 						updateSort(mb);
 					}
@@ -76,24 +76,10 @@ function initialize() {
 		createPenalty(sel, k.Penalty, v);
 	} );
 
-	WS.Register( ['ScoreBoard.Team(*).Color(overlay_bg)',
-			'ScoreBoard.Team(*).Color(overlay_fg)' ], function(k,v) {
-		var style;
-		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
-		if(style) {
-			var ns,r;
-			var rule;
-			// chrome seems to like things in lowercase
-			var rd = '#sb .colourteam'+k.Team;
 
-			if(k.Color == 'overlay_bg') ns = 'background-color';
-			if(k.Color == 'overlay_fg') ns = 'color';
-			for(var r=0; r<style.rules.length ; r++ ) {
-				var dd = style.rules[r];
-				if(dd.selectorText == rd && dd.style[0] == ns) style.deleteRule(r);
-			}
-			if(v != null) style.addRule(rd, ns + ': ' + v);
-		}
+	WS.Register( ['ScoreBoard.Team(*).Color'], function(k,v) {
+		 $(document).find('.ColourTeam'+k.Team).css('color',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_fg)'] || '');
+		 $(document).find('.ColourTeam'+k.Team).css('background',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_bg)'] || '');
 	});
 
 	WS.Register( 'ScoreBoard.Team(*).Logo', function(k,v) {
@@ -165,7 +151,9 @@ function initialize() {
 			setTimeout(function() { $('body').removeClass('preload'); }, 1000);
 }
 
-
+function jammer_ov(k, v) {
+	return	jammer(k,v,true);
+}
 
 function ensureSkaterExists(skaterId, team) {
 	if ($('.PenaltyTeam' + team + ' .Team' + team + ' .Skater[data-skaterId=' + skaterId + ']').length == 0) {

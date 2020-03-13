@@ -3,10 +3,11 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Arrays;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import java.util.Arrays;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
@@ -18,7 +19,6 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Team.Value;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -173,6 +173,10 @@ public class StatsImplTests {
         Period p = sb.getOrCreatePeriod(1);
         Jam j = p.getJam(1);
         TeamJam tj = j.getTeamJam(Team.ID_1);
+        
+        // Lead during the jam.
+        team1.set(Value.LEAD, true);
+        assertTrue(tj.isDisplayLead());
 
         // Change the score during the jam.
         team1.set(Value.TRIP_SCORE, 5, Flag.CHANGE);
@@ -183,15 +187,11 @@ public class StatsImplTests {
         team1.set(Value.STAR_PASS_TRIP, team1.get(Value.CURRENT_TRIP));
         assertEquals(true, tj.isStarPass());
 
-        // Lead during the jam.
-        team1.set(Value.LEAD, true);
-        assertTrue(tj.isDisplayLead());
-
         sb.stopJamTO();
         advance(1000);
         // Star pass and lead still correct after jam end.
         assertEquals(true, tj.isStarPass());
-        assertTrue(tj.isDisplayLead());
+        assertEquals(false, tj.isDisplayLead());
 
         // Some points arrive after end of jam.
         team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
@@ -264,6 +264,43 @@ public class StatsImplTests {
         // New jammer does not replace jammer from previous jam.
         team1.field(skater4, Role.JAMMER);
         assertEquals(skater1, tj.getFielding(FloorPosition.JAMMER).getSkater());
+    }
+    @Test
+    public void testTripAutoAdvance() {
+        sb.startJam();
+        advance(1000);
+        
+        Period p = sb.getOrCreatePeriod(1);
+        Jam j = p.getJam(1);
+        TeamJam tj = j.getTeamJam(Team.ID_1);
+        
+        // Add some points without adding a trip or lead.
+        team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
+        assertEquals(2, tj.getCurrentScoringTrip().getNumber());
+        
+        sb.stopJamTO();
+        advance(1000);
+        sb.startJam();
+        advance(1000);
+        j = p.getJam(2);
+        tj = j.getTeamJam(Team.ID_1);
+        sb.stopJamTO();
+        advance(1000);
+        
+        // Add some points between jams without adding a trip or lead.
+        team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
+        assertEquals(2, tj.getCurrentScoringTrip().getNumber());
+        
+        sb.startJam();
+        sb.setInOvertime(true);
+        advance(1000);
+        j = p.getJam(3);
+        tj = j.getTeamJam(Team.ID_1);
+        
+        // Add some points without adding a trip or lead during an overtime jam
+        assertEquals(1, tj.getCurrentScoringTrip().getNumber());
+        team1.set(Value.TRIP_SCORE, 1);
+        assertEquals(1, tj.getCurrentScoringTrip().getNumber());
     }
 
 }

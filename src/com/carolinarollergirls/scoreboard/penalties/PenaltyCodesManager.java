@@ -19,7 +19,7 @@ import com.fasterxml.jackson.jr.ob.JSON;
 public class PenaltyCodesManager extends ScoreBoardEventProviderImpl {
 
     public PenaltyCodesManager(ScoreBoard parent) {
-        super(parent, null, "", ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
+        super(parent, "", ScoreBoard.Child.PENALTY_CODES, PenaltyCodesManager.class, Child.class);
         this.parent = parent;
         loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE));
         parent.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Child.CURRENT_RULE, rulesetChangeListener));

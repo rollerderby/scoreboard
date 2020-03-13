@@ -1,6 +1,8 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedList;
 import java.util.Queue;
@@ -13,8 +15,6 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.impl.TeamJamImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -28,12 +28,11 @@ public class TeamJamImplTests {
 
         @Override
         public void scoreBoardChange(ScoreBoardEvent event) {
-            synchronized(collectedEvents) {
+            synchronized (collectedEvents) {
                 collectedEvents.add(event);
             }
         }
     };
-
 
     private TeamJamImpl tj;
 
@@ -42,7 +41,7 @@ public class TeamJamImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
-        tj = (TeamJamImpl)sb.getTeam(Team.ID_1).get(Team.Value.RUNNING_OR_UPCOMING_TEAM_JAM);
+        tj = (TeamJamImpl) sb.getTeam(Team.ID_1).get(Team.Value.RUNNING_OR_UPCOMING_TEAM_JAM);
         ScoreBoardClock.getInstance().stop();
     }
 
@@ -60,7 +59,7 @@ public class TeamJamImplTests {
         assertTrue(tj.isStarPass());
 
         tj.getCurrentScoringTrip().getPrevious().execute(ScoringTrip.Command.REMOVE);
-   
+
         assertEquals(3, tj.getJamScore());
         assertEquals(3, tj.get(TeamJam.Value.AFTER_S_P_SCORE));
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
