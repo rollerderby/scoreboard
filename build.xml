@@ -6,6 +6,7 @@
 
 	<property name="src.dir" value="src"/>
 	<property name="dest.dir" value="bin"/>
+	<property name="test.run" value="*" />
 	<property name="test.src.dir" value="tests" />
 	<property name="test.build.dir" value="test-bin" />
 	<property name="jdoc.dir" value="jdoc"/>
@@ -147,7 +148,7 @@
 			</classpath>
 			<formatter type="brief" usefile="false" />
 				<batchtest>
-					<fileset dir="${test.src.dir}" includes="**/*Tests.java" />
+					<fileset dir="${test.src.dir}" includes="**/${test.run}Tests.java" />
 				</batchtest>
 		</junit>
 	</target>

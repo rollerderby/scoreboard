@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Media;
@@ -67,6 +68,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         addWriteProtection(Child.PENALTY_CODES);
         add(Child.MEDIA, new MediaImpl(this));
         addWriteProtection(Child.MEDIA);
+        add(Child.CLIENTS, new ClientsImpl(this));
+        addWriteProtection(Child.CLIENTS);
         add(Child.TWITTER, new TwitterImpl(this));
         addWriteProtection(Child.TWITTER);
         getTeam(Team.ID_1);
@@ -172,7 +175,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) {
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == Child.CLOCK) { return new ClockImpl(this, id); }
             if (prop == Child.TEAM) { return new TeamImpl(this, id); }
@@ -651,6 +654,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
     @Override
     public Media getMedia() { return (Media) get(Child.MEDIA, ""); }
+
+    @Override
+    public Clients getClients() { return (Clients) get(Child.CLIENTS, ""); }
 
     @Override
     public Clock getClock(String id) { return (Clock) getOrCreate(Child.CLOCK, id); }

@@ -1,0 +1,30 @@
+table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Devices th {
+	border-collapse: collapse;
+	border-color:#777;
+  border: 1px;
+  border-style: solid;
+}
+
+.Devices thead { background-color: #aaaaaa; }
+.Devices tbody { background-color: #f0f0f0; }
+.Devices tbody:not(.HasComment) .Comment input { background-color: #eeeeee; }
+.Devices tbody.HasClients .LastSeenActive { background-color: #adddad; }
+.Devices tbody.HasWritten .LastWrite { background-color: #ddddad; }
+
+.Devices td, .Devices th { padding: .4ex; }
+.Devices .Created, .Devices .LastSeenActive, .Devices .LastSeenInactive, .Devices .LastWrite { text-align: right; }
+.Devices .Platform { text-align: center; }
+.Devices .RemoteAddr { text-align: left; }  /* Have all the 192.168s line up. */
+
+/* Hide LastSeen for a device if it has active clients. */
+.Devices tbody.HasClients .LastSeenInactive { display: none; }
+.Devices tbody:not(.HasClients) .LastSeenActive { display: none; }
+
+.Devices tbody { display: none; }
+.Devices.ShowWriters tbody.HasWritten { display: table-row-group; }
+.Devices.ShowActive tbody.HasClients { display: table-row-group; }
+.Devices.ShowInactive tbody:not(.HasClients) { display: table-row-group; }
+.Devices.ShowComments tbody.HasComment { display: table-row-group; }
+
+.Buttons .ui-button-text { font-size: 80%; line-height: 1em; }
+.Buttons { padding: 1ex; }

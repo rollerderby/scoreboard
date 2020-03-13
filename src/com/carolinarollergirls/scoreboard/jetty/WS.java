@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
-import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +24,8 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 
+import com.carolinarollergirls.scoreboard.core.Clients.Client;
+import com.carolinarollergirls.scoreboard.core.Clients.Device;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Period;
@@ -59,7 +60,7 @@ public class WS extends WebSocketServlet {
 
     @Override
     public WebSocket doWebSocketConnect(HttpServletRequest request, String arg1) {
-        return new Conn(jsm);
+        return new Conn(jsm, request);
     }
 
     private ScoreBoard sb;
@@ -84,8 +85,10 @@ public class WS extends WebSocketServlet {
         @SuppressWarnings("hiding")
         private JSONStateManager jsm;
 
-        public Conn(JSONStateManager jsm) {
+        public Conn(JSONStateManager jsm, HttpServletRequest request) {
             this.jsm = jsm;
+            this.request = request;
+            device = sb.getClients().getDevice(request.getSession().getId());
         }
 
         @Override
@@ -114,6 +117,7 @@ public class WS extends WebSocketServlet {
                         this.paths.addAll(newPaths);
                     }
                 } else if (action.equals("Set")) {
+                    sbClient.write();
                     String key = (String) json.get("key");
                     Object value = json.get("value");
                     String v;
@@ -135,6 +139,7 @@ public class WS extends WebSocketServlet {
                         }
                     });
                 } else if (action.equals("StartNewGame")) {
+                    sbClient.write();
                     @SuppressWarnings("unchecked")
                     final Map<String, Object> data = (Map<String, Object>) json.get("data");
                     sb.runInBatch(new Runnable() {
@@ -211,6 +216,12 @@ public class WS extends WebSocketServlet {
                     json = new HashMap<>();
                     json.put("Pong", "");
                     send(json);
+
+                    // This is usually only every 30s, so often enough
+                    // to cover us if our process is terminated uncleanly
+                    // without having to build something just for it
+                    // or risking an update loop.
+                    device.access();
                 } else {
                     sendError("Unknown Action '" + action + "'");
                 }
@@ -240,12 +251,29 @@ public class WS extends WebSocketServlet {
             // Some messages can be bigger than the 16k default
             // when there is broad registration.
             conn.setMaxTextMessageSize(1024 * 1024);
-            this.connection = conn;
-            id = UUID.randomUUID();
+            connection = conn;
             jsm.register(this);
+            String source = request.getParameter("source");
+            if (source == null) {
+                source = "CUSTOM CLIENT";
+            }
+            String platform = request.getParameter("platform");
+            if (platform == null) {
+                platform = request.getHeader("User-Agent");
+            }
+            sbClient = sb.getClients().addClient(device.getId(), request.getRemoteAddr(), source, platform);
+            device.access();
 
             Map<String, Object> json = new HashMap<>();
-            json.put("id", id);
+            Map<String, Object> initialState = new HashMap<>();
+            // Inject some of our own WS-specific information.
+            // Session id is not included, as that's the secret cookie which
+            // is meant to be httpOnly.
+            initialState.put("WS.Device.Id", device.getId());
+            initialState.put("WS.Device.Name", device.getName());
+            initialState.put("WS.Client.Id", sbClient.getId());
+            initialState.put("WS.Client.RemoteAddress", request.getRemoteAddr());
+            json.put("state", initialState);
             send(json);
         }
 
@@ -253,6 +281,9 @@ public class WS extends WebSocketServlet {
         public void onClose(int closeCode, String message) {
             connectionsActive.dec();
             jsm.unregister(this);
+            sb.getClients().removeClient(sbClient);
+
+            device.access();
         }
 
         public void sendError(String message) {
@@ -272,7 +303,7 @@ public class WS extends WebSocketServlet {
         private void sendWSUpdatesForPaths(PathTrie watchedPaths, Set<String> changed) {
             Map<String, Object> updates = new HashMap<>();
             for (String k : changed) {
-                if (watchedPaths.covers(k)) {
+                if (watchedPaths.covers(k) && !k.endsWith("Secret")) {
                     updates.put(k, state.get(k));
                 }
             }
@@ -285,7 +316,9 @@ public class WS extends WebSocketServlet {
             updates.clear();
         }
 
-        protected UUID id;
+        protected Client sbClient;
+        protected Device device;
+        protected HttpServletRequest request;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
     }

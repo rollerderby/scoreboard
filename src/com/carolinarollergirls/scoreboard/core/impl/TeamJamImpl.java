@@ -132,7 +132,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
     }
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) {
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == NChild.SCORING_TRIP) {
                 return new ScoringTripImpl(this, Integer.parseInt(id));

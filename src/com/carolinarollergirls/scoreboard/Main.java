@@ -9,6 +9,7 @@ package com.carolinarollergirls.scoreboard;
  */
 
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
@@ -61,7 +62,7 @@ public class Main extends Logger {
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
-        new JettyServletScoreBoardController(scoreBoard, jsm, host, port);
+        JettyServletScoreBoardController jetty = new JettyServletScoreBoardController(scoreBoard, jsm, host, port);
 
         // Viewers.
         new ScoreBoardMetricsCollector(scoreBoard).register();
@@ -85,7 +86,16 @@ public class Main extends Logger {
         });
 
         // Only start auto-saves once everything is loaded in.
-        new AutoSaveJSONState(jsm, autoSaveDir);
+        final AutoSaveJSONState autosaver = new AutoSaveJSONState(jsm, autoSaveDir);
+        jetty.start();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                // Save any changes since last regular autosave before we shutdown.
+                autosaver.run();
+          }
+        });
     }
 
     private void setSystemProperties() {
@@ -139,6 +149,7 @@ public class Main extends Logger {
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         guiMessages = new JTextArea();
         guiMessages.setEditable(false);
+        guiMessages.setFont(new Font("monospaced", Font.PLAIN, 12));
         guiFrameText = new JLabel("ScoreBoard status: starting...");
         guiFrame.getContentPane().setLayout(new BoxLayout(guiFrame.getContentPane(), BoxLayout.Y_AXIS));
         guiFrame.getContentPane().add(guiFrameText);

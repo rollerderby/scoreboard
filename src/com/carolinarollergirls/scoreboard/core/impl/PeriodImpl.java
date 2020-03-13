@@ -60,7 +60,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) {
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == NChild.JAM) {
                 int num = Integer.parseInt(id);

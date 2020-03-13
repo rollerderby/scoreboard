@@ -56,21 +56,9 @@ function setOperatorSettings(op) {
 	// This ensures users logging in for the first time always get the former and not whatever
 	// the latter currently happens to be.
 	var defPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.';
-	var prefix;
-	if (op !== '') {
-		$.each(['StartStopButtons', 'ReplaceButton', 'TabBar'], function() {
-			var setting = String(this);
-			if (WS.state[opPrefix+setting+')'] === undefined) {
-				WS.Set(opPrefix+setting+')', WS.state[defPrefix+setting+')']);
-			}
-		})
-		prefix = opPrefix;
-	} else {
-		prefix = defPrefix;
-	}
-	setClockControls(isTrue(WS.state[prefix+"StartStopButtons)"]));
-	setReplaceButton(isTrue(WS.state[prefix+"ReplaceButton)"]));
-	setTabBar(isTrue(WS.state[prefix+'TabBar)']));
+	setClockControls(isTrue(WS.state[opPrefix+"StartStopButtons)"] || WS.state[defPrefix+"StartStopButtons)"]));
+	setReplaceButton(isTrue(WS.state[opPrefix+"ReplaceButton)"] || WS.state[defPrefix+"ReplaceButton)"]));
+	setTabBar(isTrue(WS.state[opPrefix+'TabBar)'] || WS.state[defPrefix+'TabBar)']));
 }
 
 // FIXME - this is done after the team/time panel is loaded,

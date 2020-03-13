@@ -33,6 +33,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+        scoreBoard.getClients().getDevice(request.getSession().getId()).write();
         try {
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);

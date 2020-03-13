@@ -105,7 +105,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) {
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == NChild.PENALTY) { return new PenaltyImpl(this, Integer.valueOf(id)); }
             return null;
@@ -117,11 +117,11 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             Penalty p = (Penalty) item;
             if (FO_EXP_ID.equals(p.getProviderId())) {
                 updateEligibility();
-            } 
+            }
             if (p.getNumber() == scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) {
                 Penalty fo = getPenalty(FO_EXP_ID);
                 if (fo == null) {
-                    fo = (Penalty)getOrCreate(NChild.PENALTY, 0);
+                    fo = (Penalty) getOrCreate(NChild.PENALTY, 0);
                     fo.set(Penalty.Value.CODE, "FO");
                 }
                 if (fo.get(Penalty.Value.CODE) == "FO") {
@@ -146,7 +146,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
         if (prop == NChild.PENALTY) {
-            if (FO_EXP_ID.equals(((Penalty)item).getProviderId())) {
+            if (FO_EXP_ID.equals(((Penalty) item).getProviderId())) {
                 updateEligibility();
             } else if (get(NChild.PENALTY, scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) == null) {
                 Penalty fo = getPenalty(FO_EXP_ID);

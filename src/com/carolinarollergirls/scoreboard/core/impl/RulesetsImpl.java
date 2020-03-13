@@ -38,7 +38,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) {
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
         if (prop == Child.RULESET) {
             return new RulesetImpl(this, "", "", id);
         }

@@ -33,14 +33,14 @@ public class AutoSaveJSONState implements Runnable {
             FileUtils.forceMkdir(dir);
         } catch ( IOException ioE ) {
             Logger.printMessage("WARNING: Unable to create auto-save directory '"+dir+"' : "+ioE.getMessage());
-            return;
+            throw new RuntimeException(ioE);
         }
         backupAutoSavedFiles();
         executor.scheduleAtFixedRate(AutoSaveJSONState.this, INTERVAL_SECONDS, INTERVAL_SECONDS, TimeUnit.SECONDS);
     }
 
     @Override
-    public void run() {
+    public synchronized void run() {
         Histogram.Timer timer = autosaveDuration.startTimer();
         try {
             int n = AUTOSAVE_FILES;

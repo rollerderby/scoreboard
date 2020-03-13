@@ -68,12 +68,12 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
                 }
             }
         }
-        set(IValue.ID, id, Source.OTHER); // TODO:
+        set(IValue.ID, id, Source.OTHER);
         addWriteProtection(IValue.ID);
     }
 
     @Override
-    public String getId() { return String.valueOf(get(IValue.ID)); }
+    public String getId() { return (String) get(IValue.ID); }
     @Override
     public String getProviderName() { return providerName; }
     @Override
@@ -382,7 +382,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             if (prop.getType() == ValWithId.class) {
                 return new ValWithId(id, sValue);
             }
-            return (ValueWithId) getElement(prop.getType(), sValue);
+            return getElement(prop.getType(), sValue);
         }
     }
     @Override
@@ -399,7 +399,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         synchronized (coreLock) {
             ValueWithId result = get(prop, id);
             if (result == null) {
-                result = create(prop, id);
+                result = create(prop, id, source);
                 add(prop, result, source);
             }
             return result;
@@ -466,7 +466,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item, Source source) {}
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) { return null; }
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) { return null; }
     @Override
     public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id), Source.OTHER); }
     @Override

@@ -170,7 +170,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id) {
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             switch ((Child) prop) {
             case SKATER:

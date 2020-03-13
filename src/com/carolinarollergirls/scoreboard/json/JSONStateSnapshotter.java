@@ -29,14 +29,14 @@ public class JSONStateSnapshotter implements JSONStateListener {
             // If the jam has just ended or the score is now official, write out a file.
             if ((inJam && !bool(state.get("ScoreBoard.InJam")))
                     || (bool(state.get("ScoreBoard.OfficialScore"))
-                            && containsRelevantUpdate(changed))) {
+                        && containsRelevantUpdate(changed))) {
                 writeFile(state);
             }
         }
 
         inJam = bool(state.get("ScoreBoard.InJam"));
     }
-    
+
     private boolean containsRelevantUpdate(Set<String> keys) {
         for (String key : keys) {
             if (!key.startsWith("ScoreBoard.Clock")
@@ -71,7 +71,7 @@ public class JSONStateSnapshotter implements JSONStateListener {
         File prev = new File(new File(directory, "html/game-data/json"), name + "_prev.json");
         file.getParentFile().mkdirs();
 
-        // The state includes secrets (Twitter auth) and
+        // The state includes secrets (sessions&Twitter auth) and
         // details not relevant to one particular game (e.g. prepared teams)
         // so trim things down.
         Map<String, Object> cleanedState = new TreeMap<>(state);
@@ -80,7 +80,9 @@ public class JSONStateSnapshotter implements JSONStateListener {
             if (key.startsWith("ScoreBoard.Twitter.")
                     || key.startsWith("ScoreBoard.Media." )
                     || key.startsWith("ScoreBoard.Settings." )
-                    || key.startsWith("ScoreBoard.PreparedTeams(" )) {
+                    || key.startsWith("ScoreBoard.Clients." )
+                    || key.startsWith("ScoreBoard.PreparedTeams(" )
+                    || key.endsWith("Secret")) {
                 it.remove();
             }
         }

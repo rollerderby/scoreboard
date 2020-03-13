@@ -19,7 +19,23 @@ var WS = {
 	_connect: function() {
 		WS.connectTimeout = null;
 		var url = (document.location.protocol == "http:" ? "ws" : "wss") + "://";
-		url += document.location.host + "/WS/";
+		url += document.location.host + "/WS/"
+		// This is not required, but helps figure out which device is which.
+		url += "?source=" + encodeURIComponent(document.location.pathname + document.location.search);
+		var platform = "";
+		if (navigator.userAgent || false) {
+			var match = navigator.userAgent.match(/\((.*)\).*\(.*\)/);
+			if (match) {
+				platform += match[1] ;
+			}
+		}
+		if (!platform) {
+			platform += window.screen.width + "x" + window.screen.height + " ";
+			if (navigator.maxTouchPoints != undefined) {
+				platform += (navigator.maxTouchPoints > 0)?"Touchscreen ":"NotTouchscreen; ";
+			}
+		}
+		url += "&platform=" + encodeURIComponent(platform);
 	
 		if(WS.Connected != true || !WS.socket) {
 			if(WS.debug) console.log("WS", "Connecting the websocket at " + url);
