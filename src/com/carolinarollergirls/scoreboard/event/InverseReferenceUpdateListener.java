@@ -3,7 +3,7 @@ package com.carolinarollergirls.scoreboard.event;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
 public class InverseReferenceUpdateListener extends ConditionalScoreBoardListener {
     public InverseReferenceUpdateListener(ScoreBoardEventProvider localElement, 
@@ -21,17 +21,17 @@ public class InverseReferenceUpdateListener extends ConditionalScoreBoardListene
         if (remoteProperty instanceof PermanentProperty) {
             if (lastRemote != null &&
                     lastRemote.get((PermanentProperty)remoteProperty) == e.getProvider()) {
-                lastRemote.set((PermanentProperty)remoteProperty, null, Flag.INVERSE_REFERENCE);
+                lastRemote.set((PermanentProperty)remoteProperty, null, Source.INVERSE_REFERENCE);
             }
             if (newRemote != null) {
-                newRemote.set((PermanentProperty)remoteProperty, e.getProvider(), Flag.INVERSE_REFERENCE);
+                newRemote.set((PermanentProperty)remoteProperty, e.getProvider(), Source.INVERSE_REFERENCE);
             }
         } else if (remoteProperty instanceof AddRemoveProperty) {
             if (lastRemote != null) {
-                lastRemote.remove((AddRemoveProperty)remoteProperty, e.getProvider());
+                lastRemote.remove((AddRemoveProperty)remoteProperty, e.getProvider(), Source.INVERSE_REFERENCE);
             }
             if (newRemote != null) {
-                newRemote.add((AddRemoveProperty)remoteProperty, e.getProvider());
+                newRemote.add((AddRemoveProperty)remoteProperty, e.getProvider(), Source.INVERSE_REFERENCE);
             }
         }
     }

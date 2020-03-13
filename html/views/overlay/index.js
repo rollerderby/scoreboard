@@ -27,7 +27,7 @@ function initialize() {
 
 	WS.Register( [
 			'ScoreBoard.Team(*).Skater(*).Name',
-			'ScoreBoard.Team(*).Skater(*).Number',
+			'ScoreBoard.Team(*).Skater(*).RosterNumber',
 			'ScoreBoard.Team(*).Skater(*).Flags',
 			'ScoreBoard.Team(*).Skater(*).Role'], function(k,v) {
 				var me = '.RosterTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
@@ -54,7 +54,7 @@ function initialize() {
 					// Name or Number, replace empty string with nbsp
 					$('.'+k.field, me).text(v == '' ? '\xa0' : v);
 					$('.'+k.field, mb).text(v == '' ? '\xa0' : v);
-					if (k.field == 'Number') {
+					if (k.field == 'RosterNumber') {
 						updateSort(me);
 						updateSort(mb);
 					}

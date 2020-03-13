@@ -26,13 +26,12 @@ public interface Position extends ScoreBoardEventProvider {
     public void setPenaltyBox(boolean box);
 
     public enum Value implements PermanentProperty {
-        ID(String.class, ""),
         CURRENT_FIELDING(Fielding.class, null),
         CURRENT_BOX_SYMBOLS(String.class, ""),
         ANNOTATION(String.class, ""),
         SKATER(Skater.class, null),
         NAME(String.class, ""),
-        NUMBER(String.class, ""),
+        ROSTER_NUMBER(String.class, ""),
         FLAGS(String.class, ""),
         PENALTY_BOX(Boolean.class, false);
 

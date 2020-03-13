@@ -15,7 +15,6 @@ public interface Timeout extends ScoreBoardEventProvider {
     public boolean isRunning();
     
     public enum Value implements PermanentProperty {
-        ID(String.class, ""),
         OWNER(TimeoutOwner.class, null),
         REVIEW(Boolean.class, false),
         RETAINED_REVIEW(Boolean.class, false),

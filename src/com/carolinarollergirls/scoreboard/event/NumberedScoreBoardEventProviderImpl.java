@@ -11,11 +11,12 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         extends OrderedScoreBoardEventProviderImpl<T> implements NumberedScoreBoardEventProvider<T> {
 
     @SafeVarargs
-    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number,
-            NumberedProperty type, Class<T> ownClass, Class<? extends Property>... props) {
+    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number, NumberedProperty type,
+            Class<T> ownClass, Class<? extends Property>... props) {
         super(parent, UUID.randomUUID().toString(), type, ownClass, props);
         ownType = type;
         values.put(IValue.NUMBER, number);
+        addWriteProtectionOverride(IValue.NUMBER, Source.RENUMBER);
         setNeighbors(getNumber());
     }
 
@@ -29,49 +30,49 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
             return getNumber() - other.getNumber();
         }
         if (getParent() == null) { return 1; }
-        if (getParent() instanceof NumberedScoreBoardEventProvider<?> &&
-                other.getParent() instanceof NumberedScoreBoardEventProvider<?>) {
-            return ((NumberedScoreBoardEventProvider<?>)getParent()).compareTo(
-                    (NumberedScoreBoardEventProvider<?>)other.getParent());
+        if (getParent() instanceof NumberedScoreBoardEventProvider<?>
+                && other.getParent() instanceof NumberedScoreBoardEventProvider<?>) {
+            return ((NumberedScoreBoardEventProvider<?>) getParent())
+                    .compareTo((NumberedScoreBoardEventProvider<?>) other.getParent());
         }
         return getParent().compareTo(other.getParent());
     }
-    
+
     @Override
-    protected void unlink(boolean neighborsRemoved) {
+    public void delete(Source source) {
         T next = null;
-        if (!neighborsRemoved) {
+        if (source != Source.UNLINK) {
             next = getNext();
             unlinkNeighbors();
         }
-        super.unlink(neighborsRemoved);
+        super.delete(source);
         if (next != null && next.getNumber() == getNumber() + 1) {
-            next.set(IValue.NUMBER, getNumber());
+            next.set(IValue.NUMBER, getNumber(), Source.RENUMBER);
         }
     }
 
     @Override
-    protected Object _computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        value = super._computeValue(prop, value, last, flag);
+    protected Object _computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+        value = super._computeValue(prop, value, last, source, flag);
         if (prop == IValue.NUMBER && last != null && !Objects.equals(value, last)) {
-            parent.remove(ownType, this);
+            parent.remove(ownType, this, Source.RENUMBER);
         }
         return value;
     }
     @Override
-    protected void _valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
+    protected void _valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == IValue.NUMBER && last != null) {
-            if (flag != Flag.INTERNAL) {
-                if (hasNext() && getNext().getNumber() == (Integer)last + 1) {
-                    getNext().set(IValue.NUMBER, (Integer)value + 1);
-                } 
-                if (hasPrevious() && getPrevious().getNumber() == (Integer)last - 1) {
-                    getPrevious().set(IValue.NUMBER, (Integer)value - 1);
+            if (flag != Flag.SPECIAL_CASE) {
+                if (hasNext() && getNext().getNumber() == (Integer) last + 1) {
+                    getNext().set(IValue.NUMBER, (Integer) value + 1, Source.RENUMBER);
+                }
+                if (hasPrevious() && getPrevious().getNumber() == (Integer) last - 1) {
+                    getPrevious().set(IValue.NUMBER, (Integer) value - 1, Source.RENUMBER);
                 }
             }
-            parent.add(ownType, this);
+            parent.add(ownType, this, Source.RENUMBER);
         }
-        super._valueChanged(prop, value, last, flag);
+        super._valueChanged(prop, value, last, source, flag);
     }
 
     @Override
@@ -80,15 +81,15 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
     public void setNext(T n) { set(IValue.NEXT, n); }
 
     @Override
-    public void moveToNumber(int num)  {
+    public void moveToNumber(int num) {
         synchronized (coreLock) {
             if (num == getNumber()) { return; }
             unlinkNeighbors();
             setNeighbors(num);
-            set(IValue.NUMBER, num);
+            set(IValue.NUMBER, num, Source.RENUMBER);
         }
     }
-    
+
     public void unlinkNeighbors() {
         if (hasPrevious()) {
             getPrevious().setNext(getNext());
@@ -99,15 +100,15 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
     @SuppressWarnings("unchecked")
     public void setNeighbors(int targetPosition) {
         if (parent.get(ownType, targetPosition) != null) {
-            T replaced = (T)parent.get(ownType, targetPosition);
+            T replaced = (T) parent.get(ownType, targetPosition);
             if (targetPosition <= getNumber()) {
                 setPrevious(replaced.getPrevious());
                 setNext(replaced);
-                replaced.set(IValue.NUMBER, 1, Flag.CHANGE);
-            } else { 
+                replaced.set(IValue.NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
+            } else {
                 setNext(replaced.getNext());
                 setPrevious(replaced);
-                replaced.set(IValue.NUMBER, -1, Flag.CHANGE);
+                replaced.set(IValue.NUMBER, -1, Source.RENUMBER, Flag.CHANGE);
             }
         } else if (parent.getAll(ownType).size() == 0) {
             // do not set previous or next

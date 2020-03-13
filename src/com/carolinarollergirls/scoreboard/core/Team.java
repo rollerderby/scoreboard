@@ -86,7 +86,6 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final String ID_2 = "2";
 
     public enum Value implements PermanentProperty {
-        ID(String.class, ""),
         NAME(String.class, ""),
         LOGO(String.class, ""),
         RUNNING_OR_UPCOMING_TEAM_JAM(TeamJam.class, null),

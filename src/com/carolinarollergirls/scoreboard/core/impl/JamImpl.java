@@ -1,13 +1,13 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.TeamJam;
+import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
@@ -18,7 +18,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements Jam {
     public JamImpl(ScoreBoardEventProvider parent, Jam prev) {
-        this(parent, prev.getNumber()+1);
+        this(parent, prev.getNumber() + 1);
         setPrevious(prev);
     }
     public JamImpl(ScoreBoardEventProvider p, int j) {
@@ -26,13 +26,12 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         setInverseReference(Child.PENALTY, Penalty.Value.JAM);
         setInverseReference(Child.TIMEOUTS_AFTER, Timeout.Value.PRECEDING_JAM);
         periodNumberListener = setCopy(Value.PERIOD_NUMBER, parent,
-                parent instanceof ScoreBoard ? ScoreBoard.Value.CURRENT_PERIOD_NUMBER : IValue.NUMBER,
-                        true);
+                parent instanceof ScoreBoard ? ScoreBoard.Value.CURRENT_PERIOD_NUMBER : IValue.NUMBER, true);
         add(Child.TEAM_JAM, new TeamJamImpl(this, Team.ID_1));
         add(Child.TEAM_JAM, new TeamJamImpl(this, Team.ID_2));
         addWriteProtection(Child.TEAM_JAM);
         setRecalculated(Value.STAR_PASS).addSource(getTeamJam(Team.ID_1), TeamJam.Value.STAR_PASS)
-            .addSource(getTeamJam(Team.ID_2), TeamJam.Value.STAR_PASS);
+                .addSource(getTeamJam(Team.ID_2), TeamJam.Value.STAR_PASS);
     }
 
     @Override
@@ -42,44 +41,43 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         providers.remove(periodNumberListener);
         parent = p;
         periodNumberListener = setCopy(Value.PERIOD_NUMBER, parent,
-                parent instanceof ScoreBoard ? ScoreBoard.Value.CURRENT_PERIOD_NUMBER : IValue.NUMBER,
-                        true);
-    }
-    
-    @Override
-    protected void unlink(boolean neighborsRemoved) {
-        if (!neighborsRemoved) {
-            if (parent instanceof Period && this == ((Period)parent).getCurrentJam()) {
-                parent.set(Period.Value.CURRENT_JAM, getPrevious());
-            }
-            for (ValueWithId p : getAll(Child.PENALTY)) {
-                ((Penalty)p).set(Penalty.Value.JAM, getNext());
-            }
-            for (ValueWithId p : getAll(Child.TIMEOUTS_AFTER)) {
-                ((Timeout)p).set(Timeout.Value.PRECEDING_JAM, getPrevious());
-            }
-        }
-        super.unlink(neighborsRemoved);
+                parent instanceof ScoreBoard ? ScoreBoard.Value.CURRENT_PERIOD_NUMBER : IValue.NUMBER, true);
     }
 
     @Override
-    protected Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
+    public void delete(Source source) {
+        if (source != Source.UNLINK) {
+            if (parent instanceof Period && this == ((Period) parent).getCurrentJam()) {
+                parent.set(Period.Value.CURRENT_JAM, getPrevious());
+            }
+            for (ValueWithId p : getAll(Child.PENALTY)) {
+                ((Penalty) p).set(Penalty.Value.JAM, getNext());
+            }
+            for (ValueWithId p : getAll(Child.TIMEOUTS_AFTER)) {
+                ((Timeout) p).set(Timeout.Value.PRECEDING_JAM, getPrevious());
+            }
+        }
+        super.delete(source);
+    }
+
+    @Override
+    protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == Value.STAR_PASS) {
             return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass();
         }
         return value;
     }
-    
+
     @Override
-    public void execute(CommandProperty prop) {
+    public void execute(CommandProperty prop, Source source) {
         synchronized (coreLock) {
-            switch ((Command)prop) {
+            switch ((Command) prop) {
             case DELETE:
-                if (scoreBoard.isInJam() && (parent == scoreBoard.getCurrentPeriod()) &&
-                        (this == ((Period)parent).getCurrentJam())) {
+                if (scoreBoard.isInJam() && (parent == scoreBoard.getCurrentPeriod())
+                        && (this == ((Period) parent).getCurrentJam())) {
                     break;
                 }
-                unlink();
+                delete(source);
                 scoreBoard.updateTeamJams();
                 break;
             case INSERT_BEFORE:
@@ -91,39 +89,39 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
                     Jam newJam = new JamImpl(currentPeriod, getNumber());
                     currentPeriod.add(ownType, newJam);
                     currentPeriod.set(Period.Value.CURRENT_JAM, newJam);
-                    set(IValue.NUMBER, 1, Flag.CHANGE);
+                    set(IValue.NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
                     scoreBoard.updateTeamJams();
                 }
                 break;
             }
         }
     }
-    
-    @Override
-    public boolean isOvertimeJam() { return (Boolean)get(Value.OVERTIME); }
 
     @Override
-    public long getDuration() { return (Long)get(Value.DURATION); }
+    public boolean isOvertimeJam() { return (Boolean) get(Value.OVERTIME); }
+
+    @Override
+    public long getDuration() { return (Long) get(Value.DURATION); }
     public void setDuration(long t) { set(Value.DURATION, t); }
 
     @Override
-    public long getPeriodClockElapsedStart() { return (Long)get(Value.PERIOD_CLOCK_ELAPSED_START); }
+    public long getPeriodClockElapsedStart() { return (Long) get(Value.PERIOD_CLOCK_ELAPSED_START); }
     public void setPeriodClockElapsedStart(long t) { set(Value.PERIOD_CLOCK_ELAPSED_START, t); }
 
     @Override
-    public long getPeriodClockElapsedEnd() { return (Long)get(Value.PERIOD_CLOCK_ELAPSED_END); }
+    public long getPeriodClockElapsedEnd() { return (Long) get(Value.PERIOD_CLOCK_ELAPSED_END); }
     public void setPeriodClockElapsedEnd(long t) { set(Value.PERIOD_CLOCK_ELAPSED_END, t); }
 
     @Override
-    public long getWalltimeStart() { return (Long)get(Value.WALLTIME_START); }
+    public long getWalltimeStart() { return (Long) get(Value.WALLTIME_START); }
     public void setWalltimeStart(long t) { set(Value.WALLTIME_START, t); }
 
     @Override
-    public long getWalltimeEnd() { return (Long)get(Value.WALLTIME_END); }
+    public long getWalltimeEnd() { return (Long) get(Value.WALLTIME_END); }
     public void setWalltimeEnd(long t) { set(Value.WALLTIME_END, t); }
 
     @Override
-    public TeamJam getTeamJam(String id) { return (TeamJam)get(Child.TEAM_JAM, id); }
+    public TeamJam getTeamJam(String id) { return (TeamJam) get(Child.TEAM_JAM, id); }
 
     @Override
     public void start() {

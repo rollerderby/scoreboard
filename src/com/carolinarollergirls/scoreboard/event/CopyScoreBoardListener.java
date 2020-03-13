@@ -1,7 +1,7 @@
 package com.carolinarollergirls.scoreboard.event;
 
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
 public class CopyScoreBoardListener implements ScoreBoardListener {
     CopyScoreBoardListener(ScoreBoardEventProvider targetElement, PermanentProperty targetProperty,
@@ -16,12 +16,12 @@ public class CopyScoreBoardListener implements ScoreBoardListener {
 
     @Override
     public void scoreBoardChange(ScoreBoardEvent event) {
-        scoreBoardChange(event, Flag.COPY);
+        scoreBoardChange(event, Source.COPY);
     }
     // used when sending updates from the copy to the master value 
-    public void scoreBoardChange(ScoreBoardEvent event, Flag flag) {
+    public void scoreBoardChange(ScoreBoardEvent event, Source source) {
         if (targetElement != null) {
-            targetElement.set(targetProperty, event.getValue(), flag);
+            targetElement.set(targetProperty, event.getValue(), source);
         }
     }
     
