@@ -182,7 +182,6 @@ function createRulesetsTab(tab) {
 					} else {
 						rulesets[k.Ruleset][k.field] = WS.state[prop];
 					}
-					rulesets[k.Ruleset].Immutable = (k.Ruleset == "00000000-0000-0000-0000-000000000000");
 				}
 			}
 	 
@@ -246,8 +245,8 @@ function createRulesetsTab(tab) {
 
 		definitions.find("#name").val(rs.Name);
 
-		if (!rs.Immutable) {
-			definitions.find(".definition *").prop("disabled", rs.Immutable);
+		if (!isTrue(rs['Readonly'])) {
+			definitions.find(".definition *").prop("disabled", false);
 		}
 
 		$.each(rs.Inherited, function(key, val) {
@@ -257,9 +256,9 @@ function createRulesetsTab(tab) {
 			setDefinition(key, val, false);
 		});
 
-		if (rs.Immutable) {
+		if (isTrue(rs['Readonly'])) {
 			tab.find("#name").attr('disabled', true);
-			definitions.find(".definition *").prop("disabled", rs.Immutable);
+			definitions.find(".definition *").prop("disabled", true);
 			definitions.find(".Update, .Delete, .EditNote").hide();
 		} else if (rs.Effective) {
 			tab.find("#name").removeAttr('disabled');
@@ -288,31 +287,27 @@ function createRulesetsTab(tab) {
 
 	function Update() {
 		tab.children(".definitions").hide();
-		if (!activeRuleset.immutable) {
-			$.each(definitions, function(idx, val) {
-				var def = $(".definition[fullname='" + val.Fullname + "']");
-				var value = null;
-				if (def.find(".name input").prop("checked")) {
-					var input = def.find(".value>input").prop("value");
-					var select = def.find(".value>select").val();
-					if (input != null)
-						value = input;
-					if (select != null)
-						value = select;
-				}
-				WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
-			});
-			var newName = tab.find("#name").val();
-			if (newName.trim() === '') { newName = WS.state['ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name']; }
-			WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name', newName);
-		}
+		$.each(definitions, function(idx, val) {
+			var def = $(".definition[fullname='" + val.Fullname + "']");
+			var value = null;
+			if (def.find(".name input").prop("checked")) {
+				var input = def.find(".value>input").prop("value");
+				var select = def.find(".value>select").val();
+				if (input != null)
+					value = input;
+				if (select != null)
+					value = select;
+			}
+			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
+		});
+		var newName = tab.find("#name").val();
+		if (newName.trim() === '') { newName = WS.state['ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name']; }
+		WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name', newName);
 	}
 
 	function Delete() {
 		tab.children(".definitions").hide();
-		if (!activeRuleset.immutable) {
-			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ")", null);
-		}
+		WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ")", null);
 	}
 
 	function Cancel() {

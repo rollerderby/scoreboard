@@ -751,10 +751,10 @@ function createTeamTable() {
 				v = v || "";
 				container.children('[skater="'+v+'"]').addClass("Active");
 			}
-			WS.Register([prefix + '.Skater(*).Number', prefix + '.Skater(*).Role'], function(k, v) {
+			WS.Register([prefix + '.Skater(*).RosterNumber', prefix + '.Skater(*).Role'], function(k, v) {
 				container.children('[skater="'+k.Skater+'"]').remove();
 				if (v != null && WS.state[prefix + '.Skater('+k.Skater+').Role'] != 'NotInGame') {
-					var number = WS.state[prefix + '.Skater('+k.Skater+').Number'];
+					var number = WS.state[prefix + '.Skater('+k.Skater+').RosterNumber'];
 					var button = $('<button>').attr('number', number).attr('skater', k.Skater)
 							.attr('id', 'Team'+team+pos+k.Skater).addClass('KeyControl').text(number)
 							.click(function() {

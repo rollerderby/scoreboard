@@ -1,9 +1,13 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.LinkedList;
 import java.util.Queue;
+
 import org.junit.Before;
 import org.junit.Test;
 
@@ -12,14 +16,11 @@ import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
+import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
-import com.carolinarollergirls.scoreboard.core.impl.TeamImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
@@ -219,8 +220,38 @@ public class TeamImplTests {
         
         team.set(Team.Value.TRIP_SCORE, -1, Flag.CHANGE);
         assertEquals(3, team.getScore());
+        
+        assertFalse(team.cancelTripAdvancement());
+        
+        sb.startJam();
+        team.set(Team.Value.TRIP_SCORE, 3);
+
+        assertTrue(team.cancelTripAdvancement());
     }
 
+    @Test
+    public void testCancelTripAdvancement() {
+        sb.startJam();
+        team.execute(Team.Command.ADD_TRIP);
+
+        assertEquals(2, team.getCurrentTrip().getNumber());
+
+        team.set(Team.Value.TRIP_SCORE, 1);
+        team.set(Team.Value.TRIP_SCORE, -1, Flag.CHANGE);
+
+        assertFalse(team.cancelTripAdvancement());
+        
+        team.execute(Team.Command.ADD_TRIP);
+        team.set(Team.Value.TRIP_SCORE, 1);
+        
+        assertEquals(3, team.getCurrentTrip().getNumber());
+        
+        team.execute(Team.Command.REMOVE_TRIP);
+
+        assertFalse(team.cancelTripAdvancement());
+        assertEquals(3, team.getCurrentTrip().getNumber());
+    }
+    
     @Test
     public void testDisplayLead() {
         assertFalse(team.isLost());

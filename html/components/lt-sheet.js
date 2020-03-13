@@ -41,10 +41,10 @@ function prepareLtSheetTable(element, teamId, mode) {
 				}
 			});
 
-			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).Number',
+			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).RosterNumber',
 				'ScoreBoard.Team('+teamId+').Position(*).CurrentBoxSymbols',
 				'ScoreBoard.Team('+teamId+').Position(*).Annotation'], function(k, v) {
-				if (k.field == "Number") {
+				if (k.field == "RosterNumber") {
 					element.find("#upcoming .Skater."+k.Position).text(v);
 				} else if (k.field == "CurrentBoxSymbols") {
 					element.find("#upcoming .Box.Box"+k.Position).text(v);
@@ -315,7 +315,7 @@ function prepareFieldingEditor(teamId) {
 		}).appendTo(row);
 
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater(*).Role',
-			'ScoreBoard.Team('+teamId+').Skater(*).Number'], function(k,v) { processSkater(k,v); })
+			'ScoreBoard.Team('+teamId+').Skater(*).RosterNumber'], function(k,v) { processSkater(k,v); })
 		WS.Register(['ScoreBoard.Team('+teamId+').BoxTrip'], function(k,v) { processBoxTrip(k,v); })
 
 		fieldingEditor = $('#FieldingEditor').dialog({
@@ -341,7 +341,7 @@ function prepareFieldingEditor(teamId) {
 		select.children('[value="'+k.Skater+'"]').remove();
 		var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
 		if (v != null && WS.state[prefix + 'Role'] != 'NotInGame') {
-			var number = WS.state[prefix + 'Number'];
+			var number = WS.state[prefix + 'RosterNumber'];
 			var option = $('<option>').attr('number', number).val(k.Skater).text(number);
 			_windowFunctions.appendAlphaSortedByAttr(select, option, 'number', 1);
 		}

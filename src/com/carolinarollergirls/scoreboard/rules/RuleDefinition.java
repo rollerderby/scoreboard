@@ -6,7 +6,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 
 public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
     public RuleDefinition(Type type, String name, String description, Object defaultValue) {
-        super(null, Value.NAME, name, Rulesets.Child.RULE_DEFINITION, RuleDefinition.class, Value.class);
+        super(null, name, Rulesets.Child.RULE_DEFINITION, RuleDefinition.class, Value.class);
+        setCopy(Value.NAME, this, IValue.ID, true);
         set(Value.TYPE, type);
         set(Value.DEFAULT_VALUE, defaultValue.toString());
         set(Value.DESCRIPTION, description);

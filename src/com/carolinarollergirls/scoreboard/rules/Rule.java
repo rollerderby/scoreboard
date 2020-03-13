@@ -27,8 +27,10 @@ public enum Rule {
     INTERMISSION_DIRECTION(new BooleanRule("Intermission.ClockDirection", "Which way should the intermission clock count?", true, "Count Down", "Count Up")),
 
     AUTO_START(new BooleanRule("Automate.AutoStart", "When the Linup time plus AutoStartBuffer has elapsed start a Jam or Timeout as defined below. Jam/Timeout/Period Clocks will be adjusted by the buffer time. This only works if the lineup clock is counting up.", false, "Enabled", "Disabled")),
-    AUTO_START_BUFFER(new TimeRule("Automate.AutoStartType", "How long to wait after end of lineup before auto start is triggered.", "0:02")),
-    AUTO_START_JAM(new BooleanRule("Automate.AutoStartBuffer", "What to start after lineup is up", false, "Jam", "Timeout")),
+    AUTO_START_BUFFER(new TimeRule("Automate.AutoStartBuffer",
+            "How long to wait after end of lineup before auto start is triggered.", "0:02")),
+    AUTO_START_JAM(
+            new BooleanRule("Automate.AutoStartType", "What to start after lineup is up", false, "Jam", "Timeout")),
     AUTO_END_JAM(new BooleanRule("Automate.AutoEndJam", "End a jam, when the jam clock has run down", true, "Enabled", "Disabled")),
     AUTO_END_TTO(new BooleanRule("Automate.AutoEndTTO", "End a team timeout, after it's defined duration has elapsed", false, "Enabled", "Disabled")),
 
@@ -37,6 +39,10 @@ public enum Rule {
     NUMBER_REVIEWS(new IntegerRule("Team.OfficialReviews", "How many official reviews each team is granted per game or period", 1)),
     REVIEWS_PER_PERIOD(new BooleanRule("Team.OfficialReviewsPer", "Are official reviews granted per period or per game?", true, "Period", "Game")),
     NUMBER_RETAINS(new IntegerRule("Team.MaxRetains", "How many times per game or period a team can retain an official review", 1)),
+    RDCL_PER_HALF_RULES(new BooleanRule("Team.RDCLPerHalfRules",
+            "Restrict one TTO to the first two periods and one to the rest of the game. Stretch per period ORs to first two resp. all other periods.",
+            false,
+            "Enabled", "Disabled")),
 
     PENALTIES_FILE(new StringRule("Penalties.DefinitionFile", "File that contains the penalty code definitions to be used", "/config/penalties/wftda2018.json")),
     FO_LIMIT(new IntegerRule("Penalties.NumberToFoulout", "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.", 7));
