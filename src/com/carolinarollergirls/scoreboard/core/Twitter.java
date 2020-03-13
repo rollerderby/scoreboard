@@ -65,7 +65,6 @@ public interface Twitter extends ScoreBoardEventProvider {
 
     public interface ConditionalTweet extends ScoreBoardEventProvider {
         public enum Value implements PermanentProperty {
-            ID(String.class, ""),
             CONDITION(String.class, ""),
             TWEET(String.class, "");
 
@@ -81,7 +80,6 @@ public interface Twitter extends ScoreBoardEventProvider {
 
     public interface FormatSpecifier extends ScoreBoardEventProvider {
         public enum Value implements PermanentProperty {
-            ID(String.class, ""),
             KEY(String.class, ""),
             DESCRIPTION(String.class, ""),
             CURRENT_VALUE(String.class, "");

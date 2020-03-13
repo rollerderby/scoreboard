@@ -73,7 +73,6 @@ public interface Rulesets extends ScoreBoardEventProvider {
         public void setParentRulesetId(String id);
 
         public enum Value implements PermanentProperty {
-            ID(String.class, ""),
             PARENT_ID(String.class, ""),
             NAME(String.class, "");
 

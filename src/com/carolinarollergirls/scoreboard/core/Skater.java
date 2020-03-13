@@ -48,9 +48,8 @@ public interface Skater extends ScoreBoardEventProvider {
     public boolean hasUnservedPenalties();
 
     public enum Value implements PermanentProperty {
-        ID(String.class, ""),
         NAME(String.class, ""),
-        NUMBER(String.class, ""),
+        ROSTER_NUMBER(String.class, ""),
         CURRENT_FIELDING(Fielding.class, null),
         CURRENT_BOX_SYMBOLS(String.class, ""),
         POSITION(Position.class, null),

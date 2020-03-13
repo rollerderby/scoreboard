@@ -37,7 +37,7 @@ public class RulesetsImplTests {
         assertEquals(2, rulesets.getInt(Rule.NUMBER_PERIODS));
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
         assertEquals(rootId, rulesets.getCurrentRulesetId());
-        assertEquals("WFTDA Sanctioned", rulesets.getCurrentRulesetName());
+        assertEquals("WFTDA", rulesets.getCurrentRulesetName());
 
         child.add(Ruleset.Child.RULE, new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
         rulesets.setCurrentRuleset(id1);
@@ -50,7 +50,7 @@ public class RulesetsImplTests {
         assertEquals(2, rulesets.getInt(Rule.NUMBER_PERIODS));
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
         assertEquals(rootId, rulesets.getCurrentRulesetId());
-        assertEquals("WFTDA Sanctioned", rulesets.getCurrentRulesetName());
+        assertEquals("WFTDA", rulesets.getCurrentRulesetName());
 
         rulesets.set(Rule.NUMBER_PERIODS, "6");
         assertEquals(6, rulesets.getInt(Rule.NUMBER_PERIODS));

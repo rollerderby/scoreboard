@@ -68,7 +68,7 @@
 
 		StatsFunction.Skater = {
 			'Name':   function(kd,v) { console.log('Name', kd,v); Data['Skaters'].Upsert( { 'Name': v }, { Team: kd.Team, Skater: kd.Skater } ); },
-			'Number': function(kd,v) { console.log('Number', kd,v); Data['Skaters'].Upsert( { 'Number': v }, { Team: kd.Team, Skater: kd.Skater } ); },
+			'RosterNumber': function(kd,v) { console.log('RosterNumber', kd,v); Data['Skaters'].Upsert( { 'RosterNumber': v }, { Team: kd.Team, Skater: kd.Skater } ); },
 			'Flags':  function(kd,v) { console.log('Flags', kd,v); Data['Skaters'].Upsert( { 'Flags': v }, { Team: kd.Team, Skater: kd.Skater } ); }
 		}
 

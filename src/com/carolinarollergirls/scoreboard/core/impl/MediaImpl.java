@@ -32,7 +32,7 @@ import com.carolinarollergirls.scoreboard.utils.BasePath;
 
 public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     public MediaImpl(ScoreBoard parent) {
-        super(parent, null, "", ScoreBoard.Child.MEDIA, Media.class, Child.class);
+        super(parent, "", ScoreBoard.Child.MEDIA, Media.class, Child.class);
         setup(BasePath.get().toPath().resolve("html"));
     }
 
@@ -189,7 +189,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 
     public class MediaFormatImpl extends ScoreBoardEventProviderImpl implements MediaFormat {
         MediaFormatImpl(Media parent, String format) {
-            super(parent, null, "", Media.Child.FORMAT, MediaFormat.class, Child.class);
+            super(parent, "", Media.Child.FORMAT, MediaFormat.class, Child.class);
             this.format = format;
         }
 
@@ -208,7 +208,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 
     public class MediaTypeImpl extends ScoreBoardEventProviderImpl implements MediaType {
         MediaTypeImpl(MediaFormat parent, String type) {
-            super(parent, null, "", MediaFormat.Child.TYPE, MediaType.class, Child.class);
+            super(parent, "", MediaFormat.Child.TYPE, MediaType.class, Child.class);
             this.parent = parent;
             this.type = type;
         }
@@ -236,7 +236,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 
     public class MediaFileImpl extends ScoreBoardEventProviderImpl implements MediaFile {
         MediaFileImpl(MediaType type, String id, String name, String src) {
-            super(type, Value.ID, id, MediaType.Child.FILE, MediaFile.class, Value.class);
+            super(type, id, MediaType.Child.FILE, MediaFile.class, Value.class);
             this.type = type;
             set(Value.NAME, name);
             set(Value.SRC, src);

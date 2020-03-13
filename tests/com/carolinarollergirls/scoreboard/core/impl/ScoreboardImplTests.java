@@ -1618,7 +1618,7 @@ public class ScoreboardImplTests {
         assertEquals(j4, j5.getPrevious());
         
         sb.getCurrentPeriod().execute(Period.Command.INSERT_BEFORE);
-        ((Period)sb.get(ScoreBoard.NChild.PERIOD, "1")).unlink();
+        ((Period)sb.get(ScoreBoard.NChild.PERIOD, "1")).delete();
         
         assertEquals(2, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         assertEquals(0, sb.getMinNumber(ScoreBoard.NChild.PERIOD) + 0);
@@ -1670,7 +1670,7 @@ public class ScoreboardImplTests {
         assertEquals(j4, j5.getPrevious());
 
         sb.getCurrentPeriod().getCurrentJam().execute(Jam.Command.INSERT_BEFORE);
-        ((Jam)((ScoreBoardEventProvider) sb.get(ScoreBoard.NChild.PERIOD, "1")).get(Period.NChild.JAM, 1)).unlink();
+        ((Jam)((ScoreBoardEventProvider) sb.get(ScoreBoard.NChild.PERIOD, "1")).get(Period.NChild.JAM, 1)).delete();
         
         assertEquals(2, sb.getAll(ScoreBoard.NChild.PERIOD).size());
         assertEquals(0, sb.getMinNumber(ScoreBoard.NChild.PERIOD) + 0);
@@ -1781,7 +1781,7 @@ public class ScoreboardImplTests {
         assertEquals(2, p2.getNumber());
         assertEquals(p2.getPrevious(), penalty.getJam().getParent());
         
-        p2.getPrevious().unlink();
+        p2.getPrevious().delete();
         
         assertEquals(1, p2.getNumber());
         assertEquals(p2.getFirst(Period.NChild.JAM), penalty.getJam());

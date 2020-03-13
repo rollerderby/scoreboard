@@ -47,7 +47,7 @@ function initialize() {
 		var m = k.match(skaterRegEx);
 		if(m) {
 			var key = m[3];
-			if(!(key == 'Id' || key == 'Name' || key == 'Number' || key == 'Flags')) return;
+			if(!(key == 'Id' || key == 'Name' || key == 'RosterNumber' || key == 'Flags')) return;
 
 			var d = {}; d[key] = v; d['Team'] = m[1];
 			if(key == 'Id' && v == null) {
