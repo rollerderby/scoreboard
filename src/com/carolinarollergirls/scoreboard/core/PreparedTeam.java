@@ -17,7 +17,6 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 // Roster for teams for loading in for games.
 public interface PreparedTeam extends ScoreBoardEventProvider {
     public enum Value implements PermanentProperty {
-      ID(String.class, ""),
       NAME(String.class, ""),
       LOGO(String.class, "");
 
@@ -43,7 +42,6 @@ public interface PreparedTeam extends ScoreBoardEventProvider {
   public static interface PreparedTeamSkater extends ScoreBoardEventProvider {
 
     public enum Value implements PermanentProperty {
-      ID(String.class, ""),
       NAME(String.class, ""),
       NUMBER(String.class, ""),
       FLAGS(String.class, "");

@@ -16,7 +16,8 @@
 				<div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="AlternateName(scoreboard),Name"></div>
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
-				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
+				<div class="JamScore Box AutoFit" sbDisplay="JamScore,NoInitial" sbModify="toJamScore"></div>
+				<div class="ShowInJam StarPass AutoFit" sbDisplay="StarPass" sbModify="toSP"></div>
 				<div class="DotTimeouts Box">
 					<div class="Dot Timeout1"></div>
 					<div class="Dot Timeout2"></div>
@@ -25,14 +26,15 @@
 				<div class="DotOfficialReviews Box">
 					<div class="Dot OfficialReview1"></div>
 				</div>
-				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="DisplayLead,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
+				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="DisplayLead,StarPass,Position(Jammer).Name,Position(Pivot).Name,/ScoreBoard.InJam" sbModify="jammer"></div>
 			</div>
 
 			<div class="Team Team2 Right" sbContext="Team(2)">
 				<div class="Name AutoFit" sbModify="nameUpdate" sbDisplay="AlternateName(scoreboard),Name"></div>
 				<div class="Logo" sbTrigger="logoUpdate" sbTriggerOn="Logo">&nbsp;</div>
 				<div class="Score Box AutoFit" sbDisplay="Score"></div>
-				<div class="JamScore Box AutoFit" sbDisplay="JamScore"></div>
+				<div class="JamScore Box AutoFit" sbDisplay="JamScore,NoInitial" sbModify="toJamScore"></div>
+				<div class="ShowInJam StarPass AutoFit" sbDisplay="StarPass" sbModify="toSP"></div>
 				<div class="DotTimeouts Box">
 					<div class="Dot Timeout1"></div>
 					<div class="Dot Timeout2"></div>
@@ -41,7 +43,7 @@
 				<div class="DotOfficialReviews Box">
 					<div class="Dot OfficialReview1"></div>
 				</div>
-				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="DisplayLead,StarPass,Position(Jammer),Position(Pivot),Skater" sbModify="jammer"></div>
+				<div class="ShowInJam Clock Lead AutoFit" sbDisplay="DisplayLead,StarPass,Position(Jammer).Name,Position(Pivot).Name,/ScoreBoard.InJam" sbModify="jammer"></div>
 			</div>
 
 			<!-- Jam In Progress -->

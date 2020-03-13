@@ -56,6 +56,12 @@ body:not(.AllowSelect) .PLT {
 
 .PLT.Team .Unserved { background-color: #0FF; }
 .PLT.Team .Serving { background-color: #70ff70; }
+.PLT.Team .Penalty .Sitting, .PLT.Team .Penalty .Box { position: relative;}
+.PLT.Team .Penalty .Sitting::before, .PLT.Team .Penalty .Box::before {
+    font-weight: normal; position: absolute; left: .2em; top: .15em;
+ }
+.PLT.Team .Penalty .Sitting.Unserved::before, .PLT.Team .Penalty .Box.Unserved::before { content: "!"; }
+.PLT.Team .Penalty .Sitting.inBox::before, .PLT.Team .Penalty .Box.Serving::before { content: "\203E" /* overline */; }
 .PLT.Team .OnTrack:not(.Advance) { background-color: #70ff70; }
 .PLT.Team tr[role='Pivot'] .OnTrack:not(.Advance) { background-color: #00ee00; }
 .PLT.Team tr[role='Jammer'] .OnTrack:not(.Advance) { background-color: #00cc00; }

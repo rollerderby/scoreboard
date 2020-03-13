@@ -1,19 +1,16 @@
 
-function jammer(k, v) {
+function jammer(k, v, ov) {
 	id = getTeamId(k);
 	var prefix = "ScoreBoard.Team(" + id + ").";
-	var jammerId = WS.state[prefix + "Position(Jammer).Skater"];
-	var jammerName = WS.state[prefix + "Skater(" + jammerId + ").Name"];
-	var pivotId = WS.state[prefix + "Position(Pivot).Skater"];
-	var pivotName = WS.state[prefix + "Skater(" + pivotId + ").Name"];
+	var jammerName = WS.state[prefix + "Position(Jammer).Name"];
+	var pivotName = WS.state[prefix + "Position(Pivot).Name"];
 	var leadJammer = isTrue(WS.state[prefix + "DisplayLead"]);
 	var starPass = isTrue(WS.state[prefix + "StarPass"]);
 	var inJam = isTrue(WS.state["ScoreBoard.InJam"]);
 
 	if (jammerName == null || jammerName == "") {
-		jammerName = leadJammer ? "Lead" : "";
-	if (pivotName == null)
-		pivotName = "";
+		jammerName = (leadJammer && !ov) ? "Lead" : "";
+		if (pivotName == null) {pivotName = "";}
 	}
 
 	var jn = !starPass ? jammerName : pivotName;
@@ -22,6 +19,7 @@ function jammer(k, v) {
 	};
 	$(".Team" + id + " .Lead").toggleClass("HasLead", (leadJammer && !starPass));
 	$(".Team" + id).toggleClass("HasJammerName", (jn != ""));
+	$(".Team" + id + " .Lead").toggleClass("HasStarPass", starPass);
 	return jn
 }
 
@@ -62,8 +60,6 @@ function smallDescriptionUpdate(k, v) {
 	var lcn = WS.state["ScoreBoard.Clock(Lineup).Name"];
 	var tcn = WS.state["ScoreBoard.Clock(Timeout).Name"];
 	var ret = '';
-
-	console.log(lc,tc,to,or,lcn,tcn);
 
 	$.each(["1", "2"], function (idx, id) {
 		tto = WS.state["ScoreBoard.Team(" + id + ").Timeouts"];
@@ -134,7 +130,7 @@ function toClockInitialNumber(k, v) {
 			if (name != null && number != null)
 				ret = name.substring(0, 1) + number;
 
-			if (name == 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1) 
+			if (name == 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1)
 				ret = 'Game';
 		}
 	});
@@ -142,11 +138,20 @@ function toClockInitialNumber(k, v) {
 }
 
 function toTime(k, v) {
-	return _timeConversions.msToMinSecNoZero(v);
+	k = WS._enrichProp(k);
+	var isCountDown = isTrue(WS.state['ScoreBoard.Clock(' + k.Clock + ').Direction']);
+	return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
 
-function toInitial(k, v) {
-	return v == null ? '' : v.substring(0, 1);
+function toJamScore(k, v) {
+	var prefix = "ScoreBoard.Team(" + getTeamId(k) + ").";
+	var jamScore = WS.state[prefix + "JamScore"];
+	var noInitial = isTrue(WS.state[prefix + "NoInitial"]);
+	return (noInitial && !jamScore) ? '_' : jamScore;
+}
+
+function toSP(k, v) {
+	return isTrue(v) ? 'SP' : '';
 }
 
 function clockRunner(k,v) {
@@ -168,12 +173,8 @@ function clockRunner(k,v) {
 
 
 // Show Clocks
-WS.Register( [
-	"ScoreBoard.Clock(Period).Running",
-	"ScoreBoard.Clock(Jam).Running",
-	"ScoreBoard.Clock(Lineup).Running",
-	"ScoreBoard.Clock(Timeout).Running",
-	"ScoreBoard.Clock(Intermission).Running" ], function(k, v) { clockRunner(k,v); } );
+WS.Register( 'ScoreBoard.Clock(*).Running', function(k, v) { clockRunner(k,v); } );
+WS.Register( 'ScoreBoard.Clock(*).Direction');
 
 WS.Register( 'ScoreBoard.Rulesets.CurrentRule(Period.Number)' );
 WS.Register( 'ScoreBoard.InJam' );

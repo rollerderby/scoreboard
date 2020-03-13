@@ -1,0 +1,24 @@
+{
+	"penalties": [
+		{ "code": "?", "verbalCues": ["Unknown"]},
+		{ "code": "AS", "verbalCues": ["Above the Shoulders"]},
+		{ "code": "A", "verbalCues": ["Arms"]},
+		{ "code": "B", "verbalCues": ["Back Blocking"]},
+		{ "code": "L", "verbalCues": ["Low Blocking"]},
+		{ "code": "S", "verbalCues": ["Stopping"]},
+		{ "code": "DB", "verbalCues": ["Directional Blocking"]},
+		{ "code": "MB", "verbalCues": ["Multi-Player Blocking"]},
+		{ "code": "BB", "verbalCues": ["Blocking Out of Bounds"]},
+		{ "code": "AB", "verbalCues": ["Assistingf Out of Bounds"]},
+		{ "code": "FR", "verbalCues": ["Failure to Reform"]},
+		{ "code": "OP", "verbalCues": ["Skating Out of Play"]},
+		{ "code": "BP", "verbalCues": ["Blocking Out of Play"]},
+		{ "code": "AP", "verbalCues": ["Assisting Out of Play"]},
+		{ "code": "SB", "verbalCues": ["Skating Out of Bounds"]},
+		{ "code": "X", "verbalCues": ["Cutting the Track"]},
+		{ "code": "IB", "verbalCues": ["Illegal Block"]},
+		{ "code": "IP", "verbalCues": ["Illegal Procedure"]},
+		{ "code": "UC", "verbalCues": ["Unsporting Conduct"]},
+		{ "code": "IS", "verbalCues": ["Insubordination", "Fighting"]}
+	]
+}

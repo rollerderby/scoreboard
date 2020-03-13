@@ -72,7 +72,15 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		WS.Register(['ScoreBoard.Period(*).Jam(*).Id']);
 		WS.Register(['ScoreBoard.CurrentPeriodNumber']);
 		WS.Register(['ScoreBoard.UpcomingJam']);
-		WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)']);
+		if (mode == 'plt' || mode == 'lt') {
+			prepareUseLTDialog();
+			WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)'], function(k, v) {
+				if (!isTrue(v)) {
+					useLTDialog.dialog('open');
+			}});
+		} else {
+			WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
+		}
 	}
 
 	function updatePeriod(k, v) {
@@ -117,7 +125,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 		
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
 		var field = k.substring(prefix.length + 1);
-		if (field == 'Number') {
+		if (field == 'RosterNumber') {
 			tbody.children('.Skater.Penalty[id=' + k.Skater + ']').children('.Total').each( function(idx, elem) {
 				totalPenaltyCount -= parseInt($(elem).text(), 10);
 			});
@@ -142,8 +150,8 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 				tbody.children('.Skater[id=' + k.Skater + ']').remove();
 				return;
 			} else if (tbody.children('.Skater[id=' + k.Skater + ']').size() == 0 &&
-					WS.state[prefix + '.Number'] != null) {
-				makeSkaterRows(t, k.Skater, WS.state[prefix + '.Number']);
+					WS.state[prefix + '.RosterNumber'] != null) {
+				makeSkaterRows(t, k.Skater, WS.state[prefix + '.RosterNumber']);
 				if (WS.state[prefix + '.Penalty(0).Code'] != null) {
 					displayPenalty(t, k.Skater, 0);
 				}
@@ -393,11 +401,11 @@ function openPenaltyEditor(t, id, which) {
 
 	prefix = 'ScoreBoard.Team(' + t + ').Skater(' + id + ')';
 	var skaterName = WS.state[prefix + '.Name'];
-	var skaterNumber = WS.state[prefix + '.Number'];
+	var skaterNumber = WS.state[prefix + '.RosterNumber'];
 	
 	var penaltyNumber = which;
 	var penaltyId = null;
-	var wasServed = isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)']);
+	var wasServed = !isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
 
 	$('#PenaltyEditor .Codes>div').removeClass('Active');
 
@@ -630,7 +638,7 @@ var annotationEditor;
 
 function openAnnotationEditor(teamId, skaterId) {
 	var prefix = 'ScoreBoard.Team('+teamId+').Skater('+skaterId+').';
-	var skaterNumber = WS.state[prefix + 'Number'];
+	var skaterNumber = WS.state[prefix + 'RosterNumber'];
 	var position = WS.state[prefix + 'Position'].slice(2);
 	var fieldingPrefix = ').TeamJam('+teamId+').Fielding(' + position + ').';
 	if (isTrue(WS.state['ScoreBoard.InJam'])) {
@@ -694,7 +702,7 @@ function prepareAnnotationEditor(teamId) {
 		});
 
 		WS.Register(['ScoreBoard.Team('+teamId+').Skater(*).Role',
-			'ScoreBoard.Team('+teamId+').Skater(*).Number'], function(k,v) { processSkater(k,v); })
+			'ScoreBoard.Team('+teamId+').Skater(*).RosterNumber'], function(k,v) { processSkater(k,v); })
 
 		annotationEditor = $('#AnnotationEditor').dialog({
 			modal: true,
@@ -721,7 +729,7 @@ function prepareAnnotationEditor(teamId) {
 		select.children('[value="'+k.Skater+'"]').remove();
 		var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
 		if (v != null && WS.state[prefix + 'Role'] != 'NotInGame') {
-			var number = WS.state[prefix + 'Number'];
+			var number = WS.state[prefix + 'RosterNumber'];
 			var option = $('<option>').attr('number', number).val(k.Skater).text(number);
 			_windowFunctions.appendAlphaSortedByAttr(select, option, 'number');
 		}
@@ -788,6 +796,26 @@ function prepareOptionsDialog(teamId, onlySettings) {
 		title: 'Option Editor',
 		buttons: [{ text: "Save", click: setURL }],
 		width: '500px',
+		autoOpen: false,
+	});
+}
+
+var useLTDialog;
+
+function prepareUseLTDialog() {
+	
+	
+	useLTDialog = $('#UseLTDialog')
+		.text('Use of Lineup Tracking is disabled.')
+		.dialog({
+		modal: true,
+		closeOnEscape: true,
+		title: 'Use Lineup Tracking',
+		buttons: [{ text: "Enable", click: function() {
+			WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', true);
+			useLTDialog.dialog('close');
+		}}],
+		width: '300px',
 		autoOpen: false,
 	});
 }

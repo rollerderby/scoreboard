@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
-
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
@@ -16,24 +15,23 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
 public class PreparedTeamImpl extends ScoreBoardEventProviderImpl implements PreparedTeam {
-  PreparedTeamImpl(ScoreBoard parent, String id) {
-    super(parent, Value.ID, id, ScoreBoard.Child.PREPARED_TEAM, PreparedTeam.class, Value.class, Child.class);
-  }
+    PreparedTeamImpl(ScoreBoard parent, String id) {
+        super(parent, id, ScoreBoard.Child.PREPARED_TEAM, PreparedTeam.class, Value.class, Child.class);
+    }
 
-  @Override
-  public ValueWithId create(AddRemoveProperty prop, String id) {
-    synchronized (coreLock) {
-      if (prop == PreparedTeam.Child.SKATER) {
-        return new PreparedTeamSkaterImpl(this, id);
-      }
-      return null;
+    @Override
+    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+        synchronized (coreLock) {
+            if (prop == PreparedTeam.Child.SKATER) {
+                return new PreparedTeamSkaterImpl(this, id);
+            }
+            return null;
+        }
     }
-  }
-  public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl implements PreparedTeamSkater {
-    PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
-      super(parent, Value.ID, id, PreparedTeam.Child.SKATER, PreparedTeamSkater.class, Value.class);
+
+    public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl implements PreparedTeamSkater {
+        PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
+            super(parent, id, PreparedTeam.Child.SKATER, PreparedTeamSkater.class, Value.class);
+        }
     }
-  }
 }
-
-

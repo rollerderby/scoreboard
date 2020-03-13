@@ -48,7 +48,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
 		
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
 		var row = tbody.children('tr.Skater[id=' + k.Skater + ']');
-		if (k.parts[3] == 'Number') {
+		if (k.parts[3] == 'RosterNumber') {
 			// New skater, or number has been updated.
 			if (v == null) {
 				row.remove();
@@ -65,7 +65,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
 		var flags = WS.state[prefix + ".Flags"];
 		row.attr("flags", flags);
 		row.children(".Name").text(WS.state[prefix + ".Name"]);
-		row.children(".Number").text(String(WS.state[prefix + ".Number"]) + ((flags == "ALT" || flags == "BC")?"*":""));
+		row.children(".Number").text(String(WS.state[prefix + ".RosterNumber"]) + ((flags == "ALT" || flags == "BC")?"*":""));
 	}
 }
 

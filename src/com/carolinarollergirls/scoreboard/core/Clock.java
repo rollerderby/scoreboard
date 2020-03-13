@@ -84,7 +84,6 @@ public interface Clock extends ScoreBoardEventProvider {
     }
 
     public enum Value implements PermanentProperty {
-        ID(String.class, ""),
         NAME(String.class, ""),
         NUMBER(Integer.class, 0),
         TIME(Long.class, 0L),

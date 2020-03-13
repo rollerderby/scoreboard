@@ -190,7 +190,7 @@ public class ScoreBoardJSONListenerTests {
         t.addSkater(s);
         advance(0);
         assertEquals("Uno", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Name"));
-        assertEquals("01", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Number"));
+        assertEquals("01", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).RosterNumber"));
         assertEquals("", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Flags"));
         assertEquals("", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Position"));
         assertEquals("Bench", state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Role"));
@@ -208,7 +208,7 @@ public class ScoreBoardJSONListenerTests {
         t.removeSkater(id);
         advance(0);
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Name"));
-        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Number"));
+        assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).RosterNumber"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Flags"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Position"));
         assertEquals(null, state.get("ScoreBoard.Team(1).Skater(00000000-0000-0000-0000-000000000001).Role"));
@@ -334,7 +334,7 @@ public class ScoreBoardJSONListenerTests {
         String rootId = RulesetsImpl.ROOT_ID;
         String cid = "11111111-1111-1111-1111-111111111111";
         assertEquals(rootId, state.get("ScoreBoard.Rulesets.CurrentRulesetId"));
-        assertEquals("WFTDA Sanctioned", state.get("ScoreBoard.Rulesets.CurrentRulesetName"));
+        assertEquals("WFTDA", state.get("ScoreBoard.Rulesets.CurrentRulesetName"));
 
         assertEquals("2", state.get("ScoreBoard.Rulesets.CurrentRule(Period.Number)"));
         assertEquals("Period.Number", state.get("ScoreBoard.Rulesets.RuleDefinition(Period.Number).Name"));

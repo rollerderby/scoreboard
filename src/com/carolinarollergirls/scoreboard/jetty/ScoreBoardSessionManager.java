@@ -10,12 +10,10 @@ package com.carolinarollergirls.scoreboard.jetty;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.eclipse.jetty.server.session.AbstractSessionManager;
 import org.eclipse.jetty.server.session.AbstractSession;
-
+import org.eclipse.jetty.server.session.AbstractSessionManager;
 
 import com.carolinarollergirls.scoreboard.core.Clients;
-import com.carolinarollergirls.scoreboard.core.Clients.Client;
 import com.carolinarollergirls.scoreboard.core.Clients.Device;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 
@@ -46,7 +44,8 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
 
     @Override
     protected void invalidateSessions() {
-        // Our session objects are created per request, so nothing to cleanup on shutdown.
+        // Our session objects are created per request, so nothing to cleanup on
+        // shutdown.
     }
 
     @Override

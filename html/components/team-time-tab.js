@@ -172,64 +172,113 @@ function addDays(date, days) {
 }
 
 function createGameControlDialog() {
-	var dialog = $("<div>").addClass("GameControl");
-	var title = "Start New Game";
+	var dialog = $('<div>').addClass('GameControl');
+	var title = 'Start New Game';
 
-
-	var preparedGame = $("<div>").addClass("section").appendTo(dialog);
-	$("<span>").addClass("header").append("Start a prepared game").appendTo(preparedGame);
-
-	var adhocGame = $("<div>").addClass("section").appendTo(dialog);
+	var adhocGame = $('<div>').addClass('section').appendTo(dialog);
+	var preparedGame = $('<div>').addClass('section').appendTo(dialog);
 
 	var adhocStartGame = function() {
 		$('#GameControl').removeClass('clickMe');
-		var StartTime = adhocGame.find("input.StartTime").val();
+		var StartTime = adhocGame.find('input.StartTime').val();
 		var IntermissionClock = null;
-		if (StartTime != "") {
+		var points1 = Number(preparedGame.find('input.Points.Team1').val());
+		var points2 = Number(preparedGame.find('input.Points.Team2').val());
+		var to1 = Number(preparedGame.find('input.TO.Team1').val());
+		var to2 = Number(preparedGame.find('input.TO.Team2').val());
+		var or1 = Number(preparedGame.find('input.OR.Team1').val());
+		var or2 = Number(preparedGame.find('input.OR.Team2').val());
+		var period = Number(preparedGame.find('input.Period').val());
+		var jam = Number(preparedGame.find('input.Jam').val());
+		var periodClock = _timeConversions.minSecToMs(preparedGame.find('input.PeriodClock').val());
+		var advance = (points1 + points2 + to1 + to2 + or1 + or2 + period + jam > 0);
+		if (StartTime != '') {
 			var now = new Date();
-			var parts = StartTime.split(":");
+			var parts = StartTime.split(':');
 			StartTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(),
 					parts[0], parts[1]);
 			if (StartTime < now)
 				StartTime = addDays(StartTime, 1);
-			IntermissionClock = "" + (StartTime - now);
+			IntermissionClock = '' + (StartTime - now);
 		}
 		var game = {
-			Team1: adhocGame.find("select.Team1").val(),
-			Team2: adhocGame.find("select.Team2").val(),
-			Ruleset: adhocGame.find("select.Ruleset").val(),
-			IntermissionClock: IntermissionClock
+			Team1: adhocGame.find('select.Team1').val(),
+			Team2: adhocGame.find('select.Team2').val(),
+			Ruleset: adhocGame.find('select.Ruleset').val(),
+			IntermissionClock: IntermissionClock,
+			Advance: advance,
+			Points1: points1,
+			Points2: points2,
+			TO1: to1,
+			TO2: to2,
+			OR1: or1,
+			OR2: or2,
+			Period: period,
+			Jam: jam,
+			PeriodClock: periodClock
 		};
-		WS.Command("StartNewGame", game);
-		dialog.dialog("close");
+		WS.Command('StartNewGame', game);
+		dialog.dialog('close');
 	};
 
-	$("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
-	$("<div>")
-		.append($("<span>").append("Team 1: "))
-		.append($("<select>").addClass("Team1").append("<option value=''>No Team Selected</option"))
+	$('<div>')
+		.append($('<span>').append('Team 1: '))
+		.append($('<select>').addClass('Team1').append('<option value="">No Team Selected</option>'))
 		.appendTo(adhocGame);
-	$("<div>")
-		.append($("<span>").append("Team 2: "))
-		.append($("<select>").addClass("Team2").append("<option value=''>No Team Selected</option"))
+	$('<div>')
+		.append($('<span>').append('Team 2: '))
+		.append($('<select>').addClass('Team2').append('<option value="">No Team Selected</option>'))
 		.appendTo(adhocGame);
-	$("<div>")
-		.append($("<span>").append("Ruleset: "))
-		.append($("<select>").addClass("Ruleset"))
+	$('<div>')
+		.append($('<span>').append('Ruleset: '))
+		.append($('<select>').addClass('Ruleset'))
 		.appendTo(adhocGame);
-	$("<div>")
-		.append($("<span>").append("Start Time: "))
-		.append($("<input>").attr("type", "time").addClass("StartTime"))
+	$('<div>')
+		.append($('<span>').append('Start Time: '))
+		.append($('<input>').attr('type', 'time').addClass('StartTime'))
 		.appendTo(adhocGame);
-	$("<button>")
-		.addClass("StartGame")
-		.append("Start Game")
+	$('<button>')
+		.addClass('StartGame')
+		.append('Start Game')
 		.button({ disabled: true })
 		.appendTo(adhocGame)
 		.click(adhocStartGame);
 
 	updateAdhocName = function() {
 	};
+
+	$('<button>').addClass('setPrepState').text('Start Mid-Game').button().appendTo(preparedGame).click(function() {
+		preparedGame.children('.prepState').removeClass('Hide');
+		preparedGame.children('.setPrepState').addClass('Hide');
+	})
+	
+	$('<table>').addClass('prepState perTeam Hide')
+		.append($('<tr>').addClass('colLabel')
+			.append($('<td>'))
+			.append($('<td>').text('Team1'))
+			.append($('<td>').text('Team2')))
+		.append($('<tr>')
+			.append($('<td>').addClass('rowLabel').text('Points:'))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('Points Team1')))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('Points Team2'))))
+		.append($('<tr>')
+			.append($('<td>').addClass('rowLabel').text('Timeouts Taken:'))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('TO Team1')))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('TO Team2'))))
+		.append($('<tr>')
+			.append($('<td>').addClass('rowLabel').text('Reviews Taken:'))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('OR Team1')))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('OR Team2'))))
+		.append($('<tr>')
+			.append($('<td>').addClass('rowLabel').text('Period:'))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '1').addClass('Period'))))
+		.append($('<tr>')
+			.append($('<td>').addClass('rowLabel').text('Jam:'))
+			.append($('<td>').append($('<input>').attr('type', 'number').attr('min', '0').addClass('Jam'))))
+		.append($('<tr>')
+			.append($('<td>').addClass('rowLabel').text('Period Clock:'))
+			.append($('<td>').append($('<input>').attr('type', 'text').addClass('PeriodClock'))))
+		.appendTo(preparedGame);
 
 	WS.Register("ScoreBoard.PreparedTeam(*).Id", function(k, v) {
 		if (v == null) {
@@ -296,7 +345,7 @@ function createPeriodEndTimeoutDialog(td) {
 	WS.Register("ScoreBoard.Clock(Period).Running");
 	var checkTimeFunction = function(v) {
 		if (!applying) return;
-		var currentSecs = Number(_timeConversions.msToSeconds(v));
+		var currentSecs = Number(_timeConversions.msToSeconds(v, isTrue(WS.state['ScoreBoard.Clock(Period).Direction'])));
 		var targetSecs = Number(waitDiv.find("span.TargetSeconds").text());
 		if (currentSecs > targetSecs) {
 			return;
@@ -702,10 +751,10 @@ function createTeamTable() {
 				v = v || "";
 				container.children('[skater="'+v+'"]').addClass("Active");
 			}
-			WS.Register([prefix + '.Skater(*).Number', prefix + '.Skater(*).Role'], function(k, v) {
+			WS.Register([prefix + '.Skater(*).RosterNumber', prefix + '.Skater(*).Role'], function(k, v) {
 				container.children('[skater="'+k.Skater+'"]').remove();
 				if (v != null && WS.state[prefix + '.Skater('+k.Skater+').Role'] != 'NotInGame') {
-					var number = WS.state[prefix + '.Skater('+k.Skater+').Number'];
+					var number = WS.state[prefix + '.Skater('+k.Skater+').RosterNumber'];
 					var button = $('<button>').attr('number', number).attr('skater', k.Skater)
 							.attr('id', 'Team'+team+pos+k.Skater).addClass('KeyControl').text(number)
 							.click(function() {
@@ -722,20 +771,25 @@ function createTeamTable() {
 			return container;
 		};
 
-		var jammerSelectTd = jammerTr.children("td");
+		var jammerSelectTd = jammerTr.children('td');
 		$('<span>').text('Jammer:').appendTo(jammerSelectTd);
-		makeSkaterSelector("Jammer").appendTo(jammerSelectTd);
+		makeSkaterSelector('Jammer').appendTo(jammerSelectTd);
 
-		WSActiveButton(prefix + ".Position(Jammer).PenaltyBox", $("<button>")).text("Box")
-			.attr("id", "Team"+team+"JammerBox").addClass("KeyControl Box").button().appendTo(jammerSelectTd);
+		var jammerBoxButton = WSActiveButton(prefix + '.Position(Jammer).PenaltyBox', $('<button>')).text('Box')
+			.attr('id', 'Team'+team+'JammerBox').addClass('KeyControl Box').button().appendTo(jammerSelectTd);
 
-		var pivotSelectTd = pivotTr.children("td");
+		var pivotSelectTd = pivotTr.children('td');
 		$('<span>').text('Piv/4th Bl:').appendTo(pivotSelectTd);
-		makeSkaterSelector("Pivot").appendTo(pivotSelectTd);
+		makeSkaterSelector('Pivot').appendTo(pivotSelectTd);
 
-		WSActiveButton(prefix + ".Position(Pivot).PenaltyBox", $("<button>")).text("Box")
-			.attr("id", "Team"+team+"PivotBox").addClass("KeyControl Box").button().appendTo(pivotSelectTd);
-	});
+		var pivotBoxButton = WSActiveButton(prefix + '.Position(Pivot).PenaltyBox', $('<button>')).text('Box')
+			.attr('id', 'Team'+team+'PivotBox').addClass('KeyControl Box').button().appendTo(pivotSelectTd);
+
+		WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', function(k, v) {
+			jammerBoxButton.toggleClass('Hide', isTrue(v));
+			pivotBoxButton.toggleClass('Hide', isTrue(v));
+		});
+});
 
 	return table;
 }
@@ -764,7 +818,7 @@ function createTimeTable() {
 		if (clock == "Period" || clock == "Jam") {
 			var it = $("<a>").appendTo(nameTd).addClass("InvertedTime");
 			WS.Register(prefix +".InvertedTime", function(k, v) {
-				it.text(_timeConversions.msToMinSec(v));
+				it.text(_timeConversions.msToMinSec(v, !isTrue(WS.state[prefix+'.Direction'])));
 			});
 			WS.Register(prefix +".Direction", function(k, v) {
 				it.toggleClass("CountDown", isTrue(v));
@@ -815,7 +869,7 @@ function createTimeTable() {
 			.appendTo(timeTr.children("td:eq(0)").addClass("Button"));
 		var time = $("<a>").appendTo(timeTr.children("td:eq(1)").addClass("Time"));
 		WS.Register(prefix +".Time", function(k, v) {
-			time.text(_timeConversions.msToMinSec(v));
+			time.text(_timeConversions.msToMinSec(v, isTrue(WS.state[prefix+'.Direction'])));
 		});
 		var timeDialog = createTimeDialog(clock);
 		timeTr.children("td:eq(1)").click(function() { timeDialog.dialog("open"); });
@@ -883,9 +937,9 @@ function createPeriodDialog() {
 				}
 				if (v != null) {
 					if (key == "CurrentJamNumber") { row.children("td.Jams").text(v); }
-					if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.children("td.Duration").text(_timeConversions.msToMinSec(v)); }
+					if (key == "Duration" && !isTrue(WS.state[prefix + '.Running'])) { row.children("td.Duration").text(_timeConversions.msToMinSec(v, true)); }
 					if (key == "Running" && isTrue(v)) { row.children("td.Duration").text("running"); }
-					if (key == "Running" && !isTrue(v)) { row.children("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'])); }
+					if (key == "Running" && !isTrue(v)) { row.children("td.Duration").text(_timeConversions.msToMinSec(WS.state[prefix + '.Duration'], true)); }
 				}
 			});
 
@@ -977,14 +1031,14 @@ function createJamDialog() {
 						if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
 							row.children("td.Duration").text("running");
 						} else {
-							row.children("td.Duration").text(_timeConversions.msToMinSec(v));
+							row.children("td.Duration").text(_timeConversions.msToMinSec(v, true));
 						}
 					}
 					if (key == 'PeriodClockDisplayEnd') {
 						if (WS.state[prefix + '.WalltimeEnd'] == 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
 							row.children("td.PC").text("running");
 						} else {
-							row.children("td.PC").text(_timeConversions.msToMinSec(v));
+							row.children("td.PC").text(_timeConversions.msToMinSec(v, isTrue(WS.state['ScoreBoard.Clock(Period).Direction'])));
 						}
 					}
 				}
@@ -1145,10 +1199,11 @@ function createTimeoutDialog() {
 		}
 		if (v != null && row.length == 0) {
 			var jam = Number(WS.state[prefix+'.PrecedingJamNumber']);
-			var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix+'.Duration']);
+			var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' :	_timeConversions.msToMinSec(WS.state[prefix+'.Duration'], true);
 			var pc = _timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
-					WS.state['ScoreBoard.Clock(Period).Time'] :
-					WS.state[prefix+'.PeriodClockEnd']);
+						WS.state['ScoreBoard.Clock(Period).Time'] :
+						WS.state[prefix+'.PeriodClockEnd'],
+					isTrue(WS.state[prefix+'.Direction']));
 			var type = WS.state[prefix+'.Owner'] + '.' + WS.state[prefix+'.Review'];
 			var review = isTrue(WS.state[prefix+'.Review']);
 			var retained = isTrue(WS.state[prefix+'.RetainedReview']);
@@ -1193,14 +1248,15 @@ function createTimeoutDialog() {
 			case 'Running':
 			case 'PeriodClockEnd':
 				row.find('.PerClock').text(_timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
-							WS.state['ScoreBoard.Clock(Period).Time'] :
-							WS.state[prefix+'.PeriodClockEnd']));
+								WS.state['ScoreBoard.Clock(Period).Time'] :
+								WS.state[prefix+'.PeriodClockEnd'],
+							isTrue(WS.state[prefix+'.Direction'])));
 				break;
 			case 'Running':
 			case 'Duration':
 				row.find('.Duration').text(isTrue(WS.state[prefix+'.Running']) ?
 						'Running' :
-						_timeConversions.msToMinSec(WS.state[prefix+'.Duration']));
+						_timeConversions.msToMinSec(WS.state[prefix+'.Duration'], true));
 				break;
 			case 'Review':
 				row.find('.Retained button').toggleClass('Hide', !isTrue(v));
@@ -1240,7 +1296,7 @@ function createTimeDialog(clock) {
 			.appendTo(rowTable.find("tr:eq(0)>td").addClass("Title"));
 		var time = $("<a>").addClass("Time").appendTo(rowTable.find("tr:eq(0)>td"));
 		WS.Register(prefix + "." + e, function(k, v) {
-			time.text(_timeConversions.msToMinSec(v))
+			time.text(_timeConversions.msToMinSec(v, isTrue(WS.state[prefix + '.Direction'])))
 		});
 		$("<button>").text("-sec").button()
 			.click(function() { WS.Set(prefix + "." + e, -1000, "change");})

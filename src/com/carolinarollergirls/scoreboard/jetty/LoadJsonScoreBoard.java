@@ -23,6 +23,7 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 
 public class LoadJsonScoreBoard extends HttpServlet {
@@ -66,14 +67,14 @@ public class LoadJsonScoreBoard extends HttpServlet {
                 @Override
                 public void run() {
                     scoreBoard.reset();
-                    ScoreBoardJSONSetter.set(scoreBoard, state);
+                    ScoreBoardJSONSetter.set(scoreBoard, state, Source.JSON);
                 }
             });
         } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
             scoreBoard.runInBatch(new Runnable() {
                 @Override
                 public void run() {
-                    ScoreBoardJSONSetter.set(scoreBoard, state);
+                    ScoreBoardJSONSetter.set(scoreBoard, state, Source.JSON);
                 }
             });
         } else {

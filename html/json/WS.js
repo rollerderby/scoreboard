@@ -333,8 +333,11 @@ var WS = {
 		paths = new Array();
 		$.each(list, function(idx, item) {
 			item = $.trim(item);
-			if (path != null)
+			if (item.startsWith('/')) {
+				item = item.substring(1);
+			} else if (path != null) {
 				item = path + '.' + item;
+			}
 			paths.push(item);
 		});
 		return paths;

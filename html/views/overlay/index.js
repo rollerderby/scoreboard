@@ -27,8 +27,9 @@ function initialize() {
 
 	WS.Register( [
 			'ScoreBoard.Team(*).Skater(*).Name',
-			'ScoreBoard.Team(*).Skater(*).Number',
-			'ScoreBoard.Team(*).Skater(*).Flags' ], function(k,v) {
+			'ScoreBoard.Team(*).Skater(*).RosterNumber',
+			'ScoreBoard.Team(*).Skater(*).Flags',
+			'ScoreBoard.Team(*).Skater(*).Role'], function(k,v) {
 				var me = '.RosterTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
 				var mb = '.PenaltyTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
 				if (v == null) {
@@ -38,18 +39,27 @@ function initialize() {
 				}
 				ensureSkaterExists(k.Skater, k.Team);
 
-				if(k.field == 'Number')	{ updateSkaterNumber(me,mb,v); }
-				if(k.field == 'Flags') {
+				if (k.field == 'Flags') {
 					$('.'+k.field, me).attr('data-flag', v);
 					$(mb).attr('data-flag', v);
-				} else if (v == "") {
-					c = $('.'+k.field, me).html('&nbsp;');
-					c = $('.'+k.field, mb).html('&nbsp;');
+				} else if (k.field == 'Role') {
+					// Hide skater row in penalties panel only
+					if (v == 'NotInGame') {
+						$(mb).addClass('NoShow');
+					} else {
+						$(mb).removeClass('NoShow');
+					}
+					updateSort(mb);
 				} else {
-					c = $('.'+k.field, me).text(v);
-					c = $('.'+k.field, mb).text(v);
+					// Name or Number, replace empty string with nbsp
+					$('.'+k.field, me).text(v == '' ? '\xa0' : v);
+					$('.'+k.field, mb).text(v == '' ? '\xa0' : v);
+					if (k.field == 'RosterNumber') {
+						updateSort(me);
+						updateSort(mb);
+					}
 				}
-			});
+	});
 
 	WS.Register( 'ScoreBoard.Team(*).Skater(*).Penalty(*).Code', function(k,v) {
 		if (k.Penalty == 0) {
@@ -66,24 +76,10 @@ function initialize() {
 		createPenalty(sel, k.Penalty, v);
 	} );
 
-	WS.Register( ['ScoreBoard.Team(*).Color(overlay_bg)',
-			'ScoreBoard.Team(*).Color(overlay_fg)' ], function(k,v) {
-		var style;
-		for(i in document.styleSheets) if(document.styleSheets[i].title =='jsStyle') style=document.styleSheets[i];
-		if(style) {
-			var ns,r;
-			var rule;
-			// chrome seems to like things in lowercase
-			var rd = '#sb .colourteam'+k.Team;
 
-			if(k.Color == 'overlay_bg') ns = 'background-color';
-			if(k.Color == 'overlay_fg') ns = 'color';
-			for(var r=0; r<style.rules.length ; r++ ) {
-				var dd = style.rules[r];
-				if(dd.selectorText == rd && dd.style[0] == ns) style.deleteRule(r);
-			}
-			if(v != null) style.addRule(rd, ns + ': ' + v);
-		}
+	WS.Register( ['ScoreBoard.Team(*).Color'], function(k,v) {
+		 $(document).find('.ColourTeam'+k.Team).css('color',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_fg)'] || '');
+		 $(document).find('.ColourTeam'+k.Team).css('background',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_bg)'] || '');
 	});
 
 	WS.Register( 'ScoreBoard.Team(*).Logo', function(k,v) {
@@ -101,9 +97,7 @@ function initialize() {
 	});
 
 	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)' ], function(k,v) {
-		if (k == 'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)') {
-			$('#VIDEO-BG').css('backgroundColor', v || 'transparent');
-		}
+		$('body').css('backgroundColor', v || 'transparent');
 	});
 
 	WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)' ], function(k,v) {
@@ -157,7 +151,9 @@ function initialize() {
 			setTimeout(function() { $('body').removeClass('preload'); }, 1000);
 }
 
-
+function jammer_ov(k, v) {
+	return	jammer(k,v,true);
+}
 
 function ensureSkaterExists(skaterId, team) {
 	if ($('.PenaltyTeam' + team + ' .Team' + team + ' .Skater[data-skaterId=' + skaterId + ']').length == 0) {
@@ -180,12 +176,26 @@ function ensureSkaterExists(skaterId, team) {
 	}
 }
 
-function updateSkaterNumber(me,mb,v) {
-	sv = v;
-	if(v == '' || v == '-' || v == null) { sv = 'ZZZB'; v = '-'; }
-	$('.Number',me).parent().attr('data-sort', sv);
-	$('.Number',mb).parent().attr('data-sort', sv);
-	$(me).parent().sortDivs(); $(mb).parent().sortDivs();
+function updateSort(sel) {
+	var skaterRow = $(sel);
+	var sortValue;
+	// First, sort invisible rows to the end, so they don't interfere with alternating row color
+	if (skaterRow.hasClass('NoShow')) {
+		sortValue = '1';
+	} else {
+		sortValue = '0';
+	}
+
+	// Second, sort by number with missing numbers at the end
+	var n = $('.Number', sel).text();
+	if (n == '' || n == '-' || n == null) {
+		sortValue += 'ZZZZZZ';
+	} else {
+		sortValue += n;
+	}
+
+	skaterRow.attr('data-sort', sortValue);
+	skaterRow.parent().sortDivs();
 }
 
 function createPenalty(mb, pnum, v) {

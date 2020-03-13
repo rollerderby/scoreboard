@@ -124,7 +124,7 @@ function createTeamsTab(tab) {
 			"ScoreBoard.Team(*).Name",
 			"ScoreBoard.Team(*).Skater(*).Flags",
 			"ScoreBoard.Team(*).Skater(*).Name",
-			"ScoreBoard.Team(*).Skater(*).Number"], function(k, v) {
+			"ScoreBoard.Team(*).Skater(*).RosterNumber"], function(k, v) {
 				var teamId = selectTeam.val();
 				if ("(Current Team "+k.Team+")" == teamId) {
 					handleTeamUpdate(k, v);
@@ -147,7 +147,7 @@ function createTeamsTab(tab) {
 
 	var addSkater = function(number, name, flags, id) {
 		id = id || newUUID();
-		WS.Set(getPrefix() + ".Skater("+id+").Number", number);
+		WS.Set(getPrefix() + ".Skater("+id+").RosterNumber", number);
 		WS.Set(getPrefix() + ".Skater("+id+").Name", name);
 		WS.Set(getPrefix() + ".Skater("+id+").Flags", flags);
 	}
@@ -256,8 +256,8 @@ function createTeamsTab(tab) {
 					.click(function() { createTeamsSkaterRemoveDialog(selectTeam.val(), prefix); })
 					.appendTo(skaterRow.children("td.Remove"));
 				numberInput.change(function() {
-					WS.Set(prefix + ".Number", numberInput.val());
-					skaterRow.attr("skaternum", WS.state[prefix + ".Number"]);
+					WS.Set(prefix + ".RosterNumber", numberInput.val());
+					skaterRow.attr("skaternum", WS.state[prefix + ".RosterNumber"]);
 				});
 				var skaterFlags = $("<select>").appendTo(skaterRow.children("td.Flags"));
 				skaterFlags.append($("<option>").attr("value", "").text("Skater"));
@@ -274,7 +274,7 @@ function createTeamsTab(tab) {
 			skaterRow.children("td." + k.field).children().val(v);
 			if (k.field == "Flags") {
 				updateSkaterCount();
-			} else if (k.field == "Number") {
+			} else if (k.field == "RosterNumber") {
 				skaterRow.attr("skaternum", v);
 				_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "skaternum");
 			}
@@ -541,7 +541,7 @@ function createTeamsSkaterRemoveDialog(teamId, prefix) {
 	$("<br>").appendTo(dialog);
 
 	var skaterName = WS.state[prefix + ".Name"];
-	var skaterNumber = WS.state[prefix + ".Number"];
+	var skaterNumber = WS.state[prefix + ".RosterNumber"];
 	$("<a>").addClass("Remove").text("Remove Skater: ").appendTo(dialog);
 	$("<a>").addClass("Target").text(skaterNumber).appendTo(dialog);
 	$("<br>").appendTo(dialog);

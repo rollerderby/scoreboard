@@ -8,11 +8,10 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-import com.carolinarollergirls.scoreboard.utils.ValWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Clients extends ScoreBoardEventProvider {
     public enum Child implements AddRemoveProperty {
@@ -20,7 +19,9 @@ public interface Clients extends ScoreBoardEventProvider {
         DEVICE(Device.class);
 
         private Child(Class<? extends ValueWithId> t) { type = t; }
+
         private final Class<? extends ValueWithId> type;
+
         @Override
         public Class<? extends ValueWithId> getType() { return type; }
     }
@@ -37,7 +38,6 @@ public interface Clients extends ScoreBoardEventProvider {
         public void write();
 
         public enum Value implements PermanentProperty {
-            ID(String.class, ""),
             DEVICE(Device.class, null),
             REMOTE_ADDR(String.class, ""),
             PLATFORM(String.class, ""),
@@ -46,8 +46,10 @@ public interface Clients extends ScoreBoardEventProvider {
             WROTE(Long.class, 0L);
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+
             private final Class<?> type;
             private final Object defaultValue;
+
             @Override
             public Class<?> getType() { return type; }
             @Override
@@ -63,9 +65,8 @@ public interface Clients extends ScoreBoardEventProvider {
         public void write();
 
         public enum Value implements PermanentProperty {
-            ID(String.class, ""),
-            SESSION_ID_SECRET(String.class, ""),   // The cookie.
-            NAME(String.class, ""),                // A human-readable name.
+            SESSION_ID_SECRET(String.class, ""), // The cookie.
+            NAME(String.class, ""), // A human-readable name.
             REMOTE_ADDR(String.class, ""),
             PLATFORM(String.class, ""),
             COMMENT(String.class, ""),
@@ -74,18 +75,23 @@ public interface Clients extends ScoreBoardEventProvider {
             ACCESSED(Long.class, 0L);
 
             private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
+
             private final Class<?> type;
             private final Object defaultValue;
+
             @Override
             public Class<?> getType() { return type; }
             @Override
             public Object getDefaultValue() { return defaultValue; }
         }
+
         public enum Child implements AddRemoveProperty {
             CLIENT(Client.class);
 
             private Child(Class<? extends ValueWithId> t) { type = t; }
+
             private final Class<? extends ValueWithId> type;
+
             @Override
             public Class<? extends ValueWithId> getType() { return type; }
         }

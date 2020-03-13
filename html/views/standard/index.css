@@ -98,6 +98,7 @@ body.box_flat.bright .Box {
 .Red {
 	background: -moz-linear-gradient(top, #FF4040, #A04040 100%);
 	background: -webkit-gradient(linear, 0 0, 0 100%, from(#FF4040), color-stop(100%, #A04040));
+	color: #FFFFFF;
 }
 
 body.box_flat .Box.Red {
@@ -192,6 +193,16 @@ body.box_flat .Box.FlatTop {
 }
 .Team.Left>.JamScore { left: 39.5%; }
 .Team.Right>.JamScore { right: 39.5%; }
+
+.Team>.StarPass {
+	position: absolute;
+	width: 9%;
+	height: 8%;
+	top: 31%;
+	font-size: 9vh;
+}
+.Team.Left>.StarPass { left: 39.5%; }
+.Team.Right>.StarPass { right: 39.5%; }
 
 .DotTimeouts { position: absolute; height: 14%; width: 3%; top: 31% }
 .DotOfficialReviews { position: absolute; height: 5%; width: 3%; top: 46% }

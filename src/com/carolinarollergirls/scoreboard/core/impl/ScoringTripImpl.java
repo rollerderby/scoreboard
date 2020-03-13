@@ -16,11 +16,11 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
 
     @Override
-    public Object computeValue(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if (prop == Value.SCORE && (Integer)value < 0) { return 0; }
+    public Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == Value.SCORE && (Integer) value < 0) { return 0; }
         if (prop == Value.DURATION) {
-            if ((Long)get(Value.JAM_CLOCK_END) > 0L) {
-                return (Long)get(Value.JAM_CLOCK_END) - (Long)get(Value.JAM_CLOCK_START);
+            if ((Long) get(Value.JAM_CLOCK_END) > 0L) {
+                return (Long) get(Value.JAM_CLOCK_END) - (Long) get(Value.JAM_CLOCK_START);
             } else {
                 return 0L;
             }
@@ -28,43 +28,43 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         return value;
     }
     @Override
-    public void valueChanged(PermanentProperty prop, Object value, Object last, Flag flag) {
-        if ((prop == Value.SCORE || (prop == Value.CURRENT && !(Boolean)value)) &&
-                (Long)get(Value.JAM_CLOCK_END) == 0L) {
+    public void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+        if ((prop == Value.SCORE || (prop == Value.CURRENT && !(Boolean) value))
+                && (Long) get(Value.JAM_CLOCK_END) == 0L) {
             set(Value.JAM_CLOCK_END, ScoreBoardClock.getInstance().getCurrentWalltime());
         }
-        if (prop == Value.CURRENT && (Boolean)value && (Integer)get(Value.SCORE) == 0) {
+        if (prop == Value.CURRENT && (Boolean) value && (Integer) get(Value.SCORE) == 0) {
             set(Value.JAM_CLOCK_END, 0L);
         }
         if (prop == Value.AFTER_S_P) {
-            if ((Boolean)value && hasNext()) {
+            if ((Boolean) value && hasNext()) {
                 getNext().set(Value.AFTER_S_P, true);
             }
-            if (!(Boolean)value && hasPrevious()) {
+            if (!(Boolean) value && hasPrevious()) {
                 getPrevious().set(Value.AFTER_S_P, false);
             }
-            if (flag != Flag.INTERNAL) {
-                if ((Boolean)value && (!hasPrevious() || !(Boolean)getPrevious().get(Value.AFTER_S_P))) {
+            if (flag != Flag.SPECIAL_CASE) {
+                if ((Boolean) value && (!hasPrevious() || !(Boolean) getPrevious().get(Value.AFTER_S_P))) {
                     parent.set(TeamJam.Value.STAR_PASS_TRIP, this);
-                } else if(!(Boolean)value && (!hasNext() || (Boolean)getNext().get(Value.AFTER_S_P))) {
+                } else if (!(Boolean) value && (!hasNext() || (Boolean) getNext().get(Value.AFTER_S_P))) {
                     parent.set(TeamJam.Value.STAR_PASS_TRIP, getNext());
                 }
             }
         }
     }
-    
+
     @Override
-    public void execute(CommandProperty prop) {
-        switch ((Command)prop) {
-            case REMOVE:
-                unlink();
-                break;
-            case INSERT_BEFORE:
-                parent.add(ownType, new ScoringTripImpl((TeamJam)parent, getNumber()));
-                break;
+    public void execute(CommandProperty prop, Source source) {
+        switch ((Command) prop) {
+        case REMOVE:
+            delete(source);
+            break;
+        case INSERT_BEFORE:
+            parent.add(ownType, new ScoringTripImpl((TeamJam) parent, getNumber()));
+            break;
         }
     }
-    
+
     @Override
-    public int getScore() { return (Integer)get(Value.SCORE); }
+    public int getScore() { return (Integer) get(Value.SCORE); }
 }
