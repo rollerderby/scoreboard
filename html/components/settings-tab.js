@@ -89,7 +89,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.click(function() { intermissionControlDialog.dialog("open"); });
 
 	var syncClocksButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)", "Clocks Synced", "Clocks Unsynced");
-	var forceServedButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard.Penalties.ForceServed)", "Assume Penalties Served", "Track Penalty Serving");
+	var useLTButton = toggleButton('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', 'CRG Tracks Lineups', 'Lineup Tracking Disabled');
 	var swapTeamsButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_SwapTeams)", "Team sides swapped", "Team sides normal");
 	swapTeamsButton.attr("ApplyPreview", "SwapTeams");
 	var hideLogosButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_HideLogos)", "Hide Logos", "Show Logos");
@@ -146,7 +146,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 		.next().append(customPageViewSelect);
 	$("<tr><td/><td/><td/></tr>").addClass(type).appendTo(optionsTable)
 		.find("td").addClass("ScoreBoardOptions Footer")
-		.first().append(forceServedButton)
+		.first().append(useLTButton)
 		.next().append(hideLogosButton);
 
 }

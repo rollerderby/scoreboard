@@ -53,6 +53,7 @@
 #TeamTime .skaterSelector>button:only-of-type { border-radius: 12px; }
 #TeamTime .skaterSelector>button>span { padding-top: 0.3em; padding-bottom: 0.3em; }
 
+#TeamTime table.Team button.Box.Hide {display: none }
 #TeamTime table.Team button.Box.Active { color: #000; background: #F33; }
 #TeamTime table.Team button.Active:not(.Box) { color: #000; background: #3F3; }
 

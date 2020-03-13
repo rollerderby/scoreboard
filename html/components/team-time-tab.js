@@ -722,20 +722,25 @@ function createTeamTable() {
 			return container;
 		};
 
-		var jammerSelectTd = jammerTr.children("td");
+		var jammerSelectTd = jammerTr.children('td');
 		$('<span>').text('Jammer:').appendTo(jammerSelectTd);
-		makeSkaterSelector("Jammer").appendTo(jammerSelectTd);
+		makeSkaterSelector('Jammer').appendTo(jammerSelectTd);
 
-		WSActiveButton(prefix + ".Position(Jammer).PenaltyBox", $("<button>")).text("Box")
-			.attr("id", "Team"+team+"JammerBox").addClass("KeyControl Box").button().appendTo(jammerSelectTd);
+		var jammerBoxButton = WSActiveButton(prefix + '.Position(Jammer).PenaltyBox', $('<button>')).text('Box')
+			.attr('id', 'Team'+team+'JammerBox').addClass('KeyControl Box').button().appendTo(jammerSelectTd);
 
-		var pivotSelectTd = pivotTr.children("td");
+		var pivotSelectTd = pivotTr.children('td');
 		$('<span>').text('Piv/4th Bl:').appendTo(pivotSelectTd);
-		makeSkaterSelector("Pivot").appendTo(pivotSelectTd);
+		makeSkaterSelector('Pivot').appendTo(pivotSelectTd);
 
-		WSActiveButton(prefix + ".Position(Pivot).PenaltyBox", $("<button>")).text("Box")
-			.attr("id", "Team"+team+"PivotBox").addClass("KeyControl Box").button().appendTo(pivotSelectTd);
-	});
+		var pivotBoxButton = WSActiveButton(prefix + '.Position(Pivot).PenaltyBox', $('<button>')).text('Box')
+			.attr('id', 'Team'+team+'PivotBox').addClass('KeyControl Box').button().appendTo(pivotSelectTd);
+
+		WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', function(k, v) {
+			jammerBoxButton.toggleClass('Hide', isTrue(v));
+			pivotBoxButton.toggleClass('Hide', isTrue(v));
+		});
+});
 
 	return table;
 }
