@@ -21,10 +21,10 @@ function createDataManagementTab(tab) {
 		.append($('<col>')).append($('<col>')).append($('<col>')).append($('<col>'))
 		.append($('<thead>').append($('<tr>').addClass('Type')
 			.append($('<th>').attr('colspan', '4').addClass('Type')
-				.append($('<button>').addClass('Show').text('Show').button().click(function() {
+				.append($('<button>').addClass('Show').text('Show').button().on('click', function() {
 					$(this).closest("table").removeClass("Hide");
 				}))
-				.append($('<button>').addClass('Hide').text('Hide').button().click(function() {
+				.append($('<button>').addClass('Hide').text('Hide').button().on('click', function() {
 					$(this).closest("table").addClass("Hide");
 				}))
 				.append($('<a>').addClass('Type')
@@ -47,7 +47,7 @@ function createDataManagementTab(tab) {
 		}
 		if (tab.find(">#"+k.Format+">div.Type>table.Type[type="+k.Type+"]").length == 0) {
 			var newTable = typeTemplate.clone(true).attr("type", k.Type)
-			.find("th.Type>button.Upload").click(function() {
+			.find("th.Type>button.Upload").on('click', function() {
 				createUploadMediaDialog(k.Format, k.Type);
 			}).end()
 			.find("tr.Type>th.Type>a.Type>span.Type").text(k.Type).end();
@@ -80,8 +80,8 @@ function createDataManagementTab(tab) {
 			newRow = itemTemplate.clone(true);
 		}
 		newRow.attr('name', v).attr('file', k.File);
-		newRow.find('button.Remove').text('Remove').button().click(function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
-		newRow.find('td.Name>input').val(v).change(function(e) {
+		newRow.find('button.Remove').text('Remove').button().on('click', function() { createRemoveMediaDialog(k.Format, k.Type, k.File); });
+		newRow.find('td.Name>input').val(v).on('change', function(e) {
 			WS.Set('ScoreBoard.Media.Format('+k.Format+').Type('+k.Type+').File('+k.File+').Name', e.target.value)
 		});
 		newRow.find('td.Src').text(k.File);
@@ -166,7 +166,7 @@ function createDataManagementTab(tab) {
 			.always(function() {
 				var newInputFile = inputFile.clone(true).insertAfter(inputFile);
 				inputFile.remove();
-				inputFile = newInputFile.change();
+				inputFile = newInputFile.trigger('change');
 			});
 			uploader.fileupload("option", "formData", []);
 		};
@@ -181,14 +181,14 @@ function createDataManagementTab(tab) {
 			close: function() { $(this).dialog("destroy").remove(); },
 			buttons: buttonsCloseOnly
 		});
-		inputFile.change(function() {
+		inputFile.on('change', function() {
 			var files = this.files;
 			if (!files || !files.length) {
 				div.dialog("option", "buttons", buttonsCloseOnly);
 				return;
 			}
 			div.dialog("option", "buttons", buttonsUploadClose);
-		}).change();
+		}).trigger('change');
 	}
 	
 	function createSaveLoadTab(tab) {
@@ -237,7 +237,7 @@ function createDataManagementTab(tab) {
 			.appendTo(contentTd);
 		$("<button>").html("Add/Merge").attr("data-method", "merge").appendTo(uploadForm).button();
 		$("<button>").html("Replace running scoreboard").attr("data-method", "load").appendTo(uploadForm).button();
-		uploadForm.children("button").click(function() {
+		uploadForm.children("button").on('click', function() {
 			uploadForm.attr("action", "/LoadJSON/"+$(this).attr("data-method")).submit();
 		});
 		_crgUtils.bindAndRun(uploadForm.children("input:file").button(), "change", function() {

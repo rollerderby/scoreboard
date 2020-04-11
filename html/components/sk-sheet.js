@@ -250,14 +250,14 @@ function prepareSkSheetTable(element, teamId, mode) {
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
 			$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
 			$('<td>').addClass('Jammer').appendTo(jamRow);
-			$('<td>').addClass('Lost Narrow Darker').click(function() { WS.Set(prefix+'Lost', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Lead Narrow Darker').click(function() { WS.Set(prefix+'Lead', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Calloff Narrow Darker').click(function() { WS.Set(prefix+'Calloff', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Injury Narrow Darker').click(function() { WS.Set(prefix+'Injury', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('NoInitial Narrow Darker').click(function() { setupTripEditor(p, nr, teamId, 1); }).appendTo(jamRow);
+			$('<td>').addClass('Lost Narrow Darker').on('click', function() { WS.Set(prefix+'Lost', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('Lead Narrow Darker').on('click', function() { WS.Set(prefix+'Lead', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('Calloff Narrow Darker').on('click', function() { WS.Set(prefix+'Calloff', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('Injury Narrow Darker').on('click', function() { WS.Set(prefix+'Injury', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('NoInitial Narrow Darker').on('click', function() { setupTripEditor(p, nr, teamId, 1); }).appendTo(jamRow);
 			$.each(new Array(9), function (idx) {
 				var t = idx + 2;
-				$('<td>').addClass('Trip Trip'+t).click(function() { setupTripEditor(p, nr, teamId, t); }).appendTo(jamRow);
+				$('<td>').addClass('Trip Trip'+t).on('click', function() { setupTripEditor(p, nr, teamId, t); }).appendTo(jamRow);
 			});
 			if (mode != 'copyToStatsbook') {
 				$('<td>').addClass('JamTotal').appendTo(jamRow);
@@ -265,8 +265,8 @@ function prepareSkSheetTable(element, teamId, mode) {
 			}
 
 			var spRow = jamRow.clone(true).removeClass('Jam').addClass('SP');
-			jamRow.children('.Jammer').click(function() { showSkaterSelector(prefix+'Fielding(Jammer).Skater', teamId); });
-			spRow.children('.Jammer').click(function() { showSkaterSelector(prefix+'Fielding(Pivot).Skater', teamId); });
+			jamRow.children('.Jammer').on('click', function() { showSkaterSelector(prefix+'Fielding(Jammer).Skater', teamId); });
+			spRow.children('.Jammer').on('click', function() { showSkaterSelector(prefix+'Fielding(Pivot).Skater', teamId); });
 			if (mode == 'operator') {
 				table.prepend(jamRow)
 			} else {
@@ -320,26 +320,26 @@ function prepareTripEditor() {
 		tripEditor.append($('<table>')
 				.append($('<tr>')
 						.append($('<td>')
-								.append($('<input type="number" min="0">').attr('id', 'score').keydown(function(event) {
+								.append($('<input type="number" min="0">').attr('id', 'score').on('keydown', function(event) {
 									if (event.which == 13 && $(this).val() == '') {
 										WS.Set(tripEditor.data('prefix')+'Remove', true);
 										tripEditor.dialog('close');
 									}
-									}).change(function() {
+									}).on('change', function() {
 										WS.Set(tripEditor.data('prefix')+'Score', $(this).val());
 									})))
 						.append($('<td>')
-								.append($('<button>').attr('id', 'afterSP').text('After SP').button().click(function() {
+								.append($('<button>').attr('id', 'afterSP').text('After SP').button().on('click', function() {
 									var check = !$(this).hasClass('checked');
 									$(this).toggleClass('checked', check);
 									WS.Set(tripEditor.data('prefix')+'AfterSP', check);
 								}))))
 				.append($('<tr class="buttons">')
-						.append($('<td>').append($('<button>').attr('id','remove').text('Remove Trip').button().click(function() {
+						.append($('<td>').append($('<button>').attr('id','remove').text('Remove Trip').button().on('click', function() {
 							WS.Set(tripEditor.data('prefix')+'Remove', true);
 							tripEditor.dialog('close');
 						})))
-						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Trip').button().click(function() {
+						.append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Trip').button().on('click', function() {
 							WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
 							tripEditor.dialog('close');
 							setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip'));
@@ -348,26 +348,26 @@ function prepareTripEditor() {
 				.append($('<tr>').append($('<td>').attr('colspan', '2').append($('<hr>'))))
 				.append($('<tr>').addClass('Annotation')
 						.append($('<td>').addClass('header').text('Notes: '))
-						.append($('<td>').append($('<button>').text('Clear Notes').button().click(function() {
+						.append($('<td>').append($('<button>').text('Clear Notes').button().on('click', function() {
 							tripEditor.find('#annotation').val('');
 						}))))
 				.append($('<tr>').addClass('Annotation')
 						.append($('<td>').attr('colspan', '2')
-								.append($('<textarea>').attr('cols', '25').attr('rows', '4').attr('id', 'annotation').change(function() {
+								.append($('<textarea>').attr('cols', '25').attr('rows', '4').attr('id', 'annotation').on('change', function() {
 									WS.Set(tripEditor.data('prefix')+'Annotation', $(this).val());
 								}))))
 				.append($('<tr>').append($('<td>').attr('colspan', '2').append($('<hr>'))))
 				.append($('<tr class="buttons nav">')
 						.append($('<td>')
-								.append($('<button>').text('⬅ Prev').attr('id', 'prev').button().click(function() {
+								.append($('<button>').text('⬅ Prev').attr('id', 'prev').button().on('click', function() {
 									tripEditor.dialog('close');
 									setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') - 1);
 								}))
-								.append($('<button>').text('Next ➡').attr('id', 'next').button().click(function() {
+								.append($('<button>').text('Next ➡').attr('id', 'next').button().on('click', function() {
 									tripEditor.dialog('close');
 									setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') + 1);
 								})))
-						.append($('<td>').addClass('close').append($('<button>').attr('id','close').text('Close').button().click(function() {
+						.append($('<td>').addClass('close').append($('<button>').attr('id','close').text('Close').button().on('click', function() {
 							tripEditor.dialog('close');
 						}))))
 		);
@@ -377,7 +377,6 @@ function prepareTripEditor() {
 function showSkaterSelector(element, teamId) {
 	$('#skaterSelector .skaterSelect').addClass('Hide');
 	$('#skaterSelector #skaterSelect'+teamId).removeClass('Hide');
-	console.log(element +'='+ WS.state[element]);
 	$('#skaterSelector #skaterSelect'+teamId).val(WS.state[element]);
 	$('#skaterSelector').data('element', element).dialog('open');
 }
@@ -397,7 +396,7 @@ function prepareSkaterSelector() {
 	});
 
 	$.each(['1','2'], function() {
-		selects[String(this)] = $('<select>').attr('id', 'skaterSelect'+String(this)).addClass('skaterSelect').append($('<option>').attr('value', '').text('None/Unknown')).change(function() {
+		selects[String(this)] = $('<select>').attr('id', 'skaterSelect'+String(this)).addClass('skaterSelect').append($('<option>').attr('value', '').text('None/Unknown')).on('change', function() {
 			WS.Set(selectorDialog.data('element'), $(this).val());
 			selectorDialog.dialog('close');
 		});

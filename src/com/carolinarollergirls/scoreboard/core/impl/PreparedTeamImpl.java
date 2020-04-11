@@ -32,6 +32,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl implements Pre
     public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl implements PreparedTeamSkater {
         PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
             super(parent, id, PreparedTeam.Child.SKATER, PreparedTeamSkater.class, Value.class);
+            setCopy(Value.NUMBER, this, Value.ROSTER_NUMBER, false);
         }
     }
 }

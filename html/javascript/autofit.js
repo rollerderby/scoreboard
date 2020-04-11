@@ -27,11 +27,11 @@ _autoFit = {
 			return e.data("AutoFit");
 		var doAutoFit = function() { return _autoFit.autoFitText(e, options); };
 		e.data("AutoFit", doAutoFit);
-		$(window).bind("resize", function(event) {
+		$(window).on("resize", function(event) {
 			if (e.closest("body").length)
 				doAutoFit();
 			else
-				$(window).unbind("resize", event);
+				$(window).off("resize", event);
 		});
 		setTimeout(doAutoFit, 100); // run initial autofit deferred
 		setTimeout(doAutoFit, 2000); // again in 2 sec; bug workaround FIXME
@@ -40,7 +40,7 @@ _autoFit = {
 	disableAutoFitText: function(e) {
 		if (!e.data("AutoFit"))
 			return;
-		$(window).unbind("resize", e.data("AutoFit"));
+		$(window).off("resize", e.data("AutoFit"));
 		e.removeData("AutoFit");
 	},
 	/* This should be called each time the text content changes, or the window

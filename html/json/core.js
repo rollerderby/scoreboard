@@ -21,9 +21,9 @@ function _includeUrl(url) {
 	if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$("head link[href='"+url+"'],head link[href='"+filename+"']").length) {
 		$("<link>").attr({ href: url, type: "text/css", rel: "stylesheet"}).appendTo("head");
   } else if (/\.[jJ][sS](\?.*)?$/.test(url) && _alreadyIncludedScripts[url] == null) {
-    $.ajax(url, {dataType: "script", cache: true, async: false, error: function(e, s, x) {
+    $.ajax(url, {dataType: "script", cache: true, async: false}).fail(function(e, s, x) {
       console.error(s + " for " + url + ": " + x);
-    }})
+    });
     _alreadyIncludedScripts[url] = true;
   }
 }
@@ -38,7 +38,7 @@ function _include(dir, files) {
 	$.each(files, function() { _includeUrl((dir?dir+"/":"")+this); });
 }
 
-_include("/external/jquery-ui", [ "jquery-ui.js", "css/default/jquery-ui.css" ]);
+_include("/external/jquery-ui", [ "jquery-ui.min.js", "jquery-ui.min.css" ]);
 
 _include("/external/jquery-plugins/isjquery/jquery.isjquery.js");
 _include("/external/jquery-plugins/string/jquery.string.js");
