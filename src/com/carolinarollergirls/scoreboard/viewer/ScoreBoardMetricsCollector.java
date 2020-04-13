@@ -8,9 +8,6 @@ package com.carolinarollergirls.scoreboard.viewer;
  * See the file COPYING for details.
  */
 
-import io.prometheus.client.Collector;
-import io.prometheus.client.GaugeMetricFamily;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -18,11 +15,13 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
+import io.prometheus.client.Collector;
+import io.prometheus.client.GaugeMetricFamily;
 
 public class ScoreBoardMetricsCollector extends Collector {
     private ScoreBoard sb;
+
     public ScoreBoardMetricsCollector(ScoreBoard sb) {
         this.sb = sb;
     }
@@ -42,23 +41,20 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily clockNumber = new GaugeMetricFamily("crg_scoreboard_clock_number",
                 "Number on scoreboard clock.", Arrays.asList("clock"));
         mfs.add(clockNumber);
-        for (ValueWithId v : sb.getAll(ScoreBoard.Child.CLOCK)) {
-            Clock c = (Clock)v;
-            clockTime.addMetric(Arrays.asList(c.getName()), (float)c.getTime() / 1000);
-            clockInvertedTime.addMetric(Arrays.asList(c.getName()), (float)c.getInvertedTime() / 1000);
+        for (Clock c : sb.getAll(ScoreBoard.Child.CLOCK, Clock.class)) {
+            clockTime.addMetric(Arrays.asList(c.getName()), (float) c.getTime() / 1000);
+            clockInvertedTime.addMetric(Arrays.asList(c.getName()), (float) c.getInvertedTime() / 1000);
             clockRunning.addMetric(Arrays.asList(c.getName()), c.isRunning() ? 1 : 0);
             clockNumber.addMetric(Arrays.asList(c.getName()), c.getNumber());
         }
 
-        GaugeMetricFamily score = new GaugeMetricFamily("crg_scoreboard_team_score",
-                "Score on scoreboard.", Arrays.asList("team", "name"));
+        GaugeMetricFamily score = new GaugeMetricFamily("crg_scoreboard_team_score", "Score on scoreboard.",
+                Arrays.asList("team", "name"));
         mfs.add(score);
-        for (ValueWithId v : sb.getAll(ScoreBoard.Child.TEAM)) {
-            Team t = (Team)v;
+        for (Team t : sb.getAll(ScoreBoard.Child.TEAM, Team.class)) {
             score.addMetric(Arrays.asList(t.getId(), t.getName()), t.getScore());
         }
 
         return mfs;
     }
 }
-

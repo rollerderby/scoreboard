@@ -92,11 +92,11 @@ public class EventPackageTests {
         TestScoreBoardEventProvider child2 = new TestScoreBoardEventProviderImpl(root, UUID.randomUUID().toString(),
                 TestScoreBoardEventProvider.Child.MULTIPLE);
 
-        assertEquals(0, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(0, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(0, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
         assertTrue(root.add(TestScoreBoardEventProvider.Child.MULTIPLE, child1));
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
         assertEquals(child1, event.getValue());
@@ -107,7 +107,7 @@ public class EventPackageTests {
         assertEquals(null, root.get(TestScoreBoardEventProvider.Child.MULTIPLE, child2.getId()));
 
         assertTrue(root.add(TestScoreBoardEventProvider.Child.MULTIPLE, child2));
-        assertEquals(2, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(2, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child2, event.getValue());
@@ -118,7 +118,7 @@ public class EventPackageTests {
         assertEquals(child2, root.get(TestScoreBoardEventProvider.Child.MULTIPLE, child2.getId()));
 
         assertFalse(root.add(TestScoreBoardEventProvider.Child.MULTIPLE, child2));
-        assertEquals(2, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(2, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(0, collectedEvents.size());
         assertEquals(3, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(0, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
@@ -126,7 +126,7 @@ public class EventPackageTests {
         assertEquals(child2, root.get(TestScoreBoardEventProvider.Child.MULTIPLE, child2.getId()));
 
         assertTrue(root.remove(TestScoreBoardEventProvider.Child.MULTIPLE, child1));
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child1, event.getValue());
@@ -137,7 +137,7 @@ public class EventPackageTests {
         assertEquals(child2, root.get(TestScoreBoardEventProvider.Child.MULTIPLE, child2.getId()));
 
         assertFalse(root.remove(TestScoreBoardEventProvider.Child.MULTIPLE, child1));
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(0, collectedEvents.size());
         assertEquals(3, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
@@ -145,7 +145,7 @@ public class EventPackageTests {
         assertEquals(child2, root.get(TestScoreBoardEventProvider.Child.MULTIPLE, child2.getId()));
 
         assertTrue(root.add(TestScoreBoardEventProvider.Child.MULTIPLE, child1));
-        assertEquals(2, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(2, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child1, event.getValue());
@@ -156,7 +156,7 @@ public class EventPackageTests {
         assertEquals(child2, root.get(TestScoreBoardEventProvider.Child.MULTIPLE, child2.getId()));
 
         child2.delete();
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
         assertEquals(1, collectedEvents.size());
         assertEquals(4, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(2, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
@@ -173,18 +173,18 @@ public class EventPackageTests {
         TestScoreBoardEventProvider s1 = new TestScoreBoardEventProviderImpl(root, UUID.randomUUID().toString(),
                 TestScoreBoardEventProvider.Child.SINGLETON);
 
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.SINGLETON).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.SINGLETON));
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(0, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
         assertFalse(root.add(TestScoreBoardEventProvider.Child.SINGLETON, s1));
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.SINGLETON).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.SINGLETON));
         assertEquals(0, collectedEvents.size());
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(0, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
         assertEquals(singleton, root.get(TestScoreBoardEventProvider.Child.SINGLETON, ""));
 
         assertFalse(root.remove(TestScoreBoardEventProvider.Child.SINGLETON, singleton));
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.SINGLETON).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.SINGLETON));
         assertEquals(0, collectedEvents.size());
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(0, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
@@ -206,7 +206,7 @@ public class EventPackageTests {
         assertTrue(subchild1.add(TestParentOrderedScoreBoardEventProvider.Child.CO_ORDERED, subsubchild1));
         assertTrue(child1.add(TestNumberedScoreBoardEventProvider.Child.CO_ORDERED, subchild1));
         assertTrue(root.add(TestScoreBoardEventProvider.NChild.NUMBERED, child1));
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(1, collectedEvents.size());
         ScoreBoardEvent event = collectedEvents.poll();
         assertEquals(child1, event.getValue());
@@ -234,7 +234,7 @@ public class EventPackageTests {
         assertTrue(root.add(TestScoreBoardEventProvider.NChild.NUMBERED, child2));
         assertTrue(child2.add(TestNumberedScoreBoardEventProvider.Child.CO_ORDERED, subchild2));
         assertTrue(subchild2.add(TestParentOrderedScoreBoardEventProvider.Child.CO_ORDERED, subsubchild2));
-        assertEquals(2, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(2, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child2, event.getValue());
@@ -272,7 +272,7 @@ public class EventPackageTests {
         assertTrue(subchild5.add(TestParentOrderedScoreBoardEventProvider.Child.CO_ORDERED, subsubchild5));
         assertTrue(child5.add(TestNumberedScoreBoardEventProvider.Child.CO_ORDERED, subchild5));
         assertTrue(root.add(TestScoreBoardEventProvider.NChild.NUMBERED, child5));
-        assertEquals(3, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(3, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child5, event.getValue());
@@ -321,7 +321,7 @@ public class EventPackageTests {
         assertTrue(subchild3.add(TestParentOrderedScoreBoardEventProvider.Child.CO_ORDERED, subsubchild3));
         assertTrue(child3.add(TestNumberedScoreBoardEventProvider.Child.CO_ORDERED, subchild3));
         assertTrue(root.add(TestScoreBoardEventProvider.NChild.NUMBERED, child3));
-        assertEquals(4, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(4, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child3, event.getValue());
@@ -377,7 +377,7 @@ public class EventPackageTests {
         assertTrue(subchild4.add(TestParentOrderedScoreBoardEventProvider.Child.CO_ORDERED, subsubchild4));
         assertTrue(child4.add(TestNumberedScoreBoardEventProvider.Child.CO_ORDERED, subchild4));
         assertTrue(root.add(TestScoreBoardEventProvider.NChild.NUMBERED, child4));
-        assertEquals(5, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(5, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(3, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child5, event.getValue());
@@ -442,7 +442,7 @@ public class EventPackageTests {
         assertEquals(subsubchild4, subsubchild5.getPrevious());
 
         assertFalse(root.add(TestScoreBoardEventProvider.NChild.NUMBERED, child3));
-        assertEquals(5, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(5, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(0, collectedEvents.size());
         assertEquals(7, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
@@ -498,7 +498,7 @@ public class EventPackageTests {
         assertEquals(subsubchild4, subsubchild5.getPrevious());
 
         child3.delete();
-        assertEquals(4, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(4, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(5, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child3, event.getValue());
@@ -559,7 +559,7 @@ public class EventPackageTests {
         assertEquals(subsubchild4, subsubchild5.getPrevious());
 
         assertTrue(root.remove(TestScoreBoardEventProvider.NChild.NUMBERED, child2));
-        assertEquals(3, root.getAll(TestScoreBoardEventProvider.NChild.NUMBERED).size());
+        assertEquals(3, root.numberOf(TestScoreBoardEventProvider.NChild.NUMBERED));
         assertEquals(1, collectedEvents.size());
         event = collectedEvents.poll();
         assertEquals(child2, event.getValue());
@@ -623,7 +623,7 @@ public class EventPackageTests {
                 TestScoreBoardEventProvider.Child.MULTIPLE);
         assertNull(child1.get(TestScoreBoardEventProvider.Value.REFERENCE));
         assertNull(child2.get(TestScoreBoardEventProvider.Value.REFERENCE));
-        assertEquals(0, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(0, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
 
         root.add(TestScoreBoardEventProvider.Child.MULTIPLE, child1);
         assertEquals(root, child1.get(TestScoreBoardEventProvider.Value.REFERENCE));
@@ -634,10 +634,10 @@ public class EventPackageTests {
         root.remove(TestScoreBoardEventProvider.Child.MULTIPLE, "ID2");
         assertNull(child2.get(TestScoreBoardEventProvider.Value.REFERENCE));
         assertEquals(root, child1.get(TestScoreBoardEventProvider.Value.REFERENCE));
-        assertEquals(1, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(1, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
 
         child1.set(TestScoreBoardEventProvider.Value.REFERENCE, null);
-        assertEquals(0, root.getAll(TestScoreBoardEventProvider.Child.MULTIPLE).size());
+        assertEquals(0, root.numberOf(TestScoreBoardEventProvider.Child.MULTIPLE));
     }
 
     @Test

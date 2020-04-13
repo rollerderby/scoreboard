@@ -66,11 +66,11 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         if (prop == Value.DURATION) {
             long time = 0;
             if (!isCurrent() && get(Value.JAM_CLOCK_START) != null && get(Value.JAM_CLOCK_END) != null) {
-                for (ValueWithId f : getAll(Child.FIELDING)) {
+                for (Fielding f : getAll(Child.FIELDING, Fielding.class)) {
                     if (f == getEndFielding()) {
                         time += (Long) get(Value.JAM_CLOCK_END);
                     } else {
-                        time += ((Fielding) f).getTeamJam().getJam().getDuration();
+                        time += f.getTeamJam().getJam().getDuration();
                     }
                     if (f == getStartFielding()) {
                         time -= (Long) get(Value.JAM_CLOCK_START);
@@ -84,9 +84,9 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
     @Override
     protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == Value.IS_CURRENT) {
-            for (ValueWithId f : getAll(Child.FIELDING)) {
-                ((Fielding) f).set(Fielding.Value.CURRENT_BOX_TRIP, this);
-                ((Fielding) f).set(Fielding.Value.PENALTY_BOX, value);
+            for (Fielding f : getAll(Child.FIELDING, Fielding.class)) {
+                f.set(Fielding.Value.CURRENT_BOX_TRIP, this);
+                f.set(Fielding.Value.PENALTY_BOX, value);
             }
         }
         if ((prop == Value.END_FIELDING || prop == Value.END_AFTER_S_P || prop == Value.END_BETWEEN_JAMS)
@@ -119,27 +119,27 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl implements BoxTrip 
         if (prop == Child.FIELDING) {
             if (getStartFielding() == item) {
                 Fielding first = null;
-                for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (first == null || first.compareTo((Fielding) f) > 0) {
-                        first = (Fielding) f;
+                for (Fielding f : getAll(Child.FIELDING, Fielding.class)) {
+                    if (first == null || first.compareTo(f) > 0) {
+                        first = f;
                     }
                 }
                 set(Value.START_FIELDING, first);
             }
             if (getCurrentFielding() == item) {
                 Fielding last = null;
-                for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (last == null || last.compareTo((Fielding) f) < 0) {
-                        last = (Fielding) f;
+                for (Fielding f : getAll(Child.FIELDING, Fielding.class)) {
+                    if (last == null || last.compareTo(f) < 0) {
+                        last = f;
                     }
                 }
                 set(Value.CURRENT_FIELDING, last);
             }
             if (getEndFielding() == item) {
                 Fielding last = null;
-                for (ValueWithId f : getAll(Child.FIELDING)) {
-                    if (last == null || last.compareTo((Fielding) f) < 0) {
-                        last = (Fielding) f;
+                for (Fielding f : getAll(Child.FIELDING, Fielding.class)) {
+                    if (last == null || last.compareTo(f) < 0) {
+                        last = f;
                     }
                 }
                 set(Value.END_FIELDING, last);

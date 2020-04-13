@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Penalty;
@@ -82,8 +83,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
                 }
                 if (lf.isCurrent()) {
                     if (f != null) {
-                        for (ValueWithId v : lf.getAll(Fielding.Child.BOX_TRIP)) {
-                            f.add(Fielding.Child.BOX_TRIP, v);
+                        for (BoxTrip bt : lf.getAll(Fielding.Child.BOX_TRIP, BoxTrip.class)) {
+                            f.add(Fielding.Child.BOX_TRIP, bt);
                         }
                         lf.removeAll(Fielding.Child.BOX_TRIP);
                     }
@@ -236,8 +237,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
             lastN.add(tj);
             tj = tj.getPrevious();
         }
-        for (ValueWithId v : getAll(Child.FIELDING)) {
-            Fielding f = (Fielding) v;
+        for (Fielding f : getAll(Child.FIELDING, Fielding.class)) {
             if (f.isSitFor3()) {
                 if (lastN.contains(f.getTeamJam())) {
                     setBaseRole(Role.INELIGIBLE);
@@ -271,9 +271,9 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl implements Skater {
     @Override
     public List<Penalty> getUnservedPenalties() {
         List<Penalty> usp = new ArrayList<>();
-        for (ValueWithId p : getAll(NChild.PENALTY)) {
-            if (!((Penalty) p).isServed()) {
-                usp.add((Penalty) p);
+        for (Penalty p : getAll(NChild.PENALTY, Penalty.class)) {
+            if (!p.isServed()) {
+                usp.add(p);
             }
         }
         return usp;

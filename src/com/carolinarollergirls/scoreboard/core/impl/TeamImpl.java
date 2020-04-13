@@ -206,8 +206,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             set(Value.RUNNING_OR_ENDED_TEAM_JAM, null);
             set(Value.FIELDING_ADVANCE_PENDING, false);
 
-            for (ValueWithId p : getAll(Child.POSITION)) {
-                ((Position) p).reset();
+            for (Position p : getAll(Child.POSITION, Position.class)) {
+                p.reset();
             }
             removeAll(Child.BOX_TRIP);
             removeAll(Child.ALTERNATE_NAME);
@@ -267,8 +267,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 if (bt != null && bt.isCurrent()) { bt.add(BoxTrip.Child.FIELDING, s.getFielding(upcomingTJ)); }
             }
 
-            for (ValueWithId s : getAll(Child.SKATER)) {
-                ((Skater) s).updateEligibility();
+            for (Skater s : getAll(Child.SKATER, Skater.class)) {
+                s.updateEligibility();
             }
         }
     }
@@ -338,14 +338,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         synchronized (coreLock) {
             setLogo((String) pt.get(PreparedTeam.Value.LOGO));
             setName((String) pt.get(PreparedTeam.Value.NAME));
-            for (ValueWithId v : pt.getAll(PreparedTeam.Child.ALTERNATE_NAME)) {
+            for (ValWithId v : pt.getAll(PreparedTeam.Child.ALTERNATE_NAME, ValWithId.class)) {
                 setAlternateName(v.getId(), v.getValue());
             }
-            for (ValueWithId v : pt.getAll(PreparedTeam.Child.COLOR)) {
+            for (ValWithId v : pt.getAll(PreparedTeam.Child.COLOR, ValWithId.class)) {
                 setColor(v.getId(), v.getValue());
             }
-            for (ValueWithId v : pt.getAll(PreparedTeam.Child.SKATER)) {
-                addSkater(new SkaterImpl(this, (PreparedTeamSkater) v));
+            for (PreparedTeamSkater pts : pt.getAll(PreparedTeam.Child.SKATER, PreparedTeamSkater.class)) {
+                addSkater(new SkaterImpl(this, pts));
             }
         }
     }
@@ -376,11 +376,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             set(Value.RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(getId()));
             set(Value.RUNNING_OR_UPCOMING_TEAM_JAM,
                     scoreBoard.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext());
-            for (ValueWithId p : getAll(Child.POSITION)) {
-                ((Position) p).updateCurrentFielding();
+            for (Position p : getAll(Child.POSITION, Position.class)) {
+                p.updateCurrentFielding();
             }
-            for (ValueWithId v : getAll(Child.SKATER)) {
-                ((Skater) v).updateFielding(
+            for (Skater v : getAll(Child.SKATER, Skater.class)) {
+                v.updateFielding(
                         hasFieldingAdvancePending() ? getRunningOrEndedTeamJam() : getRunningOrUpcomingTeamJam());
             }
         }
@@ -423,8 +423,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         boolean otherHalfToUnused = rdclPerHalfRules;
         Timeout lastReview = null;
 
-        for (ValueWithId v : getAll(Child.TIME_OUT)) {
-            Timeout t = (Timeout) v;
+        for (Timeout t : getAll(Child.TIME_OUT, Timeout.class)) {
             boolean isThisRdclHalf = false;
             if (rdclPerHalfRules) {
                 boolean gameIsSecondHalf = scoreBoard.getCurrentPeriodNumber() > 2;

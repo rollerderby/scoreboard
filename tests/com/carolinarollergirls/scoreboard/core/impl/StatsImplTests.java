@@ -38,7 +38,7 @@ public class StatsImplTests {
 
         // Add a full roster for each team.
         // Skater numbers are 100..114 and 200..214.
-        for(String tid : Arrays.asList(Team.ID_1, Team.ID_2)) {
+        for (String tid : Arrays.asList(Team.ID_1, Team.ID_2)) {
             Team t = sb.getTeam(tid);
             for (int i = 0; i <= 15; i++) {
                 String number = String.format("%s%02d", tid, i);
@@ -63,14 +63,13 @@ public class StatsImplTests {
         sb.startJam();
         advance(1000);
         Period p = sb.getOrCreatePeriod(1);
-        assertEquals(1, p.getAll(Period.NChild.JAM).size());
-
+        assertEquals(1, p.numberOf(Period.NChild.JAM));
 
         // Start the second jam and confirm it's there.
         sb.stopJamTO();
         sb.startJam();
         advance(1000);
-        assertEquals(2, p.getAll(Period.NChild.JAM).size());
+        assertEquals(2, p.numberOf(Period.NChild.JAM));
     }
 
     @Test
@@ -87,15 +86,15 @@ public class StatsImplTests {
             advance(1000);
             sb.stopJamTO();
         }
-        assertEquals(3, sb.getAll(ScoreBoard.NChild.PERIOD).size()); // 0, 1, and 2
+        assertEquals(3, sb.numberOf(ScoreBoard.NChild.PERIOD)); // 0, 1, and 2
         Period p = sb.getOrCreatePeriod(2);
-        assertEquals(3, p.getAll(Period.NChild.JAM).size());
+        assertEquals(3, p.numberOf(Period.NChild.JAM));
     }
 
     @Test
     public void testJamStartListener() {
-        Skater skater1 = team1.getSkater(ID_PREFIX + "100"); 
-        Skater skater2 = team1.getSkater(ID_PREFIX + "101"); 
+        Skater skater1 = team1.getSkater(ID_PREFIX + "100");
+        Skater skater2 = team1.getSkater(ID_PREFIX + "101");
         team1.field(skater1, Role.JAMMER);
         team1.field(skater2, Role.PIVOT);
 
@@ -173,7 +172,7 @@ public class StatsImplTests {
         Period p = sb.getOrCreatePeriod(1);
         Jam j = p.getJam(1);
         TeamJam tj = j.getTeamJam(Team.ID_1);
-        
+
         // Lead during the jam.
         team1.set(Value.LEAD, true);
         assertTrue(tj.isDisplayLead());
@@ -269,15 +268,15 @@ public class StatsImplTests {
     public void testTripAutoAdvance() {
         sb.startJam();
         advance(1000);
-        
+
         Period p = sb.getOrCreatePeriod(1);
         Jam j = p.getJam(1);
         TeamJam tj = j.getTeamJam(Team.ID_1);
-        
+
         // Add some points without adding a trip or lead.
         team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
         assertEquals(2, tj.getCurrentScoringTrip().getNumber());
-        
+
         sb.stopJamTO();
         advance(1000);
         sb.startJam();
@@ -286,17 +285,17 @@ public class StatsImplTests {
         tj = j.getTeamJam(Team.ID_1);
         sb.stopJamTO();
         advance(1000);
-        
+
         // Add some points between jams without adding a trip or lead.
         team1.set(Value.TRIP_SCORE, 4, Flag.CHANGE);
         assertEquals(2, tj.getCurrentScoringTrip().getNumber());
-        
+
         sb.startJam();
         sb.setInOvertime(true);
         advance(1000);
         j = p.getJam(3);
         tj = j.getTeamJam(Team.ID_1);
-        
+
         // Add some points without adding a trip or lead during an overtime jam
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
         team1.set(Value.TRIP_SCORE, 1);

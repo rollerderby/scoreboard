@@ -110,7 +110,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
                 setPrevious(replaced);
                 replaced.set(IValue.NUMBER, -1, Source.RENUMBER, Flag.CHANGE);
             }
-        } else if (parent.getAll(ownType).size() == 0) {
+        } else if (parent.numberOf(ownType) == 0) {
             // do not set previous or next
         } else if (targetPosition > parent.getMaxNumber(ownType)) {
             T prev = (T) parent.getLast(ownType);

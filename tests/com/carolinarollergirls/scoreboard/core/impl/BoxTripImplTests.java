@@ -1,19 +1,20 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class BoxTripImplTests {
@@ -28,7 +29,7 @@ public class BoxTripImplTests {
     private ScoreBoardListener batchCounter = new ScoreBoardListener() {
         @Override
         public void scoreBoardChange(ScoreBoardEvent event) {
-            synchronized(batchCounter) {
+            synchronized (batchCounter) {
                 if (event.getProperty() == BatchEvent.START) {
                     batchLevel++;
                 } else if (event.getProperty() == BatchEvent.END) {
@@ -45,20 +46,21 @@ public class BoxTripImplTests {
 
         ScoreBoardClock.getInstance().stop();
         t = sb.getTeam(Team.ID_1);
-        s = new SkaterImpl(t, (String)null);
+        s = new SkaterImpl(t, (String) null);
         t.addSkater(s);
         sb.startJam();
         sb.stopJamTO();
         sb.startJam();
         t.field(s, Role.PIVOT);
         s.setPenaltyBox(true);
-        bt = (BoxTrip) s.getFielding(t.getRunningOrUpcomingTeamJam()).getAll(Fielding.Child.BOX_TRIP).iterator().next();
+        bt = (BoxTrip) s.getFielding(t.getRunningOrUpcomingTeamJam()).get(Fielding.Value.CURRENT_BOX_TRIP);
         sb.stopJamTO();
         sb.startJam();
         s.setPenaltyBox(false);
         sb.stopJamTO();
         t.execute(Team.Command.ADVANCE_FIELDINGS);
-        // Now going into jam 4. Skater had a box trip that started in jam 2, and ended in jam 3.
+        // Now going into jam 4. Skater had a box trip that started in jam 2, and ended
+        // in jam 3.
     }
 
     @After
@@ -150,7 +152,6 @@ public class BoxTripImplTests {
         assertEquals("", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
     }
-
 
     @Test
     public void testEndLater() {

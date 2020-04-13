@@ -8,6 +8,10 @@ package com.carolinarollergirls.scoreboard.core.impl;
  * See the file COPYING for details.
  */
 
+import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
+import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
+import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -20,14 +24,10 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
-import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
-import static java.nio.file.StandardWatchEventKinds.OVERFLOW;
 
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 
 public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
@@ -46,10 +46,10 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         // Create directories and register with inotify.
         try {
             watchService = FileSystems.getDefault().newWatchService();
-            for (ValueWithId mf : getAll(Child.FORMAT)) {
-                String format = ((MediaFormat)mf).getFormat();
-                for (ValueWithId mt : ((MediaFormat)mf).getAll(MediaFormat.Child.TYPE)) {
-                    String type = ((MediaType)mt).getType();
+            for (MediaFormat mf : getAll(Child.FORMAT, MediaFormat.class)) {
+                String format = mf.getFormat();
+                for (MediaType mt : mf.getAll(MediaFormat.Child.TYPE, MediaType.class)) {
+                    String type = mt.getType();
                     Path p = path.resolve(format).resolve(type);
                     p.toFile().mkdirs();
                     p.register(watchService, ENTRY_CREATE, ENTRY_DELETE, OVERFLOW);
@@ -71,7 +71,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
                     } catch (InterruptedException x) {
                         return;
                     }
-                    Path dir = (Path)key.watchable();
+                    Path dir = (Path) key.watchable();
                     String format = dir.getName(dir.getNameCount() - 2).toString();
                     String type = dir.getName(dir.getNameCount() - 1).toString();
 
@@ -79,13 +79,13 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
                         try {
                             requestBatchStart();
 
-                            for (WatchEvent<?> event: key.pollEvents()) {
+                            for (WatchEvent<?> event : key.pollEvents()) {
                                 WatchEvent.Kind<?> kind = event.kind();
                                 if (kind == OVERFLOW) {
                                     mediaTypeRefresh(format, type);
                                     continue;
                                 }
-                                Path filename = (Path)event.context();
+                                Path filename = (Path) event.context();
                                 if (kind == ENTRY_CREATE) {
                                     mediaFileCreated(format, type, filename.toString());
                                 } else if (kind == ENTRY_DELETE) {
@@ -106,9 +106,9 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     private void mediaTypeRefresh(String format, String type) {
         synchronized (coreLock) {
             Path p = path.resolve(format).resolve(type);
-            Collection<? extends ValueWithId> files = getFormat(format).getType(type).getAll(MediaType.Child.FILE);
+            Collection<MediaFile> files = getFormat(format).getType(type).getAll(MediaType.Child.FILE, MediaFile.class);
             // Remove any files that aren't there any more.
-            for (ValueWithId fn : files) {
+            for (MediaFile fn : files) {
                 if (!p.resolve(fn.getId()).toFile().exists()) {
                     mediaFileDeleted(format, type, fn.getId());
                 }
@@ -128,7 +128,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     private void mediaFileCreated(String format, String type, String id) {
         synchronized (coreLock) {
             MediaType mt = getFormat(format).getType(type);
-            if(mt.getFile(id) == null) {
+            if (mt.getFile(id) == null) {
                 // URL paths always use forward slashes.
                 String p = "/" + format + "/" + type + "/" + id;
                 // Name is the filename without the extension.
@@ -152,7 +152,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         }
     }
     @Override
-    public MediaFormat getFormat(String format) { return (MediaFormat)get(Child.FORMAT, format); }
+    public MediaFormat getFormat(String format) { return (MediaFormat) get(Child.FORMAT, format); }
 
     @Override
     public boolean removeMediaFile(String format, String type, String id) {
@@ -161,8 +161,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
                 // Check the directory is one the user is meant to be able to change.
                 if (getFormat(format).getType(type) != null) {
                     // Delete the file, and let inotify take care of handling the change.
-                    Files.walkFileTree(path.resolve(format).resolve(type).resolve(id),
-                            new SimpleFileVisitor<Path>() {
+                    Files.walkFileTree(path.resolve(format).resolve(type).resolve(id), new SimpleFileVisitor<Path>() {
                         @Override
                         public FileVisitResult visitFile(Path file, BasicFileAttributes attrs) throws IOException {
                             Files.delete(file);
@@ -174,7 +173,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
                             Files.delete(dir);
                             return FileVisitResult.CONTINUE;
                         }
-                     });
+                    });
                     return true;
                 }
                 return false;
@@ -200,7 +199,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         public String getFormat() { return format; }
 
         @Override
-        public MediaType getType(String type) { return (MediaType)get(Child.TYPE, type); }
+        public MediaType getType(String type) { return (MediaType) get(Child.TYPE, type); }
         protected void addType(String type) { add(Child.TYPE, new MediaTypeImpl(this, type)); }
 
         private String format;
@@ -223,7 +222,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         public String getType() { return type; }
 
         @Override
-        public MediaFile getFile(String file) { return (MediaFile)get(Child.FILE, file); }
+        public MediaFile getFile(String file) { return (MediaFile) get(Child.FILE, file); }
         @Override
         public void addFile(MediaFile file) { add(Child.FILE, file); }
         @Override
@@ -244,15 +243,35 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         }
 
         @Override
-        public String getFormat() { synchronized (coreLock) { return type.getFormat() ;} }
+        public String getFormat() {
+            synchronized (coreLock) {
+                return type.getFormat();
+            }
+        }
         @Override
-        public String getType() { synchronized (coreLock) { return type.getType() ;} }
+        public String getType() {
+            synchronized (coreLock) {
+                return type.getType();
+            }
+        }
         @Override
-        public String getName() { synchronized (coreLock) { return (String)get(Value.NAME) ;} }
+        public String getName() {
+            synchronized (coreLock) {
+                return (String) get(Value.NAME);
+            }
+        }
         @Override
-        public void setName(String n) { synchronized (coreLock) { set(Value.NAME, n) ;} }
+        public void setName(String n) {
+            synchronized (coreLock) {
+                set(Value.NAME, n);
+            }
+        }
         @Override
-        public String getSrc() { synchronized (coreLock) { return (String)get(Value.SRC); } }
+        public String getSrc() {
+            synchronized (coreLock) {
+                return (String) get(Value.SRC);
+            }
+        }
 
         private MediaType type;
     }

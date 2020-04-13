@@ -158,10 +158,10 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         for (Class<? extends Property> propertySet : properties) {
             for (Property prop : propertySet.getEnumConstants()) {
                 if (prop instanceof AddRemoveProperty) {
-                    for (ValueWithId v : getAll((AddRemoveProperty) prop)) {
-                        ScoreBoardEventProviderImpl item = (ScoreBoardEventProviderImpl) v;
-                        if (item.getParent() == this) {
-                            item.delete(Source.UNLINK);
+                    for (ValueWithId item : getAll((AddRemoveProperty) prop, ValueWithId.class)) {
+                        if (item instanceof ScoreBoardEventProvider
+                                && ((ScoreBoardEventProvider) item).getParent() == this) {
+                            ((ScoreBoardEventProvider) item).delete(Source.UNLINK);
                         } else {
                             remove((AddRemoveProperty) prop, item, Source.UNLINK);
                         }
@@ -425,10 +425,21 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             return (OrderedScoreBoardEventProvider<?>) get(prop, maxIds.get(prop));
         }
     }
+    @SuppressWarnings("unchecked")
     @Override
-    public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop) {
+    public <T extends ValueWithId> Collection<T> getAll(AddRemoveProperty prop, Class<T> t) {
         synchronized (coreLock) {
-            return new HashSet<>(children.get(prop).values());
+            if (!t.isAssignableFrom(prop.getType())) {
+                throw new IllegalArgumentException("Property " + prop + " with class " + prop.getType().getName()
+                        + " cannot be assigned to type " + t.getName());
+            }
+            return new HashSet<>((Collection<? extends T>) children.get(prop).values());
+        }
+    }
+    @Override
+    public int numberOf(AddRemoveProperty prop) {
+        synchronized (coreLock) {
+            return children.get(prop).size();
         }
     }
     @Override
@@ -497,7 +508,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
         }
         if (prop instanceof NumberedProperty) {
             NumberedProperty nprop = (NumberedProperty) prop;
-            if (getAll(nprop).isEmpty()) {
+            if (numberOf(nprop) == 0) {
                 minIds.remove(nprop);
                 maxIds.remove(nprop);
             } else {
@@ -522,7 +533,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     public void removeAll(AddRemoveProperty prop, Source source) {
         synchronized (coreLock) {
             if (isWritable(prop, source)) {
-                for (ValueWithId item : getAll(prop)) {
+                for (ValueWithId item : getAll(prop, prop.getType())) {
                     remove(prop, item, source);
                 }
             }

@@ -81,7 +81,7 @@ public class ClientsImplTests {
         Client c2 = clients.addClient(d.getId(), "remoteaddr2", "source2", null);
         assertEquals(d, c2.get(Client.Value.DEVICE));
         assertEquals(c2, d.get(Device.Child.CLIENT, c2.getId()));
-        assertEquals(2, d.getAll(Device.Child.CLIENT).size());
+        assertEquals(2, d.numberOf(Device.Child.CLIENT));
         assertNotEquals(0, c2.get(Client.Value.CREATED));
         assertEquals(0L, c2.get(Client.Value.WROTE));
         assertEquals("remoteaddr2", c2.get(Client.Value.REMOTE_ADDR));
@@ -95,12 +95,12 @@ public class ClientsImplTests {
         // Remove, device is left but clients are gone.
         clients.removeClient(c);
         assertEquals(null, d.get(Device.Child.CLIENT, c.getId()));
-        assertEquals(1, d.getAll(Device.Child.CLIENT).size());
+        assertEquals(1, d.numberOf(Device.Child.CLIENT));
         clients.removeClient(c2);
         assertEquals(null, d.get(Device.Child.CLIENT, c2.getId()));
-        assertEquals(0, d.getAll(Device.Child.CLIENT).size());
+        assertEquals(0, d.numberOf(Device.Child.CLIENT));
         assertEquals(d, clients.get(Clients.Child.DEVICE, d.getId()));
-        assertEquals(0, clients.getAll(Clients.Child.CLIENT).size());
+        assertEquals(0, clients.numberOf(Clients.Child.CLIENT));
         assertNotEquals(0, d.get(Device.Value.WROTE));
 
         d.set(Device.Value.COMMENT, "comment");
@@ -119,9 +119,9 @@ public class ClientsImplTests {
         ScoreBoardJSONSetter.set(sb, save, Source.JSON);
 
         // No clients after the load is done.
-        assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
-        assertEquals(0, clients.getAll(Clients.Child.CLIENT).size());
-        assertEquals(0, clients.getDevice("asecret").getAll(Device.Child.CLIENT).size());
+        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
+        assertEquals(0, clients.numberOf(Clients.Child.CLIENT));
+        assertEquals(0, clients.getDevice("asecret").numberOf(Device.Child.CLIENT));
     }
 
     @Test
@@ -169,14 +169,14 @@ public class ClientsImplTests {
         assertEquals(c, clients.get(Clients.Child.CLIENT, c.getId()));
         assertEquals(c2, clients.get(Clients.Child.CLIENT, c2.getId()));
         assertNull(clients.get(Clients.Child.CLIENT, "c3"));
-        assertEquals(2, clients.getAll(Clients.Child.CLIENT).size());
+        assertEquals(2, clients.numberOf(Clients.Child.CLIENT));
         assertEquals(c, clients.get(Clients.Child.CLIENT, c.getId()));
         assertEquals(c2, clients.get(Clients.Child.CLIENT, c2.getId()));
         // New device has been added, without a client.
         Device d2 = clients.getDevice("d2s");
         assertEquals(d, clients.get(Clients.Child.DEVICE, d.getId()));
         assertEquals(d2, clients.get(Clients.Child.DEVICE, "d2"));
-        assertEquals(2, clients.getAll(Clients.Child.DEVICE).size());
+        assertEquals(2, clients.numberOf(Clients.Child.DEVICE));
 
         // Comment is allowed to be updated of the device settings,
         // as anyone can do that from the WS.
@@ -198,22 +198,22 @@ public class ClientsImplTests {
     @Test
     public void testGCOldDevices() {
         Device d = clients.getOrAddDevice("S1");
-        assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
+        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
         d.access();
 
         long accessed = (long) d.get(Device.Value.ACCESSED);
         // Still has comment.
         d.set(Device.Value.COMMENT, "c");
         clients.gcOldDevices(accessed + 1);
-        assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
+        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
 
         // Still below threshold.
         d.set(Device.Value.COMMENT, "");
         clients.gcOldDevices(accessed - 1);
-        assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
+        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
 
         clients.gcOldDevices(accessed + 1);
-        assertEquals(0, clients.getAll(Clients.Child.DEVICE).size());
+        assertEquals(0, clients.numberOf(Clients.Child.DEVICE));
     }
 
     protected void fuzzSet(String path) {
@@ -281,13 +281,13 @@ public class ClientsImplTests {
 
         // Clients.
         assertNotNull(sb.getClients());
-        assertEquals(1, clients.getAll(Clients.Child.CLIENT).size());
-        assertEquals(1, clients.getAll(Clients.Child.DEVICE).size());
+        assertEquals(1, clients.numberOf(Clients.Child.CLIENT));
+        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
         assertEquals(c, clients.get(Clients.Child.CLIENT, c.getId()));
         assertEquals(d, clients.get(Clients.Child.DEVICE, d.getId()));
 
         // Device.
-        assertEquals(1, d.getAll(Device.Child.CLIENT).size());
+        assertEquals(1, d.numberOf(Device.Child.CLIENT));
         assertEquals(c, d.get(Device.Child.CLIENT, c.getId()));
         assertEquals("S1", d.get(Device.Value.SESSION_ID_SECRET));
         assertEquals(name, d.get(Device.Value.NAME));

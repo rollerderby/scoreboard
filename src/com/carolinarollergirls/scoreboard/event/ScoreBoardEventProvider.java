@@ -96,9 +96,10 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public ValueWithId getOrCreate(NumberedProperty prop, Integer num);
     public ValueWithId getOrCreate(AddRemoveProperty prop, String id, Source source);
     public ValueWithId getOrCreate(NumberedProperty prop, Integer num, Source source);
-    public Collection<? extends ValueWithId> getAll(AddRemoveProperty prop);
+    public <T extends ValueWithId> Collection<T> getAll(AddRemoveProperty prop, Class<T> t);
     public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
     public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
+    public int numberOf(AddRemoveProperty prop);
     // returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
     public boolean add(AddRemoveProperty prop, ValueWithId item, Source source);

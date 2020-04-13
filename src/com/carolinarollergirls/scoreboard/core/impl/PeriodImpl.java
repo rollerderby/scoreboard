@@ -54,7 +54,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             }
         } else if (prop == Value.CURRENT_JAM && hasNext() && getNext().get(Value.CURRENT_JAM) == last) {
             getNext().set(Value.CURRENT_JAM, value);
-        } else if (prop == IValue.PREVIOUS && value != null && getAll(NChild.JAM).size() > 0) {
+        } else if (prop == IValue.PREVIOUS && value != null && numberOf(NChild.JAM) > 0) {
             getFirst(NChild.JAM).set(IValue.PREVIOUS, getPrevious().getCurrentJam());
         }
     }
@@ -103,7 +103,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
 
     @Override
     public void delete(Source source) {
-        if (source != Source.UNLINK && getAll(NChild.JAM).size() > 0) {
+        if (source != Source.UNLINK && numberOf(NChild.JAM) > 0) {
             Jam prevJam = (Jam) getFirst(NChild.JAM).getPrevious();
             Jam nextJam = (Jam) getLast(NChild.JAM).getNext();
             if (prevJam != null) {
@@ -111,9 +111,9 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             } else if (nextJam != null) {
                 nextJam.setPrevious(null);
             }
-            for (ValueWithId j : getAll(NChild.JAM)) {
-                for (ValueWithId p : ((Jam) j).getAll(Jam.Child.PENALTY)) {
-                    ((Penalty) p).set(Penalty.Value.JAM, nextJam);
+            for (Jam j : getAll(NChild.JAM, Jam.class)) {
+                for (Penalty p : j.getAll(Jam.Child.PENALTY, Penalty.class)) {
+                    p.set(Penalty.Value.JAM, nextJam);
                 }
             }
         }

@@ -105,8 +105,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                     || getRulesets().getBoolean(Rule.STOP_PC_ON_OR);
             boolean otoForcesJam = getRulesets().getBoolean(Rule.EXTRA_JAM_AFTER_OTO)
                     && (getRulesets().getBoolean(Rule.STOP_PC_ON_TO) || getRulesets().getBoolean(Rule.STOP_PC_ON_TTO));
-            for (ValueWithId v : lastJam.getAll(Jam.Child.TIMEOUTS_AFTER)) {
-                Timeout t = (Timeout) v;
+            for (Timeout t : lastJam.getAll(Jam.Child.TIMEOUTS_AFTER, Timeout.class)) {
                 if (t.getOwner() instanceof Team) {
                     if (t.isReview() && orForcesJam) { return false; }
                     if (!t.isReview() && ttoForcesJam) { return false; }
@@ -138,8 +137,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             return;
         }
         if (prop == Value.CURRENT_PERIOD) {
-            for (ValueWithId t : getAll(Child.TEAM)) {
-                ((Team) t).recountTimeouts();
+            for (Team t : getAll(Child.TEAM, Team.class)) {
+                t.recountTimeouts();
             }
         }
     }
@@ -195,8 +194,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     @Override
     public void reset() {
         synchronized (coreLock) {
-            for (ValueWithId t : getAll(Child.TEAM)) {
-                ((Team) t).reset();
+            for (Team t : getAll(Child.TEAM, Team.class)) {
+                t.reset();
             }
             set(Value.IN_JAM, false);
             removeAll(Period.NChild.JAM);
@@ -206,8 +205,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             getCurrentPeriod().add(Period.Child.TIMEOUT, noTimeoutDummy);
             set(Value.CURRENT_TIMEOUT, noTimeoutDummy);
             set(Value.UPCOMING_JAM, new JamImpl(this, getCurrentPeriod().getCurrentJam()));
-            for (ValueWithId c : getAll(Child.CLOCK)) {
-                ((Clock) c).reset();
+            for (Clock c : getAll(Child.CLOCK, Clock.class)) {
+                c.reset();
             }
             updateTeamJams();
 
@@ -273,8 +272,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
 
     @Override
     public void updateTeamJams() {
-        for (ValueWithId t : getAll(Child.TEAM)) {
-            ((Team) t).updateTeamJams();
+        for (Team t : getAll(Child.TEAM, Team.class)) {
+            t.updateTeamJams();
         }
     }
 
@@ -578,7 +577,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
         if (getCurrentPeriod() != snapshot.getCurrentPeriod()) {
-            if (getCurrentPeriod().getAll(Period.NChild.JAM).size() > 0) {
+            if (getCurrentPeriod().numberOf(Period.NChild.JAM) > 0) {
                 // We're undoing a period advancement. Move the upcoming Jam
                 // (and any associated Fieldings) back out before deleting the period.
                 Jam movedJam = (Jam) getCurrentPeriod().getFirst(Period.NChild.JAM);
@@ -600,11 +599,11 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         setInOvertime(snapshot.inOvertime());
         set(Value.IN_JAM, snapshot.inJam());
         setInPeriod(snapshot.inPeriod());
-        for (ValueWithId clock : getAll(Child.CLOCK)) {
-            ((Clock) clock).restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
+        for (Clock clock : getAll(Child.CLOCK, Clock.class)) {
+            clock.restoreSnapshot(snapshot.getClockSnapshot(clock.getId()));
         }
-        for (ValueWithId team : getAll(Child.TEAM)) {
-            ((Team) team).restoreSnapshot(snapshot.getTeamSnapshot(team.getId()));
+        for (Team team : getAll(Child.TEAM, Team.class)) {
+            team.restoreSnapshot(snapshot.getTeamSnapshot(team.getId()));
         }
         for (Button button : Button.values()) {
             button.setLabel(snapshot.getLabels().get(button));
@@ -760,12 +759,12 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
                 labels.put(button, button.getLabel());
             }
             clockSnapshots = new HashMap<>();
-            for (ValueWithId clock : sb.getAll(Child.CLOCK)) {
-                clockSnapshots.put(clock.getId(), ((Clock) clock).snapshot());
+            for (Clock clock : sb.getAll(Child.CLOCK, Clock.class)) {
+                clockSnapshots.put(clock.getId(), clock.snapshot());
             }
             teamSnapshots = new HashMap<>();
-            for (ValueWithId team : sb.getAll(Child.TEAM)) {
-                teamSnapshots.put(team.getId(), ((Team) team).snapshot());
+            for (Team team : sb.getAll(Child.TEAM, Team.class)) {
+                teamSnapshots.put(team.getId(), team.snapshot());
             }
         }
 

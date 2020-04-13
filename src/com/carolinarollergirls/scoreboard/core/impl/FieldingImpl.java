@@ -56,7 +56,9 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 getCurrentBoxTrip().end();
             }
         }
-        if (prop == Value.NOT_FIELDED && (getSkater() != null || getAll(Child.BOX_TRIP).size() > 0)) { return false; }
+        if (prop == Value.NOT_FIELDED && (getSkater() != null || numberOf(Child.BOX_TRIP) > 0)) {
+            return false;
+        }
         if (prop == Value.SKATER_NUMBER) {
             if (getSkater() != null) {
                 return getSkater().getNumber();
@@ -157,8 +159,8 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     @Override
     public void updateBoxTripSymbols() {
         List<BoxTrip> trips = new ArrayList<>();
-        for (ValueWithId v : getAll(Child.BOX_TRIP)) {
-            trips.add((BoxTrip) v);
+        for (BoxTrip bt : getAll(Child.BOX_TRIP, BoxTrip.class)) {
+            trips.add(bt);
         }
         Collections.sort(trips, new Comparator<BoxTrip>() {
             @Override

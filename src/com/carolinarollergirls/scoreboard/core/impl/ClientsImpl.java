@@ -72,9 +72,9 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     @Override
     public Device getDevice(String sessionId) {
         synchronized (coreLock) {
-            for (ValueWithId d : getAll(Child.DEVICE)) {
-                if (((Device) d).get(Device.Value.SESSION_ID_SECRET).equals(sessionId)) {
-                    return (Device) d;
+            for (Device d : getAll(Child.DEVICE, Device.class)) {
+                if (d.get(Device.Value.SESSION_ID_SECRET).equals(sessionId)) {
+                    return d;
                 }
             }
             return null;
@@ -111,9 +111,9 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
 
     protected Device getDeviceByName(String name) {
         synchronized (coreLock) {
-            for (ValueWithId d : getAll(Child.DEVICE)) {
-                if (((Device) d).get(Device.Value.NAME).equals(name)) {
-                    return (Device) d;
+            for (Device d : getAll(Child.DEVICE, Device.class)) {
+                if (d.get(Device.Value.NAME).equals(name)) {
+                    return d;
                 }
             }
             return null;
@@ -125,8 +125,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         synchronized (coreLock) {
             int removed = 0;
             requestBatchStart();
-            for (ValueWithId i : getAll(Child.DEVICE)) {
-                Device d = (Device) i;
+            for (Device d : getAll(Child.DEVICE, Device.class)) {
                 if ((Long) d.get(Device.Value.ACCESSED) > gcBefore) { continue; }
                 if (!((String) d.get(Device.Value.COMMENT)).isEmpty()) { continue; }
                 remove(Child.DEVICE, d.getId());

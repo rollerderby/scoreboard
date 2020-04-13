@@ -60,9 +60,9 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
             // Point any rulesets with the deleted one as their parent
             // to their grandparent.
             String parentId = ((Ruleset) item).getParentRulesetId();
-            for (ValueWithId rm : getAll(Child.RULESET)) {
-                if (item.getId().equals(((Ruleset) rm).getParentRulesetId())) {
-                    ((Ruleset) rm).setParentRulesetId(parentId);
+            for (Ruleset rm : getAll(Child.RULESET, Ruleset.class)) {
+                if (item.getId().equals(rm.getParentRulesetId())) {
+                    rm.setParentRulesetId(parentId);
                 }
             }
         }
@@ -120,7 +120,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         if (!rs.getId().equals(ROOT_ID)) {
             setCurrentRulesetRecurse(rs.getParentRulesetId());
         }
-        for (ValueWithId r : rs.getAll(Ruleset.Child.RULE)) {
+        for (ValWithId r : rs.getAll(Ruleset.Child.RULE, ValWithId.class)) {
             if (getRuleDefinition(r.getId()).isValueValid(r.getValue())) {
                 add(Child.CURRENT_RULE, r);
             }

@@ -13,7 +13,8 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
         indirectionElement.addScoreBoardListener(indirectionListener);
         this.watchedProperty = watchedProperty;
         externalListener = listener;
-        scoreBoardChange(new ScoreBoardEvent(indirectionElement, indirectionProperty, indirectionElement.get(indirectionProperty), null));
+        scoreBoardChange(new ScoreBoardEvent(indirectionElement, indirectionProperty,
+                indirectionElement.get(indirectionProperty), null));
     }
 
     @Override
@@ -21,7 +22,7 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
         if (event.getValue() == watchedElement) { return; }
         ScoreBoardEventProvider lastWatched = watchedElement;
         if (watchedProperty instanceof PermanentProperty) {
-            PermanentProperty wp = (PermanentProperty)watchedProperty;
+            PermanentProperty wp = (PermanentProperty) watchedProperty;
             Object last = wp.getDefaultValue();
             if (watchedElement != null) {
                 last = watchedElement.get(wp);
@@ -31,17 +32,16 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
             if (watchedElement != null) {
                 listener = new ConditionalScoreBoardListener(watchedElement, wp, externalListener);
                 watchedElement.addScoreBoardListener(listener);
-                externalListener.scoreBoardChange(new ScoreBoardEvent(watchedElement, wp,
-                        watchedElement.get(wp), last));
+                externalListener
+                        .scoreBoardChange(new ScoreBoardEvent(watchedElement, wp, watchedElement.get(wp), last));
             } else {
                 listener = null;
-                externalListener.scoreBoardChange(new ScoreBoardEvent(lastWatched, wp,
-                        wp.getDefaultValue(), last));
+                externalListener.scoreBoardChange(new ScoreBoardEvent(lastWatched, wp, wp.getDefaultValue(), last));
             }
         } else if (watchedProperty instanceof AddRemoveProperty) {
-            AddRemoveProperty wp = (AddRemoveProperty)watchedProperty;
+            AddRemoveProperty wp = (AddRemoveProperty) watchedProperty;
             if (watchedElement != null) {
-                for (ValueWithId v : watchedElement.getAll(wp)) {
+                for (ValueWithId v : watchedElement.getAll(wp, wp.getType())) {
                     externalListener.scoreBoardChange(new ScoreBoardEvent(watchedElement, wp, v, true));
                 }
                 watchedElement.removeScoreBoardListener(listener);
@@ -50,7 +50,7 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
             if (watchedElement != null) {
                 listener = new ConditionalScoreBoardListener(watchedElement, wp, externalListener);
                 watchedElement.addScoreBoardListener(listener);
-                for (ValueWithId v : watchedElement.getAll(wp)) {
+                for (ValueWithId v : watchedElement.getAll(wp, wp.getType())) {
                     externalListener.scoreBoardChange(new ScoreBoardEvent(watchedElement, wp, v, false));
                 }
             } else {
@@ -58,7 +58,7 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
             }
         }
     }
-    
+
     @Override
     public void unlink() {
         if (watchedElement != null) {
@@ -66,7 +66,7 @@ public class IndirectScoreBoardListener implements UnlinkableScoreBoardListener 
         }
         indirectionElement.removeScoreBoardListener(indirectionListener);
     }
-    
+
     protected ScoreBoardEventProvider indirectionElement;
     protected ScoreBoardEventProvider watchedElement;
     protected Property watchedProperty;

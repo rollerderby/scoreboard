@@ -11,7 +11,6 @@ import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -50,11 +49,11 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             if (parent instanceof Period && this == ((Period) parent).getCurrentJam()) {
                 parent.set(Period.Value.CURRENT_JAM, getPrevious());
             }
-            for (ValueWithId p : getAll(Child.PENALTY)) {
-                ((Penalty) p).set(Penalty.Value.JAM, getNext());
+            for (Penalty p : getAll(Child.PENALTY, Penalty.class)) {
+                p.set(Penalty.Value.JAM, getNext());
             }
-            for (ValueWithId p : getAll(Child.TIMEOUTS_AFTER)) {
-                ((Timeout) p).set(Timeout.Value.PRECEDING_JAM, getPrevious());
+            for (Timeout t : getAll(Child.TIMEOUTS_AFTER, Timeout.class)) {
+                t.set(Timeout.Value.PRECEDING_JAM, getPrevious());
             }
         }
         super.delete(source);

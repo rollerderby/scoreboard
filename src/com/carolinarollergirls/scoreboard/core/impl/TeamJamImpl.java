@@ -27,8 +27,8 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         setRecalculated(Value.NO_INITIAL).addSource(this, Value.CURRENT_TRIP);
         setRecalculated(Value.DISPLAY_LEAD).addSource(this, Value.LEAD).addSource(this, Value.LOST);
         setRecalculated(Value.STAR_PASS).addSource(this, Value.STAR_PASS_TRIP);
-        for (ValueWithId p : team.getAll(Team.Child.POSITION)) {
-            add(Child.FIELDING, new FieldingImpl(this, (Position) p));
+        for (Position p : team.getAll(Team.Child.POSITION, Position.class)) {
+            add(Child.FIELDING, new FieldingImpl(this, p));
         }
         addWriteProtection(Child.FIELDING);
         getOrCreate(NChild.SCORING_TRIP, 1);
@@ -38,16 +38,16 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == Value.JAM_SCORE) {
             int sum = 0;
-            for (ValueWithId trip : getAll(NChild.SCORING_TRIP)) {
-                sum += ((ScoringTrip) trip).getScore();
+            for (ScoringTrip trip : getAll(NChild.SCORING_TRIP, ScoringTrip.class)) {
+                sum += trip.getScore();
             }
             return sum;
         }
         if (prop == Value.AFTER_S_P_SCORE) {
             int sum = 0;
-            for (ValueWithId trip : getAll(NChild.SCORING_TRIP)) {
-                if ((Boolean) ((ScoringTrip) trip).get(ScoringTrip.Value.AFTER_S_P)) {
-                    sum += ((ScoringTrip) trip).getScore();
+            for (ScoringTrip trip : getAll(NChild.SCORING_TRIP, ScoringTrip.class)) {
+                if ((Boolean) trip.get(ScoringTrip.Value.AFTER_S_P)) {
+                    sum += trip.getScore();
                 }
             }
             return sum;
