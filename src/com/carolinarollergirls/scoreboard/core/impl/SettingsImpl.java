@@ -15,7 +15,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
     public SettingsImpl(ScoreBoard s) {
-        super (s, "", ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
+        super(s, "", ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
     }
 
     @Override
@@ -23,9 +23,9 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl implements Setting
 
     @Override
     public String get(String k) {
-        synchronized(coreLock) {
-            if (get(Child.SETTING, k) == null) { return null; }
-            return get(Child.SETTING, k).getValue();
+        synchronized (coreLock) {
+            if (get(Child.SETTING, ValWithId.class, k) == null) { return null; }
+            return get(Child.SETTING, ValWithId.class, k).getValue();
         }
     }
     @Override

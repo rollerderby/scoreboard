@@ -38,8 +38,8 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == IValue.NEXT && getNumber() == 0) { return null; }
-        if (prop == IValue.PREVIOUS && value != null && ((Penalty)value).getNumber() == 0) { return null; }
-        if (prop == Value.SERVED) { return (get(Value.BOX_TRIP) != null || (Boolean)get(Value.FORCE_SERVED)); }
+        if (prop == IValue.PREVIOUS && value != null && ((Penalty) value).getNumber() == 0) { return null; }
+        if (prop == Value.SERVED) { return (get(Value.BOX_TRIP) != null || (Boolean) get(Value.FORCE_SERVED)); }
         return value;
     }
     @Override
@@ -60,9 +60,9 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
                 }
             }
             moveToNumber(newPos);
-            
+
             if (newPos == scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) {
-                Penalty fo = (Penalty) parent.get(Skater.NChild.PENALTY, Skater.FO_EXP_ID);
+                Penalty fo = parent.get(Skater.NChild.PENALTY, Penalty.class, Skater.FO_EXP_ID);
                 if (fo != null && fo.get(Value.CODE) == "FO") {
                     fo.set(Value.JAM, value);
                 }

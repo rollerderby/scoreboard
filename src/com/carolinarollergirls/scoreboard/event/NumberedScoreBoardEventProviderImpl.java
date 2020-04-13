@@ -97,10 +97,9 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
             getNext().setPrevious(getPrevious());
         }
     }
-    @SuppressWarnings("unchecked")
     public void setNeighbors(int targetPosition) {
-        if (parent.get(ownType, targetPosition) != null) {
-            T replaced = (T) parent.get(ownType, targetPosition);
+        if (parent.get(ownType, getProviderClass(), targetPosition) != null) {
+            T replaced = parent.get(ownType, getProviderClass(), targetPosition);
             if (targetPosition <= getNumber()) {
                 setPrevious(replaced.getPrevious());
                 setNext(replaced);
@@ -113,17 +112,17 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
         } else if (parent.numberOf(ownType) == 0) {
             // do not set previous or next
         } else if (targetPosition > parent.getMaxNumber(ownType)) {
-            T prev = (T) parent.getLast(ownType);
+            T prev = parent.getLast(ownType, getProviderClass());
             setNext(prev.getNext());
             setPrevious(prev);
         } else if (targetPosition < parent.getMinNumber(ownType)) {
-            T next = (T) parent.getFirst(ownType);
+            T next = parent.getFirst(ownType, getProviderClass());
             setPrevious(next.getPrevious());
             setNext(next);
         } else {
             int n = targetPosition + 1;
-            while (parent.get(ownType, n) == null) { n++; }
-            T next = (T) parent.get(ownType, n);
+            while (parent.get(ownType, getProviderClass(), n) == null) { n++; }
+            T next = parent.get(ownType, getProviderClass(), n);
             setPrevious(next.getPrevious());
             setNext(next);
         }

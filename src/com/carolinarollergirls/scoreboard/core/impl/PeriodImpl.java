@@ -9,7 +9,7 @@ import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderI
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -22,7 +22,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         if (hasPrevious()) {
             set(Value.CURRENT_JAM, getPrevious().get(Value.CURRENT_JAM));
         } else {
-            set(Value.CURRENT_JAM, getOrCreate(NChild.JAM, "0"));
+            set(Value.CURRENT_JAM, getOrCreate(NChild.JAM, Jam.class, "0"));
         }
         setRecalculated(Value.DURATION).addSource(this, Value.WALLTIME_END).addSource(this, Value.WALLTIME_START);
     }
@@ -30,7 +30,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     @Override
     protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == Value.FIRST_JAM) {
-            return getFirst(NChild.JAM);
+            return getFirst(NChild.JAM, Jam.class);
         }
         if (prop == Value.DURATION) {
             if (getWalltimeEnd() == 0L) {
@@ -55,12 +55,12 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         } else if (prop == Value.CURRENT_JAM && hasNext() && getNext().get(Value.CURRENT_JAM) == last) {
             getNext().set(Value.CURRENT_JAM, value);
         } else if (prop == IValue.PREVIOUS && value != null && numberOf(NChild.JAM) > 0) {
-            getFirst(NChild.JAM).set(IValue.PREVIOUS, getPrevious().getCurrentJam());
+            getFirst(NChild.JAM, Jam.class).set(IValue.PREVIOUS, getPrevious().getCurrentJam());
         }
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == NChild.JAM) {
                 int num = Integer.parseInt(id);
@@ -104,8 +104,8 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     @Override
     public void delete(Source source) {
         if (source != Source.UNLINK && numberOf(NChild.JAM) > 0) {
-            Jam prevJam = (Jam) getFirst(NChild.JAM).getPrevious();
-            Jam nextJam = (Jam) getLast(NChild.JAM).getNext();
+            Jam prevJam = getFirst(NChild.JAM, Jam.class).getPrevious();
+            Jam nextJam = getLast(NChild.JAM, Jam.class).getNext();
             if (prevJam != null) {
                 prevJam.setNext(nextJam);
             } else if (nextJam != null) {
@@ -144,7 +144,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public boolean isRunning() { return (Boolean) get(Value.RUNNING); }
 
     @Override
-    public Jam getJam(int j) { return (Jam) get(NChild.JAM, j); }
+    public Jam getJam(int j) { return get(NChild.JAM, Jam.class, j); }
     @Override
     public Jam getCurrentJam() { return (Jam) get(Value.CURRENT_JAM); }
     @Override

@@ -31,7 +31,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             add(Child.FIELDING, new FieldingImpl(this, p));
         }
         addWriteProtection(Child.FIELDING);
-        getOrCreate(NChild.SCORING_TRIP, 1);
+        getOrCreate(NChild.SCORING_TRIP, ScoringTrip.class, 1);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             return getLastScore() + getJamScore() + getOsOffset();
         }
         if (prop == Value.CURRENT_TRIP) {
-            return getLast(NChild.SCORING_TRIP);
+            return getLast(NChild.SCORING_TRIP, ScoringTrip.class);
         }
         if (prop == Value.NO_INITIAL) {
             if (getCurrentScoringTrip() == null) { return true; }
@@ -123,7 +123,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     @Override
     protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
         if (prop == NChild.SCORING_TRIP && item == get(Value.STAR_PASS_TRIP)) {
-            for (ScoringTrip trip = (ScoringTrip) getLast(NChild.SCORING_TRIP); trip != null; trip = trip
+            for (ScoringTrip trip = getLast(NChild.SCORING_TRIP, ScoringTrip.class); trip != null; trip = trip
                     .getPrevious()) {
                 if (!(Boolean) trip.get(ScoringTrip.Value.AFTER_S_P)) {
                     set(Value.STAR_PASS_TRIP, trip.getNext());
@@ -132,7 +132,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
     }
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == NChild.SCORING_TRIP) {
                 return new ScoringTripImpl(this, Integer.parseInt(id));
@@ -174,7 +174,9 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     @Override
     public ScoringTrip getCurrentScoringTrip() { return (ScoringTrip) get(Value.CURRENT_TRIP); }
     @Override
-    public void addScoringTrip() { getOrCreate(NChild.SCORING_TRIP, getCurrentScoringTrip().getNumber() + 1); }
+    public void addScoringTrip() {
+        getOrCreate(NChild.SCORING_TRIP, ScoringTrip.class, getCurrentScoringTrip().getNumber() + 1);
+    }
     @Override
     public void removeScoringTrip() { getCurrentScoringTrip().execute(ScoringTrip.Command.REMOVE); }
 
@@ -200,7 +202,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public void setNoPivot(boolean np) { set(Value.NO_PIVOT, np); }
 
     @Override
-    public Fielding getFielding(FloorPosition fp) { return (Fielding) get(Child.FIELDING, fp.toString()); }
+    public Fielding getFielding(FloorPosition fp) { return get(Child.FIELDING, Fielding.class, fp.toString()); }
 
     private Team team;
     private RecalculateScoreBoardListener jamScoreListener;

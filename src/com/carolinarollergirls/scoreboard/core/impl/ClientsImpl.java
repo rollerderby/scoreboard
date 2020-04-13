@@ -15,7 +15,7 @@ import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
 
@@ -31,7 +31,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
         synchronized (coreLock) {
             requestBatchStart();
             ClientImpl c = new ClientImpl(this, UUID.randomUUID().toString());
-            Device d = (Device) get(Child.DEVICE, deviceId);
+            Device d = get(Child.DEVICE, Device.class, deviceId);
             c.set(Client.Value.DEVICE, d);
             c.set(Client.Value.SOURCE, source);
             c.set(Client.Value.REMOTE_ADDR, remoteAddr);
@@ -55,7 +55,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl implements Clients 
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == Child.DEVICE) {
                 Device d = new DeviceImpl(this, id);

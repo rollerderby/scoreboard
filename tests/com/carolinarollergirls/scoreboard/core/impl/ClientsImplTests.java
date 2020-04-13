@@ -57,7 +57,7 @@ public class ClientsImplTests {
         assertEquals("remoteaddr", c.get(Client.Value.REMOTE_ADDR));
         assertEquals("platform", c.get(Client.Value.PLATFORM));
         assertEquals("source", c.get(Client.Value.SOURCE));
-        assertEquals(c, d.get(Device.Child.CLIENT, c.getId()));
+        assertEquals(c, d.get(Device.Child.CLIENT, Client.class, c.getId()));
         assertEquals(c.get(Client.Value.REMOTE_ADDR), d.get(Device.Value.REMOTE_ADDR));
         assertEquals(c.get(Client.Value.PLATFORM), d.get(Device.Value.PLATFORM));
         // Session id must not leak anywhere.
@@ -80,26 +80,26 @@ public class ClientsImplTests {
         // 2nd client
         Client c2 = clients.addClient(d.getId(), "remoteaddr2", "source2", null);
         assertEquals(d, c2.get(Client.Value.DEVICE));
-        assertEquals(c2, d.get(Device.Child.CLIENT, c2.getId()));
+        assertEquals(c2, d.get(Device.Child.CLIENT, Client.class, c2.getId()));
         assertEquals(2, d.numberOf(Device.Child.CLIENT));
         assertNotEquals(0, c2.get(Client.Value.CREATED));
         assertEquals(0L, c2.get(Client.Value.WROTE));
         assertEquals("remoteaddr2", c2.get(Client.Value.REMOTE_ADDR));
         assertEquals(null, c2.get(Client.Value.PLATFORM));
         assertEquals("source2", c2.get(Client.Value.SOURCE));
-        assertEquals(c2, d.get(Device.Child.CLIENT, c2.getId()));
+        assertEquals(c2, d.get(Device.Child.CLIENT, Client.class, c2.getId()));
         // Latest value wines, but do not replace with a null.
         assertEquals("remoteaddr2", d.get(Device.Value.REMOTE_ADDR));
         assertEquals("platform", d.get(Device.Value.PLATFORM));
 
         // Remove, device is left but clients are gone.
         clients.removeClient(c);
-        assertEquals(null, d.get(Device.Child.CLIENT, c.getId()));
+        assertEquals(null, d.get(Device.Child.CLIENT, Client.class, c.getId()));
         assertEquals(1, d.numberOf(Device.Child.CLIENT));
         clients.removeClient(c2);
-        assertEquals(null, d.get(Device.Child.CLIENT, c2.getId()));
+        assertEquals(null, d.get(Device.Child.CLIENT, Client.class, c2.getId()));
         assertEquals(0, d.numberOf(Device.Child.CLIENT));
-        assertEquals(d, clients.get(Clients.Child.DEVICE, d.getId()));
+        assertEquals(d, clients.get(Clients.Child.DEVICE, Device.class, d.getId()));
         assertEquals(0, clients.numberOf(Clients.Child.CLIENT));
         assertNotEquals(0, d.get(Device.Value.WROTE));
 
@@ -166,16 +166,16 @@ public class ClientsImplTests {
         ScoreBoardJSONSetter.set(sb, save, Source.JSON);
 
         // New clients have not been added, existing clients remain.
-        assertEquals(c, clients.get(Clients.Child.CLIENT, c.getId()));
-        assertEquals(c2, clients.get(Clients.Child.CLIENT, c2.getId()));
-        assertNull(clients.get(Clients.Child.CLIENT, "c3"));
+        assertEquals(c, clients.get(Clients.Child.CLIENT, Client.class, c.getId()));
+        assertEquals(c2, clients.get(Clients.Child.CLIENT, Client.class, c2.getId()));
+        assertNull(clients.get(Clients.Child.CLIENT, Client.class, "c3"));
         assertEquals(2, clients.numberOf(Clients.Child.CLIENT));
-        assertEquals(c, clients.get(Clients.Child.CLIENT, c.getId()));
-        assertEquals(c2, clients.get(Clients.Child.CLIENT, c2.getId()));
+        assertEquals(c, clients.get(Clients.Child.CLIENT, Client.class, c.getId()));
+        assertEquals(c2, clients.get(Clients.Child.CLIENT, Client.class, c2.getId()));
         // New device has been added, without a client.
         Device d2 = clients.getDevice("d2s");
-        assertEquals(d, clients.get(Clients.Child.DEVICE, d.getId()));
-        assertEquals(d2, clients.get(Clients.Child.DEVICE, "d2"));
+        assertEquals(d, clients.get(Clients.Child.DEVICE, Device.class, d.getId()));
+        assertEquals(d2, clients.get(Clients.Child.DEVICE, Device.class, "d2"));
         assertEquals(2, clients.numberOf(Clients.Child.DEVICE));
 
         // Comment is allowed to be updated of the device settings,
@@ -283,12 +283,12 @@ public class ClientsImplTests {
         assertNotNull(sb.getClients());
         assertEquals(1, clients.numberOf(Clients.Child.CLIENT));
         assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
-        assertEquals(c, clients.get(Clients.Child.CLIENT, c.getId()));
-        assertEquals(d, clients.get(Clients.Child.DEVICE, d.getId()));
+        assertEquals(c, clients.get(Clients.Child.CLIENT, Client.class, c.getId()));
+        assertEquals(d, clients.get(Clients.Child.DEVICE, Device.class, d.getId()));
 
         // Device.
         assertEquals(1, d.numberOf(Device.Child.CLIENT));
-        assertEquals(c, d.get(Device.Child.CLIENT, c.getId()));
+        assertEquals(c, d.get(Device.Child.CLIENT, Client.class, c.getId()));
         assertEquals("S1", d.get(Device.Value.SESSION_ID_SECRET));
         assertEquals(name, d.get(Device.Value.NAME));
         assertEquals("remoteaddr", d.get(Device.Value.REMOTE_ADDR));

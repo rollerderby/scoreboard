@@ -90,12 +90,13 @@ public class ScoreBoardJSONSetter {
                         p.execute((CommandProperty) prop, source);
                     }
                 } else if (remainder != null) {
-                    Object o = p.getOrCreate((AddRemoveProperty) prop, elementId, source);
+                    ScoreBoardEventProvider o = p.getOrCreate((AddRemoveProperty) prop, ScoreBoardEventProvider.class,
+                            elementId, source);
                     if (o == null) {
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
                     }
-                    set((ScoreBoardEventProvider) o, remainder, value, source, flag, postponedSets);
+                    set(o, remainder, value, source, flag, postponedSets);
                 } else if (value == null) {
                     p.remove((AddRemoveProperty) prop, elementId, source);
                 } else {

@@ -35,6 +35,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -170,7 +171,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             switch ((Child) prop) {
             case SKATER:
@@ -299,7 +300,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     @Override
-    public String getAlternateName(String i) { return get(Child.ALTERNATE_NAME, i).getValue(); }
+    public String getAlternateName(String i) { return get(Child.ALTERNATE_NAME, ValWithId.class, i).getValue(); }
 
     @Override
     public String getAlternateName(AlternateNameId id) { return getAlternateName(id.toString()); }
@@ -315,7 +316,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void removeAlternateName(String i) { remove(Child.ALTERNATE_NAME, i); }
 
     @Override
-    public String getColor(String i) { return get(Child.COLOR, i).getValue(); }
+    public String getColor(String i) { return get(Child.COLOR, ValWithId.class, i).getValue(); }
 
     @Override
     public void setColor(String i, String c) {
@@ -460,9 +461,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     };
 
     @Override
-    public Skater getSkater(String id) { return (Skater) get(Child.SKATER, id); }
+    public Skater getSkater(String id) { return get(Child.SKATER, Skater.class, id); }
 
-    public Skater addSkater(String id) { return (Skater) getOrCreate(Child.SKATER, id); }
+    public Skater addSkater(String id) { return getOrCreate(Child.SKATER, Skater.class, id); }
 
     @Override
     public void addSkater(Skater skater) { add(Child.SKATER, skater); }
@@ -472,7 +473,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
 
     @Override
     public Position getPosition(FloorPosition fp) {
-        return fp == null ? null : (Position) get(Child.POSITION, fp.toString());
+        return fp == null ? null : get(Child.POSITION, Position.class, fp.toString());
     }
 
     @Override

@@ -120,7 +120,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     public void setWalltimeEnd(long t) { set(Value.WALLTIME_END, t); }
 
     @Override
-    public TeamJam getTeamJam(String id) { return (TeamJam) get(Child.TEAM_JAM, id); }
+    public TeamJam getTeamJam(String id) { return get(Child.TEAM_JAM, TeamJam.class, id); }
 
     @Override
     public void start() {

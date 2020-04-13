@@ -19,6 +19,7 @@ import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -129,11 +130,11 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         public void scoreBoardChange(ScoreBoardEvent event) {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
-            setCountDirectionDown(
-                    Boolean.parseBoolean(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".ClockDirection").getValue()));
+            setCountDirectionDown(Boolean.parseBoolean(
+                    r.get(Rulesets.Child.CURRENT_RULE, ValueWithId.class, getId() + ".ClockDirection").getValue()));
             if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
-                setMaximumTime(ClockConversion
-                        .fromHumanReadable(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".Duration").getValue()));
+                setMaximumTime(ClockConversion.fromHumanReadable(
+                        r.get(Rulesets.Child.CURRENT_RULE, ValueWithId.class, getId() + ".Duration").getValue()));
             } else if (getId().equals(ID_INTERMISSION)) {
                 setMaximumTime(getCurrentIntermissionTime());
             } else if (getId().equals(ID_LINEUP) && isCountDirectionDown()) {
@@ -353,7 +354,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
                     }
                     long delay = timeMs - nowMs;
                     if (Math.abs(delay) >= 500) {
-                        delay = (long) (Math.signum((float) -delay) * (1000 - Math.abs(delay)));
+                        delay = (long) (Math.signum(-delay) * (1000 - Math.abs(delay)));
                     }
                     c.lastTime = currentTime;
                     if (c.isCountDirectionDown()) {

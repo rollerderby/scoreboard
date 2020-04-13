@@ -30,7 +30,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
@@ -174,7 +174,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == Child.CLOCK) { return new ClockImpl(this, id); }
             if (prop == Child.TEAM) { return new TeamImpl(this, id); }
@@ -200,7 +200,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             set(Value.IN_JAM, false);
             removeAll(Period.NChild.JAM);
             removeAll(NChild.PERIOD);
-            set(Value.CURRENT_PERIOD, getOrCreate(NChild.PERIOD, "0"));
+            set(Value.CURRENT_PERIOD, getOrCreate(NChild.PERIOD, Period.class, "0"));
             noTimeoutDummy = new TimeoutImpl(getCurrentPeriod(), "noTimeout");
             getCurrentPeriod().add(Period.Child.TIMEOUT, noTimeoutDummy);
             set(Value.CURRENT_TIMEOUT, noTimeoutDummy);
@@ -231,7 +231,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
         synchronized (coreLock) {
             // Button may have a label from autosave but undo will not work after restart
             Button.UNDO.setLabel(ACTION_NONE);
-            ((Twitter) get(Child.TWITTER, "")).postAutosaveUpdate();
+            get(Child.TWITTER, Twitter.class, "").postAutosaveUpdate();
         }
     }
 
@@ -240,7 +240,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     @Override
     public void setInPeriod(boolean p) { set(Value.IN_PERIOD, p); }
     @Override
-    public Period getOrCreatePeriod(int p) { return (Period) getOrCreate(NChild.PERIOD, p); }
+    public Period getOrCreatePeriod(int p) { return getOrCreate(NChild.PERIOD, Period.class, p); }
     @Override
     public Period getCurrentPeriod() { return (Period) get(Value.CURRENT_PERIOD); }
     @Override
@@ -580,7 +580,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
             if (getCurrentPeriod().numberOf(Period.NChild.JAM) > 0) {
                 // We're undoing a period advancement. Move the upcoming Jam
                 // (and any associated Fieldings) back out before deleting the period.
-                Jam movedJam = (Jam) getCurrentPeriod().getFirst(Period.NChild.JAM);
+                Jam movedJam = getCurrentPeriod().getFirst(Period.NChild.JAM, Jam.class);
                 getCurrentPeriod().remove(Period.NChild.JAM, movedJam);
                 movedJam.setParent(this);
                 set(Value.UPCOMING_JAM, movedJam);
@@ -643,28 +643,30 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl implements Score
     }
 
     @Override
-    public Settings getSettings() { return (Settings) get(Child.SETTINGS, ""); }
+    public Settings getSettings() { return get(Child.SETTINGS, Settings.class, ""); }
 
     @Override
-    public Rulesets getRulesets() { return (Rulesets) get(Child.RULESETS, ""); }
+    public Rulesets getRulesets() { return get(Child.RULESETS, Rulesets.class, ""); }
 
     @Override
-    public PenaltyCodesManager getPenaltyCodesManager() { return (PenaltyCodesManager) get(Child.PENALTY_CODES, ""); }
+    public PenaltyCodesManager getPenaltyCodesManager() {
+        return get(Child.PENALTY_CODES, PenaltyCodesManager.class, "");
+    }
 
     @Override
-    public Media getMedia() { return (Media) get(Child.MEDIA, ""); }
+    public Media getMedia() { return get(Child.MEDIA, Media.class, ""); }
 
     @Override
-    public Clients getClients() { return (Clients) get(Child.CLIENTS, ""); }
+    public Clients getClients() { return get(Child.CLIENTS, Clients.class, ""); }
 
     @Override
-    public Clock getClock(String id) { return (Clock) getOrCreate(Child.CLOCK, id); }
+    public Clock getClock(String id) { return getOrCreate(Child.CLOCK, Clock.class, id); }
 
     @Override
-    public Team getTeam(String id) { return (Team) getOrCreate(Child.TEAM, id); }
+    public Team getTeam(String id) { return getOrCreate(Child.TEAM, Team.class, id); }
 
     @Override
-    public PreparedTeam getPreparedTeam(String id) { return (PreparedTeam) get(Child.PREPARED_TEAM, id); }
+    public PreparedTeam getPreparedTeam(String id) { return get(Child.PREPARED_TEAM, PreparedTeam.class, id); }
 
     @Override
     public TimeoutOwner getTimeoutOwner(String id) {

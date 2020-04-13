@@ -1596,8 +1596,8 @@ public class ScoreboardImplTests {
         assertEquals(2, sb.numberOf(ScoreBoard.NChild.PERIOD));
         assertEquals(0, sb.getMinNumber(ScoreBoard.NChild.PERIOD) + 0);
         assertEquals(1, sb.getMaxNumber(ScoreBoard.NChild.PERIOD) + 0);
-        Period p0 = (Period) sb.getFirst(ScoreBoard.NChild.PERIOD);
-        Period p1 = (Period) sb.getLast(ScoreBoard.NChild.PERIOD);
+        Period p0 = sb.getFirst(ScoreBoard.NChild.PERIOD, Period.class);
+        Period p1 = sb.getLast(ScoreBoard.NChild.PERIOD, Period.class);
         assertEquals(p1, sb.getCurrentPeriod());
         assertEquals(0, p0.getNumber());
         assertEquals(1, p1.getNumber());
@@ -1614,12 +1614,12 @@ public class ScoreboardImplTests {
         assertEquals(1, sb.numberOf(Period.NChild.JAM));
         assertEquals(5, sb.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(5, sb.getMaxNumber(Period.NChild.JAM) + 0);
-        Jam j0 = (Jam) p0.getFirst(Period.NChild.JAM);
-        Jam j1 = (Jam) p1.getFirst(Period.NChild.JAM);
-        Jam j2 = (Jam) p1.get(Period.NChild.JAM, 2);
-        Jam j3 = (Jam) p1.get(Period.NChild.JAM, 3);
-        Jam j4 = (Jam) p1.getLast(Period.NChild.JAM);
-        Jam j5 = (Jam) sb.getFirst(Period.NChild.JAM);
+        Jam j0 = p0.getFirst(Period.NChild.JAM, Jam.class);
+        Jam j1 = p1.getFirst(Period.NChild.JAM, Jam.class);
+        Jam j2 = p1.get(Period.NChild.JAM, Jam.class, 2);
+        Jam j3 = p1.get(Period.NChild.JAM, Jam.class, 3);
+        Jam j4 = p1.getLast(Period.NChild.JAM, Jam.class);
+        Jam j5 = sb.getFirst(Period.NChild.JAM, Jam.class);
         assertEquals(j0, p0.getCurrentJam());
         assertEquals(j4, p1.getCurrentJam());
         assertEquals(j5, sb.getUpcomingJam());
@@ -1643,13 +1643,13 @@ public class ScoreboardImplTests {
         assertEquals(j4, j5.getPrevious());
 
         sb.getCurrentPeriod().execute(Period.Command.INSERT_BEFORE);
-        ((Period) sb.get(ScoreBoard.NChild.PERIOD, "1")).delete();
+        sb.get(ScoreBoard.NChild.PERIOD, Period.class, "1").delete();
 
         assertEquals(2, sb.numberOf(ScoreBoard.NChild.PERIOD));
         assertEquals(0, sb.getMinNumber(ScoreBoard.NChild.PERIOD) + 0);
         assertEquals(1, sb.getMaxNumber(ScoreBoard.NChild.PERIOD) + 0);
-        p0 = (Period) sb.getFirst(ScoreBoard.NChild.PERIOD);
-        p1 = (Period) sb.getLast(ScoreBoard.NChild.PERIOD);
+        p0 = sb.getFirst(ScoreBoard.NChild.PERIOD, Period.class);
+        p1 = sb.getLast(ScoreBoard.NChild.PERIOD, Period.class);
         assertEquals(p1, sb.getCurrentPeriod());
         assertEquals(0, p0.getNumber());
         assertEquals(1, p1.getNumber());
@@ -1666,12 +1666,12 @@ public class ScoreboardImplTests {
         assertEquals(1, sb.numberOf(Period.NChild.JAM));
         assertEquals(5, sb.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(5, sb.getMaxNumber(Period.NChild.JAM) + 0);
-        j0 = (Jam) p0.getFirst(Period.NChild.JAM);
-        j1 = (Jam) p1.getFirst(Period.NChild.JAM);
-        j2 = (Jam) p1.get(Period.NChild.JAM, 2);
-        j3 = (Jam) p1.get(Period.NChild.JAM, 3);
-        j4 = (Jam) p1.getLast(Period.NChild.JAM);
-        j5 = (Jam) sb.getFirst(Period.NChild.JAM);
+        j0 = p0.getFirst(Period.NChild.JAM, Jam.class);
+        j1 = p1.getFirst(Period.NChild.JAM, Jam.class);
+        j2 = p1.get(Period.NChild.JAM, Jam.class, 2);
+        j3 = p1.get(Period.NChild.JAM, Jam.class, 3);
+        j4 = p1.getLast(Period.NChild.JAM, Jam.class);
+        j5 = sb.getFirst(Period.NChild.JAM, Jam.class);
         assertEquals(j0, p0.getCurrentJam());
         assertEquals(j4, p1.getCurrentJam());
         assertEquals(j5, sb.getUpcomingJam());
@@ -1695,13 +1695,14 @@ public class ScoreboardImplTests {
         assertEquals(j4, j5.getPrevious());
 
         sb.getCurrentPeriod().getCurrentJam().execute(Jam.Command.INSERT_BEFORE);
-        ((Jam) ((ScoreBoardEventProvider) sb.get(ScoreBoard.NChild.PERIOD, "1")).get(Period.NChild.JAM, 1)).delete();
+        ((ScoreBoardEventProvider) sb.get(ScoreBoard.NChild.PERIOD, Period.class, "1"))
+                .get(Period.NChild.JAM, Jam.class, 1).delete();
 
         assertEquals(2, sb.numberOf(ScoreBoard.NChild.PERIOD));
         assertEquals(0, sb.getMinNumber(ScoreBoard.NChild.PERIOD) + 0);
         assertEquals(1, sb.getMaxNumber(ScoreBoard.NChild.PERIOD) + 0);
-        p0 = (Period) sb.getFirst(ScoreBoard.NChild.PERIOD);
-        p1 = (Period) sb.getLast(ScoreBoard.NChild.PERIOD);
+        p0 = sb.getFirst(ScoreBoard.NChild.PERIOD, Period.class);
+        p1 = sb.getLast(ScoreBoard.NChild.PERIOD, Period.class);
         assertEquals(p1, sb.getCurrentPeriod());
         assertEquals(0, p0.getNumber());
         assertEquals(1, p1.getNumber());
@@ -1718,12 +1719,12 @@ public class ScoreboardImplTests {
         assertEquals(1, sb.numberOf(Period.NChild.JAM));
         assertEquals(5, sb.getMinNumber(Period.NChild.JAM) + 0);
         assertEquals(5, sb.getMaxNumber(Period.NChild.JAM) + 0);
-        j0 = (Jam) p0.getFirst(Period.NChild.JAM);
-        j1 = (Jam) p1.getFirst(Period.NChild.JAM);
-        j2 = (Jam) p1.get(Period.NChild.JAM, 2);
-        j3 = (Jam) p1.get(Period.NChild.JAM, 3);
-        j4 = (Jam) p1.getLast(Period.NChild.JAM);
-        j5 = (Jam) sb.getFirst(Period.NChild.JAM);
+        j0 = p0.getFirst(Period.NChild.JAM, Jam.class);
+        j1 = p1.getFirst(Period.NChild.JAM, Jam.class);
+        j2 = p1.get(Period.NChild.JAM, Jam.class, 2);
+        j3 = p1.get(Period.NChild.JAM, Jam.class, 3);
+        j4 = p1.getLast(Period.NChild.JAM, Jam.class);
+        j5 = sb.getFirst(Period.NChild.JAM, Jam.class);
         assertEquals(j0, p0.getCurrentJam());
         assertEquals(j4, p1.getCurrentJam());
         assertEquals(j5, sb.getUpcomingJam());
@@ -1794,7 +1795,7 @@ public class ScoreboardImplTests {
 
         fastForwardJams(2);
 
-        Penalty penalty = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
+        Penalty penalty = skater.getOrCreate(NChild.PENALTY, Penalty.class, "1");
         penalty.set(Penalty.Value.JAM, sb.getCurrentPeriod().getCurrentJam());
         penalty.set(Penalty.Value.CODE, "C");
 
@@ -1809,7 +1810,7 @@ public class ScoreboardImplTests {
         p2.getPrevious().delete();
 
         assertEquals(1, p2.getNumber());
-        assertEquals(p2.getFirst(Period.NChild.JAM), penalty.getJam());
+        assertEquals(p2.getFirst(Period.NChild.JAM, Jam.class), penalty.getJam());
     }
 
     @Test

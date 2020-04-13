@@ -20,6 +20,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemovePropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
@@ -41,7 +42,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
         formatSpecifierViewer = new FormatSpecifierViewer(sb);
         int i = 0;
         for (Map.Entry<String, String> entry : formatSpecifierViewer.getFormatSpecifierDescriptions().entrySet()) {
-            final FormatSpecifier fs = (FormatSpecifier) getOrCreate(Child.FORMAT_SPECIFIER, String.valueOf(i++));
+            final FormatSpecifier fs = getOrCreate(Child.FORMAT_SPECIFIER, FormatSpecifier.class, String.valueOf(i++));
             final String key = entry.getKey();
             final FormatSpecifierViewer.ScoreBoardValue value = formatSpecifierViewer
                     .getFormatSpecifierScoreBoardValue(key);
@@ -111,7 +112,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
         synchronized (coreLock) {
             switch ((Child) prop) {
             case CONDITIONAL_TWEET:

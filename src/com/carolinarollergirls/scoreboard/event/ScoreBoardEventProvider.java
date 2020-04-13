@@ -90,15 +90,16 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     /*
      * Will return null if no such child is found
      */
-    public ValueWithId get(AddRemoveProperty prop, String id);
-    public ValueWithId get(NumberedProperty prop, Integer num);
-    public ValueWithId getOrCreate(AddRemoveProperty prop, String id);
-    public ValueWithId getOrCreate(NumberedProperty prop, Integer num);
-    public ValueWithId getOrCreate(AddRemoveProperty prop, String id, Source source);
-    public ValueWithId getOrCreate(NumberedProperty prop, Integer num, Source source);
+    public <T extends ValueWithId> T get(AddRemoveProperty prop, Class<T> t, String id);
+    public <T extends OrderedScoreBoardEventProvider<T>> T get(NumberedProperty prop, Class<T> t, Integer num);
+    public <T extends ValueWithId> T getOrCreate(AddRemoveProperty prop, Class<T> t, String id);
+    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedProperty prop, Class<T> t, Integer num);
+    public <T extends ValueWithId> T getOrCreate(AddRemoveProperty prop, Class<T> t, String id, Source source);
+    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedProperty prop, Class<T> t, Integer num,
+            Source source);
     public <T extends ValueWithId> Collection<T> getAll(AddRemoveProperty prop, Class<T> t);
-    public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop);
-    public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop);
+    public <T extends OrderedScoreBoardEventProvider<T>> T getFirst(NumberedProperty prop, Class<T> t);
+    public <T extends OrderedScoreBoardEventProvider<T>> T getLast(NumberedProperty prop, Class<T> t);
     public int numberOf(AddRemoveProperty prop);
     // returns true, if a value was either changed or added
     public boolean add(AddRemoveProperty prop, ValueWithId item);
@@ -114,7 +115,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      * Must call an appropriate constructor for all children that are themselves a
      * ScoreBoardEventProvider and can be created from the frontend or autosave
      */
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source);
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source);
     public Integer getMinNumber(NumberedProperty prop);
     public Integer getMaxNumber(NumberedProperty prop);
 

@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
@@ -516,7 +517,7 @@ public class TeamImplTests {
         team.field(skater1, Role.JAMMER);
         sb.startJam();
 
-        skater1.getOrCreate(Skater.NChild.PENALTY, "1");
+        skater1.getOrCreate(Skater.NChild.PENALTY, Penalty.class, "1");
         assertTrue(team.isLost());
     }
 

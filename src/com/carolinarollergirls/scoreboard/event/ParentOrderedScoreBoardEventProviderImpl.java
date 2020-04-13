@@ -5,12 +5,13 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentPropert
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
 
 public abstract class ParentOrderedScoreBoardEventProviderImpl<T extends ParentOrderedScoreBoardEventProvider<T>>
-extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoardEventProvider<T> {
+        extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoardEventProvider<T> {
     @SafeVarargs
     protected ParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, String subId,
             AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
         super(parent, parent.getId() + "_" + subId, type, ownClass, props);
         ownType = type;
+        this.parent = parent;
         this.subId = subId;
         setRecalculated(IValue.PREVIOUS).addSource(parent, IValue.PREVIOUS);
         setRecalculated(IValue.NEXT).addSource(parent, IValue.NEXT);
@@ -25,15 +26,15 @@ extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoard
     @Override
     protected Object _computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
         if (prop == IValue.PREVIOUS && source != Source.INVERSE_REFERENCE) {
-            if (((OrderedScoreBoardEventProvider<?>) parent).hasPrevious()) {
-                return ((OrderedScoreBoardEventProvider<?>) getParent()).getPrevious().get(ownType, subId);
+            if (parent.hasPrevious()) {
+                return parent.getPrevious().get(ownType, getProviderClass(), subId);
             } else {
                 return null;
             }
         }
         if (prop == IValue.NEXT && source != Source.INVERSE_REFERENCE) {
-            if (((OrderedScoreBoardEventProvider<?>) parent).hasNext()) {
-                return ((OrderedScoreBoardEventProvider<?>) getParent()).getNext().get(ownType, subId);
+            if (parent.hasNext()) {
+                return parent.getNext().get(ownType, getProviderClass(), subId);
             } else {
                 return null;
             }
@@ -43,5 +44,7 @@ extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoard
 
     @SuppressWarnings("hiding")
     protected AddRemoveProperty ownType;
+    @SuppressWarnings("hiding")
+    protected OrderedScoreBoardEventProvider<?> parent;
     protected String subId;
 }

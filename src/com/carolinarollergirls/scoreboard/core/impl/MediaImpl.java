@@ -152,7 +152,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         }
     }
     @Override
-    public MediaFormat getFormat(String format) { return (MediaFormat) get(Child.FORMAT, format); }
+    public MediaFormat getFormat(String format) { return get(Child.FORMAT, MediaFormat.class, format); }
 
     @Override
     public boolean removeMediaFile(String format, String type, String id) {
@@ -199,7 +199,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         public String getFormat() { return format; }
 
         @Override
-        public MediaType getType(String type) { return (MediaType) get(Child.TYPE, type); }
+        public MediaType getType(String type) { return get(Child.TYPE, MediaType.class, type); }
         protected void addType(String type) { add(Child.TYPE, new MediaTypeImpl(this, type)); }
 
         private String format;
@@ -222,7 +222,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         public String getType() { return type; }
 
         @Override
-        public MediaFile getFile(String file) { return (MediaFile) get(Child.FILE, file); }
+        public MediaFile getFile(String file) { return get(Child.FILE, MediaFile.class, file); }
         @Override
         public void addFile(MediaFile file) { add(Child.FILE, file); }
         @Override

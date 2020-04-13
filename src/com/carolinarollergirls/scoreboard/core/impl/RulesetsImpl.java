@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
@@ -38,7 +39,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
         if (prop == Child.RULESET) {
             return new RulesetImpl(this, "", "", id);
         }
@@ -128,7 +129,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     }
 
     @Override
-    public String get(Rule k) { return get(Child.CURRENT_RULE, k.toString()).getValue(); }
+    public String get(Rule k) { return get(Child.CURRENT_RULE, ValueWithId.class, k.toString()).getValue(); }
     @Override
     public boolean getBoolean(Rule k) { return Boolean.parseBoolean(get(k)); }
     @Override
@@ -156,14 +157,14 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
     }
 
     @Override
-    public RuleDefinition getRuleDefinition(String k) { return (RuleDefinition) get(Child.RULE_DEFINITION, k); }
+    public RuleDefinition getRuleDefinition(String k) { return get(Child.RULE_DEFINITION, RuleDefinition.class, k); }
 
     @Override
     public Ruleset getRuleset(String id) {
         synchronized (coreLock) {
-            Ruleset r = (Ruleset) get(Child.RULESET, id);
+            Ruleset r = get(Child.RULESET, Ruleset.class, id);
             if (r == null) {
-                r = (Ruleset) get(Child.RULESET, ROOT_ID);
+                r = get(Child.RULESET, Ruleset.class, ROOT_ID);
             }
             return r;
         }
@@ -201,7 +202,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl implements Ruleset
         }
 
         @Override
-        public String get(Rule r) { return get(Child.RULE, r.toString()).getValue(); }
+        public String get(Rule r) { return get(Child.RULE, ValueWithId.class, r.toString()).getValue(); }
 
         @Override
         public String getName() { return (String) get(Value.NAME); }

@@ -199,7 +199,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     public boolean isWritable(AddRemoveProperty prop, String id, Source source) {
         if (source == Source.UNLINK || source == Source.RENUMBER) { return true; }
         if (ScoreBoardEventProvider.class.isAssignableFrom(prop.getType())) {
-            ScoreBoardEventProvider oldItem = (ScoreBoardEventProvider) get(prop, id);
+            ScoreBoardEventProvider oldItem = get(prop, ScoreBoardEventProvider.class, id);
             if (oldItem != null && (Boolean) oldItem.get(IValue.READONLY)) {
                 return false;
             }
@@ -385,44 +385,55 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             return getElement(prop.getType(), sValue);
         }
     }
+    @SuppressWarnings("unchecked")
     @Override
-    public ValueWithId get(AddRemoveProperty prop, String id) {
+    public <T extends ValueWithId> T get(AddRemoveProperty prop, Class<T> t, String id) {
+        if (!t.isAssignableFrom(prop.getType())) {
+            throw new IllegalArgumentException("Property " + prop + " with class " + prop.getType().getName()
+                    + " cannot be assigned to type " + t.getName());
+        }
         if (children.get(prop) == null) { return null; }
-        return children.get(prop).get(id);
+        return (T) children.get(prop).get(id);
     }
     @Override
-    public ValueWithId get(NumberedProperty prop, Integer num) { return get(prop, String.valueOf(num)); }
+    public <T extends OrderedScoreBoardEventProvider<T>> T get(NumberedProperty prop, Class<T> t, Integer num) {
+        return get(prop, t, String.valueOf(num));
+    }
     @Override
-    public ValueWithId getOrCreate(AddRemoveProperty prop, String id) { return getOrCreate(prop, id, Source.OTHER); }
+    public <T extends ValueWithId> T getOrCreate(AddRemoveProperty prop, Class<T> t, String id) {
+        return getOrCreate(prop, t, id, Source.OTHER);
+    }
+    @SuppressWarnings("unchecked")
     @Override
-    public ValueWithId getOrCreate(AddRemoveProperty prop, String id, Source source) {
+    public <T extends ValueWithId> T getOrCreate(AddRemoveProperty prop, Class<T> t, String id, Source source) {
         synchronized (coreLock) {
-            ValueWithId result = get(prop, id);
-            if (result == null) {
-                result = create(prop, id, source);
+            T result = get(prop, t, id);
+            if (result == null && ScoreBoardEventProvider.class.isAssignableFrom(t)) {
+                result = (T) create(prop, id, source);
                 add(prop, result, source);
             }
             return result;
         }
     }
     @Override
-    public ValueWithId getOrCreate(NumberedProperty prop, Integer num) {
-        return getOrCreate(prop, String.valueOf(num), Source.OTHER);
+    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedProperty prop, Class<T> t, Integer num) {
+        return getOrCreate(prop, t, String.valueOf(num), Source.OTHER);
     }
     @Override
-    public ValueWithId getOrCreate(NumberedProperty prop, Integer num, Source source) {
-        return getOrCreate(prop, String.valueOf(num), source);
+    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedProperty prop, Class<T> t, Integer num,
+            Source source) {
+        return getOrCreate(prop, t, String.valueOf(num), source);
     }
     @Override
-    public OrderedScoreBoardEventProvider<?> getFirst(NumberedProperty prop) {
+    public <T extends OrderedScoreBoardEventProvider<T>> T getFirst(NumberedProperty prop, Class<T> t) {
         synchronized (coreLock) {
-            return (OrderedScoreBoardEventProvider<?>) get(prop, minIds.get(prop));
+            return get(prop, t, minIds.get(prop));
         }
     }
     @Override
-    public OrderedScoreBoardEventProvider<?> getLast(NumberedProperty prop) {
+    public <T extends OrderedScoreBoardEventProvider<T>> T getLast(NumberedProperty prop, Class<T> t) {
         synchronized (coreLock) {
-            return (OrderedScoreBoardEventProvider<?>) get(prop, maxIds.get(prop));
+            return get(prop, t, maxIds.get(prop));
         }
     }
     @SuppressWarnings("unchecked")
@@ -477,12 +488,16 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
     }
     protected void itemAdded(AddRemoveProperty prop, ValueWithId item, Source source) {}
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) { return null; }
+    public ScoreBoardEventProvider create(AddRemoveProperty prop, String id, Source source) {
+        return null;
+    }
     @Override
-    public boolean remove(AddRemoveProperty prop, String id) { return remove(prop, get(prop, id), Source.OTHER); }
+    public boolean remove(AddRemoveProperty prop, String id) {
+        return remove(prop, get(prop, prop.getType(), id), Source.OTHER);
+    }
     @Override
     public boolean remove(AddRemoveProperty prop, String id, Source source) {
-        return remove(prop, get(prop, id), source);
+        return remove(prop, get(prop, prop.getType(), id), source);
     }
     @Override
     public boolean remove(AddRemoveProperty prop, ValueWithId item) { return remove(prop, item, Source.OTHER); }
@@ -502,6 +517,7 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             return false;
         }
     }
+    @SuppressWarnings("unchecked")
     protected void _itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
         if (item instanceof ScoreBoardEventProvider) {
             ((ScoreBoardEventProvider) item).removeScoreBoardListener(this);
@@ -514,11 +530,11 @@ public abstract class ScoreBoardEventProviderImpl implements ScoreBoardEventProv
             } else {
                 int num = ((OrderedScoreBoardEventProvider<?>) item).getNumber();
                 if (num == getMaxNumber(nprop)) {
-                    while (get(nprop, num) == null) { num--; }
+                    while (get(nprop, OrderedScoreBoardEventProvider.class, num) == null) { num--; }
                     maxIds.put(nprop, num);
                 }
                 if (num == getMinNumber(nprop)) {
-                    while (get(nprop, num) == null) { num++; }
+                    while (get(nprop, OrderedScoreBoardEventProvider.class, num) == null) { num++; }
                     minIds.put(nprop, num);
                 }
             }
