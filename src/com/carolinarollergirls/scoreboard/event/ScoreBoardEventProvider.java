@@ -1,7 +1,6 @@
 package com.carolinarollergirls.scoreboard.event;
 
 import java.util.Collection;
-import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 
@@ -46,7 +45,8 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      * This should return all the values, children, or commands that can be accessed
      * from the frontend
      */
-    public List<Property<?>> getProperties();
+    public Collection<Property<?>> getProperties();
+    public Property<?> getProperty(String jsonName);
 
     public void addScoreBoardListener(ScoreBoardListener listener);
     public void removeScoreBoardListener(ScoreBoardListener listener);
@@ -123,6 +123,8 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public ScoreBoard getScoreBoard();
 
     public <T extends ValueWithId> T getElement(Class<T> type, String id);
+
+    public void checkProperty(Property<?> prop);
 
     public static final Value<String> ID = new Value<>(String.class, "Id", "");
     public static final Value<Boolean> READONLY = new Value<>(Boolean.class, "Readonly", false);

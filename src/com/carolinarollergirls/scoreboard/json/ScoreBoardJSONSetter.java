@@ -17,11 +17,11 @@ import java.util.regex.Pattern;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 
 /**
@@ -72,13 +72,7 @@ public class ScoreBoardJSONSetter {
             if (elementId == null) { elementId = ""; }
             String readable = p.getProviderName() + "(" + p.getProviderId() + ")." + name + "(" + elementId + ")";
             try {
-                Property prop = null;
-                for (Property<?> pr : p.getProperties()) {
-                    if (name.equals(pr.getJsonName())) {
-                        prop = pr;
-                        break;
-                    }
-                }
+                Property prop = p.getProperty(name);
                 if (prop == null) {
                     Logger.printMessage("Unknown property " + readable);
                     return;
@@ -96,8 +90,8 @@ public class ScoreBoardJSONSetter {
                     }
                 } else if (remainder != null) {
                     @SuppressWarnings("unchecked")
-                    ScoreBoardEventProvider o = p.getOrCreate(
-                            (Child<? extends ScoreBoardEventProvider>) prop, elementId, source);
+                    ScoreBoardEventProvider o = p.getOrCreate((Child<? extends ScoreBoardEventProvider>) prop,
+                            elementId, source);
                     if (o == null) {
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
@@ -131,8 +125,7 @@ public class ScoreBoardJSONSetter {
     }
 
     protected static class ValueSet<T> {
-        protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source,
-                Flag flag) {
+        protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source, Flag flag) {
             this.sbe = sbe;
             this.prop = prop;
             this.value = value;

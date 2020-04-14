@@ -12,8 +12,8 @@ import java.util.List;
 
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.NumberedChild;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Skater extends ScoreBoardEventProvider {
     public int compareTo(Skater other);
@@ -46,7 +46,7 @@ public interface Skater extends ScoreBoardEventProvider {
 
     Value<String> NAME = new Value<>(String.class, "Name", "");
     Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
-    Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "Fielding", null);
+    Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
     Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
     Value<Position> POSITION = new Value<>(Position.class, "Position", null);
     Value<Role> ROLE = new Value<>(Role.class, "Role", null);

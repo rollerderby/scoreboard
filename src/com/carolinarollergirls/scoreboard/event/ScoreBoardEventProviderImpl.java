@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
@@ -66,7 +65,9 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     @Override
     public String toString() { return getId(); }
     @Override
-    public List<Property<?>> getProperties() { return properties; }
+    public Collection<Property<?>> getProperties() { return properties.values(); }
+    @Override
+    public Property<?> getProperty(String jsonName) { return properties.get(jsonName); }
     @Override
     public ScoreBoardEventProvider getParent() { return parent; }
 
@@ -137,7 +138,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     @Override
     public void delete(Source source) {
         if (get(READONLY) && source != Source.UNLINK) { return; }
-        for (Property prop : properties) {
+        for (Property prop : properties.values()) {
             if (prop instanceof Child) {
                 for (ValueWithId item : getAll((Child<?>) prop)) {
                     if (item instanceof ScoreBoardEventProvider
@@ -147,8 +148,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                         remove((Child) prop, item, Source.UNLINK);
                     }
                 }
-            } else if (prop instanceof Value
-                    && ScoreBoardEventProvider.class.isAssignableFrom(prop.getType())) {
+            } else if (prop instanceof Value && ScoreBoardEventProvider.class.isAssignableFrom(prop.getType())) {
                 set((Value) prop, null, Source.UNLINK);
             }
         }
@@ -164,9 +164,11 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
 
     public void addWriteProtection(Property<?> prop) { addWriteProtectionOverride(prop, null); }
     public void addWriteProtectionOverride(Property<?> prop, Source override) {
+        checkProperty(prop);
         writeProtectionOverride.put(prop, override);
     }
     public boolean isWritable(Property<?> prop, Source source) {
+        checkProperty(prop);
         if (source == Source.UNLINK && prop != ID && prop != READONLY && prop != OrderedScoreBoardEventProvider.NUMBER
                 && prop != PREVIOUS && prop != NEXT) {
             return true;
@@ -180,6 +182,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         return false;
     }
     public <T extends ValueWithId> boolean isWritable(Child<T> prop, String id, Source source) {
+        checkProperty(prop);
         if (source == Source.UNLINK || source == Source.RENUMBER) { return true; }
         T oldItem = get(prop, id);
         if (oldItem instanceof ScoreBoardEventProvider) {
@@ -195,6 +198,8 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
      */
     protected <T> ScoreBoardListener setCopy(Value<T> targetProperty, ScoreBoardEventProvider sourceElement,
             Value<T> sourceProperty, boolean readonly) {
+        checkProperty(targetProperty);
+        sourceElement.checkProperty(sourceProperty);
         ScoreBoardListener l = new ConditionalScoreBoardListener<>(sourceElement, sourceProperty,
                 new CopyScoreBoardListener<>(this, targetProperty));
         sourceElement.addScoreBoardListener(l);
@@ -220,8 +225,10 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
      * the time of calling.
      */
     protected <T, U> ScoreBoardListener setCopy(final Value<T> targetProperty,
-            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty,
-            final Value<T> sourceProperty, boolean readonly) {
+            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty, final Value<T> sourceProperty,
+            boolean readonly) {
+        checkProperty(targetProperty);
+        indirectionElement.checkProperty(indirectionProperty);
         ScoreBoardListener l = new IndirectScoreBoardListener<>(indirectionElement, indirectionProperty, sourceProperty,
                 new CopyScoreBoardListener<>(this, targetProperty));
         providers.put(l, null);
@@ -247,6 +254,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
      * is changed
      */
     protected RecalculateScoreBoardListener<?> setRecalculated(Value<?> targetProperty) {
+        checkProperty(targetProperty);
         RecalculateScoreBoardListener<?> l = new RecalculateScoreBoardListener<>(this, targetProperty);
         providers.put(l, null);
         return l;
@@ -257,6 +265,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
      */
     protected <T> InverseReferenceUpdateListener<T, C> setInverseReference(Property<T> localProperty,
             Property<C> remoteProperty) {
+        checkProperty(localProperty);
         @SuppressWarnings("unchecked")
         InverseReferenceUpdateListener<T, C> l = new InverseReferenceUpdateListener<>((C) this, localProperty,
                 remoteProperty);
@@ -314,10 +323,6 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public <T> boolean set(Value<T> prop, T value, Source source, Flag flag) {
         synchronized (coreLock) {
             if (prop == null) { return false; }
-            if (!properties.contains(prop)) {
-                throw new IllegalArgumentException(
-                        prop.getJsonName() + " is not a property of " + this.getClass().getName());
-            }
             if (prop == ID && source.isFile()) {
                 // register ID as an alias so other elements from file are properly redirected
                 elements.get(providerClass).put((String) value, this);
@@ -419,6 +424,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     @Override
     public <T extends ValueWithId> Collection<T> getAll(Child<T> prop) {
         synchronized (coreLock) {
+            checkProperty(prop);
             return new HashSet<>((Collection<? extends T>) children.get(prop).values());
         }
     }
@@ -436,10 +442,6 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     @Override
     public <T extends ValueWithId> boolean add(Child<T> prop, T item, Source source) {
         synchronized (coreLock) {
-            if (!properties.contains(prop)) {
-                throw new IllegalArgumentException(
-                        prop.getJsonName() + " is not a property of " + this.getClass().getName());
-            }
             if (item == null || !isWritable(prop, item.getId(), source)) { return false; }
             Map<String, ValueWithId> map = children.get(prop);
             String id = item.getId();
@@ -559,9 +561,21 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         }
     }
 
+    @Override
+    public void checkProperty(Property<?> prop) {
+        if (!(properties.get(prop.getJsonName()) == prop)) {
+            throw new IllegalArgumentException(
+                    prop.getJsonName() + " is not a property of " + this.getClass().getName());
+        }
+    }
+
     protected void addProperties(Property<?>... props) {
         for (Property<?> prop : props) {
-            properties.add(prop);
+            if (properties.containsKey(prop.getJsonName())) {
+                throw new IllegalArgumentException(this.getClass().getName()
+                        + " can't contain multiple properties wit JSON name " + prop.getJsonName());
+            }
+            properties.put(prop.getJsonName(), prop);
             if (prop instanceof Child) {
                 children.put((Child<?>) prop, new HashMap<String, ValueWithId>());
             }
@@ -576,7 +590,8 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     protected String providerName;
     protected Class<C> providerClass;
 
-    protected List<Property<?>> properties = new ArrayList<>();
+//    protected List<Property<?>> properties = new ArrayList<>();
+    protected Map<String, Property<?>> properties = new HashMap<>();
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<>();
     protected Map<ScoreBoardListener, ScoreBoardEventProvider> providers = new HashMap<>();
