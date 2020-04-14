@@ -5,10 +5,10 @@ import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Timeout;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -30,7 +30,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == FIRST_JAM) {
             return getFirst(JAM);
         }
@@ -44,7 +44,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == RUNNING && !source.isFile()) {
             if (!(Boolean) value) {
                 set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
@@ -62,7 +62,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == JAM) {
                 int num = Integer.parseInt(id);
@@ -78,7 +78,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
                 if (!isRunning()) {

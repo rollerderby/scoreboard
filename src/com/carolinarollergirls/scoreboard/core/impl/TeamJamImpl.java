@@ -7,9 +7,9 @@ import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
@@ -37,7 +37,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == JAM_SCORE) {
             int sum = 0;
             for (ScoringTrip trip : getAll(SCORING_TRIP)) {
@@ -85,7 +85,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == STAR_PASS_TRIP) {
             if (last != null) {
                 ((ScoringTrip) last).set(ScoringTrip.AFTER_S_P, false, Flag.SPECIAL_CASE);
@@ -115,7 +115,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == SCORING_TRIP) {
             jamScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.SCORE);
             afterSPScoreListener.addSource((ScoreBoardEventProvider) item, ScoringTrip.SCORE);
@@ -123,7 +123,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
     }
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == SCORING_TRIP && item == get(STAR_PASS_TRIP)) {
             for (ScoringTrip trip = getLast(SCORING_TRIP); trip != null; trip = trip.getPrevious()) {
                 if (!trip.get(ScoringTrip.AFTER_S_P)) {
@@ -133,7 +133,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
     }
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == SCORING_TRIP) {
                 return new ScoringTripImpl(this, Integer.parseInt(id));

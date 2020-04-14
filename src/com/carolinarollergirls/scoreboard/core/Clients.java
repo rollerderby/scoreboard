@@ -8,13 +8,13 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Clients extends ScoreBoardEventProvider {
-    AddRemoveProperty<Client> CLIENT = new AddRemoveProperty<>(Client.class, "Client");
-    AddRemoveProperty<Device> DEVICE = new AddRemoveProperty<>(Device.class, "Device");
+    Child<Client> CLIENT = new Child<>(Client.class, "Client");
+    Child<Device> DEVICE = new Child<>(Device.class, "Device");
 
     public Device getDevice(String sessionId);
     public Device getOrAddDevice(String sessionId);
@@ -28,12 +28,12 @@ public interface Clients extends ScoreBoardEventProvider {
         public void write();
 
         @SuppressWarnings("hiding")
-        PermanentProperty<Device> DEVICE = new PermanentProperty<>(Device.class, "Device", null);
-        PermanentProperty<String> REMOTE_ADDR = new PermanentProperty<>(String.class, "RemoteAddr", "");
-        PermanentProperty<String> PLATFORM = new PermanentProperty<>(String.class, "Platform", "");
-        PermanentProperty<String> SOURCE = new PermanentProperty<>(String.class, "Source", "");
-        PermanentProperty<Long> CREATED = new PermanentProperty<>(Long.class, "Created", 0L);
-        PermanentProperty<Long> WROTE = new PermanentProperty<>(Long.class, "Wrote", 0L);
+        Value<Device> DEVICE = new Value<>(Device.class, "Device", null);
+        Value<String> REMOTE_ADDR = new Value<>(String.class, "RemoteAddr", "");
+        Value<String> PLATFORM = new Value<>(String.class, "Platform", "");
+        Value<String> SOURCE = new Value<>(String.class, "Source", "");
+        Value<Long> CREATED = new Value<>(Long.class, "Created", 0L);
+        Value<Long> WROTE = new Value<>(Long.class, "Wrote", 0L);
     }
 
     // A device is a HTTP cookie.
@@ -43,18 +43,16 @@ public interface Clients extends ScoreBoardEventProvider {
         public void access();
         public void write();
 
-        // @formatter:off
-        PermanentProperty<String> SESSION_ID_SECRET = new PermanentProperty<>(String.class, "SessionIdSecret", ""); // The cookie.
-        PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", ""); // A human-readable name.
-        PermanentProperty<String> REMOTE_ADDR = new PermanentProperty<>(String.class, "RemoteAddr", "");
-        PermanentProperty<String> PLATFORM = new PermanentProperty<>(String.class, "Platform", "");
-        PermanentProperty<String> COMMENT = new PermanentProperty<>(String.class, "Comment", "");
-        PermanentProperty<Long> CREATED = new PermanentProperty<>(Long.class, "Created", 0L);
-        PermanentProperty<Long> WROTE = new PermanentProperty<>(Long.class, "Wrote", 0L);
-        PermanentProperty<Long> ACCESSED = new PermanentProperty<>(Long.class, "Accessed", 0L);
+        Value<String> SESSION_ID_SECRET = new Value<>(String.class, "SessionIdSecret", ""); // The cookie.
+        Value<String> NAME = new Value<>(String.class, "Name", ""); // A human-readable name.
+        Value<String> REMOTE_ADDR = new Value<>(String.class, "RemoteAddr", "");
+        Value<String> PLATFORM = new Value<>(String.class, "Platform", "");
+        Value<String> COMMENT = new Value<>(String.class, "Comment", "");
+        Value<Long> CREATED = new Value<>(Long.class, "Created", 0L);
+        Value<Long> WROTE = new Value<>(Long.class, "Wrote", 0L);
+        Value<Long> ACCESSED = new Value<>(Long.class, "Accessed", 0L);
 
         @SuppressWarnings("hiding")
-        AddRemoveProperty<Client> CLIENT = new AddRemoveProperty<>(Client.class, "Client");
-        // @formatter:on
+        Child<Client> CLIENT = new Child<>(Client.class, "Client");
     }
 }

@@ -24,10 +24,10 @@ import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
@@ -92,7 +92,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == UPCOMING_JAM && !(value instanceof Jam)) {
             value = new JamImpl(this, getCurrentPeriod().getCurrentJam());
         } else if (prop == NO_MORE_JAM) {
@@ -120,7 +120,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == IN_OVERTIME) {
             if (isInJam()) {
                 getCurrentPeriod().getCurrentJam().set(Jam.OVERTIME, (Boolean) value);
@@ -147,7 +147,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == RESET) {
             reset();
         } else if (prop == START_JAM) {
@@ -168,7 +168,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == CLOCK) { return new ClockImpl(this, id); }
             if (prop == TEAM) { return new TeamImpl(this, id); }

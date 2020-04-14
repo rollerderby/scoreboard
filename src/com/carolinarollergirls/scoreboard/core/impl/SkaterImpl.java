@@ -24,8 +24,8 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
@@ -66,7 +66,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == ROLE && flag != Flag.SPECIAL_CASE && !source.isFile()) {
             team.field(this, (Role) value);
             return last;
@@ -74,7 +74,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == CURRENT_FIELDING) {
             Fielding f = (Fielding) value;
             Fielding lf = (Fielding) last;
@@ -108,14 +108,14 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PENALTY) { return new PenaltyImpl(this, Integer.valueOf(id)); }
             return null;
         }
     }
     @Override
-    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == PENALTY) {
             Penalty p = (Penalty) item;
             if (FO_EXP_ID.equals(p.getProviderId())) {
@@ -147,7 +147,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         }
     }
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == PENALTY) {
             if (FO_EXP_ID.equals(((Penalty) item).getProviderId())) {
                 updateEligibility();

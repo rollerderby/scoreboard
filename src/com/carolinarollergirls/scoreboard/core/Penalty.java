@@ -1,8 +1,8 @@
 package com.carolinarollergirls.scoreboard.core;
 
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int compareTo(Penalty other);
@@ -14,17 +14,15 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
 
     public boolean isServed();
 
-    // @formatter:off
-    PermanentProperty<Long> TIME = new PermanentProperty<>(Long.class, "Time", 0L);
-    PermanentProperty<Jam> JAM = new PermanentProperty<>(Jam.class, "Jam", null);
-    PermanentProperty<Integer> PERIOD_NUMBER = new PermanentProperty<>(Integer.class, "PeriodNumber", 0);
-    PermanentProperty<Integer> JAM_NUMBER = new PermanentProperty<>(Integer.class, "JamNumber", 0);
-    PermanentProperty<String> CODE = new PermanentProperty<>(String.class, "Code", "");
-    PermanentProperty<Boolean> SERVING = new PermanentProperty<>(Boolean.class, "Serving", false);
-    PermanentProperty<Boolean> SERVED = new PermanentProperty<>(Boolean.class, "Served", false);
-    PermanentProperty<Boolean> FORCE_SERVED = new PermanentProperty<>(Boolean.class, "ForceServed", false);
-    PermanentProperty<BoxTrip> BOX_TRIP = new PermanentProperty<>(BoxTrip.class, "BoxTrip", null);
+    Value<Long> TIME = new Value<>(Long.class, "Time", 0L);
+    Value<Jam> JAM = new Value<>(Jam.class, "Jam", null);
+    Value<Integer> PERIOD_NUMBER = new Value<>(Integer.class, "PeriodNumber", 0);
+    Value<Integer> JAM_NUMBER = new Value<>(Integer.class, "JamNumber", 0);
+    Value<String> CODE = new Value<>(String.class, "Code", "");
+    Value<Boolean> SERVING = new Value<>(Boolean.class, "Serving", false);
+    Value<Boolean> SERVED = new Value<>(Boolean.class, "Served", false);
+    Value<Boolean> FORCE_SERVED = new Value<>(Boolean.class, "ForceServed", false);
+    Value<BoxTrip> BOX_TRIP = new Value<>(BoxTrip.class, "BoxTrip", null);
 
-    CommandProperty REMOVE = new CommandProperty("Remove");
-    // @formatter:on
+    Command REMOVE = new Command("Remove");
 }

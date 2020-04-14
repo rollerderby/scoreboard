@@ -7,7 +7,7 @@ public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl
         setupReferences();
     }
     public TestScoreBoardEventProviderImpl(TestScoreBoardEventProvider parent, String id,
-            AddRemoveProperty<TestScoreBoardEventProvider> type) {
+            Child<TestScoreBoardEventProvider> type) {
         super(parent, id, type);
         setupReferences();
     }
@@ -25,7 +25,7 @@ public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         valuesRecalculated++;
         if (prop == RECALCULATED) {
             return -(Integer) value;
@@ -33,21 +33,21 @@ public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         valuesChanged++;
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         itemsAdded++;
     }
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         itemsRemoved++;
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         commmandsExecuted++;
     }
 

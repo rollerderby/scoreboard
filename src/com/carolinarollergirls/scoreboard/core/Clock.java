@@ -8,9 +8,9 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Clock extends ScoreBoardEventProvider {
     public void reset();
@@ -88,19 +88,17 @@ public interface Clock extends ScoreBoardEventProvider {
         public boolean isRunning();
     }
 
-    // @formatter:off
-    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
-    PermanentProperty<Integer> NUMBER = new PermanentProperty<>(Integer.class, "Number", 0);
-    PermanentProperty<Long> TIME = new PermanentProperty<>(Long.class, "Time", 0L);
-    PermanentProperty<Long> INVERTED_TIME = new PermanentProperty<>(Long.class, "InvertedTime", 0L);
-    PermanentProperty<Long> MAXIMUM_TIME = new PermanentProperty<>(Long.class, "MaximumTime", 0L);
-    PermanentProperty<Boolean> DIRECTION = new PermanentProperty<>(Boolean.class, "Direction", false);
-    PermanentProperty<Boolean> RUNNING = new PermanentProperty<>(Boolean.class, "Running", false);
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<Integer> NUMBER = new Value<>(Integer.class, "Number", 0);
+    Value<Long> TIME = new Value<>(Long.class, "Time", 0L);
+    Value<Long> INVERTED_TIME = new Value<>(Long.class, "InvertedTime", 0L);
+    Value<Long> MAXIMUM_TIME = new Value<>(Long.class, "MaximumTime", 0L);
+    Value<Boolean> DIRECTION = new Value<>(Boolean.class, "Direction", false);
+    Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", false);
 
-    CommandProperty START = new CommandProperty("Start");
-    CommandProperty STOP = new CommandProperty("Stop");
-    CommandProperty RESET_TIME = new CommandProperty("ResetTime");
-    // @formatter:on
+    Command START = new Command("Start");
+    Command STOP = new Command("Stop");
+    Command RESET_TIME = new Command("ResetTime");
 
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";
 

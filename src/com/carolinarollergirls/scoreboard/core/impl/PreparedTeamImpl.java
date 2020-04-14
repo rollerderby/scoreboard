@@ -10,7 +10,7 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import com.carolinarollergirls.scoreboard.core.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
@@ -21,7 +21,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PreparedTeam.SKATER) {
                 return new PreparedTeamSkaterImpl(this, id);

@@ -13,11 +13,11 @@ import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Twitter;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.FormatSpecifierScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
@@ -77,7 +77,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     }
 
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (!initilized) { return; }
         if (prop == OAUTH_VERIFIER && value != null && !((String) value).isEmpty()) {
             twitter.getOAuthAccessTokenAsync(requestToken, (String) value);
@@ -88,7 +88,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == LOGIN) {
             twitter.getOAuthRequestTokenAsync(get(CALLBACK_URL));
         } else if (prop == LOGOUT) {
@@ -110,7 +110,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == CONDITIONAL_TWEET) {
                 return new ConditionalTweetImpl(this, id);
@@ -123,7 +123,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     }
 
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == CONDITIONAL_TWEET) {
             removeConditionalListener(item.getId());
         }
@@ -210,7 +210,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
         }
 
         @Override
-        protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+        protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
             if (prop == TWEET || prop == CONDITION) {
                 removeConditionalListener(getId());
                 if (!getTweet().isEmpty() && !getCondition().isEmpty()) {

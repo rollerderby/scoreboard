@@ -3,7 +3,7 @@ package com.carolinarollergirls.scoreboard.event;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
 public class CopyScoreBoardListener<T> implements ScoreBoardListener {
-    CopyScoreBoardListener(ScoreBoardEventProvider targetElement, PermanentProperty<T> targetProperty) {
+    CopyScoreBoardListener(ScoreBoardEventProvider targetElement, Value<T> targetProperty) {
         this.targetElement = targetElement;
         this.targetProperty = targetProperty;
     }
@@ -22,5 +22,5 @@ public class CopyScoreBoardListener<T> implements ScoreBoardListener {
     }
 
     protected ScoreBoardEventProvider targetElement;
-    protected PermanentProperty<T> targetProperty;
+    protected Value<T> targetProperty;
 }

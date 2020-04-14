@@ -8,9 +8,9 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Timeout;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -63,7 +63,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == STAR_PASS) {
             return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass();
         }
@@ -71,7 +71,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
                 if (scoreBoard.isInJam() && (parent == scoreBoard.getCurrentPeriod())

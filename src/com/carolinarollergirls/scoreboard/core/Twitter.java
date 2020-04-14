@@ -8,49 +8,47 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Twitter extends ScoreBoardEventProvider {
     /** Update state after restoring from autosave */
     public void postAutosaveUpdate();
 
     // URL browser should be sent to do OAuth.
-    PermanentProperty<String> AUTH_URL = new PermanentProperty<>(String.class, "AuthUrl", "");
+    Value<String> AUTH_URL = new Value<>(String.class, "AuthUrl", "");
     // URL Twitter should send browser back to after OAuth.
-    PermanentProperty<String> CALLBACK_URL = new PermanentProperty<>(String.class, "CallbackUrl", "");
+    Value<String> CALLBACK_URL = new Value<>(String.class, "CallbackUrl", "");
     // The OAuth token we get back from Twitter goes here.
-    PermanentProperty<String> OAUTH_VERIFIER = new PermanentProperty<>(String.class, "OauthVerifier", "");
+    Value<String> OAUTH_VERIFIER = new Value<>(String.class, "OauthVerifier", "");
     // The ultimate credentials we use to tweet.
-    PermanentProperty<String> ACCESS_TOKEN = new PermanentProperty<>(String.class, "AccessToken", "");
-    PermanentProperty<String> ACCESS_TOKEN_SECRET = new PermanentProperty<>(String.class, "AccessTokenSecret", "");
+    Value<String> ACCESS_TOKEN = new Value<>(String.class, "AccessToken", "");
+    Value<String> ACCESS_TOKEN_SECRET = new Value<>(String.class, "AccessTokenSecret", "");
     // Setting this sends a tweet.
-    PermanentProperty<String> MANUAL_TWEET = new PermanentProperty<>(String.class, "ManualTweet", "");
+    Value<String> MANUAL_TWEET = new Value<>(String.class, "ManualTweet", "");
     // The last tweet we sent.
-    PermanentProperty<String> STATUS = new PermanentProperty<>(String.class, "Status", "");
-    PermanentProperty<Boolean> LOGGED_IN = new PermanentProperty<>(Boolean.class, "LoggedIn", false);
-    PermanentProperty<String> ERROR = new PermanentProperty<>(String.class, "Error", "");
-    PermanentProperty<String> SCREEN_NAME = new PermanentProperty<>(String.class, "ScreenName", "");
-    PermanentProperty<Boolean> TEST_MODE = new PermanentProperty<>(Boolean.class, "TestMode", false);
+    Value<String> STATUS = new Value<>(String.class, "Status", "");
+    Value<Boolean> LOGGED_IN = new Value<>(Boolean.class, "LoggedIn", false);
+    Value<String> ERROR = new Value<>(String.class, "Error", "");
+    Value<String> SCREEN_NAME = new Value<>(String.class, "ScreenName", "");
+    Value<Boolean> TEST_MODE = new Value<>(Boolean.class, "TestMode", false);
 
-    // @formatter:off
-    AddRemoveProperty<ConditionalTweet> CONDITIONAL_TWEET = new AddRemoveProperty<>(ConditionalTweet.class, "ConditionalTweet");
-    AddRemoveProperty<FormatSpecifier> FORMAT_SPECIFIER = new AddRemoveProperty<>(FormatSpecifier.class, "FormatSpecifier");
-    // @formatter:on
+    Child<ConditionalTweet> CONDITIONAL_TWEET = new Child<>(ConditionalTweet.class, "ConditionalTweet");
+    Child<FormatSpecifier> FORMAT_SPECIFIER = new Child<>(FormatSpecifier.class, "FormatSpecifier");
 
-    CommandProperty LOGIN = new CommandProperty("Login");
-    CommandProperty LOGOUT = new CommandProperty("Logout");
+    Command LOGIN = new Command("Login");
+    Command LOGOUT = new Command("Logout");
 
     public interface ConditionalTweet extends ScoreBoardEventProvider {
-        PermanentProperty<String> CONDITION = new PermanentProperty<>(String.class, "Condition", "");
-        PermanentProperty<String> TWEET = new PermanentProperty<>(String.class, "Tweet", "");
+        Value<String> CONDITION = new Value<>(String.class, "Condition", "");
+        Value<String> TWEET = new Value<>(String.class, "Tweet", "");
     }
 
     public interface FormatSpecifier extends ScoreBoardEventProvider {
-        PermanentProperty<String> KEY = new PermanentProperty<>(String.class, "Key", "");
-        PermanentProperty<String> DESCRIPTION = new PermanentProperty<>(String.class, "Description", "");
-        PermanentProperty<String> CURRENT_VALUE = new PermanentProperty<>(String.class, "CurrentValue", "");
+        Value<String> KEY = new Value<>(String.class, "Key", "");
+        Value<String> DESCRIPTION = new Value<>(String.class, "Description", "");
+        Value<String> CURRENT_VALUE = new Value<>(String.class, "CurrentValue", "");
     }
 }

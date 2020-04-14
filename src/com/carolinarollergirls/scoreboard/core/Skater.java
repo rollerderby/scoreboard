@@ -10,9 +10,9 @@ package com.carolinarollergirls.scoreboard.core;
 
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.NumberedProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.NumberedChild;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
@@ -44,19 +44,19 @@ public interface Skater extends ScoreBoardEventProvider {
     public List<Penalty> getUnservedPenalties();
     public boolean hasUnservedPenalties();
 
-    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
-    PermanentProperty<String> ROSTER_NUMBER = new PermanentProperty<>(String.class, "RosterNumber", "");
-    PermanentProperty<Fielding> CURRENT_FIELDING = new PermanentProperty<>(Fielding.class, "Fielding", null);
-    PermanentProperty<String> CURRENT_BOX_SYMBOLS = new PermanentProperty<>(String.class, "CurrentBoxSymbols", "");
-    PermanentProperty<Position> POSITION = new PermanentProperty<>(Position.class, "Position", null);
-    PermanentProperty<Role> ROLE = new PermanentProperty<>(Role.class, "Role", null);
-    PermanentProperty<Role> BASE_ROLE = new PermanentProperty<>(Role.class, "BaseRole", null);
-    PermanentProperty<Boolean> PENALTY_BOX = new PermanentProperty<>(Boolean.class, "PenaltyBox", false);
-    PermanentProperty<String> FLAGS = new PermanentProperty<>(String.class, "Flags", "");
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
+    Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "Fielding", null);
+    Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
+    Value<Position> POSITION = new Value<>(Position.class, "Position", null);
+    Value<Role> ROLE = new Value<>(Role.class, "Role", null);
+    Value<Role> BASE_ROLE = new Value<>(Role.class, "BaseRole", null);
+    Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false);
+    Value<String> FLAGS = new Value<>(String.class, "Flags", "");
 
-    AddRemoveProperty<Fielding> FIELDING = new AddRemoveProperty<>(Fielding.class, "Fielding");
+    Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding");
 
-    NumberedProperty<Penalty> PENALTY = new NumberedProperty<>(Penalty.class, "Penalty");
+    NumberedChild<Penalty> PENALTY = new NumberedChild<>(Penalty.class, "Penalty");
 
     public static final String FO_EXP_ID = "0";
 }

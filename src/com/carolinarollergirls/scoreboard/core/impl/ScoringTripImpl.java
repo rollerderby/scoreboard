@@ -2,9 +2,9 @@ package com.carolinarollergirls.scoreboard.core.impl;
 
 import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<ScoringTrip> implements ScoringTrip {
@@ -18,7 +18,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
 
     @Override
-    public Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    public Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == SCORE && (Integer) value < 0) { return 0; }
         if (prop == DURATION) {
             if (get(JAM_CLOCK_END) > 0L) {
@@ -30,7 +30,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         return value;
     }
     @Override
-    public void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    public void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L) {
             set(JAM_CLOCK_END, ScoreBoardClock.getInstance().getCurrentWalltime());
         }
@@ -55,7 +55,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == REMOVE) {
             if (getParent().numberOf(TeamJam.SCORING_TRIP) > 1) {
                 delete(source);

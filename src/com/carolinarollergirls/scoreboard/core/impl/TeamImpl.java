@@ -29,10 +29,10 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Timeout;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
@@ -82,7 +82,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == IN_TIMEOUT) {
             Timeout t = scoreBoard.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && !t.isReview();
@@ -127,7 +127,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == LEAD && (Boolean) value && scoreBoard.isInJam()) {
             if (getCurrentTrip().getNumber() == 1) { getRunningOrEndedTeamJam().addScoringTrip(); }
             if (getOtherTeam().isLead()) { getOtherTeam().set(LEAD, false); }
@@ -147,7 +147,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == ADD_TRIP) {
             tripScoreTimerTask.cancel();
             getRunningOrEndedTeamJam().addScoringTrip();
@@ -168,7 +168,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == SKATER) {
                 return new SkaterImpl(this, id);
@@ -180,12 +180,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == TIME_OUT) { recountTimeouts(); }
     }
 
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == SKATER) { ((Skater) item).delete(); }
         if (prop == TIME_OUT) { recountTimeouts(); }
     }

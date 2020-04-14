@@ -3,7 +3,7 @@ package com.carolinarollergirls.scoreboard.event;
 public abstract class ParentOrderedScoreBoardEventProviderImpl<C extends ParentOrderedScoreBoardEventProvider<C>>
         extends OrderedScoreBoardEventProviderImpl<C> implements ParentOrderedScoreBoardEventProvider<C> {
     protected ParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, String subId,
-            AddRemoveProperty<C> type) {
+            Child<C> type) {
         super(parent, parent.getId() + "_" + subId, type);
         ownType = type;
         this.parent = parent;
@@ -19,7 +19,7 @@ public abstract class ParentOrderedScoreBoardEventProviderImpl<C extends ParentO
     public String getProviderId() { return subId; }
 
     @Override
-    protected Object _computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object _computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == PREVIOUS && source != Source.INVERSE_REFERENCE) {
             if (parent.hasPrevious()) {
                 return parent.getPrevious().get(ownType, subId);

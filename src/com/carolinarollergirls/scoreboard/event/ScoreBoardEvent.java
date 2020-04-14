@@ -12,7 +12,7 @@ import java.util.EventObject;
 import java.util.Objects;
 
 public class ScoreBoardEvent<T> extends EventObject implements Cloneable {
-    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, PermanentProperty<T> p, T v, T prev) {
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, Value<T> p, T v, T prev) {
         this(sbeP, (Property<T>) p, v, prev);
     }
 

@@ -8,8 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Position extends ScoreBoardEventProvider {
@@ -25,14 +25,14 @@ public interface Position extends ScoreBoardEventProvider {
     public boolean isPenaltyBox();
     public void setPenaltyBox(boolean box);
 
-    PermanentProperty<Fielding> CURRENT_FIELDING = new PermanentProperty<>(Fielding.class, "CurrentFielding", null);
-    PermanentProperty<String> CURRENT_BOX_SYMBOLS = new PermanentProperty<>(String.class, "CurrentBoxSymbols", "");
-    PermanentProperty<String> ANNOTATION = new PermanentProperty<>(String.class, "Annotation", "");
-    PermanentProperty<Skater> SKATER = new PermanentProperty<>(Skater.class, "Skater", null);
-    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
-    PermanentProperty<String> ROSTER_NUMBER = new PermanentProperty<>(String.class, "RosterNumber", "");
-    PermanentProperty<String> FLAGS = new PermanentProperty<>(String.class, "Flags", "");
-    PermanentProperty<Boolean> PENALTY_BOX = new PermanentProperty<>(Boolean.class, "PenaltyBox", false);
+    Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
+    Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
+    Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "");
+    Value<Skater> SKATER = new Value<>(Skater.class, "Skater", null);
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
+    Value<String> FLAGS = new Value<>(String.class, "Flags", "");
+    Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false);
 
-    CommandProperty CLEAR = new CommandProperty("Clear");
+    Command CLEAR = new Command("Clear");
 }

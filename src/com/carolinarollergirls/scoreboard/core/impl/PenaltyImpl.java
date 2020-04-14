@@ -4,9 +4,9 @@ import com.carolinarollergirls.scoreboard.core.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -37,14 +37,14 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == NEXT && getNumber() == 0) { return null; }
         if (prop == PREVIOUS && value != null && ((Penalty) value).getNumber() == 0) { return null; }
         if (prop == SERVED) { return (get(BOX_TRIP) != null || get(FORCE_SERVED)); }
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == JAM && !Skater.FO_EXP_ID.equals(getProviderId())) {
             int newPos = getNumber();
             if (value == null || ((Jam) value).compareTo((Jam) last) > 0) {
@@ -75,7 +75,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == REMOVE) { delete(source); }
     }
 

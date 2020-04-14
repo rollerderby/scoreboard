@@ -13,8 +13,8 @@ import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.Media;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -46,9 +46,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     batch++;
                 } else if (prop == ScoreBoardEventProviderImpl.BATCH_END) {
                     if (batch > 0) { batch--; }
-                } else if (prop instanceof PermanentProperty) {
+                } else if (prop instanceof Value) {
                     update(getPath(p), prop, v);
-                } else if (prop instanceof AddRemoveProperty) {
+                } else if (prop instanceof Child) {
                     if (v instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider) v).getParent() == p) {
                         process((ScoreBoardEventProvider) v, rem);
                     } else if (rem) {
@@ -82,7 +82,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
     private void update(String prefix, Property<?> prop, Object v) {
         String path = prefix + "." + prop.getJsonName();
-        if (prop instanceof AddRemoveProperty) {
+        if (prop instanceof Child) {
             updates.add(new WSUpdate(path + "(" + ((ValueWithId) v).getId() + ")", ((ValueWithId) v).getValue()));
         } else if (v instanceof ScoreBoardEventProvider) {
             updates.add(new WSUpdate(path, ((ScoreBoardEventProvider) v).getId()));
@@ -104,12 +104,12 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
         if (remove) { return; }
 
         for (Property<?> prop : p.getProperties()) {
-            if (prop instanceof PermanentProperty) {
-                Object v = p.get((PermanentProperty<?>) prop);
+            if (prop instanceof Value) {
+                Object v = p.get((Value<?>) prop);
                 if (v == null) { v = ""; }
                 update(path, prop, v);
-            } else if (prop instanceof AddRemoveProperty) {
-                for (ValueWithId c : p.getAll((AddRemoveProperty<?>) prop)) {
+            } else if (prop instanceof Child) {
+                for (ValueWithId c : p.getAll((Child<?>) prop)) {
                     if (c instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider) c).getParent() == p) {
                         process((ScoreBoardEventProvider) c, false);
                     } else {

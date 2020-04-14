@@ -6,7 +6,7 @@ import java.io.Reader;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
@@ -54,5 +54,5 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl<PenaltyCode
         }
     };
 
-    AddRemoveProperty<PenaltyCode> CODE = new AddRemoveProperty<>(PenaltyCode.class, "PenaltyCode");
+    Child<PenaltyCode> CODE = new Child<>(PenaltyCode.class, "PenaltyCode");
 }

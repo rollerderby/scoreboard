@@ -15,9 +15,9 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -45,7 +45,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == TIME) {
             if (isRunning() && isSyncTime()) {
                 if (flag == Flag.CHANGE) {
@@ -74,7 +74,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == TIME && isTimeAtEnd()) {
             stop();
         }
@@ -94,7 +94,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == RESET_TIME) {
             resetTime();
         } else if (prop == START) {

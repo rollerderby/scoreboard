@@ -9,8 +9,8 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
@@ -52,7 +52,7 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
     }
 
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == OWNER) {
             if (last instanceof Team) { ((Team) last).remove(Team.TIME_OUT, this); }
             if (value instanceof Team) { ((Team) value).add(Team.TIME_OUT, this); }
@@ -88,7 +88,7 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
                 if (!isRunning()) { delete(source); }

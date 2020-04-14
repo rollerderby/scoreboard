@@ -1,20 +1,20 @@
 package com.carolinarollergirls.scoreboard.event;
 
 public interface TestScoreBoardEventProvider extends ScoreBoardEventProvider {
-    PermanentProperty<Integer> INT = new PermanentProperty<>(Integer.class, "Int", 0);
-    PermanentProperty<Integer> RO_INDIRECT_COPY = new PermanentProperty<>(Integer.class, "RoIndirectCopy", 0);
-    PermanentProperty<Integer> RW_INDIRECT_COPY = new PermanentProperty<>(Integer.class, "RwIndirectCopy", 0);
-    PermanentProperty<Integer> RECALCULATED = new PermanentProperty<>(Integer.class, "Recalculated", 0);
-    PermanentProperty<TestScoreBoardEventProvider> REFERENCE = new PermanentProperty<>(
+    Value<Integer> INT = new Value<>(Integer.class, "Int", 0);
+    Value<Integer> RO_INDIRECT_COPY = new Value<>(Integer.class, "RoIndirectCopy", 0);
+    Value<Integer> RW_INDIRECT_COPY = new Value<>(Integer.class, "RwIndirectCopy", 0);
+    Value<Integer> RECALCULATED = new Value<>(Integer.class, "Recalculated", 0);
+    Value<TestScoreBoardEventProvider> REFERENCE = new Value<>(
             TestScoreBoardEventProvider.class, "Reference", null);
 
-    AddRemoveProperty<TestScoreBoardEventProvider> MULTIPLE = new AddRemoveProperty<>(TestScoreBoardEventProvider.class,
+    Child<TestScoreBoardEventProvider> MULTIPLE = new Child<>(TestScoreBoardEventProvider.class,
             "Multiple");
-    AddRemoveProperty<TestScoreBoardEventProvider> SINGLETON = new AddRemoveProperty<>(
+    Child<TestScoreBoardEventProvider> SINGLETON = new Child<>(
             TestScoreBoardEventProvider.class, "Singleton");
 
-    NumberedProperty<TestNumberedScoreBoardEventProvider> NUMBERED = new NumberedProperty<>(
+    NumberedChild<TestNumberedScoreBoardEventProvider> NUMBERED = new NumberedChild<>(
             TestNumberedScoreBoardEventProvider.class, "Numbered");
 
-    CommandProperty TEST_COMMAND = new CommandProperty("TestCommand");
+    Command TEST_COMMAND = new Command("TestCommand");
 }

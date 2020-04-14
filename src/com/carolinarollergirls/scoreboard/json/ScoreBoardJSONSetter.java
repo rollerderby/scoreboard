@@ -15,9 +15,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
@@ -85,28 +85,28 @@ public class ScoreBoardJSONSetter {
                 }
 
                 if (prop == ScoreBoardEventProvider.ID) {
-                    p.set((PermanentProperty) prop, p.valueFromString((PermanentProperty) prop, value), source, flag);
-                } else if (prop instanceof PermanentProperty) {
+                    p.set((Value) prop, p.valueFromString((Value) prop, value), source, flag);
+                } else if (prop instanceof Value) {
                     // postpone setting PermanentProperties except ID, as they may reference
                     // elements not yet created when restoring from autosave
-                    postponedSets.add(new ValueSet(p, (PermanentProperty) prop, value, source, flag));
-                } else if (prop instanceof CommandProperty) {
+                    postponedSets.add(new ValueSet(p, (Value) prop, value, source, flag));
+                } else if (prop instanceof Command) {
                     if (Boolean.parseBoolean(value)) {
-                        p.execute((CommandProperty) prop, source);
+                        p.execute((Command) prop, source);
                     }
                 } else if (remainder != null) {
                     @SuppressWarnings("unchecked")
                     ScoreBoardEventProvider o = p.getOrCreate(
-                            (AddRemoveProperty<? extends ScoreBoardEventProvider>) prop, elementId, source);
+                            (Child<? extends ScoreBoardEventProvider>) prop, elementId, source);
                     if (o == null) {
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
                     }
                     set(o, remainder, value, source, flag, postponedSets);
                 } else if (value == null) {
-                    p.remove((AddRemoveProperty<?>) prop, elementId, source);
+                    p.remove((Child<?>) prop, elementId, source);
                 } else {
-                    AddRemoveProperty aprop = (AddRemoveProperty) prop;
+                    Child aprop = (Child) prop;
                     p.add(aprop, p.childFromString(aprop, elementId, value), source);
                 }
             } catch (Exception e) {
@@ -131,7 +131,7 @@ public class ScoreBoardJSONSetter {
     }
 
     protected static class ValueSet<T> {
-        protected ValueSet(ScoreBoardEventProvider sbe, PermanentProperty<T> prop, String value, Source source,
+        protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source,
                 Flag flag) {
             this.sbe = sbe;
             this.prop = prop;
@@ -143,7 +143,7 @@ public class ScoreBoardJSONSetter {
         public void process() { sbe.set(prop, sbe.valueFromString(prop, value), source, flag); }
 
         private ScoreBoardEventProvider sbe;
-        private PermanentProperty<T> prop;
+        private Value<T> prop;
         private String value;
         private Source source;
         private Flag flag;

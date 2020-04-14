@@ -12,8 +12,8 @@ import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
@@ -33,7 +33,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == CURRENT_RULESET) {
             setCurrentRulesetRecurse(((Ruleset) value).getId());
         }
@@ -41,14 +41,14 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         if (prop == RULESET) {
             return new RulesetImpl(this, "", "", id);
         }
         return null;
     }
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == RULESET) {
             // Point any rulesets with the deleted one as their parent
             // to their grandparent.
@@ -187,7 +187,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         }
 
         @Override
-        protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+        protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
             if (prop == NAME && !last.equals("")) {
                 ((Rulesets) parent).refreshRuleset(getId());
             }

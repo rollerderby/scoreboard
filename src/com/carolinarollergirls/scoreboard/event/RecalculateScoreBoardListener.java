@@ -6,7 +6,7 @@ import java.util.Map;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
 public class RecalculateScoreBoardListener<T> implements SelfRemovingScoreBoardListener {
-    RecalculateScoreBoardListener(ScoreBoardEventProvider targetElement, PermanentProperty<T> targetProperty) {
+    RecalculateScoreBoardListener(ScoreBoardEventProvider targetElement, Value<T> targetProperty) {
         this.targetElement = targetElement;
         this.targetProperty = targetProperty;
     }
@@ -23,7 +23,7 @@ public class RecalculateScoreBoardListener<T> implements SelfRemovingScoreBoardL
         return this;
     }
     public RecalculateScoreBoardListener<T> addIndirectSource(ScoreBoardEventProvider indirectionElement,
-            PermanentProperty<? extends ScoreBoardEventProvider> indirectionProperty, Property<?> watchedProperty) {
+            Value<? extends ScoreBoardEventProvider> indirectionProperty, Property<?> watchedProperty) {
         IndirectScoreBoardListener<?, ?> l = new IndirectScoreBoardListener<>(indirectionElement, indirectionProperty,
                 watchedProperty, this);
         sources.put(l, null);
@@ -43,5 +43,5 @@ public class RecalculateScoreBoardListener<T> implements SelfRemovingScoreBoardL
 
     protected Map<ScoreBoardListener, ScoreBoardEventProvider> sources = new HashMap<>();
     protected ScoreBoardEventProvider targetElement;
-    protected PermanentProperty<T> targetProperty;
+    protected Value<T> targetProperty;
 }

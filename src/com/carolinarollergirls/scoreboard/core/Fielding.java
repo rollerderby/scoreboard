@@ -1,9 +1,9 @@
 package com.carolinarollergirls.scoreboard.core;
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding> {
     public TeamJam getTeamJam();
@@ -20,22 +20,20 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
     public BoxTrip getCurrentBoxTrip();
     public void updateBoxTripSymbols();
 
-    // @formatter:off
-    PermanentProperty<Skater> SKATER = new PermanentProperty<>(Skater.class, "Skater", null);
-    PermanentProperty<String> SKATER_NUMBER = new PermanentProperty<>(String.class, "SkaterNumber", "?");
-    PermanentProperty<Boolean> NOT_FIELDED = new PermanentProperty<>(Boolean.class, "NotFielded", false);
-    PermanentProperty<Position> POSITION = new PermanentProperty<>(Position.class, "Position", null);
-    PermanentProperty<Boolean> SIT_FOR_3 = new PermanentProperty<>(Boolean.class, "SitFor3", false);
-    PermanentProperty<Boolean> PENALTY_BOX = new PermanentProperty<>(Boolean.class, "PenaltyBox", false);
-    PermanentProperty<BoxTrip> CURRENT_BOX_TRIP = new PermanentProperty<>(BoxTrip.class, "CurrentBoxTrip", null);
-    PermanentProperty<String> BOX_TRIP_SYMBOLS = new PermanentProperty<>(String.class, "BoxTripSymbols", "");
-    PermanentProperty<String> BOX_TRIP_SYMBOLS_BEFORE_S_P = new PermanentProperty<>(String.class, "BoxTripSymbolsBeforeSP", "");
-    PermanentProperty<String> BOX_TRIP_SYMBOLS_AFTER_S_P = new PermanentProperty<>(String.class, "BoxTripSymbolsAfterSP", "");
-    PermanentProperty<String> ANNOTATION = new PermanentProperty<>(String.class, "Annotation", "");
+    Value<Skater> SKATER = new Value<>(Skater.class, "Skater", null);
+    Value<String> SKATER_NUMBER = new Value<>(String.class, "SkaterNumber", "?");
+    Value<Boolean> NOT_FIELDED = new Value<>(Boolean.class, "NotFielded", false);
+    Value<Position> POSITION = new Value<>(Position.class, "Position", null);
+    Value<Boolean> SIT_FOR_3 = new Value<>(Boolean.class, "SitFor3", false);
+    Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false);
+    Value<BoxTrip> CURRENT_BOX_TRIP = new Value<>(BoxTrip.class, "CurrentBoxTrip", null);
+    Value<String> BOX_TRIP_SYMBOLS = new Value<>(String.class, "BoxTripSymbols", "");
+    Value<String> BOX_TRIP_SYMBOLS_BEFORE_S_P = new Value<>(String.class, "BoxTripSymbolsBeforeSP", "");
+    Value<String> BOX_TRIP_SYMBOLS_AFTER_S_P = new Value<>(String.class, "BoxTripSymbolsAfterSP", "");
+    Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "");
 
-    AddRemoveProperty<BoxTrip> BOX_TRIP = new AddRemoveProperty<>(BoxTrip.class, "BoxTrip");
+    Child<BoxTrip> BOX_TRIP = new Child<>(BoxTrip.class, "BoxTrip");
 
-    CommandProperty ADD_BOX_TRIP = new CommandProperty("AddBoxTrip");
-    CommandProperty UNEND_BOX_TRIP = new CommandProperty("UnendBoxTrip");
-    // @formatter:on
+    Command ADD_BOX_TRIP = new Command("AddBoxTrip");
+    Command UNEND_BOX_TRIP = new Command("UnendBoxTrip");
 }

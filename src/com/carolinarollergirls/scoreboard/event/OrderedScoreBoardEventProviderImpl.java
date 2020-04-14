@@ -6,14 +6,14 @@ import java.util.Map;
 public abstract class OrderedScoreBoardEventProviderImpl<C extends OrderedScoreBoardEventProvider<C>>
         extends ScoreBoardEventProviderImpl<C> implements OrderedScoreBoardEventProvider<C> {
     @SuppressWarnings("unchecked")
-    public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, AddRemoveProperty<C> type) {
+    public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, Child<C> type) {
         super(parent, id, type);
         if (!prevProperties.containsKey(providerClass)) {
-            prevProperties.put(providerClass, new PermanentProperty<>(providerClass, "Previous", null));
-            nextProperties.put(providerClass, new PermanentProperty<>(providerClass, "Next", null));
+            prevProperties.put(providerClass, new Value<>(providerClass, "Previous", null));
+            nextProperties.put(providerClass, new Value<>(providerClass, "Next", null));
         }
-        PREVIOUS = (PermanentProperty<C>) prevProperties.get(providerClass);
-        NEXT = (PermanentProperty<C>) nextProperties.get(providerClass);
+        PREVIOUS = (Value<C>) prevProperties.get(providerClass);
+        NEXT = (Value<C>) nextProperties.get(providerClass);
         addProperties(NUMBER, PREVIOUS, NEXT);
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, PREVIOUS, NEXT));
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, NEXT, PREVIOUS));
@@ -35,6 +35,6 @@ public abstract class OrderedScoreBoardEventProviderImpl<C extends OrderedScoreB
     @Override
     public void setNext(C next) { set(NEXT, next); }
 
-    protected static Map<Class<?>, PermanentProperty<?>> prevProperties = new HashMap<>();
-    protected static Map<Class<?>, PermanentProperty<?>> nextProperties = new HashMap<>();
+    protected static Map<Class<?>, Value<?>> prevProperties = new HashMap<>();
+    protected static Map<Class<?>, Value<?>> nextProperties = new HashMap<>();
 }

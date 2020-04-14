@@ -14,10 +14,10 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 
 public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Fielding> implements Fielding {
@@ -37,7 +37,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == PENALTY_BOX && !source.isFile()) {
             if ((Boolean) value && (getCurrentBoxTrip() == null || !getCurrentBoxTrip().isCurrent())) {
                 if (get(NOT_FIELDED)) {
@@ -72,7 +72,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == PENALTY_BOX && isCurrent() && (Boolean) value
                 && getPosition().getFloorPosition() == FloorPosition.JAMMER && scoreBoard.isInJam()
                 && !teamJam.getOtherTeam().isLead()) {
@@ -99,7 +99,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == BOX_TRIP) {
             BoxTrip bt = (BoxTrip) item;
             if (bt.isCurrent() || getCurrentBoxTrip() == null) {
@@ -109,7 +109,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         }
     }
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == BOX_TRIP) {
             if (item == getCurrentBoxTrip()) {
                 set(CURRENT_BOX_TRIP, null);
@@ -119,7 +119,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == ADD_BOX_TRIP && !get(NOT_FIELDED)) {
             requestBatchStart();
             BoxTrip bt = new BoxTripImpl(this);

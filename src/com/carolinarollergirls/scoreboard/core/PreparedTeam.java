@@ -8,25 +8,25 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 // Roster for teams for loading in for games.
 public interface PreparedTeam extends ScoreBoardEventProvider {
-    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
-    PermanentProperty<String> LOGO = new PermanentProperty<>(String.class, "Logo", "");
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> LOGO = new Value<>(String.class, "Logo", "");
 
-    AddRemoveProperty<ValWithId> ALTERNATE_NAME = new AddRemoveProperty<>(ValWithId.class, "AlternateName");
-    AddRemoveProperty<ValWithId> COLOR = new AddRemoveProperty<>(ValWithId.class, "Color");
-    AddRemoveProperty<PreparedTeamSkater> SKATER = new AddRemoveProperty<>(PreparedTeamSkater.class, "Skater");
+    Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName");
+    Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color");
+    Child<PreparedTeamSkater> SKATER = new Child<>(PreparedTeamSkater.class, "Skater");
 
     public static interface PreparedTeamSkater extends ScoreBoardEventProvider {
 
         @SuppressWarnings("hiding")
-        PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
-        PermanentProperty<String> ROSTER_NUMBER = new PermanentProperty<>(String.class, "RosterNumber", "");
-        PermanentProperty<String> FLAGS = new PermanentProperty<>(String.class, "Flags", "");
+        Value<String> NAME = new Value<>(String.class, "Name", "");
+        Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
+        Value<String> FLAGS = new Value<>(String.class, "Flags", "");
     }
 }

@@ -29,7 +29,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvider>
         implements ScoreBoardEventProvider, ScoreBoardListener {
     @SuppressWarnings("unchecked")
-    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, AddRemoveProperty<C> type) {
+    protected ScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, Child<C> type) {
         this.parent = parent;
         if (parent != null) {
             scoreBoard = parent.getScoreBoard();
@@ -138,18 +138,18 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public void delete(Source source) {
         if (get(READONLY) && source != Source.UNLINK) { return; }
         for (Property prop : properties) {
-            if (prop instanceof AddRemoveProperty) {
-                for (ValueWithId item : getAll((AddRemoveProperty<?>) prop)) {
+            if (prop instanceof Child) {
+                for (ValueWithId item : getAll((Child<?>) prop)) {
                     if (item instanceof ScoreBoardEventProvider
                             && ((ScoreBoardEventProvider) item).getParent() == this) {
                         ((ScoreBoardEventProvider) item).delete(Source.UNLINK);
                     } else {
-                        remove((AddRemoveProperty) prop, item, Source.UNLINK);
+                        remove((Child) prop, item, Source.UNLINK);
                     }
                 }
-            } else if (prop instanceof PermanentProperty
+            } else if (prop instanceof Value
                     && ScoreBoardEventProvider.class.isAssignableFrom(prop.getType())) {
-                set((PermanentProperty) prop, null, Source.UNLINK);
+                set((Value) prop, null, Source.UNLINK);
             }
         }
         for (ScoreBoardListener l : providers.keySet()) {
@@ -179,7 +179,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         if (writeProtectionOverride.get(prop) == source) { return true; }
         return false;
     }
-    public <T extends ValueWithId> boolean isWritable(AddRemoveProperty<T> prop, String id, Source source) {
+    public <T extends ValueWithId> boolean isWritable(Child<T> prop, String id, Source source) {
         if (source == Source.UNLINK || source == Source.RENUMBER) { return true; }
         T oldItem = get(prop, id);
         if (oldItem instanceof ScoreBoardEventProvider) {
@@ -193,8 +193,8 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     /**
      * Make targetProperty a copy of sourceProperty on sourceElement
      */
-    protected <T> ScoreBoardListener setCopy(PermanentProperty<T> targetProperty, ScoreBoardEventProvider sourceElement,
-            PermanentProperty<T> sourceProperty, boolean readonly) {
+    protected <T> ScoreBoardListener setCopy(Value<T> targetProperty, ScoreBoardEventProvider sourceElement,
+            Value<T> sourceProperty, boolean readonly) {
         ScoreBoardListener l = new ConditionalScoreBoardListener<>(sourceElement, sourceProperty,
                 new CopyScoreBoardListener<>(this, targetProperty));
         sourceElement.addScoreBoardListener(l);
@@ -219,9 +219,9 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
      * IValue.NUMBER) would attach it to the number of the Jam that was current at
      * the time of calling.
      */
-    protected <T, U> ScoreBoardListener setCopy(final PermanentProperty<T> targetProperty,
-            ScoreBoardEventProvider indirectionElement, PermanentProperty<U> indirectionProperty,
-            final PermanentProperty<T> sourceProperty, boolean readonly) {
+    protected <T, U> ScoreBoardListener setCopy(final Value<T> targetProperty,
+            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty,
+            final Value<T> sourceProperty, boolean readonly) {
         ScoreBoardListener l = new IndirectScoreBoardListener<>(indirectionElement, indirectionProperty, sourceProperty,
                 new CopyScoreBoardListener<>(this, targetProperty));
         providers.put(l, null);
@@ -246,7 +246,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
      * recalculate targetProperty whenever one of the sources added to the listener
      * is changed
      */
-    protected RecalculateScoreBoardListener<?> setRecalculated(PermanentProperty<?> targetProperty) {
+    protected RecalculateScoreBoardListener<?> setRecalculated(Value<?> targetProperty) {
         RecalculateScoreBoardListener<?> l = new RecalculateScoreBoardListener<>(this, targetProperty);
         providers.put(l, null);
         return l;
@@ -266,7 +266,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T valueFromString(PermanentProperty<T> prop, String sValue) {
+    public <T> T valueFromString(Value<T> prop, String sValue) {
         synchronized (coreLock) {
             @SuppressWarnings("rawtypes")
             Class type = prop.getType();
@@ -295,23 +295,23 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     }
     @SuppressWarnings("unchecked")
     @Override
-    public <T> T get(PermanentProperty<T> prop) {
+    public <T> T get(Value<T> prop) {
         synchronized (coreLock) {
             if (!values.containsKey(prop)) { return prop.getDefaultValue(); }
             return (T) values.get(prop);
         }
     }
     @Override
-    public <T> boolean set(PermanentProperty<T> prop, T value) { return set(prop, value, Source.OTHER, null); }
+    public <T> boolean set(Value<T> prop, T value) { return set(prop, value, Source.OTHER, null); }
     @Override
-    public <T> boolean set(PermanentProperty<T> prop, T value, Flag flag) {
+    public <T> boolean set(Value<T> prop, T value, Flag flag) {
         return set(prop, value, Source.OTHER, flag);
     }
     @Override
-    public <T> boolean set(PermanentProperty<T> prop, T value, Source source) { return set(prop, value, source, null); }
+    public <T> boolean set(Value<T> prop, T value, Source source) { return set(prop, value, source, null); }
     @SuppressWarnings("unchecked")
     @Override
-    public <T> boolean set(PermanentProperty<T> prop, T value, Source source, Flag flag) {
+    public <T> boolean set(Value<T> prop, T value, Source source, Flag flag) {
         synchronized (coreLock) {
             if (prop == null) { return false; }
             if (!properties.contains(prop)) {
@@ -336,7 +336,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             return true;
         }
     }
-    protected Object _computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object _computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (flag == Flag.CHANGE) {
             if (last instanceof Integer) {
                 value = (Integer) last + (Integer) value;
@@ -346,21 +346,21 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         }
         return computeValue(prop, value, last, source, flag);
     }
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         return value;
     }
-    protected <T> void _valueChanged(PermanentProperty<T> prop, T value, T last, Source source, Flag flag) {
+    protected <T> void _valueChanged(Value<T> prop, T value, T last, Source source, Flag flag) {
         if (prop == ID) {
             elements.get(providerClass).put((String) value, this);
         }
         scoreBoardChange(new ScoreBoardEvent<>(this, prop, value, last));
         valueChanged(prop, value, last, source, flag);
     }
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {}
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {}
 
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends ValueWithId> T childFromString(AddRemoveProperty<T> prop, String id, String sValue) {
+    public <T extends ValueWithId> T childFromString(Child<T> prop, String id, String sValue) {
         synchronized (coreLock) {
             if (prop.getType() == ValWithId.class) {
                 return (T) new ValWithId(id, sValue);
@@ -370,21 +370,21 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     }
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends ValueWithId> T get(AddRemoveProperty<T> prop, String id) {
+    public <T extends ValueWithId> T get(Child<T> prop, String id) {
         if (children.get(prop) == null) { return null; }
         return (T) children.get(prop).get(id);
     }
     @Override
-    public <T extends OrderedScoreBoardEventProvider<T>> T get(NumberedProperty<T> prop, Integer num) {
+    public <T extends OrderedScoreBoardEventProvider<T>> T get(NumberedChild<T> prop, Integer num) {
         return get(prop, String.valueOf(num));
     }
     @Override
-    public <T extends ScoreBoardEventProvider> T getOrCreate(AddRemoveProperty<T> prop, String id) {
+    public <T extends ScoreBoardEventProvider> T getOrCreate(Child<T> prop, String id) {
         return getOrCreate(prop, id, Source.OTHER);
     }
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends ScoreBoardEventProvider> T getOrCreate(AddRemoveProperty<T> prop, String id, Source source) {
+    public <T extends ScoreBoardEventProvider> T getOrCreate(Child<T> prop, String id, Source source) {
         synchronized (coreLock) {
             T result = get(prop, id);
             if (result == null) {
@@ -395,46 +395,46 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         }
     }
     @Override
-    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedProperty<T> prop, Integer num) {
+    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedChild<T> prop, Integer num) {
         return getOrCreate(prop, String.valueOf(num), Source.OTHER);
     }
     @Override
-    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedProperty<T> prop, Integer num,
+    public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedChild<T> prop, Integer num,
             Source source) {
         return getOrCreate(prop, String.valueOf(num), source);
     }
     @Override
-    public <T extends OrderedScoreBoardEventProvider<T>> T getFirst(NumberedProperty<T> prop) {
+    public <T extends OrderedScoreBoardEventProvider<T>> T getFirst(NumberedChild<T> prop) {
         synchronized (coreLock) {
             return get(prop, minIds.get(prop));
         }
     }
     @Override
-    public <T extends OrderedScoreBoardEventProvider<T>> T getLast(NumberedProperty<T> prop) {
+    public <T extends OrderedScoreBoardEventProvider<T>> T getLast(NumberedChild<T> prop) {
         synchronized (coreLock) {
             return get(prop, maxIds.get(prop));
         }
     }
     @SuppressWarnings("unchecked")
     @Override
-    public <T extends ValueWithId> Collection<T> getAll(AddRemoveProperty<T> prop) {
+    public <T extends ValueWithId> Collection<T> getAll(Child<T> prop) {
         synchronized (coreLock) {
             return new HashSet<>((Collection<? extends T>) children.get(prop).values());
         }
     }
     @Override
-    public int numberOf(AddRemoveProperty<?> prop) {
+    public int numberOf(Child<?> prop) {
         synchronized (coreLock) {
             if (!children.containsKey(prop)) { return 0; }
             return children.get(prop).size();
         }
     }
     @Override
-    public <T extends ValueWithId> boolean add(AddRemoveProperty<T> prop, T item) {
+    public <T extends ValueWithId> boolean add(Child<T> prop, T item) {
         return add(prop, item, Source.OTHER);
     }
     @Override
-    public <T extends ValueWithId> boolean add(AddRemoveProperty<T> prop, T item, Source source) {
+    public <T extends ValueWithId> boolean add(Child<T> prop, T item, Source source) {
         synchronized (coreLock) {
             if (!properties.contains(prop)) {
                 throw new IllegalArgumentException(
@@ -452,37 +452,37 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             return true;
         }
     }
-    protected <T extends ValueWithId> void _itemAdded(AddRemoveProperty<T> prop, T item, Source source) {
+    protected <T extends ValueWithId> void _itemAdded(Child<T> prop, T item, Source source) {
         if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider) item).getParent() == this) {
             ((ScoreBoardEventProvider) item).addScoreBoardListener(this);
         }
-        if (prop instanceof NumberedProperty) {
+        if (prop instanceof NumberedChild) {
             int num = ((OrderedScoreBoardEventProvider<?>) item).getNumber();
-            if (minIds.get(prop) == null || num < minIds.get(prop)) { minIds.put((NumberedProperty<?>) prop, num); }
-            if (maxIds.get(prop) == null || num > maxIds.get(prop)) { maxIds.put((NumberedProperty<?>) prop, num); }
+            if (minIds.get(prop) == null || num < minIds.get(prop)) { minIds.put((NumberedChild<?>) prop, num); }
+            if (maxIds.get(prop) == null || num > maxIds.get(prop)) { maxIds.put((NumberedChild<?>) prop, num); }
         }
         scoreBoardChange(new ScoreBoardEvent<>(this, prop, item, false));
         itemAdded(prop, item, source);
     }
-    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {}
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {}
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         return null;
     }
     @Override
-    public <T extends ValueWithId> boolean remove(AddRemoveProperty<T> prop, String id) {
+    public <T extends ValueWithId> boolean remove(Child<T> prop, String id) {
         return remove(prop, get(prop, id), Source.OTHER);
     }
     @Override
-    public <T extends ValueWithId> boolean remove(AddRemoveProperty<T> prop, String id, Source source) {
+    public <T extends ValueWithId> boolean remove(Child<T> prop, String id, Source source) {
         return remove(prop, get(prop, id), source);
     }
     @Override
-    public <T extends ValueWithId> boolean remove(AddRemoveProperty<T> prop, T item) {
+    public <T extends ValueWithId> boolean remove(Child<T> prop, T item) {
         return remove(prop, item, Source.OTHER);
     }
     @Override
-    public <T extends ValueWithId> boolean remove(AddRemoveProperty<T> prop, T item, Source source) {
+    public <T extends ValueWithId> boolean remove(Child<T> prop, T item, Source source) {
         synchronized (coreLock) {
             if (item == null || !isWritable(prop, source)) { return false; }
             String id = item.getId();
@@ -497,12 +497,12 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             return false;
         }
     }
-    protected <T extends ValueWithId> void _itemRemoved(AddRemoveProperty<T> prop, T item, Source source) {
+    protected <T extends ValueWithId> void _itemRemoved(Child<T> prop, T item, Source source) {
         if (item instanceof ScoreBoardEventProvider) {
             ((ScoreBoardEventProvider) item).removeScoreBoardListener(this);
         }
-        if (prop instanceof NumberedProperty) {
-            NumberedProperty<?> nprop = (NumberedProperty<?>) prop;
+        if (prop instanceof NumberedChild) {
+            NumberedChild<?> nprop = (NumberedChild<?>) prop;
             if (numberOf(nprop) == 0) {
                 minIds.remove(nprop);
                 maxIds.remove(nprop);
@@ -521,11 +521,11 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         scoreBoardChange(new ScoreBoardEvent<>(this, prop, item, true));
         itemRemoved(prop, item, source);
     }
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {}
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {}
     @Override
-    public <T extends ValueWithId> void removeAll(AddRemoveProperty<T> prop) { removeAll(prop, Source.OTHER); }
+    public <T extends ValueWithId> void removeAll(Child<T> prop) { removeAll(prop, Source.OTHER); }
     @Override
-    public <T extends ValueWithId> void removeAll(AddRemoveProperty<T> prop, Source source) {
+    public <T extends ValueWithId> void removeAll(Child<T> prop, Source source) {
         synchronized (coreLock) {
             if (isWritable(prop, source)) {
                 for (T item : getAll(prop)) {
@@ -535,14 +535,14 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         }
     }
     @Override
-    public Integer getMinNumber(NumberedProperty<?> prop) { return minIds.get(prop); }
+    public Integer getMinNumber(NumberedChild<?> prop) { return minIds.get(prop); }
     @Override
-    public Integer getMaxNumber(NumberedProperty<?> prop) { return maxIds.get(prop); }
+    public Integer getMaxNumber(NumberedChild<?> prop) { return maxIds.get(prop); }
 
     @Override
-    public void execute(CommandProperty prop) { execute(prop, Source.OTHER); }
+    public void execute(Command prop) { execute(prop, Source.OTHER); }
     @Override
-    public void execute(CommandProperty prop, Source source) {}
+    public void execute(Command prop, Source source) {}
 
     @Override
     public ScoreBoard getScoreBoard() { return scoreBoard; }
@@ -562,8 +562,8 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     protected void addProperties(Property<?>... props) {
         for (Property<?> prop : props) {
             properties.add(prop);
-            if (prop instanceof AddRemoveProperty) {
-                children.put((AddRemoveProperty<?>) prop, new HashMap<String, ValueWithId>());
+            if (prop instanceof Child) {
+                children.put((Child<?>) prop, new HashMap<String, ValueWithId>());
             }
         }
     }
@@ -572,7 +572,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
 
     protected ScoreBoard scoreBoard;
     protected ScoreBoardEventProvider parent;
-    protected AddRemoveProperty<C> ownType;
+    protected Child<C> ownType;
     protected String providerName;
     protected Class<C> providerClass;
 
@@ -581,20 +581,20 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<>();
     protected Map<ScoreBoardListener, ScoreBoardEventProvider> providers = new HashMap<>();
 
-    protected Map<PermanentProperty<?>, Object> values = new HashMap<>();
+    protected Map<Value<?>, Object> values = new HashMap<>();
     protected Map<Property<?>, Source> writeProtectionOverride = new HashMap<>();
     @SuppressWarnings("rawtypes")
-    protected Map<PermanentProperty<?>, CopyScoreBoardListener> reverseCopyListeners = new HashMap<>();
+    protected Map<Value<?>, CopyScoreBoardListener> reverseCopyListeners = new HashMap<>();
 
-    protected Map<AddRemoveProperty<?>, Map<String, ValueWithId>> children = new HashMap<>();
-    protected Map<NumberedProperty<?>, Integer> minIds = new HashMap<>();
-    protected Map<NumberedProperty<?>, Integer> maxIds = new HashMap<>();
+    protected Map<Child<?>, Map<String, ValueWithId>> children = new HashMap<>();
+    protected Map<NumberedChild<?>, Integer> minIds = new HashMap<>();
+    protected Map<NumberedChild<?>, Integer> maxIds = new HashMap<>();
 
     protected static Map<Class<? extends ScoreBoardEventProvider>, Map<String, ScoreBoardEventProvider>> elements = new HashMap<>();
 
-    public PermanentProperty<C> PREVIOUS;
-    public PermanentProperty<C> NEXT;
+    public Value<C> PREVIOUS;
+    public Value<C> NEXT;
 
-    public final static PermanentProperty<Boolean> BATCH_START = new PermanentProperty<>(Boolean.class, "", true);
-    public final static PermanentProperty<Boolean> BATCH_END = new PermanentProperty<>(Boolean.class, "", false);
+    public final static Value<Boolean> BATCH_START = new Value<>(Boolean.class, "", true);
+    public final static Value<Boolean> BATCH_END = new Value<>(Boolean.class, "", false);
 }

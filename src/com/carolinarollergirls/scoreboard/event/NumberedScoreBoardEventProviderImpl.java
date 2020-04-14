@@ -7,7 +7,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScor
         extends OrderedScoreBoardEventProviderImpl<C> implements NumberedScoreBoardEventProvider<C> {
 
     protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number,
-            NumberedProperty<C> type) {
+            NumberedChild<C> type) {
         super(parent, UUID.randomUUID().toString(), type);
         ownType = type;
         values.put(NUMBER, number);
@@ -48,7 +48,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScor
 
     @SuppressWarnings("unchecked")
     @Override
-    protected Object _computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object _computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         value = super._computeValue(prop, value, last, source, flag);
         if (prop == NUMBER && last != null && !Objects.equals(value, last)) {
             parent.remove(ownType, (C) this, Source.RENUMBER);
@@ -57,7 +57,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScor
     }
     @SuppressWarnings("unchecked")
     @Override
-    protected <T> void _valueChanged(PermanentProperty<T> prop, T value, T last, Source source, Flag flag) {
+    protected <T> void _valueChanged(Value<T> prop, T value, T last, Source source, Flag flag) {
         if (prop == NUMBER && last != null) {
             if (flag != Flag.SPECIAL_CASE) {
                 if (hasNext() && getNext().getNumber() == (Integer) last + 1) {
@@ -121,5 +121,5 @@ public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScor
     }
 
     @SuppressWarnings("hiding")
-    protected NumberedProperty<C> ownType;
+    protected NumberedChild<C> ownType;
 }

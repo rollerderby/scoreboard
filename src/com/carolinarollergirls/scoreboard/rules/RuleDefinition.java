@@ -1,7 +1,7 @@
 package com.carolinarollergirls.scoreboard.rules;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
@@ -47,11 +47,11 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl<RuleDef
         String string;
     }
 
-    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
-    PermanentProperty<Type> TYPE = new PermanentProperty<>(Type.class, "Type", null);
-    PermanentProperty<String> DEFAULT_VALUE = new PermanentProperty<>(String.class, "DefaultValue", "");
-    PermanentProperty<String> DESCRIPTION = new PermanentProperty<>(String.class, "Description", "");
-    PermanentProperty<Integer> INDEX = new PermanentProperty<>(Integer.class, "Index", 0);
-    PermanentProperty<String> TRUE_VALUE = new PermanentProperty<>(String.class, "TrueValue", "");
-    PermanentProperty<String> FALSE_VALUE = new PermanentProperty<>(String.class, "FalseValue", "");
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<Type> TYPE = new Value<>(Type.class, "Type", null);
+    Value<String> DEFAULT_VALUE = new Value<>(String.class, "DefaultValue", "");
+    Value<String> DESCRIPTION = new Value<>(String.class, "Description", "");
+    Value<Integer> INDEX = new Value<>(Integer.class, "Index", 0);
+    Value<String> TRUE_VALUE = new Value<>(String.class, "TrueValue", "");
+    Value<String> FALSE_VALUE = new Value<>(String.class, "FalseValue", "");
 }

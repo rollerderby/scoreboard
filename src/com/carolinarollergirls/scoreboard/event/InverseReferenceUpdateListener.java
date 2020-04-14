@@ -15,19 +15,19 @@ public class InverseReferenceUpdateListener<T, U extends ScoreBoardEventProvider
         ScoreBoardEventProvider newRemote = (ScoreBoardEventProvider) (e.isRemove() ? null : e.getValue());
         ScoreBoardEventProvider lastRemote = (ScoreBoardEventProvider) (e.isRemove() ? e.getValue()
                 : e.getPreviousValue());
-        if (remoteProperty instanceof PermanentProperty) {
-            if (lastRemote != null && lastRemote.get((PermanentProperty<U>) remoteProperty) == e.getProvider()) {
-                lastRemote.set((PermanentProperty<U>) remoteProperty, null, Source.INVERSE_REFERENCE);
+        if (remoteProperty instanceof Value) {
+            if (lastRemote != null && lastRemote.get((Value<U>) remoteProperty) == e.getProvider()) {
+                lastRemote.set((Value<U>) remoteProperty, null, Source.INVERSE_REFERENCE);
             }
             if (newRemote != null) {
-                newRemote.set((PermanentProperty<U>) remoteProperty, (U) e.getProvider(), Source.INVERSE_REFERENCE);
+                newRemote.set((Value<U>) remoteProperty, (U) e.getProvider(), Source.INVERSE_REFERENCE);
             }
-        } else if (remoteProperty instanceof AddRemoveProperty) {
+        } else if (remoteProperty instanceof Child) {
             if (lastRemote != null) {
-                lastRemote.remove((AddRemoveProperty<U>) remoteProperty, (U) e.getProvider(), Source.INVERSE_REFERENCE);
+                lastRemote.remove((Child<U>) remoteProperty, (U) e.getProvider(), Source.INVERSE_REFERENCE);
             }
             if (newRemote != null) {
-                newRemote.add((AddRemoveProperty<U>) remoteProperty, (U) e.getProvider(), Source.INVERSE_REFERENCE);
+                newRemote.add((Child<U>) remoteProperty, (U) e.getProvider(), Source.INVERSE_REFERENCE);
             }
         }
     }

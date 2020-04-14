@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.event;
 
 public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardListener {
     public IndirectScoreBoardListener(ScoreBoardEventProvider indirectionElement,
-            PermanentProperty<U> indirectionProperty, Property<T> watchedProperty, ScoreBoardListener listener) {
+            Value<U> indirectionProperty, Property<T> watchedProperty, ScoreBoardListener listener) {
         indirectionListener = new ConditionalScoreBoardListener<>(indirectionElement, indirectionProperty, this);
         this.indirectionElement = indirectionElement;
         indirectionElement.addScoreBoardListener(indirectionListener);
@@ -17,8 +17,8 @@ public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardL
     public void scoreBoardChange(ScoreBoardEvent<?> event) {
         if (event.getValue() == watchedElement) { return; }
         ScoreBoardEventProvider lastWatched = watchedElement;
-        if (watchedProperty instanceof PermanentProperty) {
-            PermanentProperty<T> wp = (PermanentProperty<T>) watchedProperty;
+        if (watchedProperty instanceof Value) {
+            Value<T> wp = (Value<T>) watchedProperty;
             T last = wp.getDefaultValue();
             if (watchedElement != null) {
                 last = watchedElement.get(wp);
@@ -34,8 +34,8 @@ public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardL
                 listener = null;
                 externalListener.scoreBoardChange(new ScoreBoardEvent<>(lastWatched, wp, wp.getDefaultValue(), last));
             }
-        } else if (watchedProperty instanceof AddRemoveProperty) {
-            AddRemoveProperty<?> wp = (AddRemoveProperty<?>) watchedProperty;
+        } else if (watchedProperty instanceof Child) {
+            Child<?> wp = (Child<?>) watchedProperty;
             if (watchedElement != null) {
                 for (ValueWithId v : watchedElement.getAll(wp)) {
                     externalListener

@@ -13,7 +13,7 @@ import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
 public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implements Position {
@@ -35,7 +35,7 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
     public String getProviderId() { return floorPosition.toString(); }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == CLEAR) {
             set(SKATER, null);
         }

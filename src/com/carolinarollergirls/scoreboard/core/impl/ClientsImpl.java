@@ -13,8 +13,8 @@ import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
@@ -56,7 +56,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     }
 
     @Override
-    public ScoreBoardEventProvider create(AddRemoveProperty<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == DEVICE) {
                 Device d = new DeviceImpl(this, id);
@@ -190,7 +190,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         }
 
         @Override
-        protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+        protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
             if (!source.isInternal() && prop != COMMENT) {
                 // Only allow changing values from WS/load if they didn't already have one.
                 if (!Objects.equals(last, prop.getDefaultValue())) {

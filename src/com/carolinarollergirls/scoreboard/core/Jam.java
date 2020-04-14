@@ -1,10 +1,10 @@
 package com.carolinarollergirls.scoreboard.core;
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public void setParent(ScoreBoardEventProvider p);
@@ -22,22 +22,20 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public void start();
     public void stop();
 
-    // @formatter:off
-    PermanentProperty<Integer> PERIOD_NUMBER = new PermanentProperty<>(Integer.class, "PeriodNumber", 0);
-    PermanentProperty<Boolean> STAR_PASS = new PermanentProperty<>(Boolean.class, "StarPass", false); // true, if either team had an SP
-    PermanentProperty<Boolean> OVERTIME = new PermanentProperty<>(Boolean.class, "Overtime", false);
-    PermanentProperty<Long> DURATION = new PermanentProperty<>(Long.class, "Duration", 0L);
-    PermanentProperty<Long> PERIOD_CLOCK_ELAPSED_START = new PermanentProperty<>(Long.class, "PeriodClockElapsedStart", 0L);
-    PermanentProperty<Long> PERIOD_CLOCK_ELAPSED_END = new PermanentProperty<>(Long.class, "PeriodClockElapsedEnd", 0L);
-    PermanentProperty<Long> PERIOD_CLOCK_DISPLAY_END = new PermanentProperty<>(Long.class, "PeriodClockDisplayEnd", 0L);
-    PermanentProperty<Long> WALLTIME_START = new PermanentProperty<>(Long.class, "WalltimeStart", 0L);
-    PermanentProperty<Long> WALLTIME_END = new PermanentProperty<>(Long.class, "WalltimeEnd", 0L);
+    Value<Integer> PERIOD_NUMBER = new Value<>(Integer.class, "PeriodNumber", 0);
+    Value<Boolean> STAR_PASS = new Value<>(Boolean.class, "StarPass", false); // true, if either team had an SP
+    Value<Boolean> OVERTIME = new Value<>(Boolean.class, "Overtime", false);
+    Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L);
+    Value<Long> PERIOD_CLOCK_ELAPSED_START = new Value<>(Long.class, "PeriodClockElapsedStart", 0L);
+    Value<Long> PERIOD_CLOCK_ELAPSED_END = new Value<>(Long.class, "PeriodClockElapsedEnd", 0L);
+    Value<Long> PERIOD_CLOCK_DISPLAY_END = new Value<>(Long.class, "PeriodClockDisplayEnd", 0L);
+    Value<Long> WALLTIME_START = new Value<>(Long.class, "WalltimeStart", 0L);
+    Value<Long> WALLTIME_END = new Value<>(Long.class, "WalltimeEnd", 0L);
 
-    AddRemoveProperty<TeamJam> TEAM_JAM = new AddRemoveProperty<>(TeamJam.class, "TeamJam");
-    AddRemoveProperty<Penalty> PENALTY = new AddRemoveProperty<>(Penalty.class, "Penalty");
-    AddRemoveProperty<Timeout> TIMEOUTS_AFTER = new AddRemoveProperty<>(Timeout.class, "TimeoutsAfter");
+    Child<TeamJam> TEAM_JAM = new Child<>(TeamJam.class, "TeamJam");
+    Child<Penalty> PENALTY = new Child<>(Penalty.class, "Penalty");
+    Child<Timeout> TIMEOUTS_AFTER = new Child<>(Timeout.class, "TimeoutsAfter");
 
-    CommandProperty DELETE = new CommandProperty("Delete");
-    CommandProperty INSERT_BEFORE = new CommandProperty("InsertBefore");
-    // @formatter:on
+    Command DELETE = new Command("Delete");
+    Command INSERT_BEFORE = new Command("InsertBefore");
 }

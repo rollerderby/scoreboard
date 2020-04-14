@@ -8,8 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Media extends ScoreBoardEventProvider {
@@ -20,13 +20,13 @@ public interface Media extends ScoreBoardEventProvider {
 
     public boolean validFileName(String fn);
 
-    AddRemoveProperty<MediaFormat> FORMAT = new AddRemoveProperty<>(MediaFormat.class, "Format");
+    Child<MediaFormat> FORMAT = new Child<>(MediaFormat.class, "Format");
 
     public static interface MediaFormat extends ScoreBoardEventProvider {
         public String getFormat();
         public MediaType getType(String type);
 
-        AddRemoveProperty<MediaType> TYPE = new AddRemoveProperty<>(MediaType.class, "Type");
+        Child<MediaType> TYPE = new Child<>(MediaType.class, "Type");
     }
 
     public static interface MediaType extends ScoreBoardEventProvider {
@@ -37,7 +37,7 @@ public interface Media extends ScoreBoardEventProvider {
         public void addFile(MediaFile file);
         public void removeFile(MediaFile file);
 
-        AddRemoveProperty<MediaFile> FILE = new AddRemoveProperty<>(MediaFile.class, "File");
+        Child<MediaFile> FILE = new Child<>(MediaFile.class, "File");
     }
 
     public static interface MediaFile extends ScoreBoardEventProvider {
@@ -49,7 +49,7 @@ public interface Media extends ScoreBoardEventProvider {
         public void setName(String s);
         public String getSrc();
 
-        PermanentProperty<String> SRC = new PermanentProperty<>(String.class, "Src", "");
-        PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
+        Value<String> SRC = new Value<>(String.class, "Src", "");
+        Value<String> NAME = new Value<>(String.class, "Name", "");
     }
 }

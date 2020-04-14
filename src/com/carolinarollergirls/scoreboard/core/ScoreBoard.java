@@ -8,11 +8,11 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.NumberedProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.NumberedChild;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -106,42 +106,40 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Clients getClients();
 
-    PermanentProperty<Integer> CURRENT_PERIOD_NUMBER = new PermanentProperty<>(Integer.class, "CurrentPeriodNumber", 0);
-    PermanentProperty<Period> CURRENT_PERIOD = new PermanentProperty<>(Period.class, "CurrentPeriod", null);
-    PermanentProperty<Jam> UPCOMING_JAM = new PermanentProperty<>(Jam.class, "UpcomingJam", null);
-    PermanentProperty<Integer> UPCOMING_JAM_NUMBER = new PermanentProperty<>(Integer.class, "UpcomingJamNumber", 0);
-    PermanentProperty<Boolean> IN_PERIOD = new PermanentProperty<>(Boolean.class, "InPeriod", false);
-    PermanentProperty<Boolean> IN_JAM = new PermanentProperty<>(Boolean.class, "InJam", false);
-    PermanentProperty<Boolean> IN_OVERTIME = new PermanentProperty<>(Boolean.class, "InOvertime", false);
-    PermanentProperty<Boolean> OFFICIAL_SCORE = new PermanentProperty<>(Boolean.class, "OfficialScore", false);
-    PermanentProperty<Timeout> CURRENT_TIMEOUT = new PermanentProperty<>(Timeout.class, "CurrentTimeout", null);
-    PermanentProperty<TimeoutOwner> TIMEOUT_OWNER = new PermanentProperty<>(TimeoutOwner.class, "TimeoutOwner", null);
-    PermanentProperty<Boolean> OFFICIAL_REVIEW = new PermanentProperty<>(Boolean.class, "OfficialReview", false);
-    PermanentProperty<Boolean> NO_MORE_JAM = new PermanentProperty<>(Boolean.class, "NoMoreJam", false);
+    Value<Integer> CURRENT_PERIOD_NUMBER = new Value<>(Integer.class, "CurrentPeriodNumber", 0);
+    Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null);
+    Value<Jam> UPCOMING_JAM = new Value<>(Jam.class, "UpcomingJam", null);
+    Value<Integer> UPCOMING_JAM_NUMBER = new Value<>(Integer.class, "UpcomingJamNumber", 0);
+    Value<Boolean> IN_PERIOD = new Value<>(Boolean.class, "InPeriod", false);
+    Value<Boolean> IN_JAM = new Value<>(Boolean.class, "InJam", false);
+    Value<Boolean> IN_OVERTIME = new Value<>(Boolean.class, "InOvertime", false);
+    Value<Boolean> OFFICIAL_SCORE = new Value<>(Boolean.class, "OfficialScore", false);
+    Value<Timeout> CURRENT_TIMEOUT = new Value<>(Timeout.class, "CurrentTimeout", null);
+    Value<TimeoutOwner> TIMEOUT_OWNER = new Value<>(TimeoutOwner.class, "TimeoutOwner", null);
+    Value<Boolean> OFFICIAL_REVIEW = new Value<>(Boolean.class, "OfficialReview", false);
+    Value<Boolean> NO_MORE_JAM = new Value<>(Boolean.class, "NoMoreJam", false);
 
-    // @formatter:off
-    AddRemoveProperty<ValWithId> VERSION = new AddRemoveProperty<>(ValWithId.class, "Version");
-    AddRemoveProperty<Settings> SETTINGS = new AddRemoveProperty<>(Settings.class, "Settings");
-    AddRemoveProperty<Twitter> TWITTER = new AddRemoveProperty<>(Twitter.class, "Twitter");
-    AddRemoveProperty<Rulesets> RULESETS = new AddRemoveProperty<>(Rulesets.class, "Rulesets");
-    AddRemoveProperty<PenaltyCodesManager> PENALTY_CODES = new AddRemoveProperty<>(PenaltyCodesManager.class, "PenaltyCodes");
-    AddRemoveProperty<Media> MEDIA = new AddRemoveProperty<>(Media.class, "Media");
-    AddRemoveProperty<Clients> CLIENTS = new AddRemoveProperty<>(Clients.class, "Clients");
-    AddRemoveProperty<Clock> CLOCK = new AddRemoveProperty<>(Clock.class, "Clock");
-    AddRemoveProperty<Team> TEAM = new AddRemoveProperty<>(Team.class, "Team");
-    AddRemoveProperty<PreparedTeam> PREPARED_TEAM = new AddRemoveProperty<>(PreparedTeam.class, "PreparedTeam");
-    // @formatter:on
+    Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version");
+    Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings");
+    Child<Twitter> TWITTER = new Child<>(Twitter.class, "Twitter");
+    Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets");
+    Child<PenaltyCodesManager> PENALTY_CODES = new Child<>(PenaltyCodesManager.class, "PenaltyCodes");
+    Child<Media> MEDIA = new Child<>(Media.class, "Media");
+    Child<Clients> CLIENTS = new Child<>(Clients.class, "Clients");
+    Child<Clock> CLOCK = new Child<>(Clock.class, "Clock");
+    Child<Team> TEAM = new Child<>(Team.class, "Team");
+    Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam");
 
-    NumberedProperty<Period> PERIOD = new NumberedProperty<>(Period.class, "Period");
+    NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period");
 
-    CommandProperty RESET = new CommandProperty("Reset");
-    CommandProperty START_JAM = new CommandProperty("StartJam");
-    CommandProperty STOP_JAM = new CommandProperty("StopJam");
-    CommandProperty TIMEOUT = new CommandProperty("Timeout");
-    CommandProperty CLOCK_UNDO = new CommandProperty("ClockUndo");
-    CommandProperty CLOCK_REPLACE = new CommandProperty("ClockReplace");
-    CommandProperty START_OVERTIME = new CommandProperty("StartOvertime");
-    CommandProperty OFFICIAL_TIMEOUT = new CommandProperty("OfficialTimeout");
+    Command RESET = new Command("Reset");
+    Command START_JAM = new Command("StartJam");
+    Command STOP_JAM = new Command("StopJam");
+    Command TIMEOUT = new Command("Timeout");
+    Command CLOCK_UNDO = new Command("ClockUndo");
+    Command CLOCK_REPLACE = new Command("ClockReplace");
+    Command START_OVERTIME = new Command("StartOvertime");
+    Command OFFICIAL_TIMEOUT = new Command("OfficialTimeout");
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 

@@ -7,9 +7,9 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Fielding;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -68,7 +68,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
 
     @Override
-    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == DURATION) {
             long time = 0;
             if (!isCurrent() && get(JAM_CLOCK_START) != null && get(JAM_CLOCK_END) != null) {
@@ -88,7 +88,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == IS_CURRENT) {
             for (Fielding f : getAll(FIELDING)) {
                 f.set(Fielding.CURRENT_BOX_TRIP, this);
@@ -105,7 +105,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == FIELDING) {
             Fielding f = (Fielding) item;
             if (getStartFielding() == null || f.compareTo(getStartFielding()) < 0) {
@@ -121,7 +121,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
 
     @Override
-    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == FIELDING) {
             if (getStartFielding() == item) {
                 Fielding first = null;
@@ -154,7 +154,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
+    public void execute(Command prop, Source source) {
         if (prop == DELETE) {
             delete(source);
         } else if (prop == START_EARLIER) {
