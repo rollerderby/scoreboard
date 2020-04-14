@@ -30,9 +30,10 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 
-public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
+public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Media {
     public MediaImpl(ScoreBoard parent) {
-        super(parent, "", ScoreBoard.Child.MEDIA, Media.class, Child.class);
+        super(parent, "", ScoreBoard.MEDIA);
+        addProperties(FORMAT);
         setup(BasePath.get().toPath().resolve("html"));
     }
 
@@ -46,9 +47,9 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         // Create directories and register with inotify.
         try {
             watchService = FileSystems.getDefault().newWatchService();
-            for (MediaFormat mf : getAll(Child.FORMAT, MediaFormat.class)) {
+            for (MediaFormat mf : getAll(FORMAT)) {
                 String format = mf.getFormat();
-                for (MediaType mt : mf.getAll(MediaFormat.Child.TYPE, MediaType.class)) {
+                for (MediaType mt : mf.getAll(MediaFormat.TYPE)) {
                     String type = mt.getType();
                     Path p = path.resolve(format).resolve(type);
                     p.toFile().mkdirs();
@@ -106,7 +107,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     private void mediaTypeRefresh(String format, String type) {
         synchronized (coreLock) {
             Path p = path.resolve(format).resolve(type);
-            Collection<MediaFile> files = getFormat(format).getType(type).getAll(MediaType.Child.FILE, MediaFile.class);
+            Collection<MediaFile> files = getFormat(format).getType(type).getAll(MediaType.FILE);
             // Remove any files that aren't there any more.
             for (MediaFile fn : files) {
                 if (!p.resolve(fn.getId()).toFile().exists()) {
@@ -146,13 +147,13 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
 
     private void addFormat(String format, String... types) {
         MediaFormatImpl child = new MediaFormatImpl(this, format);
-        add(Child.FORMAT, child);
+        add(FORMAT, child);
         for (String type : types) {
             child.addType(type);
         }
     }
     @Override
-    public MediaFormat getFormat(String format) { return get(Child.FORMAT, MediaFormat.class, format); }
+    public MediaFormat getFormat(String format) { return get(FORMAT, format); }
 
     @Override
     public boolean removeMediaFile(String format, String type, String id) {
@@ -186,9 +187,10 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
     private Path path;
     private WatchService watchService;
 
-    public class MediaFormatImpl extends ScoreBoardEventProviderImpl implements MediaFormat {
+    public class MediaFormatImpl extends ScoreBoardEventProviderImpl<MediaFormat> implements MediaFormat {
         MediaFormatImpl(Media parent, String format) {
-            super(parent, "", Media.Child.FORMAT, MediaFormat.class, Child.class);
+            super(parent, "", Media.FORMAT);
+            addProperties(TYPE);
             this.format = format;
         }
 
@@ -199,15 +201,16 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         public String getFormat() { return format; }
 
         @Override
-        public MediaType getType(String type) { return get(Child.TYPE, MediaType.class, type); }
-        protected void addType(String type) { add(Child.TYPE, new MediaTypeImpl(this, type)); }
+        public MediaType getType(String type) { return get(TYPE, type); }
+        protected void addType(String type) { add(TYPE, new MediaTypeImpl(this, type)); }
 
         private String format;
     }
 
-    public class MediaTypeImpl extends ScoreBoardEventProviderImpl implements MediaType {
+    public class MediaTypeImpl extends ScoreBoardEventProviderImpl<MediaType> implements MediaType {
         MediaTypeImpl(MediaFormat parent, String type) {
-            super(parent, "", MediaFormat.Child.TYPE, MediaType.class, Child.class);
+            super(parent, "", MediaFormat.TYPE);
+            addProperties(FILE);
             this.parent = parent;
             this.type = type;
         }
@@ -222,24 +225,25 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         public String getType() { return type; }
 
         @Override
-        public MediaFile getFile(String file) { return get(Child.FILE, MediaFile.class, file); }
+        public MediaFile getFile(String file) { return get(FILE, file); }
         @Override
-        public void addFile(MediaFile file) { add(Child.FILE, file); }
+        public void addFile(MediaFile file) { add(FILE, file); }
         @Override
-        public void removeFile(MediaFile file) { remove(Child.FILE, file); }
+        public void removeFile(MediaFile file) { remove(FILE, file); }
 
         @SuppressWarnings("hiding")
         private MediaFormat parent;
         private String type;
     }
 
-    public class MediaFileImpl extends ScoreBoardEventProviderImpl implements MediaFile {
+    public class MediaFileImpl extends ScoreBoardEventProviderImpl<MediaFile> implements MediaFile {
         MediaFileImpl(MediaType type, String id, String name, String src) {
-            super(type, id, MediaType.Child.FILE, MediaFile.class, Value.class);
+            super(type, id, MediaType.FILE);
+            addProperties(SRC, NAME);
             this.type = type;
-            set(Value.NAME, name);
-            set(Value.SRC, src);
-            addWriteProtection(Value.SRC);
+            set(NAME, name);
+            set(SRC, src);
+            addWriteProtection(SRC);
         }
 
         @Override
@@ -257,19 +261,19 @@ public class MediaImpl extends ScoreBoardEventProviderImpl implements Media {
         @Override
         public String getName() {
             synchronized (coreLock) {
-                return (String) get(Value.NAME);
+                return get(NAME);
             }
         }
         @Override
         public void setName(String n) {
             synchronized (coreLock) {
-                set(Value.NAME, n);
+                set(NAME, n);
             }
         }
         @Override
         public String getSrc() {
             synchronized (coreLock) {
-                return (String) get(Value.SRC);
+                return get(SRC);
             }
         }
 

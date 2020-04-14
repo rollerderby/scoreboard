@@ -5,41 +5,40 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.LinkedBlockingQueue;
 import java.io.File;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Test;
 import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.core.Media;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Media.MediaType;
-import com.carolinarollergirls.scoreboard.core.impl.MediaImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
-import com.carolinarollergirls.scoreboard.utils.BasePath;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.utils.BasePath;
 
 public class MediaImplTests {
 
     private Media media;
     private File init;
-    
+
     private File oldDir;
 
-    private BlockingQueue<ScoreBoardEvent> collectedEvents;
+    private BlockingQueue<ScoreBoardEvent<?>> collectedEvents;
     private ScoreBoard sbMock;
     public ScoreBoardListener listener = new ScoreBoardListener() {
 
         @Override
-        public void scoreBoardChange(ScoreBoardEvent event) {
-            synchronized(collectedEvents) {
+        public void scoreBoardChange(ScoreBoardEvent<?> event) {
+            synchronized (collectedEvents) {
                 collectedEvents.add(event);
             }
         }
@@ -68,7 +67,7 @@ public class MediaImplTests {
         BasePath.set(oldDir);
     }
 
-   @Test
+    @Test
     public void testFilesAddedAtStartup() {
         Media.MediaType mt = media.getFormat("images").getType("teamlogo");
         assertNotNull(mt);
@@ -78,10 +77,10 @@ public class MediaImplTests {
     @Test
     public void testFileDeletionManual() throws Exception {
         init.delete();
-        ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS); //batch start
+        ScoreBoardEvent<?> e = collectedEvents.poll(1, TimeUnit.SECONDS); // batch start
         e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(MediaType.Child.FILE, e.getProperty());
+        assertEquals(MediaType.FILE, e.getProperty());
         assertTrue(e.isRemove());
         assertNull(media.getFormat("images").getType("teamlogo").getFile("init.png"));
     }
@@ -89,10 +88,10 @@ public class MediaImplTests {
     @Test
     public void testFileDeletion() throws Exception {
         assertTrue(media.removeMediaFile("images", "teamlogo", "init.png"));
-        ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS); //batch start
+        ScoreBoardEvent<?> e = collectedEvents.poll(1, TimeUnit.SECONDS); // batch start
         e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(MediaType.Child.FILE, e.getProperty());
+        assertEquals(MediaType.FILE, e.getProperty());
         assertTrue(e.isRemove());
         assertNull(media.getFormat("images").getType("teamlogo").getFile("init.png"));
     }
@@ -100,16 +99,16 @@ public class MediaImplTests {
     @Test
     public void testFileCreation() throws Exception {
         dir.newFile("html/images/teamlogo/new.png");
-        ScoreBoardEvent e = collectedEvents.poll(1, TimeUnit.SECONDS);
+        ScoreBoardEvent<?> e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(BatchEvent.START, e.getProperty());
+        assertEquals(ScoreBoardEventProviderImpl.BATCH_START, e.getProperty());
         e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(MediaType.Child.FILE, e.getProperty());
+        assertEquals(MediaType.FILE, e.getProperty());
         assertNotNull(media.getFormat("images").getType("teamlogo").getFile("new.png"));
         e = collectedEvents.poll(1, TimeUnit.SECONDS);
         assertNotNull(e);
-        assertEquals(BatchEvent.END, e.getProperty());
+        assertEquals(ScoreBoardEventProviderImpl.BATCH_END, e.getProperty());
     }
 
 }

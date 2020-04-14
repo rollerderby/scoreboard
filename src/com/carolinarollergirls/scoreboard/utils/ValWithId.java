@@ -1,6 +1,6 @@
 package com.carolinarollergirls.scoreboard.utils;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
 
 public class ValWithId implements ValueWithId {
     public ValWithId(String i, String val) {

@@ -177,8 +177,8 @@ public class WS extends WebSocketServlet {
                                     sb.timeout();
                                 }
                                 sb.setTimeoutType(Timeout.Owners.OTO, false);
-                                sb.getTeam(Team.ID_1).set(Team.Value.TRIP_SCORE, data.get("Points1"));
-                                sb.getTeam(Team.ID_2).set(Team.Value.TRIP_SCORE, data.get("Points2"));
+                                sb.getTeam(Team.ID_1).set(Team.TRIP_SCORE, (Integer) data.get("Points1"));
+                                sb.getTeam(Team.ID_2).set(Team.TRIP_SCORE, (Integer) data.get("Points2"));
                                 int period = (Integer) data.get("Period");
                                 int jam = (Integer) data.get("Jam");
                                 if (jam == 0 && period > 1) {
@@ -188,14 +188,14 @@ public class WS extends WebSocketServlet {
                                     sb.getClock(Clock.ID_INTERMISSION)
                                             .elapseTime(sb.getClock(Clock.ID_INTERMISSION).getMaximumTime());
                                     for (int i = 2; i < period; i++) {
-                                        sb.getCurrentPeriod().execute(Period.Command.INSERT_BEFORE);
+                                        sb.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
                                 } else {
                                     for (int i = 1; i < period; i++) {
-                                        sb.getCurrentPeriod().execute(Period.Command.INSERT_BEFORE);
+                                        sb.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
                                     for (int i = 1; i < jam; i++) {
-                                        sb.getCurrentPeriod().getCurrentJam().execute(Jam.Command.INSERT_BEFORE);
+                                        sb.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
                                     }
                                     sb.getClock(Clock.ID_PERIOD)
                                             .setTime(Long.valueOf((String) data.get("PeriodClock")));

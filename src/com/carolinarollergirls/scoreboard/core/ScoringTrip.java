@@ -1,34 +1,22 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 
 public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip> {
     public int getScore();
-    
-    public enum Value implements PermanentProperty {
-        SCORE(Integer.class, 0),
-        AFTER_S_P(Boolean.class, false),
-        CURRENT(Boolean.class, false),
-        DURATION(Long.class, 0L),
-        JAM_CLOCK_START(Long.class, 0L),
-        JAM_CLOCK_END(Long.class, 0L),
-        ANNOTATION(String.class, "");
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Command implements CommandProperty {
-        INSERT_BEFORE,
-        REMOVE;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    // @formatter:off
+    PermanentProperty<Integer> SCORE = new PermanentProperty<>(Integer.class, "Score", 0);
+    PermanentProperty<Boolean> AFTER_S_P = new PermanentProperty<>(Boolean.class, "AfterSP", false);
+    PermanentProperty<Boolean> CURRENT = new PermanentProperty<>(Boolean.class, "Current", false);
+    PermanentProperty<Long> DURATION = new PermanentProperty<>(Long.class, "Duration", 0L);
+    PermanentProperty<Long> JAM_CLOCK_START = new PermanentProperty<>(Long.class, "JamClockStart", 0L);
+    PermanentProperty<Long> JAM_CLOCK_END = new PermanentProperty<>(Long.class, "JamClockEnd", 0L);
+    PermanentProperty<String> ANNOTATION = new PermanentProperty<>(String.class, "Annotation", "");
+
+    CommandProperty INSERT_BEFORE = new CommandProperty("InsertBefore");
+    CommandProperty REMOVE = new CommandProperty("Remove");
+    // @formatter:on
 }

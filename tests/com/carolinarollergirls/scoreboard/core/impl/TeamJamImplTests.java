@@ -23,11 +23,11 @@ public class TeamJamImplTests {
 
     private ScoreBoard sb;
 
-    private Queue<ScoreBoardEvent> collectedEvents;
+    private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
 
         @Override
-        public void scoreBoardChange(ScoreBoardEvent event) {
+        public void scoreBoardChange(ScoreBoardEvent<?> event) {
             synchronized (collectedEvents) {
                 collectedEvents.add(event);
             }
@@ -41,51 +41,50 @@ public class TeamJamImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
-        tj = (TeamJamImpl) sb.getTeam(Team.ID_1).get(Team.Value.RUNNING_OR_UPCOMING_TEAM_JAM);
+        tj = (TeamJamImpl) sb.getTeam(Team.ID_1).get(Team.RUNNING_OR_UPCOMING_TEAM_JAM);
         ScoreBoardClock.getInstance().stop();
     }
 
     @Test
     public void testRemoveInitialPassAfterStarPass() {
-        tj.getCurrentScoringTrip().set(ScoringTrip.Value.SCORE, 2);
-        tj.getCurrentScoringTrip().set(ScoringTrip.Value.AFTER_S_P, true);
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 2);
+        tj.getCurrentScoringTrip().set(ScoringTrip.AFTER_S_P, true);
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
         tj.addScoringTrip();
-        tj.getCurrentScoringTrip().set(ScoringTrip.Value.SCORE, 3);
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 3);
 
         assertEquals(5, tj.getJamScore());
-        assertEquals(5, tj.get(TeamJam.Value.AFTER_S_P_SCORE));
+        assertEquals(5, (int) tj.get(TeamJam.AFTER_S_P_SCORE));
         assertEquals(2, tj.getCurrentScoringTrip().getNumber());
         assertTrue(tj.isStarPass());
 
-        tj.getCurrentScoringTrip().getPrevious().execute(ScoringTrip.Command.REMOVE);
+        tj.getCurrentScoringTrip().getPrevious().execute(ScoringTrip.REMOVE);
 
         assertEquals(3, tj.getJamScore());
-        assertEquals(3, tj.get(TeamJam.Value.AFTER_S_P_SCORE));
+        assertEquals(3, (int) tj.get(TeamJam.AFTER_S_P_SCORE));
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
         assertTrue(tj.isStarPass());
     }
 
     @Test
     public void testRemoveInitialWhenItIsTheOnlyTrip() {
-        tj.getCurrentScoringTrip().set(ScoringTrip.Value.SCORE, 2);
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 2);
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
         tj.removeScoringTrip();
         // Score is now zero, but trip remains.
         assertEquals(0, tj.getJamScore());
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
 
-
-        tj.getCurrentScoringTrip().set(ScoringTrip.Value.SCORE, 2);
-        tj.getCurrentScoringTrip().execute(ScoringTrip.Command.REMOVE);
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 2);
+        tj.getCurrentScoringTrip().execute(ScoringTrip.REMOVE);
         assertEquals(0, tj.getJamScore());
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
     }
 
     @Test
     public void testNoLostInOvertime() {
-        tj.getJam().set(Jam.Value.OVERTIME, true);
-        tj.set(TeamJam.Value.LOST, true);
+        tj.getJam().set(Jam.OVERTIME, true);
+        tj.set(TeamJam.LOST, true);
         assertFalse(tj.isLost());
     }
 }

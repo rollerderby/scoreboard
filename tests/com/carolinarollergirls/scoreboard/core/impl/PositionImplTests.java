@@ -15,8 +15,6 @@ import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.impl.SkaterImpl;
 
 public class PositionImplTests {
     private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";
@@ -93,7 +91,7 @@ public class PositionImplTests {
     @Test
     public void doesnt_set_penalty_with_no_skater() {
         Position jammer = team.getPosition(FloorPosition.JAMMER);
-        jammer.getCurrentFielding().set(Fielding.Value.NOT_FIELDED, true);
+        jammer.getCurrentFielding().set(Fielding.NOT_FIELDED, true);
         jammer.setPenaltyBox(true);
 
         assertFalse(jammer.isPenaltyBox());
@@ -118,7 +116,6 @@ public class PositionImplTests {
 
         assertNull(jammer.getSkater());
     }
-
 
     @Test
     public void position_knows_penalty_after_sp() {

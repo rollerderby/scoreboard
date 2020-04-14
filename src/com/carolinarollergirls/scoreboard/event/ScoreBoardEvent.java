@@ -11,46 +11,51 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.EventObject;
 import java.util.Objects;
 
-public class ScoreBoardEvent extends EventObject implements Cloneable {
-    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, PermanentProperty p, Object v, Object prev) {
-        this(sbeP, (Property)p, v, prev);
+public class ScoreBoardEvent<T> extends EventObject implements Cloneable {
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, PermanentProperty<T> p, T v, T prev) {
+        this(sbeP, (Property<T>) p, v, prev);
     }
 
-    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, AddRemoveProperty p, ValueWithId v, boolean r) {
-        this(sbeP, (Property)p, v, null);
+    public ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property<T> p, T v, boolean r) {
+        this(sbeP, p, v, null);
         remove = r;
     }
 
-    private ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property p, Object v, Object prev) {
+    private ScoreBoardEvent(ScoreBoardEventProvider sbeP, Property<T> p, T v, T prev) {
         super(sbeP);
         provider = sbeP;
         property = p;
         value = v;
         previousValue = prev;
         remove = false;
-    } 
+    }
 
     public ScoreBoardEventProvider getProvider() { return provider; }
-    public Property getProperty() { return property; }
-    public Object getValue() { return value; }
-    public Object getPreviousValue() { return previousValue; }
+    public Property<T> getProperty() { return property; }
+    public T getValue() { return value; }
+    public T getPreviousValue() { return previousValue; }
     public boolean isRemove() { return remove; }
 
     @Override
-    public Object clone() { return new ScoreBoardEvent(getProvider(), getProperty(), getValue(), getPreviousValue()); }
+    public Object clone() {
+        return new ScoreBoardEvent<>(getProvider(), getProperty(), getValue(), getPreviousValue());
+    }
 
+    @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
         if (null == o) {
             return false;
         }
-        try { return equals((ScoreBoardEvent)o); }
-        catch ( ClassCastException ccE ) { }
-        try { return equals((ScoreBoardCondition)o); }
-        catch ( ClassCastException ccE ) { }
+        try {
+            return equals((ScoreBoardEvent<T>) o);
+        } catch (ClassCastException ccE) {}
+        try {
+            return equals((ScoreBoardCondition<T>) o);
+        } catch (ClassCastException ccE) {}
         return false;
     }
-    public boolean equals(ScoreBoardEvent e) {
+    public boolean equals(ScoreBoardEvent<T> e) {
         if (!Objects.equals(getProvider(), e.getProvider())) {
             return false;
         }
@@ -65,7 +70,7 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
         }
         return true;
     }
-    public boolean equals(ScoreBoardCondition c) {
+    public boolean equals(ScoreBoardCondition<T> c) {
         return c.equals(this);
     }
     @Override
@@ -79,41 +84,8 @@ public class ScoreBoardEvent extends EventObject implements Cloneable {
     }
 
     protected ScoreBoardEventProvider provider;
-    protected Property property;
-    protected Object value;
-    protected Object previousValue;
+    protected Property<T> property;
+    protected T value;
+    protected T previousValue;
     protected boolean remove;
-
-    public interface Property {
-        public Class<?> getType();
-    }
-    public interface PermanentProperty extends Property {
-        public Object getDefaultValue();
-    }
-    public interface AddRemoveProperty extends Property {
-        @Override
-        public Class<? extends ValueWithId> getType();
-    }
-    public interface NumberedProperty extends AddRemoveProperty {
-        @Override
-        public Class<? extends OrderedScoreBoardEventProvider<?>> getType();
-    }
-    public interface CommandProperty extends Property {
-        @Override
-        public Class<Boolean> getType();
-    }
-
-    public interface ValueWithId {
-        /**
-         * Id to be used in order to identify this element amongst all elements of its type.
-         * Used when the element is referenced by elements other than its parent.
-         *  (Typically a UUID.)
-         */
-        public String getId();
-        /**
-         * Value of the element. For implementations of ScoreBoardEventProvider this should
-         * usually be the same as getId().
-         */
-        public String getValue();
-    }
 }

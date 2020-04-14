@@ -8,14 +8,11 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.NumberedProperty;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Skater extends ScoreBoardEventProvider {
@@ -47,41 +44,19 @@ public interface Skater extends ScoreBoardEventProvider {
     public List<Penalty> getUnservedPenalties();
     public boolean hasUnservedPenalties();
 
-    public enum Value implements PermanentProperty {
-        NAME(String.class, ""),
-        ROSTER_NUMBER(String.class, ""),
-        CURRENT_FIELDING(Fielding.class, null),
-        CURRENT_BOX_SYMBOLS(String.class, ""),
-        POSITION(Position.class, null),
-        ROLE(Role.class, null),
-        BASE_ROLE(Role.class, null),
-        PENALTY_BOX(Boolean.class, false),
-        FLAGS(String.class, "");
+    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
+    PermanentProperty<String> ROSTER_NUMBER = new PermanentProperty<>(String.class, "RosterNumber", "");
+    PermanentProperty<Fielding> CURRENT_FIELDING = new PermanentProperty<>(Fielding.class, "Fielding", null);
+    PermanentProperty<String> CURRENT_BOX_SYMBOLS = new PermanentProperty<>(String.class, "CurrentBoxSymbols", "");
+    PermanentProperty<Position> POSITION = new PermanentProperty<>(Position.class, "Position", null);
+    PermanentProperty<Role> ROLE = new PermanentProperty<>(Role.class, "Role", null);
+    PermanentProperty<Role> BASE_ROLE = new PermanentProperty<>(Role.class, "BaseRole", null);
+    PermanentProperty<Boolean> PENALTY_BOX = new PermanentProperty<>(Boolean.class, "PenaltyBox", false);
+    PermanentProperty<String> FLAGS = new PermanentProperty<>(String.class, "Flags", "");
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        FIELDING(Fielding.class);
+    AddRemoveProperty<Fielding> FIELDING = new AddRemoveProperty<>(Fielding.class, "Fielding");
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum NChild implements NumberedProperty {
-        PENALTY(Penalty.class);
-
-        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
-        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
-        @Override
-        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
-    }
+    NumberedProperty<Penalty> PENALTY = new NumberedProperty<>(Penalty.class, "Penalty");
 
     public static final String FO_EXP_ID = "0";
 }

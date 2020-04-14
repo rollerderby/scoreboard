@@ -8,12 +8,10 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.NumberedProperty;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -30,8 +28,9 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     /**
      * Id of Team who called Timeout.
      *
-     * The Id is as returned from Team.getId().	 For Offical Timeouts, this returns the letter "O".
-     * If the type of timeout hasn't been set, it returns an empty string.
+     * The Id is as returned from Team.getId(). For Offical Timeouts, this returns
+     * the letter "O". If the type of timeout hasn't been set, it returns an empty
+     * string.
      */
     public TimeoutOwner getTimeoutOwner();
     public void setTimeoutOwner(TimeoutOwner owner);
@@ -39,9 +38,9 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     /**
      * If this Timeout is an Official Review.
      *
-     * This is true if the current timeout is actually a team-requested Official Review.
-     * This is false if the current timeout is a normal team or official timeout or the type
-     * of timeout hasn't been set.
+     * This is true if the current timeout is actually a team-requested Official
+     * Review. This is false if the current timeout is a normal team or official
+     * timeout or the type of timeout hasn't been set.
      */
     public boolean isOfficialReview();
     public void setOfficialReview(boolean official);
@@ -49,13 +48,11 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     /**
      * If in a Period.
      *
-     * This returns true if any Period has started,
-     * until the Period is over.	A Period is considered
-     * "started" once the first Jam starts.	 A Period has
-     * not "ended" until its time has expired and the
-     * Jam clock has stopped.
-     * Note that the Period may end and then re-start
-     * (the same Period) if Overtime is started.
+     * This returns true if any Period has started, until the Period is over. A
+     * Period is considered "started" once the first Jam starts. A Period has not
+     * "ended" until its time has expired and the Jam clock has stopped. Note that
+     * the Period may end and then re-start (the same Period) if Overtime is
+     * started.
      */
     public boolean isInPeriod();
     public void setInPeriod(boolean inPeriod);
@@ -90,7 +87,8 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public void clockUndo(boolean replace);
 
-    // FIXME - clock and team getters should either return null or throw exception instead of creating new clock/team...
+    // FIXME - clock and team getters should either return null or throw exception
+    // instead of creating new clock/team...
     public Clock getClock(String id);
 
     public Team getTeam(String id);
@@ -108,66 +106,42 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Clients getClients();
 
-    public enum Value implements PermanentProperty {
-        CURRENT_PERIOD_NUMBER(Integer.class, 0),
-        CURRENT_PERIOD(Period.class, null),
-        UPCOMING_JAM(Jam.class, null),
-        UPCOMING_JAM_NUMBER(Integer.class, 0),
-        IN_PERIOD(Boolean.class, false),
-        IN_JAM(Boolean.class, false),
-        IN_OVERTIME(Boolean.class, false),
-        OFFICIAL_SCORE(Boolean.class, false),
-        CURRENT_TIMEOUT(Timeout.class, null),
-        TIMEOUT_OWNER(TimeoutOwner.class, null),
-        OFFICIAL_REVIEW(Boolean.class, false),
-        NO_MORE_JAM(Boolean.class, false);
+    PermanentProperty<Integer> CURRENT_PERIOD_NUMBER = new PermanentProperty<>(Integer.class, "CurrentPeriodNumber", 0);
+    PermanentProperty<Period> CURRENT_PERIOD = new PermanentProperty<>(Period.class, "CurrentPeriod", null);
+    PermanentProperty<Jam> UPCOMING_JAM = new PermanentProperty<>(Jam.class, "UpcomingJam", null);
+    PermanentProperty<Integer> UPCOMING_JAM_NUMBER = new PermanentProperty<>(Integer.class, "UpcomingJamNumber", 0);
+    PermanentProperty<Boolean> IN_PERIOD = new PermanentProperty<>(Boolean.class, "InPeriod", false);
+    PermanentProperty<Boolean> IN_JAM = new PermanentProperty<>(Boolean.class, "InJam", false);
+    PermanentProperty<Boolean> IN_OVERTIME = new PermanentProperty<>(Boolean.class, "InOvertime", false);
+    PermanentProperty<Boolean> OFFICIAL_SCORE = new PermanentProperty<>(Boolean.class, "OfficialScore", false);
+    PermanentProperty<Timeout> CURRENT_TIMEOUT = new PermanentProperty<>(Timeout.class, "CurrentTimeout", null);
+    PermanentProperty<TimeoutOwner> TIMEOUT_OWNER = new PermanentProperty<>(TimeoutOwner.class, "TimeoutOwner", null);
+    PermanentProperty<Boolean> OFFICIAL_REVIEW = new PermanentProperty<>(Boolean.class, "OfficialReview", false);
+    PermanentProperty<Boolean> NO_MORE_JAM = new PermanentProperty<>(Boolean.class, "NoMoreJam", false);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        VERSION(ValWithId.class),
-        SETTINGS(Settings.class),
-        TWITTER(Twitter.class),
-        RULESETS(Rulesets.class),
-        PENALTY_CODES(PenaltyCodesManager.class),
-        MEDIA(Media.class),
-        CLIENTS(Clients.class),
-        CLOCK(Clock.class),
-        TEAM(Team.class),
-        PREPARED_TEAM(PreparedTeam.class);
+    // @formatter:off
+    AddRemoveProperty<ValWithId> VERSION = new AddRemoveProperty<>(ValWithId.class, "Version");
+    AddRemoveProperty<Settings> SETTINGS = new AddRemoveProperty<>(Settings.class, "Settings");
+    AddRemoveProperty<Twitter> TWITTER = new AddRemoveProperty<>(Twitter.class, "Twitter");
+    AddRemoveProperty<Rulesets> RULESETS = new AddRemoveProperty<>(Rulesets.class, "Rulesets");
+    AddRemoveProperty<PenaltyCodesManager> PENALTY_CODES = new AddRemoveProperty<>(PenaltyCodesManager.class, "PenaltyCodes");
+    AddRemoveProperty<Media> MEDIA = new AddRemoveProperty<>(Media.class, "Media");
+    AddRemoveProperty<Clients> CLIENTS = new AddRemoveProperty<>(Clients.class, "Clients");
+    AddRemoveProperty<Clock> CLOCK = new AddRemoveProperty<>(Clock.class, "Clock");
+    AddRemoveProperty<Team> TEAM = new AddRemoveProperty<>(Team.class, "Team");
+    AddRemoveProperty<PreparedTeam> PREPARED_TEAM = new AddRemoveProperty<>(PreparedTeam.class, "PreparedTeam");
+    // @formatter:on
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum NChild implements NumberedProperty {
-        PERIOD(Period.class);
+    NumberedProperty<Period> PERIOD = new NumberedProperty<>(Period.class, "Period");
 
-        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
-        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
-        @Override
-        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
-    }
-    public enum Command implements CommandProperty {
-        RESET,
-        START_JAM,
-        STOP_JAM,
-        TIMEOUT,
-        CLOCK_UNDO,
-        CLOCK_REPLACE,
-        START_OVERTIME,
-        OFFICIAL_TIMEOUT;
-
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    CommandProperty RESET = new CommandProperty("Reset");
+    CommandProperty START_JAM = new CommandProperty("StartJam");
+    CommandProperty STOP_JAM = new CommandProperty("StopJam");
+    CommandProperty TIMEOUT = new CommandProperty("Timeout");
+    CommandProperty CLOCK_UNDO = new CommandProperty("ClockUndo");
+    CommandProperty CLOCK_REPLACE = new CommandProperty("ClockReplace");
+    CommandProperty START_OVERTIME = new CommandProperty("StartOvertime");
+    CommandProperty OFFICIAL_TIMEOUT = new CommandProperty("OfficialTimeout");
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 

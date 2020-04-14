@@ -1,8 +1,8 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 
 public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int compareTo(Penalty other);
@@ -11,32 +11,20 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int getJamNumber();
     public Jam getJam();
     public String getCode();
-    
+
     public boolean isServed();
 
-    public enum Value implements PermanentProperty {
-        TIME(Long.class, 0L),
-        JAM(Jam.class, null),
-        PERIOD_NUMBER(Integer.class, 0),
-        JAM_NUMBER(Integer.class, 0),
-        CODE(String.class, ""),
-        SERVING(Boolean.class, false),
-        SERVED(Boolean.class, false),
-        FORCE_SERVED(Boolean.class, false),
-        BOX_TRIP(BoxTrip.class, null);
+    // @formatter:off
+    PermanentProperty<Long> TIME = new PermanentProperty<>(Long.class, "Time", 0L);
+    PermanentProperty<Jam> JAM = new PermanentProperty<>(Jam.class, "Jam", null);
+    PermanentProperty<Integer> PERIOD_NUMBER = new PermanentProperty<>(Integer.class, "PeriodNumber", 0);
+    PermanentProperty<Integer> JAM_NUMBER = new PermanentProperty<>(Integer.class, "JamNumber", 0);
+    PermanentProperty<String> CODE = new PermanentProperty<>(String.class, "Code", "");
+    PermanentProperty<Boolean> SERVING = new PermanentProperty<>(Boolean.class, "Serving", false);
+    PermanentProperty<Boolean> SERVED = new PermanentProperty<>(Boolean.class, "Served", false);
+    PermanentProperty<Boolean> FORCE_SERVED = new PermanentProperty<>(Boolean.class, "ForceServed", false);
+    PermanentProperty<BoxTrip> BOX_TRIP = new PermanentProperty<>(BoxTrip.class, "BoxTrip", null);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Command implements CommandProperty {
-        REMOVE;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    CommandProperty REMOVE = new CommandProperty("Remove");
+    // @formatter:on
 }

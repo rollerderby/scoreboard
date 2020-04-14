@@ -13,20 +13,22 @@ import com.carolinarollergirls.scoreboard.core.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.Position;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
-public class PositionImpl extends ScoreBoardEventProviderImpl implements Position {
+public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
-        super(t, t.getId() + "_" + fp.toString(), Team.Child.POSITION, Position.class, Value.class, Command.class);
+        super(t, t.getId() + "_" + fp.toString(), Team.POSITION);
+        addProperties(CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, ANNOTATION, SKATER, NAME, ROSTER_NUMBER, FLAGS,
+                PENALTY_BOX, CLEAR);
         floorPosition = fp;
-        setCopy(Value.NAME, this, Value.SKATER, Skater.Value.NAME, true);
-        setCopy(Value.ROSTER_NUMBER, this, Value.SKATER, Skater.Value.ROSTER_NUMBER, true);
-        setCopy(Value.FLAGS, this, Value.SKATER, Skater.Value.FLAGS, true);
-        setCopy(Value.SKATER, this, Value.CURRENT_FIELDING, Fielding.Value.SKATER, false);
-        setCopy(Value.PENALTY_BOX, this, Value.CURRENT_FIELDING, Fielding.Value.PENALTY_BOX, false);
-        setCopy(Value.CURRENT_BOX_SYMBOLS, this, Value.CURRENT_FIELDING, Fielding.Value.BOX_TRIP_SYMBOLS, true);
-        setCopy(Value.ANNOTATION, this, Value.CURRENT_FIELDING, Fielding.Value.ANNOTATION, true);
+        setCopy(NAME, this, SKATER, Skater.NAME, true);
+        setCopy(ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, true);
+        setCopy(FLAGS, this, SKATER, Skater.FLAGS, true);
+        setCopy(SKATER, this, CURRENT_FIELDING, Fielding.SKATER, false);
+        setCopy(PENALTY_BOX, this, CURRENT_FIELDING, Fielding.PENALTY_BOX, false);
+        setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
+        setCopy(ANNOTATION, this, CURRENT_FIELDING, Fielding.ANNOTATION, true);
     }
 
     @Override
@@ -34,8 +36,8 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
 
     @Override
     public void execute(CommandProperty prop, Source source) {
-        if (prop == Command.CLEAR) {
-            set(Value.SKATER, null);
+        if (prop == CLEAR) {
+            set(SKATER, null);
         }
     }
 
@@ -56,19 +58,19 @@ public class PositionImpl extends ScoreBoardEventProviderImpl implements Positio
     }
 
     @Override
-    public Skater getSkater() { return (Skater) get(Value.SKATER); }
+    public Skater getSkater() { return get(SKATER); }
     @Override
-    public void setSkater(Skater s) { set(Value.SKATER, s); }
+    public void setSkater(Skater s) { set(SKATER, s); }
 
     @Override
-    public Fielding getCurrentFielding() { return (Fielding) get(Value.CURRENT_FIELDING); }
+    public Fielding getCurrentFielding() { return get(CURRENT_FIELDING); }
     @Override
-    public void setCurrentFielding(Fielding f) { set(Value.CURRENT_FIELDING, f); }
+    public void setCurrentFielding(Fielding f) { set(CURRENT_FIELDING, f); }
 
     @Override
-    public boolean isPenaltyBox() { return (Boolean) get(Value.PENALTY_BOX); }
+    public boolean isPenaltyBox() { return get(PENALTY_BOX); }
     @Override
-    public void setPenaltyBox(boolean box) { set(Value.PENALTY_BOX, box); }
+    public void setPenaltyBox(boolean box) { set(PENALTY_BOX, box); }
 
     protected FloorPosition floorPosition;
 }

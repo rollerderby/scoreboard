@@ -1,31 +1,26 @@
 package com.carolinarollergirls.scoreboard.event;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
-public class CopyScoreBoardListener implements ScoreBoardListener {
-    CopyScoreBoardListener(ScoreBoardEventProvider targetElement, PermanentProperty targetProperty,
-            boolean setCopyFlag) {
-        this(targetElement, targetProperty);
-        this.setCopyFlag = setCopyFlag;
-    }
-    CopyScoreBoardListener(ScoreBoardEventProvider targetElement, PermanentProperty targetProperty) {
+public class CopyScoreBoardListener<T> implements ScoreBoardListener {
+    CopyScoreBoardListener(ScoreBoardEventProvider targetElement, PermanentProperty<T> targetProperty) {
         this.targetElement = targetElement;
         this.targetProperty = targetProperty;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public void scoreBoardChange(ScoreBoardEvent event) {
-        scoreBoardChange(event, Source.COPY);
+    public void scoreBoardChange(ScoreBoardEvent<?> event) {
+        scoreBoardChange((ScoreBoardEvent<T>) event, Source.COPY);
     }
-    // used when sending updates from the copy to the master value 
-    public void scoreBoardChange(ScoreBoardEvent event, Source source) {
+    // used when sending updates from the copy to the master value
+    @SuppressWarnings("unchecked")
+    public void scoreBoardChange(ScoreBoardEvent<T> event, Source source) {
         if (targetElement != null) {
             targetElement.set(targetProperty, event.getValue(), source);
         }
     }
-    
+
     protected ScoreBoardEventProvider targetElement;
-    protected PermanentProperty targetProperty;
-    protected boolean setCopyFlag = true;
+    protected PermanentProperty<T> targetProperty;
 }

@@ -8,10 +8,9 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -51,7 +50,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public int getScore();
 
     public ScoringTrip getCurrentTrip();
-    
+
     public int getTimeouts();
     public int getOfficialReviews();
 
@@ -78,77 +77,58 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public boolean isDisplayLead();
     public boolean isStarPass();
     public boolean hasNoPivot();
-    
-    public Team getOtherTeam();
 
+    public Team getOtherTeam();
 
     public static final String ID_1 = "1";
     public static final String ID_2 = "2";
 
-    public enum Value implements PermanentProperty {
-        NAME(String.class, ""),
-        LOGO(String.class, ""),
-        RUNNING_OR_UPCOMING_TEAM_JAM(TeamJam.class, null),
-        RUNNING_OR_ENDED_TEAM_JAM(TeamJam.class, null),
-        FIELDING_ADVANCE_PENDING(Boolean.class, false),
-        CURRENT_TRIP(ScoringTrip.class, null),
-        SCORE(Integer.class, 0),
-        JAM_SCORE(Integer.class, 0),
-        TRIP_SCORE(Integer.class, 0),
-        LAST_SCORE(Integer.class, 0),
-        TIMEOUTS(Integer.class, 0),
-        OFFICIAL_REVIEWS(Integer.class, 0),
-        LAST_REVIEW(Timeout.class, null),
-        IN_TIMEOUT(Boolean.class, false),
-        IN_OFFICIAL_REVIEW(Boolean.class, false),
-        NO_PIVOT(Boolean.class, false),
-        RETAINED_OFFICIAL_REVIEW(Boolean.class, false),
-        LOST(Boolean.class, false),
-        LEAD(Boolean.class, false),
-        CALLOFF(Boolean.class, false),
-        INJURY(Boolean.class, false),
-        NO_INITIAL(Boolean.class, true),
-        DISPLAY_LEAD(Boolean.class, false),
-        STAR_PASS(Boolean.class, false),
-        STAR_PASS_TRIP(ScoringTrip.class, null);
+    // @formatter:off
+    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
+    PermanentProperty<String> LOGO = new PermanentProperty<>(String.class, "Logo", "");
+    PermanentProperty<TeamJam> RUNNING_OR_UPCOMING_TEAM_JAM = new PermanentProperty<>(TeamJam.class, "RunningOrUpcomingTeamJam", null);
+    PermanentProperty<TeamJam> RUNNING_OR_ENDED_TEAM_JAM = new PermanentProperty<>(TeamJam.class, "RunningOrEndedTeamJam", null);
+    PermanentProperty<Boolean> FIELDING_ADVANCE_PENDING = new PermanentProperty<>(Boolean.class, "FieldingAdvancePending", false);
+    PermanentProperty<ScoringTrip> CURRENT_TRIP = new PermanentProperty<>(ScoringTrip.class, "CurrentTrip", null);
+    PermanentProperty<Integer> SCORE = new PermanentProperty<>(Integer.class, "Score", 0);
+    PermanentProperty<Integer> JAM_SCORE = new PermanentProperty<>(Integer.class, "JamScore", 0);
+    PermanentProperty<Integer> TRIP_SCORE = new PermanentProperty<>(Integer.class, "TripScore", 0);
+    PermanentProperty<Integer> LAST_SCORE = new PermanentProperty<>(Integer.class, "LastScore", 0);
+    PermanentProperty<Integer> TIMEOUTS = new PermanentProperty<>(Integer.class, "Timeouts", 0);
+    PermanentProperty<Integer> OFFICIAL_REVIEWS = new PermanentProperty<>(Integer.class, "OfficialReviews", 0);
+    PermanentProperty<Timeout> LAST_REVIEW = new PermanentProperty<>(Timeout.class, "LastReview", null);
+    PermanentProperty<Boolean> IN_TIMEOUT = new PermanentProperty<>(Boolean.class, "InTimeout", false);
+    PermanentProperty<Boolean> IN_OFFICIAL_REVIEW = new PermanentProperty<>(Boolean.class, "InOfficialReview", false);
+    PermanentProperty<Boolean> NO_PIVOT = new PermanentProperty<>(Boolean.class, "NoPivot", false);
+    PermanentProperty<Boolean> RETAINED_OFFICIAL_REVIEW = new PermanentProperty<>(Boolean.class, "RetainedOfficialReview", false);
+    PermanentProperty<Boolean> LOST = new PermanentProperty<>(Boolean.class, "Lost", false);
+    PermanentProperty<Boolean> LEAD = new PermanentProperty<>(Boolean.class, "Lead", false);
+    PermanentProperty<Boolean> CALLOFF = new PermanentProperty<>(Boolean.class, "Calloff", false);
+    PermanentProperty<Boolean> INJURY = new PermanentProperty<>(Boolean.class, "Injury", false);
+    PermanentProperty<Boolean> NO_INITIAL = new PermanentProperty<>(Boolean.class, "NoInitial", true);
+    PermanentProperty<Boolean> DISPLAY_LEAD = new PermanentProperty<>(Boolean.class, "DisplayLead", false);
+    PermanentProperty<Boolean> STAR_PASS = new PermanentProperty<>(Boolean.class, "StarPass", false);
+    PermanentProperty<ScoringTrip> STAR_PASS_TRIP = new PermanentProperty<>(ScoringTrip.class, "StarPassTrip", null);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        SKATER(Skater.class),
-        POSITION(Position.class),
-        TIME_OUT(Timeout.class), // can't be TIMEOUT, as that would lead to a conflict with Command.TIMEOUT
-        ALTERNATE_NAME(ValWithId.class),
-        COLOR(ValWithId.class),
-        BOX_TRIP(BoxTrip.class);
+    AddRemoveProperty<ValWithId> ALTERNATE_NAME = new AddRemoveProperty<>(ValWithId.class, "AlternateName");
+    AddRemoveProperty<ValWithId> COLOR = new AddRemoveProperty<>(ValWithId.class, "Color");
+    AddRemoveProperty<Skater> SKATER = new AddRemoveProperty<>(Skater.class, "Skater");
+    AddRemoveProperty<Position> POSITION = new AddRemoveProperty<>(Position.class, "Position");
+    AddRemoveProperty<Timeout> TIME_OUT = new AddRemoveProperty<>(Timeout.class, "TimeOut");
+    AddRemoveProperty<BoxTrip> BOX_TRIP = new AddRemoveProperty<>(BoxTrip.class, "BoxTrip");
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum Command implements CommandProperty {
-        ADD_TRIP,
-        REMOVE_TRIP,
-        ADVANCE_FIELDINGS,
-        TIMEOUT,
-        OFFICIAL_REVIEW;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    CommandProperty ADD_TRIP = new CommandProperty("AddTrip");
+    CommandProperty REMOVE_TRIP = new CommandProperty("RemoveTrip");
+    CommandProperty ADVANCE_FIELDINGS = new CommandProperty("AdvanceFieldings");
+    CommandProperty TIMEOUT = new CommandProperty("Timeout");
+    CommandProperty OFFICIAL_REVIEW = new CommandProperty("OfficialReview");
+    // @formatter:on
 
     public enum AlternateNameId {
         OPERATOR("operator"),
         OVERLAY("overlay"),
         TWITTER("twitter");
-        
+
         private AlternateNameId(String i) { id = i; }
         @Override
         public String toString() { return id; }

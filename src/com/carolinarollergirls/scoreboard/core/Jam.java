@@ -1,17 +1,16 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public void setParent(ScoreBoardEventProvider p);
 
     public boolean isOvertimeJam();
-    
+
     public long getDuration();
     public long getPeriodClockElapsedStart();
     public long getPeriodClockElapsedEnd();
@@ -23,40 +22,22 @@ public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
     public void start();
     public void stop();
 
-    public enum Value implements PermanentProperty {
-        PERIOD_NUMBER(Integer.class, 0),
-        STAR_PASS(Boolean.class, false), //true, if either team had an SP
-        OVERTIME(Boolean.class, false),
-        DURATION(Long.class, 0L),
-        PERIOD_CLOCK_ELAPSED_START(Long.class, 0L),
-        PERIOD_CLOCK_ELAPSED_END(Long.class, 0L),
-        PERIOD_CLOCK_DISPLAY_END(Long.class, 0L),
-        WALLTIME_START(Long.class, 0L),
-        WALLTIME_END(Long.class, 0L);
+    // @formatter:off
+    PermanentProperty<Integer> PERIOD_NUMBER = new PermanentProperty<>(Integer.class, "PeriodNumber", 0);
+    PermanentProperty<Boolean> STAR_PASS = new PermanentProperty<>(Boolean.class, "StarPass", false); // true, if either team had an SP
+    PermanentProperty<Boolean> OVERTIME = new PermanentProperty<>(Boolean.class, "Overtime", false);
+    PermanentProperty<Long> DURATION = new PermanentProperty<>(Long.class, "Duration", 0L);
+    PermanentProperty<Long> PERIOD_CLOCK_ELAPSED_START = new PermanentProperty<>(Long.class, "PeriodClockElapsedStart", 0L);
+    PermanentProperty<Long> PERIOD_CLOCK_ELAPSED_END = new PermanentProperty<>(Long.class, "PeriodClockElapsedEnd", 0L);
+    PermanentProperty<Long> PERIOD_CLOCK_DISPLAY_END = new PermanentProperty<>(Long.class, "PeriodClockDisplayEnd", 0L);
+    PermanentProperty<Long> WALLTIME_START = new PermanentProperty<>(Long.class, "WalltimeStart", 0L);
+    PermanentProperty<Long> WALLTIME_END = new PermanentProperty<>(Long.class, "WalltimeEnd", 0L);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        TEAM_JAM(TeamJam.class),
-        PENALTY(Penalty.class),
-        TIMEOUTS_AFTER(Timeout.class);
+    AddRemoveProperty<TeamJam> TEAM_JAM = new AddRemoveProperty<>(TeamJam.class, "TeamJam");
+    AddRemoveProperty<Penalty> PENALTY = new AddRemoveProperty<>(Penalty.class, "Penalty");
+    AddRemoveProperty<Timeout> TIMEOUTS_AFTER = new AddRemoveProperty<>(Timeout.class, "TimeoutsAfter");
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum Command implements CommandProperty {
-        DELETE,
-        INSERT_BEFORE;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    CommandProperty DELETE = new CommandProperty("Delete");
+    CommandProperty INSERT_BEFORE = new CommandProperty("InsertBefore");
+    // @formatter:on
 }

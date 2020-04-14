@@ -1,40 +1,35 @@
 package com.carolinarollergirls.scoreboard.event;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-
-public abstract class ParentOrderedScoreBoardEventProviderImpl<T extends ParentOrderedScoreBoardEventProvider<T>>
-        extends OrderedScoreBoardEventProviderImpl<T> implements ParentOrderedScoreBoardEventProvider<T> {
-    @SafeVarargs
+public abstract class ParentOrderedScoreBoardEventProviderImpl<C extends ParentOrderedScoreBoardEventProvider<C>>
+        extends OrderedScoreBoardEventProviderImpl<C> implements ParentOrderedScoreBoardEventProvider<C> {
     protected ParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, String subId,
-            AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
-        super(parent, parent.getId() + "_" + subId, type, ownClass, props);
+            AddRemoveProperty<C> type) {
+        super(parent, parent.getId() + "_" + subId, type);
         ownType = type;
         this.parent = parent;
         this.subId = subId;
-        setRecalculated(IValue.PREVIOUS).addSource(parent, IValue.PREVIOUS);
-        setRecalculated(IValue.NEXT).addSource(parent, IValue.NEXT);
-        set(IValue.PREVIOUS, null, Source.RECALCULATE);
-        set(IValue.NEXT, null, Source.RECALCULATE);
-        setCopy(IValue.NUMBER, parent, IValue.NUMBER, true);
+        setRecalculated(PREVIOUS).addSource(parent, prevProperties.get(parent.getProviderClass()));
+        setRecalculated(NEXT).addSource(parent, nextProperties.get(parent.getProviderClass()));
+        set(PREVIOUS, null, Source.RECALCULATE);
+        set(NEXT, null, Source.RECALCULATE);
+        setCopy(NUMBER, parent, NUMBER, true);
     }
 
     @Override
     public String getProviderId() { return subId; }
 
     @Override
-    protected Object _computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == IValue.PREVIOUS && source != Source.INVERSE_REFERENCE) {
+    protected Object _computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == PREVIOUS && source != Source.INVERSE_REFERENCE) {
             if (parent.hasPrevious()) {
-                return parent.getPrevious().get(ownType, getProviderClass(), subId);
+                return parent.getPrevious().get(ownType, subId);
             } else {
                 return null;
             }
         }
-        if (prop == IValue.NEXT && source != Source.INVERSE_REFERENCE) {
+        if (prop == NEXT && source != Source.INVERSE_REFERENCE) {
             if (parent.hasNext()) {
-                return parent.getNext().get(ownType, getProviderClass(), subId);
+                return parent.getNext().get(ownType, subId);
             } else {
                 return null;
             }
@@ -42,8 +37,6 @@ public abstract class ParentOrderedScoreBoardEventProviderImpl<T extends ParentO
         return super._computeValue(prop, value, last, source, flag);
     }
 
-    @SuppressWarnings("hiding")
-    protected AddRemoveProperty ownType;
     @SuppressWarnings("hiding")
     protected OrderedScoreBoardEventProvider<?> parent;
     protected String subId;

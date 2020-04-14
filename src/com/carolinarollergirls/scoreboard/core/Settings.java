@@ -8,9 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Settings extends ScoreBoardEventProvider {
@@ -20,12 +19,5 @@ public interface Settings extends ScoreBoardEventProvider {
     // Setting to null deletes a setting.
     public void set(String k, String v);
 
-    public enum Child implements AddRemoveProperty {
-        SETTING(ValWithId.class);
-
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
+    AddRemoveProperty<ValWithId> SETTING = new AddRemoveProperty<>(ValWithId.class, "Setting");
 }

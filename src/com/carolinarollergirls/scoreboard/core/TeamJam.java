@@ -1,16 +1,14 @@
 package com.carolinarollergirls.scoreboard.core;
 
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.NumberedProperty;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 
 public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public Jam getJam();
     public Team getTeam();
-    
+
     public TeamJam getOtherTeam();
 
     public boolean isRunningOrEnded();
@@ -29,7 +27,7 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     public ScoringTrip getCurrentScoringTrip();
     public void addScoringTrip();
     public void removeScoringTrip();
-    
+
     public boolean isLost();
     public boolean isLead();
     public boolean isCalloff();
@@ -44,46 +42,26 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
 
     public Fielding getFielding(FloorPosition fp);
 
-    public enum Value implements PermanentProperty {
-        CURRENT_TRIP(ScoringTrip.class, null),
-        CURRENT_TRIP_NUMBER(Integer.class, 0),
-        LAST_SCORE(Integer.class, 0),
-        OS_OFFSET(Integer.class, 0),
-        JAM_SCORE(Integer.class, 0),
-        AFTER_S_P_SCORE(Integer.class, 0),
-        TOTAL_SCORE(Integer.class, 0),
-        LOST(Boolean.class, false),
-        LEAD(Boolean.class, false),
-        CALLOFF(Boolean.class, false),
-        NO_INITIAL(Boolean.class, true),
-        INJURY(Boolean.class, false),
-        DISPLAY_LEAD(Boolean.class, false),
-        STAR_PASS(Boolean.class, false),
-        STAR_PASS_TRIP(ScoringTrip.class, null),
-        NO_PIVOT(Boolean.class, false);
+    // @formatter:off
+    PermanentProperty<ScoringTrip> CURRENT_TRIP = new PermanentProperty<>(ScoringTrip.class, "CurrentTrip", null);
+    PermanentProperty<Integer> CURRENT_TRIP_NUMBER = new PermanentProperty<>(Integer.class, "CurrentTripNumber", 0);
+    PermanentProperty<Integer> LAST_SCORE = new PermanentProperty<>(Integer.class, "LastScore", 0);
+    PermanentProperty<Integer> OS_OFFSET = new PermanentProperty<>(Integer.class, "OsOffset", 0);
+    PermanentProperty<Integer> JAM_SCORE = new PermanentProperty<>(Integer.class, "JamScore", 0);
+    PermanentProperty<Integer> AFTER_S_P_SCORE = new PermanentProperty<>(Integer.class, "AfterSPScore", 0);
+    PermanentProperty<Integer> TOTAL_SCORE = new PermanentProperty<>(Integer.class, "TotalScore", 0);
+    PermanentProperty<Boolean> LOST = new PermanentProperty<>(Boolean.class, "Lost", false);
+    PermanentProperty<Boolean> LEAD = new PermanentProperty<>(Boolean.class, "Lead", false);
+    PermanentProperty<Boolean> CALLOFF = new PermanentProperty<>(Boolean.class, "Calloff", false);
+    PermanentProperty<Boolean> NO_INITIAL = new PermanentProperty<>(Boolean.class, "NoInitial", true);
+    PermanentProperty<Boolean> INJURY = new PermanentProperty<>(Boolean.class, "Injury", false);
+    PermanentProperty<Boolean> DISPLAY_LEAD = new PermanentProperty<>(Boolean.class, "DisplayLead", false);
+    PermanentProperty<Boolean> STAR_PASS = new PermanentProperty<>(Boolean.class, "StarPass", false);
+    PermanentProperty<ScoringTrip> STAR_PASS_TRIP = new PermanentProperty<>(ScoringTrip.class, "StarPassTrip", null);
+    PermanentProperty<Boolean> NO_PIVOT = new PermanentProperty<>(Boolean.class, "NoPivot", false);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        FIELDING(Fielding.class);
+    AddRemoveProperty<Fielding> FIELDING = new AddRemoveProperty<>(Fielding.class, "Fielding");
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum NChild implements NumberedProperty {
-        SCORING_TRIP(ScoringTrip.class);
-
-        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
-        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
-        @Override
-        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
-    }
+    NumberedProperty<ScoringTrip> SCORING_TRIP = new NumberedProperty<>(ScoringTrip.class, "ScoringTrip");
+    // @formatter:on
 }

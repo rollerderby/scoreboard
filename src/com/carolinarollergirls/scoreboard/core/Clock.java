@@ -8,8 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Clock extends ScoreBoardEventProvider {
@@ -36,29 +36,34 @@ public interface Clock extends ScoreBoardEventProvider {
     public void setTime(long ms);
     /**
      * Add time to the clock.
+     * 
      * @param ms The amount of change (can be negative)
      */
     public void changeTime(long ms);
     /**
      *
-     * @return The clock's maximum time minus the time displayed on the clock (in ms)
+     * @return The clock's maximum time minus the time displayed on the clock (in
+     *         ms)
      */
     public long getInvertedTime();
     /**
      *
-     * @return The time the clock has run (in ms). This is either the time or inverted time depending on the direction of the clock
+     * @return The time the clock has run (in ms). This is either the time or
+     *         inverted time depending on the direction of the clock
      */
     public long getTimeElapsed();
     /**
-     * Change the clock in the direction it is running.
-     * This function is the inverse of changeTime(), when the clock counts down.
+     * Change the clock in the direction it is running. This function is the inverse
+     * of changeTime(), when the clock counts down.
+     * 
      * @param ms The amount of change (can be negative)
      */
     public void elapseTime(long ms);
     public void resetTime();
     /**
      *
-     * @return The time until the clock reaches its maximum or zero (in ms). This is the inverse of getTimeElapsed.
+     * @return The time until the clock reaches its maximum or zero (in ms). This is
+     *         the inverse of getTimeElapsed.
      */
     public long getTimeRemaining();
     public long getMaximumTime();
@@ -75,7 +80,7 @@ public interface Clock extends ScoreBoardEventProvider {
     public void setCountDirectionDown(boolean down);
 
     public long getCurrentIntermissionTime();
-    
+
     public static interface ClockSnapshot {
         public String getId();
         public int getNumber();
@@ -83,31 +88,19 @@ public interface Clock extends ScoreBoardEventProvider {
         public boolean isRunning();
     }
 
-    public enum Value implements PermanentProperty {
-        NAME(String.class, ""),
-        NUMBER(Integer.class, 0),
-        TIME(Long.class, 0L),
-        INVERTED_TIME(Long.class, 0L),
-        MAXIMUM_TIME(Long.class, 0L),
-        DIRECTION(Boolean.class, false),
-        RUNNING(Boolean.class, false);
+    // @formatter:off
+    PermanentProperty<String> NAME = new PermanentProperty<>(String.class, "Name", "");
+    PermanentProperty<Integer> NUMBER = new PermanentProperty<>(Integer.class, "Number", 0);
+    PermanentProperty<Long> TIME = new PermanentProperty<>(Long.class, "Time", 0L);
+    PermanentProperty<Long> INVERTED_TIME = new PermanentProperty<>(Long.class, "InvertedTime", 0L);
+    PermanentProperty<Long> MAXIMUM_TIME = new PermanentProperty<>(Long.class, "MaximumTime", 0L);
+    PermanentProperty<Boolean> DIRECTION = new PermanentProperty<>(Boolean.class, "Direction", false);
+    PermanentProperty<Boolean> RUNNING = new PermanentProperty<>(Boolean.class, "Running", false);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Command implements CommandProperty {
-        START,
-        STOP,
-        RESET_TIME;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    CommandProperty START = new CommandProperty("Start");
+    CommandProperty STOP = new CommandProperty("Stop");
+    CommandProperty RESET_TIME = new CommandProperty("ResetTime");
+    // @formatter:on
 
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";
 

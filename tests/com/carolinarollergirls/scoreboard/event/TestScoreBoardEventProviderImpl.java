@@ -1,52 +1,48 @@
 package com.carolinarollergirls.scoreboard.event;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-
-public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl
+public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl<TestScoreBoardEventProvider>
         implements TestScoreBoardEventProvider {
     public TestScoreBoardEventProviderImpl() {
-        super(null, "", null, TestScoreBoardEventProvider.class, Value.class, Child.class, NChild.class, Command.class);
+        super(null, "", null);
         setupReferences();
     }
-    public TestScoreBoardEventProviderImpl(TestScoreBoardEventProvider parent, String id, AddRemoveProperty type) {
-        super(parent, id, type, TestScoreBoardEventProvider.class, Value.class, Child.class, NChild.class,
-                Command.class);
+    public TestScoreBoardEventProviderImpl(TestScoreBoardEventProvider parent, String id,
+            AddRemoveProperty<TestScoreBoardEventProvider> type) {
+        super(parent, id, type);
         setupReferences();
     }
 
     private void setupReferences() {
-        setInverseReference(Child.MULTIPLE, Value.REFERENCE);
-        setInverseReference(Value.REFERENCE, Child.MULTIPLE);
-        setCopy(Value.RO_INDIRECT_COPY, this, Value.REFERENCE, Value.INT, true);
-        setCopy(Value.RW_INDIRECT_COPY, this, Value.REFERENCE, Value.INT, false);
-        if (parent == null) { add(Child.SINGLETON, new TestScoreBoardEventProviderImpl(this, "", Child.SINGLETON)); }
-        addWriteProtection(Child.SINGLETON);
-        setRecalculated(Value.RECALCULATED).addSource(this, Value.INT).addIndirectSource(this, Value.REFERENCE,
-                Value.INT);
+        addProperties(INT, RO_INDIRECT_COPY, RW_INDIRECT_COPY, RECALCULATED, REFERENCE, MULTIPLE, SINGLETON, NUMBERED,
+                TEST_COMMAND);
+        setInverseReference(MULTIPLE, REFERENCE);
+        setInverseReference(REFERENCE, MULTIPLE);
+        setCopy(RO_INDIRECT_COPY, this, REFERENCE, INT, true);
+        setCopy(RW_INDIRECT_COPY, this, REFERENCE, INT, false);
+        if (parent == null) { add(SINGLETON, new TestScoreBoardEventProviderImpl(this, "", SINGLETON)); }
+        addWriteProtection(SINGLETON);
+        setRecalculated(RECALCULATED).addSource(this, INT).addIndirectSource(this, REFERENCE, INT);
     }
 
     @Override
-    protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
         valuesRecalculated++;
-        if (prop == Value.RECALCULATED) {
+        if (prop == RECALCULATED) {
             return -(Integer) value;
         }
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
         valuesChanged++;
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty prop, ValueWithId item, Source source) {
+    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
         itemsAdded++;
     }
     @Override
-    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
+    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
         itemsRemoved++;
     }
 

@@ -45,66 +45,66 @@ public class ClientsImplTests {
         assertNotNull(d);
         assertEquals(d, clients.getDevice("S1"));
         assertNotEquals("", d.getName());
-        assertNotEquals("", d.get(Device.Value.SESSION_ID_SECRET));
-        assertEquals(0L, d.get(Device.Value.WROTE));
-        assertNotEquals(0, d.get(Device.Value.CREATED));
-        assertEquals(d.get(Device.Value.ACCESSED), d.get(Device.Value.CREATED));
+        assertNotEquals("", d.get(Device.SESSION_ID_SECRET));
+        assertEquals(0L, (long) d.get(Device.WROTE));
+        assertNotEquals(0, (long) d.get(Device.CREATED));
+        assertEquals(d.get(Device.ACCESSED), d.get(Device.CREATED));
 
         Client c = clients.addClient(d.getId(), "remoteaddr", "source", "platform");
-        assertEquals(d, c.get(Client.Value.DEVICE));
-        assertNotEquals(0, c.get(Client.Value.CREATED));
-        assertEquals(0L, c.get(Client.Value.WROTE));
-        assertEquals("remoteaddr", c.get(Client.Value.REMOTE_ADDR));
-        assertEquals("platform", c.get(Client.Value.PLATFORM));
-        assertEquals("source", c.get(Client.Value.SOURCE));
-        assertEquals(c, d.get(Device.Child.CLIENT, Client.class, c.getId()));
-        assertEquals(c.get(Client.Value.REMOTE_ADDR), d.get(Device.Value.REMOTE_ADDR));
-        assertEquals(c.get(Client.Value.PLATFORM), d.get(Device.Value.PLATFORM));
+        assertEquals(d, c.get(Client.DEVICE));
+        assertNotEquals(0, (long) c.get(Client.CREATED));
+        assertEquals(0L, (long) c.get(Client.WROTE));
+        assertEquals("remoteaddr", c.get(Client.REMOTE_ADDR));
+        assertEquals("platform", c.get(Client.PLATFORM));
+        assertEquals("source", c.get(Client.SOURCE));
+        assertEquals(c, d.get(Device.CLIENT, c.getId()));
+        assertEquals(c.get(Client.REMOTE_ADDR), d.get(Device.REMOTE_ADDR));
+        assertEquals(c.get(Client.PLATFORM), d.get(Device.PLATFORM));
         // Session id must not leak anywhere.
-        assertNotEquals(d.getId(), d.get(Device.Value.SESSION_ID_SECRET));
-        assertNotEquals(d.getName(), d.get(Device.Value.SESSION_ID_SECRET));
-        assertNotEquals(d.get(Device.Value.COMMENT), d.get(Device.Value.SESSION_ID_SECRET));
-        assertNotEquals(c.getId(), d.get(Device.Value.SESSION_ID_SECRET));
-        assertNotEquals(c.get(Client.Value.REMOTE_ADDR), d.get(Device.Value.SESSION_ID_SECRET));
-        assertNotEquals(c.get(Client.Value.PLATFORM), d.get(Device.Value.SESSION_ID_SECRET));
+        assertNotEquals(d.getId(), d.get(Device.SESSION_ID_SECRET));
+        assertNotEquals(d.getName(), d.get(Device.SESSION_ID_SECRET));
+        assertNotEquals(d.get(Device.COMMENT), d.get(Device.SESSION_ID_SECRET));
+        assertNotEquals(c.getId(), d.get(Device.SESSION_ID_SECRET));
+        assertNotEquals(c.get(Client.REMOTE_ADDR), d.get(Device.SESSION_ID_SECRET));
+        assertNotEquals(c.get(Client.PLATFORM), d.get(Device.SESSION_ID_SECRET));
 
-        d.set(Device.Value.ACCESSED, 0L);
-        assertEquals(0L, d.get(Device.Value.ACCESSED));
+        d.set(Device.ACCESSED, 0L);
+        assertEquals(0L, (long) d.get(Device.ACCESSED));
         d.access();
-        assertNotEquals(0, d.get(Device.Value.ACCESSED));
+        assertNotEquals(0, (long) d.get(Device.ACCESSED));
 
         c.write();
-        assertNotEquals(0, c.get(Client.Value.WROTE));
-        assertNotEquals(0, d.get(Device.Value.WROTE));
+        assertNotEquals(0, (long) c.get(Client.WROTE));
+        assertNotEquals(0, (long) d.get(Device.WROTE));
 
         // 2nd client
         Client c2 = clients.addClient(d.getId(), "remoteaddr2", "source2", null);
-        assertEquals(d, c2.get(Client.Value.DEVICE));
-        assertEquals(c2, d.get(Device.Child.CLIENT, Client.class, c2.getId()));
-        assertEquals(2, d.numberOf(Device.Child.CLIENT));
-        assertNotEquals(0, c2.get(Client.Value.CREATED));
-        assertEquals(0L, c2.get(Client.Value.WROTE));
-        assertEquals("remoteaddr2", c2.get(Client.Value.REMOTE_ADDR));
-        assertEquals(null, c2.get(Client.Value.PLATFORM));
-        assertEquals("source2", c2.get(Client.Value.SOURCE));
-        assertEquals(c2, d.get(Device.Child.CLIENT, Client.class, c2.getId()));
+        assertEquals(d, c2.get(Client.DEVICE));
+        assertEquals(c2, d.get(Device.CLIENT, c2.getId()));
+        assertEquals(2, d.numberOf(Device.CLIENT));
+        assertNotEquals(0, (long) c2.get(Client.CREATED));
+        assertEquals(0L, (long) c2.get(Client.WROTE));
+        assertEquals("remoteaddr2", c2.get(Client.REMOTE_ADDR));
+        assertEquals(null, c2.get(Client.PLATFORM));
+        assertEquals("source2", c2.get(Client.SOURCE));
+        assertEquals(c2, d.get(Device.CLIENT, c2.getId()));
         // Latest value wines, but do not replace with a null.
-        assertEquals("remoteaddr2", d.get(Device.Value.REMOTE_ADDR));
-        assertEquals("platform", d.get(Device.Value.PLATFORM));
+        assertEquals("remoteaddr2", d.get(Device.REMOTE_ADDR));
+        assertEquals("platform", d.get(Device.PLATFORM));
 
         // Remove, device is left but clients are gone.
         clients.removeClient(c);
-        assertEquals(null, d.get(Device.Child.CLIENT, Client.class, c.getId()));
-        assertEquals(1, d.numberOf(Device.Child.CLIENT));
+        assertEquals(null, d.get(Device.CLIENT, c.getId()));
+        assertEquals(1, d.numberOf(Device.CLIENT));
         clients.removeClient(c2);
-        assertEquals(null, d.get(Device.Child.CLIENT, Client.class, c2.getId()));
-        assertEquals(0, d.numberOf(Device.Child.CLIENT));
-        assertEquals(d, clients.get(Clients.Child.DEVICE, Device.class, d.getId()));
-        assertEquals(0, clients.numberOf(Clients.Child.CLIENT));
-        assertNotEquals(0, d.get(Device.Value.WROTE));
+        assertEquals(null, d.get(Device.CLIENT, c2.getId()));
+        assertEquals(0, d.numberOf(Device.CLIENT));
+        assertEquals(d, clients.get(Clients.DEVICE, d.getId()));
+        assertEquals(0, clients.numberOf(Clients.CLIENT));
+        assertNotEquals(0, (long) d.get(Device.WROTE));
 
-        d.set(Device.Value.COMMENT, "comment");
-        assertEquals("comment", d.get(Device.Value.COMMENT));
+        d.set(Device.COMMENT, "comment");
+        assertEquals("comment", d.get(Device.COMMENT));
     }
 
     @Test
@@ -119,9 +119,9 @@ public class ClientsImplTests {
         ScoreBoardJSONSetter.set(sb, save, Source.JSON);
 
         // No clients after the load is done.
-        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
-        assertEquals(0, clients.numberOf(Clients.Child.CLIENT));
-        assertEquals(0, clients.getDevice("asecret").numberOf(Device.Child.CLIENT));
+        assertEquals(1, clients.numberOf(Clients.DEVICE));
+        assertEquals(0, clients.numberOf(Clients.CLIENT));
+        assertEquals(0, clients.getDevice("asecret").numberOf(Device.CLIENT));
     }
 
     @Test
@@ -166,54 +166,54 @@ public class ClientsImplTests {
         ScoreBoardJSONSetter.set(sb, save, Source.JSON);
 
         // New clients have not been added, existing clients remain.
-        assertEquals(c, clients.get(Clients.Child.CLIENT, Client.class, c.getId()));
-        assertEquals(c2, clients.get(Clients.Child.CLIENT, Client.class, c2.getId()));
-        assertNull(clients.get(Clients.Child.CLIENT, Client.class, "c3"));
-        assertEquals(2, clients.numberOf(Clients.Child.CLIENT));
-        assertEquals(c, clients.get(Clients.Child.CLIENT, Client.class, c.getId()));
-        assertEquals(c2, clients.get(Clients.Child.CLIENT, Client.class, c2.getId()));
+        assertEquals(c, clients.get(Clients.CLIENT, c.getId()));
+        assertEquals(c2, clients.get(Clients.CLIENT, c2.getId()));
+        assertNull(clients.get(Clients.CLIENT, "c3"));
+        assertEquals(2, clients.numberOf(Clients.CLIENT));
+        assertEquals(c, clients.get(Clients.CLIENT, c.getId()));
+        assertEquals(c2, clients.get(Clients.CLIENT, c2.getId()));
         // New device has been added, without a client.
         Device d2 = clients.getDevice("d2s");
-        assertEquals(d, clients.get(Clients.Child.DEVICE, Device.class, d.getId()));
-        assertEquals(d2, clients.get(Clients.Child.DEVICE, Device.class, "d2"));
-        assertEquals(2, clients.numberOf(Clients.Child.DEVICE));
+        assertEquals(d, clients.get(Clients.DEVICE, d.getId()));
+        assertEquals(d2, clients.get(Clients.DEVICE, "d2"));
+        assertEquals(2, clients.numberOf(Clients.DEVICE));
 
         // Comment is allowed to be updated of the device settings,
         // as anyone can do that from the WS.
-        // Remote was empty, so we take a value.
-        assertEquals("d1c", d.get(Device.Value.COMMENT));
-        assertEquals("c2r", d.get(Device.Value.REMOTE_ADDR));
-        assertNotEquals(0, (long) d.get(Device.Value.ACCESSED));
-        assertNotEquals(0, (long) d.get(Device.Value.WROTE));
-        assertEquals("d1s", d.get(Device.Value.SESSION_ID_SECRET));
+        // Remote was empty, so we take a
+        assertEquals("d1c", d.get(Device.COMMENT));
+        assertEquals("c2r", d.get(Device.REMOTE_ADDR));
+        assertNotEquals(0, (long) d.get(Device.ACCESSED));
+        assertNotEquals(0, (long) d.get(Device.WROTE));
+        assertEquals("d1s", d.get(Device.SESSION_ID_SECRET));
         // New device has settings from save.
-        assertEquals("d2c", d2.get(Device.Value.COMMENT));
-        assertEquals("d2r", d2.get(Device.Value.REMOTE_ADDR));
-        assertEquals("d2s", d2.get(Device.Value.SESSION_ID_SECRET));
+        assertEquals("d2c", d2.get(Device.COMMENT));
+        assertEquals("d2r", d2.get(Device.REMOTE_ADDR));
+        assertEquals("d2s", d2.get(Device.SESSION_ID_SECRET));
         // Client settings remain the same.
-        assertEquals("c1r", c.get(Client.Value.REMOTE_ADDR));
+        assertEquals("c1r", c.get(Client.REMOTE_ADDR));
 
     }
 
     @Test
     public void testGCOldDevices() {
         Device d = clients.getOrAddDevice("S1");
-        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
+        assertEquals(1, clients.numberOf(Clients.DEVICE));
         d.access();
 
-        long accessed = (long) d.get(Device.Value.ACCESSED);
+        long accessed = d.get(Device.ACCESSED);
         // Still has comment.
-        d.set(Device.Value.COMMENT, "c");
+        d.set(Device.COMMENT, "c");
         clients.gcOldDevices(accessed + 1);
-        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
+        assertEquals(1, clients.numberOf(Clients.DEVICE));
 
         // Still below threshold.
-        d.set(Device.Value.COMMENT, "");
+        d.set(Device.COMMENT, "");
         clients.gcOldDevices(accessed - 1);
-        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
+        assertEquals(1, clients.numberOf(Clients.DEVICE));
 
         clients.gcOldDevices(accessed + 1);
-        assertEquals(0, clients.numberOf(Clients.Child.DEVICE));
+        assertEquals(0, clients.numberOf(Clients.DEVICE));
     }
 
     protected void fuzzSet(String path) {
@@ -235,17 +235,17 @@ public class ClientsImplTests {
     public void testWritesPrevented() {
         Device d = clients.getOrAddDevice("S1");
         String dId = "ScoreBoard.Clients.Device(" + d.getId() + ")";
-        d.set(Device.Value.COMMENT, "original comment");
+        d.set(Device.COMMENT, "original comment");
         Client c = clients.addClient(d.getId(), "remoteaddr", "source", "platform");
         String cId = "ScoreBoard.Clients.Client(" + c.getId() + ")";
         c.write();
-        long created = (long) d.get(Device.Value.CREATED);
-        long accessed = (long) d.get(Device.Value.ACCESSED);
-        long wrote = (long) d.get(Device.Value.WROTE);
-        String name = (String) d.get(Device.Value.NAME);
+        long created = d.get(Device.CREATED);
+        long accessed = d.get(Device.ACCESSED);
+        long wrote = d.get(Device.WROTE);
+        String name = d.get(Device.NAME);
         // Make times the same for convenience.
-        c.set(Client.Value.CREATED, created);
-        assertEquals(wrote, (long) c.get(Client.Value.WROTE));
+        c.set(Client.CREATED, created);
+        assertEquals(wrote, (long) c.get(Client.WROTE));
 
         // A WS user who can do writes should not be able to hide that a write
         // was performed, or otherwise alter anything beyond a device comment.
@@ -281,30 +281,30 @@ public class ClientsImplTests {
 
         // Clients.
         assertNotNull(sb.getClients());
-        assertEquals(1, clients.numberOf(Clients.Child.CLIENT));
-        assertEquals(1, clients.numberOf(Clients.Child.DEVICE));
-        assertEquals(c, clients.get(Clients.Child.CLIENT, Client.class, c.getId()));
-        assertEquals(d, clients.get(Clients.Child.DEVICE, Device.class, d.getId()));
+        assertEquals(1, clients.numberOf(Clients.CLIENT));
+        assertEquals(1, clients.numberOf(Clients.DEVICE));
+        assertEquals(c, clients.get(Clients.CLIENT, c.getId()));
+        assertEquals(d, clients.get(Clients.DEVICE, d.getId()));
 
         // Device.
-        assertEquals(1, d.numberOf(Device.Child.CLIENT));
-        assertEquals(c, d.get(Device.Child.CLIENT, Client.class, c.getId()));
-        assertEquals("S1", d.get(Device.Value.SESSION_ID_SECRET));
-        assertEquals(name, d.get(Device.Value.NAME));
-        assertEquals("remoteaddr", d.get(Device.Value.REMOTE_ADDR));
-        assertEquals("platform", d.get(Device.Value.PLATFORM));
-        assertEquals(created, (long) d.get(Device.Value.CREATED));
-        assertEquals(wrote, (long) d.get(Device.Value.WROTE));
-        assertEquals(accessed, (long) d.get(Device.Value.ACCESSED));
-        assertEquals("new comment", d.get(Device.Value.COMMENT));
+        assertEquals(1, d.numberOf(Device.CLIENT));
+        assertEquals(c, d.get(Device.CLIENT, c.getId()));
+        assertEquals("S1", d.get(Device.SESSION_ID_SECRET));
+        assertEquals(name, d.get(Device.NAME));
+        assertEquals("remoteaddr", d.get(Device.REMOTE_ADDR));
+        assertEquals("platform", d.get(Device.PLATFORM));
+        assertEquals(created, (long) d.get(Device.CREATED));
+        assertEquals(wrote, (long) d.get(Device.WROTE));
+        assertEquals(accessed, (long) d.get(Device.ACCESSED));
+        assertEquals("new comment", d.get(Device.COMMENT));
 
         // Client.
-        assertEquals(d, c.get(Client.Value.DEVICE));
-        assertEquals(wrote, (long) c.get(Client.Value.WROTE));
-        assertEquals("remoteaddr", c.get(Client.Value.REMOTE_ADDR));
-        assertEquals("platform", c.get(Client.Value.PLATFORM));
-        assertEquals("source", c.get(Client.Value.SOURCE));
-        assertEquals(created, (long) c.get(Client.Value.CREATED));
-        assertEquals(wrote, (long) c.get(Client.Value.WROTE));
+        assertEquals(d, c.get(Client.DEVICE));
+        assertEquals(wrote, (long) c.get(Client.WROTE));
+        assertEquals("remoteaddr", c.get(Client.REMOTE_ADDR));
+        assertEquals("platform", c.get(Client.PLATFORM));
+        assertEquals("source", c.get(Client.SOURCE));
+        assertEquals(created, (long) c.get(Client.CREATED));
+        assertEquals(wrote, (long) c.get(Client.WROTE));
     }
 }

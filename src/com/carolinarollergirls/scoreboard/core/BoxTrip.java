@@ -1,19 +1,18 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
 
 public interface BoxTrip extends ScoreBoardEventProvider {
     public int compareTo(BoxTrip other);
-    
+
     public void end();
     public void unend();
-    
+
     public Team getTeam();
-    
+
     public boolean isCurrent();
     public Fielding getCurrentFielding();
     public Fielding getStartFielding();
@@ -22,50 +21,31 @@ public interface BoxTrip extends ScoreBoardEventProvider {
     public Fielding getEndFielding();
     public boolean endedBetweenJams();
     public boolean endedAfterSP();
-    
-    public enum Value implements PermanentProperty {
-        ID(String.class, ""),
-        IS_CURRENT(Boolean.class, false),
-        CURRENT_FIELDING(Fielding.class, null),
-        START_FIELDING(Fielding.class, null),
-        START_JAM_NUMBER(Integer.class, 0),
-        START_BETWEEN_JAMS(Boolean.class, false),
-        START_AFTER_S_P(Boolean.class, false),
-        END_FIELDING(Fielding.class, null),
-        END_JAM_NUMBER(Integer.class, 0),
-        END_BETWEEN_JAMS(Boolean.class, false),
-        END_AFTER_S_P(Boolean.class, false),
-        WALLTIME_START(Long.class, 0L),
-        WALLTIME_END(Long.class, 0L),
-        JAM_CLOCK_START(Long.class, 0L),
-        JAM_CLOCK_END(Long.class, 0L),
-        DURATION(Long.class, 0L);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        FIELDING(Fielding.class),
-        PENALTY(Penalty.class);
+    // @formatter:off
+    PermanentProperty<Boolean> IS_CURRENT = new PermanentProperty<>(Boolean.class, "IsCurrent", false);
+    PermanentProperty<Fielding> CURRENT_FIELDING = new PermanentProperty<>(Fielding.class, "CurrentFielding", null);
+    PermanentProperty<Fielding> START_FIELDING = new PermanentProperty<>(Fielding.class, "StartFielding", null);
+    PermanentProperty<Integer> START_JAM_NUMBER = new PermanentProperty<>(Integer.class, "StartJamNumber", 0);
+    PermanentProperty<Boolean> START_BETWEEN_JAMS = new PermanentProperty<>(Boolean.class, "StartBetweenJams", false);
+    PermanentProperty<Boolean> START_AFTER_S_P = new PermanentProperty<>(Boolean.class, "StartAfterSP", false);
+    PermanentProperty<Fielding> END_FIELDING = new PermanentProperty<>(Fielding.class, "EndFielding", null);
+    PermanentProperty<Integer> END_JAM_NUMBER = new PermanentProperty<>(Integer.class, "EndJamNumber", 0);
+    PermanentProperty<Boolean> END_BETWEEN_JAMS = new PermanentProperty<>(Boolean.class, "EndBetweenJams", false);
+    PermanentProperty<Boolean> END_AFTER_S_P = new PermanentProperty<>(Boolean.class, "EndAfterSP", false);
+    PermanentProperty<Long> WALLTIME_START = new PermanentProperty<>(Long.class, "WalltimeStart", 0L);
+    PermanentProperty<Long> WALLTIME_END = new PermanentProperty<>(Long.class, "WalltimeEnd", 0L);
+    PermanentProperty<Long> JAM_CLOCK_START = new PermanentProperty<>(Long.class, "JamClockStart", 0L);
+    PermanentProperty<Long> JAM_CLOCK_END = new PermanentProperty<>(Long.class, "JamClockEnd", 0L);
+    PermanentProperty<Long> DURATION = new PermanentProperty<>(Long.class, "Duration", 0L);
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum Command implements CommandProperty {
-        START_EARLIER,
-        START_LATER,
-        END_EARLIER,
-        END_LATER,
-        DELETE;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    AddRemoveProperty<Fielding> FIELDING = new AddRemoveProperty<>(Fielding.class, "Fielding");
+    AddRemoveProperty<Penalty> PENALTY = new AddRemoveProperty<>(Penalty.class, "Penalty");
+
+    CommandProperty START_EARLIER = new CommandProperty("StartEarlier");
+    CommandProperty START_LATER = new CommandProperty("StartLater");
+    CommandProperty END_EARLIER = new CommandProperty("EndEarlier");
+    CommandProperty END_LATER = new CommandProperty("EndLater");
+    CommandProperty DELETE = new CommandProperty("Delete");
+    // @formatter:on
 }

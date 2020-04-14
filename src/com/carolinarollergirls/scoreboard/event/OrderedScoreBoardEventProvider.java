@@ -1,10 +1,15 @@
 package com.carolinarollergirls.scoreboard.event;
 
-public interface OrderedScoreBoardEventProvider<T extends OrderedScoreBoardEventProvider<T>> extends ScoreBoardEventProvider {
+public interface OrderedScoreBoardEventProvider<C extends OrderedScoreBoardEventProvider<C>>
+        extends ScoreBoardEventProvider {
     public int getNumber();
 
-    public T getPrevious();
+    public C getPrevious();
     public boolean hasPrevious();
-    public T getNext();
+    public void setPrevious(C prev);
+    public C getNext();
     public boolean hasNext();
+    public void setNext(C next);
+
+    public static final PermanentProperty<Integer> NUMBER = new PermanentProperty<>(Integer.class, "Number", 0);
 }

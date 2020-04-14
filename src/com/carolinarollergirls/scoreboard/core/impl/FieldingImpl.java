@@ -14,55 +14,56 @@ import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
+import com.carolinarollergirls.scoreboard.event.AddRemoveProperty;
+import com.carolinarollergirls.scoreboard.event.CommandProperty;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
 
 public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Fielding> implements Fielding {
     public FieldingImpl(TeamJam teamJam, Position position) {
-        super(teamJam, position.getProviderId(), TeamJam.Child.FIELDING, Fielding.class, Value.class, Child.class,
-                Command.class);
+        super(teamJam, position.getProviderId(), TeamJam.FIELDING);
+        addProperties(SKATER, SKATER_NUMBER, NOT_FIELDED, POSITION, SIT_FOR_3, PENALTY_BOX, CURRENT_BOX_TRIP,
+                BOX_TRIP_SYMBOLS, BOX_TRIP_SYMBOLS_BEFORE_S_P, BOX_TRIP_SYMBOLS_AFTER_S_P, ANNOTATION, BOX_TRIP,
+                ADD_BOX_TRIP, UNEND_BOX_TRIP);
         this.teamJam = teamJam;
-        set(Value.POSITION, position);
-        addWriteProtection(Value.POSITION);
-        setRecalculated(Value.SKATER_NUMBER).addIndirectSource(this, Value.SKATER, Skater.Value.ROSTER_NUMBER)
-                .addSource(this, Value.NOT_FIELDED);
-        setInverseReference(Child.BOX_TRIP, BoxTrip.Child.FIELDING);
-        setInverseReference(Value.SKATER, Skater.Child.FIELDING);
-        setRecalculated(Value.NOT_FIELDED).addSource(this, Value.SKATER);
+        set(POSITION, position);
+        addWriteProtection(POSITION);
+        setRecalculated(SKATER_NUMBER).addIndirectSource(this, SKATER, Skater.ROSTER_NUMBER).addSource(this,
+                NOT_FIELDED);
+        setInverseReference(BOX_TRIP, BoxTrip.FIELDING);
+        setInverseReference(SKATER, Skater.FIELDING);
+        setRecalculated(NOT_FIELDED).addSource(this, SKATER);
     }
 
     @Override
-    protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == Value.PENALTY_BOX && !source.isFile()) {
+    protected Object computeValue(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == PENALTY_BOX && !source.isFile()) {
             if ((Boolean) value && (getCurrentBoxTrip() == null || !getCurrentBoxTrip().isCurrent())) {
-                if ((Boolean) get(Value.NOT_FIELDED)) {
+                if (get(NOT_FIELDED)) {
                     return false;
                 } else {
-                    getTeamJam().getTeam().add(Team.Child.BOX_TRIP, new BoxTripImpl(this));
+                    getTeamJam().getTeam().add(Team.BOX_TRIP, new BoxTripImpl(this));
                     if (getTeamJam().getTeam().hasFieldingAdvancePending() && isCurrent()) {
                         if (getNext().getSkater() == null && getNext().getCurrentRole() == getCurrentRole()) {
                             getNext().setSkater(getSkater());
                         } else {
                             getTeamJam().getTeam().field(getSkater(), getCurrentRole(), getTeamJam().getNext());
                         }
-                        getCurrentBoxTrip().add(BoxTrip.Child.FIELDING,
-                                getSkater().getFielding(getTeamJam().getNext()));
+                        getCurrentBoxTrip().add(BoxTrip.FIELDING, getSkater().getFielding(getTeamJam().getNext()));
                     }
                 }
             } else if (!(Boolean) value && getCurrentBoxTrip() != null && getCurrentBoxTrip().isCurrent()) {
                 getCurrentBoxTrip().end();
             }
         }
-        if (prop == Value.NOT_FIELDED && (getSkater() != null || numberOf(Child.BOX_TRIP) > 0)) {
+        if (prop == NOT_FIELDED && (getSkater() != null || numberOf(BOX_TRIP) > 0)) {
             return false;
         }
-        if (prop == Value.SKATER_NUMBER) {
+        if (prop == SKATER_NUMBER) {
             if (getSkater() != null) {
                 return getSkater().getNumber();
-            } else if ((Boolean) get(Value.NOT_FIELDED)) {
+            } else if (get(NOT_FIELDED)) {
                 return "n/a";
             } else {
                 return "?";
@@ -71,46 +72,47 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == Value.PENALTY_BOX && isCurrent() && (Boolean) value
+    protected void valueChanged(PermanentProperty<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == PENALTY_BOX && isCurrent() && (Boolean) value
                 && getPosition().getFloorPosition() == FloorPosition.JAMMER && scoreBoard.isInJam()
                 && !teamJam.getOtherTeam().isLead()) {
-            teamJam.set(TeamJam.Value.LOST, true);
+            teamJam.set(TeamJam.LOST, true);
         }
-        if (prop == Value.CURRENT_BOX_TRIP) {
-            set(Value.PENALTY_BOX, value != null && ((BoxTrip) value).isCurrent());
+        if (prop == CURRENT_BOX_TRIP) {
+            set(PENALTY_BOX, value != null && ((BoxTrip) value).isCurrent());
             updateBoxTripSymbols();
         }
-        if (prop == Value.SIT_FOR_3) {
+        if (prop == SIT_FOR_3) {
             updateBoxTripSymbols();
             if (getSkater() != null) {
                 getSkater().updateEligibility();
             }
         }
-        if (prop == Value.NOT_FIELDED && getPosition().getFloorPosition() == FloorPosition.PIVOT) {
+        if (prop == NOT_FIELDED && getPosition().getFloorPosition() == FloorPosition.PIVOT) {
             teamJam.setNoPivot((Boolean) value);
         }
-        if (prop == Value.SKATER && value != null && isInBox() && !source.isFile()) {
+        if (prop == SKATER && value != null && isInBox() && !source.isFile()) {
             for (Penalty p : ((Skater) value).getUnservedPenalties()) {
-                getCurrentBoxTrip().add(BoxTrip.Child.PENALTY, p);
+                getCurrentBoxTrip().add(BoxTrip.PENALTY, p);
             }
         }
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty prop, ValueWithId item, Source source) {
-        if (prop == Child.BOX_TRIP) {
-            if (((BoxTrip) item).isCurrent() || getCurrentBoxTrip() == null) {
-                set(Value.CURRENT_BOX_TRIP, item);
+    protected void itemAdded(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+        if (prop == BOX_TRIP) {
+            BoxTrip bt = (BoxTrip) item;
+            if (bt.isCurrent() || getCurrentBoxTrip() == null) {
+                set(CURRENT_BOX_TRIP, bt);
             }
             updateBoxTripSymbols();
         }
     }
     @Override
-    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
-        if (prop == Child.BOX_TRIP) {
+    protected void itemRemoved(AddRemoveProperty<?> prop, ValueWithId item, Source source) {
+        if (prop == BOX_TRIP) {
             if (item == getCurrentBoxTrip()) {
-                set(Value.CURRENT_BOX_TRIP, null);
+                set(CURRENT_BOX_TRIP, null);
             }
             updateBoxTripSymbols();
         }
@@ -118,15 +120,15 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
 
     @Override
     public void execute(CommandProperty prop, Source source) {
-        if (prop == Command.ADD_BOX_TRIP && !(Boolean) get(Value.NOT_FIELDED)) {
+        if (prop == ADD_BOX_TRIP && !get(NOT_FIELDED)) {
             requestBatchStart();
             BoxTrip bt = new BoxTripImpl(this);
             bt.end();
-            getTeamJam().getTeam().add(Team.Child.BOX_TRIP, bt);
-            add(Child.BOX_TRIP, bt);
+            getTeamJam().getTeam().add(Team.BOX_TRIP, bt);
+            add(BOX_TRIP, bt);
             requestBatchEnd();
         }
-        if (prop == Command.UNEND_BOX_TRIP && getCurrentBoxTrip() != null && !getCurrentBoxTrip().isCurrent()) {
+        if (prop == UNEND_BOX_TRIP && getCurrentBoxTrip() != null && !getCurrentBoxTrip().isCurrent()) {
             getCurrentBoxTrip().unend();
         }
     }
@@ -134,7 +136,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     @Override
     public TeamJam getTeamJam() { return teamJam; }
     @Override
-    public Position getPosition() { return (Position) get(Value.POSITION); }
+    public Position getPosition() { return get(POSITION); }
 
     @Override
     public boolean isCurrent() {
@@ -146,20 +148,20 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     public Role getCurrentRole() { return getPosition().getFloorPosition().getRole(teamJam); }
 
     @Override
-    public Skater getSkater() { return (Skater) get(Value.SKATER); }
+    public Skater getSkater() { return get(SKATER); }
     @Override
-    public void setSkater(Skater s) { set(Value.SKATER, s); }
+    public void setSkater(Skater s) { set(SKATER, s); }
 
     @Override
-    public boolean isSitFor3() { return (Boolean) get(Value.SIT_FOR_3); }
+    public boolean isSitFor3() { return get(SIT_FOR_3); }
     @Override
-    public boolean isInBox() { return (Boolean) get(Value.PENALTY_BOX); }
+    public boolean isInBox() { return get(PENALTY_BOX); }
     @Override
-    public BoxTrip getCurrentBoxTrip() { return (BoxTrip) get(Value.CURRENT_BOX_TRIP); }
+    public BoxTrip getCurrentBoxTrip() { return get(CURRENT_BOX_TRIP); }
     @Override
     public void updateBoxTripSymbols() {
         List<BoxTrip> trips = new ArrayList<>();
-        for (BoxTrip bt : getAll(Child.BOX_TRIP, BoxTrip.class)) {
+        for (BoxTrip bt : getAll(BOX_TRIP)) {
             trips.add(bt);
         }
         Collections.sort(trips, new Comparator<BoxTrip>() {
@@ -222,9 +224,9 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 beforeSP.append(" 3");
             }
         }
-        set(Value.BOX_TRIP_SYMBOLS_BEFORE_S_P, beforeSP.toString());
-        set(Value.BOX_TRIP_SYMBOLS_AFTER_S_P, afterSP.toString());
-        set(Value.BOX_TRIP_SYMBOLS, jam.toString());
+        set(BOX_TRIP_SYMBOLS_BEFORE_S_P, beforeSP.toString());
+        set(BOX_TRIP_SYMBOLS_AFTER_S_P, afterSP.toString());
+        set(BOX_TRIP_SYMBOLS, jam.toString());
     }
 
     private TeamJam teamJam;

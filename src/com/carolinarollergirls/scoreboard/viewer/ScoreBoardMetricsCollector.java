@@ -41,7 +41,7 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily clockNumber = new GaugeMetricFamily("crg_scoreboard_clock_number",
                 "Number on scoreboard clock.", Arrays.asList("clock"));
         mfs.add(clockNumber);
-        for (Clock c : sb.getAll(ScoreBoard.Child.CLOCK, Clock.class)) {
+        for (Clock c : sb.getAll(ScoreBoard.CLOCK)) {
             clockTime.addMetric(Arrays.asList(c.getName()), (float) c.getTime() / 1000);
             clockInvertedTime.addMetric(Arrays.asList(c.getName()), (float) c.getInvertedTime() / 1000);
             clockRunning.addMetric(Arrays.asList(c.getName()), c.isRunning() ? 1 : 0);
@@ -51,7 +51,7 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily score = new GaugeMetricFamily("crg_scoreboard_team_score", "Score on scoreboard.",
                 Arrays.asList("team", "name"));
         mfs.add(score);
-        for (Team t : sb.getAll(ScoreBoard.Child.TEAM, Team.class)) {
+        for (Team t : sb.getAll(ScoreBoard.TEAM)) {
             score.addMetric(Arrays.asList(t.getId(), t.getName()), t.getScore());
         }
 
