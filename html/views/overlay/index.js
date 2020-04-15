@@ -50,14 +50,15 @@ function initialize() {
 						$(mb).removeClass('NoShow');
 					}
 					updateSort(mb);
-				} else {
-					// Name or Number, replace empty string with nbsp
-					$('.'+k.field, me).text(v == '' ? '\xa0' : v);
-					$('.'+k.field, mb).text(v == '' ? '\xa0' : v);
-					if (k.field == 'RosterNumber') {
+				} else if (k.field == 'RosterNumber') {
+					$('.Number', me).text(v == '' ? '\xa0' : v);
+					$('.Number', mb).text(v == '' ? '\xa0' : v);
 						updateSort(me);
 						updateSort(mb);
-					}
+				} else {
+					// Name, replace empty string with nbsp
+					$('.'+k.field, me).text(v == '' ? '\xa0' : v);
+					$('.'+k.field, mb).text(v == '' ? '\xa0' : v);
 				}
 	});
 

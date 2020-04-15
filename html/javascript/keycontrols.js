@@ -48,18 +48,18 @@ _crgKeyControls = {
 	setupKeyControl: function(button, operator) {
 		_crgKeyControls._start(operator);
 		_crgKeyControls.destroyKeyControl(button)
-			.addClass("KeyControl")
-			.bind("mouseenter mouseleave", _crgKeyControls._hoverFunction)
-			.children("span")
-			.append($("<span>").text(" [").addClass("Indicator"))
-			.append($("<span>").addClass("Key Indicator"))
-			.append($("<span>").text("]").addClass("Indicator"))
+			.addClass('KeyControl')
+			.on('mouseenter mouseleave', _crgKeyControls._hoverFunction)
+			.children('span')
+			.append($('<span>').text(' [').addClass('Indicator'))
+			.append($('<span>').addClass('Key Indicator'))
+			.append($('<span>').text(']').addClass('Indicator'))
 			.end()
 			.each(function() {
 				var button = $(this);
 				var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.KeyControl.' + button.attr('id') + ')';
 				var key = WS.state[prop];
-				button.attr('_crgKeyControls_prop', prop).toggleClass("HasControlKey", (key?true:false));
+				button.attr('_crgKeyControls_prop', prop).toggleClass('HasControlKey', (key?true:false));
 				button.find('span.Key').attr('data-keycontrol', String(key?key.charCodeAt(0):'')).text(key?key:'');
 			});
 		return button;
@@ -74,7 +74,7 @@ _crgKeyControls = {
 	 */
 	destroyKeyControl: function(button) {
 		button.attr("_crgKeyControls_prop", false);
-		button.unbind("mouseenter mouseleave", _crgKeyControls._hoverFunction);
+		button.off("mouseenter mouseleave", _crgKeyControls._hoverFunction);
 		button.find("span.Indicator").remove();
 		return button;
 	},
@@ -106,8 +106,8 @@ _crgKeyControls = {
 	_start: function(operator) {
 		_crgKeyControls.operator = operator;
 		if (!_crgKeyControls._keyControlStarted) {
-			$(document).keypress(_crgKeyControls._keyControlPress);
-			$(document).keydown(_crgKeyControls._keyControlDown);
+			$(document).on('keypress', _crgKeyControls._keyControlPress);
+			$(document).on('keydown', _crgKeyControls._keyControlDown);
 
 			WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.*)", function(k, v) {
 				if (!k.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator__" + _crgKeyControls.operator + ".KeyControl.")) return;
@@ -153,11 +153,11 @@ _crgKeyControls = {
 		var editing = controls.filter(".Editing");
 
 		// Perform the corresponding button's action
-		var target = active.has("span.Key[data-keycontrol='"+event.which+"']").click();
+		var target = active.has("span.Key[data-keycontrol='"+event.which+"']").trigger('click');
 		// FIXME - workaround seemingly broken jQuery-UI
 		// which does not fire change event for radio buttons when click() is called on their label...
 		if (target.is("label"))
-			target.filter("label").each(function() { $("#"+$(this).attr("for")).change(); });
+			target.filter("label").each(function() { $("#"+$(this).attr("for")).trigger('change'); });
 
 		// Update the hovered button if in edit mode
 		var editingTarget = editing.filter(".hover");
@@ -211,7 +211,7 @@ _crgKeyControls = {
 			.text("Assign '"+key+"' to only this control, remove from the other "+n+" control"+s)
 			.button()
 			.appendTo(div)
-			.click(function() {
+			.on('click', function() {
 				_crgKeyControls._clearKey(existing);
 				_crgKeyControls._setKey(target, key);
 				div.dialog("close");
@@ -221,7 +221,7 @@ _crgKeyControls = {
 			.text("Assign '"+key+"' to this control and the other "+n+" control"+s)
 			.button()
 			.appendTo(div)
-			.click(function() {
+			.on('click', function() {
 				_crgKeyControls._setKey(target, key);
 				div.dialog("close");
 			});

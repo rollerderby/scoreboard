@@ -142,7 +142,7 @@ html > body div.Wrapper .FloatRight { float: right !important; right: 0; }
 .TeamBox .JammerBox .JammerName,
 .TeamBox .Team .Name			{ text-align: left; overflow: hidden; font-size: 80%; }
 
-.TeamBox .Team .Indicator		{ width: .5em; height: 100%;}
+.TeamBox .Indicator		{ width: 1.6em; height: 100%; text-align: center; font-size: 75%; }
 .TeamBox .JammerBox .JammerName		{ font-size: 50%; margin-left: 1vw; height: 100%; }
 .TeamBox .Team      { border-right: 2px solid #333; }
 
@@ -282,18 +282,18 @@ div.AnimatedPanel {
 div.AnimatedPanel.PanelHideRight 	{ -webkit-transform: translateX(200%); }
 div.AnimatedPanel.PanelHideLeft  	{ -webkit-transform: translateX(-200%); }
 
-div.AnimatedPanel.PanelHideRight.show,
-div.AnimatedPanel.PanelHideLeft.show 	{ -webkit-transform: translateX(-50%); }
+div.AnimatedPanel.PanelHideRight.Show,
+div.AnimatedPanel.PanelHideLeft.Show 	{ -webkit-transform: translateX(-50%); }
 
-div.PanelWrapperLeft   .AnimatedPanel.show  { -webkit-transform: translateY(0); }
+div.PanelWrapperLeft   .AnimatedPanel.Show  { -webkit-transform: translateY(0); }
 
 .AnimatedPanel.PanelHideTop 	{ -webkit-transform: translateY(-160%); }
-div.PanelWrapperCenter .AnimatedPanel.PanelHideTop.show { -webkit-transform: translateY(-80%); }
+div.PanelWrapperCenter .AnimatedPanel.PanelHideTop.Show { -webkit-transform: translateY(-80%); }
 
 div.PanelWrapperCenter .AnimatedPanel.PanelHideBottom 	{ -webkit-transform: translateY(200%); }
-div.PanelWrapperCenter .AnimatedPanel.PanelHideBottom.show,
+div.PanelWrapperCenter .AnimatedPanel.PanelHideBottom.Show,
 
-div.PanelWrapperTop    .AnimatedPanel.PanelHideTop.show	{ -webkit-transform: translateY(5%); }
+div.PanelWrapperTop    .AnimatedPanel.PanelHideTop.Show	{ -webkit-transform: translateY(5%); }
 
 
 .JammerWrapper .JammerBox  { background: #333; color: white; }

@@ -1,8 +1,8 @@
 #Teams { width: 100%; }
-#Teams>tbody>tr>td { text-align: center; }
-#Teams>tbody>tr.Selection>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
-#Teams>tbody>tr.Selection.NoneSelected>td { border-radius: 12px; }
-#Teams>tbody>tr.Team>td { background: #eee; border-radius: 0px 0px 12px 12px; }
+#Teams>tr>td { text-align: center; }
+#Teams>tr.Selection>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
+#Teams>tr.Selection.NoneSelected>td { border-radius: 12px; }
+#Teams>tr.Team>td { background: #eee; border-radius: 0px 0px 12px 12px; }
 
 #Teams table.Team { width: 100%; border-spacing: 0px; }
 #Teams table.Team.Hide { display: none; }
@@ -14,7 +14,7 @@
 #Teams table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; }
 #Teams table.Skaters tbody tr:nth-child(2n) { background: #ccc; }
 #Teams table.Skaters col.Name { width: 40%; }
-#Teams table.Skaters col.Number { width: 30%; }
+#Teams table.Skaters col.RosterNumber { width: 30%; }
 #Teams table.Skaters col.Button { width: 15%; }
 
 #Teams table.Skaters th.Title { font-size: 200%; }

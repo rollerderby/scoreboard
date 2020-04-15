@@ -2,11 +2,11 @@
 $(function() {
   var formatSpecifiers = {};
 
-  $("button.TestMode").click(function(){
+  $("button.TestMode").on('click', function(){
     WS.Set("ScoreBoard.Twitter.TestMode", $(this).attr('checked') == null);
   }).button();
 
-  $("button.Login").click(function() {
+  $("button.Login").on('click', function() {
     WS.Set("ScoreBoard.Twitter.CallbackUrl", window.location.protocol+"//"+window.location.host+"/controls/twitter_auth.html");
     WS.Set("ScoreBoard.Twitter.Login", true);
   }).button();
@@ -16,15 +16,15 @@ $(function() {
     }
   });
 
-  $("button.Logout").click(function() { WS.Set("ScoreBoard.Twitter.Logout", true)}).button();
+  $("button.Logout").on('click', function() { WS.Set("ScoreBoard.Twitter.Logout", true)}).button();
 
-  $("p.DirectTweet button.Tweet").click(function() {
+  $("p.DirectTweet button.Tweet").on('click', function() {
     WS.Set("ScoreBoard.Twitter.ManualTweet", $("p.DirectTweet input:text.Tweet").val());
     $("p.DirectTweet input:text.Tweet").val("").focus();
   }).button();
-  $("p.DirectTweet input:text.Tweet").keydown(function(event) {
+  $("p.DirectTweet input:text.Tweet").on('keydown', function(event) {
     if (event.which == 13) // Pressed Enter
-      $("p.DirectTweet button.Tweet").click();
+      $("p.DirectTweet button.Tweet").trigger('click');
   });
 
   WS.Register(["ScoreBoard.Twitter.LoggedIn", "ScoreBoard.Twitter.TestMode"], function(k, v) {
@@ -52,14 +52,14 @@ $(function() {
     }
   });
 
-  $("button.EditConditionalTweets").click(function() {
+  $("button.EditConditionalTweets").on('click', function() {
     var checked = ($(this).attr('checked') == null);
     $("#ConditionalTweetConfiguration").toggleClass("show", checked);
     $(this).button("option", "label", (checked ? "Hide Conditional Tweets" : "Edit Conditional Tweets"));
     $(this).attr('checked', checked);
   }).button();
 
-  $("p.AddConditionalTweet button.Add").click(function() {
+  $("p.AddConditionalTweet button.Add").on('click', function() {
     var p = $(this).closest("p");
     var conditionInput = p.find("input:text.Condition");
     var tweetInput = p.find("input:text.Tweet");
@@ -74,7 +74,7 @@ $(function() {
     conditionInput.val("").trigger("input").focus();
     p.removeClass("Update");
   }).button();
-  $("p.AddConditionalTweet button.Cancel").click(function() {
+  $("p.AddConditionalTweet button.Cancel").on('click', function() {
     var p = $(this).closest("p");
     p.find("input:text.UpdateId").val("");
     p.find("input:text.Tweet").val("");
@@ -82,9 +82,9 @@ $(function() {
     p.find("input:text").trigger("input");
     p.removeClass("Update");
   }).button();
-  $("p.AddConditionalTweet input:text.Tweet").keydown(function(event) {
+  $("p.AddConditionalTweet input:text.Tweet").on('keydown', function(event) {
     if (event.which == 13) // Pressed Enter
-      $("p.AddConditionalTweet button.Add").click();
+      $("p.AddConditionalTweet button.Add").trigger('click');
   });
 	WS.Register(["ScoreBoard.Twitter.ConditionalTweet(*).Condition",
 			"ScoreBoard.Twitter.ConditionalTweet(*).Tweet"], function(k, v) {
@@ -100,8 +100,8 @@ $(function() {
       tr = $("#ConditionalTweets>tbody>tr.ConditionalTweet.Template").clone(true)
         .removeClass("Template").attr("conditionId", id)
         .appendTo("#ConditionalTweets>tbody");
-      tr.find("button.Remove").click(function() { WS.Set(prefix, null); });
-      tr.find("button.Edit").click(function() {
+      tr.find("button.Remove").on('click', function() { WS.Set(prefix, null); });
+      tr.find("button.Edit").on('click', function() {
         $("p.AddConditionalTweet").addClass("Update");
         $("p.AddConditionalTweet input:text.UpdateId").val(id);
         $("p.AddConditionalTweet input:text.Condition").val(WS.state[prefix + ".Condition"]);
@@ -120,10 +120,10 @@ $(function() {
   });
 
   $("#HelpText").insertBefore("#ConditionalTweets");
-  $("#ShowHelp").change(function() {
+  $("#ShowHelp").on('change', function() {
     $("#HelpText").toggle(this.checked);
     $(this).button("option", "label", (this.checked?"Hide Help":"Show Help"));
-  }).after("<label for=ShowHelp />").button().change();
+  }).after("<label for=ShowHelp />").button().trigger('change');
 
   WS.Register(["ScoreBoard.Twitter.FormatSpecifier"], function(k, v) {
     var ul = $("ul.FormatSpecifierDescriptions");
@@ -155,7 +155,7 @@ $(function() {
   $.each( [ "Condition", "Tweet" ], function(i,e) {
     var div = $("#ConditionalTweetConfiguration");
     var input = div.find("input:text."+e);
-    input.bind("input", function() {
+    input.on("input", function() {
       div.find("a.Preview."+e).text(replaceSpecifiers(input.val()));
     })
   });

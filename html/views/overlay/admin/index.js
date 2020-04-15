@@ -34,7 +34,7 @@ function initialize() {
 				$t.val(v).toggleClass('current', (v != null && v != ""));
 			} else {
 				if($t.prop('tagName') == 'SELECT') { 	
-					$('option[value=' + v + ']', $t).attr('selected', 'selected');
+					$('option[value="' + v + '"]', $t).attr('selected', 'selected');
 				} else {
 					if(!$t.hasClass('NoToggle')) $t.toggleClass('current', $t.val() == v);
 				}
@@ -84,7 +84,7 @@ function initialize() {
 	WS.AutoRegister();
 }
 
-$('#Controls input, #Controls .Selector').change(function() {
+$('#Controls input, #Controls .Selector').on('change', function() {
 	t = $(this).attr('data-setting');
 	v = $(this).val();
 	if ($(this).attr("type") == "color") {
@@ -98,7 +98,7 @@ $('#Controls input, #Controls .Selector').change(function() {
 	}
 });
 
-$('.SelectUpdator').change(function() {
+$('.SelectUpdator').on('change', function() {
 	$t = $(this);
 	v = $t.val();
 
@@ -112,7 +112,7 @@ $('.SelectUpdator').change(function() {
 		if(field) 
 			$(target).attr(field, v);
 		else 
-			$(target).val(v).change();
+			$(target).val(v).trigger('change');
 
 		// flag it as changed
 		if(ov != v) $(target).addClass('changed');
@@ -127,19 +127,19 @@ $('.SelectUpdator').change(function() {
 
 });
 
-$('select#Skaters').change(function(e) {
+$('select#Skaters').on('change', function(e) {
 	$t = $(this);
 	v = $t.val();
 	team = $( 'option[value=' + v + ']', $t ).attr('data-team');
 	name = $( 'option[value=' + v + ']', $t ).attr('data-name');
 	tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
 	tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
-	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').change();
-	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(name).change();
-	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(tnam).change();
+	f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').trigger('change');
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(name).trigger('change');
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(tnam).trigger('change');
 });
 
-$('select#Keepers').change(function(e) {
+$('select#Keepers').on('change', function(e) {
 	var $t = $(this);
 	v = $t.val();
 
@@ -148,13 +148,13 @@ $('select#Keepers').change(function(e) {
 	var line2 = $d.attr('data-line2');
 	var style = $d.attr('data-style');
 
-	$('#LowerThirdStyle option[value=' + style + ']').attr('selected', 'selected').change();
-	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(line1).change();
-	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(line2).change();
+	$('#LowerThirdStyle option[value=' + style + ']').attr('selected', 'selected').trigger('change');
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(line1).trigger('change');
+	$('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(line2).trigger('change');
 });
 
-$('#KeeperAdd').click(function() {
-	$('#LowerThirdStyle').change();
+$('#KeeperAdd').on('click', function() {
+	$('#LowerThirdStyle').trigger('change');
 	var line1 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val();
 	var line2 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val();
 	var style = $('#LowerStyle').val();
@@ -168,7 +168,7 @@ $('#KeeperAdd').click(function() {
 
 
 
-$('#Controls button').click(function() { 
+$('#Controls button').on('click', function() { 
 	$t = $(this);
 	v = $t.val();
 	$t.removeClass('changed'); 
@@ -189,15 +189,15 @@ $('#Controls button').click(function() {
 });
 
 $(function() {
-    $(document).keyup(function(e) {
+    $(document).on('keyup', function(e) {
 	var tag = e.target.tagName.toLowerCase();
 	var c = String.fromCharCode(e.keyCode || e.charCode).toUpperCase();
 	if (e.keyCode == 27) { $('body').focus(); e.preventDefault(); return false; }
         if ( tag != 'input' && tag != 'textarea') {
 		$('[data-key="' + c + '"]').each(function() {
 			$t = $(this);
-			if($t.prop('tagName') == 'OPTION') { $t.attr('selected', 'selected').parent().change(); }
-			if($t.prop('tagName') == 'BUTTON') { $t.click(); }
+			if($t.prop('tagName') == 'OPTION') { $t.attr('selected', 'selected').parent().trigger('change'); }
+			if($t.prop('tagName') == 'BUTTON') { $t.trigger('click'); }
 		});
 		e.preventDefault();
 	}

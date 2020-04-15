@@ -34,7 +34,8 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
             implements PreparedTeamSkater {
         PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
             super(parent, id, PreparedTeam.SKATER);
-            addProperties(NAME, ROSTER_NUMBER, FLAGS);
+            addProperties(NAME, ROSTER_NUMBER, NUMBER_OLD, FLAGS);
+            setCopy(NUMBER_OLD, this, ROSTER_NUMBER, false);
         }
     }
 }

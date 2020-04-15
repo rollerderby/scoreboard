@@ -4,7 +4,7 @@ function toggleButton(key, trueText, falseText) {
 	var id = newUUID();
 	button.first().attr("for", id);
 	var input = button.last().attr("id", id).button();
-	input.change(function(e) { WS.Set(key, input.prop("checked")); });
+	input.on('change', function(e) { WS.Set(key, input.prop("checked")); });
 	input.button("option", "label", falseText);
 	WS.Register(key, function(k, v) {
 		input.button("option", "label", isTrue(v)?trueText:falseText)
@@ -30,7 +30,7 @@ function mediaSelect(key, format, type, humanName) {
 
 
 function WSActiveButton(key, button) {
-	button.click(function() { WS.Set(key, !button.hasClass("Active"));} );
+	button.on('click', function() { WS.Set(key, !button.hasClass("Active"));} );
 	WS.Register(key, function (k, v) {
 		button.toggleClass("Active", isTrue(v));
 	});
@@ -38,7 +38,7 @@ function WSActiveButton(key, button) {
 }
 
 function WSControl(key, element) {
-	element.change(function() { WS.Set(key, element.val()); });
+	element.on('change', function() { WS.Set(key, element.val()); });
 	WS.Register(key, function(k, v) { element.val(v); });
 	return element;
 }

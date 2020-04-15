@@ -8,7 +8,7 @@ function createScoreBoardSettingsTab(tab) {
 		table.toggleClass("UsePreview", !isTrue(this.checked));
 	});
 	var applyPreviewButton = $("<button>Apply Preview</button>").button()
-		.click(function() {
+		.on('click', function() {
 			var done = {};
 			table.find(".Preview [ApplyPreview]").each(function(_, e) {
 				var name = $(e).attr("ApplyPreview");
@@ -37,7 +37,7 @@ function createScoreBoardSettingsTab(tab) {
 		.first().append("<a>Current</a>")
 		.next().append("<a>Preview</a>");
 
-	var previewButton = $("<button>").html("Show Preview").click(function() {
+	var previewButton = $("<button>").html("Show Preview").on('click', function() {
 		$("<iframe>Your browser does not support iframes.</iframe>")
 			.attr({ scrolling: "no", frameborder: "0", src: $(this).attr("src") })
 			.replaceAll(this);
@@ -57,24 +57,25 @@ function createScoreBoardViewPreviewRows(table, type) {
 	var currentViewTd = $("<tr><td/></tr>").addClass(type).appendTo(table)
 		.children("td").addClass("Header NoChildren CurrentView")
 		.attr("ApplyPreview", "CurrentView")
+		.append($('<span>')
 		.append("<label >ScoreBoard</label><input type='radio' value='scoreboard'/>")
 		.append("<label >WhiteBoard</label><input type='radio' value='whiteboard'/>")
 		.append("<label >Image</label><input type='radio' value='image'/>")
 		.append("<label >Video</label><input type='radio' value='video'/>")
-		.append("<label >Custom Page</label><input type='radio' value='html'/>");
+		.append("<label >Custom Page</label><input type='radio' value='html'/>"));
 
-	currentViewTd.children("input")
+	currentViewTd.children('span').children("input")
 		.attr("name", "createScoreBoardViewPreviewRows" + type)
 		.each(function(_, e) {
 			e = $(e);
 			e.attr("id", "createScoreBoardViewPreviewRows" + e.attr("value") + type);
 			e.prev().attr("for", "createScoreBoardViewPreviewRows" + e.attr("value") + type);
 		})
-	.change(function(e) {
+	.on('change', function(e) {
 		WS.Set("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)", e.target.value);
 	});
 
-	currentViewTd.buttonset({items: "input"}).prepend("<a>Current View : </a>");
+	currentViewTd.children('span').controlgroup({items: {button: "input"}}).end().prepend("<a>Current View : </a>");
 
 	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard." + type + "_CurrentView)", function(k, v) {
 		currentViewTd.children("input[value=" + v + "]").prop("checked", true).button("refresh");
@@ -86,7 +87,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 
 	var intermissionControlDialog = createIntermissionControlDialog();
 	var intermissionControlButton = $("<button>Intermission Labels</button>").button().addClass("ui-button-small")
-		.click(function() { intermissionControlDialog.dialog("open"); });
+		.on('click', function() { intermissionControlDialog.dialog("open"); });
 
 	var syncClocksButton = toggleButton("ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)", "Clocks Synced", "Clocks Unsynced");
 	var useLTButton = toggleButton('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', 'CRG Tracks Lineups', 'Lineup Tracking Disabled');
@@ -165,7 +166,7 @@ function createIntermissionControlDialog() {
 		var row = $("<tr>").appendTo(table);
 		$("<td>").addClass("Name").text(field.display).appendTo(row);
 		var input = $("<input>").attr("type", "text").val(WS.state[path])
-			.bind("input", function(e) { WS.Set(path, e.target.value); })
+			.on("input", function(e) { WS.Set(path, e.target.value); })
 			.appendTo($("<td>").addClass("Value").appendTo(row));
 		WS.Register(path, function(k, v) { input.val(v); } );
 	});

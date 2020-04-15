@@ -9,8 +9,8 @@ package com.carolinarollergirls.scoreboard.core;
  */
 
 import com.carolinarollergirls.scoreboard.event.Child;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 // Roster for teams for loading in for games.
@@ -27,6 +27,8 @@ public interface PreparedTeam extends ScoreBoardEventProvider {
         @SuppressWarnings("hiding")
         Value<String> NAME = new Value<>(String.class, "Name", "");
         Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
+        Value<String> NUMBER_OLD = new Value<>(String.class, "Number", ""); // for compatibility with older autosaves
+                                                                            // and exports
         Value<String> FLAGS = new Value<>(String.class, "Flags", "");
     }
 }

@@ -30,7 +30,7 @@
 	#JamControlPage div.Period div.Number { font-size: 200% }
 	#JamControlPage div.Period div.PeriodTime { font-size: 500%; }
 	#JamControlPage div.Time a.Time { font-size: 150%; }
-	#JamControlPage span.Label { display:block; min-height: 1.4em; }
+	#JamControlPage span.Label { min-height: 1.4em; }
 /* END JamControlPage */
 
 /* PeriodTimePage */

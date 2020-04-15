@@ -4,15 +4,14 @@
 /* Key Control */
 	.KeyControl span.Indicator { font-size: 75%; }
 	.KeyControl:not(.HasControlKey) span.Indicator { display: none; }
-	.KeyControl>span { padding: .3em .6em !important; }
 	.KeyControl.Editing { border: 1px solid #f00; }
 	.KeyControl.Editing.hover { background: #faa; }
 /* End Key Control */
 
 #TeamTime { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; }
 #TeamTime a { font-weight: bold; }
-#TeamTime .ui-button-text { font-size: 80%; line-height: 1em; }
-#TeamTime .BigButton .ui-button-text { font-size: 100%; line-height: 1.4em; }
+#TeamTime .ui-button { font-size: 80%; line-height: 1em; padding: .4em; }
+#TeamTime .BigButton.ui-button { font-size: 100%; line-height: 1.4em; }
 
 #TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
 #TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
@@ -25,10 +24,12 @@
 
 #TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
 #TeamTime table.MetaControl { font-size: 65%; }
+#TeamTime table.MetaControl .ui-button { padding: .7em; }
 #TeamTime table.MetaControl>tbody>tr>td { background: #eee; }
 
 #TeamTime table.JamControl>tbody>tr>td { width: 100%; }
 #TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
+#TeamTime table.JamControl .ui-button { font-size: 100%; padding: .3em; }
 #TeamTime table.JamControl .Label { display: inline-block; min-width:50px; }
 #TeamTime table.JamControl .Hidden { display: none; }
 
@@ -44,14 +45,15 @@
 #TeamTime table.Team tr.Timeout td.OfficialTimeout { position: relative; }
 #TeamTime table.Team tr.Timeout td.OfficialTimeout>div { position: absolute; left: 50%; width: 100%; }
 #TeamTime table.Team tr.Timeout td.OfficialTimeout button { transform: translateY(-50%); }
-#TeamTime table.Team tr.Jammer td.ui-buttonset label.Lead.ui-state-active { background: #3f3; }
-#TeamTime table.Team tr.Jammer td.ui-buttonset label.StarPass.ui-state-active { background: #3f3; }
+#TeamTime table.Team tr.Jammer td.ui-controlgroup label.Lead.ui-state-active { background: #3f3; }
+#TeamTime table.Team tr.Jammer td.ui-controlgroup label.StarPass.ui-state-active { background: #3f3; }
 
-#TeamTime .skaterSelector>button { border-radius: 0; }
-#TeamTime .skaterSelector>button:first-of-type { border-radius: 12px 0px 0px 12px; border-top: none; }
-#TeamTime .skaterSelector>button:last-of-type { border-radius: 0px 12px 12px 0px; }
-#TeamTime .skaterSelector>button:only-of-type { border-radius: 12px; }
-#TeamTime .skaterSelector>button>span { padding-top: 0.3em; padding-bottom: 0.3em; }
+#TeamTime .ui-controlgroup { text-align: center; }
+#TeamTime .ui-controlgroup>button { border-radius: 0; margin: 0; }
+#TeamTime .ui-controlgroup>button:first-of-type { border-radius: 6px 0px 0px 6px; }
+#TeamTime .ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; }
+#TeamTime .ui-controlgroup>button:only-of-type { border-radius: 6px; }
+#TeamTime .ui-controlgroup>button>span { padding-top: 0.3em; padding-bottom: 0.3em; }
 
 #TeamTime table.Team button.Box.Hide {display: none }
 #TeamTime table.Team button.Box.Active { color: #000; background: #F33; }
