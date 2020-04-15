@@ -19,7 +19,7 @@ $(function() {
 
   function getDeviceTbody(id) {
     var tbody = deviceTable.children('[deviceId="'+ id +'"]');
-    if (tbody.length == 0) {
+    if (tbody.length === 0) {
       var prefix = 'ScoreBoard.Clients.Device(' + id + ')';
       var name = WS.state[prefix + '.Name'];
       tbody = $('<tbody>').attr('deviceId', id).attr('name', name)
@@ -40,12 +40,12 @@ $(function() {
     return tbody;
   }
 
-	WS.Register(['ScoreBoard.Clients.Device(*)'], function(k, v) {
+  WS.Register(['ScoreBoard.Clients.Device(*)'], function(k, v) {
     var id = k.Device;
-    if (k.field == 'Client') {
+    if (k.field === 'Client') {
       return;
     }
-    if (v == null) {
+    if (v === null) {
       deviceTable.children('tbody[deviceId="'+ id +'"]').remove();
       return;
     }
@@ -68,23 +68,23 @@ $(function() {
         break;
       case 'Wrote':
         updateAge(tr.children('td.LastWrite').attr('age', v).attr('title', new Date(v)));
-        tbody.toggleClass('HasWritten', v != 0);
+        tbody.toggleClass('HasWritten', v !== 0);
         break;
       case 'Created':
         updateAge(tr.children('td.Created').attr('age', v).attr('title', new Date(v)));
         break;
       case 'Comment':
         tr.children('.Comment').children('input').val(v);
-        tbody.toggleClass('HasComment', v != '');
+        tbody.toggleClass('HasComment', v !== '');
         break;
     }
   });
 
-	WS.Register(['ScoreBoard.Clients.Client(*)'], function(k, v) {
+  WS.Register(['ScoreBoard.Clients.Client(*)'], function(k, v) {
     var id = k.Client;
-    if (v == null) {
+    if (v === null) {
       var tr = deviceTable.find('tr[clientId="'+ id +'"]');
-      if (tr.siblings().length == 1) {
+      if (tr.siblings().length === 1) {
         tr.parent().removeClass('HasClients');
       }
       tr.siblings().first().children('[rowspan]').attr('rowspan', tr.siblings().length);
@@ -94,7 +94,7 @@ $(function() {
 
     var tbody = getDeviceTbody(WS.state['ScoreBoard.Clients.Client(' + id + ').Device']);
     var tr = tbody.children('tr[clientId="'+ id +'"]');
-    if (tr.length == 0) {
+    if (tr.length === 0) {
       var created = WS.state['ScoreBoard.Clients.Client(' + id + ').Created'];
       tr = $('<tr>').attr('clientId', id).attr('created', created)
         .append('<td class="Source">')
@@ -132,7 +132,7 @@ $(function() {
       now = new Date().getTime();
     }
     var age = e.attr('age');
-    if (age == 0) {
+    if (age === 0) {
       return;
     }
     var t = (now - age) / 1000;

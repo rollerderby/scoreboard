@@ -1,19 +1,19 @@
 (function () {
-	var teamId = _windowFunctions.getParam('team');
+  var teamId = _windowFunctions.getParam('team');
 
-	preparePltInputTable($('#input'), teamId, 'lt');
-	
-	prepareLtSheetTable($('#sheet'), teamId, 'plt');
-	
-	prepareAnnotationEditor(teamId);
+  preparePltInputTable($('#input'), teamId, 'lt');
+  
+  prepareLtSheetTable($('#sheet'), teamId, 'plt');
+  
+  prepareAnnotationEditor(teamId);
 
-	prepareFieldingEditor(teamId);
+  prepareFieldingEditor(teamId);
 
-	prepareOptionsDialog(teamId);
-	_windowFunctions.configureZoom();
-	
-	WS.AutoRegister();
-	WS.Connect();
+  prepareOptionsDialog(teamId);
+  _windowFunctions.configureZoom();
+  
+  WS.AutoRegister();
+  WS.Connect();
 
-	if (!teamId) { openOptionsDialog(); }
+  if (!teamId) { openOptionsDialog(); }
 })();

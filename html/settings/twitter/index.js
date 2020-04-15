@@ -3,7 +3,7 @@ $(function() {
   var formatSpecifiers = {};
 
   $('button.TestMode').on('click', function(){
-    WS.Set('ScoreBoard.Twitter.TestMode', $(this).attr('checked') == null);
+    WS.Set('ScoreBoard.Twitter.TestMode', $(this).attr('checked') === null);
   }).button();
 
   $('button.Login').on('click', function() {
@@ -23,7 +23,7 @@ $(function() {
     $('p.DirectTweet input:text.Tweet').val('').focus();
   }).button();
   $('p.DirectTweet input:text.Tweet').on('keydown', function(event) {
-    if (event.which == 13) // Pressed Enter
+    if (event.which === 13) // Pressed Enter
       $('p.DirectTweet button.Tweet').trigger('click');
   });
 
@@ -42,10 +42,10 @@ $(function() {
   });
   WS.Register(['ScoreBoard.Twitter.Error'], function(k, v) {
     $('a.Error').text(v);
-    $('p.Error').toggleClass('Show', v != '');
+    $('p.Error').toggleClass('Show', v !== '');
   });
   WS.Register(['ScoreBoard.Twitter.Status'], function(k, v) {
-    if (v != '') {
+    if (v !== '') {
       $('#UserTweets>tbody>tr.Template').clone(true).removeClass('Template')
         .prependTo('#UserTweets>tbody')
         .find('a.Tweet').html(v);
@@ -53,7 +53,7 @@ $(function() {
   });
 
   $('button.EditConditionalTweets').on('click', function() {
-    var checked = ($(this).attr('checked') == null);
+    var checked = ($(this).attr('checked') === null);
     $('#ConditionalTweetConfiguration').toggleClass('show', checked);
     $(this).button('option', 'label', (checked ? 'Hide Conditional Tweets' : 'Edit Conditional Tweets'));
     $(this).attr('checked', checked);
@@ -83,20 +83,20 @@ $(function() {
     p.removeClass('Update');
   }).button();
   $('p.AddConditionalTweet input:text.Tweet').on('keydown', function(event) {
-    if (event.which == 13) // Pressed Enter
+    if (event.which === 13) // Pressed Enter
       $('p.AddConditionalTweet button.Add').trigger('click');
   });
-	WS.Register(['ScoreBoard.Twitter.ConditionalTweet(*).Condition',
-			'ScoreBoard.Twitter.ConditionalTweet(*).Tweet'], function(k, v) {
+  WS.Register(['ScoreBoard.Twitter.ConditionalTweet(*).Condition',
+      'ScoreBoard.Twitter.ConditionalTweet(*).Tweet'], function(k, v) {
     var id = k.ConditionalTweet;
-    if (v == null) {
+    if (v === null) {
       $('#ConditionalTweets>tbody>tr[conditionId="'+ id +'"]').remove();
       return;
     }
     var prefix = 'ScoreBoard.Twitter.ConditionalTweet(' + id + ')';
 
     var tr = $('#ConditionalTweets>tbody>tr[conditionId="'+ id +'"]');
-    if (tr.length == 0) {
+    if (tr.length === 0) {
       tr = $('#ConditionalTweets>tbody>tr.ConditionalTweet.Template').clone(true)
         .removeClass('Template').attr('conditionId', id)
         .appendTo('#ConditionalTweets>tbody');
@@ -128,7 +128,7 @@ $(function() {
   WS.Register(['ScoreBoard.Twitter.FormatSpecifier'], function(k, v) {
     var ul = $('ul.FormatSpecifierDescriptions');
     var li =  ul.children('li#' + k.FormatSpecifier);
-    if (li.length == 0) {
+    if (li.length === 0) {
       li = $('<li>').attr('id', k.FormatSpecifier)
         .append($('<span class="Key">'))
         .append($('<span>').text(' : '))
@@ -138,9 +138,9 @@ $(function() {
       _windowFunctions.appendAlphaNumSortedByAttr(ul, li, 'id')
     }
     li.children('.'+k.field).text(v);
-    if (k.field == 'Key') {
+    if (k.field === 'Key') {
       formatSpecifiers[v] = k.FormatSpecifier;
-    } else if (k.field == 'CurrentValue') {
+    } else if (k.field === 'CurrentValue') {
       $('p.AddConditionalTweet input:text').trigger('input');
     }
   });

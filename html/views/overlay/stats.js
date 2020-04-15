@@ -4,22 +4,21 @@ jQuery.fn.sortRows = function sortRows() {
 }
 
 $(document).ready(function() {
-	StatsEngine.Initialize({ debug: true });
+  StatsEngine.Initialize({ debug: true });
 
-	StatsEngine.GetSomething()['Jams'].AddTrigger('INSERT', '*', { }, function(nv, ov, key) { 
-		c = (parseInt(this.Period) * 1000) + parseInt(this.Jam);
-		row = $('<tr>').attr('id', 'Jam-P' + this.Period + '-J' + this.Jam).attr('period', this.Period).attr('jam', this.Jam).attr('data-sort', c);
+  StatsEngine.GetSomething()['Jams'].AddTrigger('INSERT', '*', { }, function(nv, ov, key) { 
+    c = (parseInt(this.Period) * 1000) + parseInt(this.Jam);
+    row = $('<tr>').attr('id', 'Jam-P' + this.Period + '-J' + this.Jam).attr('period', this.Period).attr('jam', this.Jam).attr('data-sort', c);
 
-		if(this.Period) { $('<td class="DataPeriod">').text(this.Period).appendTo(row); }
-		if(this.Jam)    { $('<td class="DataJam">').text(this.Jam).appendTo(row); }
+    if(this.Period) { $('<td class="DataPeriod">').text(this.Period).appendTo(row); }
+    if(this.Jam)    { $('<td class="DataJam">').text(this.Jam).appendTo(row); }
 
-		$('<td class="DataPeriodClockStart">').appendTo(row);
-		$('<td class="DataDurationHuman">').appendTo(row);
-		$('table#Jams tbody').prepend(row);
-		$('table#Jams tbody').sortRows();	
-	});
-	StatsEngine.GetSomething()['Jams'].AddTrigger('VALUE', ['DurationHuman', 'PeriodClockStart'], { }, function(nv, ov, key) { 
-		$('tr#Jam-P'+this.Period+'-J'+this.Jam + ' .Data'+key).text(nv);
-	});
+    $('<td class="DataPeriodClockStart">').appendTo(row);
+    $('<td class="DataDurationHuman">').appendTo(row);
+    $('table#Jams tbody').prepend(row);
+    $('table#Jams tbody').sortRows(); 
+  });
+  StatsEngine.GetSomething()['Jams'].AddTrigger('VALUE', ['DurationHuman', 'PeriodClockStart'], { }, function(nv, ov, key) { 
+    $('tr#Jam-P'+this.Period+'-J'+this.Jam + ' .Data'+key).text(nv);
+  });
 });
-

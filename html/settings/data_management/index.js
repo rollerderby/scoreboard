@@ -10,10 +10,10 @@
 
 
 $(function() {
-	createDataManagementTab($('#tabsDiv'));
+  createDataManagementTab($('#tabsDiv'));
 
-	WS.AutoRegister();
-	WS.Connect();
+  WS.AutoRegister();
+  WS.Connect();
 });
 
 //# sourceURL=settings\data_management\index.js
