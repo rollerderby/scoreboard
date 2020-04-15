@@ -8,10 +8,6 @@
  * See the file COPYING for details.
  */
 
-
-$.fx.interval = 33;
-
-
 $(function() {
 	createTeamTimeTab(createTab("Team/Time", "TeamTimeTab"));
 	createRulesetsTab(createTab('Rulesets', 'RulesetsTab'))
@@ -36,7 +32,7 @@ $(function() {
 
 
 	$("<li>").text("Caps Lock is On").attr("id", "capsLockWarning").addClass("Hidden").appendTo("#tabBar");
-	$(document).keydown(function(e) {
+	$(document).on('keydown', function(e) {
 		if (e.originalEvent.key === "CapsLock") {
 			// Assume it'll be toggled. Different OSes actually change
 			// the setting at different stages of the keypress, so
@@ -47,7 +43,7 @@ $(function() {
 			$("#capsLockWarning").toggleClass("Hidden", !e.originalEvent.getModifierState("CapsLock"));
 		}
 	});
-	$("<button>").text("Logout").click(logout).button().css("float", "right").appendTo("#tabBar");
+	$("<button>").text("Logout").on('click', logout).button().css("float", "right").appendTo("#tabBar");
 });
 
 function setOperatorSettings(op) {

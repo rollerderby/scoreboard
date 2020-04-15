@@ -14,4 +14,4 @@ $(function() {
     });
   });
 });
-//# sourceURL=settings\twitter\auth.js
+//# sourceURL=controls\twitter_auth.js

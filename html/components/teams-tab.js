@@ -3,7 +3,7 @@ function createTeamsTab(tab) {
 	
 	table.append($("<tr><td/></tr>").addClass("Selection NoneSelected"))
 		.append($("<tr><td/></tr>").addClass("Team"));
-	_crgUtils.createRowTable(2).appendTo(table.find("tbody>tr.Selection>td")).addClass("Selection");
+	_crgUtils.createRowTable(2).appendTo(table.find("tr.Selection>td")).addClass("Selection");
 
 	var selectTeam = $("<select>").appendTo(table.find("table.Selection td:eq(0)"));
 	$("<option value=''>No Team Selected</option>").appendTo(selectTeam);
@@ -22,22 +22,22 @@ function createTeamsTab(tab) {
 		}
 	}
 
-	newTeamName.keyup(function(event) {
+	newTeamName.on('keyup', function(event) {
 		createNewTeam.button("option", "disabled", (!$(this).val()));
 		if (!createNewTeam.button("option", "disabled") && (13 == event.which)) { // Enter
-			createNewTeam.click();
+			createNewTeam.trigger('click');
 		}
 	});
 	var waitingOnNewTeam = "";
-	createNewTeam.click(function(event) {
+	createNewTeam.on('click', function(event) {
 		var teamname = newTeamName.val();
 		var teamid = _crgUtils.checkSbId(teamname);
 		WS.Set("ScoreBoard.PreparedTeam("+teamid+").Name", teamname);
 		waitingOnNewTeam = teamid;
-		newTeamName.val("").keyup().focus();
+		newTeamName.val("").trigger('keyup').trigger('focus');
 		// If team already exists, switch to it.
 		selectTeam.val(teamid);
-		selectTeam.change();
+		selectTeam.trigger('change');
 	});
 
 	WS.Register("ScoreBoard.PreparedTeam(*).Id", function(k, v) {
@@ -51,7 +51,7 @@ function createTeamsTab(tab) {
 		}
 		if (v == waitingOnNewTeam) {
 			selectTeam.val(v);
-			selectTeam.change();
+			selectTeam.trigger('change');
 			waitingOnNewTeam = "";
 		}
 	});
@@ -62,13 +62,13 @@ function createTeamsTab(tab) {
 		.appendTo(table.find(".Team td"));
 	var controlTable = _crgUtils.createRowTable(5).appendTo(teamTable.find("tr.Control>td")).addClass("Control");
 	var teamName = $("<input type='text' class='Name'>").appendTo(controlTable.find("td:eq(0)"));
-	teamName.bind("input", function() {
+	teamName.on("input", function() {
 		WS.Set(getPrefix() + ".Name", teamName.val());
 	});
 	var waitingOnUpload = "";
 	var logoSelect = $("<select>").append($("<option value=''>No Logo</option>"))
 		.appendTo(controlTable.find("td:eq(1)"));
-	logoSelect.change(function() {
+	logoSelect.on('change', function() {
 		WS.Set(getPrefix() + ".Logo", logoSelect.val() == "" ? "": "/images/teamlogo/" + logoSelect.val())
 	});
 	WS.Register("ScoreBoard.Media.Format(images).Type(teamlogo).File(*).Name", function(k, v) {
@@ -82,7 +82,7 @@ function createTeamsTab(tab) {
 			var option = $("<option>").attr("name", v).attr("value", k.File).text(v);
 			_windowFunctions.appendAlphaSortedByAttr(logoSelect, option, "name", 1);
 			logoSelect.val(val);
-			logoSelect.change();
+			logoSelect.trigger('change');
 		}
 	});
 	$("<input type='file' id='teamLogoUpload'>").fileupload({
@@ -99,17 +99,17 @@ function createTeamsTab(tab) {
 			console.log("Failed upload", data.errorThrown);
 		}
 	}).css("display", "none").appendTo(controlTable.find("td:eq(1)"));
-	$("<button>").text("Upload...").appendTo(controlTable.find("td:eq(1)")).click(function(){controlTable.find("#teamLogoUpload").click();});
+	$("<button>").text("Upload...").appendTo(controlTable.find("td:eq(1)")).on('click', function(){controlTable.find("#teamLogoUpload").trigger('click');});
 	var alternameNameDialog = createAlternateNamesDialog();
 	$("<button>").text("Alternate Names").button()
-		.click(function() {alternameNameDialog.dialog("open");} )
+		.on('click', function() {alternameNameDialog.dialog("open");} )
 		.appendTo(controlTable.find("td:eq(2)"));
 	var colorsDialog = createColorsDialog();
 	$("<button>").text("Colors").button()
-		.click(function() { colorsDialog.dialog("open"); })
+		.on('click', function() { colorsDialog.dialog("open"); })
 		.appendTo(controlTable.find("td:eq(3)"));
 	var removeTeam = $("<button>").text("Remove Team").button()
-		.click(function() { createTeamsRemoveDialog(selectTeam.val()); })
+		.on('click', function() { createTeamsRemoveDialog(selectTeam.val()); })
 		.appendTo(controlTable.find("td:eq(4)"));
 
 	WS.Register(["ScoreBoard.PreparedTeam(*)"], function(k, v) {
@@ -133,7 +133,7 @@ function createTeamsTab(tab) {
 
 	var skatersTable = $("<table>").addClass("Skaters Empty")
 		.appendTo(teamTable.find("tr.Skaters>td"))
-		.append("<col class='Number'>")
+		.append("<col class='RosterNumber'>")
 		.append("<col class='Name'>")
 		.append("<col class='Flags'>")
 		.append("<col class='Button'>")
@@ -147,12 +147,12 @@ function createTeamsTab(tab) {
 
 	var addSkater = function(number, name, flags, id) {
 		id = id || newUUID();
-		WS.Set(getPrefix() + ".Skater("+id+").RosterNumber", number);
-		WS.Set(getPrefix() + ".Skater("+id+").Name", name);
-		WS.Set(getPrefix() + ".Skater("+id+").Flags", flags);
+		WS.Set(getPrefix() + '.Skater('+id+').RosterNumber', number);
+		WS.Set(getPrefix() + '.Skater('+id+').Name', name);
+		WS.Set(getPrefix() + '.Skater('+id+').Flags', flags);
 	}
 
-	var newSkaterNumber = $("<input type='text' size='10'>").addClass("Number")
+	var newSkaterNumber = $("<input type='text' size='10'>").addClass("RosterNumber")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(0)"));
 	var newSkaterName = $("<input type='text' size='30'>").addClass("Name")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(1)"));
@@ -160,18 +160,18 @@ function createTeamsTab(tab) {
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(2)"));
 	var newSkaterButton = $("<button>").text("Add Skater").button({ disabled: true }).addClass("AddSkater")
 		.appendTo(skatersTable.find("tr.AddSkater>th:eq(3)"))
-		.click(function() {
+		.on('click', function() {
 			addSkater(newSkaterNumber.val(), newSkaterName.val(), newSkaterFlags.val());
-			newSkaterNumber.val("").focus();
+			newSkaterNumber.val("").trigger('focus');
 			newSkaterFlags.val("");
 			newSkaterName.val("");
-			$(this).blur();
+			$(this).trigger('blur');
 			newSkaterButton.button("option", "disabled", true);
 		});
-	newSkaterName.add(newSkaterNumber).keyup(function(event) {
+	newSkaterName.add(newSkaterNumber).on('keyup', function(event) {
 		newSkaterButton.button("option", "disabled", (!newSkaterName.val() && !newSkaterNumber.val()));
 		if (!newSkaterButton.button("option", "disabled") && (13 == event.which)) // Enter
-			newSkaterButton.click();
+			newSkaterButton.trigger('click');
 	});
 	newSkaterFlags.append($("<option>").attr("value", "").text("Skater"));
 	newSkaterFlags.append($("<option>").attr("value", "ALT").text("Not Skating"));
@@ -209,8 +209,8 @@ function createTeamsTab(tab) {
 		}
 		return false;
 	}
-	newSkaterNumber.bind("paste", pasteHandler);
-	newSkaterName.bind("paste", pasteHandler);
+	newSkaterNumber.on("paste", pasteHandler);
+	newSkaterName.on("paste", pasteHandler);
 
 	var updateSkaterCount = function() {
 		var count = 0;
@@ -241,23 +241,23 @@ function createTeamsTab(tab) {
 			if (skaterRow.length == 0) {
 				skatersTable.removeClass("Empty");
 				skaterRow = $("<tr class='Skater'>").attr("skaterid", k.Skater)
-					.append("<td class='Number'>")
+					.append("<td class='RosterNumber'>")
 					.append("<td class='Name'>")
 					.append("<td class='Flags'>")
 					.append("<td class='Remove'>");
 				var numberInput = $("<input type='text' size='10'>")
-					.appendTo(skaterRow.children("td.Number"));
+					.appendTo(skaterRow.children("td.RosterNumber"));
 				var nameInput = $("<input type='text' size='30'>")
 					.appendTo(skaterRow.children("td.Name"));
-				nameInput.change(function() {
+				nameInput.on('change', function() {
 					WS.Set(prefix + ".Name", nameInput.val());
 				});
 				$("<button>").text("Remove").addClass("RemoveSkater").button()
-					.click(function() { createTeamsSkaterRemoveDialog(selectTeam.val(), prefix); })
+					.on('click', function() { createTeamsSkaterRemoveDialog(selectTeam.val(), prefix); })
 					.appendTo(skaterRow.children("td.Remove"));
-				numberInput.change(function() {
-					WS.Set(prefix + ".RosterNumber", numberInput.val());
-					skaterRow.attr("skaternum", WS.state[prefix + ".RosterNumber"]);
+				numberInput.on('change', function() {
+					WS.Set(prefix + '.RosterNumber', numberInput.val());
+					skaterRow.attr('skaternum', WS.state[prefix + '.RosterNumber']);
 				});
 				var skaterFlags = $("<select>").appendTo(skaterRow.children("td.Flags"));
 				skaterFlags.append($("<option>").attr("value", "").text("Skater"));
@@ -265,7 +265,7 @@ function createTeamsTab(tab) {
 				skaterFlags.append($("<option>").attr("value", "C").text("Captain"));
 				skaterFlags.append($("<option>").attr("value", "AC").text("Alt Captain"));
 				skaterFlags.append($("<option>").attr("value", "BC").text("Bench Alt Captain"));
-				skaterFlags.change(function() {
+				skaterFlags.on('change', function() {
 					WS.Set(prefix + ".Flags", skaterFlags.val());
 				});
 				_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "skaternum");
@@ -274,7 +274,7 @@ function createTeamsTab(tab) {
 			skaterRow.children("td." + k.field).children().val(v);
 			if (k.field == "Flags") {
 				updateSkaterCount();
-			} else if (k.field == "RosterNumber") {
+			} else if (k.field == 'RosterNumber') {
 				skaterRow.attr("skaternum", v);
 				_windowFunctions.appendAlphaSortedByAttr(skatersTable.children("tbody"), skaterRow, "skaternum");
 			}
@@ -308,7 +308,7 @@ function createTeamsTab(tab) {
 		}
 	}
 
-	selectTeam.change(function(event) {
+	selectTeam.on('change', function(event) {
 		var teamId = selectTeam.val();
 		table.find("tr.Selection").toggleClass("NoneSelected", teamId == "");
 		teamTable.toggleClass("Hide", teamId == "");
@@ -327,7 +327,7 @@ function createTeamsTab(tab) {
 			}
 		}
 	});
-	selectTeam.change();
+	selectTeam.trigger('change');
 }
 
 function createAlternateNamesDialog() {
@@ -343,14 +343,14 @@ function createAlternateNamesDialog() {
 		var newName = newNameInput.val();
 		WS.Set(dialog.attr("prefix") + ".AlternateName("+newId+")", newName);
 		newNameInput.val("");
-		newIdInput.val("").focus();
+		newIdInput.val("").trigger('focus');
 	};
 
-	newNameInput.keypress(function(event) {
+	newNameInput.on('keypress', function(event) {
 		if (event.which == 13) // Enter
 			newFunc();
 	});
-	$("<button>").button({ label: "Add" }).click(newFunc)
+	$("<button>").button({ label: "Add" }).on('click', newFunc)
 		.appendTo(dialog);
 
 	var table = $("<table>").appendTo(dialog);
@@ -371,10 +371,10 @@ function createAlternateNamesDialog() {
 				.append("<td class='Id'>")
 				.append("<td class='Name'>");
 			$("<button>").button({ label: "X" })
-				.click(function() { WS.Set(prefix + ".AlternateName("+id+")", null); })
+				.on('click', function() { WS.Set(prefix + ".AlternateName("+id+")", null); })
 				.appendTo(tr.children("td.X"));
 			$("<input type='text' size='20'>")
-				.bind("input", function(e) { WS.Set(prefix + ".AlternateName("+id+")", e.target.value); })
+				.on("input", function(e) { WS.Set(prefix + ".AlternateName("+id+")", e.target.value); })
 				.appendTo(tr.children("td.Name"));
 			_windowFunctions.appendAlphaSortedByAttr(tbody, tr, "id");
 		}
@@ -385,16 +385,6 @@ function createAlternateNamesDialog() {
 		tbody.children("tr#" + id).remove();
 	}
 
-	newIdInput.autocomplete({
-		minLength: 0,
-		source: [
-		{ label: "operator (Operator Controls)", value: "operator" },
-		{ label: "overlay (Video Overlay)", value: "overlay" },
-		{ label: "scoreboard (Scoreboard Display)", value: "scoreboard" },
-		{ label: "twitter (Twitter)", value: "twitter" }
-		]
-	}).focus(function() { $(this).autocomplete("search", ""); });
-
 	dialog.dialog({
 		title: "Alternate Names",
 		modal: true,
@@ -402,6 +392,17 @@ function createAlternateNamesDialog() {
 		autoOpen: false,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
+
+	newIdInput.autocomplete({
+		minLength: 0,
+		source: [
+		{ label: "operator (Operator Controls)", value: "operator" },
+		{ label: "overlay (Video Overlay)", value: "overlay" },
+		{ label: "scoreboard (Scoreboard Display)", value: "scoreboard" },
+		{ label: "twitter (Twitter)", value: "twitter" }
+		],
+		appendTo: dialog.parent()
+	}).on('focus', function() { $(this).autocomplete("search", ""); });
 
 	return dialog;
 
@@ -421,10 +422,10 @@ function createColorsDialog() {
 		WS.Set(prefix + ".Color(" + newId + "_bg)", "");
 		WS.Set(prefix + ".Color(" + newId + "_glow)", "");
 
-		newIdInput.val("").focus();
+		newIdInput.val("").trigger('focus');
 	};
 
-	$("<button>").button({ label: "Add" }).click(newFunc)
+	$("<button>").button({ label: "Add" }).on('click', newFunc)
 		.appendTo(dialog);
 
 	var table = $("<table>").appendTo(dialog);
@@ -454,17 +455,17 @@ function createColorsDialog() {
 				.appendTo(tr.children("td.bg"));
 			$("<input type='color' cleared='true' value='#666666' suffix='glow'>")
 				.appendTo(tr.children("td.glow"));
-			tr.find("input").bind("input", function(e) {
+			tr.find("input").on("input", function(e) {
 				var prefix = dialog.attr("prefix");
 				WS.Set(prefix + ".Color(" + colorId + "_"+ $(e.target).attr("suffix") + ")", e.target.value);
 			});
-			tr.find("input").after($("<button class='ClearPrev'>X</button>").click(function(e) {
+			tr.find("input").after($("<button class='ClearPrev'>X</button>").on('click', function(e) {
 				var prefix = dialog.attr("prefix");
 				WS.Set(prefix + ".Color(" + colorId + "_" + $(e.target).prev().attr("suffix") + ")", "");
 			}));
 
 			$("<button>").button({ label: "X" })
-				.click(function() {
+				.on('click', function() {
 					var prefix = dialog.attr("prefix");
 					WS.Set(prefix + ".Color(" + colorId + "_fg)", null);
 					WS.Set(prefix + ".Color(" + colorId + "_bg)", null);
@@ -486,16 +487,6 @@ function createColorsDialog() {
 		}
 	};
 
-	newIdInput.autocomplete({
-		minLength: 0,
-		source: [
-		{ label: "operator (Operator Colors)", value: "operator" },
-		{ label: "overlay (Video Overlay Colors)", value: "overlay" },
-		{ label: "scoreboard (Scoreboard Colors)", value: "scoreboard" },
-		{ label: "scoreboard_dots (Scoreboard Dot Colors)", value: "scoreboard_dots" },
-		]
-	}).focus(function() { $(this).autocomplete("search", ""); });
-
 	dialog.dialog({
 		title: "Team Colors",
 		modal: true,
@@ -503,6 +494,17 @@ function createColorsDialog() {
 		autoOpen: false,
 		buttons: { Close: function() { $(this).dialog("close"); } }
 	});
+
+	newIdInput.autocomplete({
+		minLength: 0,
+		source: [
+		{ label: "operator (Operator Colors)", value: "operator" },
+		{ label: "overlay (Video Overlay Colors)", value: "overlay" },
+		{ label: "scoreboard (Scoreboard Colors)", value: "scoreboard" },
+		{ label: "scoreboard_dots (Scoreboard Dot Colors)", value: "scoreboard_dots" },
+		],
+		appendTo: dialog.parent()
+	}).on('focus', function() { $(this).autocomplete("search", ""); });
 
 	return dialog;
 }
@@ -518,10 +520,10 @@ function createTeamsRemoveDialog(teamId) {
 	$("<a>").addClass("AreYouSure").text("Are you sure?").appendTo(dialog);
 	$("<br>").appendTo(dialog);
 
-	$("<button>").addClass("No").text("No, keep this team.").appendTo(dialog).click(function() {
+	$("<button>").addClass("No").text("No, keep this team.").appendTo(dialog).on('click', function() {
 		dialog.dialog("close");
 	}).button();
-	$("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
+	$("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).on('click', function() {
 		WS.Set("ScoreBoard.PreparedTeam("+teamId+")", null);
 		dialog.dialog("close");
 	}).button();
@@ -554,10 +556,10 @@ function createTeamsSkaterRemoveDialog(teamId, prefix) {
 	$("<a>").addClass("AreYouSure").text("Are you sure?").appendTo(dialog);
 	$("<br>").appendTo(dialog);
 
-	$("<button>").addClass("No").text("No, keep this skater.").appendTo(dialog).click(function() {
+	$("<button>").addClass("No").text("No, keep this skater.").appendTo(dialog).on('click', function() {
 		dialog.dialog("close");
 	}).button();
-	$("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).click(function() {
+	$("<button>").addClass("Yes").text("Yes, remove!").appendTo(dialog).on('click', function() {
 		WS.Set(prefix, null);
 		dialog.dialog("close");
 	}).button();

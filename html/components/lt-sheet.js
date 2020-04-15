@@ -172,10 +172,10 @@ function prepareLtSheetTable(element, teamId, mode) {
 				var npBox = $('<td>').addClass('NP Darker').appendTo(jamRow);
 				$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 					var pos = String(this);
-					var numBox = $('<td>').addClass('Skater '+pos).click(function() { 
+					var numBox = $('<td>').addClass('Skater '+pos).on('click', function() { 
 						openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
 					}).appendTo(jamRow);
-					var boxBox = $('<td>').addClass('Box Box'+pos).click(function() {
+					var boxBox = $('<td>').addClass('Box Box'+pos).on('click', function() {
 						openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
 					}).appendTo(jamRow);
 
@@ -197,7 +197,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
 			if (mode != 'copyToStatsbook') {
 				$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
-				$('<td>').addClass('NP Darker').click(function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
+				$('<td>').addClass('NP Darker').on('click', function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
 			}
 			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
 				var pos = String(this);
@@ -207,8 +207,8 @@ function prepareLtSheetTable(element, teamId, mode) {
 					$('<td>').addClass('Box Box'+pos+'_2').appendTo(jamRow);
 					$('<td>').addClass('Box Box'+pos+'_3').appendTo(jamRow);
 				} else {
-					$('<td>').addClass('Skater '+pos).click(function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
-					$('<td>').addClass('Box Box'+pos).click(function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
+					$('<td>').addClass('Skater '+pos).on('click', function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
+					$('<td>').addClass('Box Box'+pos).on('click', function() { openFieldingEditor(p, nr, teamId, pos); }).appendTo(jamRow);
 				}
 			});
 
@@ -272,15 +272,15 @@ function prepareFieldingEditor(teamId) {
 		var table = $('<table>').appendTo($('#FieldingEditor'));
 		
 		var row = $('<tr>').addClass('Skater').appendTo(table);
-		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown')).change(function() {
+		$('<td>').append($('<select>').attr('id', 'skater').append($('<option>').attr('value', '').text('None/Unknown')).on('change', function() {
 			WS.Set(fieldingEditor.data('prefix')+'Skater', $(this).val());
 		})).appendTo(row);
-		$('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded').click(function() {
+		$('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded').on('click', function() {
 			var check = $(this).attr('checked') == null;
 			$(this).attr('checked', check);
 			WS.Set(fieldingEditor.data('prefix')+'NotFielded', check);
 		})).appendTo(row)
-		$('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3').click(function() {
+		$('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3').on('click', function() {
 			var check = $(this).attr('checked') == null;
 			$(this).attr('checked', check);
 			WS.Set(fieldingEditor.data('prefix')+'SitFor3', check);
@@ -288,13 +288,13 @@ function prepareFieldingEditor(teamId) {
 		
 		row = $('<tr>').addClass('Skater').appendTo(table);
 		$('<td>').attr('colspan', '3')
-			.append($('<input type="text">').attr('size', '40').attr('id', 'annotation').change(function() {
+			.append($('<input type="text">').attr('size', '40').attr('id', 'annotation').on('change', function() {
 				WS.Set(fieldingEditor.data('prefix')+'Annotation', $(this).val());
 			})).appendTo(row);
 		
 		row = $('<tr>').addClass('Skater BoxTripComments').appendTo(table);
-		$('<td>').append($('<button>').text('No Penalty').button().click(function() { appendAnnotation('No Penalty');})).appendTo(row);
-		$('<td>').append($('<button>').text('Penalty Overturned').button().click(function() { appendAnnotation('Penalty Overturned');})).appendTo(row);
+		$('<td>').append($('<button>').text('No Penalty').button().on('click', function() { appendAnnotation('No Penalty');})).appendTo(row);
+		$('<td>').append($('<button>').text('Penalty Overturned').button().on('click', function() { appendAnnotation('Penalty Overturned');})).appendTo(row);
 		
 		row = $('<tr>').addClass('tripHeader').appendTo(table);
 		$('<td>').attr('colspan', '2').text('Box Trips').appendTo(row);
@@ -306,11 +306,11 @@ function prepareFieldingEditor(teamId) {
 		$('<td>').appendTo(row);
 		
 		row = $('<tr>').attr('id', 'tripFooter').appendTo(table);
-		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip').button().click(function() {
+		$('<td>').append($('<button>').attr('id', 'addTrip').text('Add Box Trip').button().on('click', function() {
 			WS.Set(fieldingEditor.data('prefix')+'AddBoxTrip', true);
 		})).appendTo(row);
 		$('<td>').appendTo(row);
-		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'close').text('Close').button()).click(function() {
+		$('<td>').addClass('ButtonCell').append($('<button>').attr('id', 'close').text('Close').button()).on('click', function() {
 			fieldingEditor.dialog('close');
 		}).appendTo(row);
 
@@ -355,19 +355,19 @@ function prepareFieldingEditor(teamId) {
 		var row = $('#FieldingEditor .BoxTrip[id='+k.BoxTrip+']');
 		if (v != null && row.length == 0) {
 			row = $('<tr>').addClass('BoxTrip').attr('id', k.BoxTrip).insertBefore('#FieldingEditor #tripFooter');
-			$('<td>').append($('<button>').addClass('tripModify').text('-').button().click(function() {
+			$('<td>').append($('<button>').addClass('tripModify').text('-').button().on('click', function() {
 				WS.Set(prefix+'StartEarlier', true);
 			})).append($('<span>').addClass('tripStartText'))
-			.append($('<button>').addClass('tripModify').text('+').button().click(function() {
+			.append($('<button>').addClass('tripModify').text('+').button().on('click', function() {
 				WS.Set(prefix+'StartLater', true);
 			})).appendTo(row);
-			$('<td>').append($('<button>').addClass('tripModify').text('-').button().click(function() {
+			$('<td>').append($('<button>').addClass('tripModify').text('-').button().on('click', function() {
 				WS.Set(prefix+'EndEarlier', true);
 			})).append($('<span>').addClass('tripEndText').text('ongoing'))
-			.append($('<button>').addClass('tripModify').text('+').button().click(function() {
+			.append($('<button>').addClass('tripModify').text('+').button().on('click', function() {
 				WS.Set(prefix+'EndLater', true);
 			})).appendTo(row);
-			$('<td>').addClass('Col3').append($('<button>').addClass('tripRemove').text('Remove').button().click(function() {
+			$('<td>').addClass('Col3').append($('<button>').addClass('tripRemove').text('Remove').button().on('click', function() {
 				WS.Set(prefix+'Delete', true);
 			})).appendTo(row);
 		}

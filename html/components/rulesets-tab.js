@@ -32,7 +32,7 @@ function createRulesetsTab(tab) {
 						.append(
 							$("<a>")
 								.attr("href", "#")
-								.click(function() {
+								.on('click', function() {
 									displayRuleset(val.Id);
 								}
 								).append($("<span>").append(val.Name)
@@ -56,7 +56,7 @@ function createRulesetsTab(tab) {
 					.attr("group", def.Group)
 
 				section.append($("<div>").addClass("header")
-					.click(function(e) {
+					.on('click', function(e) {
 						section.toggleClass("folded");
 					}).append(name));
 
@@ -95,7 +95,7 @@ function createRulesetsTab(tab) {
 				tooltiptext = $("<span>").addClass("tooltiptext").append(def.Description);
 			}
 			$("<div>").addClass("name").appendTo(div)
-				.append($("<label>").append($("<input>").attr("type", "checkbox").prop("checked", true).click(definitionOverride))
+				.append($("<label>").append($("<input>").attr("type", "checkbox").prop("checked", true).on('click', definitionOverride))
 				.append(def.Name).append(tooltiptext));
 
 			var value = $("<div>").addClass("value").appendTo(div);
@@ -133,25 +133,25 @@ function createRulesetsTab(tab) {
 						.append($('<td>').text('Parent:'))
 						.append($('<td>').append($('<select>').attr('id', 'new_parent'))))
 				.append($('<tr>').append($('<td>').addClass('new').attr('colspan', '2')
-						.append($('<button>').addClass('New').text('Create').click(New).button()))))
+						.append($('<button>').addClass('New').text('Create').on('click', New).button()))))
 			.append($('<br>'))
 			.append($('<div>').addClass('current')
 				.append($('<h1>').text('Current Ruleset'))
-				.append($('<div>').append($('<select>').attr('id', 'current_rs')).change(Change))
+				.append($('<div>').append($('<select>').attr('id', 'current_rs')).on('change', Change))
 				));
 		tab.append($('<div>').addClass('definitions')
 			.append($('<div>').addClass('buttons top')
-					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
-					.append($('<button>').addClass('Update').text('Update').click(Update).button())
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())
+					.append($('<button>').addClass('Cancel').text('Cancel').on('click', Cancel).button())
+					.append($('<button>').addClass('Update').text('Update').on('click', Update).button())
+					.append($('<button>').addClass('Delete').text('Delete').on('click', Delete).button())
 					.append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.')))
 			.append($('<span>').text('Name: '))
 				.append($('<input type="text">').attr('id', 'name').attr('size', '40'))
 			.append($('<div>').addClass('rules'))
 			.append($('<div>').addClass('buttons bottom')
-					.append($('<button>').addClass('Cancel').text('Cancel').click(Cancel).button())
-					.append($('<button>').addClass('Update').text('Update').click(Update).button())
-					.append($('<button>').addClass('Delete').text('Delete').click(Delete).button())
+					.append($('<button>').addClass('Cancel').text('Cancel').on('click', Cancel).button())
+					.append($('<button>').addClass('Update').text('Update').on('click', Update).button())
+					.append($('<button>').addClass('Delete').text('Delete').on('click', Delete).button())
 					.append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.'))));
 		tab.children('.definitions').hide();
 		
@@ -257,15 +257,15 @@ function createRulesetsTab(tab) {
 		});
 
 		if (isTrue(rs['Readonly'])) {
-			tab.find("#name").attr('disabled', true);
+			tab.find("#name").prop('disabled', true);
 			definitions.find(".definition *").prop("disabled", true);
 			definitions.find(".Update, .Delete, .EditNote").hide();
 		} else if (rs.Effective) {
-			tab.find("#name").removeAttr('disabled');
+			tab.find("#name").prop('disabled', false);
 			definitions.find(".Update, .EditNote").show();
 			definitions.find(".Delete").hide();
 		} else {
-			tab.find("#name").removeAttr('disabled');
+			tab.find("#name").prop('disabled', false);
 			definitions.find(".Update, .Delete").show();
 			definitions.find(".EditNote").hide();
 		}

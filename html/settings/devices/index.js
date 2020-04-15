@@ -8,12 +8,12 @@ $(function() {
       .appendTo(buttons);
     $("<input type='checkbox'>").attr("id", "Show"+i+"Button")
       .appendTo(buttons).button()
-      .change(function() {
+      .on('change', function() {
         deviceTable.toggleClass("Show"+i, this.checked);
       });
   });
   $.each(["Comments", "Writers", "Active"], function(_, i) {
-    buttons.children("#Show"+i+"Button").click();
+    buttons.children("#Show"+i+"Button").trigger('click');
   });
 
 
@@ -33,7 +33,7 @@ $(function() {
           .append("<td class='Created'>"));
       _windowFunctions.appendAlphaSortedByAttr(deviceTable, tbody, "name", 1)
 
-      tbody.find('td.Comment').append($("<input type='text'>").change(function() {
+      tbody.find('td.Comment').append($("<input type='text'>").on('change', function() {
         WS.Set(prefix + ".Comment", this.value);
       }));
     }

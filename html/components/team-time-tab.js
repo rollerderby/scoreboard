@@ -10,7 +10,7 @@ function createTeamTimeTab(tab) {
 		.append(createTeamTable());
 	$("<tr><td/></tr>").appendTo(table).children("td")
 		.append(createTimeTable());
-	table.children("tbody").children("tr").children("td").children("table").addClass("TabTable");
+	table.children("tr").children("td").children("table").addClass("TabTable");
 
 	var sk1 = $('<div>').addClass('SKSheet').appendTo(tab);
 	var sk2 = $('<div>').addClass('SKSheet').appendTo(tab);
@@ -61,7 +61,7 @@ function createMetaControlTable() {
 	$("<input type='checkbox'>").attr("id", "EditKeyControlButton")
 		.appendTo(buttonsTd)
 		.button()
-		.click(function() {
+		.on('click', function() {
 			_crgKeyControls.editKeys(this.checked);
 			table.find("tr.Help").toggleClass("Hidden", !this.checked);
 		});
@@ -73,7 +73,7 @@ function createMetaControlTable() {
 	$("<input type='checkbox'>").attr("id", "EnableReplaceButton")
 		.appendTo(buttonsTd)
 		.button()
-		.click(function() {
+		.on('click', function() {
 			var value = this.checked;
 			setReplaceButton(value);
 			var operator = $("#operatorId").text();
@@ -87,7 +87,7 @@ function createMetaControlTable() {
 	$("<input type='checkbox'>").attr("id", "ShowClockControlsButton")
 		.appendTo(buttonsTd)
 		.button()
-		.click(function() {
+		.on('click', function() {
 			var value = this.checked;
 			setClockControls(value);
 			var operator = $("#operatorId").text();
@@ -101,7 +101,7 @@ function createMetaControlTable() {
 	$("<input type='checkbox'>").attr("id", "ShowTabBarButton")
 		.appendTo(buttonsTd)
 		.button()
-		.click(function() {
+		.on('click', function() {
 			var value = this.checked;
 			setTabBar(value);
 			var operator = $("#operatorId").text();
@@ -115,7 +115,7 @@ function createMetaControlTable() {
 		.addClass('clickMe')
 		.appendTo(buttonsTd)
 		.button()
-		.click(createGameControlDialog);
+		.on('click', createGameControlDialog);
 
 	var periodEndControlsLabel = $("<label>").attr("for", "PeriodEndControlsCheckbox")
 		.text("End of Period Controls")
@@ -124,7 +124,7 @@ function createMetaControlTable() {
 	$("<input type='checkbox'>").attr("id", "PeriodEndControlsCheckbox")
 		.appendTo(buttonsTd)
 		.button()
-		.click(function() {
+		.on('click', function() {
 			table.find("tr.PeriodEnd").toggleClass("Hidden", !this.checked);
 		});
 	var doPulseFlag = false;
@@ -149,12 +149,12 @@ function createMetaControlTable() {
 	$("<button>").addClass("PeriodEndTimeout").text("Timeout before Period End")
 		.appendTo(periodEndTd)
 		.button()
-		.click(function() { periodEndTimeoutDialog.dialog("open"); });
+		.on('click', function() { periodEndTimeoutDialog.dialog("open"); });
 	WS.Register("ScoreBoard.Rulesets.CurrentRule(Period.Number)");
 	$("<button>").text("Overtime")
 		.appendTo(periodEndTd)
 		.button()
-		.click(function() {createOvertimeDialog(WS.state["ScoreBoard.Rulesets.CurrentRule(Period.Number)"])});
+		.on('click', function() {createOvertimeDialog(WS.state["ScoreBoard.Rulesets.CurrentRule(Period.Number)"])});
 
 	return table;
 }
@@ -242,12 +242,12 @@ function createGameControlDialog() {
 		.append('Start Game')
 		.button({ disabled: true })
 		.appendTo(adhocGame)
-		.click(adhocStartGame);
+		.on('click', adhocStartGame);
 
 	updateAdhocName = function() {
 	};
 
-	$('<button>').addClass('setPrepState').text('Start Mid-Game').button().appendTo(preparedGame).click(function() {
+	$('<button>').addClass('setPrepState').text('Start Mid-Game').button().appendTo(preparedGame).on('click', function() {
 		preparedGame.children('.prepState').removeClass('Hide');
 		preparedGame.children('.setPrepState').addClass('Hide');
 	})
@@ -291,7 +291,7 @@ function createGameControlDialog() {
 			_windowFunctions.appendAlphaSortedByAttr(adhocGame.find("select.Team2"), option.clone(), 'value', 1);
 		}
 	});
-	adhocGame.find("select.Team1, select.Team2").change(function(e) {
+	adhocGame.find("select.Team1, select.Team2").on('change', function(e) {
 		var t1 = adhocGame.find("select.Team1 option:selected");
 		var t2 = adhocGame.find("select.Team2 option:selected");
 		if (t1.val() != "" && t2.val() != "") {
@@ -360,7 +360,7 @@ function createPeriodEndTimeoutDialog(td) {
 		waitDiv.hide();
 		dialog.dialog("close");
 	};
-	applyDiv.find("button.Apply").click(function() {
+	applyDiv.find("button.Apply").on('click', function() {
 		var secs = Number(periodSeconds.val());
 		if (isNaN(secs))
 			return;
@@ -372,7 +372,7 @@ function createPeriodEndTimeoutDialog(td) {
 		applying = true;
 		checkTimeFunction(WS.state["ScoreBoard.Clock(Period).Time"]);
 	});
-	waitDiv.find("button.Cancel").click(function() {
+	waitDiv.find("button.Cancel").on('click', function() {
 		td.find("button.PeriodEndTimeout").button("option", "label", "Timeout before Period End");
 		applying = false;
 		applyDiv.show();
@@ -393,7 +393,7 @@ function createOvertimeDialog(numPeriods) {
 	$("<span>").text("Note: Overtime can only be started at the end of Period ").appendTo(dialog);
 	$("<span>").text(numPeriods).appendTo(dialog);
 	$("<button>").addClass("StartOvertime").text("Start Overtime Lineup clock").appendTo(dialog)
-		.click(function() {
+		.on('click', function() {
 			WS.Set("ScoreBoard.StartOvertime", true);
 			dialog.dialog("close");
 		});
@@ -408,8 +408,9 @@ function createOvertimeDialog(numPeriods) {
 
 function createJamControlTable() {
 	var table = $("<table><tr><td/></tr></table>").addClass("JamControl");
-	var replaceInfoTr = _crgUtils.createRowTable(1).addClass("ReplaceInfo Hidden").appendTo(table.find("td"));
-	var controlsTr = _crgUtils.createRowTable(4,1).appendTo(table.find("td")).find("tr:eq(0)").addClass("Controls");
+	var td = table.find('td');
+	var replaceInfoTr = _crgUtils.createRowTable(1).addClass("ReplaceInfo Hidden").appendTo(td);
+	var controlsTr = _crgUtils.createRowTable(4,1).appendTo(td).find("tr:eq(0)").addClass("Controls");
 
 	var replaceInfoText = $("<span>").html("Replace &quot;<span id=\"replacedLabel\"></span>&quot; with").appendTo(replaceInfoTr);
 	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.Button.ReplacedLabel)", function(k, v) {
@@ -417,8 +418,8 @@ function createJamControlTable() {
 	});
 
 	var jamStartButton = $("<button>")
-		.html("<span class=\"Label\">Start Jam</span>")
-		.attr("id", "StartJam").addClass("KeyControl").button().click(function() {
+		.html("<span><span class=\"Label\">Start Jam</span></span>")
+		.attr("id", "StartJam").addClass("KeyControl").button().on('click', function() {
 			WS.Set("ScoreBoard.StartJam", true);
 		});
 	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.Button.StartLabel)", function(k, v) {
@@ -427,8 +428,8 @@ function createJamControlTable() {
 	jamStartButton.appendTo(controlsTr.children("td:eq(0)"));
 
 	var jamStopButton = $("<button>")
-		.html("<span class=\"Label\">Stop Jam</span>")
-		.attr("id", "StopJam").addClass("KeyControl").button().click(function() {
+		.html("<span><span class=\"Label\">Stop Jam</span></span>")
+		.attr("id", "StopJam").addClass("KeyControl").button().on('click', function() {
 			WS.Set("ScoreBoard.StopJam", true);
 		});
 	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.Button.StopLabel)", function(k, v) {
@@ -438,8 +439,8 @@ function createJamControlTable() {
 
 
 	var timeoutButton = $("<button>")
-		.html("<span class=\"Label\">Timeout</span>")
-		.attr("id", "Timeout").addClass("KeyControl").button().click(function() {
+		.html("<span><span class=\"Label\">Timeout</span></span>")
+		.attr("id", "Timeout").addClass("KeyControl").button().on('click', function() {
 			WS.Set("ScoreBoard.Timeout", true);
 		});
 	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.Button.TimeoutLabel)", function(k, v) {
@@ -448,16 +449,16 @@ function createJamControlTable() {
 	timeoutButton.appendTo(controlsTr.children("td:eq(2)"));
 
 	var undoButton = $("<button>")
-		.html("<span class=\"Label\">Undo</span>")
-		.attr("id", "ClockUndo").addClass("KeyControl").button().click(function() {
+		.html("<span><span class=\"Label\">Undo</span></span>")
+		.attr("id", "ClockUndo").addClass("KeyControl").button().on('click', function() {
 			WS.Set("ScoreBoard.ClockUndo", true);
 		});
 	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)", function(k, v) {
 		undoButton.find("span.Label").text(v);
 	});
 	var replaceButton = $("<button>")
-		.html("<span class=\"Label\">Replace</span>")
-		.attr("id", "ClockReplace").addClass("KeyControl Hidden KeyInactive").button().click(function() {
+		.html("<span><span class=\"Label\">Replace</span></span>")
+		.attr("id", "ClockReplace").addClass("KeyControl Hidden KeyInactive").button().on('click', function() {
 			WS.Set("ScoreBoard.ClockReplace", true);
 		});
 	WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)", function(k, v) {
@@ -468,10 +469,10 @@ function createJamControlTable() {
 			$("#TeamTime").find(".ReplaceInfo").toggleClass("Hidden", !rep);
 		}});
 	undoButton
-		.bind("mouseenter mouseleave", function(event) {replaceButton.toggleClass("hover", (event.type == "mouseenter"));})
+		.on("mouseenter mouseleave", function(event) {replaceButton.toggleClass("hover", (event.type == "mouseenter"));})
 		.appendTo(controlsTr.children("td:eq(3)"));
 	replaceButton
-		.bind("mouseenter mouseleave", function(event) {undoButton.toggleClass("hover", (event.type == "mouseenter"));})
+		.on("mouseenter mouseleave", function(event) {undoButton.toggleClass("hover", (event.type == "mouseenter"));})
 		.appendTo(controlsTr.children("td:eq(3)"));
 
 	return table;
@@ -479,7 +480,7 @@ function createJamControlTable() {
 
 var timeoutDialog;
 function createTeamTable() {
-	var table = $("<table>").addClass("Team");
+	var table = $('<table>').append('<tbody>').addClass("Team");
 	var row = $("<tr></tr>");
 	var nameRow = row.clone().addClass("Name").appendTo(table);
 	var scoreRow = row.clone().addClass("Score").appendTo(table);
@@ -535,20 +536,20 @@ function createTeamTable() {
 		var nameInputKeyup = function(event) {
 			var c = $(event.target);
 			switch (event.which) {
-				case 13: /* RET */ if (c.is("textarea") && !event.ctrlKey) break; c.blur(); break;
-				case 27: /* ESC */ c.blur(); break;
+				case 13: /* RET */ if (c.is("textarea") && !event.ctrlKey) break; c.trigger('blur'); break;
+				case 27: /* ESC */ c.trigger('blur'); break;
 			}
 		};
 
-		nameDisplayDiv.bind("click", function() { nameInput.focus(); });
-		nameInput.bind("focus", nameInputFocus);
-		altNameInput.bind("focus", nameInputFocus);
-		nameInput.bind("blur", nameInputBlur);
-		altNameInput.bind("blur", nameInputBlur);
-		nameInput.bind("keyup", nameInputKeyup);
-		altNameInput.bind("keyup", nameInputKeyup);
+		nameDisplayDiv.on("click", function() { nameInput.focus(); });
+		nameInput.on("focus", nameInputFocus);
+		altNameInput.on("focus", nameInputFocus);
+		nameInput.on("blur", nameInputBlur);
+		altNameInput.on("blur", nameInputBlur);
+		nameInput.on("keyup", nameInputKeyup);
+		altNameInput.on("keyup", nameInputKeyup);
 
-		altNameInput.bind("change", function() {
+		altNameInput.on("change", function() {
 			var val = $.trim(altNameInput.val());
 			if (val == "") {
 				WS.Set(prefix + ".AlternateName(operator)", null);
@@ -604,20 +605,20 @@ function createTeamTable() {
 			logoImg.attr("src", v);
 		});
 		logoSelect
-			.blur(function() { logoShowSelect(false); })
-			.keyup(function(event) { if (event.which == 27 /* ESC */) $(this).blur(); });
+			.on('blur', function() { logoShowSelect(false); })
+			.on('keyup', function(event) { if (event.which == 27 /* ESC */) $(this).trigger('blur'); });
 
-		logoTd.click(function() { if (!logoSelect.is(":visible")) logoShowSelect(true); });
+		logoTd.on('click', function() { if (!logoSelect.is(":visible")) logoShowSelect(true); });
 
 		var scoreTd = scoreTr.children("td:eq("+(first?"0":"2")+")").addClass("Down");
-		$("<button>").text("Score -1")
+		$("<button>").append($('<span>').text("Score -1"))
 			.attr("id", "Team"+team+"ScoreDown").addClass("KeyControl BigButton").button()
-			.click(function(){WS.Set(prefix + ".TripScore", -1, "change");})
+			.on('click', function(){WS.Set(prefix + ".TripScore", -1, "change");})
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
-		$("<button>").text("Trip -1").val("true")
+		$("<button>").append($('<span>').text("Trip -1")).val("true")
 			.attr("id", "Team"+team+"RemoveTrip").addClass("KeyControl TripButton").button()
-			.click(function(){WS.Set(prefix + ".RemoveTrip", true);})
+			.on('click', function(){WS.Set(prefix + ".RemoveTrip", true);})
 			.appendTo(scoreTd);
 
 		var scoreSubTr = _crgUtils.createRowTable(3).appendTo(scoreTr.children("td:eq(1)")).find("tr");
@@ -626,14 +627,14 @@ function createTeamTable() {
 
 		var scoreTd = scoreTr.children("td:eq("+(first?"2":"0")+")").addClass("Up");
 
-		$("<button>").text("Score +1")
+		$("<button>").append($('<span>').text("Score +1"))
 			.attr("id", "Team"+team+"ScoreUp").addClass("KeyControl BigButton").button()
-			.click(function(){WS.Set(prefix + ".TripScore", +1, "change");})
+			.on('click', function(){WS.Set(prefix + ".TripScore", +1, "change");})
 			.appendTo(scoreTd);
 		$("<br />").appendTo(scoreTd);
-		$("<button>").text("Trip +1")
+		$("<button>").append($('<span>').text("Trip +1"))
 			.attr("id", "Team"+team+"AddTrip").addClass("KeyControl TripButton").button()
-			.click(function(){WS.Set(prefix + ".AddTrip", true);})
+			.on('click', function(){WS.Set(prefix + ".AddTrip", true);})
 			.appendTo(scoreTd);
 
 		for (var i = 1; i <= 4; i++) {
@@ -642,9 +643,9 @@ function createTeamTable() {
 				pos = 3 - pos;
 			}
 			(function(i) {
-				$("<button>").text(i)
+				$("<button>").append($('<span>').text(i))
 					.attr("id", "Team"+team+"TripScore"+i).addClass("KeyControl").button()
-					.click(function(){ WS.Set(prefix + ".TripScore", i); })
+					.on('click', function(){ WS.Set(prefix + ".TripScore", i); })
 					.appendTo(speedScoreTr.find("td:eq("+pos+")"));
 			}(i));
 		}
@@ -681,19 +682,19 @@ function createTeamTable() {
 			}, 2000);
 		});
 
-		var timeoutButton = $("<button>").text("Team TO")
+		var timeoutButton = $("<button>").append($('<span>').text("Team TO"))
 			.attr("id", "Team"+team+"Timeout").addClass("KeyControl").button()
-			.click(function() { WS.Set(prefix + ".Timeout", true);});
+			.on('click', function() { WS.Set(prefix + ".Timeout", true);});
 		timeoutButton.appendTo(timeoutTr.children("td:eq("+(first?"0":"5")+")").addClass("Timeout"));
-		var timeoutCount = $("<a/>").click(function() { timeoutDialog.dialog("open"); })
+		var timeoutCount = $("<a/>").on('click', function() { timeoutDialog.dialog("open"); })
 			.appendTo(timeoutTr.children("td:eq("+(first?"1":"4")+")").addClass("Timeouts"));
 		WS.Register(prefix + ".Timeouts", function(k, v) { timeoutCount.text(v);});
 
-		var reviewButton = $("<button>").text("Off Review")
+		var reviewButton = $("<button>").append($('<span>').text("Off Review"))
 			.attr("id", "Team"+team+"OfficialReview").addClass("KeyControl").button()
-			.click(function() { WS.Set(prefix + ".OfficialReview", true);});
+			.on('click', function() { WS.Set(prefix + ".OfficialReview", true);});
 		reviewButton.appendTo(timeoutTr.children("td:eq("+(first?"2":"3")+")").addClass("OfficialReview"));
-		var officialReviews = $("<a/>").click(function() { timeoutDialog.dialog("open"); })
+		var officialReviews = $("<a/>").on('click', function() { timeoutDialog.dialog("open"); })
 			.appendTo(timeoutTr.children("td:eq("+(first?"3":"2")+")").addClass("OfficialReviews"));
 		WS.Register(prefix + ".OfficialReviews", function(k, v) { officialReviews.text(v);});
 
@@ -704,14 +705,14 @@ function createTeamTable() {
 			reviewButton.toggleClass("Active", to && or);
 		});
 
-		var retainedORButton = WSActiveButton(prefix + ".RetainedOfficialReview", $("<button>")).text("Retained")
+		var retainedORButton = WSActiveButton(prefix + ".RetainedOfficialReview", $("<button>")).append($('<span>').text("Retained"))
 			.attr("id", "Team"+team+"RetainedOfficialReview").addClass("KeyControl").button();
 		retainedORButton.appendTo(timeoutTr.children("td:eq("+(first?"4":"1")+")").addClass("RetainedOfficialReview"));
 
 		if (first) {
-			var otoButton = $("<button>").text("Official TO")
+			var otoButton = $("<button>").append($('<span>').text("Official TO"))
 				.attr("id", "OfficialTimeout").addClass("KeyControl").button()
-				.click(function() { WS.Set("ScoreBoard.OfficialTimeout", true);} );
+				.on('click', function() { WS.Set("ScoreBoard.OfficialTimeout", true);} );
 			WS.Register("ScoreBoard.TimeoutOwner", function(k, v) {
 				otoButton.toggleClass("Active", v == "O");
 			});
@@ -719,32 +720,32 @@ function createTeamTable() {
 			otoButton.wrap("<div></div>");
 		}
 
-		var leadJammerTd = flagsTr.children("td:eq("+(first?"1":"0")+")").css("direction", "ltr");
-		WSActiveButton(prefix + ".Lost", $("<button>")).text("Lost")
+		var leadJammerTd = flagsTr.children("td:eq("+(first?"1":"0")+")").append($('<span>')).children('span');
+		WSActiveButton(prefix + ".Lost", $("<button>")).append($('<span>').text("Lost"))
 			.attr("id", "Team"+team+"Lost").addClass("KeyControl").button().appendTo(leadJammerTd);
-		WSActiveButton(prefix + ".Lead", $("<button>")).text("Lead")
+		WSActiveButton(prefix + ".Lead", $("<button>")).append($('<span>').text("Lead"))
 			.attr("id", "Team"+team+"Lead").addClass("KeyControl").button().appendTo(leadJammerTd);
-		WSActiveButton(prefix + ".Calloff", $("<button>")).text("Call")
+		WSActiveButton(prefix + ".Calloff", $("<button>")).append($('<span>').text("Call"))
 			.attr("id", "Team"+team+"Call").addClass("KeyControl").button().appendTo(leadJammerTd);
-		WSActiveButton(prefix + ".Injury", $("<button>")).text("Inj")
+		WSActiveButton(prefix + ".Injury", $("<button>")).append($('<span>').text("Inj"))
 			.attr("id", "Team"+team+"Inj").addClass("KeyControl").button().appendTo(leadJammerTd);
-		WSActiveButton(prefix + ".NoInitial", $("<button>")).text("NI")
+		WSActiveButton(prefix + ".NoInitial", $("<button>")).append($('<span>').text("NI"))
 			.attr("id", "Team"+team+"NI").addClass("KeyControl").button().appendTo(leadJammerTd);
 
-		leadJammerTd.buttonset();
+		leadJammerTd.controlgroup();
 
-		var starPassTd = flagsTr.children("td:eq("+(first?"0":"1")+")").css("direction", "ltr");
-		var starPassButton = WSActiveButton(prefix + ".StarPass", $("<button>")).text("Star Pass")
+		var starPassTd = flagsTr.children("td:eq("+(first?"0":"1")+")");
+		var starPassButton = WSActiveButton(prefix + ".StarPass", $("<button>")).append($('<span>').text("Star Pass"))
 			.attr("id", "Team"+team+"StarPass").addClass("KeyControl").button().appendTo(starPassTd);
-		var noPivotButton = WSActiveButton(prefix + ".NoPivot", $("<button>")).text("No Pivot")
+		var noPivotButton = WSActiveButton(prefix + ".NoPivot", $("<button>")).append($('<span>').text("No Pivot"))
 			.attr("id", "Team"+team+"NoPivot").addClass("KeyControl").button().appendTo(starPassTd);
 				
 		var makeSkaterSelector = function(pos) {
 			var container = $('<span class="skaterSelector">')
 
-			var none = $('<button>').text("?").attr("skater", "").attr('id', 'Team'+team+pos+'None').addClass('KeyControl').button();
-			container.append(none).buttonset();
-			none.click(function(){WS.Set(prefix + '.Position('+pos+').Skater', "") });
+			var none = $('<button>').append($('<span>').text("?")).attr("skater", "").attr('id', 'Team'+team+pos+'None').addClass('KeyControl').button();
+			container.append(none).controlgroup();
+			none.on('click', function(){WS.Set(prefix + '.Position('+pos+').Skater', "") });
 
 			function setValue(v) {
 				container.children().removeClass("Active");
@@ -756,8 +757,8 @@ function createTeamTable() {
 				if (v != null && WS.state[prefix + '.Skater('+k.Skater+').Role'] != 'NotInGame') {
 					var number = WS.state[prefix + '.Skater('+k.Skater+').RosterNumber'];
 					var button = $('<button>').attr('number', number).attr('skater', k.Skater)
-							.attr('id', 'Team'+team+pos+k.Skater).addClass('KeyControl').text(number)
-							.click(function() {
+							.attr('id', 'Team'+team+pos+k.Skater).addClass('KeyControl').append($('<span>').text(number))
+							.on('click', function() {
 								WS.Set(prefix + '.Position('+pos+').Skater', k.Skater);
 						}).button();
 						_crgKeyControls.setupKeyControl(button, _crgKeyControls.operator);
@@ -775,14 +776,14 @@ function createTeamTable() {
 		$('<span>').text('Jammer:').appendTo(jammerSelectTd);
 		makeSkaterSelector('Jammer').appendTo(jammerSelectTd);
 
-		var jammerBoxButton = WSActiveButton(prefix + '.Position(Jammer).PenaltyBox', $('<button>')).text('Box')
+		var jammerBoxButton = WSActiveButton(prefix + '.Position(Jammer).PenaltyBox', $('<button>')).append($('<span>').text('Box'))
 			.attr('id', 'Team'+team+'JammerBox').addClass('KeyControl Box').button().appendTo(jammerSelectTd);
 
 		var pivotSelectTd = pivotTr.children('td');
 		$('<span>').text('Piv/4th Bl:').appendTo(pivotSelectTd);
 		makeSkaterSelector('Pivot').appendTo(pivotSelectTd);
 
-		var pivotBoxButton = WSActiveButton(prefix + '.Position(Pivot).PenaltyBox', $('<button>')).text('Box')
+		var pivotBoxButton = WSActiveButton(prefix + '.Position(Pivot).PenaltyBox', $('<button>')).append($('<span>').text('Box'))
 			.attr('id', 'Team'+team+'PivotBox').addClass('KeyControl Box').button().appendTo(pivotSelectTd);
 
 		WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', function(k, v) {
@@ -795,7 +796,7 @@ function createTeamTable() {
 }
 
 function createTimeTable() {
-	var table = $("<table>").addClass("Time");
+	var table = $("<table>").append('<tbody>').addClass("Time");
 	var row = $("<tr></tr>");
 	var nameRow = row.clone().addClass("Name").appendTo(table);
 	var numberRow = row.clone().addClass("Number").appendTo(table);
@@ -845,37 +846,37 @@ function createTimeTable() {
 		});
 		if (clock == "Period") {
 			var periodDialog = createPeriodDialog();
-			numberTr.children("td:eq(1)").click(function() { periodDialog.dialog("open"); });
+			numberTr.children("td:eq(1)").on('click', function() { periodDialog.dialog("open"); });
 		} else if (clock == "Jam") {
 			var jamDialog = createJamDialog();
-			numberTr.children("td:eq(1)").click(function() { jamDialog.dialog("open"); });			
+			numberTr.children("td:eq(1)").on('click', function() { jamDialog.dialog("open"); });			
 		} else if (clock == "Timeout") {
 			timeoutDialog = createTimeoutDialog();
-			numberTr.children("td:eq(1)").click(function() { timeoutDialog.dialog("open"); });
+			numberTr.children("td:eq(1)").on('click', function() { timeoutDialog.dialog("open"); });
 		}
 
-		$("<button>").text("Start").val("true")
+		$("<button>").append($('<span>').text("Start")).val("true")
 			.attr("id", "Clock"+clock+"Start").addClass("KeyControl").button()
 			.appendTo(controlTr.children("td:eq(0)").addClass("Start"))
-			.click(function() { WS.Set(prefix + ".Start", true);});
-		$("<button>").text("Stop").val("true")
+			.on('click', function() { WS.Set(prefix + ".Start", true);});
+		$("<button>").append($('<span>').text("Stop")).val("true")
 			.attr("id", "Clock"+clock+"Stop").addClass("KeyControl").button()
 			.appendTo(controlTr.children("td:eq(1)").addClass("Stop"))
-			.click(function() { WS.Set(prefix + ".Stop", true);});
+			.on('click', function() { WS.Set(prefix + ".Stop", true);});
 
-		$("<button>").text("-1")
+		$("<button>").append($('<span>').text("-1"))
 			.attr("id", "Clock"+clock+"TimeDown").addClass("KeyControl").button()
-			.click(function() { WS.Set(prefix + ".Time", -1000, "change");})
+			.on('click', function() { WS.Set(prefix + ".Time", -1000, "change");})
 			.appendTo(timeTr.children("td:eq(0)").addClass("Button"));
 		var time = $("<a>").appendTo(timeTr.children("td:eq(1)").addClass("Time"));
 		WS.Register(prefix +".Time", function(k, v) {
 			time.text(_timeConversions.msToMinSec(v, isTrue(WS.state[prefix+'.Direction'])));
 		});
 		var timeDialog = createTimeDialog(clock);
-		timeTr.children("td:eq(1)").click(function() { timeDialog.dialog("open"); });
-		$("<button>").text("+1")
+		timeTr.children("td:eq(1)").on('click', function() { timeDialog.dialog("open"); });
+		$("<button>").append($('<span>').text("+1"))
 			.attr("id", "Clock"+clock+"TimeUp").addClass("KeyControl").button()
-			.click(function() { WS.Set(prefix + ".Time", +1000, "change");})
+			.on('click', function() { WS.Set(prefix + ".Time", +1000, "change");})
 			.appendTo(timeTr.children("td:eq(2)").addClass("Button"));
 	});
 
@@ -912,12 +913,12 @@ function createPeriodDialog() {
 						.append($('<td>').addClass('Jams').text(0))
 						.append($('<td>').addClass('Duration'))
 						.append($('<td>').append($("<button>").text("Delete")
-									.button().click(function () {
+									.button().on('click', function () {
 										//TODO: confirmation popup
 										WS.Set(prefix + ".Delete", true);
 									})))
 					.append($('<td>').append($("<button>").text("Insert Before")
-								.button().click(function () {
+								.button().on('click', function () {
 									WS.Set(prefix + ".InsertBefore", true); 
 								})));
 					var inserted = false;
@@ -969,7 +970,7 @@ function createJamDialog() {
 	var footer = $('<tr><td colspan="4"></td><td></td><td></td>')
 		.addClass("Jam").attr("nr", 999).appendTo(tableTemplate);
 	$('<span>').text('Upcoming').appendTo(footer.children('td:eq(0)'));
-	$('<button>').text('Insert Before').button().click(function () {
+	$('<button>').text('Insert Before').button().on('click', function () {
 		WS.Set('ScoreBoard.Jam(' + nextJam + ').InsertBefore', true);
 	}).appendTo(footer.children('td:eq(2)'));
 
@@ -1002,12 +1003,12 @@ function createJamDialog() {
 						.append($('<td>').addClass('Duration'))
 						.append($('<td>').addClass('PC'))
 						.append($('<td>').append($("<button>").text("Delete")
-									.button().click(function () {
+									.button().on('click', function () {
 										//TODO: confirmation popup
 										WS.Set(prefix + ".Delete", true);
 									})))
 					.append($('<td>').append($("<button>").text("Insert Before")
-								.button().click(function () {
+								.button().on('click', function () {
 									WS.Set(prefix + ".InsertBefore", true); 
 								})));
 					var inserted = false;
@@ -1098,7 +1099,7 @@ function createTimeoutDialog() {
 
 	var footer = $("<tr><td/><td colspan=\"3\"/><td/><td/><td/></tr>").attr('id', 'toFooter').appendTo(table);
 	periodDropdownTemplate.clone().appendTo(footer.find('td:eq(0)'));
-	$('<button>').text('Add Timeout').button().click(function() {
+	$('<button>').text('Add Timeout').button().on('click', function() {
 		WS.Set('ScoreBoard.Period('+footer.find('#PeriodDropdown').val()+').InsertTimeout', true);
 	}).appendTo(footer.find('td:eq(1)'));
 
@@ -1208,25 +1209,25 @@ function createTimeoutDialog() {
 			var review = isTrue(WS.state[prefix+'.Review']);
 			var retained = isTrue(WS.state[prefix+'.RetainedReview']);
 			row = $("<tr>").addClass("Timeout").attr("toId", id).attr('period', k.Period).attr('jam', jam)
-				.append($('<td>').addClass('Period').append(periodDropdownTemplate.clone().val(p).change(function() {
+				.append($('<td>').addClass('Period').append(periodDropdownTemplate.clone().val(p).on('change', function() {
 					WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+$(this).val()+').CurrentJam']);
 				})))
-			.append($('<td>').addClass('Jam').append(jamDropdownTemplate[p].clone().val(jam).change(function() {
+			.append($('<td>').addClass('Jam').append(jamDropdownTemplate[p].clone().val(jam).on('change', function() {
 				WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+p+').Jam('+$(this).val()+').Id']);
 			})))
 			.append($('<td>').addClass('Duration').text(dur))
 				.append($('<td>').addClass('PerClock').text(pc))
-				.append($('<td>').addClass('Type').append(typeDropdownTemplate.clone().val(type).change(function() {
+				.append($('<td>').addClass('Type').append(typeDropdownTemplate.clone().val(type).on('change', function() {
 					var parts = $(this).val().split('.');
 					WS.Set(prefix+'.Owner', parts[0]);
 					WS.Set(prefix+'.Review', isTrue(parts[1]));
 				})))
 			.append($('<td>').addClass('Retained').append($('<button>').toggleClass('Hide', !review).toggleClass('Active', retained)
-						.text('Retained').button().click(function () {
+						.text('Retained').button().on('click', function () {
 							WS.Set(prefix+'.RetainedReview', !isTrue(WS.state[prefix+'.RetainedReview']));
 						})))
 			.append($('<td>').append($("<button>").text("Delete")
-						.button().click(function () {
+						.button().on('click', function () {
 							//TODO: confirmation popup
 							WS.Set(prefix + ".Delete", true);
 						})));
@@ -1299,14 +1300,14 @@ function createTimeDialog(clock) {
 			time.text(_timeConversions.msToMinSec(v, isTrue(WS.state[prefix + '.Direction'])))
 		});
 		$("<button>").text("-sec").button()
-			.click(function() { WS.Set(prefix + "." + e, -1000, "change");})
+			.on('click', function() { WS.Set(prefix + "." + e, -1000, "change");})
 			.appendTo(rowTable.find("tr:eq(1)>td:eq(0)"));
 		$("<button>").text("+sec").button()
-			.click(function() { WS.Set(prefix + "." + e, +1000, "change");})
+			.on('click', function() { WS.Set(prefix + "." + e, +1000, "change");})
 			.appendTo(rowTable.find("tr:eq(1)>td:eq(2)"));
 		var input = $("<input type='text' size='5'>").appendTo(rowTable.find("tr:eq(1)>td:eq(1)"));
 		$("<button>").text("Set").addClass("Set").button().appendTo(rowTable.find("tr:eq(1)>td:eq(1)"))
-			.click(function() {
+			.on('click', function() {
 				WS.Set(prefix + "." + e, _timeConversions.minSecToMs(input.val()));
 				input.val("");
 			});
@@ -1314,7 +1315,7 @@ function createTimeDialog(clock) {
 	$("<tr><td/><td/><td/></tr>").insertAfter(table.find("tr.Time table tr:eq(0)"));
 	$.each( [ "Start", "ResetTime", "Stop" ], function(i, t) {
 		$("<button>").text(t).button()
-			.click(function() {WS.Set(prefix + "." + t, "true");})
+			.on('click', function() {WS.Set(prefix + "." + t, "true");})
 			.appendTo(table.find("tr.Time table tr:eq(1)>td:eq("+i+")"));
 	});
 

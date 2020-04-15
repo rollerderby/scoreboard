@@ -41,12 +41,12 @@ _crgUtils = {
 			handler = eventData;
 			eventData = undefined;
 			if (useBind)
-				target.bind(eventType, handler);
+				target.on(eventType, handler);
 			else
 				target.live(eventType, handler);
 		} else {
 			if (useBind)
-				target.bind(eventType, eventData, handler);
+				target.on(eventType, eventData, handler);
 			else
 				target.live(eventType, eventData, handler);
 		}
