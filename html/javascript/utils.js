@@ -14,7 +14,7 @@ _crgUtils = {
 	 * so it's safe to use as an element's id.
 	 */
 	checkSbId: function(s) {
-		return s.replace(/['"()]/g, "");
+		return s.replace(/['"()]/g, '');
 	},
 
 	/* Bind, using on(), and run a function.
@@ -26,7 +26,7 @@ _crgUtils = {
 	 * to supply to the initial call of the handler.
 	 * The handler is initially run once for each element
 	 * in the jQuery target object.
-	 * As a special case, if the eventType is "sbchange", and
+	 * As a special case, if the eventType is 'sbchange', and
 	 * the initialParams are not defined, and the target
 	 * is a $sb() node, the target.$sbGet() value is passed as the
 	 * first and second initial parameters to the handler.
@@ -54,7 +54,7 @@ _crgUtils = {
 			var params = [ ];
 			if (initialParams)
 				params = initialParams;
-			else if ($.trim(eventType) == "sbchange" && $sb(this))
+			else if ($.trim(eventType) == 'sbchange' && $sb(this))
 				params = [ $sb(this).$sbGet(), $sb(this).$sbGet() ];
 //FIXME - call once for each eventType after splitting by spaces?
 			var event = jQuery.Event(eventType);
@@ -70,35 +70,35 @@ _crgUtils = {
 	},
 
 	showLoginDialog: function(titleText, nameText, buttonText, callback) {
-		var dialog = $("<div>").append($("<a>").html(nameText)).append("<input type='text'/>");
+		var dialog = $('<div>').append($('<a>').html(nameText)).append('<input type="text"/>');
 		var login = function() {
-			if (callback(dialog.find("input:text").val()))
-				dialog.dialog("destroy");
+			if (callback(dialog.find('input:text').val()))
+				dialog.dialog('destroy');
 		};
-		dialog.find("input:text").keydown(function(event) { if (event.which == 13) login(); });
+		dialog.find('input:text').keydown(function(event) { if (event.which == 13) login(); });
 		dialog.dialog({
 			modal: true,
 			closeOnEscape: false,
 			title: titleText,
 			buttons: [ { text: buttonText, click: login } ],
 			close: function() { if (callback('default'))
-				dialog.dialog("destroy");
+				dialog.dialog('destroy');
 			}
 		});
 		// If we're in period 2, the dialog can end up off screen once all the
 		// SK rows finish loading. This ensures the dialog stays up top.
-		dialog.dialog("widget").css({"top": "5em", "position": "fixed"});
+		dialog.dialog('widget').css({'top': '5em', 'position': 'fixed'});
 	},
 
 	createRowTable: function(n, r) {
-		var table = $("<table>").css("width", "100%").addClass("RowTable");
-		var w = (100 / n) + "%";
+		var table = $('<table>').css('width', '100%').addClass('RowTable');
+		var w = (100 / n) + '%';
 		r = r || 1;
 		while (0 < r--) {
 			var count = n;
-			var row = $("<tr>").appendTo(table);
+			var row = $('<tr>').appendTo(table);
 			while (0 < count--)
-				$("<td>").css("width", w).appendTo(row);
+				$('<td>').css('width', w).appendTo(row);
 		}
 		return table;
 	}

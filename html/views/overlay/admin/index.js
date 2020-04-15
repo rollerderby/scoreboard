@@ -1,6 +1,6 @@
 
 function str_sort(a, b){ return ( $(b).text() < $(a).text() ) ? 1 : -1; }
-jQuery.fn.sortOptions = function sortOptions() { $("> option", this[0]).sort(str_sort).appendTo(this[0]); }
+jQuery.fn.sortOptions = function sortOptions() { $('> option', this[0]).sort(str_sort).appendTo(this[0]); }
 
 Skaters = new DataSet();
 Skaters.AddTrigger('UPDATE', '*', { }, function(n,o,k) {
@@ -31,7 +31,7 @@ function initialize() {
 		$('[data-setting="' + k +'"]').each(function(i) {
 			$t = $(this);
 			if($t.hasClass('ToggleSwitch')) {
-				$t.val(v).toggleClass('current', (v != null && v != ""));
+				$t.val(v).toggleClass('current', (v != null && v != ''));
 			} else {
 				if($t.prop('tagName') == 'SELECT') { 	
 					$('option[value="' + v + '"]', $t).attr('selected', 'selected');
@@ -69,11 +69,11 @@ function initialize() {
 		'ScoreBoard.Team(2).Color(overlay_fg)',
 		'ScoreBoard.Team(2).Color(overlay_bg)'],
 				function(k,v) {
-					if (v == null || v == "") {
-						$('input[data-setting="'+k+'"]').attr("cleared", "true");
-						$('input[data-setting="'+k+'"]').val("#666666");  // Same as background color.
+					if (v == null || v == '') {
+						$('input[data-setting="'+k+'"]').attr('cleared', 'true');
+						$('input[data-setting="'+k+'"]').val('#666666');  // Same as background color.
 					} else {
-						$('input[data-setting="'+k+'"]').attr("cleared", "false");
+						$('input[data-setting="'+k+'"]').attr('cleared', 'false');
 						$('input[data-setting="'+k+'"]').val(v);
 					}
 				});
@@ -87,8 +87,8 @@ function initialize() {
 $('#Controls input, #Controls .Selector').on('change', function() {
 	t = $(this).attr('data-setting');
 	v = $(this).val();
-	if ($(this).attr("type") == "color") {
-		$(this).attr("cleared", "false");
+	if ($(this).attr('type') == 'color') {
+		$(this).attr('cleared', 'false');
 	}
 	if (v == '' && t.endsWith('AlternateName(overlay)')) {
 		// Delete the AlternateName
@@ -174,7 +174,7 @@ $('#Controls button').on('click', function() {
 	$t.removeClass('changed'); 
 	if( $t.hasClass('ClearPrev') ) {
 		$t = $t.prev()
-		$t.attr("cleared", true);
+		$t.attr('cleared', true);
 	} else if( $t.hasClass('ToggleSwitch') ) {
 		if( $t.hasClass('NoAuto') ) {
 			nv = $t.attr('data-next');

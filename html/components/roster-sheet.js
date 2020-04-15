@@ -7,12 +7,12 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
 	'use strict';
 	$(initialize);
 
-	var alternateName = "operator";
+	var alternateName = 'operator';
 	var tbody;
 
 	function initialize() {
 
-		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('Roster Team').addClass("AlternateName_" + alternateName).appendTo(element);
+		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('Roster Team').addClass('AlternateName_' + alternateName).appendTo(element);
 		var thead = $('<thead>').appendTo(table);
 		$('<tr>').appendTo(thead)
 			.append($('<td colspan=2 id=head>').text('Team ' + teamId));
@@ -55,17 +55,17 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
 				return;
 			}
 			if (row.length == 0) {
-				row = $("<tr>").appendTo(tbody).addClass("Skater").attr("id", k.Skater)
-					.append($("<td>").addClass("Number"))
-					.append($("<td>").addClass("Name"));
+				row = $('<tr>').appendTo(tbody).addClass('Skater').attr('id', k.Skater)
+					.append($('<td>').addClass('Number'))
+					.append($('<td>').addClass('Name'));
 			}
-			row.attr("number", String(v));
-			tbody.children().sort(function(a, b){return $(a).attr("number") > $(b).attr("number") ? 1 : -1}).appendTo(tbody);
+			row.attr('number', String(v));
+			tbody.children().sort(function(a, b){return $(a).attr('number') > $(b).attr('number') ? 1 : -1}).appendTo(tbody);
 		}
-		var flags = WS.state[prefix + ".Flags"];
-		row.attr("flags", flags);
-		row.children(".Name").text(WS.state[prefix + ".Name"]);
-		row.children(".Number").text(String(WS.state[prefix + ".RosterNumber"]) + ((flags == "ALT" || flags == "BC")?"*":""));
+		var flags = WS.state[prefix + '.Flags'];
+		row.attr('flags', flags);
+		row.children('.Name').text(WS.state[prefix + '.Name']);
+		row.children('.Number').text(String(WS.state[prefix + '.RosterNumber']) + ((flags == 'ALT' || flags == 'BC')?'*':''));
 	}
 }
 

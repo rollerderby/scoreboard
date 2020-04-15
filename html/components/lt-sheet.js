@@ -3,7 +3,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 	'use strict';
 	$(initialize);
 
-	var teamName = "";
+	var teamName = '';
 	// Looking these up via the DOM is slow, so cache them.
 	var periodElements = {};
 	var jamElements = {};
@@ -32,24 +32,24 @@ function prepareLtSheetTable(element, teamId, mode) {
 		], handleUpdate);
 
 		if (mode == 'plt') {
-			WS.Register(['ScoreBoard.UpcomingJamNumber'], function (k, v) { element.find("#upcoming .JamNumber").text(v); });
-			WS.Register(['ScoreBoard.Team('+teamId+').NoPivot'], function(k, v) { element.find("#upcoming .NP").text(isTrue(v)?'X':''); });
+			WS.Register(['ScoreBoard.UpcomingJamNumber'], function (k, v) { element.find('#upcoming .JamNumber').text(v); });
+			WS.Register(['ScoreBoard.Team('+teamId+').NoPivot'], function(k, v) { element.find('#upcoming .NP').text(isTrue(v)?'X':''); });
 
 			WS.Register(['ScoreBoard.InJam', 'ScoreBoard.CurrentPeriodNumber'], function() {
 				for (var p in periodElements) {
-					periodElements[p].find("#upcoming").toggleClass('Hide', isTrue(WS.state['ScoreBoard.InJam']) || WS.state['ScoreBoard.CurrentPeriodNumber'] != p);
+					periodElements[p].find('#upcoming').toggleClass('Hide', isTrue(WS.state['ScoreBoard.InJam']) || WS.state['ScoreBoard.CurrentPeriodNumber'] != p);
 				}
 			});
 
 			WS.Register(['ScoreBoard.Team('+teamId+').Position(*).RosterNumber',
 				'ScoreBoard.Team('+teamId+').Position(*).CurrentBoxSymbols',
 				'ScoreBoard.Team('+teamId+').Position(*).Annotation'], function(k, v) {
-				if (k.field == "RosterNumber") {
-					element.find("#upcoming .Skater."+k.Position).text(v);
-				} else if (k.field == "CurrentBoxSymbols") {
-					element.find("#upcoming .Box.Box"+k.Position).text(v);
-				} else if (k.field == "Annotation") {
-					element.find("#upcoming .Skater."+k.Position).toggleClass('hasAnnotation', v != '');
+				if (k.field == 'RosterNumber') {
+					element.find('#upcoming .Skater.'+k.Position).text(v);
+				} else if (k.field == 'CurrentBoxSymbols') {
+					element.find('#upcoming .Box.Box'+k.Position).text(v);
+				} else if (k.field == 'Annotation') {
+					element.find('#upcoming .Skater.'+k.Position).toggleClass('hasAnnotation', v != '');
 				}
 			});
 		}
@@ -109,7 +109,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 			case 'StarPass':
 				spRow.children('.JamNumber').text(isTrue(v)?'SP':'SP*');
 				spRow.children('.NP').text(isTrue(v)?'X':'');
-				$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
+				$.each( [ 'Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3' ], function() {
 					var pos = String(this);
 					spRow.children('.'+pos).text(isTrue(v)?WS.state[prefix+'Fielding('+pos+').SkaterNumber']:'');
 					setBoxTripSymbols(spRow, '.Box'+pos, isTrue(v)?WS.state[prefix+'Fielding('+pos+').BoxTripSymbolsAfterSP']:'')
@@ -138,9 +138,9 @@ function prepareLtSheetTable(element, teamId, mode) {
 			var table = $('<table cellpadding="0" cellspacing="0" border="1">')
 				.addClass('Period LT').attr('nr', nr);
 			if (mode == 'plt') {
-				table.prependTo(element).addClass("Backwards");
+				table.prependTo(element).addClass('Backwards');
 			} else {
-				table.appendTo(element).addClass("Forewards");
+				table.appendTo(element).addClass('Forewards');
 			}
 			if (mode != 'plt') {
 				$('<div class="LT">').html('<span class ="Team">' + teamName + '</span> P' + nr)
@@ -170,7 +170,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 				var jamRow = $('<tr>').addClass('Jam').attr('id', 'upcoming');
 				var jamBox = $('<td>').addClass('JamNumber Darker').appendTo(jamRow);
 				var npBox = $('<td>').addClass('NP Darker').appendTo(jamRow);
-				$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
+				$.each( [ 'Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3' ], function() {
 					var pos = String(this);
 					var numBox = $('<td>').addClass('Skater '+pos).on('click', function() { 
 						openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
@@ -197,9 +197,9 @@ function prepareLtSheetTable(element, teamId, mode) {
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
 			if (mode != 'copyToStatsbook') {
 				$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
-				$('<td>').addClass('NP Darker').on('click', function() { WS.Set(prefix+'NoPivot', $(this).text() == ""); }).appendTo(jamRow);
+				$('<td>').addClass('NP Darker').on('click', function() { WS.Set(prefix+'NoPivot', $(this).text() == ''); }).appendTo(jamRow);
 			}
-			$.each( [ "Jammer", "Pivot", "Blocker1", "Blocker2", "Blocker3" ], function() {
+			$.each( [ 'Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3' ], function() {
 				var pos = String(this);
 				if (mode == 'copyToStatsbook') {
 					$('<td>').addClass('Skater '+pos).appendTo(jamRow);

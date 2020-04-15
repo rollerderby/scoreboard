@@ -55,7 +55,7 @@ _timeConversions = {
 	 * These are generally internal functions that should not be used externally
 	 */
 
-	/* If needed, this preprends ":" */
+	/* If needed, this preprends ':' */
 	_formatMinSec: function(time) { return ((String(time).indexOf(':') > -1) ? time : ':'+time); },
 	/* Convert ms to seconds portion of min:sec */
 	_msOnlySec: function(ms, roundUp) {

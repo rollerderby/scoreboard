@@ -18,11 +18,11 @@ var WS = {
 
 	_connect: function() {
 		WS.connectTimeout = null;
-		var url = (document.location.protocol == "http:" ? "ws" : "wss") + "://";
-		url += document.location.host + "/WS/"
+		var url = (document.location.protocol == 'http:' ? 'ws' : 'wss') + '://';
+		url += document.location.host + '/WS/'
 		// This is not required, but helps figure out which device is which.
-		url += "?source=" + encodeURIComponent(document.location.pathname + document.location.search);
-		var platform = "";
+		url += '?source=' + encodeURIComponent(document.location.pathname + document.location.search);
+		var platform = '';
 		if (navigator.userAgent || false) {
 			var match = navigator.userAgent.match(/\((.*)\).*\(.*\)/);
 			if (match) {
@@ -30,23 +30,23 @@ var WS = {
 			}
 		}
 		if (!platform) {
-			platform += window.screen.width + "x" + window.screen.height + " ";
+			platform += window.screen.width + 'x' + window.screen.height + ' ';
 			if (navigator.maxTouchPoints != undefined) {
-				platform += (navigator.maxTouchPoints > 0)?"Touchscreen ":"NotTouchscreen; ";
+				platform += (navigator.maxTouchPoints > 0)?'Touchscreen ':'NotTouchscreen; ';
 			}
 		}
-		url += "&platform=" + encodeURIComponent(platform);
+		url += '&platform=' + encodeURIComponent(platform);
 	
 		if(WS.Connected != true || !WS.socket) {
-			if(WS.debug) console.log("WS", "Connecting the websocket at " + url);
+			if(WS.debug) console.log('WS', 'Connecting the websocket at ' + url);
 
 			WS.socket = new WebSocket(url);
 			WS.socket.onopen = function(e) {
 				WS.Connected = true;
-				if(WS.debug) console.log("WS", "Websocket: Open");
-				$(".ConnectionError").addClass("Connected");
+				if(WS.debug) console.log('WS', 'Websocket: Open');
+				$('.ConnectionError').addClass('Connected');
 				req = {
-					action: "Register",
+					action: 'Register',
 					paths: new Array()
 				};
 				$.each(Object.keys(WS.state), function(idx, k) {
@@ -65,11 +65,11 @@ var WS = {
 				if (WS.connectCallback != null)
 					WS.connectCallback();
 				// Hearbeat every 30s so the connection is kept alive.
-				WS.heartbeat = setInterval(WS.Command, 30000, "Ping");
+				WS.heartbeat = setInterval(WS.Command, 30000, 'Ping');
 			};
 			WS.socket.onmessage = function(e) {
 				json = JSON.parse(e.data);
-				if (WS.debug) console.log("WS", json);
+				if (WS.debug) console.log('WS', json);
 				if (json.authorization != null)
 					alert(json.authorization);
 				if (json.state != null) {
@@ -78,15 +78,15 @@ var WS = {
 			};
 			WS.socket.onclose = function(e) {
 				WS.Connected = false;
-				console.log("WS", "Websocket: Close", e);
-				$(".ConnectionError").removeClass("Connected");
+				console.log('WS', 'Websocket: Close', e);
+				$('.ConnectionError').removeClass('Connected');
 				if (WS.connectTimeout == null)
 					WS.connectTimeout = setTimeout(WS._connect, 1000);
 				clearInterval(WS.heartbeat);
 			};
 			WS.socket.onerror = function(e) {
-				console.log("WS", "Websocket: Error", e);
-				$(".ConnectionError").removeClass("Connected");
+				console.log('WS', 'Websocket: Error', e);
+				$('.ConnectionError').removeClass('Connected');
 				if (WS.connectTimeout == null)
 					WS.connectTimeout = setTimeout(WS._connect, 1000);
 				clearInterval(WS.heartbeat);
@@ -210,7 +210,7 @@ var WS = {
 			} else {
 				var dot = prop.lastIndexOf('.', i)
 				var key = prop.substring(dot + 1, i + 1);
-				prop[key] = "";
+				prop[key] = '';
 				parts.push(key)
 				i = dot - 1;
 			}
@@ -242,25 +242,25 @@ var WS = {
 				} else if (options.attr != null) {
 					callback = function(k, v) { elem.attr(options.attr, v); };
 				} else {
-					if (elem.hasClass("AutoFit")) {
+					if (elem.hasClass('AutoFit')) {
 						elem.empty();
-						var div = $("<div>").css("width", "100%").css("height", "100%").appendTo(elem);
-						elem = $("<a>").appendTo(div);
+						var div = $('<div>').css('width', '100%').css('height', '100%').appendTo(elem);
+						elem = $('<a>').appendTo(div);
 						var autofit = _autoFit.enableAutoFitText(div);
 
 						callback = function(k, v) {
 							elem.text(v);
-							if (elem.data("lastText") != v) {
-								elem.data("lastText", v);
+							if (elem.data('lastText') != v) {
+								elem.data('lastText', v);
 								autofit();
 							}
 						};
-					} else if (elem.parent().hasClass("AutoFit")) {
+					} else if (elem.parent().hasClass('AutoFit')) {
 						var autofit = _autoFit.enableAutoFitText(elem.parent());
 						callback = function(k, v) {
 							elem.text(v);
-							if (elem.data("lastText") != v) {
-								elem.data("lastText", v);
+							if (elem.data('lastText') != v) {
+								elem.data('lastText', v);
 								autofit();
 							}
 						};
@@ -287,7 +287,7 @@ var WS = {
 		});
 
 		req = {
-			action: "Register",
+			action: 'Register',
 			paths: paths
 		};
 		WS.send(JSON.stringify(req));
@@ -308,12 +308,12 @@ var WS = {
 		function matches(t, p, i) {
 			var result = t.values || [];
 			for (; i < p.length; i++) {
-				if (t["*)"] != null) {
+				if (t['*)'] != null) {
 					// Allow Blah(*) as a wildcard.
 					var j;
 					// id captured by * might contain . and thus be split - find the end
-					for (j = i; j < p.length && !p[j].endsWith(")"); j++);
-					result = result.concat(matches(t["*)"], p, j+1) || []);
+					for (j = i; j < p.length && !p[j].endsWith(')'); j++);
+					result = result.concat(matches(t['*)'], p, j+1) || []);
 				}
 				t = t[p[i]];
 				if (t == null) {
@@ -328,7 +328,7 @@ var WS = {
 	},
 
 	getPaths: function(elem, attr) {
-		var list = elem.attr(attr).split(",");
+		var list = elem.attr(attr).split(',');
 		var path = WS._getContext(elem);
 		paths = new Array();
 		$.each(list, function(idx, item) {
@@ -344,9 +344,9 @@ var WS = {
 	},
 
 	AutoRegister: function() {
-		$.each($("[sbDisplay]"), function(idx, elem) {
+		$.each($('[sbDisplay]'), function(idx, elem) {
 			elem = $(elem);
-			var paths = WS.getPaths(elem, "sbDisplay");
+			var paths = WS.getPaths(elem, 'sbDisplay');
 			if (paths.length > 0) {
 				// When there's multiple names, use the
 				// first non-empty one.
@@ -360,21 +360,21 @@ var WS = {
 							break;
 						}
 					}
-					if (window[elem.attr("sbModify")] != null) {
-						v = window[elem.attr("sbModify")](path, v);
+					if (window[elem.attr('sbModify')] != null) {
+						v = window[elem.attr('sbModify')](path, v);
 					}
 					return v;
 				}
 				WS.Register(paths, { element: elem, modifyFunc: mf });
 			}
 		});
-		$.each($("[sbTrigger]"), function(idx, elem) {
+		$.each($('[sbTrigger]'), function(idx, elem) {
 			elem = $(elem);
-			var sbTrigger = window[elem.attr("sbTrigger")];
+			var sbTrigger = window[elem.attr('sbTrigger')];
 			if (sbTrigger == null)
 				return;
 
-			var paths = WS.getPaths(elem, "sbTriggerOn");
+			var paths = WS.getPaths(elem, 'sbTriggerOn');
 			if (paths.length > 0)
 				WS.Register(paths, { triggerFunc: sbTrigger } );
 		});
@@ -382,12 +382,12 @@ var WS = {
 
 	_getContext: function(elem, attr) {
 		if (attr == null)
-			attr = "sbContext";
+			attr = 'sbContext';
 
 		var parent = elem.parent();
 		var ret = '';
 		if (parent.length > 0)
-			ret = WS._getContext(parent, "sbContext");
+			ret = WS._getContext(parent, 'sbContext');
 		var context = elem.attr(attr);
 		if (context != null)
 			ret = (ret != '' ? ret + '.' : '') + context;

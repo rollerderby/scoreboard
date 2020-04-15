@@ -15,7 +15,7 @@ _autoFit = {
 	 * with no parameters, if the autoFitText() function needs to be called manually,
 	 * e.g. if the contained text changes or the container size changes.
 	 * The text will only be auto-fit automatically when the browser window resizes.
-	 * The auto-fit function can also be accessed via element.data("AutoFit").
+	 * The auto-fit function can also be accessed via element.data('AutoFit').
 	 */
 	enableAutoFitText: function(e, options) {
 		if (!e)
@@ -23,25 +23,25 @@ _autoFit = {
 		e = $(e);
 		if (!e.length)
 			return null;
-		if (e.data("AutoFit"))
-			return e.data("AutoFit");
+		if (e.data('AutoFit'))
+			return e.data('AutoFit');
 		var doAutoFit = function() { return _autoFit.autoFitText(e, options); };
-		e.data("AutoFit", doAutoFit);
-		$(window).on("resize", function(event) {
-			if (e.closest("body").length)
+		e.data('AutoFit', doAutoFit);
+		$(window).on('resize', function(event) {
+			if (e.closest('body').length)
 				doAutoFit();
 			else
-				$(window).off("resize", event);
+				$(window).off('resize', event);
 		});
 		setTimeout(doAutoFit, 100); // run initial autofit deferred
 		setTimeout(doAutoFit, 2000); // again in 2 sec; bug workaround FIXME
 		return doAutoFit;
 	},
 	disableAutoFitText: function(e) {
-		if (!e.data("AutoFit"))
+		if (!e.data('AutoFit'))
 			return;
-		$(window).off("resize", e.data("AutoFit"));
-		e.removeData("AutoFit");
+		$(window).off('resize', e.data('AutoFit'));
+		e.removeData('AutoFit');
 	},
 	/* This should be called each time the text content changes, or the window
 	 * or container resizes.	It resizes the text element to fit, and returns the
@@ -89,9 +89,9 @@ _autoFit = {
 		if (!contents.length)
 			return _autoFit._cssObject(container, options);
 		else if (1 < contents.length)
-			contents = container.wrapInner("<span>").children().addClass("autoFitTextWrapper");
+			contents = container.wrapInner('<span>').children().addClass('autoFitTextWrapper');
 
-		container.css({ marginTop: "0px", marginBottom: "0px" });
+		container.css({ marginTop: '0px', marginBottom: '0px' });
 
 		var params = {
 			min: (options.min || 0.1),
@@ -114,9 +114,9 @@ _autoFit = {
 			return _autoFit._cssObject(container, options);
 
 		if (_autoFit._currentFontSize(container) > params.maxFontSize)
-			container.css("fontSize", params.maxFontSize);
+			container.css('fontSize', params.maxFontSize);
 		if (_autoFit._currentFontSize(container) < params.minFontSize)
-			container.css("fontSize", params.minFontSize);
+			container.css('fontSize', params.minFontSize);
 
 		var breakCnt = 0;
 		while (0 < params.iterations-- && ++breakCnt < 100) {
@@ -141,19 +141,19 @@ _autoFit = {
 			// adjust for browser-specific vertical adjustment of text
 			vShift -= contents.position().top;
 			if (options.useMarginBottom)
-				container.css("margin-bottom", (-1*vShift)+"px");
+				container.css('margin-bottom', (-1*vShift)+'px');
 			else
-				container.css("margin-top", vShift+"px");
+				container.css('margin-top', vShift+'px');
 		}
-		contents.filter(".autoFitTextWrapper").children().unwrap();
+		contents.filter('.autoFitTextWrapper').children().unwrap();
 		return _autoFit._cssObject(container, options);
 	},
 	_currentFontSize: function(container) {
-		return Number(container.css("fontSize").replace(/px$/, ""));
+		return Number(container.css('fontSize').replace(/px$/, ''));
 	},
 	_updateFontSize: function(container, size) {
 		var last = _autoFit._currentFontSize(container);
-		container.css("fontSize", size+"px");
+		container.css('fontSize', size+'px');
 		return (last != _autoFit._currentFontSize(container));
 	},
 	_updateMinMaxFontSizes: function(container, params, newMin, newMax) {
@@ -167,12 +167,12 @@ _autoFit = {
 	_cssObject: function(container, options) {
 		if (!options.returnCssObject)
 			return;
-		var obj = { fontSize: container.css("fontSize") };
+		var obj = { fontSize: container.css('fontSize') };
 		if (!options.noVerticalAdjust) {
 			if (options.useMarginBottom)
-				obj.marginBottom = container.css("marginBottom");
+				obj.marginBottom = container.css('marginBottom');
 			else
-				obj.marginTop = container.css("marginTop");
+				obj.marginTop = container.css('marginTop');
 		}
 		return obj;
 	}

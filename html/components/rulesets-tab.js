@@ -5,12 +5,12 @@ function createRulesetsTab(tab) {
 	initialize();
 
 	function loadRulesets() {
-		var rs = tab.find(">.rulesets>.tree");
-		tab.find("#new_parent").empty();
-		tab.find("#current_rs").empty();
+		var rs = tab.find('>.rulesets>.tree');
+		tab.find('#new_parent').empty();
+		tab.find('#current_rs').empty();
 		rs.empty();
-		rs.append(displayRulesetTree(""));
-		tab.find("#current_rs").val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
+		rs.append(displayRulesetTree(''));
+		tab.find('#current_rs').val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
 		if (activeRuleset != null) {
 			displayRuleset(activeRuleset.Id);
 		}
@@ -21,21 +21,21 @@ function createRulesetsTab(tab) {
 		 	$.each(rulesets, function(idx, val) {
 				if (val.ParentId == parentId) {
 					if (list == null)
-						list = $("<ul>");
+						list = $('<ul>');
 
-					$("<option>")
-						.prop("value", val.Id)
+					$('<option>')
+						.prop('value', val.Id)
 						.append(val.Name)
-						.appendTo(tab.find("#new_parent"))
-						.clone().appendTo(tab.find("#current_rs"));
-					$("<li>")
+						.appendTo(tab.find('#new_parent'))
+						.clone().appendTo(tab.find('#current_rs'));
+					$('<li>')
 						.append(
-							$("<a>")
-								.attr("href", "#")
+							$('<a>')
+								.attr('href', '#')
 								.on('click', function() {
 									displayRuleset(val.Id);
 								}
-								).append($("<span>").append(val.Name)
+								).append($('<span>').append(val.Name)
 							)
 						)
 						.append(displayRulesetTree(val.Id))
@@ -46,30 +46,30 @@ function createRulesetsTab(tab) {
 	}
 
 	function loadDefinitions() {
-		var d = tab.find(">.definitions>.rules");
+		var d = tab.find('>.definitions>.rules');
 		d.empty();
 		var findSection = function(def) {
 			var newSection = function(def) {
 				var name = def.Group;
-				var section = $("<div>")
-					.addClass("section folded")
-					.attr("group", def.Group)
+				var section = $('<div>')
+					.addClass('section folded')
+					.attr('group', def.Group)
 
-				section.append($("<div>").addClass("header")
+				section.append($('<div>').addClass('header')
 					.on('click', function(e) {
-						section.toggleClass("folded");
+						section.toggleClass('folded');
 					}).append(name));
 
 				return section;
 			};
 			var section = null;
 
-			var children = d.find(".section");
+			var children = d.find('.section');
 			$.each(children, function (idx, s) {
 				if (section != null)
 					return;
 				s = $(s);
-				if (s.attr("group") == def.Group) {
+				if (s.attr('group') == def.Group) {
 					section = s;
 				}
 			});
@@ -78,9 +78,9 @@ function createRulesetsTab(tab) {
 				d.append(section);
 			}
 
-			var div = $("<div>")
-				.addClass("definition")
-				.attr("fullname", def.Fullname);
+			var div = $('<div>')
+				.addClass('definition')
+				.attr('fullname', def.Fullname);
 			section.append(div);
 			return div;
 		};
@@ -91,30 +91,30 @@ function createRulesetsTab(tab) {
 		$.each(sortedValues, function(idx, def) {
 			var div = findSection(def);
 			var tooltiptext = null;
-			if (def.Description != "") {
-				tooltiptext = $("<span>").addClass("tooltiptext").append(def.Description);
+			if (def.Description != '') {
+				tooltiptext = $('<span>').addClass('tooltiptext').append(def.Description);
 			}
-			$("<div>").addClass("name").appendTo(div)
-				.append($("<label>").append($("<input>").attr("type", "checkbox").prop("checked", true).on('click', definitionOverride))
+			$('<div>').addClass('name').appendTo(div)
+				.append($('<label>').append($('<input>').attr('type', 'checkbox').prop('checked', true).on('click', definitionOverride))
 				.append(def.Name).append(tooltiptext));
 
-			var value = $("<div>").addClass("value").appendTo(div);
-			value.append($("<span>").addClass("inherit"));
-			if (def.Type == "Boolean") {
-				var select = $("<select>").addClass("override");
-				select.append($("<option>").attr("value", true).append(def.TrueValue));
-				select.append($("<option>").attr("value", false).append(def.FalseValue));
+			var value = $('<div>').addClass('value').appendTo(div);
+			value.append($('<span>').addClass('inherit'));
+			if (def.Type == 'Boolean') {
+				var select = $('<select>').addClass('override');
+				select.append($('<option>').attr('value', true).append(def.TrueValue));
+				select.append($('<option>').attr('value', false).append(def.FalseValue));
 
 				select.appendTo(value);
-			} else if (def.Type == "Integer") {
-				value.append($("<input>").addClass("override").attr("type", "text"));
-			} else if (def.Type == "Long") {
-				value.append($("<input>").addClass("override").attr("type", "text"));
-			} else if (def.Type == "Time") {
-				value.append($("<input>").addClass("override").attr("type", "text"));
+			} else if (def.Type == 'Integer') {
+				value.append($('<input>').addClass('override').attr('type', 'text'));
+			} else if (def.Type == 'Long') {
+				value.append($('<input>').addClass('override').attr('type', 'text'));
+			} else if (def.Type == 'Time') {
+				value.append($('<input>').addClass('override').attr('type', 'text'));
 			} else {
 				// Treat as string
-				value.append($("<input>").addClass("override").attr("type", "text"));
+				value.append($('<input>').addClass('override').attr('type', 'text'));
 			}
 		});
 	}
@@ -163,8 +163,8 @@ function createRulesetsTab(tab) {
 					definitions[k.RuleDefinition] = definitions[k.RuleDefinition] || {};
 					definitions[k.RuleDefinition][k.field] = WS.state[prop];
 					definitions[k.RuleDefinition]['Fullname'] = k.RuleDefinition;
-					definitions[k.RuleDefinition]['Group'] = k.RuleDefinition.split(".")[0];
-					definitions[k.RuleDefinition]['Name'] = k.RuleDefinition.split(".")[1];
+					definitions[k.RuleDefinition]['Group'] = k.RuleDefinition.split('.')[0];
+					definitions[k.RuleDefinition]['Name'] = k.RuleDefinition.split('.')[1];
 				}
 			}
 			loadDefinitions();
@@ -177,7 +177,7 @@ function createRulesetsTab(tab) {
 				var k = WS._enrichProp(prop)
 				if (k.Rulesets != null && k.Ruleset != null) {
 					rulesets[k.Ruleset] = rulesets[k.Ruleset] || {Rules: {}};
-					if (k.field == "Rule") {
+					if (k.field == 'Rule') {
 						rulesets[k.Ruleset].Rules[k.Rule] = WS.state[prop]
 					} else {
 						rulesets[k.Ruleset][k.field] = WS.state[prop];
@@ -205,13 +205,13 @@ function createRulesetsTab(tab) {
 		WS.Register(['ScoreBoard.Rulesets.CurrentRulesetId'], function(k, v) {
 			tab.find('#current_rs').val(v);
 			markEffectiveRulesets();
-			var definitions = tab.children(".definitions");
+			var definitions = tab.children('.definitions');
 			if (activeRuleset.Effective) {
-				definitions.find(".Update, .EditNote").show();
-				definitions.find(".Delete").hide();
+				definitions.find('.Update, .EditNote').show();
+				definitions.find('.Delete').hide();
 			} else {
-				definitions.find(".Update, .Delete").show();
-				definitions.find(".EditNote").hide();
+				definitions.find('.Update, .Delete').show();
+				definitions.find('.EditNote').hide();
 			}
 		});
 	}
@@ -227,13 +227,13 @@ function createRulesetsTab(tab) {
 
 	function definitionOverride(e) {
 		var elem = $(e.target);
-		var value = elem.parents(".definition").find(".value");
-		if (!elem.prop("checked")) {
-			value.children(".inherit").show();
-			value.children(".override").hide();
+		var value = elem.parents('.definition').find('.value');
+		if (!elem.prop('checked')) {
+			value.children('.inherit').show();
+			value.children('.override').hide();
 		} else {
-			value.children(".inherit").hide();
-			value.children(".override").show();
+			value.children('.inherit').hide();
+			value.children('.override').show();
 		}
 	}
 
@@ -241,12 +241,12 @@ function createRulesetsTab(tab) {
 		var rs = rulesets[id];
 		if (!rs) return;
 		activeRuleset = rs;
-		var definitions = tab.children(".definitions");
+		var definitions = tab.children('.definitions');
 
-		definitions.find("#name").val(rs.Name);
+		definitions.find('#name').val(rs.Name);
 
 		if (!isTrue(rs['Readonly'])) {
-			definitions.find(".definition *").prop("disabled", false);
+			definitions.find('.definition *').prop('disabled', false);
 		}
 
 		$.each(rs.Inherited, function(key, val) {
@@ -257,61 +257,61 @@ function createRulesetsTab(tab) {
 		});
 
 		if (isTrue(rs['Readonly'])) {
-			tab.find("#name").prop('disabled', true);
-			definitions.find(".definition *").prop("disabled", true);
-			definitions.find(".Update, .Delete, .EditNote").hide();
+			tab.find('#name').prop('disabled', true);
+			definitions.find('.definition *').prop('disabled', true);
+			definitions.find('.Update, .Delete, .EditNote').hide();
 		} else if (rs.Effective) {
-			tab.find("#name").prop('disabled', false);
-			definitions.find(".Update, .EditNote").show();
-			definitions.find(".Delete").hide();
+			tab.find('#name').prop('disabled', false);
+			definitions.find('.Update, .EditNote').show();
+			definitions.find('.Delete').hide();
 		} else {
-			tab.find("#name").prop('disabled', false);
-			definitions.find(".Update, .Delete").show();
-			definitions.find(".EditNote").hide();
+			tab.find('#name').prop('disabled', false);
+			definitions.find('.Update, .Delete').show();
+			definitions.find('.EditNote').hide();
 		}
 		definitions.show();
 	}
 
 	function New() {
-		var newName = tab.find("#new_name").val();
+		var newName = tab.find('#new_name').val();
 		if (newName.trim() === '') { return; }
 		var uuid;
 		do {
 			uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c=='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
 		} while (rulesets[uuid]);
-		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").Name", newName);
-		WS.Set("ScoreBoard.Rulesets.Ruleset("+uuid+").ParentId", tab.find("#new_parent").val());
-		$("#new_name").val("");
+		WS.Set('ScoreBoard.Rulesets.Ruleset('+uuid+').Name', newName);
+		WS.Set('ScoreBoard.Rulesets.Ruleset('+uuid+').ParentId', tab.find('#new_parent').val());
+		$('#new_name').val('');
 		activeRuleset = uuid;
 	}
 
 	function Update() {
-		tab.children(".definitions").hide();
+		tab.children('.definitions').hide();
 		$.each(definitions, function(idx, val) {
-			var def = $(".definition[fullname='" + val.Fullname + "']");
+			var def = $('.definition[fullname="' + val.Fullname + '"]');
 			var value = null;
-			if (def.find(".name input").prop("checked")) {
-				var input = def.find(".value>input").prop("value");
-				var select = def.find(".value>select").val();
+			if (def.find('.name input').prop('checked')) {
+				var input = def.find('.value>input').prop('value');
+				var select = def.find('.value>select').val();
 				if (input != null)
 					value = input;
 				if (select != null)
 					value = select;
 			}
-			WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ").Rule(" + val.Fullname + ")", value);
+			WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Rule(' + val.Fullname + ')', value);
 		});
-		var newName = tab.find("#name").val();
+		var newName = tab.find('#name').val();
 		if (newName.trim() === '') { newName = WS.state['ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name']; }
 		WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name', newName);
 	}
 
 	function Delete() {
-		tab.children(".definitions").hide();
-		WS.Set("ScoreBoard.Rulesets.Ruleset(" + activeRuleset.Id + ")", null);
+		tab.children('.definitions').hide();
+		WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ')', null);
 	}
 
 	function Cancel() {
-		tab.children(".definitions").hide();
+		tab.children('.definitions').hide();
 	}
 	
 	function Change() {
@@ -319,18 +319,18 @@ function createRulesetsTab(tab) {
 	}
 
 	function setDefinition(key, value, inherited) {
-		var def = tab.find(".definition[fullname='" + key + "']");
-		def.find(".value>input").prop("value", value);
-		def.find(".value>select").val(value);
-		value = def.find(".value>select>option:selected").text() || value;
+		var def = tab.find('.definition[fullname="' + key + '"]');
+		def.find('.value>input').prop('value', value);
+		def.find('.value>select').val(value);
+		value = def.find('.value>select>option:selected').text() || value;
 		if (inherited) {
-			def.find(".name input").prop("checked", false);
-			def.find(".value .inherit").show().empty().append(value);
-			def.find(".value .override").hide();
+			def.find('.name input').prop('checked', false);
+			def.find('.value .inherit').show().empty().append(value);
+			def.find('.value .override').hide();
 		} else {
-			def.find(".name input").prop("checked", true);
-			def.find(".value .inherit").hide();
-			def.find(".value .override").show();
+			def.find('.name input').prop('checked', true);
+			def.find('.value .inherit').hide();
+			def.find('.value .override').show();
 		}
 	}
 }

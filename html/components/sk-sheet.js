@@ -3,7 +3,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 	'use strict';
 	$(initialize);
 
-	var teamName = "";
+	var teamName = '';
 
 	// Looking these up via the DOM is slow, so cache them.
 	var periodElements = {};
@@ -192,10 +192,10 @@ function prepareSkSheetTable(element, teamId, mode) {
 						var tripScore = WS.state[prefix+'ScoringTrip('+t+').Score'];
 						if (tripScore == null) break;
 						if (isTrue(WS.state[prefix+'ScoringTrip('+t+').AfterSP'])) {
-							scoreAfterSP = scoreAfterSP==='' ? tripScore : scoreAfterSP + " + " + tripScore;
+							scoreAfterSP = scoreAfterSP==='' ? tripScore : scoreAfterSP + ' + ' + tripScore;
 							annotationAfterSP = annotationAfterSP || WS.state[prefix+'ScoringTrip('+t+').Annotation'] != '';
 						} else {
-							scoreBeforeSP = scoreBeforeSP==='' ? tripScore : scoreBeforeSP + " + " + tripScore;
+							scoreBeforeSP = scoreBeforeSP==='' ? tripScore : scoreBeforeSP + ' + ' + tripScore;
 							annotationBeforeSP = annotationBeforeSP || WS.state[prefix+'ScoringTrip('+t+').Annotation'] != '';
 						}
 						t++;
@@ -213,9 +213,9 @@ function prepareSkSheetTable(element, teamId, mode) {
 			var table = $('<table cellpadding="0" cellspacing="0" border="1">')
 				.addClass('SK Period').attr('nr', nr);
 			if (mode == 'operator') {
-				table.prependTo(element).addClass("Backwards");
+				table.prependTo(element).addClass('Backwards');
 			} else {
-				table.appendTo(element).addClass("Forwards");
+				table.appendTo(element).addClass('Forwards');
 			}
 			if (mode != 'operator') {
 				var header = $('<thead><tr>').appendTo(table);
@@ -250,10 +250,10 @@ function prepareSkSheetTable(element, teamId, mode) {
 			var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
 			$('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
 			$('<td>').addClass('Jammer').appendTo(jamRow);
-			$('<td>').addClass('Lost Narrow Darker').on('click', function() { WS.Set(prefix+'Lost', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Lead Narrow Darker').on('click', function() { WS.Set(prefix+'Lead', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Calloff Narrow Darker').on('click', function() { WS.Set(prefix+'Calloff', $(this).text() == ""); }).appendTo(jamRow);
-			$('<td>').addClass('Injury Narrow Darker').on('click', function() { WS.Set(prefix+'Injury', $(this).text() == ""); }).appendTo(jamRow);
+			$('<td>').addClass('Lost Narrow Darker').on('click', function() { WS.Set(prefix+'Lost', $(this).text() == ''); }).appendTo(jamRow);
+			$('<td>').addClass('Lead Narrow Darker').on('click', function() { WS.Set(prefix+'Lead', $(this).text() == ''); }).appendTo(jamRow);
+			$('<td>').addClass('Calloff Narrow Darker').on('click', function() { WS.Set(prefix+'Calloff', $(this).text() == ''); }).appendTo(jamRow);
+			$('<td>').addClass('Injury Narrow Darker').on('click', function() { WS.Set(prefix+'Injury', $(this).text() == ''); }).appendTo(jamRow);
 			$('<td>').addClass('NoInitial Narrow Darker').on('click', function() { setupTripEditor(p, nr, teamId, 1); }).appendTo(jamRow);
 			$.each(new Array(9), function (idx) {
 				var t = idx + 2;

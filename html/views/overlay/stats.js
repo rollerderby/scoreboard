@@ -1,6 +1,6 @@
 jQuery.fn.sortRows = function sortRows() {
-    $("> tr", this[0]).sort(dec_sort).appendTo(this[0]);
-    function dec_sort(a, b){ return ($(b).attr("data-sort")) > ($(a).attr("data-sort")) ? 1 : -1; }
+    $('> tr', this[0]).sort(dec_sort).appendTo(this[0]);
+    function dec_sort(a, b){ return ($(b).attr('data-sort')) > ($(a).attr('data-sort')) ? 1 : -1; }
 }
 
 $(document).ready(function() {

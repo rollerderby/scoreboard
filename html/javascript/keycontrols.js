@@ -11,7 +11,7 @@
 
 _crgKeyControls = {
 	/* This selector should be used to match key control buttons. */
-	keySelector: ":button.KeyControl,label.KeyControl",
+	keySelector: ':button.KeyControl,label.KeyControl',
 
 	/* Setup all key control buttons.
 	 * This finds all button-type elements with the class KeyControl
@@ -64,7 +64,7 @@ _crgKeyControls = {
 			});
 		return button;
 	},
-	_hoverFunction: function(event) { $(this).toggleClass("hover", (event.type == "mouseenter")); },
+	_hoverFunction: function(event) { $(this).toggleClass('hover', (event.type == 'mouseenter')); },
 
 	/* Destroy a key control button.
 	 * This undoes the key control setup. If destroyButton
@@ -73,9 +73,9 @@ _crgKeyControls = {
 	 * Note this does not remove the KeyControl class from the button.
 	 */
 	destroyKeyControl: function(button) {
-		button.attr("_crgKeyControls_prop", false);
-		button.off("mouseenter mouseleave", _crgKeyControls._hoverFunction);
-		button.find("span.Indicator").remove();
+		button.attr('_crgKeyControls_prop', false);
+		button.off('mouseenter mouseleave', _crgKeyControls._hoverFunction);
+		button.find('span.Indicator').remove();
 		return button;
 	},
 
@@ -90,17 +90,17 @@ _crgKeyControls = {
 	 * conflict (and this button key assignment will not be changed).
 	 * To clear the control key assignment, press the Backspace or Delete keys.
 	 *
-	 * CSS note: buttons in edit mode have the class "Editing".
+	 * CSS note: buttons in edit mode have the class 'Editing'.
 	 */
 	editKeys: function(edit) {
-		$(_crgKeyControls.keySelector).toggleClass("Editing", edit);
+		$(_crgKeyControls.keySelector).toggleClass('Editing', edit);
 	},
 
 	addCondition: function(condition) {
 		_crgKeyControls._conditions.push(condition);
 	},
-	_conditions: [ function() { return !$("div.MultipleKeyAssignDialog").length; },
-	function() { return !$("#TeamTimeTab.ui-tabs-hide").length;} //disable keys when TeamTimeTab is hidden.
+	_conditions: [ function() { return !$('div.MultipleKeyAssignDialog').length; },
+	function() { return !$('#TeamTimeTab.ui-tabs-hide').length;} //disable keys when TeamTimeTab is hidden.
 	],
 
 	_start: function(operator) {
@@ -109,18 +109,18 @@ _crgKeyControls = {
 			$(document).on('keypress', _crgKeyControls._keyControlPress);
 			$(document).on('keydown', _crgKeyControls._keyControlDown);
 
-			WS.Register("ScoreBoard.Settings.Setting(ScoreBoard.*)", function(k, v) {
-				if (!k.startsWith("ScoreBoard.Settings.Setting(ScoreBoard.Operator__" + _crgKeyControls.operator + ".KeyControl.")) return;
-				var button = $("#" + k.substring(k.lastIndexOf(".") + 1, k.length - 1));
-				button.toggleClass("HasControlKey", (v?true:false))
-					.find("span.Key").text(v?v:'')
-					.attr("data-keycontrol", String(v?v.charCodeAt(0):""));
+			WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function(k, v) {
+				if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + _crgKeyControls.operator + '.KeyControl.')) return;
+				var button = $('#' + k.substring(k.lastIndexOf('.') + 1, k.length - 1));
+				button.toggleClass('HasControlKey', (v?true:false))
+					.find('span.Key').text(v?v:'')
+					.attr('data-keycontrol', String(v?v.charCodeAt(0):''));
 			});
 			_crgKeyControls._keyControlStarted = true;
 		}
 	},
 	_keyControlStarted: false,
-	_operator: "",
+	_operator: '',
 
 	_checkConditions: function() {
 		var ok = true;
@@ -149,20 +149,20 @@ _crgKeyControls = {
 		var key = String.fromCharCode(event.which);
 
 		var controls = $(_crgKeyControls.keySelector);
-		var active = controls.filter(":not(.Editing):not(.KeyInactive)");
-		var editing = controls.filter(".Editing");
+		var active = controls.filter(':not(.Editing):not(.KeyInactive)');
+		var editing = controls.filter('.Editing');
 
 		// Perform the corresponding button's action
-		var target = active.has("span.Key[data-keycontrol='"+event.which+"']").trigger('click');
+		var target = active.has('span.Key[data-keycontrol="'+event.which+'"]').trigger('click');
 		// FIXME - workaround seemingly broken jQuery-UI
 		// which does not fire change event for radio buttons when click() is called on their label...
-		if (target.is("label"))
-			target.filter("label").each(function() { $("#"+$(this).attr("for")).trigger('change'); });
+		if (target.is('label'))
+			target.filter('label').each(function() { $('#'+$(this).attr('for')).trigger('change'); });
 
 		// Update the hovered button if in edit mode
-		var editingTarget = editing.filter(".hover");
+		var editingTarget = editing.filter('.hover');
 		if (editingTarget.length) {
-			var existingControl = editing.filter(":not(.hover)").has("span.Key[data-keycontrol='"+event.which+"']");
+			var existingControl = editing.filter(':not(.hover)').has('span.Key[data-keycontrol="'+event.which+'"]');
 			if (existingControl.length) {
 				if (_crgKeyControls._existingKeyLast != key)
 					_crgKeyControls._existingKeyCount = 1;
@@ -173,7 +173,7 @@ _crgKeyControls = {
 					_crgKeyControls._showMultipleKeyAssignDialog(existingControl, editingTarget, key);
 					_crgKeyControls._existingKeyCount = 0;
 				} else {
-					existingControl.effect("highlight", { color: "#f00" }, 300);
+					existingControl.effect('highlight', { color: '#f00' }, 300);
 				}
 			} else {
 				_crgKeyControls._setKey(editingTarget, key);
@@ -188,48 +188,48 @@ _crgKeyControls = {
 		switch (event.which) {
 			case 8: // Backspace
 			case 46: // Delete
-				_crgKeyControls._clearKey($(_crgKeyControls.keySelector).filter(".Editing.hover"));
+				_crgKeyControls._clearKey($(_crgKeyControls.keySelector).filter('.Editing.hover'));
 		}
 	},
-	_clearKey: function(targets) { _crgKeyControls._setKey(targets, ""); },
+	_clearKey: function(targets) { _crgKeyControls._setKey(targets, ''); },
 	_setKey: function(targets, key) {
 		targets.each(function() {
-			var prop = $(this).attr("_crgKeyControls_prop");
+			var prop = $(this).attr('_crgKeyControls_prop');
 			if (prop) {
 				WS.Set(prop, key?key:null);
 			}
 		});
 	},
 	_showMultipleKeyAssignDialog: function(existing, target, key) {
-		var div = $("<div>").addClass("MultipleKeyAssignDialog");
+		var div = $('<div>').addClass('MultipleKeyAssignDialog');
 		var n = existing.length;
-		var s = (n == 1 ? "" : "s");
-		$("<p>").text("The key '"+key+"' is assigned to "+n+" other control"+s+", what do you want to do?")
+		var s = (n == 1 ? '' : 's');
+		$('<p>').text('The key \''+key+'\' is assigned to '+n+' other control'+s+', what do you want to do?')
 			.appendTo(div);
-		$("<hr>").appendTo(div);
-		$("<button>")
-			.text("Assign '"+key+"' to only this control, remove from the other "+n+" control"+s)
+		$('<hr>').appendTo(div);
+		$('<button>')
+			.text('Assign \''+key+'\' to only this control, remove from the other '+n+' control'+s)
 			.button()
 			.appendTo(div)
 			.on('click', function() {
 				_crgKeyControls._clearKey(existing);
 				_crgKeyControls._setKey(target, key);
-				div.dialog("close");
+				div.dialog('close');
 			});
-		$("<br>").appendTo(div);
-		$("<button>")
-			.text("Assign '"+key+"' to this control and the other "+n+" control"+s)
+		$('<br>').appendTo(div);
+		$('<button>')
+			.text('Assign \''+key+'\' to this control and the other '+n+' control'+s)
 			.button()
 			.appendTo(div)
 			.on('click', function() {
 				_crgKeyControls._setKey(target, key);
-				div.dialog("close");
+				div.dialog('close');
 			});
 		div.dialog({
 			modal: true,
-			width: "700px",
-			buttons: { Cancel: function() { div.dialog("close"); } },
-			close: function() { div.dialog("destroy").remove(); }
+			width: '700px',
+			buttons: { Cancel: function() { div.dialog('close'); } },
+			close: function() { div.dialog('destroy').remove(); }
 		});
 	}
 };

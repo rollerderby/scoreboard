@@ -4,7 +4,7 @@
 	
 	preparePenaltyEditor();
 
-	prepareOptionsDialog("", true);
+	prepareOptionsDialog('', true);
 	_windowFunctions.configureZoom();
 
 	WS.AutoRegister();

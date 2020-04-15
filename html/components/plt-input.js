@@ -21,7 +21,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			alternateName = 'operator';
 		}
 
-		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('PLT Team').addClass("AlternateName_" + alternateName).appendTo(element);
+		var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('PLT Team').addClass('AlternateName_' + alternateName).appendTo(element);
 		var thead = $('<tr>').appendTo($('<thead>').appendTo(table));
 		if (mode == 'plt' || mode == 'lt') {
 			if (mode == 'lt') {
@@ -114,7 +114,7 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 		$('#current-jam-style').remove();
 		if (mode != 'copyToStatsbook') {
-			$("<style> .Box[period='" + periodNumber + "'][jam='" + jamNumber + "'] { text-decoration: underline; } </style>")
+			$('<style> .Box[period="' + periodNumber + '"][jam="' + jamNumber + '"] { text-decoration: underline; } </style>')
 				.attr('id', 'current-jam-style')
 				.appendTo('head');
 		}
@@ -189,14 +189,14 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 
 		var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + s + ').Penalty(' + p + ')';
 
-		var field = "";
+		var field = '';
 		if (k != null) {
 			field = k.parts[4];
 		}
 
-		if (field == "Code" || field == "PeriodNumber" || field == "") {
-			var code = WS.state[prefix + ".Code"];
-			var penaltyPeriod = WS.state[prefix + ".PeriodNumber"];
+		if (field == 'Code' || field == 'PeriodNumber' || field == '') {
+			var code = WS.state[prefix + '.Code'];
+			var penaltyPeriod = WS.state[prefix + '.PeriodNumber'];
 			if (code != null) {
 				if (mode == 'copyToStatsbook') {
 					if (penaltyPeriod == statsbookPeriod) {
@@ -216,13 +216,13 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			}
 		}
 
-		if (field == "JamNumber" || field == "PeriodNumber" || field == "") {
-			var penaltyPeriod = WS.state[prefix + ".PeriodNumber"] || null;
-			var penaltyJam = WS.state[prefix + ".JamNumber"] || null;
-			penaltyBox.attr("period", penaltyPeriod);
-			penaltyBox.attr("jam", penaltyJam);
-			jamBox.attr("period", penaltyPeriod);
-			jamBox.attr("jam", penaltyJam);
+		if (field == 'JamNumber' || field == 'PeriodNumber' || field == '') {
+			var penaltyPeriod = WS.state[prefix + '.PeriodNumber'] || null;
+			var penaltyJam = WS.state[prefix + '.JamNumber'] || null;
+			penaltyBox.attr('period', penaltyPeriod);
+			penaltyBox.attr('jam', penaltyJam);
+			jamBox.attr('period', penaltyPeriod);
+			jamBox.attr('jam', penaltyJam);
 			if (mode == 'copyToStatsbook') {
 				if (penaltyPeriod == statsbookPeriod) {
 					jamBox.text(penaltyJam);
@@ -240,25 +240,25 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			}
 		}
 
-		if (field == "Id" || field == "") {
-			var oldId = penaltyBox.attr("pid");
-			var newId = WS.state[prefix + ".Id"] || null;
+		if (field == 'Id' || field == '') {
+			var oldId = penaltyBox.attr('pid');
+			var newId = WS.state[prefix + '.Id'] || null;
 			if (oldId == newId) return;
-			penaltyBox.attr("pid", newId);
-			jamBox.attr("pid", newId);
+			penaltyBox.attr('pid', newId);
+			jamBox.attr('pid', newId);
 
 			var cnt = 0; // Change row colors for skaters on 5 or more penalties, or expulsion.
-			var limit = WS.state["ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)"];
-			var fo_exp = ($($('.PLT.Team .Skater.Penalty[id=' + s + '] .Box0')[0]).attr("pid") != null);
+			var limit = WS.state['ScoreBoard.Rulesets.CurrentRule(Penalties.NumberToFoulout)'];
+			var fo_exp = ($($('.PLT.Team .Skater.Penalty[id=' + s + '] .Box0')[0]).attr('pid') != null);
 
 			codeRow.children('.Box:not(.Box0)').each(function (idx, elem) {
-				cnt += ($(elem).attr("pid") != null ? 1 : 0); });
+				cnt += ($(elem).attr('pid') != null ? 1 : 0); });
 			if (mode != 'copyToStatsbook') {
 				totalBox.text(cnt);
 			}
-			tbody.children('.Skater[id=' + s + ']').toggleClass("Warn1", cnt == limit-2 && !fo_exp);
-			tbody.children('.Skater[id=' + s + ']').toggleClass("Warn2", cnt == limit-1 && !fo_exp);
-			tbody.children('.Skater[id=' + s + ']').toggleClass("Warn3", cnt >= limit || fo_exp);
+			tbody.children('.Skater[id=' + s + ']').toggleClass('Warn1', cnt == limit-2 && !fo_exp);
+			tbody.children('.Skater[id=' + s + ']').toggleClass('Warn2', cnt == limit-1 && !fo_exp);
+			tbody.children('.Skater[id=' + s + ']').toggleClass('Warn3', cnt >= limit || fo_exp);
 
 			if (p != 0) {
 				if (oldId == null && newId != null) {
@@ -272,18 +272,18 @@ function preparePltInputTable(element, teamId, mode, statsbookPeriod, alternateN
 			}
 		}
 
-		if (field == "Serving" || field == "") {
-			jamBox.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
-			penaltyBox.toggleClass("Serving", isTrue(WS.state[prefix + ".Serving"]));
+		if (field == 'Serving' || field == '') {
+			jamBox.toggleClass('Serving', isTrue(WS.state[prefix + '.Serving']));
+			penaltyBox.toggleClass('Serving', isTrue(WS.state[prefix + '.Serving']));
 		}
-		if (field == "Served" || field == "") {
-			jamBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
-			penaltyBox.toggleClass("Unserved", WS.state[prefix + ".Served"] == false);
+		if (field == 'Served' || field == '') {
+			jamBox.toggleClass('Unserved', WS.state[prefix + '.Served'] == false);
+			penaltyBox.toggleClass('Unserved', WS.state[prefix + '.Served'] == false);
 			var anyUnserved = false;
 			codeRow.children('.Box:not(.Box0)').each(function (idx, elem) {
 				anyUnserved = anyUnserved || ($(elem).hasClass('Unserved'));
 			});
-			codeRow.children('.Sitting').toggleClass("Unserved", anyUnserved);
+			codeRow.children('.Sitting').toggleClass('Unserved', anyUnserved);
 		}
 	}
 
@@ -410,9 +410,9 @@ function openPenaltyEditor(t, id, which) {
 	$('#PenaltyEditor .Codes>div').removeClass('Active');
 
 	penaltyEditor.dialog('option', 'title', teamName + ' ' + skaterNumber + ' (' + skaterName + ')');
-	var periodNumber = WS.state["ScoreBoard.CurrentPeriodNumber"];
+	var periodNumber = WS.state['ScoreBoard.CurrentPeriodNumber'];
 	$('#PenaltyEditor .Period').val(periodNumber).trigger('change');
-	$('#PenaltyEditor .Jam').val(WS.state["ScoreBoard.Period("+periodNumber+").CurrentJam"]);
+	$('#PenaltyEditor .Jam').val(WS.state['ScoreBoard.Period('+periodNumber+').CurrentJam']);
 	$('#PenaltyEditor #served').removeClass('checked');
 
 	$('#PenaltyEditor .Codes>.Penalty').toggle(which != 0);
@@ -422,7 +422,7 @@ function openPenaltyEditor(t, id, which) {
 	var c = WS.state[prefix + '.Penalty(' + which + ').Code'];
 	var p = WS.state[prefix + '.Penalty(' + which + ').PeriodNumber'];
 	var j = WS.state[prefix + '.Penalty(' + which + ').Jam'];
-	penaltyId = penaltyBox.attr("pid");
+	penaltyId = penaltyBox.attr('pid');
 	var isNew = true;
 	if (penaltyId != null) {
 		if (c == null || j == null || p == null) {
@@ -502,18 +502,18 @@ function preparePenaltyEditor() {
 	
 		addFOCode();
 	
-		$("#PenaltyEditor .period_minus").on('click', function () { adjust("Period", 'prev'); });
-		$("#PenaltyEditor .period_plus").on('click', function () { adjust("Period", 'next'); });
-		$("#PenaltyEditor .jam_minus").on('click', function () { adjust("Jam", 'prev'); });
-		$("#PenaltyEditor .jam_plus").on('click', function () { adjust("Jam", 'next'); });
-		$("#PenaltyEditor .clear").on('click', function () { clear(); });
-		$("#PenaltyEditor .set").on('click', function () { if (!isTrue(penaltyEditor.data('new'))) { submitPenalty(); }});
-		$("#PenaltyEditor .Period").on('change', function() { setupJamSelect(); })
+		$('#PenaltyEditor .period_minus').on('click', function () { adjust('Period', 'prev'); });
+		$('#PenaltyEditor .period_plus').on('click', function () { adjust('Period', 'next'); });
+		$('#PenaltyEditor .jam_minus').on('click', function () { adjust('Jam', 'prev'); });
+		$('#PenaltyEditor .jam_plus').on('click', function () { adjust('Jam', 'next'); });
+		$('#PenaltyEditor .clear').on('click', function () { clear(); });
+		$('#PenaltyEditor .set').on('click', function () { if (!isTrue(penaltyEditor.data('new'))) { submitPenalty(); }});
+		$('#PenaltyEditor .Period').on('change', function() { setupJamSelect(); })
 	}
 
 	function adjust(which, inc) {
-		$("#PenaltyEditor ." + which + " :selected")[inc]().prop("selected", true);
-		if (which == "Period") { setupJamSelect(); }
+		$('#PenaltyEditor .' + which + ' :selected')[inc]().prop('selected', true);
+		if (which == 'Period') { setupJamSelect(); }
 	}
 
 	function submitPenalty() {
@@ -539,16 +539,16 @@ function preparePenaltyEditor() {
 		var penaltyNumber = penaltyEditor.data('pnr');
 
 		if (penaltyId == null || skaterId == null) {
-			penaltyEditor.dialog("close");
+			penaltyEditor.dialog('close');
 		} else {
-			WS.Set("ScoreBoard.Team(" + teamId + ").Skater(" + skaterId + ").Penalty(" + penaltyNumber + ").Remove", true);
+			WS.Set('ScoreBoard.Team(' + teamId + ').Skater(' + skaterId + ').Penalty(' + penaltyNumber + ').Remove', true);
 			penaltyEditor.dialog('close');
 		}
 	}
 
 	var codeIdRegex = /Code\(([^\)]+)\)/;
 	function penaltyCode(k, v) {
-		var match = (k || "").match(codeIdRegex);
+		var match = (k || '').match(codeIdRegex);
 		if (match == null || match.length == 0) { return; }
 
 		var code = match[1];
@@ -745,27 +745,27 @@ function openOptionsDialog() {
 function prepareOptionsDialog(teamId, onlySettings) {
 	var table = $('<table>').appendTo($('#OptionsDialog'));
 
-	var zoomable = $("<label/><input type='checkbox'/>").addClass("ui-button-small");
+	var zoomable = $('<label/><input type="checkbox"/>').addClass('ui-button-small');
 	var id = newUUID();
-	zoomable.first().attr("for", id);
-	var zoomInput = zoomable.last().attr("id", id).button();
-	zoomInput.prop("checked", _windowFunctions.checkParam("zoomable", 1));
-	zoomInput.button("option", "label", "Pinch Zoom " + (zoomInput.prop("checked")?"Enabled":"Disabled"));
+	zoomable.first().attr('for', id);
+	var zoomInput = zoomable.last().attr('id', id).button();
+	zoomInput.prop('checked', _windowFunctions.checkParam('zoomable', 1));
+	zoomInput.button('option', 'label', 'Pinch Zoom ' + (zoomInput.prop('checked')?'Enabled':'Disabled'));
 	zoomInput.on('change', function(e) {
-		zoomInput.button("option", "label", "Pinch Zoom " + (zoomInput.prop("checked")?"Enabled":"Disabled"));
+		zoomInput.button('option', 'label', 'Pinch Zoom ' + (zoomInput.prop('checked')?'Enabled':'Disabled'));
 	});
 	zoomInput.trigger('change');
 
 	if (!onlySettings) {
-		teamId = (teamId == "2" ? "2" : "1");	 // Ensure we start with a sane value.
+		teamId = (teamId == '2' ? '2' : '1');	 // Ensure we start with a sane value.
 		$('<tr>').append($('<th>').text('Select Team')).appendTo(table);
 		$.each( [ '1', '2' ], function() {
 			var tId = String(this);
 			var row = $('<tr>').addClass('selectTeam'+tId).appendTo(table);
 			$('<td>').append($('<button>').attr('team', tId).addClass('name').toggleClass('selected', tId === teamId).button().on('click', function() {
 				teamId = tId;
-				table.find('[team]').removeClass("selected");
-				table.find('[team="'+tId+'"]').addClass("selected");
+				table.find('[team]').removeClass('selected');
+				table.find('[team="'+tId+'"]').addClass('selected');
 			})).appendTo(row);
 		});
 		$('<tr>').append($('<th>').text('Options')).appendTo(table);
@@ -780,7 +780,7 @@ function prepareOptionsDialog(teamId, onlySettings) {
 	$('<tr>').append($('<td>').append(zoomable)).appendTo(table);
 
 	var setURL = function() {
-		var updated = window.location.href.replace(/[\?#].*|$/, '?zoomable='+(zoomInput.prop("checked")?1:0));
+		var updated = window.location.href.replace(/[\?#].*|$/, '?zoomable='+(zoomInput.prop('checked')?1:0));
 		if (!onlySettings) {
 			updated = updated + '&team='+teamId;
 		}
@@ -794,7 +794,7 @@ function prepareOptionsDialog(teamId, onlySettings) {
 		modal: true,
 		closeOnEscape: true,
 		title: 'Option Editor',
-		buttons: [{ text: "Save", click: setURL }],
+		buttons: [{ text: 'Save', click: setURL }],
 		width: '500px',
 		autoOpen: false,
 	});
@@ -811,7 +811,7 @@ function prepareUseLTDialog() {
 		modal: true,
 		closeOnEscape: true,
 		title: 'Use Lineup Tracking',
-		buttons: [{ text: "Enable", click: function() {
+		buttons: [{ text: 'Enable', click: function() {
 			WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)', true);
 			useLTDialog.dialog('close');
 		}}],

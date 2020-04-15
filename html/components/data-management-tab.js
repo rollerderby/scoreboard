@@ -22,10 +22,10 @@ function createDataManagementTab(tab) {
 		.append($('<thead>').append($('<tr>').addClass('Type')
 			.append($('<th>').attr('colspan', '4').addClass('Type')
 				.append($('<button>').addClass('Show').text('Show').button().on('click', function() {
-					$(this).closest("table").removeClass("Hide");
+					$(this).closest('table').removeClass('Hide');
 				}))
 				.append($('<button>').addClass('Hide').text('Hide').button().on('click', function() {
-					$(this).closest("table").addClass("Hide");
+					$(this).closest('table').addClass('Hide');
 				}))
 				.append($('<a>').addClass('Type')
 					.append($('<span>').addClass('Label').text('Type: '))
@@ -38,20 +38,20 @@ function createDataManagementTab(tab) {
 				.append($('<th>').addClass('Download'))))
 		.append($('<tbody>'));
 	
-	WS.Register("ScoreBoard.Media.Format(*).Type(*)" , function(k, v) {
-		if (v == null && k.field == "Type") {
-			tab.find(">#"+k.Format+">div.Type>table.Type")
-			.filter(function() { return $(this).data("type") == k.Format; })
+	WS.Register('ScoreBoard.Media.Format(*).Type(*)' , function(k, v) {
+		if (v == null && k.field == 'Type') {
+			tab.find('>#'+k.Format+'>div.Type>table.Type')
+			.filter(function() { return $(this).data('type') == k.Format; })
 			.remove();
 			return;
 		}
-		if (tab.find(">#"+k.Format+">div.Type>table.Type[type="+k.Type+"]").length == 0) {
-			var newTable = typeTemplate.clone(true).attr("type", k.Type)
-			.find("th.Type>button.Upload").on('click', function() {
+		if (tab.find('>#'+k.Format+'>div.Type>table.Type[type='+k.Type+']').length == 0) {
+			var newTable = typeTemplate.clone(true).attr('type', k.Type)
+			.find('th.Type>button.Upload').on('click', function() {
 				createUploadMediaDialog(k.Format, k.Type);
 			}).end()
-			.find("tr.Type>th.Type>a.Type>span.Type").text(k.Type).end();
-			_windowFunctions.appendAlphaSortedByAttr($("#"+k.Format+">div.Type"), newTable, "Type");
+			.find('tr.Type>th.Type>a.Type>span.Type').text(k.Type).end();
+			_windowFunctions.appendAlphaSortedByAttr($('#'+k.Format+'>div.Type'), newTable, 'Type');
 		}
 
 	});
@@ -106,29 +106,29 @@ function createDataManagementTab(tab) {
 
 	function createRemoveMediaDialog(format, type, file) {
 		var div = removeDialogTemplate.clone(true);
-		div.find("a.File").text(format+"/"+type+"/"+file);
+		div.find('a.File').text(format+'/'+type+'/'+file);
 		div.dialog({
-			title: "Remove media",
+			title: 'Remove media',
 			modal: true,
 			width: 700,
-			close: function() { $(this).dialog("destroy").remove(); },
+			close: function() { $(this).dialog('destroy').remove(); },
 			buttons: {
-				"Yes, Remove": function() {
-					div.find("p.Warning,p.Confirm").text("");
-					div.find("p.Status").text("Removing file...");
-					$.post("/Media/remove", {
+				'Yes, Remove': function() {
+					div.find('p.Warning,p.Confirm').text('');
+					div.find('p.Status').text('Removing file...');
+					$.post('/Media/remove', {
 						media: format,
 						type: type,
 						filename: file
 					}).fail(function(jqxhr, textStatus, errorThrown) {
-						div.find("p.Status").text("Error removing media file: "+jqxhr.responseText);
-						div.dialog("option", "buttons", { Close: function() { div.dialog("close"); } });
+						div.find('p.Status').text('Error removing media file: '+jqxhr.responseText);
+						div.dialog('option', 'buttons', { Close: function() { div.dialog('close'); } });
 					}).done(function(data, textStatus, jqXHR) {
-						div.dialog("close");
+						div.dialog('close');
 					});
 				},
-				"No": function() {
-					div.dialog("close");
+				'No': function() {
+					div.dialog('close');
 				}
 			}
 		});
@@ -142,106 +142,106 @@ function createDataManagementTab(tab) {
 
 	function createUploadMediaDialog(format, type) {
 		var div = uploadDialogTemplate.clone(true);
-		var uploader = div.find("div.Upload").fileupload({
-			url: "/Media/upload",
+		var uploader = div.find('div.Upload').fileupload({
+			url: '/Media/upload',
 			dropZone: null,
 			singleFileUploads: false
 		});
-		var inputFile = div.find("input:file.File");
+		var inputFile = div.find('input:file.File');
 		var uploadFunction = function() {
-			var data = { files: $(this).find("input:file.File")[0].files };
+			var data = { files: $(this).find('input:file.File')[0].files };
 			var length = data.files.length;
-			var statustxt = "file"+(length>1?"s":"");
-			uploader.fileupload("option", "formData", [
-				{ name: "media", value: format },
-				{ name: "type", value: type }
+			var statustxt = 'file'+(length>1?'s':'');
+			uploader.fileupload('option', 'formData', [
+				{ name: 'media', value: format },
+				{ name: 'type', value: type }
 				]);
-			uploader.fileupload("send", data)
+			uploader.fileupload('send', data)
 			.done(function(data, textStatus, jqxhr) {
-				div.find("a.Status").text(data);
+				div.find('a.Status').text(data);
 			})
 			.fail(function(jqxhr, textStatus, errorThrown) {
-				div.find("a.Status").text("Error while uploading : "+jqxhr.responseText);
+				div.find('a.Status').text('Error while uploading : '+jqxhr.responseText);
 			})
 			.always(function() {
 				var newInputFile = inputFile.clone(true).insertAfter(inputFile);
 				inputFile.remove();
 				inputFile = newInputFile.trigger('change');
 			});
-			uploader.fileupload("option", "formData", []);
+			uploader.fileupload('option', 'formData', []);
 		};
-		var closeFunction = function() { $(this).dialog("close"); };
+		var closeFunction = function() { $(this).dialog('close'); };
 		var buttonsCloseOnly = { Close: closeFunction };
 		var buttonsUploadClose = { Upload: uploadFunction, Close: closeFunction };
 
 		div.dialog({
-			title: "Upload media "+format+" : "+type,
+			title: 'Upload media '+format+' : '+type,
 			modal: true,
 			width: 700,
-			close: function() { $(this).dialog("destroy").remove(); },
+			close: function() { $(this).dialog('destroy').remove(); },
 			buttons: buttonsCloseOnly
 		});
 		inputFile.on('change', function() {
 			var files = this.files;
 			if (!files || !files.length) {
-				div.dialog("option", "buttons", buttonsCloseOnly);
+				div.dialog('option', 'buttons', buttonsCloseOnly);
 				return;
 			}
-			div.dialog("option", "buttons", buttonsUploadClose);
+			div.dialog('option', 'buttons', buttonsUploadClose);
 		}).trigger('change');
 	}
 	
 	function createSaveLoadTab(tab) {
-		var table = $("<table>").attr("id", "SaveLoad").appendTo(tab);
+		var table = $('<table>').attr('id', 'SaveLoad').appendTo(tab);
 		
 		// Download table
-		var sbDownloadTable = $("<table>").addClass("Download")
-			.appendTo($("<td>").appendTo($("<tr>").appendTo(table)));
-		$("<tr>").addClass("Name").appendTo(sbDownloadTable)
-			.append("<td colspan='4'>Download ScoreBoard JSON</td>");
-		var contentRow = $("<tr>").addClass("Content").appendTo(sbDownloadTable);
+		var sbDownloadTable = $('<table>').addClass('Download')
+			.appendTo($('<td>').appendTo($('<tr>').appendTo(table)));
+		$('<tr>').addClass('Name').appendTo(sbDownloadTable)
+			.append('<td colspan="4">Download ScoreBoard JSON</td>');
+		var contentRow = $('<tr>').addClass('Content').appendTo(sbDownloadTable);
 	
 		var links = [
-		{ name: "All data", url: "" },
-		{ name: "Teams", url: "teams.json?path=ScoreBoard.PreparedTeam" }
+		{ name: 'All data', url: '' },
+		{ name: 'Teams', url: 'teams.json?path=ScoreBoard.PreparedTeam' }
 		];
 		$.each( links, function() {
-			$("<td><a download/></td>").appendTo(contentRow)
-				.children("a").text(this.name).button()
+			$('<td><a download/></td>').appendTo(contentRow)
+				.children('a').text(this.name).button()
 				.attr('href', '/SaveJSON/'+this.url);
 		});
-		var allDataA = contentRow.find(">td:eq(0)>a");
+		var allDataA = contentRow.find('>td:eq(0)>a');
 		var updateAllUrl = function() {
 			var d = new Date();
-			var name = $.datepicker.formatDate("yy-mm-dd_", d);
+			var name = $.datepicker.formatDate('yy-mm-dd_', d);
 			name += _timeConversions.twoDigit(d.getHours());
 			name += _timeConversions.twoDigit(d.getMinutes());
 			name += _timeConversions.twoDigit(d.getSeconds());
-			allDataA.attr("href", "/SaveJSON/scoreboard-"+name+".json");
+			allDataA.attr('href', '/SaveJSON/scoreboard-'+name+'.json');
 		};
 		setInterval(updateAllUrl, 1000);
 	
 	
 		// Upload table
-		var sbUploadTable = $("<table>").addClass("Upload")
-			.appendTo($("<td>").appendTo($("<tr>").appendTo(table)));
-		$("<tr>").addClass("Name").appendTo(sbUploadTable)
-			.append("<td>Upload ScoreBoard JSON</td>");
-		var contentTd = $("<td>")
-			.appendTo($("<tr>").addClass("Content").appendTo(sbUploadTable));
+		var sbUploadTable = $('<table>').addClass('Upload')
+			.appendTo($('<td>').appendTo($('<tr>').appendTo(table)));
+		$('<tr>').addClass('Name').appendTo(sbUploadTable)
+			.append('<td>Upload ScoreBoard JSON</td>');
+		var contentTd = $('<td>')
+			.appendTo($('<tr>').addClass('Content').appendTo(sbUploadTable));
 	
-		var iframeId = "SaveLoadUploadHiddenIframe";
-		var uploadForm = $("<form method='post' enctype='multipart/form-data' target='"+iframeId+"'/>")
-			.append("<iframe id='"+iframeId+"' name='"+iframeId+"' style='display: none'/>")
-			.append("<input type='file' name='jsonFile'/>")
+		var iframeId = 'SaveLoadUploadHiddenIframe';
+		var uploadForm = $('<form method="post" enctype="multipart/form-data" target="'+iframeId+'"/>')
+			.append('<iframe id="'+iframeId+'" name="'+iframeId+'" style="display: none"/>')
+			.append('<input type="file" name="jsonFile"/>')
 			.appendTo(contentTd);
-		$("<button>").html("Add/Merge").attr("data-method", "merge").appendTo(uploadForm).button();
-		$("<button>").html("Replace running scoreboard").attr("data-method", "load").appendTo(uploadForm).button();
-		uploadForm.children("button").on('click', function() {
-			uploadForm.attr("action", "/LoadJSON/"+$(this).attr("data-method")).submit();
+		$('<button>').html('Add/Merge').attr('data-method', 'merge').appendTo(uploadForm).button();
+		$('<button>').html('Replace running scoreboard').attr('data-method', 'load').appendTo(uploadForm).button();
+		uploadForm.children('button').on('click', function() {
+			uploadForm.attr('action', '/LoadJSON/'+$(this).attr('data-method')).submit();
 		});
-		_crgUtils.bindAndRun(uploadForm.children("input:file").button(), "change", function() {
-			uploadForm.children("button").button(this.value ? "enable" : "disable");
+		_crgUtils.bindAndRun(uploadForm.children('input:file').button(), 'change', function() {
+			uploadForm.children('button').button(this.value ? 'enable' : 'disable');
 		});
 	}
 }

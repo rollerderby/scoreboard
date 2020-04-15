@@ -1,18 +1,18 @@
 
-function str_sort(a, b){ return ( $(a).attr("data-sort") == null ||	$(b).attr("data-sort") < $(a).attr("data-sort") ) ? 1 : -1; }
+function str_sort(a, b){ return ( $(a).attr('data-sort') == null ||	$(b).attr('data-sort') < $(a).attr('data-sort') ) ? 1 : -1; }
 
-jQuery.fn.sortDivs = function sortDivsStr() { $("> div", this[0]).sort(str_sort).appendTo(this[0]); }
+jQuery.fn.sortDivs = function sortDivsStr() { $('> div', this[0]).sort(str_sort).appendTo(this[0]); }
 
 $(initialize);
 
 function initialize() {
 
-	WS.Register( [ "ScoreBoard.Clock(Intermission).Number",
-			"ScoreBoard.Rulesets.CurrentRule(Period.Number)",
-			"ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)",
-			"ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)",
-			"ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)",
-			"ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)" ]);
+	WS.Register( [ 'ScoreBoard.Clock(Intermission).Number',
+			'ScoreBoard.Rulesets.CurrentRule(Period.Number)',
+			'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)',
+			'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)',
+			'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)',
+			'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)' ]);
 
 	WS.Register( [	'ScoreBoard.Clock(Timeout).Running',
 			'ScoreBoard.TimeoutOwner',
@@ -204,8 +204,8 @@ function createPenalty(mb, pnum, v) {
 	var penalty = $('<div class="Penalty Number-' + pnum + ' Penalty-' + v + '">' + v + '</div>');
 	$(mb).attr('data-count', $('.Penalty', mb).length+1);
 	penalty.attr('data-sort', pnum);
-	$(mb).children(".Penalties").append(penalty);
-	$(mb).children(".Penalties").sortDivs();
+	$(mb).children('.Penalties').append(penalty);
+	$(mb).children('.Penalties').sortDivs();
 }
 
 function jamData(k,v) {
@@ -271,33 +271,33 @@ function pointsPerJamColumnWidths() {
 
 function clockType(k,v) {
 	var ret;
-	var to = WS.state["ScoreBoard.TimeoutOwner"];
-	var or = WS.state["ScoreBoard.OfficialReview"];
+	var to = WS.state['ScoreBoard.TimeoutOwner'];
+	var or = WS.state['ScoreBoard.OfficialReview'];
 	var tc = WS.state['ScoreBoard.Clock(Timeout).Running'];
 	var lc = WS.state['ScoreBoard.Clock(Lineup).Running'];
 	var ic = WS.state['ScoreBoard.Clock(Intermission).Running'];
 
 	if(tc) {
-		ret = WS.state["ScoreBoard.Clock(Timeout).Name"];
-		if(to != "" && to != "O" && or) { ret = 'Official Review'; }
-		if(to != "" && to != "O" && !or) { ret = 'Team Timeout'; }
-		if(to == "O") { ret = 'Official Timeout'; }
+		ret = WS.state['ScoreBoard.Clock(Timeout).Name'];
+		if(to != '' && to != 'O' && or) { ret = 'Official Review'; }
+		if(to != '' && to != 'O' && !or) { ret = 'Team Timeout'; }
+		if(to == 'O') { ret = 'Official Timeout'; }
 		$('.ClockDescription').css('backgroundColor', 'red');
 	} else if(lc) {
-		ret = WS.state["ScoreBoard.Clock(Lineup).Name"];
+		ret = WS.state['ScoreBoard.Clock(Lineup).Name'];
 		$('.ClockDescription').css('backgroundColor', '#888');
 	} else if(ic) {
-		var num = WS.state["ScoreBoard.Clock(Intermission).Number"];
-		var max = WS.state["ScoreBoard.Rulesets.CurrentRule(Period.Number)"];
-		var isOfficial = WS.state["ScoreBoard.OfficialScore"];
+		var num = WS.state['ScoreBoard.Clock(Intermission).Number'];
+		var max = WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'];
+		var isOfficial = WS.state['ScoreBoard.OfficialScore'];
 		if (num == 0)
-			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)"];
+			ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
 		else if (num != max)
-			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)"];
+			ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
 		else if (!isOfficial)
-			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)"];
+			ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
 		else
-			ret = WS.state["ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)"];
+			ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
 
 		$('.ClockDescription').css('backgroundColor', 'blue');
 	} else {

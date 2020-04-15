@@ -1,5 +1,5 @@
 (function () {
-	var teamId = _windowFunctions.getParam("team");
+	var teamId = _windowFunctions.getParam('team');
 	
 
 	preparePltInputTable($('#input'), teamId, 'plt');
