@@ -3,9 +3,9 @@ var WS = {
 
   connectCallback: null,
   connectTimeout: null,
-  callbacks: new Array(),
+  callbacks: [],
   callbackTrie: {},
-  batchCallbacks: new Array(),
+  batchCallbacks: [],
   Connected: false,
   state: { },
   heartbeat: null,
@@ -19,7 +19,7 @@ var WS = {
   _connect: function() {
     WS.connectTimeout = null;
     var url = (document.location.protocol === 'http:' ? 'ws' : 'wss') + '://';
-    url += document.location.host + '/WS/'
+    url += document.location.host + '/WS/';
     // This is not required, but helps figure out which device is which.
     url += '?source=' + encodeURIComponent(document.location.pathname + document.location.search);
     var platform = '';
@@ -38,16 +38,16 @@ var WS = {
     url += '&platform=' + encodeURIComponent(platform);
   
     if(WS.Connected !== true || !WS.socket) {
-      if(WS.debug) console.log('WS', 'Connecting the websocket at ' + url);
+      if(WS.debug) { console.log('WS', 'Connecting the websocket at ' + url); }
 
       WS.socket = new WebSocket(url);
       WS.socket.onopen = function(e) {
         WS.Connected = true;
-        if(WS.debug) console.log('WS', 'Websocket: Open');
+        if(WS.debug) { console.log('WS', 'Websocket: Open'); }
         $('.ConnectionError').addClass('Connected');
-        req = {
+        var req = {
           action: 'Register',
-          paths: new Array()
+          paths: []
         };
         $.each(Object.keys(WS.state), function(idx, k) {
           WS.triggerCallback(k, null);
@@ -62,16 +62,18 @@ var WS = {
         if (req.paths.length > 0) {
           WS.send(JSON.stringify(req));
         }
-        if (WS.connectCallback !== null)
+        if (WS.connectCallback !== null) {
           WS.connectCallback();
+        }
         // Hearbeat every 30s so the connection is kept alive.
         WS.heartbeat = setInterval(WS.Command, 30000, 'Ping');
       };
       WS.socket.onmessage = function(e) {
-        json = JSON.parse(e.data);
-        if (WS.debug) console.log('WS', json);
-        if (json.authorization !== null)
+        var json = JSON.parse(e.data);
+        if (WS.debug) { console.log('WS', json); }
+        if (json.authorization !== null) {
           alert(json.authorization);
+        }
         if (json.state !== null) {
           WS.processUpdate(json.state);
         }
@@ -80,20 +82,22 @@ var WS = {
         WS.Connected = false;
         console.log('WS', 'Websocket: Close', e);
         $('.ConnectionError').removeClass('Connected');
-        if (WS.connectTimeout === null)
+        if (WS.connectTimeout === null) {
           WS.connectTimeout = setTimeout(WS._connect, 1000);
+        }
         clearInterval(WS.heartbeat);
       };
       WS.socket.onerror = function(e) {
         console.log('WS', 'Websocket: Error', e);
         $('.ConnectionError').removeClass('Connected');
-        if (WS.connectTimeout === null)
+        if (WS.connectTimeout === null) {
           WS.connectTimeout = setTimeout(WS._connect, 1000);
+        }
         clearInterval(WS.heartbeat);
-      }
+      };
     } else {
       // better run the callback on post connect if we didn't need to connect
-      if(WS.connectCallback !== null) WS.connectCallback();
+      if(WS.connectCallback !== null) { WS.connectCallback(); }
     }
   },
 
@@ -104,7 +108,7 @@ var WS = {
   },
 
   Command: function(command, data) {
-    req = {
+    var req = {
       action: command,
       data: data
     };
@@ -112,7 +116,7 @@ var WS = {
   },
 
   Set: function(key, value, flag) {
-    req = {
+    var req = {
       action: 'Set',
       key: key,
       value: value,
@@ -124,10 +128,11 @@ var WS = {
   triggerCallback: function (k, v) {
     k = WS._enrichProp(k);
     var callbacks = WS._getMatchesFromTrie(WS.callbackTrie, k);
-    for (idx = 0; idx < callbacks.length; idx++) {
-      c = callbacks[idx];
-      if (c === null)
+    for (var idx = 0; idx < callbacks.length; idx++) {
+      var c = callbacks[idx];
+      if (c === null) {
         continue;
+      }
       try {
         c(k, v);
       } catch (err) {
@@ -148,12 +153,14 @@ var WS = {
     }
 
     for (var prop in state) {
-      if (state[prop] === null)
+      if (state[prop] === null) {
         WS.triggerCallback(prop, state[prop]);
+      }
     }
     for (var prop in state) {
-      if (state[prop] !== null)
+      if (state[prop] !== null) {
         WS.triggerCallback(prop, state[prop]);
+      }
     }
 
     // Batch functions are only called once per update.
@@ -200,31 +207,32 @@ var WS = {
     var parts = [];
     while (i >= 0) {
       if (prop[i] === ')') {
-        var open = prop.lastIndexOf('(', i)
-        var dot = prop.lastIndexOf('.', open)
+        var open = prop.lastIndexOf('(', i);
+        var dot = prop.lastIndexOf('.', open);
         var key = prop.substring(dot + 1, open);
-        var val = prop.substring(open + 1, i)
+        var val = prop.substring(open + 1, i);
         prop[key] = val;
-        parts.push(key)
+        parts.push(key);
         i = dot - 1;
       } else {
-        var dot = prop.lastIndexOf('.', i)
+        var dot = prop.lastIndexOf('.', i);
         var key = prop.substring(dot + 1, i + 1);
         prop[key] = '';
-        parts.push(key)
+        parts.push(key);
         i = dot - 1;
       }
     }
     prop.field = parts[0];
     parts.reverse();
-    prop.parts = parts
-    WS._enrichPropCache[prop] = prop
+    prop.parts = parts;
+    WS._enrichPropCache[prop] = prop;
     return prop;
   },
 
   Register: function(paths, options) {
-    if ($.isFunction(options))
+    if ($.isFunction(options)) {
       options = { triggerFunc: options };
+    }
 
     var callback = null;
     var batchCallback = null;
@@ -286,7 +294,7 @@ var WS = {
       WS.batchCallbacks.push( { path: path, callback: batchCallback } );
     });
 
-    req = {
+    var req = {
       action: 'Register',
       paths: paths
     };
@@ -312,7 +320,7 @@ var WS = {
           // Allow Blah(*) as a wildcard.
           var j;
           // id captured by * might contain . and thus be split - find the end
-          for (j = i; j < p.length && !p[j].endsWith(')'); j++);
+          for (j = i; j < p.length && !p[j].endsWith(')'); j++) {}
           result = result.concat(matches(t['*)'], p, j+1) || []);
         }
         t = t[p[i]];
@@ -322,7 +330,7 @@ var WS = {
         result = result.concat(t.values || []);
       }
       return result;
-    };
+    }
     
     return matches(t, key.split(/[.(]/), 0);
   },
@@ -330,7 +338,7 @@ var WS = {
   getPaths: function(elem, attr) {
     var list = elem.attr(attr).split(',');
     var path = WS._getContext(elem);
-    paths = new Array();
+    var paths = [];
     $.each(list, function(idx, item) {
       item = $.trim(item);
       if (item.startsWith('/')) {
@@ -364,33 +372,38 @@ var WS = {
             v = window[elem.attr('sbModify')](path, v);
           }
           return v;
-        }
+        };
         WS.Register(paths, { element: elem, modifyFunc: mf });
       }
     });
     $.each($('[sbTrigger]'), function(idx, elem) {
       elem = $(elem);
       var sbTrigger = window[elem.attr('sbTrigger')];
-      if (sbTrigger === null)
+      if (sbTrigger === null) {
         return;
+      }
 
       var paths = WS.getPaths(elem, 'sbTriggerOn');
-      if (paths.length > 0)
+      if (paths.length > 0) {
         WS.Register(paths, { triggerFunc: sbTrigger } );
+      }
     });
   },
 
   _getContext: function(elem, attr) {
-    if (attr === null)
+    if (attr === null) {
       attr = 'sbContext';
+    }
 
     var parent = elem.parent();
     var ret = '';
-    if (parent.length > 0)
+    if (parent.length > 0) {
       ret = WS._getContext(parent, 'sbContext');
+    }
     var context = elem.attr(attr);
-    if (context !== null)
+    if (context !== null) {
       ret = (ret !== '' ? ret + '.' : '') + context;
+    }
     return ret;
   },
 };

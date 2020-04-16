@@ -9,7 +9,7 @@
  */
 
 
-_windowFunctions = {
+var _windowFunctions = {
   /* Display area dimensions */
   getAspectDimensions: function(aspect, overflow) {
     var width, height, top, bottom, left, right;
@@ -76,10 +76,11 @@ _windowFunctions = {
         return false;
       }
     });
-    if (child)
+    if (child) {
       newChild.insertBefore(child);
-    else
+    } else {
       parent.append(newChild);
+    }
     return parent;
   },
 
@@ -137,12 +138,13 @@ _windowFunctions = {
   },
   numCompare: function(a, b) {
     var numA = Number(a), numB = Number(b);
-    if (!isNaN(numA) && !isNaN(numB)) // both numbers
+    if (!isNaN(numA) && !isNaN(numB)) { // both numbers
       return _windowFunctions.alphaCompare(numA, numB);
-    else if (isNaN(numA) && isNaN(numB)) // both non-numbers
+    } else if (isNaN(numA) && isNaN(numB)) { // both non-numbers
       return _windowFunctions.alphaCompare(a, b);
-    else  // b num, a non-num? a>b (true).  a num, b non-num? a<b (false).
+    } else { // b num, a non-num? a>b (true).  a num, b non-num? a<b (false).
       return (isNaN(numA));
+    }
   },
   numCompareByAttr: function(n, a, b) {
     return _windowFunctions.numCompare($(a).attr(n), $(b).attr(n));
@@ -155,10 +157,10 @@ _windowFunctions = {
   },
   fullscreenRequest: function(a) {
     var isFullscreen = false;
-    if (document.fullscreen) isFullscreen = true;
-    if (document.mozFullScreen) isFullscreen = true;
-    if (document.webkitIsFullScreen) isFullscreen = true;
-    if (document.msFullscreenElement) isFullscreen = true;
+    if (document.fullscreen) { isFullscreen = true; }
+    if (document.mozFullScreen) { isFullscreen = true; }
+    if (document.webkitIsFullScreen) { isFullscreen = true; }
+    if (document.msFullscreenElement) { isFullscreen = true; }
 
     var docElem = document.documentElement;
     if (!isFullscreen && (a === true || a === null)) {

@@ -11,7 +11,7 @@ var DataSet = (function() {
     var i = haystack.length;
     while (i--) { if (haystack[i] === needle) { return true; } }
     return false;
-  }
+  };
 
 
 
@@ -20,34 +20,34 @@ var DataSet = (function() {
   /************************************************************************************************/
   function DataTriggers() { }
 
-  DataTriggers.prototype = new Array();
+  DataTriggers.prototype = [];
 
   DataTriggers.prototype.get = function(typ, key) {
     var found = [];
     for(var i = 0; i < this.length ; i++ ) {
       var trigger = this[i];
       var ut = (trigger.Type === typ && (key === '*' || _arrayContains(trigger.Key, key) ));
-      if(ut) found.push(trigger);
+      if(ut) { found.push(trigger); }
     }
     return found;
-  }
+  };
 
   DataTriggers.prototype.add = function(typ, key, match, func) {
     var sk;
-    sk = typeof(key) === 'array' || typeof(key) === 'object' ? key : [ key ];
-    e = { Type: typ, Func: func, Key: sk, Match: match };
+    sk = typeof(key) === 'object' ? key : [ key ];
+    var e = { Type: typ, Func: func, Key: sk, Match: match };
     return this.push(e);
-  }
+  };
 
   DataTriggers.prototype.action = function(typ, key, newval, oldval, fullRecord) {
-    trig = this.get(typ, key);
+    var trig = this.get(typ, key);
     for(var i = 0; i < trig.length; i++) {
       var trigger = trig[i];
       if(fullRecord.isMatch(trigger.Match)) {
         trigger.Func.call(fullRecord, newval, oldval, key);
       }
     }
-  }
+  };
 
   /************************************************************************************************/
   /* Individual Data Records 
@@ -66,34 +66,35 @@ var DataSet = (function() {
       va++; 
       if(this[k] === required[k]) { vb++; } 
     }
-    if(va === vb) return true;
+    if(va === vb) { return true; }
     return false;
-  }
+  };
 
   DataRecord.prototype.keys = function() {
     var ret = [];
-    for(var k in this) ret.push(k);
+    for(var k in this) { ret.push(k); }
     return ret;
-  }
+  };
 
   DataRecord.prototype.set = function(data) {
     var up = [];
     for(var k in data) {
       var dst = this[k], src = data[k];
-      if(src === dst) continue;
+      if(src === dst) { continue; }
       this[k] = src;
       this.Keys[k] = src;
       up.push({'Key': k, 'Original': dst, 'New': src});
     }
-    for(var c = 0; c < up.length; c++ ) 
+    for(var c = 0; c < up.length; c++ ) {
       this.DataSet.Triggers.action( 'VALUE', up[c].Key, up[c].New, up[c].Original, this );
+    }
 
     return this;
-  }
+  };
 
   DataRecord.prototype.values = function() {
     return this.Keys;
-  }
+  };
 
   /************************************************************************************************/
   /* Data Select Object 
@@ -104,18 +105,20 @@ var DataSet = (function() {
     this.Selector = match;
 
     var items = this.DataSet._filter(match);
-    for(var i = 0; i < items.length; i++) 
+    for(var i = 0; i < items.length; i++) {
       this.push(items[i]);
+    }
   }
 
 
-  DataSelect.prototype = new Array();
+  DataSelect.prototype = [];
 
   DataSelect.prototype.Each = function(callback) {
-    for(var i = 0; i < this.length; i++) 
+    for(var i = 0; i < this.length; i++) {
       callback.call(this[i]);
+    }
     return this;
-  }
+  };
 
   /************************************************************************************************/
   /* Data Set Object 
@@ -125,7 +128,7 @@ var DataSet = (function() {
     this.Triggers = new DataTriggers();
   } 
   
-  DataSet.prototype = new Array();
+  DataSet.prototype = [];
 
   DataSet.prototype._filter = function(match) {
     var found = [];
@@ -133,7 +136,7 @@ var DataSet = (function() {
       if( this[i].isMatch(match)) { found.push(this[i]); }
     }
     return found;
-  }
+  };
 
   /* Magic UpSert & Transform Function */
   DataSet.prototype.Upsert = function(data, match) {
@@ -145,7 +148,7 @@ var DataSet = (function() {
       this.Update( found, data );
     }
     return found;
-  }
+  };
   
   DataSet.prototype.Delete = function(matches) {
     for(var i = 0; i < this.length; i ++) {
@@ -154,16 +157,15 @@ var DataSet = (function() {
       this.Triggers.action('DELETE', '*', {}, o, c );
       this.splice(i,1);
     }
-  }
+  };
   
   DataSet.prototype.Filter = function(match) {
-    var items = this._filter(match);
     return new DataSelect(this, match);
-  }
+  };
 
   DataSet.prototype.All = function(match) {
     return new DataSelect(this, {});
-  }
+  };
 
   DataSet.prototype.Update = function(records, newdata) {
     var upd = [];
@@ -173,13 +175,13 @@ var DataSet = (function() {
       record.set(newdata);
       upd.push(record);
       this.Triggers.action( 'UPDATE', '*', record, orig, record );
-    };
+    }
     return upd;
-  }
+  };
 
   DataSet.prototype.AddTrigger = function(typ, key, match, func) {
     return this.Triggers.add(typ, key, match, func);
-  }
+  };
 
   
   DataSet.prototype.Insert = function(data) {
@@ -188,11 +190,10 @@ var DataSet = (function() {
 
     this.Triggers.action( 'INSERT', '*', newRecord, {}, newRecord );
     return [ newRecord ];
-  }
+  };
 
   return DataSet;
 
 })();
 
-o = new DataSet();
-
+DataSet();

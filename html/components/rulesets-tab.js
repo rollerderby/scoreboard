@@ -20,8 +20,9 @@ function createRulesetsTab(tab) {
     var list = null;
     $.each(rulesets, function(idx, val) {
       if (val.ParentId === parentId) {
-        if (list === null)
+        if (list === null) {
           list = $('<ul>');
+        }
 
         $('<option>')
         .prop('value', val.Id)
@@ -53,7 +54,7 @@ function createRulesetsTab(tab) {
         var name = def.Group;
         var section = $('<div>')
         .addClass('section folded')
-        .attr('group', def.Group)
+        .attr('group', def.Group);
 
         section.append($('<div>').addClass('header')
             .on('click', function(e) {
@@ -66,8 +67,9 @@ function createRulesetsTab(tab) {
 
       var children = d.find('.section');
       $.each(children, function (idx, s) {
-        if (section !== null)
+        if (section !== null) {
           return;
+        }
         s = $(s);
         if (s.attr('group') === def.Group) {
           section = s;
@@ -87,7 +89,7 @@ function createRulesetsTab(tab) {
     // Keep them in the same order they are in the Java code.
     var sortedValues = $.map(definitions, function(v) {
       return v;
-    }).sort(function(a, b){return a.Index - b.Index});
+    }).sort(function(a, b){return a.Index - b.Index;});
     $.each(sortedValues, function(idx, def) {
       var div = findSection(def);
       var tooltiptext = null;
@@ -158,7 +160,7 @@ function createRulesetsTab(tab) {
     WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {triggerBatchFunc: function() {
       definitions = {};
       for (var prop in WS.state) {
-        var k = WS._enrichProp(prop)
+        var k = WS._enrichProp(prop);
         if (k.RuleDefinition) {
           definitions[k.RuleDefinition] = definitions[k.RuleDefinition] || {};
           definitions[k.RuleDefinition][k.field] = WS.state[prop];
@@ -174,11 +176,11 @@ function createRulesetsTab(tab) {
     WS.Register(['ScoreBoard.Rulesets.RuleDefinition', 'ScoreBoard.Rulesets.Ruleset'], {triggerBatchFunc: function() {
       rulesets = {};
       for (var prop in WS.state) {
-        var k = WS._enrichProp(prop)
+        var k = WS._enrichProp(prop);
         if (k.Rulesets !== null && k.Ruleset !== null) {
           rulesets[k.Ruleset] = rulesets[k.Ruleset] || {Rules: {}};
           if (k.field === 'Rule') {
-            rulesets[k.Ruleset].Rules[k.Rule] = WS.state[prop]
+            rulesets[k.Ruleset].Rules[k.Rule] = WS.state[prop];
           } else {
             rulesets[k.Ruleset][k.field] = WS.state[prop];
           }
@@ -239,13 +241,13 @@ function createRulesetsTab(tab) {
 
   function displayRuleset(id) {
     var rs = rulesets[id];
-    if (!rs) return;
+    if (!rs) { return; }
     activeRuleset = rs;
     var definitions = tab.children('.definitions');
 
     definitions.find('#name').val(rs.Name);
 
-    if (!isTrue(rs['Readonly'])) {
+    if (!isTrue(rs.Readonly)) {
       definitions.find('.definition *').prop('disabled', false);
     }
 
@@ -256,7 +258,7 @@ function createRulesetsTab(tab) {
       setDefinition(key, val, false);
     });
 
-    if (isTrue(rs['Readonly'])) {
+    if (isTrue(rs.Readonly)) {
       tab.find('#name').prop('disabled', true);
       definitions.find('.definition *').prop('disabled', true);
       definitions.find('.Update, .Delete, .EditNote').hide();
@@ -293,10 +295,12 @@ function createRulesetsTab(tab) {
       if (def.find('.name input').prop('checked')) {
         var input = def.find('.value>input').prop('value');
         var select = def.find('.value>select').val();
-        if (input !== null)
+        if (input !== null) {
           value = input;
-        if (select !== null)
+        }
+        if (select !== null) {
           value = select;
+        }
       }
       WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Rule(' + val.Fullname + ')', value);
     });

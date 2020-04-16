@@ -13,14 +13,14 @@ function createTeamsTab(tab) {
     .appendTo(table.find('table.Selection td:eq(1)'));
   var createNewTeam = $('<button>').text('New Team').attr('disabled', true).button()
     .appendTo(table.find('table.Selection td:eq(1)'));
-  var isCurrentTeam = function(){ return selectTeam.val().startsWith('(Current Team');}
+  var isCurrentTeam = function(){ return selectTeam.val().startsWith('(Current Team');};
   var getPrefix = function() {
     if (isCurrentTeam()) {
       return 'ScoreBoard.Team('+selectTeam.val()[14]+')';
     } else {
       return 'ScoreBoard.PreparedTeam('+selectTeam.val()+')';
     }
-  }
+  };
 
   newTeamName.on('keyup', function(event) {
     createNewTeam.button('option', 'disabled', (!$(this).val()));
@@ -69,7 +69,7 @@ function createTeamsTab(tab) {
   var logoSelect = $('<select>').append($('<option value="">No Logo</option>'))
     .appendTo(controlTable.find('td:eq(1)'));
   logoSelect.on('change', function() {
-    WS.Set(getPrefix() + '.Logo', logoSelect.val() === '' ? '': '/images/teamlogo/' + logoSelect.val())
+    WS.Set(getPrefix() + '.Logo', logoSelect.val() === '' ? '': '/images/teamlogo/' + logoSelect.val());
   });
   WS.Register('ScoreBoard.Media.Format(images).Type(teamlogo).File(*).Name', function(k, v) {
     var val = logoSelect.val(); // Record this before we potentially remove and re-add it.
@@ -153,7 +153,7 @@ function createTeamsTab(tab) {
     WS.Set(getPrefix() + '.Skater('+id+').RosterNumber', number);
     WS.Set(getPrefix() + '.Skater('+id+').Name', name);
     WS.Set(getPrefix() + '.Skater('+id+').Flags', flags);
-  }
+  };
 
   var newSkaterNumber = $('<input type="text" size="10">').addClass('RosterNumber')
     .appendTo(skatersTable.find('tr.AddSkater>th:eq(0)'));
@@ -173,8 +173,9 @@ function createTeamsTab(tab) {
     });
   newSkaterName.add(newSkaterNumber).on('keyup', function(event) {
     newSkaterButton.button('option', 'disabled', (!newSkaterName.val() && !newSkaterNumber.val()));
-    if (!newSkaterButton.button('option', 'disabled') && (13 === event.which)) // Enter
+    if (!newSkaterButton.button('option', 'disabled') && (13 === event.which)) { // Enter
       newSkaterButton.trigger('click');
+    }
   });
   newSkaterFlags.append($('<option>').attr('value', '').text('Skater'));
   newSkaterFlags.append($('<option>').attr('value', 'ALT').text('Not Skating'));
@@ -192,7 +193,7 @@ function createTeamsTab(tab) {
     // Treat as a tab-seperated roster.
     var knownNumbers = {};
     teamTable.find('.Skater').map( function(_, n) {
-      n = $(n)
+      n = $(n);
       knownNumbers[n.attr('skaternum')] = n.attr('skaterid');
     });
 
@@ -211,7 +212,7 @@ function createTeamsTab(tab) {
       addSkater(number, name, '', id);
     }
     return false;
-  }
+  };
   newSkaterNumber.on('paste', pasteHandler);
   newSkaterName.on('paste', pasteHandler);
 
@@ -229,7 +230,7 @@ function createTeamsTab(tab) {
   var handleTeamUpdate = function(k, v) {
     if (k.Skater !== null) {
       // For a current team, could be a penalty or position.
-      if (k.parts.length !== 4 || k.parts[2] !== 'Skater') return;
+      if (k.parts.length !== 4 || k.parts[2] !== 'Skater') { return; }
       var skaterRow = skatersTable.find('tr[skaterid="'+k.Skater+'"]');
       if (v === null) {
         skaterRow.remove();
@@ -283,7 +284,7 @@ function createTeamsTab(tab) {
       }
     } else { // Team update.
       // For a current team, could be a Position.
-      if (k.parts.length !== 3) return;
+      if (k.parts.length !== 3) { return; }
       switch (k.field) {
         case 'Logo':
           logoSelect.val(v.substring(v.lastIndexOf('/') + 1));
@@ -309,7 +310,7 @@ function createTeamsTab(tab) {
           break;
       }
     }
-  }
+  };
 
   selectTeam.on('change', function(event) {
     var teamId = selectTeam.val();
@@ -350,8 +351,9 @@ function createAlternateNamesDialog() {
   };
 
   newNameInput.on('keypress', function(event) {
-    if (event.which === 13) // Enter
+    if (event.which === 13) { // Enter
       newFunc();
+    }
   });
   $('<button>').button({ label: 'Add' }).on('click', newFunc)
     .appendTo(dialog);
@@ -383,10 +385,10 @@ function createAlternateNamesDialog() {
     }
     tr.children('td.Id').text(id);
     tr.find('td.Name input').val(v);
-  }
+  };
   dialog.removeFunc = function(id) {
     tbody.children('tr#' + id).remove();
-  }
+  };
 
   dialog.dialog({
     title: 'Alternate Names',

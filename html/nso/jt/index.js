@@ -18,10 +18,11 @@ $(function() {
 });
 
 function isTrue(value) {
-  if (typeof value === 'boolean')
+  if (typeof value === 'boolean') {
     return value;
-  else
+  } else {
     return (String(value).toLowerCase() === 'true');
+  }
 }
 
 function setupJamControlPage() {

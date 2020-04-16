@@ -47,15 +47,17 @@ function initialize() {
       var sidePadding = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_SidePadding)'];
 
       // change box_flat_bright to two separate classes in order to reuse much of the css
-      if (boxStyle === 'box_flat_bright')
+      if (boxStyle === 'box_flat_bright') {
         boxStyle = 'box_flat bright';
+      }
 
       $('body').removeClass();
-      if (boxStyle !== '' && boxStyle !== null)
+      if (boxStyle !== '' && boxStyle !== null) {
         $('body').addClass(boxStyle);
+      }
 
-      left = 0;
-      right = 0;
+      var left = 0;
+      var right = 0;
       if (sidePadding !== '' && sidePadding !== null) {
         left = sidePadding;
         right = left;
@@ -97,7 +99,7 @@ function initialize() {
               'background: ' + dotColor + ';');
           break;
       }
-    })
+    });
   });
 
   WS.Register(['ScoreBoard.NoMoreJam'], function(k, v) {
@@ -146,7 +148,7 @@ function initialize() {
           images[m[1]][m[2]] = WS.state[prop];
         }
       }
-      banners = Object.values(images).sort(function (a, b) {a.Id.localeCompare(b.Id, 'en')});
+      banners = Object.values(images).sort(function (a, b) {a.Id.localeCompare(b.Id, 'en');});
     }});
 
     setNextSrc();

@@ -31,7 +31,7 @@ $(function() {
           .append('<td class="LastSeenInactive" rowspan="1">')
           .append('<td class="LastWrite">')
           .append('<td class="Created">'));
-      _windowFunctions.appendAlphaSortedByAttr(deviceTable, tbody, 'name', 1)
+      _windowFunctions.appendAlphaSortedByAttr(deviceTable, tbody, 'name', 1);
 
       tbody.find('td.Comment').append($('<input type="text">').on('change', function() {
         WS.Set(prefix + '.Comment', this.value);
@@ -148,7 +148,7 @@ $(function() {
   }
 
   setInterval(function(){
-    var now = new Date().getTime()
+    var now = new Date().getTime();
     $.each(deviceTable.find('td[age]'), function(e) {
       updateAge($(this), now);
     });

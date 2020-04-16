@@ -8,7 +8,7 @@
  * See the file COPYING for details.
  */
 
-_autoFit = {
+var _autoFit = {
   /* This enables the specified element for auto-fitting its contained text.
    * See the autoFitText() function description for details on the options.
    * This returns a reference to a function that should be called,
@@ -18,28 +18,33 @@ _autoFit = {
    * The auto-fit function can also be accessed via element.data('AutoFit').
    */
   enableAutoFitText: function(e, options) {
-    if (!e)
+    if (!e) {
       return null;
+    }
     e = $(e);
-    if (!e.length)
+    if (!e.length) {
       return null;
-    if (e.data('AutoFit'))
+    }
+    if (e.data('AutoFit')) {
       return e.data('AutoFit');
+    }
     var doAutoFit = function() { return _autoFit.autoFitText(e, options); };
     e.data('AutoFit', doAutoFit);
     $(window).on('resize', function(event) {
-      if (e.closest('body').length)
+      if (e.closest('body').length) {
         doAutoFit();
-      else
+      } else {
         $(window).off('resize', event);
+      }
     });
     setTimeout(doAutoFit, 100); // run initial autofit deferred
     setTimeout(doAutoFit, 2000); // again in 2 sec; bug workaround FIXME
     return doAutoFit;
   },
   disableAutoFitText: function(e) {
-    if (!e.data('AutoFit'))
+    if (!e.data('AutoFit')) {
       return;
+    }
     $(window).off('resize', e.data('AutoFit'));
     e.removeData('AutoFit');
   },
@@ -79,17 +84,20 @@ _autoFit = {
    * This returns an object with the relevant css properties that were updated.
    */
   autoFitText: function(container, options) {
-    if (!options)
+    if (!options) {
       options = { };
+    }
 
-    if (!container.text())
+    if (!container.text()) {
       return _autoFit._cssObject(container, options);
+    }
 
     var contents = container.children();
-    if (!contents.length)
+    if (!contents.length) {
       return _autoFit._cssObject(container, options);
-    else if (1 < contents.length)
+    } else if (1 < contents.length) {
       contents = container.wrapInner('<span>').children().addClass('autoFitTextWrapper');
+    }
 
     container.css({ marginTop: '0px', marginBottom: '0px' });
 
@@ -109,41 +117,48 @@ _autoFit = {
     params.minFontSize = ((params.min * params.referenceFontSize) / 100);
     params.maxFontSize = ((params.max * params.referenceFontSize) / 100);
 
-    if (!params.maxW || !params.maxH)
+    if (!params.maxW || !params.maxH) {
       // likely a last call for a removed element; in any case, can't autofit for a 0-size element
       return _autoFit._cssObject(container, options);
+    }
 
-    if (_autoFit._currentFontSize(container) > params.maxFontSize)
+    if (_autoFit._currentFontSize(container) > params.maxFontSize) {
       container.css('fontSize', params.maxFontSize);
-    if (_autoFit._currentFontSize(container) < params.minFontSize)
+    }
+    if (_autoFit._currentFontSize(container) < params.minFontSize) {
       container.css('fontSize', params.minFontSize);
+    }
 
     var breakCnt = 0;
     while (0 < params.iterations-- && ++breakCnt < 100) {
       if (_autoFit._overSize(contents, params)) {
-        if (!_autoFit._updateMinMaxFontSizes(container, params, params.minFontSize, _autoFit._currentFontSize(container)))
+        if (!_autoFit._updateMinMaxFontSizes(container, params, params.minFontSize, _autoFit._currentFontSize(container))) {
           break;
-      } else if (contents.outerHeight(true) > (params.percentHeight * params.targetH))
+        }
+      } else if (contents.outerHeight(true) > (params.percentHeight * params.targetH)) {
         break;
-      else if (!_autoFit._updateMinMaxFontSizes(container, params, _autoFit._currentFontSize(container), params.maxFontSize))
+      } else if (!_autoFit._updateMinMaxFontSizes(container, params, _autoFit._currentFontSize(container), params.maxFontSize)) {
         break;
+      }
     }
 
     var reduceBy = 1;
     breakCnt = 0;
     while (_autoFit._overSize(contents, params) && ++breakCnt < 100) {
-      if (!_autoFit._updateFontSize(container, _autoFit._currentFontSize(container) - reduceBy))
+      if (!_autoFit._updateFontSize(container, _autoFit._currentFontSize(container) - reduceBy)) {
         reduceBy++;
+      }
     }
 
     if (!options.noVerticalAdjust) {
       var vShift = ((params.maxH - contents.outerHeight(true)) / 2);
       // adjust for browser-specific vertical adjustment of text
       vShift -= contents.position().top;
-      if (options.useMarginBottom)
+      if (options.useMarginBottom) {
         container.css('margin-bottom', (-1*vShift)+'px');
-      else
+      } else {
         container.css('margin-top', vShift+'px');
+      }
     }
     contents.filter('.autoFitTextWrapper').children().unwrap();
     return _autoFit._cssObject(container, options);
@@ -165,14 +180,16 @@ _autoFit = {
     return ((contents.outerWidth(true) > params.maxW) || (contents.outerHeight(true) > params.targetH));
   },
   _cssObject: function(container, options) {
-    if (!options.returnCssObject)
+    if (!options.returnCssObject) {
       return;
+    }
     var obj = { fontSize: container.css('fontSize') };
     if (!options.noVerticalAdjust) {
-      if (options.useMarginBottom)
+      if (options.useMarginBottom) {
         obj.marginBottom = container.css('marginBottom');
-      else
+      } else {
         obj.marginTop = container.css('marginTop');
+      }
     }
     return obj;
   }

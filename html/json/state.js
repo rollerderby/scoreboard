@@ -6,10 +6,12 @@ function display(k, v) {
   if (v !== null) {
     if ($.isPlainObject(v)) {
       row.find('td.Value').text(JSON.stringify(v));
-    } else
+    } else {
       row.find('td.Value').text(v);
-  } else
+    }
+  } else {
     row.remove();
+  }
 }
 
 function findRow(k) {

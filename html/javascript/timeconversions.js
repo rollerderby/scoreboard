@@ -9,17 +9,18 @@
  */
 
 
-_timeConversions = {
+var _timeConversions = {
   /*
    * These are conversion functions for external use
    */
 
   /* Convert ms to seconds */
   msToSeconds: function(ms, roundUp) {
-    if (roundUp)
+    if (roundUp) {
       return String(Math.ceil(ms / 1000));
-    else
+    } else {
       return String(Math.floor(ms / 1000));
+    }
   },
   /* Convert seconds to milliseconds */
   secondsToMs: function(sec) { return String(sec * 1000); },
@@ -36,10 +37,11 @@ _timeConversions = {
   /* Convert milliseconds to min:sec, if min is 0 return only seconds portion */
   msToMinSecNoZero: function(ms, roundUp) {
     var limit = (roundUp ? 59001 : 60000);
-    if (ms >= limit)
+    if (ms >= limit) {
       return _timeConversions.msToMinSec(ms, roundUp);
-    else
+    } else {
       return _timeConversions.msToSeconds(ms, roundUp);
+    }
   },
   /* Same as minSecToMs() */
   minSecNoZeroToMs: function(time) { return _timeConversions.minSecToMs(time); },

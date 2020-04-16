@@ -9,7 +9,7 @@
  */
 
 
-_crgKeyControls = {
+var _crgKeyControls = {
   /* This selector should be used to match key control buttons. */
   keySelector: ':button.KeyControl,label.KeyControl',
 
@@ -110,7 +110,7 @@ _crgKeyControls = {
       $(document).on('keydown', _crgKeyControls._keyControlDown);
 
       WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function(k, v) {
-        if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + _crgKeyControls.operator + '.KeyControl.')) return;
+        if (!k.startsWith('ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + _crgKeyControls.operator + '.KeyControl.')) { return; }
         var button = $('#' + k.substring(k.lastIndexOf('.') + 1, k.length - 1));
         button.toggleClass('HasControlKey', (v?true:false))
           .find('span.Key').text(v?v:'')
@@ -125,26 +125,31 @@ _crgKeyControls = {
   _checkConditions: function() {
     var ok = true;
     $.each(_crgKeyControls._conditions, function() {
-      if (ok && $.isFunction(this) && !this())
+      if (ok && $.isFunction(this) && !this()) {
         ok = false;
+      }
     });
     return ok;
   },
   _validKey: function(keycode) {
     /* For reference see http://en.wikipedia.org/wiki/List_of_Unicode_characters */
-    if (keycode < 0x20) // Low control chars
+    if (keycode < 0x20) { // Low control chars
       return false;
-    if (0x7e < keycode && keycode < 0xa1) // Higher control chars
+    }
+    if (0x7e < keycode && keycode < 0xa1) { // Higher control chars
       return false;
+    }
     return true;
   },
   _existingKeyLast: undefined,
   _existingKeyCount: 0,
   _keyControlPress: function(event) {
-    if (!_crgKeyControls._checkConditions())
+    if (!_crgKeyControls._checkConditions()) {
       return;
-    if (!_crgKeyControls._validKey(event.which))
+    }
+    if (!_crgKeyControls._validKey(event.which)) {
       return;
+    }
 
     var key = String.fromCharCode(event.which);
 
@@ -156,18 +161,20 @@ _crgKeyControls = {
     var target = active.has('span.Key[data-keycontrol="'+event.which+'"]').trigger('click');
     // FIXME - workaround seemingly broken jQuery-UI
     // which does not fire change event for radio buttons when click() is called on their label...
-    if (target.is('label'))
+    if (target.is('label')) {
       target.filter('label').each(function() { $('#'+$(this).attr('for')).trigger('change'); });
+    }
 
     // Update the hovered button if in edit mode
     var editingTarget = editing.filter('.hover');
     if (editingTarget.length) {
       var existingControl = editing.filter(':not(.hover)').has('span.Key[data-keycontrol="'+event.which+'"]');
       if (existingControl.length) {
-        if (_crgKeyControls._existingKeyLast !== key)
+        if (_crgKeyControls._existingKeyLast !== key) {
           _crgKeyControls._existingKeyCount = 1;
-        else
+        } else {
           _crgKeyControls._existingKeyCount++;
+        }
         _crgKeyControls._existingKeyLast = key;
         if (_crgKeyControls._existingKeyCount > 2) {
           _crgKeyControls._showMultipleKeyAssignDialog(existingControl, editingTarget, key);
@@ -181,8 +188,9 @@ _crgKeyControls = {
     }
   },
   _keyControlDown: function(event) {
-    if (!_crgKeyControls._checkConditions())
+    if (!_crgKeyControls._checkConditions()) {
       return;
+    }
 
     // Clear control key from button being hovered over
     switch (event.which) {

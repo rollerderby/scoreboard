@@ -71,14 +71,14 @@ function prepareLtSheetTable(element, teamId, mode) {
     teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
 
     if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'] !== null) {
-      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)']
+      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'];
     }
 
     element.find('#head .Team').text(teamName);
   }
 
   function handleUpdate(k, v) {
-    if (!k.Period || k.Period === 0) return;
+    if (!k.Period || k.Period === 0) { return; }
     if (v === null && k === 'ScoreBoard.Period(' + k.Period + ').Number') {
       element.children('table.Period[nr=' + k.Period + ']').remove();
       delete periodElements[k.Period];
@@ -86,7 +86,7 @@ function prepareLtSheetTable(element, teamId, mode) {
     } else if (v !== null) {
       createPeriod(k.Period);
     }
-    if (!k.Jam || k.Jam === 0) return;
+    if (!k.Jam || k.Jam === 0) { return; }
     var prefix = 'ScoreBoard.Period(' + k.Period + ').Jam(' + k.Jam + ').';
     if (v === null && k === prefix + 'Number') {
       element.children('table.Period[nr=' + k.Period + ']').find('tr[nr=' + k.Jam + ']').remove();
@@ -96,7 +96,7 @@ function prepareLtSheetTable(element, teamId, mode) {
     }
 
     var je = (jamElements[k.Period] || {})[k.Jam];
-    if (je === null) return;
+    if (je === null) { return; }
     var jamRow = je[0];
     var spRow = je[1];
     if (k === prefix + 'StarPass') {
@@ -112,7 +112,7 @@ function prepareLtSheetTable(element, teamId, mode) {
     }
 
     // Everything after here is team specific.
-    if (k.TeamJam !== teamId) return;
+    if (k.TeamJam !== teamId) { return; }
     prefix = prefix + 'TeamJam(' + teamId + ').';
     switch (k.substring(prefix.length)) {
     case 'NoPivot':
@@ -124,7 +124,7 @@ function prepareLtSheetTable(element, teamId, mode) {
       $.each([ 'Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3' ], function () {
         var pos = String(this);
         spRow.children('.' + pos).text(isTrue(v) ? WS.state[prefix + 'Fielding(' + pos + ').SkaterNumber'] : '');
-        setBoxTripSymbols(spRow, '.Box' + pos, isTrue(v) ? WS.state[prefix + 'Fielding(' + pos + ').BoxTripSymbolsAfterSP'] : '')
+        setBoxTripSymbols(spRow, '.Box' + pos, isTrue(v) ? WS.state[prefix + 'Fielding(' + pos + ').BoxTripSymbolsAfterSP'] : '');
       });
       break;
     default:
@@ -183,13 +183,13 @@ function prepareLtSheetTable(element, teamId, mode) {
       if (mode === 'plt') {
         var jamRow = $('<tr>').addClass('Jam').attr('id', 'upcoming');
         var jamBox = $('<td>').addClass('JamNumber Darker').appendTo(jamRow);
-        var npBox = $('<td>').addClass('NP Darker').appendTo(jamRow);
+        $('<td>').addClass('NP Darker').appendTo(jamRow);
         $.each([ 'Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3' ], function () {
           var pos = String(this);
-          var numBox = $('<td>').addClass('Skater ' + pos).on('click', function () {
+          $('<td>').addClass('Skater ' + pos).on('click', function () {
             openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
           }).appendTo(jamRow);
-          var boxBox = $('<td>').addClass('Box Box' + pos).on('click', function () {
+          $('<td>').addClass('Box Box' + pos).on('click', function () {
             openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
           }).appendTo(jamRow);
 
@@ -270,10 +270,10 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
   var prefix = 'ScoreBoard.' + (isTrue(upcoming) ? '' : 'Period(' + p + ').') + 'Jam(' + j + ').TeamJam(' + t + ').Fielding(' + pos + ').';
 
   fieldingEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' ' + (pos));
-  var skaterField = fieldingEditor.find('#skater').val(WS.state[prefix + 'Skater']);
-  var notFieldedField = fieldingEditor.find('#notFielded').attr('checked', isTrue(WS.state[prefix + 'NotFielded']));
-  var sitFor3Field = fieldingEditor.find('#sitFor3').attr('checked', isTrue(WS.state[prefix + 'SitFor3']));
-  var annotationField = fieldingEditor.find('#annotation').val(WS.state[prefix + 'Annotation']);
+  fieldingEditor.find('#skater').val(WS.state[prefix + 'Skater']);
+  fieldingEditor.find('#notFielded').attr('checked', isTrue(WS.state[prefix + 'NotFielded']));
+  fieldingEditor.find('#sitFor3').attr('checked', isTrue(WS.state[prefix + 'SitFor3']));
+  fieldingEditor.find('#annotation').val(WS.state[prefix + 'Annotation']);
   fieldingEditor.find('#notFielded').toggleClass('Hide', isTrue(upcoming));
   fieldingEditor.find('.BoxTripComments').toggleClass('Hide', WS.state[prefix + 'CurrentBoxTrip'] === '');
   fieldingEditor.find('.BoxTrip').addClass('Hide');
@@ -300,7 +300,7 @@ function prepareFieldingEditor(teamId) {
       var check = $(this).attr('checked') === null;
       $(this).attr('checked', check);
       WS.Set(fieldingEditor.data('prefix') + 'NotFielded', check);
-    })).appendTo(row)
+    })).appendTo(row);
     $('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3').on('click', function () {
       var check = $(this).attr('checked') === null;
       $(this).attr('checked', check);
@@ -341,10 +341,10 @@ function prepareFieldingEditor(teamId) {
     WS.Register([ 'ScoreBoard.Team(' + teamId + ').Skater(*).Role', 'ScoreBoard.Team(' + teamId + ').Skater(*).RosterNumber' ],
         function (k, v) {
       processSkater(k, v);
-    })
+    });
     WS.Register([ 'ScoreBoard.Team(' + teamId + ').BoxTrip' ], function (k, v) {
       processBoxTrip(k, v);
-    })
+    });
 
     fieldingEditor = $('#FieldingEditor').dialog(
         { modal: true,
@@ -375,7 +375,7 @@ function prepareFieldingEditor(teamId) {
   }
 
   function processBoxTrip(k, v) {
-    if (k.BoxTrip === null) return;
+    if (k.BoxTrip === null) { return; }
     var key = k.parts[3];
     var prefix = 'ScoreBoard.Team(' + teamId + ').BoxTrip(' + k.BoxTrip + ').';
 

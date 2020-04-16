@@ -16,15 +16,16 @@ $(function() {
     }
   });
 
-  $('button.Logout').on('click', function() { WS.Set('ScoreBoard.Twitter.Logout', true)}).button();
+  $('button.Logout').on('click', function() { WS.Set('ScoreBoard.Twitter.Logout', true);}).button();
 
   $('p.DirectTweet button.Tweet').on('click', function() {
     WS.Set('ScoreBoard.Twitter.ManualTweet', $('p.DirectTweet input:text.Tweet').val());
     $('p.DirectTweet input:text.Tweet').val('').focus();
   }).button();
   $('p.DirectTweet input:text.Tweet').on('keydown', function(event) {
-    if (event.which === 13) // Pressed Enter
+    if (event.which === 13) { // Pressed Enter
       $('p.DirectTweet button.Tweet').trigger('click');
+    }
   });
 
   WS.Register(['ScoreBoard.Twitter.LoggedIn', 'ScoreBoard.Twitter.TestMode'], function(k, v) {
@@ -68,7 +69,7 @@ $(function() {
     var tweet = tweetInput.val();
     var id = idInput.val() || newUUID();
     WS.Set('ScoreBoard.Twitter.ConditionalTweet(' + id + ').Condition', condition);
-    WS.Set('ScoreBoard.Twitter.ConditionalTweet(' + id + ').Tweet', tweet)
+    WS.Set('ScoreBoard.Twitter.ConditionalTweet(' + id + ').Tweet', tweet);
       idInput.val('');
     tweetInput.val('').trigger('input');
     conditionInput.val('').trigger('input').focus();
@@ -83,8 +84,9 @@ $(function() {
     p.removeClass('Update');
   }).button();
   $('p.AddConditionalTweet input:text.Tweet').on('keydown', function(event) {
-    if (event.which === 13) // Pressed Enter
+    if (event.which === 13) { // Pressed Enter
       $('p.AddConditionalTweet button.Add').trigger('click');
+    }
   });
   WS.Register(['ScoreBoard.Twitter.ConditionalTweet(*).Condition',
       'ScoreBoard.Twitter.ConditionalTweet(*).Tweet'], function(k, v) {
@@ -135,7 +137,7 @@ $(function() {
         .append($('<span class="Description">'))
         .append($('<span>').text(' : '))
         .append($('<span class="CurrentValue">'));
-      _windowFunctions.appendAlphaNumSortedByAttr(ul, li, 'id')
+      _windowFunctions.appendAlphaNumSortedByAttr(ul, li, 'id');
     }
     li.children('.'+k.field).text(v);
     if (k.field === 'Key') {
@@ -145,19 +147,19 @@ $(function() {
     }
   });
 
-  replaceSpecifiers = function(s) {
+  var replaceSpecifiers = function(s) {
     for(var k in formatSpecifiers) {
       s = s.replace(k, WS.state['ScoreBoard.Twitter.FormatSpecifier(' + formatSpecifiers[k] + ').CurrentValue']);
     }
     return s;
-  }
+  };
 
   $.each( [ 'Condition', 'Tweet' ], function(i,e) {
     var div = $('#ConditionalTweetConfiguration');
     var input = div.find('input:text.'+e);
     input.on('input', function() {
       div.find('a.Preview.'+e).text(replaceSpecifiers(input.val()));
-    })
+    });
   });
 
 

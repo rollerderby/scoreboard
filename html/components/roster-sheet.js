@@ -36,7 +36,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
     var teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
 
     if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'] !== null) {
-      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')']
+      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'];
     }
 
     head.text(teamName);
@@ -44,7 +44,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
 
 
   function skaterUpdate(t, k, v) {
-    if (k.Skater === null) return;
+    if (k.Skater === null) { return; }
 
     var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
     var row = tbody.children('tr.Skater[id=' + k.Skater + ']');
@@ -60,7 +60,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
           .append($('<td>').addClass('Name'));
       }
       row.attr('number', String(v));
-      tbody.children().sort(function(a, b){return $(a).attr('number') > $(b).attr('number') ? 1 : -1}).appendTo(tbody);
+      tbody.children().sort(function(a, b){return $(a).attr('number') > $(b).attr('number') ? 1 : -1;}).appendTo(tbody);
     }
     var flags = WS.state[prefix + '.Flags'];
     row.attr('flags', flags);

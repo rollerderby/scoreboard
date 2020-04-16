@@ -1,14 +1,14 @@
 
 function str_sort(a, b){ return ( $(b).text() < $(a).text() ) ? 1 : -1; }
-jQuery.fn.sortOptions = function sortOptions() { $('> option', this[0]).sort(str_sort).appendTo(this[0]); }
+jQuery.fn.sortOptions = function sortOptions() { $('> option', this[0]).sort(str_sort).appendTo(this[0]); };
 
-Skaters = new DataSet();
+var Skaters = new DataSet();
 Skaters.AddTrigger('UPDATE', '*', { }, function(n,o,k) {
 
   if(this.Name && this.Team && this.Id) {
-    att = { 'data-name': this.Name, 'data-team': this.Team, 'value': this.Skater };
+    var att = { 'data-name': this.Name, 'data-team': this.Team, 'value': this.Skater };
     var $s = $('#Skaters option[value="' + this.Skater + '"]');
-    if($s.length === 0) $s = $('<option>').attr(att).appendTo('#Skaters');
+    if($s.length === 0) { $s = $('<option>').attr(att).appendTo('#Skaters'); }
     $s.attr(att).text(this.Name);
     $('#Skaters').sortOptions();
   }
@@ -17,7 +17,7 @@ Skaters.AddTrigger('DELETE', '*', { }, function(n,o,k) {
   $('#Skaters option[value="' + this.Skater + '"]').remove();
 });
 
-$(initialize)
+$(initialize);
 
 
 function initialize() {
@@ -29,14 +29,14 @@ function initialize() {
          'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'], function(k,v) { 
 
     $('[data-setting="' + k +'"]').each(function(i) {
-      $t = $(this);
+      var $t = $(this);
       if($t.hasClass('ToggleSwitch')) {
         $t.val(v).toggleClass('current', (v !== null && v !== ''));
       } else {
         if($t.prop('tagName') === 'SELECT') {   
           $('option[value="' + v + '"]', $t).attr('selected', 'selected');
         } else {
-          if(!$t.hasClass('NoToggle')) $t.toggleClass('current', $t.val() === v);
+          if(!$t.hasClass('NoToggle')) { $t.toggleClass('current', $t.val() === v); }
         }
       } 
     });
@@ -47,7 +47,7 @@ function initialize() {
     var m = k.match(skaterRegEx);
     if(m) {
       var key = m[3];
-      if(!(key === 'Id' || key === 'Name' || key === 'RosterNumber' || key === 'Flags')) return;
+      if(!(key === 'Id' || key === 'Name' || key === 'RosterNumber' || key === 'Flags')) { return; }
 
       var d = {}; d[key] = v; d['Team'] = m[1];
       if(key === 'Id' && v === null) {
@@ -85,8 +85,8 @@ function initialize() {
 }
 
 $('#Controls input, #Controls .Selector').on('change', function() {
-  t = $(this).attr('data-setting');
-  v = $(this).val();
+  var t = $(this).attr('data-setting');
+  var v = $(this).val();
   if ($(this).attr('type') === 'color') {
     $(this).attr('cleared', 'false');
   }
@@ -99,27 +99,28 @@ $('#Controls input, #Controls .Selector').on('change', function() {
 });
 
 $('.SelectUpdator').on('change', function() {
-  $t = $(this);
-  v = $t.val();
+  var $t = $(this);
+  var v = $t.val();
 
   // if we have an element target, update it
-  target = $t.attr('data-target');
-  field  = $t.attr('data-field');
+  var target = $t.attr('data-target');
+  var field  = $t.attr('data-field');
 
   if(target) {
     // we have a target element to write to not data
-    ov = $(target).attr(field);
-    if(field) 
+    var ov = $(target).attr(field);
+    if(field) {
       $(target).attr(field, v);
-    else 
+    } else {
       $(target).val(v).trigger('change');
+    }
 
     // flag it as changed
-    if(ov !== v) $(target).addClass('changed');
+    if(ov !== v) { $(target).addClass('changed'); }
   }
 
   $( $t.attr('data-subforms') ).hide();
-  forms = $( 'option[value=' + v + ']', $t ).attr('data-form');
+  var forms = $( 'option[value=' + v + ']', $t ).attr('data-form');
   if(forms) {
     $(forms).show();
     $('input[type=text],textarea', $(forms)).eq(0).select().focus();
@@ -128,22 +129,22 @@ $('.SelectUpdator').on('change', function() {
 });
 
 $('select#Skaters').on('change', function(e) {
-  $t = $(this);
-  v = $t.val();
-  team = $( 'option[value=' + v + ']', $t ).attr('data-team');
-  name = $( 'option[value=' + v + ']', $t ).attr('data-name');
-  tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
+  var $t = $(this);
+  var v = $t.val();
+  var team = $( 'option[value=' + v + ']', $t ).attr('data-team');
+  var name = $( 'option[value=' + v + ']', $t ).attr('data-name');
+  var tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
   tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
-  f = $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').trigger('change');
+  $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').trigger('change');
   $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(name).trigger('change');
   $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(tnam).trigger('change');
 });
 
 $('select#Keepers').on('change', function(e) {
   var $t = $(this);
-  v = $t.val();
+  var v = $t.val();
 
-  $d = $('option[value="' + v + '"]', this);
+  var $d = $('option[value="' + v + '"]', this);
   var line1 = $d.attr('data-line1');
   var line2 = $d.attr('data-line2');
   var style = $d.attr('data-style');
@@ -169,18 +170,18 @@ $('#KeeperAdd').on('click', function() {
 
 
 $('#Controls button').on('click', function() { 
-  $t = $(this);
-  v = $t.val();
+  var $t = $(this);
+  var v = $t.val();
   $t.removeClass('changed'); 
   if( $t.hasClass('ClearPrev') ) {
-    $t = $t.prev()
+    $t = $t.prev();
     $t.attr('cleared', true);
   } else if( $t.hasClass('ToggleSwitch') ) {
     if( $t.hasClass('NoAuto') ) {
-      nv = $t.attr('data-next');
+      var nv = $t.attr('data-next');
       if(nv === v) { nv = null; }
       v = nv ? nv : null;
-      if(v) $t.val(v).attr('data-next', v);
+      if(v) { $t.val(v).attr('data-next', v); }
     } else {
       v = (v === 'On') ? null : 'On';
     }
@@ -195,7 +196,7 @@ $(function() {
   if (e.keyCode === 27) { $('body').focus(); e.preventDefault(); return false; }
         if ( tag !== 'input' && tag !== 'textarea') {
     $('[data-key="' + c + '"]').each(function() {
-      $t = $(this);
+      var $t = $(this);
       if($t.prop('tagName') === 'OPTION') { $t.attr('selected', 'selected').parent().trigger('change'); }
       if($t.prop('tagName') === 'BUTTON') { $t.trigger('click'); }
     });

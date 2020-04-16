@@ -33,8 +33,9 @@ function _include(dir, files) {
     files = dir;
     dir = undefined;
   }
-  if (!$.isArray(files))
+  if (!$.isArray(files)) {
     files = [ files ];
+  }
   $.each(files, function() { _includeUrl((dir?dir+'/':'')+this); });
 }
 
@@ -65,10 +66,11 @@ $(function() {
 });
 
 function isTrue(value) {
-  if (typeof value === 'boolean')
+  if (typeof value === 'boolean') {
     return value;
-  else
+  } else {
     return (String(value).toLowerCase() === 'true');
+  }
 }
 
 function newUUID() {

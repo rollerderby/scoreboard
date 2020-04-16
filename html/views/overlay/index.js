@@ -1,7 +1,7 @@
 
 function str_sort(a, b){ return ( $(a).attr('data-sort') === null ||  $(b).attr('data-sort') < $(a).attr('data-sort') ) ? 1 : -1; }
 
-jQuery.fn.sortDivs = function sortDivsStr() { $('> div', this[0]).sort(str_sort).appendTo(this[0]); }
+jQuery.fn.sortDivs = function sortDivsStr() { $('> div', this[0]).sort(str_sort).appendTo(this[0]); };
 
 $(initialize);
 
@@ -118,7 +118,7 @@ function initialize() {
     $('.OverlayPanel').removeClass('Show');
     // sort divs in the panel before we show, just in case it's changed
     if(v === 'PenaltyTeam1' || v === 'PenaltyTeam2') {
-      c = $('.PenaltyTeam [data-flag="BC"]');
+      var c = $('.PenaltyTeam [data-flag="BC"]');
       c.empty().remove();
     }
     $('.OverlayPanel.'+v+' .SortBox').sortDivs();
@@ -127,7 +127,7 @@ function initialize() {
 
   WS.Register([ 'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)',
     'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)' ] , function(k,v) {
-    sp = '.' + k.split('.').slice(4,6).join(' .').slice(0, -1);
+    var sp = '.' + k.split('.').slice(4,6).join(' .').slice(0, -1);
     $(sp).text(v);
   });
 
@@ -153,7 +153,7 @@ function initialize() {
 }
 
 function jammer_ov(k, v) {
-  return  jammer(k,v,true);
+  return jammer(k,v,true);
 }
 
 function ensureSkaterExists(skaterId, team) {
@@ -214,8 +214,8 @@ function jamData(k,v) {
   var team = k.TeamJam;
   var key = k.field;
 
-  pa = '.PPJBox .Team'+ team + ' .Period'+period;
-  me = pa + ' .Jam'+jam;
+  var pa = '.PPJBox .Team'+ team + ' .Period'+period;
+  var me = pa + ' .Jam'+jam;
   var $pId = $(pa);
   var $mId = $(me);
 
@@ -227,7 +227,7 @@ function jamData(k,v) {
 
   if($(me).length === 0) {
     pointsPerJamColumnWidths();
-    xv = $('<div data-sort="' + jam + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
+    var xv = $('<div data-sort="' + jam + '" class="ColumnWidth GraphBlock Jam' + jam + '"></div>');
     $('<div class="JammerStar ColumnWidth"></div>').appendTo(xv);
     $('<div class="Points ColumnWidth"></div>').appendTo(xv);
     $pId.append(xv);
@@ -242,12 +242,12 @@ function jamData(k,v) {
       $(me).attr('lost', v);
       break;
     case 'JamScore':
-      setHeight = v*4 + 'px';
+      var setHeight = v*4 + 'px';
       $(me).css('height', setHeight);
 
       if(team === 1) {
-        hid = $('.PPJBox .Team1 .Period').innerHeight();
-        marg = parseInt(hid)-parseInt(setHeight);
+        var hid = $('.PPJBox .Team1 .Period').innerHeight();
+        var marg = parseInt(hid)-parseInt(setHeight);
         $(me).css('marginTop', marg);
       }
       if(v !== 0) { $('.Points', me).text(v); }
@@ -258,12 +258,12 @@ function jamData(k,v) {
 }
 
 function pointsPerJamColumnWidths() {
-  ne1 = $('.PPJBox .Team1 .GraphBlock').length;
-  ne2 = $('.PPJBox .Team2 .GraphBlock').length;
-  if(ne2 > ne1) ne1=ne2;
-  nel = ne1 + 3;
-  wid = parseInt( $('.PPJBox').innerWidth() );
-  newwidth = parseInt(wid / nel) - 3;
+  var ne1 = $('.PPJBox .Team1 .GraphBlock').length;
+  var ne2 = $('.PPJBox .Team2 .GraphBlock').length;
+  if(ne2 > ne1) { ne1=ne2; }
+  var nel = ne1 + 3;
+  var wid = parseInt( $('.PPJBox').innerWidth() );
+  var newwidth = parseInt(wid / nel) - 3;
   $('.ColumnWidth').innerWidth(newwidth);
   $('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(1).Color(overlay_bg)']);
   $('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(2).Color(overlay_bg)']);
@@ -290,14 +290,15 @@ function clockType(k,v) {
     var num = WS.state['ScoreBoard.Clock(Intermission).Number'];
     var max = WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'];
     var isOfficial = WS.state['ScoreBoard.OfficialScore'];
-    if (num === 0)
+    if (num === 0) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
-    else if (num !== max)
+    } else if (num !== max) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
-    else if (!isOfficial)
+    } else if (!isOfficial) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
-    else
+    } else {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
+    }
 
     $('.ClockDescription').css('backgroundColor', 'blue');
   } else {

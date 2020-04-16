@@ -12,7 +12,7 @@ function createScoreBoardSettingsTab(tab) {
       var done = {};
       table.find('.Preview [ApplyPreview]').each(function(_, e) {
         var name = $(e).attr('ApplyPreview');
-        if (done[name]) return;
+        if (done[name]) { return; }
         WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.View_' + name + ')',
             WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Preview_' + name + ')']);
         done[name] = true;

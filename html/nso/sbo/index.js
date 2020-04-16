@@ -10,7 +10,7 @@
 
 $(function() {
   createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'));
-  createRulesetsTab(createTab('Rulesets', 'RulesetsTab'))
+  createRulesetsTab(createTab('Rulesets', 'RulesetsTab'));
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
   createTeamsTab(createTab('Teams', 'TeamsTab'));
   createDataManagementTab(createTab('Up/Download', 'DataManagementTab'));
@@ -72,28 +72,31 @@ function initialLogin() {
 
 function login(name) {
   $('#operatorId').text(name);
-  if (window.history.replaceState)
+  if (window.history.replaceState) {
     window.history.replaceState(null, '', '?operator='+$('#operatorId').text());
+  }
   _crgKeyControls.setupKeyControls(name);
   setOperatorSettings(name);
 }
 
 function logout() {
   $('#operatorId').text('');
-  if (window.history.replaceState)
+  if (window.history.replaceState) {
     window.history.replaceState(null, '', '?');
+  }
   _crgKeyControls.destroyKeyControls();
   setOperatorSettings('');
   _crgUtils.showLoginDialog('Operator Login', 'Operator:', 'Login', function(value) {
-    if (!value)
+    if (!value) {
       return false;
+    }
     login(value);
     return true;
   });
 }
 
 function createTab(title, tabId) {
-  if (typeof title === 'string') title = $('<a>').html(title);
+  if (typeof title === 'string') { title = $('<a>').html(title); }
   $('<li>').append(title.attr('href', '#'+tabId)).appendTo('#tabsDiv>ul');
   return $('<div>').attr('id', tabId).addClass('TabContent')
     .appendTo('#tabsDiv');
