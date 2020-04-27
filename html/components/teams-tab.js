@@ -73,15 +73,18 @@ function createTeamsTab(tab) {
 	});
 	WS.Register("ScoreBoard.Media.Format(images).Type(teamlogo).File(*).Name", function(k, v) {
 		var val = logoSelect.val();	// Record this before we potentially remove and re-add it.
+		logoSelect.children('[value="' + k.File + '"]').remove();
 		if (v != null) {
 			if (waitingOnUpload == k.File) {
 				val = k.File;
 				waitingOnUpload = "";
 			}
-			logoSelect.children("[value='"+k.File+"']").remove();
 			var option = $("<option>").attr("name", v).attr("value", k.File).text(v);
 			_windowFunctions.appendAlphaSortedByAttr(logoSelect, option, "name", 1);
 			logoSelect.val(val);
+			logoSelect.trigger('change');
+		} else if (val === k.File) {
+			logoSelect.val('');
 			logoSelect.trigger('change');
 		}
 	});
