@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
+
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -15,20 +16,20 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl.BatchEvent;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class FieldingImplTests {
 
     private ScoreBoard sb;
 
-    private Queue<ScoreBoardEvent> collectedEvents;
+    private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
 
         @Override
-        public void scoreBoardChange(ScoreBoardEvent event) {
-            synchronized(collectedEvents) {
+        public void scoreBoardChange(ScoreBoardEvent<?> event) {
+            synchronized (collectedEvents) {
                 collectedEvents.add(event);
             }
         }
@@ -37,11 +38,11 @@ public class FieldingImplTests {
     private int batchLevel;
     private ScoreBoardListener batchCounter = new ScoreBoardListener() {
         @Override
-        public void scoreBoardChange(ScoreBoardEvent event) {
-            synchronized(batchCounter) {
-                if (event.getProperty() == BatchEvent.START) {
+        public void scoreBoardChange(ScoreBoardEvent<?> event) {
+            synchronized (batchCounter) {
+                if (event.getProperty() == ScoreBoardEventProviderImpl.BATCH_START) {
                     batchLevel++;
-                } else if (event.getProperty() == BatchEvent.END) {
+                } else if (event.getProperty() == ScoreBoardEventProviderImpl.BATCH_END) {
                     batchLevel--;
                 }
             }
@@ -68,7 +69,7 @@ public class FieldingImplTests {
     @Test
     public void testSortBoxTripSymbols() {
         Team t = sb.getTeam(Team.ID_1);
-        Skater s = new SkaterImpl(t, (String)null);
+        Skater s = new SkaterImpl(t, (String) null);
         t.addSkater(s);
         sb.startJam();
         sb.getTeam(Team.ID_1).field(s, Role.PIVOT);
@@ -80,58 +81,59 @@ public class FieldingImplTests {
         sb.stopJamTO();
         sb.startJam();
         s.setPenaltyBox(false);
-        
+
         Fielding f = s.getFielding(sb.getOrCreatePeriod(1).getJam(2).getTeamJam(Team.ID_1));
-        f.execute(Fielding.Command.ADD_BOX_TRIP);
-        
-        assertEquals(" $ + -", f.get(Fielding.Value.BOX_TRIP_SYMBOLS));
+        f.execute(Fielding.ADD_BOX_TRIP);
+
+        assertEquals(" $ + -", f.get(Fielding.BOX_TRIP_SYMBOLS));
     }
 
     @Test
-   public void testAddingPastBoxTripHasRightJamNumbers() {
-       Team t = sb.getTeam(Team.ID_1);
-       Skater s = new SkaterImpl(t, (String)null);
-       t.addSkater(s);
-       sb.startJam();
-       t.field(s, Role.PIVOT);
-       sb.stopJamTO();
-       sb.startJam();
-       sb.stopJamTO();
+    public void testAddingPastBoxTripHasRightJamNumbers() {
+        Team t = sb.getTeam(Team.ID_1);
+        Skater s = new SkaterImpl(t, (String) null);
+        t.addSkater(s);
+        sb.startJam();
+        t.field(s, Role.PIVOT);
+        sb.stopJamTO();
+        sb.startJam();
+        sb.stopJamTO();
 
         Fielding f = s.getFielding(sb.getOrCreatePeriod(1).getJam(1).getTeamJam(Team.ID_1));
-       f.execute(Fielding.Command.ADD_BOX_TRIP);
-       BoxTrip bt = (BoxTrip) f.getAll(Fielding.Child.BOX_TRIP).iterator().next();
+        f.execute(Fielding.ADD_BOX_TRIP);
+        BoxTrip bt = f.getAll(Fielding.BOX_TRIP).iterator().next();
 
-        assertEquals(1, bt.get(BoxTrip.Value.START_JAM_NUMBER));
-       assertEquals(1, bt.get(BoxTrip.Value.END_JAM_NUMBER));
-   }
+        assertEquals(1, (int) bt.get(BoxTrip.START_JAM_NUMBER));
+        assertEquals(1, (int) bt.get(BoxTrip.END_JAM_NUMBER));
+    }
 
     @Test
-   public void testRemovingUpcomingBoxTripAfterAdvance() {
-       Team t = sb.getTeam(Team.ID_1);
-       Skater s = new SkaterImpl(t, (String)null);
-       t.addSkater(s);
-       sb.getTeam(Team.ID_1).field(s, Role.PIVOT);
-       sb.startJam();
-       s.setPenaltyBox(true);
-       sb.stopJamTO();
-       s.setPenaltyBox(false);
-       // Box trip from ended jam remains.
-       Fielding f1 = s.getFielding(t.getRunningOrUpcomingTeamJam().getPrevious());
-       assertEquals(1, f1.getAll(Fielding.Child.BOX_TRIP).size());
+    public void testRemovingUpcomingBoxTripAfterAdvance() {
+        Team t = sb.getTeam(Team.ID_1);
+        Skater s = new SkaterImpl(t, (String) null);
+        t.addSkater(s);
+        sb.getTeam(Team.ID_1).field(s, Role.PIVOT);
+        sb.startJam();
+        s.setPenaltyBox(true);
+        sb.stopJamTO();
+        s.setPenaltyBox(false);
+        // Box trip from ended jam remains.
+        Fielding f1 = s.getFielding(t.getRunningOrUpcomingTeamJam().getPrevious());
+        assertEquals(1, f1.numberOf(Fielding.BOX_TRIP));
 
-        t.execute(Team.Command.ADVANCE_FIELDINGS);
-       t.field(s, Role.PIVOT);
-       Fielding f2 = s.getFielding(t.getRunningOrUpcomingTeamJam());
-       assertEquals(0, f2.getAll(Fielding.Child.BOX_TRIP).size());
+        t.execute(Team.ADVANCE_FIELDINGS);
+        t.field(s, Role.PIVOT);
+        Fielding f2 = s.getFielding(t.getRunningOrUpcomingTeamJam());
+        assertEquals(0, f2.numberOf(Fielding.BOX_TRIP));
 
         // Box trip added to upcoming jam.
-       s.setPenaltyBox(true);
-       assertEquals(1, f1.getAll(Fielding.Child.BOX_TRIP).size());
-       assertEquals(1, f2.getAll(Fielding.Child.BOX_TRIP).size());
+        s.setPenaltyBox(true);
+        assertEquals(1, f1.numberOf(Fielding.BOX_TRIP));
+        assertEquals(1, f2.numberOf(Fielding.BOX_TRIP));
 
         // And removed again.
-       s.setPenaltyBox(false);
-       assertEquals(1, f1.getAll(Fielding.Child.BOX_TRIP).size());
-       assertEquals(0, f2.getAll(Fielding.Child.BOX_TRIP).size());
-   }}
+        s.setPenaltyBox(false);
+        assertEquals(1, f1.numberOf(Fielding.BOX_TRIP));
+        assertEquals(0, f2.numberOf(Fielding.BOX_TRIP));
+    }
+}

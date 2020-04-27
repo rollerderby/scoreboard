@@ -1,30 +1,40 @@
 package com.carolinarollergirls.scoreboard.event;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import java.util.HashMap;
+import java.util.Map;
 
-public abstract class OrderedScoreBoardEventProviderImpl<T extends OrderedScoreBoardEventProvider<T>>
-        extends ScoreBoardEventProviderImpl implements OrderedScoreBoardEventProvider<T> {
-    @SafeVarargs
-    @SuppressWarnings("varargs")  // @SafeVarargs isn't working for some reason.
-    public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, 
-            AddRemoveProperty type, Class<T> ownClass, Class<? extends Property>... props) {
-        super(parent, id, type, ownClass, props);
-        addScoreBoardListener(new InverseReferenceUpdateListener(this, IValue.PREVIOUS, IValue.NEXT));
-        addScoreBoardListener(new InverseReferenceUpdateListener(this, IValue.NEXT, IValue.PREVIOUS));
+public abstract class OrderedScoreBoardEventProviderImpl<C extends OrderedScoreBoardEventProvider<C>>
+        extends ScoreBoardEventProviderImpl<C> implements OrderedScoreBoardEventProvider<C> {
+    @SuppressWarnings("unchecked")
+    public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, Child<C> type) {
+        super(parent, id, type);
+        if (!prevProperties.containsKey(providerClass)) {
+            prevProperties.put(providerClass, new Value<>(providerClass, "Previous", null));
+            nextProperties.put(providerClass, new Value<>(providerClass, "Next", null));
+        }
+        PREVIOUS = (Value<C>) prevProperties.get(providerClass);
+        NEXT = (Value<C>) nextProperties.get(providerClass);
+        addProperties(NUMBER, PREVIOUS, NEXT);
+        addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, PREVIOUS, NEXT));
+        addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, NEXT, PREVIOUS));
     }
 
     @Override
-    public int getNumber() { return (Integer)get(IValue.NUMBER); }
+    public int getNumber() { return get(NUMBER); }
 
     @Override
-    @SuppressWarnings("unchecked")
-    public T getPrevious() { return (T)get(IValue.PREVIOUS); }
+    public C getPrevious() { return get(PREVIOUS); }
     @Override
     public boolean hasPrevious() { return getPrevious() != null; }
     @Override
-    @SuppressWarnings("unchecked")
-    public T getNext() { return (T)get(IValue.NEXT); }
+    public void setPrevious(C prev) { set(PREVIOUS, prev); }
+    @Override
+    public C getNext() { return get(NEXT); }
     @Override
     public boolean hasNext() { return getNext() != null; }
+    @Override
+    public void setNext(C next) { set(NEXT, next); }
+
+    protected static Map<Class<?>, Value<?>> prevProperties = new HashMap<>();
+    protected static Map<Class<?>, Value<?>> nextProperties = new HashMap<>();
 }

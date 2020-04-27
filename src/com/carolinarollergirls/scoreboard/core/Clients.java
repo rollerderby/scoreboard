@@ -8,23 +8,13 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Clients extends ScoreBoardEventProvider {
-    public enum Child implements AddRemoveProperty {
-        CLIENT(Client.class),
-        DEVICE(Device.class);
-
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-
-        private final Class<? extends ValueWithId> type;
-
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
+    Child<Client> CLIENT = new Child<>(Client.class, "Client");
+    Child<Device> DEVICE = new Child<>(Device.class, "Device");
 
     public Device getDevice(String sessionId);
     public Device getOrAddDevice(String sessionId);
@@ -37,24 +27,13 @@ public interface Clients extends ScoreBoardEventProvider {
     public static interface Client extends ScoreBoardEventProvider {
         public void write();
 
-        public enum Value implements PermanentProperty {
-            DEVICE(Device.class, null),
-            REMOTE_ADDR(String.class, ""),
-            PLATFORM(String.class, ""),
-            SOURCE(String.class, ""),
-            CREATED(Long.class, 0L),
-            WROTE(Long.class, 0L);
-
-            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-
-            private final Class<?> type;
-            private final Object defaultValue;
-
-            @Override
-            public Class<?> getType() { return type; }
-            @Override
-            public Object getDefaultValue() { return defaultValue; }
-        }
+        @SuppressWarnings("hiding")
+        Value<Device> DEVICE = new Value<>(Device.class, "Device", null);
+        Value<String> REMOTE_ADDR = new Value<>(String.class, "RemoteAddr", "");
+        Value<String> PLATFORM = new Value<>(String.class, "Platform", "");
+        Value<String> SOURCE = new Value<>(String.class, "Source", "");
+        Value<Long> CREATED = new Value<>(Long.class, "Created", 0L);
+        Value<Long> WROTE = new Value<>(Long.class, "Wrote", 0L);
     }
 
     // A device is a HTTP cookie.
@@ -64,36 +43,16 @@ public interface Clients extends ScoreBoardEventProvider {
         public void access();
         public void write();
 
-        public enum Value implements PermanentProperty {
-            SESSION_ID_SECRET(String.class, ""), // The cookie.
-            NAME(String.class, ""), // A human-readable name.
-            REMOTE_ADDR(String.class, ""),
-            PLATFORM(String.class, ""),
-            COMMENT(String.class, ""),
-            CREATED(Long.class, 0L),
-            WROTE(Long.class, 0L),
-            ACCESSED(Long.class, 0L);
+        Value<String> SESSION_ID_SECRET = new Value<>(String.class, "SessionIdSecret", ""); // The cookie.
+        Value<String> NAME = new Value<>(String.class, "Name", ""); // A human-readable name.
+        Value<String> REMOTE_ADDR = new Value<>(String.class, "RemoteAddr", "");
+        Value<String> PLATFORM = new Value<>(String.class, "Platform", "");
+        Value<String> COMMENT = new Value<>(String.class, "Comment", "");
+        Value<Long> CREATED = new Value<>(Long.class, "Created", 0L);
+        Value<Long> WROTE = new Value<>(Long.class, "Wrote", 0L);
+        Value<Long> ACCESSED = new Value<>(Long.class, "Accessed", 0L);
 
-            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-
-            private final Class<?> type;
-            private final Object defaultValue;
-
-            @Override
-            public Class<?> getType() { return type; }
-            @Override
-            public Object getDefaultValue() { return defaultValue; }
-        }
-
-        public enum Child implements AddRemoveProperty {
-            CLIENT(Client.class);
-
-            private Child(Class<? extends ValueWithId> t) { type = t; }
-
-            private final Class<? extends ValueWithId> type;
-
-            @Override
-            public Class<? extends ValueWithId> getType() { return type; }
-        }
+        @SuppressWarnings("hiding")
+        Child<Client> CLIENT = new Child<>(Client.class, "Client");
     }
 }

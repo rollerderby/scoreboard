@@ -15,16 +15,14 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.IValue;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.Logger;
-import com.carolinarollergirls.scoreboard.utils.PropertyConversion;
 
 /**
  * Bulk set ScoreBoard atttributes with JSON paths.
@@ -48,7 +46,7 @@ public class ScoreBoardJSONSetter {
     }
 
     public static void set(ScoreBoard sb, List<JSONSet> jsl, Source source) {
-        List<ValueSet> postponedSets = new ArrayList<>();
+        List<ValueSet<?>> postponedSets = new ArrayList<>();
         for (JSONSet s : jsl) {
             Matcher m = pathElementPattern.matcher(s.path);
             if (m.matches() && m.group("name").equals("ScoreBoard") && m.group("id") == null
@@ -58,13 +56,14 @@ public class ScoreBoardJSONSetter {
                 Logger.printMessage("Illegal path: " + s.path);
             }
         }
-        for (ValueSet vs : postponedSets) {
+        for (ValueSet<?> vs : postponedSets) {
             vs.process();
         }
     }
 
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     private static void set(ScoreBoardEventProvider p, String path, String value, Source source, Flag flag,
-            List<ValueSet> postponedSets) {
+            List<ValueSet<?>> postponedSets) {
         Matcher m = pathElementPattern.matcher(path);
         if (m.matches()) {
             String name = m.group("name");
@@ -73,34 +72,36 @@ public class ScoreBoardJSONSetter {
             if (elementId == null) { elementId = ""; }
             String readable = p.getProviderName() + "(" + p.getProviderId() + ")." + name + "(" + elementId + ")";
             try {
-                Property prop = PropertyConversion.fromFrontend(name, p.getProperties());
+                Property prop = p.getProperty(name);
                 if (prop == null) {
                     Logger.printMessage("Unknown property " + readable);
                     return;
                 }
 
-                if (prop == IValue.ID) {
-                    p.set((PermanentProperty) prop, p.valueFromString((PermanentProperty) prop, value), source, flag);
-                } else if (prop instanceof PermanentProperty) {
+                if (prop == ScoreBoardEventProvider.ID) {
+                    p.set((Value) prop, p.valueFromString((Value) prop, value), source, flag);
+                } else if (prop instanceof Value) {
                     // postpone setting PermanentProperties except ID, as they may reference
                     // elements not yet created when restoring from autosave
-                    postponedSets.add(new ValueSet(p, (PermanentProperty) prop, value, source, flag));
-                } else if (prop instanceof CommandProperty) {
+                    postponedSets.add(new ValueSet(p, (Value) prop, value, source, flag));
+                } else if (prop instanceof Command) {
                     if (Boolean.parseBoolean(value)) {
-                        p.execute((CommandProperty) prop, source);
+                        p.execute((Command) prop, source);
                     }
                 } else if (remainder != null) {
-                    Object o = p.getOrCreate((AddRemoveProperty) prop, elementId, source);
+                    @SuppressWarnings("unchecked")
+                    ScoreBoardEventProvider o = p.getOrCreate((Child<? extends ScoreBoardEventProvider>) prop,
+                            elementId, source);
                     if (o == null) {
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
                     }
-                    set((ScoreBoardEventProvider) o, remainder, value, source, flag, postponedSets);
+                    set(o, remainder, value, source, flag, postponedSets);
                 } else if (value == null) {
-                    p.remove((AddRemoveProperty) prop, elementId, source);
+                    p.remove((Child<?>) prop, elementId, source);
                 } else {
-                    p.add((AddRemoveProperty) prop, p.childFromString((AddRemoveProperty) prop, elementId, value),
-                            source);
+                    Child aprop = (Child) prop;
+                    p.add(aprop, p.childFromString(aprop, elementId, value), source);
                 }
             } catch (Exception e) {
                 Logger.printMessage("Exception handling update for " + readable + " - " + value + ": " + e.toString());
@@ -123,9 +124,8 @@ public class ScoreBoardJSONSetter {
         public final Flag flag;
     }
 
-    protected static class ValueSet {
-        protected ValueSet(ScoreBoardEventProvider sbe, PermanentProperty prop, String value, Source source,
-                Flag flag) {
+    protected static class ValueSet<T> {
+        protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source, Flag flag) {
             this.sbe = sbe;
             this.prop = prop;
             this.value = value;
@@ -136,7 +136,7 @@ public class ScoreBoardJSONSetter {
         public void process() { sbe.set(prop, sbe.valueFromString(prop, value), source, flag); }
 
         private ScoreBoardEventProvider sbe;
-        private PermanentProperty prop;
+        private Value<T> prop;
         private String value;
         private Source source;
         private Flag flag;

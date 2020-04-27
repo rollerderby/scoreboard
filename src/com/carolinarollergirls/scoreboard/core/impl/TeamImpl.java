@@ -29,72 +29,77 @@ import com.carolinarollergirls.scoreboard.core.Skater;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.core.Timeout;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
+public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team {
     public TeamImpl(ScoreBoard sb, String i) {
-        super(sb, i, ScoreBoard.Child.TEAM, Team.class, Value.class, Child.class, Command.class);
+        super(sb, i, ScoreBoard.TEAM);
+        addProperties(NAME, LOGO, RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING,
+                CURRENT_TRIP, SCORE, JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW,
+                IN_TIMEOUT, IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY,
+                NO_INITIAL, DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, ALTERNATE_NAME, COLOR, SKATER, POSITION, TIME_OUT,
+                BOX_TRIP, ADD_TRIP, REMOVE_TRIP, ADVANCE_FIELDINGS, TIMEOUT, OFFICIAL_REVIEW);
         for (FloorPosition fp : FloorPosition.values()) {
-            add(Child.POSITION, new PositionImpl(this, fp));
+            add(POSITION, new PositionImpl(this, fp));
         }
-        addWriteProtection(Child.POSITION);
-        setCopy(Value.CURRENT_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.CURRENT_TRIP, true);
-        setCopy(Value.SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.TOTAL_SCORE, true);
-        setCopy(Value.JAM_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.JAM_SCORE, true);
-        setCopy(Value.LAST_SCORE, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.LAST_SCORE, true);
-        setCopy(Value.TRIP_SCORE, this, Value.CURRENT_TRIP, ScoringTrip.Value.SCORE, false);
-        setCopy(Value.LOST, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.LOST, false);
-        setCopy(Value.LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.LEAD, false);
-        setCopy(Value.CALLOFF, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.CALLOFF, false);
-        setCopy(Value.INJURY, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.INJURY, false);
-        setCopy(Value.NO_INITIAL, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.NO_INITIAL, false);
-        setCopy(Value.DISPLAY_LEAD, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.DISPLAY_LEAD, false);
-        setCopy(Value.NO_PIVOT, this, Value.RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.Value.NO_PIVOT, false);
-        setCopy(Value.STAR_PASS, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS, false);
-        setCopy(Value.STAR_PASS_TRIP, this, Value.RUNNING_OR_ENDED_TEAM_JAM, TeamJam.Value.STAR_PASS_TRIP, false);
-        setRecalculated(Value.IN_TIMEOUT).addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.OWNER)
-                .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.REVIEW)
-                .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.RUNNING);
-        setRecalculated(Value.IN_OFFICIAL_REVIEW)
-                .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.OWNER)
-                .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.REVIEW)
-                .addIndirectSource(sb, ScoreBoard.Value.CURRENT_TIMEOUT, Timeout.Value.RUNNING);
-        addWriteProtectionOverride(Value.TIMEOUTS, Source.ANY_INTERNAL);
-        addWriteProtectionOverride(Value.OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
-        addWriteProtectionOverride(Value.LAST_REVIEW, Source.ANY_INTERNAL);
-        setCopy(Value.RETAINED_OFFICIAL_REVIEW, this, Value.LAST_REVIEW, Timeout.Value.RETAINED_REVIEW, false);
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET,
-                rulesetChangeListener));
+        addWriteProtection(POSITION);
+        setCopy(CURRENT_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.CURRENT_TRIP, true);
+        setCopy(SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE, true);
+        setCopy(JAM_SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.JAM_SCORE, true);
+        setCopy(LAST_SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.LAST_SCORE, true);
+        setCopy(TRIP_SCORE, this, CURRENT_TRIP, ScoringTrip.SCORE, false);
+        setCopy(LOST, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.LOST, false);
+        setCopy(LEAD, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.LEAD, false);
+        setCopy(CALLOFF, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.CALLOFF, false);
+        setCopy(INJURY, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.INJURY, false);
+        setCopy(NO_INITIAL, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.NO_INITIAL, false);
+        setCopy(DISPLAY_LEAD, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.DISPLAY_LEAD, false);
+        setCopy(NO_PIVOT, this, RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.NO_PIVOT, false);
+        setCopy(STAR_PASS, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS, false);
+        setCopy(STAR_PASS_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS_TRIP, false);
+        setRecalculated(IN_TIMEOUT).addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.OWNER)
+                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.REVIEW)
+                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.RUNNING);
+        setRecalculated(IN_OFFICIAL_REVIEW).addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.OWNER)
+                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.REVIEW)
+                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.RUNNING);
+        addWriteProtectionOverride(TIMEOUTS, Source.ANY_INTERNAL);
+        addWriteProtectionOverride(OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
+        addWriteProtectionOverride(LAST_REVIEW, Source.ANY_INTERNAL);
+        setCopy(RETAINED_OFFICIAL_REVIEW, this, LAST_REVIEW, Timeout.RETAINED_REVIEW, false);
+        sb.addScoreBoardListener(
+                new ConditionalScoreBoardListener<>(Rulesets.class, Rulesets.CURRENT_RULESET, rulesetChangeListener));
     }
 
     @Override
-    protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == Value.IN_TIMEOUT) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == IN_TIMEOUT) {
             Timeout t = scoreBoard.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && !t.isReview();
         }
-        if (prop == Value.IN_OFFICIAL_REVIEW) {
+        if (prop == IN_OFFICIAL_REVIEW) {
             Timeout t = scoreBoard.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && t.isReview();
         }
-        if (prop == Value.TRIP_SCORE && source != Source.COPY) {
+        if (prop == TRIP_SCORE && source != Source.COPY) {
             tripScoreTimerTask.cancel();
             if ((Integer) value > 0) {
                 // If points arrive during an initial trip and we are not in overtime, assign
                 // the points to the first scoring trip instead.
                 if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
-                    getCurrentTrip().set(ScoringTrip.Value.ANNOTATION,
-                            "Points were added without Trip +1\n" + get(ScoringTrip.Value.ANNOTATION));
-                    execute(Command.ADD_TRIP);
+                    getCurrentTrip().set(ScoringTrip.ANNOTATION,
+                            "Points were added without Trip +1\n" + get(ScoringTrip.ANNOTATION));
+                    execute(ADD_TRIP);
                 }
 
                 if (scoreBoard.isInJam()) {
@@ -102,32 +107,31 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                     tripScoreTimerTask = new TimerTask() {
                         @Override
                         public void run() {
-                            execute(Command.ADD_TRIP);
+                            execute(ADD_TRIP);
                         }
                     };
                     tripScoreTimer.schedule(tripScoreTimerTask, 4000);
                 }
             }
         }
-        if (prop == Value.NO_INITIAL && source != Source.COPY) {
+        if (prop == NO_INITIAL && source != Source.COPY) {
             if (!(Boolean) value && (Boolean) last) {
-                execute(Command.ADD_TRIP, source);
-            } else if ((Boolean) value && !(Boolean) last && getCurrentTrip().getNumber() == 2
-                    && (Integer) get(Value.JAM_SCORE) == 0) {
-                execute(Command.REMOVE_TRIP, Source.OTHER);
+                execute(ADD_TRIP, source);
+            } else if ((Boolean) value && !(Boolean) last && getCurrentTrip().getNumber() == 2 && get(JAM_SCORE) == 0) {
+                execute(REMOVE_TRIP, Source.OTHER);
             }
         }
-        if (prop == Value.INJURY && source != Source.COPY && (Boolean) value) { set(Value.CALLOFF, false); }
-        if (prop == Value.CALLOFF && source != Source.COPY && (Boolean) value) { set(Value.INJURY, false); }
+        if (prop == INJURY && source != Source.COPY && (Boolean) value) { set(CALLOFF, false); }
+        if (prop == CALLOFF && source != Source.COPY && (Boolean) value) { set(INJURY, false); }
         return value;
     }
 
     @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == Value.LEAD && (Boolean) value && scoreBoard.isInJam()) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == LEAD && (Boolean) value && scoreBoard.isInJam()) {
             if (getCurrentTrip().getNumber() == 1) { getRunningOrEndedTeamJam().addScoringTrip(); }
-            if (getOtherTeam().isLead()) { getOtherTeam().set(Value.LEAD, false); }
-        } else if (prop == Value.STAR_PASS) {
+            if (getOtherTeam().isLead()) { getOtherTeam().set(LEAD, false); }
+        } else if (prop == STAR_PASS) {
             if (getPosition(FloorPosition.JAMMER).getSkater() != null) {
                 getPosition(FloorPosition.JAMMER).getSkater()
                         .setRole(FloorPosition.JAMMER.getRole(getRunningOrUpcomingTeamJam()));
@@ -136,62 +140,54 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 getPosition(FloorPosition.PIVOT).getSkater()
                         .setRole(FloorPosition.PIVOT.getRole(getRunningOrUpcomingTeamJam()));
             }
-            if ((Boolean) value && isLead()) { set(Value.LOST, true); }
-        } else if ((prop == Value.CALLOFF || prop == Value.INJURY) && scoreBoard.isInJam() && (Boolean) value) {
+            if ((Boolean) value && isLead()) { set(LOST, true); }
+        } else if ((prop == CALLOFF || prop == INJURY) && scoreBoard.isInJam() && (Boolean) value) {
             scoreBoard.stopJamTO();
         }
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
-        switch ((Command) prop) {
-        case ADD_TRIP:
+    public void execute(Command prop, Source source) {
+        if (prop == ADD_TRIP) {
             tripScoreTimerTask.cancel();
             getRunningOrEndedTeamJam().addScoringTrip();
             if (!isLead() && !getScoreBoard().getTeam(Team.ID_1.equals(getId()) ? Team.ID_2 : Team.ID_1).isLead()) {
-                set(Value.LOST, true);
+                set(LOST, true);
             }
-            break;
-        case REMOVE_TRIP:
+        } else if (prop == REMOVE_TRIP) {
             if (!tripScoreTimerTask.cancel()) {
                 getRunningOrEndedTeamJam().removeScoringTrip();
             }
-            break;
-        case ADVANCE_FIELDINGS:
+        } else if (prop == ADVANCE_FIELDINGS) {
             advanceFieldings();
-            break;
-        case OFFICIAL_REVIEW:
+        } else if (prop == OFFICIAL_REVIEW) {
             officialReview();
-            break;
-        case TIMEOUT:
+        } else if (prop == TIMEOUT) {
             timeout();
-            break;
         }
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
-            switch ((Child) prop) {
-            case SKATER:
+            if (prop == SKATER) {
                 return new SkaterImpl(this, id);
-            case BOX_TRIP:
+            } else if (prop == BOX_TRIP) {
                 return new BoxTripImpl(this, id);
-            default:
-                return null;
             }
+            return null;
         }
     }
 
     @Override
-    protected void itemAdded(AddRemoveProperty prop, ValueWithId item, Source source) {
-        if (prop == Child.TIME_OUT) { recountTimeouts(); }
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
+        if (prop == TIME_OUT) { recountTimeouts(); }
     }
 
     @Override
-    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
-        if (prop == Child.SKATER) { ((Skater) item).delete(); }
-        if (prop == Child.TIME_OUT) { recountTimeouts(); }
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
+        if (prop == SKATER) { ((Skater) item).delete(); }
+        if (prop == TIME_OUT) { recountTimeouts(); }
     }
 
     @Override
@@ -202,26 +198,26 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         synchronized (coreLock) {
             setName(DEFAULT_NAME_PREFIX + getId());
             setLogo(DEFAULT_LOGO);
-            set(Value.RUNNING_OR_UPCOMING_TEAM_JAM, null);
-            set(Value.RUNNING_OR_ENDED_TEAM_JAM, null);
-            set(Value.FIELDING_ADVANCE_PENDING, false);
+            set(RUNNING_OR_UPCOMING_TEAM_JAM, null);
+            set(RUNNING_OR_ENDED_TEAM_JAM, null);
+            set(FIELDING_ADVANCE_PENDING, false);
 
-            for (ValueWithId p : getAll(Child.POSITION)) {
-                ((Position) p).reset();
+            for (Position p : getAll(POSITION)) {
+                p.reset();
             }
-            removeAll(Child.BOX_TRIP);
-            removeAll(Child.ALTERNATE_NAME);
-            removeAll(Child.COLOR);
-            removeAll(Child.SKATER);
-            removeAll(Child.TIME_OUT);
+            removeAll(BOX_TRIP);
+            removeAll(ALTERNATE_NAME);
+            removeAll(COLOR);
+            removeAll(SKATER);
+            removeAll(TIME_OUT);
         }
     }
 
     @Override
-    public String getName() { return (String) get(Value.NAME); }
+    public String getName() { return get(NAME); }
 
     @Override
-    public void setName(String n) { set(Value.NAME, n); }
+    public void setName(String n) { set(NAME, n); }
 
     @Override
     public void startJam() {
@@ -235,11 +231,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         synchronized (coreLock) {
             if (isDisplayLead() && !scoreBoard.getClock(Clock.ID_JAM).isTimeAtEnd() && !isInjury()
                     && !getOtherTeam().isInjury()) {
-                set(Value.CALLOFF, true);
+                set(CALLOFF, true);
             }
-            getCurrentTrip().set(ScoringTrip.Value.CURRENT, false);
+            getCurrentTrip().set(ScoringTrip.CURRENT, false);
 
-            set(Value.FIELDING_ADVANCE_PENDING, true);
+            set(FIELDING_ADVANCE_PENDING, true);
 
             updateTeamJams();
 
@@ -255,7 +251,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                         upcomingTJ.getFielding(fp).setSkater(s);
                         BoxTrip bt = endedTJ.getFielding(fp).getCurrentBoxTrip();
                         if (bt != null && bt.isCurrent()) {
-                            bt.add(BoxTrip.Child.FIELDING, upcomingTJ.getFielding(fp));
+                            bt.add(BoxTrip.FIELDING, upcomingTJ.getFielding(fp));
                         }
                     }
                 }
@@ -264,17 +260,17 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             for (Skater s : toField.keySet()) {
                 field(s, toField.get(s), upcomingTJ);
                 BoxTrip bt = s.getFielding(endedTJ).getCurrentBoxTrip();
-                if (bt != null && bt.isCurrent()) { bt.add(BoxTrip.Child.FIELDING, s.getFielding(upcomingTJ)); }
+                if (bt != null && bt.isCurrent()) { bt.add(BoxTrip.FIELDING, s.getFielding(upcomingTJ)); }
             }
 
-            for (ValueWithId s : getAll(Child.SKATER)) {
-                ((Skater) s).updateEligibility();
+            for (Skater s : getAll(SKATER)) {
+                s.updateEligibility();
             }
         }
     }
 
     private void advanceFieldings() {
-        set(Value.FIELDING_ADVANCE_PENDING, false);
+        set(FIELDING_ADVANCE_PENDING, false);
         updateTeamJams();
     }
 
@@ -289,17 +285,17 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     public void restoreSnapshot(TeamSnapshot s) {
         synchronized (coreLock) {
             if (s.getId() != getId()) { return; }
-            set(Value.FIELDING_ADVANCE_PENDING, s.getFieldingAdvancePending());
+            set(FIELDING_ADVANCE_PENDING, s.getFieldingAdvancePending());
             updateTeamJams();
             if (scoreBoard.isInJam()) {
-                set(Value.CALLOFF, false);
-                set(Value.INJURY, false);
+                set(CALLOFF, false);
+                set(INJURY, false);
             }
         }
     }
 
     @Override
-    public String getAlternateName(String i) { return get(Child.ALTERNATE_NAME, i).getValue(); }
+    public String getAlternateName(String i) { return get(ALTERNATE_NAME, i).getValue(); }
 
     @Override
     public String getAlternateName(AlternateNameId id) { return getAlternateName(id.toString()); }
@@ -307,45 +303,45 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     @Override
     public void setAlternateName(String i, String n) {
         synchronized (coreLock) {
-            add(Child.ALTERNATE_NAME, new ValWithId(i, n));
+            add(ALTERNATE_NAME, new ValWithId(i, n));
         }
     }
 
     @Override
-    public void removeAlternateName(String i) { remove(Child.ALTERNATE_NAME, i); }
+    public void removeAlternateName(String i) { remove(ALTERNATE_NAME, i); }
 
     @Override
-    public String getColor(String i) { return get(Child.COLOR, i).getValue(); }
+    public String getColor(String i) { return get(COLOR, i).getValue(); }
 
     @Override
     public void setColor(String i, String c) {
         synchronized (coreLock) {
-            add(Child.COLOR, new ValWithId(i, c));
+            add(COLOR, new ValWithId(i, c));
         }
     }
 
     @Override
-    public void removeColor(String i) { remove(Child.COLOR, i); }
+    public void removeColor(String i) { remove(COLOR, i); }
 
     @Override
-    public String getLogo() { return (String) get(Value.LOGO); }
+    public String getLogo() { return get(LOGO); }
 
     @Override
-    public void setLogo(String l) { set(Value.LOGO, l); }
+    public void setLogo(String l) { set(LOGO, l); }
 
     @Override
     public void loadPreparedTeam(PreparedTeam pt) {
         synchronized (coreLock) {
-            setLogo((String) pt.get(PreparedTeam.Value.LOGO));
-            setName((String) pt.get(PreparedTeam.Value.NAME));
-            for (ValueWithId v : pt.getAll(PreparedTeam.Child.ALTERNATE_NAME)) {
+            setLogo(pt.get(PreparedTeam.LOGO));
+            setName(pt.get(PreparedTeam.NAME));
+            for (ValWithId v : pt.getAll(PreparedTeam.ALTERNATE_NAME)) {
                 setAlternateName(v.getId(), v.getValue());
             }
-            for (ValueWithId v : pt.getAll(PreparedTeam.Child.COLOR)) {
+            for (ValWithId v : pt.getAll(PreparedTeam.COLOR)) {
                 setColor(v.getId(), v.getValue());
             }
-            for (ValueWithId v : pt.getAll(PreparedTeam.Child.SKATER)) {
-                addSkater(new SkaterImpl(this, (PreparedTeamSkater) v));
+            for (PreparedTeamSkater pts : pt.getAll(PreparedTeam.SKATER)) {
+                addSkater(new SkaterImpl(this, pts));
             }
         }
     }
@@ -365,52 +361,52 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     @Override
-    public TeamJam getRunningOrUpcomingTeamJam() { return (TeamJam) get(Value.RUNNING_OR_UPCOMING_TEAM_JAM); }
+    public TeamJam getRunningOrUpcomingTeamJam() { return get(RUNNING_OR_UPCOMING_TEAM_JAM); }
 
     @Override
-    public TeamJam getRunningOrEndedTeamJam() { return (TeamJam) get(Value.RUNNING_OR_ENDED_TEAM_JAM); }
+    public TeamJam getRunningOrEndedTeamJam() { return get(RUNNING_OR_ENDED_TEAM_JAM); }
 
     @Override
     public void updateTeamJams() {
         synchronized (coreLock) {
-            set(Value.RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(getId()));
-            set(Value.RUNNING_OR_UPCOMING_TEAM_JAM,
+            set(RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(getId()));
+            set(RUNNING_OR_UPCOMING_TEAM_JAM,
                     scoreBoard.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext());
-            for (ValueWithId p : getAll(Child.POSITION)) {
-                ((Position) p).updateCurrentFielding();
+            for (Position p : getAll(POSITION)) {
+                p.updateCurrentFielding();
             }
-            for (ValueWithId v : getAll(Child.SKATER)) {
-                ((Skater) v).updateFielding(
+            for (Skater v : getAll(SKATER)) {
+                v.updateFielding(
                         hasFieldingAdvancePending() ? getRunningOrEndedTeamJam() : getRunningOrUpcomingTeamJam());
             }
         }
     }
 
     @Override
-    public int getScore() { return (Integer) get(Value.SCORE); }
+    public int getScore() { return get(SCORE); }
 
     @Override
-    public ScoringTrip getCurrentTrip() { return (ScoringTrip) get(Value.CURRENT_TRIP); }
+    public ScoringTrip getCurrentTrip() { return get(CURRENT_TRIP); }
 
     public boolean cancelTripAdvancement() { return tripScoreTimerTask.cancel(); }
 
     @Override
-    public boolean inTimeout() { return (Boolean) get(Value.IN_TIMEOUT); }
+    public boolean inTimeout() { return get(IN_TIMEOUT); }
 
     @Override
-    public boolean inOfficialReview() { return (Boolean) get(Value.IN_OFFICIAL_REVIEW); }
+    public boolean inOfficialReview() { return get(IN_OFFICIAL_REVIEW); }
 
     @Override
-    public boolean retainedOfficialReview() { return (Boolean) get(Value.RETAINED_OFFICIAL_REVIEW); }
+    public boolean retainedOfficialReview() { return get(RETAINED_OFFICIAL_REVIEW); }
 
     @Override
-    public void setRetainedOfficialReview(boolean b) { set(Value.RETAINED_OFFICIAL_REVIEW, b); }
+    public void setRetainedOfficialReview(boolean b) { set(RETAINED_OFFICIAL_REVIEW, b); }
 
     @Override
-    public int getTimeouts() { return (Integer) get(Value.TIMEOUTS); }
+    public int getTimeouts() { return get(TIMEOUTS); }
 
     @Override
-    public int getOfficialReviews() { return (Integer) get(Value.OFFICIAL_REVIEWS); }
+    public int getOfficialReviews() { return get(OFFICIAL_REVIEWS); }
 
     @Override
     public void recountTimeouts() {
@@ -423,8 +419,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
         boolean otherHalfToUnused = rdclPerHalfRules;
         Timeout lastReview = null;
 
-        for (ValueWithId v : getAll(Child.TIME_OUT)) {
-            Timeout t = (Timeout) v;
+        for (Timeout t : getAll(TIME_OUT)) {
             boolean isThisRdclHalf = false;
             if (rdclPerHalfRules) {
                 boolean gameIsSecondHalf = scoreBoard.getCurrentPeriodNumber() > 2;
@@ -450,30 +445,30 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
             }
         }
         if (otherHalfToUnused) { toCount--; }
-        set(Value.TIMEOUTS, toCount);
-        set(Value.OFFICIAL_REVIEWS, revCount);
-        set(Value.LAST_REVIEW, lastReview);
+        set(TIMEOUTS, toCount);
+        set(OFFICIAL_REVIEWS, revCount);
+        set(LAST_REVIEW, lastReview);
     }
 
     protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
         @Override
-        public void scoreBoardChange(ScoreBoardEvent event) { recountTimeouts(); }
+        public void scoreBoardChange(ScoreBoardEvent<?> event) { recountTimeouts(); }
     };
 
     @Override
-    public Skater getSkater(String id) { return (Skater) get(Child.SKATER, id); }
+    public Skater getSkater(String id) { return get(SKATER, id); }
 
-    public Skater addSkater(String id) { return (Skater) getOrCreate(Child.SKATER, id); }
-
-    @Override
-    public void addSkater(Skater skater) { add(Child.SKATER, skater); }
+    public Skater addSkater(String id) { return getOrCreate(SKATER, id); }
 
     @Override
-    public void removeSkater(String id) { remove(Child.SKATER, id); }
+    public void addSkater(Skater skater) { add(SKATER, skater); }
+
+    @Override
+    public void removeSkater(String id) { remove(SKATER, id); }
 
     @Override
     public Position getPosition(FloorPosition fp) {
-        return fp == null ? null : (Position) get(Child.POSITION, fp.toString());
+        return fp == null ? null : get(POSITION, fp.toString());
     }
 
     @Override
@@ -512,7 +507,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
                 } else if (f != null) {
                     f.setSkater(s);
                 } else {
-                    s.remove(Skater.Child.FIELDING, s.getFielding(tj));
+                    s.remove(Skater.FIELDING, s.getFielding(tj));
                 }
             }
         }
@@ -568,22 +563,22 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     @Override
-    public boolean hasFieldingAdvancePending() { return (Boolean) get(Value.FIELDING_ADVANCE_PENDING); }
+    public boolean hasFieldingAdvancePending() { return get(FIELDING_ADVANCE_PENDING); }
 
     @Override
-    public boolean isLost() { return (Boolean) get(Value.LOST); }
+    public boolean isLost() { return get(LOST); }
 
     @Override
-    public boolean isLead() { return (Boolean) get(Value.LEAD); }
+    public boolean isLead() { return get(LEAD); }
 
     @Override
-    public boolean isCalloff() { return (Boolean) get(Value.CALLOFF); }
+    public boolean isCalloff() { return get(CALLOFF); }
 
     @Override
-    public boolean isInjury() { return (Boolean) get(Value.INJURY); }
+    public boolean isInjury() { return get(INJURY); }
 
     @Override
-    public boolean isDisplayLead() { return (Boolean) get(Value.DISPLAY_LEAD); }
+    public boolean isDisplayLead() { return get(DISPLAY_LEAD); }
 
     protected boolean isFieldingStarPass() {
         if (hasFieldingAdvancePending()) {
@@ -594,12 +589,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl implements Team {
     }
 
     @Override
-    public boolean isStarPass() { return (Boolean) get(Value.STAR_PASS); }
+    public boolean isStarPass() { return get(STAR_PASS); }
 
-    public void setStarPass(boolean sp) { set(Value.STAR_PASS, sp); }
+    public void setStarPass(boolean sp) { set(STAR_PASS, sp); }
 
     @Override
-    public boolean hasNoPivot() { return (Boolean) get(Value.NO_PIVOT); }
+    public boolean hasNoPivot() { return get(NO_PIVOT); }
 
     @Override
     public Team getOtherTeam() {

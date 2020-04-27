@@ -15,37 +15,38 @@ import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Period;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
-public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
+public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clock {
     public ClockImpl(ScoreBoard sb, String i) {
-        super(sb, i, ScoreBoard.Child.CLOCK, Clock.class, Value.class, Command.class);
+        super(sb, i, ScoreBoard.CLOCK);
+        addProperties(NAME, NUMBER, TIME, INVERTED_TIME, MAXIMUM_TIME, DIRECTION, RUNNING, START, STOP, RESET_TIME);
         // initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
-            setCopy(Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD_NUMBER, true);
+            setCopy(NUMBER, sb, ScoreBoard.CURRENT_PERIOD_NUMBER, true);
         } else if (i == ID_JAM) {
-            setCopy(Value.NUMBER, sb, ScoreBoard.Value.CURRENT_PERIOD, Period.Value.CURRENT_JAM_NUMBER, true);
+            setCopy(NUMBER, sb, ScoreBoard.CURRENT_PERIOD, Period.CURRENT_JAM_NUMBER, true);
         } else {
-            values.put(Value.NUMBER, 0);
+            values.put(NUMBER, 0);
         }
-        setRecalculated(Value.TIME).addSource(this, Value.MAXIMUM_TIME);
-        setRecalculated(Value.INVERTED_TIME).addSource(this, Value.MAXIMUM_TIME).addSource(this, Value.TIME);
+        setRecalculated(TIME).addSource(this, MAXIMUM_TIME);
+        setRecalculated(INVERTED_TIME).addSource(this, MAXIMUM_TIME).addSource(this, TIME);
 
-        sb.addScoreBoardListener(new ConditionalScoreBoardListener(Rulesets.class, Rulesets.Value.CURRENT_RULESET,
-                rulesetChangeListener));
+        sb.addScoreBoardListener(
+                new ConditionalScoreBoardListener<>(Rulesets.class, Rulesets.CURRENT_RULESET, rulesetChangeListener));
     }
 
     @Override
-    protected Object computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == Value.TIME) {
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == TIME) {
             if (isRunning() && isSyncTime()) {
                 if (flag == Flag.CHANGE) {
                     value = (Long) last + ((((Long) value - (Long) last) / 1000L) * 1000L);
@@ -61,29 +62,29 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
                 return Long.valueOf(0);
             }
         }
-        if (prop == Value.INVERTED_TIME) {
+        if (prop == INVERTED_TIME) {
             return getMaximumTime() - getTime();
         }
-        if (prop == Value.MAXIMUM_TIME && (Long) value < 0) {
+        if (prop == MAXIMUM_TIME && (Long) value < 0) {
             return Long.valueOf(0);
         }
-        if (prop == Value.NUMBER && (Integer) value < 0) {
+        if (prop == NUMBER && (Integer) value < 0) {
             return 0;
         }
         return value;
     }
     @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == Value.TIME && isTimeAtEnd()) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == TIME && isTimeAtEnd()) {
             stop();
         }
-        if (prop == Value.MAXIMUM_TIME && isCountDirectionDown() && !source.isFile()) {
+        if (prop == MAXIMUM_TIME && isCountDirectionDown() && !source.isFile()) {
             changeTime((Long) value - (Long) last);
         }
-        if (prop == Value.DIRECTION) {
+        if (prop == DIRECTION) {
             setTime(getInvertedTime());
         }
-        if (prop == Value.RUNNING) {
+        if (prop == RUNNING) {
             if ((Boolean) value) {
                 updateClockTimerTask.addClock(this, flag == Flag.SPECIAL_CASE);
             } else {
@@ -93,17 +94,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
-        switch ((Command) prop) {
-        case RESET_TIME:
+    public void execute(Command prop, Source source) {
+        if (prop == RESET_TIME) {
             resetTime();
-            break;
-        case START:
+        } else if (prop == START) {
             start();
-            break;
-        case STOP:
+        } else if (prop == STOP) {
             stop();
-            break;
         }
     }
 
@@ -126,14 +123,14 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
 
     protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
         @Override
-        public void scoreBoardChange(ScoreBoardEvent event) {
+        public void scoreBoardChange(ScoreBoardEvent<?> event) {
             // Get default values from current settings or use hardcoded values
             Rulesets r = getScoreBoard().getRulesets();
             setCountDirectionDown(
-                    Boolean.parseBoolean(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".ClockDirection").getValue()));
+                    Boolean.parseBoolean(r.get(Rulesets.CURRENT_RULE, getId() + ".ClockDirection").getValue()));
             if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
                 setMaximumTime(ClockConversion
-                        .fromHumanReadable(r.get(Rulesets.Child.CURRENT_RULE, getId() + ".Duration").getValue()));
+                        .fromHumanReadable(r.get(Rulesets.CURRENT_RULE, getId() + ".Duration").getValue()));
             } else if (getId().equals(ID_INTERMISSION)) {
                 setMaximumTime(getCurrentIntermissionTime());
             } else if (getId().equals(ID_LINEUP) && isCountDirectionDown()) {
@@ -159,7 +156,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         synchronized (coreLock) {
             if (s.getId() != getId()) { return; }
             setNumber(s.getNumber());
-            set(Value.TIME, s.getTime(), Flag.SPECIAL_CASE);
+            set(TIME, s.getTime(), Flag.SPECIAL_CASE);
             if (s.isRunning()) {
                 start();
             } else {
@@ -169,20 +166,20 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     }
 
     @Override
-    public String getName() { return (String) get(Value.NAME); }
-    public void setName(String n) { set(Value.NAME, n); }
+    public String getName() { return get(NAME); }
+    public void setName(String n) { set(NAME, n); }
 
     @Override
-    public int getNumber() { return (Integer) get(Value.NUMBER); }
+    public int getNumber() { return get(NUMBER); }
     @Override
-    public void setNumber(int n) { set(Value.NUMBER, n); }
+    public void setNumber(int n) { set(NUMBER, n); }
     @Override
-    public void changeNumber(int change) { set(Value.NUMBER, change, Flag.CHANGE); }
+    public void changeNumber(int change) { set(NUMBER, change, Flag.CHANGE); }
 
     @Override
-    public long getTime() { return (Long) get(Value.TIME); }
+    public long getTime() { return get(TIME); }
     @Override
-    public long getInvertedTime() { return (Long) get(Value.INVERTED_TIME); }
+    public long getInvertedTime() { return get(INVERTED_TIME); }
     @Override
     public long getTimeElapsed() {
         synchronized (coreLock) {
@@ -196,9 +193,9 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     }
     @Override
-    public void setTime(long ms) { set(Value.TIME, ms); }
+    public void setTime(long ms) { set(TIME, ms); }
     @Override
-    public void changeTime(long change) { set(Value.TIME, change, Flag.CHANGE); }
+    public void changeTime(long change) { set(TIME, change, Flag.CHANGE); }
     @Override
     public void elapseTime(long change) {
         synchronized (coreLock) {
@@ -206,7 +203,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         }
     }
     @Override
-    public void resetTime() { set(Value.TIME, getTime(), Flag.RESET); }
+    public void resetTime() { set(TIME, getTime(), Flag.RESET); }
     protected boolean isDisplayChange(long current, long last) {
         // the frontend rounds values that are not full seconds to the earlier second
         // i.e. 3600ms will be displayed as 3s on a count up clock and as 4s on a count
@@ -219,11 +216,11 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     }
 
     @Override
-    public long getMaximumTime() { return (Long) get(Value.MAXIMUM_TIME); }
+    public long getMaximumTime() { return get(MAXIMUM_TIME); }
     @Override
-    public void setMaximumTime(long ms) { set(Value.MAXIMUM_TIME, ms); }
+    public void setMaximumTime(long ms) { set(MAXIMUM_TIME, ms); }
     @Override
-    public void changeMaximumTime(long change) { set(Value.MAXIMUM_TIME, change, Flag.CHANGE); }
+    public void changeMaximumTime(long change) { set(MAXIMUM_TIME, change, Flag.CHANGE); }
     @Override
     public boolean isTimeAtStart(long t) {
         synchronized (coreLock) {
@@ -250,18 +247,18 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
     public boolean isTimeAtEnd() { return isTimeAtEnd(getTime()); }
 
     @Override
-    public boolean isCountDirectionDown() { return ((Boolean) get(Value.DIRECTION)).booleanValue(); }
+    public boolean isCountDirectionDown() { return get(DIRECTION); }
     @Override
-    public void setCountDirectionDown(boolean down) { set(Value.DIRECTION, down); }
+    public void setCountDirectionDown(boolean down) { set(DIRECTION, down); }
 
     @Override
-    public boolean isRunning() { return (Boolean) get(Value.RUNNING); }
+    public boolean isRunning() { return get(RUNNING); }
 
     @Override
     public void start() { start(false); }
-    public void start(boolean quickAdd) { set(Value.RUNNING, Boolean.TRUE, quickAdd ? Flag.SPECIAL_CASE : null); }
+    public void start(boolean quickAdd) { set(RUNNING, Boolean.TRUE, quickAdd ? Flag.SPECIAL_CASE : null); }
     @Override
-    public void stop() { set(Value.RUNNING, Boolean.FALSE); }
+    public void stop() { set(RUNNING, Boolean.FALSE); }
 
     @Override
     public void restart() {
@@ -277,10 +274,10 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
         long newTime = isCountDirectionDown() ? getTime() - delta : getTime() + delta;
         long newInvertedTime = getMaximumTime() - newTime;
         if (isDisplayChange(newTime, getTime())) {
-            set(Value.TIME, newTime, Flag.SPECIAL_CASE);
+            set(TIME, newTime, Flag.SPECIAL_CASE);
         } else {
-            values.put(Value.TIME, newTime);
-            values.put(Value.INVERTED_TIME, newInvertedTime);
+            values.put(TIME, newTime);
+            values.put(INVERTED_TIME, newInvertedTime);
         }
     }
 
@@ -353,13 +350,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl implements Clock {
                     }
                     long delay = timeMs - nowMs;
                     if (Math.abs(delay) >= 500) {
-                        delay = (long) (Math.signum((float) -delay) * (1000 - Math.abs(delay)));
+                        delay = (long) (Math.signum(-delay) * (1000 - Math.abs(delay)));
                     }
                     c.lastTime = currentTime;
                     if (c.isCountDirectionDown()) {
                         delay = -delay;
                     }
-                    c.values.put(Value.TIME, c.getTime() - delay);
+                    c.values.put(TIME, c.getTime() - delay);
                 } else {
                     c.lastTime = currentTime;
                 }

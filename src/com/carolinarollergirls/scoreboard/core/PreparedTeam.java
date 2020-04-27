@@ -8,59 +8,27 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 // Roster for teams for loading in for games.
 public interface PreparedTeam extends ScoreBoardEventProvider {
-    public enum Value implements PermanentProperty {
-        NAME(String.class, ""),
-        LOGO(String.class, "");
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> LOGO = new Value<>(String.class, "Logo", "");
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-
-        private final Class<?> type;
-        private final Object defaultValue;
-
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-
-    public enum Child implements AddRemoveProperty {
-        ALTERNATE_NAME(ValWithId.class),
-        COLOR(ValWithId.class),
-        SKATER(PreparedTeamSkater.class);
-
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-
-        private final Class<? extends ValueWithId> type;
-
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
+    Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName");
+    Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color");
+    Child<PreparedTeamSkater> SKATER = new Child<>(PreparedTeamSkater.class, "Skater");
 
     public static interface PreparedTeamSkater extends ScoreBoardEventProvider {
 
-        public enum Value implements PermanentProperty {
-            NAME(String.class, ""),
-            ROSTER_NUMBER(String.class, ""),
-            NUMBER(String.class, ""), // kept for compatibility with older autosaves and exports
-            FLAGS(String.class, "");
-
-            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-
-            private final Class<?> type;
-            private final Object defaultValue;
-
-            @Override
-            public Class<?> getType() { return type; }
-            @Override
-            public Object getDefaultValue() { return defaultValue; }
-        }
+        @SuppressWarnings("hiding")
+        Value<String> NAME = new Value<>(String.class, "Name", "");
+        Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
+        Value<String> NUMBER_OLD = new Value<>(String.class, "Number", ""); // for compatibility with older autosaves
+                                                                            // and exports
+        Value<String> FLAGS = new Value<>(String.class, "Flags", "");
     }
 }

@@ -8,15 +8,12 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
-
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.event.OrderedScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.NumberedChild;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Skater extends ScoreBoardEventProvider {
     public int compareTo(Skater other);
@@ -47,41 +44,19 @@ public interface Skater extends ScoreBoardEventProvider {
     public List<Penalty> getUnservedPenalties();
     public boolean hasUnservedPenalties();
 
-    public enum Value implements PermanentProperty {
-        NAME(String.class, ""),
-        ROSTER_NUMBER(String.class, ""),
-        CURRENT_FIELDING(Fielding.class, null),
-        CURRENT_BOX_SYMBOLS(String.class, ""),
-        POSITION(Position.class, null),
-        ROLE(Role.class, null),
-        BASE_ROLE(Role.class, null),
-        PENALTY_BOX(Boolean.class, false),
-        FLAGS(String.class, "");
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
+    Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
+    Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
+    Value<Position> POSITION = new Value<>(Position.class, "Position", null);
+    Value<Role> ROLE = new Value<>(Role.class, "Role", null);
+    Value<Role> BASE_ROLE = new Value<>(Role.class, "BaseRole", null);
+    Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false);
+    Value<String> FLAGS = new Value<>(String.class, "Flags", "");
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        FIELDING(Fielding.class);
+    Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding");
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum NChild implements NumberedProperty {
-        PENALTY(Penalty.class);
-
-        private NChild(Class<? extends OrderedScoreBoardEventProvider<?>> t) { type = t; }
-        private final Class<? extends OrderedScoreBoardEventProvider<?>> type;
-        @Override
-        public Class<? extends OrderedScoreBoardEventProvider<?>> getType() { return type; }
-    }
+    NumberedChild<Penalty> PENALTY = new NumberedChild<>(Penalty.class, "Penalty");
 
     public static final String FO_EXP_ID = "0";
 }

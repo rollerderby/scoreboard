@@ -1,47 +1,33 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Timeout extends ScoreBoardEventProvider {
     int compareTo(Timeout other);
 
     public void stop();
-    
+
     public TimeoutOwner getOwner();
     public boolean isReview();
     public boolean isRetained();
     public boolean isRunning();
-    
-    public enum Value implements PermanentProperty {
-        OWNER(TimeoutOwner.class, null),
-        REVIEW(Boolean.class, false),
-        RETAINED_REVIEW(Boolean.class, false),
-        RUNNING(Boolean.class, true),
-        PRECEDING_JAM(Jam.class, null),
-        PRECEDING_JAM_NUMBER(Integer.class, 0),
-        DURATION(Long.class, 0L),
-        PERIOD_CLOCK_ELAPSED_START(Long.class, 0L),
-        PERIOD_CLOCK_ELAPSED_END(Long.class, 0L),
-        PERIOD_CLOCK_END(Long.class, 0L),
-        WALLTIME_START(Long.class, 0L),
-        WALLTIME_END(Long.class, 0L);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Command implements CommandProperty {
-        DELETE;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    Value<TimeoutOwner> OWNER = new Value<>(TimeoutOwner.class, "Owner", null);
+    Value<Boolean> REVIEW = new Value<>(Boolean.class, "Review", false);
+    Value<Boolean> RETAINED_REVIEW = new Value<>(Boolean.class, "RetainedReview", false);
+    Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", true);
+    Value<Jam> PRECEDING_JAM = new Value<>(Jam.class, "PrecedingJam", null);
+    Value<Integer> PRECEDING_JAM_NUMBER = new Value<>(Integer.class, "PrecedingJamNumber", 0);
+    Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L);
+    Value<Long> PERIOD_CLOCK_ELAPSED_START = new Value<>(Long.class, "PeriodClockElapsedStart", 0L);
+    Value<Long> PERIOD_CLOCK_ELAPSED_END = new Value<>(Long.class, "PeriodClockElapsedEnd", 0L);
+    Value<Long> PERIOD_CLOCK_END = new Value<>(Long.class, "PeriodClockEnd", 0L);
+    Value<Long> WALLTIME_START = new Value<>(Long.class, "WalltimeStart", 0L);
+    Value<Long> WALLTIME_END = new Value<>(Long.class, "WalltimeEnd", 0L);
+
+    Command DELETE = new Command("Delete");
 
     public enum Owners implements TimeoutOwner {
         NONE(""),

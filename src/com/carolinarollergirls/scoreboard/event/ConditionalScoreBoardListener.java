@@ -1,64 +1,64 @@
 package com.carolinarollergirls.scoreboard.event;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
-
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
+ * This file is part of the Carolina Rollergirls (CRG) ScoreBoard. The CRG
+ * ScoreBoard is licensed under either the GNU General Public License version 3
+ * (or later), or the Apache License 2.0, at your option. See the file COPYING
+ * for details.
  */
 
-
-public class ConditionalScoreBoardListener implements ScoreBoardListener {
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop, Object v, ScoreBoardListener l) {
-        this(new ScoreBoardCondition(c, id, prop, v), l);
+public class ConditionalScoreBoardListener<T> implements ScoreBoardListener {
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property<T> prop, T v,
+            ScoreBoardListener l) {
+        this(new ScoreBoardCondition<>(c, id, prop, v), l);
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop, Object v) {
-        this(new ScoreBoardCondition(c, id, prop, v));
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property<T> prop, T v) {
+        this(new ScoreBoardCondition<>(c, id, prop, v));
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop, ScoreBoardListener l) {
-        this(c, id, prop, ScoreBoardCondition.ANY_VALUE, l);
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property<T> prop,
+            ScoreBoardListener l) {
+        this(new ScoreBoardCondition<>(c, id, prop), l);
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property prop) {
-        this(c, id, prop, ScoreBoardCondition.ANY_VALUE);
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, String id, Property<T> prop) {
+        this(new ScoreBoardCondition<>(c, id, prop));
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, Property prop, ScoreBoardListener l) {
-        this(c, ScoreBoardCondition.ANY_ID, prop, ScoreBoardCondition.ANY_VALUE, l);
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, Property<T> prop,
+            ScoreBoardListener l) {
+        this(c, ScoreBoardCondition.ANY_ID, prop, l);
     }
-    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, Property prop) {
-        this(c, ScoreBoardCondition.ANY_ID, prop, ScoreBoardCondition.ANY_VALUE);
+    public ConditionalScoreBoardListener(Class<? extends ScoreBoardEventProvider> c, Property<T> prop) {
+        this(c, ScoreBoardCondition.ANY_ID, prop);
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop, Object v, ScoreBoardListener l) {
-        this(new ScoreBoardCondition(p, prop, v), l);
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property<T> prop, T v, ScoreBoardListener l) {
+        this(new ScoreBoardCondition<>(p, prop, v), l);
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop, Object v) {
-        this(new ScoreBoardCondition(p, prop, v));
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property<T> prop, T v) {
+        this(new ScoreBoardCondition<>(p, prop, v));
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop, ScoreBoardListener l) {
-        this(p, prop, ScoreBoardCondition.ANY_VALUE, l);
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property<T> prop, ScoreBoardListener l) {
+        this(new ScoreBoardCondition<>(p, prop), l);
     }
-    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property prop) {
-        this(p, prop, ScoreBoardCondition.ANY_VALUE);
+    public ConditionalScoreBoardListener(ScoreBoardEventProvider p, Property<T> prop) {
+        this(new ScoreBoardCondition<>(p, prop));
     }
-    public ConditionalScoreBoardListener(ScoreBoardEvent e, ScoreBoardListener l) {
-        this(new ScoreBoardCondition(e), l);
+    public ConditionalScoreBoardListener(ScoreBoardEvent<T> e, ScoreBoardListener l) {
+        this(new ScoreBoardCondition<>(e), l);
     }
-    public ConditionalScoreBoardListener(ScoreBoardEvent e) {
-        this(new ScoreBoardCondition(e));
+    public ConditionalScoreBoardListener(ScoreBoardEvent<T> e) {
+        this(new ScoreBoardCondition<>(e));
     }
-    public ConditionalScoreBoardListener(ScoreBoardCondition c, ScoreBoardListener l) {
+    public ConditionalScoreBoardListener(ScoreBoardCondition<T> c, ScoreBoardListener l) {
         condition = c;
         listener = l;
     }
-    public ConditionalScoreBoardListener(ScoreBoardCondition c) {
+    public ConditionalScoreBoardListener(ScoreBoardCondition<T> c) {
         this(c, null);
     }
 
     @Override
-    public void scoreBoardChange(ScoreBoardEvent e) {
+    public void scoreBoardChange(ScoreBoardEvent<?> e) {
         if (checkScoreBoardEvent(e)) {
             matchedScoreBoardChange(e);
         }
@@ -72,14 +72,14 @@ public class ConditionalScoreBoardListener implements ScoreBoardListener {
         return sbL;
     }
 
-    protected boolean checkScoreBoardEvent(ScoreBoardEvent e) { return condition.equals(e); }
-    protected void matchedScoreBoardChange(ScoreBoardEvent e) {
+    @SuppressWarnings("unlikely-arg-type")
+    protected boolean checkScoreBoardEvent(ScoreBoardEvent<?> e) { return condition.equals(e); }
+    protected void matchedScoreBoardChange(ScoreBoardEvent<?> e) {
         if (null != getScoreBoardListener()) {
             getScoreBoardListener().scoreBoardChange(e);
         }
     }
 
-    protected ScoreBoardCondition condition;
+    protected ScoreBoardCondition<T> condition;
     protected ScoreBoardListener listener;
 }
-

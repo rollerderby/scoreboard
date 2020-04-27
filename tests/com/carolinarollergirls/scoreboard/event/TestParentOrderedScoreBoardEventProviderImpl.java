@@ -5,7 +5,9 @@ public class TestParentOrderedScoreBoardEventProviderImpl
         implements TestParentOrderedScoreBoardEventProvider {
     public TestParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, String subId) {
         super(parent, subId,
-                parent instanceof TestParentOrderedScoreBoardEventProvider ? TestParentOrderedScoreBoardEventProvider.Child.CO_ORDERED : TestNumberedScoreBoardEventProvider.Child.CO_ORDERED,
-                        TestParentOrderedScoreBoardEventProvider.class, Child.class);
+                parent instanceof TestParentOrderedScoreBoardEventProvider
+                        ? TestParentOrderedScoreBoardEventProvider.CO_ORDERED
+                        : TestNumberedScoreBoardEventProvider.CO_ORDERED);
+        addProperties(CO_ORDERED);
     }
 }

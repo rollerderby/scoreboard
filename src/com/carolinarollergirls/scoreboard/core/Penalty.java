@@ -1,8 +1,8 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int compareTo(Penalty other);
@@ -11,32 +11,18 @@ public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int getJamNumber();
     public Jam getJam();
     public String getCode();
-    
+
     public boolean isServed();
 
-    public enum Value implements PermanentProperty {
-        TIME(Long.class, 0L),
-        JAM(Jam.class, null),
-        PERIOD_NUMBER(Integer.class, 0),
-        JAM_NUMBER(Integer.class, 0),
-        CODE(String.class, ""),
-        SERVING(Boolean.class, false),
-        SERVED(Boolean.class, false),
-        FORCE_SERVED(Boolean.class, false),
-        BOX_TRIP(BoxTrip.class, null);
+    Value<Long> TIME = new Value<>(Long.class, "Time", 0L);
+    Value<Jam> JAM = new Value<>(Jam.class, "Jam", null);
+    Value<Integer> PERIOD_NUMBER = new Value<>(Integer.class, "PeriodNumber", 0);
+    Value<Integer> JAM_NUMBER = new Value<>(Integer.class, "JamNumber", 0);
+    Value<String> CODE = new Value<>(String.class, "Code", "");
+    Value<Boolean> SERVING = new Value<>(Boolean.class, "Serving", false);
+    Value<Boolean> SERVED = new Value<>(Boolean.class, "Served", false);
+    Value<Boolean> FORCE_SERVED = new Value<>(Boolean.class, "ForceServed", false);
+    Value<BoxTrip> BOX_TRIP = new Value<>(BoxTrip.class, "BoxTrip", null);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Command implements CommandProperty {
-        REMOVE;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    Command REMOVE = new Command("Remove");
 }

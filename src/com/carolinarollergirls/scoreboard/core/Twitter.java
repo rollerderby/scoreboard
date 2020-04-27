@@ -8,89 +8,47 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Twitter extends ScoreBoardEventProvider {
     /** Update state after restoring from autosave */
     public void postAutosaveUpdate();
 
-    public enum Value implements PermanentProperty {
-        // URL browser should be sent to do OAuth.
-        AUTH_URL(String.class, ""),
-        // URL Twitter should send browser back to after OAuth.
-        CALLBACK_URL(String.class, ""),
-        // The OAuth token we get back from Twitter goes here.
-        OAUTH_VERIFIER(String.class, ""),
-        // The ultimate credentials we use to tweet.
-        ACCESS_TOKEN(String.class, ""),
-        ACCESS_TOKEN_SECRET(String.class, ""),
-        // Setting this sends a tweet.
-        MANUAL_TWEET(String.class, ""),
-        // The last tweet we sent.
-        STATUS(String.class, ""),
-        LOGGED_IN(Boolean.class, false),
-        ERROR(String.class, ""),
-        SCREEN_NAME(String.class, ""),
-        TEST_MODE(Boolean.class, false);
+    // URL browser should be sent to do OAuth.
+    Value<String> AUTH_URL = new Value<>(String.class, "AuthUrl", "");
+    // URL Twitter should send browser back to after OAuth.
+    Value<String> CALLBACK_URL = new Value<>(String.class, "CallbackUrl", "");
+    // The OAuth token we get back from Twitter goes here.
+    Value<String> OAUTH_VERIFIER = new Value<>(String.class, "OauthVerifier", "");
+    // The ultimate credentials we use to tweet.
+    Value<String> ACCESS_TOKEN = new Value<>(String.class, "AccessToken", "");
+    Value<String> ACCESS_TOKEN_SECRET = new Value<>(String.class, "AccessTokenSecret", "");
+    // Setting this sends a tweet.
+    Value<String> MANUAL_TWEET = new Value<>(String.class, "ManualTweet", "");
+    // The last tweet we sent.
+    Value<String> STATUS = new Value<>(String.class, "Status", "");
+    Value<Boolean> LOGGED_IN = new Value<>(Boolean.class, "LoggedIn", false);
+    Value<String> ERROR = new Value<>(String.class, "Error", "");
+    Value<String> SCREEN_NAME = new Value<>(String.class, "ScreenName", "");
+    Value<Boolean> TEST_MODE = new Value<>(Boolean.class, "TestMode", false);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
+    Child<ConditionalTweet> CONDITIONAL_TWEET = new Child<>(ConditionalTweet.class, "ConditionalTweet");
+    Child<FormatSpecifier> FORMAT_SPECIFIER = new Child<>(FormatSpecifier.class, "FormatSpecifier");
 
-    public enum Child implements AddRemoveProperty {
-        CONDITIONAL_TWEET(ConditionalTweet.class),
-        FORMAT_SPECIFIER(FormatSpecifier.class);
-
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum Command implements CommandProperty {
-        LOGIN,
-        LOGOUT;
-
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    Command LOGIN = new Command("Login");
+    Command LOGOUT = new Command("Logout");
 
     public interface ConditionalTweet extends ScoreBoardEventProvider {
-        public enum Value implements PermanentProperty {
-            CONDITION(String.class, ""),
-            TWEET(String.class, "");
-
-            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-            private final Class<?> type;
-            private final Object defaultValue;
-            @Override
-            public Class<?> getType() { return type; }
-            @Override
-            public Object getDefaultValue() { return defaultValue; }
-        }
+        Value<String> CONDITION = new Value<>(String.class, "Condition", "");
+        Value<String> TWEET = new Value<>(String.class, "Tweet", "");
     }
 
     public interface FormatSpecifier extends ScoreBoardEventProvider {
-        public enum Value implements PermanentProperty {
-            KEY(String.class, ""),
-            DESCRIPTION(String.class, ""),
-            CURRENT_VALUE(String.class, "");
-
-            private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-            private final Class<?> type;
-            private final Object defaultValue;
-            @Override
-            public Class<?> getType() { return type; }
-            @Override
-            public Object getDefaultValue() { return defaultValue; }
-        }
+        Value<String> KEY = new Value<>(String.class, "Key", "");
+        Value<String> DESCRIPTION = new Value<>(String.class, "Description", "");
+        Value<String> CURRENT_VALUE = new Value<>(String.class, "CurrentValue", "");
     }
 }

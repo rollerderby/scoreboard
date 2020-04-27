@@ -1,27 +1,29 @@
 package com.carolinarollergirls.scoreboard.rules;
 
 import com.carolinarollergirls.scoreboard.core.Rulesets;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 
-public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
+public abstract class RuleDefinition extends ScoreBoardEventProviderImpl<RuleDefinition> {
     public RuleDefinition(Type type, String name, String description, Object defaultValue) {
-        super(null, name, Rulesets.Child.RULE_DEFINITION, RuleDefinition.class, Value.class);
-        setCopy(Value.NAME, this, IValue.ID, true);
-        set(Value.TYPE, type);
-        set(Value.DEFAULT_VALUE, defaultValue.toString());
-        set(Value.DESCRIPTION, description);
-        for (Value prop : Value.values()) {
+        super(null, name, Rulesets.RULE_DEFINITION);
+        addProperties(NAME, TYPE, DEFAULT_VALUE, DESCRIPTION, INDEX);
+        setCopy(NAME, this, ID, true);
+        set(TYPE, type);
+        set(DEFAULT_VALUE, defaultValue.toString());
+        set(DESCRIPTION, description);
+        for (Property<?> prop : getProperties()) {
             addWriteProtection(prop);
         }
     }
 
-    public Type getType() { return (Type)get(Value.TYPE); }
-    public String getName() { return (String)get(Value.NAME); }
-    public String getDefaultValue() { return (String)get(Value.DEFAULT_VALUE); }
-    public String getDescription() { return (String)get(Value.DESCRIPTION); }
-    public int getIndex() { return (Integer)get(Value.INDEX); }
-    public void setIndex(Integer i) { values.put(Value.INDEX, i); }
+    public Type getType() { return get(TYPE); }
+    public String getName() { return get(NAME); }
+    public String getDefaultValue() { return get(DEFAULT_VALUE); }
+    public String getDescription() { return get(DESCRIPTION); }
+    public int getIndex() { return get(INDEX); }
+    public void setIndex(Integer i) { values.put(INDEX, i); }
 
     public abstract boolean isValueValid(String v);
 
@@ -45,21 +47,11 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl {
         String string;
     }
 
-    public enum Value implements PermanentProperty {
-        NAME(String.class, ""),
-        TYPE(Type.class, null),
-        DEFAULT_VALUE(String.class, ""),
-        DESCRIPTION(String.class, ""),
-        INDEX(Integer.class, 0),
-        TRUE_VALUE(String.class, ""),
-        FALSE_VALUE(String.class, "");
-
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<Type> TYPE = new Value<>(Type.class, "Type", null);
+    Value<String> DEFAULT_VALUE = new Value<>(String.class, "DefaultValue", "");
+    Value<String> DESCRIPTION = new Value<>(String.class, "Description", "");
+    Value<Integer> INDEX = new Value<>(Integer.class, "Index", 0);
+    Value<String> TRUE_VALUE = new Value<>(String.class, "TrueValue", "");
+    Value<String> FALSE_VALUE = new Value<>(String.class, "FalseValue", "");
 }

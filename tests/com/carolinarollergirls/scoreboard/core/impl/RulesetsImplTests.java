@@ -7,10 +7,8 @@ import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.Rulesets;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Rulesets.Ruleset;
-import com.carolinarollergirls.scoreboard.core.impl.RulesetsImpl;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -39,7 +37,7 @@ public class RulesetsImplTests {
         assertEquals(rootId, rulesets.getCurrentRulesetId());
         assertEquals("WFTDA", rulesets.getCurrentRulesetName());
 
-        child.add(Ruleset.Child.RULE, new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
+        child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
         rulesets.setCurrentRuleset(id1);
         assertEquals(5, rulesets.getInt(Rule.NUMBER_PERIODS));
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
@@ -65,7 +63,7 @@ public class RulesetsImplTests {
         assertEquals(rootId, child.getParentRulesetId());
         assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
 
-        child.add(Ruleset.Child.RULE, new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
+        child.add(Ruleset.RULE, new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
         rulesets.setCurrentRuleset(id1);
         assertEquals(60000, rulesets.getLong(Rule.PERIOD_DURATION));
         assertEquals(60000, sb.getClock(Clock.ID_PERIOD).getTime());
@@ -80,6 +78,5 @@ public class RulesetsImplTests {
         rulesets.removeRuleset(id1);
         assertEquals(rootId, grandchild.getParentRulesetId());
     }
-
 
 }

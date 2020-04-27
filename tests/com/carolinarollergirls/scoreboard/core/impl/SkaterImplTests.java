@@ -15,7 +15,6 @@ import com.carolinarollergirls.scoreboard.core.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.Role;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Skater;
-import com.carolinarollergirls.scoreboard.core.Skater.NChild;
 import com.carolinarollergirls.scoreboard.core.Team;
 import com.carolinarollergirls.scoreboard.core.impl.PreparedTeamImpl.PreparedTeamSkaterImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
@@ -35,25 +34,25 @@ public class SkaterImplTests {
         skaterId = UUID.randomUUID();
 
         skater = new SkaterImpl(team, skaterId.toString());
-        sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "2");
-        sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "3");
-        sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "4");
-        sb.getOrCreatePeriod(1).getOrCreate(Period.NChild.JAM, "5");
-        sb.getOrCreatePeriod(2).getOrCreate(Period.NChild.JAM, "1");
-        sb.getOrCreatePeriod(2).getOrCreate(Period.NChild.JAM, "2");
-        sb.getOrCreatePeriod(2).getOrCreate(Period.NChild.JAM, "3");
+        sb.getOrCreatePeriod(1).getOrCreate(Period.JAM, "2");
+        sb.getOrCreatePeriod(1).getOrCreate(Period.JAM, "3");
+        sb.getOrCreatePeriod(1).getOrCreate(Period.JAM, "4");
+        sb.getOrCreatePeriod(1).getOrCreate(Period.JAM, "5");
+        sb.getOrCreatePeriod(2).getOrCreate(Period.JAM, "1");
+        sb.getOrCreatePeriod(2).getOrCreate(Period.JAM, "2");
+        sb.getOrCreatePeriod(2).getOrCreate(Period.JAM, "3");
     }
 
     @Test
     public void add_penalty() {
-        Penalty p = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p.set(Penalty.CODE, "C");
 
-        assertEquals(1, skater.getAll(Skater.NChild.PENALTY).size());
-        assertNull(skater.get(Skater.NChild.PENALTY, Skater.FO_EXP_ID));
+        assertEquals(1, skater.numberOf(Skater.PENALTY));
+        assertNull(skater.get(Skater.PENALTY, Skater.FO_EXP_ID));
 
-        Penalty penalty = (Penalty) skater.get(Skater.NChild.PENALTY, "1");
+        Penalty penalty = skater.get(Skater.PENALTY, "1");
 
         assertEquals("C", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
@@ -63,15 +62,15 @@ public class SkaterImplTests {
 
     @Test
     public void add_penalty_with_id() {
-        Penalty p = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.IValue.ID, "f03d5e2e-e581-4fcb-99c7-7fbd49101a36", Source.AUTOSAVE);
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
+        p.set(Penalty.ID, "f03d5e2e-e581-4fcb-99c7-7fbd49101a36", Source.AUTOSAVE);
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p.set(Penalty.CODE, "C");
 
-        assertEquals(1, skater.getAll(Skater.NChild.PENALTY).size());
-        assertNull(skater.get(Skater.NChild.PENALTY, Skater.FO_EXP_ID));
+        assertEquals(1, skater.numberOf(Skater.PENALTY));
+        assertNull(skater.get(Skater.PENALTY, Skater.FO_EXP_ID));
 
-        Penalty penalty = (Penalty) skater.get(Skater.NChild.PENALTY, "1");
+        Penalty penalty = skater.get(Skater.PENALTY, "1");
 
         assertEquals("C", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
@@ -81,18 +80,18 @@ public class SkaterImplTests {
 
     @Test
     public void add_ooo_penalty() {
-        Penalty p = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p.set(Penalty.CODE, "C");
 
-        p = (Penalty) skater.getOrCreate(NChild.PENALTY, "2");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(2));
-        p.set(Penalty.Value.CODE, "P");
+        p = skater.getOrCreate(Skater.PENALTY, "2");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(2));
+        p.set(Penalty.CODE, "P");
 
-        assertEquals(2, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(2, skater.numberOf(Skater.PENALTY));
 
-        Penalty penalty = (Penalty) skater.get(Skater.NChild.PENALTY, "1");
-        Penalty penaltytwo = (Penalty) skater.get(Skater.NChild.PENALTY, "2");
+        Penalty penalty = skater.get(Skater.PENALTY, "1");
+        Penalty penaltytwo = skater.get(Skater.PENALTY, "2");
 
         assertEquals("P", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
@@ -105,18 +104,18 @@ public class SkaterImplTests {
 
     @Test
     public void add_ooo_penalty_diff_period() {
-        Penalty p = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(3));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(2).getJam(3));
+        p.set(Penalty.CODE, "C");
 
-        p = (Penalty) skater.getOrCreate(NChild.PENALTY, "2");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p.set(Penalty.Value.CODE, "P");
+        p = skater.getOrCreate(Skater.PENALTY, "2");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p.set(Penalty.CODE, "P");
 
-        assertEquals(2, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(2, skater.numberOf(Skater.PENALTY));
 
-        Penalty penalty = (Penalty) skater.get(Skater.NChild.PENALTY, "1");
-        Penalty penaltytwo = (Penalty) skater.get(Skater.NChild.PENALTY, "2");
+        Penalty penalty = skater.get(Skater.PENALTY, "1");
+        Penalty penaltytwo = skater.get(Skater.PENALTY, "2");
 
         assertEquals("P", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
@@ -129,57 +128,57 @@ public class SkaterImplTests {
 
     @Test
     public void remove_penalty() {
-        Penalty p1 = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
-        p1.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(1));
-        p1.set(Penalty.Value.CODE, "C");
-        Penalty p2 = (Penalty) skater.getOrCreate(NChild.PENALTY, "2");
-        p2.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(2));
-        p2.set(Penalty.Value.CODE, "D");
-        Penalty p3 = (Penalty) skater.getOrCreate(NChild.PENALTY, "3");
-        p3.set(Penalty.Value.JAM, sb.getOrCreatePeriod(2).getJam(3));
-        p3.set(Penalty.Value.CODE, "E");
+        Penalty p1 = skater.getOrCreate(Skater.PENALTY, "1");
+        p1.set(Penalty.JAM, sb.getOrCreatePeriod(2).getJam(1));
+        p1.set(Penalty.CODE, "C");
+        Penalty p2 = skater.getOrCreate(Skater.PENALTY, "2");
+        p2.set(Penalty.JAM, sb.getOrCreatePeriod(2).getJam(2));
+        p2.set(Penalty.CODE, "D");
+        Penalty p3 = skater.getOrCreate(Skater.PENALTY, "3");
+        p3.set(Penalty.JAM, sb.getOrCreatePeriod(2).getJam(3));
+        p3.set(Penalty.CODE, "E");
 
-        assertEquals(3, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(3, skater.numberOf(Skater.PENALTY));
         assertEquals(1, p1.getNumber());
         assertEquals(2, p2.getNumber());
         assertEquals(3, p3.getNumber());
-        assertEquals(p1, skater.getFirst(NChild.PENALTY));
+        assertEquals(p1, skater.getFirst(Skater.PENALTY));
         assertEquals(p2, p3.getPrevious());
         assertEquals(p1, p2.getPrevious());
         assertEquals(p3, p2.getNext());
         assertEquals(p2, p1.getNext());
-        assertEquals(p3, skater.getLast(NChild.PENALTY));
+        assertEquals(p3, skater.getLast(Skater.PENALTY));
 
         p2.delete();
 
-        assertEquals(2, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(2, skater.numberOf(Skater.PENALTY));
         assertEquals(1, p1.getNumber());
         assertEquals(2, p3.getNumber());
-        assertEquals(p1, skater.getFirst(NChild.PENALTY));
+        assertEquals(p1, skater.getFirst(Skater.PENALTY));
         assertEquals(p1, p3.getPrevious());
         assertEquals(p3, p1.getNext());
-        assertEquals(p3, skater.getLast(NChild.PENALTY));
+        assertEquals(p3, skater.getLast(Skater.PENALTY));
     }
 
     @Test
     public void update_penalty() {
-        Penalty p = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p.set(Penalty.CODE, "C");
 
-        p = (Penalty) skater.getOrCreate(NChild.PENALTY, "2");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(2));
-        p.set(Penalty.Value.CODE, "P");
+        p = skater.getOrCreate(Skater.PENALTY, "2");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(2));
+        p.set(Penalty.CODE, "P");
 
-        Penalty penalty = (Penalty) skater.get(Skater.NChild.PENALTY, "1");
+        Penalty penalty = skater.get(Skater.PENALTY, "1");
 
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(4));
-        p.set(Penalty.Value.CODE, "X");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(4));
+        p.set(Penalty.CODE, "X");
 
-        assertEquals(2, skater.getAll(Skater.NChild.PENALTY).size());
+        assertEquals(2, skater.numberOf(Skater.PENALTY));
 
-        Penalty penaltyone = (Penalty) skater.get(Skater.NChild.PENALTY, "1");
-        Penalty penaltytwo = (Penalty) skater.get(Skater.NChild.PENALTY, "2");
+        Penalty penaltyone = skater.get(Skater.PENALTY, "1");
+        Penalty penaltytwo = skater.get(Skater.PENALTY, "2");
 
         assertEquals("C", penaltyone.getCode());
         assertEquals(1, penaltyone.getPeriodNumber());
@@ -194,14 +193,14 @@ public class SkaterImplTests {
 
     @Test
     public void add_fo_exp() {
-        Penalty p = (Penalty) skater.getOrCreate(NChild.PENALTY, Skater.FO_EXP_ID);
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p = skater.getOrCreate(Skater.PENALTY, Skater.FO_EXP_ID);
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p.set(Penalty.CODE, "C");
 
-        assertEquals(1, skater.getAll(Skater.NChild.PENALTY).size());
-        assertNotNull(skater.get(Skater.NChild.PENALTY, Skater.FO_EXP_ID));
+        assertEquals(1, skater.numberOf(Skater.PENALTY));
+        assertNotNull(skater.get(Skater.PENALTY, Skater.FO_EXP_ID));
 
-        Penalty penalty = (Penalty) skater.get(Skater.NChild.PENALTY, Skater.FO_EXP_ID);
+        Penalty penalty = skater.get(Skater.PENALTY, Skater.FO_EXP_ID);
 
         assertEquals("C", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
@@ -211,52 +210,52 @@ public class SkaterImplTests {
         penalty.delete();
         assertEquals(Role.BENCH, skater.getBaseRole());
     }
-    
+
     @Test
     public void auto_added_fo() {
         sb.getRulesets().set(Rule.FO_LIMIT, "2");
-        Penalty p = (Penalty)skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(2));
-        p.set(Penalty.Value.CODE, "B");
-        
+        Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(2));
+        p.set(Penalty.CODE, "B");
+
         assertNull(skater.getPenalty(Skater.FO_EXP_ID));
 
-        Penalty p2 = (Penalty)skater.getOrCreate(NChild.PENALTY, "2");
-        p2.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p2.set(Penalty.Value.CODE, "C");
-        
-        assertEquals(sb.getOrCreatePeriod(1).getJam(3), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.JAM));
-        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.CODE));
-        
-        p2.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(4));
-        
-        assertEquals(sb.getOrCreatePeriod(1).getJam(4), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.JAM));
-        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.CODE));
-        
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(5));
-        
-        assertEquals(sb.getOrCreatePeriod(1).getJam(5), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.JAM));
-        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.CODE));
-        
-        p2.set(Penalty.Value.CODE, null);
-        
-        assertNull(skater.get(NChild.PENALTY, sb.getRulesets().getInt(Rule.FO_LIMIT)));
-        assertNull(skater.getPenalty(Skater.FO_EXP_ID));
-        
-        p2 = (Penalty)skater.getOrCreate(NChild.PENALTY, "2");
-        p2.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(3));
-        p2.set(Penalty.Value.CODE, "C");
-        
-        assertEquals(sb.getOrCreatePeriod(1).getJam(5), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.JAM));
-        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.CODE));
-        
-        skater.getPenalty(Skater.FO_EXP_ID).set(Penalty.Value.CODE, "B");
+        Penalty p2 = skater.getOrCreate(Skater.PENALTY, "2");
+        p2.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p2.set(Penalty.CODE, "C");
 
-        p2.set(Penalty.Value.CODE, null);
-        
-        assertNull(skater.get(NChild.PENALTY, sb.getRulesets().getInt(Rule.FO_LIMIT)));
-        assertEquals("B", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.Value.CODE));
-}
+        assertEquals(sb.getOrCreatePeriod(1).getJam(3), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.JAM));
+        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.CODE));
+
+        p2.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(4));
+
+        assertEquals(sb.getOrCreatePeriod(1).getJam(4), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.JAM));
+        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.CODE));
+
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(5));
+
+        assertEquals(sb.getOrCreatePeriod(1).getJam(5), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.JAM));
+        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.CODE));
+
+        p2.set(Penalty.CODE, null);
+
+        assertNull(skater.get(Skater.PENALTY, sb.getRulesets().getInt(Rule.FO_LIMIT)));
+        assertNull(skater.getPenalty(Skater.FO_EXP_ID));
+
+        p2 = skater.getOrCreate(Skater.PENALTY, "2");
+        p2.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(3));
+        p2.set(Penalty.CODE, "C");
+
+        assertEquals(sb.getOrCreatePeriod(1).getJam(5), skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.JAM));
+        assertEquals("FO", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.CODE));
+
+        skater.getPenalty(Skater.FO_EXP_ID).set(Penalty.CODE, "B");
+
+        p2.set(Penalty.CODE, null);
+
+        assertNull(skater.get(Skater.PENALTY, sb.getRulesets().getInt(Rule.FO_LIMIT)));
+        assertEquals("B", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.CODE));
+    }
 
     @Test
     public void penalty_between_jams_fields_skater() {
@@ -264,9 +263,9 @@ public class SkaterImplTests {
         sb.startJam();
         sb.stopJamTO();
 
-        Penalty p = (Penalty) skater.getOrCreate(NChild.PENALTY, "1");
-        p.set(Penalty.Value.JAM, sb.getOrCreatePeriod(1).getJam(1));
-        p.set(Penalty.Value.CODE, "C");
+        Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
+        p.set(Penalty.JAM, sb.getOrCreatePeriod(1).getJam(1));
+        p.set(Penalty.CODE, "C");
 
         assertEquals(Role.BLOCKER, skater.getRole(team.getRunningOrUpcomingTeamJam()));
     }
@@ -274,9 +273,9 @@ public class SkaterImplTests {
     @Test
     public void alt_prepared_skater_not_in_game() {
         PreparedTeamSkater pts = new PreparedTeamSkaterImpl(null, "1234");
-        pts.set(PreparedTeamSkater.Value.NUMBER, "1");
-        pts.set(PreparedTeamSkater.Value.NAME, "Uno");
-        pts.set(PreparedTeamSkater.Value.FLAGS, "ALT");
+        pts.set(PreparedTeamSkater.ROSTER_NUMBER, "1");
+        pts.set(PreparedTeamSkater.NAME, "Uno");
+        pts.set(PreparedTeamSkater.FLAGS, "ALT");
         skater = new SkaterImpl(team, pts);
 
         assertEquals(Role.NOT_IN_GAME, skater.getBaseRole());

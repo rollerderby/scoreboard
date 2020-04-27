@@ -13,28 +13,29 @@ import com.carolinarollergirls.scoreboard.core.Settings;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
-public class SettingsImpl extends ScoreBoardEventProviderImpl implements Settings {
+public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implements Settings {
     public SettingsImpl(ScoreBoard s) {
-        super (s, "", ScoreBoard.Child.SETTINGS, Settings.class, Child.class);
+        super(s, "", ScoreBoard.SETTINGS);
+        addProperties(SETTING);
     }
 
     @Override
-    public void reset() { removeAll(Child.SETTING); }
+    public void reset() { removeAll(SETTING); }
 
     @Override
     public String get(String k) {
-        synchronized(coreLock) {
-            if (get(Child.SETTING, k) == null) { return null; }
-            return get(Child.SETTING, k).getValue();
+        synchronized (coreLock) {
+            if (get(SETTING, k) == null) { return null; }
+            return get(SETTING, k).getValue();
         }
     }
     @Override
     public void set(String k, String v) {
         synchronized (coreLock) {
             if (v == null) {
-                remove(Child.SETTING, k);
+                remove(SETTING, k);
             } else {
-                add(Child.SETTING, new ValWithId(k, v));
+                add(SETTING, new ValWithId(k, v));
             }
         }
     }

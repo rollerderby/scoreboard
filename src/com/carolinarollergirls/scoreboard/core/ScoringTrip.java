@@ -1,34 +1,20 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip> {
     public int getScore();
-    
-    public enum Value implements PermanentProperty {
-        SCORE(Integer.class, 0),
-        AFTER_S_P(Boolean.class, false),
-        CURRENT(Boolean.class, false),
-        DURATION(Long.class, 0L),
-        JAM_CLOCK_START(Long.class, 0L),
-        JAM_CLOCK_END(Long.class, 0L),
-        ANNOTATION(String.class, "");
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Command implements CommandProperty {
-        INSERT_BEFORE,
-        REMOVE;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    Value<Integer> SCORE = new Value<>(Integer.class, "Score", 0);
+    Value<Boolean> AFTER_S_P = new Value<>(Boolean.class, "AfterSP", false);
+    Value<Boolean> CURRENT = new Value<>(Boolean.class, "Current", false);
+    Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L);
+    Value<Long> JAM_CLOCK_START = new Value<>(Long.class, "JamClockStart", 0L);
+    Value<Long> JAM_CLOCK_END = new Value<>(Long.class, "JamClockEnd", 0L);
+    Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "");
+
+    Command INSERT_BEFORE = new Command("InsertBefore");
+    Command REMOVE = new Command("Remove");
 }

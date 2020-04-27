@@ -1,10 +1,9 @@
 package com.carolinarollergirls.scoreboard.core;
 
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding> {
     public TeamJam getTeamJam();
@@ -21,40 +20,20 @@ public interface Fielding extends ParentOrderedScoreBoardEventProvider<Fielding>
     public BoxTrip getCurrentBoxTrip();
     public void updateBoxTripSymbols();
 
-    public enum Value implements PermanentProperty {
-        SKATER(Skater.class, null),
-        SKATER_NUMBER(String.class, "?"),
-        NOT_FIELDED(Boolean.class, false),
-        POSITION(Position.class, null),
-        SIT_FOR_3(Boolean.class, false),
-        PENALTY_BOX(Boolean.class, false),
-        CURRENT_BOX_TRIP(BoxTrip.class, null),
-        BOX_TRIP_SYMBOLS(String.class, ""),
-        BOX_TRIP_SYMBOLS_BEFORE_S_P(String.class, ""),
-        BOX_TRIP_SYMBOLS_AFTER_S_P(String.class, ""),
-        ANNOTATION(String.class, "");
+    Value<Skater> SKATER = new Value<>(Skater.class, "Skater", null);
+    Value<String> SKATER_NUMBER = new Value<>(String.class, "SkaterNumber", "?");
+    Value<Boolean> NOT_FIELDED = new Value<>(Boolean.class, "NotFielded", false);
+    Value<Position> POSITION = new Value<>(Position.class, "Position", null);
+    Value<Boolean> SIT_FOR_3 = new Value<>(Boolean.class, "SitFor3", false);
+    Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false);
+    Value<BoxTrip> CURRENT_BOX_TRIP = new Value<>(BoxTrip.class, "CurrentBoxTrip", null);
+    Value<String> BOX_TRIP_SYMBOLS = new Value<>(String.class, "BoxTripSymbols", "");
+    Value<String> BOX_TRIP_SYMBOLS_BEFORE_S_P = new Value<>(String.class, "BoxTripSymbolsBeforeSP", "");
+    Value<String> BOX_TRIP_SYMBOLS_AFTER_S_P = new Value<>(String.class, "BoxTripSymbolsAfterSP", "");
+    Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "");
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        BOX_TRIP(BoxTrip.class);
+    Child<BoxTrip> BOX_TRIP = new Child<>(BoxTrip.class, "BoxTrip");
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum Command implements CommandProperty {
-        ADD_BOX_TRIP,
-        UNEND_BOX_TRIP;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    Command ADD_BOX_TRIP = new Command("AddBoxTrip");
+    Command UNEND_BOX_TRIP = new Command("UnendBoxTrip");
 }

@@ -8,11 +8,10 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 // Managemnt of currently playing teams.
@@ -51,7 +50,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public int getScore();
 
     public ScoringTrip getCurrentTrip();
-    
+
     public int getTimeouts();
     public int getOfficialReviews();
 
@@ -78,77 +77,56 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public boolean isDisplayLead();
     public boolean isStarPass();
     public boolean hasNoPivot();
-    
-    public Team getOtherTeam();
 
+    public Team getOtherTeam();
 
     public static final String ID_1 = "1";
     public static final String ID_2 = "2";
 
-    public enum Value implements PermanentProperty {
-        NAME(String.class, ""),
-        LOGO(String.class, ""),
-        RUNNING_OR_UPCOMING_TEAM_JAM(TeamJam.class, null),
-        RUNNING_OR_ENDED_TEAM_JAM(TeamJam.class, null),
-        FIELDING_ADVANCE_PENDING(Boolean.class, false),
-        CURRENT_TRIP(ScoringTrip.class, null),
-        SCORE(Integer.class, 0),
-        JAM_SCORE(Integer.class, 0),
-        TRIP_SCORE(Integer.class, 0),
-        LAST_SCORE(Integer.class, 0),
-        TIMEOUTS(Integer.class, 0),
-        OFFICIAL_REVIEWS(Integer.class, 0),
-        LAST_REVIEW(Timeout.class, null),
-        IN_TIMEOUT(Boolean.class, false),
-        IN_OFFICIAL_REVIEW(Boolean.class, false),
-        NO_PIVOT(Boolean.class, false),
-        RETAINED_OFFICIAL_REVIEW(Boolean.class, false),
-        LOST(Boolean.class, false),
-        LEAD(Boolean.class, false),
-        CALLOFF(Boolean.class, false),
-        INJURY(Boolean.class, false),
-        NO_INITIAL(Boolean.class, true),
-        DISPLAY_LEAD(Boolean.class, false),
-        STAR_PASS(Boolean.class, false),
-        STAR_PASS_TRIP(ScoringTrip.class, null);
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> LOGO = new Value<>(String.class, "Logo", "");
+    Value<TeamJam> RUNNING_OR_UPCOMING_TEAM_JAM = new Value<>(TeamJam.class, "RunningOrUpcomingTeamJam", null);
+    Value<TeamJam> RUNNING_OR_ENDED_TEAM_JAM = new Value<>(TeamJam.class, "RunningOrEndedTeamJam", null);
+    Value<Boolean> FIELDING_ADVANCE_PENDING = new Value<>(Boolean.class, "FieldingAdvancePending", false);
+    Value<ScoringTrip> CURRENT_TRIP = new Value<>(ScoringTrip.class, "CurrentTrip", null);
+    Value<Integer> SCORE = new Value<>(Integer.class, "Score", 0);
+    Value<Integer> JAM_SCORE = new Value<>(Integer.class, "JamScore", 0);
+    Value<Integer> TRIP_SCORE = new Value<>(Integer.class, "TripScore", 0);
+    Value<Integer> LAST_SCORE = new Value<>(Integer.class, "LastScore", 0);
+    Value<Integer> TIMEOUTS = new Value<>(Integer.class, "Timeouts", 0);
+    Value<Integer> OFFICIAL_REVIEWS = new Value<>(Integer.class, "OfficialReviews", 0);
+    Value<Timeout> LAST_REVIEW = new Value<>(Timeout.class, "LastReview", null);
+    Value<Boolean> IN_TIMEOUT = new Value<>(Boolean.class, "InTimeout", false);
+    Value<Boolean> IN_OFFICIAL_REVIEW = new Value<>(Boolean.class, "InOfficialReview", false);
+    Value<Boolean> NO_PIVOT = new Value<>(Boolean.class, "NoPivot", false);
+    Value<Boolean> RETAINED_OFFICIAL_REVIEW = new Value<>(Boolean.class, "RetainedOfficialReview", false);
+    Value<Boolean> LOST = new Value<>(Boolean.class, "Lost", false);
+    Value<Boolean> LEAD = new Value<>(Boolean.class, "Lead", false);
+    Value<Boolean> CALLOFF = new Value<>(Boolean.class, "Calloff", false);
+    Value<Boolean> INJURY = new Value<>(Boolean.class, "Injury", false);
+    Value<Boolean> NO_INITIAL = new Value<>(Boolean.class, "NoInitial", true);
+    Value<Boolean> DISPLAY_LEAD = new Value<>(Boolean.class, "DisplayLead", false);
+    Value<Boolean> STAR_PASS = new Value<>(Boolean.class, "StarPass", false);
+    Value<ScoringTrip> STAR_PASS_TRIP = new Value<>(ScoringTrip.class, "StarPassTrip", null);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Child implements AddRemoveProperty {
-        SKATER(Skater.class),
-        POSITION(Position.class),
-        TIME_OUT(Timeout.class), // can't be TIMEOUT, as that would lead to a conflict with Command.TIMEOUT
-        ALTERNATE_NAME(ValWithId.class),
-        COLOR(ValWithId.class),
-        BOX_TRIP(BoxTrip.class);
+    Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName");
+    Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color");
+    Child<Skater> SKATER = new Child<>(Skater.class, "Skater");
+    Child<Position> POSITION = new Child<>(Position.class, "Position");
+    Child<Timeout> TIME_OUT = new Child<>(Timeout.class, "TimeOut");
+    Child<BoxTrip> BOX_TRIP = new Child<>(BoxTrip.class, "BoxTrip");
 
-        private Child(Class<? extends ValueWithId> t) { type = t; }
-        private final Class<? extends ValueWithId> type;
-        @Override
-        public Class<? extends ValueWithId> getType() { return type; }
-    }
-    public enum Command implements CommandProperty {
-        ADD_TRIP,
-        REMOVE_TRIP,
-        ADVANCE_FIELDINGS,
-        TIMEOUT,
-        OFFICIAL_REVIEW;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    Command ADD_TRIP = new Command("AddTrip");
+    Command REMOVE_TRIP = new Command("RemoveTrip");
+    Command ADVANCE_FIELDINGS = new Command("AdvanceFieldings");
+    Command TIMEOUT = new Command("Timeout");
+    Command OFFICIAL_REVIEW = new Command("OfficialReview");
 
     public enum AlternateNameId {
         OPERATOR("operator"),
         OVERLAY("overlay"),
         TWITTER("twitter");
-        
+
         private AlternateNameId(String i) { id = i; }
         @Override
         public String toString() { return id; }

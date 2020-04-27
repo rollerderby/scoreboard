@@ -3,20 +3,15 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.Objects;
 import java.util.UUID;
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.NumberedProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.Property;
+public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScoreBoardEventProvider<C>>
+        extends OrderedScoreBoardEventProviderImpl<C> implements NumberedScoreBoardEventProvider<C> {
 
-public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScoreBoardEventProvider<T>>
-        extends OrderedScoreBoardEventProviderImpl<T> implements NumberedScoreBoardEventProvider<T> {
-
-    @SafeVarargs
-    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number, NumberedProperty type,
-            Class<T> ownClass, Class<? extends Property>... props) {
-        super(parent, UUID.randomUUID().toString(), type, ownClass, props);
+    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number,
+            NumberedChild<C> type) {
+        super(parent, UUID.randomUUID().toString(), type);
         ownType = type;
-        values.put(IValue.NUMBER, number);
-        addWriteProtectionOverride(IValue.NUMBER, Source.RENUMBER);
+        values.put(NUMBER, number);
+        addWriteProtectionOverride(NUMBER, Source.RENUMBER);
         setNeighbors(getNumber());
     }
 
@@ -40,45 +35,42 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
 
     @Override
     public void delete(Source source) {
-        T next = null;
+        C next = null;
         if (source != Source.UNLINK) {
             next = getNext();
             unlinkNeighbors();
         }
         super.delete(source);
         if (next != null && next.getNumber() == getNumber() + 1) {
-            next.set(IValue.NUMBER, getNumber(), Source.RENUMBER);
+            next.set(NUMBER, getNumber(), Source.RENUMBER);
         }
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    protected Object _computeValue(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+    protected Object _computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         value = super._computeValue(prop, value, last, source, flag);
-        if (prop == IValue.NUMBER && last != null && !Objects.equals(value, last)) {
-            parent.remove(ownType, this, Source.RENUMBER);
+        if (prop == NUMBER && last != null && !Objects.equals(value, last)) {
+            parent.remove(ownType, (C) this, Source.RENUMBER);
         }
         return value;
     }
+    @SuppressWarnings("unchecked")
     @Override
-    protected void _valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == IValue.NUMBER && last != null) {
+    protected <T> void _valueChanged(Value<T> prop, T value, T last, Source source, Flag flag) {
+        if (prop == NUMBER && last != null) {
             if (flag != Flag.SPECIAL_CASE) {
                 if (hasNext() && getNext().getNumber() == (Integer) last + 1) {
-                    getNext().set(IValue.NUMBER, (Integer) value + 1, Source.RENUMBER);
+                    getNext().set(NUMBER, (Integer) value + 1, Source.RENUMBER);
                 }
                 if (hasPrevious() && getPrevious().getNumber() == (Integer) last - 1) {
-                    getPrevious().set(IValue.NUMBER, (Integer) value - 1, Source.RENUMBER);
+                    getPrevious().set(NUMBER, (Integer) value - 1, Source.RENUMBER);
                 }
             }
-            parent.add(ownType, this, Source.RENUMBER);
+            parent.add(ownType, (C) this, Source.RENUMBER);
         }
         super._valueChanged(prop, value, last, source, flag);
     }
-
-    @Override
-    public void setPrevious(T p) { set(IValue.PREVIOUS, p); }
-    @Override
-    public void setNext(T n) { set(IValue.NEXT, n); }
 
     @Override
     public void moveToNumber(int num) {
@@ -86,7 +78,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
             if (num == getNumber()) { return; }
             unlinkNeighbors();
             setNeighbors(num);
-            set(IValue.NUMBER, num, Source.RENUMBER);
+            set(NUMBER, num, Source.RENUMBER);
         }
     }
 
@@ -97,38 +89,37 @@ public abstract class NumberedScoreBoardEventProviderImpl<T extends NumberedScor
             getNext().setPrevious(getPrevious());
         }
     }
-    @SuppressWarnings("unchecked")
     public void setNeighbors(int targetPosition) {
         if (parent.get(ownType, targetPosition) != null) {
-            T replaced = (T) parent.get(ownType, targetPosition);
+            C replaced = parent.get(ownType, targetPosition);
             if (targetPosition <= getNumber()) {
                 setPrevious(replaced.getPrevious());
                 setNext(replaced);
-                replaced.set(IValue.NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
+                replaced.set(NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
             } else {
                 setNext(replaced.getNext());
                 setPrevious(replaced);
-                replaced.set(IValue.NUMBER, -1, Source.RENUMBER, Flag.CHANGE);
+                replaced.set(NUMBER, -1, Source.RENUMBER, Flag.CHANGE);
             }
-        } else if (parent.getAll(ownType).size() == 0) {
+        } else if (parent.numberOf(ownType) == 0) {
             // do not set previous or next
         } else if (targetPosition > parent.getMaxNumber(ownType)) {
-            T prev = (T) parent.getLast(ownType);
+            C prev = parent.getLast(ownType);
             setNext(prev.getNext());
             setPrevious(prev);
         } else if (targetPosition < parent.getMinNumber(ownType)) {
-            T next = (T) parent.getFirst(ownType);
+            C next = parent.getFirst(ownType);
             setPrevious(next.getPrevious());
             setNext(next);
         } else {
             int n = targetPosition + 1;
             while (parent.get(ownType, n) == null) { n++; }
-            T next = (T) parent.get(ownType, n);
+            C next = parent.get(ownType, n);
             setPrevious(next.getPrevious());
             setNext(next);
         }
     }
 
     @SuppressWarnings("hiding")
-    protected NumberedProperty ownType;
+    protected NumberedChild<C> ownType;
 }

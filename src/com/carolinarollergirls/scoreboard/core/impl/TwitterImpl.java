@@ -13,15 +13,16 @@ import java.util.Map;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.Twitter;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.FormatSpecifierScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.AddRemoveProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.ValueWithId;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
 import twitter4j.AsyncTwitter;
@@ -34,99 +35,96 @@ import twitter4j.auth.AccessToken;
 import twitter4j.auth.RequestToken;
 import twitter4j.conf.ConfigurationBuilder;
 
-public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter {
+public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements Twitter {
     public TwitterImpl(ScoreBoard sb) {
-        super(sb, "", ScoreBoard.Child.TWITTER, Twitter.class, Value.class, Child.class, Command.class);
+        super(sb, "", ScoreBoard.TWITTER);
+        addProperties(AUTH_URL, CALLBACK_URL, OAUTH_VERIFIER, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, MANUAL_TWEET, STATUS,
+                LOGGED_IN, ERROR, SCREEN_NAME, TEST_MODE, CONDITIONAL_TWEET, FORMAT_SPECIFIER, LOGIN, LOGOUT);
 
         formatSpecifierViewer = new FormatSpecifierViewer(sb);
         int i = 0;
         for (Map.Entry<String, String> entry : formatSpecifierViewer.getFormatSpecifierDescriptions().entrySet()) {
-            final FormatSpecifier fs = (FormatSpecifier) getOrCreate(Child.FORMAT_SPECIFIER, String.valueOf(i++));
+            final FormatSpecifier fs = getOrCreate(FORMAT_SPECIFIER, String.valueOf(i++));
             final String key = entry.getKey();
-            final FormatSpecifierViewer.ScoreBoardValue value = formatSpecifierViewer
+            final FormatSpecifierViewer.ScoreBoardValue<?> value = formatSpecifierViewer
                     .getFormatSpecifierScoreBoardValue(key);
-            fs.set(FormatSpecifier.Value.KEY, key);
-            fs.set(FormatSpecifier.Value.DESCRIPTION, entry.getValue());
+            fs.set(FormatSpecifier.KEY, key);
+            fs.set(FormatSpecifier.DESCRIPTION, entry.getValue());
             // Provide current value of each specifier to the frontend.
-            scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener(
+            scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener<>(
                     formatSpecifierViewer.getScoreBoardCondition(key), new ScoreBoardListener() {
                         @Override
-                        public void scoreBoardChange(ScoreBoardEvent e) {
-                            fs.set(FormatSpecifier.Value.CURRENT_VALUE, value.getValue());
+                        public void scoreBoardChange(ScoreBoardEvent<?> e) {
+                            fs.set(FormatSpecifier.CURRENT_VALUE, value.getValue());
                         }
                     }));
         }
-        addWriteProtection(Child.FORMAT_SPECIFIER);
+        addWriteProtection(FORMAT_SPECIFIER);
 
         twitter.addListener(new Listener());
     }
 
     @Override
     public void postAutosaveUpdate() {
-        set(Value.MANUAL_TWEET, "");
-        set(Value.ERROR, "");
+        set(MANUAL_TWEET, "");
+        set(ERROR, "");
         // If we were authenticated when shut down.
         if (isLoggedIn()) {
-            twitter.setOAuthAccessToken(
-                    new AccessToken((String) get(Value.ACCESS_TOKEN), (String) get(Value.ACCESS_TOKEN_SECRET)));
+            twitter.setOAuthAccessToken(new AccessToken(get(ACCESS_TOKEN), get(ACCESS_TOKEN_SECRET)));
             twitter.verifyCredentials(); // This is async, and checks our credentials work.
         }
         initilized = true;
     }
 
     @Override
-    protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (!initilized) { return; }
-        if (prop == Value.OAUTH_VERIFIER && value != null && !((String) value).isEmpty()) {
+        if (prop == OAUTH_VERIFIER && value != null && !((String) value).isEmpty()) {
             twitter.getOAuthAccessTokenAsync(requestToken, (String) value);
-        } else if (prop == Value.MANUAL_TWEET && value != null && !((String) value).isEmpty()) {
+        } else if (prop == MANUAL_TWEET && value != null && !((String) value).isEmpty()) {
             tweet((String) value);
-            set(Value.MANUAL_TWEET, "");
+            set(MANUAL_TWEET, "");
         }
     }
 
     @Override
-    public void execute(CommandProperty prop, Source source) {
-        switch ((Command) prop) {
-        case LOGIN:
-            twitter.getOAuthRequestTokenAsync((String) get(Value.CALLBACK_URL));
-            break;
-        case LOGOUT:
+    public void execute(Command prop, Source source) {
+        if (prop == LOGIN) {
+            twitter.getOAuthRequestTokenAsync(get(CALLBACK_URL));
+        } else if (prop == LOGOUT) {
             resetTwitter();
-            break;
         }
     }
 
     private void resetTwitter() {
         synchronized (coreLock) {
-            set(Value.LOGGED_IN, false);
-            set(Value.SCREEN_NAME, "");
-            set(Value.AUTH_URL, "");
-            set(Value.ERROR, "");
-            set(Value.OAUTH_VERIFIER, "");
-            set(Value.ACCESS_TOKEN, "");
-            set(Value.ACCESS_TOKEN_SECRET, "");
+            set(LOGGED_IN, false);
+            set(SCREEN_NAME, "");
+            set(AUTH_URL, "");
+            set(ERROR, "");
+            set(OAUTH_VERIFIER, "");
+            set(ACCESS_TOKEN, "");
+            set(ACCESS_TOKEN_SECRET, "");
             twitter.setOAuthAccessToken(null);
         }
     }
 
     @Override
-    public ValueWithId create(AddRemoveProperty prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
-            switch ((Child) prop) {
-            case CONDITIONAL_TWEET:
+            if (prop == CONDITIONAL_TWEET) {
                 return new ConditionalTweetImpl(this, id);
-            case FORMAT_SPECIFIER:
+            } else if (prop == FORMAT_SPECIFIER) {
                 return new FormatSpecifierImpl(this, id);
-            default:
+            } else {
                 return null;
             }
         }
     }
 
     @Override
-    protected void itemRemoved(AddRemoveProperty prop, ValueWithId item, Source source) {
-        if (prop == Child.CONDITIONAL_TWEET) {
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
+        if (prop == CONDITIONAL_TWEET) {
             removeConditionalListener(item.getId());
         }
     }
@@ -142,15 +140,15 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
         String parsedTweet = formatSpecifierViewer.parse(tweet);
         if (isTestMode()) {
             System.out.println("(TEST MODE) Tweeting '" + parsedTweet + "'");
-            set(Value.STATUS, "(TEST MODE) " + parsedTweet);
+            set(STATUS, "(TEST MODE) " + parsedTweet);
         } else if (isLoggedIn()) {
             System.out.println("Tweeting '" + parsedTweet + "'");
-            set(Value.STATUS, ""); // Clear it so frontend can notice duplicates.
+            set(STATUS, ""); // Clear it so frontend can notice duplicates.
             twitter.updateStatus(parsedTweet);
         }
     }
-    protected boolean isTestMode() { return (Boolean) get(Value.TEST_MODE); }
-    protected boolean isLoggedIn() { return (Boolean) get(Value.LOGGED_IN); }
+    protected boolean isTestMode() { return get(TEST_MODE); }
+    protected boolean isLoggedIn() { return get(LOGGED_IN); }
 
     private ConfigurationBuilder getConfigurationBuilder() {
         return new ConfigurationBuilder().setDebugEnabled(false).setUserStreamRepliesAllEnabled(false)
@@ -171,7 +169,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
         public void onException(TwitterException te, TwitterMethod method) {
             te.printStackTrace();
             synchronized (coreLock) {
-                set(Value.ERROR, "Twitter Exception for " + method + ": " + te.getMessage());
+                set(ERROR, "Twitter Exception for " + method + ": " + te.getMessage());
             }
         }
 
@@ -180,45 +178,47 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
             synchronized (coreLock) {
                 requestToken = token;
                 resetTwitter();
-                set(Value.AUTH_URL, requestToken.getAuthorizationURL());
+                set(AUTH_URL, requestToken.getAuthorizationURL());
             }
         }
 
         @Override
         public void gotOAuthAccessToken(AccessToken token) {
             synchronized (coreLock) {
-                set(Value.ACCESS_TOKEN, token.getToken());
-                set(Value.ACCESS_TOKEN_SECRET, token.getTokenSecret());
-                set(Value.SCREEN_NAME, token.getScreenName());
-                set(Value.LOGGED_IN, true);
-                set(Value.OAUTH_VERIFIER, "");
+                set(ACCESS_TOKEN, token.getToken());
+                set(ACCESS_TOKEN_SECRET, token.getTokenSecret());
+                set(SCREEN_NAME, token.getScreenName());
+                set(LOGGED_IN, true);
+                set(OAUTH_VERIFIER, "");
             }
         }
 
         @Override
         public void updatedStatus(Status status) {
             synchronized (coreLock) {
-                set(Value.STATUS, status.getText());
-                set(Value.ERROR, "");
+                set(STATUS, status.getText());
+                set(ERROR, "");
             }
         }
     }
 
-    public class ConditionalTweetImpl extends ScoreBoardEventProviderImpl implements ConditionalTweet {
+    public class ConditionalTweetImpl extends ScoreBoardEventProviderImpl<ConditionalTweet>
+            implements ConditionalTweet {
         public ConditionalTweetImpl(Twitter t, String id) {
-            super(t, id, Twitter.Child.CONDITIONAL_TWEET, ConditionalTweet.class, Value.class);
+            super(t, id, Twitter.CONDITIONAL_TWEET);
+            addProperties(CONDITION, TWEET);
         }
 
         @Override
-        protected void valueChanged(PermanentProperty prop, Object value, Object last, Source source, Flag flag) {
-            if (prop == Value.TWEET || prop == Value.CONDITION) {
+        protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+            if (prop == TWEET || prop == CONDITION) {
                 removeConditionalListener(getId());
                 if (!getTweet().isEmpty() && !getCondition().isEmpty()) {
                     // Everything is set, we can create the condition.
                     ScoreBoardListener tweetListener = new TweetScoreBoardListener(getTweet());
                     ScoreBoardListener conditionalListener;
                     try {
-                        conditionalListener = new FormatSpecifierScoreBoardListener(formatSpecifierViewer,
+                        conditionalListener = new FormatSpecifierScoreBoardListener<>(formatSpecifierViewer,
                                 getCondition(), tweetListener);
                     } catch (IllegalArgumentException e) {
                         // Invalid condition.
@@ -231,13 +231,14 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
             }
         }
 
-        protected String getTweet() { return (String) get(Value.TWEET); }
-        protected String getCondition() { return (String) get(Value.CONDITION); }
+        protected String getTweet() { return get(TWEET); }
+        protected String getCondition() { return get(CONDITION); }
     }
 
-    public class FormatSpecifierImpl extends ScoreBoardEventProviderImpl implements FormatSpecifier {
+    public class FormatSpecifierImpl extends ScoreBoardEventProviderImpl<FormatSpecifier> implements FormatSpecifier {
         public FormatSpecifierImpl(Twitter t, String id) {
-            super(t, id, Twitter.Child.FORMAT_SPECIFIER, FormatSpecifier.class, Value.class);
+            super(t, id, Twitter.FORMAT_SPECIFIER);
+            addProperties(KEY, DESCRIPTION, CURRENT_VALUE);
         }
     }
 
@@ -246,7 +247,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl implements Twitter 
             tweet = t;
         }
         @Override
-        public void scoreBoardChange(ScoreBoardEvent e) {
+        public void scoreBoardChange(ScoreBoardEvent<?> e) {
             tweet(tweet);
         }
 

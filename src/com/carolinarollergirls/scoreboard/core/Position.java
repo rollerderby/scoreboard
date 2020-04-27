@@ -8,8 +8,8 @@ package com.carolinarollergirls.scoreboard.core;
  * See the file COPYING for details.
  */
 
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.CommandProperty;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent.PermanentProperty;
+import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 public interface Position extends ScoreBoardEventProvider {
@@ -25,28 +25,14 @@ public interface Position extends ScoreBoardEventProvider {
     public boolean isPenaltyBox();
     public void setPenaltyBox(boolean box);
 
-    public enum Value implements PermanentProperty {
-        CURRENT_FIELDING(Fielding.class, null),
-        CURRENT_BOX_SYMBOLS(String.class, ""),
-        ANNOTATION(String.class, ""),
-        SKATER(Skater.class, null),
-        NAME(String.class, ""),
-        ROSTER_NUMBER(String.class, ""),
-        FLAGS(String.class, ""),
-        PENALTY_BOX(Boolean.class, false);
+    Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
+    Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
+    Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "");
+    Value<Skater> SKATER = new Value<>(Skater.class, "Skater", null);
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
+    Value<String> FLAGS = new Value<>(String.class, "Flags", "");
+    Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false);
 
-        private Value(Class<?> t, Object dv) { type = t; defaultValue = dv; }
-        private final Class<?> type;
-        private final Object defaultValue;
-        @Override
-        public Class<?> getType() { return type; }
-        @Override
-        public Object getDefaultValue() { return defaultValue; }
-    }
-    public enum Command implements CommandProperty {
-        CLEAR;
-        
-        @Override
-        public Class<Boolean> getType() { return Boolean.class; }
-    }
+    Command CLEAR = new Command("Clear");
 }

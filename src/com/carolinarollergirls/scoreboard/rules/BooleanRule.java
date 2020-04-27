@@ -3,9 +3,11 @@ package com.carolinarollergirls.scoreboard.rules;
 public class BooleanRule extends RuleDefinition {
     public BooleanRule(String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
         super(Type.BOOLEAN, fullname, description, Boolean.valueOf(defaultValue));
-
-        values.put(Value.TRUE_VALUE, trueValue);
-        values.put(Value.FALSE_VALUE, falseValue);
+        addProperties(TRUE_VALUE, FALSE_VALUE);
+        set(TRUE_VALUE, trueValue);
+        set(FALSE_VALUE, falseValue);
+        addWriteProtection(TRUE_VALUE);
+        addWriteProtection(FALSE_VALUE);
     }
 
     @Override
@@ -26,10 +28,6 @@ public class BooleanRule extends RuleDefinition {
         return Boolean.valueOf(v.toString()) ? getTrueValue() : getFalseValue();
     }
 
-    public String getTrueValue() {
-        return (String)get(Value.TRUE_VALUE);
-    }
-    public String getFalseValue() {
-        return (String)get(Value.FALSE_VALUE);
-    }
+    public String getTrueValue() { return get(TRUE_VALUE); }
+    public String getFalseValue() { return get(FALSE_VALUE); }
 }
