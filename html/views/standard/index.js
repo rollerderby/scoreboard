@@ -52,13 +52,13 @@ function initialize() {
       }
 
       $('body').removeClass();
-      if (boxStyle !== '' && boxStyle !== null) {
+      if (boxStyle !== '' && boxStyle != null) {
         $('body').addClass(boxStyle);
       }
 
       var left = 0;
       var right = 0;
-      if (sidePadding !== '' && sidePadding !== null) {
+      if (sidePadding !== '' && sidePadding != null) {
         left = sidePadding;
         right = left;
       }
@@ -69,7 +69,7 @@ function initialize() {
   
   $.each([1, 2], function(idx, t) {
     WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) {
-      if (v === null) {
+      if (v == null) {
         v = '';
       }
       switch (String(k)){
@@ -138,12 +138,12 @@ function initialize() {
     WS.Register(['ScoreBoard.Media.Format(images).Type(sponsor_banner)'], {triggerBatchFunc: function() {
       var images = {};
       for (var prop in WS.state) {
-        if (WS.state[prop] === null) {
+        if (WS.state[prop] == null) {
           continue;
         }
         var re = /ScoreBoard.Media.Format\(images\).Type\(sponsor_banner\)\.File\((.*)\)\.(\w+)/;
         var m = prop.match(re);
-        if (m !== null) {
+        if (m != null) {
           images[m[1]] = images[m[1]] || {};
           images[m[1]][m[2]] = WS.state[prop];
         }

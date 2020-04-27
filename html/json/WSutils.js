@@ -18,7 +18,7 @@ function mediaSelect(key, format, type, humanName) {
   var select = $('<select>').append($('<option value="">No ' + humanName + '</option>'));
   WS.Register('ScoreBoard.Media.Format(' + format + ').Type(' + type + ').File(*).Name', function(k, v) {
     select.children('[value="' + '/' + format + '/' + type + '/' + k.File + '"]').remove();
-    if (v !== null) {
+    if (v != null) {
       var option = $('<option>').attr('name', v).val('/' + format + '/' + type + '/' + k.File).text(v);
       _windowFunctions.appendAlphaSortedByAttr(select, option, 'name', 1);
     }

@@ -41,7 +41,7 @@ function createTeamsTab(tab) {
   });
 
   WS.Register('ScoreBoard.PreparedTeam(*).Id', function(k, v) {
-    if (v === null) {
+    if (v == null) {
       selectTeam.children('option[value="'+k.PreparedTeam+'"]').remove();
       return;
     }
@@ -74,7 +74,7 @@ function createTeamsTab(tab) {
   WS.Register('ScoreBoard.Media.Format(images).Type(teamlogo).File(*).Name', function(k, v) {
     var val = logoSelect.val(); // Record this before we potentially remove and re-add it.
     logoSelect.children('[value="' + k.File + '"]').remove();
-    if (v !== null) {
+    if (v != null) {
       if (waitingOnUpload === k.File) {
         val = k.File;
         waitingOnUpload = '';
@@ -228,11 +228,11 @@ function createTeamsTab(tab) {
   updateSkaterCount();
 
   var handleTeamUpdate = function(k, v) {
-    if (k.Skater !== null) {
+    if (k.Skater != null) {
       // For a current team, could be a penalty or position.
       if (k.parts.length !== 4 || k.parts[2] !== 'Skater') { return; }
       var skaterRow = skatersTable.find('tr[skaterid="'+k.Skater+'"]');
-      if (v === null) {
+      if (v == null) {
         skaterRow.remove();
         if (!skatersTable.find('tr[skaterid]').length) {
           skatersTable.children('tbody').addClass('Empty');
@@ -293,7 +293,7 @@ function createTeamsTab(tab) {
           teamName.val(v);
           break;
         case 'AlternateName':
-          if (v === null) {
+          if (v == null) {
             alternameNameDialog.removeFunc(k.AlternateName);
             return;
           }
@@ -301,7 +301,7 @@ function createTeamsTab(tab) {
           break;
         case 'Color':
           var colorId = k.Color.substring(0, k.Color.lastIndexOf('_'));
-          if (v === null) {
+          if (v == null) {
             colorsDialog.removeFunc(colorId);
             return;
           }
@@ -485,7 +485,7 @@ function createColorsDialog() {
     tbody.children('tr[id="' + colorId + '"]').remove();
   };
   dialog.updateFunc = function(colorId, suffix, v) {
-    if (v === null || v === '') {
+    if (v == null || v === '') {
       tbody.children('tr[id="' + colorId + '"]').children('td.' + suffix).children('input').attr('cleared', 'true').val('#666666');
     } else {
       tbody.children('tr[id="' + colorId + '"]').children('td.' + suffix).children('input').attr('cleared', 'false').val(v);

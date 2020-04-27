@@ -163,7 +163,7 @@ var _windowFunctions = {
     if (document.msFullscreenElement) { isFullscreen = true; }
 
     var docElem = document.documentElement;
-    if (!isFullscreen && (a === true || a === null)) {
+    if (!isFullscreen && (a === true || a == null)) {
       if (docElem.requestFullscreen) {
         docElem.requestFullscreen();
       } else if (docElem.mozRequestFullScreen) {
@@ -173,7 +173,7 @@ var _windowFunctions = {
       } else if (docElem.msRequestFullscreen) {
         docElem.msRequestFullscreen();
       }
-    } else if (isFullscreen && (a === false || a === null)) {
+    } else if (isFullscreen && (a === false || a == null)) {
       if (document.exitFullscreen) {
         document.exitFullscreen();
       } else if (document.mozCancelFullScreen) {

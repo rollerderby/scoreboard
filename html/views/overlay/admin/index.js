@@ -31,7 +31,7 @@ function initialize() {
     $('[data-setting="' + k +'"]').each(function(i) {
       var $t = $(this);
       if($t.hasClass('ToggleSwitch')) {
-        $t.val(v).toggleClass('current', (v !== null && v !== ''));
+        $t.val(v).toggleClass('current', (v != null && v !== ''));
       } else {
         if($t.prop('tagName') === 'SELECT') {   
           $('option[value="' + v + '"]', $t).attr('selected', 'selected');
@@ -50,7 +50,7 @@ function initialize() {
       if(!(key === 'Id' || key === 'Name' || key === 'RosterNumber' || key === 'Flags')) { return; }
 
       var d = {}; d[key] = v; d['Team'] = m[1];
-      if(key === 'Id' && v === null) {
+      if(key === 'Id' && v == null) {
         Skaters.Delete({ Skater: m[2] });
       } else {
         Skaters.Upsert(d, { Skater: m[2] });  
@@ -69,7 +69,7 @@ function initialize() {
     'ScoreBoard.Team(2).Color(overlay_fg)',
     'ScoreBoard.Team(2).Color(overlay_bg)'],
         function(k,v) {
-          if (v === null || v === '') {
+          if (v == null || v === '') {
             $('input[data-setting="'+k+'"]').attr('cleared', 'true');
             $('input[data-setting="'+k+'"]').val('#666666');  // Same as background color.
           } else {

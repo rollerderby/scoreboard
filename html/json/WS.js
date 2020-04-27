@@ -62,7 +62,7 @@ var WS = {
         if (req.paths.length > 0) {
           WS.send(JSON.stringify(req));
         }
-        if (WS.connectCallback !== null) {
+        if (WS.connectCallback != null) {
           WS.connectCallback();
         }
         // Hearbeat every 30s so the connection is kept alive.
@@ -71,10 +71,10 @@ var WS = {
       WS.socket.onmessage = function(e) {
         var json = JSON.parse(e.data);
         if (WS.debug) { console.log('WS', json); }
-        if (json.authorization !== null) {
+        if (json.authorization != null) {
           alert(json.authorization);
         }
-        if (json.state !== null) {
+        if (json.state != null) {
           WS.processUpdate(json.state);
         }
       };
@@ -82,7 +82,7 @@ var WS = {
         WS.Connected = false;
         console.log('WS', 'Websocket: Close', e);
         $('.ConnectionError').removeClass('Connected');
-        if (WS.connectTimeout === null) {
+        if (WS.connectTimeout == null) {
           WS.connectTimeout = setTimeout(WS._connect, 1000);
         }
         clearInterval(WS.heartbeat);
@@ -90,19 +90,19 @@ var WS = {
       WS.socket.onerror = function(e) {
         console.log('WS', 'Websocket: Error', e);
         $('.ConnectionError').removeClass('Connected');
-        if (WS.connectTimeout === null) {
+        if (WS.connectTimeout == null) {
           WS.connectTimeout = setTimeout(WS._connect, 1000);
         }
         clearInterval(WS.heartbeat);
       };
     } else {
       // better run the callback on post connect if we didn't need to connect
-      if(WS.connectCallback !== null) { WS.connectCallback(); }
+      if(WS.connectCallback != null) { WS.connectCallback(); }
     }
   },
 
   send: function(data) {
-    if (WS.socket !== null && WS.socket.readyState === 1) {
+    if (WS.socket != null && WS.socket.readyState === 1) {
       WS.socket.send(data);
     }
   },
@@ -130,7 +130,7 @@ var WS = {
     var callbacks = WS._getMatchesFromTrie(WS.callbackTrie, k);
     for (var idx = 0; idx < callbacks.length; idx++) {
       var c = callbacks[idx];
-      if (c === null) {
+      if (c == null) {
         continue;
       }
       try {
@@ -145,7 +145,7 @@ var WS = {
     for (var prop in state) {
       // update all incoming properties before triggers 
       // dependency issues causing problems
-      if (state[prop] === null) {
+      if (state[prop] == null) {
         delete WS.state[prop];
       } else {
         WS.state[prop] = state[prop];
@@ -153,12 +153,12 @@ var WS = {
     }
 
     for (var prop in state) {
-      if (state[prop] === null) {
+      if (state[prop] == null) {
         WS.triggerCallback(prop, state[prop]);
       }
     }
     for (var prop in state) {
-      if (state[prop] !== null) {
+      if (state[prop] != null) {
         WS.triggerCallback(prop, state[prop]);
       }
     }
@@ -168,7 +168,7 @@ var WS = {
     // every callback redraws everything.
     var batched = {};
     $.each(WS.batchCallbacks, function(idx, c) {
-      if (c.callback === null) {
+      if (c.callback == null) {
         return;
       }
       for (var prop in state) {
@@ -188,7 +188,7 @@ var WS = {
 
     // Clean cache to avoid a memory leak for long running screens.
     for (var prop in state) {
-      if (state[prop] === null) {
+      if (state[prop] == null) {
         delete WS._enrichPropCache[prop];
       }
     }
@@ -199,7 +199,7 @@ var WS = {
 
   // Parse property name, and make it easily accessible.
   _enrichProp: function(prop) {
-    if (WS._enrichPropCache[prop] !== null) {
+    if (WS._enrichPropCache[prop] != null) {
       return WS._enrichPropCache[prop];
     }
     prop = new String(prop);
@@ -236,18 +236,18 @@ var WS = {
 
     var callback = null;
     var batchCallback = null;
-    if (options === null) {
+    if (options == null) {
       callback = null;
     } else {
-      if (options.triggerFunc !== null) {
+      if (options.triggerFunc != null) {
         callback = options.triggerFunc;
-      } else if (options.triggerBatchFunc !== null) {
+      } else if (options.triggerBatchFunc != null) {
         batchCallback = options.triggerBatchFunc;
       } else {
         var elem = options.element;
-        if (options.css !== null) {
+        if (options.css != null) {
           callback = function(k, v) { elem.css(options.css, v); };
-        } else if (options.attr !== null) {
+        } else if (options.attr != null) {
           callback = function(k, v) { elem.attr(options.attr, v); };
         } else {
           if (elem.hasClass('AutoFit')) {
@@ -278,7 +278,7 @@ var WS = {
         }
       }
 
-      if (options.modifyFunc !== null) {
+      if (options.modifyFunc != null) {
         var origCallback = callback;
         callback = function(k, v) { origCallback(k, options.modifyFunc(k, v)); };
       }
@@ -316,7 +316,7 @@ var WS = {
     function matches(t, p, i) {
       var result = t.values || [];
       for (; i < p.length; i++) {
-        if (t['*)'] !== null) {
+        if (t['*)'] != null) {
           // Allow Blah(*) as a wildcard.
           var j;
           // id captured by * might contain . and thus be split - find the end
@@ -324,7 +324,7 @@ var WS = {
           result = result.concat(matches(t['*)'], p, j+1) || []);
         }
         t = t[p[i]];
-        if (t === null) {
+        if (t == null) {
           break;
         }
         result = result.concat(t.values || []);
@@ -343,7 +343,7 @@ var WS = {
       item = $.trim(item);
       if (item.startsWith('/')) {
         item = item.substring(1);
-      } else if (path !== null) {
+      } else if (path != null) {
         item = path + '.' + item;
       }
       paths.push(item);
@@ -363,12 +363,12 @@ var WS = {
           var path;
           for (var i = 0; i < paths.length; i++) {
             path = paths[i];
-            if (WS.state[path] !== null ) {
+            if (WS.state[path] != null ) {
               v = WS.state[path];
               break;
             }
           }
-          if (window[elem.attr('sbModify')] !== null) {
+          if (window[elem.attr('sbModify')] != null) {
             v = window[elem.attr('sbModify')](path, v);
           }
           return v;
@@ -379,7 +379,7 @@ var WS = {
     $.each($('[sbTrigger]'), function(idx, elem) {
       elem = $(elem);
       var sbTrigger = window[elem.attr('sbTrigger')];
-      if (sbTrigger === null) {
+      if (sbTrigger == null) {
         return;
       }
 
@@ -391,7 +391,7 @@ var WS = {
   },
 
   _getContext: function(elem, attr) {
-    if (attr === null) {
+    if (attr == null) {
       attr = 'sbContext';
     }
 
@@ -401,7 +401,7 @@ var WS = {
       ret = WS._getContext(parent, 'sbContext');
     }
     var context = elem.attr(attr);
-    if (context !== null) {
+    if (context != null) {
       ret = (ret !== '' ? ret + '.' : '') + context;
     }
     return ret;

@@ -45,7 +45,7 @@ $(function() {
     if (k.field === 'Client') {
       return;
     }
-    if (v === null) {
+    if (v == null) {
       deviceTable.children('tbody[deviceId="'+ id +'"]').remove();
       return;
     }
@@ -82,7 +82,7 @@ $(function() {
 
   WS.Register(['ScoreBoard.Clients.Client(*)'], function(k, v) {
     var id = k.Client;
-    if (v === null) {
+    if (v == null) {
       var tr = deviceTable.find('tr[clientId="'+ id +'"]');
       if (tr.siblings().length === 1) {
         tr.parent().removeClass('HasClients');

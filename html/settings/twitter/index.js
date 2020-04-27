@@ -3,7 +3,7 @@ $(function() {
   var formatSpecifiers = {};
 
   $('button.TestMode').on('click', function(){
-    WS.Set('ScoreBoard.Twitter.TestMode', $(this).attr('checked') === null);
+    WS.Set('ScoreBoard.Twitter.TestMode', $(this).attr('checked') == null);
   }).button();
 
   $('button.Login').on('click', function() {
@@ -54,7 +54,7 @@ $(function() {
   });
 
   $('button.EditConditionalTweets').on('click', function() {
-    var checked = ($(this).attr('checked') === null);
+    var checked = ($(this).attr('checked') == null);
     $('#ConditionalTweetConfiguration').toggleClass('show', checked);
     $(this).button('option', 'label', (checked ? 'Hide Conditional Tweets' : 'Edit Conditional Tweets'));
     $(this).attr('checked', checked);
@@ -91,7 +91,7 @@ $(function() {
   WS.Register(['ScoreBoard.Twitter.ConditionalTweet(*).Condition',
       'ScoreBoard.Twitter.ConditionalTweet(*).Tweet'], function(k, v) {
     var id = k.ConditionalTweet;
-    if (v === null) {
+    if (v == null) {
       $('#ConditionalTweets>tbody>tr[conditionId="'+ id +'"]').remove();
       return;
     }

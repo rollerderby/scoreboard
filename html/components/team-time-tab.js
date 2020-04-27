@@ -280,7 +280,7 @@ function createGameControlDialog() {
     .appendTo(preparedGame);
 
   WS.Register('ScoreBoard.PreparedTeam(*).Id', function(k, v) {
-    if (v === null) {
+    if (v == null) {
       adhocGame.find('option[value="'+k.PreparedTeam+'"]').remove();
       return;
     }
@@ -307,7 +307,7 @@ function createGameControlDialog() {
   WS.Register('ScoreBoard.Rulesets.Ruleset(*).Name', function(k, v) {
     var select = adhocGame.find('select.Ruleset');
     select.children('option[value="'+k.Ruleset+'"]').remove();
-    if (v === null) {
+    if (v == null) {
       return;
     }
     var option = $('<option>').attr('value', k.Ruleset).attr('name', v).text(v);
@@ -560,7 +560,7 @@ function createTeamTable() {
     WS.Register(prefix + '.AlternateName(operator)', function(k, v) {
       altNameA.text(v || '');
       altNameInput.val(v || '');
-      nameA.toggleClass('AlternateName', v !== null);
+      nameA.toggleClass('AlternateName', v != null);
     });
 
     var names = nameA.add(altNameA);
@@ -755,7 +755,7 @@ function createTeamTable() {
       }
       WS.Register([prefix + '.Skater(*).RosterNumber', prefix + '.Skater(*).Role'], function(k, v) {
         container.children('[skater="'+k.Skater+'"]').remove();
-        if (v !== null && WS.state[prefix + '.Skater('+k.Skater+').Role'] !== 'NotInGame') {
+        if (v != null && WS.state[prefix + '.Skater('+k.Skater+').Role'] !== 'NotInGame') {
           var number = WS.state[prefix + '.Skater('+k.Skater+').RosterNumber'];
           var button = $('<button>').attr('number', number).attr('skater', k.Skater)
               .attr('id', 'Team'+team+pos+k.Skater).addClass('KeyControl').append($('<span>').text(number))
@@ -901,14 +901,14 @@ function createPeriodDialog() {
       'ScoreBoard.Period(*).Number',
       'ScoreBoard.Period(*).Running'], function (k, v) {
         var nr = k.Period;
-        if (nr === null || nr === 0) { return; }
+        if (nr == null || nr === 0) { return; }
         var prefix = 'ScoreBoard.Period(' + nr + ')';
         var key = k.field;
         if (k.parts.length > 3) { return; }
         if (!(['CurrentJamNumber', 'Duration', 'Number', 'Running'].includes(key))) { return; }
 
         var row = table.find('tr.Period[nr='+nr+']');
-        if (row.length === 0 && v !== null) {
+        if (row.length === 0 && v != null) {
           row = $('<tr>').addClass('Period').attr('nr', nr)
             .append($('<td>').addClass('Number').text(nr))
             .append($('<td>').addClass('Jams').text(0))
@@ -933,11 +933,11 @@ function createPeriodDialog() {
           if (!inserted) {
             row.appendTo(table);
           }
-        } else if (key === 'Number' && v === null && row.length > 0) {
+        } else if (key === 'Number' && v == null && row.length > 0) {
           row.remove();
           return;
         }
-        if (v !== null) {
+        if (v != null) {
           if (key === 'CurrentJamNumber') { row.children('td.Jams').text(v); }
           if (key === 'Duration' && !isTrue(WS.state[prefix + '.Running'])) { row.children('td.Duration').text(_timeConversions.msToMinSec(v, true)); }
           if (key === 'Running' && isTrue(v)) { row.children('td.Duration').text('running'); }
@@ -987,7 +987,7 @@ function createJamDialog() {
         var key = k.field;
 
         var table = dialog.find('table.Period[nr='+per+']');
-        if (table.length === 0 && v !== null) {
+        if (table.length === 0 && v != null) {
           table = tableTemplate.clone(true).attr('nr', per).appendTo(dialog);
           if (per === currentPeriod) {
             table.addClass('Show');
@@ -996,7 +996,7 @@ function createJamDialog() {
         if (table.length === 0) { return; }
 
         var row = table.find('tr.Jam[nr='+nr+']');
-        if (row.length === 0 && v !== null) {
+        if (row.length === 0 && v != null) {
           row = $('<tr>').addClass('Jam').attr('nr', nr)
             .append($('<td>').addClass('Number').text(nr))
             .append($('<td>').addClass('Points').append($('<span>').addClass('1'))
@@ -1023,11 +1023,11 @@ function createJamDialog() {
           if (!inserted) {
             row.appendTo(table);
           }
-        } else if (key === 'Number' && v === null && row.length > 0) {
+        } else if (key === 'Number' && v == null && row.length > 0) {
           row.remove();
           return;
         }
-        if (v !== null) {
+        if (v != null) {
           if (key === 'JamScore') { row.find('td.Points .'+k.TeamJam).text(v); }
           if (key === 'Duration') {
             if (WS.state[prefix + '.WalltimeEnd'] === 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
@@ -1053,7 +1053,7 @@ function createJamDialog() {
   });
   
   WS.Register(['ScoreBoard.Jam(*).Number'], function(k, v) {
-    if (v !== null) {
+    if (v != null) {
       nextJam = v;
     }
   });
@@ -1138,8 +1138,8 @@ function createTimeoutDialog() {
 
   function processJamNumber(k, v) {
     var p = Number(k.Period);
-    if (v === null) {
-      if (jamDropdownTemplate[p] !== null) {
+    if (v == null) {
+      if (jamDropdownTemplate[p] != null) {
         periodDropdownTemplate.children('option[value='+p+']').remove();
         table.find('#PeriodDropdown option[value='+p+']').remove();
         clearPeriod(p);
@@ -1147,7 +1147,7 @@ function createTimeoutDialog() {
       }
       return;
     }
-    if (jamDropdownTemplate[p] === null) {
+    if (jamDropdownTemplate[p] == null) {
       firstJamListed[p] = 0;
       lastJamListed[p] = 0;
       jamDropdownTemplate[p] = $('<select>').attr('id', 'JamDropdown').attr('period', p);
@@ -1191,7 +1191,7 @@ function createTimeoutDialog() {
     var p = Number(k.Period);
     var prefix = 'ScoreBoard.Period('+k.Period+').Timeout('+id+')';
     var row = table.find('tr.Timeout[toId='+id+']');
-    if (k.field === 'Id' && v === null && row.length > 0) {
+    if (k.field === 'Id' && v == null && row.length > 0) {
       row.remove();
       return;
     }
@@ -1199,7 +1199,7 @@ function createTimeoutDialog() {
       row.remove();
       row = [];
     }
-    if (v !== null && row.length === 0) {
+    if (v != null && row.length === 0) {
       var jam = Number(WS.state[prefix+'.PrecedingJamNumber']);
       var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix+'.Duration'], true);
       var pc = _timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?

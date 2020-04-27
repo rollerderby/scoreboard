@@ -1,5 +1,5 @@
 
-function str_sort(a, b){ return ( $(a).attr('data-sort') === null ||  $(b).attr('data-sort') < $(a).attr('data-sort') ) ? 1 : -1; }
+function str_sort(a, b){ return ( $(a).attr('data-sort') == null ||  $(b).attr('data-sort') < $(a).attr('data-sort') ) ? 1 : -1; }
 
 jQuery.fn.sortDivs = function sortDivsStr() { $('> div', this[0]).sort(str_sort).appendTo(this[0]); };
 
@@ -32,7 +32,7 @@ function initialize() {
       'ScoreBoard.Team(*).Skater(*).Role'], function(k,v) {
         var me = '.RosterTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
         var mb = '.PenaltyTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
-        if (v === null) {
+        if (v == null) {
           $(me).remove();
           $(mb).remove();
           return;
@@ -68,7 +68,7 @@ function initialize() {
       return;
     }
     var sel = '.PenaltyTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
-    if (v === null) {
+    if (v == null) {
       $('.Number-'+k.Penalty, sel).remove();
       $(sel).attr('data-count', $('.Penalty', sel).length);
       return;
@@ -189,7 +189,7 @@ function updateSort(sel) {
 
   // Second, sort by number with missing numbers at the end
   var n = $('.Number', sel).text();
-  if (n === '' || n === '-' || n === null) {
+  if (n === '' || n === '-' || n == null) {
     sortValue += 'ZZZZZZ';
   } else {
     sortValue += n;
@@ -219,7 +219,7 @@ function jamData(k,v) {
   var $pId = $(pa);
   var $mId = $(me);
 
-  if(v === null) {
+  if(v == null) {
     $(me).remove();
     $mId.sortDivs();
     return;

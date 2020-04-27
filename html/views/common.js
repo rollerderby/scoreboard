@@ -8,9 +8,9 @@ function jammer(k, v, ov) {
   var starPass = isTrue(WS.state[prefix + 'StarPass']);
   var inJam = isTrue(WS.state['ScoreBoard.InJam']);
 
-  if (jammerName === null || jammerName === '') {
+  if (jammerName == null || jammerName === '') {
     jammerName = (leadJammer && !ov) ? 'Lead' : '';
-    if (pivotName === null) {pivotName = '';}
+    if (pivotName == null) {pivotName = '';}
   }
 
   var jn = !starPass ? jammerName : pivotName;
@@ -42,7 +42,7 @@ function logoUpdate(k, v) {
   var id = getTeamId(k);
   var prefix = 'ScoreBoard.Team(' + id + ').';
   var logo = WS.state[prefix + 'Logo'];
-  if (logo === null) {
+  if (logo == null) {
     logo = '';
   }
   if (logo !== '') {
@@ -133,7 +133,7 @@ function toClockInitialNumber(k, v) {
       var name = WS.state['ScoreBoard.Clock(' + c + ').Name'];
       var number = WS.state['ScoreBoard.Clock(' + c + ').Number'];
 
-      if (name !== null && number !== null) {
+      if (name != null && number != null) {
         ret = name.substring(0, 1) + number;
       }
 

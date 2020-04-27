@@ -70,7 +70,7 @@ function prepareLtSheetTable(element, teamId, mode) {
   function teamNameUpdate() {
     teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
 
-    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'] !== null) {
+    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'] != null) {
       teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'];
     }
 
@@ -79,27 +79,27 @@ function prepareLtSheetTable(element, teamId, mode) {
 
   function handleUpdate(k, v) {
     if (!k.Period || k.Period === 0) { return; }
-    if (v === null && k === 'ScoreBoard.Period(' + k.Period + ').Number') {
+    if (v == null && k == 'ScoreBoard.Period(' + k.Period + ').Number') {
       element.children('table.Period[nr=' + k.Period + ']').remove();
       delete periodElements[k.Period];
       delete jamElements[k.Period];
-    } else if (v !== null) {
+    } else if (v != null) {
       createPeriod(k.Period);
     }
     if (!k.Jam || k.Jam === 0) { return; }
     var prefix = 'ScoreBoard.Period(' + k.Period + ').Jam(' + k.Jam + ').';
-    if (v === null && k === prefix + 'Number') {
+    if (v == null && k == prefix + 'Number') {
       element.children('table.Period[nr=' + k.Period + ']').find('tr[nr=' + k.Jam + ']').remove();
       delete jamElements[k.Period][k.Jam];
-    } else if (v !== null) {
+    } else if (v != null) {
       createJam(k.Period, k.Jam);
     }
 
     var je = (jamElements[k.Period] || {})[k.Jam];
-    if (je === null) { return; }
+    if (je == null) { return; }
     var jamRow = je[0];
     var spRow = je[1];
-    if (k === prefix + 'StarPass') {
+    if (k == prefix + 'StarPass') {
       if (isTrue(v)) {
         if (mode === 'plt') {
           jamRow.before(spRow);
@@ -128,20 +128,20 @@ function prepareLtSheetTable(element, teamId, mode) {
       });
       break;
     default:
-      if (k.Fielding !== null) {
-        if (k.SkaterNumber !== null) {
+      if (k.Fielding != null) {
+        if (k.SkaterNumber != null) {
           jamRow.children('.' + k.Fielding).text(v);
           if (isTrue(WS.state[prefix + 'StarPass'])) {
             spRow.children('.' + k.Fielding).text(v);
           }
-        } else if (k.BoxTripSymbolsBeforeSP !== null) {
+        } else if (k.BoxTripSymbolsBeforeSP != null) {
           setBoxTripSymbols(jamRow, '.Box' + k.Fielding, v);
-        } else if (k.BoxTripSymbolsAfterSP !== null) {
+        } else if (k.BoxTripSymbolsAfterSP != null) {
           if (isTrue(WS.state[prefix + 'StarPass'])) {
             setBoxTripSymbols(spRow, '.Box' + k.Fielding, v);
           }
-        } else if (k.Annotation !== null) {
-          jamRow.children('.' + k.Fielding).toggleClass('hasAnnotation', v !== null && v !== '');
+        } else if (k.Annotation != null) {
+          jamRow.children('.' + k.Fielding).toggleClass('hasAnnotation', v != null && v !== '');
         }
       }
     break;
@@ -149,7 +149,7 @@ function prepareLtSheetTable(element, teamId, mode) {
   }
 
   function createPeriod(nr) {
-    if (nr > 0 && periodElements[nr] === null) {
+    if (nr > 0 && periodElements[nr] == null) {
       createPeriod(nr - 1);
       var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('Period LT').attr('nr', nr);
       if (mode === 'plt') {
@@ -202,7 +202,7 @@ function prepareLtSheetTable(element, teamId, mode) {
   function createJam(p, nr) {
 
     var table = periodElements[p];
-    if (nr > 0 && jamElements[p][nr] === null) {
+    if (nr > 0 && jamElements[p][nr] == null) {
       createJam(p, nr - 1);
 
       var prefix = 'ScoreBoard.Period(' + p + ').Jam(' + nr + ').TeamJam(' + teamId + ').';
@@ -297,12 +297,12 @@ function prepareFieldingEditor(teamId) {
           WS.Set(fieldingEditor.data('prefix') + 'Skater', $(this).val());
         })).appendTo(row);
     $('<td>').append($('<button>').attr('id', 'notFielded').button().text('No Skater fielded').on('click', function () {
-      var check = $(this).attr('checked') === null;
+      var check = $(this).attr('checked') == null;
       $(this).attr('checked', check);
       WS.Set(fieldingEditor.data('prefix') + 'NotFielded', check);
     })).appendTo(row);
     $('<td>').append($('<button>').attr('id', 'sitFor3').button().text('Sit out next 3').on('click', function () {
-      var check = $(this).attr('checked') === null;
+      var check = $(this).attr('checked') == null;
       $(this).attr('checked', check);
       WS.Set(fieldingEditor.data('prefix') + 'SitFor3', check);
     })).appendTo(row);
@@ -367,7 +367,7 @@ function prepareFieldingEditor(teamId) {
     var select = $('#FieldingEditor #skater');
     select.children('[value="' + k.Skater + '"]').remove();
     var prefix = 'ScoreBoard.Team(' + k.Team + ').Skater(' + k.Skater + ').';
-    if (v !== null && WS.state[prefix + 'Role'] !== 'NotInGame') {
+    if (v != null && WS.state[prefix + 'Role'] !== 'NotInGame') {
       var number = WS.state[prefix + 'RosterNumber'];
       var option = $('<option>').attr('number', number).val(k.Skater).text(number);
       _windowFunctions.appendAlphaSortedByAttr(select, option, 'number', 1);
@@ -375,12 +375,12 @@ function prepareFieldingEditor(teamId) {
   }
 
   function processBoxTrip(k, v) {
-    if (k.BoxTrip === null) { return; }
+    if (k.BoxTrip == null) { return; }
     var key = k.parts[3];
     var prefix = 'ScoreBoard.Team(' + teamId + ').BoxTrip(' + k.BoxTrip + ').';
 
     var row = $('#FieldingEditor .BoxTrip[id=' + k.BoxTrip + ']');
-    if (v !== null && row.length === 0) {
+    if (v != null && row.length === 0) {
       row = $('<tr>').addClass('BoxTrip').attr('id', k.BoxTrip).insertBefore('#FieldingEditor #tripFooter');
       $('<td>').append($('<button>').addClass('tripModify').text('-').button().on('click', function () {
         WS.Set(prefix + 'StartEarlier', true);
@@ -400,7 +400,7 @@ function prepareFieldingEditor(teamId) {
         WS.Set(prefix + 'Delete', true);
       })).appendTo(row);
     }
-    if (v === null) {
+    if (v == null) {
       if (key === 'Id') {
         row.remove();
       }

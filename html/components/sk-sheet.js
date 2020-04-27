@@ -44,7 +44,7 @@ function prepareSkSheetTable(element, teamId, mode) {
   function teamNameUpdate() {
     teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
 
-    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'] !== null) {
+    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'] != null) {
       teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'];
     }
 
@@ -54,27 +54,27 @@ function prepareSkSheetTable(element, teamId, mode) {
   function handleUpdate(k, v) {
     // Ensure periods/jams exist.
     if (!k.Period || k.Period === 0) { return; }
-    if (v === null && k === 'ScoreBoard.Period('+k.Period+').Number') {
+    if (v == null && k == 'ScoreBoard.Period('+k.Period+').Number') {
       element.children('table.Period[nr='+k.Period+']').remove();
       delete periodElements[k.Period];
       delete jamElements[k.Period];
-    } else if (v !== null){
+    } else if (v != null){
       createPeriod(k.Period);
     }
     if (!k.Jam || k.Jam === 0) { return; }
     var prefix = 'ScoreBoard.Period('+k.Period+').Jam('+k.Jam+').';
-    if (v === null && k === prefix + 'Number') {
+    if (v == null && k == prefix + 'Number') {
       element.children('table.Period[nr='+k.Period+']').find('tr[nr='+k.Jam+']').remove();
       delete jamElements[k.Period][k.Jam];
-    } else if (v !== null) {
+    } else if (v != null) {
       createJam(k.Period, k.Jam);
     }
 
     var je = (jamElements[k.Period] || {})[k.Jam];
-    if (je === null) { return; }
+    if (je == null) { return; }
     var jamRow = je[0];
     var spRow = je[1];
-    if (k === prefix + 'StarPass') {
+    if (k == prefix + 'StarPass') {
       if (isTrue(v)) {
         if (mode === 'operator') {
           jamRow.before(spRow);
@@ -134,7 +134,7 @@ function prepareSkSheetTable(element, teamId, mode) {
         var trip2Score = WS.state[prefix+'ScoringTrip(2).Score'];
         var trip2Current = isTrue(WS.state[prefix+'ScoringTrip(2).Current']);
         var trip2AfterSP = isTrue(WS.state[prefix+'ScoringTrip(2).AfterSP']);
-        var trip2HasAnnotation = trip2Score !== null && WS.state[prefix+'ScoringTrip(2).Annotation'] !== '';
+        var trip2HasAnnotation = trip2Score != null && WS.state[prefix+'ScoringTrip(2).Annotation'] !== '';
         var noInitial = isTrue(WS.state[prefix+'NoInitial']);
         var scoreText = '';
         var otherScoreText = '';
@@ -142,7 +142,7 @@ function prepareSkSheetTable(element, teamId, mode) {
           trip2Score = '.';
         }
         if (trip1Score > 0) {
-          if (trip2Score === null) {
+          if (trip2Score == null) {
             scoreText = trip1Score + ' + NI';
           } else if (trip1AfterSP === trip2AfterSP) {
             scoreText = trip1Score + ' + ' + trip2Score;
@@ -150,12 +150,12 @@ function prepareSkSheetTable(element, teamId, mode) {
             scoreText = trip2Score;
             otherScoreText = trip1Score + ' + SP';
           }
-        } else if (trip2Score !== null) {
+        } else if (trip2Score != null) {
           scoreText = trip2Score;           
         }
         var row = jamRow;
         var otherRow = spRow;
-        if (trip2AfterSP || (trip2Score === null && trip1AfterSP)) {
+        if (trip2AfterSP || (trip2Score == null && trip1AfterSP)) {
           row = spRow;
           otherRow = jamRow;
         }
@@ -180,7 +180,7 @@ function prepareSkSheetTable(element, teamId, mode) {
           var current = isTrue(WS.state[prefix+'ScoringTrip('+t+').Current']);
           var hasAnnotation = WS.state[prefix+'ScoringTrip('+t+').Annotation'] !== '';
           row.find('.Trip'+t).toggleClass('hasAnnotation', hasAnnotation)
-            .text(score === null ? '' : current && score === 0 ? '.' : score);
+            .text(score == null ? '' : current && score === 0 ? '.' : score);
           otherRow.find('.Trip'+t).removeClass('hasAnnotation').text('');
         } else if (k.parts[4] === 'ScoringTrip' && k.ScoringTrip >= 10) {
           var scoreBeforeSP = '';
@@ -190,7 +190,7 @@ function prepareSkSheetTable(element, teamId, mode) {
           var annotationAfterSP = false;
           while (true) {
             var tripScore = WS.state[prefix+'ScoringTrip('+t+').Score'];
-            if (tripScore === null) { break; }
+            if (tripScore == null) { break; }
             if (isTrue(WS.state[prefix+'ScoringTrip('+t+').AfterSP'])) {
               scoreAfterSP = scoreAfterSP==='' ? tripScore : scoreAfterSP + ' + ' + tripScore;
               annotationAfterSP = annotationAfterSP || WS.state[prefix+'ScoringTrip('+t+').Annotation'] !== '';
@@ -208,7 +208,7 @@ function prepareSkSheetTable(element, teamId, mode) {
   }
 
   function createPeriod(nr) {
-    if (nr > 0 && periodElements[nr] === null) {
+    if (nr > 0 && periodElements[nr] == null) {
       createPeriod(nr-1);
       var table = $('<table cellpadding="0" cellspacing="0" border="1">')
         .addClass('SK Period').attr('nr', nr);
@@ -242,7 +242,7 @@ function prepareSkSheetTable(element, teamId, mode) {
 
   function createJam(p, nr) {
     var table = periodElements[p];
-    if (nr > 0 && jamElements[p][nr] === null) {
+    if (nr > 0 && jamElements[p][nr] == null) {
       createJam(p, nr-1);
 
       var prefix = 'ScoreBoard.Period('+p+').Jam('+nr+').TeamJam('+teamId+').';
@@ -407,7 +407,7 @@ function prepareSkaterSelector() {
   WS.Register(['ScoreBoard.Team(*).Skater(*).RosterNumber', 'ScoreBoard.Team(*).Skater(*).Role'], function(k, v) {
     selects[k.Team].children('[value="'+k.Skater+'"]').remove();
     var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
-    if (v !== null && WS.state[prefix + 'Role'] !== 'NotInGame') {
+    if (v != null && WS.state[prefix + 'Role'] !== 'NotInGame') {
       var number = WS.state[prefix + 'RosterNumber'];
       var option = $('<option>').attr('number', number).val(k.Skater).text(number);
       _windowFunctions.appendAlphaSortedByAttr(selects[k.Team], option, 'number', 1);

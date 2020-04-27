@@ -75,7 +75,7 @@
     StatsFunction.Setting = {
       MaximumTime: function(kd,v) {
         Data.Config.DefaultClocks[kd.ClockType] = v; /* Milliseconds */
-        if(kd.ClockType === 'Jam' && v !== null) {
+        if(kd.ClockType === 'Jam' && v != null) {
           Data['Jams'].All().Each(function() {
             var t = parseInt(this.TimeRemaining/1000);
             var dc = Data.Config.DefaultClocks.Jam / 1000;

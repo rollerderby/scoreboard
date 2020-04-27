@@ -20,7 +20,7 @@ function _includeUrl(url) {
   var filename = url.replace(/^.*[\/]/g, '');
   if (/\.[cC][sS][sS](\?.*)?$/.test(url) && !$('head link[href="'+url+'"],head link[href="'+filename+'"]').length) {
     $('<link>').attr({ href: url, type: 'text/css', rel: 'stylesheet'}).appendTo('head');
-  } else if (/\.[jJ][sS](\?.*)?$/.test(url) && _alreadyIncludedScripts[url] === null) {
+  } else if (/\.[jJ][sS](\?.*)?$/.test(url) && _alreadyIncludedScripts[url] == null) {
     $.ajax(url, {dataType: 'script', cache: true, async: false}).fail(function(e, s, x) {
       console.error(s + ' for ' + url + ': ' + x);
     });

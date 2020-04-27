@@ -35,7 +35,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
     var head = element.find('#head');
     var teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
 
-    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'] !== null) {
+    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'] != null) {
       teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'];
     }
 
@@ -44,13 +44,13 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
 
 
   function skaterUpdate(t, k, v) {
-    if (k.Skater === null) { return; }
+    if (k.Skater == null) { return; }
 
     var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
     var row = tbody.children('tr.Skater[id=' + k.Skater + ']');
     if (k.parts[3] === 'RosterNumber') {
       // New skater, or number has been updated.
-      if (v === null) {
+      if (v == null) {
         row.remove();
         return;
       }

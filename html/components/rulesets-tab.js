@@ -11,7 +11,7 @@ function createRulesetsTab(tab) {
     rs.empty();
     rs.append(displayRulesetTree(''));
     tab.find('#current_rs').val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
-    if (activeRuleset !== null) {
+    if (activeRuleset != null) {
       displayRuleset(activeRuleset.Id);
     }
   }
@@ -20,7 +20,7 @@ function createRulesetsTab(tab) {
     var list = null;
     $.each(rulesets, function(idx, val) {
       if (val.ParentId === parentId) {
-        if (list === null) {
+        if (list == null) {
           list = $('<ul>');
         }
 
@@ -67,7 +67,7 @@ function createRulesetsTab(tab) {
 
       var children = d.find('.section');
       $.each(children, function (idx, s) {
-        if (section !== null) {
+        if (section != null) {
           return;
         }
         s = $(s);
@@ -75,7 +75,7 @@ function createRulesetsTab(tab) {
           section = s;
         }
       });
-      if (section === null) {
+      if (section == null) {
         section = newSection(def);
         d.append(section);
       }
@@ -177,7 +177,7 @@ function createRulesetsTab(tab) {
       rulesets = {};
       for (var prop in WS.state) {
         var k = WS._enrichProp(prop);
-        if (k.Rulesets !== null && k.Ruleset !== null) {
+        if (k.Rulesets != null && k.Ruleset != null) {
           rulesets[k.Ruleset] = rulesets[k.Ruleset] || {Rules: {}};
           if (k.field === 'Rule') {
             rulesets[k.Ruleset].Rules[k.Rule] = WS.state[prop];
@@ -295,10 +295,10 @@ function createRulesetsTab(tab) {
       if (def.find('.name input').prop('checked')) {
         var input = def.find('.value>input').prop('value');
         var select = def.find('.value>select').val();
-        if (input !== null) {
+        if (input != null) {
           value = input;
         }
-        if (select !== null) {
+        if (select != null) {
           value = select;
         }
       }

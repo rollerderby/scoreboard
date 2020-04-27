@@ -3,7 +3,7 @@ WS.Register('', display);
 
 function display(k, v) {
   var row = findRow(k);
-  if (v !== null) {
+  if (v != null) {
     if ($.isPlainObject(v)) {
       row.find('td.Value').text(JSON.stringify(v));
     } else {

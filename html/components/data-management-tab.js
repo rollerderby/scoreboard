@@ -39,7 +39,7 @@ function createDataManagementTab(tab) {
           .append($('<tbody>'));
 
   WS.Register('ScoreBoard.Media.Format(*).Type(*)' , function(k, v) {
-    if (v === null && k.field === 'Type') {
+    if (v == null && k.field === 'Type') {
       tab.find('>#'+k.Format+'>div.Type>table.Type')
       .filter(function() { return $(this).data('type') === k.Format; })
       .remove();
@@ -70,7 +70,7 @@ function createDataManagementTab(tab) {
   WS.Register('ScoreBoard.Media.Format(*).Type(*).File(*).Name', function(k, v) {
     var table = tab.find('>#'+k.Format+'>div.Type>table.Type[type='+k.Type+']');
     table.find('tr.Item[file="'+k.File+'"]').remove();
-    if (v === null) {
+    if (v == null) {
       return;
     }
     var newRow;
