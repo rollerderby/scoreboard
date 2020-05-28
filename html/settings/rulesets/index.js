@@ -1,7 +1,7 @@
 $(function() {
-	createRulesetsTab($('#RulesetsTab'));
+  createRulesetsTab($('#RulesetsTab'));
 
-	WS.AutoRegister();
-	WS.Connect();
+  WS.AutoRegister();
+  WS.Connect();
 });
 //# sourceURL=settings\rulesets\index.js

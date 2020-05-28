@@ -1,7 +1,7 @@
 $(function() {
-	createTeamsTab($('#TeamsTab'));
+  createTeamsTab($('#TeamsTab'));
 
-	WS.AutoRegister();
-	WS.Connect();
+  WS.AutoRegister();
+  WS.Connect();
 });
 //# sourceURL=settings\rulesets\index.js
