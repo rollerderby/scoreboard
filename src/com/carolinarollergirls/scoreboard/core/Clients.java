@@ -13,8 +13,12 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Clients extends ScoreBoardEventProvider {
+    Value<Boolean> NEW_DEVICE_WRITE = new Value<>(Boolean.class, "NewDeviceWrite", true);
+
     Child<Client> CLIENT = new Child<>(Client.class, "Client");
     Child<Device> DEVICE = new Child<>(Device.class, "Device");
+
+    public void postAutosaveUpdate();
 
     public Device getDevice(String sessionId);
     public Device getOrAddDevice(String sessionId);
@@ -40,6 +44,8 @@ public interface Clients extends ScoreBoardEventProvider {
     public static interface Device extends ScoreBoardEventProvider {
         public String getName();
 
+        public Boolean mayWrite();
+
         public void access();
         public void write();
 
@@ -51,6 +57,7 @@ public interface Clients extends ScoreBoardEventProvider {
         Value<Long> CREATED = new Value<>(Long.class, "Created", 0L);
         Value<Long> WROTE = new Value<>(Long.class, "Wrote", 0L);
         Value<Long> ACCESSED = new Value<>(Long.class, "Accessed", 0L);
+        Value<Boolean> MAY_WRITE = new Value<>(Boolean.class, "MayWrite", false);
 
         @SuppressWarnings("hiding")
         Child<Client> CLIENT = new Child<>(Client.class, "Client");

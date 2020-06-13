@@ -16,7 +16,8 @@ $(function() {
     buttons.children('#Show'+i+'Button').trigger('click');
   });
 
-
+  $('#writeAccess').append(toggleButton('ScoreBoard.Clients.NewDeviceWrite', 'Enabled', 'Disabled'));
+  
   function getDeviceTbody(id) {
     var tbody = deviceTable.children('[deviceId="'+ id +'"]');
     if (tbody.length === 0) {
@@ -24,6 +25,7 @@ $(function() {
       var name = WS.state[prefix + '.Name'];
       tbody = $('<tbody>').attr('deviceId', id).attr('name', name)
         .append($('<tr>').append('<td class="Name" rowspan="1">')
+          .append($('<td rowspan="1">').addClass('Access').append(toggleButton(prefix + '.MayWrite', 'Read + Write', 'Read only')))
           .append('<td class="Comment">')
           .append('<td class="Platform">')
           .append('<td class="RemoteAddr">')

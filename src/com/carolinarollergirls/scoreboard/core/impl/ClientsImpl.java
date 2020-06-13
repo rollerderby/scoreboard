@@ -14,17 +14,31 @@ import java.util.UUID;
 import com.carolinarollergirls.scoreboard.core.Clients;
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.HumanIdGenerator;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 
 public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements Clients {
     public ClientsImpl(ScoreBoard parent) {
         super(parent, "", ScoreBoard.CLIENTS);
-        addProperties(CLIENT, DEVICE);
+        addProperties(NEW_DEVICE_WRITE, CLIENT, DEVICE);
         addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
+    }
+
+    @Override
+    public void postAutosaveUpdate() {
+        if (get(NEW_DEVICE_WRITE)) { return; }
+        Boolean hasWritableClient = false;
+        for (Device d : getAll(DEVICE)) {
+            if (d.mayWrite()) { hasWritableClient = true; }
+        }
+        if (!hasWritableClient) {
+            Logger.printMessage("No device with write access remaining -- enabling write access for new devices");
+            set(NEW_DEVICE_WRITE, true);
+        }
     }
 
     @Override
@@ -163,7 +177,9 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public class DeviceImpl extends ScoreBoardEventProviderImpl<Device> implements Device {
         protected DeviceImpl(Clients parent, String id) {
             super(parent, id, Clients.DEVICE);
-            addProperties(SESSION_ID_SECRET, NAME, REMOTE_ADDR, PLATFORM, COMMENT, CREATED, WROTE, ACCESSED, CLIENT);
+            addProperties(SESSION_ID_SECRET, NAME, REMOTE_ADDR, PLATFORM, COMMENT, CREATED, WROTE, ACCESSED, MAY_WRITE,
+                    CLIENT);
+            set(MAY_WRITE, parent.get(NEW_DEVICE_WRITE));
             addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         }
 
@@ -171,6 +187,13 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         public String getName() {
             synchronized (coreLock) {
                 return get(NAME);
+            }
+        }
+
+        @Override
+        public Boolean mayWrite() {
+            synchronized (coreLock) {
+                return get(MAY_WRITE);
             }
         }
 
@@ -191,7 +214,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
 
         @Override
         protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-            if (!source.isInternal() && prop != COMMENT) {
+            if (!source.isInternal() && prop != COMMENT && prop != MAY_WRITE) {
                 // Only allow changing values from WS/load if they didn't already have one.
                 if (!Objects.equals(last, prop.getDefaultValue())) {
                     return last;
