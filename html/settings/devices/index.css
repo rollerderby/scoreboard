@@ -14,6 +14,7 @@ table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Device
 .Devices td, .Devices th { padding: .4ex; }
 .Devices .Created, .Devices .LastSeenActive, .Devices .LastSeenInactive, .Devices .LastWrite { text-align: right; }
 .Devices .Platform { text-align: center; }
+.Devices .Access { text-align: center; }
 .Devices .RemoteAddr { text-align: left; }  /* Have all the 192.168s line up. */
 
 /* Hide LastSeen for a device if it has active clients. */
