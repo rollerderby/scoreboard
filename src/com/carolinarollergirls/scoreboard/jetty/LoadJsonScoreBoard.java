@@ -17,14 +17,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.fasterxml.jackson.jr.ob.JSON;
 import org.apache.commons.fileupload.FileItemIterator;
 import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
 import com.carolinarollergirls.scoreboard.core.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
+import com.fasterxml.jackson.jr.ob.JSON;
 
 public class LoadJsonScoreBoard extends HttpServlet {
     public LoadJsonScoreBoard(ScoreBoard sb) {
@@ -32,36 +33,42 @@ public class LoadJsonScoreBoard extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        scoreBoard.getClients().getDevice(request.getSession().getId()).write();
-        try {
-            if (!ServletFileUpload.isMultipartContent(request)) {
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST);
-                return;
-            }
-
-            ServletFileUpload sfU = new ServletFileUpload();
-            FileItemIterator items = sfU.getItemIterator(request);
-            while (items.hasNext()) {
-                FileItemStream item = items.next();
-                if (!item.isFormField()) {
-                    InputStream stream = item.openStream();
-                    Map<String, Object> map = JSON.std.mapFrom(stream);
-                    stream.close();
-                    @SuppressWarnings("unchecked")
-                    Map<String, Object> state = (Map<String, Object>)map.get("state");
-                    handleJSON(request, response, state);
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (scoreBoard.getClients().getDevice(request.getSession().getId()).mayWrite()) {
+            scoreBoard.getClients().getDevice(request.getSession().getId()).write();
+            try {
+                if (!ServletFileUpload.isMultipartContent(request)) {
+                    response.sendError(HttpServletResponse.SC_BAD_REQUEST);
                     return;
                 }
-            }
 
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No JSON uploaded");
-        } catch ( FileUploadException fuE ) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
+                ServletFileUpload sfU = new ServletFileUpload();
+                FileItemIterator items = sfU.getItemIterator(request);
+                while (items.hasNext()) {
+                    FileItemStream item = items.next();
+                    if (!item.isFormField()) {
+                        InputStream stream = item.openStream();
+                        Map<String, Object> map = JSON.std.mapFrom(stream);
+                        stream.close();
+                        @SuppressWarnings("unchecked")
+                        Map<String, Object> state = (Map<String, Object>) map.get("state");
+                        handleJSON(request, response, state);
+                        return;
+                    }
+                }
+
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No JSON uploaded");
+            } catch (FileUploadException fuE) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
+            }
+        } else {
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "No write access");
         }
     }
 
-    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, final Map<String, Object> state) throws IOException {
+    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, final Map<String, Object> state)
+            throws IOException {
         if (request.getPathInfo().equalsIgnoreCase("/load")) {
             scoreBoard.runInBatch(new Runnable() {
                 @Override
