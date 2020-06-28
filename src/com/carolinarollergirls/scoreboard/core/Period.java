@@ -31,6 +31,7 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L);
     Value<Long> WALLTIME_START = new Value<>(Long.class, "WalltimeStart", 0L);
     Value<Long> WALLTIME_END = new Value<>(Long.class, "WalltimeEnd", 0L);
+    Value<String> LOCAL_TIME_START = new Value<>(String.class, "LocalTimeStart", "");
 
     Child<Timeout> TIMEOUT = new Child<>(Timeout.class, "Timeout");
 
