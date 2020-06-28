@@ -42,23 +42,29 @@ public class MediaServlet extends HttpServlet {
     }
 
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
-        scoreBoard.getClients().getDevice(request.getSession().getId()).write();
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        if (scoreBoard.getClients().getDevice(request.getSession().getId()).mayWrite()) {
+            scoreBoard.getClients().getDevice(request.getSession().getId()).write();
 
-        response.setHeader("Cache-Control", "no-cache");
-        response.setHeader("Expires", "-1");
-        response.setCharacterEncoding("UTF-8");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setHeader("Expires", "-1");
+            response.setCharacterEncoding("UTF-8");
 
-        if (request.getPathInfo().equals("/upload")) {
-            upload(request, response);
-        } else if (request.getPathInfo().equals("/remove")) {
-            remove(request, response);
+            if (request.getPathInfo().equals("/upload")) {
+                upload(request, response);
+            } else if (request.getPathInfo().equals("/remove")) {
+                remove(request, response);
+            } else {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            }
         } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND);
+            response.sendError(HttpServletResponse.SC_FORBIDDEN, "No write access");
         }
     }
 
-    protected void upload(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    protected void upload(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         try {
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -72,7 +78,7 @@ public class MediaServlet extends HttpServlet {
             Iterator<?> i = sfU.parseRequest(request).iterator();
 
             while (i.hasNext()) {
-                FileItem item = (FileItem)i.next();
+                FileItem item = (FileItem) i.next();
                 if (item.isFormField()) {
                     if (item.getFieldName().equals("media")) {
                         media = item.getString();
@@ -94,17 +100,19 @@ public class MediaServlet extends HttpServlet {
             processFileItemList(fileItems, media, type);
 
             int len = fileItems.size();
-            setTextResponse(response, HttpServletResponse.SC_OK, "Successfully uploaded "+len+" file"+(len>1?"s":""));
-        } catch ( FileNotFoundException fnfE ) {
+            setTextResponse(response, HttpServletResponse.SC_OK,
+                    "Successfully uploaded " + len + " file" + (len > 1 ? "s" : ""));
+        } catch (FileNotFoundException fnfE) {
             setTextResponse(response, HttpServletResponse.SC_NOT_FOUND, fnfE.getMessage());
-        } catch ( IllegalArgumentException iaE ) {
+        } catch (IllegalArgumentException iaE) {
             setTextResponse(response, HttpServletResponse.SC_BAD_REQUEST, iaE.getMessage());
-        } catch ( FileUploadException fuE ) {
+        } catch (FileUploadException fuE) {
             setTextResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, fuE.getMessage());
         }
     }
 
-    protected void remove(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    protected void remove(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
         String media = request.getParameter("media");
         String type = request.getParameter("type");
         String filename = request.getParameter("filename");
@@ -117,7 +125,8 @@ public class MediaServlet extends HttpServlet {
         }
     }
 
-    protected void processFileItemList(List<FileItem> fileItems, String media, String type) throws FileNotFoundException,IOException {
+    protected void processFileItemList(List<FileItem> fileItems, String media, String type)
+            throws FileNotFoundException, IOException {
         File typeDir = getTypeDir(media, type);
 
         ListIterator<FileItem> fileItemIterator = fileItems.listIterator();
@@ -131,10 +140,10 @@ public class MediaServlet extends HttpServlet {
         }
     }
 
-    protected File getTypeDir(String media, String type) throws FileNotFoundException,IllegalArgumentException {
-        if (scoreBoard.getMedia().getFormat(media) == null ||
-                scoreBoard.getMedia().getFormat(media).getType(type) == null) {
-            throw new IllegalArgumentException("Invalid media '"+media+"' or type '"+type+"'");
+    protected File getTypeDir(String media, String type) throws FileNotFoundException, IllegalArgumentException {
+        if (scoreBoard.getMedia().getFormat(media) == null
+                || scoreBoard.getMedia().getFormat(media).getType(type) == null) {
+            throw new IllegalArgumentException("Invalid media '" + media + "' or type '" + type + "'");
         }
 
         File htmlDir = new File(htmlDirName);
@@ -143,7 +152,7 @@ public class MediaServlet extends HttpServlet {
         return typeDir;
     }
 
-    protected File createFile(File typeDir, FileItem item) throws IOException,FileNotFoundException {
+    protected File createFile(File typeDir, FileItem item) throws IOException, FileNotFoundException {
         File f = new File(typeDir, item.getName());
         f.getParentFile().mkdirs();
         FileOutputStream fos = null;
@@ -160,7 +169,8 @@ public class MediaServlet extends HttpServlet {
         }
     }
 
-    protected void processZipFileItem(FileItemFactory factory, FileItem zip, List<FileItem> fileItems) throws IOException {
+    protected void processZipFileItem(FileItemFactory factory, FileItem zip, List<FileItem> fileItems)
+            throws IOException {
         ZipInputStream ziS = new ZipInputStream(zip.getInputStream());
         ZipEntry zE;
         try {

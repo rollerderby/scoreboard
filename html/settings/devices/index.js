@@ -16,7 +16,10 @@ $(function() {
     buttons.children('#Show'+i+'Button').trigger('click');
   });
 
-
+  WS.Register('WS.Device.Id');
+  
+  $('#writeAccess').append(toggleButton('ScoreBoard.Clients.NewDeviceWrite', 'Enabled', 'Disabled'));
+  
   function getDeviceTbody(id) {
     var tbody = deviceTable.children('[deviceId="'+ id +'"]');
     if (tbody.length === 0) {
@@ -24,6 +27,8 @@ $(function() {
       var name = WS.state[prefix + '.Name'];
       tbody = $('<tbody>').attr('deviceId', id).attr('name', name)
         .append($('<tr>').append('<td class="Name" rowspan="1">')
+          .append($('<td rowspan="1">').addClass('Access')
+              .append(id === WS.state['WS.Device.Id'] ? $('<span id="ownAccess">') : toggleButton(prefix + '.MayWrite', 'Read + Write', 'Read only')))
           .append('<td class="Comment">')
           .append('<td class="Platform">')
           .append('<td class="RemoteAddr">')
@@ -76,6 +81,11 @@ $(function() {
       case 'Comment':
         tr.children('.Comment').children('input').val(v);
         tbody.toggleClass('HasComment', v !== '');
+        break;
+      case 'MayWrite':
+        if (id === WS.state['WS.Device.Id']) {
+          $('#ownAccess').text(isTrue(v) ? 'Read + Write' : 'Read only');
+        }
         break;
     }
   });

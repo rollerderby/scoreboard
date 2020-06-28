@@ -66,8 +66,16 @@ public class WS extends WebSocketServlet {
     private ScoreBoard sb;
     private JSONStateManager jsm;
 
-    private boolean hasPermission(String action) {
-        return true;
+    private boolean hasPermission(Device device, String action) {
+        switch (action) {
+        case "Register":
+        case "Ping":
+            return true;
+        case "Set":
+        case "StartNewGame":
+        default:
+            return device.mayWrite();
+        }
     }
 
     private static final Gauge connectionsActive = Gauge.build().name("crg_websocket_active_connections")
@@ -97,13 +105,14 @@ public class WS extends WebSocketServlet {
             try {
                 Map<String, Object> json = JSON.std.mapFrom(message_data);
                 String action = (String) json.get("action");
-                if (!hasPermission(action)) {
+                if (!hasPermission(device, action)) {
                     json = new HashMap<>();
                     json.put("authorization", "Not authorized for " + action);
                     send(json);
                     return;
                 }
-                if (action.equals("Register")) {
+                switch (action) {
+                case "Register":
                     List<?> jsonPaths = (List<?>) json.get("paths");
                     if (jsonPaths != null) {
                         Set<String> newPaths = new TreeSet<>();
@@ -116,7 +125,8 @@ public class WS extends WebSocketServlet {
                         sendWSUpdatesForPaths(pt, state.keySet());
                         this.paths.addAll(newPaths);
                     }
-                } else if (action.equals("Set")) {
+                    break;
+                case "Set":
                     sbClient.write();
                     String key = (String) json.get("key");
                     Object value = json.get("value");
@@ -138,7 +148,8 @@ public class WS extends WebSocketServlet {
                             ScoreBoardJSONSetter.set(sb, Collections.singletonList(js), Source.WS);
                         }
                     });
-                } else if (action.equals("StartNewGame")) {
+                    break;
+                case "StartNewGame":
                     sbClient.write();
                     @SuppressWarnings("unchecked")
                     final Map<String, Object> data = (Map<String, Object>) json.get("data");
@@ -212,7 +223,8 @@ public class WS extends WebSocketServlet {
                             }
                         }
                     });
-                } else if (action.equals("Ping")) {
+                    break;
+                case "Ping":
                     json = new HashMap<>();
                     json.put("Pong", "");
                     send(json);
@@ -222,8 +234,10 @@ public class WS extends WebSocketServlet {
                     // without having to build something just for it
                     // or risking an update loop.
                     device.access();
-                } else {
+                    break;
+                default:
                     sendError("Unknown Action '" + action + "'");
+                    break;
                 }
             } catch (Exception je) {
                 Logger.printMessage("Error handling JSON message: " + je);
