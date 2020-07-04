@@ -1,7 +1,5 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
-import java.time.ZonedDateTime;
-
 import com.carolinarollergirls.scoreboard.core.Jam;
 import com.carolinarollergirls.scoreboard.core.Penalty;
 import com.carolinarollergirls.scoreboard.core.Period;
@@ -53,7 +51,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             } else {
                 set(WALLTIME_END, 0L);
                 if (get(WALLTIME_START) == 0L) {
-                    set(LOCAL_TIME_START, ZonedDateTime.now().toString());
+                    set(LOCAL_TIME_START, ScoreBoardClock.getInstance().getLocalTime());
                     set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
                 }
             }
