@@ -1,7 +1,10 @@
 package com.carolinarollergirls.scoreboard.utils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -11,11 +14,13 @@ public class ScoreBoardClock extends TimerTask {
     private ScoreBoardClock() {
         offset = System.currentTimeMillis();
         timer.scheduleAtFixedRate(this, CLOCK_UPDATE_INTERVAL / 4, CLOCK_UPDATE_INTERVAL / 4);
+        dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+        dateFormat.setTimeZone(TimeZone.getDefault());
     }
 
-    public static ScoreBoardClock getInstance() {
-        return instance;
-    }
+    public static ScoreBoardClock getInstance() { return instance; }
+
+    public String getLocalTime() { return dateFormat.format(new Date()) + "[" + TimeZone.getDefault().getID() + "]"; }
 
     public long getCurrentTime() {
         synchronized (coreLock) {
@@ -37,7 +42,8 @@ public class ScoreBoardClock extends TimerTask {
             // changing offset instead of currentTime has two reasons:
             // 1. The change only becomes visible to clients after the clock has restarted.
             // 2. Repeating values for currentTime would cause UpdateClockTimerTask to just
-            //    idle until it has caught up, instead of advancing the clocks by the desired amount.
+            // idle until it has caught up, instead of advancing the clocks by the desired
+            // amount.
             offset -= lastRewind;
         }
     }
@@ -49,7 +55,7 @@ public class ScoreBoardClock extends TimerTask {
     }
 
     public void advance(long ms) {
-        synchronized(coreLock) {
+        synchronized (coreLock) {
             currentTime += ms;
             updateClients();
         }
@@ -85,7 +91,7 @@ public class ScoreBoardClock extends TimerTask {
     }
 
     private void updateClients() {
-        for (ScoreBoardClockClient client: clients) {
+        for (ScoreBoardClockClient client : clients) {
             client.updateTime(currentTime);
         }
     }
@@ -106,6 +112,8 @@ public class ScoreBoardClock extends TimerTask {
 
     private Timer timer = new Timer();
 
+    private SimpleDateFormat dateFormat;
+
     private static final ScoreBoardClock instance = new ScoreBoardClock();
 
     private Object coreLock = ScoreBoardImpl.getCoreLock();
@@ -116,8 +124,8 @@ public class ScoreBoardClock extends TimerTask {
 
     public interface ScoreBoardClockClient {
         /*
-         * Callback that notifies the client of the current time.
-         * Parameter is the time elapsed since scoreboard startup.
+         * Callback that notifies the client of the current time. Parameter is the time
+         * elapsed since scoreboard startup.
          */
         void updateTime(long ms);
     }
