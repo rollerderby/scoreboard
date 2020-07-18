@@ -496,7 +496,7 @@ function createTeamTable() {
 
     var nameTr = _crgUtils.createRowTable(2).appendTo($('<td>').appendTo(nameRow)).find('tr');
     var scoreTr = _crgUtils.createRowTable(3).appendTo($('<td>').appendTo(scoreRow)).find('tr');
-    var speedScoreTr = _crgUtils.createRowTable(4).appendTo($('<td>').appendTo(speedScoreRow)).find('tr');
+    var speedScoreTr = _crgUtils.createRowTable(6).appendTo($('<td>').appendTo(speedScoreRow)).find('tr');
     var timeoutTr = _crgUtils.createRowTable(6).appendTo($('<td>').appendTo(timeoutRow)).find('tr');
     var flagsTr = _crgUtils.createRowTable(2).appendTo($('<td>').appendTo(flagsRow)).find('tr');
     var jammerTr = _crgUtils.createRowTable(1).appendTo($('<td>').appendTo(jammerRow)).find('tr');
@@ -609,37 +609,58 @@ function createTeamTable() {
 
     logoTd.on('click', function() { if (!logoSelect.is(':visible')) { logoShowSelect(true); }});
 
+    function flash(element) {
+      element.stop(true).last().css({ color: '#F00' });
+      element.last().animate({ color: '#000' }, 1000);
+    }
+
+    var scoreSubTr = _crgUtils.createRowTable(2).appendTo(scoreTr.children('td:eq(1)')).find('tr');
+
+    var subScoreTd = scoreSubTr.children('td:eq('+(first?'0':'1')+')');
+    $('<span>').text('Jam Pts: ').appendTo(subScoreTd);
+    var jamScore = $('<a>').appendTo(subScoreTd).addClass('JamScore');
+    WS.Register(prefix +'.JamScore', function(k, v) { jamScore.text(v); });
+    $('<br>').appendTo(subScoreTd);
+    $('<span>').text('Trip Pts: ').appendTo(subScoreTd);
+    var tripScore = $('<a>').appendTo(subScoreTd).addClass('TripScore');
+    WS.Register(prefix +'.TripScore', function(k, v) { tripScore.text(v); });
+    
+    var score = $('<a/>').appendTo(scoreSubTr.children('td:eq('+(first?'1':'0')+')').addClass('Score'));
+    WS.Register(prefix +'.Score', function(k, v) { score.text(v); });
+
     var scoreTd = scoreTr.children('td:eq('+(first?'0':'2')+')').addClass('Down');
-    $('<button>').append($('<span>').text('Score -1'))
+    $('<button>').append($('<span>').text('Points -1'))
       .attr('id', 'Team'+team+'ScoreDown').addClass('KeyControl BigButton').button()
-      .on('click', function(){WS.Set(prefix + '.TripScore', -1, 'change');})
+      .on('click', function(){
+        WS.Set(prefix + '.TripScore', -1, 'change');
+        if (WS.state[prefix + '.Score'] === 0) { flash(score); }
+        if (WS.state[prefix + '.JamScore'] === 0) { flash(jamScore); }
+        if (WS.state[prefix + '.TripScore'] === 0) { flash(tripScore); }
+      })
       .appendTo(scoreTd);
     $('<br />').appendTo(scoreTd);
-    $('<button>').append($('<span>').text('Trip -1')).val('true')
+    $('<button>').append($('<span>').text('Remove Trip')).val('true')
       .attr('id', 'Team'+team+'RemoveTrip').addClass('KeyControl TripButton').button()
       .on('click', function(){WS.Set(prefix + '.RemoveTrip', true);})
       .appendTo(scoreTd);
 
-    var scoreSubTr = _crgUtils.createRowTable(3).appendTo(scoreTr.children('td:eq(1)')).find('tr');
-    var score = $('<a/>').appendTo(scoreSubTr.children('td:eq(1)').addClass('Score'));
-    WS.Register(prefix +'.Score', function(k, v) { score.text(v); });
-
     var scoreTd = scoreTr.children('td:eq('+(first?'2':'0')+')').addClass('Up');
 
-    $('<button>').append($('<span>').text('Score +1'))
+    $('<button>').append($('<span>').text('Points +1'))
       .attr('id', 'Team'+team+'ScoreUp').addClass('KeyControl BigButton').button()
       .on('click', function(){WS.Set(prefix + '.TripScore', +1, 'change');})
       .appendTo(scoreTd);
     $('<br />').appendTo(scoreTd);
-    $('<button>').append($('<span>').text('Trip +1'))
+    $('<button>').append($('<span>').text('Add Trip'))
       .attr('id', 'Team'+team+'AddTrip').addClass('KeyControl TripButton').button()
       .on('click', function(){WS.Set(prefix + '.AddTrip', true);})
       .appendTo(scoreTd);
 
-    for (var i = 1; i <= 4; i++) {
-      var pos = (i - 1);
+    if (first) { $('<span>').text('Set Trip Pts').appendTo(speedScoreTr.find('td:eq(0)')); }
+    for (var i = 0; i <= 4; i++) {
+      var pos = (i + 1);
       if (!first) {
-        pos = 3 - pos;
+        pos = 5 - pos;
       }
       (function(i) {
         $('<button>').append($('<span>').text(i))
@@ -648,40 +669,6 @@ function createTeamTable() {
           .appendTo(speedScoreTr.find('td:eq('+pos+')'));
       }(i));
     }
-
-
-    // Note instantaneous score change is always towards the center.  Jam score total is on the outside.
-    var scoreChange = $('<a>').css({ opacity: '0' }).appendTo(scoreSubTr.children('td:eq('+(first?'2':'0')+')')).addClass('TripScore');
-    var jamScore = $('<a>').appendTo(scoreSubTr.children('td:eq('+(first?'0':'2')+')')).addClass('JamScore');
-
-    var scoreChangeTimeout;
-    WS.Register(prefix + '.TripScore', function(k, v) {
-      var c = (v>0 ? '#080' : '#008');
-      scoreChange.stop(true).text(v).last().css({ opacity: '1', color: c });
-      if (scoreChangeTimeout) {
-        clearTimeout(scoreChangeTimeout);
-      }
-      scoreChangeTimeout = setTimeout(function() {
-        scoreChange.last()
-          .animate({ color: '#000' }, 1000)
-          .animate({ opacity: '0' }, 1000, 'easeInExpo');
-        scoreChangeTimeout = null;
-      }, 2000);
-    });
-
-    jamScore.stop(true).text('0').last().css({ opacity: '1', color: '#008' });
-    var jamScoreTimeout;
-    WS.Register(prefix + '.JamScore', function(k, v) {
-      var c = (v>0 ? '#080' : '#008');
-      jamScore.stop(true).text(v).last().css({ opacity: '1', color: c });
-      if (jamScoreTimeout) {
-        clearTimeout(jamScoreTimeout);
-      }
-      jamScoreTimeout = setTimeout(function() {
-        jamScore.last()
-          .animate({ color: '#008' }, 2000);
-      }, 2000);
-    });
 
     var timeoutButton = $('<button>').append($('<span>').text('Team TO'))
       .attr('id', 'Team'+team+'Timeout').addClass('KeyControl').button()
@@ -1135,6 +1122,18 @@ function createTimeoutDialog() {
     firstJamListed[p] = 0;
     lastJamListed[p] = 0;
   }
+  
+  function createJamDropdownTemplate(p) {
+    firstJamListed[p] = 0;
+    lastJamListed[p] = 0;
+    jamDropdownTemplate[p] = $('<select>').attr('id', 'JamDropdown').attr('period', p);
+    var option = $('<option>').attr('value', p).text('P'+p);
+    _windowFunctions.appendAlphaNumSortedByAttr(periodDropdownTemplate, option.clone(), 'value', 0);
+    table.find('#PeriodDropdown').each(function(idx, e) {
+      _windowFunctions.appendAlphaNumSortedByAttr($(e), option.clone(), 'value', 0);
+    });
+    footer.find('#PeriodDropdown').val(WS.state['ScoreBoard.CurrentPeriodNumber']);
+  }
 
   function processJamNumber(k, v) {
     var p = Number(k.Period);
@@ -1147,17 +1146,7 @@ function createTimeoutDialog() {
       }
       return;
     }
-    if (jamDropdownTemplate[p] == null) {
-      firstJamListed[p] = 0;
-      lastJamListed[p] = 0;
-      jamDropdownTemplate[p] = $('<select>').attr('id', 'JamDropdown').attr('period', p);
-      var option = $('<option>').attr('value', p).text('P'+p);
-      _windowFunctions.appendAlphaNumSortedByAttr(periodDropdownTemplate, option.clone(), 'value', 0);
-      table.find('#PeriodDropdown').each(function(idx, e) {
-        _windowFunctions.appendAlphaNumSortedByAttr($(e), option.clone(), 'value', 0);
-      });
-      footer.find('#PeriodDropdown').val(WS.state['ScoreBoard.CurrentPeriodNumber']);
-    }
+    if (jamDropdownTemplate[p] == null) { createJamDropdownTemplate(p); }
 
     var newFirst = WS.state['ScoreBoard.Period('+p+').FirstJamNumber'];
     var newLast = WS.state['ScoreBoard.Period('+p+').CurrentJamNumber'];
@@ -1209,6 +1198,7 @@ function createTimeoutDialog() {
       var type = WS.state[prefix+'.Owner'] + '.' + WS.state[prefix+'.Review'];
       var review = isTrue(WS.state[prefix+'.Review']);
       var retained = isTrue(WS.state[prefix+'.RetainedReview']);
+      if (jamDropdownTemplate[p] == null) { createJamDropdownTemplate(p); }
       row = $('<tr>').addClass('Timeout').attr('toId', id).attr('period', k.Period).attr('jam', jam)
         .append($('<td>').addClass('Period').append(periodDropdownTemplate.clone().val(p).on('change', function() {
           WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+$(this).val()+').CurrentJam']);

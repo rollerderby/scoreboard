@@ -208,7 +208,7 @@ function createRulesetsTab(tab) {
       tab.find('#current_rs').val(v);
       markEffectiveRulesets();
       var definitions = tab.children('.definitions');
-      if (activeRuleset.Effective) {
+      if (activeRuleset != null && activeRuleset.Effective) {
         definitions.find('.Update, .EditNote').show();
         definitions.find('.Delete').hide();
       } else {
