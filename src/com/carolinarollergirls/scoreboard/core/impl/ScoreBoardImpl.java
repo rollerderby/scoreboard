@@ -703,8 +703,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
             Clock jc = getClock(Clock.ID_JAM);
             if (jc.isTimeAtEnd() && getRulesets().getBoolean(Rule.AUTO_END_JAM)) {
                 // clock has run down naturally
-                setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
-                _endJam();
+                stopJamTO();
             }
         }
     };

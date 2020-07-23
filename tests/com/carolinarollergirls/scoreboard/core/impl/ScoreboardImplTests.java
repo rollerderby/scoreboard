@@ -1229,7 +1229,9 @@ public class ScoreboardImplTests {
     @Test
     public void testJamClockEnd_pcRemaining() {
         sb.startJam();
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevStartLabel = Button.START.getLabel();
+        String prevStopLabel = Button.STOP.getLabel();
+        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
         assertTrue(pc.isRunning());
         assertTrue(jc.isRunning());
         assertTrue(jc.isCountDirectionDown());
@@ -1247,7 +1249,20 @@ public class ScoreboardImplTests {
         assertTrue(lc.isTimeAtStart());
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
-        checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT, prevUndoLabel);
+        checkLabels(ScoreBoard.ACTION_START_JAM, ScoreBoard.ACTION_NONE, ScoreBoard.ACTION_TIMEOUT,
+                ScoreBoard.UNDO_PREFIX + ScoreBoard.ACTION_STOP_JAM);
+
+        sb.clockUndo(false);
+        advance(1000);
+
+        assertTrue(pc.isRunning());
+        assertFalse(jc.isRunning());
+        assertTrue(jc.isCountDirectionDown());
+        assertTrue(jc.isTimeAtEnd());
+        assertFalse(lc.isRunning());
+        assertFalse(tc.isRunning());
+        assertFalse(ic.isRunning());
+        checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, ScoreBoard.ACTION_NONE);
     }
 
     @Test
