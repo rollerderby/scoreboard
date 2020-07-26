@@ -68,6 +68,10 @@ function initialize() {
   });
   
   $.each([1, 2], function(idx, t) {
+    WS.Register([ 'ScoreBoard.Team(' + t + ').NoInitial', 'ScoreBoard.InOvertime'], function(k, v) {
+      var invert = isTrue(WS.state['ScoreBoard.Team(' + t + ').NoInitial']) && !isTrue(WS.state['ScoreBoard.InOvertime']);
+      $('.Team' + t + ' .JamScore').toggleClass('FlatDark', invert);
+    });
     WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) {
       if (v == null) {
         v = '';
