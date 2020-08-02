@@ -87,7 +87,7 @@ function prepareSkSheetTable(element, teamId, mode) {
     }
 
     // Everything after here is team specific.
-    if (k.TeamJam !== teamId) { return; }
+    if (k.TeamJam != teamId) { return; }
     prefix = prefix + 'TeamJam(' + teamId + ').';
     switch (k.substring(prefix.length)) {
       case 'Fielding(Jammer).SkaterNumber':
@@ -417,4 +417,4 @@ function prepareSkaterSelector() {
   WS.Register(['ScoreBoard.Period(*).Jam(*).TeamJam(*).Fielding(*).Skater']);
 }
 
-//# sourceURL=controls\sk\sk-sheet.js
+//# sourceURL=components\sk-sheet.js

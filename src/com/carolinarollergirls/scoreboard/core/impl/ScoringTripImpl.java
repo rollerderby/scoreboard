@@ -1,11 +1,11 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
+import com.carolinarollergirls.scoreboard.core.Clock;
 import com.carolinarollergirls.scoreboard.core.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
-import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<ScoringTrip> implements ScoringTrip {
     ScoringTripImpl(TeamJam parent, int number) {
@@ -32,7 +32,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     @Override
     public void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L) {
-            set(JAM_CLOCK_END, ScoreBoardClock.getInstance().getCurrentWalltime());
+            set(JAM_CLOCK_END, scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
         }
         if (prop == CURRENT && (Boolean) value && get(SCORE) == 0) {
             set(JAM_CLOCK_END, 0L);

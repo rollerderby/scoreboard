@@ -32,11 +32,11 @@ import com.carolinarollergirls.scoreboard.core.Timeout;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -93,25 +93,27 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == TRIP_SCORE && source != Source.COPY) {
             tripScoreTimerTask.cancel();
-            if ((Integer) value > 0) {
+            if ((Integer) value > 0 && getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
                 // If points arrive during an initial trip and we are not in overtime, assign
                 // the points to the first scoring trip instead.
-                if (getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
-                    getCurrentTrip().set(ScoringTrip.ANNOTATION,
-                            "Points were added without Trip +1\n" + get(ScoringTrip.ANNOTATION));
-                    execute(ADD_TRIP);
-                }
-
-                if (scoreBoard.isInJam()) {
-                    tripScoreTimer.purge();
-                    tripScoreTimerTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            execute(ADD_TRIP);
-                        }
-                    };
-                    tripScoreTimer.schedule(tripScoreTimerTask, 4000);
-                }
+                getCurrentTrip().set(ScoringTrip.ANNOTATION,
+                        "Points were added without Add Trip\n" + getCurrentTrip().get(ScoringTrip.ANNOTATION));
+                execute(ADD_TRIP);
+            }
+            if (scoreBoard.isInJam() && ((Integer) value > 0 || ((Integer) last == 0 && flag != Flag.CHANGE))) {
+                // we are during a jam and either points have been entered or the trip score has
+                // been explicitly set to 0 - set a timer to advance the trip
+                tripScoreTimer.purge();
+                tripScoreJamTime = getCurrentTrip().get(ScoringTrip.JAM_CLOCK_END);
+                if (tripScoreJamTime == 0L) { tripScoreJamTime = scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed(); }
+                tripScoreTimerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        execute(ADD_TRIP);
+                        getCurrentTrip().getPrevious().set(ScoringTrip.JAM_CLOCK_END, tripScoreJamTime);
+                    }
+                };
+                tripScoreTimer.schedule(tripScoreTimerTask, 4000);
             }
         }
         if (prop == NO_INITIAL && source != Source.COPY) {
@@ -223,6 +225,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     public void startJam() {
         synchronized (coreLock) {
             advanceFieldings(); // if this hasn't been manually triggered between jams, do it now
+            getCurrentTrip().set(ScoringTrip.CURRENT, true);
         }
     }
 
@@ -610,6 +613,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         public void run() {} // dummy, so the variable is not
                              // null at the first score entry
     };
+    private long tripScoreJamTime; // store the jam clock when starting the timer so we can set the correct value
+    // when advancing the trip
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";
