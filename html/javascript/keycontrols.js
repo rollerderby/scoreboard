@@ -180,7 +180,7 @@ var _crgKeyControls = {
           _crgKeyControls._showMultipleKeyAssignDialog(existingControl, editingTarget, key);
           _crgKeyControls._existingKeyCount = 0;
         } else {
-          existingControl.effect('highlight', { color: '#f00' }, 300);
+          existingControl.filter(':not(.Hidden)').effect('highlight', { color: '#f00' }, 300);
         }
       } else {
         _crgKeyControls._setKey(editingTarget, key);
@@ -210,7 +210,7 @@ var _crgKeyControls = {
   },
   _showMultipleKeyAssignDialog: function(existing, target, key) {
     var div = $('<div>').addClass('MultipleKeyAssignDialog');
-    var n = existing.length;
+    var n = existing.filter(':not(.Hidden)').length;
     var s = (n === 1 ? '' : 's');
     $('<p>').text('The key \''+key+'\' is assigned to '+n+' other control'+s+', what do you want to do?')
       .appendTo(div);
