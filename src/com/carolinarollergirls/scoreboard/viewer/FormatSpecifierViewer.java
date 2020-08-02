@@ -357,25 +357,38 @@ public class FormatSpecifierViewer {
             @Override
             public String getValue() { return getClockSecs(id); }
             @Override
-            public String getPreviousValue(Object o) { return getClockSecs(((Long) o).longValue()); }
+            public String getPreviousValue(Object o) {
+                return getClockSecs(((Long) o), getClock(id).isCountDirectionDown());
+            }
         };
         new ScoreBoardValue("%c" + c + "tms", "Clock " + id + " Time (min:sec)", getClock(id), Clock.TIME) {
             @Override
             public String getValue() { return getClockMinSecs(id); }
             @Override
-            public String getPreviousValue(Object o) { return getClockMinSecs(((Long) o).longValue()); }
+            public String getPreviousValue(Object o) {
+                return getClockMinSecs(((Long) o), getClock(id).isCountDirectionDown());
+            }
         };
     }
 
     protected Clock getClock(String id) { return getScoreBoard().getClock(id); }
 
-    protected String getClockSecs(String id) { return getClockSecs(getClock(id).getTime()); }
-    protected String getClockSecs(long time) { return String.valueOf(time / 1000); }
-    protected String getClockMinSecs(String id) { return getClockMinSecs(getClock(id).getTime()); }
-    protected String getClockMinSecs(long time) {
-        time = (time / 1000);
-        String min = String.valueOf(time / 60);
-        String sec = String.valueOf(time % 60);
+    protected String getClockSecs(String id) {
+        return getClockSecs(getClock(id).getTime(), getClock(id).isCountDirectionDown());
+    }
+    protected String getClockSecs(long time, boolean roundUp) {
+        long roundedTime = time / 1000;
+        if (roundUp && time % 1000 != 0) { roundedTime++; }
+        return String.valueOf(roundedTime);
+    }
+    protected String getClockMinSecs(String id) {
+        return getClockMinSecs(getClock(id).getTime(), getClock(id).isCountDirectionDown());
+    }
+    protected String getClockMinSecs(long time, boolean roundUp) {
+        long roundedTime = time / 1000;
+        if (roundUp && time % 1000 != 0) { roundedTime++; }
+        String min = String.valueOf(roundedTime / 60);
+        String sec = String.valueOf(roundedTime % 60);
         if (sec.length() == 1) {
             sec = "0" + sec;
         }
