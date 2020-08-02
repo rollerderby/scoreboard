@@ -26,7 +26,7 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 
 .barBackgroundTop {
 	background: silver;
-	background: linear-gradient(to bottom, #eee, #ddd 30%, #eee 60%, #bbb);
+	background: linear-gradient(to bottom, #eee, #ddd 30%, #ccc 60%, #bbb);
 }
 
 .barBackgroundBottom {
@@ -65,6 +65,7 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 
 .Dot 			{ background: #333; }
 .Dot.OfficialReview1 	{ background: #fff; }
+.Dot.OfficialReview1.Retained 	{ margin-left: .2em; }
 .Dot.Active 		{ opacity: 0; animation: DotActive 0.75s infinite steps(6); -moz-animation: DotActive 0.75s infinite steps(6); -webkit-animation: DotActive 0.75s infinite steps(6); }
 .Dot.Used 		{ opacity: 0; }
 
