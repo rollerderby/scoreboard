@@ -834,9 +834,15 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 </ul>
 <p class="page" id="Scoreboard-Best-Practices"></p><h1>Scoreboard Best Practices</h1>
 <ul>
-<li><p>Clearing browsing data is strongly recommended if you are upgrading from version 3.x to version 4.x. It shouldn&#39;t be needed when switching between different releases of 4.x.</p>
+<li><p><strong>Enable Replace on Undo</strong>. Without Replace pressing the wrong one of the clock controls is a huge pressure situation as every second you don&#39;t fix it the clocks run further away and you will have to fix them manually, if that is possible at all. Plus you may have messed up other data, e.g created another jam, which will take more effort to clean up. With Replace you have the time to first think for a moment what just happened and what you can do to fix it and then fix it completely with two clicks/button presses.
+(It is planned to make this enabled by default in a future version but as the times when undo is being used tend to be the worst for learning about a new feature by being confronted with it, we want to give people plenty of time to learn about it before that.)</p>
 </li>
-<li><p>If you are using a Windows system, leave it connected to the internet a day or two beforehand and manually run Windows Update to ensure that patches won&#39;t be automatically applied during the game. (Or alternatively, ensure you disable the devices ability to communicate with the outside world so it can&#39;t capture updates.)</p>
+<li><p><strong>Don&#39;t rely on Auto-End Jam</strong> and disable it when you have control over the ruleset you are using. (But if you are setting up the ruleset for someone else and disable it make sure they are aware.) Simply reacting to the jam ending whistles when they happen takes less effort than checking the jam duration first. And if Jams are not called off on time, your lineups will still last 30s from the end of the jam instead of being shortened (or requiring the jam timer to ignore the publicly visible lineup clock).
+(The setting is enabled by default because it has been this way for a very long time and there are a substantial number of people out there that have trained themselves to explicitly rely on it. The default may be changed in the future, when this number drops sufficiently.)</p>
+</li>
+<li><p><strong>Clearing browsing data</strong> is strongly recommended if you are upgrading from version 3.x to version 4.x. It shouldn&#39;t be needed when switching between different releases of 4.x.</p>
+</li>
+<li><p>If you are using a Windows system, leave it connected to the internet a day or two beforehand and manually run <strong>Windows Update</strong> to ensure that patches won&#39;t be automatically applied during the game. (Or alternatively, ensure you disable the device&#39;s ability to communicate with the outside world so it can&#39;t capture updates.)</p>
 </li>
 </ul>
 <p class="page" id="Team-Time--Scoreboard-Operation-"></p><h1>Team/Time (Scoreboard Operation)</h1>
@@ -889,11 +895,16 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <h3 id="during-a-jam">During a Jam</h3>
 <ul>
 <li>Be ready to stop the clock at any moment.  Keep one hand near your &quot;Stop Jam&quot; hotkey at all times.  (You did define a &quot;Stop Jam&quot; hotkey, right?)</li>
-<li>When lead is signaled, press the &quot;Lead&quot; button for the appropriate team. If lead is later lost, press the &quot;Lost&quot; buttons for that team. (Lost is automatically marked when a star pass or a penalty for the lead jammer are entered. In this case pressing the button will undo the marking.)<ul>
+<li>When lead is signaled, press the &quot;Lead&quot; button for the appropriate team.<ul>
 <li>If the lead jammer gets reabsorbed by the pack still on their initial trip after being awarded lead status, press the &quot;Remove Trip&quot; button.</li>
 </ul>
 </li>
 <li>When a jammer finishes their initial trip without being given lead at the same time (i.e. either they have not been given lead at all or you pressed &quot;Remove Trip&quot; after they got stuck in the pack) press the &quot;Add Trip&quot; button.</li>
+<li>Most of the time when a Jammer loses lead or the eligibility to become lead jammer, the scoreboard will mark lost automatically. You&#39;ll have to mark it manually, when<ul>
+<li>the Jammer takes off their helmet cover without passing the star or</li>
+<li>the Jammer is penalized and your crew is not tracking penalties via CRG.</li>
+</ul>
+</li>
 <li>When a JR signals the points for a scoring trip, press the according one out of the &quot;0&quot; to &quot;4&quot; buttons. If you do this while the jam is running, the scoreboard will automatically advance to the next scoring trip after a few seconds. Alternatively you can press the &quot;Points +1&quot; button for the appropriate team the corresponding number of times (which also triggers trip advancement during a jam) or press &quot;Add Trip&quot; for a 0 point trip.</li>
 <li>If a star pass occurs, press the &quot;Star Pass&quot; button. If you haven&#39;t entered a pivot before, you can do so now. (Note that you still select the skater with the Pivot buttons even though they are now a jammer.)</li>
 <li>When a ref or the jam timer signals the end of the jam, press the &quot;Stop Jam&quot; button on the fourth whistle.</li>
@@ -944,6 +955,8 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <li>Click on the trip you want to remove.</li>
 <li>Click on &quot;Remove Trip&quot;.</li>
 </ul>
+<h3 id="recording-a-jammer-who-gets-reabsorbed-into-an-already-completed-trip-or-a-1-trip-from-the-initial-trip-">Recording a jammer who gets reabsorbed into an already completed trip (or a -1 trip from the initial trip)</h3>
+<p>This is not tracked by the software. Just make a mental note that nothing has to be recorded the next time the jammer emerges from the pack.</p>
 <h3 id="adding-a-missed-jam-increasing-the-jam-number-">Adding a missed Jam (= increasing the jam number)</h3>
 <ul>
 <li>In the jam clock section click on the jam number.</li>
@@ -985,6 +998,24 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <ul>
 <li>In the SK sheet click on the jammer field you want to change.</li>
 <li>In the dropdown that appears select the correct Jammer.</li>
+</ul>
+<h3 id="adding-a-star-pass-to-a-past-jam-or-moving-a-star-pass-to-an-eariler-trip">Adding a Star pass to a past jam or moving a star pass to an eariler trip</h3>
+<ul>
+<li>In the SK sheet click on the scoring trip (or the NI box for the initial trip) during which the star pass occured.</li>
+<li>In the popup activate the &quot;After SP&quot; button.</li>
+<li>Close the popup.</li>
+</ul>
+<h3 id="removing-a-star-pass-from-a-past-jam">Removing a star pass from a past jam</h3>
+<ul>
+<li>In the SK sheet click on the last scoring trip for the jam (or the NI box if there was no scoring trip).</li>
+<li>In the popup deactivate the &quot;After SP&quot; button.</li>
+<li>Close the popup.</li>
+</ul>
+<h3 id="moving-a-star-pass-to-a-later-trip">Moving a star pass to a later trip</h3>
+<ul>
+<li>In the SK sheet click on the last scoring trip before the star pass (or the NI box if the star pass occured during the first scoring trip).</li>
+<li>In the popup deactivate the &quot;After SP&quot; button.</li>
+<li>Close the popup.</li>
 </ul>
 <h3 id="setting-up-a-specific-game-state">Setting up a specific game state</h3>
 <p>(e.g. if your primary scoreboard computer broke down and you need to bring in a spare mid-game</p>
