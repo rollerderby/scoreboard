@@ -22,7 +22,7 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl<PenaltyCode
         super(parent, "", ScoreBoard.PENALTY_CODES);
         addProperties(CODE);
         this.parent = parent;
-        loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE));
+        setDefinitions(loadFromJSON(parent.getRulesets().get(Rule.PENALTIES_FILE)));
         parent.addScoreBoardListener(
                 new ConditionalScoreBoardListener<>(Rulesets.class, Rulesets.CURRENT_RULE, rulesetChangeListener));
     }
@@ -54,5 +54,5 @@ public class PenaltyCodesManager extends ScoreBoardEventProviderImpl<PenaltyCode
         }
     };
 
-    Child<PenaltyCode> CODE = new Child<>(PenaltyCode.class, "PenaltyCode");
+    Child<PenaltyCode> CODE = new Child<>(PenaltyCode.class, "Code");
 }
