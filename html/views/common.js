@@ -114,7 +114,7 @@ function intermissionDisplay() {
 
   if (num === 0) {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
-  } else if (num !== max) {
+  } else if (num != max) {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
   } else if (!isOfficial) {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
@@ -122,7 +122,7 @@ function intermissionDisplay() {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
   }
 
-  $('.Clock.Intermission .Time').toggleClass('Hide', num === max);
+  $('.Clock.Intermission .Time').toggleClass('Hide', num == max);
   return ret;
 }
 
@@ -137,7 +137,7 @@ function toClockInitialNumber(k, v) {
         ret = name.substring(0, 1) + number;
       }
 
-      if (name === 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] === 1) {
+      if (name === 'Period' && WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] == 1) {
         ret = 'Game';
       }
     }
