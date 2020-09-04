@@ -1,9 +1,11 @@
 package com.carolinarollergirls.scoreboard.core.impl;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -306,5 +308,26 @@ public class ClientsImplTests {
         assertEquals("source", c.get(Client.SOURCE));
         assertEquals(created, (long) c.get(Client.CREATED));
         assertEquals(wrote, (long) c.get(Client.WROTE));
+    }
+
+    @Test
+    public void testLocalCheck() {
+        clients.set(Clients.NEW_DEVICE_WRITE, false);
+        clients.set(Clients.ALL_LOCAL_DEVICES_WRITE, false);
+
+        Device d = clients.getOrAddDevice("S1");
+        assertFalse(d.mayWrite());
+
+        d.set(Device.REMOTE_ADDR, "127.0.0.1");
+        assertFalse(d.mayWrite());
+
+        clients.set(Clients.ALL_LOCAL_DEVICES_WRITE, true);
+        assertTrue(d.mayWrite());
+
+        d.set(Device.REMOTE_ADDR, "192.168.0.1");
+        assertFalse(d.mayWrite());
+
+        d.set(Device.REMOTE_ADDR, "0:0:0:0:0:0:0:1");
+        assertTrue(d.mayWrite());
     }
 }

@@ -29,3 +29,6 @@ table.Devices, .Devices thead, .Devices tbody, .Devices tr, .Devices td, .Device
 
 .Buttons .ui-button-text { font-size: 80%; line-height: 1em; }
 .Buttons { padding: 1ex; }
+
+.Devices:not(.ForceLocal) .Local .ForcedWrite { display: none; }
+.Devices.ForceLocal .Local .RegularWrite { display: none; }

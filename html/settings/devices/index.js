@@ -17,8 +17,10 @@ $(function() {
   });
 
   WS.Register('WS.Device.Id');
+  WS.Register('ScoreBoard.Clients.AllLocalDevicesWrite', function(k, v) { $('.Devices').toggleClass('ForceLocal', isTrue(v));});
   
   $('#writeAccess').append(toggleButton('ScoreBoard.Clients.NewDeviceWrite', 'Enabled', 'Disabled'));
+  $('#writeAccessLocal').append(toggleButton('ScoreBoard.Clients.AllLocalDevicesWrite', 'Can always write', 'Follow normal rules'));
   
   function getDeviceTbody(id) {
     var tbody = deviceTable.children('[deviceId="'+ id +'"]');
@@ -28,7 +30,9 @@ $(function() {
       tbody = $('<tbody>').attr('deviceId', id).attr('name', name)
         .append($('<tr>').append('<td class="Name" rowspan="1">')
           .append($('<td rowspan="1">').addClass('Access')
-              .append(id === WS.state['WS.Device.Id'] ? $('<span id="ownAccess">') : toggleButton(prefix + '.MayWrite', 'Read + Write', 'Read only')))
+              .append($('<span>').addClass('ForcedWrite').text('Read + Write'))
+              .append($('<span>').addClass('RegularWrite')
+                  .append(id === WS.state['WS.Device.Id'] ? $('<span id="ownAccess">') : toggleButton(prefix + '.MayWrite', 'Read + Write', 'Read only'))))
           .append('<td class="Comment">')
           .append('<td class="Platform">')
           .append('<td class="RemoteAddr">')
@@ -64,6 +68,7 @@ $(function() {
         break;
       case 'RemoteAddr':
         tr.children('.RemoteAddr').text(v);
+        tr.toggleClass('Local', v === '127.0.0.1' || v === '0:0:0:0:0:0:0:1');
         break;
       case 'Platform':
         tr.children('.Platform').text(v);
