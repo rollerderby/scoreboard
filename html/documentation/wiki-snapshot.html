@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 4.1.1 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 4.1.3 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <ul class="nav"><li><strong><a href="#Quick-Start-Guide-to-Operating-the-Scoreboard">Quick Start Guide to Operating the Scoreboard</a></strong><ul class="nav"><li><span>Basic information for how to start a game as well as running the clock and changing the score.</span></li></ul></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong>Main Operator Control Panel</strong><ul class="nav"><li><strong><a href="#Team-Time--Scoreboard-Operation-">Team/Time (Scoreboard Operation)</a></strong><ul class="nav"><li><span>Workflow for a game using the full feature set of the scoreboard.  Descriptions of all the operator controls.</span></li></ul></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong><ul class="nav"><li><span>How to configure shortcut keys.</span></li></ul></li><li><strong><a href="#Ruleset-Editor">Ruleset Editor</a></strong><ul class="nav"><li><span>Settings that affect the internal behaviour of the socreboard.</span></li></ul></li><li><strong><a href="ScoreBoard-Settings">ScoreBoard Settings</a></strong><ul class="nav"><li><span>Adjusting display settings or displaying non-scoreboard information from CRG.</span></li></ul></li><li><strong><a href="#Entering-Teams">Entering Teams</a></strong><ul class="nav"><li><span>Storing team information in the scoreboard.</span></li></ul></li><li><strong><a href="#Up---Download">Up / Download</a></strong><ul class="nav"><li><span>Saving or loading scoreboard information.</span></li></ul></li></ul></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li></ul>
               
             </div>
@@ -772,8 +772,8 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 <li>When <em>Active</em> is enabled all currently active devices will be displayed.</li>
 <li>When <em>Inactive</em> is enabled all currently inactive devices will be displayed.</li>
 </ul>
-<p>The selections are cumulative, e.g. in the screenshots all devices that either have a comment or have written are shown. Selecting <em>Active</em> and <em>Inactive</em> together will always show all devices known to the scoreboard.</p>
-<p>Right above the table you can toggle if new devices should be given wirte access.</p>
+<p>The selections are cumulative, e.g. in the screenshot all devices that either have a comment or have written are shown. Selecting <em>Active</em> and <em>Inactive</em> together will always show all devices known to the scoreboard.</p>
+<p>Right above the table you can toggle if new devices should be given write access and if clients running on the same computer as the CRG backend should always have write access.</p>
 <p>The columns in the table have the following meaning:</p>
 <ul>
 <li>Name: A unique auto generated name for the device.</li>
@@ -787,9 +787,9 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 </ul>
 <h3 id="notes-on-device-identification">Notes on device identification</h3>
 <ul>
-<li><p>Devices are identified via browser cookies. That means if the browser is configured to discard cookies on close or cookies are deleted manually, closing and reopening the browser will cause the scoreboard to treat the device as a new one. The same happens when a different browser on the same physical device is used. (The old entry will however still be listed as an inactive device, as the software has no way of knwing that the cookie has been deleted.) This can cause unwanted changes in the access state for physical devices:</p>
+<li><p>Devices are identified via browser cookies. That means if the browser is configured to discard cookies on close or cookies are deleted manually, closing and reopening the browser will cause the scoreboard to treat the device as a new one. The same happens when a different browser on the same physical device is used. (The old entry will however still be listed as an inactive device, as the software has no way of knowing that the cookie has been deleted.) This can cause unwanted changes in the access state for physical devices:</p>
 <ul>
-<li>When new devices are set to read only mode a device with write access might lose this status after closing and reopening the browser. If this happens to all the devices with read access in parallel (e.g. over night at a multi day event), this will cause you to be locked out of the scoreboard. Thus it is recommended that you verify ahead of setting the default to read only that at least one device will be reidentified after closing and reopening the browser.</li>
+<li>When new devices are set to read only mode a device with write access might lose this status after closing and reopening the browser. If this happens to all the devices with read access in parallel (e.g. over night at a multi day event), this will cause you to be locked out of the scoreboard. If you can open a browser on the computer running the scoreboard server, the easiest way to avoid this is to allow local devices to always write. If this is not an option due to your setup, it is recommended that you verify ahead of setting the default to read only that at least one device will be reidentified after closing and reopening the browser.</li>
 <li>When new devices are set to read/write mode a read only device can gain write access by deleting cookies. Thus this configuration is only useful to protect against people accidentally changing the scoreboard. If you worry about people intentionally modifying data, you should deny write access for new devices at least from game start until all stats have been extracted.</li>
 </ul>
 </li>
@@ -798,7 +798,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 </ul>
 <h3 id="recommended-procedure-for-setting-up-devices-in-the-venue-when-using-access-control-">Recommended procedure for setting up devices in the venue when using access control:</h3>
 <ol>
-<li>Connect ythe browser on the device running the server and verify that it is recognized as the same device after closing and reopening the browser.</li>
+<li>Connect the browser on the device running the server and verify that either local devices can always write or that the browser is recognized as the same device after closing and reopening the browser.</li>
 <li>Set the default mode for new devices to read only and set any device that&#39;s already connected and that you haven&#39;t identified as one that should write to read only as well.</li>
 <li>For each additional device<ol>
 <li>Connect the device to the scoreboard and open the start page.</li>
