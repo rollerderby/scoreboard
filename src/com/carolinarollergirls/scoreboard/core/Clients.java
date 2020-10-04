@@ -14,6 +14,7 @@ import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Clients extends ScoreBoardEventProvider {
     Value<Boolean> NEW_DEVICE_WRITE = new Value<>(Boolean.class, "NewDeviceWrite", true);
+    Value<Boolean> ALL_LOCAL_DEVICES_WRITE = new Value<>(Boolean.class, "AllLocalDevicesWrite", true);
 
     Child<Client> CLIENT = new Child<>(Client.class, "Client");
     Child<Device> DEVICE = new Child<>(Device.class, "Device");
@@ -45,6 +46,7 @@ public interface Clients extends ScoreBoardEventProvider {
         public String getName();
 
         public Boolean mayWrite();
+        public Boolean isLocal();
 
         public void access();
         public void write();

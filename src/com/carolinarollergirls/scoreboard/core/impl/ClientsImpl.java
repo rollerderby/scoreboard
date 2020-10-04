@@ -23,7 +23,7 @@ import com.carolinarollergirls.scoreboard.utils.Logger;
 public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements Clients {
     public ClientsImpl(ScoreBoard parent) {
         super(parent, "", ScoreBoard.CLIENTS);
-        addProperties(NEW_DEVICE_WRITE, CLIENT, DEVICE);
+        addProperties(NEW_DEVICE_WRITE, ALL_LOCAL_DEVICES_WRITE, CLIENT, DEVICE);
         addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
     }
@@ -193,7 +193,18 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         @Override
         public Boolean mayWrite() {
             synchronized (coreLock) {
-                return get(MAY_WRITE);
+                return get(MAY_WRITE) || (isLocal() && parent.get(Clients.ALL_LOCAL_DEVICES_WRITE));
+            }
+        }
+
+        @Override
+        public Boolean isLocal() {
+            synchronized (coreLock) {
+                String address = get(REMOTE_ADDR);
+                if ("127.0.0.1".equals(address) || "0:0:0:0:0:0:0:1".equals(address)) {
+                    return true;
+                }
+                return false;
             }
         }
 
