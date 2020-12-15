@@ -11,8 +11,8 @@ package com.carolinarollergirls.scoreboard.json;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.core.Media;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Media;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.Property;

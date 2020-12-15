@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.event;
 
 import java.util.Collection;
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>

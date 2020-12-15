@@ -17,10 +17,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import com.carolinarollergirls.scoreboard.core.FloorPosition;
-import com.carolinarollergirls.scoreboard.core.Role;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.TimeoutOwner;
+import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.Role;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;

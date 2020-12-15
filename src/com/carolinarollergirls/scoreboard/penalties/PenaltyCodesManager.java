@@ -4,8 +4,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
 
-import com.carolinarollergirls.scoreboard.core.Rulesets;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;

@@ -18,7 +18,7 @@ import java.util.TreeMap;
 import com.fasterxml.jackson.jr.ob.JSON;
 import org.apache.commons.io.FileUtils;
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 

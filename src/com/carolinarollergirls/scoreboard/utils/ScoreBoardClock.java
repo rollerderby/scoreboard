@@ -8,7 +8,7 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
 
 public class ScoreBoardClock extends TimerTask {
     private ScoreBoardClock() {

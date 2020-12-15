@@ -1,6 +1,6 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import com.carolinarollergirls.scoreboard.core.Rulesets;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;

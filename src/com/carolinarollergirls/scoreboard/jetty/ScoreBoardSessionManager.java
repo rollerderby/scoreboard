@@ -13,9 +13,9 @@ import javax.servlet.http.HttpServletRequest;
 import org.eclipse.jetty.server.session.AbstractSession;
 import org.eclipse.jetty.server.session.AbstractSessionManager;
 
-import com.carolinarollergirls.scoreboard.core.Clients;
-import com.carolinarollergirls.scoreboard.core.Clients.Device;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
 
 public class ScoreBoardSessionManager extends AbstractSessionManager {
 
