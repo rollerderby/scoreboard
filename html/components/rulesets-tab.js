@@ -10,7 +10,7 @@ function createRulesetsTab(tab) {
     tab.find('#current_rs').empty();
     rs.empty();
     rs.append(displayRulesetTree(''));
-    tab.find('#current_rs').val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
+    tab.find('#current_rs').val(WS.state['ScoreBoard.Rulesets.CurrentRuleset']);
     if (activeRuleset != null) {
       displayRuleset(activeRuleset.Id);
     }
@@ -190,21 +190,21 @@ function createRulesetsTab(tab) {
       // Populate inherited values from parents.
       $.each(rulesets, function(idx, rs) {
         rs.Inherited = {};
-        var pid = rs.ParentId;
+        var pid = rs.Parent;
         while (rulesets[pid]) {
           $.each(rulesets[pid].Rules, function(name, value) {
             if (rs.Inherited[name] === undefined) {
               rs.Inherited[name] = value;
             }
           });
-          pid = rulesets[pid].ParentId;
+          pid = rulesets[pid].Parent;
         }
       });
       loadRulesets();
       markEffectiveRulesets();
     }});
 
-    WS.Register(['ScoreBoard.Rulesets.CurrentRulesetId'], function(k, v) {
+    WS.Register(['ScoreBoard.Rulesets.CurrentRuleset'], function(k, v) {
       tab.find('#current_rs').val(v);
       markEffectiveRulesets();
       var definitions = tab.children('.definitions');
@@ -220,10 +220,10 @@ function createRulesetsTab(tab) {
 
   function markEffectiveRulesets() {
     $.each(rulesets, function(idx, rs) { rs.Effective = false; });
-    var id = WS.state['ScoreBoard.Rulesets.CurrentRulesetId'];
+    var id = WS.state['ScoreBoard.Rulesets.CurrentRuleset'];
     while (rulesets[id]) {
       rulesets[id].Effective = true;
-      id = rulesets[id].ParentId;
+      id = rulesets[id].Parent;
     }
   }
 
@@ -282,7 +282,7 @@ function createRulesetsTab(tab) {
       uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c==='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
     } while (rulesets[uuid]);
     WS.Set('ScoreBoard.Rulesets.Ruleset('+uuid+').Name', newName);
-    WS.Set('ScoreBoard.Rulesets.Ruleset('+uuid+').ParentId', tab.find('#new_parent').val());
+    WS.Set('ScoreBoard.Rulesets.Ruleset('+uuid+').Parent', tab.find('#new_parent').val());
     $('#new_name').val('');
     activeRuleset = uuid;
   }

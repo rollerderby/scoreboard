@@ -586,7 +586,8 @@ public class TeamImplTests {
 
     @Test
     public void testRulesetChange() {
-        Rulesets.Ruleset child = sb.getRulesets().addRuleset("child", RulesetsImpl.ROOT_ID, "id");
+        Rulesets.Ruleset child = sb.getRulesets().addRuleset("child", sb.getRulesets().getRuleset(RulesetsImpl.ROOT_ID),
+                "id");
         child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_TIMEOUTS.toString(), "1"));
         child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_REVIEWS.toString(), "0"));
 

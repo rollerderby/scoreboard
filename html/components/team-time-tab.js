@@ -301,7 +301,7 @@ function createGameControlDialog() {
   });
 
 
-  WS.Register('ScoreBoard.Rulesets.CurrentRulesetId', function(k, v) {
+  WS.Register('ScoreBoard.Rulesets.CurrentRuleset', function(k, v) {
     adhocGame.find('select.Ruleset').val(v);
   });
   WS.Register('ScoreBoard.Rulesets.Ruleset(*).Name', function(k, v) {
@@ -312,7 +312,7 @@ function createGameControlDialog() {
     }
     var option = $('<option>').attr('value', k.Ruleset).attr('name', v).text(v);
     _windowFunctions.appendAlphaSortedByAttr(select, option, 'name');
-    select.val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
+    select.val(WS.state['ScoreBoard.Rulesets.CurrentRuleset']);
   });
 
   dialog.dialog({
