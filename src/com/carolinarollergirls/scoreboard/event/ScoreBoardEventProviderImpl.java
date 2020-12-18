@@ -198,18 +198,61 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
      */
     protected <T> ScoreBoardListener setCopy(Value<T> targetProperty, ScoreBoardEventProvider sourceElement,
             Value<T> sourceProperty, boolean readonly) {
+        return setCopy(targetProperty, sourceElement, sourceProperty, readonly, null, READONLY);
+    }
+    protected <T> ScoreBoardListener setCopy(Value<T> targetProperty, ScoreBoardEventProvider sourceElement,
+            Value<T> sourceProperty, boolean readonly, Value<Boolean> guardProperty) {
+        return setCopy(targetProperty, sourceElement, sourceProperty, readonly, this, guardProperty);
+    }
+    protected <T> ScoreBoardListener setCopy(Value<T> targetProperty, ScoreBoardEventProvider sourceElement,
+            Value<T> sourceProperty, boolean readonly, ScoreBoardEventProvider guardElement,
+            Value<Boolean> guardProperty) {
         checkProperty(targetProperty);
         sourceElement.checkProperty(sourceProperty);
         ScoreBoardListener l = new ConditionalScoreBoardListener<>(sourceElement, sourceProperty,
-                new CopyScoreBoardListener<>(this, targetProperty));
+                new CopyValueScoreBoardListener<>(this, targetProperty, guardElement, guardProperty));
         sourceElement.addScoreBoardListener(l);
         providers.put(l, sourceElement);
         if (readonly) {
             addWriteProtectionOverride(targetProperty, Source.COPY);
         } else {
-            reverseCopyListeners.put(targetProperty, new CopyScoreBoardListener<>(sourceElement, sourceProperty));
+            reverseCopyListeners.put(targetProperty,
+                    new CopyValueScoreBoardListener<>(sourceElement, sourceProperty, guardElement, guardProperty));
         }
-        set(targetProperty, sourceElement.get(sourceProperty), Source.COPY);
+        if (guardElement == null || guardElement.get(guardProperty)) {
+            set(targetProperty, sourceElement.get(sourceProperty), Source.COPY);
+        }
+        return l;
+    }
+    protected <T extends ValueWithId> ScoreBoardListener setCopy(Child<T> targetProperty,
+            ScoreBoardEventProvider sourceElement, Child<T> sourceProperty, boolean readonly) {
+        return setCopy(targetProperty, sourceElement, sourceProperty, readonly, null, READONLY);
+    }
+    protected <T extends ValueWithId> ScoreBoardListener setCopy(Child<T> targetProperty,
+            ScoreBoardEventProvider sourceElement, Child<T> sourceProperty, boolean readonly,
+            Value<Boolean> guardProperty) {
+        return setCopy(targetProperty, sourceElement, sourceProperty, readonly, this, guardProperty);
+    }
+    protected <T extends ValueWithId> ScoreBoardListener setCopy(Child<T> targetProperty,
+            ScoreBoardEventProvider sourceElement, Child<T> sourceProperty, boolean readonly,
+            ScoreBoardEventProvider guardElement, Value<Boolean> guardProperty) {
+        checkProperty(targetProperty);
+        sourceElement.checkProperty(sourceProperty);
+        ScoreBoardListener l = new ConditionalScoreBoardListener<>(sourceElement, sourceProperty,
+                new CopyChildScoreBoardListener<>(this, targetProperty, guardElement, guardProperty));
+        sourceElement.addScoreBoardListener(l);
+        providers.put(l, sourceElement);
+        if (readonly) {
+            addWriteProtectionOverride(targetProperty, Source.COPY);
+        } else {
+            reverseCopyListeners.put(targetProperty,
+                    new CopyChildScoreBoardListener<>(sourceElement, sourceProperty, guardElement, guardProperty));
+        }
+        if ((guardElement == null || guardElement.get(guardProperty))) {
+            for (T element : sourceElement.getAll(sourceProperty)) {
+                add(targetProperty, element);
+            }
+        }
         return l;
     }
     /**
@@ -227,10 +270,22 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     protected <T, U> ScoreBoardListener setCopy(final Value<T> targetProperty,
             ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty, final Value<T> sourceProperty,
             boolean readonly) {
+        return setCopy(targetProperty, indirectionElement, indirectionProperty, sourceProperty, readonly, null,
+                READONLY);
+    }
+    protected <T, U> ScoreBoardListener setCopy(final Value<T> targetProperty,
+            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty, final Value<T> sourceProperty,
+            boolean readonly, final Value<Boolean> guardProperty) {
+        return setCopy(targetProperty, indirectionElement, indirectionProperty, sourceProperty, readonly, this,
+                guardProperty);
+    }
+    protected <T, U> ScoreBoardListener setCopy(final Value<T> targetProperty,
+            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty, final Value<T> sourceProperty,
+            boolean readonly, final ScoreBoardEventProvider guardElement, final Value<Boolean> guardProperty) {
         checkProperty(targetProperty);
         indirectionElement.checkProperty(indirectionProperty);
         ScoreBoardListener l = new IndirectScoreBoardListener<>(indirectionElement, indirectionProperty, sourceProperty,
-                new CopyScoreBoardListener<>(this, targetProperty));
+                new CopyValueScoreBoardListener<>(this, targetProperty, guardElement, guardProperty));
         providers.put(l, null);
         if (readonly) {
             addWriteProtectionOverride(targetProperty, Source.COPY);
@@ -239,8 +294,47 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                     indirectionProperty, new ScoreBoardListener() {
                         @Override
                         public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                            reverseCopyListeners.put(targetProperty, new CopyScoreBoardListener<>(
-                                    (ScoreBoardEventProvider) event.getValue(), sourceProperty));
+                            reverseCopyListeners.put(targetProperty,
+                                    new CopyValueScoreBoardListener<>((ScoreBoardEventProvider) event.getValue(),
+                                            sourceProperty, guardElement, guardProperty));
+                        }
+                    });
+            indirectionElement.addScoreBoardListener(reverseListener);
+            reverseListener.scoreBoardChange(new ScoreBoardEvent<>(indirectionElement, indirectionProperty,
+                    indirectionElement.get(indirectionProperty), null));
+        }
+        return l;
+    }
+    protected <T extends ValueWithId, U> ScoreBoardListener setCopy(final Child<T> targetProperty,
+            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty, final Child<T> sourceProperty,
+            boolean readonly) {
+        return setCopy(targetProperty, indirectionElement, indirectionProperty, sourceProperty, readonly, null,
+                READONLY);
+    }
+    protected <T extends ValueWithId, U> ScoreBoardListener setCopy(final Child<T> targetProperty,
+            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty, final Child<T> sourceProperty,
+            boolean readonly, final Value<Boolean> guardProperty) {
+        return setCopy(targetProperty, indirectionElement, indirectionProperty, sourceProperty, readonly, this,
+                guardProperty);
+    }
+    protected <T extends ValueWithId, U> ScoreBoardListener setCopy(final Child<T> targetProperty,
+            ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty, final Child<T> sourceProperty,
+            boolean readonly, final ScoreBoardEventProvider guardElement, final Value<Boolean> guardProperty) {
+        checkProperty(targetProperty);
+        indirectionElement.checkProperty(indirectionProperty);
+        ScoreBoardListener l = new IndirectScoreBoardListener<>(indirectionElement, indirectionProperty, sourceProperty,
+                new CopyChildScoreBoardListener<>(this, targetProperty, guardElement, guardProperty));
+        providers.put(l, null);
+        if (readonly) {
+            addWriteProtectionOverride(targetProperty, Source.COPY);
+        } else {
+            ScoreBoardListener reverseListener = new ConditionalScoreBoardListener<>(indirectionElement,
+                    indirectionProperty, new ScoreBoardListener() {
+                        @Override
+                        public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                            reverseCopyListeners.put(targetProperty,
+                                    new CopyChildScoreBoardListener<>((ScoreBoardEventProvider) event.getValue(),
+                                            sourceProperty, guardElement, guardProperty));
                         }
                     });
             indirectionElement.addScoreBoardListener(reverseListener);
@@ -331,7 +425,8 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             if (!isWritable(prop, source)) { return false; }
             T last = get(prop);
             value = (T) _computeValue(prop, value, last, source, flag);
-            if (reverseCopyListeners.containsKey(prop) && source != Source.COPY) {
+            if (reverseCopyListeners.containsKey(prop) && reverseCopyListeners.get(prop).isActive()
+                    && source != Source.COPY) {
                 reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent<>(this, prop, value, last), source);
                 return false;
             }
@@ -442,12 +537,18 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     @Override
     public <T extends ValueWithId> boolean add(Child<T> prop, T item, Source source) {
         synchronized (coreLock) {
-            if (item == null || !isWritable(prop, item.getId(), source)) { return false; }
-            Map<String, ValueWithId> map = children.get(prop);
+            if (item == null) { return false; }
             String id = item.getId();
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider) item).getParent() == this) {
                 id = ((ScoreBoardEventProvider) item).getProviderId();
             }
+            if (!isWritable(prop, id, source)) { return false; }
+            if (reverseCopyListeners.containsKey(prop) && reverseCopyListeners.get(prop).isActive()
+                    && source != Source.COPY) {
+                reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent<>(this, prop, item, false), source);
+                return false;
+            }
+            Map<String, ValueWithId> map = children.get(prop);
             if (map.containsKey(id) && map.get(id).equals(item)) { return false; }
             map.put(id, item);
             _itemAdded(prop, item, source);
@@ -486,10 +587,16 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     @Override
     public <T extends ValueWithId> boolean remove(Child<T> prop, T item, Source source) {
         synchronized (coreLock) {
-            if (item == null || !isWritable(prop, source)) { return false; }
+            if (item == null) { return false; }
             String id = item.getId();
             if (item instanceof ScoreBoardEventProvider && ((ScoreBoardEventProvider) item).getParent() == this) {
                 id = ((ScoreBoardEventProvider) item).getProviderId();
+            }
+            if (!isWritable(prop, id, source)) { return false; }
+            if (reverseCopyListeners.containsKey(prop) && reverseCopyListeners.get(prop).isActive()
+                    && source != Source.COPY) {
+                reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent<>(this, prop, item, true), source);
+                return false;
             }
             if (children.get(prop).get(id) == item) {
                 children.get(prop).remove(id);
@@ -599,7 +706,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     protected Map<Value<?>, Object> values = new HashMap<>();
     protected Map<Property<?>, Source> writeProtectionOverride = new HashMap<>();
     @SuppressWarnings("rawtypes")
-    protected Map<Value<?>, CopyScoreBoardListener> reverseCopyListeners = new HashMap<>();
+    protected Map<Property<?>, CopyScoreBoardListener> reverseCopyListeners = new HashMap<>();
 
     protected Map<Child<?>, Map<String, ValueWithId>> children = new HashMap<>();
     protected Map<NumberedChild<?>, Integer> minIds = new HashMap<>();
