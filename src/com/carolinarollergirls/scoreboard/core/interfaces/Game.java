@@ -88,6 +88,7 @@ public interface Game extends ScoreBoardEventProvider {
     Child<Team> TEAM = new Child<>(Team.class, "Team");
     Child<ValWithId> RULE = new Child<>(ValWithId.class, "Rule");
     Child<PenaltyCode> PENALTY_CODE = new Child<>(PenaltyCode.class, "Code");
+    Child<ValWithId> LABEL = new Child<>(ValWithId.class, "Label");
 
     NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period");
 

@@ -125,16 +125,16 @@ public class GameImplTests {
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel) {
-        assertEquals(startLabel, Button.START.getLabel());
-        assertEquals(stopLabel, Button.STOP.getLabel());
-        assertEquals(timeoutLabel, Button.TIMEOUT.getLabel());
-        assertEquals(undoLabel, Button.UNDO.getLabel());
+        assertEquals(startLabel, g.getLabel(Button.START));
+        assertEquals(stopLabel, g.getLabel(Button.STOP));
+        assertEquals(timeoutLabel, g.getLabel(Button.TIMEOUT));
+        assertEquals(undoLabel, g.getLabel(Button.UNDO));
     }
 
     private void checkLabels(String startLabel, String stopLabel, String timeoutLabel, String undoLabel,
             String replaceLabel) {
         checkLabels(startLabel, stopLabel, timeoutLabel, undoLabel);
-        assertEquals(replaceLabel, Button.REPLACED.getLabel());
+        assertEquals(replaceLabel, g.getLabel(Button.REPLACED));
     }
 
     @Test
@@ -566,7 +566,7 @@ public class GameImplTests {
         assertEquals(9, jc.getNumber());
         assertTrue(jc.isRunning());
         g.setLabels(Game.ACTION_NONE, Game.ACTION_STOP_JAM, Game.ACTION_TIMEOUT);
-        Button.UNDO.setLabel(Game.ACTION_NONE);
+        g.setLabel(Button.UNDO, Game.ACTION_NONE);
         GameSnapshot saved = g.snapshot;
 
         g.startJam();
@@ -797,7 +797,7 @@ public class GameImplTests {
 
     @Test
     public void testStopJam_lineupRunning() {
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevUndoLabel = g.getLabel(Button.UNDO);
         g.setLabels(Game.ACTION_START_JAM, Game.ACTION_NONE, Game.ACTION_TIMEOUT);
         lc.setTime(14000);
         lc.setNumber(9);
@@ -975,11 +975,11 @@ public class GameImplTests {
         assertFalse(g.isInOvertime());
         assertTrue(g.isInPeriod());
         g.setLabels(Game.ACTION_START_JAM, Game.ACTION_STOP_JAM, Game.ACTION_TIMEOUT);
-        Button.UNDO.setLabel(Game.ACTION_NONE);
+        g.setLabel(Button.UNDO, Game.ACTION_NONE);
 
         g.createSnapshot("TEST");
         assertEquals("TEST", g.snapshot.getType());
-        assertEquals(Game.UNDO_PREFIX + "TEST", Button.UNDO.getLabel());
+        assertEquals(Game.UNDO_PREFIX + "TEST", g.getLabel(Button.UNDO));
 
         g.timeout();
         lc.start();
@@ -1149,7 +1149,7 @@ public class GameImplTests {
         ic.setTime(0);
         fastForwardJams(1);
         advance(0);
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevUndoLabel = g.getLabel(Button.UNDO);
 
         assertTrue(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
@@ -1181,7 +1181,7 @@ public class GameImplTests {
         g.set(Rule.PERIOD_END_BETWEEN_JAMS, "false");
 
         fastForwardJams(1);
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevUndoLabel = g.getLabel(Button.UNDO);
 
         assertTrue(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
@@ -1209,10 +1209,10 @@ public class GameImplTests {
     public void testPeriodClockEnd_duringJam() {
         fastForwardJams(16);
         g.startJam();
-        String prevStartLabel = Button.START.getLabel();
-        String prevStopLabel = Button.STOP.getLabel();
-        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevStartLabel = g.getLabel(Button.START);
+        String prevStopLabel = g.getLabel(Button.STOP);
+        String prevTimeoutLabel = g.getLabel(Button.TIMEOUT);
+        String prevUndoLabel = g.getLabel(Button.UNDO);
         assertTrue(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         pc.setTime(2000);
@@ -1239,9 +1239,9 @@ public class GameImplTests {
     @Test
     public void testJamClockEnd_pcRemaining() {
         g.startJam();
-        String prevStartLabel = Button.START.getLabel();
-        String prevStopLabel = Button.STOP.getLabel();
-        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
+        String prevStartLabel = g.getLabel(Button.START);
+        String prevStopLabel = g.getLabel(Button.STOP);
+        String prevTimeoutLabel = g.getLabel(Button.TIMEOUT);
         assertTrue(pc.isRunning());
         assertTrue(jc.isRunning());
         assertTrue(jc.isCountDirectionDown());
@@ -1279,10 +1279,10 @@ public class GameImplTests {
     public void testJamClockEnd_autoEndDisabled() {
         g.set(Rule.AUTO_END_JAM, "false");
         g.startJam();
-        String prevStartLabel = Button.START.getLabel();
-        String prevStopLabel = Button.STOP.getLabel();
-        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevStartLabel = g.getLabel(Button.START);
+        String prevStopLabel = g.getLabel(Button.STOP);
+        String prevTimeoutLabel = g.getLabel(Button.TIMEOUT);
+        String prevUndoLabel = g.getLabel(Button.UNDO);
 
         assertTrue(pc.isRunning());
         assertTrue(jc.isRunning());
@@ -1312,7 +1312,7 @@ public class GameImplTests {
         g.addScoreBoardListener(new ConditionalScoreBoardListener<>(jc, Clock.NUMBER, listener));
         fastForwardJams(19);
         fastForwardPeriod();
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevUndoLabel = g.getLabel(Button.UNDO);
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         assertTrue(pc.isTimeAtEnd());
@@ -1376,10 +1376,10 @@ public class GameImplTests {
         ic.setTime(0);
         fastForwardJams(20);
         fastForwardPeriod();
-        String prevStartLabel = Button.START.getLabel();
-        String prevStopLabel = Button.STOP.getLabel();
-        String prevTimeoutLabel = Button.TIMEOUT.getLabel();
-        String prevUndoLabel = Button.UNDO.getLabel();
+        String prevStartLabel = g.getLabel(Button.START);
+        String prevStopLabel = g.getLabel(Button.STOP);
+        String prevTimeoutLabel = g.getLabel(Button.TIMEOUT);
+        String prevUndoLabel = g.getLabel(Button.UNDO);
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         assertTrue(pc.isTimeAtEnd());

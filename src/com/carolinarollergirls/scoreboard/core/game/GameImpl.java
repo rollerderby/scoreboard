@@ -41,8 +41,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         super(parent, id, ScoreBoard.GAME);
         addProperties(CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM, UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM,
                 IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER, OFFICIAL_REVIEW, NO_MORE_JAM, RULESET,
-                RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, PERIOD, Period.JAM, RESET, START_JAM, STOP_JAM, TIMEOUT,
-                CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
+                RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, PERIOD, Period.JAM, RESET, START_JAM, STOP_JAM,
+                TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -52,9 +52,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         setCopy(RULESET_NAME, this, RULESET, Ruleset.NAME, true);
         addWriteProtectionOverride(RULE, Source.ANY_INTERNAL);
         setRuleset(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
-        for (Button b : Button.values()) {
-            b.setScoreBoard(parent);
-        }
         add(TEAM, new TeamImpl(this, Team.ID_1));
         add(TEAM, new TeamImpl(this, Team.ID_2));
         addWriteProtection(TEAM);
@@ -214,10 +211,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
             setRuleset(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
 
-            Button.START.setLabel(ACTION_START_JAM);
-            Button.STOP.setLabel(ACTION_LINEUP);
-            Button.TIMEOUT.setLabel(ACTION_TIMEOUT);
-            Button.UNDO.setLabel(ACTION_NONE);
+            setLabel(Button.START, ACTION_START_JAM);
+            setLabel(Button.STOP, ACTION_LINEUP);
+            setLabel(Button.TIMEOUT, ACTION_TIMEOUT);
+            setLabel(Button.UNDO, ACTION_NONE);
+            setLabel(Button.REPLACED, ACTION_NONE);
         }
     }
 
@@ -225,7 +223,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     public void postAutosaveUpdate() {
         synchronized (coreLock) {
             // Button may have a label from autosave but undo will not work after restart
-            Button.UNDO.setLabel(ACTION_NONE);
+            setLabel(Button.UNDO, ACTION_NONE);
         }
     }
 
@@ -554,7 +552,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     protected void createSnapshot(String type) {
         snapshot = new GameSnapshot(this, type);
-        Button.UNDO.setLabel(UNDO_PREFIX + type);
+        setLabel(Button.UNDO, UNDO_PREFIX + type);
     }
     protected void restoreSnapshot() {
         ScoreBoardClock.getInstance().rewindTo(snapshot.getSnapshotTime());
@@ -588,10 +586,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             team.restoreSnapshot(snapshot.getTeamSnapshot(team.getId()));
         }
         for (Button button : Button.values()) {
-            button.setLabel(snapshot.getLabels().get(button));
+            setLabel(button, snapshot.getLabels().get(button));
         }
-        Button.UNDO.setLabel(ACTION_NONE);
-        Button.REPLACED.setLabel(snapshot.getType());
+        setLabel(Button.UNDO, ACTION_NONE);
+        setLabel(Button.REPLACED, snapshot.getType());
         snapshot = null;
     }
     protected void finishReplace() {
@@ -610,7 +608,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 restoreSnapshot();
                 if (replace) {
                     replacePending = true;
-                    Button.UNDO.setLabel(ACTION_NO_REPLACE);
+                    setLabel(Button.UNDO, ACTION_NO_REPLACE);
                 } else {
                     ScoreBoardClock.getInstance().start(true);
                 }
@@ -618,10 +616,12 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         }
     }
 
+    public String getLabel(Button button) { return get(LABEL, button.toString()).getValue(); }
+    public void setLabel(Button button, String label) { add(LABEL, new ValWithId(button.toString(), label)); }
     protected void setLabels(String startLabel, String stopLabel, String timeoutLabel) {
-        Button.START.setLabel(startLabel);
-        Button.STOP.setLabel(stopLabel);
-        Button.TIMEOUT.setLabel(timeoutLabel);
+        setLabel(Button.START, startLabel);
+        setLabel(Button.STOP, stopLabel);
+        setLabel(Button.TIMEOUT, timeoutLabel);
     }
 
     @Override
@@ -791,7 +791,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             periodSnapshot = g.getCurrentPeriod().snapshot();
             labels = new HashMap<>();
             for (Button button : Button.values()) {
-                labels.put(button, button.getLabel());
+                labels.put(button, g.getLabel(button));
             }
             clockSnapshots = new HashMap<>();
             for (Clock clock : g.getAll(CLOCK)) {
@@ -830,24 +830,19 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         protected Map<String, Team.TeamSnapshot> teamSnapshots;
     }
 
-    public enum Button {
-        START("ScoreBoard.Button.StartLabel"),
-        STOP("ScoreBoard.Button.StopLabel"),
+    static public enum Button {
+        START("StartLabel"),
+        STOP("StopLabel"),
         @SuppressWarnings("hiding")
-        TIMEOUT("ScoreBoard.Button.TimeoutLabel"),
-        UNDO("ScoreBoard.Button.UndoLabel"),
-        REPLACED("ScoreBoard.Button.ReplacedLabel");
+        TIMEOUT("TimeoutLabel"),
+        UNDO("UndoLabel"),
+        REPLACED("ReplacedLabel");
 
-        private Button(String s) {
-            setting = s;
-        }
+        private Button(String i) { id = i; }
 
-        public void setScoreBoard(ScoreBoard sb) { scoreBoard = sb; }
+        @Override
+        public String toString() { return id; }
 
-        public String getLabel() { return scoreBoard.getSettings().get(setting); }
-        public void setLabel(String label) { scoreBoard.getSettings().set(setting, label); }
-
-        private ScoreBoard scoreBoard;
-        private String setting;
+        private String id;
     }
 }
