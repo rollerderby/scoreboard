@@ -357,10 +357,10 @@ public class ScoreBoardJSONListenerTests {
         String rootId = RulesetsImpl.ROOT_ID;
         Rulesets.Ruleset rootRs = sb.getRulesets().getRuleset(rootId);
         String cid = "11111111-1111-1111-1111-111111111111";
-        assertEquals(rootId, state.get("ScoreBoard.Rulesets.CurrentRuleset"));
-        assertEquals("WFTDA", state.get("ScoreBoard.Rulesets.CurrentRulesetName"));
+        assertEquals(rootId, state.get("ScoreBoard.Game.Ruleset"));
+        assertEquals("WFTDA", state.get("ScoreBoard.Game.RulesetName"));
 
-        assertEquals("2", state.get("ScoreBoard.Rulesets.CurrentRule(Period.Number)"));
+        assertEquals("2", state.get("ScoreBoard.Game.Rule(Period.Number)"));
         assertEquals("Period.Number", state.get("ScoreBoard.Rulesets.RuleDefinition(Period.Number).Name"));
         assertEquals("Number of periods", state.get("ScoreBoard.Rulesets.RuleDefinition(Period.Number).Description"));
         assertEquals("Integer", state.get("ScoreBoard.Rulesets.RuleDefinition(Period.Number).Type"));
@@ -383,11 +383,11 @@ public class ScoreBoardJSONListenerTests {
         assertEquals("3",
                 state.get("ScoreBoard.Rulesets.Ruleset(11111111-1111-1111-1111-111111111111).Rule(Period.Number)"));
 
-        sb.getRulesets().setCurrentRuleset(cid);
+        g.setRuleset(sb.getRulesets().getRuleset(cid));
         advance(0);
-        assertEquals(cid, state.get("ScoreBoard.Rulesets.CurrentRuleset"));
-        assertEquals("child", state.get("ScoreBoard.Rulesets.CurrentRulesetName"));
-        assertEquals("3", state.get("ScoreBoard.Rulesets.CurrentRule(Period.Number)"));
+        assertEquals(cid, state.get("ScoreBoard.Game.Ruleset"));
+        assertEquals("child", state.get("ScoreBoard.Game.RulesetName"));
+        assertEquals("3", state.get("ScoreBoard.Game.Rule(Period.Number)"));
 
         sb.getRulesets().removeRuleset(cid);
         advance(0);

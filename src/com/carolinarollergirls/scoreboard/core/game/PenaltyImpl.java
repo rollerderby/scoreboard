@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
@@ -13,6 +14,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> implements Penalty {
     public PenaltyImpl(Skater s, int n) {
         super(s, n, Skater.PENALTY);
+        game = s.getTeam().getGame();
         addProperties(TIME, JAM, PERIOD_NUMBER, JAM_NUMBER, CODE, SERVING, SERVED, FORCE_SERVED, BOX_TRIP, REMOVE);
         set(TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
         setInverseReference(JAM, Jam.PENALTY);
@@ -62,7 +64,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
             }
             moveToNumber(newPos);
 
-            if (newPos == scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) {
+            if (newPos == game.getInt(Rule.FO_LIMIT)) {
                 Penalty fo = parent.get(Skater.PENALTY, Skater.FO_EXP_ID);
                 if (fo != null && fo.get(CODE) == "FO") {
                     fo.set(JAM, (Jam) value);
@@ -89,4 +91,6 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     public String getCode() { return get(CODE); }
     @Override
     public boolean isServed() { return get(SERVED); }
+
+    private Game game;
 }

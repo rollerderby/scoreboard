@@ -90,7 +90,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
                     delete(source);
                 }
             } else if (prop == INSERT_BEFORE) {
-                if (game.getCurrentPeriodNumber() < scoreBoard.getRulesets().getInt(Rule.NUMBER_PERIODS))
+                if (game.getCurrentPeriodNumber() < game.getInt(Rule.NUMBER_PERIODS))
                     game.add(ownType, new PeriodImpl(game, getNumber()));
             } else if (prop == INSERT_TIMEOUT) {
                 Timeout t = new TimeoutImpl(getCurrentJam());

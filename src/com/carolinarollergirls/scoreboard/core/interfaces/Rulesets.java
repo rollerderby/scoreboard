@@ -16,23 +16,6 @@ import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Rulesets extends ScoreBoardEventProvider {
-    public void reset();
-
-    public void setCurrentRuleset(String id);
-    // if rs is the current ruleset or an ancestor of it, refresh the current rules
-    public void refreshRuleset(Ruleset rs);
-
-    // Get information from current ruleset.
-    public String get(Rule r);
-    public boolean getBoolean(Rule r);
-    public int getInt(Rule r);
-    public long getLong(Rule r);
-    public void set(Rule r, String v);
-
-    // The last loaded ruleset.
-    public Ruleset getCurrentRuleset();
-    public String getCurrentRulesetName();
-
     public RuleDefinition getRuleDefinition(String id);
 
     public Ruleset getRuleset(String id);
@@ -40,12 +23,10 @@ public interface Rulesets extends ScoreBoardEventProvider {
     public Ruleset addRuleset(String name, Ruleset parent);
     public Ruleset addRuleset(String name, Ruleset parent, String id);
 
-    Value<Ruleset> CURRENT_RULESET = new Value<>(Ruleset.class, "CurrentRuleset", null);
-    Value<String> CURRENT_RULESET_NAME = new Value<>(String.class, "CurrentRulesetName", "");
-
-    Child<ValWithId> CURRENT_RULE = new Child<>(ValWithId.class, "CurrentRule");
     Child<RuleDefinition> RULE_DEFINITION = new Child<>(RuleDefinition.class, "RuleDefinition");
     Child<Ruleset> RULESET = new Child<>(Ruleset.class, "Ruleset");
+
+    public static final String ROOT_ID = "WFTDARuleset";
 
     public static interface Ruleset extends ScoreBoardEventProvider {
         public String get(Rule k);

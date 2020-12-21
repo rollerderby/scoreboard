@@ -31,6 +31,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
@@ -160,9 +161,9 @@ public class WS extends WebSocketServlet {
                             Game g = sb.getGame();
                             PreparedTeam t1 = sb.getPreparedTeam((String) data.get("Team1"));
                             PreparedTeam t2 = sb.getPreparedTeam((String) data.get("Team2"));
-                            String rs = (String) data.get("Ruleset");
+                            Ruleset rs = sb.getRulesets().getRuleset((String) data.get("Ruleset"));
                             g.reset();
-                            sb.getRulesets().setCurrentRuleset(rs);
+                            g.setRuleset(rs);
                             g.getTeam(Team.ID_1).loadPreparedTeam(t1);
                             g.getTeam(Team.ID_2).loadPreparedTeam(t2);
 

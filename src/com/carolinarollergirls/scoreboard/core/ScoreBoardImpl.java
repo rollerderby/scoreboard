@@ -29,14 +29,13 @@ import com.carolinarollergirls.scoreboard.core.prepared.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.utils.Version;
 
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> implements ScoreBoard {
     public ScoreBoardImpl() {
         super(null, "", null);
-        addProperties(VERSION, SETTINGS, TWITTER, RULESETS, PENALTY_CODES, MEDIA, CLIENTS, GAME, PREPARED_TEAM);
+        addProperties(VERSION, SETTINGS, TWITTER, RULESETS, MEDIA, CLIENTS, GAME, PREPARED_TEAM);
         setupScoreBoard();
     }
 
@@ -50,8 +49,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         addWriteProtection(SETTINGS);
         add(RULESETS, new RulesetsImpl(this));
         addWriteProtection(RULESETS);
-        add(PENALTY_CODES, new PenaltyCodesManager(this));
-        addWriteProtection(PENALTY_CODES);
         add(MEDIA, new MediaImpl(this));
         addWriteProtection(MEDIA);
         add(CLIENTS, new ClientsImpl(this));
@@ -84,9 +81,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
 
     @Override
     public Rulesets getRulesets() { return get(RULESETS, ""); }
-
-    @Override
-    public PenaltyCodesManager getPenaltyCodesManager() { return get(PENALTY_CODES, ""); }
 
     @Override
     public Media getMedia() { return get(MEDIA, ""); }

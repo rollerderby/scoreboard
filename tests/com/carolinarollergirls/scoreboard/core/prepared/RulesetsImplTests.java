@@ -32,43 +32,14 @@ public class RulesetsImplTests {
     }
 
     @Test
-    public void testChangingRuleset() {
-        Ruleset child = rulesets.addRuleset("child", root, id1);
-        assertEquals(root, child.getParentRuleset());
-        assertEquals(2, rulesets.getInt(Rule.NUMBER_PERIODS));
-        assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
-        assertEquals(root, rulesets.getCurrentRuleset());
-        assertEquals("WFTDA", rulesets.getCurrentRulesetName());
-
-        child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
-        rulesets.setCurrentRuleset(id1);
-        assertEquals(5, rulesets.getInt(Rule.NUMBER_PERIODS));
-        assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
-        assertEquals(id1, rulesets.getCurrentRuleset().getId());
-        assertEquals("child", rulesets.getCurrentRulesetName());
-
-        rulesets.setCurrentRuleset(root.getId());
-        assertEquals(2, rulesets.getInt(Rule.NUMBER_PERIODS));
-        assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
-        assertEquals(root, rulesets.getCurrentRuleset());
-        assertEquals("WFTDA", rulesets.getCurrentRulesetName());
-
-        rulesets.set(Rule.NUMBER_PERIODS, "6");
-        assertEquals(6, rulesets.getInt(Rule.NUMBER_PERIODS));
-
-        rulesets.set(Rule.NUMBER_PERIODS, "zz");
-        assertEquals(6, rulesets.getInt(Rule.NUMBER_PERIODS));
-    }
-
-    @Test
     public void testTimeRule() {
         Ruleset child = rulesets.addRuleset("child", root, id1);
         assertEquals(root, child.getParentRuleset());
-        assertEquals(1800000, rulesets.getLong(Rule.PERIOD_DURATION));
+        assertEquals(1800000, sb.getGame().getLong(Rule.PERIOD_DURATION));
 
         child.add(Ruleset.RULE, new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
-        rulesets.setCurrentRuleset(id1);
-        assertEquals(60000, rulesets.getLong(Rule.PERIOD_DURATION));
+        sb.getGame().setRuleset(child);
+        assertEquals(60000, sb.getGame().getLong(Rule.PERIOD_DURATION));
         assertEquals(60000, sb.getGame().getClock(Clock.ID_PERIOD).getTime());
     }
 

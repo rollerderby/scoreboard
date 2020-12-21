@@ -182,7 +182,7 @@ public class TeamImplTests {
 
         g.stopJamTO();
         g.startJam();
-        advance(sb.getRulesets().getLong(Rule.PERIOD_DURATION));
+        advance(g.getLong(Rule.PERIOD_DURATION));
         advance(15 * 60 * 1000);
         g.startJam();
         team.setRetainedOfficialReview(true);
@@ -193,7 +193,7 @@ public class TeamImplTests {
         assertEquals(1, team.getOfficialReviews());
         assertFalse(team.retainedOfficialReview());
 
-        sb.getRulesets().set(Rule.NUMBER_REVIEWS, String.valueOf(2));
+        g.set(Rule.NUMBER_REVIEWS, String.valueOf(2));
         team.recountTimeouts();
         assertFalse(team.inTimeout());
         assertFalse(team.inOfficialReview());
@@ -201,9 +201,9 @@ public class TeamImplTests {
         assertEquals(2, team.getOfficialReviews());
         assertFalse(team.retainedOfficialReview());
 
-        sb.getRulesets().set(Rule.NUMBER_TIMEOUTS, String.valueOf(4));
-        sb.getRulesets().set(Rule.TIMEOUTS_PER_PERIOD, String.valueOf(true));
-        sb.getRulesets().set(Rule.REVIEWS_PER_PERIOD, String.valueOf(false));
+        g.set(Rule.NUMBER_TIMEOUTS, String.valueOf(4));
+        g.set(Rule.TIMEOUTS_PER_PERIOD, String.valueOf(true));
+        g.set(Rule.REVIEWS_PER_PERIOD, String.valueOf(false));
         team.recountTimeouts();
         assertEquals(4, team.getTimeouts());
         assertEquals(1, team.getOfficialReviews());
@@ -595,7 +595,7 @@ public class TeamImplTests {
         child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_TIMEOUTS.toString(), "1"));
         child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_REVIEWS.toString(), "0"));
 
-        sb.getRulesets().setCurrentRuleset("id");
+        g.setRuleset(child);
         assertEquals(1, team.getTimeouts());
         assertEquals(0, team.getOfficialReviews());
     }

@@ -123,7 +123,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             if (FO_EXP_ID.equals(p.getProviderId())) {
                 updateEligibility();
             }
-            if (p.getNumber() == scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) {
+            if (p.getNumber() == game.getInt(Rule.FO_LIMIT)) {
                 Penalty fo = getPenalty(FO_EXP_ID);
                 if (fo == null) {
                     fo = getOrCreate(PENALTY, 0);
@@ -153,7 +153,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         if (prop == PENALTY) {
             if (FO_EXP_ID.equals(((Penalty) item).getProviderId())) {
                 updateEligibility();
-            } else if (get(PENALTY, scoreBoard.getRulesets().getInt(Rule.FO_LIMIT)) == null) {
+            } else if (get(PENALTY, game.getInt(Rule.FO_LIMIT)) == null) {
                 Penalty fo = getPenalty(FO_EXP_ID);
                 if (fo != null && fo.get(Penalty.CODE) == "FO") {
                     fo.delete();

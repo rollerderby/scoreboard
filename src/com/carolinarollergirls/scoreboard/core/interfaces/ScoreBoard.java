@@ -10,7 +10,6 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
 
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface ScoreBoard extends ScoreBoardEventProvider {
@@ -24,8 +23,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Rulesets getRulesets();
 
-    public PenaltyCodesManager getPenaltyCodesManager();
-
     public Media getMedia();
 
     public Clients getClients();
@@ -37,7 +34,6 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version");
     Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings");
     Child<Twitter> TWITTER = new Child<>(Twitter.class, "Twitter");
-    Child<PenaltyCodesManager> PENALTY_CODES = new Child<>(PenaltyCodesManager.class, "PenaltyCodes");
     Child<Media> MEDIA = new Child<>(Media.class, "Media");
     Child<Clients> CLIENTS = new Child<>(Clients.class, "Clients");
     Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets");

@@ -23,7 +23,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
-import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
@@ -32,11 +31,8 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
-import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -79,8 +75,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         addWriteProtectionOverride(OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(LAST_REVIEW, Source.ANY_INTERNAL);
         setCopy(RETAINED_OFFICIAL_REVIEW, this, LAST_REVIEW, Timeout.RETAINED_REVIEW, false);
-        scoreBoard.addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(Rulesets.class, Rulesets.CURRENT_RULESET, rulesetChangeListener));
     }
 
     @Override
@@ -418,12 +412,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
 
     @Override
     public void recountTimeouts() {
-        boolean toPerPeriod = scoreBoard.getRulesets().getBoolean(Rule.TIMEOUTS_PER_PERIOD);
-        boolean revPerPeriod = scoreBoard.getRulesets().getBoolean(Rule.REVIEWS_PER_PERIOD);
-        int toCount = scoreBoard.getRulesets().getInt(Rule.NUMBER_TIMEOUTS);
-        int revCount = scoreBoard.getRulesets().getInt(Rule.NUMBER_REVIEWS);
-        int retainsLeft = scoreBoard.getRulesets().getInt(Rule.NUMBER_RETAINS);
-        boolean rdclPerHalfRules = scoreBoard.getRulesets().getBoolean(Rule.RDCL_PER_HALF_RULES);
+        boolean toPerPeriod = game.getBoolean(Rule.TIMEOUTS_PER_PERIOD);
+        boolean revPerPeriod = game.getBoolean(Rule.REVIEWS_PER_PERIOD);
+        int toCount = game.getInt(Rule.NUMBER_TIMEOUTS);
+        int revCount = game.getInt(Rule.NUMBER_REVIEWS);
+        int retainsLeft = game.getInt(Rule.NUMBER_RETAINS);
+        boolean rdclPerHalfRules = game.getBoolean(Rule.RDCL_PER_HALF_RULES);
         boolean otherHalfToUnused = rdclPerHalfRules;
         Timeout lastReview = null;
 
@@ -457,11 +451,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         set(OFFICIAL_REVIEWS, revCount);
         set(LAST_REVIEW, lastReview);
     }
-
-    protected ScoreBoardListener rulesetChangeListener = new ScoreBoardListener() {
-        @Override
-        public void scoreBoardChange(ScoreBoardEvent<?> event) { recountTimeouts(); }
-    };
 
     @Override
     public Skater getSkater(String id) { return get(SKATER, id); }

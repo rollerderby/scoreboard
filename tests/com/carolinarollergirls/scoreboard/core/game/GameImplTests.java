@@ -24,6 +24,8 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
@@ -37,6 +39,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class GameImplTests {
 
@@ -157,7 +160,7 @@ public class GameImplTests {
 
     @Test
     public void testSetInOvertime() {
-        (sb.getRulesets()).set(Rule.LINEUP_DURATION, "30000");
+        g.set(Rule.LINEUP_DURATION, "30000");
         lc.setMaximumTime(999999999);
 
         assertFalse(lc.isCountDirectionDown());
@@ -259,13 +262,13 @@ public class GameImplTests {
 
     @Test
     public void testStartOvertime_default() {
-        (sb.getRulesets()).set(Rule.OVERTIME_LINEUP_DURATION, "60000");
+        g.set(Rule.OVERTIME_LINEUP_DURATION, "60000");
 
         fastForwardPeriod();
         fastForwardPeriod();
         assertFalse(pc.isRunning());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         jc.setTime(0);
         assertTrue(jc.isTimeAtEnd());
@@ -295,7 +298,7 @@ public class GameImplTests {
         g.timeout();
         assertFalse(pc.isRunning());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         jc.setTime(0);
         assertTrue(jc.isTimeAtEnd());
@@ -320,7 +323,7 @@ public class GameImplTests {
 
     @Test
     public void testStartOvertime_notLastPeriod() {
-        assertNotEquals(pc.getNumber(), sb.getRulesets().getInt(Rule.NUMBER_PERIODS));
+        assertNotEquals(pc.getNumber(), g.getInt(Rule.NUMBER_PERIODS));
 
         g.startOvertime();
 
@@ -333,7 +336,7 @@ public class GameImplTests {
         fastForwardPeriod();
         ic.setTime(0);
         g.startJam();
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertTrue(pc.isRunning());
         GameSnapshot saved = g.snapshot;
 
@@ -349,7 +352,7 @@ public class GameImplTests {
         ic.setTime(0);
         g.startJam();
         pc.setTime(0);
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(pc.isRunning());
         assertTrue(jc.isRunning());
         GameSnapshot saved = g.snapshot;
@@ -630,7 +633,7 @@ public class GameImplTests {
         assertFalse(tc.isRunning());
         assertTrue(ic.isRunning());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(g.get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getMaximumTime());
         assertTrue(ic.isTimeAtStart());
         assertFalse(g.isInPeriod());
@@ -1140,7 +1143,7 @@ public class GameImplTests {
 
     @Test
     public void testPeriodClockEnd_duringLineup() {
-        sb.getRulesets().set(Rule.INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
+        g.set(Rule.INTERMISSION_DURATIONS, "5:00,15:00,5:00,60:00");
 
         fastForwardPeriod();
         ic.setTime(0);
@@ -1168,14 +1171,14 @@ public class GameImplTests {
         assertTrue(ic.isRunning());
         assertTrue(ic.isTimeAtStart());
         assertEquals(2, ic.getNumber());
-        long dur = ClockConversion.fromHumanReadable(sb.getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
+        long dur = ClockConversion.fromHumanReadable(g.get(Rule.INTERMISSION_DURATIONS).split(",")[1]);
         assertEquals(dur, ic.getTimeRemaining());
         checkLabels(Game.ACTION_START_JAM, Game.ACTION_LINEUP, Game.ACTION_TIMEOUT, prevUndoLabel);
     }
 
     @Test
     public void testPeriodClockEnd_periodEndInhibitedByRuleset() {
-        sb.getRulesets().set(Rule.PERIOD_END_BETWEEN_JAMS, "false");
+        g.set(Rule.PERIOD_END_BETWEEN_JAMS, "false");
 
         fastForwardJams(1);
         String prevUndoLabel = Button.UNDO.getLabel();
@@ -1274,7 +1277,7 @@ public class GameImplTests {
 
     @Test
     public void testJamClockEnd_autoEndDisabled() {
-        sb.getRulesets().set(Rule.AUTO_END_JAM, "false");
+        g.set(Rule.AUTO_END_JAM, "false");
         g.startJam();
         String prevStartLabel = Button.START.getLabel();
         String prevStopLabel = Button.STOP.getLabel();
@@ -1298,7 +1301,7 @@ public class GameImplTests {
         assertFalse(ic.isRunning());
         checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, prevUndoLabel);
 
-        advance(sb.getRulesets().getLong(Rule.PERIOD_DURATION));
+        advance(g.getLong(Rule.PERIOD_DURATION));
         g.stopJamTO();
 
         assertFalse(lc.isRunning());
@@ -1345,7 +1348,7 @@ public class GameImplTests {
 
     @Test
     public void testIntermissionClockEnd_notLastPeriodContinueCountingJams() {
-        sb.getRulesets().set(Rule.JAM_NUMBER_PER_PERIOD, "false");
+        g.set(Rule.JAM_NUMBER_PER_PERIOD, "false");
 
         fastForwardJams(19);
         fastForwardPeriod();
@@ -1380,7 +1383,7 @@ public class GameImplTests {
         assertFalse(pc.isRunning());
         assertTrue(pc.isCountDirectionDown());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         assertEquals(21, jc.getNumber());
         jc.setTime(56000);
@@ -1388,14 +1391,14 @@ public class GameImplTests {
         assertFalse(tc.isRunning());
         assertTrue(ic.isRunning());
         assertTrue(ic.isCountDirectionDown());
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), ic.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), ic.getNumber());
         ic.setTime(3000);
 
         advance(3000);
 
         assertFalse(pc.isRunning());
         assertTrue(pc.isTimeAtEnd());
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), pc.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), pc.getNumber());
         assertFalse(jc.isRunning());
         assertEquals(21, jc.getNumber());
         assertEquals(56000, jc.getTime());
@@ -1403,7 +1406,7 @@ public class GameImplTests {
         assertFalse(tc.isRunning());
         assertFalse(ic.isRunning());
         assertTrue(ic.isTimeAtEnd());
-        assertEquals(sb.getRulesets().getInt(Rule.NUMBER_PERIODS), ic.getNumber());
+        assertEquals(g.getInt(Rule.NUMBER_PERIODS), ic.getNumber());
         checkLabels(prevStartLabel, prevStopLabel, prevTimeoutLabel, prevUndoLabel);
     }
 
@@ -1481,11 +1484,11 @@ public class GameImplTests {
 
     @Test
     public void testTimeoutsThatDontAlwaysStopPc() {
-        sb.getRulesets().set(Rule.STOP_PC_ON_TO, "false");
-        sb.getRulesets().set(Rule.STOP_PC_ON_OTO, "false");
-        sb.getRulesets().set(Rule.STOP_PC_ON_TTO, "true");
-        sb.getRulesets().set(Rule.STOP_PC_ON_OR, "true");
-        sb.getRulesets().set(Rule.STOP_PC_AFTER_TO_DURATION, "120000");
+        g.set(Rule.STOP_PC_ON_TO, "false");
+        g.set(Rule.STOP_PC_ON_OTO, "false");
+        g.set(Rule.STOP_PC_ON_TTO, "true");
+        g.set(Rule.STOP_PC_ON_OR, "true");
+        g.set(Rule.STOP_PC_AFTER_TO_DURATION, "120000");
 
         fastForwardJams(1);
         assertTrue(pc.isCountDirectionDown());
@@ -1530,8 +1533,8 @@ public class GameImplTests {
 
     @Test
     public void testAutoStartJam() {
-        sb.getRulesets().set(Rule.AUTO_START, "true");
-        sb.getRulesets().set(Rule.AUTO_START_JAM, "true");
+        g.set(Rule.AUTO_START, "true");
+        g.set(Rule.AUTO_START_JAM, "true");
 
         fastForwardJams(1);
         assertTrue(pc.isRunning());
@@ -1559,7 +1562,7 @@ public class GameImplTests {
 
     @Test
     public void testNoAutoEndJam() {
-        sb.getRulesets().set(Rule.AUTO_END_JAM, "false");
+        g.set(Rule.AUTO_END_JAM, "false");
 
         g.startJam();
         advance(jc.getMaximumTime());
@@ -1570,11 +1573,11 @@ public class GameImplTests {
 
     @Test
     public void testAutoStartAndEndTimeout() {
-        sb.getRulesets().set(Rule.AUTO_START, "true");
-        sb.getRulesets().set(Rule.AUTO_START_JAM, "false");
-        sb.getRulesets().set(Rule.AUTO_START_BUFFER, "0");
-        sb.getRulesets().set(Rule.AUTO_END_TTO, "true");
-        sb.getRulesets().set(Rule.TTO_DURATION, "25000");
+        g.set(Rule.AUTO_START, "true");
+        g.set(Rule.AUTO_START_JAM, "false");
+        g.set(Rule.AUTO_START_BUFFER, "0");
+        g.set(Rule.AUTO_END_TTO, "true");
+        g.set(Rule.TTO_DURATION, "25000");
 
         fastForwardJams(1);
         assertTrue(pc.isRunning());
@@ -2084,5 +2087,37 @@ public class GameImplTests {
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
         team1.set(Team.TRIP_SCORE, 1);
         assertEquals(1, tj.getCurrentScoringTrip().getNumber());
+    }
+
+    @Test
+    public void testChangingRuleset() {
+        Rulesets rulesets = sb.getRulesets();
+        Ruleset root = rulesets.getRuleset(Rulesets.ROOT_ID);
+        String id1 = UUID.randomUUID().toString();
+        Ruleset child = rulesets.addRuleset("child", root, id1);
+        assertEquals(root, child.getParentRuleset());
+        assertEquals(2, g.getInt(Rule.NUMBER_PERIODS));
+        assertEquals(1800000, g.getLong(Rule.PERIOD_DURATION));
+        assertEquals(root, g.getRuleset());
+        assertEquals("WFTDA", g.getRulesetName());
+
+        child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_PERIODS.toString(), "5"));
+        g.setRuleset(child);
+        assertEquals(5, g.getInt(Rule.NUMBER_PERIODS));
+        assertEquals(1800000, g.getLong(Rule.PERIOD_DURATION));
+        assertEquals(id1, g.getRuleset().getId());
+        assertEquals("child", g.getRulesetName());
+
+        g.setRuleset(root);
+        assertEquals(2, g.getInt(Rule.NUMBER_PERIODS));
+        assertEquals(1800000, g.getLong(Rule.PERIOD_DURATION));
+        assertEquals(root, g.getRuleset());
+        assertEquals("WFTDA", g.getRulesetName());
+
+        g.set(Rule.NUMBER_PERIODS, "6");
+        assertEquals(6, g.getInt(Rule.NUMBER_PERIODS));
+
+        g.set(Rule.NUMBER_PERIODS, "zz");
+        assertEquals(6, g.getInt(Rule.NUMBER_PERIODS));
     }
 }

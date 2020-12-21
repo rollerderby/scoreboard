@@ -1,10 +1,14 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedChild;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
+import com.carolinarollergirls.scoreboard.rules.Rule;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Game extends ScoreBoardEventProvider {
     public void reset();
@@ -50,6 +54,21 @@ public interface Game extends ScoreBoardEventProvider {
 
     public Team getTeam(String id);
 
+    public void setRuleset(Ruleset rs);
+    // if rs is the current ruleset or an ancestor of it, refresh the current rules
+    public void refreshRuleset(Ruleset rs);
+
+    // Get information from current ruleset.
+    public String get(Rule r);
+    public boolean getBoolean(Rule r);
+    public int getInt(Rule r);
+    public long getLong(Rule r);
+    public void set(Rule r, String v);
+
+    // The last loaded ruleset.
+    public Ruleset getRuleset();
+    public String getRulesetName();
+
     Value<Integer> CURRENT_PERIOD_NUMBER = new Value<>(Integer.class, "CurrentPeriodNumber", 0);
     Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null);
     Value<Jam> UPCOMING_JAM = new Value<>(Jam.class, "UpcomingJam", null);
@@ -62,9 +81,13 @@ public interface Game extends ScoreBoardEventProvider {
     Value<TimeoutOwner> TIMEOUT_OWNER = new Value<>(TimeoutOwner.class, "TimeoutOwner", null);
     Value<Boolean> OFFICIAL_REVIEW = new Value<>(Boolean.class, "OfficialReview", false);
     Value<Boolean> NO_MORE_JAM = new Value<>(Boolean.class, "NoMoreJam", false);
+    Value<Ruleset> RULESET = new Value<>(Ruleset.class, "Ruleset", null);
+    Value<String> RULESET_NAME = new Value<>(String.class, "RulesetName", "");
 
     Child<Clock> CLOCK = new Child<>(Clock.class, "Clock");
     Child<Team> TEAM = new Child<>(Team.class, "Team");
+    Child<ValWithId> RULE = new Child<>(ValWithId.class, "Rule");
+    Child<PenaltyCode> PENALTY_CODE = new Child<>(PenaltyCode.class, "Code");
 
     NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period");
 

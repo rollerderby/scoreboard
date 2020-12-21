@@ -14,7 +14,6 @@ import java.util.Iterator;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
-import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
@@ -41,8 +40,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         setRecalculated(TIME).addSource(this, MAXIMUM_TIME);
         setRecalculated(INVERTED_TIME).addSource(this, MAXIMUM_TIME).addSource(this, TIME);
 
-        scoreBoard.addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(Rulesets.class, Rulesets.CURRENT_RULESET, rulesetChangeListener));
+        game.addScoreBoardListener(new ConditionalScoreBoardListener<>(Game.class, Game.RULE, rulesetChangeListener));
     }
 
     @Override
@@ -126,19 +124,17 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
             // Get default values from current settings or use hardcoded values
-            Rulesets r = getScoreBoard().getRulesets();
-            setCountDirectionDown(
-                    Boolean.parseBoolean(r.get(Rulesets.CURRENT_RULE, getId() + ".ClockDirection").getValue()));
+            setCountDirectionDown(Boolean.parseBoolean(game.get(Game.RULE, getId() + ".ClockDirection").getValue()));
             if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
-                setMaximumTime(ClockConversion
-                        .fromHumanReadable(r.get(Rulesets.CURRENT_RULE, getId() + ".Duration").getValue()));
+                setMaximumTime(
+                        ClockConversion.fromHumanReadable(game.get(Game.RULE, getId() + ".Duration").getValue()));
             } else if (getId().equals(ID_INTERMISSION)) {
                 setMaximumTime(getCurrentIntermissionTime());
             } else if (getId().equals(ID_LINEUP) && isCountDirectionDown()) {
                 if (game.isInOvertime()) {
-                    setMaximumTime(r.getLong(Rule.OVERTIME_LINEUP_DURATION));
+                    setMaximumTime(game.getLong(Rule.OVERTIME_LINEUP_DURATION));
                 } else {
-                    setMaximumTime(r.getLong(Rule.LINEUP_DURATION));
+                    setMaximumTime(game.getLong(Rule.LINEUP_DURATION));
                 }
             } else {
                 setMaximumTime(DEFAULT_MAXIMUM_TIME);
@@ -285,7 +281,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     @Override
     public long getCurrentIntermissionTime() {
         long duration = DEFAULT_MAXIMUM_TIME;
-        String[] sequence = getScoreBoard().getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",");
+        String[] sequence = game.get(Rule.INTERMISSION_DURATIONS).split(",");
         int number = Math.min(game.getCurrentPeriodNumber(), sequence.length);
         if (number > 0) {
             duration = ClockConversion.fromHumanReadable(sequence[number - 1]);

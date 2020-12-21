@@ -217,7 +217,7 @@ public class SkaterImplTests {
 
     @Test
     public void auto_added_fo() {
-        sb.getRulesets().set(Rule.FO_LIMIT, "2");
+        g.set(Rule.FO_LIMIT, "2");
         Penalty p = skater.getOrCreate(Skater.PENALTY, "1");
         p.set(Penalty.JAM, g.getOrCreatePeriod(1).getJam(2));
         p.set(Penalty.CODE, "B");
@@ -243,7 +243,7 @@ public class SkaterImplTests {
 
         p2.set(Penalty.CODE, null);
 
-        assertNull(skater.get(Skater.PENALTY, sb.getRulesets().getInt(Rule.FO_LIMIT)));
+        assertNull(skater.get(Skater.PENALTY, g.getInt(Rule.FO_LIMIT)));
         assertNull(skater.getPenalty(Skater.FO_EXP_ID));
 
         p2 = skater.getOrCreate(Skater.PENALTY, "2");
@@ -257,7 +257,7 @@ public class SkaterImplTests {
 
         p2.set(Penalty.CODE, null);
 
-        assertNull(skater.get(Skater.PENALTY, sb.getRulesets().getInt(Rule.FO_LIMIT)));
+        assertNull(skater.get(Skater.PENALTY, g.getInt(Rule.FO_LIMIT)));
         assertEquals("B", skater.getPenalty(Skater.FO_EXP_ID).get(Penalty.CODE));
     }
 
