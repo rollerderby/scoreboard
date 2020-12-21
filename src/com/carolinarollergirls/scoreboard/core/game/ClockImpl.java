@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.state;
+package com.carolinarollergirls.scoreboard.core.game;
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -12,35 +12,36 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
-import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clock {
-    public ClockImpl(ScoreBoard sb, String i) {
-        super(sb, i, ScoreBoard.CLOCK);
+    public ClockImpl(Game g, String i) {
+        super(g, i, Game.CLOCK);
+        game = g;
         addProperties(NAME, NUMBER, TIME, INVERTED_TIME, MAXIMUM_TIME, DIRECTION, RUNNING, START, STOP, RESET_TIME);
         // initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
-            setCopy(NUMBER, sb, ScoreBoard.CURRENT_PERIOD_NUMBER, true);
+            setCopy(NUMBER, g, Game.CURRENT_PERIOD_NUMBER, true);
         } else if (i == ID_JAM) {
-            setCopy(NUMBER, sb, ScoreBoard.CURRENT_PERIOD, Period.CURRENT_JAM_NUMBER, true);
+            setCopy(NUMBER, g, Game.CURRENT_PERIOD, Period.CURRENT_JAM_NUMBER, true);
         } else {
             values.put(NUMBER, 0);
         }
         setRecalculated(TIME).addSource(this, MAXIMUM_TIME);
         setRecalculated(INVERTED_TIME).addSource(this, MAXIMUM_TIME).addSource(this, TIME);
 
-        sb.addScoreBoardListener(
+        scoreBoard.addScoreBoardListener(
                 new ConditionalScoreBoardListener<>(Rulesets.class, Rulesets.CURRENT_RULESET, rulesetChangeListener));
     }
 
@@ -134,7 +135,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
             } else if (getId().equals(ID_INTERMISSION)) {
                 setMaximumTime(getCurrentIntermissionTime());
             } else if (getId().equals(ID_LINEUP) && isCountDirectionDown()) {
-                if (getScoreBoard().isInOvertime()) {
+                if (game.isInOvertime()) {
                     setMaximumTime(r.getLong(Rule.OVERTIME_LINEUP_DURATION));
                 } else {
                     setMaximumTime(r.getLong(Rule.LINEUP_DURATION));
@@ -285,7 +286,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     public long getCurrentIntermissionTime() {
         long duration = DEFAULT_MAXIMUM_TIME;
         String[] sequence = getScoreBoard().getRulesets().get(Rule.INTERMISSION_DURATIONS).split(",");
-        int number = Math.min(getScoreBoard().getCurrentPeriodNumber(), sequence.length);
+        int number = Math.min(game.getCurrentPeriodNumber(), sequence.length);
         if (number > 0) {
             duration = ClockConversion.fromHumanReadable(sequence[number - 1]);
         }
@@ -296,6 +297,8 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
 
     protected long lastTime;
     protected boolean isRunning = false;
+
+    private Game game;
 
     public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 

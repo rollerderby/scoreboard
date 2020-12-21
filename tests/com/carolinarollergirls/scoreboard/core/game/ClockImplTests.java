@@ -1,4 +1,4 @@
-package com.carolinarollergirls.scoreboard.core.state;
+package com.carolinarollergirls.scoreboard.core.game;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -11,11 +11,11 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.game.ClockImpl.ClockSnapshotImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.state.ClockImpl;
-import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.state.ClockImpl.ClockSnapshotImpl;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -25,6 +25,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 public class ClockImplTests {
 
     private ScoreBoard sb;
+    private Game g;
 
     private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
@@ -50,9 +51,10 @@ public class ClockImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
+        g = sb.getGame();
         sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
-        clock = (ClockImpl) sb.getClock(ID);
+        clock = (ClockImpl) g.getClock(ID);
     }
 
     @After
@@ -123,7 +125,7 @@ public class ClockImplTests {
 
     @Test
     public void testSetting_ClockSync() {
-        ClockImpl clock2 = new ClockImpl(sb, Clock.ID_TIMEOUT);
+        ClockImpl clock2 = new ClockImpl(g, Clock.ID_TIMEOUT);
         sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(true));
         clock.setMaximumTime(10000);
         clock2.setMaximumTime(10000);

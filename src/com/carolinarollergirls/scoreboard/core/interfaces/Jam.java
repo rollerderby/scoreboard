@@ -7,6 +7,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Jam extends NumberedScoreBoardEventProvider<Jam> {
+    public Period getPeriod();
+
     public void setParent(ScoreBoardEventProvider p);
 
     public boolean isOvertimeJam();

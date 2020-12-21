@@ -1,18 +1,18 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
-import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements Jam {
@@ -28,7 +28,8 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         setInverseReference(PENALTY, Penalty.JAM);
         setInverseReference(TIMEOUTS_AFTER, Timeout.PRECEDING_JAM);
         periodNumberListener = setCopy(PERIOD_NUMBER, parent,
-                parent instanceof ScoreBoard ? ScoreBoard.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
+                parent instanceof Game ? Game.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
+        game = parent instanceof Game ? (Game) parent : ((Period) parent).getGame();
         add(TEAM_JAM, new TeamJamImpl(this, Team.ID_1));
         add(TEAM_JAM, new TeamJamImpl(this, Team.ID_2));
         addWriteProtection(TEAM_JAM);
@@ -43,7 +44,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         providers.remove(periodNumberListener);
         parent = p;
         periodNumberListener = setCopy(PERIOD_NUMBER, parent,
-                parent instanceof ScoreBoard ? ScoreBoard.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
+                parent instanceof Game ? Game.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
     }
 
     @Override
@@ -74,27 +75,30 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
-                if (scoreBoard.isInJam() && (parent == scoreBoard.getCurrentPeriod())
+                if (game.isInJam() && (parent == game.getCurrentPeriod())
                         && (this == ((Period) parent).getCurrentJam())) {
                     return;
                 }
                 delete(source);
-                scoreBoard.updateTeamJams();
+                game.updateTeamJams();
             } else if (prop == INSERT_BEFORE) {
                 if (parent instanceof Period) {
                     parent.add(ownType, new JamImpl(parent, getNumber()));
-                    scoreBoard.updateTeamJams();
-                } else if (!scoreBoard.isInJam()) {
-                    Period currentPeriod = scoreBoard.getCurrentPeriod();
+                    game.updateTeamJams();
+                } else if (!game.isInJam()) {
+                    Period currentPeriod = game.getCurrentPeriod();
                     Jam newJam = new JamImpl(currentPeriod, getNumber());
                     currentPeriod.add(ownType, newJam);
                     currentPeriod.set(Period.CURRENT_JAM, newJam);
                     set(NUMBER, 1, Source.RENUMBER, Flag.CHANGE);
-                    scoreBoard.updateTeamJams();
+                    game.updateTeamJams();
                 }
             }
         }
     }
+
+    @Override
+    public Period getPeriod() { return parent instanceof Game ? game.getCurrentPeriod() : (Period) parent; }
 
     @Override
     public boolean isOvertimeJam() { return get(OVERTIME); }
@@ -125,19 +129,21 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     @Override
     public void start() {
         synchronized (coreLock) {
-            setPeriodClockElapsedStart(scoreBoard.getClock(Clock.ID_PERIOD).getTimeElapsed());
+            setPeriodClockElapsedStart(game.getClock(Clock.ID_PERIOD).getTimeElapsed());
             setWalltimeStart(ScoreBoardClock.getInstance().getCurrentWalltime());
         }
     }
     @Override
     public void stop() {
         synchronized (coreLock) {
-            set(DURATION, scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
-            set(PERIOD_CLOCK_ELAPSED_END, scoreBoard.getClock(Clock.ID_PERIOD).getTimeElapsed());
-            set(PERIOD_CLOCK_DISPLAY_END, scoreBoard.getClock(Clock.ID_PERIOD).getTime());
+            set(DURATION, game.getClock(Clock.ID_JAM).getTimeElapsed());
+            set(PERIOD_CLOCK_ELAPSED_END, game.getClock(Clock.ID_PERIOD).getTimeElapsed());
+            set(PERIOD_CLOCK_DISPLAY_END, game.getClock(Clock.ID_PERIOD).getTime());
             set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
         }
     }
+
+    private Game game;
 
     private ScoreBoardListener periodNumberListener;
 }

@@ -5,18 +5,20 @@ import java.util.UUID;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements BoxTrip {
     public BoxTripImpl(Team t, String id) {
         super(t, id, Team.BOX_TRIP);
+        game = t.getGame();
         addProperties(IS_CURRENT, CURRENT_FIELDING, START_FIELDING, START_JAM_NUMBER, START_BETWEEN_JAMS,
                 START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
                 WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER, START_LATER,
@@ -25,14 +27,15 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
     public BoxTripImpl(Fielding f) {
         super(f.getTeamJam().getTeam(), UUID.randomUUID().toString(), Team.BOX_TRIP);
+        game = f.getTeamJam().getTeam().getGame();
         addProperties(IS_CURRENT, CURRENT_FIELDING, START_FIELDING, START_JAM_NUMBER, START_BETWEEN_JAMS,
                 START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
                 WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER, START_LATER,
                 END_EARLIER, END_LATER, DELETE);
         set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(START_AFTER_S_P, f.getTeamJam().isStarPass() && f.isCurrent());
-        set(START_BETWEEN_JAMS, !scoreBoard.isInJam() && !getTeam().hasFieldingAdvancePending() && f.isCurrent());
-        set(JAM_CLOCK_START, startedBetweenJams() ? 0L : scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
+        set(START_BETWEEN_JAMS, !game.isInJam() && !getTeam().hasFieldingAdvancePending() && f.isCurrent());
+        set(JAM_CLOCK_START, startedBetweenJams() ? 0L : game.getClock(Clock.ID_JAM).getTimeElapsed());
         set(IS_CURRENT, true);
         initReferences();
         add(FIELDING, f);
@@ -172,7 +175,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             }
         } else if (prop == START_LATER) {
             if (getStartFielding() == null) { return; }
-            if (getStartFielding().getTeamJam().isRunningOrUpcoming() && !scoreBoard.isInJam()) { return; }
+            if (getStartFielding().getTeamJam().isRunningOrUpcoming() && !game.isInJam()) { return; }
             if (startedBetweenJams()) {
                 set(START_BETWEEN_JAMS, false);
             } else if (getStartFielding() == getEndFielding()) {
@@ -215,7 +218,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                 set(END_AFTER_S_P, false);
                 set(END_BETWEEN_JAMS, false);
             }
-            if (getEndFielding().getTeamJam().isRunningOrUpcoming() && (endedBetweenJams() || !scoreBoard.isInJam())) {
+            if (getEndFielding().getTeamJam().isRunningOrUpcoming() && (endedBetweenJams() || !game.isInJam())) {
                 // moved end past the present point in the game -> make ongoing if possible
                 if (!getEndFielding().isInBox()) {
                     unend();
@@ -228,7 +231,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     public void end() {
         set(IS_CURRENT, false);
         set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
-        if (!scoreBoard.isInJam() && getCurrentFielding().getTeamJam().isRunningOrUpcoming()) {
+        if (!game.isInJam() && getCurrentFielding().getTeamJam().isRunningOrUpcoming()) {
             if (getTeam().hasFieldingAdvancePending()) {
                 getCurrentFielding().setSkater(null);
             }
@@ -239,10 +242,10 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             delete();
         } else {
             set(END_FIELDING, get(CURRENT_FIELDING));
-            set(END_BETWEEN_JAMS, !scoreBoard.isInJam() && !getTeam().hasFieldingAdvancePending()
+            set(END_BETWEEN_JAMS, !game.isInJam() && !getTeam().hasFieldingAdvancePending()
                     && getEndFielding().getTeamJam().isRunningOrEnded());
             set(END_AFTER_S_P, getEndFielding().getTeamJam().isStarPass() && getEndFielding().isCurrent());
-            set(JAM_CLOCK_END, endedBetweenJams() ? 0L : scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
+            set(JAM_CLOCK_END, endedBetweenJams() ? 0L : game.getClock(Clock.ID_JAM).getTimeElapsed());
             getCurrentFielding().updateBoxTripSymbols();
         }
     }
@@ -275,4 +278,6 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     public boolean endedBetweenJams() { return get(END_BETWEEN_JAMS); }
     @Override
     public boolean endedAfterSP() { return get(END_AFTER_S_P); }
+
+    private Game game;
 }

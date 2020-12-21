@@ -5,12 +5,12 @@ import static org.junit.Assert.assertEquals;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
-import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
-import com.carolinarollergirls.scoreboard.core.prepared.RulesetsImpl;
-import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -26,7 +26,7 @@ public class RulesetsImplTests {
     @Before
     public void setUp() throws Exception {
         sb = new ScoreBoardImpl();
-        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
+        sb.getSettings().set(Game.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
         rulesets = sb.getRulesets();
         root = rulesets.getRuleset(RulesetsImpl.ROOT_ID);
     }
@@ -69,7 +69,7 @@ public class RulesetsImplTests {
         child.add(Ruleset.RULE, new ValWithId(Rule.PERIOD_DURATION.toString(), "1:00"));
         rulesets.setCurrentRuleset(id1);
         assertEquals(60000, rulesets.getLong(Rule.PERIOD_DURATION));
-        assertEquals(60000, sb.getClock(Clock.ID_PERIOD).getTime());
+        assertEquals(60000, sb.getGame().getClock(Clock.ID_PERIOD).getTime());
     }
 
     @Test

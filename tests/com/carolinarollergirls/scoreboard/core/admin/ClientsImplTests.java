@@ -17,12 +17,12 @@ import java.util.Map;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.admin.ClientsImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Client;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
-import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;

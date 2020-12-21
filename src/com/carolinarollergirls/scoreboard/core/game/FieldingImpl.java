@@ -8,6 +8,7 @@ import java.util.List;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
@@ -27,6 +28,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 BOX_TRIP_SYMBOLS, BOX_TRIP_SYMBOLS_BEFORE_S_P, BOX_TRIP_SYMBOLS_AFTER_S_P, ANNOTATION, BOX_TRIP,
                 ADD_BOX_TRIP, UNEND_BOX_TRIP);
         this.teamJam = teamJam;
+        game = teamJam.getTeam().getGame();
         set(POSITION, position);
         addWriteProtection(POSITION);
         setRecalculated(SKATER_NUMBER).addIndirectSource(this, SKATER, Skater.ROSTER_NUMBER).addSource(this,
@@ -74,7 +76,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == PENALTY_BOX && isCurrent() && (Boolean) value
-                && getPosition().getFloorPosition() == FloorPosition.JAMMER && scoreBoard.isInJam()
+                && getPosition().getFloorPosition() == FloorPosition.JAMMER && game.isInJam()
                 && !teamJam.getOtherTeam().isLead()) {
             teamJam.set(TeamJam.LOST, true);
         }
@@ -230,4 +232,5 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
     }
 
     private TeamJam teamJam;
+    private Game game;
 }

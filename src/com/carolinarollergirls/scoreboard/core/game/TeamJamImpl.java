@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.core.game;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
@@ -9,9 +10,9 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 
 public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJam> implements TeamJam {
@@ -20,7 +21,8 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         addProperties(CURRENT_TRIP, CURRENT_TRIP_NUMBER, LAST_SCORE, OS_OFFSET, JAM_SCORE, AFTER_S_P_SCORE, TOTAL_SCORE,
                 LOST, LEAD, CALLOFF, INJURY, NO_INITIAL, DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, NO_PIVOT, FIELDING,
                 SCORING_TRIP);
-        team = scoreBoard.getTeam(teamId);
+        game = j.getPeriod().getGame();
+        team = game.getTeam(teamId);
         setRecalculated(CURRENT_TRIP).addSource(this, SCORING_TRIP);
         setRecalculated(TOTAL_SCORE).addSource(this, LAST_SCORE).addSource(this, JAM_SCORE).addSource(this, OS_OFFSET);
         setCopy(LAST_SCORE, this, PREVIOUS, TOTAL_SCORE, true);
@@ -98,7 +100,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             getOtherTeam().set(INJURY, (Boolean) value);
         }
         if (prop == CURRENT_TRIP) {
-            if (value != null && value == team.getCurrentTrip() && scoreBoard.isInJam()) {
+            if (value != null && value == team.getCurrentTrip() && game.isInJam()) {
                 ((ScoringTrip) value).set(ScoringTrip.CURRENT, true);
             }
             if (last != null) {
@@ -206,6 +208,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
     public Fielding getFielding(FloorPosition fp) { return get(FIELDING, fp.toString()); }
 
     private Team team;
+    private Game game;
     private RecalculateScoreBoardListener<?> jamScoreListener;
     private RecalculateScoreBoardListener<?> afterSPScoreListener;
 }

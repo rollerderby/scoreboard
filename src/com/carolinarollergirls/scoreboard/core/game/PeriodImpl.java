@@ -1,9 +1,9 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
-import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
@@ -14,8 +14,9 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> implements Period {
-    public PeriodImpl(ScoreBoard s, int p) {
-        super(s, p, ScoreBoard.PERIOD);
+    public PeriodImpl(Game g, int p) {
+        super(g, p, Game.PERIOD);
+        game = g;
         addProperties(CURRENT_JAM, CURRENT_JAM_NUMBER, FIRST_JAM, FIRST_JAM_NUMBER, RUNNING, DURATION, WALLTIME_START,
                 WALLTIME_END, LOCAL_TIME_START, TIMEOUT, JAM, DELETE, INSERT_BEFORE, INSERT_TIMEOUT);
         setCopy(CURRENT_JAM_NUMBER, this, CURRENT_JAM, Jam.NUMBER, true);
@@ -83,14 +84,14 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         synchronized (coreLock) {
             if (prop == DELETE) {
                 if (!isRunning()) {
-                    if (this == scoreBoard.getCurrentPeriod()) {
-                        scoreBoard.set(ScoreBoard.CURRENT_PERIOD, getPrevious());
+                    if (this == game.getCurrentPeriod()) {
+                        game.set(Game.CURRENT_PERIOD, getPrevious());
                     }
                     delete(source);
                 }
             } else if (prop == INSERT_BEFORE) {
-                if (scoreBoard.getCurrentPeriodNumber() < scoreBoard.getRulesets().getInt(Rule.NUMBER_PERIODS))
-                    scoreBoard.add(ownType, new PeriodImpl(scoreBoard, getNumber()));
+                if (game.getCurrentPeriodNumber() < scoreBoard.getRulesets().getInt(Rule.NUMBER_PERIODS))
+                    game.add(ownType, new PeriodImpl(game, getNumber()));
             } else if (prop == INSERT_TIMEOUT) {
                 Timeout t = new TimeoutImpl(getCurrentJam());
                 t.stop();
@@ -133,12 +134,15 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             if (getCurrentJam() != s.getCurrentJam()) {
                 Jam movedJam = getCurrentJam();
                 remove(JAM, movedJam);
-                movedJam.setParent(scoreBoard);
-                scoreBoard.set(ScoreBoard.UPCOMING_JAM, movedJam);
+                movedJam.setParent(game);
+                game.set(Game.UPCOMING_JAM, movedJam);
                 set(CURRENT_JAM, s.getCurrentJam());
             }
         }
     }
+
+    @Override
+    public Game getGame() { return game; }
 
     @Override
     public boolean isRunning() { return get(RUNNING); }
@@ -171,6 +175,8 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public long getWalltimeStart() { return get(WALLTIME_START); }
     @Override
     public long getWalltimeEnd() { return get(WALLTIME_END); }
+
+    private Game game;
 
     public static class PeriodSnapshotImpl implements PeriodSnapshot {
         private PeriodSnapshotImpl(Period period) {

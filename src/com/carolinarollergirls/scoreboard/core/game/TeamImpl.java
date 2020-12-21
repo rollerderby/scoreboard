@@ -17,9 +17,11 @@ import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -28,7 +30,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
-import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -42,8 +43,9 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team {
-    public TeamImpl(ScoreBoard sb, String i) {
-        super(sb, i, ScoreBoard.TEAM);
+    public TeamImpl(Game g, String i) {
+        super(g, i, Game.TEAM);
+        game = g;
         addProperties(NAME, LOGO, RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING,
                 CURRENT_TRIP, SCORE, JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW,
                 IN_TIMEOUT, IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY,
@@ -67,45 +69,45 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setCopy(NO_PIVOT, this, RUNNING_OR_UPCOMING_TEAM_JAM, TeamJam.NO_PIVOT, false);
         setCopy(STAR_PASS, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS, false);
         setCopy(STAR_PASS_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.STAR_PASS_TRIP, false);
-        setRecalculated(IN_TIMEOUT).addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.OWNER)
-                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.REVIEW)
-                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.RUNNING);
-        setRecalculated(IN_OFFICIAL_REVIEW).addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.OWNER)
-                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.REVIEW)
-                .addIndirectSource(sb, ScoreBoard.CURRENT_TIMEOUT, Timeout.RUNNING);
+        setRecalculated(IN_TIMEOUT).addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.OWNER)
+                .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.REVIEW)
+                .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.RUNNING);
+        setRecalculated(IN_OFFICIAL_REVIEW).addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.OWNER)
+                .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.REVIEW)
+                .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.RUNNING);
         addWriteProtectionOverride(TIMEOUTS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(LAST_REVIEW, Source.ANY_INTERNAL);
         setCopy(RETAINED_OFFICIAL_REVIEW, this, LAST_REVIEW, Timeout.RETAINED_REVIEW, false);
-        sb.addScoreBoardListener(
+        scoreBoard.addScoreBoardListener(
                 new ConditionalScoreBoardListener<>(Rulesets.class, Rulesets.CURRENT_RULESET, rulesetChangeListener));
     }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == IN_TIMEOUT) {
-            Timeout t = scoreBoard.getCurrentTimeout();
+            Timeout t = game.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && !t.isReview();
         }
         if (prop == IN_OFFICIAL_REVIEW) {
-            Timeout t = scoreBoard.getCurrentTimeout();
+            Timeout t = game.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && t.isReview();
         }
         if (prop == TRIP_SCORE && source != Source.COPY) {
             tripScoreTimerTask.cancel();
-            if ((Integer) value > 0 && getCurrentTrip().getNumber() == 1 && !getScoreBoard().isInOvertime()) {
+            if ((Integer) value > 0 && getCurrentTrip().getNumber() == 1 && !game.isInOvertime()) {
                 // If points arrive during an initial trip and we are not in overtime, assign
                 // the points to the first scoring trip instead.
                 getCurrentTrip().set(ScoringTrip.ANNOTATION,
                         "Points were added without Add Trip\n" + getCurrentTrip().get(ScoringTrip.ANNOTATION));
                 execute(ADD_TRIP);
             }
-            if (scoreBoard.isInJam() && ((Integer) value > 0 || ((Integer) last == 0 && flag != Flag.CHANGE))) {
+            if (game.isInJam() && ((Integer) value > 0 || ((Integer) last == 0 && flag != Flag.CHANGE))) {
                 // we are during a jam and either points have been entered or the trip score has
                 // been explicitly set to 0 - set a timer to advance the trip
                 tripScoreTimer.purge();
                 tripScoreJamTime = getCurrentTrip().get(ScoringTrip.JAM_CLOCK_END);
-                if (tripScoreJamTime == 0L) { tripScoreJamTime = scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed(); }
+                if (tripScoreJamTime == 0L) { tripScoreJamTime = game.getClock(Clock.ID_JAM).getTimeElapsed(); }
                 tripScoreTimerTask = new TimerTask() {
                     @Override
                     public void run() {
@@ -130,7 +132,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
 
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == LEAD && (Boolean) value && scoreBoard.isInJam()) {
+        if (prop == LEAD && (Boolean) value && game.isInJam()) {
             if (getCurrentTrip().getNumber() == 1) { getRunningOrEndedTeamJam().addScoringTrip(); }
             if (getOtherTeam().isLead()) { getOtherTeam().set(LEAD, false); }
         } else if (prop == STAR_PASS) {
@@ -143,8 +145,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                         .setRole(FloorPosition.PIVOT.getRole(getRunningOrUpcomingTeamJam()));
             }
             if ((Boolean) value && isLead()) { set(LOST, true); }
-        } else if ((prop == CALLOFF || prop == INJURY) && scoreBoard.isInJam() && (Boolean) value) {
-            scoreBoard.stopJamTO();
+        } else if ((prop == CALLOFF || prop == INJURY) && game.isInJam() && (Boolean) value) {
+            game.stopJamTO();
         }
     }
 
@@ -153,7 +155,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         if (prop == ADD_TRIP) {
             tripScoreTimerTask.cancel();
             getRunningOrEndedTeamJam().addScoringTrip();
-            if (!isLead() && !getScoreBoard().getTeam(Team.ID_1.equals(getId()) ? Team.ID_2 : Team.ID_1).isLead()) {
+            if (!isLead() && !game.getTeam(Team.ID_1.equals(getId()) ? Team.ID_2 : Team.ID_1).isLead()) {
                 set(LOST, true);
             }
         } else if (prop == REMOVE_TRIP) {
@@ -216,6 +218,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
+    public Game getGame() { return game; }
+
+    @Override
     public String getName() { return get(NAME); }
 
     @Override
@@ -232,7 +237,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void stopJam() {
         synchronized (coreLock) {
-            if (isDisplayLead() && !scoreBoard.getClock(Clock.ID_JAM).isTimeAtEnd() && !isInjury()
+            if (isDisplayLead() && !game.getClock(Clock.ID_JAM).isTimeAtEnd() && !isInjury()
                     && !getOtherTeam().isInjury()) {
                 set(CALLOFF, true);
             }
@@ -290,7 +295,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             if (s.getId() != getId()) { return; }
             set(FIELDING_ADVANCE_PENDING, s.getFieldingAdvancePending());
             updateTeamJams();
-            if (scoreBoard.isInJam()) {
+            if (game.isInJam()) {
                 set(CALLOFF, false);
                 set(INJURY, false);
             }
@@ -352,14 +357,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void timeout() {
         synchronized (coreLock) {
-            if (getTimeouts() > 0) { getScoreBoard().setTimeoutType(this, false); }
+            if (getTimeouts() > 0) { game.setTimeoutType(this, false); }
         }
     }
 
     @Override
     public void officialReview() {
         synchronized (coreLock) {
-            if (getOfficialReviews() > 0) { getScoreBoard().setTimeoutType(this, true); }
+            if (getOfficialReviews() > 0) { game.setTimeoutType(this, true); }
         }
     }
 
@@ -372,9 +377,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void updateTeamJams() {
         synchronized (coreLock) {
-            set(RUNNING_OR_ENDED_TEAM_JAM, scoreBoard.getCurrentPeriod().getCurrentJam().getTeamJam(getId()));
+            set(RUNNING_OR_ENDED_TEAM_JAM, game.getCurrentPeriod().getCurrentJam().getTeamJam(getId()));
             set(RUNNING_OR_UPCOMING_TEAM_JAM,
-                    scoreBoard.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext());
+                    game.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext());
             for (Position p : getAll(POSITION)) {
                 p.updateCurrentFielding();
             }
@@ -425,12 +430,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         for (Timeout t : getAll(TIME_OUT)) {
             boolean isThisRdclHalf = false;
             if (rdclPerHalfRules) {
-                boolean gameIsSecondHalf = scoreBoard.getCurrentPeriodNumber() > 2;
+                boolean gameIsSecondHalf = game.getCurrentPeriodNumber() > 2;
                 boolean tIsSecondHalf = ((Period) t.getParent()).getNumber() > 2;
                 isThisRdclHalf = (gameIsSecondHalf == tIsSecondHalf);
             }
             if (t.isReview()) {
-                if (!revPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod() || isThisRdclHalf) {
+                if (!revPerPeriod || t.getParent() == game.getCurrentPeriod() || isThisRdclHalf) {
                     if (retainsLeft > 0 && t.isRetained()) {
                         retainsLeft--;
                     } else if (revCount > 0) {
@@ -441,7 +446,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                     }
                 }
             } else {
-                if (toCount > 0 && (!toPerPeriod || t.getParent() == scoreBoard.getCurrentPeriod())) {
+                if (toCount > 0 && (!toPerPeriod || t.getParent() == game.getCurrentPeriod())) {
                     toCount--;
                     otherHalfToUnused = otherHalfToUnused && !isThisRdclHalf;
                 }
@@ -602,7 +607,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public Team getOtherTeam() {
         String otherId = getId().equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
-        return getScoreBoard().getTeam(otherId);
+        return game.getTeam(otherId);
     }
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
@@ -614,7 +619,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                              // null at the first score entry
     };
     private long tripScoreJamTime; // store the jam clock when starting the timer so we can set the correct value
-    // when advancing the trip
+                                   // when advancing the trip
+    private Game game;
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";

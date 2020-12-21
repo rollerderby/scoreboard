@@ -73,7 +73,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
             scoreBoard.runInBatch(new Runnable() {
                 @Override
                 public void run() {
-                    scoreBoard.reset();
+                    scoreBoard.getGame().reset();
                     ScoreBoardJSONSetter.set(scoreBoard, state, Source.JSON);
                 }
             });

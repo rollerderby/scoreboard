@@ -16,6 +16,8 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 // Managemnt of currently playing teams.
 public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
+    public Game getGame();
+
     public void reset();
 
     public String getName();

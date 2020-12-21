@@ -6,8 +6,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.admin.SettingsImpl;
-import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
 
 public class SettingsImplTests {
 

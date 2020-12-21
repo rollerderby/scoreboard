@@ -9,14 +9,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carolinarollergirls.scoreboard.core.game.SkaterImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
-import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -25,6 +25,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 public class FieldingImplTests {
 
     private ScoreBoard sb;
+    private Game g;
 
     private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
@@ -56,6 +57,7 @@ public class FieldingImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
+        g = sb.getGame();
         sb.addScoreBoardListener(batchCounter);
 
         ScoreBoardClock.getInstance().stop();
@@ -70,21 +72,21 @@ public class FieldingImplTests {
 
     @Test
     public void testSortBoxTripSymbols() {
-        Team t = sb.getTeam(Team.ID_1);
+        Team t = g.getTeam(Team.ID_1);
         Skater s = new SkaterImpl(t, (String) null);
         t.addSkater(s);
-        sb.startJam();
-        sb.getTeam(Team.ID_1).field(s, Role.PIVOT);
+        g.startJam();
+        g.getTeam(Team.ID_1).field(s, Role.PIVOT);
         s.setPenaltyBox(true);
-        sb.stopJamTO();
-        sb.startJam();
+        g.stopJamTO();
+        g.startJam();
         s.setPenaltyBox(false);
         s.setPenaltyBox(true);
-        sb.stopJamTO();
-        sb.startJam();
+        g.stopJamTO();
+        g.startJam();
         s.setPenaltyBox(false);
 
-        Fielding f = s.getFielding(sb.getOrCreatePeriod(1).getJam(2).getTeamJam(Team.ID_1));
+        Fielding f = s.getFielding(g.getOrCreatePeriod(1).getJam(2).getTeamJam(Team.ID_1));
         f.execute(Fielding.ADD_BOX_TRIP);
 
         assertEquals(" $ + -", f.get(Fielding.BOX_TRIP_SYMBOLS));
@@ -92,16 +94,16 @@ public class FieldingImplTests {
 
     @Test
     public void testAddingPastBoxTripHasRightJamNumbers() {
-        Team t = sb.getTeam(Team.ID_1);
+        Team t = g.getTeam(Team.ID_1);
         Skater s = new SkaterImpl(t, (String) null);
         t.addSkater(s);
-        sb.startJam();
+        g.startJam();
         t.field(s, Role.PIVOT);
-        sb.stopJamTO();
-        sb.startJam();
-        sb.stopJamTO();
+        g.stopJamTO();
+        g.startJam();
+        g.stopJamTO();
 
-        Fielding f = s.getFielding(sb.getOrCreatePeriod(1).getJam(1).getTeamJam(Team.ID_1));
+        Fielding f = s.getFielding(g.getOrCreatePeriod(1).getJam(1).getTeamJam(Team.ID_1));
         f.execute(Fielding.ADD_BOX_TRIP);
         BoxTrip bt = f.getAll(Fielding.BOX_TRIP).iterator().next();
 
@@ -111,13 +113,13 @@ public class FieldingImplTests {
 
     @Test
     public void testRemovingUpcomingBoxTripAfterAdvance() {
-        Team t = sb.getTeam(Team.ID_1);
+        Team t = g.getTeam(Team.ID_1);
         Skater s = new SkaterImpl(t, (String) null);
         t.addSkater(s);
-        sb.getTeam(Team.ID_1).field(s, Role.PIVOT);
-        sb.startJam();
+        g.getTeam(Team.ID_1).field(s, Role.PIVOT);
+        g.startJam();
         s.setPenaltyBox(true);
-        sb.stopJamTO();
+        g.stopJamTO();
         s.setPenaltyBox(false);
         // Box trip from ended jam remains.
         Fielding f1 = s.getFielding(t.getRunningOrUpcomingTeamJam().getPrevious());

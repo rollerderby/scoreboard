@@ -9,14 +9,13 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carolinarollergirls.scoreboard.core.game.SkaterImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
-import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
 
 public class PositionImplTests {
     private final String firstId = "662caf51-17da-4ef2-8f01-a6d7e1c30d56";
@@ -33,7 +32,7 @@ public class PositionImplTests {
     public void setup() {
         sb = new ScoreBoardImpl();
 
-        team = sb.getTeam(Team.ID_1);
+        team = sb.getGame().getTeam(Team.ID_1);
 
         first = new SkaterImpl(team, firstId);
         second = new SkaterImpl(team, secondId);

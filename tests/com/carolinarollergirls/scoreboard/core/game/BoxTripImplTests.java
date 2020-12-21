@@ -6,14 +6,14 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.carolinarollergirls.scoreboard.core.game.SkaterImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
-import com.carolinarollergirls.scoreboard.core.state.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
@@ -22,7 +22,7 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 public class BoxTripImplTests {
 
     private ScoreBoard sb;
-
+    private Game g;
     private Team t;
     private Skater s;
     private BoxTrip bt;
@@ -44,22 +44,23 @@ public class BoxTripImplTests {
     @Before
     public void setUp() throws Exception {
         sb = new ScoreBoardImpl();
+        g = sb.getGame();
         sb.addScoreBoardListener(batchCounter);
 
         ScoreBoardClock.getInstance().stop();
-        t = sb.getTeam(Team.ID_1);
+        t = g.getTeam(Team.ID_1);
         s = new SkaterImpl(t, (String) null);
         t.addSkater(s);
-        sb.startJam();
-        sb.stopJamTO();
-        sb.startJam();
+        g.startJam();
+        g.stopJamTO();
+        g.startJam();
         t.field(s, Role.PIVOT);
         s.setPenaltyBox(true);
         bt = s.getFielding(t.getRunningOrUpcomingTeamJam()).get(Fielding.CURRENT_BOX_TRIP);
-        sb.stopJamTO();
-        sb.startJam();
+        g.stopJamTO();
+        g.startJam();
         s.setPenaltyBox(false);
-        sb.stopJamTO();
+        g.stopJamTO();
         t.execute(Team.ADVANCE_FIELDINGS);
         // Now going into jam 4. Skater had a box trip that started in jam 2, and ended
         // in jam 3.
@@ -77,7 +78,7 @@ public class BoxTripImplTests {
         if (jam == 4) {
             f = s.getFielding(t.getRunningOrUpcomingTeamJam());
         } else {
-            f = s.getFielding(sb.getCurrentPeriod().getJam(jam).getTeamJam(Team.ID_1));
+            f = s.getFielding(g.getCurrentPeriod().getJam(jam).getTeamJam(Team.ID_1));
         }
         return f == null ? null : f.get(Fielding.BOX_TRIP_SYMBOLS);
     }

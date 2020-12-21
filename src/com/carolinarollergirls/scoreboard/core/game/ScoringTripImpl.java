@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Command;
@@ -10,6 +11,7 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<ScoringTrip> implements ScoringTrip {
     ScoringTripImpl(TeamJam parent, int number) {
         super(parent, number, TeamJam.SCORING_TRIP);
+        game = parent.getTeam().getGame();
         addProperties(SCORE, AFTER_S_P, CURRENT, DURATION, JAM_CLOCK_START, JAM_CLOCK_END, ANNOTATION, INSERT_BEFORE,
                 REMOVE);
         setCopy(JAM_CLOCK_START, this, PREVIOUS, JAM_CLOCK_END, true);
@@ -32,7 +34,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     @Override
     public void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L) {
-            set(JAM_CLOCK_END, scoreBoard.getClock(Clock.ID_JAM).getTimeElapsed());
+            set(JAM_CLOCK_END, game.getClock(Clock.ID_JAM).getTimeElapsed());
         }
         if (prop == CURRENT && (Boolean) value && get(SCORE) == 0) {
             set(JAM_CLOCK_END, 0L);
@@ -73,4 +75,6 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
 
     @Override
     public int getScore() { return get(SCORE); }
+
+    private Game game;
 }

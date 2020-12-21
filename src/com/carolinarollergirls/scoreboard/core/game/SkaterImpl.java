@@ -17,17 +17,18 @@ import java.util.UUID;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
-import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.event.Child;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
@@ -35,6 +36,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     public SkaterImpl(Team t, String i) {
         super(t, (i == null ? UUID.randomUUID().toString() : i), Team.SKATER);
         team = t;
+        game = t.getGame();
         initialize();
     }
     public SkaterImpl(Team t, PreparedTeamSkater pts) {
@@ -132,10 +134,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                 }
             }
             if (!p.isServed() && getRole() == Role.JAMMER && getCurrentFielding() != null
-                    && !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && scoreBoard.isInJam()) {
+                    && !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && game.isInJam()) {
                 getTeam().set(Team.LOST, true);
             }
-            if (!p.isServed() && !getScoreBoard().isInJam()) {
+            if (!p.isServed() && !game.isInJam()) {
                 getTeam().field(this, getRole(getTeam().getRunningOrEndedTeamJam()),
                         getTeam().getRunningOrUpcomingTeamJam());
             }
@@ -245,7 +247,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                     setBaseRole(Role.INELIGIBLE);
                     return;
                 }
-                if (f.getTeamJam().getJam().getParent() == scoreBoard.getCurrentPeriod()) {
+                if (f.getTeamJam().getJam().getParent() == game.getCurrentPeriod()) {
                     if (satThisPeriod) {
                         setBaseRole(Role.INELIGIBLE);
                         return;
@@ -284,4 +286,5 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     public boolean hasUnservedPenalties() { return getUnservedPenalties().size() > 0; }
 
     protected Team team;
+    private Game game;
 }

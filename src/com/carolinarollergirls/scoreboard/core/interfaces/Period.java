@@ -7,6 +7,8 @@ import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Period extends NumberedScoreBoardEventProvider<Period> {
+    public Game getGame();
+
     public PeriodSnapshot snapshot();
     public void restoreSnapshot(PeriodSnapshot s);
 

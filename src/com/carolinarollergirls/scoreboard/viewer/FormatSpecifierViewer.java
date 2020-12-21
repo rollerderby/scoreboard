@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
@@ -187,24 +188,24 @@ public class FormatSpecifierViewer {
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void setupScoreBoardValues() {
-        new ScoreBoardValue("%sbto", "ScoreBoard Timeout Owner", getScoreBoard(), ScoreBoard.TIMEOUT_OWNER) {
+        new ScoreBoardValue("%sbto", "ScoreBoard Timeout Owner", getGame(), Game.TIMEOUT_OWNER) {
             @Override
             public String getValue() {
-                TimeoutOwner to = getScoreBoard().getTimeoutOwner();
+                TimeoutOwner to = getGame().getTimeoutOwner();
                 return to == null ? "" : to.getId();
             }
         };
-        new ScoreBoardValue("%sbip", "ScoreBoard Is In Period", getScoreBoard(), ScoreBoard.IN_PERIOD) {
+        new ScoreBoardValue("%sbip", "ScoreBoard Is In Period", getGame(), Game.IN_PERIOD) {
             @Override
-            public String getValue() { return String.valueOf(getScoreBoard().isInPeriod()); }
+            public String getValue() { return String.valueOf(getGame().isInPeriod()); }
         };
-        new ScoreBoardValue("%sbio", "ScoreBoard Is In Overtime", getScoreBoard(), ScoreBoard.IN_OVERTIME) {
+        new ScoreBoardValue("%sbio", "ScoreBoard Is In Overtime", getGame(), Game.IN_OVERTIME) {
             @Override
-            public String getValue() { return String.valueOf(getScoreBoard().isInOvertime()); }
+            public String getValue() { return String.valueOf(getGame().isInOvertime()); }
         };
-        new ScoreBoardValue("%sbos", "ScoreBoard Is Score Official", getScoreBoard(), ScoreBoard.OFFICIAL_SCORE) {
+        new ScoreBoardValue("%sbos", "ScoreBoard Is Score Official", getGame(), Game.OFFICIAL_SCORE) {
             @Override
-            public String getValue() { return String.valueOf(getScoreBoard().isOfficialScore()); }
+            public String getValue() { return String.valueOf(getGame().isOfficialScore()); }
         };
 
         setupTeamValues("1", Team.ID_1);
@@ -330,7 +331,7 @@ public class FormatSpecifierViewer {
         };
     }
 
-    protected Team getTeam(String id) { return getScoreBoard().getTeam(id); }
+    protected Team getTeam(String id) { return getGame().getTeam(id); }
 
     protected Skater getPositionSkater(String id, FloorPosition position) {
         return getTeam(id).getPosition(position).getSkater();
@@ -371,7 +372,7 @@ public class FormatSpecifierViewer {
         };
     }
 
-    protected Clock getClock(String id) { return getScoreBoard().getClock(id); }
+    protected Clock getClock(String id) { return getGame().getClock(id); }
 
     protected String getClockSecs(String id) {
         return getClockSecs(getClock(id).getTime(), getClock(id).isCountDirectionDown());
@@ -395,7 +396,7 @@ public class FormatSpecifierViewer {
         return min + ":" + sec;
     }
 
-    protected ScoreBoard getScoreBoard() { return scoreBoard; }
+    protected Game getGame() { return scoreBoard.getGame(); }
 
     protected ScoreBoard scoreBoard = null;
 
