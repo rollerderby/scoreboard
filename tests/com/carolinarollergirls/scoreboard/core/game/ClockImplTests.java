@@ -14,6 +14,7 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.game.ClockImpl.ClockSnapshotImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
@@ -51,7 +52,8 @@ public class ClockImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
-        g = sb.getGame();
+        sb.postAutosaveUpdate();
+        g = sb.getCurrentGame().get(CurrentGame.GAME);
         sb.getSettings().set(Clock.SETTING_SYNC, String.valueOf(false));
 
         clock = (ClockImpl) g.getClock(ID);
@@ -82,21 +84,6 @@ public class ClockImplTests {
     }
 
     @Test
-    public void testReset() {
-        clock.setNumber(4);
-        clock.setMaximumTime(1200000);
-        clock.setTime(5000);
-        clock.setCountDirectionDown(true);
-
-        clock.reset();
-
-        assertFalse(clock.isCountDirectionDown());
-        assertEquals(ClockImpl.DEFAULT_MAXIMUM_TIME, clock.getMaximumTime());
-        assertEquals(0, clock.getNumber());
-        assertTrue(clock.isTimeAtStart());
-    }
-
-    @Test
     public void testRestoreSnapshot() {
         clock.setNumber(4);
         clock.setMaximumTime(1200000);
@@ -104,7 +91,9 @@ public class ClockImplTests {
         clock.start();
         ClockImpl.ClockSnapshotImpl snapshot = (ClockSnapshotImpl) clock.snapshot();
 
-        clock.reset();
+        clock.stop();
+        clock.setNumber(0);
+        clock.resetTime();
         assertFalse(clock.isRunning());
         assertEquals(0, clock.getNumber());
         assertEquals(0, clock.getTime());

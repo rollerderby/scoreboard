@@ -23,7 +23,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
-import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
@@ -186,29 +185,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == SKATER) { ((Skater) item).delete(); }
         if (prop == TIME_OUT) { recountTimeouts(); }
-    }
-
-    @Override
-    public ScoreBoard getScoreBoard() { return scoreBoard; }
-
-    @Override
-    public void reset() {
-        synchronized (coreLock) {
-            setName(DEFAULT_NAME_PREFIX + getId());
-            setLogo(DEFAULT_LOGO);
-            set(RUNNING_OR_UPCOMING_TEAM_JAM, null);
-            set(RUNNING_OR_ENDED_TEAM_JAM, null);
-            set(FIELDING_ADVANCE_PENDING, false);
-
-            for (Position p : getAll(POSITION)) {
-                p.reset();
-            }
-            removeAll(BOX_TRIP);
-            removeAll(ALTERNATE_NAME);
-            removeAll(COLOR);
-            removeAll(SKATER);
-            removeAll(TIME_OUT);
-        }
     }
 
     @Override

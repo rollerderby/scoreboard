@@ -48,9 +48,6 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
     public FloorPosition getFloorPosition() { return floorPosition; }
 
     @Override
-    public void reset() { setCurrentFielding(null); }
-
-    @Override
     public void updateCurrentFielding() {
         synchronized (coreLock) {
             setCurrentFielding(getTeam().getRunningOrUpcomingTeamJam().getFielding(floorPosition));

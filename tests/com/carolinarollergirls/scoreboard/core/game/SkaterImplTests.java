@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
@@ -33,7 +34,8 @@ public class SkaterImplTests {
     @Before
     public void setup() {
         sb = new ScoreBoardImpl();
-        g = sb.getGame();
+        sb.postAutosaveUpdate();
+        g = sb.getCurrentGame().get(CurrentGame.GAME);
         team = g.getTeam(Team.ID_1);
         skaterId = UUID.randomUUID();
 

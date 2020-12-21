@@ -18,6 +18,8 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public interface Skater extends ScoreBoardEventProvider {
     public int compareTo(Skater other);
 
+    public CurrentSkater getCurrentSkater();
+
     public Team getTeam();
     public String getName();
     public void setName(String id);

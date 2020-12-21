@@ -13,8 +13,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Clock extends ScoreBoardEventProvider {
-    public void reset();
-
     public ClockSnapshot snapshot();
     public void restoreSnapshot(ClockSnapshot s);
 

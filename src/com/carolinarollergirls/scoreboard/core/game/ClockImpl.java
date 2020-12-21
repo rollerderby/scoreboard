@@ -39,7 +39,11 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         }
         setRecalculated(TIME).addSource(this, MAXIMUM_TIME);
         setRecalculated(INVERTED_TIME).addSource(this, MAXIMUM_TIME).addSource(this, TIME);
+        setName(getId());
 
+        // Pull in settings.
+        rulesetChangeListener.scoreBoardChange(null);
+        resetTime();
         game.addScoreBoardListener(new ConditionalScoreBoardListener<>(Game.class, Game.RULE, rulesetChangeListener));
     }
 
@@ -100,23 +104,6 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
             start();
         } else if (prop == STOP) {
             stop();
-        }
-    }
-
-    @Override
-    public void reset() {
-        synchronized (coreLock) {
-            stop();
-
-            setName(getId());
-
-            // Pull in settings.
-            rulesetChangeListener.scoreBoardChange(null);
-
-            // We hardcode the assumption that numbers count up.
-            setNumber(0);
-
-            resetTime();
         }
     }
 

@@ -27,9 +27,11 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public Clients getClients();
 
-    public Game getGame();
+    public Game getGame(String id);
 
     public PreparedTeam getPreparedTeam(String id);
+
+    public CurrentGame getCurrentGame();
 
     Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version");
     Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings");
@@ -39,4 +41,5 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets");
     Child<Game> GAME = new Child<>(Game.class, "Game");
     Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam");
+    Child<CurrentGame> CURRENT_GAME = new Child<>(CurrentGame.class, "CurrentGame");
 }

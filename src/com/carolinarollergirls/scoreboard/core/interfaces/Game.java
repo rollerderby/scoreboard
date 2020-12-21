@@ -11,8 +11,6 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Game extends ScoreBoardEventProvider {
-    public void reset();
-
     public void postAutosaveUpdate();
 
     public Timeout getCurrentTimeout();
@@ -92,7 +90,6 @@ public interface Game extends ScoreBoardEventProvider {
 
     NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period");
 
-    Command RESET = new Command("Reset");
     Command START_JAM = new Command("StartJam");
     Command STOP_JAM = new Command("StopJam");
     Command TIMEOUT = new Command("Timeout");

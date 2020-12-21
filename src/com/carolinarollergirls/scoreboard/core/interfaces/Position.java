@@ -9,11 +9,10 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
  */
 
 import com.carolinarollergirls.scoreboard.event.Command;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Position extends ScoreBoardEventProvider {
-    public void reset();
     public void updateCurrentFielding();
 
     public Team getTeam();

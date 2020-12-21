@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
@@ -56,7 +57,8 @@ public class TeamImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
-        g = sb.getGame();
+        sb.postAutosaveUpdate();
+        g = sb.getCurrentGame().get(CurrentGame.GAME);
         team = (TeamImpl) g.getTeam(ID);
         ScoreBoardClock.getInstance().stop();
 
@@ -577,15 +579,6 @@ public class TeamImplTests {
         advance(20000);
         team.getOtherTeam().set(Team.INJURY, true);
         assertFalse(team.isCalloff());
-    }
-
-    @Test
-    public void testReset() {
-        team.set(Team.FIELDING_ADVANCE_PENDING, true);
-        assertEquals(true, team.hasFieldingAdvancePending());
-
-        team.reset();
-        assertEquals(false, team.hasFieldingAdvancePending());
     }
 
     @Test

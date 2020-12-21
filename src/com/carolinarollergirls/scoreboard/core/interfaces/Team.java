@@ -18,8 +18,6 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public Game getGame();
 
-    public void reset();
-
     public String getName();
     public void setName(String name);
 

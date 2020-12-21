@@ -8,6 +8,7 @@ import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
@@ -44,7 +45,8 @@ public class BoxTripImplTests {
     @Before
     public void setUp() throws Exception {
         sb = new ScoreBoardImpl();
-        g = sb.getGame();
+        sb.postAutosaveUpdate();
+        g = sb.getCurrentGame().get(CurrentGame.GAME);
         sb.addScoreBoardListener(batchCounter);
 
         ScoreBoardClock.getInstance().stop();

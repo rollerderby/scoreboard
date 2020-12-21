@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
@@ -57,7 +58,8 @@ public class FieldingImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
-        g = sb.getGame();
+        sb.postAutosaveUpdate();
+        g = sb.getCurrentGame().get(CurrentGame.GAME);
         sb.addScoreBoardListener(batchCounter);
 
         ScoreBoardClock.getInstance().stop();

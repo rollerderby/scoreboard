@@ -5,12 +5,14 @@ import java.io.FileReader;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period.PeriodSnapshot;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -37,12 +39,23 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game {
+    public GameImpl(ScoreBoard sb, PreparedTeam team1, PreparedTeam team2, Ruleset rs) {
+        super(sb, UUID.randomUUID().toString(), ScoreBoard.GAME);
+        initReferences(rs);
+        getTeam(Team.ID_1).loadPreparedTeam(team1);
+        getTeam(Team.ID_2).loadPreparedTeam(team2);
+    }
+
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
+        initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
+    }
+
+    private void initReferences(Ruleset rs) {
         addProperties(CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM, UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM,
                 IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER, OFFICIAL_REVIEW, NO_MORE_JAM, RULESET,
-                RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, PERIOD, Period.JAM, RESET, START_JAM, STOP_JAM,
-                TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
+                RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT,
+                CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -51,7 +64,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         setCopy(OFFICIAL_REVIEW, this, CURRENT_TIMEOUT, Timeout.REVIEW, false);
         setCopy(RULESET_NAME, this, RULESET, Ruleset.NAME, true);
         addWriteProtectionOverride(RULE, Source.ANY_INTERNAL);
-        setRuleset(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
+        setRuleset(rs);
         add(TEAM, new TeamImpl(this, Team.ID_1));
         add(TEAM, new TeamImpl(this, Team.ID_2));
         addWriteProtection(TEAM);
@@ -63,7 +76,29 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         addWriteProtection(CLOCK);
         setRecalculated(NO_MORE_JAM).addSource(this, IN_JAM).addSource(this, IN_PERIOD).addSource(this, RULE)
                 .addIndirectSource(this, CURRENT_PERIOD, Period.TIMEOUT);
-        reset();
+        set(IN_JAM, false);
+        removeAll(Period.JAM);
+        removeAll(PERIOD);
+        set(CURRENT_PERIOD, getOrCreate(PERIOD, "0"));
+        noTimeoutDummy = new TimeoutImpl(getCurrentPeriod(), "noTimeout");
+        getCurrentPeriod().add(Period.TIMEOUT, noTimeoutDummy);
+        set(CURRENT_TIMEOUT, noTimeoutDummy);
+        set(UPCOMING_JAM, new JamImpl(this, getCurrentPeriod().getCurrentJam()));
+        updateTeamJams();
+
+        setInPeriod(false);
+        setInOvertime(false);
+        setOfficialScore(false);
+        snapshot = null;
+        replacePending = false;
+
+        setRuleset(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
+
+        setLabel(Button.START, ACTION_START_JAM);
+        setLabel(Button.STOP, ACTION_LINEUP);
+        setLabel(Button.TIMEOUT, ACTION_TIMEOUT);
+        setLabel(Button.UNDO, ACTION_NONE);
+        setLabel(Button.REPLACED, ACTION_NONE);
         addScoreBoardListener(periodEndListener);
         addScoreBoardListener(jamEndListener);
         addScoreBoardListener(intermissionEndListener);
@@ -149,9 +184,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     @Override
     public void execute(Command prop, Source source) {
-        if (prop == RESET) {
-            reset();
-        } else if (prop == START_JAM) {
+        if (prop == START_JAM) {
             startJam();
         } else if (prop == STOP_JAM) {
             stopJamTO();
@@ -181,41 +214,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 }
             }
             return null;
-        }
-    }
-
-    @Override
-    public void reset() {
-        synchronized (coreLock) {
-            for (Team t : getAll(TEAM)) {
-                t.reset();
-            }
-            set(IN_JAM, false);
-            removeAll(Period.JAM);
-            removeAll(PERIOD);
-            set(CURRENT_PERIOD, getOrCreate(PERIOD, "0"));
-            noTimeoutDummy = new TimeoutImpl(getCurrentPeriod(), "noTimeout");
-            getCurrentPeriod().add(Period.TIMEOUT, noTimeoutDummy);
-            set(CURRENT_TIMEOUT, noTimeoutDummy);
-            set(UPCOMING_JAM, new JamImpl(this, getCurrentPeriod().getCurrentJam()));
-            for (Clock c : getAll(CLOCK)) {
-                c.reset();
-            }
-            updateTeamJams();
-
-            setInPeriod(false);
-            setInOvertime(false);
-            setOfficialScore(false);
-            snapshot = null;
-            replacePending = false;
-
-            setRuleset(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
-
-            setLabel(Button.START, ACTION_START_JAM);
-            setLabel(Button.STOP, ACTION_LINEUP);
-            setLabel(Button.TIMEOUT, ACTION_TIMEOUT);
-            setLabel(Button.UNDO, ACTION_NONE);
-            setLabel(Button.REPLACED, ACTION_NONE);
         }
     }
 

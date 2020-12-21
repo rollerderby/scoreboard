@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
@@ -42,7 +43,9 @@ public class TeamJamImplTests {
         collectedEvents = new LinkedList<>();
 
         sb = new ScoreBoardImpl();
-        tj = (TeamJamImpl) sb.getGame().getTeam(Team.ID_1).get(Team.RUNNING_OR_UPCOMING_TEAM_JAM);
+        sb.postAutosaveUpdate();
+        tj = (TeamJamImpl) sb.getCurrentGame().get(CurrentGame.GAME).getTeam(Team.ID_1)
+                .get(Team.RUNNING_OR_UPCOMING_TEAM_JAM);
         ScoreBoardClock.getInstance().stop();
     }
 

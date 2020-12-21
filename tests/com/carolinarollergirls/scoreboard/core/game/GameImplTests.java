@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.game.GameImpl.Button;
 import com.carolinarollergirls.scoreboard.core.game.GameImpl.GameSnapshot;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
@@ -80,7 +81,8 @@ public class GameImplTests {
     public void setUp() throws Exception {
         ScoreBoardClock.getInstance().stop();
         sb = new ScoreBoardImpl();
-        g = (GameImpl) sb.getGame();
+        sb.postAutosaveUpdate();
+        g = (GameImpl) sb.getCurrentGame().get(CurrentGame.GAME);
         pc = g.getClock(Clock.ID_PERIOD);
         jc = g.getClock(Clock.ID_JAM);
         lc = g.getClock(Clock.ID_LINEUP);
@@ -101,7 +103,6 @@ public class GameImplTests {
     @After
     public void tearDown() throws Exception {
         ScoreBoardClock.getInstance().start(false);
-        g.reset();
         // Check all started batches were ended.
         assertEquals(0, batchLevel);
     }
@@ -1833,13 +1834,6 @@ public class GameImplTests {
 
         assertEquals(1, p2.getNumber());
         assertEquals(p2.getFirst(Period.JAM), penalty.getJam());
-    }
-
-    @Test
-    public void testResetDoesntAffectSettings() {
-        sb.getSettings().set("foo", "bar");
-        g.reset();
-        assertEquals("bar", sb.getSettings().get("foo"));
     }
 
     @Test

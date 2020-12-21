@@ -14,8 +14,11 @@ import com.carolinarollergirls.scoreboard.core.admin.ClientsImpl;
 import com.carolinarollergirls.scoreboard.core.admin.MediaImpl;
 import com.carolinarollergirls.scoreboard.core.admin.SettingsImpl;
 import com.carolinarollergirls.scoreboard.core.admin.TwitterImpl;
+import com.carolinarollergirls.scoreboard.core.current.CurrentGameImpl;
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -35,7 +38,7 @@ import com.carolinarollergirls.scoreboard.utils.Version;
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> implements ScoreBoard {
     public ScoreBoardImpl() {
         super(null, "", null);
-        addProperties(VERSION, SETTINGS, TWITTER, RULESETS, MEDIA, CLIENTS, GAME, PREPARED_TEAM);
+        addProperties(VERSION, SETTINGS, TWITTER, RULESETS, MEDIA, CLIENTS, GAME, PREPARED_TEAM, CURRENT_GAME);
         setupScoreBoard();
     }
 
@@ -53,7 +56,8 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         addWriteProtection(MEDIA);
         add(CLIENTS, new ClientsImpl(this));
         addWriteProtection(CLIENTS);
-        add(GAME, new GameImpl(this, ""));
+        add(CURRENT_GAME, new CurrentGameImpl(this));
+        addWriteProtection(CURRENT_GAME);
         add(TWITTER, new TwitterImpl(this));
         addWriteProtection(TWITTER);
     }
@@ -62,6 +66,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PREPARED_TEAM) { return new PreparedTeamImpl(this, id); }
+            if (prop == GAME) { return new GameImpl(this, id); }
             if (prop == TWITTER) { return new TwitterImpl(this); }
             return null;
         }
@@ -70,7 +75,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     @Override
     public void postAutosaveUpdate() {
         synchronized (coreLock) {
-            get(GAME, "").postAutosaveUpdate();
+            for (Game g : getAll(GAME)) {
+                g.postAutosaveUpdate();
+            }
+            get(CURRENT_GAME, "").postAutosaveUpdate();
             get(CLIENTS, "").postAutosaveUpdate();
             get(TWITTER, "").postAutosaveUpdate();
         }
@@ -89,10 +97,13 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     public Clients getClients() { return get(CLIENTS, ""); }
 
     @Override
-    public Game getGame() { return get(GAME, ""); }
+    public Game getGame(String id) { return get(GAME, id); }
 
     @Override
     public PreparedTeam getPreparedTeam(String id) { return get(PREPARED_TEAM, id); }
+
+    @Override
+    public CurrentGame getCurrentGame() { return get(CURRENT_GAME, ""); }
 
     @Override
     public TimeoutOwner getTimeoutOwner(String id) {
@@ -100,8 +111,15 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         for (Timeout.Owners o : Timeout.Owners.values()) {
             if (o.getId().equals(id)) { return o; }
         }
-        if (getGame().getTeam(id) != null) {
-            return getGame().getTeam(id);
+        if (getCurrentGame().get(CurrentGame.TEAM, id) != null) {
+            return getCurrentGame().get(CurrentGame.TEAM, id).get(CurrentTeam.TEAM);
+        }
+        if (id.contains("_")) { // gameId_teamId
+            String[] parts = id.split("_");
+            Game g = get(GAME, parts[0]);
+            if (g != null && g.getTeam(parts[1]) != null) {
+                return g.getTeam(parts[1]);
+            }
         }
         return Timeout.Owners.NONE;
     }

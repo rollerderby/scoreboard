@@ -24,6 +24,7 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 
+import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Client;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
@@ -158,14 +159,11 @@ public class WS extends WebSocketServlet {
                     sb.runInBatch(new Runnable() {
                         @Override
                         public void run() {
-                            Game g = sb.getGame();
                             PreparedTeam t1 = sb.getPreparedTeam((String) data.get("Team1"));
                             PreparedTeam t2 = sb.getPreparedTeam((String) data.get("Team2"));
                             Ruleset rs = sb.getRulesets().getRuleset((String) data.get("Ruleset"));
-                            g.reset();
-                            g.setRuleset(rs);
-                            g.getTeam(Team.ID_1).loadPreparedTeam(t1);
-                            g.getTeam(Team.ID_2).loadPreparedTeam(t2);
+                            Game g = new GameImpl(sb, t1, t2, rs);
+                            sb.getCurrentGame().load(g);
 
                             if ((Boolean) data.get("Advance")) {
                                 g.startJam();

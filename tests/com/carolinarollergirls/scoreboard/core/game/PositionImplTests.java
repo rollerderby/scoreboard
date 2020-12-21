@@ -10,6 +10,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
@@ -31,8 +32,9 @@ public class PositionImplTests {
     @Before
     public void setup() {
         sb = new ScoreBoardImpl();
+        sb.postAutosaveUpdate();
 
-        team = sb.getGame().getTeam(Team.ID_1);
+        team = sb.getCurrentGame().get(CurrentGame.GAME).getTeam(Team.ID_1);
 
         first = new SkaterImpl(team, firstId);
         second = new SkaterImpl(team, secondId);

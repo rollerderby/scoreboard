@@ -15,6 +15,9 @@ import java.util.Set;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentSkater;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
@@ -162,6 +165,12 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         } else if (prop == FIELDING && getCurrentFielding() == item) {
             set(CURRENT_FIELDING, null);
         }
+    }
+
+    @Override
+    public CurrentSkater getCurrentSkater() {
+        CurrentTeam t = scoreBoard.getCurrentGame().get(CurrentGame.TEAM, team.getProviderId());
+        return t == null ? null : t.get(CurrentTeam.SKATER, getId());
     }
 
     @Override
