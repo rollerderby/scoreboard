@@ -163,6 +163,7 @@ public class WS extends WebSocketServlet {
                             PreparedTeam t2 = sb.getPreparedTeam((String) data.get("Team2"));
                             Ruleset rs = sb.getRulesets().getRuleset((String) data.get("Ruleset"));
                             Game g = new GameImpl(sb, t1, t2, rs);
+                            sb.add(ScoreBoard.GAME, g);
                             sb.getCurrentGame().load(g);
 
                             if ((Boolean) data.get("Advance")) {

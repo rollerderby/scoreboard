@@ -1,4 +1,9 @@
-function prepareLtSheetTable(element, teamId, mode) {
+function prepareLtSheetTable(element, gameId, teamId, mode) {
+
+  /* Values supported for mode:
+   * plt: In-game mode with most recent jam at the top
+   * copyToStatsbook: Only cells that have to be manually typed in a WFTDA statsbook for the given period, except No Pivot
+   */
 
   'use strict';
   $(initialize);
@@ -11,51 +16,51 @@ function prepareLtSheetTable(element, teamId, mode) {
   function initialize() {
 
     if (mode !== 'plt') {
-      WS.Register([ 'ScoreBoard.Team(' + teamId + ').Name' ], function () {
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name' ], function () {
         teamNameUpdate();
       });
-      WS.Register([ 'ScoreBoard.Team(' + teamId + ').AlternateName(operator)' ], function () {
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)' ], function () {
         teamNameUpdate();
       });
 
-      WS.Register([ 'ScoreBoard.Team(' + teamId + ').Color' ], function (k, v) {
-        element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg)']);
-        element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg)']);
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color' ], function (k, v) {
+        element.find('#head').css('background-color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(operator_bg)']);
+        element.find('#head').css('color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(operator_fg)']);
       });
     }
 
     // for fielding editor
-    WS.Register([ 'ScoreBoard.Jam(*).TeamJam(' + teamId + ').NoPivot',
-      'ScoreBoard.Jam(*).TeamJam(' + teamId + ').StarPass',
-      'ScoreBoard.Jam(*).TeamJam(' + teamId + ').Fielding(*)' ]);
-    WS.Register([ 'ScoreBoard.Period(*).Number',
-      'ScoreBoard.Period(*).Jam(*).Number',
-      'ScoreBoard.Period(*).Jam(*).StarPass',
-      'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').NoPivot',
-      'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
-      'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(*)',
+    WS.Register([ 'ScoreBoard.Game(' + gameId + ').Jam(*).TeamJam(' + teamId + ').NoPivot',
+      'ScoreBoard.Game(' + gameId + ').Jam(*).TeamJam(' + teamId + ').StarPass',
+      'ScoreBoard.Game(' + gameId + ').Jam(*).TeamJam(' + teamId + ').Fielding(*)' ]);
+    WS.Register([ 'ScoreBoard.Game(' + gameId + ').Period(*).Number',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').NoPivot',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(*)',
       ], handleUpdate);
 
     if (mode === 'plt') {
-      WS.Register([ 'ScoreBoard.UpcomingJamNumber' ], function (k, v) {
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').UpcomingJamNumber' ], function (k, v) {
         element.find('#upcoming .JamNumber').text(v);
       });
-      WS.Register([ 'ScoreBoard.Team(' + teamId + ').NoPivot' ], function (k, v) {
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').NoPivot' ], function (k, v) {
         element.find('#upcoming .NP').text(isTrue(v) ? 'X' : '');
       });
 
-      WS.Register([ 'ScoreBoard.InJam', 'ScoreBoard.CurrentPeriodNumber' ], function () {
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').InJam', 'ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber' ], function () {
         for ( var p in periodElements) {
           periodElements[p].find('#upcoming').toggleClass(
               'Hide',
-              isTrue(WS.state['ScoreBoard.InJam']) ||
-              WS.state['ScoreBoard.CurrentPeriodNumber'] !== p);
+              isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam']) ||
+              WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'] !== p);
         }
       });
 
-      WS.Register([ 'ScoreBoard.Team(' + teamId + ').Position(*).RosterNumber',
-        'ScoreBoard.Team(' + teamId + ').Position(*).CurrentBoxSymbols',
-        'ScoreBoard.Team(' + teamId + ').Position(*).Annotation' ], function (k, v) {
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Position(*).RosterNumber',
+        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Position(*).CurrentBoxSymbols',
+        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Position(*).Annotation' ], function (k, v) {
         if (k.field === 'RosterNumber') {
           element.find('#upcoming .Skater.' + k.Position).text(v);
         } else if (k.field === 'CurrentBoxSymbols') {
@@ -68,10 +73,10 @@ function prepareLtSheetTable(element, teamId, mode) {
   }
 
   function teamNameUpdate() {
-    teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
+    teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
 
-    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'] != null) {
-      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'];
+    if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'] != null) {
+      teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'];
     }
 
     element.find('#head .Team').text(teamName);
@@ -79,7 +84,7 @@ function prepareLtSheetTable(element, teamId, mode) {
 
   function handleUpdate(k, v) {
     if (!k.Period || k.Period === 0) { return; }
-    if (v == null && k == 'ScoreBoard.Period(' + k.Period + ').Number') {
+    if (v == null && k == 'ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Number') {
       element.children('table.Period[nr=' + k.Period + ']').remove();
       delete periodElements[k.Period];
       delete jamElements[k.Period];
@@ -87,7 +92,7 @@ function prepareLtSheetTable(element, teamId, mode) {
       createPeriod(k.Period);
     }
     if (!k.Jam || k.Jam === 0) { return; }
-    var prefix = 'ScoreBoard.Period(' + k.Period + ').Jam(' + k.Jam + ').';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Jam(' + k.Jam + ').';
     if (v == null && k == prefix + 'Number') {
       element.children('table.Period[nr=' + k.Period + ']').find('tr[nr=' + k.Jam + ']').remove();
       delete jamElements[k.Period][k.Jam];
@@ -187,10 +192,10 @@ function prepareLtSheetTable(element, teamId, mode) {
         $.each([ 'Jammer', 'Pivot', 'Blocker1', 'Blocker2', 'Blocker3' ], function () {
           var pos = String(this);
           $('<td>').addClass('Skater ' + pos).on('click', function () {
-            openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
+            openFieldingEditor(gameId, nr, jamBox.text(), teamId, pos, true);
           }).appendTo(jamRow);
           $('<td>').addClass('Box Box' + pos).on('click', function () {
-            openFieldingEditor(nr, jamBox.text(), teamId, pos, true);
+            openFieldingEditor(gameId, nr, jamBox.text(), teamId, pos, true);
           }).appendTo(jamRow);
 
         });
@@ -205,7 +210,7 @@ function prepareLtSheetTable(element, teamId, mode) {
     if (nr > 0 && jamElements[p][nr] == null) {
       createJam(p, nr - 1);
 
-      var prefix = 'ScoreBoard.Period(' + p + ').Jam(' + nr + ').TeamJam(' + teamId + ').';
+      var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + p + ').Jam(' + nr + ').TeamJam(' + teamId + ').';
 
       var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
       if (mode !== 'copyToStatsbook') {
@@ -223,10 +228,10 @@ function prepareLtSheetTable(element, teamId, mode) {
           $('<td>').addClass('Box Box' + pos + '_3').appendTo(jamRow);
         } else {
           $('<td>').addClass('Skater ' + pos).on('click', function () {
-            openFieldingEditor(p, nr, teamId, pos);
+            openFieldingEditor(gameId, p, nr, teamId, pos);
           }).appendTo(jamRow);
           $('<td>').addClass('Box Box' + pos).on('click', function () {
-            openFieldingEditor(p, nr, teamId, pos);
+            openFieldingEditor(gameId, p, nr, teamId, pos);
           }).appendTo(jamRow);
         }
       });
@@ -266,8 +271,8 @@ function prepareLtSheetTable(element, teamId, mode) {
 
 var fieldingEditor;
 
-function openFieldingEditor(p, j, t, pos, upcoming) {
-  var prefix = 'ScoreBoard.' + (isTrue(upcoming) ? '' : 'Period(' + p + ').') + 'Jam(' + j + ').TeamJam(' + t + ').Fielding(' + pos + ').';
+function openFieldingEditor(g, p, j, t, pos, upcoming) {
+  var prefix = 'ScoreBoard.Game(' + g + ').' + (isTrue(upcoming) ? '' : 'Period(' + p + ').') + 'Jam(' + j + ').TeamJam(' + t + ').Fielding(' + pos + ').';
 
   fieldingEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' ' + (pos));
   fieldingEditor.find('#skater').val(WS.state[prefix + 'Skater']);
@@ -282,7 +287,7 @@ function openFieldingEditor(p, j, t, pos, upcoming) {
   fieldingEditor.dialog('open');
 }
 
-function prepareFieldingEditor(teamId) {
+function prepareFieldingEditor(gameId, teamId) {
 
   'use strict';
   $(initialize);
@@ -338,11 +343,11 @@ function prepareFieldingEditor(teamId) {
       fieldingEditor.dialog('close');
     }).appendTo(row);
 
-    WS.Register([ 'ScoreBoard.Team(' + teamId + ').Skater(*).Role', 'ScoreBoard.Team(' + teamId + ').Skater(*).RosterNumber' ],
+    WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(*).Role', 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(*).RosterNumber' ],
         function (k, v) {
       processSkater(k, v);
     });
-    WS.Register([ 'ScoreBoard.Team(' + teamId + ').BoxTrip' ], function (k, v) {
+    WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').BoxTrip' ], function (k, v) {
       processBoxTrip(k, v);
     });
 
@@ -366,7 +371,7 @@ function prepareFieldingEditor(teamId) {
   function processSkater(k, v) {
     var select = $('#FieldingEditor #skater');
     select.children('[value="' + k.Skater + '"]').remove();
-    var prefix = 'ScoreBoard.Team(' + k.Team + ').Skater(' + k.Skater + ').';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + k.Team + ').Skater(' + k.Skater + ').';
     if (v != null && WS.state[prefix + 'Role'] !== 'NotInGame') {
       var number = WS.state[prefix + 'RosterNumber'];
       var option = $('<option>').attr('number', number).val(k.Skater).text(number);
@@ -377,7 +382,7 @@ function prepareFieldingEditor(teamId) {
   function processBoxTrip(k, v) {
     if (k.BoxTrip == null) { return; }
     var key = k.parts[3];
-    var prefix = 'ScoreBoard.Team(' + teamId + ').BoxTrip(' + k.BoxTrip + ').';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').BoxTrip(' + k.BoxTrip + ').';
 
     var row = $('#FieldingEditor .BoxTrip[id=' + k.BoxTrip + ']');
     if (v != null && row.length === 0) {

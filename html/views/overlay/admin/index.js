@@ -42,8 +42,8 @@ function initialize() {
     });
   });
 
-  var skaterRegEx = /^ScoreBoard\.Team\((.+)\)\.Skater\((.+?)\)\.(.+)$/;
-  WS.Register('ScoreBoard.Team', function(k,v) {
+  var skaterRegEx = /^ScoreBoard\.CurrentGame\.Team\((.+)\)\.Skater\((.+?)\)\.(.+)$/;
+  WS.Register('ScoreBoard.CurrentGame.Team', function(k,v) {
     var m = k.match(skaterRegEx);
     if(m) {
       var key = m[3];
@@ -60,14 +60,14 @@ function initialize() {
 
   WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)',
     'ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)',
-    'ScoreBoard.Team(1).AlternateName(overlay)',
-    'ScoreBoard.Team(2).AlternateName(overlay)'],
+    'ScoreBoard.CurrentGame.Team(1).AlternateName(overlay)',
+    'ScoreBoard.CurrentGame.Team(2).AlternateName(overlay)'],
         function(k,v) { $('input[data-setting="'+k+'"]').val(v); });
 
-  WS.Register(['ScoreBoard.Team(1).Color(overlay_fg)',
-    'ScoreBoard.Team(1).Color(overlay_bg)',
-    'ScoreBoard.Team(2).Color(overlay_fg)',
-    'ScoreBoard.Team(2).Color(overlay_bg)'],
+  WS.Register(['ScoreBoard.CurrentGame.Team(1).Color(overlay_fg)',
+    'ScoreBoard.CurrentGame.Team(1).Color(overlay_bg)',
+    'ScoreBoard.CurrentGame.Team(2).Color(overlay_fg)',
+    'ScoreBoard.CurrentGame.Team(2).Color(overlay_bg)'],
         function(k,v) {
           if (v == null || v === '') {
             $('input[data-setting="'+k+'"]').attr('cleared', 'true');
@@ -133,8 +133,8 @@ $('select#Skaters').on('change', function(e) {
   var v = $t.val();
   var team = $( 'option[value=' + v + ']', $t ).attr('data-team');
   var name = $( 'option[value=' + v + ']', $t ).attr('data-name');
-  var tnam = WS.state['ScoreBoard.Team(' + team + ').AlternateName(overlay)'];
-  tnam = tnam ? tnam : WS.state['ScoreBoard.Team(' + team + ').Name'];
+  var tnam = WS.state['ScoreBoard.CurrentGame.Team(' + team + ').AlternateName(overlay)'];
+  tnam = tnam ? tnam : WS.state['ScoreBoard.CurrentGame.Team(' + team + ').Name'];
   $( '#LowerThirdStyle option[value=ColourTeam' + team + ']').attr('selected', 'selected').trigger('change');
   $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val(name).trigger('change');
   $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val(tnam).trigger('change');

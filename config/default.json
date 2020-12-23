@@ -1,9 +1,5 @@
 {
   "state": {
-    "ScoreBoard.PreparedTeam(Black).Name" : "Black",
-    "ScoreBoard.PreparedTeam(White).Name" : "White",
-    "ScoreBoard.Team(1).Name" : "Black",
-    "ScoreBoard.Team(2).Name" : "White",
     "ScoreBoard.Rulesets.Ruleset(SevensRuleset).Id" : "SevensRuleset",
     "ScoreBoard.Rulesets.Ruleset(SevensRuleset).Name" : "Sevens",
     "ScoreBoard.Rulesets.Ruleset(SevensRuleset).ParentId" : "WFTDARuleset",

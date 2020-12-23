@@ -28,6 +28,13 @@ $(function() {
 		}
 		$("#deviceName").text(name);
 	});
+	WS.Register("ScoreBoard.CurrentGame.Game", function(k,v) {
+	  var gId = v || '';
+	  $('.curGame').each(function() {
+	    var old = $(this).attr('href');
+	    $(this).attr('href', old.substring(0, old.lastIndexOf('=') + 1) + v);
+	  })
+	});
 	WS.AutoRegister();
 	WS.Connect();
 });
@@ -84,7 +91,7 @@ $(function() {
         <div class="btn">
           <h2><span class="fa fa-2x fa-gamepad"></span> OPERATOR &amp CONTROLS</h2>
           <ul>
-            <li><a href="nso/sbo"><strong>Scoreboard Operator Panel</strong></a></li>
+            <li><a class="curGame" href="nso/sbo?game="><strong>Scoreboard Operator Panel</strong></a></li>
             <li><a href="nso/jt">Jam Timer (Mobile Control)</a></li>
           </ul>
         </div>
@@ -99,19 +106,19 @@ $(function() {
         <div class="btn">
           <h2><span class="fa fa-2x fa-list-alt"></span> STATS TRACKING</h2>
           <ul>
-            <li><a href="nso/pt">Penalty Tracking</a></li>
+            <li><a class="curGame" href="nso/pt?game=">Penalty Tracking</a></li>
           </ul>
           <ul>
-            <li><a href="nso/lt">Lineup Tracking</a></li>
+            <li><a class="curGame" href="nso/lt?game=">Lineup Tracking</a></li>
           </ul>
           <ul>
-            <li><a href="nso/plt">Penalty + Lineup Tracking</a></li>
+            <li><a class="curGame" href="nso/plt?game=">Penalty + Lineup Tracking</a></li>
           </ul>
           <ul>
-            <li><a href='views/wb'>Penalty Whiteboard Display</a></li>
+            <li><a class="curGame" href="views/wb?game=">Penalty Whiteboard Display</a></li>
           </ul>
           <ul>
-            <li><a href='views/copy'>Copy to Statsbook</a></li>
+            <li><a class="curGame" href="views/copy?game=">Copy to Statsbook</a></li>
           </ul>
         </div>
     </div><!-- column -->
@@ -119,8 +126,8 @@ $(function() {
         <div class="btn">
           <h2><span class="fa fa-2x fa-video-camera"></span> BROADCAST OVERLAYS</h2>
           <ul>
-            <li><a href='views/overlay'>Broadcast Overlay</a></li>
-            <li><a href='views/overlay/admin'>Overlay Admin Page</a></li>
+            <li><a href="views/overlay">Broadcast Overlay</a></li>
+            <li><a href="views/overlay/admin">Overlay Admin Page</a></li>
           </ul>
         </div>
         <div class="btn">

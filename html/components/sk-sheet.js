@@ -1,4 +1,9 @@
-function prepareSkSheetTable(element, teamId, mode) {
+function prepareSkSheetTable(element, gameId, teamId, mode) {
+
+  /* Values supported for mode:
+   * operator: In-game mode with most recent jam at the top
+   * copyToStatsbook: Only cells that have to be manually typed in a WFTDA statsbook for the given period, except No Pivot
+   */
 
   'use strict';
   $(initialize);
@@ -11,41 +16,41 @@ function prepareSkSheetTable(element, teamId, mode) {
 
   function initialize() {
     if (mode !== 'operator') {
-      WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
-      WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'], function () { teamNameUpdate(); });
+      WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
+      WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'], function () { teamNameUpdate(); });
 
-      WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-        element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_bg)']);
-        element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(operator_fg)']);
+      WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color'], function (k, v) {
+        element.find('#head').css('background-color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(operator_bg)']);
+        element.find('#head').css('color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(operator_fg)']);
       });
     }
 
-    WS.Register(['ScoreBoard.Period(*).Number',
-        'ScoreBoard.Period(*).Jam(*).Number',
-        'ScoreBoard.Period(*).Jam(*).StarPass',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Injury',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Lead',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Lost',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').NoInitial',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').TotalScore',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Jammer).SkaterNumber',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).SkaterNumber',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Current',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score',
-        'ScoreBoard.Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Annotation'
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Period(*).Number',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Injury',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Lead',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Lost',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').NoInitial',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').TotalScore',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Jammer).SkaterNumber',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).SkaterNumber',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Current',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Score',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).Annotation'
     ], handleUpdate);
   }
 
   function teamNameUpdate() {
-    teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
+    teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
 
-    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'] != null) {
-      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(operator)'];
+    if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'] != null) {
+      teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'];
     }
 
     element.find('#head .Team').text(teamName);
@@ -54,7 +59,7 @@ function prepareSkSheetTable(element, teamId, mode) {
   function handleUpdate(k, v) {
     // Ensure periods/jams exist.
     if (!k.Period || k.Period === 0) { return; }
-    if (v == null && k == 'ScoreBoard.Period('+k.Period+').Number') {
+    if (v == null && k == 'ScoreBoard.Game(' + gameId + ').Period('+k.Period+').Number') {
       element.children('table.Period[nr='+k.Period+']').remove();
       delete periodElements[k.Period];
       delete jamElements[k.Period];
@@ -62,7 +67,7 @@ function prepareSkSheetTable(element, teamId, mode) {
       createPeriod(k.Period);
     }
     if (!k.Jam || k.Jam === 0) { return; }
-    var prefix = 'ScoreBoard.Period('+k.Period+').Jam('+k.Jam+').';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Period('+k.Period+').Jam('+k.Jam+').';
     if (v == null && k == prefix + 'Number') {
       element.children('table.Period[nr='+k.Period+']').find('tr[nr='+k.Jam+']').remove();
       delete jamElements[k.Period][k.Jam];
@@ -245,7 +250,7 @@ function prepareSkSheetTable(element, teamId, mode) {
     if (nr > 0 && jamElements[p][nr] == null) {
       createJam(p, nr-1);
 
-      var prefix = 'ScoreBoard.Period('+p+').Jam('+nr+').TeamJam('+teamId+').';
+      var prefix = 'ScoreBoard.Game(' + gameId + ').Period('+p+').Jam('+nr+').TeamJam('+teamId+').';
 
       var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
       $('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
@@ -254,10 +259,10 @@ function prepareSkSheetTable(element, teamId, mode) {
       $('<td>').addClass('Lead Narrow Darker').on('click', function() { WS.Set(prefix+'Lead', $(this).text() === ''); }).appendTo(jamRow);
       $('<td>').addClass('Calloff Narrow Darker').on('click', function() { WS.Set(prefix+'Calloff', $(this).text() === ''); }).appendTo(jamRow);
       $('<td>').addClass('Injury Narrow Darker').on('click', function() { WS.Set(prefix+'Injury', $(this).text() === ''); }).appendTo(jamRow);
-      $('<td>').addClass('NoInitial Narrow Darker').on('click', function() { setupTripEditor(p, nr, teamId, 1); }).appendTo(jamRow);
+      $('<td>').addClass('NoInitial Narrow Darker').on('click', function() { setupTripEditor(gameId, p, nr, teamId, 1); }).appendTo(jamRow);
       $.each(new Array(9), function (idx) {
         var t = idx + 2;
-        $('<td>').addClass('Trip Trip'+t).on('click', function() { setupTripEditor(p, nr, teamId, t); }).appendTo(jamRow);
+        $('<td>').addClass('Trip Trip'+t).on('click', function() { setupTripEditor(gameId, p, nr, teamId, t); }).appendTo(jamRow);
       });
       if (mode !== 'copyToStatsbook') {
         $('<td>').addClass('JamTotal').appendTo(jamRow);
@@ -281,11 +286,11 @@ function prepareSkSheetTable(element, teamId, mode) {
 
 var tripEditor;
 
-function setupTripEditor(p, j, teamId, t) {
-  while (t > 1 && WS.state['ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+(t-1)+').Score'] === undefined) { t--; }
+function setupTripEditor(gameId, p, j, teamId, t) {
+  while (t > 1 && WS.state['ScoreBoard.Game(' + gameId + ').Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+(t-1)+').Score'] === undefined) { t--; }
   if (t < 1) { t = 1; }
   
-  var prefix = 'ScoreBoard.Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+t+').';
+  var prefix = 'ScoreBoard.Game(' + gameId + ').Period('+p+').Jam('+j+').TeamJam('+teamId+').ScoringTrip('+t+').';
 
   tripEditor.dialog('option', 'title', 'Period ' + p + ' Jam ' + j + ' Trip ' + (t===1?'Initial':t));
   tripEditor.find('#score').val(WS.state[prefix+'Score']);
@@ -295,6 +300,7 @@ function setupTripEditor(p, j, teamId, t) {
   tripEditor.find('#prev').toggleClass('Invisible', t === 1);
   tripEditor.find('#next').toggleClass('Invisible', WS.state[prefix+'Score'] === undefined);
   tripEditor.data('prefix', prefix);
+  tripEditor.data('game', gameId);
   tripEditor.data('team', teamId);
   tripEditor.data('period', p);
   tripEditor.data('jam', j);
@@ -342,7 +348,7 @@ function prepareTripEditor() {
             .append($('<td>').append($('<button>').attr('id','insert_before').text('Insert Trip').button().on('click', function() {
               WS.Set(tripEditor.data('prefix')+'InsertBefore', true);
               tripEditor.dialog('close');
-              setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip'));
+              setupTripEditor(tripEditor.data('game'), tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip'));
               tripEditor.find('#score').val(0); // the update of the popup may run before the WS is updated
             }))))
         .append($('<tr>').append($('<td>').attr('colspan', '2').append($('<hr>'))))
@@ -361,11 +367,11 @@ function prepareTripEditor() {
             .append($('<td>')
                 .append($('<button>').text('⬅ Prev').attr('id', 'prev').button().on('click', function() {
                   tripEditor.dialog('close');
-                  setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') - 1);
+                  setupTripEditor(tripEditor.data('game'), tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') - 1);
                 }))
                 .append($('<button>').text('Next ➡').attr('id', 'next').button().on('click', function() {
                   tripEditor.dialog('close');
-                  setupTripEditor(tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') + 1);
+                  setupTripEditor(tripEditor.data('game'), tripEditor.data('period'), tripEditor.data('jam'), tripEditor.data('team'), tripEditor.data('trip') + 1);
                 })))
             .append($('<td>').addClass('close').append($('<button>').attr('id','close').text('Close').button().on('click', function() {
               tripEditor.dialog('close');
@@ -381,7 +387,7 @@ function showSkaterSelector(element, teamId) {
   $('#skaterSelector').data('element', element).dialog('open');
 }
 
-function prepareSkaterSelector() {
+function prepareSkaterSelector(gameId) {
   
   'use strict';
   
@@ -404,9 +410,9 @@ function prepareSkaterSelector() {
 
   selectorDialog.append(selects['1']).append(selects['2']);
   
-  WS.Register(['ScoreBoard.Team(*).Skater(*).RosterNumber', 'ScoreBoard.Team(*).Skater(*).Role'], function(k, v) {
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).RosterNumber', 'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).Role'], function(k, v) {
     selects[k.Team].children('[value="'+k.Skater+'"]').remove();
-    var prefix = 'ScoreBoard.Team('+k.Team+').Skater('+k.Skater+').';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Team('+k.Team+').Skater('+k.Skater+').';
     if (v != null && WS.state[prefix + 'Role'] !== 'NotInGame') {
       var number = WS.state[prefix + 'RosterNumber'];
       var option = $('<option>').attr('number', number).val(k.Skater).text(number);
@@ -414,7 +420,7 @@ function prepareSkaterSelector() {
     }
   });
 
-  WS.Register(['ScoreBoard.Period(*).Jam(*).TeamJam(*).Fielding(*).Skater']);
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(*).Fielding(*).Skater']);
 }
 
 //# sourceURL=components\sk-sheet.js

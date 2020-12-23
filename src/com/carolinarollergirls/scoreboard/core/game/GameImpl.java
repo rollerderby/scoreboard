@@ -829,12 +829,12 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     static public enum Button {
-        START("StartLabel"),
-        STOP("StopLabel"),
+        START("Start"),
+        STOP("Stop"),
         @SuppressWarnings("hiding")
-        TIMEOUT("TimeoutLabel"),
-        UNDO("UndoLabel"),
-        REPLACED("ReplacedLabel");
+        TIMEOUT("Timeout"),
+        UNDO("Undo"),
+        REPLACED("Replaced");
 
         private Button(String i) { id = i; }
 

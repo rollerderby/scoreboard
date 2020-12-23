@@ -7,29 +7,29 @@ $(initialize);
 
 function initialize() {
 
-  WS.Register( [ 'ScoreBoard.Clock(Intermission).Number',
-      'ScoreBoard.Rulesets.CurrentRule(Period.Number)',
-      'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)',
-      'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)',
-      'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)',
-      'ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)' ]);
+  WS.Register( [ 'ScoreBoard.CurrentGame.Clock(Intermission).Number',
+      'ScoreBoard.CurrentGame.Rulesets.CurrentRule(Period.Number)',
+      'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.PreGame)',
+      'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.Unofficial)',
+      'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.Official)',
+      'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.Intermission)' ]);
 
-  WS.Register( [  'ScoreBoard.Clock(Timeout).Running',
-      'ScoreBoard.TimeoutOwner',
-      'ScoreBoard.OfficialReview',
-      'ScoreBoard.Team(*).Timeouts',
-      'ScoreBoard.Team(*).OfficialReviews',
-      'ScoreBoard.Team(*).RetainedOfficialReview' ], function(k,v) { smallDescriptionUpdate(k,v); } );
+  WS.Register( [  'ScoreBoard.CurrentGame.Clock(Timeout).Running',
+      'ScoreBoard.CurrentGame.TimeoutOwner',
+      'ScoreBoard.CurrentGame.OfficialReview',
+      'ScoreBoard.CurrentGame.Team(*).Timeouts',
+      'ScoreBoard.CurrentGame.Team(*).OfficialReviews',
+      'ScoreBoard.CurrentGame.Team(*).RetainedOfficialReview' ], function(k,v) { smallDescriptionUpdate(k,v); } );
 
-  WS.Register( ['ScoreBoard.Period(*).Jam(*).TeamJam(*).JamScore',
-      'ScoreBoard.Period(*).Jam(*).TeamJam(*).Lead',
-      'ScoreBoard.Period(*).Jam(*).TeamJam(*).Lost'], function(k,v) { jamData(k,v); } );
+  WS.Register( ['ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).JamScore',
+      'ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).Lead',
+      'ScoreBoard.CurrentGame.Period(*).Jam(*).TeamJam(*).Lost'], function(k,v) { jamData(k,v); } );
 
   WS.Register( [
-      'ScoreBoard.Team(*).Skater(*).Name',
-      'ScoreBoard.Team(*).Skater(*).RosterNumber',
-      'ScoreBoard.Team(*).Skater(*).Flags',
-      'ScoreBoard.Team(*).Skater(*).Role'], function(k,v) {
+      'ScoreBoard.CurrentGame.Team(*).Skater(*).Name',
+      'ScoreBoard.CurrentGame.Team(*).Skater(*).RosterNumber',
+      'ScoreBoard.CurrentGame.Team(*).Skater(*).Flags',
+      'ScoreBoard.CurrentGame.Team(*).Skater(*).Role'], function(k,v) {
         var me = '.RosterTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
         var mb = '.PenaltyTeam' + k.Team + ' .Team' + k.Team + ' .Skater[data-skaterId=' + k.Skater + ']';
         if (v == null) {
@@ -62,7 +62,7 @@ function initialize() {
         }
   });
 
-  WS.Register( 'ScoreBoard.Team(*).Skater(*).Penalty(*).Code', function(k,v) {
+  WS.Register( 'ScoreBoard.CurrentGame.Team(*).Skater(*).Penalty(*).Code', function(k,v) {
     if (k.Penalty === 0) {
       // Foulout/Expulsion.
       return;
@@ -78,12 +78,12 @@ function initialize() {
   } );
 
 
-  WS.Register( ['ScoreBoard.Team(*).Color'], function(k,v) {
+  WS.Register( ['ScoreBoard.CurrentGame.Team(*).Color'], function(k,v) {
      $(document).find('.ColourTeam'+k.Team).css('color',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_fg)'] || '');
      $(document).find('.ColourTeam'+k.Team).css('background',  WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_bg)'] || '');
   });
 
-  WS.Register( 'ScoreBoard.Team(*).Logo', function(k,v) {
+  WS.Register( 'ScoreBoard.CurrentGame.Team(*).Logo', function(k,v) {
     if(v && v !== '') {
       $('img.TeamLogo'+k.Team).attr('src', v).css('display', 'block');
       $('img.TeamLogo'+k.Team).parent().removeClass('NoLogo');
@@ -93,7 +93,7 @@ function initialize() {
     }
   });
 
-  WS.Register( 'ScoreBoard.Clock(Period).Number', function(k,v) {
+  WS.Register( 'ScoreBoard.CurrentGame.Clock(Period).Number', function(k,v) {
     if(v === 2) { $('.PPJBox .Team .Period2').show(); } else { $('.PPJBox .Team .Period2').hide(); }
   });
 
@@ -271,25 +271,25 @@ function pointsPerJamColumnWidths() {
 
 function clockType(k,v) {
   var ret;
-  var to = WS.state['ScoreBoard.TimeoutOwner'];
-  var or = WS.state['ScoreBoard.OfficialReview'];
-  var tc = WS.state['ScoreBoard.Clock(Timeout).Running'];
-  var lc = WS.state['ScoreBoard.Clock(Lineup).Running'];
-  var ic = WS.state['ScoreBoard.Clock(Intermission).Running'];
+  var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
+  var or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];
+  var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
+  var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
+  var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
 
   if(tc) {
-    ret = WS.state['ScoreBoard.Clock(Timeout).Name'];
+    ret = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Name'];
     if(to !== '' && to !== 'O' && or) { ret = 'Official Review'; }
     if(to !== '' && to !== 'O' && !or) { ret = 'Team Timeout'; }
     if(to === 'O') { ret = 'Official Timeout'; }
     $('.ClockDescription').css('backgroundColor', 'red');
   } else if(lc) {
-    ret = WS.state['ScoreBoard.Clock(Lineup).Name'];
+    ret = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Name'];
     $('.ClockDescription').css('backgroundColor', '#888');
   } else if(ic) {
-    var num = WS.state['ScoreBoard.Clock(Intermission).Number'];
-    var max = WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'];
-    var isOfficial = WS.state['ScoreBoard.OfficialScore'];
+    var num = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Number'];
+    var max = WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'];
+    var isOfficial = WS.state['ScoreBoard.CurrentGame.OfficialScore'];
     if (num === 0) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
     } else if (num !== max) {

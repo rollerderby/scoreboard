@@ -9,7 +9,9 @@
  */
 
 $(function() {
-  createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'));
+  var gameId = _windowFunctions.getParam('game');
+  setupGameAdvance($('gameAdvance'), gameId, true);
+  createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'), gameId);
   createRulesetsTab(createTab('Rulesets', 'RulesetsTab'));
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
   createTeamsTab(createTab('Teams', 'TeamsTab'));
@@ -71,18 +73,20 @@ function initialLogin() {
 }
 
 function login(name) {
+  var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text(name);
   if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?operator='+$('#operatorId').text());
+    window.history.replaceState(null, '', '?operator='+$('#operatorId').text()+'&game='+gameId);
   }
   _crgKeyControls.setupKeyControls(name);
   setOperatorSettings(name);
 }
 
 function logout() {
+  var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text('');
   if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?');
+    window.history.replaceState(null, '', '?game='+gameId);
   }
   _crgKeyControls.destroyKeyControls();
   setOperatorSettings('');

@@ -203,7 +203,10 @@ function createDataManagementTab(tab) {
 
     var links = [
       { name: 'All data', url: '' },
-      { name: 'Teams', url: 'teams.json?path=ScoreBoard.PreparedTeam' }
+      { name: 'Teams', url: 'teams.json?path=ScoreBoard.PreparedTeam' },
+      { name: 'Games', url: 'games.json?path=ScoreBoard.Game' },
+      { name: 'Rulesets', url: 'rulesets.json?path=ScoreBoard.Rulesets' },
+      { name: 'Settings', url: 'settings.json?path=ScoreBoard.Settings' }
       ];
     $.each( links, function() {
       $('<td><a download/></td>').appendTo(contentRow)

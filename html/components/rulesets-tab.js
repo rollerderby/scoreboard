@@ -10,7 +10,7 @@ function createRulesetsTab(tab) {
     tab.find('#current_rs').empty();
     rs.empty();
     rs.append(displayRulesetTree(''));
-    tab.find('#current_rs').val(WS.state['ScoreBoard.Rulesets.CurrentRuleset']);
+    tab.find('#current_rs').val(WS.state['ScoreBoard.CurrentGame.Ruleset']);
     if (activeRuleset != null) {
       displayRuleset(activeRuleset.Id);
     }
@@ -204,7 +204,7 @@ function createRulesetsTab(tab) {
       markEffectiveRulesets();
     }});
 
-    WS.Register(['ScoreBoard.Rulesets.CurrentRuleset'], function(k, v) {
+    WS.Register(['ScoreBoard.CurrentGame.Ruleset'], function(k, v) {
       tab.find('#current_rs').val(v);
       markEffectiveRulesets();
       var definitions = tab.children('.definitions');
@@ -220,7 +220,7 @@ function createRulesetsTab(tab) {
 
   function markEffectiveRulesets() {
     $.each(rulesets, function(idx, rs) { rs.Effective = false; });
-    var id = WS.state['ScoreBoard.Rulesets.CurrentRuleset'];
+    var id = WS.state['ScoreBoard.CurrentGame.Ruleset'];
     while (rulesets[id]) {
       rulesets[id].Effective = true;
       id = rulesets[id].Parent;
@@ -319,7 +319,7 @@ function createRulesetsTab(tab) {
   }
 
   function Change() {
-    WS.Set('ScoreBoard.Rulesets.CurrentRuleset', tab.find('#current_rs').val());
+    WS.Set('ScoreBoard.CurrentGame.Ruleset', tab.find('#current_rs').val());
   }
 
   function setDefinition(key, value, inherited) {

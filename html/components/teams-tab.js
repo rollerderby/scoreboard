@@ -16,7 +16,7 @@ function createTeamsTab(tab) {
   var isCurrentTeam = function(){ return selectTeam.val().startsWith('(Current Team');};
   var getPrefix = function() {
     if (isCurrentTeam()) {
-      return 'ScoreBoard.Team('+selectTeam.val()[14]+')';
+      return 'ScoreBoard.CurrentGame.Team('+selectTeam.val()[14]+')';
     } else {
       return 'ScoreBoard.PreparedTeam('+selectTeam.val()+')';
     }
@@ -121,13 +121,13 @@ function createTeamsTab(tab) {
       handleTeamUpdate(k, v);
     }
   });
-  WS.Register(['ScoreBoard.Team(*).AlternateName',
-      'ScoreBoard.Team(*).Color',
-      'ScoreBoard.Team(*).Logo',
-      'ScoreBoard.Team(*).Name',
-      'ScoreBoard.Team(*).Skater(*).Flags',
-      'ScoreBoard.Team(*).Skater(*).Name',
-      'ScoreBoard.Team(*).Skater(*).RosterNumber'], function(k, v) {
+  WS.Register(['ScoreBoard.CurrentGame.Team(*).AlternateName',
+      'ScoreBoard.CurrentGame.Team(*).Color',
+      'ScoreBoard.CurrentGame.Team(*).Logo',
+      'ScoreBoard.CurrentGame.Team(*).Name',
+      'ScoreBoard.CurrentGame.Team(*).Skater(*).Flags',
+      'ScoreBoard.CurrentGame.Team(*).Skater(*).Name',
+      'ScoreBoard.CurrentGame.Team(*).Skater(*).RosterNumber'], function(k, v) {
         var teamId = selectTeam.val();
         if ('(Current Team '+k.Team+')' === teamId) {
           handleTeamUpdate(k, v);

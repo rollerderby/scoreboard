@@ -20,8 +20,9 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
         super(sb, "", ScoreBoard.CURRENT_GAME);
         addProperties(GAME, Game.CURRENT_PERIOD_NUMBER, Game.UPCOMING_JAM_NUMBER, Game.IN_PERIOD, Game.IN_JAM,
                 Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER, Game.OFFICIAL_REVIEW,
-                Game.NO_MORE_JAM, Game.RULESET_NAME, CLOCK, TEAM, Game.RULE, Game.LABEL, Game.START_JAM, Game.STOP_JAM,
-                Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE, Game.START_OVERTIME, Game.OFFICIAL_TIMEOUT);
+                Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, CLOCK, TEAM, Game.RULE, Game.LABEL, Game.START_JAM,
+                Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE, Game.START_OVERTIME,
+                Game.OFFICIAL_TIMEOUT);
         setCopy(Game.CURRENT_PERIOD_NUMBER, this, GAME, Game.CURRENT_PERIOD_NUMBER, false);
         setCopy(Game.UPCOMING_JAM_NUMBER, this, GAME, Game.UPCOMING_JAM_NUMBER, false);
         setCopy(Game.IN_PERIOD, this, GAME, Game.IN_PERIOD, false);
@@ -32,6 +33,7 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
         setCopy(Game.TIMEOUT_OWNER, this, GAME, Game.TIMEOUT_OWNER, false);
         setCopy(Game.OFFICIAL_REVIEW, this, GAME, Game.OFFICIAL_REVIEW, false);
         setCopy(Game.NO_MORE_JAM, this, GAME, Game.NO_MORE_JAM, false);
+        setCopy(Game.RULESET, this, GAME, Game.RULESET, false);
         setCopy(Game.RULESET_NAME, this, GAME, Game.RULESET_NAME, false);
         setCopy(Game.RULE, this, GAME, Game.RULE, false);
         setCopy(Game.LABEL, this, GAME, Game.LABEL, false);

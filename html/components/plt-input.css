@@ -1,8 +1,8 @@
-.PLT, #PenaltyEditor {	
+.PLT, #PenaltyEditor, .GameAdvance {	
 	font-size: 11pt;
 	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
 }
-table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr, #PenaltyEditor td {
+table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr, #PenaltyEditor td, .GameAdvance {
 	border-collapse: collapse;
 	border-color:#777;
 }
@@ -13,6 +13,11 @@ body:not(.AllowSelect) .PLT {
 	-moz-user-select: none;
 	-o-user-select: none;
 }
+
+.GameAdvance { background-color: #ff9010; width: 99%; text-align: center;  padding: 0px, 5px; margin-bottom: 2px;  font-size: 22pt; font-weight: bold; }
+
+.GameAdvance.Hide { display: none; }
+
 .PLT tr {
     color: #333;
 }

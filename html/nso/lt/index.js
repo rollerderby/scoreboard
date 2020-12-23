@@ -1,15 +1,18 @@
 (function () {
   var teamId = _windowFunctions.getParam('team');
+  var gameId = _windowFunctions.getParam('game');
 
-  preparePltInputTable($('#input'), teamId, 'lt');
+  setupGameAdvance($('#gameAdvance'), gameId, false);
+
+  preparePltInputTable($('#input'), gameId, teamId, 'lt');
   
-  prepareLtSheetTable($('#sheet'), teamId, 'plt');
+  prepareLtSheetTable($('#sheet'), gameId, teamId, 'plt');
   
-  prepareAnnotationEditor(teamId);
+  prepareAnnotationEditor(gameId, teamId);
 
-  prepareFieldingEditor(teamId);
+  prepareFieldingEditor(gameId, teamId);
 
-  prepareOptionsDialog(teamId);
+  prepareOptionsDialog(gameId, teamId);
   _windowFunctions.configureZoom();
   
   WS.AutoRegister();

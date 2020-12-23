@@ -1,4 +1,4 @@
-function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
+function prepareRosterSheetTable(element, gameId, teamId, mode, statsbookPeriod) {
 
   /* Values supported for mode:
    * copyToStatsbook: Only roster cells for IGRF.
@@ -21,22 +21,22 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
       .append($('<td>').text('Skater Name'));
     tbody = $('<tbody>').appendTo(table);
 
-    WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
-    WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'], function () { teamNameUpdate(); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')'], function () { teamNameUpdate(); });
 
-    WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-      element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_bg)'] || '');
-      element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_fg)'] || '');
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color'], function (k, v) {
+      element.find('#head').css('background-color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(' + alternateName + '_bg)'] || '');
+      element.find('#head').css('color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(' + alternateName + '_fg)'] || '');
     });
-    WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function (k, v) { skaterUpdate(teamId, k, v); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team('+teamId+').Skater'], function (k, v) { skaterUpdate(teamId, k, v); });
   }
 
   function teamNameUpdate() {
     var head = element.find('#head');
-    var teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
+    var teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
 
-    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'] != null) {
-      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'];
+    if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')'] != null) {
+      teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')'];
     }
 
     head.text(teamName);
@@ -46,7 +46,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
   function skaterUpdate(t, k, v) {
     if (k.Skater == null) { return; }
 
-    var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + t + ').Skater(' + k.Skater + ')';
     var row = tbody.children('tr.Skater[id=' + k.Skater + ']');
     if (k.parts[3] === 'RosterNumber') {
       // New skater, or number has been updated.
