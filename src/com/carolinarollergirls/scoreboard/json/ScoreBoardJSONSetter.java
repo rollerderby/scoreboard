@@ -14,6 +14,8 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
@@ -94,6 +96,11 @@ public class ScoreBoardJSONSetter {
                     ScoreBoardEventProvider o = p.getOrCreate((Child<? extends ScoreBoardEventProvider>) prop,
                             elementId, source);
                     if (o == null) {
+                        if (source.isFile()) {
+                            // filter out elements that we expect to fail on each startup
+                            if (prop == CurrentTeam.SKATER) { return; }
+                            if (prop == Clients.CLIENT) { return; }
+                        }
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
                     }

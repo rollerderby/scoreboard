@@ -79,6 +79,12 @@ public interface Game extends ScoreBoardEventProvider {
 
         @Override
         public String toString() { return string; }
+        public static State fromString(String s) {
+            for (State r : values()) {
+                if (r.toString().equals(s)) { return r; }
+            }
+            return null;
+        }
 
         private String string;
     }

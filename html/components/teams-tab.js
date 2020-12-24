@@ -1,4 +1,4 @@
-function createTeamsTab(tab) {
+function createTeamsTab(tab, gameId) {
   var table = $('<table>').attr('id', 'Teams').appendTo(tab);
   
   table.append($('<tr><td/></tr>').addClass('Selection NoneSelected'))
@@ -16,7 +16,7 @@ function createTeamsTab(tab) {
   var isCurrentTeam = function(){ return selectTeam.val().startsWith('(Current Team');};
   var getPrefix = function() {
     if (isCurrentTeam()) {
-      return 'ScoreBoard.CurrentGame.Team('+selectTeam.val()[14]+')';
+      return 'ScoreBoard.Game(' + gameId + ').Team('+selectTeam.val()[14]+')';
     } else {
       return 'ScoreBoard.PreparedTeam('+selectTeam.val()+')';
     }
@@ -121,13 +121,13 @@ function createTeamsTab(tab) {
       handleTeamUpdate(k, v);
     }
   });
-  WS.Register(['ScoreBoard.CurrentGame.Team(*).AlternateName',
-      'ScoreBoard.CurrentGame.Team(*).Color',
-      'ScoreBoard.CurrentGame.Team(*).Logo',
-      'ScoreBoard.CurrentGame.Team(*).Name',
-      'ScoreBoard.CurrentGame.Team(*).Skater(*).Flags',
-      'ScoreBoard.CurrentGame.Team(*).Skater(*).Name',
-      'ScoreBoard.CurrentGame.Team(*).Skater(*).RosterNumber'], function(k, v) {
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Team(*).AlternateName',
+      'ScoreBoard.Game(' + gameId + ').Team(*).Color',
+      'ScoreBoard.Game(' + gameId + ').Team(*).Logo',
+      'ScoreBoard.Game(' + gameId + ').Team(*).Name',
+      'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).Flags',
+      'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).Name',
+      'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).RosterNumber'], function(k, v) {
         var teamId = selectTeam.val();
         if ('(Current Team '+k.Team+')' === teamId) {
           handleTeamUpdate(k, v);
@@ -229,8 +229,6 @@ function createTeamsTab(tab) {
 
   var handleTeamUpdate = function(k, v) {
     if (k.Skater != null) {
-      // For a current team, could be a penalty or position.
-      if (k.parts.length !== 4 || k.parts[2] !== 'Skater') { return; }
       var skaterRow = skatersTable.find('tr[skaterid="'+k.Skater+'"]');
       if (v == null) {
         skaterRow.remove();

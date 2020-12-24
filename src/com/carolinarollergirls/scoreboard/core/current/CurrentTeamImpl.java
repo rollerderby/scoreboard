@@ -26,28 +26,28 @@ public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> im
                 Team.CALLOFF, Team.INJURY, Team.NO_INITIAL, Team.DISPLAY_LEAD, Team.STAR_PASS, Team.ALTERNATE_NAME,
                 Team.COLOR, SKATER, POSITION, Team.ADD_TRIP, Team.REMOVE_TRIP, Team.ADVANCE_FIELDINGS, Team.TIMEOUT,
                 Team.OFFICIAL_REVIEW);
-        setCopy(Team.NAME, this, TEAM, Team.NAME, false);
-        setCopy(Team.LOGO, this, TEAM, Team.LOGO, false);
-        setCopy(Team.FIELDING_ADVANCE_PENDING, this, TEAM, Team.FIELDING_ADVANCE_PENDING, false);
-        setCopy(Team.SCORE, this, TEAM, Team.SCORE, false);
-        setCopy(Team.JAM_SCORE, this, TEAM, Team.JAM_SCORE, false);
-        setCopy(Team.TRIP_SCORE, this, TEAM, Team.TRIP_SCORE, false);
-        setCopy(Team.LAST_SCORE, this, TEAM, Team.LAST_SCORE, false);
-        setCopy(Team.TIMEOUTS, this, TEAM, Team.TIMEOUTS, false);
-        setCopy(Team.OFFICIAL_REVIEWS, this, TEAM, Team.OFFICIAL_REVIEWS, false);
-        setCopy(Team.IN_TIMEOUT, this, TEAM, Team.IN_TIMEOUT, false);
-        setCopy(Team.IN_OFFICIAL_REVIEW, this, TEAM, Team.IN_OFFICIAL_REVIEW, false);
-        setCopy(Team.NO_PIVOT, this, TEAM, Team.NO_PIVOT, false);
-        setCopy(Team.RETAINED_OFFICIAL_REVIEW, this, TEAM, Team.RETAINED_OFFICIAL_REVIEW, false);
-        setCopy(Team.LOST, this, TEAM, Team.LOST, false);
-        setCopy(Team.LEAD, this, TEAM, Team.LEAD, false);
-        setCopy(Team.CALLOFF, this, TEAM, Team.CALLOFF, false);
-        setCopy(Team.INJURY, this, TEAM, Team.INJURY, false);
-        setCopy(Team.NO_INITIAL, this, TEAM, Team.NO_INITIAL, false);
-        setCopy(Team.DISPLAY_LEAD, this, TEAM, Team.DISPLAY_LEAD, false);
-        setCopy(Team.STAR_PASS, this, TEAM, Team.STAR_PASS, false);
-        setCopy(Team.ALTERNATE_NAME, this, TEAM, Team.ALTERNATE_NAME, false);
-        setCopy(Team.COLOR, this, TEAM, Team.COLOR, false);
+        setCopy(Team.NAME, this, TEAM, Team.NAME, true);
+        setCopy(Team.LOGO, this, TEAM, Team.LOGO, true);
+        setCopy(Team.FIELDING_ADVANCE_PENDING, this, TEAM, Team.FIELDING_ADVANCE_PENDING, true);
+        setCopy(Team.SCORE, this, TEAM, Team.SCORE, true);
+        setCopy(Team.JAM_SCORE, this, TEAM, Team.JAM_SCORE, true);
+        setCopy(Team.TRIP_SCORE, this, TEAM, Team.TRIP_SCORE, true);
+        setCopy(Team.LAST_SCORE, this, TEAM, Team.LAST_SCORE, true);
+        setCopy(Team.TIMEOUTS, this, TEAM, Team.TIMEOUTS, true);
+        setCopy(Team.OFFICIAL_REVIEWS, this, TEAM, Team.OFFICIAL_REVIEWS, true);
+        setCopy(Team.IN_TIMEOUT, this, TEAM, Team.IN_TIMEOUT, true);
+        setCopy(Team.IN_OFFICIAL_REVIEW, this, TEAM, Team.IN_OFFICIAL_REVIEW, true);
+        setCopy(Team.NO_PIVOT, this, TEAM, Team.NO_PIVOT, true);
+        setCopy(Team.RETAINED_OFFICIAL_REVIEW, this, TEAM, Team.RETAINED_OFFICIAL_REVIEW, true);
+        setCopy(Team.LOST, this, TEAM, Team.LOST, true);
+        setCopy(Team.LEAD, this, TEAM, Team.LEAD, true);
+        setCopy(Team.CALLOFF, this, TEAM, Team.CALLOFF, true);
+        setCopy(Team.INJURY, this, TEAM, Team.INJURY, true);
+        setCopy(Team.NO_INITIAL, this, TEAM, Team.NO_INITIAL, true);
+        setCopy(Team.DISPLAY_LEAD, this, TEAM, Team.DISPLAY_LEAD, true);
+        setCopy(Team.STAR_PASS, this, TEAM, Team.STAR_PASS, true);
+        setCopy(Team.ALTERNATE_NAME, this, TEAM, Team.ALTERNATE_NAME, true);
+        setCopy(Team.COLOR, this, TEAM, Team.COLOR, true);
         for (FloorPosition fp : FloorPosition.values()) {
             add(POSITION, new CurrentPositionImpl(this, fp));
         }

@@ -10,13 +10,13 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
         super(t, s.getId(), CurrentTeam.SKATER);
         addProperties(SKATER, Skater.NAME, Skater.ROSTER_NUMBER, Skater.CURRENT_BOX_SYMBOLS, Skater.ROLE,
                 Skater.BASE_ROLE, Skater.PENALTY_BOX, Skater.FLAGS);
-        setCopy(Skater.NAME, this, SKATER, Skater.NAME, false);
-        setCopy(Skater.ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, false);
-        setCopy(Skater.CURRENT_BOX_SYMBOLS, this, SKATER, Skater.CURRENT_BOX_SYMBOLS, false);
-        setCopy(Skater.ROLE, this, SKATER, Skater.ROLE, false);
-        setCopy(Skater.BASE_ROLE, this, SKATER, Skater.BASE_ROLE, false);
-        setCopy(Skater.PENALTY_BOX, this, SKATER, Skater.PENALTY_BOX, false);
-        setCopy(Skater.FLAGS, this, SKATER, Skater.FLAGS, false);
+        setCopy(Skater.NAME, this, SKATER, Skater.NAME, true);
+        setCopy(Skater.ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, true);
+        setCopy(Skater.CURRENT_BOX_SYMBOLS, this, SKATER, Skater.CURRENT_BOX_SYMBOLS, true);
+        setCopy(Skater.ROLE, this, SKATER, Skater.ROLE, true);
+        setCopy(Skater.BASE_ROLE, this, SKATER, Skater.BASE_ROLE, true);
+        setCopy(Skater.PENALTY_BOX, this, SKATER, Skater.PENALTY_BOX, true);
+        setCopy(Skater.FLAGS, this, SKATER, Skater.FLAGS, true);
         set(SKATER, s);
     }
 

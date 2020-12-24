@@ -13,13 +13,13 @@ public class CurrentPositionImpl extends ScoreBoardEventProviderImpl<CurrentPosi
         floorPosition = fp;
         addProperties(POSITION, Position.CURRENT_BOX_SYMBOLS, Position.ANNOTATION, Position.SKATER, Position.NAME,
                 Position.ROSTER_NUMBER, Position.FLAGS, Position.PENALTY_BOX, Position.CLEAR);
-        setCopy(Position.CURRENT_BOX_SYMBOLS, this, POSITION, Position.CURRENT_BOX_SYMBOLS, false);
-        setCopy(Position.ANNOTATION, this, POSITION, Position.ANNOTATION, false);
-        setCopy(Position.SKATER, this, POSITION, Position.SKATER, false);
-        setCopy(Position.NAME, this, POSITION, Position.NAME, false);
-        setCopy(Position.ROSTER_NUMBER, this, POSITION, Position.ROSTER_NUMBER, false);
-        setCopy(Position.FLAGS, this, POSITION, Position.FLAGS, false);
-        setCopy(Position.PENALTY_BOX, this, POSITION, Position.PENALTY_BOX, false);
+        setCopy(Position.CURRENT_BOX_SYMBOLS, this, POSITION, Position.CURRENT_BOX_SYMBOLS, true);
+        setCopy(Position.ANNOTATION, this, POSITION, Position.ANNOTATION, true);
+        setCopy(Position.SKATER, this, POSITION, Position.SKATER, true);
+        setCopy(Position.NAME, this, POSITION, Position.NAME, true);
+        setCopy(Position.ROSTER_NUMBER, this, POSITION, Position.ROSTER_NUMBER, true);
+        setCopy(Position.FLAGS, this, POSITION, Position.FLAGS, true);
+        setCopy(Position.PENALTY_BOX, this, POSITION, Position.PENALTY_BOX, true);
     }
 
     @Override

@@ -18,6 +18,7 @@ import java.util.Objects;
 import java.util.Set;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
@@ -379,6 +380,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             if (type == RuleDefinition.Type.class) { return prop.getDefaultValue(); }
             if (type == Role.class) { return (T) Role.fromString(sValue); }
             if (type == FloorPosition.class) { return (T) FloorPosition.fromString(sValue); }
+            if (type == Game.State.class) { return (T) Game.State.fromString(sValue); }
             if (type == Boolean.class) { return (T) Boolean.valueOf(sValue); }
             if (type == Integer.class) { return (T) Integer.valueOf(sValue); }
             if (type == Long.class) { return (T) Long.valueOf(sValue); }

@@ -14,7 +14,7 @@ $(function() {
   createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'), gameId);
   createRulesetsTab(createTab('Rulesets', 'RulesetsTab'));
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
-  createTeamsTab(createTab('Teams', 'TeamsTab'));
+  createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
   createDataManagementTab(createTab('Up/Download', 'DataManagementTab'));
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function(k, v) {
     setOperatorSettings(_windowFunctions.getParam('operator'));
