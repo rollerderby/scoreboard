@@ -52,10 +52,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     private void initReferences(Ruleset rs) {
-        addProperties(CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM, UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM,
-                IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER, OFFICIAL_REVIEW, NO_MORE_JAM, RULESET,
-                RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT,
-                CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
+        addProperties(NAME, NAME_FORMAT, CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM, UPCOMING_JAM_NUMBER,
+                IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER, OFFICIAL_REVIEW,
+                NO_MORE_JAM, RULESET, RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, PERIOD, Period.JAM,
+                START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -76,6 +76,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         addWriteProtection(CLOCK);
         setRecalculated(NO_MORE_JAM).addSource(this, IN_JAM).addSource(this, IN_PERIOD).addSource(this, RULE)
                 .addIndirectSource(this, CURRENT_PERIOD, Period.TIMEOUT);
+        setRecalculated(NAME).addSource(this, NAME_FORMAT).addSource(get(TEAM, Team.ID_1), Team.NAME)
+                .addSource(get(TEAM, Team.ID_2), Team.NAME);
         set(IN_JAM, false);
         removeAll(Period.JAM);
         removeAll(PERIOD);
@@ -129,8 +131,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 } else if (otoForcesJam) { return false; }
             }
             return true;
-        }
-        if (prop == RULESET) {
+        } else if (prop == NAME) {
+            return get(NAME_FORMAT).replace("%1", get(TEAM, Team.ID_1).getName()).replace("%2",
+                    get(TEAM, Team.ID_2).getName());
+        } else if (prop == RULESET) {
             setCurrentRulesetRecurse(((Ruleset) value));
         }
         return value;

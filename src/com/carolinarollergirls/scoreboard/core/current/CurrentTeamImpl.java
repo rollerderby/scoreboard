@@ -70,7 +70,7 @@ public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> im
     @Override
     public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
-            if (prop == SKATER) {
+            if (prop == SKATER && !source.isFile()) {
                 get(TEAM).getOrCreate(Team.SKATER, id);
                 return get(SKATER, id);
             }

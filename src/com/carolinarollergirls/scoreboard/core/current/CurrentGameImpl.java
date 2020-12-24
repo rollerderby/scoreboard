@@ -18,11 +18,12 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> implements CurrentGame {
     public CurrentGameImpl(ScoreBoard sb) {
         super(sb, "", ScoreBoard.CURRENT_GAME);
-        addProperties(GAME, Game.CURRENT_PERIOD_NUMBER, Game.UPCOMING_JAM_NUMBER, Game.IN_PERIOD, Game.IN_JAM,
-                Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER, Game.OFFICIAL_REVIEW,
-                Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, CLOCK, TEAM, Game.RULE, Game.LABEL, Game.START_JAM,
-                Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE, Game.START_OVERTIME,
-                Game.OFFICIAL_TIMEOUT);
+        addProperties(GAME, Game.NAME, Game.CURRENT_PERIOD_NUMBER, Game.UPCOMING_JAM_NUMBER, Game.IN_PERIOD,
+                Game.IN_JAM, Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER,
+                Game.OFFICIAL_REVIEW, Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, CLOCK, TEAM, Game.RULE,
+                Game.LABEL, Game.START_JAM, Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE,
+                Game.START_OVERTIME, Game.OFFICIAL_TIMEOUT);
+        setCopy(Game.NAME, this, GAME, Game.NAME, false);
         setCopy(Game.CURRENT_PERIOD_NUMBER, this, GAME, Game.CURRENT_PERIOD_NUMBER, false);
         setCopy(Game.UPCOMING_JAM_NUMBER, this, GAME, Game.UPCOMING_JAM_NUMBER, false);
         setCopy(Game.IN_PERIOD, this, GAME, Game.IN_PERIOD, false);

@@ -190,22 +190,37 @@ function createGameControlDialog(gameId) {
   var dialog = $('<div>').addClass('GameControl');
   var title = 'Start New Game';
 
-  var adhocGame = $('<div>').addClass('section').appendTo(dialog);
   var preparedGame = $('<div>').addClass('section').appendTo(dialog);
+  $("<span>").addClass("header").append("Start a prepared game").appendTo(preparedGame);
+  $('<div>')
+    .append($('<span>').append('Game: '))
+    .append($('<select>').addClass('Game').append('<option value="">No Game Selected</option>'))
+    .appendTo(preparedGame);
+  $('<button>')
+    .addClass('StartGame')
+    .append('Start Game')
+    .button({ disabled: true })
+    .appendTo(preparedGame)
+    .on('click', function() {
+      WS.Set('ScoreBoard.CurrentGame.Game', preparedGame.find('select.Game option:selected').val());
+    });
+
+  var adhocGame = $('<div>').addClass('section').appendTo(dialog);
+  var adhocState = $('<div>').addClass('section').appendTo(dialog);
 
   var adhocStartGame = function() {
     $('#GameControl').removeClass('clickMe');
     var StartTime = adhocGame.find('input.StartTime').val();
     var IntermissionClock = null;
-    var points1 = Number(preparedGame.find('input.Points.Team1').val());
-    var points2 = Number(preparedGame.find('input.Points.Team2').val());
-    var to1 = Number(preparedGame.find('input.TO.Team1').val());
-    var to2 = Number(preparedGame.find('input.TO.Team2').val());
-    var or1 = Number(preparedGame.find('input.OR.Team1').val());
-    var or2 = Number(preparedGame.find('input.OR.Team2').val());
-    var period = Number(preparedGame.find('input.Period').val());
-    var jam = Number(preparedGame.find('input.Jam').val());
-    var periodClock = _timeConversions.minSecToMs(preparedGame.find('input.PeriodClock').val());
+    var points1 = Number(adhocState.find('input.Points.Team1').val());
+    var points2 = Number(adhocState.find('input.Points.Team2').val());
+    var to1 = Number(adhocState.find('input.TO.Team1').val());
+    var to2 = Number(adhocState.find('input.TO.Team2').val());
+    var or1 = Number(adhocState.find('input.OR.Team1').val());
+    var or2 = Number(adhocState.find('input.OR.Team2').val());
+    var period = Number(adhocState.find('input.Period').val());
+    var jam = Number(adhocState.find('input.Jam').val());
+    var periodClock = _timeConversions.minSecToMs(adhocState.find('input.PeriodClock').val());
     var advance = (points1 + points2 + to1 + to2 + or1 + or2 + period + jam > 0);
     if (StartTime !== '') {
       var now = new Date();
@@ -237,6 +252,7 @@ function createGameControlDialog(gameId) {
     dialog.dialog('close');
   };
 
+  $("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
   $('<div>')
     .append($('<span>').append('Team 1: '))
     .append($('<select>').addClass('Team1').append('<option value="">No Team Selected</option>'))
@@ -260,9 +276,9 @@ function createGameControlDialog(gameId) {
     .appendTo(adhocGame)
     .on('click', adhocStartGame);
 
-  $('<button>').addClass('setPrepState').text('Start Mid-Game').button().appendTo(preparedGame).on('click', function() {
-    preparedGame.children('.prepState').removeClass('Hide');
-    preparedGame.children('.setPrepState').addClass('Hide');
+  $('<button>').addClass('setPrepState').text('Start Mid-Game').button().appendTo(adhocState).on('click', function() {
+    adhocState.children('.prepState').removeClass('Hide');
+    adhocState.children('.setPrepState').addClass('Hide');
   });
   
   $('<table>').addClass('prepState perTeam Hide')
@@ -291,17 +307,36 @@ function createGameControlDialog(gameId) {
     .append($('<tr>')
       .append($('<td>').addClass('rowLabel').text('Period Clock:'))
       .append($('<td>').append($('<input>').attr('type', 'text').addClass('PeriodClock'))))
-    .appendTo(preparedGame);
+    .appendTo(adhocState);
 
-  WS.Register('ScoreBoard.PreparedTeam(*).Id', function(k, v) {
+  WS.Register('ScoreBoard.Game(*).Name', function(k, v) {
+    if (v == null) {
+      preparedGame.find('option[value="'+k.Game+'"]').remove();
+      return;
+    }
+    if (preparedGame.find('option[value="'+k.Game+'"]').length === 0) {
+      var option = $('<option>').attr('value', k.Game).data('name', v).text(v);
+      _windowFunctions.appendAlphaSortedByData(preparedGame.find('select.Game'), option, 'name', 1);
+    } else {
+      options.text(v);
+    }
+  });
+  preparedGame.find('select.Game').change(function(e) {
+    preparedGame.find('button.StartGame').button('option', 'disabled', $(this).find('option:selected').val() === '');
+  });
+
+  WS.Register('ScoreBoard.PreparedTeam(*).Name', function(k, v) {
     if (v == null) {
       adhocGame.find('option[value="'+k.PreparedTeam+'"]').remove();
       return;
     }
-    if (adhocGame.find('option[value="'+k.PreparedTeam+'"]').length === 0) {
-      var option = $('<option>').attr('value', v).text(v);
+    var options = adhocGame.find('option[value="'+k.PreparedTeam+'"]');
+    if (options.length === 0) {
+      var option = $('<option>').attr('value', k.PreparedTeam).text(v);
       _windowFunctions.appendAlphaSortedByAttr(adhocGame.find('select.Team1'), option, 'value', 1);
       _windowFunctions.appendAlphaSortedByAttr(adhocGame.find('select.Team2'), option.clone(), 'value', 1);
+    } else {
+      options.text(v);
     }
   });
   adhocGame.find('select.Team1, select.Team2').on('change', function(e) {
@@ -313,7 +348,6 @@ function createGameControlDialog(gameId) {
       adhocGame.find('button.StartGame').button('option', 'disabled', true);
     }
   });
-
 
   WS.Register('ScoreBoard.Game(' + gameId + ').Ruleset', function(k, v) {
     adhocGame.find('select.Ruleset').val(v);

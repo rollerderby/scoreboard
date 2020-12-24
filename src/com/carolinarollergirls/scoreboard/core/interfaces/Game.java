@@ -67,6 +67,8 @@ public interface Game extends ScoreBoardEventProvider {
     public Ruleset getRuleset();
     public String getRulesetName();
 
+    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "%1 - %2");
     Value<Integer> CURRENT_PERIOD_NUMBER = new Value<>(Integer.class, "CurrentPeriodNumber", 0);
     Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null);
     Value<Jam> UPCOMING_JAM = new Value<>(Jam.class, "UpcomingJam", null);
