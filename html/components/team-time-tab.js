@@ -309,16 +309,18 @@ function createGameControlDialog(gameId) {
       .append($('<td>').append($('<input>').attr('type', 'text').addClass('PeriodClock'))))
     .appendTo(adhocState);
 
-  WS.Register('ScoreBoard.Game(*).Name', function(k, v) {
-    if (v == null) {
-      preparedGame.find('option[value="'+k.Game+'"]').remove();
-      return;
-    }
-    if (preparedGame.find('option[value="'+k.Game+'"]').length === 0) {
-      var option = $('<option>').attr('value', k.Game).data('name', v).text(v);
+  WS.Register(['ScoreBoard.Game(*).Name', 'ScoreBoard.Game(*).State'], function(k, v) {
+    var name = WS.state['ScoreBoard.Game('+k.Game+').Name'] ||  '';
+    var state = WS.state['ScoreBoard.Game('+k.Game+').State'] || '';
+    var include = ((state === 'Prepared' || state === 'Running') && name !== '');
+    var options = preparedGame.find('option[value="'+k.Game+'"]');
+    if (include && options.length === 0) {
+      var option = $('<option>').attr('value', k.Game).data('name', name).text(name);
       _windowFunctions.appendAlphaSortedByData(preparedGame.find('select.Game'), option, 'name', 1);
+    } else if (include) {
+      options.text(name);
     } else {
-      options.text(v);
+      options.remove();
     }
   });
   preparedGame.find('select.Game').change(function(e) {
