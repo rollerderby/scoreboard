@@ -55,7 +55,7 @@ public class ScoreBoardMetricsCollector extends Collector {
                 Arrays.asList("team", "name"));
         mfs.add(score);
         for (CurrentTeam t : sb.getCurrentGame().getAll(CurrentGame.TEAM)) {
-            score.addMetric(Arrays.asList(t.get(CurrentTeam.ID), t.get(Team.NAME)), t.get(Team.SCORE));
+            score.addMetric(Arrays.asList(t.get(CurrentTeam.ID), t.get(Team.FULL_NAME)), t.get(Team.SCORE));
         }
 
         return mfs;

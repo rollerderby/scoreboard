@@ -232,9 +232,9 @@ public class FormatSpecifierViewer {
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     protected void setupTeamValues(String t, final String id) {
-        new ScoreBoardValue("%t" + t + "n", "Team " + t + " Name", getTeam(id), Team.NAME) {
+        new ScoreBoardValue("%t" + t + "n", "Team " + t + " Name", getTeam(id), Team.DISPLAY_NAME) {
             @Override
-            public String getValue() { return getTeam(id).get(Team.NAME); }
+            public String getValue() { return getTeam(id).get(Team.DISPLAY_NAME); }
         };
         new ScoreBoardValue("%t" + t + "Nt", "Team " + t + " Twitter Name", getTeam(id), Team.ALTERNATE_NAME) {
             @Override
@@ -242,7 +242,7 @@ public class FormatSpecifierViewer {
                 try {
                     return getTeam(id).get(Team.ALTERNATE_NAME, Team.AlternateNameId.TWITTER.toString()).getValue();
                 } catch (NullPointerException npE) {
-                    return getTeam(id).get(Team.NAME);
+                    return getTeam(id).get(Team.INITIALS);
                 }
             }
         };

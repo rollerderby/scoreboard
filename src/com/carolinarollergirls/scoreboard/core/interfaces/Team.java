@@ -82,8 +82,14 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
     public static final String ID_1 = "1";
     public static final String ID_2 = "2";
+    public static final String DISPLAY_NAME_SETTING = "ScoreBoard.Teams.DisplayName";
 
-    Value<String> NAME = new Value<>(String.class, "Name", "");
+    Value<String> FULL_NAME = new Value<>(String.class, "FullName", "");
+    Value<String> LEAGUE_NAME = new Value<>(String.class, "LeagueName", "");
+    Value<String> TEAM_NAME = new Value<>(String.class, "TeamName", "");
+    Value<String> DISPLAY_NAME = new Value<>(String.class, "Name", "");
+    Value<String> INITIALS = new Value<>(String.class, "Initials", "");
+    Value<String> UNIFORM_COLOR = new Value<>(String.class, "UniformColor", "");
     Value<String> LOGO = new Value<>(String.class, "Logo", "");
     Value<TeamJam> RUNNING_OR_UPCOMING_TEAM_JAM = new Value<>(TeamJam.class, "RunningOrUpcomingTeamJam", null);
     Value<TeamJam> RUNNING_OR_ENDED_TEAM_JAM = new Value<>(TeamJam.class, "RunningOrEndedTeamJam", null);

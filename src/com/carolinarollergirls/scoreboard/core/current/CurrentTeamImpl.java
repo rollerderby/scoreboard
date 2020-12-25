@@ -20,13 +20,14 @@ import com.carolinarollergirls.scoreboard.event.ValueWithId;
 public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> implements CurrentTeam {
     public CurrentTeamImpl(CurrentGame g, String id) {
         super(g, id, CurrentGame.TEAM);
-        addProperties(TEAM, Team.NAME, Team.LOGO, Team.FIELDING_ADVANCE_PENDING, Team.SCORE, Team.JAM_SCORE,
-                Team.TRIP_SCORE, Team.LAST_SCORE, Team.TIMEOUTS, Team.OFFICIAL_REVIEWS, Team.IN_TIMEOUT,
+        addProperties(TEAM, Team.DISPLAY_NAME, Team.INITIALS, Team.LOGO, Team.FIELDING_ADVANCE_PENDING, Team.SCORE,
+                Team.JAM_SCORE, Team.TRIP_SCORE, Team.LAST_SCORE, Team.TIMEOUTS, Team.OFFICIAL_REVIEWS, Team.IN_TIMEOUT,
                 Team.IN_OFFICIAL_REVIEW, Team.NO_PIVOT, Team.RETAINED_OFFICIAL_REVIEW, Team.LOST, Team.LEAD,
                 Team.CALLOFF, Team.INJURY, Team.NO_INITIAL, Team.DISPLAY_LEAD, Team.STAR_PASS, Team.ALTERNATE_NAME,
                 Team.COLOR, SKATER, POSITION, Team.ADD_TRIP, Team.REMOVE_TRIP, Team.ADVANCE_FIELDINGS, Team.TIMEOUT,
                 Team.OFFICIAL_REVIEW);
-        setCopy(Team.NAME, this, TEAM, Team.NAME, true);
+        setCopy(Team.DISPLAY_NAME, this, TEAM, Team.DISPLAY_NAME, true);
+        setCopy(Team.INITIALS, this, TEAM, Team.INITIALS, true);
         setCopy(Team.LOGO, this, TEAM, Team.LOGO, true);
         setCopy(Team.FIELDING_ADVANCE_PENDING, this, TEAM, Team.FIELDING_ADVANCE_PENDING, true);
         setCopy(Team.SCORE, this, TEAM, Team.SCORE, true);

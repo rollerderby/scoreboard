@@ -74,9 +74,11 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
             if (get(GAME) == null) {
                 // autosave did not contain a current game - create one ad hoc
                 PreparedTeam t1 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "Black");
-                t1.set(PreparedTeam.NAME, "Black");
+                t1.set(Team.TEAM_NAME, "Black");
+                t1.set(Team.UNIFORM_COLOR, "Black");
                 PreparedTeam t2 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "White");
-                t2.set(PreparedTeam.NAME, "White");
+                t2.set(Team.TEAM_NAME, "White");
+                t1.set(Team.UNIFORM_COLOR, "White");
                 Ruleset rs = scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID);
                 Game g = new GameImpl(scoreBoard, t1, t2, rs);
                 scoreBoard.add(ScoreBoard.GAME, g);

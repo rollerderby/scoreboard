@@ -24,6 +24,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
@@ -41,11 +42,12 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     public TeamImpl(Game g, String i) {
         super(g, i, Game.TEAM);
         game = g;
-        addProperties(NAME, LOGO, RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING,
-                CURRENT_TRIP, SCORE, JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW,
-                IN_TIMEOUT, IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY,
-                NO_INITIAL, DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, ALTERNATE_NAME, COLOR, SKATER, POSITION, TIME_OUT,
-                BOX_TRIP, ADD_TRIP, REMOVE_TRIP, ADVANCE_FIELDINGS, TIMEOUT, OFFICIAL_REVIEW);
+        addProperties(FULL_NAME, LEAGUE_NAME, TEAM_NAME, DISPLAY_NAME, UNIFORM_COLOR, INITIALS, LOGO,
+                RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING, CURRENT_TRIP, SCORE,
+                JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW, IN_TIMEOUT,
+                IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL,
+                DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, ALTERNATE_NAME, COLOR, SKATER, POSITION, TIME_OUT, BOX_TRIP,
+                ADD_TRIP, REMOVE_TRIP, ADVANCE_FIELDINGS, TIMEOUT, OFFICIAL_REVIEW);
         for (FloorPosition fp : FloorPosition.values()) {
             add(POSITION, new PositionImpl(this, fp));
         }
@@ -70,6 +72,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setRecalculated(IN_OFFICIAL_REVIEW).addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.OWNER)
                 .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.REVIEW)
                 .addIndirectSource(g, Game.CURRENT_TIMEOUT, Timeout.RUNNING);
+        setRecalculated(FULL_NAME).addSource(this, LEAGUE_NAME).addSource(this, TEAM_NAME);
+        setRecalculated(DISPLAY_NAME).addSource(this, LEAGUE_NAME).addSource(this, TEAM_NAME)
+                .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        setRecalculated(Team.INITIALS).addSource(this, Team.DISPLAY_NAME);
         addWriteProtectionOverride(TIMEOUTS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(LAST_REVIEW, Source.ANY_INTERNAL);
@@ -78,6 +84,43 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == FULL_NAME) {
+            String league = get(LEAGUE_NAME);
+            String team = get(TEAM_NAME);
+            String in = value == null ? "" : (String) value;
+            if (!"".equals(league)) {
+                if (!"".equals(team)) {
+                    if (league.equals(team)) {
+                        return league;
+                    } else {
+                        return league + " - " + team;
+                    }
+                } else {
+                    return league;
+                }
+            } else {
+                if (!"".equals(team)) {
+                    return team;
+                } else if (!"".equals(in)) {
+                    return in;
+                } else {
+                    return "Unnamed Team";
+                }
+            }
+        }
+        if (prop == DISPLAY_NAME) {
+            String setting = scoreBoard.getSettings().get(DISPLAY_NAME_SETTING);
+            if ("Team".equals(setting) && !"".equals(get(TEAM_NAME))) {
+                return get(TEAM_NAME);
+            } else if (!"Full".equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+                return get(LEAGUE_NAME);
+            } else {
+                return get(FULL_NAME);
+            }
+        }
+        if (prop == INITIALS) {
+            return get(DISPLAY_NAME).replaceAll("[^\\p{Lu}]", "");
+        }
         if (prop == IN_TIMEOUT) {
             Timeout t = game.getCurrentTimeout();
             return t.isRunning() && this == t.getOwner() && !t.isReview();
@@ -191,10 +234,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     public Game getGame() { return game; }
 
     @Override
-    public String getName() { return get(NAME); }
+    public String getName() { return get(FULL_NAME); }
 
     @Override
-    public void setName(String n) { set(NAME, n); }
+    public void setName(String n) { set(FULL_NAME, n); }
 
     @Override
     public void startJam() {
@@ -310,12 +353,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void loadPreparedTeam(PreparedTeam pt) {
         synchronized (coreLock) {
-            setLogo(pt.get(PreparedTeam.LOGO));
-            setName(pt.get(PreparedTeam.NAME));
-            for (ValWithId v : pt.getAll(PreparedTeam.ALTERNATE_NAME)) {
+            setLogo(pt.get(LOGO));
+            set(LEAGUE_NAME, pt.get(LEAGUE_NAME));
+            set(TEAM_NAME, pt.get(TEAM_NAME));
+            set(UNIFORM_COLOR, pt.get(UNIFORM_COLOR));
+            for (ValWithId v : pt.getAll(ALTERNATE_NAME)) {
                 setAlternateName(v.getId(), v.getValue());
             }
-            for (ValWithId v : pt.getAll(PreparedTeam.COLOR)) {
+            for (ValWithId v : pt.getAll(COLOR)) {
                 setColor(v.getId(), v.getValue());
             }
             for (PreparedTeamSkater pts : pt.getAll(PreparedTeam.SKATER)) {

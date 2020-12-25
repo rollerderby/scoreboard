@@ -40,6 +40,7 @@
     "ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)" : "true",
     "ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)" : "Lineup",
     "ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)" : "false",
+    "ScoreBoard.Settings.Setting(ScoreBoard.Teams.DisplayName)" : "League",
     "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)" : "Time To Derby",
     "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)" : "Intermission",
     "ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)" : "Unofficial Score",

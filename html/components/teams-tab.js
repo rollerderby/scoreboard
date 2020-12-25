@@ -12,22 +12,14 @@ function createTeamsTab(tab, gameId) {
   
     var selectTeam = $('<select>').appendTo(table.find('table.Selection td:eq(0)'));
     $('<option value="">No Team Selected</option>').appendTo(selectTeam);
-    var newTeamName = $('<input type="text" size="30"/>')
-      .appendTo(table.find('table.Selection td:eq(1)'));
-    var createNewTeam = $('<button>').text('New Team').attr('disabled', true).button()
+    $('<span>').addClass('Label').text('New Team: ')
+    var createNewTeam = $('<button>').text('Create New Team').button()
       .appendTo(table.find('table.Selection td:eq(1)'));
   
-    newTeamName.on('keyup', function(event) {
-      createNewTeam.button('option', 'disabled', (!$(this).val()));
-      if (!createNewTeam.button('option', 'disabled') && (13 === event.which)) { // Enter
-        createNewTeam.trigger('click');
-      }
-    });
     var waitingOnNewTeam = '';
     createNewTeam.on('click', function(event) {
-      var teamname = newTeamName.val();
-      var teamid = _crgUtils.checkSbId(teamname);
-      WS.Set('ScoreBoard.PreparedTeam('+teamid+').Name', teamname);
+      var teamid = newUUID();
+      WS.Set('ScoreBoard.PreparedTeam('+teamid+').Id', teamid);
       waitingOnNewTeam = teamid;
       newTeamName.val('').trigger('keyup').trigger('focus');
       // If team already exists, switch to it.
@@ -35,19 +27,18 @@ function createTeamsTab(tab, gameId) {
       selectTeam.trigger('change');
     });
   
-    WS.Register('ScoreBoard.PreparedTeam(*).Id', function(k, v) {
-      if (v == null) {
-        selectTeam.children('option[value="'+k.PreparedTeam+'"]').remove();
-        return;
-      }
-      if (selectTeam.children('option[value="'+k.PreparedTeam+'"]').length === 0) {
-        var option = $('<option>').attr('value', v).text(v);
-        _windowFunctions.appendAlphaSortedByAttr(selectTeam, option, 'value', 3);
-      }
+    WS.Register('ScoreBoard.PreparedTeam(*).FullName', function(k, v) {
+      var selected = selectTeam.val();
+      selectTeam.children('option[value="'+k.PreparedTeam+'"]').remove();
+      var option = $('<option>').attr('value', k.PreparedTeam).data('name', v).text(v);
+      _windowFunctions.appendAlphaSortedByData(selectTeam, option, 'name', 1);
+
       if (v === waitingOnNewTeam) {
         selectTeam.val(v);
         selectTeam.trigger('change');
         waitingOnNewTeam = '';
+      } else {
+        selectTeam.val(selected);
       }
     });
     
@@ -57,7 +48,7 @@ function createTeamsTab(tab, gameId) {
       var teamsTd = table.find('.Team td');
       teamsTd.children().addClass('Hide');
       if (teamId !== '') {
-        var curTeam = teamsTd.children('[teamId='+teamId+']');
+        var curTeam = teamsTd.children('[teamId="'+teamId+'"]');
         if(curTeam.length === 0) {
           curTeam = createEditTeamTable(teamsTd, 'ScoreBoard.PreparedTeam('+teamId+')', false).attr('teamId', teamId);
         }
@@ -72,13 +63,28 @@ function createEditTeamTable(element, teamPrefix, showName) {
   var teamTable = $('<table>').addClass('Team')
     .append($('<tr><td/></tr>').addClass('Name').toggleClass('Hide', !showName))
     .append($('<tr><td/></tr>').addClass('Control'))
+    .append($('<tr><td/></tr>').addClass('League'))
+    .append($('<tr><td/></tr>').addClass('LTeam'))
+    .append($('<tr><td/></tr>').addClass('Color'))
     .append($('<tr><td/></tr>').addClass('Skaters'))
     .appendTo(element);
-  var controlTable = _crgUtils.createRowTable(4).appendTo(teamTable.find('tr.Control>td')).addClass('Control');
-  var teamName = $('<input type="text" class="Name">').appendTo(teamTable.find('tr.Name>td'));
-  teamName.on('input', function() {
-    WS.Set(teamPrefix + '.Name', teamName.val());
+  var teamName = $('<span>').appendTo(teamTable.find('tr.Name>td'));
+  $('<span>').text('League: ').appendTo(teamTable.find('tr.League>td'));
+  var leagueName = $('<input type="text" class="Name">').appendTo(teamTable.find('tr.League>td'));
+  leagueName.on('input', function() {
+    WS.Set(teamPrefix + '.LeagueName', leagueName.val());
   });
+  $('<span>').text('Team: ').appendTo(teamTable.find('tr.LTeam>td'));
+  var lTeamName = $('<input type="text" class="Name">').appendTo(teamTable.find('tr.LTeam>td'));
+  lTeamName.on('input', function() {
+    WS.Set(teamPrefix + '.TeamName', lTeamName.val());
+  });
+  $('<span>').text('Color: ').appendTo(teamTable.find('tr.Color>td'));
+  var uniformColor = $('<input type="text" class="Name">').appendTo(teamTable.find('tr.Color>td'));
+  uniformColor.on('input', function() {
+    WS.Set(teamPrefix + '.UniformColor', uniformColor.val());
+  });
+  var controlTable = _crgUtils.createRowTable(4).appendTo(teamTable.find('tr.Control>td')).addClass('Control');
   var waitingOnUpload = '';
   var logoSelect = $('<select>').append($('<option value="">No Logo</option>'))
     .appendTo(controlTable.find('td:eq(0)'));
@@ -260,8 +266,9 @@ function createEditTeamTable(element, teamPrefix, showName) {
         skaterFlags.append($('<option>').attr('value', '').text('Skater'));
         skaterFlags.append($('<option>').attr('value', 'ALT').text('Not Skating'));
         skaterFlags.append($('<option>').attr('value', 'C').text('Captain'));
-        skaterFlags.append($('<option>').attr('value', 'AC').text('Alt Captain'));
-        skaterFlags.append($('<option>').attr('value', 'BC').text('Bench Alt Captain'));
+        skaterFlags.append($('<option>').attr('value', 'A').text('Alt Captain'));
+        skaterFlags.append($('<option>').attr('value', 'BA').text('Bench Alt Captain'));
+        skaterFlags.append($('<option>').attr('value', 'B').text('Bench Staff'));
         skaterFlags.on('change', function() {
           WS.Set(skaterPrefix + '.Flags', skaterFlags.val());
         });
@@ -281,7 +288,16 @@ function createEditTeamTable(element, teamPrefix, showName) {
           logoSelect.val(v.substring(v.lastIndexOf('/') + 1));
           break;
         case 'Name':
-          teamName.val(v);
+          teamName.text(v);
+          break;
+        case 'LeagueName':
+          leagueName.val(v);
+          break;
+        case 'TeamName':
+          lTeamName.val(v);
+          break;
+        case 'UniformColor':
+          uniformColor.val(v);
           break;
         case 'AlternateName':
           if (v == null) {
@@ -307,6 +323,9 @@ function createEditTeamTable(element, teamPrefix, showName) {
                teamPrefix + '.Color',
                teamPrefix + '.Logo',
                teamPrefix + '.Name',
+               teamPrefix + '.LeagueName',
+               teamPrefix + '.TeamName',
+               teamPrefix + '.UniformColor',
                teamPrefix + '.Skater(*).Flags',
                teamPrefix + '.Skater(*).Name',
                teamPrefix + '.Skater(*).RosterNumber'], 

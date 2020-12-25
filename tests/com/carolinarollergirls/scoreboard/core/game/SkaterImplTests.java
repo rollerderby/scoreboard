@@ -279,9 +279,9 @@ public class SkaterImplTests {
     @Test
     public void alt_prepared_skater_not_in_game() {
         PreparedTeamSkater pts = new PreparedTeamSkaterImpl(null, "1234");
-        pts.set(PreparedTeamSkater.ROSTER_NUMBER, "1");
-        pts.set(PreparedTeamSkater.NAME, "Uno");
-        pts.set(PreparedTeamSkater.FLAGS, "ALT");
+        pts.set(Skater.ROSTER_NUMBER, "1");
+        pts.set(Skater.NAME, "Uno");
+        pts.set(Skater.FLAGS, "ALT");
         skater = new SkaterImpl(team, pts);
 
         assertEquals(Role.NOT_IN_GAME, skater.getBaseRole());

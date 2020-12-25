@@ -17,11 +17,11 @@ import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.FormatSpecifierScoreBoardListener;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
@@ -50,6 +50,8 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
                     .getFormatSpecifierScoreBoardValue(key);
             fs.set(FormatSpecifier.KEY, key);
             fs.set(FormatSpecifier.DESCRIPTION, entry.getValue());
+            fs.set(FormatSpecifier.CURRENT_VALUE,
+                    formatSpecifierViewer.getFormatSpecifierScoreBoardValue(key).getValue());
             // Provide current value of each specifier to the frontend.
             scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener<>(
                     formatSpecifierViewer.getScoreBoardCondition(key), new ScoreBoardListener() {

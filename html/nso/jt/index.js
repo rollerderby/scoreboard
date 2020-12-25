@@ -36,9 +36,13 @@ function setupJamControlPage() {
   $('#JamControlPage div.Timeout button.Team2').on('click', function() { WS.Set('ScoreBoard.CurrentGame.Team(2).Timeout', true); });
   $('#JamControlPage div.OfficialReview button.Team2').on('click', function() { WS.Set('ScoreBoard.CurrentGame.Team(2).OfficialReview', true); });
 
-  WS.Register(['ScoreBoard.CurrentGame.Team(*).Name', 'ScoreBoard.CurrentGame.Team(*).AlternateName(operator)'], function(k, v) {
+  WS.Register(['ScoreBoard.CurrentGame.Team(*).Name', 'ScoreBoard.CurrentGame.Team(*).UniformColor', 
+               'ScoreBoard.CurrentGame.Team(*).AlternateName(operator)'], function(k, v) {
     var name = WS.state['ScoreBoard.CurrentGame.Team('+k.Team+').AlternateName(operator)'];
-    name = name || WS.state['ScoreBoard.CurrentGame.Team('+k.Team+').Name'];
+    name = name || WS.state['ScoreBoard.CurrentGame.Team('+k.Team+').UnifromColor'];
+    if (name == null || name === '') {
+      name = WS.state['ScoreBoard.CurrentGame.Team('+k.Team+').Name'];
+    }
     $('.Name.Team'+k.Team).text(name);
   });
 

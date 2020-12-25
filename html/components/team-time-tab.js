@@ -554,31 +554,27 @@ function createTeamTable(gameId) {
 
     var nameTd = nameTr.children('td:eq('+(first?1:0)+')').addClass('Name');
     var nameDisplayDiv = $('<div>').appendTo(nameTd);
-    var nameA = $('<a>').appendTo(nameDisplayDiv);
-    var altNameA = $('<a>').appendTo(nameDisplayDiv);
+    var nameA = $('<a>').appendTo(nameDisplayDiv).text('');
+    var colorA = $('<a>').appendTo(nameDisplayDiv).text('');
+    var altNameA = $('<a>').appendTo(nameDisplayDiv).text('');
 
-    var nameEditTable = $('<table><tr><td>Team Name</td><td>Alternate Name</td></tr>' +
-        '<tr><td><input class="Name" type="text" size="15" /></td>' +
-        '<td><input class="AlternateName" type="text" size="15" /></td></tr></table>').appendTo(nameTd);
-    var nameInput = $(nameEditTable).find('.Name');
+    var nameEditTable = $('<table><tr><td>Alternate Name</td></tr>' +
+        '<tr><td><input class="AlternateName" type="text" size="15" /></td></tr></table>').appendTo(nameTd);
     var altNameInput = $(nameEditTable).find('.AlternateName');
 
     nameEditTable.hide();
     WS.Register(prefix + '.Name', function(k, v) { nameA.text(v); });
-    WSControl(prefix + '.Name', nameInput);
     var nameInputFocus = function() {
       if (nameDisplayDiv.css('display') !== 'none') {
         nameDisplayDiv.hide();
         nameEditTable.show();
-        nameInput.addClass('Editing').trigger('editstart');
         altNameInput.addClass('Editing').trigger('editstart');
       }
     };
     var nameInputBlur = function(event) {
-      if (event.relatedTarget !== nameInput[0] && event.relatedTarget !== altNameInput[0]) {
+      if (event.relatedTarget !== altNameInput[0]) {
         nameEditTable.hide();
         nameDisplayDiv.show();
-        nameInput.removeClass('Editing').trigger('editstop');
         altNameInput.removeClass('Editing').trigger('editstop');
       }
     };
@@ -590,12 +586,9 @@ function createTeamTable(gameId) {
       }
     };
 
-    nameDisplayDiv.on('click', function() { nameInput.focus(); });
-    nameInput.on('focus', nameInputFocus);
+    nameDisplayDiv.on('click', function() { altNameInput.focus(); });
     altNameInput.on('focus', nameInputFocus);
-    nameInput.on('blur', nameInputBlur);
     altNameInput.on('blur', nameInputBlur);
-    nameInput.on('keyup', nameInputKeyup);
     altNameInput.on('keyup', nameInputKeyup);
 
     altNameInput.on('change', function() {
@@ -607,10 +600,15 @@ function createTeamTable(gameId) {
       }
     });
 
+    WS.Register(prefix + '.UniformColor', function(k, v) {
+      colorA.text(v || '');
+      nameA.toggleClass('AlternateName', colorA.text() !== '' || altNameA.text() !== '');
+    });
     WS.Register(prefix + '.AlternateName(operator)', function(k, v) {
       altNameA.text(v || '');
       altNameInput.val(v || '');
-      nameA.toggleClass('AlternateName', v != null);
+      nameA.toggleClass('AlternateName', v != null || colorA.text() !== '');
+      colorA.toggleClass('AlternateName', v != null);
     });
 
     var names = nameA.add(altNameA);

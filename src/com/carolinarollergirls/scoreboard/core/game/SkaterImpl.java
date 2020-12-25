@@ -46,9 +46,9 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         super(t, pts.getId(), Team.SKATER);
         team = t;
         initialize();
-        setName(pts.get(PreparedTeamSkater.NAME));
-        setNumber(pts.get(PreparedTeamSkater.ROSTER_NUMBER));
-        setFlags(pts.get(PreparedTeamSkater.FLAGS));
+        setName(pts.get(NAME));
+        setNumber(pts.get(ROSTER_NUMBER));
+        setFlags(pts.get(FLAGS));
     }
     private void initialize() {
         addProperties(NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, POSITION, ROLE, BASE_ROLE,
@@ -100,7 +100,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             }
         }
         if (prop == FLAGS) {
-            if ("ALT".equals(value) || "BC".equals(value)) {
+            if ("ALT".equals(value) || "BA".equals(value) || "B".equals(value)) {
                 set(BASE_ROLE, Role.NOT_IN_GAME);
             } else if (get(BASE_ROLE) == Role.NOT_IN_GAME) {
                 set(BASE_ROLE, Role.BENCH);

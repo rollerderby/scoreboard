@@ -48,8 +48,10 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
     }
     tbody = $('<tbody>').appendTo(table);
 
-    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
-    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')'], function () { teamNameUpdate(); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name',
+                 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UNiformColor',
+                 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')'],
+       teamNameUpdate);
 
     WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color'], function (k, v) {
       element.find('#head').css('background-color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(' + alternateName + '_bg)'] || '');
@@ -290,6 +292,10 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
   function teamNameUpdate() {
     var head = element.find('#head');
     var teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
+    
+    if (alternateName === 'operator' && WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'] != null) {
+      teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'];
+    }
 
     if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')'] != null) {
       teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')'];
@@ -395,8 +401,8 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
 
 function openPenaltyEditor(g, t, id, which) {
   var prefix = 'ScoreBoard.Game(' + g + ').Team(' + t + ')';
-  teamName = WS.state[prefix + '.AlternateName(operator)'];
-  if (teamName == null) {
+  teamName = WS.state[prefix + '.AlternateName(operator)'] || WS.state[prefix + '.UniformColor'];
+  if (teamName == null || teamName == '') {
     teamName = WS.state[prefix + '.Name'];
   }
 
@@ -772,10 +778,13 @@ function prepareOptionsDialog(gameId, teamId, onlySettings) {
     });
     $('<tr>').append($('<th>').text('Options')).appendTo(table);
 
-    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(*).Name', 'ScoreBoard.Game(' + gameId + ').Team(*).AlternateName(operator)'], function(k, v) {
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(*).Name',
+                 'ScoreBoard.Game(' + gameId + ').Team(*).UniformColor',
+                 'ScoreBoard.Game(' + gameId + ').Team(*).AlternateName(operator)'], function(k, v) {
       var displayName = 'Team ' + k.Team + ': ' + WS.state['ScoreBoard.Game(' + gameId + ').Team('+k.Team+').Name'];
-      var altName = WS.state['ScoreBoard.Game(' + gameId + ').Team('+k.Team+').AlternateName(operator)'];
-      if (altName != null) { displayName = displayName + ' / ' + altName; }
+      var altName = WS.state['ScoreBoard.Game(' + gameId + ').Team('+k.Team+').AlternateName(operator)']
+                 || WS.state['ScoreBoard.Game(' + gameId + ').Team('+k.Team+').UniformColor'];
+      if (altName != null && altName !== '') { displayName = displayName + ' / ' + altName; }
       $('.selectTeam'+k.Team+' .name').text(displayName);
     });
   }

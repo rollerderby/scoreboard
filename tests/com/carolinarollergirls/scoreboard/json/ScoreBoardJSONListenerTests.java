@@ -153,10 +153,14 @@ public class ScoreBoardJSONListenerTests {
         assertEquals(false, state.get("ScoreBoard.Game(" + gameId + ").Team(1).InOfficialReview"));
         assertEquals(true, state.get("ScoreBoard.Game(" + gameId + ").Team(1).InTimeout"));
 
-        g.getTeam("1").setName("ATeam");
+        g.getTeam("1").set(Team.TEAM_NAME, "ATeam");
+        g.getTeam("1").set(Team.LEAGUE_NAME, "ALeague");
         g.getTeam("1").setLogo("ATeamLogo");
         advance(0);
-        assertEquals("ATeam", state.get("ScoreBoard.Game(" + gameId + ").Team(1).Name"));
+        assertEquals("ALeague", state.get("ScoreBoard.Game(" + gameId + ").Team(1).Name"));
+        assertEquals("ALeague - ATeam", state.get("ScoreBoard.Game(" + gameId + ").Team(1).FullName"));
+        assertEquals("ATeam", state.get("ScoreBoard.Game(" + gameId + ").Team(1).TeamName"));
+        assertEquals("ALeague", state.get("ScoreBoard.Game(" + gameId + ").Team(1).LeagueName"));
         assertEquals("ATeamLogo", state.get("ScoreBoard.Game(" + gameId + ").Team(1).Logo"));
 
         g.getTeam("1").setAlternateName("overlay", "AT");

@@ -17,6 +17,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
   function initialize() {
     if (mode !== 'operator') {
       WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
+      WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'], function () { teamNameUpdate(); });
       WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'], function () { teamNameUpdate(); });
 
       WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color'], function (k, v) {
@@ -48,6 +49,11 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
 
   function teamNameUpdate() {
     teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
+
+    if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'] != null && 
+        WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'] !== '') {
+      teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'];
+    }
 
     if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'] != null) {
       teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'];

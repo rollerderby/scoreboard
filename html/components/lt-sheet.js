@@ -16,10 +16,9 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
   function initialize() {
 
     if (mode !== 'plt') {
-      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name' ], function () {
-        teamNameUpdate();
-      });
-      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)' ], function () {
+      WS.Register([ 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name',
+                    'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor',
+                    'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)' ], function () {
         teamNameUpdate();
       });
 
@@ -73,10 +72,10 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
   }
 
   function teamNameUpdate() {
-    teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
-
-    if (WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'] != null) {
-      teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'];
+    teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(operator)'] 
+            || WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'];
+    if (teamName == null || teamName === '') {
+     teamName = WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name'];
     }
 
     element.find('#head .Team').text(teamName);
