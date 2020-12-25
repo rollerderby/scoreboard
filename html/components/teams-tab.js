@@ -1,75 +1,89 @@
 function createTeamsTab(tab, gameId) {
-  var table = $('<table>').attr('id', 'Teams').appendTo(tab);
+  if (gameId != null) { // show teams for given game
+    var table = _crgUtils.createRowTable(2).appendTo(tab).attr('id', 'Teams', true);
+    createEditTeamTable(table.children('tr').children('td:eq(0)'), 'ScoreBoard.Game(' + gameId + ').Team(1)', true);
+    createEditTeamTable(table.children('tr').children('td:eq(1)'), 'ScoreBoard.Game(' + gameId + ').Team(2)', true);
+  } else { // show prepared teams
+    var table = $('<table>').attr('id', 'Teams').appendTo(tab);
+    
+    table.append($('<tr><td/></tr>').addClass('Selection NoneSelected'))
+      .append($('<tr><td/></tr>').addClass('Team'));
+    _crgUtils.createRowTable(2).appendTo(table.find('tr.Selection>td')).addClass('Selection');
   
-  table.append($('<tr><td/></tr>').addClass('Selection NoneSelected'))
-    .append($('<tr><td/></tr>').addClass('Team'));
-  _crgUtils.createRowTable(2).appendTo(table.find('tr.Selection>td')).addClass('Selection');
-
-  var selectTeam = $('<select>').appendTo(table.find('table.Selection td:eq(0)'));
-  $('<option value="">No Team Selected</option>').appendTo(selectTeam);
-  $('<option value="(Current Team 1)">Current Team 1</option>').appendTo(selectTeam);
-  $('<option value="(Current Team 2)">Current Team 2</option>').appendTo(selectTeam);
-  var newTeamName = $('<input type="text" size="30"/>')
-    .appendTo(table.find('table.Selection td:eq(1)'));
-  var createNewTeam = $('<button>').text('New Team').attr('disabled', true).button()
-    .appendTo(table.find('table.Selection td:eq(1)'));
-  var isCurrentTeam = function(){ return selectTeam.val().startsWith('(Current Team');};
-  var getPrefix = function() {
-    if (isCurrentTeam()) {
-      return 'ScoreBoard.Game(' + gameId + ').Team('+selectTeam.val()[14]+')';
-    } else {
-      return 'ScoreBoard.PreparedTeam('+selectTeam.val()+')';
-    }
-  };
-
-  newTeamName.on('keyup', function(event) {
-    createNewTeam.button('option', 'disabled', (!$(this).val()));
-    if (!createNewTeam.button('option', 'disabled') && (13 === event.which)) { // Enter
-      createNewTeam.trigger('click');
-    }
-  });
-  var waitingOnNewTeam = '';
-  createNewTeam.on('click', function(event) {
-    var teamname = newTeamName.val();
-    var teamid = _crgUtils.checkSbId(teamname);
-    WS.Set('ScoreBoard.PreparedTeam('+teamid+').Name', teamname);
-    waitingOnNewTeam = teamid;
-    newTeamName.val('').trigger('keyup').trigger('focus');
-    // If team already exists, switch to it.
-    selectTeam.val(teamid);
-    selectTeam.trigger('change');
-  });
-
-  WS.Register('ScoreBoard.PreparedTeam(*).Id', function(k, v) {
-    if (v == null) {
-      selectTeam.children('option[value="'+k.PreparedTeam+'"]').remove();
-      return;
-    }
-    if (selectTeam.children('option[value="'+k.PreparedTeam+'"]').length === 0) {
-      var option = $('<option>').attr('value', v).text(v);
-      _windowFunctions.appendAlphaSortedByAttr(selectTeam, option, 'value', 3);
-    }
-    if (v === waitingOnNewTeam) {
-      selectTeam.val(v);
+    var selectTeam = $('<select>').appendTo(table.find('table.Selection td:eq(0)'));
+    $('<option value="">No Team Selected</option>').appendTo(selectTeam);
+    var newTeamName = $('<input type="text" size="30"/>')
+      .appendTo(table.find('table.Selection td:eq(1)'));
+    var createNewTeam = $('<button>').text('New Team').attr('disabled', true).button()
+      .appendTo(table.find('table.Selection td:eq(1)'));
+  
+    newTeamName.on('keyup', function(event) {
+      createNewTeam.button('option', 'disabled', (!$(this).val()));
+      if (!createNewTeam.button('option', 'disabled') && (13 === event.which)) { // Enter
+        createNewTeam.trigger('click');
+      }
+    });
+    var waitingOnNewTeam = '';
+    createNewTeam.on('click', function(event) {
+      var teamname = newTeamName.val();
+      var teamid = _crgUtils.checkSbId(teamname);
+      WS.Set('ScoreBoard.PreparedTeam('+teamid+').Name', teamname);
+      waitingOnNewTeam = teamid;
+      newTeamName.val('').trigger('keyup').trigger('focus');
+      // If team already exists, switch to it.
+      selectTeam.val(teamid);
       selectTeam.trigger('change');
-      waitingOnNewTeam = '';
-    }
-  });
+    });
+  
+    WS.Register('ScoreBoard.PreparedTeam(*).Id', function(k, v) {
+      if (v == null) {
+        selectTeam.children('option[value="'+k.PreparedTeam+'"]').remove();
+        return;
+      }
+      if (selectTeam.children('option[value="'+k.PreparedTeam+'"]').length === 0) {
+        var option = $('<option>').attr('value', v).text(v);
+        _windowFunctions.appendAlphaSortedByAttr(selectTeam, option, 'value', 3);
+      }
+      if (v === waitingOnNewTeam) {
+        selectTeam.val(v);
+        selectTeam.trigger('change');
+        waitingOnNewTeam = '';
+      }
+    });
+    
+    selectTeam.on('change', function(event) {
+      var teamId = selectTeam.val();
+      table.find('tr.Selection').toggleClass('NoneSelected', teamId === '');
+      var teamsTd = table.find('.Team td');
+      teamsTd.children().addClass('Hide');
+      if (teamId !== '') {
+        var curTeam = teamsTd.children('[teamId='+teamId+']');
+        if(curTeam.length === 0) {
+          curTeam = createEditTeamTable(teamsTd, 'ScoreBoard.PreparedTeam('+teamId+')', false).attr('teamId', teamId);
+        }
+        curTeam.removeClass('Hide');
+      }
+    });
+    selectTeam.trigger('change');
+  }
+}
 
+function createEditTeamTable(element, teamPrefix, showName) {
   var teamTable = $('<table>').addClass('Team')
+    .append($('<tr><td/></tr>').addClass('Name').toggleClass('Hide', !showName))
     .append($('<tr><td/></tr>').addClass('Control'))
     .append($('<tr><td/></tr>').addClass('Skaters'))
-    .appendTo(table.find('.Team td'));
-  var controlTable = _crgUtils.createRowTable(5).appendTo(teamTable.find('tr.Control>td')).addClass('Control');
-  var teamName = $('<input type="text" class="Name">').appendTo(controlTable.find('td:eq(0)'));
+    .appendTo(element);
+  var controlTable = _crgUtils.createRowTable(4).appendTo(teamTable.find('tr.Control>td')).addClass('Control');
+  var teamName = $('<input type="text" class="Name">').appendTo(teamTable.find('tr.Name>td'));
   teamName.on('input', function() {
-    WS.Set(getPrefix() + '.Name', teamName.val());
+    WS.Set(teamPrefix + '.Name', teamName.val());
   });
   var waitingOnUpload = '';
   var logoSelect = $('<select>').append($('<option value="">No Logo</option>'))
-    .appendTo(controlTable.find('td:eq(1)'));
+    .appendTo(controlTable.find('td:eq(0)'));
   logoSelect.on('change', function() {
-    WS.Set(getPrefix() + '.Logo', logoSelect.val() === '' ? '': '/images/teamlogo/' + logoSelect.val());
+    WS.Set(teamPrefix + '.Logo', logoSelect.val() === '' ? '': '/images/teamlogo/' + logoSelect.val());
   });
   WS.Register('ScoreBoard.Media.Format(images).Type(teamlogo).File(*).Name', function(k, v) {
     var val = logoSelect.val(); // Record this before we potentially remove and re-add it.
@@ -93,7 +107,7 @@ function createTeamsTab(tab, gameId) {
     formData: [{name: 'media', value: 'images'}, {name: 'type', value: 'teamlogo'}],
     add: function(e, data) {
       var fd = new FormData();
-      fd.append('f', data.files[0], (isCurrentTeam() ? 'current' : selectTeam.val())+ '_' + data.files[0].name);
+      fd.append('f', data.files[0], data.files[0].name);
       data.files[0] = fd.get('f');
       data.submit();
       waitingOnUpload = fd.get('f').name;
@@ -101,38 +115,19 @@ function createTeamsTab(tab, gameId) {
     fail: function(e, data) {
       console.log('Failed upload', data.errorThrown);
     }
-  }).css('display', 'none').appendTo(controlTable.find('td:eq(1)'));
-  $('<button>').text('Upload...').appendTo(controlTable.find('td:eq(1)')).on('click', function(){controlTable.find('#teamLogoUpload').trigger('click');});
-  var alternameNameDialog = createAlternateNamesDialog();
+  }).css('display', 'none').appendTo(controlTable.find('td:eq(0)'));
+  $('<button>').text('Upload...').appendTo(controlTable.find('td:eq(0)')).on('click', function(){controlTable.find('#teamLogoUpload').trigger('click');});
+  var alternameNameDialog = createAlternateNamesDialog(teamPrefix);
   $('<button>').text('Alternate Names').button()
     .on('click', function() {alternameNameDialog.dialog('open');} )
-    .appendTo(controlTable.find('td:eq(2)'));
-  var colorsDialog = createColorsDialog();
+    .appendTo(controlTable.find('td:eq(1)'));
+  var colorsDialog = createColorsDialog(teamPrefix);
   $('<button>').text('Colors').button()
     .on('click', function() { colorsDialog.dialog('open'); })
-    .appendTo(controlTable.find('td:eq(3)'));
+    .appendTo(controlTable.find('td:eq(2)'));
   var removeTeam = $('<button>').text('Remove Team').button()
-    .on('click', function() { createTeamsRemoveDialog(selectTeam.val()); })
-    .appendTo(controlTable.find('td:eq(4)'));
-
-  WS.Register(['ScoreBoard.PreparedTeam(*)'], function(k, v) {
-    var teamId = selectTeam.val();
-    if (k.PreparedTeam === teamId) {
-      handleTeamUpdate(k, v);
-    }
-  });
-  WS.Register(['ScoreBoard.Game(' + gameId + ').Team(*).AlternateName',
-      'ScoreBoard.Game(' + gameId + ').Team(*).Color',
-      'ScoreBoard.Game(' + gameId + ').Team(*).Logo',
-      'ScoreBoard.Game(' + gameId + ').Team(*).Name',
-      'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).Flags',
-      'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).Name',
-      'ScoreBoard.Game(' + gameId + ').Team(*).Skater(*).RosterNumber'], function(k, v) {
-        var teamId = selectTeam.val();
-        if ('(Current Team '+k.Team+')' === teamId) {
-          handleTeamUpdate(k, v);
-        }
-      });
+    .on('click', function() { createTeamsRemoveDialog(teamPrefix); })
+    .appendTo(controlTable.find('td:eq(3)'));
 
   var skatersTable = $('<table>').addClass('Skaters Empty')
     .appendTo(teamTable.find('tr.Skaters>td'))
@@ -150,9 +145,9 @@ function createTeamsTab(tab, gameId) {
 
   var addSkater = function(number, name, flags, id) {
     id = id || newUUID();
-    WS.Set(getPrefix() + '.Skater('+id+').RosterNumber', number);
-    WS.Set(getPrefix() + '.Skater('+id+').Name', name);
-    WS.Set(getPrefix() + '.Skater('+id+').Flags', flags);
+    WS.Set(teamPrefix + '.Skater('+id+').RosterNumber', number);
+    WS.Set(teamPrefix + '.Skater('+id+').Name', name);
+    WS.Set(teamPrefix + '.Skater('+id+').Flags', flags);
   };
 
   var newSkaterNumber = $('<input type="text" size="10">').addClass('RosterNumber')
@@ -238,7 +233,7 @@ function createTeamsTab(tab, gameId) {
         updateSkaterCount();
         return;
       }
-      var prefix = getPrefix() + '.Skater('+k.Skater+')';
+      var skaterPrefix = teamPrefix + '.Skater('+k.Skater+')';
 
       if (skaterRow.length === 0) {
         skatersTable.removeClass('Empty');
@@ -247,19 +242,19 @@ function createTeamsTab(tab, gameId) {
           .append('<td class="Name">')
           .append('<td class="Flags">')
           .append('<td class="Remove">');
-        var numberInput = $('<input type="text" size="10">')
+        var numberInput = $('<input type="text" size="5">')
           .appendTo(skaterRow.children('td.RosterNumber'));
         var nameInput = $('<input type="text" size="30">')
           .appendTo(skaterRow.children('td.Name'));
         nameInput.on('change', function() {
-          WS.Set(prefix + '.Name', nameInput.val());
+          WS.Set(skaterPrefix + '.Name', nameInput.val());
         });
         $('<button>').text('Remove').addClass('RemoveSkater').button()
-          .on('click', function() { createTeamsSkaterRemoveDialog(selectTeam.val(), prefix); })
+          .on('click', function() { createTeamsSkaterRemoveDialog(WS.state[teamPrefix + '.Name'], skaterPrefix); })
           .appendTo(skaterRow.children('td.Remove'));
         numberInput.on('change', function() {
-          WS.Set(prefix + '.RosterNumber', numberInput.val());
-          skaterRow.attr('skaternum', WS.state[prefix + '.RosterNumber']);
+          WS.Set(skaterPrefix + '.RosterNumber', numberInput.val());
+          skaterRow.attr('skaternum', WS.state[skaterPrefix + '.RosterNumber']);
         });
         var skaterFlags = $('<select>').appendTo(skaterRow.children('td.Flags'));
         skaterFlags.append($('<option>').attr('value', '').text('Skater'));
@@ -268,7 +263,7 @@ function createTeamsTab(tab, gameId) {
         skaterFlags.append($('<option>').attr('value', 'AC').text('Alt Captain'));
         skaterFlags.append($('<option>').attr('value', 'BC').text('Bench Alt Captain'));
         skaterFlags.on('change', function() {
-          WS.Set(prefix + '.Flags', skaterFlags.val());
+          WS.Set(skaterPrefix + '.Flags', skaterFlags.val());
         });
         _windowFunctions.appendAlphaSortedByAttr(skatersTable.children('tbody'), skaterRow, 'skaternum');
       }
@@ -281,8 +276,6 @@ function createTeamsTab(tab, gameId) {
         _windowFunctions.appendAlphaSortedByAttr(skatersTable.children('tbody'), skaterRow, 'skaternum');
       }
     } else { // Team update.
-      // For a current team, could be a Position.
-      if (k.parts.length !== 3) { return; }
       switch (k.field) {
         case 'Logo':
           logoSelect.val(v.substring(v.lastIndexOf('/') + 1));
@@ -310,29 +303,19 @@ function createTeamsTab(tab, gameId) {
     }
   };
 
-  selectTeam.on('change', function(event) {
-    var teamId = selectTeam.val();
-    table.find('tr.Selection').toggleClass('NoneSelected', teamId === '');
-    teamTable.toggleClass('Hide', teamId === '');
-    removeTeam.button('option', 'disabled', isCurrentTeam() || teamId === '');
-    skatersTable.addClass('Empty');
-    skatersTable.children('tbody').empty();
-    updateSkaterCount();  // In case there's no skaters.
-    alternameNameDialog.attr('prefix', getPrefix());
-    alternameNameDialog.find('tbody').empty();
-    colorsDialog.attr('prefix', getPrefix());
-    colorsDialog.find('tbody').empty();
-    for (var key in WS.state) {
-      var prefix = getPrefix();
-      if (key.startsWith(prefix)) {
-        handleTeamUpdate(WS._enrichProp(key), WS.state[key]);
-      }
-    }
-  });
-  selectTeam.trigger('change');
+  WS.Register([teamPrefix + '.AlternateName',
+               teamPrefix + '.Color',
+               teamPrefix + '.Logo',
+               teamPrefix + '.Name',
+               teamPrefix + '.Skater(*).Flags',
+               teamPrefix + '.Skater(*).Name',
+               teamPrefix + '.Skater(*).RosterNumber'], 
+          handleTeamUpdate);
+
+  return teamTable;
 }
 
-function createAlternateNamesDialog() {
+function createAlternateNamesDialog(prefix) {
   var dialog = $('<div>').addClass('AlternateNamesDialog');
 
   $('<a>').text('Type:').appendTo(dialog);
@@ -343,7 +326,7 @@ function createAlternateNamesDialog() {
   var newFunc = function() {
     var newId = newIdInput.val();
     var newName = newNameInput.val();
-    WS.Set(dialog.attr('prefix') + '.AlternateName('+newId+')', newName);
+    WS.Set(prefix + '.AlternateName('+newId+')', newName);
     newNameInput.val('');
     newIdInput.val('').trigger('focus');
   };
@@ -368,7 +351,6 @@ function createAlternateNamesDialog() {
   dialog.updateFunc = function(id, v) {
     var tr = tbody.find('tr#' + id);
     if (tr.length === 0) {
-      var prefix = dialog.attr('prefix');
       tr = $('<tr>').attr('id', id)
         .append('<td class="X">')
         .append('<td class="Id">')
@@ -411,7 +393,7 @@ function createAlternateNamesDialog() {
 
 }
 
-function createColorsDialog() {
+function createColorsDialog(prefix) {
   var dialog = $('<div>').addClass('ColorsDialog');
 
   $('<a>').text('Type:').appendTo(dialog);
@@ -419,7 +401,6 @@ function createColorsDialog() {
 
   var newFunc = function() {
     var newId = newIdInput.val();
-    var prefix = dialog.attr('prefix');
 
     WS.Set(prefix + '.Color(' + newId + '_fg)', '');
     WS.Set(prefix + '.Color(' + newId + '_bg)', '');
@@ -459,7 +440,6 @@ function createColorsDialog() {
       $('<input type="color" cleared="true" value="#666666" suffix="glow">')
         .appendTo(tr.children('td.glow'));
       tr.find('input').on('input', function(e) {
-        var prefix = dialog.attr('prefix');
         WS.Set(prefix + '.Color(' + colorId + '_'+ $(e.target).attr('suffix') + ')', e.target.value);
       });
       tr.find('input').after($('<button class="ClearPrev">X</button>').on('click', function(e) {
@@ -512,11 +492,11 @@ function createColorsDialog() {
   return dialog;
 }
 
-function createTeamsRemoveDialog(teamId) {
+function createTeamsRemoveDialog(prefix) {
   var dialog = $('<div>').addClass('TeamsRemoveDialog');
 
   $('<a>').addClass('Remove').text('Remove Entire Team: ').appendTo(dialog);
-  $('<a>').addClass('Target').text(teamId).appendTo(dialog);
+  $('<a>').addClass('Target').text(WS.state[prefix + '.Name']).appendTo(dialog);
   $('<br>').appendTo(dialog);
 
   $('<hr>').appendTo(dialog);
@@ -527,7 +507,7 @@ function createTeamsRemoveDialog(teamId) {
     dialog.dialog('close');
   }).button();
   $('<button>').addClass('Yes').text('Yes, remove!').appendTo(dialog).on('click', function() {
-    WS.Set('ScoreBoard.PreparedTeam('+teamId+')', null);
+    WS.Set(prefix, null);
     dialog.dialog('close');
   }).button();
 
@@ -539,10 +519,10 @@ function createTeamsRemoveDialog(teamId) {
   });
 }
 
-function createTeamsSkaterRemoveDialog(teamId, prefix) {
+function createTeamsSkaterRemoveDialog(teamName, prefix) {
   var dialog = $('<div>').addClass('TeamsRemoveDialog');
 
-  $('<a>').addClass('Title').text('Team: '+teamId).appendTo(dialog);
+  $('<a>').addClass('Title').text('Team: '+teamName).appendTo(dialog);
   $('<br>').appendTo(dialog);
 
   var skaterName = WS.state[prefix + '.Name'];

@@ -1,5 +1,5 @@
 $(function() {
-  createTeamsTab($('#TeamsTab'), '');
+  createTeamsTab($('#TeamsTab'));
 
   WS.AutoRegister();
   WS.Connect();
