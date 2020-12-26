@@ -14,7 +14,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
-import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
@@ -278,11 +278,11 @@ public class SkaterImplTests {
 
     @Test
     public void alt_prepared_skater_not_in_game() {
-        PreparedTeamSkater pts = new PreparedTeamSkaterImpl(null, "1234");
+        PreparedSkater pts = new PreparedTeamSkaterImpl(null, "1234");
         pts.set(Skater.ROSTER_NUMBER, "1");
         pts.set(Skater.NAME, "Uno");
         pts.set(Skater.FLAGS, "ALT");
-        skater = new SkaterImpl(team, pts);
+        skater = new SkaterImpl(team, pts, null);
 
         assertEquals(Role.NOT_IN_GAME, skater.getBaseRole());
         assertEquals(Role.NOT_IN_GAME, skater.getRole());

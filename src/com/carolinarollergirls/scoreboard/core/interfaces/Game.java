@@ -106,6 +106,7 @@ public interface Game extends ScoreBoardEventProvider {
     Value<Boolean> NO_MORE_JAM = new Value<>(Boolean.class, "NoMoreJam", false);
     Value<Ruleset> RULESET = new Value<>(Ruleset.class, "Ruleset", null);
     Value<String> RULESET_NAME = new Value<>(String.class, "RulesetName", "");
+    Value<Boolean> RULESET_CONNECTED = new Value<>(Boolean.class, "RulesetConnected", false);
 
     Child<Clock> CLOCK = new Child<>(Clock.class, "Clock");
     Child<Team> TEAM = new Child<>(Team.class, "Team");

@@ -23,7 +23,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
-import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
@@ -37,25 +37,26 @@ import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements Skater {
     public SkaterImpl(Team t, String i) {
-        super(t, (i == null ? UUID.randomUUID().toString() : i), Team.SKATER);
+        super(t, i == null ? UUID.randomUUID().toString() : i, Team.SKATER);
         team = t;
         game = t.getGame();
         initialize();
     }
-    public SkaterImpl(Team t, PreparedTeamSkater pts) {
-        super(t, pts.getId(), Team.SKATER);
+    public SkaterImpl(Team t, PreparedSkater ps, String i) {
+        super(t, i == null ? UUID.randomUUID().toString() : i, Team.SKATER);
         team = t;
         initialize();
-        setName(pts.get(NAME));
-        setNumber(pts.get(ROSTER_NUMBER));
-        setFlags(pts.get(FLAGS));
+        set(PREPARED_SKATER, ps);
+        setFlags(ps.get(FLAGS));
     }
     private void initialize() {
-        addProperties(NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, POSITION, ROLE, BASE_ROLE,
-                PENALTY_BOX, FLAGS, FIELDING, PENALTY);
-        set(BASE_ROLE, Role.BENCH);
-        set(ROLE, Role.BENCH);
+        addProperties(PREPARED_SKATER, NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, POSITION, ROLE,
+                BASE_ROLE, PENALTY_BOX, FLAGS, FIELDING, PENALTY);
         setInverseReference(FIELDING, Fielding.SKATER);
+        setCopy(NAME, this, PREPARED_SKATER, NAME, false, team, Team.PREPARED_TEAM_CONNECTED);
+        setCopy(ROSTER_NUMBER, this, PREPARED_SKATER, ROSTER_NUMBER, false, team, Team.PREPARED_TEAM_CONNECTED);
+        set(ROLE, Role.BENCH, Flag.SPECIAL_CASE);
+        set(BASE_ROLE, Role.BENCH);
         setCopy(POSITION, this, CURRENT_FIELDING, Fielding.POSITION, true);
         setCopy(PENALTY_BOX, this, CURRENT_FIELDING, Fielding.PENALTY_BOX, false);
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);

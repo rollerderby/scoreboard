@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
@@ -21,7 +22,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
-import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedTeamSkater;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
@@ -31,8 +32,11 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.IndirectScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -40,18 +44,24 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team {
     public TeamImpl(Game g, String i) {
-        super(g, i, Game.TEAM);
+        super(g, g.getId() + "_" + i, Game.TEAM);
         game = g;
+        subId = i;
         addProperties(FULL_NAME, LEAGUE_NAME, TEAM_NAME, DISPLAY_NAME, UNIFORM_COLOR, INITIALS, LOGO,
                 RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING, CURRENT_TRIP, SCORE,
                 JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW, IN_TIMEOUT,
                 IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL,
-                DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, ALTERNATE_NAME, COLOR, SKATER, POSITION, TIME_OUT, BOX_TRIP,
-                ADD_TRIP, REMOVE_TRIP, ADVANCE_FIELDINGS, TIMEOUT, OFFICIAL_REVIEW);
+                DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, PREPARED_TEAM, PREPARED_TEAM_CONNECTED, ALTERNATE_NAME, COLOR,
+                SKATER, POSITION, TIME_OUT, BOX_TRIP, ADD_TRIP, REMOVE_TRIP, ADVANCE_FIELDINGS, TIMEOUT,
+                OFFICIAL_REVIEW);
         for (FloorPosition fp : FloorPosition.values()) {
             add(POSITION, new PositionImpl(this, fp));
         }
         addWriteProtection(POSITION);
+        setCopy(LEAGUE_NAME, this, PREPARED_TEAM, LEAGUE_NAME, false, PREPARED_TEAM_CONNECTED);
+        setCopy(TEAM_NAME, this, PREPARED_TEAM, TEAM_NAME, false, PREPARED_TEAM_CONNECTED);
+        setCopy(UNIFORM_COLOR, this, PREPARED_TEAM, UNIFORM_COLOR, false, PREPARED_TEAM_CONNECTED);
+        setCopy(LOGO, this, PREPARED_TEAM, LOGO, false, PREPARED_TEAM_CONNECTED);
         setCopy(CURRENT_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.CURRENT_TRIP, true);
         setCopy(SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE, true);
         setCopy(JAM_SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.JAM_SCORE, true);
@@ -80,7 +90,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         addWriteProtectionOverride(OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(LAST_REVIEW, Source.ANY_INTERNAL);
         setCopy(RETAINED_OFFICIAL_REVIEW, this, LAST_REVIEW, Timeout.RETAINED_REVIEW, false);
+        setCopy(ALTERNATE_NAME, this, PREPARED_TEAM, ALTERNATE_NAME, false, PREPARED_TEAM_CONNECTED);
+        setCopy(COLOR, this, PREPARED_TEAM, COLOR, false, PREPARED_TEAM_CONNECTED);
+        providers.put(skaterListener, null);
     }
+
+    @Override
+    public String getProviderId() { return subId; }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
@@ -191,7 +207,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         if (prop == ADD_TRIP) {
             tripScoreTimerTask.cancel();
             getRunningOrEndedTeamJam().addScoringTrip();
-            if (!isLead() && !game.getTeam(Team.ID_1.equals(getId()) ? Team.ID_2 : Team.ID_1).isLead()) {
+            if (!isLead() && !getOtherTeam().isLead()) {
                 set(LOST, true);
             }
         } else if (prop == REMOVE_TRIP) {
@@ -211,7 +227,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == SKATER) {
-                return new SkaterImpl(this, id);
+                if (get(PREPARED_TEAM_CONNECTED)) {
+                    nextSkaterId = id;
+                    get(PREPARED_TEAM).getOrCreate(PreparedTeam.SKATER, UUID.randomUUID().toString());
+                    return get(SKATER, id);
+                } else {
+                    return new SkaterImpl(this, id);
+                }
             } else if (prop == BOX_TRIP) {
                 return new BoxTripImpl(this, id);
             }
@@ -226,7 +248,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
 
     @Override
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == SKATER) { ((Skater) item).delete(); }
+        if (prop == SKATER) {
+            Skater s = ((Skater) item);
+            if (get(PREPARED_TEAM_CONNECTED)) {
+                get(PREPARED_TEAM).remove(PreparedTeam.SKATER, s.get(Skater.PREPARED_SKATER));
+            }
+            s.delete();
+        }
         if (prop == TIME_OUT) { recountTimeouts(); }
     }
 
@@ -353,19 +381,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void loadPreparedTeam(PreparedTeam pt) {
         synchronized (coreLock) {
-            setLogo(pt.get(LOGO));
-            set(LEAGUE_NAME, pt.get(LEAGUE_NAME));
-            set(TEAM_NAME, pt.get(TEAM_NAME));
-            set(UNIFORM_COLOR, pt.get(UNIFORM_COLOR));
-            for (ValWithId v : pt.getAll(ALTERNATE_NAME)) {
-                setAlternateName(v.getId(), v.getValue());
-            }
-            for (ValWithId v : pt.getAll(COLOR)) {
-                setColor(v.getId(), v.getValue());
-            }
-            for (PreparedTeamSkater pts : pt.getAll(PreparedTeam.SKATER)) {
-                addSkater(new SkaterImpl(this, pts));
-            }
+            set(PREPARED_TEAM_CONNECTED, true);
+            set(PREPARED_TEAM, pt);
         }
     }
 
@@ -392,7 +409,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     public void updateTeamJams() {
         synchronized (coreLock) {
-            set(RUNNING_OR_ENDED_TEAM_JAM, game.getCurrentPeriod().getCurrentJam().getTeamJam(getId()));
+            set(RUNNING_OR_ENDED_TEAM_JAM, game.getCurrentPeriod().getCurrentJam().getTeamJam(subId));
             set(RUNNING_OR_UPCOMING_TEAM_JAM,
                     game.isInJam() ? getRunningOrEndedTeamJam() : getRunningOrEndedTeamJam().getNext());
             for (Position p : getAll(POSITION)) {
@@ -616,9 +633,31 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
 
     @Override
     public Team getOtherTeam() {
-        String otherId = getId().equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
+        String otherId = subId.equals(Team.ID_1) ? Team.ID_2 : Team.ID_1;
         return game.getTeam(otherId);
     }
+
+    protected ScoreBoardListener skaterListener = new IndirectScoreBoardListener<>(this, PREPARED_TEAM,
+            PreparedTeam.SKATER, new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                    if (get(PREPARED_TEAM_CONNECTED)) {
+                        PreparedSkater ps = (PreparedSkater) event.getValue();
+                        for (Skater s : getAll(SKATER)) {
+                            if (ps == s.get(Skater.PREPARED_SKATER)) {
+                                if (event.isRemove()) {
+                                    remove(SKATER, s);
+                                }
+                                return;
+                            }
+                        }
+                        if (!event.isRemove()) {
+                            add(SKATER, new SkaterImpl(TeamImpl.this, ps, nextSkaterId));
+                            nextSkaterId = null;
+                        }
+                    }
+                }
+            });
 
     FloorPosition nextReplacedBlocker = FloorPosition.PIVOT;
 
@@ -631,6 +670,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     private long tripScoreJamTime; // store the jam clock when starting the timer so we can set the correct value
                                    // when advancing the trip
     private Game game;
+    private String subId;
+    private String nextSkaterId;
 
     public static final String DEFAULT_NAME_PREFIX = "Team ";
     public static final String DEFAULT_LOGO = "";

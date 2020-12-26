@@ -77,8 +77,8 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
         }
     }
 
-    public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl<PreparedTeamSkater>
-            implements PreparedTeamSkater {
+    public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl<PreparedSkater>
+            implements PreparedSkater {
         public PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
             super(parent, id, PreparedTeam.SKATER);
             addProperties(Skater.NAME, Skater.ROSTER_NUMBER, Skater.FLAGS);

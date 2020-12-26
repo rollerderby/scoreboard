@@ -13,8 +13,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 // Roster for teams for loading in for games.
 public interface PreparedTeam extends ScoreBoardEventProvider {
-    Child<PreparedTeamSkater> SKATER = new Child<>(PreparedTeamSkater.class, "Skater");
+    Child<PreparedSkater> SKATER = new Child<>(PreparedSkater.class, "Skater");
 
-    public static interface PreparedTeamSkater extends ScoreBoardEventProvider {
+    public static interface PreparedSkater extends ScoreBoardEventProvider {
     }
 }

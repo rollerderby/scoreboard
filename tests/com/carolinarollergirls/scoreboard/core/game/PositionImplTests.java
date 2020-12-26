@@ -49,7 +49,7 @@ public class PositionImplTests {
     public void key_values_populated() {
         Position blocker = team.getPosition(FloorPosition.BLOCKER1);
 
-        assertEquals(blocker.getId(), Team.ID_1 + "_" + FloorPosition.BLOCKER1.toString());
+        assertEquals(blocker.getId(), team.getId() + "_" + FloorPosition.BLOCKER1.toString());
         assertEquals(blocker.getProviderName(), "Position");
         assertEquals(blocker.getProviderId(), FloorPosition.BLOCKER1.toString());
         assertEquals(blocker.getProviderClass(), Position.class);

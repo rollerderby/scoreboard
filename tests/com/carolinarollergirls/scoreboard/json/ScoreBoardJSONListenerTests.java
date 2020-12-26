@@ -190,10 +190,9 @@ public class ScoreBoardJSONListenerTests {
         String id = "00000000-0000-0000-0000-000000000001";
 
         Team t = g.getTeam("1");
-        Skater s = new SkaterImpl(t, id);
+        Skater s = t.getOrCreate(Team.SKATER, id);
         s.setName("Uno");
         s.setNumber("01");
-        t.addSkater(s);
         advance(0);
         assertEquals("Uno",
                 state.get("ScoreBoard.Game(" + gameId + ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Name"));
@@ -211,7 +210,7 @@ public class ScoreBoardJSONListenerTests {
         t.field(s, Role.JAMMER);
         s.setPenaltyBox(true);
         advance(0);
-        assertEquals("1_Jammer", state
+        assertEquals(gameId + "_1_Jammer", state
                 .get("ScoreBoard.Game(" + gameId + ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Position"));
         assertEquals("Jammer",
                 state.get("ScoreBoard.Game(" + gameId + ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Role"));
@@ -317,7 +316,7 @@ public class ScoreBoardJSONListenerTests {
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
         assertEquals(false,
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
-        assertEquals("1_Jammer",
+        assertEquals(gameId + "_1_Jammer",
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         t.field(s, Role.BENCH);
@@ -326,7 +325,7 @@ public class ScoreBoardJSONListenerTests {
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
         assertEquals(false,
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
-        assertEquals("1_Jammer",
+        assertEquals(gameId + "_1_Jammer",
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         t.field(s, Role.JAMMER);
@@ -339,7 +338,7 @@ public class ScoreBoardJSONListenerTests {
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Skater"));
         assertEquals(false,
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).PenaltyBox"));
-        assertEquals("1_Jammer",
+        assertEquals(gameId + "_1_Jammer",
                 state.get("ScoreBoard.Game(" + gameId + ").Period(1).Jam(1).TeamJam(1).Fielding(Jammer).Position"));
 
         g.stopJamTO();

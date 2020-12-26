@@ -114,6 +114,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     Value<Boolean> DISPLAY_LEAD = new Value<>(Boolean.class, "DisplayLead", false);
     Value<Boolean> STAR_PASS = new Value<>(Boolean.class, "StarPass", false);
     Value<ScoringTrip> STAR_PASS_TRIP = new Value<>(ScoringTrip.class, "StarPassTrip", null);
+    Value<PreparedTeam> PREPARED_TEAM = new Value<>(PreparedTeam.class, "PreparedTeam", null);
+    Value<Boolean> PREPARED_TEAM_CONNECTED = new Value<>(Boolean.class, "PreparedTeamConnected", false);
 
     Child<ValWithId> ALTERNATE_NAME = new Child<>(ValWithId.class, "AlternateName");
     Child<ValWithId> COLOR = new Child<>(ValWithId.class, "Color");

@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
 
 import java.util.List;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.NumberedChild;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -46,6 +47,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public List<Penalty> getUnservedPenalties();
     public boolean hasUnservedPenalties();
 
+    Value<PreparedSkater> PREPARED_SKATER = new Value<>(PreparedSkater.class, "PreparedSkater", null);
     Value<String> NAME = new Value<>(String.class, "Name", "");
     Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
     Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
