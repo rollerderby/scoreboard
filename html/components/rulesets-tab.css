@@ -16,6 +16,8 @@
 	overflow: auto;
 }
 
+#RulesetsTab .Hide { display: none; }
+
 #RulesetsTab table { width: 100%; }
 #RulesetsTab th { text-align: left; }
 #RulesetsTab #new_parent, #new_name { width: 99%; }

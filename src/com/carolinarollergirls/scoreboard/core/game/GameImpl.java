@@ -54,9 +54,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     private void initReferences(Ruleset rs) {
         addProperties(NAME, NAME_FORMAT, STATE, CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM,
                 UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER,
-                OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, RULESET_CONNECTED, CLOCK, TEAM, RULE, PENALTY_CODE,
-                LABEL, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME,
-                OFFICIAL_TIMEOUT);
+                OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, PERIOD,
+                Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -79,8 +78,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 .addIndirectSource(this, CURRENT_PERIOD, Period.TIMEOUT);
         setRecalculated(NAME).addSource(this, NAME_FORMAT).addSource(this, STATE)
                 .addSource(get(TEAM, Team.ID_1), Team.FULL_NAME).addSource(get(TEAM, Team.ID_2), Team.FULL_NAME);
-        setRecalculated(STATE).addSource(get(TEAM, Team.ID_1), Team.ID).addSource(get(TEAM, Team.ID_2), Team.ID)
-                .addSource(this, CURRENT_PERIOD_NUMBER).addSource(this, OFFICIAL_SCORE);
+        setRecalculated(STATE).addSource(this, CURRENT_PERIOD_NUMBER).addSource(this, OFFICIAL_SCORE);
         set(IN_JAM, false);
         removeAll(Period.JAM);
         removeAll(PERIOD);
@@ -137,12 +135,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         } else if (prop == NAME) {
             return get(NAME_FORMAT).replace("%1", getTeam(Team.ID_1).get(Team.DISPLAY_NAME))
                     .replace("%2", getTeam(Team.ID_2).get(Team.DISPLAY_NAME)).replace("%s", get(STATE).toString());
-        } else if (prop == RULESET) {
+        } else if (prop == RULESET && value != null) {
             setCurrentRulesetRecurse(((Ruleset) value));
         } else if (prop == STATE) {
-            if (getTeam(Team.ID_1).getName() == "" || getTeam(Team.ID_2).getName() == "") {
-                return State.INCOMPLETE;
-            } else if (getCurrentPeriodNumber() == 0) {
+            if (getCurrentPeriodNumber() == 0) {
                 return State.PREPARED;
             } else if (!isOfficialScore()) {
                 return State.RUNNING;
@@ -178,11 +174,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 t.recountTimeouts();
             }
         }
-        if (prop == RULESET && value != null) {
-            set(RULESET_CONNECTED, true);
-        }
         if (prop == STATE && (State) value == State.RUNNING && (State) last == State.PREPARED) {
-            set(RULESET_CONNECTED, false);
+            set(RULESET, null);
             getTeam(Team.ID_1).set(Team.PREPARED_TEAM_CONNECTED, false);
             getTeam(Team.ID_2).set(Team.PREPARED_TEAM_CONNECTED, false);
         }
@@ -672,13 +665,12 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     public void setRuleset(Ruleset rs) { set(RULESET, rs); }
     @Override
     public void refreshRuleset(Ruleset rs) {
-        synchronized (coreLock) {
-            for (Ruleset tRs = getRuleset(); !Rulesets.ROOT_ID.equals(tRs.getId()); tRs = tRs.getParentRuleset()) {
-                if (tRs.equals(rs)) {
-                    setCurrentRulesetRecurse(getRuleset());
-                    scoreBoardChange(new ScoreBoardEvent<>(this, RULESET, getRuleset(), getRuleset()));
-                    break;
-                }
+        if (getRuleset() == null) { return; }
+        for (Ruleset tRs = getRuleset(); !Rulesets.ROOT_ID.equals(tRs.getId()); tRs = tRs.getParentRuleset()) {
+            if (tRs.equals(rs)) {
+                setCurrentRulesetRecurse(getRuleset());
+                scoreBoardChange(new ScoreBoardEvent<>(this, RULESET, getRuleset(), getRuleset()));
+                break;
             }
         }
     }
@@ -799,9 +791,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             Ruleset.RULE, new ScoreBoardListener() {
                 @Override
                 public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    if (get(RULESET_CONNECTED)) {
-                        refreshRuleset((Ruleset) event.getProvider());
-                    }
+                    refreshRuleset((Ruleset) event.getProvider());
                 }
             });
 

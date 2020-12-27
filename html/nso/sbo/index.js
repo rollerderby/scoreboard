@@ -12,7 +12,7 @@ $(function() {
   var gameId = _windowFunctions.getParam('game');
   setupGameAdvance($('gameAdvance'), gameId, true);
   createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'), gameId);
-  createRulesetsTab(createTab('Rulesets', 'RulesetsTab'));
+  createRulesetsTab(createTab('Rulesets', 'RulesetsTab'), gameId);
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
   createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
   createDataManagementTab(createTab('Up/Download', 'DataManagementTab'));
