@@ -11,11 +11,11 @@
 $(function() {
   var gameId = _windowFunctions.getParam('game');
   setupGameAdvance($('gameAdvance'), gameId, true);
-  createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'), gameId);
-  createRulesetsTab(createTab('Rulesets', 'RulesetsTab'), gameId);
-  createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
+  createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
   createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
-  createDataManagementTab(createTab('Up/Download', 'DataManagementTab'));
+  createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId);
+  createIgrfTab(createTab('IGRF', 'IgrfTab'), gameId);
+  createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function(k, v) {
     setOperatorSettings(_windowFunctions.getParam('operator'));
   });

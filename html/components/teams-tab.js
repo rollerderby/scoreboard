@@ -156,7 +156,7 @@ function createEditTeamTable(element, teamPrefix, showName) {
     WS.Set(teamPrefix + '.Skater('+id+').Flags', flags);
   };
 
-  var newSkaterNumber = $('<input type="text" size="10">').addClass('RosterNumber')
+  var newSkaterNumber = $('<input type="text" size="5">').addClass('RosterNumber')
     .appendTo(skatersTable.find('tr.AddSkater>th:eq(0)'));
   var newSkaterName = $('<input type="text" size="30">').addClass('Name')
     .appendTo(skatersTable.find('tr.AddSkater>th:eq(1)'));

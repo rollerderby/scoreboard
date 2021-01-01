@@ -134,6 +134,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 return get(FULL_NAME);
             }
         }
+        if (prop == LEAGUE_NAME && value != null && (game.get(Game.EVENT_INFO, Game.INFO_HOST) == null
+                || game.get(Game.EVENT_INFO, Game.INFO_HOST).getValue() == "")) {
+            game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_HOST, (String) value));
+        }
         if (prop == INITIALS) {
             return get(DISPLAY_NAME).replaceAll("[^\\p{Lu}]", "");
         }

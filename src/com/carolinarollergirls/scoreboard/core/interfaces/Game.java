@@ -90,7 +90,7 @@ public interface Game extends ScoreBoardEventProvider {
     }
 
     Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "%1 vs. %2 (%s)");
+    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "%G %d %1 vs. %2 (%s)");
     Value<State> STATE = new Value<>(State.class, "State", State.PREPARED);
     Value<Integer> CURRENT_PERIOD_NUMBER = new Value<>(Integer.class, "CurrentPeriodNumber", 0);
     Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null);
@@ -106,12 +106,17 @@ public interface Game extends ScoreBoardEventProvider {
     Value<Boolean> NO_MORE_JAM = new Value<>(Boolean.class, "NoMoreJam", false);
     Value<Ruleset> RULESET = new Value<>(Ruleset.class, "Ruleset", null);
     Value<String> RULESET_NAME = new Value<>(String.class, "RulesetName", "Custom");
+    Value<Official> HEAD_NSO = new Value<>(Official.class, "HNSO", null);
+    Value<Official> HEAD_REF = new Value<>(Official.class, "HR", null);
 
     Child<Clock> CLOCK = new Child<>(Clock.class, "Clock");
     Child<Team> TEAM = new Child<>(Team.class, "Team");
     Child<ValWithId> RULE = new Child<>(ValWithId.class, "Rule");
     Child<PenaltyCode> PENALTY_CODE = new Child<>(PenaltyCode.class, "PenaltyCode");
     Child<ValWithId> LABEL = new Child<>(ValWithId.class, "Label");
+    Child<ValWithId> EVENT_INFO = new Child<>(ValWithId.class, "EventInfo");
+    Child<Official> NSO = new Child<>(Official.class, "Nso");
+    Child<Official> REF = new Child<>(Official.class, "Ref");
 
     NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period");
 
@@ -124,6 +129,15 @@ public interface Game extends ScoreBoardEventProvider {
     Command OFFICIAL_TIMEOUT = new Command("OfficialTimeout");
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
+
+    public static final String INFO_VENUE = "Venue";
+    public static final String INFO_CITY = "City";
+    public static final String INFO_STATE = "State";
+    public static final String INFO_TOURNAMENT = "Tournament";
+    public static final String INFO_HOST = "HostLeague";
+    public static final String INFO_GAME_NUMBER = "GameNo";
+    public static final String INFO_DATE = "Date";
+    public static final String INFO_START_TIME = "StartTime";
 
     public static final String ACTION_NONE = "---";
     public static final String ACTION_NO_REPLACE = "No Action";

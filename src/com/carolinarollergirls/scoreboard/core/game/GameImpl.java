@@ -54,8 +54,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     private void initReferences(Ruleset rs) {
         addProperties(NAME, NAME_FORMAT, STATE, CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM,
                 UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER,
-                OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, PERIOD,
-                Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
+                OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, HEAD_NSO, HEAD_REF, CLOCK, TEAM, RULE,
+                PENALTY_CODE, LABEL, EVENT_INFO, NSO, REF, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO,
+                CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -76,8 +77,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         addWriteProtection(CLOCK);
         setRecalculated(NO_MORE_JAM).addSource(this, IN_JAM).addSource(this, IN_PERIOD).addSource(this, RULE)
                 .addIndirectSource(this, CURRENT_PERIOD, Period.TIMEOUT);
-        setRecalculated(NAME).addSource(this, NAME_FORMAT).addSource(this, STATE)
-                .addSource(get(TEAM, Team.ID_1), Team.FULL_NAME).addSource(get(TEAM, Team.ID_2), Team.FULL_NAME);
+        setRecalculated(NAME).addSource(this, NAME_FORMAT).addSource(this, STATE).addSource(this, EVENT_INFO)
+                .addSource(get(TEAM, Team.ID_1), Team.DISPLAY_NAME).addSource(get(TEAM, Team.ID_2), Team.DISPLAY_NAME);
         setRecalculated(STATE).addSource(this, CURRENT_PERIOD_NUMBER).addSource(this, OFFICIAL_SCORE);
         set(IN_JAM, false);
         removeAll(Period.JAM);
@@ -133,8 +134,13 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             }
             return true;
         } else if (prop == NAME) {
-            return get(NAME_FORMAT).replace("%1", getTeam(Team.ID_1).get(Team.DISPLAY_NAME))
-                    .replace("%2", getTeam(Team.ID_2).get(Team.DISPLAY_NAME)).replace("%s", get(STATE).toString());
+            String game = get(EVENT_INFO, INFO_GAME_NUMBER) == null ? "" : get(EVENT_INFO, INFO_GAME_NUMBER).getValue();
+            String date = get(EVENT_INFO, INFO_DATE) == null ? "" : get(EVENT_INFO, INFO_DATE).getValue();
+            return get(NAME_FORMAT).replace("%d", date).replace("%g", game)
+                    .replace("%G", game == "" ? "" : ("Game " + game + ":"))
+                    .replace("%1", getTeam(Team.ID_1).get(Team.DISPLAY_NAME))
+                    .replace("%2", getTeam(Team.ID_2).get(Team.DISPLAY_NAME)).replace("%s", get(STATE).toString())
+                    .trim();
         } else if (prop == RULESET && value != null) {
             setCurrentRulesetRecurse(((Ruleset) value));
         } else if (prop == STATE) {
@@ -231,6 +237,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                     return new PeriodImpl(this, num);
                 }
             }
+            if (prop == NSO) { return new OfficialImpl(this, id, NSO); }
+            if (prop == REF) { return new OfficialImpl(this, id, REF); }
             return null;
         }
     }
@@ -676,7 +684,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     private void setCurrentRulesetRecurse(Ruleset rs) {
-        if (!rs.getId().equals(Rulesets.ROOT_ID)) {
+        if (rs != null && !rs.getId().equals(Rulesets.ROOT_ID)) {
             setCurrentRulesetRecurse(rs.getParentRuleset());
         }
         for (ValWithId r : rs.getAll(Ruleset.RULE)) {
