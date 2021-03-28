@@ -192,7 +192,7 @@ public class ScoreBoardJSONListenerTests {
         Team t = g.getTeam("1");
         Skater s = t.getOrCreate(Team.SKATER, id);
         s.setName("Uno");
-        s.setNumber("01");
+        s.setRosterNumber("01");
         advance(0);
         assertEquals("Uno",
                 state.get("ScoreBoard.Game(" + gameId + ").Team(1).Skater(00000000-0000-0000-0000-000000000001).Name"));
@@ -246,7 +246,7 @@ public class ScoreBoardJSONListenerTests {
         Team t = g.getTeam("1");
         Skater s = new SkaterImpl(t, sid);
         s.setName("Uno");
-        s.setNumber("01");
+        s.setRosterNumber("01");
         t.addSkater(s);
         Penalty p = s.getOrCreate(Skater.PENALTY, "1");
         pid = p.getId();
@@ -301,7 +301,7 @@ public class ScoreBoardJSONListenerTests {
         Team t = g.getTeam("1");
         Skater s = new SkaterImpl(t, id);
         s.setName("Uno");
-        s.setNumber("01");
+        s.setRosterNumber("01");
         t.addSkater(s);
         t.field(s, Role.JAMMER);
         g.startJam();

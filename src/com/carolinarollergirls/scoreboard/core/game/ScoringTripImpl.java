@@ -76,5 +76,11 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     @Override
     public int getScore() { return get(SCORE); }
 
+    @Override
+    public boolean isAfterSP() { return get(AFTER_S_P); }
+
+    @Override
+    public String getAnnotation() { return get(ANNOTATION); }
+
     private Game game;
 }

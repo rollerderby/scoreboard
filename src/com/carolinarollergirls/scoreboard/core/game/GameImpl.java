@@ -745,9 +745,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             Clock.RUNNING, Boolean.FALSE, new ScoreBoardListener() {
                 @Override
                 public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    if (getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) {
-                        _possiblyEndPeriod();
-                    }
+                    if (getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { _possiblyEndPeriod(); }
                 }
             });
     protected ScoreBoardListener jamEndListener = new ConditionalScoreBoardListener<>(Clock.class, Clock.ID_JAM,
@@ -775,9 +773,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             Clock.TIME, new ScoreBoardListener() {
                 @Override
                 public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    if (getBoolean(Rule.AUTO_START)) {
-                        _possiblyAutostart();
-                    }
+                    if (getBoolean(Rule.AUTO_START)) { _possiblyAutostart(); }
                 }
             });
     protected ScoreBoardListener timeoutClockListener = new ConditionalScoreBoardListener<>(Clock.class,
@@ -798,9 +794,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     protected ScoreBoardListener rulesetChangeListener = new ConditionalScoreBoardListener<>(Ruleset.class,
             Ruleset.RULE, new ScoreBoardListener() {
                 @Override
-                public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    refreshRuleset((Ruleset) event.getProvider());
-                }
+                public void scoreBoardChange(
+                        ScoreBoardEvent<?> event) { refreshRuleset((Ruleset) event.getProvider()); }
             });
 
     public static class GameSnapshot {

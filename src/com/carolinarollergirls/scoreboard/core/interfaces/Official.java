@@ -4,6 +4,8 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Official extends ScoreBoardEventProvider {
+    public int compareTo(Official other);
+
     Value<String> ROLE = new Value<>(String.class, "Role", "");
     Value<String> NAME = new Value<>(String.class, "Name", "");
     Value<String> LEAGUE = new Value<>(String.class, "League", "");

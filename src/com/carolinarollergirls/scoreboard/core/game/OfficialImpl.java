@@ -15,6 +15,11 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
     }
 
     @Override
+    public int compareTo(Official other) {
+        return roleIndex() - ((OfficialImpl) other).roleIndex();
+    }
+
+    @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == ROLE && value != null) {
             String role = (String) value;
@@ -48,6 +53,47 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
                     other.set(P1_TEAM, t.getOtherTeam());
                 }
             }
+        }
+    }
+
+    private int roleIndex() {
+        switch (get(ROLE)) {
+        case ROLE_PLT:
+            return 0;
+        case ROLE_PT:
+            return 1;
+        case ROLE_PW:
+            return 2;
+        case ROLE_WB:
+            return 3;
+        case ROLE_JT:
+            return 4;
+        case ROLE_SK:
+            return 5;
+        case ROLE_SBO:
+            return 6;
+        case ROLE_PBM:
+            return 7;
+        case ROLE_PBT:
+            return 8;
+        case ROLE_LT:
+            return 9;
+        case ROLE_ALTN:
+            return 10;
+
+        case ROLE_HR:
+            return 1;
+        case ROLE_IPR:
+            return 2;
+        case ROLE_JR:
+            return 3;
+        case ROLE_OPR:
+            return 4;
+        case ROLE_ALTR:
+            return 5;
+
+        default:
+            return 15;
         }
     }
 

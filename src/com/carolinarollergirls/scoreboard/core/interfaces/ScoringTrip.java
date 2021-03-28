@@ -6,6 +6,8 @@ import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface ScoringTrip extends NumberedScoreBoardEventProvider<ScoringTrip> {
     public int getScore();
+    public boolean isAfterSP();
+    public String getAnnotation();
 
     Value<Integer> SCORE = new Value<>(Integer.class, "Score", 0);
     Value<Boolean> AFTER_S_P = new Value<>(Boolean.class, "AfterSP", false);

@@ -64,7 +64,7 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         }
         if (prop == SKATER_NUMBER) {
             if (getSkater() != null) {
-                return getSkater().getNumber();
+                return getSkater().getRosterNumber();
             } else if (get(NOT_FIELDED)) {
                 return "n/a";
             } else {

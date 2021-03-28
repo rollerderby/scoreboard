@@ -341,7 +341,7 @@ public class FormatSpecifierViewer {
     }
 
     protected String getSkaterName(Skater s) { return (null == s ? NO_SKATER_NAME_VALUE : s.getName()); }
-    protected String getSkaterNumber(Skater s) { return (null == s ? NO_SKATER_NUMBER_VALUE : s.getNumber()); }
+    protected String getSkaterNumber(Skater s) { return (null == s ? NO_SKATER_NUMBER_VALUE : s.getRosterNumber()); }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     protected void setupClockValues(String c, final String id) {

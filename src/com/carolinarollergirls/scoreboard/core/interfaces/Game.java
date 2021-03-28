@@ -127,6 +127,7 @@ public interface Game extends ScoreBoardEventProvider {
     Command CLOCK_REPLACE = new Command("ClockReplace");
     Command START_OVERTIME = new Command("StartOvertime");
     Command OFFICIAL_TIMEOUT = new Command("OfficialTimeout");
+    Command EXPORT = new Command("Export");
 
     public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
 

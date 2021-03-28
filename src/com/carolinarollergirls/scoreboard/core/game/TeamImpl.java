@@ -51,9 +51,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                 RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING, CURRENT_TRIP, SCORE,
                 JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW, IN_TIMEOUT,
                 IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL,
-                DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, PREPARED_TEAM, PREPARED_TEAM_CONNECTED, ALTERNATE_NAME, COLOR,
-                SKATER, POSITION, TIME_OUT, BOX_TRIP, ADD_TRIP, REMOVE_TRIP, ADVANCE_FIELDINGS, TIMEOUT,
-                OFFICIAL_REVIEW);
+                DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, PREPARED_TEAM, PREPARED_TEAM_CONNECTED, CAPTAIN,
+                ALTERNATE_NAME, COLOR, SKATER, POSITION, TIME_OUT, BOX_TRIP, ADD_TRIP, REMOVE_TRIP, ADVANCE_FIELDINGS,
+                TIMEOUT, OFFICIAL_REVIEW);
         for (FloorPosition fp : FloorPosition.values()) {
             add(POSITION, new PositionImpl(this, fp));
         }
@@ -203,6 +203,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             if ((Boolean) value && isLead()) { set(LOST, true); }
         } else if ((prop == CALLOFF || prop == INJURY) && game.isInJam() && (Boolean) value) {
             game.stopJamTO();
+        } else if (prop == CAPTAIN && last != null) {
+            ((Skater) last).set(Skater.FLAGS, "");
         }
     }
 

@@ -65,10 +65,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     @Override
     public int compareTo(Skater other) {
         if (other == null) { return -1; }
-        if (getNumber() == other.getNumber()) { return 0; }
-        if (getNumber() == null) { return 1; }
-        if (other.getNumber() == null) { return -1; }
-        return getNumber().compareTo(other.getNumber());
+        if (getRosterNumber() == other.getRosterNumber()) { return 0; }
+        if (getRosterNumber() == null) { return 1; }
+        if (other.getRosterNumber() == null) { return -1; }
+        return getRosterNumber().compareTo(other.getRosterNumber());
     }
 
     @Override
@@ -101,6 +101,11 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             }
         }
         if (prop == FLAGS) {
+            if ("C".equals(value)) {
+                team.set(Team.CAPTAIN, this);
+            } else if ("C".equals(last) && team.get(Team.CAPTAIN) == this) {
+                team.set(Team.CAPTAIN, null);
+            }
             if ("ALT".equals(value) || "BA".equals(value) || "B".equals(value)) {
                 set(BASE_ROLE, Role.NOT_IN_GAME);
             } else if (get(BASE_ROLE) == Role.NOT_IN_GAME) {
@@ -183,9 +188,9 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     public void setName(String n) { set(NAME, n); }
 
     @Override
-    public String getNumber() { return get(ROSTER_NUMBER); }
+    public String getRosterNumber() { return get(ROSTER_NUMBER); }
     @Override
-    public void setNumber(String n) { set(ROSTER_NUMBER, n); }
+    public void setRosterNumber(String n) { set(ROSTER_NUMBER, n); }
 
     @Override
     public Fielding getFielding(TeamJam teamJam) {

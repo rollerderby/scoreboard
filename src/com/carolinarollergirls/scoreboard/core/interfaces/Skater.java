@@ -24,8 +24,8 @@ public interface Skater extends ScoreBoardEventProvider {
     public Team getTeam();
     public String getName();
     public void setName(String id);
-    public String getNumber();
-    public void setNumber(String number);
+    public String getRosterNumber();
+    public void setRosterNumber(String number);
     public Fielding getFielding(TeamJam teamJam);
     public Fielding getCurrentFielding();
     public void removeCurrentFielding();
