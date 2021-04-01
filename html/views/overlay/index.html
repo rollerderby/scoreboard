@@ -19,8 +19,7 @@
 				<div data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.Score)" class="TeamBox AnimatedPanel PanelHideTop Wrapper">
 					<div class="Team1" sbContext="Team(1)">
 						<div class="Indicator ColourTeam1 barBackgroundTop Box">
-							<div class="LeadJammer Lead ">&#9733;</div>
-							<div class="ShowInJam" sbdisplay="StarPass" sbmodify="toSP">&nbsp;</div>
+							<div class="ShowInJam" sbdisplay="StarPass, Lead, Lost" sbmodify="toIndicator"></div>
 						</div>
 					<div class="Team Row barBackgroundTop">
 						<div class="Name  VerticalCenter Box" sbDisplay="AlternateName(overlay),Name"></div>
@@ -40,8 +39,7 @@
 				</div>
 				<div class="Team2" sbContext="Team(2)">
 					<div class=" Indicator ColourTeam2 barBackgroundBottom Box">
-						<div class="LeadJammer Lead ">&#9733;</div>
-						<div class="ShowInJam" style="" sbdisplay="StarPass" sbmodify="toSP"></div>
+							<div class="ShowInJam" sbdisplay="StarPass, Lead, Lost" sbmodify="toIndicator"></div>
 					</div>
 					<div class="Team Row barBackgroundBottom">
 						<div class="Name Box" sbDisplay="AlternateName(overlay),Name"></div>
@@ -65,12 +63,12 @@
 						<div class="Box TextRight Name" sbDisplay="Name,Number" sbContext="Clock(Jam)" sbModify="toClockInitialNumber"></div>
 					</div>
 
-					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineUp ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock.(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rulesets.CurrentRule(Period.Number)" sbModify="clockType"></div>
+					<div class="ClockBarMiddle Wrapper SlideDown ShowInIntermission ShowInLineup ShowInTimeout Box BigName ClockDescription" sbDisplay="Clock(Intermission).Running, Clock(Intermission).Number, Clock(Lineup).Running, Clock(Lineup).Name, Clock(Timeout).Name, Clock(Timeout).Running, TimeoutOwner, OfficialReviews, Team(1).Timeouts, Team(2).OfficialReviews, Team(2).Timeouts, Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rulesets.CurrentRule(Period.Number)" sbModify="clockType"></div>
 					<div class="ClockBarBottom Wrapper Row BottomRow barBackgroundBottom">
 						<div class="Box TextLeft Time Clock Show ShowInJam ShowInLineup ShowInTimeout" sbContext="Clock(Period)" sbDisplay="Time" sbModify="toTime"></div>
 						<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 						<div class="Box TextRight Time Clock Show ShowInJam" sbContext="Clock(Jam)" sbDisplay="Time" sbModify="toTime"></div>
-						<div class="Box TextRight Time Clock ShowInLineUp" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
+						<div class="Box TextRight Time Clock ShowInLineup" sbContext="Clock(Lineup)" sbDisplay="Time" sbModify="toTime"></div>
 						<div class="Box TextRight Time Clock ShowInTimeout" sbContext="Clock(Timeout)" sbDisplay="Time" sbModify="toTime"></div>
 					</div>
 
@@ -81,7 +79,7 @@
 			<div class="PanelWrapperCenter">
 
 				<div class="ClockBox Wrapper OverlayPanel PanelHideBottom MediumPanel AnimatedPanel">
-						<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineUp ShowInTimeout">
+						<div class="Wrapper Clock SlideDown ShowInIntermission ShowInLineup ShowInTimeout">
 							<div class="Box BigName ShowInIntermission Clock" sbDisplay="Settings.Setting(ScoreBoard.Intermission.PreGame), Settings.Setting(ScoreBoard.Intermission.Intermission), Settings.Setting(ScoreBoard.Intermission.Unofficial), Settings.Setting(ScoreBoard.Intermission.Official), OfficialScore, Clock(Intermission).Number, Rulesets.CurrentRule(Period.Number)" sbModify="intermissionDisplay"></div>
 							<div class="Box BoxLarge TextCenter Time Clock ShowInIntermission" sbDisplay="Clock(Intermission).Time" sbModify="toTime"></div>
 						</div>

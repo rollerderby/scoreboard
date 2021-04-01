@@ -46,9 +46,6 @@ div 		{ white-space: nowrap; display: block; padding: 0; margin: 0;  overflow: h
 
 /* Team Boxes */
 .Teambox .Indicator		{ width: 4%; height: 100%; font-size: 45%;  float: left; text-align: center;}
-.Teambox .Indicator .Lead		{ opacity: 0; height: 100%; }
-.Teambox .Indicator .HasLead	{ opacity: 1; }
-.TeamBox .Indicator .HasStarPass  { display: none; }
 
 .Team .Name { width: 67%; padding-left: 2%;  border-left: 2px solid #666;  }
 .Team .Score { width: 18%; text-align: right; padding-right: .1em ; font-size: 90%; }
@@ -143,7 +140,7 @@ html > body div.Wrapper .FloatRight { float: right !important; right: 0; }
 .TeamBox .JammerBox .JammerName,
 .TeamBox .Team .Name			{ text-align: left; overflow: hidden; font-size: 80%; }
 
-.TeamBox .Indicator		{ width: 1.6em; height: 100%; text-align: center; font-size: 75%; }
+.TeamBox .Indicator		{ width: 1.6em; height: 1.3em; text-align: center; font-size: 75%; }
 .TeamBox .JammerBox .JammerName		{ font-size: 50%; margin-left: 1vw; height: 100%; }
 .TeamBox .Team      { border-right: 2px solid #333; }
 
