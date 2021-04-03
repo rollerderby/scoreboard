@@ -12,7 +12,8 @@ function initialize() {
       'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.PreGame)',
       'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.Unofficial)',
       'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.Official)',
-      'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.Intermission)' ]);
+      'ScoreBoard.CurrentGame.Settings.Setting(ScoreBoard.Intermission.Intermission)',
+      'ScoreBoard.CurrentGame.Team(*).StarPass']);
 
   WS.Register( [  'ScoreBoard.CurrentGame.Clock(Timeout).Running',
       'ScoreBoard.CurrentGame.TimeoutOwner',
@@ -150,6 +151,12 @@ function initialize() {
       WS.Connect();
 
       setTimeout(function() { $('body').removeClass('preload'); }, 1000);
+}
+
+
+function toIndicator(k, v) {
+  var prefix = k.substring(0, k.lastIndexOf('.'));
+  return isTrue(WS.state[prefix + '.StarPass']) ? 'SP' : isTrue(WS.state[prefix + '.Lost']) ? '' : isTrue(WS.state[prefix + '.Lead']) ? '★' : '';
 }
 
 function jammer_ov(k, v) {
