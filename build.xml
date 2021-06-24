@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 
 <project name="Carolina Rollergirls Scoreboard" default="test">
-	<property name="ant.build.javac.source" value="1.7"/>
-	<property name="ant.build.javac.target" value="1.7"/>
+	<property name="ant.build.javac.source" value="1.8"/>
+	<property name="ant.build.javac.target" value="1.8"/>
 
 	<property name="src.dir" value="src"/>
 	<property name="dest.dir" value="bin"/>
@@ -187,7 +187,7 @@
 	<target name="launcher" >
 		<launch4j>
 			<config outfile="${launch4j.outfile}" dontWrapJar="true" jarPath="${jar.dir}/${jar.file}" stayAlive="true" headerType="gui" chdir="." errTitle="CRG ScoreBoard" cmdLine="--gui" >
-				<jre minVersion="1.7.0" jdkPreference="preferJre" maxHeapSize="512" />
+				<jre minVersion="1.8.0" jdkPreference="preferJre" maxHeapSize="512" />
 				<messages jreVersionErr="You do not have Java installed.	Press OK to open the Java download website.	Restart the scoreboard after installing Java.\nError: The scoreboard requires Java JRE minimum version" />
 			</config>
 		</launch4j>

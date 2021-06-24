@@ -28,23 +28,10 @@ public class PenaltyCode implements ValueWithId {
     public String getId() { return code; }
 
     @Override
-    public String getValue() { return cuesForWS(); }
+    public String getValue() { return String.join(",", verbalCues); }
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }
     public List<String> getVerbalCues() { return verbalCues; }
     public void setVerbalCues(List<String> verbalCues) { this.verbalCues = verbalCues; }
-
-    public String cuesForWS() {
-        // TODO: replace by String.join() when we move to Java 1.8
-        if (verbalCues.isEmpty()) {
-            return "";
-        }
-        StringBuilder sb = new StringBuilder();
-        for (String cue : verbalCues) {
-            sb.append(",").append(cue);
-        }
-        sb.deleteCharAt(0);
-        return sb.toString();
-    }
 }
