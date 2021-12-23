@@ -5,6 +5,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
 public class CurrentPositionImpl extends ScoreBoardEventProviderImpl<CurrentPosition> implements CurrentPosition {
@@ -21,6 +22,10 @@ public class CurrentPositionImpl extends ScoreBoardEventProviderImpl<CurrentPosi
         setCopy(Position.FLAGS, this, POSITION, Position.FLAGS, true);
         setCopy(Position.PENALTY_BOX, this, POSITION, Position.PENALTY_BOX, true);
     }
+    public CurrentPositionImpl(CurrentPositionImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentPositionImpl(this, root); }
 
     @Override
     public String getProviderId() { return floorPosition.toString(); }

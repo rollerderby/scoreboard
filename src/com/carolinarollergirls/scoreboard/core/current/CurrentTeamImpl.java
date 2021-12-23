@@ -55,6 +55,10 @@ public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> im
         addWriteProtection(POSITION);
         providers.put(skaterListener, null);
     }
+    public CurrentTeamImpl(CurrentTeamImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentTeamImpl(this, root); }
 
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {

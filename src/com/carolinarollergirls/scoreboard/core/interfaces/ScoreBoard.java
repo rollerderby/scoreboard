@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
 
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface ScoreBoard extends ScoreBoardEventProvider {
@@ -32,6 +33,10 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     public PreparedTeam getPreparedTeam(String id);
 
     public CurrentGame getCurrentGame();
+
+    public JSONStateManager getJsm();
+
+    public boolean isInitialLoadDone();
 
     Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version");
     Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings");

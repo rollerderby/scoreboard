@@ -37,6 +37,14 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         addWriteProtection(FIELDING);
         getOrCreate(SCORING_TRIP, 1);
     }
+    public TeamJamImpl(TeamJamImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = toCloneIfInTree(cloned.game, root);
+        team = toCloneIfInTree(cloned.team, root);
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new TeamJamImpl(this, root); }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {

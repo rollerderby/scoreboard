@@ -29,6 +29,13 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
         }
         setRecalculated(DURATION).addSource(this, WALLTIME_END).addSource(this, WALLTIME_START);
     }
+    public PeriodImpl(PeriodImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = (Game) parent;
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PeriodImpl(this, root); }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {

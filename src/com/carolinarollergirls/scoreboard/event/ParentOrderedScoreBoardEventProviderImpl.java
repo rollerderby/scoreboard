@@ -14,6 +14,12 @@ public abstract class ParentOrderedScoreBoardEventProviderImpl<C extends ParentO
         set(NEXT, null, Source.RECALCULATE);
         setCopy(NUMBER, parent, NUMBER, true);
     }
+    protected ParentOrderedScoreBoardEventProviderImpl(ParentOrderedScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        ownType = cloned.ownType;
+        subId = cloned.subId;
+        parent = toCloneIfInTree(cloned.parent, root);
+    }
 
     @Override
     public String getProviderId() { return subId; }

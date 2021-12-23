@@ -13,6 +13,7 @@ public interface Official extends ScoreBoardEventProvider {
     Value<Team> P1_TEAM = new Value<>(Team.class, "P1Team", null);
     Value<Boolean> SWAP = new Value<>(Boolean.class, "Swap", false);
 
+    public static final String ROLE_HNSO = "Head Non-Skating Official";
     public static final String ROLE_PLT = "Penalty Lineup Tracker";
     public static final String ROLE_PT = "Penalty Tracker";
     public static final String ROLE_PW = "Penalty Wrangler";

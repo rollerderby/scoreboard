@@ -49,6 +49,15 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         set(PREPARED_SKATER, ps);
         setFlags(ps.get(FLAGS));
     }
+    public SkaterImpl(SkaterImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = toCloneIfInTree(cloned.game, root);
+        team = (Team) parent;
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new SkaterImpl(this, root); }
+
     private void initialize() {
         addProperties(PREPARED_SKATER, NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, POSITION, ROLE,
                 BASE_ROLE, PENALTY_BOX, FLAGS, FIELDING, PENALTY);

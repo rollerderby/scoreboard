@@ -25,11 +25,13 @@ import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
+import com.carolinarollergirls.scoreboard.utils.StatsbookImporter;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 public class LoadJsonScoreBoard extends HttpServlet {
     public LoadJsonScoreBoard(ScoreBoard sb) {
         this.scoreBoard = sb;
+        sbImporter = new StatsbookImporter(sb);
     }
 
     @Override
@@ -48,49 +50,37 @@ public class LoadJsonScoreBoard extends HttpServlet {
                 while (items.hasNext()) {
                     FileItemStream item = items.next();
                     if (!item.isFormField()) {
-                        InputStream stream = item.openStream();
-                        Map<String, Object> map = JSON.std.mapFrom(stream);
-                        stream.close();
-                        @SuppressWarnings("unchecked")
-                        Map<String, Object> state = (Map<String, Object>) map.get("state");
-                        handleJSON(request, response, state);
+                        if (request.getPathInfo().equalsIgnoreCase("/JSON")) {
+                            InputStream stream = item.openStream();
+                            Map<String, Object> map = JSON.std.mapFrom(stream);
+                            stream.close();
+                            scoreBoard.runInBatch(new Runnable() {
+                                @Override
+                                @SuppressWarnings("unchecked")
+                                public void run() {
+                                    ScoreBoardJSONSetter.set(scoreBoard, (Map<String, Object>) map.get("state"),
+                                            Source.JSON);
+                                }
+                            });
+                            response.setContentType("text/plain");
+                            response.setStatus(HttpServletResponse.SC_OK);
+                        } else if (request.getPathInfo().equalsIgnoreCase("/xlsx")) {
+                            sbImporter.read(item.openStream());
+                        }
                         return;
                     }
                 }
-
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No JSON uploaded");
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "No File uploaded");
             } catch (FileUploadException fuE) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST, fuE.getMessage());
+            } catch (IOException iE) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Error Reading File: " + iE.getMessage());
             }
         } else {
             response.sendError(HttpServletResponse.SC_FORBIDDEN, "No write access");
         }
     }
 
-    protected void handleJSON(HttpServletRequest request, HttpServletResponse response, final Map<String, Object> state)
-            throws IOException {
-        if (request.getPathInfo().equalsIgnoreCase("/load")) {
-            scoreBoard.runInBatch(new Runnable() {
-                @Override
-                public void run() {
-                    // scoreBoard.getGame().reset();
-                    ScoreBoardJSONSetter.set(scoreBoard, state, Source.JSON);
-                }
-            });
-        } else if (request.getPathInfo().equalsIgnoreCase("/merge")) {
-            scoreBoard.runInBatch(new Runnable() {
-                @Override
-                public void run() {
-                    ScoreBoardJSONSetter.set(scoreBoard, state, Source.JSON);
-                }
-            });
-        } else {
-            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Must specify to load or merge");
-        }
-        response.setContentType("text/plain");
-        response.setStatus(HttpServletResponse.SC_OK);
-    }
-
     protected final ScoreBoard scoreBoard;
-
+    protected final StatsbookImporter sbImporter;
 }

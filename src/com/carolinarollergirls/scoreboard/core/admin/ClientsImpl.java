@@ -27,6 +27,10 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
     }
+    public ClientsImpl(ClientsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ClientsImpl(this, root); }
 
     @Override
     public void postAutosaveUpdate() {
@@ -163,7 +167,11 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
             addWriteProtectionOverride(CREATED, Source.ANY_INTERNAL);
             addWriteProtectionOverride(WROTE, Source.ANY_INTERNAL);
         }
+        public ClientImpl(ClientImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
+        @Override
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ClientImpl(this, root); }
+    
         @Override
         public void write() {
             synchronized (coreLock) {
@@ -182,7 +190,11 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
             set(MAY_WRITE, parent.get(NEW_DEVICE_WRITE));
             addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         }
+        public DeviceImpl(DeviceImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
+        @Override
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new DeviceImpl(this, root); }
+    
         @Override
         public String getName() {
             synchronized (coreLock) {

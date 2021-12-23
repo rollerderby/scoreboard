@@ -36,6 +36,13 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         setRecalculated(STAR_PASS).addSource(getTeamJam(Team.ID_1), TeamJam.STAR_PASS).addSource(getTeamJam(Team.ID_2),
                 TeamJam.STAR_PASS);
     }
+    public JamImpl(JamImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = toCloneIfInTree(cloned.game, root);
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new JamImpl(this, root); }
 
     @Override
     public void setParent(ScoreBoardEventProvider p) {

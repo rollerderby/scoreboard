@@ -10,9 +10,9 @@
   
   preparePenaltyEditor(gameId);
   
-  prepareAnnotationEditor(gameId, teamId);
+  prepareAnnotationEditor($('#AnnotationEditor'), gameId, teamId);
   
-  prepareFieldingEditor(gameId, teamId);
+  prepareFieldingEditor($('#FieldingEditor'), gameId, teamId);
 
   prepareOptionsDialog(gameId, teamId);
   _windowFunctions.configureZoom();

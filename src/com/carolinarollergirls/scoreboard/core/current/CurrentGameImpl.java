@@ -12,6 +12,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -49,6 +50,10 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
         add(CLOCK, new CurrentClockImpl(this, Clock.ID_INTERMISSION));
         addWriteProtection(CLOCK);
     }
+    public CurrentGameImpl(CurrentGameImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentGameImpl(this, root); }
 
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {

@@ -1,11 +1,14 @@
 package com.carolinarollergirls.scoreboard.utils;
 
-import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import static java.nio.file.StandardCopyOption.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,16 +40,22 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
-public class StatsbookExporter {
+public class StatsbookExporter extends Thread {
     public StatsbookExporter(Game g) {
-        game = g;
+        baseGame = g;
+        game = (Game) g.clone(g);
+        start();
     }
 
-    public void export() {
+    @Override
+    public void run() {
+        boolean success = false;
         try {
-            wb = WorkbookFactory.create(new File(game.getScoreBoard().getSettings().get("Scorboard.Stats.InputFile")));
+            Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
+            Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
+            Files.copy(Paths.get(game.getScoreBoard().getSettings().get("ScoreBoard.Stats.InputFile")), tmpPath, REPLACE_EXISTING);
+            wb = WorkbookFactory.create(tmpPath.toFile());
 
             fillIgrfAndPenalties();
             fillScoreLineupsAndClock();
@@ -54,44 +63,44 @@ public class StatsbookExporter {
             write();
 
             wb.close();
+            Files.move(tmpPath, fullPath, REPLACE_EXISTING);
+            success = true;
         } catch (IOException e) {
             e.printStackTrace();
+        } finally {
+            baseGame.exportDone(success);
         }
     }
 
     private void fillIgrfAndPenalties() {
         Sheet igrf = wb.getSheet("IGRF");
 
-        synchronized (coreLock) {
-            fillIgrfHead(igrf);
-            fillNsos(igrf);
-            fillRefs(igrf);
-        }
+        fillIgrfHead(igrf);
+        fillNsos(igrf);
+        fillRefs(igrf);
 
         Sheet penalties = wb.getSheet("Penalties");
         Sheet clock = wb.getSheet("Game Clock");
 
-        synchronized (coreLock) {
-            fillTeamData(igrf, clock, Team.ID_1);
-            fillTeamData(igrf, clock, Team.ID_2);
-            fillPenaltiesHead(penalties);
-        }
+        fillTeamData(igrf, clock, Team.ID_1);
+        fillTeamData(igrf, clock, Team.ID_2);
+        fillPenaltiesHead(penalties);
 
         createCellStyles(igrf);
 
         for (Team t : game.getAll(Game.TEAM)) {
-            synchronized (coreLock) {
-                List<Skater> skaters = (List<Skater>) t.getAll(Team.SKATER);
-                Collections.sort(skaters);
-                int igrfRowId = 13;
-                int penRowId = 3;
-                for (Skater s : skaters) {
-                    fillSkater(igrf.getRow(igrfRowId), s, clock);
-                    fillPenalties(penalties.getRow(penRowId), penalties.getRow(penRowId + 1), s);
-
-                    if (++igrfRowId > 32) { break; } // no more space
+            List<Skater> skaters = new ArrayList<>(t.getAll(Team.SKATER));
+            Collections.sort(skaters);
+            int igrfRowId = 13;
+            int penRowId = 3;
+            for (Skater s : skaters) {
+                fillSkater(igrf.getRow(igrfRowId), s, clock);
+                fillPenalties(penalties.getRow(penRowId), penalties.getRow(penRowId + 1), s);
+                if(!s.getFlags().startsWith("B")) {
+                    igrfRowId++;
                     penRowId += 2;
                 }
+                if (igrfRowId > 32) { break; } // no more space
             }
         }
     }
@@ -99,22 +108,23 @@ public class StatsbookExporter {
     private void fillIgrfHead(Sheet igrf) {
         Row row = igrf.getRow(2);
         setEventInfoCell(row, 1, "Venue");
-        setEventInfoCell(row, 7, "City");
-        setEventInfoCell(row, 9, "State");
-        setEventInfoCell(row, 10, "GameNo");
+        setEventInfoCell(row, 8, "City");
+        setEventInfoCell(row, 10, "State");
+        setEventInfoCell(row, 11, "GameNo");
         row = igrf.getRow(4);
         setEventInfoCell(row, 1, "Tournament");
-        setEventInfoCell(row, 1, "HostLeague");
+        setEventInfoCell(row, 8, "HostLeague");
         row = igrf.getRow(6);
-        row.getCell(1).setCellValue(LocalDate.parse(game.get(Game.EVENT_INFO, "Date").getValue()));
-        row.getCell(7).setCellValue(LocalDateTime.parse(game.get(Game.EVENT_INFO, "StartTime").getValue(),
-                DateTimeFormatter.ISO_LOCAL_TIME));
+        LocalDate date = LocalDate.parse(game.get(Game.EVENT_INFO, "Date").getValue());
+        LocalTime time = LocalTime.parse(game.get(Game.EVENT_INFO, "StartTime").getValue());
+        row.getCell(1).setCellValue(date);
+        row.getCell(8).setCellValue(LocalDateTime.of(date, time));
     }
 
     private void fillNsos(Sheet igrf) {
         fillOfficialRow(igrf.getRow(59), game.get(Game.HEAD_NSO), true);
 
-        List<Official> nsos = (List<Official>) game.getAll(Game.NSO);
+        List<Official> nsos = new ArrayList<>(game.getAll(Game.NSO));
         Collections.sort(nsos);
         int rowId = 60;
         for (Official o : nsos) {
@@ -157,7 +167,7 @@ public class StatsbookExporter {
     }
 
     private void fillRefs(Sheet igrf) {
-        List<Official> refs = (List<Official>) game.getAll(Game.REF);
+        List<Official> refs = new ArrayList<>(game.getAll(Game.REF));
         Collections.sort(refs);
         int rowId = game.get(Game.HEAD_REF) == null ? 80 : 79;
         for (Official o : refs) {
@@ -172,7 +182,7 @@ public class StatsbookExporter {
                 }
             }
 
-            if (++rowId > 86) { break; }
+            if (++rowId > 87) { break; }
         }
     }
 
@@ -180,19 +190,19 @@ public class StatsbookExporter {
         fillOfficialRow(row, o, false);
     }
     private void fillOfficialRow(Row row, Official o, boolean skipRole) {
-        setCell(row, 0, o.get(Official.ROLE));
+        if (!skipRole) { setCell(row, 0, o.get(Official.ROLE)); }
         setCell(row, 2, o.get(Official.NAME));
-        setCell(row, 6, o.get(Official.LEAGUE));
-        setCell(row, 9, o.get(Official.CERT));
+        setCell(row, 7, o.get(Official.LEAGUE));
+        setCell(row, 10, o.get(Official.CERT));
     }
 
     private void fillTeamData(Sheet igrf, Sheet clock, String teamId) {
         Team t = game.getTeam(teamId);
-        int col = Team.ID_1.equals(teamId) ? 1 : 7;
+        int col = Team.ID_1.equals(teamId) ? 1 : 8;
         setCell(igrf.getRow(9), col, t.get(Team.LEAGUE_NAME));
         setCell(igrf.getRow(10), col, t.get(Team.TEAM_NAME));
         setCell(igrf.getRow(11), col, t.get(Team.UNIFORM_COLOR));
-        String captain = t.get(Team.CAPTAIN).get(Skater.NAME);
+        String captain = t.get(Team.CAPTAIN) == null ? "" : t.get(Team.CAPTAIN).get(Skater.NAME);
         setCell(igrf.getRow(48), col, captain);
         setCell(clock.getRow(Team.ID_1.equals(teamId) ? 4 : 6), 1, captain);
         setCell(clock.getRow(Team.ID_1.equals(teamId) ? 55 : 57), 1, captain);
@@ -212,11 +222,11 @@ public class StatsbookExporter {
             setCell(clock.getRow(Team.ID_1.equals(teamId) ? 56 : 58), 1, s.getName());
         }
         if ("ALT".equals(flags)) {
-            setCell(row, Team.ID_1.equals(teamId) ? 1 : 7, s.getRosterNumber() + "*", strikedNum);
-            setCell(row, Team.ID_1.equals(teamId) ? 2 : 8, s.getName(), strikedName);
+            setCell(row, Team.ID_1.equals(teamId) ? 1 : 8, s.getRosterNumber() + "*", strikedNum);
+            setCell(row, Team.ID_1.equals(teamId) ? 2 : 9, s.getName(), strikedName);
         } else if (!flags.startsWith("B")) {
-            setCell(row, Team.ID_1.equals(teamId) ? 1 : 7, s.getRosterNumber());
-            setCell(row, Team.ID_1.equals(teamId) ? 2 : 8, s.getName());
+            setCell(row, Team.ID_1.equals(teamId) ? 1 : 8, s.getRosterNumber());
+            setCell(row, Team.ID_1.equals(teamId) ? 2 : 9, s.getName());
         }
     }
 
@@ -245,19 +255,16 @@ public class StatsbookExporter {
             fillScoreHead(score.getRow(rowIndex), pn);
             fillLineupsHead(lineups.getRow(rowIndex), pn);
 
-            Period p = game.get(Game.PERIOD, pn - 1);
+            Period p = game.get(Game.PERIOD, pn + 1);
             toCols = fillTimeouts(clock, toCols, p);
 
             rowIndex += 3;
             for (int jn = 1; jn <= p.getCurrentJamNumber(); jn++) {
-                synchronized (coreLock) {
-                    fillJam(score.getRow(rowIndex), score.getRow(rowIndex + 1), osOffset.getRow(rowIndex),
-                            lineups.getRow(rowIndex), lineups.getRow(rowIndex + 1), clock.getRow(pn * 51 + jn + 9),
-                            p.getJam(jn));
-
-                    rowIndex += p.getJam(jn).get(Jam.STAR_PASS) ? 2 : 1;
-                    if (rowIndex > 82 || (rowIndex > 40 && rowIndex < 45)) { break; } // end of sheet
-                }
+                fillJam(score.getRow(rowIndex), score.getRow(rowIndex + 1), osOffset.getRow(rowIndex),
+                         lineups.getRow(rowIndex), lineups.getRow(rowIndex + 1), clock.getRow(pn * 51 + jn + 9),
+                         p.getJam(jn));
+                 rowIndex += p.getJam(jn).get(Jam.STAR_PASS) ? 2 : 1;
+                 if (rowIndex > 82 || (rowIndex > 40 && rowIndex < 45)) { break; } // end of sheet
             }
         }
     }
@@ -279,7 +286,7 @@ public class StatsbookExporter {
         int baseRow = p.getNumber() == 1 ? 0 : 51;
         Row[] toRows = { clockSheet.getRow(baseRow + 4), clockSheet.getRow(baseRow + 6) };
 
-        List<Timeout> timeouts = (List<Timeout>) p.getAll(Period.TIMEOUT);
+        List<Timeout> timeouts = new ArrayList<>(p.getAll(Period.TIMEOUT));
         Collections.sort(timeouts);
 
         for (Timeout t : timeouts) {
@@ -309,7 +316,7 @@ public class StatsbookExporter {
         if (p.getNumber() == 1) { // cross off timeouts for P2
             for (int i = 1; i <= 2; i++) {
                 Row row = clockSheet.getRow(53 + i * 2);
-                for (int col = 3; col < toCol[i]; col++) {
+                for (int col = 3; col < toCol[i-1]; col++) {
                     setCell(row, col, "X");
                 }
             }
@@ -328,7 +335,7 @@ public class StatsbookExporter {
         fillLineupsTeamJam(lineupsRow, lineupsSpRow, 0, tj);
 
         tj = j.getTeamJam(Team.ID_2);
-        fillScoreTeamJam(scoreRow, scoreSpRow, 18, tj);
+        fillScoreTeamJam(scoreRow, scoreSpRow, 19, tj);
         fillOsOffsetTeamJam(osOffsetRow, 4, tj);
         fillLineupsTeamJam(lineupsRow, lineupsSpRow, 26, tj);
 
@@ -340,7 +347,7 @@ public class StatsbookExporter {
         if (tj.getJam().get(Jam.STAR_PASS)) {
             setCell(spRow, baseCol, tj.isStarPass() ? "SP" : "SP*");
         }
-        setCell(baseRow, baseCol + 1, tj.getFielding(FloorPosition.JAMMER).getSkater().getRosterNumber());
+        setCell(baseRow, baseCol + 1, tj.getFielding(FloorPosition.JAMMER).get(Fielding.SKATER_NUMBER));
 
         setCell(baseRow, baseCol + 2, tj.isLost() ? "X" : "");
         setCell(baseRow, baseCol + 3, tj.isLead() ? "X" : "");
@@ -439,14 +446,14 @@ public class StatsbookExporter {
     }
     private void fillFielding(Row row, int startCol, Fielding f, boolean afterSp, boolean skipNumber) {
         if (!skipNumber) {
-            setCell(row, startCol, f.getSkater().getRosterNumber(), f.get(Fielding.ANNOTATION));
+            setCell(row, startCol, f.get(Fielding.SKATER_NUMBER), f.get(Fielding.ANNOTATION));
         }
         String[] boxSyms = f.get(afterSp ? Fielding.BOX_TRIP_SYMBOLS_AFTER_S_P : Fielding.BOX_TRIP_SYMBOLS_BEFORE_S_P)
                 .split(" ");
         for (int i = 0; i < boxSyms.length; i++) {
             setCell(row, startCol + i + 1, boxSyms[i]);
             if ("3".equals(boxSyms[i])) {
-                injuries.add(f.getSkater().getTeam().get(Team.UNIFORM_COLOR) + " " + f.getSkater().getRosterNumber());
+                injuries.add(f.getPosition().getTeam().get(Team.UNIFORM_COLOR) + " " + f.get(Fielding.SKATER_NUMBER));
             }
         }
     }
@@ -569,7 +576,7 @@ public class StatsbookExporter {
         strikedName.setFont(strikeFont);
     }
 
-    Game game;
+    Game game, baseGame;
     Workbook wb;
     CellStyle strikedNum;
     CellStyle strikedName;
@@ -581,6 +588,4 @@ public class StatsbookExporter {
     String[][] lt = { { "", "" }, { "", "" } };
 
     List<String> injuries;
-
-    Object coreLock = ScoreBoardEventProviderImpl.getCoreLock();
 }

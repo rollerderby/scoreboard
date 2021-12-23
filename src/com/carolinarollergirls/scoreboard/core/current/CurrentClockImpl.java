@@ -4,6 +4,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentClock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
 public class CurrentClockImpl extends ScoreBoardEventProviderImpl<CurrentClock> implements CurrentClock {
@@ -19,6 +20,10 @@ public class CurrentClockImpl extends ScoreBoardEventProviderImpl<CurrentClock> 
         setCopy(Clock.DIRECTION, this, CLOCK, Clock.DIRECTION, true);
         setCopy(Clock.RUNNING, this, CLOCK, Clock.RUNNING, true);
     }
+    public CurrentClockImpl(CurrentClockImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentClockImpl(this, root); }
 
     @Override
     public void execute(Command prop, Source source) { get(CLOCK).execute(prop, source); }

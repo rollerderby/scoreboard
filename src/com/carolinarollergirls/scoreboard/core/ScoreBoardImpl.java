@@ -32,6 +32,7 @@ import com.carolinarollergirls.scoreboard.core.prepared.RulesetsImpl;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.utils.Version;
 
@@ -41,6 +42,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         addProperties(VERSION, SETTINGS, TWITTER, RULESETS, MEDIA, CLIENTS, GAME, PREPARED_TEAM, CURRENT_GAME);
         setupScoreBoard();
     }
+    public ScoreBoardImpl(ScoreBoardImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ScoreBoardImpl(this, root); }
 
     protected void setupScoreBoard() {
         removeAll(VERSION);
@@ -81,6 +86,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
             get(CURRENT_GAME, "").postAutosaveUpdate();
             get(CLIENTS, "").postAutosaveUpdate();
             get(TWITTER, "").postAutosaveUpdate();
+            initialLoadDone = true;
         }
     }
 
@@ -123,4 +129,13 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         }
         return Timeout.Owners.NONE;
     }
+
+    @Override
+    public JSONStateManager getJsm() { return jsm; }
+
+    @Override
+    public boolean isInitialLoadDone() { return initialLoadDone; }
+
+    private JSONStateManager jsm = new JSONStateManager();
+    private boolean initialLoadDone = false;
 }

@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.core.current;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
 public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater> implements CurrentSkater {
@@ -19,6 +20,10 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
         setCopy(Skater.FLAGS, this, SKATER, Skater.FLAGS, true);
         set(SKATER, s);
     }
+    public CurrentSkaterImpl(CurrentSkaterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentSkaterImpl(this, root); }
 
     @Override
     public int compareTo(CurrentSkater other) {

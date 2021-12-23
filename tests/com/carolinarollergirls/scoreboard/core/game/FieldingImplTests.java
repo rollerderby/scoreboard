@@ -91,7 +91,7 @@ public class FieldingImplTests {
         Fielding f = s.getFielding(g.getOrCreatePeriod(1).getJam(2).getTeamJam(Team.ID_1));
         f.execute(Fielding.ADD_BOX_TRIP);
 
-        assertEquals(" $ + -", f.get(Fielding.BOX_TRIP_SYMBOLS));
+        assertEquals("$ + -", f.get(Fielding.BOX_TRIP_SYMBOLS));
     }
 
     @Test

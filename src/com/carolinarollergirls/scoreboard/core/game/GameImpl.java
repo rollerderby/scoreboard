@@ -3,6 +3,9 @@ package com.carolinarollergirls.scoreboard.core.game;
 import java.io.File;
 import java.io.FileReader;
 import java.io.Reader;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -28,6 +31,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
+import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCodesDefinition;
 import com.carolinarollergirls.scoreboard.rules.Rule;
@@ -35,6 +39,7 @@ import com.carolinarollergirls.scoreboard.rules.RuleDefinition;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.ClockConversion;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
+import com.carolinarollergirls.scoreboard.utils.StatsbookExporter;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.fasterxml.jackson.jr.ob.JSON;
 
@@ -44,19 +49,25 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         initReferences(rs);
         getTeam(Team.ID_1).loadPreparedTeam(team1);
         getTeam(Team.ID_2).loadPreparedTeam(team2);
+        jsonSnapshotter = new JSONStateSnapshotter(sb.getJsm(), this);
     }
 
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
         initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
+        jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this);
     }
+    public GameImpl(GameImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new GameImpl(this, root); }
 
     private void initReferences(Ruleset rs) {
         addProperties(NAME, NAME_FORMAT, STATE, CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM,
                 UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER,
-                OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, HEAD_NSO, HEAD_REF, CLOCK, TEAM, RULE,
+                OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, HEAD_NSO, HEAD_REF, FILENAME, LAST_FILE_UPDATE, CLOCK, TEAM, RULE,
                 PENALTY_CODE, LABEL, EVENT_INFO, NSO, REF, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO,
-                CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT);
+                CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT, EXPORT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -78,7 +89,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         setRecalculated(NO_MORE_JAM).addSource(this, IN_JAM).addSource(this, IN_PERIOD).addSource(this, RULE)
                 .addIndirectSource(this, CURRENT_PERIOD, Period.TIMEOUT);
         setRecalculated(NAME).addSource(this, NAME_FORMAT).addSource(this, STATE).addSource(this, EVENT_INFO)
-                .addSource(get(TEAM, Team.ID_1), Team.DISPLAY_NAME).addSource(get(TEAM, Team.ID_2), Team.DISPLAY_NAME);
+                .addSource(get(TEAM, Team.ID_1), Team.DISPLAY_NAME).addSource(get(TEAM, Team.ID_2), Team.DISPLAY_NAME)
+                .addSource(get(TEAM, Team.ID_1), Team.SCORE).addSource(get(TEAM, Team.ID_2), Team.SCORE);
+        setRecalculated(FILENAME).addSource(this, EVENT_INFO).addSource(get(TEAM, Team.ID_1), Team.DISPLAY_NAME)
+                .addSource(get(TEAM, Team.ID_2), Team.DISPLAY_NAME);
         setRecalculated(STATE).addSource(this, CURRENT_PERIOD_NUMBER).addSource(this, OFFICIAL_SCORE);
         set(IN_JAM, false);
         removeAll(Period.JAM);
@@ -136,11 +150,20 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         } else if (prop == NAME) {
             String game = get(EVENT_INFO, INFO_GAME_NUMBER) == null ? "" : get(EVENT_INFO, INFO_GAME_NUMBER).getValue();
             String date = get(EVENT_INFO, INFO_DATE) == null ? "" : get(EVENT_INFO, INFO_DATE).getValue();
-            return get(NAME_FORMAT).replace("%d", date).replace("%g", game)
-                    .replace("%G", game == "" ? "" : ("Game " + game + ":"))
+            return get(NAME_FORMAT)
+                    .replace("%d", date)
+                    .replace("%g", game)
+                    .replace("%G", game.equals("") ? "" : ("Game " + game + ":"))
                     .replace("%1", getTeam(Team.ID_1).get(Team.DISPLAY_NAME))
-                    .replace("%2", getTeam(Team.ID_2).get(Team.DISPLAY_NAME)).replace("%s", get(STATE).toString())
+                    .replace("%2", getTeam(Team.ID_2).get(Team.DISPLAY_NAME))
+                    .replace("%s", get(STATE).toString())
+                    .replace("%S", getTeam(Team.ID_1).get(Team.SCORE) + " - " + getTeam(Team.ID_2).get(Team.SCORE))
                     .trim();
+        } else if (prop == FILENAME) {
+            String date = get(EVENT_INFO, INFO_DATE) == null ? "0000-00-00" : get(EVENT_INFO, INFO_DATE).getValue();
+            String team1 = getTeam(Team.ID_1).get(Team.DISPLAY_NAME).replace(" ", "");
+            String team2 = getTeam(Team.ID_2).get(Team.DISPLAY_NAME).replace(" ", "");
+            return "STATS-" + date + "_" + team1 + "_vs_" + team2;
         } else if (prop == RULESET && value != null) {
             setCurrentRulesetRecurse(((Ruleset) value));
         } else if (prop == STATE) {
@@ -185,6 +208,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             getTeam(Team.ID_1).set(Team.PREPARED_TEAM_CONNECTED, false);
             getTeam(Team.ID_2).set(Team.PREPARED_TEAM_CONNECTED, false);
         }
+        if(prop == OFFICIAL_SCORE && (boolean)value && source == Source.WS) {
+            jsonSnapshotter.writeOnNextUpdate();
+        }
     }
 
     @Override
@@ -222,6 +248,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             startOvertime();
         } else if (prop == OFFICIAL_TIMEOUT) {
             setTimeoutType(Timeout.Owners.OTO, false);
+        } else if (prop == EXPORT) {
+            jsonSnapshotter.writeFile();
+            if(statsbookExporter == null) {
+                statsbookExporter = new StatsbookExporter(this);
+            }
         }
     }
 
@@ -467,6 +498,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         } else {
             _possiblyEndPeriod();
         }
+        jsonSnapshotter.writeOnNextUpdate();
     }
     private void _startLineup() {
         Clock lc = getClock(Clock.ID_LINEUP);
@@ -530,6 +562,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 }
             }
         }
+        jsonSnapshotter.writeOnNextUpdate();
     }
     private void _startIntermission() {
         Clock ic = getClock(Clock.ID_INTERMISSION);
@@ -736,10 +769,24 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         }
     }
 
+    @Override
+    public String getFilename() { return get(FILENAME); }
+
+    @Override
+    public void exportDone(boolean success) {
+        if(success) {
+            set(LAST_FILE_UPDATE, LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
+        }
+        statsbookExporter = null;
+    }
+
     protected GameSnapshot snapshot = null;
     protected boolean replacePending = false;
 
     protected Timeout noTimeoutDummy;
+
+    protected StatsbookExporter statsbookExporter;
+    protected JSONStateSnapshotter jsonSnapshotter;
 
     protected ScoreBoardListener periodEndListener = new ConditionalScoreBoardListener<>(Clock.class, Clock.ID_PERIOD,
             Clock.RUNNING, Boolean.FALSE, new ScoreBoardListener() {

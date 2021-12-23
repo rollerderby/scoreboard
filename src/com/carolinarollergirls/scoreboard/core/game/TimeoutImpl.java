@@ -10,6 +10,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -33,6 +34,13 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
         set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(PERIOD_CLOCK_ELAPSED_START, game.getClock(Clock.ID_PERIOD).getTimeElapsed());
     }
+    public TimeoutImpl(TimeoutImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = toCloneIfInTree(cloned.game, root);
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new TimeoutImpl(this, root); }
 
     private void initReferences() {
         addProperties(OWNER, REVIEW, RETAINED_REVIEW, RUNNING, PRECEDING_JAM, PRECEDING_JAM_NUMBER, DURATION,

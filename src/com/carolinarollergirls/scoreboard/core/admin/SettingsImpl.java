@@ -10,6 +10,7 @@ package com.carolinarollergirls.scoreboard.core.admin;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
@@ -18,6 +19,10 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         super(s, "", ScoreBoard.SETTINGS);
         addProperties(SETTING);
     }
+    public SettingsImpl(SettingsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new SettingsImpl(this, root); }
 
     @Override
     public void reset() { removeAll(SETTING); }

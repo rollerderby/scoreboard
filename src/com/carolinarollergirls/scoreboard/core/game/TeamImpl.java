@@ -94,6 +94,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setCopy(COLOR, this, PREPARED_TEAM, COLOR, false, PREPARED_TEAM_CONNECTED);
         providers.put(skaterListener, null);
     }
+    public TeamImpl(TeamImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = (Game) parent;
+        subId = cloned.subId;
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new TeamImpl(this, root); }
 
     @Override
     public String getProviderId() { return subId; }
@@ -135,7 +143,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             }
         }
         if (prop == LEAGUE_NAME && value != null && (game.get(Game.EVENT_INFO, Game.INFO_HOST) == null
-                || game.get(Game.EVENT_INFO, Game.INFO_HOST).getValue() == "")) {
+                || game.get(Game.EVENT_INFO, Game.INFO_HOST).getValue().equals(""))) {
             game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_HOST, (String) value));
         }
         if (prop == INITIALS) {
@@ -183,7 +191,17 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == INJURY && source != Source.COPY && (Boolean) value) { set(CALLOFF, false); }
         if (prop == CALLOFF && source != Source.COPY && (Boolean) value) { set(INJURY, false); }
-        return value;
+        if (prop == PREPARED_TEAM && value != last && source == Source.WS) {
+            if (getGame().get(Game.STATE) != Game.State.PREPARED) {
+                // no team change after game start
+                return last;
+            }
+            set(PREPARED_TEAM_CONNECTED, value != null, source, Flag.SPECIAL_CASE);
+        }
+        if (prop == PREPARED_TEAM_CONNECTED && flag != Flag.SPECIAL_CASE && get(PREPARED_TEAM) == null) {
+            return false;
+        } 
+    return value;
     }
 
     @Override
@@ -651,7 +669,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                         PreparedSkater ps = (PreparedSkater) event.getValue();
                         for (Skater s : getAll(SKATER)) {
                             if (ps == s.get(Skater.PREPARED_SKATER)) {
-                                if (event.isRemove()) {
+                                if (event.isRemove() && getGame().get(Game.STATE) == Game.State.PREPARED) {
+                                    // removing Skaters after game start might break stats
                                     remove(SKATER, s);
                                 }
                                 return;

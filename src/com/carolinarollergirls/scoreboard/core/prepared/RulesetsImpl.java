@@ -26,6 +26,11 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         addProperties(RULE_DEFINITION, RULESET);
         initialize();
     }
+    public RulesetsImpl(RulesetsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new RulesetsImpl(this, root); }
+
 
     @Override
     public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
@@ -97,7 +102,11 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
             set(NAME, name);
             set(PARENT, parent);
         }
+        public RulesetImpl(RulesetImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
+        @Override
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new RulesetImpl(this, root); }
+        
         @Override
         public String get(Rule r) { return get(RULE, r.toString()).getValue(); }
 

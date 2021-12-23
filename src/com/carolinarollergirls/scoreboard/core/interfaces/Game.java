@@ -67,8 +67,11 @@ public interface Game extends ScoreBoardEventProvider {
     public Ruleset getRuleset();
     public String getRulesetName();
 
+    public String getFilename();
+
+    public void exportDone(boolean success);
+
     public enum State {
-        INCOMPLETE("Incomplete"),
         PREPARED("Prepared"),
         RUNNING("Running"),
         FINISHED("Finished");
@@ -90,7 +93,7 @@ public interface Game extends ScoreBoardEventProvider {
     }
 
     Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "%G %d %1 vs. %2 (%s)");
+    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "%G %d %1 vs. %2 (%s: %S)");
     Value<State> STATE = new Value<>(State.class, "State", State.PREPARED);
     Value<Integer> CURRENT_PERIOD_NUMBER = new Value<>(Integer.class, "CurrentPeriodNumber", 0);
     Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null);
@@ -108,6 +111,8 @@ public interface Game extends ScoreBoardEventProvider {
     Value<String> RULESET_NAME = new Value<>(String.class, "RulesetName", "Custom");
     Value<Official> HEAD_NSO = new Value<>(Official.class, "HNSO", null);
     Value<Official> HEAD_REF = new Value<>(Official.class, "HR", null);
+    Value<String> FILENAME = new Value<>(String.class, "Filename", "STATS-0000-00-00_Team1_vs_Team_2");
+    Value<String> LAST_FILE_UPDATE = new Value<>(String.class, "LastFileUpdate", "Never");
 
     Child<Clock> CLOCK = new Child<>(Clock.class, "Clock");
     Child<Team> TEAM = new Child<>(Team.class, "Team");

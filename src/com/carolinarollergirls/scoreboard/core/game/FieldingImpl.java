@@ -18,6 +18,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 
@@ -37,6 +38,14 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         setInverseReference(SKATER, Skater.FIELDING);
         setRecalculated(NOT_FIELDED).addSource(this, SKATER);
     }
+    public FieldingImpl(FieldingImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        teamJam = (TeamJam) parent;
+        game = toCloneIfInTree(cloned.game, root);
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new FieldingImpl(this, root); }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
@@ -226,9 +235,9 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
                 beforeSP.append(" 3");
             }
         }
-        set(BOX_TRIP_SYMBOLS_BEFORE_S_P, beforeSP.toString());
-        set(BOX_TRIP_SYMBOLS_AFTER_S_P, afterSP.toString());
-        set(BOX_TRIP_SYMBOLS, jam.toString());
+        set(BOX_TRIP_SYMBOLS_BEFORE_S_P, beforeSP.toString().trim());
+        set(BOX_TRIP_SYMBOLS_AFTER_S_P, afterSP.toString().trim());
+        set(BOX_TRIP_SYMBOLS, jam.toString().trim());
     }
 
     private TeamJam teamJam;

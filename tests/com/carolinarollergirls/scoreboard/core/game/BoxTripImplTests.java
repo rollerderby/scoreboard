@@ -88,8 +88,8 @@ public class BoxTripImplTests {
     @Test
     public void testBaseCase() {
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" $", getBoxTripSymbols(3));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("$", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
     }
 
@@ -98,15 +98,15 @@ public class BoxTripImplTests {
         // Start before jam.
         bt.execute(BoxTrip.START_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" S", getBoxTripSymbols(2));
-        assertEquals(" $", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(2));
+        assertEquals("$", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
         // Can't go before the skater was present.
         bt.execute(BoxTrip.START_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" S", getBoxTripSymbols(2));
-        assertEquals(" $", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(2));
+        assertEquals("$", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
     }
 
@@ -116,21 +116,21 @@ public class BoxTripImplTests {
         bt.execute(BoxTrip.START_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
-        assertEquals(" $", getBoxTripSymbols(3));
+        assertEquals("$", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
         // Start in next jam.
         bt.execute(BoxTrip.START_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
-        assertEquals(" +", getBoxTripSymbols(3));
+        assertEquals("+", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
         // Can't go beyond end of penalty.
         bt.execute(BoxTrip.START_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
-        assertEquals(" +", getBoxTripSymbols(3));
+        assertEquals("+", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
     }
 
@@ -139,21 +139,21 @@ public class BoxTripImplTests {
         // End between Jams
         bt.execute(BoxTrip.END_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
+        assertEquals("-", getBoxTripSymbols(2));
         assertEquals("", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
         // End during previous.
         bt.execute(BoxTrip.END_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" +", getBoxTripSymbols(2));
+        assertEquals("+", getBoxTripSymbols(2));
         assertEquals("", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
         // Can't go beyond start of penalty.
         bt.execute(BoxTrip.END_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" +", getBoxTripSymbols(2));
+        assertEquals("+", getBoxTripSymbols(2));
         assertEquals("", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
     }
@@ -162,39 +162,39 @@ public class BoxTripImplTests {
     public void testEndLater() {
         bt.execute(BoxTrip.END_LATER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
         // Penalty is ongoing, but skater isn't in the upcoming jam.
         bt.execute(BoxTrip.END_LATER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
         assertEquals(null, getBoxTripSymbols(4));
 
         // Field them in upcoming jam.
         t.field(s, Role.PIVOT);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
         assertEquals("", getBoxTripSymbols(4));
         assertEquals(false, s.getFielding(t.getRunningOrUpcomingTeamJam()).isInBox());
 
         // Now can mark penalty as ongoing.
         bt.execute(BoxTrip.END_LATER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
         assertEquals(true, s.getFielding(t.getRunningOrUpcomingTeamJam()).isInBox());
 
         // Can't go beyond ongoing.
         bt.execute(BoxTrip.END_LATER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
         assertEquals(true, s.getFielding(t.getRunningOrUpcomingTeamJam()).isInBox());
     }
 
@@ -204,31 +204,31 @@ public class BoxTripImplTests {
         bt.execute(BoxTrip.END_LATER);
         bt.execute(BoxTrip.END_LATER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.END_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
         assertEquals("", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.END_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" $", getBoxTripSymbols(3));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("$", getBoxTripSymbols(3));
         assertEquals("", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.END_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
+        assertEquals("-", getBoxTripSymbols(2));
         assertEquals("", getBoxTripSymbols(3));
         assertEquals("", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.END_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" +", getBoxTripSymbols(2));
+        assertEquals("+", getBoxTripSymbols(2));
         assertEquals("", getBoxTripSymbols(3));
         assertEquals("", getBoxTripSymbols(4));
     }
@@ -239,58 +239,58 @@ public class BoxTripImplTests {
         bt.execute(BoxTrip.END_LATER);
         bt.execute(BoxTrip.END_LATER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.START_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.START_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
-        assertEquals(" -", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("-", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.START_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
         assertEquals("", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("S", getBoxTripSymbols(4));
 
         // Can't go beyond upcoming jam.
         bt.execute(BoxTrip.START_LATER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
         assertEquals("", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.START_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
-        assertEquals(" -", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("-", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.START_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
         assertEquals("", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.START_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" -", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("-", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
 
         bt.execute(BoxTrip.START_EARLIER);
         assertEquals(null, getBoxTripSymbols(1));
-        assertEquals(" S", getBoxTripSymbols(2));
-        assertEquals(" S", getBoxTripSymbols(3));
-        assertEquals(" S", getBoxTripSymbols(4));
+        assertEquals("S", getBoxTripSymbols(2));
+        assertEquals("S", getBoxTripSymbols(3));
+        assertEquals("S", getBoxTripSymbols(4));
     }
 
 }

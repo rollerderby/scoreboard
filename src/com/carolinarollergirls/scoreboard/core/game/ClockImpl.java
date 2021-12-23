@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
@@ -46,6 +47,13 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         resetTime();
         game.addScoreBoardListener(new ConditionalScoreBoardListener<>(Game.class, Game.RULE, rulesetChangeListener));
     }
+    public ClockImpl(ClockImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = (Game) parent;
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ClockImpl(this, root); }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {

@@ -8,18 +8,15 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import io.prometheus.client.exporter.MetricsServlet;
-import io.prometheus.client.filter.MetricsFilter;
-import io.prometheus.client.hotspot.DefaultExports;
-
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.SocketException;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import javax.servlet.http.HttpServlet;
+
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -35,7 +32,9 @@ import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 
-
+import io.prometheus.client.exporter.MetricsServlet;
+import io.prometheus.client.filter.MetricsFilter;
+import io.prometheus.client.hotspot.DefaultExports;
 
 public class JettyServletScoreBoardController {
     public JettyServletScoreBoardController(ScoreBoard sb, JSONStateManager jsm, String host, int port) {
@@ -64,7 +63,8 @@ public class JettyServletScoreBoardController {
         manager.setHttpOnly(true);
         manager.setSessionCookie("CRG_SCOREBOARD");
         manager.setMaxCookieAge(COOKIE_DURATION_SECONDS);
-        // Sessions are created per request, so they're actually refreshed on each request
+        // Sessions are created per request, so they're actually refreshed on each
+        // request
         // which is harmless.
         manager.setRefreshCookieAge(1);
         SessionHandler sessions = new SessionHandler(manager);
@@ -73,10 +73,11 @@ public class JettyServletScoreBoardController {
         FilterHolder mf;
         try {
             // Only keep the first two path components.
-            mf = new FilterHolder(new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
-        } catch ( ServletException e ) {
+            mf = new FilterHolder(
+                    new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
+        } catch (ServletException e) {
             // Can't actually throw an exception, so this should never happen.
-            throw new RuntimeException("Could not create MetricsFilter : "+e.getMessage());
+            throw new RuntimeException("Could not create MetricsFilter : " + e.getMessage());
         }
         sch.addFilter(mf, "/*", 1);
 
@@ -100,7 +101,7 @@ public class JettyServletScoreBoardController {
         sch.addServlet(new ServletHolder(sjs), "/SaveJSON/*");
 
         HttpServlet ljs = new LoadJsonScoreBoard(scoreBoard);
-        sch.addServlet(new ServletHolder(ljs), "/LoadJSON/*");
+        sch.addServlet(new ServletHolder(ljs), "/Load/*");
 
         HttpServlet ms = new MediaServlet(scoreBoard, new File(BasePath.get(), "html").getPath());
         sch.addServlet(new ServletHolder(ms), "/Media/*");
@@ -109,8 +110,8 @@ public class JettyServletScoreBoardController {
     public void start() {
         try {
             server.start();
-        } catch ( Exception e ) {
-            throw new RuntimeException("Could not start server : "+e.getMessage());
+        } catch (Exception e) {
+            throw new RuntimeException("Could not start server : " + e.getMessage());
         }
 
         Logger.printMessage("");
@@ -120,19 +121,19 @@ public class JettyServletScoreBoardController {
             Logger.printMessage("Double-click/open the 'start.html' file, or");
         }
         Logger.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
-        Logger.printMessage("	http://"+(host != null ? host : "localhost")+":"+port);
+        Logger.printMessage("	http://" + (host != null ? host : "localhost") + ":" + port);
         try {
             Iterator<String> urls = urlsServlet.getUrls().iterator();
             if (urls.hasNext()) {
                 Logger.printMessage("or try one of these URLs:");
             }
             while (urls.hasNext()) {
-                Logger.printMessage("	"+urls.next().toString());
+                Logger.printMessage("	" + urls.next().toString());
             }
-        } catch ( MalformedURLException muE ) {
-            Logger.printMessage("Internal error: malformed URL from Server Connector: "+muE.getMessage());
-        } catch ( SocketException sE ) {
-            Logger.printMessage("Internal error: socket exception from Server Connector: "+sE.getMessage());
+        } catch (MalformedURLException muE) {
+            Logger.printMessage("Internal error: malformed URL from Server Connector: " + muE.getMessage());
+        } catch (SocketException sE) {
+            Logger.printMessage("Internal error: socket exception from Server Connector: " + sE.getMessage());
         }
         Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
         Logger.printMessage("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");
@@ -141,10 +142,10 @@ public class JettyServletScoreBoardController {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                int removed = scoreBoard.getClients().gcOldDevices(
-                                  System.currentTimeMillis() - COOKIE_DURATION_SECONDS * 1000);
+                int removed = scoreBoard.getClients()
+                        .gcOldDevices(System.currentTimeMillis() - COOKIE_DURATION_SECONDS * 1000);
                 if (removed > 0) {
-                    Logger.printMessage("Garbage collected " +  removed + " old device(s)." );
+                    Logger.printMessage("Garbage collected " + removed + " old device(s).");
                 }
             }
         }, 0, 3600, TimeUnit.SECONDS);

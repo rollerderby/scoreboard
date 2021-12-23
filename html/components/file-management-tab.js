@@ -1,19 +1,18 @@
-function createDataManagementTab(tab) {
+function createFileManagementTab(tab) {
 
-  tab.attr('id', 'DataManagementTab').append($('<ul>').attr('id', 'dmTabBar'));
+  tab.attr('id', 'FileManagementTab').append($('<ul>').attr('id', 'fileTabBar'));
 
   createTab('Image', 'images');
   createTab('Video', 'videos');
   createTab('Custom Screens', 'custom');
-  createTab('Game Data', 'game-data');
-  createSaveLoadTab(createTab('ScoreBoard Data', 'saveLoad'));
+  createTab('Game Files', 'game-data');
   tab.tabs();
 
   function createTab(name, id) {
     var newTab = $('<div>').attr('id', id).append($('<div>').addClass('Type'))
       .appendTo(tab);
     $('<li>').append($('<a>').attr('href', '#'+id).text(name))
-      .appendTo($('#dmTabBar'));
+      .appendTo($('#fileTabBar'));
     return newTab;
   }
 
@@ -189,62 +188,5 @@ function createDataManagementTab(tab) {
       }
       div.dialog('option', 'buttons', buttonsUploadClose);
     }).trigger('change');
-  }
-
-  function createSaveLoadTab(tab) {
-    var table = $('<table>').attr('id', 'SaveLoad').appendTo(tab);
-
-    // Download table
-    var sbDownloadTable = $('<table>').addClass('Download')
-    .appendTo($('<td>').appendTo($('<tr>').appendTo(table)));
-    $('<tr>').addClass('Name').appendTo(sbDownloadTable)
-    .append('<td colspan="4">Download ScoreBoard JSON</td>');
-    var contentRow = $('<tr>').addClass('Content').appendTo(sbDownloadTable);
-
-    var links = [
-      { name: 'All data', url: '' },
-      { name: 'Teams', url: 'teams.json?path=ScoreBoard.PreparedTeam' },
-      { name: 'Games', url: 'games.json?path=ScoreBoard.Game' },
-      { name: 'Rulesets', url: 'rulesets.json?path=ScoreBoard.Rulesets' },
-      { name: 'Settings', url: 'settings.json?path=ScoreBoard.Settings' }
-      ];
-    $.each( links, function() {
-      $('<td><a download/></td>').appendTo(contentRow)
-      .children('a').text(this.name).button()
-      .attr('href', '/SaveJSON/'+this.url);
-    });
-    var allDataA = contentRow.find('>td:eq(0)>a');
-    var updateAllUrl = function() {
-      var d = new Date();
-      var name = $.datepicker.formatDate('yy-mm-dd_', d);
-      name += _timeConversions.twoDigit(d.getHours());
-      name += _timeConversions.twoDigit(d.getMinutes());
-      name += _timeConversions.twoDigit(d.getSeconds());
-      allDataA.attr('href', '/SaveJSON/scoreboard-'+name+'.json');
-    };
-    setInterval(updateAllUrl, 1000);
-
-
-    // Upload table
-    var sbUploadTable = $('<table>').addClass('Upload')
-    .appendTo($('<td>').appendTo($('<tr>').appendTo(table)));
-    $('<tr>').addClass('Name').appendTo(sbUploadTable)
-    .append('<td>Upload ScoreBoard JSON</td>');
-    var contentTd = $('<td>')
-    .appendTo($('<tr>').addClass('Content').appendTo(sbUploadTable));
-
-    var iframeId = 'SaveLoadUploadHiddenIframe';
-    var uploadForm = $('<form method="post" enctype="multipart/form-data" target="'+iframeId+'"/>')
-    .append('<iframe id="'+iframeId+'" name="'+iframeId+'" style="display: none"/>')
-    .append('<input type="file" name="jsonFile"/>')
-    .appendTo(contentTd);
-    $('<button>').html('Add/Merge').attr('data-method', 'merge').appendTo(uploadForm).button();
-    $('<button>').html('Replace running scoreboard').attr('data-method', 'load').appendTo(uploadForm).button();
-    uploadForm.children('button').on('click', function() {
-      uploadForm.attr('action', '/LoadJSON/'+$(this).attr('data-method')).submit();
-    });
-    _crgUtils.bindAndRun(uploadForm.children('input:file').button(), 'change', function() {
-      uploadForm.children('button').button(this.value ? 'enable' : 'disable');
-    });
   }
 }

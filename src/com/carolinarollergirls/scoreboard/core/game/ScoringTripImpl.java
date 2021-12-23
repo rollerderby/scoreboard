@@ -6,6 +6,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<ScoringTrip> implements ScoringTrip {
@@ -18,6 +19,13 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         setRecalculated(DURATION).addSource(this, JAM_CLOCK_END).addSource(this, JAM_CLOCK_START);
         set(AFTER_S_P, hasPrevious() ? getPrevious().get(AFTER_S_P) : false);
     }
+    public ScoringTripImpl(ScoringTripImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        game = toCloneIfInTree(cloned.game, root);
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ScoringTripImpl(this, root); }
 
     @Override
     public Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {

@@ -14,6 +14,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
 public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implements Position {
@@ -30,6 +31,13 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
         setCopy(ANNOTATION, this, CURRENT_FIELDING, Fielding.ANNOTATION, true);
     }
+    public PositionImpl(PositionImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        floorPosition = cloned.floorPosition;
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PositionImpl(this, root); }
 
     @Override
     public String getProviderId() { return floorPosition.toString(); }

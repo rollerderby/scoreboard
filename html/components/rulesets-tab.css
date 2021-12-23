@@ -1,18 +1,8 @@
-#RulesetsTab .rulesets {
-	display: inline-block;
-	vertical-align:top;
-	width: calc(20% - 10px);
-	padding: 5px 5px 20px 5px;
-	background-color: #ccc;
-	border-radius: 12px;
-	overflow: hidden;
-}
-
 #RulesetsTab .definitions {
 	display: inline-block;
 	vertical-align:top;
 	padding-left: 2px;
-	width: 79%;
+	width: 100%;
 	overflow: auto;
 }
 
@@ -20,14 +10,11 @@
 
 #RulesetsTab table { width: 100%; }
 #RulesetsTab th { text-align: left; }
-#RulesetsTab #new_parent, #new_name { width: 99%; }
 
-#RulesetsTab .rulesets a { color: #333333; }
-#RulesetsTab .rulesets .new { text-align: center; }
-#RulesetsTab .rulesets .current > div { text-align: center; }
-#RulesetsTab .rules { padding-top: 5px; }
-#RulesetsTab .definitions .buttons { background-color: #ccc; padding: 3px 20px; }
-#RulesetsTab .definitions .buttons.top { border-radius: 12px 12px 0px 0px; margin-bottom: 5px; }
+#RulesetsTab .selection { text-align: center; }
+#RulesetsTab .metadata { text-align: center; background-color: #eee; padding: 5px; }
+#RulesetsTab .definitions .buttons { background-color: #ccc; padding: 3px 20px; min-height: 40px; }
+#RulesetsTab .definitions .buttons.top { border-radius: 12px 12px 0px 0px; }
 #RulesetsTab .definitions .buttons.bottom { border-radius: 0px 0px 12px 12px; margin-top: 2px; }
 #RulesetsTab .definitions .buttons button { margin-left: 10px;}
 #RulesetsTab .definitions .buttons span { margin-left: 5px;}

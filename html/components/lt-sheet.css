@@ -17,8 +17,8 @@ body:not(.AllowSelect) .LT {
     color: #333;
 }
 .LT .Hide, #FieldingEditor .Hide { display: none; }
-div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: #333333; margin-top: 1em}
-.LT.Period { width: 100%; table-layout:fixed; margin-top: 0.5em; }
+div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: #333333; margin-top: 1em; margin-right: 1px; }
+.LT.Period { width: 100%; table-layout:fixed; margin-top: 0.5em; margin-right: 1px; }
 .LT.Period thead td { font-size: 95%; background-color: #cccccc; color: #333333; }
 .LT.Period td { text-align: center; vertical-align: middle; }
 .LT.Period tbody tr { background-color: #FFF; }

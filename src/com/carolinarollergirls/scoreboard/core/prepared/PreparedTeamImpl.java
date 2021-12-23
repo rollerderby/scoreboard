@@ -27,6 +27,10 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
         setRecalculated(Team.DISPLAY_NAME).addSource(this, Team.LEAGUE_NAME).addSource(this, Team.TEAM_NAME)
                 .addSource(scoreBoard.getSettings(), Settings.SETTING);
     }
+    public PreparedTeamImpl(PreparedTeamImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PreparedTeamImpl(this, root); }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
@@ -83,5 +87,9 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
             super(parent, id, PreparedTeam.SKATER);
             addProperties(Skater.NAME, Skater.ROSTER_NUMBER, Skater.FLAGS);
         }
+        public PreparedTeamSkaterImpl(PreparedTeamSkaterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+        @Override
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PreparedTeamSkaterImpl(this, root); }
     }
 }

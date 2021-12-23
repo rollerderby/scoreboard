@@ -52,7 +52,19 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         set(ID, id, Source.OTHER);
         addWriteProtection(ID);
     }
-
+    protected ScoreBoardEventProviderImpl(ScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
+        providerClass = cloned.providerClass;
+        providerName = cloned.providerName;
+        ownType = cloned.ownType;
+        parent = toCloneIfInTree(cloned.parent, root);
+        scoreBoard = toCloneIfInTree(cloned.scoreBoard, root);
+        PREVIOUS = cloned.PREVIOUS;
+        NEXT = cloned.NEXT;
+        addProperties(ID);
+        set(ID, "cloned-" + cloned.getId(), Source.OTHER);
+        cloneProperties(cloned, root);
+    }
+ 
     @Override
     public String getId() { return get(ID); }
     @Override
@@ -71,6 +83,15 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public Property<?> getProperty(String jsonName) { return properties.get(jsonName); }
     @Override
     public ScoreBoardEventProvider getParent() { return parent; }
+    @Override
+    public boolean isAncestorOf(ScoreBoardEventProvider other) {
+        ScoreBoardEventProvider comp = other;
+        while (comp != null) {
+            if(comp == this) { return true; }
+            comp = comp.getParent();
+        }
+        return false;
+    }
 
     @Override
     public void scoreBoardChange(ScoreBoardEvent<?> event) {
@@ -536,6 +557,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public <T extends ValueWithId> boolean add(Child<T> prop, T item) {
         return add(prop, item, Source.OTHER);
     }
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends ValueWithId> boolean add(Child<T> prop, T item, Source source) {
         synchronized (coreLock) {
@@ -586,6 +608,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public <T extends ValueWithId> boolean remove(Child<T> prop, T item) {
         return remove(prop, item, Source.OTHER);
     }
+    @SuppressWarnings("unchecked")
     @Override
     public <T extends ValueWithId> boolean remove(Child<T> prop, T item, Source source) {
         synchronized (coreLock) {
@@ -691,6 +714,52 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         }
     }
 
+    @SuppressWarnings("unchecked")
+    protected <T extends ScoreBoardEventProvider> T toCloneIfInTree(T source, ScoreBoardEventProvider root) {
+        T result = source;
+        if (root.isAncestorOf(source)) {
+            T clone = (T) elements.get(source.getProviderClass()).get("cloned-" + source.getId());
+            result = clone == null ? (T) source.clone(root) : clone;
+        }
+        return result;
+    }
+
+    protected void cloneProperties(ScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
+        for (Property<?> prop : cloned.getProperties()) {
+            if(prop == ID) { continue; }
+            properties.put(prop.getJsonName(), prop);
+            if (prop instanceof Value && cloned.values.containsKey(prop)) {
+                Object value = cloned.values.get(prop);
+                if (value instanceof ScoreBoardEventProvider) {
+                    value = toCloneIfInTree((ScoreBoardEventProvider) value, root);
+                }
+                values.put((Value<?>) prop, value);
+            } else if (prop instanceof Child) {
+                Map<String, ValueWithId> newMap = new HashMap<>();
+                for (ValueWithId child : cloned.children.get(prop).values()) {
+                    String id = "";
+                    if (child instanceof ValWithId) {
+                        child = new ValWithId(child.getId(), child.getValue());
+                        id = child.getId();
+                    } else if (child instanceof ScoreBoardEventProvider) {
+                        child = toCloneIfInTree((ScoreBoardEventProvider) child, root);
+                        ScoreBoardEventProvider c = (ScoreBoardEventProvider) child;
+                        id = c.getParent() == this ? c.getProviderId() : c.getId();
+                    }
+                    newMap.put(id, child);
+                }
+                if (prop instanceof NumberedChild<?>) {
+                    minIds.put((NumberedChild<?>) prop, cloned.minIds.get(prop));
+                    maxIds.put((NumberedChild<?>) prop, cloned.maxIds.get(prop));
+                }
+                children.put((Child<?>) prop, newMap);
+            }
+            if(cloned.writeProtectionOverride.containsKey(prop)) {
+                writeProtectionOverride.put(prop, cloned.writeProtectionOverride.get(prop));
+            }
+        }
+    }
+
     protected static Object coreLock = new Object();
 
     protected ScoreBoard scoreBoard;
@@ -699,7 +768,6 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     protected String providerName;
     protected Class<C> providerClass;
 
-//    protected List<Property<?>> properties = new ArrayList<>();
     protected Map<String, Property<?>> properties = new HashMap<>();
 
     protected Set<ScoreBoardListener> scoreBoardEventListeners = new LinkedHashSet<>();
