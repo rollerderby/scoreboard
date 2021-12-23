@@ -64,10 +64,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     private void initReferences(Ruleset rs) {
         addProperties(NAME, NAME_FORMAT, STATE, CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM,
-                UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, CURRENT_TIMEOUT, TIMEOUT_OWNER,
-                OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, HEAD_NSO, HEAD_REF, FILENAME, LAST_FILE_UPDATE, CLOCK, TEAM, RULE,
-                PENALTY_CODE, LABEL, EVENT_INFO, NSO, REF, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO,
-                CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT, EXPORT);
+                UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, ABORT_REASON, CURRENT_TIMEOUT,
+                TIMEOUT_OWNER, OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, HEAD_NSO, HEAD_REF, FILENAME,
+                LAST_FILE_UPDATE, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, EVENT_INFO, NSO, REF, PERIOD, Period.JAM,
+                START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT, EXPORT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -174,6 +174,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             } else {
                 return State.FINISHED;
             }
+        } else if (prop == OFFICIAL_SCORE) {
+            if (this == scoreBoard.getCurrentGame() && getCurrentPeriod().isRunning() && !getCurrentTimeout().isRunning()) {
+                // Only allow a running game to be ended prematurely during intermission or a timeout
+                return false;
+            }
         }
         return value;
     }
@@ -209,6 +214,22 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             getTeam(Team.ID_2).set(Team.PREPARED_TEAM_CONNECTED, false);
         }
         if(prop == OFFICIAL_SCORE && (boolean)value && source == Source.WS) {
+            Clock pc = getClock(Clock.ID_PERIOD);
+            Clock ic = getClock(Clock.ID_INTERMISSION);
+            Clock tc = getClock(Clock.ID_TIMEOUT);
+            Clock lc = getClock(Clock.ID_LINEUP);
+            if(!ic.isRunning()) {
+                // Game ended prematurely. Go to intermission, so "Final Score" is displayed.
+                // Don't change period number or time. That info may have to be reported to the governing body.
+                if (isInJam()) { _endJam(); }
+                if (tc.isRunning()) {
+                    tc.stop();
+                    getCurrentTimeout().stop();
+                }
+                if (lc.isRunning()) { lc.stop(); }
+                if (pc.isRunning()) { pc.stop(); }
+                _startIntermission();
+            }
             jsonSnapshotter.writeOnNextUpdate();
         }
     }
@@ -322,15 +343,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             Clock pc = getClock(Clock.ID_PERIOD);
             Clock lc = getClock(Clock.ID_LINEUP);
 
-            if (pc.isRunning() || isInJam()) {
-                return;
-            }
-            if (pc.getNumber() < getInt(Rule.NUMBER_PERIODS)) {
-                return;
-            }
-            if (!pc.isTimeAtEnd()) {
-                return;
-            }
+            if (pc.isRunning() || isInJam()) { return; }
+            if (pc.getNumber() < getInt(Rule.NUMBER_PERIODS)) { return; }
+            if (!pc.isTimeAtEnd()) { return; }
+            if (isOfficialScore()) { return; }
+
             createSnapshot(ACTION_OVERTIME);
 
             _endTimeout(false);
@@ -352,7 +369,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     public void startJam() {
         synchronized (coreLock) {
-            if (!isInJam()) {
+            if (!isInJam() && !isOfficialScore()) {
                 createSnapshot(ACTION_START_JAM);
                 setLabels(ACTION_NONE, ACTION_STOP_JAM, ACTION_TIMEOUT);
                 _startJam();
@@ -577,11 +594,13 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         if (!ic.isRunning() && !force && getCurrentPeriodNumber() > 0) { return; }
 
         ic.stop();
-        if (getCurrentPeriodNumber() == 0
-                || (ic.getTimeRemaining() < ic.getTimeElapsed() && pc.getNumber() < getInt(Rule.NUMBER_PERIODS))) {
+        if (!isOfficialScore() && 
+            (getCurrentPeriodNumber() == 0
+                || (ic.getTimeRemaining() < ic.getTimeElapsed() && pc.getNumber() < getInt(Rule.NUMBER_PERIODS)))) {
             // If less than half of intermission is left and there is another period,
             // go to the next period. Otherwise extend the previous period.
             // Always start period 1 as there is no previous period to extend.
+            // Skip all of this if the score is official (premature game end)
             _preparePeriod();
         }
     }

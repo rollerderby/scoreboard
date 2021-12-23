@@ -27,6 +27,10 @@
   font-size: 200%;
   font-weight: bold;
 }
+#Igrf tr.Name > td > button {
+  font-size: 50%;
+  margin-left: 5px;
+}
 #Igrf tr.Files > td {
   background: #ddd;
 }

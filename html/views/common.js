@@ -112,14 +112,14 @@ function intermissionDisplay() {
   var isOfficial = WS.state['ScoreBoard.CurrentGame.OfficialScore'];
   var ret = '';
 
-  if (num === 0) {
+  if (isOfficial) {
+    ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
+  } else if (num === 0) {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
   } else if (num != max) {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
-  } else if (!isOfficial) {
-    ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
   } else {
-    ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
+    ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
   }
 
   $('.Clock.Intermission .Time').toggleClass('Hide', num == max);

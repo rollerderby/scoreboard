@@ -103,6 +103,7 @@ public interface Game extends ScoreBoardEventProvider {
     Value<Boolean> IN_JAM = new Value<>(Boolean.class, "InJam", false);
     Value<Boolean> IN_OVERTIME = new Value<>(Boolean.class, "InOvertime", false);
     Value<Boolean> OFFICIAL_SCORE = new Value<>(Boolean.class, "OfficialScore", false);
+    Value<String> ABORT_REASON = new Value<>(String.class, "AbortReason", "");
     Value<Timeout> CURRENT_TIMEOUT = new Value<>(Timeout.class, "CurrentTimeout", null);
     Value<TimeoutOwner> TIMEOUT_OWNER = new Value<>(TimeoutOwner.class, "TimeoutOwner", null);
     Value<Boolean> OFFICIAL_REVIEW = new Value<>(Boolean.class, "OfficialReview", false);

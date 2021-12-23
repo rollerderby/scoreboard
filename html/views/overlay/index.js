@@ -297,14 +297,14 @@ function clockType(k,v) {
     var num = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Number'];
     var max = WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'];
     var isOfficial = WS.state['ScoreBoard.CurrentGame.OfficialScore'];
-    if (num === 0) {
+    if (isOfficial) {
+      ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
+    } else if (num === 0) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
     } else if (num !== max) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
     } else if (!isOfficial) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
-    } else {
-      ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
     }
 
     $('.ClockDescription').css('backgroundColor', 'blue');

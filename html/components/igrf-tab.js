@@ -9,11 +9,24 @@ function createIgrfTab(tab, gameId) {
     .append($('<tr><td colspan="2"/><td/></tr>').addClass('Event'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Host'))
     .append($('<tr><td/><td/><td/></tr>').addClass('Time'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Seperator'))
+    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator Abort'))
+    .append($('<tr><td colspan="3"/></tr>').addClass('Abort Info'))
+    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator'))
     .append($('<tr><td colspan="3"/></tr>').addClass('NSOs'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Seperator'))
+    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Refs'));
   var gameName = $('<span>').appendTo(table.find('tr.Name>td'));
+  var endButton = $('<button>')
+    .text('End Game')
+    .on('click', function () {
+      WS.Set(gamePrefix + '.OfficialScore', true);
+    })
+    .button()
+    .appendTo(table.find('tr.Name>td'));
+
+  WS.Register(gamePrefix + '.State', function (k, v) {
+    endButton.toggleClass('Hide', v !== 'Running');
+  });
 
   $('<span>').text('Game Files: ').appendTo(table.find('tr.Files>td:eq(0)'));
   $('<button>')
@@ -59,6 +72,35 @@ function createIgrfTab(tab, gameId) {
 
   $('<span>').text('Start Time: ').appendTo(table.find('tr.Time>td:eq(1)'));
   WSControl(gamePrefix + '.EventInfo(StartTime)', $('<input type="time">')).appendTo(table.find('tr.Time>td:eq(1)'));
+
+  var abortTime = $('<span>').text('').appendTo(table.find('tr.Abort.Info>td:eq(0)'));
+  WSControl(gamePrefix + '.AbortReason', $('<input type="text" size="50">')).appendTo(table.find('tr.Abort.Info>td:eq(0)'));
+
+  WS.Register(
+    [
+      gamePrefix + '.Clock(Period).Time',
+      gamePrefix + '.CurrentPeriodNumber',
+      gamePrefix + '.Rule(Period.Number)',
+      gamePrefix + '.OfficialScore',
+    ],
+    function () {
+      var curPeriod = WS.state[gamePrefix + '.CurrentPeriodNumber'];
+      var lastPeriod = WS.state[gamePrefix + '.Rule(Period.Number)'];
+      var pc = WS.state[gamePrefix + '.Clock(Period).Time'];
+      var text = 'Game ended ';
+      var show = isTrue(WS.state[gamePrefix + '.OfficialScore']);
+
+      if (pc > 0) {
+        text = text + 'with ' + _timeConversions.msToMinSec(pc) + ' left in period ' + curPeriod;
+      } else if (curPeriod !== lastPeriod) {
+        text = text + 'after period ' + curPeriod;
+      } else {
+        show = false;
+      }
+      abortTime.text(text + '. Reason: ');
+      $('tr.Abort').toggleClass('Hide', !show);
+    }
+  );
 
   var createOfficialsTable = function (title) {
     return $('<table>')
