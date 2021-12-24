@@ -1,22 +1,20 @@
-
 var WS = {
-
   connectCallback: null,
   connectTimeout: null,
   callbacks: [],
   callbackTrie: {},
   batchCallbacks: [],
   Connected: false,
-  state: { },
+  state: {},
   heartbeat: null,
   debug: false,
 
-  Connect: function(callback) {
+  Connect: function (callback) {
     WS.connectCallback = callback;
     WS._connect();
   },
 
-  _connect: function() {
+  _connect: function () {
     WS.connectTimeout = null;
     var url = (document.location.protocol === 'http:' ? 'ws' : 'wss') + '://';
     url += document.location.host + '/WS/';
@@ -26,30 +24,34 @@ var WS = {
     if (navigator.userAgent || false) {
       var match = navigator.userAgent.match(/\((.*)\).*\(.*\)/);
       if (match) {
-        platform += match[1] ;
+        platform += match[1];
       }
     }
     if (!platform) {
       platform += window.screen.width + 'x' + window.screen.height + ' ';
       if (navigator.maxTouchPoints !== undefined) {
-        platform += (navigator.maxTouchPoints > 0)?'Touchscreen ':'NotTouchscreen; ';
+        platform += navigator.maxTouchPoints > 0 ? 'Touchscreen ' : 'NotTouchscreen; ';
       }
     }
     url += '&platform=' + encodeURIComponent(platform);
-  
-    if(WS.Connected !== true || !WS.socket) {
-      if(WS.debug) { console.log('WS', 'Connecting the websocket at ' + url); }
+
+    if (WS.Connected !== true || !WS.socket) {
+      if (WS.debug) {
+        console.log('WS', 'Connecting the websocket at ' + url);
+      }
 
       WS.socket = new WebSocket(url);
-      WS.socket.onopen = function(e) {
+      WS.socket.onopen = function (e) {
         WS.Connected = true;
-        if(WS.debug) { console.log('WS', 'Websocket: Open'); }
+        if (WS.debug) {
+          console.log('WS', 'Websocket: Open');
+        }
         $('.ConnectionError').addClass('Connected');
         var req = {
           action: 'Register',
-          paths: []
+          paths: [],
         };
-        $.each(Object.keys(WS.state), function(idx, k) {
+        $.each(Object.keys(WS.state), function (idx, k) {
           WS.triggerCallback(k, null);
         });
         WS.state = {};
@@ -68,9 +70,11 @@ var WS = {
         // Hearbeat every 30s so the connection is kept alive.
         WS.heartbeat = setInterval(WS.Command, 30000, 'Ping');
       };
-      WS.socket.onmessage = function(e) {
+      WS.socket.onmessage = function (e) {
         var json = JSON.parse(e.data);
-        if (WS.debug) { console.log('WS', json); }
+        if (WS.debug) {
+          console.log('WS', json);
+        }
         if (json.authorization != null) {
           alert(json.authorization);
         }
@@ -78,7 +82,7 @@ var WS = {
           WS.processUpdate(json.state);
         }
       };
-      WS.socket.onclose = function(e) {
+      WS.socket.onclose = function (e) {
         WS.Connected = false;
         console.log('WS', 'Websocket: Close', e);
         $('.ConnectionError').removeClass('Connected');
@@ -87,7 +91,7 @@ var WS = {
         }
         clearInterval(WS.heartbeat);
       };
-      WS.socket.onerror = function(e) {
+      WS.socket.onerror = function (e) {
         console.log('WS', 'Websocket: Error', e);
         $('.ConnectionError').removeClass('Connected');
         if (WS.connectTimeout == null) {
@@ -97,30 +101,32 @@ var WS = {
       };
     } else {
       // better run the callback on post connect if we didn't need to connect
-      if(WS.connectCallback != null) { WS.connectCallback(); }
+      if (WS.connectCallback != null) {
+        WS.connectCallback();
+      }
     }
   },
 
-  send: function(data) {
+  send: function (data) {
     if (WS.socket != null && WS.socket.readyState === 1) {
       WS.socket.send(data);
     }
   },
 
-  Command: function(command, data) {
+  Command: function (command, data) {
     var req = {
       action: command,
-      data: data
+      data: data,
     };
     WS.send(JSON.stringify(req));
   },
 
-  Set: function(key, value, flag) {
+  Set: function (key, value, flag) {
     var req = {
       action: 'Set',
       key: key,
       value: value,
-      flag: typeof flag !== 'undefined' ? flag : ''
+      flag: typeof flag !== 'undefined' ? flag : '',
     };
     WS.send(JSON.stringify(req));
   },
@@ -143,7 +149,7 @@ var WS = {
 
   processUpdate: function (state) {
     for (var prop in state) {
-      // update all incoming properties before triggers 
+      // update all incoming properties before triggers
       // dependency issues causing problems
       if (state[prop] == null) {
         delete WS.state[prop];
@@ -167,7 +173,7 @@ var WS = {
     // This is useful to avoid n^2 operations when
     // every callback redraws everything.
     var batched = {};
-    $.each(WS.batchCallbacks, function(idx, c) {
+    $.each(WS.batchCallbacks, function (idx, c) {
       if (c.callback == null) {
         return;
       }
@@ -178,7 +184,7 @@ var WS = {
         }
       }
     });
-    $.each(batched, function(idx, c) {
+    $.each(batched, function (idx, c) {
       try {
         c();
       } catch (err) {
@@ -192,13 +198,12 @@ var WS = {
         delete WS._enrichPropCache[prop];
       }
     }
-
   },
 
   _enrichPropCache: {},
 
   // Parse property name, and make it easily accessible.
-  _enrichProp: function(prop) {
+  _enrichProp: function (prop) {
     if (WS._enrichPropCache[prop] != null) {
       return WS._enrichPropCache[prop];
     }
@@ -229,7 +234,7 @@ var WS = {
     return prop;
   },
 
-  Register: function(paths, options) {
+  Register: function (paths, options) {
     if ($.isFunction(options)) {
       options = { triggerFunc: options };
     }
@@ -246,9 +251,13 @@ var WS = {
       } else {
         var elem = options.element;
         if (options.css != null) {
-          callback = function(k, v) { elem.css(options.css, v); };
+          callback = function (k, v) {
+            elem.css(options.css, v);
+          };
         } else if (options.attr != null) {
-          callback = function(k, v) { elem.attr(options.attr, v); };
+          callback = function (k, v) {
+            elem.attr(options.attr, v);
+          };
         } else {
           if (elem.hasClass('AutoFit')) {
             elem.empty();
@@ -256,7 +265,7 @@ var WS = {
             elem = $('<a>').appendTo(div);
             var autofit = _autoFit.enableAutoFitText(div);
 
-            callback = function(k, v) {
+            callback = function (k, v) {
               elem.text(v);
               if (elem.data('lastText') !== v) {
                 elem.data('lastText', v);
@@ -265,7 +274,7 @@ var WS = {
             };
           } else if (elem.parent().hasClass('AutoFit')) {
             var autofit = _autoFit.enableAutoFitText(elem.parent());
-            callback = function(k, v) {
+            callback = function (k, v) {
               elem.text(v);
               if (elem.data('lastText') !== v) {
                 elem.data('lastText', v);
@@ -273,35 +282,39 @@ var WS = {
               }
             };
           } else {
-            callback = function(k, v) { elem.text(v); };
+            callback = function (k, v) {
+              elem.text(v);
+            };
           }
         }
       }
 
       if (options.modifyFunc != null) {
         var origCallback = callback;
-        callback = function(k, v) { origCallback(k, options.modifyFunc(k, v)); };
+        callback = function (k, v) {
+          origCallback(k, options.modifyFunc(k, v));
+        };
       }
     }
 
     if (!$.isArray(paths)) {
-      paths = [ paths ];
+      paths = [paths];
     }
 
-    $.each(paths, function(idx, path) {
-      WS.callbacks.push( { path: path, callback: callback } );
+    $.each(paths, function (idx, path) {
+      WS.callbacks.push({ path: path, callback: callback });
       WS._addToTrie(WS.callbackTrie, path, callback);
-      WS.batchCallbacks.push( { path: path, callback: batchCallback } );
+      WS.batchCallbacks.push({ path: path, callback: batchCallback });
     });
 
     var req = {
       action: 'Register',
-      paths: paths
+      paths: paths,
     };
     WS.send(JSON.stringify(req));
   },
 
-  _addToTrie: function(t, key, value) {
+  _addToTrie: function (t, key, value) {
     var p = key.split(/[.(]/);
     for (var i = 0; i < p.length; i++) {
       var c = p[i];
@@ -312,7 +325,7 @@ var WS = {
     t.values.push(value);
   },
 
-  _getMatchesFromTrie: function(t, key) {
+  _getMatchesFromTrie: function (t, key) {
     function matches(t, p, i) {
       var result = t.values || [];
       for (; i < p.length; i++) {
@@ -321,7 +334,7 @@ var WS = {
           var j;
           // id captured by * might contain . and thus be split - find the end
           for (j = i; j < p.length && !p[j].endsWith(')'); j++) {}
-          result = result.concat(matches(t['*)'], p, j+1) || []);
+          result = result.concat(matches(t['*)'], p, j + 1) || []);
         }
         t = t[p[i]];
         if (t == null) {
@@ -331,15 +344,15 @@ var WS = {
       }
       return result;
     }
-    
+
     return matches(t, key.split(/[.(]/), 0);
   },
 
-  getPaths: function(elem, attr) {
+  getPaths: function (elem, attr) {
     var list = elem.attr(attr).split(',');
     var path = WS._getContext(elem);
     var paths = [];
-    $.each(list, function(idx, item) {
+    $.each(list, function (idx, item) {
       item = $.trim(item);
       if (item.startsWith('/')) {
         item = item.substring(1);
@@ -351,19 +364,19 @@ var WS = {
     return paths;
   },
 
-  AutoRegister: function() {
-    $.each($('[sbDisplay]'), function(idx, elem) {
+  AutoRegister: function () {
+    $.each($('[sbDisplay]'), function (idx, elem) {
       elem = $(elem);
       var paths = WS.getPaths(elem, 'sbDisplay');
       if (paths.length > 0) {
         // When there's multiple names, use the
         // first non-empty one.
-        var mf = function() {
+        var mf = function () {
           var v = null;
           var path;
           for (var i = 0; i < paths.length; i++) {
             path = paths[i];
-            if (WS.state[path] != null ) {
+            if (WS.state[path] != null) {
               v = WS.state[path];
               break;
             }
@@ -376,7 +389,7 @@ var WS = {
         WS.Register(paths, { element: elem, modifyFunc: mf });
       }
     });
-    $.each($('[sbTrigger]'), function(idx, elem) {
+    $.each($('[sbTrigger]'), function (idx, elem) {
       elem = $(elem);
       var sbTrigger = window[elem.attr('sbTrigger')];
       if (sbTrigger == null) {
@@ -385,12 +398,12 @@ var WS = {
 
       var paths = WS.getPaths(elem, 'sbTriggerOn');
       if (paths.length > 0) {
-        WS.Register(paths, { triggerFunc: sbTrigger } );
+        WS.Register(paths, { triggerFunc: sbTrigger });
       }
     });
   },
 
-  _getContext: function(elem, attr) {
+  _getContext: function (elem, attr) {
     if (attr == null) {
       attr = 'sbContext';
     }

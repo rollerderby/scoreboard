@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
   createFileManagementTab($('#tabsDiv'));
 
   WS.AutoRegister();

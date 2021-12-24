@@ -1,4 +1,3 @@
-
 function jammer(k, v, ov) {
   var id = getTeamId(k);
   var prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
@@ -9,16 +8,18 @@ function jammer(k, v, ov) {
   var inJam = isTrue(WS.state['ScoreBoard.InJam']);
 
   if (jammerName == null || jammerName === '') {
-    jammerName = (leadJammer && !ov) ? 'Lead' : '';
-    if (pivotName == null) {pivotName = '';}
+    jammerName = leadJammer && !ov ? 'Lead' : '';
+    if (pivotName == null) {
+      pivotName = '';
+    }
   }
 
   var jn = !starPass ? jammerName : pivotName;
   if (!inJam) {
-    jn = '';  // When no clocks are running, do not show jammer names.
+    jn = ''; // When no clocks are running, do not show jammer names.
   }
-  $('.Team' + id + ' .Lead').toggleClass('HasLead', (leadJammer && !starPass));
-  $('.Team' + id).toggleClass('HasJammerName', (jn !== ''));
+  $('.Team' + id + ' .Lead').toggleClass('HasLead', leadJammer && !starPass);
+  $('.Team' + id).toggleClass('HasJammerName', jn !== '');
   $('.Team' + id + ' .Lead').toggleClass('HasStarPass', starPass);
   return jn;
 }
@@ -155,7 +156,7 @@ function toSP(k, v) {
   return isTrue(v) ? 'SP' : '';
 }
 
-function clockRunner(k,v) {
+function clockRunner(k, v) {
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
   var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
@@ -173,10 +174,11 @@ function clockRunner(k,v) {
   $('.SlideDown.ShowIn' + clock + ',.Clock.ShowIn' + clock).addClass('Show');
 }
 
-
 // Show Clocks
-WS.Register( 'ScoreBoard.CurrentGame.Clock(*).Running', function(k, v) { clockRunner(k,v); } );
-WS.Register( 'ScoreBoard.CurrentGame.Clock(*).Direction');
+WS.Register('ScoreBoard.CurrentGame.Clock(*).Running', function (k, v) {
+  clockRunner(k, v);
+});
+WS.Register('ScoreBoard.CurrentGame.Clock(*).Direction');
 
-WS.Register( 'ScoreBoard.CurrentGame.Rule(Period.Number)' );
-WS.Register( 'ScoreBoard.CurrentGame.InJam' );
+WS.Register('ScoreBoard.CurrentGame.Rule(Period.Number)');
+WS.Register('ScoreBoard.CurrentGame.InJam');

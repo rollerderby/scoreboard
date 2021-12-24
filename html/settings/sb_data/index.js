@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
   createDataTab($('#sbData'));
 
   WS.AutoRegister();

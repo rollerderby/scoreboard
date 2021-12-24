@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -17,7 +16,7 @@ var _autoFit = {
    * The text will only be auto-fit automatically when the browser window resizes.
    * The auto-fit function can also be accessed via element.data('AutoFit').
    */
-  enableAutoFitText: function(e, options) {
+  enableAutoFitText: function (e, options) {
     if (!e) {
       return null;
     }
@@ -28,9 +27,11 @@ var _autoFit = {
     if (e.data('AutoFit')) {
       return e.data('AutoFit');
     }
-    var doAutoFit = function() { return _autoFit.autoFitText(e, options); };
+    var doAutoFit = function () {
+      return _autoFit.autoFitText(e, options);
+    };
     e.data('AutoFit', doAutoFit);
-    $(window).on('resize', function(event) {
+    $(window).on('resize', function (event) {
       if (e.closest('body').length) {
         doAutoFit();
       } else {
@@ -41,7 +42,7 @@ var _autoFit = {
     setTimeout(doAutoFit, 2000); // again in 2 sec; bug workaround FIXME
     return doAutoFit;
   },
-  disableAutoFitText: function(e) {
+  disableAutoFitText: function (e) {
     if (!e.data('AutoFit')) {
       return;
     }
@@ -83,9 +84,9 @@ var _autoFit = {
    *
    * This returns an object with the relevant css properties that were updated.
    */
-  autoFitText: function(container, options) {
+  autoFitText: function (container, options) {
     if (!options) {
-      options = { };
+      options = {};
     }
 
     if (!container.text()) {
@@ -102,20 +103,20 @@ var _autoFit = {
     container.css({ marginTop: '0px', marginBottom: '0px' });
 
     var params = {
-      min: (options.min || 0.1),
-      max: (options.max || 100),
-      iterations: (options.iterations || 30),
-      percentHeight: ((options.percentHeight || 98) / 100),
+      min: options.min || 0.1,
+      max: options.max || 100,
+      iterations: options.iterations || 30,
+      percentHeight: (options.percentHeight || 98) / 100,
       maxW: container.innerWidth(),
       maxH: container.innerHeight(),
-      targetH: (((100 + (options.overage || 0)) * container.innerHeight()) / 100)
+      targetH: ((100 + (options.overage || 0)) * container.innerHeight()) / 100,
     };
 
-//FIXME - using window height is wrong, e.g. for fixed-aspect views like the scoreboard,
-//        it should be the aspect-corrected height; maybe referenceFontSize should be mandatory param?
-    params.referenceFontSize = (options.referenceFontSize || $(window).height());
-    params.minFontSize = ((params.min * params.referenceFontSize) / 100);
-    params.maxFontSize = ((params.max * params.referenceFontSize) / 100);
+    //FIXME - using window height is wrong, e.g. for fixed-aspect views like the scoreboard,
+    //        it should be the aspect-corrected height; maybe referenceFontSize should be mandatory param?
+    params.referenceFontSize = options.referenceFontSize || $(window).height();
+    params.minFontSize = (params.min * params.referenceFontSize) / 100;
+    params.maxFontSize = (params.max * params.referenceFontSize) / 100;
 
     if (!params.maxW || !params.maxH) {
       // likely a last call for a removed element; in any case, can't autofit for a 0-size element
@@ -135,7 +136,7 @@ var _autoFit = {
         if (!_autoFit._updateMinMaxFontSizes(container, params, params.minFontSize, _autoFit._currentFontSize(container))) {
           break;
         }
-      } else if (contents.outerHeight(true) > (params.percentHeight * params.targetH)) {
+      } else if (contents.outerHeight(true) > params.percentHeight * params.targetH) {
         break;
       } else if (!_autoFit._updateMinMaxFontSizes(container, params, _autoFit._currentFontSize(container), params.maxFontSize)) {
         break;
@@ -151,35 +152,35 @@ var _autoFit = {
     }
 
     if (!options.noVerticalAdjust) {
-      var vShift = ((params.maxH - contents.outerHeight(true)) / 2);
+      var vShift = (params.maxH - contents.outerHeight(true)) / 2;
       // adjust for browser-specific vertical adjustment of text
       vShift -= contents.position().top;
       if (options.useMarginBottom) {
-        container.css('margin-bottom', (-1*vShift)+'px');
+        container.css('margin-bottom', -1 * vShift + 'px');
       } else {
-        container.css('margin-top', vShift+'px');
+        container.css('margin-top', vShift + 'px');
       }
     }
     contents.filter('.autoFitTextWrapper').children().unwrap();
     return _autoFit._cssObject(container, options);
   },
-  _currentFontSize: function(container) {
+  _currentFontSize: function (container) {
     return Number(container.css('fontSize').replace(/px$/, ''));
   },
-  _updateFontSize: function(container, size) {
+  _updateFontSize: function (container, size) {
     var last = _autoFit._currentFontSize(container);
-    container.css('fontSize', size+'px');
-    return (last !== _autoFit._currentFontSize(container));
+    container.css('fontSize', size + 'px');
+    return last !== _autoFit._currentFontSize(container);
   },
-  _updateMinMaxFontSizes: function(container, params, newMin, newMax) {
+  _updateMinMaxFontSizes: function (container, params, newMin, newMax) {
     params.minFontSize = Number(newMin);
     params.maxFontSize = Number(newMax);
     return _autoFit._updateFontSize(container, (params.minFontSize + params.maxFontSize) / 2);
   },
-  _overSize: function(contents, params) {
-    return ((contents.outerWidth(true) > params.maxW) || (contents.outerHeight(true) > params.targetH));
+  _overSize: function (contents, params) {
+    return contents.outerWidth(true) > params.maxW || contents.outerHeight(true) > params.targetH;
   },
-  _cssObject: function(container, options) {
+  _cssObject: function (container, options) {
     if (!options.returnCssObject) {
       return;
     }
@@ -192,7 +193,6 @@ var _autoFit = {
       }
     }
     return obj;
-  }
-
+  },
 };
 //# sourceURL=autofit.js

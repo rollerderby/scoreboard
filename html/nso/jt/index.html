@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html><head><title>CRG ScoreBoard Mobile Operator Controls</title>
+<html>
+  <head>
+    <title>CRG ScoreBoard Mobile Operator Controls</title>
 
-<!--
+    <!--
  Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
 
  This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
@@ -10,118 +12,125 @@
  See the file COPYING for details.
 -->
 
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 
-<script type="text/javascript" src="/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/external/jquery/jquery.js"></script>
 
-<script type="text/javascript" src="/json/WS.js"></script>
+    <script type="text/javascript" src="/json/WS.js"></script>
 
-<link rel="stylesheet" type="text/css" href="/external/jquery-mobile/jquery.mobile.css" />
-<script type="text/javascript" src="/external/jquery-mobile/jquery.mobile.js"></script>
+    <link rel="stylesheet" type="text/css" href="/external/jquery-mobile/jquery.mobile.css" />
+    <script type="text/javascript" src="/external/jquery-mobile/jquery.mobile.js"></script>
 
-<script type="text/javascript" src="/javascript/timeconversions.js"></script>
-<link rel="stylesheet" type="text/css" href="index.css" />
-<script type="text/javascript" src="index.js"></script>
+    <script type="text/javascript" src="/javascript/timeconversions.js"></script>
+    <link rel="stylesheet" type="text/css" href="index.css" />
+    <script type="text/javascript" src="index.js"></script>
+  </head>
 
+  <body sbContext="ScoreBoard.CurrentGame">
+    <div data-role="page" id="Main">
+      <div data-role="header">
+        <h1>CRG SB Controls</h1>
+      </div>
 
-</head>
+      <div data-role="content">
+        <ul data-role="listview">
+          <li><a href="#JamControlPage">Jam Control</a></li>
+          <li><a href="#PeriodTimePage">Period Time</a></li>
+        </ul>
+      </div>
+    </div>
 
-<body sbContext="ScoreBoard.CurrentGame">
+    <div data-role="page" id="JamControlPage">
+      <div data-role="header">
+        <a href="#Main" data-direction="reverse" data-role="button" data-icon="ui-icon-arrow-l">Main</a>
+        <h1>Jam Control</h1>
+      </div>
 
-<div data-role="page" id="Main">
-	<div data-role="header">
-		<h1>CRG SB Controls</h1>
-	</div>
+      <div data-role="content">
+        <div class="ui-grid-a Period">
+          <div class="ui-block-a PeriodNumber">
+            <div class="Title">Period</div>
+            <div class="Number"><a class="Number" sbDisplay="Clock(Period).Number"></a></div>
+          </div>
+          <div class="ui-block-b PeriodTime"><a class="Time" sbDisplay="Clock(Period).Time" sbModify="toTime"></a></div>
+        </div>
+        <div class="JamTime Time">
+          <h2>Jam Time</h2>
+          <a class="Time" sbDisplay="Clock(Jam).Time" sbModify="toTime"></a>
+        </div>
+        <div class="LineupTime Time">
+          <h2>Lineup Time</h2>
+          <a class="Time" sbDisplay="Clock(Lineup).Time" sbModify="toTime"></a>
+        </div>
+        <div class="TimeoutTime Time">
+          <h2>TIMEOUT Time</h2>
+          <a class="Time" sbDisplay="Clock(Timeout).Time" sbModify="toTime"></a>
+        </div>
+        <div class="ui-grid-a">
+          <div class="ui-block-a">
+            <button class="StartJam" data-role="button"><span class="StartLabel Label">Start Jam</span></button>
+          </div>
+          <div class="ui-block-b">
+            <button class="StopJam" data-role="button"><span class="StopLabel Label">Stop Jam/TO</span></button>
+          </div>
+        </div>
+        <button class="Timeout" data-role="button"><span class="TimeoutLabel Label">Timeout</span></button>
+        <button class="Undo" data-role="button"><span class="UndoLabel Label">Undo</span></button>
+        <div class="ui-grid-b Timeout">
+          <div class="ui-block-a">
+            <button class="Team1">
+              TO
+              <span class="Team1 Name">Team 1</span>
+            </button>
+          </div>
+          <div class="ui-block-b"><button class="Official">TO Official</button></div>
+          <div class="ui-block-c">
+            <button class="Team2">
+              TO
+              <span class="Team2 Name">Team 2</span>
+            </button>
+          </div>
+        </div>
+        <div class="ui-grid-b OfficialReview">
+          <div class="ui-block-a">
+            <button class="Team1">
+              OR
+              <span class="Team1 Name">Team 1</span>
+            </button>
+          </div>
+          <div class="ui-block-b"></div>
+          <div class="ui-block-c">
+            <button class="Team2">
+              OR
+              <span class="Team2 Name">Team 2</span>
+            </button>
+          </div>
+        </div>
+        <p class="Clocks">
+          <span class="ClockBubble Period">Period</span>
+          <span class="ClockBubble Jam">Jam</span>
+          <span class="ClockBubble Timeout">Timeout</span>
+        </p>
+      </div>
+    </div>
 
-	<div data-role="content">
-		<ul data-role="listview">
-			<li><a href="#JamControlPage">Jam Control</a></li>
-			<li><a href="#PeriodTimePage">Period Time</a></li>
-		</ul>
-	</div>
-</div>
+    <div data-role="page" id="PeriodTimePage">
+      <div data-role="header">
+        <a href="#Main" data-direction="reverse" data-role="button" data-icon="ui-icon-arrow-l">Main</a>
+        <h1>Period Time</h1>
+      </div>
 
-<div data-role="page" id="JamControlPage">
-	<div data-role="header">
-		<a href="#Main" data-direction="reverse" data-role="button" data-icon="ui-icon-arrow-l">Main</a>
-		<h1>Jam Control</h1>
-	</div>
-
-	<div data-role="content">
-		<div class="ui-grid-a Period">
-			<div class="ui-block-a PeriodNumber">
-				<div class="Title">Period</div>
-				<div class="Number"><a class="Number" sbDisplay="Clock(Period).Number"></a></div>
-			</div>
-			<div class="ui-block-b PeriodTime"><a class="Time" sbDisplay="Clock(Period).Time" sbModify="toTime"></a></div>
-		</div>
-		<div class="JamTime Time"><h2>Jam Time</h2><a class="Time" sbDisplay="Clock(Jam).Time" sbModify="toTime"></a></div>
-		<div class="LineupTime Time"><h2>Lineup Time</h2><a class="Time" sbDisplay="Clock(Lineup).Time" sbModify="toTime"></a></div>
-		<div class="TimeoutTime Time"><h2>TIMEOUT Time</h2><a class="Time" sbDisplay="Clock(Timeout).Time" sbModify="toTime"></a></div>
-		<div class="ui-grid-a">
-			<div class="ui-block-a">
-				<button class="StartJam" data-role="button"><span class="StartLabel Label">Start Jam</span></button>
-			</div>
-			<div class="ui-block-b">
-				<button class="StopJam" data-role="button"><span class="StopLabel Label">Stop Jam/TO</span></button>
-			</div>
-		</div>
-		<button class="Timeout" data-role="button"><span class="TimeoutLabel Label">Timeout</span></button>
-		<button class="Undo" data-role="button"><span class="UndoLabel Label">Undo</span></button>
-		<div class="ui-grid-b Timeout">
-			<div class="ui-block-a"><button class="Team1">
-				TO 
-				<span class="Team1 Name">Team 1</span>
-				
-			</button></div>
-			<div class="ui-block-b"><button class="Official">TO Official</button></div>
-			<div class="ui-block-c"><button class="Team2">
-			TO 
-				<span class="Team2 Name">Team 2</span>
-			</button></div>
-		</div>
-		<div class="ui-grid-b OfficialReview">
-			<div class="ui-block-a"><button class="Team1">
-			OR
-				<span class="Team1 Name">Team 1</span>
-				 
-			</button></div>
-			<div class="ui-block-b">
-			</div>
-			<div class="ui-block-c"><button class="Team2">
-			 OR
-				<span class="Team2 Name">Team 2</span>
-				
-			</button></div>
-		</div>
-			<p class="Clocks">
-			<span class="ClockBubble Period">Period</span>
-			<span class="ClockBubble Jam">Jam</span>
-			<span class="ClockBubble Timeout">Timeout</span>
-		</p>
-		
-</div>
-</div>
-
-<div data-role="page" id="PeriodTimePage">
-	<div data-role="header">
-		<a href="#Main" data-direction="reverse" data-role="button" data-icon="ui-icon-arrow-l">Main</a>
-		<h1>Period Time</h1>
-	</div>
-
-	<div data-role="content">
-		<p class="Time"><a class="Time" sbDisplay="Clock(Period).Time" sbModify="toTime"></a></p>
-		<hr/>
-		<p>
-			<button class="TimeDown" data-inline="true" value="-1000">-1 sec</button>
-			<button class="TimeUp" data-inline="true" value="1000">+1 sec</button>
-		</p>
-		<hr/>
-		<p><input type="text" class="SetTime"/></p>
-		<p><button class="SetTime" data-inline="true">Set Time</button></p>
-	</div>
-</div>
-
-</body>
-
+      <div data-role="content">
+        <p class="Time"><a class="Time" sbDisplay="Clock(Period).Time" sbModify="toTime"></a></p>
+        <hr />
+        <p>
+          <button class="TimeDown" data-inline="true" value="-1000">-1 sec</button>
+          <button class="TimeUp" data-inline="true" value="1000">+1 sec</button>
+        </p>
+        <hr />
+        <p><input type="text" class="SetTime" /></p>
+        <p><button class="SetTime" data-inline="true">Set Time</button></p>
+      </div>
+    </div>
+  </body>
 </html>

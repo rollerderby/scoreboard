@@ -11,7 +11,7 @@
   preparePltInputTable($('#plt12'), gameId, 2, 'copyToStatsbook', 1);
   preparePltInputTable($('#plt21'), gameId, 1, 'copyToStatsbook', 2);
   preparePltInputTable($('#plt22'), gameId, 2, 'copyToStatsbook', 2);
-  
+
   prepareLtSheetTable($('#lt1'), gameId, 1, 'copyToStatsbook');
   prepareLtSheetTable($('#lt2'), gameId, 2, 'copyToStatsbook');
 

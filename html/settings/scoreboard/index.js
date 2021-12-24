@@ -1,4 +1,4 @@
-$(function() {
+$(function () {
   createScoreBoardSettingsTab($('#ScoreBoardSettings'));
 
   WS.AutoRegister();

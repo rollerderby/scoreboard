@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -8,39 +7,44 @@
  * See the file COPYING for details.
  */
 
-
 var _windowFunctions = {
   /* Display area dimensions */
-  getAspectDimensions: function(aspect, overflow) {
+  getAspectDimensions: function (aspect, overflow) {
     var width, height, top, bottom, left, right;
-    if ((aspect > ($(window).width()/$(window).height())) === (overflow===true)) {
-      width = Math.round((aspect * $(window).height()));
+    if (aspect > $(window).width() / $(window).height() === (overflow === true)) {
+      width = Math.round(aspect * $(window).height());
       height = $(window).height();
       top = bottom = 0;
-      left = right = (($(window).width() - width) / 2);
+      left = right = ($(window).width() - width) / 2;
     } else {
       width = $(window).width();
-      height = Math.round(($(window).width() / aspect));
-      top = bottom = (($(window).height() - height) / 2);
+      height = Math.round($(window).width() / aspect);
+      top = bottom = ($(window).height() - height) / 2;
       left = right = 0;
     }
     return { width: width, height: height, top: top, bottom: bottom, left: left, right: right };
   },
-  get4x3Dimensions: function(overflow) { return this.getAspectDimensions(4/3, overflow); },
-  get16x9Dimensions: function(overflow) { return this.getAspectDimensions(16/9, overflow); },
+  get4x3Dimensions: function (overflow) {
+    return this.getAspectDimensions(4 / 3, overflow);
+  },
+  get16x9Dimensions: function (overflow) {
+    return this.getAspectDimensions(16 / 9, overflow);
+  },
 
   /* URL parameters */
-  getParam: function(param) {
+  getParam: function (param) {
     var value = $.string(window.location.search).toQueryParams()[param];
-    return ($.isArray(value) ? value[0] : value);
+    return $.isArray(value) ? value[0] : value;
   },
-  hasParam: function(param) {
+  hasParam: function (param) {
     return $.string(window.location.search).toQueryParams().hasOwnProperty(param);
   },
-  checkParam: function(param, value) { return value === _windowFunctions.getParam(param); },
+  checkParam: function (param, value) {
+    return value === _windowFunctions.getParam(param);
+  },
 
   /* Zoom for mobile views */
-  configureZoom: function() {
+  configureZoom: function () {
     if (!_windowFunctions.checkParam('zoomable', 1)) {
       $('head').append('<meta name="viewport" content="width=device-width, user-scalable=no">');
     } else {
@@ -58,7 +62,7 @@ var _windowFunctions = {
    * newChild will be appended).  The comparator should accept two
    * parameters (both actual DOM elements, not jQuery objects),
    * the first being the existing child to compare, and the second
-   * being the newChild that is being inserted, and it should return 
+   * being the newChild that is being inserted, and it should return
    * true to indicate the newChild is "before" the existing child,
    * and false to indicate the newChild is "after" the existing child.
    * This insertion function does not attempt to maintain ordering
@@ -67,11 +71,11 @@ var _windowFunctions = {
    * for "equal" children, which will be sorted in the order they
    * are inserted.
    */
-  appendSorted: function(parent, newChild, comparator, startIndex) {
+  appendSorted: function (parent, newChild, comparator, startIndex) {
     var child = null;
-    startIndex = (startIndex || 0);
-    parent.children().each(function(i) {
-      if (newChild[0] !== child && (startIndex <= i) && comparator(this, newChild[0])) {
+    startIndex = startIndex || 0;
+    parent.children().each(function (i) {
+      if (newChild[0] !== child && startIndex <= i && comparator(this, newChild[0])) {
         child = this;
         return false;
       }
@@ -94,73 +98,99 @@ var _windowFunctions = {
    * Numbers) sorted in numerical order, then the rest are given
    * to the "Alpha" sort.
    */
-  appendAlphaSorted: function(parent, newChild, startIndex) {
+  appendAlphaSorted: function (parent, newChild, startIndex) {
     var comp = _windowFunctions.alphaCompareByNodeName;
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
-  appendAlphaSortedByAttr: function(parent, newChild, attrName, startIndex) {
-    var comp = function(a, b) { return _windowFunctions.alphaCompareByAttr(attrName, a, b); };
+  appendAlphaSortedByAttr: function (parent, newChild, attrName, startIndex) {
+    var comp = function (a, b) {
+      return _windowFunctions.alphaCompareByAttr(attrName, a, b);
+    };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
-  appendAlphaNumSortedByAttr: function(parent, newChild, attrName, startIndex) {
-    var comp = function(a, b) { return _windowFunctions.numCompareByAttr(attrName, a, b); };
+  appendAlphaNumSortedByAttr: function (parent, newChild, attrName, startIndex) {
+    var comp = function (a, b) {
+      return _windowFunctions.numCompareByAttr(attrName, a, b);
+    };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
-  appendAlphaSortedByProp: function(parent, newChild, propName, startIndex) {
-    var comp = function(a, b) { return _windowFunctions.alphaCompareByProp(propName, a, b); };
+  appendAlphaSortedByProp: function (parent, newChild, propName, startIndex) {
+    var comp = function (a, b) {
+      return _windowFunctions.alphaCompareByProp(propName, a, b);
+    };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
-  appendAlphaNumSortedByProp: function(parent, newChild, propName, startIndex) {
-    var comp = function(a, b) { return _windowFunctions.numCompareByProp(propName, a, b); };
+  appendAlphaNumSortedByProp: function (parent, newChild, propName, startIndex) {
+    var comp = function (a, b) {
+      return _windowFunctions.numCompareByProp(propName, a, b);
+    };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
-  appendAlphaSortedByData: function(parent, newChild, dataName, startIndex) {
-    var comp = function(a, b) { return _windowFunctions.alphaCompareByData(dataName, a, b); };
+  appendAlphaSortedByData: function (parent, newChild, dataName, startIndex) {
+    var comp = function (a, b) {
+      return _windowFunctions.alphaCompareByData(dataName, a, b);
+    };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
-  appendAlphaNumSortedByData: function(parent, newChild, dataName, startIndex) {
-    var comp = function(a, b) { return _windowFunctions.numCompareByData(dataName, a, b); };
+  appendAlphaNumSortedByData: function (parent, newChild, dataName, startIndex) {
+    var comp = function (a, b) {
+      return _windowFunctions.numCompareByData(dataName, a, b);
+    };
     return _windowFunctions.appendSorted(parent, newChild, comp, startIndex);
   },
 
-  alphaCompare: function(a, b) { return (a > b); },
-  alphaCompareByNodeName: function(a, b) {
+  alphaCompare: function (a, b) {
+    return a > b;
+  },
+  alphaCompareByNodeName: function (a, b) {
     return _windowFunctions.alphaCompare(a.nodeName, b.nodeName);
   },
-  alphaCompareByAttr: function(n, a, b) {
+  alphaCompareByAttr: function (n, a, b) {
     return _windowFunctions.alphaCompare($(a).attr(n), $(b).attr(n));
   },
-  alphaCompareByProp: function(n, a, b) {
+  alphaCompareByProp: function (n, a, b) {
     return _windowFunctions.alphaCompare($(a).prop(n), $(b).prop(n));
   },
-  alphaCompareByData: function(n, a, b) {
+  alphaCompareByData: function (n, a, b) {
     return _windowFunctions.alphaCompare($(a).data(n), $(b).data(n));
   },
-  numCompare: function(a, b) {
-    var numA = Number(a), numB = Number(b);
-    if (!isNaN(numA) && !isNaN(numB)) { // both numbers
+  numCompare: function (a, b) {
+    var numA = Number(a),
+      numB = Number(b);
+    if (!isNaN(numA) && !isNaN(numB)) {
+      // both numbers
       return _windowFunctions.alphaCompare(numA, numB);
-    } else if (isNaN(numA) && isNaN(numB)) { // both non-numbers
+    } else if (isNaN(numA) && isNaN(numB)) {
+      // both non-numbers
       return _windowFunctions.alphaCompare(a, b);
-    } else { // b num, a non-num? a>b (true).  a num, b non-num? a<b (false).
-      return (isNaN(numA));
+    } else {
+      // b num, a non-num? a>b (true).  a num, b non-num? a<b (false).
+      return isNaN(numA);
     }
   },
-  numCompareByAttr: function(n, a, b) {
+  numCompareByAttr: function (n, a, b) {
     return _windowFunctions.numCompare($(a).attr(n), $(b).attr(n));
   },
-  numCompareByProp: function(n, a, b) {
+  numCompareByProp: function (n, a, b) {
     return _windowFunctions.numCompare($(a).prop(n), $(b).prop(n));
   },
-  numCompareByData: function(n, a, b) {
+  numCompareByData: function (n, a, b) {
     return _windowFunctions.numCompare($(a).data(n), $(b).data(n));
   },
-  fullscreenRequest: function(a) {
+  fullscreenRequest: function (a) {
     var isFullscreen = false;
-    if (document.fullscreen) { isFullscreen = true; }
-    if (document.mozFullScreen) { isFullscreen = true; }
-    if (document.webkitIsFullScreen) { isFullscreen = true; }
-    if (document.msFullscreenElement) { isFullscreen = true; }
+    if (document.fullscreen) {
+      isFullscreen = true;
+    }
+    if (document.mozFullScreen) {
+      isFullscreen = true;
+    }
+    if (document.webkitIsFullScreen) {
+      isFullscreen = true;
+    }
+    if (document.msFullscreenElement) {
+      isFullscreen = true;
+    }
 
     var docElem = document.documentElement;
     if (!isFullscreen && (a === true || a == null)) {
