@@ -1,4 +1,5 @@
 function createTeamsTab(tab, gameId, teamId) {
+  'use strict';
   var table;
   if (gameId != null) {
     // show teams for given game
@@ -14,6 +15,7 @@ function createTeamsTab(tab, gameId, teamId) {
 }
 
 function createEditTeamTable(element, teamPrefix, changable) {
+  'use strict';
   var teamTable = $('<table>')
     .addClass('Team')
     .append($('<tr><td/></tr>').addClass('Name'))
@@ -96,7 +98,9 @@ function createEditTeamTable(element, teamPrefix, changable) {
         waitingOnUpload = fd.get('f').name;
       },
       fail: function (e, data) {
+        /* jshint -W117 */
         console.log('Failed upload', data.errorThrown);
+        /* jshint +W117 */
       },
     })
     .css('display', 'none')
@@ -322,6 +326,7 @@ function createEditTeamTable(element, teamPrefix, changable) {
 }
 
 function createAlternateNamesDialog(prefix) {
+  'use strict';
   var dialog = $('<div>').addClass('AlternateNamesDialog');
 
   $('<a>').text('Type:').appendTo(dialog);
@@ -405,6 +410,7 @@ function createAlternateNamesDialog(prefix) {
 }
 
 function createColorsDialog(prefix) {
+  'use strict';
   var dialog = $('<div>').addClass('ColorsDialog');
 
   $('<a>').text('Type:').appendTo(dialog);
@@ -452,7 +458,6 @@ function createColorsDialog(prefix) {
       });
       tr.find('input').after(
         $('<button class="ClearPrev">X</button>').on('click', function (e) {
-          var prefix = dialog.attr('prefix');
           WS.Set(prefix + '.Color(' + colorId + '_' + $(e.target).prev().attr('suffix') + ')', '');
         })
       );
@@ -460,7 +465,6 @@ function createColorsDialog(prefix) {
       $('<button>')
         .button({ label: 'X' })
         .on('click', function () {
-          var prefix = dialog.attr('prefix');
           WS.Set(prefix + '.Color(' + colorId + '_fg)', null);
           WS.Set(prefix + '.Color(' + colorId + '_bg)', null);
           WS.Set(prefix + '.Color(' + colorId + '_glow)', null);
@@ -522,6 +526,7 @@ function createColorsDialog(prefix) {
 }
 
 function createTeamsSkaterRemoveDialog(teamName, prefix) {
+  'use strict';
   var dialog = $('<div>').addClass('TeamsRemoveDialog');
 
   $('<a>')

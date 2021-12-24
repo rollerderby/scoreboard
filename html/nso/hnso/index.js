@@ -1,4 +1,5 @@
 $(function () {
+  'use strict';
   var gameId = _windowFunctions.getParam('game');
   createIgrfTab(createTab('IGRF', 'IgrfTab'), gameId);
   createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
@@ -13,6 +14,7 @@ $(function () {
 });
 
 function createTab(title, tabId) {
+  'use strict';
   if (typeof title === 'string') {
     title = $('<a>').html(title);
   }

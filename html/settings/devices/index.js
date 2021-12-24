@@ -1,4 +1,5 @@
 $(function () {
+  'use strict';
   var deviceTable = $('.Devices');
   var buttons = $('.Buttons');
 
@@ -120,12 +121,12 @@ $(function () {
   WS.Register(['ScoreBoard.Clients.Client(*)'], function (k, v) {
     var id = k.Client;
     if (v == null) {
-      var tr = deviceTable.find('tr[clientId="' + id + '"]');
-      if (tr.siblings().length === 1) {
-        tr.parent().removeClass('HasClients');
+      var dr = deviceTable.find('tr[clientId="' + id + '"]');
+      if (dr.siblings().length === 1) {
+        dr.parent().removeClass('HasClients');
       }
-      tr.siblings().first().children('[rowspan]').attr('rowspan', tr.siblings().length);
-      tr.remove();
+      dr.siblings().first().children('[rowspan]').attr('rowspan', dr.siblings().length);
+      dr.remove();
       return;
     }
 

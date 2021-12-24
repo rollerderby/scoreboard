@@ -2,6 +2,7 @@ WS.Connect();
 WS.Register('', display);
 
 function display(k, v) {
+  'use strict';
   var row = findRow(k);
   if (v != null) {
     if ($.isPlainObject(v)) {
@@ -15,6 +16,7 @@ function display(k, v) {
 }
 
 function findRow(k) {
+  'use strict';
   var row = $('tr[key="' + k + '"]');
   if (row.length === 0) {
     row = $('<tr>').attr('key', k);

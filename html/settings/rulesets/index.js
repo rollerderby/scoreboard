@@ -1,4 +1,5 @@
 $(function () {
+  'use strict';
   var rulesetId = _windowFunctions.getParam('ruleset');
   createRulesetsTab($('#RulesetsTab'), rulesetId, false);
 

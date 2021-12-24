@@ -17,6 +17,7 @@ var _autoFit = {
    * The auto-fit function can also be accessed via element.data('AutoFit').
    */
   enableAutoFitText: function (e, options) {
+    'use strict';
     if (!e) {
       return null;
     }
@@ -43,6 +44,7 @@ var _autoFit = {
     return doAutoFit;
   },
   disableAutoFitText: function (e) {
+    'use strict';
     if (!e.data('AutoFit')) {
       return;
     }
@@ -85,6 +87,7 @@ var _autoFit = {
    * This returns an object with the relevant css properties that were updated.
    */
   autoFitText: function (container, options) {
+    'use strict';
     if (!options) {
       options = {};
     }
@@ -165,22 +168,27 @@ var _autoFit = {
     return _autoFit._cssObject(container, options);
   },
   _currentFontSize: function (container) {
+    'use strict';
     return Number(container.css('fontSize').replace(/px$/, ''));
   },
   _updateFontSize: function (container, size) {
+    'use strict';
     var last = _autoFit._currentFontSize(container);
     container.css('fontSize', size + 'px');
     return last !== _autoFit._currentFontSize(container);
   },
   _updateMinMaxFontSizes: function (container, params, newMin, newMax) {
+    'use strict';
     params.minFontSize = Number(newMin);
     params.maxFontSize = Number(newMax);
     return _autoFit._updateFontSize(container, (params.minFontSize + params.maxFontSize) / 2);
   },
   _overSize: function (contents, params) {
+    'use strict';
     return contents.outerWidth(true) > params.maxW || contents.outerHeight(true) > params.targetH;
   },
   _cssObject: function (container, options) {
+    'use strict';
     if (!options.returnCssObject) {
       return;
     }

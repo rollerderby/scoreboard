@@ -1,4 +1,5 @@
 $(function () {
+  'use strict';
   WS.Connect(function () {
     if (_windowFunctions.getParam('oauth_verifier')) {
       WS.Set('ScoreBoard.Twitter.OauthVerifier', _windowFunctions.getParam('oauth_verifier'));

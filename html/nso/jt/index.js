@@ -9,6 +9,7 @@
  */
 
 $(function () {
+  'use strict';
   setupJamControlPage();
   setupPeriodTimePage();
 
@@ -17,6 +18,7 @@ $(function () {
 });
 
 function isTrue(value) {
+  'use strict';
   if (typeof value === 'boolean') {
     return value;
   } else {
@@ -25,6 +27,7 @@ function isTrue(value) {
 }
 
 function setupJamControlPage() {
+  'use strict';
   $('#JamControlPage button.StartJam').on('click', function () {
     WS.Set('ScoreBoard.CurrentGame.StartJam', true);
   });
@@ -98,6 +101,7 @@ function setupJamControlPage() {
 }
 
 function setupPeriodTimePage() {
+  'use strict';
   $('#PeriodTimePage button.TimeDown').on('click', function () {
     WS.Set('ScoreBoard.CurrentGame.Clock(Period).Time', -1000, 'change');
   });
@@ -111,6 +115,7 @@ function setupPeriodTimePage() {
 }
 
 function toTime(k, v) {
+  'use strict';
   k = WS._enrichProp(k);
   var isCountDown = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);

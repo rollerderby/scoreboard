@@ -8,6 +8,7 @@
  */
 
 $(function () {
+  'use strict';
   var gameId = _windowFunctions.getParam('game');
   setupGameAdvance($('gameAdvance'), gameId, true);
   createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
@@ -51,6 +52,7 @@ $(function () {
 });
 
 function setOperatorSettings(op) {
+  'use strict';
   var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + op + '.';
   // Default settings are intentionally separate from settings of the default operator
   // This ensures users logging in for the first time always get the former and not whatever
@@ -66,6 +68,7 @@ function setOperatorSettings(op) {
 //         really, the keycontrol helper lib needs to have a per-tab interface so
 //         each tab can setup its own keycontrol.
 function initialLogin() {
+  'use strict';
   var operator = _windowFunctions.getParam('operator');
   if (operator) {
     login(operator);
@@ -75,6 +78,7 @@ function initialLogin() {
 }
 
 function login(name) {
+  'use strict';
   var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text(name);
   if (window.history.replaceState) {
@@ -85,6 +89,7 @@ function login(name) {
 }
 
 function logout() {
+  'use strict';
   var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text('');
   if (window.history.replaceState) {
@@ -102,6 +107,7 @@ function logout() {
 }
 
 function createTab(title, tabId) {
+  'use strict';
   if (typeof title === 'string') {
     title = $('<a>').html(title);
   }

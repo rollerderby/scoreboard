@@ -1,4 +1,5 @@
 function createDataTab(tab) {
+  'use strict';
   var games;
   var teams;
   var rulesets;

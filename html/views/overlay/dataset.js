@@ -4,6 +4,7 @@
 */
 
 var DataSet = (function () {
+  'use strict';
   /* Utility Functions */
 
   var _arrayContains = function (haystack, needle) {
@@ -136,9 +137,11 @@ var DataSet = (function () {
   /* Data Set Object 
   /************************************************************************************************/
 
+  /* jshint -W123 */
   function DataSet() {
     this.Triggers = new DataTriggers();
   }
+  /* jshint +W123 */
 
   DataSet.prototype = [];
 

@@ -1,4 +1,5 @@
 (function () {
+  'use strict';
   var teamId = _windowFunctions.getParam('team');
   var gameId = _windowFunctions.getParam('game');
 

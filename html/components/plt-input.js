@@ -237,9 +237,9 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
       field = k.field;
     }
 
+    var penaltyPeriod = WS.state[prefix + '.PeriodNumber'] || null;
     if (field === 'Code' || field === 'PeriodNumber' || field === '') {
       var code = WS.state[prefix + '.Code'];
-      var penaltyPeriod = WS.state[prefix + '.PeriodNumber'];
       if (code != null) {
         if (mode === 'copyToStatsbook') {
           if (penaltyPeriod === statsbookPeriod) {
@@ -260,7 +260,6 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
     }
 
     if (field === 'JamNumber' || field === 'PeriodNumber' || field === '') {
-      var penaltyPeriod = WS.state[prefix + '.PeriodNumber'] || null;
       var penaltyJam = WS.state[prefix + '.JamNumber'] || null;
       penaltyBox.attr('period', penaltyPeriod);
       penaltyBox.attr('jam', penaltyJam);
@@ -513,8 +512,9 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
 }
 
 function openPenaltyEditor(g, t, id, which) {
+  'use strict';
   var prefix = 'ScoreBoard.Game(' + g + ').Team(' + t + ')';
-  teamName = WS.state[prefix + '.AlternateName(operator)'] || WS.state[prefix + '.UniformColor'];
+  var teamName = WS.state[prefix + '.AlternateName(operator)'] || WS.state[prefix + '.UniformColor'];
   if (teamName == null || teamName == '') {
     teamName = WS.state[prefix + '.Name'];
   }
@@ -811,6 +811,7 @@ function preparePenaltyEditor(gameId) {
 var annotationEditor = {};
 
 function openAnnotationEditor(gameId, teamId, skaterId) {
+  'use strict';
   var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + skaterId + ').';
   var skaterNumber = WS.state[prefix + 'RosterNumber'];
   var position = WS.state[prefix + 'Position'].slice(2);
@@ -841,6 +842,7 @@ function openAnnotationEditor(gameId, teamId, skaterId) {
 }
 
 function prepareAnnotationEditor(elem, gameId, teamId) {
+  'use strict';
   $(initialize);
 
   var subDropdown = $('<select>').attr('id', 'subDropdown');
@@ -988,10 +990,12 @@ function prepareAnnotationEditor(elem, gameId, teamId) {
 var optionsDialog;
 
 function openOptionsDialog() {
+  'use strict';
   optionsDialog.dialog('open');
 }
 
 function prepareOptionsDialog(gameId, teamId, onlySettings) {
+  'use strict';
   var table = $('<table>').appendTo($('#OptionsDialog'));
 
   var zoomable = $('<label/><input type="checkbox"/>').addClass('ui-button-small');
@@ -1075,6 +1079,7 @@ function prepareOptionsDialog(gameId, teamId, onlySettings) {
 var useLTDialog;
 
 function prepareUseLTDialog() {
+  'use strict';
   useLTDialog = $('#UseLTDialog')
     .text('Use of Lineup Tracking is disabled.')
     .dialog({
@@ -1096,6 +1101,7 @@ function prepareUseLTDialog() {
 }
 
 function setupGameAdvance(element, gameId, auto) {
+  'use strict';
   element
     .addClass('Hide GameAdvance')
     .text('Go To Current Game')

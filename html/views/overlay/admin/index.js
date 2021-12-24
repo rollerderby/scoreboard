@@ -1,12 +1,15 @@
 function str_sort(a, b) {
+  'use strict';
   return $(b).text() < $(a).text() ? 1 : -1;
 }
 jQuery.fn.sortOptions = function sortOptions() {
+  'use strict';
   $('> option', this[0]).sort(str_sort).appendTo(this[0]);
 };
 
 var Skaters = new DataSet();
 Skaters.AddTrigger('UPDATE', '*', {}, function (n, o, k) {
+  'use strict';
   if (this.Name && this.Team && this.Id) {
     var att = { 'data-name': this.Name, 'data-team': this.Team, value: this.Skater };
     var $s = $('#Skaters option[value="' + this.Skater + '"]');
@@ -18,12 +21,14 @@ Skaters.AddTrigger('UPDATE', '*', {}, function (n, o, k) {
   }
 });
 Skaters.AddTrigger('DELETE', '*', {}, function (n, o, k) {
+  'use strict';
   $('#Skaters option[value="' + this.Skater + '"]').remove();
 });
 
 $(initialize);
 
 function initialize() {
+  'use strict';
   WS.Register(
     [
       'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)',
@@ -61,7 +66,7 @@ function initialize() {
 
       var d = {};
       d[key] = v;
-      d['Team'] = m[1];
+      d.Team = m[1];
       if (key === 'Id' && v == null) {
         Skaters.Delete({ Skater: m[2] });
       } else {
@@ -109,6 +114,7 @@ function initialize() {
 }
 
 $('#Controls input, #Controls .Selector').on('change', function () {
+  'use strict';
   var t = $(this).attr('data-setting');
   var v = $(this).val();
   if ($(this).attr('type') === 'color') {
@@ -123,6 +129,7 @@ $('#Controls input, #Controls .Selector').on('change', function () {
 });
 
 $('.SelectUpdator').on('change', function () {
+  'use strict';
   var $t = $(this);
   var v = $t.val();
 
@@ -154,6 +161,7 @@ $('.SelectUpdator').on('change', function () {
 });
 
 $('select#Skaters').on('change', function (e) {
+  'use strict';
   var $t = $(this);
   var v = $t.val();
   var team = $('option[value=' + v + ']', $t).attr('data-team');
@@ -168,6 +176,7 @@ $('select#Skaters').on('change', function (e) {
 });
 
 $('select#Keepers').on('change', function (e) {
+  'use strict';
   var $t = $(this);
   var v = $t.val();
 
@@ -184,6 +193,7 @@ $('select#Keepers').on('change', function (e) {
 });
 
 $('#KeeperAdd').on('click', function () {
+  'use strict';
   $('#LowerThirdStyle').trigger('change');
   var line1 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line1)"]').val();
   var line2 = $('input[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.LowerThird.Line2)"]').val();
@@ -199,6 +209,7 @@ $('#KeeperAdd').on('click', function () {
 });
 
 $('#Controls button').on('click', function () {
+  'use strict';
   var $t = $(this);
   var v = $t.val();
   $t.removeClass('changed');
@@ -223,6 +234,7 @@ $('#Controls button').on('click', function () {
 });
 
 $(function () {
+  'use strict';
   $(document).on('keyup', function (e) {
     var tag = e.target.tagName.toLowerCase();
     var c = String.fromCharCode(e.keyCode || e.charCode).toUpperCase();

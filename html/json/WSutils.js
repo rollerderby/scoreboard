@@ -1,4 +1,5 @@
 function toggleButton(key, trueText, falseText) {
+  'use strict';
   var button = $('<label/><input type="checkbox"/>').addClass('ui-button-small');
   var id = newUUID();
   button.first().attr('for', id);
@@ -17,6 +18,7 @@ function toggleButton(key, trueText, falseText) {
 }
 
 function mediaSelect(key, format, type, humanName) {
+  'use strict';
   var select = $('<select>').append($('<option value="">No ' + humanName + '</option>'));
   WS.Register('ScoreBoard.Media.Format(' + format + ').Type(' + type + ').File(*).Name', function (k, v) {
     select.children('[value="' + '/' + format + '/' + type + '/' + k.File + '"]').remove();
@@ -34,6 +36,7 @@ function mediaSelect(key, format, type, humanName) {
 }
 
 function WSActiveButton(key, button) {
+  'use strict';
   button.on('click', function () {
     WS.Set(key, !button.hasClass('Active'));
   });
@@ -44,6 +47,7 @@ function WSActiveButton(key, button) {
 }
 
 function WSControl(key, element) {
+  'use strict';
   element.on('change', function () {
     WS.Set(key, element.val());
   });

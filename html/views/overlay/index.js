@@ -1,14 +1,17 @@
 function str_sort(a, b) {
+  'use strict';
   return $(a).attr('data-sort') == null || $(b).attr('data-sort') < $(a).attr('data-sort') ? 1 : -1;
 }
 
 jQuery.fn.sortDivs = function sortDivsStr() {
+  'use strict';
   $('> div', this[0]).sort(str_sort).appendTo(this[0]);
 };
 
 $(initialize);
 
 function initialize() {
+  'use strict';
   WS.Register([
     'ScoreBoard.CurrentGame.Clock(Intermission).Number',
     'ScoreBoard.CurrentGame.Rulesets.CurrentRule(Period.Number)',
@@ -243,6 +246,7 @@ function initialize() {
 }
 
 function toIndicator(k, v) {
+  'use strict';
   var prefix = k.substring(0, k.lastIndexOf('.'));
   return isTrue(WS.state[prefix + '.StarPass'])
     ? 'SP'
@@ -254,10 +258,14 @@ function toIndicator(k, v) {
 }
 
 function jammer_ov(k, v) {
+  'use strict';
+  /* jshint -W117 */
   return jammer(k, v, true);
+  /* jshint +W117 */
 }
 
 function ensureSkaterExists(skaterId, team) {
+  'use strict';
   if ($('.PenaltyTeam' + team + ' .Team' + team + ' .Skater[data-skaterId=' + skaterId + ']').length === 0) {
     // create the roster entry for this skater
     var xv = $('<div class="Skater"></div>');
@@ -279,6 +287,7 @@ function ensureSkaterExists(skaterId, team) {
 }
 
 function updateSort(sel) {
+  'use strict';
   var skaterRow = $(sel);
   var sortValue;
   // First, sort invisible rows to the end, so they don't interfere with alternating row color
@@ -301,6 +310,7 @@ function updateSort(sel) {
 }
 
 function createPenalty(mb, pnum, v) {
+  'use strict';
   $('.Number-' + pnum, mb).remove();
   var penalty = $('<div class="Penalty Number-' + pnum + ' Penalty-' + v + '">' + v + '</div>');
   $(mb).attr('data-count', $('.Penalty', mb).length + 1);
@@ -310,6 +320,7 @@ function createPenalty(mb, pnum, v) {
 }
 
 function jamData(k, v) {
+  'use strict';
   var period = k.Period;
   var jam = k.Jam;
   var team = k.TeamJam;
@@ -361,6 +372,7 @@ function jamData(k, v) {
 }
 
 function pointsPerJamColumnWidths() {
+  'use strict';
   var ne1 = $('.PPJBox .Team1 .GraphBlock').length;
   var ne2 = $('.PPJBox .Team2 .GraphBlock').length;
   if (ne2 > ne1) {
@@ -375,6 +387,7 @@ function pointsPerJamColumnWidths() {
 }
 
 function clockType(k, v) {
+  'use strict';
   var ret;
   var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
   var or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];

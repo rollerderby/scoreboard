@@ -1,4 +1,5 @@
 function createSheetsTab(tab, gameId) {
+  'use strict';
   WS.Register(['ScoreBoard.Game(' + gameId + ').Team(1).Name'], function (k, v) {
     tab.find('.O1').each(function () {
       $(this).text(v + $(this).data('suffix'));

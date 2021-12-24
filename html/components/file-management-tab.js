@@ -1,4 +1,5 @@
 function createFileManagementTab(tab) {
+  'use strict';
   tab.attr('id', 'FileManagementTab').append($('<ul>').attr('id', 'fileTabBar'));
 
   createTab('Image', 'images');
@@ -223,7 +224,7 @@ function createFileManagementTab(tab) {
       ]);
       uploader
         .fileupload('send', data)
-        .done(function (data, textStatus, jqxhr) {
+        .done(function (d, textStatus, jqxhr) {
           div.find('a.Status').text(statustxt);
         })
         .fail(function (jqxhr, textStatus, errorThrown) {

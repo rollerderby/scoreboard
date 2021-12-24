@@ -123,6 +123,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       return;
     }
     prefix = prefix + 'TeamJam(' + teamId + ').';
+    var row = jamRow;
+    var otherRow = spRow;
     switch (k.substring(prefix.length)) {
       case 'Fielding(Jammer).SkaterNumber':
         jamRow.find('.Jammer').text(v);
@@ -149,8 +151,6 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       case 'Injury':
       case 'StarPass':
       case 'Fielding(Pivot).SkaterNumber':
-        var row = jamRow;
-        var otherRow = spRow;
         if (isTrue(WS.state[prefix + 'StarPass'])) {
           row = spRow;
           otherRow = jamRow;
@@ -196,8 +196,6 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         } else if (trip2Score != null) {
           scoreText = trip2Score;
         }
-        var row = jamRow;
-        var otherRow = spRow;
         if (trip2AfterSP || (trip2Score == null && trip1AfterSP)) {
           row = spRow;
           otherRow = jamRow;
@@ -216,22 +214,20 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
 
       default:
         if (k.parts[5] === 'ScoringTrip' && k.ScoringTrip >= 3 && k.ScoringTrip < 10) {
-          var t = k.ScoringTrip;
-          var row = jamRow;
-          var otherRow = spRow;
-          if (isTrue(WS.state[prefix + 'ScoringTrip(' + t + ').AfterSP'])) {
+          var trip = k.ScoringTrip;
+          if (isTrue(WS.state[prefix + 'ScoringTrip(' + trip + ').AfterSP'])) {
             row = spRow;
             otherRow = jamRow;
           }
-          var score = WS.state[prefix + 'ScoringTrip(' + t + ').Score'];
-          var current = isTrue(WS.state[prefix + 'ScoringTrip(' + t + ').Current']);
-          var hasAnnotation = WS.state[prefix + 'ScoringTrip(' + t + ').Annotation'] !== '';
+          var score = WS.state[prefix + 'ScoringTrip(' + trip + ').Score'];
+          var current = isTrue(WS.state[prefix + 'ScoringTrip(' + trip + ').Current']);
+          var hasAnnotation = WS.state[prefix + 'ScoringTrip(' + trip + ').Annotation'] !== '';
           row
-            .find('.Trip' + t)
+            .find('.Trip' + trip)
             .toggleClass('hasAnnotation', hasAnnotation)
             .text(score == null ? '' : current && score === 0 ? '.' : score);
           otherRow
-            .find('.Trip' + t)
+            .find('.Trip' + trip)
             .removeClass('hasAnnotation')
             .text('');
         } else if (k.parts[5] === 'ScoringTrip' && k.ScoringTrip >= 10) {
@@ -368,6 +364,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
 var tripEditor;
 
 function setupTripEditor(gameId, p, j, teamId, t) {
+  'use strict';
   while (
     t > 1 &&
     WS.state[
@@ -569,6 +566,7 @@ function prepareTripEditor() {
 }
 
 function showSkaterSelector(element, teamId) {
+  'use strict';
   $('#skaterSelector .skaterSelect').addClass('Hide');
   $('#skaterSelector #skaterSelect' + teamId).removeClass('Hide');
   $('#skaterSelector #skaterSelect' + teamId).val(WS.state[element]);

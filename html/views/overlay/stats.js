@@ -1,4 +1,5 @@
 jQuery.fn.sortRows = function sortRows() {
+  'use strict';
   $('> tr', this[0]).sort(dec_sort).appendTo(this[0]);
   function dec_sort(a, b) {
     return $(b).attr('data-sort') > $(a).attr('data-sort') ? 1 : -1;
@@ -6,9 +7,10 @@ jQuery.fn.sortRows = function sortRows() {
 };
 
 $(document).ready(function () {
+  'use strict';
   StatsEngine.Initialize({ debug: true });
 
-  StatsEngine.GetSomething()['Jams'].AddTrigger('INSERT', '*', {}, function (nv, ov, key) {
+  StatsEngine.GetSomething().Jams.AddTrigger('INSERT', '*', {}, function (nv, ov, key) {
     var c = parseInt(this.Period) * 1000 + parseInt(this.Jam);
     var row = $('<tr>')
       .attr('id', 'Jam-P' + this.Period + '-J' + this.Jam)
@@ -28,7 +30,7 @@ $(document).ready(function () {
     $('table#Jams tbody').prepend(row);
     $('table#Jams tbody').sortRows();
   });
-  StatsEngine.GetSomething()['Jams'].AddTrigger('VALUE', ['DurationHuman', 'PeriodClockStart'], {}, function (nv, ov, key) {
+  StatsEngine.GetSomething().Jams.AddTrigger('VALUE', ['DurationHuman', 'PeriodClockStart'], {}, function (nv, ov, key) {
     $('tr#Jam-P' + this.Period + '-J' + this.Jam + ' .Data' + key).text(nv);
   });
 });

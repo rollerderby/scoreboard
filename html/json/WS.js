@@ -9,12 +9,15 @@ var WS = {
   heartbeat: null,
   debug: false,
 
+  /* jshint -W117 */
   Connect: function (callback) {
+    'use strict';
     WS.connectCallback = callback;
     WS._connect();
   },
 
   _connect: function () {
+    'use strict';
     WS.connectTimeout = null;
     var url = (document.location.protocol === 'http:' ? 'ws' : 'wss') + '://';
     url += document.location.host + '/WS/';
@@ -108,12 +111,14 @@ var WS = {
   },
 
   send: function (data) {
+    'use strict';
     if (WS.socket != null && WS.socket.readyState === 1) {
       WS.socket.send(data);
     }
   },
 
   Command: function (command, data) {
+    'use strict';
     var req = {
       action: command,
       data: data,
@@ -122,6 +127,7 @@ var WS = {
   },
 
   Set: function (key, value, flag) {
+    'use strict';
     var req = {
       action: 'Set',
       key: key,
@@ -132,6 +138,7 @@ var WS = {
   },
 
   triggerCallback: function (k, v) {
+    'use strict';
     k = WS._enrichProp(k);
     var callbacks = WS._getMatchesFromTrie(WS.callbackTrie, k);
     for (var idx = 0; idx < callbacks.length; idx++) {
@@ -148,7 +155,9 @@ var WS = {
   },
 
   processUpdate: function (state) {
-    for (var prop in state) {
+    'use strict';
+    var prop;
+    for (prop in state) {
       // update all incoming properties before triggers
       // dependency issues causing problems
       if (state[prop] == null) {
@@ -158,12 +167,12 @@ var WS = {
       }
     }
 
-    for (var prop in state) {
+    for (prop in state) {
       if (state[prop] == null) {
         WS.triggerCallback(prop, state[prop]);
       }
     }
-    for (var prop in state) {
+    for (prop in state) {
       if (state[prop] != null) {
         WS.triggerCallback(prop, state[prop]);
       }
@@ -177,7 +186,7 @@ var WS = {
       if (c.callback == null) {
         return;
       }
-      for (var prop in state) {
+      for (prop in state) {
         if (prop.indexOf(c.path) === 0) {
           batched[c.callback] = c.callback;
           return;
@@ -193,7 +202,7 @@ var WS = {
     });
 
     // Clean cache to avoid a memory leak for long running screens.
-    for (var prop in state) {
+    for (prop in state) {
       if (state[prop] == null) {
         delete WS._enrichPropCache[prop];
       }
@@ -204,28 +213,31 @@ var WS = {
 
   // Parse property name, and make it easily accessible.
   _enrichProp: function (prop) {
+    'use strict';
     if (WS._enrichPropCache[prop] != null) {
       return WS._enrichPropCache[prop];
     }
+    /* jshint -W053 */
     prop = new String(prop);
+    /* jshint +W053 */
     var i = prop.length - 1;
     var parts = [];
     while (i >= 0) {
+      var dot;
+      var key;
+      var val = '';
       if (prop[i] === ')') {
         var open = prop.lastIndexOf('(', i);
-        var dot = prop.lastIndexOf('.', open);
-        var key = prop.substring(dot + 1, open);
-        var val = prop.substring(open + 1, i);
-        prop[key] = val;
-        parts.push(key);
-        i = dot - 1;
+        dot = prop.lastIndexOf('.', open);
+        key = prop.substring(dot + 1, open);
+        val = prop.substring(open + 1, i);
       } else {
-        var dot = prop.lastIndexOf('.', i);
-        var key = prop.substring(dot + 1, i + 1);
-        prop[key] = '';
-        parts.push(key);
-        i = dot - 1;
+        dot = prop.lastIndexOf('.', i);
+        key = prop.substring(dot + 1, i + 1);
       }
+      prop[key] = val;
+      parts.push(key);
+      i = dot - 1;
     }
     prop.field = parts[0];
     parts.reverse();
@@ -235,6 +247,7 @@ var WS = {
   },
 
   Register: function (paths, options) {
+    'use strict';
     if ($.isFunction(options)) {
       options = { triggerFunc: options };
     }
@@ -273,12 +286,12 @@ var WS = {
               }
             };
           } else if (elem.parent().hasClass('AutoFit')) {
-            var autofit = _autoFit.enableAutoFitText(elem.parent());
+            var parenAutofit = _autoFit.enableAutoFitText(elem.parent());
             callback = function (k, v) {
               elem.text(v);
               if (elem.data('lastText') !== v) {
                 elem.data('lastText', v);
-                autofit();
+                parenAutofit();
               }
             };
           } else {
@@ -315,6 +328,7 @@ var WS = {
   },
 
   _addToTrie: function (t, key, value) {
+    'use strict';
     var p = key.split(/[.(]/);
     for (var i = 0; i < p.length; i++) {
       var c = p[i];
@@ -325,7 +339,8 @@ var WS = {
     t.values.push(value);
   },
 
-  _getMatchesFromTrie: function (t, key) {
+  _getMatchesFromTrie: function (trie, key) {
+    'use strict';
     function matches(t, p, i) {
       var result = t.values || [];
       for (; i < p.length; i++) {
@@ -345,10 +360,11 @@ var WS = {
       return result;
     }
 
-    return matches(t, key.split(/[.(]/), 0);
+    return matches(trie, key.split(/[.(]/), 0);
   },
 
   getPaths: function (elem, attr) {
+    'use strict';
     var list = elem.attr(attr).split(',');
     var path = WS._getContext(elem);
     var paths = [];
@@ -365,6 +381,7 @@ var WS = {
   },
 
   AutoRegister: function () {
+    'use strict';
     $.each($('[sbDisplay]'), function (idx, elem) {
       elem = $(elem);
       var paths = WS.getPaths(elem, 'sbDisplay');
@@ -404,6 +421,7 @@ var WS = {
   },
 
   _getContext: function (elem, attr) {
+    'use strict';
     if (attr == null) {
       attr = 'sbContext';
     }
@@ -419,6 +437,7 @@ var WS = {
     }
     return ret;
   },
+  /* jshint +W117 */
 };
 
 //# sourceURL=json\WS.js

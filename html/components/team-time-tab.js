@@ -1,4 +1,5 @@
 function setupGameAdvance(element, gameId, auto) {
+  'use strict';
   element
     .addClass('Hide GameAdvance')
     .text('Go To Current Game')
@@ -16,6 +17,7 @@ function setupGameAdvance(element, gameId, auto) {
 }
 
 function createTeamTimeTab(tab, gameId) {
+  'use strict';
   var table = $('<table>').attr('id', 'TeamTime').appendTo(tab);
 
   $('<tr><td/></tr>').appendTo(table).children('td').append(createMetaControlTable(gameId));
@@ -37,18 +39,21 @@ function createTeamTimeTab(tab, gameId) {
 }
 
 function setClockControls(value) {
+  'use strict';
   $('#ShowClockControlsButton').prop('checked', value);
   $('label.ShowClockControlsButton').toggleClass('ui-state-active', value);
   $('#TeamTime').find('tr.Control').toggleClass('Show', value);
 }
 
 function setTabBar(value) {
+  'use strict';
   $('#ShowTabBarButton').prop('checked', value);
   $('label.ShowTabBarButton').toggleClass('ui-state-active', value);
   $('#tabBar').toggle(value);
 }
 
 function setReplaceButton(value) {
+  'use strict';
   $('#EnableReplaceButton').prop('checked', value);
   $('label.EnableReplaceButton').toggleClass('ui-state-active', value);
   $('#ClockUndo').toggleClass('Hidden KeyInactive', value);
@@ -56,6 +61,7 @@ function setReplaceButton(value) {
 }
 
 function createMetaControlTable(gameId) {
+  'use strict';
   var table = $('<table><tr><td/></tr><tr><td/></tr><tr><td/></tr></table>').addClass('MetaControl');
   var buttonsTd = _crgUtils.createRowTable(1).appendTo(table.find('>tbody>tr:eq(0)').addClass('Buttons').children('td')).find('tr>td');
   var helpTd = _crgUtils.createRowTable(1).appendTo(table.find('>tbody>tr:eq(1)').addClass('Help Hidden').children('td')).find('tr>td');
@@ -195,18 +201,21 @@ function createMetaControlTable(gameId) {
 }
 
 function hideEndOfPeriodControls() {
+  'use strict';
   $('#PeriodEndControlsCheckbox').removeAttr('checked');
   $('#PeriodEndControlsCheckbox').button('refresh');
   $('tr.PeriodEnd').addClass('Hidden');
 }
 
 function addDays(date, days) {
+  'use strict';
   var result = new Date(date);
   result.setDate(result.getDate() + days);
   return result;
 }
 
 function createGameControlDialog(gameId) {
+  'use strict';
   var dialog = $('<div>').addClass('GameControl');
   var title = 'Start New Game';
 
@@ -405,6 +414,7 @@ function createGameControlDialog(gameId) {
 }
 
 function createPeriodEndTimeoutDialog(td, gameId) {
+  'use strict';
   var dialog = $('<div>');
   var applyDiv = $('<div>').addClass('Apply').appendTo(dialog);
   $('<span>').text('Timeout with ').appendTo(applyDiv);
@@ -473,6 +483,7 @@ function createPeriodEndTimeoutDialog(td, gameId) {
 }
 
 function createOvertimeDialog(numPeriods, gameId) {
+  'use strict';
   var dialog = $('<div>');
   $('<span>').text('Note: Overtime can only be started at the end of Period ').appendTo(dialog);
   $('<span>').text(numPeriods).appendTo(dialog);
@@ -500,6 +511,7 @@ function createOvertimeDialog(numPeriods, gameId) {
 }
 
 function createJamControlTable(gameId) {
+  'use strict';
   var table = $('<table><tr><td/></tr></table>').addClass('JamControl');
   var td = table.find('td');
   var replaceInfoTr = _crgUtils.createRowTable(1).addClass('ReplaceInfo Hidden').appendTo(td);
@@ -592,6 +604,7 @@ function createJamControlTable(gameId) {
 
 var timeoutDialog;
 function createTeamTable(gameId) {
+  'use strict';
   var table = $('<table>').append('<tbody>').addClass('Team');
   var row = $('<tr></tr>');
   var nameRow = row.clone().addClass('Name').appendTo(table);
@@ -766,7 +779,7 @@ function createTeamTable(gameId) {
       score.text(v);
     });
 
-    var scoreTd = scoreTr.children('td:eq(' + (first ? '0' : '2') + ')').addClass('Down');
+    var scoreDownTd = scoreTr.children('td:eq(' + (first ? '0' : '2') + ')').addClass('Down');
     $('<button>')
       .append($('<span>').text('Points -1'))
       .attr('id', 'Team' + team + 'ScoreDown')
@@ -784,8 +797,8 @@ function createTeamTable(gameId) {
           flash(tripScore);
         }
       })
-      .appendTo(scoreTd);
-    $('<br />').appendTo(scoreTd);
+      .appendTo(scoreDownTd);
+    $('<br />').appendTo(scoreDownTd);
     $('<button>')
       .append($('<span>').text('Remove Trip'))
       .val('true')
@@ -795,9 +808,9 @@ function createTeamTable(gameId) {
       .on('click', function () {
         WS.Set(prefix + '.RemoveTrip', true);
       })
-      .appendTo(scoreTd);
+      .appendTo(scoreDownTd);
 
-    var scoreTd = scoreTr.children('td:eq(' + (first ? '2' : '0') + ')').addClass('Up');
+    var scoreUpTd = scoreTr.children('td:eq(' + (first ? '2' : '0') + ')').addClass('Up');
 
     $('<button>')
       .append($('<span>').text('Points +1'))
@@ -807,8 +820,8 @@ function createTeamTable(gameId) {
       .on('click', function () {
         WS.Set(prefix + '.TripScore', +1, 'change');
       })
-      .appendTo(scoreTd);
-    $('<br />').appendTo(scoreTd);
+      .appendTo(scoreUpTd);
+    $('<br />').appendTo(scoreUpTd);
     $('<button>')
       .append($('<span>').text('Add Trip'))
       .attr('id', 'Team' + team + 'AddTrip')
@@ -817,27 +830,24 @@ function createTeamTable(gameId) {
       .on('click', function () {
         WS.Set(prefix + '.AddTrip', true);
       })
-      .appendTo(scoreTd);
+      .appendTo(scoreUpTd);
 
     if (first) {
       $('<span>').text('Set Trip Pts').appendTo(speedScoreTr.find('td:eq(0)'));
     }
+    function addSpeedScoreButton(amount, pos) {
+      $('<button>')
+        .append($('<span>').text(amount))
+        .attr('id', 'Team' + team + 'TripScore' + amount)
+        .addClass('KeyControl')
+        .button()
+        .on('click', function () {
+          WS.Set(prefix + '.TripScore', amount);
+        })
+        .appendTo(speedScoreTr.find('td:eq(' + pos + ')'));
+    }
     for (var i = 0; i <= 4; i++) {
-      var pos = i + 1;
-      if (!first) {
-        pos = 5 - pos;
-      }
-      (function (i) {
-        $('<button>')
-          .append($('<span>').text(i))
-          .attr('id', 'Team' + team + 'TripScore' + i)
-          .addClass('KeyControl')
-          .button()
-          .on('click', function () {
-            WS.Set(prefix + '.TripScore', i);
-          })
-          .appendTo(speedScoreTr.find('td:eq(' + pos + ')'));
-      })(i);
+      addSpeedScoreButton(i, first ? i + 1 : 4 - i);
     }
 
     var timeoutButton = $('<button>')
@@ -1033,6 +1043,7 @@ function createTeamTable(gameId) {
 }
 
 function createTimeTable(gameId) {
+  'use strict';
   var table = $('<table>').append('<tbody>').addClass('Time');
   var row = $('<tr></tr>');
   var nameRow = row.clone().addClass('Name').appendTo(table);
@@ -1150,6 +1161,7 @@ function createTimeTable(gameId) {
 }
 
 function createPeriodDialog(gameId) {
+  'use strict';
   var dialog = $('<div>').addClass('NumberDialog');
   var table = $('<table>').appendTo(dialog);
   var headers = $('<tr><td/><td/><td/><td/><td/></tr>').appendTo(table);
@@ -1254,6 +1266,7 @@ function createPeriodDialog(gameId) {
 }
 
 function createJamDialog(gameId) {
+  'use strict';
   var currentPeriod;
   var nextJam;
   var dialog = $('<div>').addClass('NumberDialog');
@@ -1398,6 +1411,7 @@ function createJamDialog(gameId) {
 }
 
 function createTimeoutDialog(gameId) {
+  'use strict';
   var firstJamListed = [0];
   var lastJamListed = [0];
   var periodDropdownTemplate = $('<select>').attr('id', 'PeriodDropdown').append($('<option>').attr('value', 0).text('P0'));
@@ -1509,7 +1523,7 @@ function createTimeoutDialog(gameId) {
       clearPeriod(p);
       return;
     }
-    if (newFirst > 0 && !(oldFirst > 0)) {
+    if (newFirst > 0 && oldFirst === 0) {
       for (j = newFirst; j <= newLast; j++) {
         addJam(p, j, true);
       }
@@ -1672,7 +1686,7 @@ function createTimeoutDialog(gameId) {
         break;
       case 'Review':
         row.find('.Retained button').toggleClass('Hide', !isTrue(v));
-      //no break
+      /* falls through */
       case 'Owner':
         row.find('#TypeDropdown').val(WS.state[prefix + '.Owner'] + '.' + WS.state[prefix + '.Review']);
         break;
@@ -1696,6 +1710,7 @@ function createTimeoutDialog(gameId) {
 }
 
 function createTimeDialog(gameId, clock) {
+  'use strict';
   var prefix = 'ScoreBoard.Game(' + gameId + ').Clock(' + clock + ')';
   var dialog = $('<div>');
   var table = $('<table>').appendTo(dialog).addClass('TimeDialog');

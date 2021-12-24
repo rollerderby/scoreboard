@@ -13,6 +13,7 @@ var _crgUtils = {
    * so it's safe to use as an element's id.
    */
   checkSbId: function (s) {
+    'use strict';
     return s.replace(/['"()]/g, '');
   },
 
@@ -29,6 +30,7 @@ var _crgUtils = {
    * instead of on().
    */
   onAndRun: function (target, eventType, eventData, handler, initialParams, useBind) {
+    'use strict';
     if (!$.isjQuery(target)) {
       target = $(target);
     }
@@ -64,10 +66,12 @@ var _crgUtils = {
     return target;
   },
   bindAndRun: function (target, eventType, eventData, handler, initialParams) {
+    'use strict';
     return _crgUtils.onAndRun(target, eventType, eventData, handler, initialParams, true);
   },
 
   showLoginDialog: function (titleText, nameText, buttonText, callback) {
+    'use strict';
     var dialog = $('<div>').append($('<a>').html(nameText)).append('<input type="text"/>');
     var login = function () {
       if (callback(dialog.find('input:text').val())) {
@@ -96,6 +100,7 @@ var _crgUtils = {
   },
 
   createRowTable: function (n, r) {
+    'use strict';
     var table = $('<table>').css('width', '100%').addClass('RowTable');
     var w = 100 / n + '%';
     r = r || 1;

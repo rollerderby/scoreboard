@@ -1,6 +1,7 @@
 $(initialize);
 
 function initialize() {
+  'use strict';
   WS.Connect();
   WS.AutoRegister();
 
@@ -18,8 +19,10 @@ function initialize() {
     $('.Team1').toggleClass('HideLogos', isTrue(v));
     $('.Team2').toggleClass('HideLogos', isTrue(v));
     // Update autofit of the names.
+    /* jshint -W117 */
     logoUpdate('.Team(1)');
     logoUpdate('.Team(2)');
+    /* jshint +W117 */
   });
 
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + view + '_CurrentView)', function (k, v) {

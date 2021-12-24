@@ -16,6 +16,7 @@ var _crgKeyControls = {
    * and calls setupKeyControl, using the given controlParent.
    */
   setupKeyControls: function (operator) {
+    'use strict';
     _crgKeyControls.setupKeyControl($(_crgKeyControls.keySelector), operator);
   },
   /* Destroy all key control buttons.
@@ -23,6 +24,7 @@ var _crgKeyControls = {
    * and calls destroyKeyControl.
    */
   destroyKeyControls: function () {
+    'use strict';
     _crgKeyControls.destroyKeyControl($(_crgKeyControls.keySelector));
   },
 
@@ -44,6 +46,7 @@ var _crgKeyControls = {
    * when there is a control key the button has class HasControlKey
    */
   setupKeyControl: function (button, operator) {
+    'use strict';
     _crgKeyControls._start(operator);
     _crgKeyControls
       .destroyKeyControl(button)
@@ -55,11 +58,11 @@ var _crgKeyControls = {
       .append($('<span>').text(']').addClass('Indicator'))
       .end()
       .each(function () {
-        var button = $(this);
-        var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.KeyControl.' + button.attr('id') + ')';
+        var btn = $(this);
+        var prop = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + operator + '.KeyControl.' + btn.attr('id') + ')';
         var key = WS.state[prop];
-        button.attr('_crgKeyControls_prop', prop).toggleClass('HasControlKey', key ? true : false);
-        button
+        btn.attr('_crgKeyControls_prop', prop).toggleClass('HasControlKey', key ? true : false);
+        btn
           .find('span.Key')
           .attr('data-keycontrol', String(key ? key.charCodeAt(0) : ''))
           .text(key ? key : '');
@@ -67,6 +70,7 @@ var _crgKeyControls = {
     return button;
   },
   _hoverFunction: function (event) {
+    'use strict';
     $(this).toggleClass('hover', event.type === 'mouseenter');
   },
 
@@ -77,6 +81,7 @@ var _crgKeyControls = {
    * Note this does not remove the KeyControl class from the button.
    */
   destroyKeyControl: function (button) {
+    'use strict';
     button.attr('_crgKeyControls_prop', false);
     button.off('mouseenter mouseleave', _crgKeyControls._hoverFunction);
     button.find('span.Indicator').remove();
@@ -97,22 +102,27 @@ var _crgKeyControls = {
    * CSS note: buttons in edit mode have the class 'Editing'.
    */
   editKeys: function (edit) {
+    'use strict';
     $(_crgKeyControls.keySelector).toggleClass('Editing', edit);
   },
 
   addCondition: function (condition) {
+    'use strict';
     _crgKeyControls._conditions.push(condition);
   },
   _conditions: [
     function () {
+      'use strict';
       return !$('div.MultipleKeyAssignDialog').length;
     },
     function () {
+      'use strict';
       return !$('#TeamTimeTab.ui-tabs-hide').length;
     }, //disable keys when TeamTimeTab is hidden.
   ],
 
   _start: function (operator) {
+    'use strict';
     _crgKeyControls.operator = operator;
     if (!_crgKeyControls._keyControlStarted) {
       $(document).on('keypress', _crgKeyControls._keyControlPress);
@@ -136,6 +146,7 @@ var _crgKeyControls = {
   _operator: '',
 
   _checkConditions: function () {
+    'use strict';
     var ok = true;
     $.each(_crgKeyControls._conditions, function () {
       if (ok && $.isFunction(this) && !this()) {
@@ -145,6 +156,7 @@ var _crgKeyControls = {
     return ok;
   },
   _validKey: function (keycode) {
+    'use strict';
     /* For reference see http://en.wikipedia.org/wiki/List_of_Unicode_characters */
     if (keycode < 0x20) {
       // Low control chars
@@ -159,6 +171,7 @@ var _crgKeyControls = {
   _existingKeyLast: undefined,
   _existingKeyCount: 0,
   _keyControlPress: function (event) {
+    'use strict';
     if (!_crgKeyControls._checkConditions()) {
       return;
     }
@@ -205,6 +218,7 @@ var _crgKeyControls = {
     }
   },
   _keyControlDown: function (event) {
+    'use strict';
     if (!_crgKeyControls._checkConditions()) {
       return;
     }
@@ -217,9 +231,11 @@ var _crgKeyControls = {
     }
   },
   _clearKey: function (targets) {
+    'use strict';
     _crgKeyControls._setKey(targets, '');
   },
   _setKey: function (targets, key) {
+    'use strict';
     targets.each(function () {
       var prop = $(this).attr('_crgKeyControls_prop');
       if (prop) {
@@ -228,6 +244,7 @@ var _crgKeyControls = {
     });
   },
   _showMultipleKeyAssignDialog: function (existing, target, key) {
+    'use strict';
     var div = $('<div>').addClass('MultipleKeyAssignDialog');
     var n = existing.filter(':not(.Hidden)').length;
     var s = n === 1 ? '' : 's';

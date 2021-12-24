@@ -1,4 +1,5 @@
 (function () {
+  'use strict';
   var gameId = _windowFunctions.getParam('game');
 
   prepareRosterSheetTable($('#roster1'), gameId, 1, 'copyToStatsbook');
