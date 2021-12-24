@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-
-    <string name="app_name">CRG ScoreBoard</string>
-    <string name="button_start">Start</string>
-    <string name="button_stop">Stop</string>
-    <string name="remote_service_started">CRG</string>
-
-</resources>
