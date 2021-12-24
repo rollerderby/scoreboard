@@ -30,21 +30,16 @@ public class ClockImplTests {
 
     private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
-
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
-            synchronized (collectedEvents) {
-                collectedEvents.add(event);
-            }
+            synchronized (collectedEvents) { collectedEvents.add(event); }
         }
     };
 
     private ClockImpl clock;
     private static String ID = Clock.ID_LINEUP;
 
-    private void advance(long time_ms) {
-        ScoreBoardClock.getInstance().advance(time_ms);
-    }
+    private void advance(long time_ms) { ScoreBoardClock.getInstance().advance(time_ms); }
 
     @Before
     public void setUp() throws Exception {

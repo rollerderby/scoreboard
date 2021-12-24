@@ -21,18 +21,18 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         super(t, id, Team.BOX_TRIP);
         game = t.getGame();
         addProperties(IS_CURRENT, CURRENT_FIELDING, START_FIELDING, START_JAM_NUMBER, START_BETWEEN_JAMS,
-                START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
-                WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER, START_LATER,
-                END_EARLIER, END_LATER, DELETE);
+                      START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
+                      WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER,
+                      START_LATER, END_EARLIER, END_LATER, DELETE);
         initReferences();
     }
     public BoxTripImpl(Fielding f) {
         super(f.getTeamJam().getTeam(), UUID.randomUUID().toString(), Team.BOX_TRIP);
         game = f.getTeamJam().getTeam().getGame();
         addProperties(IS_CURRENT, CURRENT_FIELDING, START_FIELDING, START_JAM_NUMBER, START_BETWEEN_JAMS,
-                START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
-                WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER, START_LATER,
-                END_EARLIER, END_LATER, DELETE);
+                      START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
+                      WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER,
+                      START_LATER, END_EARLIER, END_LATER, DELETE);
         set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(START_AFTER_S_P, f.getTeamJam().isStarPass() && f.isCurrent());
         set(START_BETWEEN_JAMS, !game.isInJam() && !getTeam().hasFieldingAdvancePending() && f.isCurrent());
@@ -42,9 +42,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         add(FIELDING, f);
         f.updateBoxTripSymbols();
         if (f.getSkater() != null) {
-            for (Penalty p : f.getSkater().getUnservedPenalties()) {
-                add(PENALTY, p);
-            }
+            for (Penalty p : f.getSkater().getUnservedPenalties()) { add(PENALTY, p); }
         }
     }
     public BoxTripImpl(BoxTripImpl cloned, ScoreBoardEventProvider root) {
@@ -53,7 +51,9 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new BoxTripImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new BoxTripImpl(this, root);
+    }
 
     private void initReferences() {
         setInverseReference(FIELDING, Fielding.BOX_TRIP);
@@ -75,7 +75,6 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         }
         if (getStartFielding() == null) { return 1; }
         return getStartFielding().compareTo(other.getStartFielding());
-
     }
 
     @Override
@@ -89,9 +88,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
                     } else {
                         time += f.getTeamJam().getJam().getDuration();
                     }
-                    if (f == getStartFielding()) {
-                        time -= get(JAM_CLOCK_START);
-                    }
+                    if (f == getStartFielding()) { time -= get(JAM_CLOCK_START); }
                 }
             }
             value = time;
@@ -109,8 +106,8 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         if ((prop == END_FIELDING || prop == END_AFTER_S_P || prop == END_BETWEEN_JAMS) && getEndFielding() != null) {
             getEndFielding().updateBoxTripSymbols();
         }
-        if ((prop == START_FIELDING || prop == START_AFTER_S_P || prop == START_BETWEEN_JAMS)
-                && getStartFielding() != null) {
+        if ((prop == START_FIELDING || prop == START_AFTER_S_P || prop == START_BETWEEN_JAMS) &&
+            getStartFielding() != null) {
             getStartFielding().updateBoxTripSymbols();
         }
     }
@@ -119,15 +116,9 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == FIELDING) {
             Fielding f = (Fielding) item;
-            if (getStartFielding() == null || f.compareTo(getStartFielding()) < 0) {
-                set(START_FIELDING, f);
-            }
-            if (getCurrentFielding() == null || f.compareTo(getCurrentFielding()) > 0) {
-                set(CURRENT_FIELDING, f);
-            }
-            if (getEndFielding() != null && f.compareTo(getEndFielding()) > 0) {
-                set(END_FIELDING, f);
-            }
+            if (getStartFielding() == null || f.compareTo(getStartFielding()) < 0) { set(START_FIELDING, f); }
+            if (getCurrentFielding() == null || f.compareTo(getCurrentFielding()) > 0) { set(CURRENT_FIELDING, f); }
+            if (getEndFielding() != null && f.compareTo(getEndFielding()) > 0) { set(END_FIELDING, f); }
         }
     }
 
@@ -137,27 +128,21 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             if (getStartFielding() == item) {
                 Fielding first = null;
                 for (Fielding f : getAll(FIELDING)) {
-                    if (first == null || first.compareTo(f) > 0) {
-                        first = f;
-                    }
+                    if (first == null || first.compareTo(f) > 0) { first = f; }
                 }
                 set(START_FIELDING, first);
             }
             if (getCurrentFielding() == item) {
                 Fielding last = null;
                 for (Fielding f : getAll(FIELDING)) {
-                    if (last == null || last.compareTo(f) < 0) {
-                        last = f;
-                    }
+                    if (last == null || last.compareTo(f) < 0) { last = f; }
                 }
                 set(CURRENT_FIELDING, last);
             }
             if (getEndFielding() == item) {
                 Fielding last = null;
                 for (Fielding f : getAll(FIELDING)) {
-                    if (last == null || last.compareTo(f) < 0) {
-                        last = f;
-                    }
+                    if (last == null || last.compareTo(f) < 0) { last = f; }
                 }
                 set(END_FIELDING, last);
             }
@@ -175,11 +160,9 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             } else if (!startedBetweenJams()) {
                 set(START_BETWEEN_JAMS, true);
             } else if (add(FIELDING,
-                    getStartFielding().getSkater().getFielding(getStartFielding().getTeamJam().getPrevious()))) {
+                           getStartFielding().getSkater().getFielding(getStartFielding().getTeamJam().getPrevious()))) {
                 set(START_BETWEEN_JAMS, false);
-                if (getStartFielding().getTeamJam().isStarPass()) {
-                    set(START_AFTER_S_P, true);
-                }
+                if (getStartFielding().getTeamJam().isStarPass()) { set(START_AFTER_S_P, true); }
             }
         } else if (prop == START_LATER) {
             if (getStartFielding() == null) { return; }
@@ -187,9 +170,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             if (startedBetweenJams()) {
                 set(START_BETWEEN_JAMS, false);
             } else if (getStartFielding() == getEndFielding()) {
-                if (endedAfterSP() && !startedAfterSP()) {
-                    set(START_AFTER_S_P, true);
-                }
+                if (endedAfterSP() && !startedAfterSP()) { set(START_AFTER_S_P, true); }
             } else if (!startedAfterSP() && getStartFielding().getTeamJam().isStarPass()) {
                 set(START_AFTER_S_P, true);
             } else if (getStartFielding() != getCurrentFielding()) {
@@ -203,17 +184,13 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             } else if (endedBetweenJams()) {
                 set(END_BETWEEN_JAMS, false);
             } else if (getStartFielding() == getEndFielding()) {
-                if (endedAfterSP() && !startedAfterSP()) {
-                    set(END_AFTER_S_P, false);
-                }
+                if (endedAfterSP() && !startedAfterSP()) { set(END_AFTER_S_P, false); }
             } else if (endedAfterSP()) {
                 set(END_AFTER_S_P, false);
             } else {
                 remove(FIELDING, getEndFielding());
                 set(END_BETWEEN_JAMS, true);
-                if (getEndFielding().getTeamJam().isStarPass()) {
-                    set(END_AFTER_S_P, true);
-                }
+                if (getEndFielding().getTeamJam().isStarPass()) { set(END_AFTER_S_P, true); }
             }
         } else if (prop == END_LATER) {
             if (getEndFielding() == null) { return; }
@@ -222,15 +199,13 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             } else if (!endedBetweenJams()) {
                 set(END_BETWEEN_JAMS, true);
             } else if (add(FIELDING,
-                    getEndFielding().getSkater().getFielding(getEndFielding().getTeamJam().getNext()))) {
+                           getEndFielding().getSkater().getFielding(getEndFielding().getTeamJam().getNext()))) {
                 set(END_AFTER_S_P, false);
                 set(END_BETWEEN_JAMS, false);
             }
             if (getEndFielding().getTeamJam().isRunningOrUpcoming() && (endedBetweenJams() || !game.isInJam())) {
                 // moved end past the present point in the game -> make ongoing if possible
-                if (!getEndFielding().isInBox()) {
-                    unend();
-                }
+                if (!getEndFielding().isInBox()) { unend(); }
             }
         }
     }
@@ -240,9 +215,7 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         set(IS_CURRENT, false);
         set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
         if (!game.isInJam() && getCurrentFielding().getTeamJam().isRunningOrUpcoming()) {
-            if (getTeam().hasFieldingAdvancePending()) {
-                getCurrentFielding().setSkater(null);
-            }
+            if (getTeam().hasFieldingAdvancePending()) { getCurrentFielding().setSkater(null); }
             remove(FIELDING, getCurrentFielding());
         }
         if (getCurrentFielding() == null) {
@@ -250,8 +223,8 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
             delete();
         } else {
             set(END_FIELDING, get(CURRENT_FIELDING));
-            set(END_BETWEEN_JAMS, !game.isInJam() && !getTeam().hasFieldingAdvancePending()
-                    && getEndFielding().getTeamJam().isRunningOrEnded());
+            set(END_BETWEEN_JAMS, !game.isInJam() && !getTeam().hasFieldingAdvancePending() &&
+                                      getEndFielding().getTeamJam().isRunningOrEnded());
             set(END_AFTER_S_P, getEndFielding().getTeamJam().isStarPass() && getEndFielding().isCurrent());
             set(JAM_CLOCK_END, endedBetweenJams() ? 0L : game.getClock(Clock.ID_JAM).getTimeElapsed());
             getCurrentFielding().updateBoxTripSymbols();
@@ -268,24 +241,42 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
 
     @Override
-    public Team getTeam() { return (Team) getParent(); }
+    public Team getTeam() {
+        return (Team) getParent();
+    }
 
     @Override
-    public boolean isCurrent() { return get(IS_CURRENT); }
+    public boolean isCurrent() {
+        return get(IS_CURRENT);
+    }
     @Override
-    public Fielding getCurrentFielding() { return get(CURRENT_FIELDING); }
+    public Fielding getCurrentFielding() {
+        return get(CURRENT_FIELDING);
+    }
     @Override
-    public Fielding getStartFielding() { return get(START_FIELDING); }
+    public Fielding getStartFielding() {
+        return get(START_FIELDING);
+    }
     @Override
-    public boolean startedBetweenJams() { return get(START_BETWEEN_JAMS); }
+    public boolean startedBetweenJams() {
+        return get(START_BETWEEN_JAMS);
+    }
     @Override
-    public boolean startedAfterSP() { return get(START_AFTER_S_P); }
+    public boolean startedAfterSP() {
+        return get(START_AFTER_S_P);
+    }
     @Override
-    public Fielding getEndFielding() { return get(END_FIELDING); }
+    public Fielding getEndFielding() {
+        return get(END_FIELDING);
+    }
     @Override
-    public boolean endedBetweenJams() { return get(END_BETWEEN_JAMS); }
+    public boolean endedBetweenJams() {
+        return get(END_BETWEEN_JAMS);
+    }
     @Override
-    public boolean endedAfterSP() { return get(END_AFTER_S_P); }
+    public boolean endedAfterSP() {
+        return get(END_AFTER_S_P);
+    }
 
     private Game game;
 }

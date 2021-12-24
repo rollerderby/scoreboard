@@ -9,9 +9,13 @@ public class ValWithId implements ValueWithId {
     }
 
     @Override
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
     @Override
-    public String getValue() { return value; }
+    public String getValue() {
+        return value;
+    }
 
     private String id;
     private String value;

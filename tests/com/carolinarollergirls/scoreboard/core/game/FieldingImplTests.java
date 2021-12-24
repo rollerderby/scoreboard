@@ -30,12 +30,9 @@ public class FieldingImplTests {
 
     private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
-
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
-            synchronized (collectedEvents) {
-                collectedEvents.add(event);
-            }
+            synchronized (collectedEvents) { collectedEvents.add(event); }
         }
     };
 

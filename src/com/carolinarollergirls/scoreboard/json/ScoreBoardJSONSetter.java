@@ -52,21 +52,19 @@ public class ScoreBoardJSONSetter {
         List<PropertySet> postponedSets = new ArrayList<>();
         for (JSONSet s : jsl) {
             Matcher m = pathElementPattern.matcher(s.path);
-            if (m.matches() && m.group("name").equals("ScoreBoard") && m.group("id") == null
-                    && m.group("remainder") != null) {
+            if (m.matches() && m.group("name").equals("ScoreBoard") && m.group("id") == null &&
+                m.group("remainder") != null) {
                 set(sb, m.group("remainder"), s.value, source, s.flag, postponedSets);
             } else {
                 Logger.printMessage("Illegal path: " + s.path);
             }
         }
-        for (PropertySet vs : postponedSets) {
-            vs.process();
-        }
+        for (PropertySet vs : postponedSets) { vs.process(); }
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     private static void set(ScoreBoardEventProvider p, String path, String value, Source source, Flag flag,
-            List<PropertySet> postponedSets) {
+                            List<PropertySet> postponedSets) {
         Matcher m = pathElementPattern.matcher(path);
         if (m.matches()) {
             String name = m.group("name");
@@ -88,13 +86,11 @@ public class ScoreBoardJSONSetter {
                     // elements not yet created when restoring from autosave
                     postponedSets.add(new ValueSet(p, (Value) prop, value, source, flag));
                 } else if (prop instanceof Command) {
-                    if (Boolean.parseBoolean(value)) {
-                        p.execute((Command) prop, source);
-                    }
+                    if (Boolean.parseBoolean(value)) { p.execute((Command) prop, source); }
                 } else if (remainder != null) {
                     @SuppressWarnings("unchecked")
-                    ScoreBoardEventProvider o = p.getOrCreate((Child<? extends ScoreBoardEventProvider>) prop,
-                            elementId, source);
+                    ScoreBoardEventProvider o =
+                        p.getOrCreate((Child<? extends ScoreBoardEventProvider>) prop, elementId, source);
                     if (o == null) {
                         if (source.isFile()) {
                             // filter out elements that we expect to fail on each startup
@@ -134,9 +130,7 @@ public class ScoreBoardJSONSetter {
         public final Flag flag;
     }
 
-    protected static interface PropertySet {
-        public void process();
-    }
+    protected static interface PropertySet { public void process(); }
 
     protected static class ValueSet<T> implements PropertySet {
         protected ValueSet(ScoreBoardEventProvider sbe, Value<T> prop, String value, Source source, Flag flag) {
@@ -148,7 +142,9 @@ public class ScoreBoardJSONSetter {
         }
 
         @Override
-        public void process() { sbe.set(prop, sbe.valueFromString(prop, value), source, flag); }
+        public void process() {
+            sbe.set(prop, sbe.valueFromString(prop, value), source, flag);
+        }
 
         private ScoreBoardEventProvider sbe;
         private Value<T> prop;
@@ -167,7 +163,9 @@ public class ScoreBoardJSONSetter {
         }
 
         @Override
-        public void process() { sbe.add(prop, sbe.childFromString(prop, id, value), source); }
+        public void process() {
+            sbe.add(prop, sbe.childFromString(prop, id, value), source);
+        }
 
         private ScoreBoardEventProvider sbe;
         private Child<T> prop;
@@ -176,7 +174,6 @@ public class ScoreBoardJSONSetter {
         private Source source;
     }
 
-    private static final Pattern pathElementPattern = Pattern
-            .compile("^(?<name>\\w+)(\\((?<id>[^\\)]*)\\))?(\\.(?<remainder>.*))?$");
-
+    private static final Pattern pathElementPattern =
+        Pattern.compile("^(?<name>\\w+)(\\((?<id>[^\\)]*)\\))?(\\.(?<remainder>.*))?$");
 }

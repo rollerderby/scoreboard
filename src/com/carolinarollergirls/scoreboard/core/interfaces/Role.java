@@ -8,12 +8,12 @@ public enum Role {
     PIVOT("Pivot"),
     BLOCKER("Blocker");
 
-    Role(String str) {
-        string = str;
-    }
+    Role(String str) { string = str; }
 
     @Override
-    public String toString() { return string; }
+    public String toString() {
+        return string;
+    }
     public static Role fromString(String s) {
         for (Role r : values()) {
             if (r.toString().equals(s)) { return r; }

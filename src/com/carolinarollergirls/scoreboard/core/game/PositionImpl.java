@@ -21,7 +21,7 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
     public PositionImpl(Team t, FloorPosition fp) {
         super(t, t.getId() + "_" + fp.toString(), Team.POSITION);
         addProperties(CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, ANNOTATION, SKATER, NAME, ROSTER_NUMBER, FLAGS,
-                PENALTY_BOX, CLEAR);
+                      PENALTY_BOX, CLEAR);
         floorPosition = fp;
         setCopy(NAME, this, SKATER, Skater.NAME, true);
         setCopy(ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, true);
@@ -37,23 +37,29 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
     }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PositionImpl(this, root); }
-
-    @Override
-    public String getProviderId() { return floorPosition.toString(); }
-
-    @Override
-    public void execute(Command prop, Source source) {
-        if (prop == CLEAR) {
-            set(SKATER, null);
-        }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new PositionImpl(this, root);
     }
 
     @Override
-    public Team getTeam() { return (Team) parent; }
+    public String getProviderId() {
+        return floorPosition.toString();
+    }
 
     @Override
-    public FloorPosition getFloorPosition() { return floorPosition; }
+    public void execute(Command prop, Source source) {
+        if (prop == CLEAR) { set(SKATER, null); }
+    }
+
+    @Override
+    public Team getTeam() {
+        return (Team) parent;
+    }
+
+    @Override
+    public FloorPosition getFloorPosition() {
+        return floorPosition;
+    }
 
     @Override
     public void updateCurrentFielding() {
@@ -63,19 +69,31 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
     }
 
     @Override
-    public Skater getSkater() { return get(SKATER); }
+    public Skater getSkater() {
+        return get(SKATER);
+    }
     @Override
-    public void setSkater(Skater s) { set(SKATER, s); }
+    public void setSkater(Skater s) {
+        set(SKATER, s);
+    }
 
     @Override
-    public Fielding getCurrentFielding() { return get(CURRENT_FIELDING); }
+    public Fielding getCurrentFielding() {
+        return get(CURRENT_FIELDING);
+    }
     @Override
-    public void setCurrentFielding(Fielding f) { set(CURRENT_FIELDING, f); }
+    public void setCurrentFielding(Fielding f) {
+        set(CURRENT_FIELDING, f);
+    }
 
     @Override
-    public boolean isPenaltyBox() { return get(PENALTY_BOX); }
+    public boolean isPenaltyBox() {
+        return get(PENALTY_BOX);
+    }
     @Override
-    public void setPenaltyBox(boolean box) { set(PENALTY_BOX, box); }
+    public void setPenaltyBox(boolean box) {
+        set(PENALTY_BOX, box);
+    }
 
     protected FloorPosition floorPosition;
 }

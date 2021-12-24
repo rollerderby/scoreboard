@@ -34,14 +34,14 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PenaltyImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new PenaltyImpl(this, root);
+    }
 
     @Override
     public int compareTo(Penalty other) {
         if (other == null) { return -1; }
-        if (getJam() == other.getJam()) {
-            return (int) (get(Penalty.TIME) - other.get(Penalty.TIME));
-        }
+        if (getJam() == other.getJam()) { return (int) (get(Penalty.TIME) - other.get(Penalty.TIME)); }
         if (getJam() == null) { return 1; }
         return getJam().compareTo(other.getJam());
     }
@@ -74,14 +74,10 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
 
             if (newPos == game.getInt(Rule.FO_LIMIT)) {
                 Penalty fo = parent.get(Skater.PENALTY, Skater.FO_EXP_ID);
-                if (fo != null && fo.get(CODE) == "FO") {
-                    fo.set(JAM, (Jam) value);
-                }
+                if (fo != null && fo.get(CODE) == "FO") { fo.set(JAM, (Jam) value); }
             }
         }
-        if (prop == CODE && value == null) {
-            delete(source);
-        }
+        if (prop == CODE && value == null) { delete(source); }
     }
 
     @Override
@@ -90,15 +86,25 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
 
     @Override
-    public int getPeriodNumber() { return get(PERIOD_NUMBER); }
+    public int getPeriodNumber() {
+        return get(PERIOD_NUMBER);
+    }
     @Override
-    public int getJamNumber() { return get(JAM_NUMBER); }
+    public int getJamNumber() {
+        return get(JAM_NUMBER);
+    }
     @Override
-    public Jam getJam() { return get(JAM); }
+    public Jam getJam() {
+        return get(JAM);
+    }
     @Override
-    public String getCode() { return get(CODE); }
+    public String getCode() {
+        return get(CODE);
+    }
     @Override
-    public boolean isServed() { return get(SERVED); }
+    public boolean isServed() {
+        return get(SERVED);
+    }
 
     private Game game;
 }

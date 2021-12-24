@@ -31,49 +31,46 @@ import org.eclipse.jetty.server.Server;
 public class UrlsServlet extends HttpServlet {
     public UrlsServlet(Server s) { server = s; }
 
-    public Set<String> getUrls() throws MalformedURLException,SocketException {
+    public Set<String> getUrls() throws MalformedURLException, SocketException {
         Set<String> urls = new TreeSet<>();
-        for (Connector c : server.getConnectors()) {
-            addURLs(urls, c.getHost(), c.getLocalPort());
-        }
+        for (Connector c : server.getConnectors()) { addURLs(urls, c.getHost(), c.getLocalPort()); }
         return urls;
     }
 
-    protected void addURLs(Set<String> urls, String host, int port) throws MalformedURLException,SocketException {
-      if (null == host) {
-        for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
-            for (InetAddress addr : Collections.list(iface.getInetAddresses())) {
-                if (!addr.isLoopbackAddress()) {
-                    urls.add(new URL("http", addr.getHostAddress(), port, "/").toString());
+    protected void addURLs(Set<String> urls, String host, int port) throws MalformedURLException, SocketException {
+        if (null == host) {
+            for (NetworkInterface iface : Collections.list(NetworkInterface.getNetworkInterfaces())) {
+                for (InetAddress addr : Collections.list(iface.getInetAddresses())) {
+                    if (!addr.isLoopbackAddress()) {
+                        urls.add(new URL("http", addr.getHostAddress(), port, "/").toString());
+                    }
                 }
             }
+        } else {
+            urls.add(new URL("http", host, port, "/").toString());
+            try {
+                // Get the IP address of the given host.
+                urls.add(new URL("http", InetAddress.getByName(host).getHostAddress(), port, "/").toString());
+            } catch (UnknownHostException uhE) {}
         }
-      } else {
-          urls.add(new URL("http", host, port, "/").toString());
-          try {
-              // Get the IP address of the given host.
-              urls.add(new URL("http", InetAddress.getByName(host).getHostAddress(), port, "/").toString());
-          } catch ( UnknownHostException uhE ) {
-          }
-      }
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException,IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+        throws ServletException, IOException {
         response.setHeader("Cache-Control", "no-cache");
         response.setHeader("Expires", "-1");
         response.setCharacterEncoding("UTF-8");
 
         try {
             response.setContentType("text/plain");
-            for (String u : getUrls()) {
-                response.getWriter().println(u);
-            }
+            for (String u : getUrls()) { response.getWriter().println(u); }
             response.setStatus(HttpServletResponse.SC_OK);
-        } catch ( MalformedURLException muE ) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Could not parse internal URL : "+muE.getMessage());
-        } catch ( SocketException sE ) {
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Socket Exception : "+sE.getMessage());
+        } catch (MalformedURLException muE) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                               "Could not parse internal URL : " + muE.getMessage());
+        } catch (SocketException sE) {
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Socket Exception : " + sE.getMessage());
         }
     }
 

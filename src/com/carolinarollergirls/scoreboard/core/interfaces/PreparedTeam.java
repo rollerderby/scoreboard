@@ -15,6 +15,5 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 public interface PreparedTeam extends ScoreBoardEventProvider {
     Child<PreparedSkater> SKATER = new Child<>(PreparedSkater.class, "Skater");
 
-    public static interface PreparedSkater extends ScoreBoardEventProvider {
-    }
+    public static interface PreparedSkater extends ScoreBoardEventProvider {}
 }

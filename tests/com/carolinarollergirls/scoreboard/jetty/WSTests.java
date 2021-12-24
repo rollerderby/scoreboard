@@ -1,7 +1,7 @@
 package com.carolinarollergirls.scoreboard.jetty;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -85,17 +85,17 @@ public class WSTests {
         pt.add("ScoreBoard.Rulesets.Rule(Period.Duration)");
         pt.add("ScoreBoard.Rulesets.Rule(Jam.*)");
         pt.add("ScoreBoard.Rulesets.Rule(Intermission*)");
-        
+
         assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Period.Duration)"));
         assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Jam.Foo)"));
         assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Jam.Foo.Bar)"));
-        
+
         assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Period.Direction)"));
         assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Jam)"));
         assertFalse(pt.covers("ScoreBoard.Rulesets.Rule(Intermission.Direction)"));
-        
+
         pt.add("ScoreBoard.Rulesets.Rule(*)");
-        
+
         assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Period.Direction)"));
         assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Jam)"));
         assertTrue(pt.covers("ScoreBoard.Rulesets.Rule(Intermission.Direction)"));

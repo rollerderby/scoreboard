@@ -63,7 +63,6 @@ public class SkaterImplTests {
         assertEquals("C", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
         assertEquals(3, penalty.getJamNumber());
-
     }
 
     @Test
@@ -81,7 +80,6 @@ public class SkaterImplTests {
         assertEquals("C", penalty.getCode());
         assertEquals(1, penalty.getPeriodNumber());
         assertEquals(3, penalty.getJamNumber());
-
     }
 
     @Test

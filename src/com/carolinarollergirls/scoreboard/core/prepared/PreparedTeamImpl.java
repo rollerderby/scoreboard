@@ -22,15 +22,19 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
     public PreparedTeamImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.PREPARED_TEAM);
         addProperties(Team.FULL_NAME, Team.LEAGUE_NAME, Team.TEAM_NAME, Team.DISPLAY_NAME, Team.UNIFORM_COLOR,
-                Team.LOGO, Team.ALTERNATE_NAME, Team.COLOR, SKATER);
+                      Team.LOGO, Team.ALTERNATE_NAME, Team.COLOR, SKATER);
         setRecalculated(Team.FULL_NAME).addSource(this, Team.LEAGUE_NAME).addSource(this, Team.TEAM_NAME);
-        setRecalculated(Team.DISPLAY_NAME).addSource(this, Team.LEAGUE_NAME).addSource(this, Team.TEAM_NAME)
-                .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        setRecalculated(Team.DISPLAY_NAME)
+            .addSource(this, Team.LEAGUE_NAME)
+            .addSource(this, Team.TEAM_NAME)
+            .addSource(scoreBoard.getSettings(), Settings.SETTING);
     }
     public PreparedTeamImpl(PreparedTeamImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PreparedTeamImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new PreparedTeamImpl(this, root);
+    }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
@@ -74,22 +78,24 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
     @Override
     public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
         synchronized (coreLock) {
-            if (prop == PreparedTeam.SKATER) {
-                return new PreparedTeamSkaterImpl(this, id);
-            }
+            if (prop == PreparedTeam.SKATER) { return new PreparedTeamSkaterImpl(this, id); }
             return null;
         }
     }
 
-    public static class PreparedTeamSkaterImpl extends ScoreBoardEventProviderImpl<PreparedSkater>
-            implements PreparedSkater {
+    public static class PreparedTeamSkaterImpl
+        extends ScoreBoardEventProviderImpl<PreparedSkater> implements PreparedSkater {
         public PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
             super(parent, id, PreparedTeam.SKATER);
             addProperties(Skater.NAME, Skater.ROSTER_NUMBER, Skater.FLAGS);
         }
-        public PreparedTeamSkaterImpl(PreparedTeamSkaterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+        public PreparedTeamSkaterImpl(PreparedTeamSkaterImpl cloned, ScoreBoardEventProvider root) {
+            super(cloned, root);
+        }
 
         @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new PreparedTeamSkaterImpl(this, root); }
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+            return new PreparedTeamSkaterImpl(this, root);
+        }
     }
 }

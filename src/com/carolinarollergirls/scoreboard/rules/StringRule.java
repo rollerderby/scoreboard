@@ -9,7 +9,9 @@ public class StringRule extends RuleDefinition {
     public StringRule(StringRule cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new StringRule(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new StringRule(this, root);
+    }
 
     @Override
     public boolean isValueValid(String v) {

@@ -54,5 +54,4 @@ public class RulesetsImplTests {
         rulesets.removeRuleset(id1);
         assertEquals(root, grandchild.getParentRuleset());
     }
-
 }

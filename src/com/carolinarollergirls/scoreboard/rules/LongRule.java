@@ -9,15 +9,15 @@ public class LongRule extends RuleDefinition {
     public LongRule(LongRule cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new LongRule(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new LongRule(this, root);
+    }
 
     @Override
     public boolean isValueValid(String v) {
         try {
             Long.valueOf(v);
             return true;
-        } catch (Exception e) {
-            return false;
-        }
+        } catch (Exception e) { return false; }
     }
 }

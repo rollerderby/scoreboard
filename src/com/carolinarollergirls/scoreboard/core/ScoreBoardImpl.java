@@ -45,7 +45,9 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     public ScoreBoardImpl(ScoreBoardImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ScoreBoardImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new ScoreBoardImpl(this, root);
+    }
 
     protected void setupScoreBoard() {
         removeAll(VERSION);
@@ -80,9 +82,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     @Override
     public void postAutosaveUpdate() {
         synchronized (coreLock) {
-            for (Game g : getAll(GAME)) {
-                g.postAutosaveUpdate();
-            }
+            for (Game g : getAll(GAME)) { g.postAutosaveUpdate(); }
             get(CURRENT_GAME, "").postAutosaveUpdate();
             get(CLIENTS, "").postAutosaveUpdate();
             get(TWITTER, "").postAutosaveUpdate();
@@ -91,25 +91,39 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
-    public Settings getSettings() { return get(SETTINGS, ""); }
+    public Settings getSettings() {
+        return get(SETTINGS, "");
+    }
 
     @Override
-    public Rulesets getRulesets() { return get(RULESETS, ""); }
+    public Rulesets getRulesets() {
+        return get(RULESETS, "");
+    }
 
     @Override
-    public Media getMedia() { return get(MEDIA, ""); }
+    public Media getMedia() {
+        return get(MEDIA, "");
+    }
 
     @Override
-    public Clients getClients() { return get(CLIENTS, ""); }
+    public Clients getClients() {
+        return get(CLIENTS, "");
+    }
 
     @Override
-    public Game getGame(String id) { return get(GAME, id); }
+    public Game getGame(String id) {
+        return get(GAME, id);
+    }
 
     @Override
-    public PreparedTeam getPreparedTeam(String id) { return get(PREPARED_TEAM, id); }
+    public PreparedTeam getPreparedTeam(String id) {
+        return get(PREPARED_TEAM, id);
+    }
 
     @Override
-    public CurrentGame getCurrentGame() { return get(CURRENT_GAME, ""); }
+    public CurrentGame getCurrentGame() {
+        return get(CURRENT_GAME, "");
+    }
 
     @Override
     public TimeoutOwner getTimeoutOwner(String id) {
@@ -123,18 +137,20 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         if (id.contains("_")) { // gameId_teamId
             String[] parts = id.split("_");
             Game g = get(GAME, parts[0]);
-            if (g != null && g.getTeam(parts[1]) != null) {
-                return g.getTeam(parts[1]);
-            }
+            if (g != null && g.getTeam(parts[1]) != null) { return g.getTeam(parts[1]); }
         }
         return Timeout.Owners.NONE;
     }
 
     @Override
-    public JSONStateManager getJsm() { return jsm; }
+    public JSONStateManager getJsm() {
+        return jsm;
+    }
 
     @Override
-    public boolean isInitialLoadDone() { return initialLoadDone; }
+    public boolean isInitialLoadDone() {
+        return initialLoadDone;
+    }
 
     private JSONStateManager jsm = new JSONStateManager();
     private boolean initialLoadDone = false;

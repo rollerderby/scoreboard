@@ -10,3 +10,4 @@ AllowShortLoopsOnASingleLine: true
 AllowShortEnumsOnASingleLine: true
 BreakAfterJavaFieldAnnotations: true
 SpaceAfterCStyleCast: true
+JavaImportGroups: ['java', 'javax', 'org', 'com', 'com.carolinarollergirls']

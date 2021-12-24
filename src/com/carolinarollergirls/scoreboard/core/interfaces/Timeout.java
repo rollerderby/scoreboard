@@ -33,14 +33,16 @@ public interface Timeout extends ScoreBoardEventProvider {
         NONE(""),
         OTO("O");
 
-        Owners(String id) {
-            this.id = id;
-        }
+        Owners(String id) { this.id = id; }
 
         @Override
-        public String getId() { return id; }
+        public String getId() {
+            return id;
+        }
         @Override
-        public String toString() { return id; }
+        public String toString() {
+            return id;
+        }
 
         private String id;
     }

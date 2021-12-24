@@ -292,5 +292,4 @@ public class BoxTripImplTests {
         assertEquals("S", getBoxTripSymbols(3));
         assertEquals("S", getBoxTripSymbols(4));
     }
-
 }

@@ -33,16 +33,11 @@ public class AsyncScoreBoardListener extends Thread implements ScoreBoardListene
             ScoreBoardEvent<?> event = null;
             synchronized (this) {
                 try {
-                    if ((event = queue.poll()) == null) {
-                        this.wait();
-                    }
+                    if ((event = queue.poll()) == null) { this.wait(); }
                 } catch (InterruptedException e) {}
             }
-            if (event != null) {
-                listener.scoreBoardChange(event);
-            }
+            if (event != null) { listener.scoreBoardChange(event); }
         }
-
     }
 
     private ScoreBoardListener listener;

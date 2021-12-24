@@ -10,7 +10,9 @@ public class TimeRule extends RuleDefinition {
     public TimeRule(TimeRule cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new TimeRule(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new TimeRule(this, root);
+    }
 
     @Override
     public boolean isValueValid(String v) {

@@ -7,7 +7,6 @@ import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.admin.SettingsImpl;
 
 public class SettingsImplTests {
 
@@ -27,5 +26,4 @@ public class SettingsImplTests {
 
         assertSame("ABC", settings.get("Example"));
     }
-
 }

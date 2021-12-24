@@ -17,16 +17,17 @@ public enum FloorPosition {
         if (teamJam == null) { return role; }
         if (role == Role.PIVOT && teamJam.isStarPass()) {
             return Role.JAMMER;
-        } else if (role == Role.JAMMER && teamJam.isStarPass() ||
-                role == Role.PIVOT && teamJam.hasNoPivot()) {
+        } else if (role == Role.JAMMER && teamJam.isStarPass() || role == Role.PIVOT && teamJam.hasNoPivot()) {
             return Role.BLOCKER;
         } else {
-            return role; 
+            return role;
         }
     }
 
     @Override
-    public String toString() { return string; }
+    public String toString() {
+        return string;
+    }
     public static FloorPosition fromString(String s) {
         for (FloorPosition fp : values()) {
             if (fp.toString().equals(s)) { return fp; }

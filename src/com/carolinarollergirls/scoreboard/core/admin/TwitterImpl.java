@@ -39,27 +39,27 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     public TwitterImpl(ScoreBoard sb) {
         super(sb, "", ScoreBoard.TWITTER);
         addProperties(AUTH_URL, CALLBACK_URL, OAUTH_VERIFIER, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, MANUAL_TWEET, STATUS,
-                LOGGED_IN, ERROR, SCREEN_NAME, TEST_MODE, CONDITIONAL_TWEET, FORMAT_SPECIFIER, LOGIN, LOGOUT);
+                      LOGGED_IN, ERROR, SCREEN_NAME, TEST_MODE, CONDITIONAL_TWEET, FORMAT_SPECIFIER, LOGIN, LOGOUT);
 
         formatSpecifierViewer = new FormatSpecifierViewer(sb);
         int i = 0;
         for (Map.Entry<String, String> entry : formatSpecifierViewer.getFormatSpecifierDescriptions().entrySet()) {
             final FormatSpecifier fs = getOrCreate(FORMAT_SPECIFIER, String.valueOf(i++));
             final String key = entry.getKey();
-            final FormatSpecifierViewer.ScoreBoardValue<?> value = formatSpecifierViewer
-                    .getFormatSpecifierScoreBoardValue(key);
+            final FormatSpecifierViewer.ScoreBoardValue<?> value =
+                formatSpecifierViewer.getFormatSpecifierScoreBoardValue(key);
             fs.set(FormatSpecifier.KEY, key);
             fs.set(FormatSpecifier.DESCRIPTION, entry.getValue());
             fs.set(FormatSpecifier.CURRENT_VALUE,
-                    formatSpecifierViewer.getFormatSpecifierScoreBoardValue(key).getValue());
+                   formatSpecifierViewer.getFormatSpecifierScoreBoardValue(key).getValue());
             // Provide current value of each specifier to the frontend.
             scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener<>(
-                    formatSpecifierViewer.getScoreBoardCondition(key), new ScoreBoardListener() {
-                        @Override
-                        public void scoreBoardChange(ScoreBoardEvent<?> e) {
-                            fs.set(FormatSpecifier.CURRENT_VALUE, value.getValue());
-                        }
-                    }));
+                formatSpecifierViewer.getScoreBoardCondition(key), new ScoreBoardListener() {
+                    @Override
+                    public void scoreBoardChange(ScoreBoardEvent<?> e) {
+                        fs.set(FormatSpecifier.CURRENT_VALUE, value.getValue());
+                    }
+                }));
         }
         addWriteProtection(FORMAT_SPECIFIER);
 
@@ -68,7 +68,9 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     public TwitterImpl(TwitterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new TwitterImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new TwitterImpl(this, root);
+    }
 
     @Override
     public void postAutosaveUpdate() {
@@ -130,9 +132,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
 
     @Override
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == CONDITIONAL_TWEET) {
-            removeConditionalListener(item.getId());
-        }
+        if (prop == CONDITIONAL_TWEET) { removeConditionalListener(item.getId()); }
     }
 
     protected void removeConditionalListener(String id) {
@@ -157,10 +157,12 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     protected boolean isLoggedIn() { return get(LOGGED_IN); }
 
     private ConfigurationBuilder getConfigurationBuilder() {
-        return new ConfigurationBuilder().setDebugEnabled(false).setUserStreamRepliesAllEnabled(false)
-                /* Twitter Account for this - derbyscores */
-                .setOAuthConsumerKey("qOzry57P6rp6PBnj2BfpuvzK6")
-                .setOAuthConsumerSecret("Yx0bI3M5SinRYDGX1tfxQiP6a1oCVmfu5FXE4o27sNmvYeCY1W");
+        return new ConfigurationBuilder()
+            .setDebugEnabled(false)
+            .setUserStreamRepliesAllEnabled(false)
+            /* Twitter Account for this - derbyscores */
+            .setOAuthConsumerKey("qOzry57P6rp6PBnj2BfpuvzK6")
+            .setOAuthConsumerSecret("Yx0bI3M5SinRYDGX1tfxQiP6a1oCVmfu5FXE4o27sNmvYeCY1W");
     }
 
     protected boolean initilized = false;
@@ -174,9 +176,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
         @Override
         public void onException(TwitterException te, TwitterMethod method) {
             te.printStackTrace();
-            synchronized (coreLock) {
-                set(ERROR, "Twitter Exception for " + method + ": " + te.getMessage());
-            }
+            synchronized (coreLock) { set(ERROR, "Twitter Exception for " + method + ": " + te.getMessage()); }
         }
 
         @Override
@@ -208,8 +208,8 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
         }
     }
 
-    public class ConditionalTweetImpl extends ScoreBoardEventProviderImpl<ConditionalTweet>
-            implements ConditionalTweet {
+    public class ConditionalTweetImpl
+        extends ScoreBoardEventProviderImpl<ConditionalTweet> implements ConditionalTweet {
         public ConditionalTweetImpl(Twitter t, String id) {
             super(t, id, Twitter.CONDITIONAL_TWEET);
             addProperties(CONDITION, TWEET);
@@ -217,8 +217,10 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
         public ConditionalTweetImpl(ConditionalTweetImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
         @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ConditionalTweetImpl(this, root); }
-    
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+            return new ConditionalTweetImpl(this, root);
+        }
+
         @Override
         protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
             if (prop == TWEET || prop == CONDITION) {
@@ -229,7 +231,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
                     ScoreBoardListener conditionalListener;
                     try {
                         conditionalListener = new FormatSpecifierScoreBoardListener<>(formatSpecifierViewer,
-                                getCondition(), tweetListener);
+                                                                                      getCondition(), tweetListener);
                     } catch (IllegalArgumentException e) {
                         // Invalid condition.
                         return;
@@ -253,13 +255,13 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
         public FormatSpecifierImpl(FormatSpecifierImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
         @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new FormatSpecifierImpl(this, root); }
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+            return new FormatSpecifierImpl(this, root);
         }
+    }
 
     protected class TweetScoreBoardListener implements ScoreBoardListener {
-        public TweetScoreBoardListener(String t) {
-            tweet = t;
-        }
+        public TweetScoreBoardListener(String t) { tweet = t; }
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> e) {
             tweet(tweet);

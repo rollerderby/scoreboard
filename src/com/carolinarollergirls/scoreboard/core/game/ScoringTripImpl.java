@@ -14,7 +14,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         super(parent, number, TeamJam.SCORING_TRIP);
         game = parent.getTeam().getGame();
         addProperties(SCORE, AFTER_S_P, CURRENT, DURATION, JAM_CLOCK_START, JAM_CLOCK_END, ANNOTATION, INSERT_BEFORE,
-                REMOVE);
+                      REMOVE);
         setCopy(JAM_CLOCK_START, this, PREVIOUS, JAM_CLOCK_END, true);
         setRecalculated(DURATION).addSource(this, JAM_CLOCK_END).addSource(this, JAM_CLOCK_START);
         set(AFTER_S_P, hasPrevious() ? getPrevious().get(AFTER_S_P) : false);
@@ -25,7 +25,9 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ScoringTripImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new ScoringTripImpl(this, root);
+    }
 
     @Override
     public Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
@@ -44,16 +46,10 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L) {
             set(JAM_CLOCK_END, game.getClock(Clock.ID_JAM).getTimeElapsed());
         }
-        if (prop == CURRENT && (Boolean) value && get(SCORE) == 0) {
-            set(JAM_CLOCK_END, 0L);
-        }
+        if (prop == CURRENT && (Boolean) value && get(SCORE) == 0) { set(JAM_CLOCK_END, 0L); }
         if (prop == AFTER_S_P) {
-            if ((Boolean) value && hasNext()) {
-                getNext().set(AFTER_S_P, true);
-            }
-            if (!(Boolean) value && hasPrevious()) {
-                getPrevious().set(AFTER_S_P, false);
-            }
+            if ((Boolean) value && hasNext()) { getNext().set(AFTER_S_P, true); }
+            if (!(Boolean) value && hasPrevious()) { getPrevious().set(AFTER_S_P, false); }
             if (flag != Flag.SPECIAL_CASE) {
                 if ((Boolean) value && (!hasPrevious() || !getPrevious().get(AFTER_S_P))) {
                     parent.set(TeamJam.STAR_PASS_TRIP, this);
@@ -82,13 +78,19 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
 
     @Override
-    public int getScore() { return get(SCORE); }
+    public int getScore() {
+        return get(SCORE);
+    }
 
     @Override
-    public boolean isAfterSP() { return get(AFTER_S_P); }
+    public boolean isAfterSP() {
+        return get(AFTER_S_P);
+    }
 
     @Override
-    public String getAnnotation() { return get(ANNOTATION); }
+    public String getAnnotation() {
+        return get(ANNOTATION);
+    }
 
     private Game game;
 }

@@ -18,11 +18,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
-import com.carolinarollergirls.scoreboard.core.admin.ClientsImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
-import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Client;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
@@ -196,7 +195,6 @@ public class ClientsImplTests {
         assertEquals("d2s", d2.get(Device.SESSION_ID_SECRET));
         // Client settings remain the same.
         assertEquals("c1r", c.get(Client.REMOTE_ADDR));
-
     }
 
     @Test
@@ -221,11 +219,12 @@ public class ClientsImplTests {
     }
 
     protected void fuzzSet(String path) {
-        List<JSONSet> sets = new ArrayList<>(Arrays.asList(new JSONSet(path, null, null), new JSONSet(path, "", null),
-                new JSONSet(path, "abc", null), new JSONSet(path, "20", null),
-                // WS can use these flags.
-                new JSONSet(path, "answer", Flag.CHANGE), new JSONSet(path, "42", Flag.CHANGE),
-                new JSONSet(path, null, Flag.RESET)));
+        List<JSONSet> sets =
+            new ArrayList<>(Arrays.asList(new JSONSet(path, null, null), new JSONSet(path, "", null),
+                                          new JSONSet(path, "abc", null), new JSONSet(path, "20", null),
+                                          // WS can use these flags.
+                                          new JSONSet(path, "answer", Flag.CHANGE),
+                                          new JSONSet(path, "42", Flag.CHANGE), new JSONSet(path, null, Flag.RESET)));
         for (JSONSet s : sets) {
             try {
                 ScoreBoardJSONSetter.set(sb, Collections.singletonList(s), Source.WS);
@@ -281,7 +280,7 @@ public class ClientsImplTests {
 
         // This should work.
         ScoreBoardJSONSetter.set(sb, Collections.singletonList(new JSONSet(dId + ".Comment", "new comment", null)),
-                Source.WS);
+                                 Source.WS);
 
         // Clients.
         assertNotNull(sb.getClients());

@@ -40,12 +40,14 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
     }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new TimeoutImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new TimeoutImpl(this, root);
+    }
 
     private void initReferences() {
         addProperties(OWNER, REVIEW, RETAINED_REVIEW, RUNNING, PRECEDING_JAM, PRECEDING_JAM_NUMBER, DURATION,
-                PERIOD_CLOCK_ELAPSED_START, PERIOD_CLOCK_ELAPSED_END, PERIOD_CLOCK_END, WALLTIME_START, WALLTIME_END,
-                DELETE);
+                      PERIOD_CLOCK_ELAPSED_START, PERIOD_CLOCK_ELAPSED_END, PERIOD_CLOCK_END, WALLTIME_START,
+                      WALLTIME_END, DELETE);
         set(OWNER, Owners.NONE);
         setInverseReference(PRECEDING_JAM, Jam.TIMEOUTS_AFTER);
         setCopy(PRECEDING_JAM_NUMBER, this, PRECEDING_JAM, Jam.NUMBER, true);
@@ -115,16 +117,24 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
     }
 
     @Override
-    public TimeoutOwner getOwner() { return get(OWNER); }
+    public TimeoutOwner getOwner() {
+        return get(OWNER);
+    }
 
     @Override
-    public boolean isReview() { return get(REVIEW); }
+    public boolean isReview() {
+        return get(REVIEW);
+    }
 
     @Override
-    public boolean isRetained() { return get(RETAINED_REVIEW); }
+    public boolean isRetained() {
+        return get(RETAINED_REVIEW);
+    }
 
     @Override
-    public boolean isRunning() { return get(RUNNING); }
+    public boolean isRunning() {
+        return get(RUNNING);
+    }
 
     private Game game;
 }

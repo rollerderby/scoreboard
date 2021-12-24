@@ -4,7 +4,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
 public class CopyChildScoreBoardListener<T extends ValueWithId> extends CopyScoreBoardListener<T> {
     CopyChildScoreBoardListener(ScoreBoardEventProvider targetElement, Child<T> targetProperty,
-            ScoreBoardEventProvider guardElement, Value<Boolean> guardProperty) {
+                                ScoreBoardEventProvider guardElement, Value<Boolean> guardProperty) {
         super(guardElement, guardProperty);
         this.targetElement = targetElement;
         this.targetProperty = targetProperty;

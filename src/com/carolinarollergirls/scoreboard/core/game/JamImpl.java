@@ -23,18 +23,19 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     public JamImpl(ScoreBoardEventProvider p, int j) {
         super(p, j, Period.JAM);
         addProperties(PERIOD_NUMBER, STAR_PASS, OVERTIME, DURATION, PERIOD_CLOCK_ELAPSED_START,
-                PERIOD_CLOCK_ELAPSED_END, PERIOD_CLOCK_DISPLAY_END, WALLTIME_START, WALLTIME_END, TEAM_JAM, PENALTY,
-                TIMEOUTS_AFTER, DELETE, INSERT_BEFORE);
+                      PERIOD_CLOCK_ELAPSED_END, PERIOD_CLOCK_DISPLAY_END, WALLTIME_START, WALLTIME_END, TEAM_JAM,
+                      PENALTY, TIMEOUTS_AFTER, DELETE, INSERT_BEFORE);
         setInverseReference(PENALTY, Penalty.JAM);
         setInverseReference(TIMEOUTS_AFTER, Timeout.PRECEDING_JAM);
-        periodNumberListener = setCopy(PERIOD_NUMBER, parent,
-                parent instanceof Game ? Game.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
+        periodNumberListener =
+            setCopy(PERIOD_NUMBER, parent, parent instanceof Game ? Game.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
         game = parent instanceof Game ? (Game) parent : ((Period) parent).getGame();
         add(TEAM_JAM, new TeamJamImpl(this, Team.ID_1));
         add(TEAM_JAM, new TeamJamImpl(this, Team.ID_2));
         addWriteProtection(TEAM_JAM);
-        setRecalculated(STAR_PASS).addSource(getTeamJam(Team.ID_1), TeamJam.STAR_PASS).addSource(getTeamJam(Team.ID_2),
-                TeamJam.STAR_PASS);
+        setRecalculated(STAR_PASS)
+            .addSource(getTeamJam(Team.ID_1), TeamJam.STAR_PASS)
+            .addSource(getTeamJam(Team.ID_2), TeamJam.STAR_PASS);
     }
     public JamImpl(JamImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);
@@ -42,7 +43,9 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new JamImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new JamImpl(this, root);
+    }
 
     @Override
     public void setParent(ScoreBoardEventProvider p) {
@@ -50,8 +53,8 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
         parent.removeScoreBoardListener(periodNumberListener);
         providers.remove(periodNumberListener);
         parent = p;
-        periodNumberListener = setCopy(PERIOD_NUMBER, parent,
-                parent instanceof Game ? Game.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
+        periodNumberListener =
+            setCopy(PERIOD_NUMBER, parent, parent instanceof Game ? Game.CURRENT_PERIOD_NUMBER : Period.NUMBER, true);
     }
 
     @Override
@@ -60,21 +63,15 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             if (parent instanceof Period && this == ((Period) parent).getCurrentJam()) {
                 parent.set(Period.CURRENT_JAM, getPrevious());
             }
-            for (Penalty p : getAll(PENALTY)) {
-                p.set(Penalty.JAM, getNext());
-            }
-            for (Timeout t : getAll(TIMEOUTS_AFTER)) {
-                t.set(Timeout.PRECEDING_JAM, getPrevious());
-            }
+            for (Penalty p : getAll(PENALTY)) { p.set(Penalty.JAM, getNext()); }
+            for (Timeout t : getAll(TIMEOUTS_AFTER)) { t.set(Timeout.PRECEDING_JAM, getPrevious()); }
         }
         super.delete(source);
     }
 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == STAR_PASS) {
-            return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass();
-        }
+        if (prop == STAR_PASS) { return getTeamJam(Team.ID_1).isStarPass() || getTeamJam(Team.ID_2).isStarPass(); }
         return value;
     }
 
@@ -82,8 +79,8 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     public void execute(Command prop, Source source) {
         synchronized (coreLock) {
             if (prop == DELETE) {
-                if (game.isInJam() && (parent == game.getCurrentPeriod())
-                        && (this == ((Period) parent).getCurrentJam())) {
+                if (game.isInJam() && (parent == game.getCurrentPeriod()) &&
+                    (this == ((Period) parent).getCurrentJam())) {
                     return;
                 }
                 delete(source);
@@ -105,33 +102,49 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     }
 
     @Override
-    public Period getPeriod() { return parent instanceof Game ? game.getCurrentPeriod() : (Period) parent; }
+    public Period getPeriod() {
+        return parent instanceof Game ? game.getCurrentPeriod() : (Period) parent;
+    }
 
     @Override
-    public boolean isOvertimeJam() { return get(OVERTIME); }
+    public boolean isOvertimeJam() {
+        return get(OVERTIME);
+    }
 
     @Override
-    public long getDuration() { return get(DURATION); }
+    public long getDuration() {
+        return get(DURATION);
+    }
     public void setDuration(long t) { set(DURATION, t); }
 
     @Override
-    public long getPeriodClockElapsedStart() { return get(PERIOD_CLOCK_ELAPSED_START); }
+    public long getPeriodClockElapsedStart() {
+        return get(PERIOD_CLOCK_ELAPSED_START);
+    }
     public void setPeriodClockElapsedStart(long t) { set(PERIOD_CLOCK_ELAPSED_START, t); }
 
     @Override
-    public long getPeriodClockElapsedEnd() { return get(PERIOD_CLOCK_ELAPSED_END); }
+    public long getPeriodClockElapsedEnd() {
+        return get(PERIOD_CLOCK_ELAPSED_END);
+    }
     public void setPeriodClockElapsedEnd(long t) { set(PERIOD_CLOCK_ELAPSED_END, t); }
 
     @Override
-    public long getWalltimeStart() { return get(WALLTIME_START); }
+    public long getWalltimeStart() {
+        return get(WALLTIME_START);
+    }
     public void setWalltimeStart(long t) { set(WALLTIME_START, t); }
 
     @Override
-    public long getWalltimeEnd() { return get(WALLTIME_END); }
+    public long getWalltimeEnd() {
+        return get(WALLTIME_END);
+    }
     public void setWalltimeEnd(long t) { set(WALLTIME_END, t); }
 
     @Override
-    public TeamJam getTeamJam(String id) { return get(TEAM_JAM, id); }
+    public TeamJam getTeamJam(String id) {
+        return get(TEAM_JAM, id);
+    }
 
     @Override
     public void start() {
