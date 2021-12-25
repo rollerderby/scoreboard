@@ -1,4 +1,5 @@
-Copyright (C) 2008-2011 Mr Temper <MrTemper@CarolinaRollergirls.com>
+Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
+Copyright (C) 2012-2021 The CRG developers
 
 This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
 The CRG ScoreBoard is licensed under either the GNU General Public
@@ -11,36 +12,67 @@ have their own licenses, as listed below.  Please see each package's
 website for details on their license and terms.
 
 
-These packages use the Apache License 2.0:
+Packages using the Apache License 2.0 which can be found in COPYING-AL
 
-Apache James Mime4j (apache-mime4j-*.jar)
-http://james.apache.org/mime4j/
+Apache POI (poi-*.jar, xmlbeans-3.1.0.jar)
+https://poi.apache.org
 
-Commons Codec (commons-codec-*.jar)
-http://commons.apache.org/codec/
+Byte Buddy (byte-buddy-*.jar)
+https://bytebuddy.net/
+
+Commons Collections (commons-collections4-*.jar)
+https://commons.apache.org/proper/commons-collections/
+
+Commons Compress (commons-compress-*.jar)
+https://commons.apache.org/proper/commons-collections/
 
 Commons Fileupload (commons-fileupload-*.jar)
-http://commons.apache.org/fileupload/
+https://commons.apache.org/proper/commons-fileupload/
 
 Commons IO (commons-io-*.jar)
-http://commons.apache.org/io/
+https://commons.apache.org/proper/commons-io/
 
-Commons Logging (commons-logging-*.jar)
-http://commons.apache.org/logging/
+Commons Math (commons-math3-*.jar)
+https://commons.apache.org/proper/commons-math/
 
-Apache HttpComponents (httpclient-*.jar, httpcore-*.jar, httpmime-*.jar)
-http://hc.apache.org/
+Jackson (jackson-*.jar)
+https://github.com/FasterXML/jackson
 
-Jetty (jetty-*.jar, servlet-api-*.jar)
-http://jetty.codehaus.org/jetty/
+Jetty (jetty-*.jar, servlet-api-*.jar, websocket-*.jar)
+https://www.eclipse.org/jetty/
+
+Objenesis (objenesis-*.jar)
+https://objenesis.org/
+
+Prometheus Java Simpleclient (simpleclient-*.jar)
+https://github.com/prometheus/client_java
 
 Twitter4j (twitter4j-*.jar)
-http://twitter4j.org/
+https://twitter4j.org/
 
 
 
-These packages use an "Apache-like" license:
 
-Jaxen (jaxen-*.jar)
-https://github.com/jaxen-xpath/jaxen
-"Apache-like license":
+Packages using the Eclipse Public License 1.0 available at
+https://www.eclipse.org/legal/epl-v10.html
+
+JUnit test library (junit-4.*.jar)
+https://junit.org
+
+
+
+
+Packages using the BSD License 3 available at
+https://opensource.org/licenses/BSD-3-Clause
+
+Hamcrest (hamcrest-*.jar)
+https://hamcrest.org/JavaHamcrest/
+
+
+
+
+Packages using the MIT license available at
+https://github.com/mockito/mockito/blob/main/LICENSE
+
+Mockito (mockito-*.jar)
+https://github.com/mockito/mockito

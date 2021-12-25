@@ -108,7 +108,7 @@
 			<compilerarg value="-Xlint:-serial"/>
 			<compilerarg value="-Xlint:-options"/>
 			<classpath>
-				<fileset dir="${jar.dir}" includes="deps/*.jar deps/poi-4.1.2/*.jar" />
+				<fileset dir="${jar.dir}" includes="deps/*.jar" />
 			</classpath>
 		</javac>
 
@@ -123,7 +123,7 @@
 				<fileset dir="${dest.dir}" excludes="**/*.java" />
 			</main>
 			<lib>
-				<fileset dir="${jar.dir}" includes="deps/*.jar deps/poi-4.1.2/**/*.jar" />
+				<fileset dir="${jar.dir}" includes="deps/*.jar" />
 			</lib>
 		</one-jar>
 	</target>
