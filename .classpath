@@ -7,8 +7,8 @@
 	<classpathentry kind="lib" path="lib/deps/commons-fileupload-1.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/deps/commons-io-2.2.jar"/>
 	<classpathentry kind="lib" path="lib/deps/commons-logging-1.1.1.jar"/>
-	<classpathentry kind="lib" path="lib/deps/jackson-core-2.9.5.jar"/>
-	<classpathentry kind="lib" path="lib/deps/jackson-jr-objects-2.9.5.jar"/>
+	<classpathentry kind="lib" path="lib/deps/jackson-core-2.13.1.jar"/>
+	<classpathentry kind="lib" path="lib/deps/jackson-jr-objects-2.13.1.jar"/>
 	<classpathentry kind="lib" path="lib/deps/jetty-http-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/jetty-io-9.4.44.v20210927.jar"/>
 	<classpathentry kind="lib" path="lib/deps/jetty-security-9.4.44.v20210927.jar"/>
