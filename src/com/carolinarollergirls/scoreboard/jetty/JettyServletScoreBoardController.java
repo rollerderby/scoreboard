@@ -17,7 +17,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.server.Server;
@@ -70,14 +69,9 @@ public class JettyServletScoreBoardController {
         sch.setSessionHandler(sessions);
 
         FilterHolder mf;
-        try {
-            // Only keep the first two path components.
-            mf = new FilterHolder(
-                new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
-        } catch (ServletException e) {
-            // Can't actually throw an exception, so this should never happen.
-            throw new RuntimeException("Could not create MetricsFilter : " + e.getMessage());
-        }
+        // Only keep the first two path components.
+        mf = new FilterHolder(
+            new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
         sch.addFilter(mf, "/*", EnumSet.of(DispatcherType.REQUEST));
 
         sch.setResourceBase((new File(BasePath.get(), "html")).getPath());
