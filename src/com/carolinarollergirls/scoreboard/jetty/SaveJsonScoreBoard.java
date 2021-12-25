@@ -37,6 +37,7 @@ public class SaveJsonScoreBoard extends HttpServlet {
         String path = request.getParameter("path");
         if (path != null) {
             List<String> prefixes = Arrays.asList(path.split(","));
+            prefixes.add("ScoreBoard.Version");
             Iterator<String> it = state.keySet().iterator();
             while (it.hasNext()) {
                 String key = it.next();
