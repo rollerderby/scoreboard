@@ -13,8 +13,6 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public interface Settings extends ScoreBoardEventProvider {
-    public void reset();
-
     public String get(String k);
     // Setting to null deletes a setting.
     public void set(String k, String v);
