@@ -1,19 +1,25 @@
 (function () {
+  'use strict';
   var teamId = _windowFunctions.getParam('team');
+  var gameId = _windowFunctions.getParam('game');
 
-  preparePltInputTable($('#input'), teamId, 'lt');
-  
-  prepareLtSheetTable($('#sheet'), teamId, 'plt');
-  
-  prepareAnnotationEditor(teamId);
+  setupGameAdvance($('#gameAdvance'), gameId, false);
 
-  prepareFieldingEditor(teamId);
+  preparePltInputTable($('#input'), gameId, teamId, 'lt');
 
-  prepareOptionsDialog(teamId);
+  prepareLtSheetTable($('#sheet'), gameId, teamId, 'plt');
+
+  prepareAnnotationEditor($('#AnnotationEditor'), gameId, teamId);
+
+  prepareFieldingEditor($('#FieldingEditor'), gameId, teamId);
+
+  prepareOptionsDialog(gameId, teamId);
   _windowFunctions.configureZoom();
-  
+
   WS.AutoRegister();
   WS.Connect();
 
-  if (!teamId) { openOptionsDialog(); }
+  if (!teamId) {
+    openOptionsDialog();
+  }
 })();

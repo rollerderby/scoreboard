@@ -20,13 +20,12 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
-import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.Logger;
@@ -34,9 +33,7 @@ import com.carolinarollergirls.scoreboard.utils.Version;
 import com.carolinarollergirls.scoreboard.viewer.ScoreBoardMetricsCollector;
 
 public class Main extends Logger {
-    public static void main(String argv[]) {
-        new Main(argv);
-    }
+    public static void main(String argv[]) { new Main(argv); }
 
     public Main(String argv[]) {
         parseArgv(argv);
@@ -51,14 +48,12 @@ public class Main extends Logger {
         setSystemProperties();
         try {
             if (!Version.load()) { stop(null); }
-        } catch(IOException e) {
-            stop(e);
-        }
+        } catch (IOException e) { stop(e); }
 
         scoreBoard = new ScoreBoardImpl();
 
         // JSON updates.
-        final JSONStateManager jsm = new JSONStateManager();
+        final JSONStateManager jsm = scoreBoard.getJsm();
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
@@ -66,7 +61,6 @@ public class Main extends Logger {
 
         // Viewers.
         new ScoreBoardMetricsCollector(scoreBoard).register();
-        new JSONStateSnapshotter(jsm, BasePath.get());
 
         final File autoSaveDir = new File(BasePath.get(), "config/autosave");
         scoreBoard.runInBatch(new Runnable() {
@@ -75,10 +69,11 @@ public class Main extends Logger {
                 if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
                     try {
                         Logger.printMessage("No autosave to load from, using default.json");
-                        AutoSaveJSONState.loadFile(scoreBoard, new File(BasePath.get(), "config/default.json"), Source.DEFAULTS);
+                        AutoSaveJSONState.loadFile(scoreBoard, new File(BasePath.get(), "config/default.json"),
+                                                   Source.DEFAULTS);
                     } catch (Exception e) {
-                      Logger.printMessage("Error loading default configuration");
-                      stop(e);
+                        Logger.printMessage("Error loading default configuration");
+                        stop(e);
                     }
                 }
                 scoreBoard.postAutosaveUpdate();
@@ -94,7 +89,7 @@ public class Main extends Logger {
             public void run() {
                 // Save any changes since last regular autosave before we shutdown.
                 autosaver.run();
-          }
+            }
         });
     }
 
@@ -103,18 +98,19 @@ public class Main extends Logger {
     }
 
     private void stop(Exception ex) {
-        if (ex != null) {
-            ex.printStackTrace();
-        }
+        if (ex != null) { ex.printStackTrace(); }
         Logger.printMessage("Fatal error.   Exiting in 15 seconds.");
-        try { Thread.sleep(15000); } catch ( Exception e ) { /* Probably Ctrl-C or similar, ignore. */ }
+        try {
+            Thread.sleep(15000);
+        } catch (Exception e) { /* Probably Ctrl-C or similar, ignore. */
+        }
         System.exit(1);
     }
-    
+
     @Override
     public void log(String msg) {
         if (guiMessages != null) {
-            guiMessages.append(msg+"\n");
+            guiMessages.append(msg + "\n");
         } else {
             System.err.println(msg);
         }
@@ -123,27 +119,23 @@ public class Main extends Logger {
     private void parseArgv(String[] argv) {
         boolean gui = false;
 
-        for(String arg : argv) {
-            if(arg.equals("--gui") || arg.equals("-g")) {
+        for (String arg : argv) {
+            if (arg.equals("--gui") || arg.equals("-g")) {
                 gui = true;
-            } else if(arg.equals("--nogui") || arg.equals("-G")) {
+            } else if (arg.equals("--nogui") || arg.equals("-G")) {
                 gui = false;
-            } else if(arg.startsWith("--port=") || arg.startsWith("-p=")) {
+            } else if (arg.startsWith("--port=") || arg.startsWith("-p=")) {
                 port = Integer.parseInt(arg.split("=")[1]);
-            } else if(arg.startsWith("--host") || arg.startsWith("-h=")) {
+            } else if (arg.startsWith("--host") || arg.startsWith("-h=")) {
                 host = arg.split("=")[1];
             }
         }
 
-        if (gui) {
-            createGui();
-        }
+        if (gui) { createGui(); }
     }
 
     private void createGui() {
-        if (guiFrame != null) {
-            return;
-        }
+        if (guiFrame != null) { return; }
 
         guiFrame = new JFrame("Carolina Rollergirls ScoreBoard");
         guiFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -158,8 +150,8 @@ public class Main extends Logger {
         Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
         int w = guiFrame.getSize().width;
         int h = guiFrame.getSize().height;
-        int x = (dim.width-w)/2;
-        int y = (dim.height-h)/2;
+        int x = (dim.width - w) / 2;
+        int y = (dim.height - h) / 2;
         guiFrame.setLocation(x, y);
         guiFrame.setVisible(true);
     }

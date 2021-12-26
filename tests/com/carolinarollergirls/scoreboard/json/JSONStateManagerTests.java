@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -99,7 +98,7 @@ public class JSONStateManagerTests {
     public void delete_and_recreate_in_one_update() {
         jsm.register(listener);
         jsm.updateState("foo.1", "bar");
-        List<WSUpdate> updates =  new ArrayList<>();
+        List<WSUpdate> updates = new ArrayList<>();
         updates.add(new WSUpdate("foo", null));
         updates.add(new WSUpdate("foo.1", "baz"));
         jsm.updateState(updates);
@@ -109,5 +108,4 @@ public class JSONStateManagerTests {
         jsm.waitForSent();
         assertEquals(hm, listener.state);
     }
-
 }

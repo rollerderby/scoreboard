@@ -1,20 +1,28 @@
 package com.carolinarollergirls.scoreboard.event;
 
-public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl<TestScoreBoardEventProvider>
-        implements TestScoreBoardEventProvider {
+public class TestScoreBoardEventProviderImpl
+    extends ScoreBoardEventProviderImpl<TestScoreBoardEventProvider> implements TestScoreBoardEventProvider {
     public TestScoreBoardEventProviderImpl() {
         super(null, "", null);
         setupReferences();
     }
     public TestScoreBoardEventProviderImpl(TestScoreBoardEventProvider parent, String id,
-            Child<TestScoreBoardEventProvider> type) {
+                                           Child<TestScoreBoardEventProvider> type) {
         super(parent, id, type);
         setupReferences();
+    }
+    public TestScoreBoardEventProviderImpl(TestScoreBoardEventProviderImpl cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+    }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new TestScoreBoardEventProviderImpl(this, root);
     }
 
     private void setupReferences() {
         addProperties(INT, RO_INDIRECT_COPY, RW_INDIRECT_COPY, RECALCULATED, REFERENCE, MULTIPLE, SINGLETON, NUMBERED,
-                TEST_COMMAND);
+                      TEST_COMMAND);
         setInverseReference(MULTIPLE, REFERENCE);
         setInverseReference(REFERENCE, MULTIPLE);
         setCopy(RO_INDIRECT_COPY, this, REFERENCE, INT, true);
@@ -27,9 +35,7 @@ public class TestScoreBoardEventProviderImpl extends ScoreBoardEventProviderImpl
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         valuesRecalculated++;
-        if (prop == RECALCULATED) {
-            return -(Integer) value;
-        }
+        if (prop == RECALCULATED) { return -(Integer) value; }
         return value;
     }
     @Override

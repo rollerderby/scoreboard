@@ -1,0 +1,40 @@
+#Igrf { width: 100%; } 
+#Igrf > tr > td { text-align: center; vertical-align: middle; margin-top: 5px; background: #eee; } 
+#Igrf > tr:first-of-type > td { border-radius: 12px 12px 0px 0px; } 
+#Igrf > tr:last-of-type > td { border-radius: 0px 0px 12px 12px; } 
+#Igrf > tr:only-of-type > td { border-radius: 12px; } 
+
+#Igrf .Hide { display: none; } 
+
+#Igrf tr.Name > td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
+#Igrf tr.Name > td > button { font-size: 50%; margin-left: 5px; } 
+#Igrf tr.Files > td { background: #ddd; } 
+#Igrf tr.Files .ui-button { margin: 1px 5px; } 
+
+#Igrf table.Officials { width: 100%; border-spacing: 0px; } 
+#Igrf table.Officials.Empty tr:last-of-type > th:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Igrf table.Officials.Empty tr:last-of-type > th:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Igrf table.Officials tr:last-of-type > td:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#Igrf table.Officials tr:last-of-type > td:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#Igrf table.Officials tbody tr:nth-child(2n) { background: #ddd; } 
+#Igrf table.Officials col.Name { width: 30%; } 
+#Igrf table.Officials col.League { width: 30%; } 
+#Igrf table.Officials col.Cert { width: 10%; } 
+#Igrf table.Officials col.Button { width: 10%; } 
+
+#Igrf table.Officials th.Title { font-size: 150%; } 
+#Igrf table.Officials th#skaterCount { font-size: 100%; font-weight: normal; } 
+#Igrf table.Officials button.AddOfficial > span { padding-top: 0em; padding-bottom: 0em; } 
+#Igrf table.Officials button.RemoveOfficial > span { padding-top: 0em; padding-bottom: 0em; } 
+#Igrf table.Officials button.Swap { font-size: 80%; padding: 0.4em; } 
+#Igrf table.Officials button.Active { background: #3f3; } 
+
+/* Official Remove Dialog */
+div.OfficialRemoveDialog { text-align: center; } 
+div.OfficialRemoveDialog a.Title { font-size: 125%; } 
+div.OfficialRemoveDialog a.Remove { font-size: 150%; } 
+div.OfficialRemoveDialog a.Target { font-weight: bold; font-size: 250%; } 
+div.OfficialRemoveDialog a.AreYouSure { font-weight: bold; font-size: 300%; } 
+div.OfficialRemoveDialog button.No { float: left; } 
+div.OfficialRemoveDialog button.Yes { float: right; } 
+/* End Official Remove Dialog */

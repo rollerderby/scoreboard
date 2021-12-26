@@ -33,7 +33,7 @@ import org.apache.commons.fileupload.disk.DiskFileItemFactory;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.apache.commons.io.IOUtils;
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 
 public class MediaServlet extends HttpServlet {
     public MediaServlet(ScoreBoard sb, String dir) {
@@ -43,7 +43,7 @@ public class MediaServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         if (scoreBoard.getClients().getDevice(request.getSession().getId()).mayWrite()) {
             scoreBoard.getClients().getDevice(request.getSession().getId()).write();
 
@@ -64,7 +64,7 @@ public class MediaServlet extends HttpServlet {
     }
 
     protected void upload(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         try {
             if (!ServletFileUpload.isMultipartContent(request)) {
                 response.sendError(HttpServletResponse.SC_BAD_REQUEST);
@@ -101,7 +101,7 @@ public class MediaServlet extends HttpServlet {
 
             int len = fileItems.size();
             setTextResponse(response, HttpServletResponse.SC_OK,
-                    "Successfully uploaded " + len + " file" + (len > 1 ? "s" : ""));
+                            "Successfully uploaded " + len + " file" + (len > 1 ? "s" : ""));
         } catch (FileNotFoundException fnfE) {
             setTextResponse(response, HttpServletResponse.SC_NOT_FOUND, fnfE.getMessage());
         } catch (IllegalArgumentException iaE) {
@@ -112,7 +112,7 @@ public class MediaServlet extends HttpServlet {
     }
 
     protected void remove(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         String media = request.getParameter("media");
         String type = request.getParameter("type");
         String filename = request.getParameter("filename");
@@ -126,7 +126,7 @@ public class MediaServlet extends HttpServlet {
     }
 
     protected void processFileItemList(List<FileItem> fileItems, String media, String type)
-            throws FileNotFoundException, IOException {
+        throws FileNotFoundException, IOException {
         File typeDir = getTypeDir(media, type);
 
         ListIterator<FileItem> fileItemIterator = fileItems.listIterator();
@@ -141,8 +141,8 @@ public class MediaServlet extends HttpServlet {
     }
 
     protected File getTypeDir(String media, String type) throws FileNotFoundException, IllegalArgumentException {
-        if (scoreBoard.getMedia().getFormat(media) == null
-                || scoreBoard.getMedia().getFormat(media).getType(type) == null) {
+        if (scoreBoard.getMedia().getFormat(media) == null ||
+            scoreBoard.getMedia().getFormat(media).getType(type) == null) {
             throw new IllegalArgumentException("Invalid media '" + media + "' or type '" + type + "'");
         }
 
@@ -163,30 +163,24 @@ public class MediaServlet extends HttpServlet {
             return f;
         } finally {
             is.close();
-            if (null != fos) {
-                fos.close();
-            }
+            if (null != fos) { fos.close(); }
         }
     }
 
     protected void processZipFileItem(FileItemFactory factory, FileItem zip, List<FileItem> fileItems)
-            throws IOException {
+        throws IOException {
         ZipInputStream ziS = new ZipInputStream(zip.getInputStream());
         ZipEntry zE;
         try {
             while (null != (zE = ziS.getNextEntry())) {
-                if (zE.isDirectory() || !scoreBoard.getMedia().validFileName(zE.getName())) {
-                    continue;
-                }
+                if (zE.isDirectory() || !scoreBoard.getMedia().validFileName(zE.getName())) { continue; }
                 FileItem item = factory.createItem(null, null, false, zE.getName());
                 OutputStream oS = item.getOutputStream();
                 IOUtils.copyLarge(ziS, oS);
                 oS.close();
                 fileItems.add(item);
             }
-        } finally {
-            ziS.close();
-        }
+        } finally { ziS.close(); }
     }
 
     protected void setTextResponse(HttpServletResponse response, int code, String text) throws IOException {

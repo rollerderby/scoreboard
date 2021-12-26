@@ -1,55 +1,41 @@
-.SK, #TripEditor {	
-	font-size: 11pt;
-	font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-}
-table.SK, .SK .table, .SK tr, .SK td, #TripEditor table, #TripEditor tr, #TripEditor td {
-	border-collapse: collapse;
-	border-color:#777;
-}
-body:not(.AllowSelect) .SK {
-	user-select: none;
-	-webkit-user-select: none;
-	-khtml-user-select: none;
-	-moz-user-select: none;
-	-o-user-select: none;
-}
-.SK tr {
-    color: #333;
-}
-.SK .Hide { display: none; }
-.SK.Period { width: 98%; table-layout:fixed; margin: 1%; }
-.SK.Period thead td { font-size: 95%; background-color: #cccccc; color: #333333; }
-.SK.Period .SmallHead>div { font-size: 75%; transform: rotate(270deg); }
-.SK.Period td { text-align: center; vertical-align: middle; }
-.SK.Period tr { background-color: #FFF; }
-.SK.Period.Forwards tr:nth-child(even) { background-color: #e9f6da; }
-.SK.Period.Backwards tr:nth-last-child(even) { background-color: #e9f6da; }
-.SK.Period tr .Darker { background-color: #e9f6da; }
-.SK.Period.Forwards tr:nth-child(even) .Darker { background-color: #d3ecb6; }
-.SK.Period.Backwards tr:nth-last-child(even) .Darker { background-color: #d3ecb6; }
-.SK.Period.Backwards tr.SP td { border-bottom-style: dotted; }
-.SK.Period.Forwards tr.SP td { border-top-style: dotted; }
-.SK.Period .JamNumber { width: 30px; }
-.SK.Period .Jammer { width: 50px; }
-.SK.Period .Narrow, .Period .SmallHead { width: 14px; }
-.SK.Period #head { font-size: 200%; }
-.SK.Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; }
-.SK.Period .GameTotal, .SK.Period .JamTotal,.SK.Period .Lost, .SK.Period .Trip2 { border-left-width: 2px; }
-.SK.Period .GameTotal { background-color: #d3ecb6; }
-.SK.Period .hasAnnotation { position: relative; }
-.SK.Period .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; }
+.SK, #TripEditor {font-size: 11pt;font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; } 
+table.SK, .SK .table, .SK tr, .SK td, #TripEditor table, #TripEditor tr, #TripEditor td {border-collapse: collapse;border-color:#777; } 
+body:not(.AllowSelect) .SK {user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none; } 
+.SK tr { color: #333; } 
+.SK .Hide { display: none; } 
+.SK.Period { width: 98%; table-layout:fixed; margin: 1%; } 
+.SK.Period thead td { font-size: 95%; background-color: #cccccc; color: #333333; } 
+.SK.Period .SmallHead>div { font-size: 75%; transform: rotate(270deg); } 
+.SK.Period td { text-align: center; vertical-align: middle; } 
+.SK.Period tr { background-color: #FFF; } 
+.SK.Period.Forwards tr:nth-child(even) { background-color: #e9f6da; } 
+.SK.Period.Backwards tr:nth-last-child(even) { background-color: #e9f6da; } 
+.SK.Period tr .Darker { background-color: #e9f6da; } 
+.SK.Period.Forwards tr:nth-child(even) .Darker { background-color: #d3ecb6; } 
+.SK.Period.Backwards tr:nth-last-child(even) .Darker { background-color: #d3ecb6; } 
+.SK.Period.Backwards tr.SP td { border-bottom-style: dotted; } 
+.SK.Period.Forwards tr.SP td { border-top-style: dotted; } 
+.SK.Period .JamNumber { width: 30px; } 
+.SK.Period .Jammer { width: 50px; } 
+.SK.Period .Narrow, .Period .SmallHead { width: 14px; } 
+.SK.Period #head { font-size: 200%; } 
+.SK.Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; } 
+.SK.Period .GameTotal, .SK.Period .JamTotal,.SK.Period .Lost, .SK.Period .Trip2 { border-left-width: 2px; } 
+.SK.Period .GameTotal { background-color: #d3ecb6; } 
+.SK.Period .hasAnnotation { position: relative; } 
+.SK.Period .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
 
-#TripEditor input[type="number"] { width: 50px; }
-#TripEditor table { width: 100%; }
-#TripEditor td { padding: 0.25em; text-align: center; width: 33%; }
-#TripEditor td.close { text-align: right; }
-#TripEditor .header { font-weight: bold; }
-#TripEditor .ui-button { font-size: 75%; }
-#TripEditor .ui-button.checked { background: #3f3; }
-#TripEditor .Hide { display: none; }
-#TripEditor .Invisible { visibility: hidden; }
+#TripEditor input[type="number"] { width: 50px; } 
+#TripEditor table { width: 100%; } 
+#TripEditor td { padding: 0.25em; text-align: center; width: 33%; } 
+#TripEditor td.close { text-align: right; } 
+#TripEditor .header { font-weight: bold; } 
+#TripEditor .ui-button { font-size: 75%; } 
+#TripEditor .ui-button.checked { background: #3f3; } 
+#TripEditor .Hide { display: none; } 
+#TripEditor .Invisible { visibility: hidden; } 
 
-#skaterSelector .Hide { display: none; }
+#skaterSelector .Hide { display: none; } 
 
-.SK.Period .noTripAlert { position: relative; }
-.SK.Period .noTripAlert::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; }
+.SK.Period .noTripAlert { position: relative; } 
+.SK.Period .noTripAlert::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 

@@ -1,0 +1,53 @@
+#FileManagementTab #saveLoad table { width: 100%; border-spacing: 1px 0px; } 
+#FileManagementTab #saveLoad table tr > td { text-align: center; background: #eee; } 
+#FileManagementTab #saveLoad table tr.Name > td { background: #ccc; border-radius: 12px 12px 0px 0px; } 
+#FileManagementTab #saveLoad table tr.Content > td:first-of-type { border-radius: 0px 0px 0px 12px; } 
+#FileManagementTab #saveLoad table tr.Content > td:last-of-type { border-radius: 0px 0px 12px 0px; } 
+#FileManagementTab #saveLoad table tr.Content > td:only-of-type { border-radius: 0px 0px 12px 12px; } 
+
+#FileManagementTab #GameData { width: 100%; height: 70vh; } 
+#FileManagementTab #gameData table { background: #ddd; font-size: 125%; font-weight: bold; } 
+#FileManagementTab #gameData .Info { width: 90%; } 
+#FileManagementTab #gameData .Reload { width: 10%; text-align: right; } 
+
+/* Tab divs */
+#FileManagementTab #tabsDiv > div { padding: 0px; } 
+/* End Tab divs */
+
+/* Type groups */
+/* width, font size, text alignment */
+#FileManagementTab table.Type { width: 100%; border-spacing: 0px; } 
+#FileManagementTab table.Type tr.Type > th.Type > a.Type { font-size: 150%; } 
+#FileManagementTab table.Type > thead > tr.Type { text-align: left; } 
+#FileManagementTab table.Type > thead > tr.Type > th { padding-left: 15px; padding-right: 15px; } 
+#FileManagementTab table.Type > thead > tr.Type > th > button.Right { float: right; } 
+#FileManagementTab table.Type > thead > tr.Controls { text-align: center; } 
+#FileManagementTab table.Type > tbody > tr { text-align: center; } 
+#FileManagementTab table.Type .ui-button { font-size: 75%; } 
+#FileManagementTab table.Type col:nth-of-type(1) { width: 15%; } 
+#FileManagementTab table.Type col:nth-of-type(2) { width: 20%; } 
+#FileManagementTab table.Type col:nth-of-type(3) { width: 50%; } 
+#FileManagementTab table.Type col:nth-of-type(4) { width: 15%; } 
+
+/* Colors, round corners */
+#FileManagementTab table.Type tr.Type > th { background: #ccc; } 
+#FileManagementTab table.Type tr.Controls > th { background: #ddd; } 
+#FileManagementTab table.Type tr.Item > td { background: #eee; } 
+#FileManagementTab table.Type tr.Type > th.Type { border-radius: 12px 12px 0px 0px; } 
+#FileManagementTab table.Type.Hide tr.Type > th.Type { border-radius: 12px; } 
+#FileManagementTab table.Type tr.Item:last-of-type > td:first-of-type { border-bottom-left-radius: 12px; } 
+#FileManagementTab table.Type tr.Item:last-of-type > td:last-of-type { border-bottom-right-radius: 12px; } 
+
+/* Make preview background black */
+#FileManagementTab #Images table.Type tr.Item td.Preview { background: #000; } 
+
+/* Show/Hide Type groups */
+#FileManagementTab table.Type:not(.Hide) tr.Type > th.Type > button.Show { display: none; } 
+#FileManagementTab table.Type.Hide tr.Type > th.Type > button.Hide { display: none; } 
+#FileManagementTab table.Type.Hide tr.Type > th.Type > button.Available { display: none; } 
+#FileManagementTab table.Type.Hide tr:not(.Type) > th { display: none; } 
+#FileManagementTab table.Type.Hide tr:not(.Type) > td { display: none; } 
+
+/* Preview elements */
+#FileManagementTab table.Type tr.Item > td.Preview > * { max-width: 400px; max-height: 100px; } 
+/* End Type groups */

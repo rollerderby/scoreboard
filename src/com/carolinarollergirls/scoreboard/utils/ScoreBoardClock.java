@@ -8,7 +8,7 @@ import java.util.TimeZone;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 
 public class ScoreBoardClock extends TimerTask {
     private ScoreBoardClock() {
@@ -49,9 +49,7 @@ public class ScoreBoardClock extends TimerTask {
     }
 
     public long getLastRewind() {
-        synchronized (coreLock) {
-            return lastRewind;
-        }
+        synchronized (coreLock) { return lastRewind; }
     }
 
     public void advance(long ms) {
@@ -70,17 +68,13 @@ public class ScoreBoardClock extends TimerTask {
 
     public void start(boolean doCatchUp) {
         synchronized (coreLock) {
-            if (!doCatchUp) {
-                offset = System.currentTimeMillis() - currentTime;
-            }
+            if (!doCatchUp) { offset = System.currentTimeMillis() - currentTime; }
             stopCounter--;
         }
     }
 
     public void registerClient(ScoreBoardClockClient client) {
-        synchronized (coreLock) {
-            clients.add(client);
-        }
+        synchronized (coreLock) { clients.add(client); }
     }
 
     private void updateTime() {
@@ -91,17 +85,13 @@ public class ScoreBoardClock extends TimerTask {
     }
 
     private void updateClients() {
-        for (ScoreBoardClockClient client : clients) {
-            client.updateTime(currentTime);
-        }
+        for (ScoreBoardClockClient client : clients) { client.updateTime(currentTime); }
     }
 
     @Override
     public void run() {
         synchronized (coreLock) {
-            if (stopCounter == 0) {
-                updateTime();
-            }
+            if (stopCounter == 0) { updateTime(); }
         }
     }
 

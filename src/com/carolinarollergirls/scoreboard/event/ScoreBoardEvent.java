@@ -44,9 +44,7 @@ public class ScoreBoardEvent<T> extends EventObject implements Cloneable {
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
-        if (null == o) {
-            return false;
-        }
+        if (null == o) { return false; }
         try {
             return equals((ScoreBoardEvent<T>) o);
         } catch (ClassCastException ccE) {}
@@ -56,23 +54,13 @@ public class ScoreBoardEvent<T> extends EventObject implements Cloneable {
         return false;
     }
     public boolean equals(ScoreBoardEvent<T> e) {
-        if (!Objects.equals(getProvider(), e.getProvider())) {
-            return false;
-        }
-        if (!Objects.equals(getProperty(), e.getProperty())) {
-            return false;
-        }
-        if (!Objects.equals(getValue(), e.getValue())) {
-            return false;
-        }
-        if (!Objects.equals(getPreviousValue(), e.getPreviousValue())) {
-            return false;
-        }
+        if (!Objects.equals(getProvider(), e.getProvider())) { return false; }
+        if (!Objects.equals(getProperty(), e.getProperty())) { return false; }
+        if (!Objects.equals(getValue(), e.getValue())) { return false; }
+        if (!Objects.equals(getPreviousValue(), e.getPreviousValue())) { return false; }
         return true;
     }
-    public boolean equals(ScoreBoardCondition<T> c) {
-        return c.equals(this);
-    }
+    public boolean equals(ScoreBoardCondition<T> c) { return c.equals(this); }
     @Override
     public int hashCode() {
         return Objects.hash(provider, property, value, previousValue);

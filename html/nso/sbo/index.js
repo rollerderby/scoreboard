@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -8,13 +7,16 @@
  * See the file COPYING for details.
  */
 
-$(function() {
-  createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'));
-  createRulesetsTab(createTab('Rulesets', 'RulesetsTab'));
+$(function () {
+  'use strict';
+  var gameId = _windowFunctions.getParam('game');
+  setupGameAdvance($('gameAdvance'), gameId, true);
+  createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
+  createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
+  createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId);
+  createIgrfTab(createTab('IGRF', 'IgrfTab'), gameId);
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
-  createTeamsTab(createTab('Teams', 'TeamsTab'));
-  createDataManagementTab(createTab('Up/Download', 'DataManagementTab'));
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function(k, v) {
+  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {
     setOperatorSettings(_windowFunctions.getParam('operator'));
   });
   // Only connect after any registrations from the above are in place.
@@ -25,14 +27,17 @@ $(function() {
   $('#tabsDiv').tabs();
 
   // FIXME - is there better way to avoid key controls when a dialog is visible?
-  _crgKeyControls.addCondition(function() { return !$('body>div.ui-dialog').is(':visible'); });
+  _crgKeyControls.addCondition(function () {
+    return !$('body>div.ui-dialog').is(':visible');
+  });
   // FIXME - maybe use something else to check if user is typing into a text input...
   // FIXME - also provide visual feedback that key-control is disabled while typing into input text box?
-  _crgKeyControls.addCondition(function() { return !$('#TeamTime input:text.Editing').length; });
-
+  _crgKeyControls.addCondition(function () {
+    return !$('#TeamTime input:text.Editing').length;
+  });
 
   $('<li>').text('Caps Lock is On').attr('id', 'capsLockWarning').addClass('Hidden').appendTo('#tabBar');
-  $(document).on('keydown', function(e) {
+  $(document).on('keydown', function (e) {
     if (e.originalEvent.key === 'CapsLock') {
       // Assume it'll be toggled. Different OSes actually change
       // the setting at different stages of the keypress, so
@@ -47,14 +52,15 @@ $(function() {
 });
 
 function setOperatorSettings(op) {
+  'use strict';
   var opPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator__' + op + '.';
   // Default settings are intentionally separate from settings of the default operator
   // This ensures users logging in for the first time always get the former and not whatever
   // the latter currently happens to be.
   var defPrefix = 'ScoreBoard.Settings.Setting(ScoreBoard.Operator_Default.';
-  setClockControls(isTrue(WS.state[opPrefix+'StartStopButtons)'] || WS.state[defPrefix+'StartStopButtons)']));
-  setReplaceButton(isTrue(WS.state[opPrefix+'ReplaceButton)'] || WS.state[defPrefix+'ReplaceButton)']));
-  setTabBar(isTrue(WS.state[opPrefix+'TabBar)'] || WS.state[defPrefix+'TabBar)']));
+  setClockControls(isTrue(WS.state[opPrefix + 'StartStopButtons)'] || WS.state[defPrefix + 'StartStopButtons)']));
+  setReplaceButton(isTrue(WS.state[opPrefix + 'ReplaceButton)'] || WS.state[defPrefix + 'ReplaceButton)']));
+  setTabBar(isTrue(WS.state[opPrefix + 'TabBar)'] || WS.state[defPrefix + 'TabBar)']));
 }
 
 // FIXME - this is done after the team/time panel is loaded,
@@ -62,6 +68,7 @@ function setOperatorSettings(op) {
 //         really, the keycontrol helper lib needs to have a per-tab interface so
 //         each tab can setup its own keycontrol.
 function initialLogin() {
+  'use strict';
   var operator = _windowFunctions.getParam('operator');
   if (operator) {
     login(operator);
@@ -71,22 +78,26 @@ function initialLogin() {
 }
 
 function login(name) {
+  'use strict';
+  var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text(name);
   if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?operator='+$('#operatorId').text());
+    window.history.replaceState(null, '', '?operator=' + $('#operatorId').text() + '&game=' + gameId);
   }
   _crgKeyControls.setupKeyControls(name);
   setOperatorSettings(name);
 }
 
 function logout() {
+  'use strict';
+  var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text('');
   if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?');
+    window.history.replaceState(null, '', '?game=' + gameId);
   }
   _crgKeyControls.destroyKeyControls();
   setOperatorSettings('');
-  _crgUtils.showLoginDialog('Operator Login', 'Operator:', 'Login', function(value) {
+  _crgUtils.showLoginDialog('Operator Login', 'Operator:', 'Login', function (value) {
     if (!value) {
       return false;
     }
@@ -96,10 +107,14 @@ function logout() {
 }
 
 function createTab(title, tabId) {
-  if (typeof title === 'string') { title = $('<a>').html(title); }
-  $('<li>').append(title.attr('href', '#'+tabId)).appendTo('#tabsDiv>ul');
-  return $('<div>').attr('id', tabId).addClass('TabContent')
-    .appendTo('#tabsDiv');
+  'use strict';
+  if (typeof title === 'string') {
+    title = $('<a>').html(title);
+  }
+  $('<li>')
+    .append(title.attr('href', '#' + tabId))
+    .appendTo('#tabsDiv>ul');
+  return $('<div>').attr('id', tabId).addClass('TabContent').appendTo('#tabsDiv');
 }
 
 //# sourceURL=nso\sbo.js

@@ -1,0 +1,5 @@
+body { margin: 0px; } 
+#tabsDiv>div.TabContent { padding: 2px; overflow: hidden; } 
+#tabsDiv>div.TabContent>table { width: 100%; border-spacing: 0px; } 
+#tabsDiv>div.TabContent>div.Loading { text-align: center; font-weight: bold; font-size: 300%; } 
+table.RowTable { border-spacing: 0px; } 

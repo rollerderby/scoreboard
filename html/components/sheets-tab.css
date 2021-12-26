@@ -1,0 +1,4 @@
+#SheetsTab .Hide { display: none; } 
+#SheetsTab .SheetSelector { width: 100%; background-color: #ccc; text-align: center; padding: 2px; } 
+#SheetsTab .Sheet { float:left; width: 50%; } 
+#SheetsTab .Sheet.Only { width: 100%; } 

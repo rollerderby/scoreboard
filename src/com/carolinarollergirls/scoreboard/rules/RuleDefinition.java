@@ -1,7 +1,8 @@
 package com.carolinarollergirls.scoreboard.rules;
 
-import com.carolinarollergirls.scoreboard.core.Rulesets;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.event.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -13,10 +14,9 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl<RuleDef
         set(TYPE, type);
         set(DEFAULT_VALUE, defaultValue.toString());
         set(DESCRIPTION, description);
-        for (Property<?> prop : getProperties()) {
-            addWriteProtection(prop);
-        }
+        for (Property<?> prop : getProperties()) { addWriteProtection(prop); }
     }
+    public RuleDefinition(RuleDefinition cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     public Type getType() { return get(TYPE); }
     public String getName() { return get(NAME); }
@@ -42,7 +42,9 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl<RuleDef
         private Type(String s) { string = s; }
 
         @Override
-        public String toString() { return string; }
+        public String toString() {
+            return string;
+        }
 
         String string;
     }

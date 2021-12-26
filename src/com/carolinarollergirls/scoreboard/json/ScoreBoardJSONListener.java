@@ -11,15 +11,15 @@ package com.carolinarollergirls.scoreboard.json;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.core.Media;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Media;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
-import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 import com.carolinarollergirls.scoreboard.utils.Logger;
 
@@ -57,24 +57,18 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                         update(getPath(p), prop, v);
                     }
                 } else {
-                    Logger.printMessage(
-                            provider + " update of unknown kind.	prop: " + prop.getJsonName() + ", v: " + v);
+                    Logger.printMessage(provider + " update of unknown kind.	prop: " + prop.getJsonName() +
+                                        ", v: " + v);
                 }
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (batch == 0) {
-                    updateState();
-                }
+            } catch (Exception e) { e.printStackTrace(); } finally {
+                if (batch == 0) { updateState(); }
             }
         }
     }
 
     private void updateState() {
         synchronized (this) {
-            if (updates.isEmpty()) {
-                return;
-            }
+            if (updates.isEmpty()) { return; }
             jsm.updateState(updates);
             updates.clear();
         }
@@ -125,9 +119,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
         // announce empty directories to the frontend
         for (Media.MediaFormat mf : sb.getMedia().getAll(Media.FORMAT)) {
-            for (Media.MediaType mt : mf.getAll(Media.MediaFormat.TYPE)) {
-                updates.add(new WSUpdate(getPath(mt), ""));
-            }
+            for (Media.MediaType mt : mf.getAll(Media.MediaFormat.TYPE)) { updates.add(new WSUpdate(getPath(mt), "")); }
         }
 
         updateState();
@@ -135,13 +127,9 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
 
     String getPath(ScoreBoardEventProvider p) {
         String path = "";
-        if (p.getParent() != null) {
-            path = getPath(p.getParent()) + ".";
-        }
+        if (p.getParent() != null) { path = getPath(p.getParent()) + "."; }
         path = path + p.getProviderName();
-        if (!"".equals(p.getProviderId()) && p.getProviderId() != null) {
-            path = path + "(" + p.getProviderId() + ")";
-        }
+        if (!"".equals(p.getProviderId()) && p.getProviderId() != null) { path = path + "(" + p.getProviderId() + ")"; }
         return path;
     }
 

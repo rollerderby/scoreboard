@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,30 +15,39 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.websocket.WebSocket;
-import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
-import org.eclipse.jetty.websocket.WebSocketServlet;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
-import com.carolinarollergirls.scoreboard.core.Clients.Client;
-import com.carolinarollergirls.scoreboard.core.Clients.Device;
-import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.Jam;
-import com.carolinarollergirls.scoreboard.core.Period;
-import com.carolinarollergirls.scoreboard.core.PreparedTeam;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.Timeout;
+import com.fasterxml.jackson.jr.ob.JSON;
+
+import com.carolinarollergirls.scoreboard.core.game.GameImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Client;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Period;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Team;
+import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 import com.carolinarollergirls.scoreboard.utils.Logger;
-import com.fasterxml.jackson.jr.ob.JSON;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.Gauge;
@@ -53,54 +61,62 @@ public class WS extends WebSocketServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        getServletContext().getNamedDispatcher("default").forward(request, response);
+    public void configure(WebSocketServletFactory factory) {
+        factory.setCreator(new ScoreBoardWebSocketCreator());
     }
 
-    @Override
-    public WebSocket doWebSocketConnect(HttpServletRequest request, String arg1) {
-        return new Conn(jsm, request);
+    private boolean hasPermission(Device device, String action) {
+        switch (action) {
+        case "Register":
+        case "Ping": return true;
+        case "Set":
+        case "StartNewGame":
+        default: return device.mayWrite();
+        }
     }
 
     private ScoreBoard sb;
     private JSONStateManager jsm;
 
-    private boolean hasPermission(Device device, String action) {
-        switch (action) {
-        case "Register":
-        case "Ping":
-            return true;
-        case "Set":
-        case "StartNewGame":
-        default:
-            return device.mayWrite();
+    private static final Gauge connectionsActive =
+        Gauge.build().name("crg_websocket_active_connections").help("Current WebSocket connections").register();
+    private static final Counter messagesReceived = Counter.build()
+                                                        .name("crg_websocket_messages_received")
+                                                        .help("Number of WebSocket messages received")
+                                                        .register();
+    private static final Histogram messagesSentDuration = Histogram.build()
+                                                              .name("crg_websocket_messages_sent_duration_seconds")
+                                                              .help("Time spent sending WebSocket messages")
+                                                              .register();
+    private static final Counter messagesSentFailures = Counter.build()
+                                                            .name("crg_websocket_messages_sent_failed")
+                                                            .help("Number of WebSocket messages we failed to send")
+                                                            .register();
+
+    public class ScoreBoardWebSocketCreator implements WebSocketCreator {
+        @Override
+        public Object createWebSocket(ServletUpgradeRequest request, ServletUpgradeResponse response) {
+            HttpServletRequest baseRequest = request.getHttpServletRequest();
+            String httpSessionId = baseRequest.getSession().getId();
+            String remoteAddress = baseRequest.getRemoteAddr();
+            String source = baseRequest.getParameter("source");
+            if (source == null) { source = "CUSTOM CLIENT"; }
+            String platform = baseRequest.getParameter("platform");
+            if (platform == null) { platform = baseRequest.getHeader("User-Agent"); }
+            return new ScoreBoardWebSocket(httpSessionId, remoteAddress, source, platform);
         }
     }
 
-    private static final Gauge connectionsActive = Gauge.build().name("crg_websocket_active_connections")
-            .help("Current WebSocket connections").register();
-    private static final Counter messagesReceived = Counter.build().name("crg_websocket_messages_received")
-            .help("Number of WebSocket messages received").register();
-    private static final Histogram messagesSentDuration = Histogram.build()
-            .name("crg_websocket_messages_sent_duration_seconds").help("Time spent sending WebSocket messages")
-            .register();
-    private static final Counter messagesSentFailures = Counter.build().name("crg_websocket_messages_sent_failed")
-            .help("Number of WebSocket messages we failed to send").register();
+    @WebSocket(maxTextMessageSize = 1024 * 1024)
+    public class ScoreBoardWebSocket implements JSONStateListener {
 
-    public class Conn implements OnTextMessage, JSONStateListener {
-        private Connection connection;
-        @SuppressWarnings("hiding")
-        private JSONStateManager jsm;
-
-        public Conn(JSONStateManager jsm, HttpServletRequest request) {
-            this.jsm = jsm;
-            this.request = request;
-            device = sb.getClients().getDevice(request.getSession().getId());
+        public ScoreBoardWebSocket(String httpSessionId, String remoteAddress, String source, String platform) {
+            device = sb.getClients().getOrAddDevice(httpSessionId);
+            sbClient = sb.getClients().addClient(device.getId(), remoteAddress, source, platform);
         }
 
-        @Override
-        public synchronized void onMessage(String message_data) {
+        @OnWebSocketMessage
+        public synchronized void onMessage(Session session, String message_data) {
             messagesReceived.inc();
             try {
                 Map<String, Object> json = JSON.std.mapFrom(message_data);
@@ -116,9 +132,7 @@ public class WS extends WebSocketServlet {
                     List<?> jsonPaths = (List<?>) json.get("paths");
                     if (jsonPaths != null) {
                         Set<String> newPaths = new TreeSet<>();
-                        for (Object p : jsonPaths) {
-                            newPaths.add((String) p);
-                        }
+                        for (Object p : jsonPaths) { newPaths.add((String) p); }
                         // Send on updates for the newly registered paths.
                         PathTrie pt = new PathTrie();
                         pt.addAll(newPaths);
@@ -158,65 +172,63 @@ public class WS extends WebSocketServlet {
                         public void run() {
                             PreparedTeam t1 = sb.getPreparedTeam((String) data.get("Team1"));
                             PreparedTeam t2 = sb.getPreparedTeam((String) data.get("Team2"));
-                            String rs = (String) data.get("Ruleset");
-                            sb.reset();
-                            sb.getRulesets().setCurrentRuleset(rs);
-                            sb.getTeam(Team.ID_1).loadPreparedTeam(t1);
-                            sb.getTeam(Team.ID_2).loadPreparedTeam(t2);
+                            Ruleset rs = sb.getRulesets().getRuleset((String) data.get("Ruleset"));
+                            Game g = new GameImpl(sb, t1, t2, rs);
+                            sb.add(ScoreBoard.GAME, g);
+                            sb.getCurrentGame().load(g);
 
                             if ((Boolean) data.get("Advance")) {
-                                sb.startJam();
-                                sb.timeout();
+                                g.startJam();
+                                g.timeout();
                                 for (int i = 0; i < (Integer) data.get("TO1"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_1), false);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
                                 for (int i = 0; i < (Integer) data.get("TO2"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_2), false);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_2), false);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
                                 for (int i = 0; i < (Integer) data.get("OR1"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_1), true);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_1), true);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
                                 for (int i = 0; i < (Integer) data.get("OR2"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_2), true);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_2), true);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
-                                sb.setTimeoutType(Timeout.Owners.OTO, false);
-                                sb.getTeam(Team.ID_1).set(Team.TRIP_SCORE, (Integer) data.get("Points1"));
-                                sb.getTeam(Team.ID_2).set(Team.TRIP_SCORE, (Integer) data.get("Points2"));
+                                g.setTimeoutType(Timeout.Owners.OTO, false);
+                                g.getTeam(Team.ID_1).set(Team.TRIP_SCORE, (Integer) data.get("Points1"));
+                                g.getTeam(Team.ID_2).set(Team.TRIP_SCORE, (Integer) data.get("Points2"));
                                 int period = (Integer) data.get("Period");
                                 int jam = (Integer) data.get("Jam");
                                 if (jam == 0 && period > 1) {
-                                    sb.getClock(Clock.ID_PERIOD)
-                                            .elapseTime(sb.getClock(Clock.ID_PERIOD).getMaximumTime());
-                                    sb.stopJamTO();
-                                    sb.getClock(Clock.ID_INTERMISSION)
-                                            .elapseTime(sb.getClock(Clock.ID_INTERMISSION).getMaximumTime());
+                                    g.getClock(Clock.ID_PERIOD)
+                                        .elapseTime(g.getClock(Clock.ID_PERIOD).getMaximumTime());
+                                    g.stopJamTO();
+                                    g.getClock(Clock.ID_INTERMISSION)
+                                        .elapseTime(g.getClock(Clock.ID_INTERMISSION).getMaximumTime());
                                     for (int i = 2; i < period; i++) {
-                                        sb.getCurrentPeriod().execute(Period.INSERT_BEFORE);
+                                        g.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
                                 } else {
                                     for (int i = 1; i < period; i++) {
-                                        sb.getCurrentPeriod().execute(Period.INSERT_BEFORE);
+                                        g.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
                                     for (int i = 1; i < jam; i++) {
-                                        sb.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
+                                        g.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
                                     }
-                                    sb.getClock(Clock.ID_PERIOD)
-                                            .setTime(Long.valueOf((String) data.get("PeriodClock")));
+                                    g.getClock(Clock.ID_PERIOD).setTime(Long.valueOf((String) data.get("PeriodClock")));
                                 }
                             } else {
                                 String intermissionClock = (String) data.get("IntermissionClock");
                                 if (intermissionClock != null) {
                                     Long ic_time = Long.valueOf(intermissionClock);
                                     ic_time = ic_time - (ic_time % 1000);
-                                    Clock c = sb.getClock(Clock.ID_INTERMISSION);
+                                    Clock c = g.getClock(Clock.ID_INTERMISSION);
                                     c.setMaximumTime(ic_time);
                                     c.restart();
                                 }
@@ -235,9 +247,7 @@ public class WS extends WebSocketServlet {
                     // or risking an update loop.
                     device.access();
                     break;
-                default:
-                    sendError("Unknown Action '" + action + "'");
-                    break;
+                default: sendError("Unknown Action '" + action + "'"); break;
                 }
             } catch (Exception je) {
                 Logger.printMessage("Error handling JSON message: " + je);
@@ -248,34 +258,20 @@ public class WS extends WebSocketServlet {
         public void send(Map<String, Object> json) {
             Histogram.Timer timer = messagesSentDuration.startTimer();
             try {
-                connection.sendMessage(
-                        JSON.std.with(JSON.Feature.WRITE_NULL_PROPERTIES).composeString().addObject(json).finish());
+                wsSession.getRemote().sendStringByFuture(
+                    JSON.std.with(JSON.Feature.WRITE_NULL_PROPERTIES).composeString().addObject(json).finish());
             } catch (Exception e) {
                 Logger.printMessage("Error sending JSON update: " + e);
                 e.printStackTrace();
                 messagesSentFailures.inc();
-            } finally {
-                timer.observeDuration();
-            }
+            } finally { timer.observeDuration(); }
         }
 
-        @Override
-        public void onOpen(Connection conn) {
+        @OnWebSocketConnect
+        public void onOpen(Session session) {
+            wsSession = session;
             connectionsActive.inc();
-            // Some messages can be bigger than the 16k default
-            // when there is broad registration.
-            conn.setMaxTextMessageSize(1024 * 1024);
-            connection = conn;
             jsm.register(this);
-            String source = request.getParameter("source");
-            if (source == null) {
-                source = "CUSTOM CLIENT";
-            }
-            String platform = request.getParameter("platform");
-            if (platform == null) {
-                platform = request.getHeader("User-Agent");
-            }
-            sbClient = sb.getClients().addClient(device.getId(), request.getRemoteAddr(), source, platform);
             device.access();
 
             Map<String, Object> json = new HashMap<>();
@@ -286,12 +282,12 @@ public class WS extends WebSocketServlet {
             initialState.put("WS.Device.Id", device.getId());
             initialState.put("WS.Device.Name", device.getName());
             initialState.put("WS.Client.Id", sbClient.getId());
-            initialState.put("WS.Client.RemoteAddress", request.getRemoteAddr());
+            initialState.put("WS.Client.RemoteAddress", session.getRemoteAddress().getAddress().getHostAddress());
             json.put("state", initialState);
             send(json);
         }
 
-        @Override
+        @OnWebSocketClose
         public void onClose(int closeCode, String message) {
             connectionsActive.dec();
             jsm.unregister(this);
@@ -317,13 +313,9 @@ public class WS extends WebSocketServlet {
         private void sendWSUpdatesForPaths(PathTrie watchedPaths, Set<String> changed) {
             Map<String, Object> updates = new HashMap<>();
             for (String k : changed) {
-                if (watchedPaths.covers(k) && !k.endsWith("Secret")) {
-                    updates.put(k, state.get(k));
-                }
+                if (watchedPaths.covers(k) && !k.endsWith("Secret")) { updates.put(k, state.get(k)); }
             }
-            if (updates.size() == 0) {
-                return;
-            }
+            if (updates.size() == 0) { return; }
             Map<String, Object> json = new HashMap<>();
             json.put("state", updates);
             send(json);
@@ -332,9 +324,9 @@ public class WS extends WebSocketServlet {
 
         protected Client sbClient;
         protected Device device;
-        protected HttpServletRequest request;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
+        private Session wsSession;
     }
 
     protected static class PathTrie {
@@ -342,9 +334,7 @@ public class WS extends WebSocketServlet {
         Map<String, PathTrie> trie = new HashMap<>();
 
         public void addAll(Set<String> c) {
-            for (String p : c) {
-                add(p);
-            }
+            for (String p : c) { add(p); }
         }
         public void add(String path) {
             String[] p = path.split("[.(]");
@@ -360,32 +350,22 @@ public class WS extends WebSocketServlet {
             }
             head.exists = true;
         }
-        public boolean covers(String p) {
-            return _covers(p.split("[.(]"), 0);
-        }
+        public boolean covers(String p) { return _covers(p.split("[.(]"), 0); }
         private boolean _covers(String[] p, int i) {
             PathTrie head = this;
             for (;; i++) {
-                if (head.exists) {
-                    return true;
-                }
-                if (i >= p.length) {
-                    return false;
-                }
+                if (head.exists) { return true; }
+                if (i >= p.length) { return false; }
                 // Allow Blah(*).
                 if (head.trie.containsKey("*)")) {
                     int j;
                     // id captured by * might contain . and thus be split - find the end
                     for (j = i; j < p.length && !p[j].endsWith(")"); j++)
                         ;
-                    if (head.trie.get("*)")._covers(p, j + 1)) {
-                        return true;
-                    }
+                    if (head.trie.get("*)")._covers(p, j + 1)) { return true; }
                 }
                 head = head.trie.get(p[i]);
-                if (head == null) {
-                    return false;
-                }
+                if (head == null) { return false; }
             }
         }
     }

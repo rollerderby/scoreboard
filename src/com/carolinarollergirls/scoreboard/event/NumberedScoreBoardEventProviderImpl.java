@@ -4,31 +4,35 @@ import java.util.Objects;
 import java.util.UUID;
 
 public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScoreBoardEventProvider<C>>
-        extends OrderedScoreBoardEventProviderImpl<C> implements NumberedScoreBoardEventProvider<C> {
+    extends OrderedScoreBoardEventProviderImpl<C> implements NumberedScoreBoardEventProvider<C> {
 
-    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number,
-            NumberedChild<C> type) {
+    protected NumberedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, int number, NumberedChild<C> type) {
         super(parent, UUID.randomUUID().toString(), type);
         ownType = type;
         values.put(NUMBER, number);
         addWriteProtectionOverride(NUMBER, Source.RENUMBER);
         setNeighbors(getNumber());
     }
+    protected NumberedScoreBoardEventProviderImpl(NumberedScoreBoardEventProviderImpl<C> cloned,
+                                                  ScoreBoardEventProvider root) {
+        super(cloned, root);
+        ownType = cloned.ownType;
+    }
 
     @Override
-    public String getProviderId() { return String.valueOf(getNumber()); }
+    public String getProviderId() {
+        return String.valueOf(getNumber());
+    }
 
     @Override
     public int compareTo(NumberedScoreBoardEventProvider<?> other) {
         if (other == null) { return -1; }
-        if (getParent() == other.getParent()) {
-            return getNumber() - other.getNumber();
-        }
+        if (getParent() == other.getParent()) { return getNumber() - other.getNumber(); }
         if (getParent() == null) { return 1; }
-        if (getParent() instanceof NumberedScoreBoardEventProvider<?>
-                && other.getParent() instanceof NumberedScoreBoardEventProvider<?>) {
+        if (getParent() instanceof NumberedScoreBoardEventProvider<?> && other.getParent() instanceof
+                                                                             NumberedScoreBoardEventProvider<?>) {
             return ((NumberedScoreBoardEventProvider<?>) getParent())
-                    .compareTo((NumberedScoreBoardEventProvider<?>) other.getParent());
+                .compareTo((NumberedScoreBoardEventProvider<?>) other.getParent());
         }
         return getParent().compareTo(other.getParent());
     }
@@ -41,9 +45,7 @@ public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScor
             unlinkNeighbors();
         }
         super.delete(source);
-        if (next != null && next.getNumber() == getNumber() + 1) {
-            next.set(NUMBER, getNumber(), Source.RENUMBER);
-        }
+        if (next != null && next.getNumber() == getNumber() + 1) { next.set(NUMBER, getNumber(), Source.RENUMBER); }
     }
 
     @SuppressWarnings("unchecked")

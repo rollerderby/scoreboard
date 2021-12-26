@@ -1,5 +1,7 @@
-$(function() {
-  createRulesetsTab($('#RulesetsTab'));
+$(function () {
+  'use strict';
+  var rulesetId = _windowFunctions.getParam('ruleset');
+  createRulesetsTab($('#RulesetsTab'), rulesetId, false);
 
   WS.AutoRegister();
   WS.Connect();

@@ -1,68 +1,54 @@
-function createRulesetsTab(tab) {
+function createRulesetsTab(tab, id, isGame) {
+  'use strict';
   var rulesets = {};
   var activeRuleset = null;
   var definitions = {};
   initialize();
 
   function loadRulesets() {
-    var rs = tab.find('>.rulesets>.tree');
-    tab.find('#new_parent').empty();
-    tab.find('#current_rs').empty();
-    rs.empty();
-    rs.append(displayRulesetTree(''));
-    tab.find('#current_rs').val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
-    if (activeRuleset != null) {
-      displayRuleset(activeRuleset.Id);
+    tab.find('#parent').empty();
+    if (isGame) {
+      tab.find('#select').empty().append($('<option>').prop('value', '').append('Custom'));
+    }
+    addRulesetOptions('', '');
+    if (isGame) {
+      tab.find('#select').val(WS.state['ScoreBoard.Game(' + id + ').Ruleset'] || '');
     }
   }
 
-  function displayRulesetTree(parentId) {
-    var list = null;
-    $.each(rulesets, function(idx, val) {
-      if (val.ParentId === parentId) {
-        if (list == null) {
-          list = $('<ul>');
-        }
-
+  function addRulesetOptions(parentId, prefix) {
+    $.each(rulesets, function (idx, val) {
+      if (val.Parent === parentId && val.Id !== '') {
         $('<option>')
-        .prop('value', val.Id)
-        .append(val.Name)
-        .appendTo(tab.find('#new_parent'))
-        .clone().appendTo(tab.find('#current_rs'));
-        $('<li>')
-        .append(
-            $('<a>')
-            .attr('href', '#')
-            .on('click', function() {
-              displayRuleset(val.Id);
-            }
-            ).append($('<span>').append(val.Name)
-            )
-        )
-        .append(displayRulesetTree(val.Id))
-        .appendTo(list);
+          .prop('value', val.Id)
+          .html(prefix + val.Name)
+          .appendTo(tab.find('#parent'))
+          .clone()
+          .appendTo(tab.find('#select'));
+        addRulesetOptions(val.Id, prefix + '&nbsp;');
       }
     });
-    return list;
   }
 
   function loadDefinitions() {
     var d = tab.find('>.definitions>.rules');
     d.empty();
-    var findSection = function(def) {
-      var newSection = function(def) {
-        var name = def.Group;
-        var section = $('<div>')
-        .addClass('section folded')
-        .attr('group', def.Group);
+    function newSection(def) {
+      var name = def.Group;
+      var section = $('<div>').addClass('section folded').attr('group', def.Group);
 
-        section.append($('<div>').addClass('header')
-            .on('click', function(e) {
-              section.toggleClass('folded');
-            }).append(name));
+      section.append(
+        $('<div>')
+          .addClass('header')
+          .on('click', function (e) {
+            section.toggleClass('folded');
+          })
+          .append(name)
+      );
 
-        return section;
-      };
+      return section;
+    }
+    function findSection(def) {
       var section = null;
 
       var children = d.find('.section');
@@ -80,25 +66,31 @@ function createRulesetsTab(tab) {
         d.append(section);
       }
 
-      var div = $('<div>')
-      .addClass('definition')
-      .attr('fullname', def.Fullname);
+      var div = $('<div>').addClass('definition').attr('fullname', def.Fullname);
       section.append(div);
       return div;
-    };
+    }
     // Keep them in the same order they are in the Java code.
-    var sortedValues = $.map(definitions, function(v) {
+    var sortedValues = $.map(definitions, function (v) {
       return v;
-    }).sort(function(a, b){return a.Index - b.Index;});
-    $.each(sortedValues, function(idx, def) {
+    }).sort(function (a, b) {
+      return a.Index - b.Index;
+    });
+    $.each(sortedValues, function (idx, def) {
       var div = findSection(def);
       var tooltiptext = null;
       if (def.Description !== '') {
         tooltiptext = $('<span>').addClass('tooltiptext').append(def.Description);
       }
-      $('<div>').addClass('name').appendTo(div)
-      .append($('<label>').append($('<input>').attr('type', 'checkbox').prop('checked', true).on('click', definitionOverride))
-          .append(def.Name).append(tooltiptext));
+      $('<div>')
+        .addClass('name')
+        .appendTo(div)
+        .append(
+          $('<label>')
+            .append($('<input>').addClass('Selector').attr('type', 'checkbox').prop('checked', true).on('click', definitionOverride))
+            .append(def.Name)
+            .append(tooltiptext)
+        );
 
       var value = $('<div>').addClass('value').appendTo(div);
       value.append($('<span>').addClass('inherit'));
@@ -122,109 +114,129 @@ function createRulesetsTab(tab) {
   }
 
   function initialize() {
-    tab.append($('<div>').addClass('rulesets')
-        .append($('<h1>').text('Rulesets'))
-        .append($('<div>').addClass('tree')).append($('<br>'))
-        .append($('<table>')
-            .append($('<tr>')
-                .append($('<th>').attr('colspan', '2').text('New Ruleset')))
-            .append($('<tr>')
-                .append($('<td>').text('Name:'))
-                .append($('<td>').append($('<input type="text">').attr('id', 'new_name'))))
-            .append($('<tr>')
-                .append($('<td>').text('Parent:'))
-                .append($('<td>').append($('<select>').attr('id', 'new_parent'))))
-            .append($('<tr>').append($('<td>').addClass('new').attr('colspan', '2')
-                .append($('<button>').addClass('New').text('Create').on('click', New).button()))))
-        .append($('<br>'))
-        .append($('<div>').addClass('current')
-            .append($('<h1>').text('Current Ruleset'))
-            .append($('<div>').append($('<select>').attr('id', 'current_rs')).on('change', Change))
-        ));
-    tab.append($('<div>').addClass('definitions')
-        .append($('<div>').addClass('buttons top')
-            .append($('<button>').addClass('Cancel').text('Cancel').on('click', Cancel).button())
+    tab.append(
+      $('<div>')
+        .addClass('definitions')
+        .append(
+          $('<div>')
+            .addClass('selection')
+            .toggleClass('Hide', !isGame)
+            .append($('<span>').text('Current Ruleset: '))
+            .append($('<select>').attr('id', 'select').on('click', Select))
+        )
+        .append(
+          $('<div>')
+            .addClass('buttons top')
             .append($('<button>').addClass('Update').text('Update').on('click', Update).button())
-            .append($('<button>').addClass('Delete').text('Delete').on('click', Delete).button())
-            .append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.')))
-        .append($('<span>').text('Name: '))
-        .append($('<input type="text">').attr('id', 'name').attr('size', '40'))
+            .append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.'))
+        )
+        .append(
+          $('<div>')
+            .addClass('metadata')
+            .append($('<span>').text('Name: '))
+            .append($('<input type="text">').attr('id', 'name').attr('size', '20'))
+            .append($('<span>').text('  Parent: '))
+            .append($('<select>').attr('id', 'parent').on('click', ChangeParent))
+        )
         .append($('<div>').addClass('rules'))
-        .append($('<div>').addClass('buttons bottom')
-            .append($('<button>').addClass('Cancel').text('Cancel').on('click', Cancel).button())
+        .append(
+          $('<div>')
+            .addClass('buttons bottom')
             .append($('<button>').addClass('Update').text('Update').on('click', Update).button())
-            .append($('<button>').addClass('Delete').text('Delete').on('click', Delete).button())
-            .append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.'))));
-    tab.children('.definitions').hide();
+            .append($('<span>').addClass('EditNote').text('Note: Changing this ruleset will affect the current game.'))
+        )
+    );
 
-    WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {triggerBatchFunc: function() {
-      definitions = {};
-      for (var prop in WS.state) {
-        var k = WS._enrichProp(prop);
-        if (k.RuleDefinition) {
-          definitions[k.RuleDefinition] = definitions[k.RuleDefinition] || {};
-          definitions[k.RuleDefinition][k.field] = WS.state[prop];
-          definitions[k.RuleDefinition]['Fullname'] = k.RuleDefinition;
-          definitions[k.RuleDefinition]['Group'] = k.RuleDefinition.split('.')[0];
-          definitions[k.RuleDefinition]['Name'] = k.RuleDefinition.split('.')[1];
-        }
-      }
-      loadDefinitions();
-    }});
-
-    // If the definitions change, we'll have to redraw the rulesets too.
-    WS.Register(['ScoreBoard.Rulesets.RuleDefinition', 'ScoreBoard.Rulesets.Ruleset'], {triggerBatchFunc: function() {
-      rulesets = {};
-      for (var prop in WS.state) {
-        var k = WS._enrichProp(prop);
-        if (k.Rulesets != null && k.Ruleset != null) {
-          rulesets[k.Ruleset] = rulesets[k.Ruleset] || {Rules: {}};
-          if (k.field === 'Rule') {
-            rulesets[k.Ruleset].Rules[k.Rule] = WS.state[prop];
-          } else {
-            rulesets[k.Ruleset][k.field] = WS.state[prop];
+    WS.Register(['ScoreBoard.Rulesets.RuleDefinition'], {
+      triggerBatchFunc: function () {
+        definitions = {};
+        for (var prop in WS.state) {
+          var k = WS._enrichProp(prop);
+          if (k.RuleDefinition) {
+            definitions[k.RuleDefinition] = definitions[k.RuleDefinition] || {};
+            definitions[k.RuleDefinition][k.field] = WS.state[prop];
+            definitions[k.RuleDefinition].Fullname = k.RuleDefinition;
+            definitions[k.RuleDefinition].Group = k.RuleDefinition.split('.')[0];
+            definitions[k.RuleDefinition].Name = k.RuleDefinition.split('.')[1];
           }
         }
-      }
+        loadDefinitions();
+      },
+    });
 
-      // Populate inherited values from parents.
-      $.each(rulesets, function(idx, rs) {
-        rs.Inherited = {};
-        var pid = rs.ParentId;
-        while (rulesets[pid]) {
-          $.each(rulesets[pid].Rules, function(name, value) {
-            if (rs.Inherited[name] === undefined) {
-              rs.Inherited[name] = value;
-            }
-          });
-          pid = rulesets[pid].ParentId;
+    // If the definitions change, we'll have to redraw the rulesets too.
+    var rereadProperties = ['ScoreBoard.Rulesets.RuleDefinition', 'ScoreBoard.Rulesets.Ruleset'];
+    if (isGame) {
+      rereadProperties.concat('ScoreBoard.Game(' + id + ').Rule(*)');
+    }
+    WS.Register(rereadProperties, {
+      triggerBatchFunc: function () {
+        rulesets = {};
+        if (isGame) {
+          rulesets[''] = { Id: '', Rules: {}, Parent: '', Name: 'Custom Ruleset', Readonly: false };
         }
-      });
-      loadRulesets();
-      markEffectiveRulesets();
-    }});
+        for (var prop in WS.state) {
+          var k = WS._enrichProp(prop);
+          if (k.Rulesets != null && k.Ruleset != null) {
+            rulesets[k.Ruleset] = rulesets[k.Ruleset] || { Rules: {} };
+            if (k.field === 'Rule') {
+              rulesets[k.Ruleset].Rules[k.Rule] = WS.state[prop];
+            } else {
+              rulesets[k.Ruleset][k.field] = WS.state[prop];
+            }
+          } else if (isGame && k.Game === id && k.field === 'Rule') {
+            rulesets[''].Rules[k.Rule] = WS.state[prop];
+          }
+        }
 
-    WS.Register(['ScoreBoard.Rulesets.CurrentRulesetId'], function(k, v) {
-      tab.find('#current_rs').val(v);
+        // Populate inherited values from parents.
+        $.each(rulesets, function (idx, rs) {
+          rs.Inherited = {};
+          var pid = rs.Parent;
+          while (pid !== '' && rulesets[pid]) {
+            /* jshint -W083 */
+            $.each(rulesets[pid].Rules, function (name, value) {
+              if (rs.Inherited[name] === undefined) {
+                rs.Inherited[name] = value;
+              }
+            });
+            /* jshint +W083 */
+            pid = rulesets[pid].Parent;
+          }
+        });
+        loadRulesets();
+        markEffectiveRulesets();
+        displayRuleset();
+      },
+    });
+
+    if (isGame) {
+      WS.Register(['ScoreBoard.Game(' + id + ').Ruleset'], function (k, v) {
+        tab.find('#select').val(v);
+        displayRuleset();
+      });
+    }
+
+    WS.Register(['ScoreBoard.CurrentGame.Ruleset'], function (k, v) {
       markEffectiveRulesets();
-      var definitions = tab.children('.definitions');
-      if (activeRuleset != null && activeRuleset.Effective) {
-        definitions.find('.Update, .EditNote').show();
-        definitions.find('.Delete').hide();
+      if (activeRuleset == null || activeRuleset.Readonly) {
+        return;
+      }
+      var definitionsDiv = tab.children('.definitions');
+      if (activeRuleset.Effective) {
+        definitionsDiv.find('.Update, .EditNote').show();
       } else {
-        definitions.find('.Update, .Delete').show();
-        definitions.find('.EditNote').hide();
+        definitionsDiv.find('.Update').show();
+        definitionsDiv.find('.EditNote').hide();
       }
     });
   }
 
   function markEffectiveRulesets() {
-    $.each(rulesets, function(idx, rs) { rs.Effective = false; });
-    var id = WS.state['ScoreBoard.Rulesets.CurrentRulesetId'];
-    while (rulesets[id]) {
-      rulesets[id].Effective = true;
-      id = rulesets[id].ParentId;
-    }
+    var curId = WS.state['ScoreBoard.CurrentGame.Ruleset'] || '';
+    $.each(rulesets, function (idx, rs) {
+      rs.Effective = isAncestor(rs.Id, curId);
+    });
   }
 
   function definitionOverride(e) {
@@ -239,57 +251,48 @@ function createRulesetsTab(tab) {
     }
   }
 
-  function displayRuleset(id) {
-    var rs = rulesets[id];
-    if (!rs) { return; }
-    activeRuleset = rs;
-    var definitions = tab.children('.definitions');
+  function displayRuleset() {
+    var activeId = isGame ? WS.state['ScoreBoard.Game(' + id + ').Ruleset'] || '' : id;
+    activeRuleset = rulesets[activeId];
+    if (!activeRuleset) {
+      return;
+    }
+    var definitionsDiv = tab.children('.definitions');
 
-    definitions.find('#name').val(rs.Name);
+    definitionsDiv.find('#name').val(activeRuleset.Name);
 
-    if (!isTrue(rs.Readonly)) {
-      definitions.find('.definition *').prop('disabled', false);
+    if (!isTrue(activeRuleset.Readonly)) {
+      definitionsDiv.find('.definition *').prop('disabled', false);
     }
 
-    $.each(rs.Inherited, function(key, val) {
+    $.each(activeRuleset.Inherited, function (key, val) {
       setDefinition(key, val, true);
     });
-    $.each(rs.Rules, function(key, val) {
+    $.each(activeRuleset.Rules, function (key, val) {
       setDefinition(key, val, false);
     });
 
-    if (isTrue(rs.Readonly)) {
+    if (isTrue(activeRuleset.Readonly)) {
       tab.find('#name').prop('disabled', true);
-      definitions.find('.definition *').prop('disabled', true);
-      definitions.find('.Update, .Delete, .EditNote').hide();
-    } else if (rs.Effective) {
+      definitionsDiv.find('.definition *').prop('disabled', true);
+      definitionsDiv.find('.Update, .EditNote').hide();
+    } else if (activeRuleset.Effective) {
       tab.find('#name').prop('disabled', false);
-      definitions.find('.Update, .EditNote').show();
-      definitions.find('.Delete').hide();
+      definitionsDiv.find('.Update, .EditNote').show();
+    } else if (activeRuleset.Id === '') {
+      tab.find('#name').prop('disabled', true);
+      definitionsDiv.find('.definition .Selector').prop('disabled', true);
+      definitionsDiv.find('.Update').show();
+      definitionsDiv.find('.EditNote').hide();
     } else {
       tab.find('#name').prop('disabled', false);
-      definitions.find('.Update, .Delete').show();
-      definitions.find('.EditNote').hide();
+      definitionsDiv.find('.Update').show();
+      definitionsDiv.find('.EditNote').hide();
     }
-    definitions.show();
-  }
-
-  function New() {
-    var newName = tab.find('#new_name').val();
-    if (newName.trim() === '') { return; }
-    var uuid;
-    do {
-      uuid = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {var r = Math.random()*16|0,v=c==='x'?r:r&0x3|0x8;return v.toString(16);}).toUpperCase();
-    } while (rulesets[uuid]);
-    WS.Set('ScoreBoard.Rulesets.Ruleset('+uuid+').Name', newName);
-    WS.Set('ScoreBoard.Rulesets.Ruleset('+uuid+').ParentId', tab.find('#new_parent').val());
-    $('#new_name').val('');
-    activeRuleset = uuid;
   }
 
   function Update() {
-    tab.children('.definitions').hide();
-    $.each(definitions, function(idx, val) {
+    $.each(definitions, function (idx, val) {
       var def = $('.definition[fullname="' + val.Fullname + '"]');
       var value = null;
       if (def.find('.name input').prop('checked')) {
@@ -302,24 +305,30 @@ function createRulesetsTab(tab) {
           value = select;
         }
       }
-      WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Rule(' + val.Fullname + ')', value);
+      if (activeRuleset.Id === '') {
+        WS.Set('ScoreBoard.Game(' + id + ').Rule(' + val.Fullname + ')', value);
+      } else {
+        WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Rule(' + val.Fullname + ')', value);
+      }
     });
-    var newName = tab.find('#name').val();
-    if (newName.trim() === '') { newName = WS.state['ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name']; }
-    WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name', newName);
+    if (activeRuleset.Id !== '') {
+      var newName = tab.find('#name').val();
+      if (newName.trim() === '') {
+        newName = WS.state['ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name'];
+      }
+      WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Name', newName);
+    }
   }
 
-  function Delete() {
-    tab.children('.definitions').hide();
-    WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ')', null);
+  function ChangeParent() {
+    var newParent = tab.find('#parent').val();
+    if (!activeRuleset.Readonly && activeRuleset.Id !== '' && !isAncestor(activeRuleset.Id, newParent)) {
+      WS.Set('ScoreBoard.Rulesets.Ruleset(' + activeRuleset.Id + ').Parent', newParent);
+    }
   }
 
-  function Cancel() {
-    tab.children('.definitions').hide();
-  }
-
-  function Change() {
-    WS.Set('ScoreBoard.Rulesets.CurrentRuleset', tab.find('#current_rs').val());
+  function Select() {
+    WS.Set('ScoreBoard.Game(' + id + ').Ruleset', tab.find('#select').val());
   }
 
   function setDefinition(key, value, inherited) {
@@ -336,5 +345,16 @@ function createRulesetsTab(tab) {
       def.find('.value .inherit').hide();
       def.find('.value .override').show();
     }
+  }
+
+  function isAncestor(id1, id2) {
+    var curId = id2;
+    while (curId !== '') {
+      if (curId === id1) {
+        return true;
+      }
+      curId = rulesets[curId].Parent;
+    }
+    return false;
   }
 }

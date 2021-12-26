@@ -1,7 +1,5 @@
 package com.carolinarollergirls.scoreboard.json;
 
-import io.prometheus.client.Histogram;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -15,6 +13,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import io.prometheus.client.Histogram;
 
 public class JSONStateManager {
 
@@ -43,8 +43,8 @@ public class JSONStateManager {
 
         for (WSUpdate update : updates) {
             if (update.getValue() == null) {
-                for (String stateKey: newState.keySet()) {
-                    if (stateKey.equals(update.getKey()) || stateKey.startsWith(update.getKey()+".")) {
+                for (String stateKey : newState.keySet()) {
+                    if (stateKey.equals(update.getKey()) || stateKey.startsWith(update.getKey() + ".")) {
                         toRemove.add(stateKey);
                         changed.add(stateKey);
                     }
@@ -57,9 +57,7 @@ public class JSONStateManager {
         }
 
         // Modifications to the map have to be done after iteration.
-        for (String key: toRemove) {
-            newState.remove(key);
-        }
+        for (String key : toRemove) { newState.remove(key); }
 
         // Discard noop changes.
         Iterator<String> it = changed.iterator();
@@ -67,9 +65,7 @@ public class JSONStateManager {
             String key = it.next();
             Object old = state.get(key);
             Object cur = newState.get(key);
-            if (Objects.equals(cur, old)) {
-                it.remove();
-            }
+            if (Objects.equals(cur, old)) { it.remove(); }
         }
 
         state = Collections.unmodifiableMap(newState);
@@ -82,28 +78,24 @@ public class JSONStateManager {
             for (JSONStateListener source : sources.keySet()) {
                 final JSONStateListener localSource = source;
                 pending.incrementAndGet();
-                sources.get(source).execute(
-                        new Runnable() {
-                            @Override
-                            public void run() {
-                                localSource.sendUpdates(localState, immutableChanged);
-                                pending.decrementAndGet();
-                            }
-                        }
-                        );
+                sources.get(source).execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        localSource.sendUpdates(localState, immutableChanged);
+                        pending.decrementAndGet();
+                    }
+                });
             }
         }
         timer.observeDuration();
         updateStateUpdates.observe(updates.size());
     }
 
-    public synchronized Map<String, Object> getState() {
-      return state;
-    }
+    public synchronized Map<String, Object> getState() { return state; }
 
     // For unittests.
     protected void waitForSent() {
-        while(pending.get() > 0) {
+        while (pending.get() > 0) {
             try {
                 Thread.sleep(1);
             } catch (InterruptedException e) {};
@@ -114,9 +106,15 @@ public class JSONStateManager {
     private Map<String, Object> state = new HashMap<>();
     private final AtomicInteger pending = new AtomicInteger();
 
-    private static final Histogram updateStateDuration = Histogram.build()
-            .name("crg_json_update_state_duration_seconds").help("Time spent in JSONStateManager.updateState function").register();
-    private static final Histogram updateStateUpdates = Histogram.build()
-            .name("crg_json_update_state_updates").help("Updates sent to JSONStateManager.updateState function")
-            .exponentialBuckets(1, 2, 10).register();
+    private static final Histogram updateStateDuration =
+        Histogram.build()
+            .name("crg_json_update_state_duration_seconds")
+            .help("Time spent in JSONStateManager.updateState function")
+            .register();
+    private static final Histogram updateStateUpdates =
+        Histogram.build()
+            .name("crg_json_update_state_updates")
+            .help("Updates sent to JSONStateManager.updateState function")
+            .exponentialBuckets(1, 2, 10)
+            .register();
 }
