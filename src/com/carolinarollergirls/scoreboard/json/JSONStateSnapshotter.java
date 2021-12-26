@@ -28,7 +28,9 @@ public class JSONStateSnapshotter implements JSONStateListener {
     @Override
     public synchronized void sendUpdates(Map<String, Object> newState, Set<String> changed) {
         for (String key : changed) {
-            if (key.startsWith(pathPrefix) && !key.endsWith("Secret")) { state.put(key, newState.get(key)); }
+            if ((key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) && !key.endsWith("Secret")) {
+                state.put(key, newState.get(key));
+            }
         }
         if (writeOnNextUpdate) {
             writeOnNextUpdate = false;

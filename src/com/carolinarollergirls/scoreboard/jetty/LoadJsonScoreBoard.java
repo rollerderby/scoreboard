@@ -55,12 +55,13 @@ public class LoadJsonScoreBoard extends HttpServlet {
                             InputStream stream = item.openStream();
                             Map<String, Object> map = JSON.std.mapFrom(stream);
                             stream.close();
+                            @SuppressWarnings("unchecked")
+                            Map<String, Object> state = (Map<String, Object>) map.get("state");
+                            ScoreBoardJSONSetter.updateToCurrentVersion(state);
                             scoreBoard.runInBatch(new Runnable() {
                                 @Override
-                                @SuppressWarnings("unchecked")
                                 public void run() {
-                                    ScoreBoardJSONSetter.set(scoreBoard, (Map<String, Object>) map.get("state"),
-                                                             Source.JSON);
+                                    ScoreBoardJSONSetter.set(scoreBoard, state, Source.JSON);
                                 }
                             });
                             response.setContentType("text/plain");
