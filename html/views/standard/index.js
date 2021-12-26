@@ -68,22 +68,22 @@ function initialize() {
   });
   
   $.each([1, 2], function(idx, t) {
-    WS.Register([ 'ScoreBoard.Team(' + t + ').NoInitial', 'ScoreBoard.InOvertime'], function(k, v) {
-      var invert = isTrue(WS.state['ScoreBoard.Team(' + t + ').NoInitial']) && !isTrue(WS.state['ScoreBoard.InOvertime']);
+    WS.Register([ 'ScoreBoard.CurrentGame.Team(' + t + ').NoInitial', 'ScoreBoard.InOvertime'], function(k, v) {
+      var invert = isTrue(WS.state['ScoreBoard.CurrentGame.Team(' + t + ').NoInitial']) && !isTrue(WS.state['ScoreBoard.CurrentGame.InOvertime']);
       $('.Team' + t + ' .JamScore').toggleClass('FlatDark', invert);
     });
-    WS.Register([ 'ScoreBoard.Team(' + t + ').Color' ], function(k, v) {
+    WS.Register([ 'ScoreBoard.CurrentGame.Team(' + t + ').Color' ], function(k, v) {
       if (v == null) {
         v = '';
       }
       switch (String(k)){
-        case 'ScoreBoard.Team(' + t + ').Color(scoreboard_fg)':
+        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_fg)':
           $('.Team' + t + ' .Name').css('color', v);
           break;
-        case 'ScoreBoard.Team(' + t + ').Color(scoreboard_bg)':
+        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_bg)':
           $('.Team' + t + ' .Name').css('background-color', v);
           break;
-        case 'ScoreBoard.Team(' + t + ').Color(scoreboard_glow)':
+        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_glow)':
           var shadow = '0px 0px 0.2em ' + v;
           var shadowCSS = shadow + ', ' + shadow + ', ' + shadow;
           if (v === '') {
@@ -91,7 +91,7 @@ function initialize() {
           }
           $('.Team' + t + ' .Name').css('text-shadow',shadowCSS);
           break;
-        case 'ScoreBoard.Team(' + t + ').Color(scoreboard_dots_fg)':
+        case 'ScoreBoard.CurrentGame.Team(' + t + ').Color(scoreboard_dots_fg)':
           var dotColor = v;
           if (dotColor === '') {dotColor = '#000000';}
           $('.Team' + t + ' .DotTimeouts .Dot').css('background', dotColor);
@@ -106,7 +106,7 @@ function initialize() {
     });
   });
 
-  WS.Register(['ScoreBoard.NoMoreJam'], function(k, v) {
+  WS.Register(['ScoreBoard.CurrentGame.NoMoreJam'], function(k, v) {
     $('.Clock.Lineup').toggleClass('Red', isTrue(v));
     $('.Clock.Timeout').toggleClass('Red', isTrue(v));
   });

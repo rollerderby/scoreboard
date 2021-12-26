@@ -9,11 +9,13 @@
  */
 
 $(function() {
-  createTeamTimeTab(createTab('Team/Time', 'TeamTimeTab'));
-  createRulesetsTab(createTab('Rulesets', 'RulesetsTab'));
+  var gameId = _windowFunctions.getParam('game');
+  setupGameAdvance($('gameAdvance'), gameId, true);
+  createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
+  createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
+  createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId);
+  createIgrfTab(createTab('IGRF', 'IgrfTab'), gameId);
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
-  createTeamsTab(createTab('Teams', 'TeamsTab'));
-  createDataManagementTab(createTab('Up/Download', 'DataManagementTab'));
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function(k, v) {
     setOperatorSettings(_windowFunctions.getParam('operator'));
   });
@@ -71,18 +73,20 @@ function initialLogin() {
 }
 
 function login(name) {
+  var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text(name);
   if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?operator='+$('#operatorId').text());
+    window.history.replaceState(null, '', '?operator='+$('#operatorId').text()+'&game='+gameId);
   }
   _crgKeyControls.setupKeyControls(name);
   setOperatorSettings(name);
 }
 
 function logout() {
+  var gameId = _windowFunctions.getParam('game');
   $('#operatorId').text('');
   if (window.history.replaceState) {
-    window.history.replaceState(null, '', '?');
+    window.history.replaceState(null, '', '?game='+gameId);
   }
   _crgKeyControls.destroyKeyControls();
   setOperatorSettings('');

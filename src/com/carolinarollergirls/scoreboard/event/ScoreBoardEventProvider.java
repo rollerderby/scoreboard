@@ -2,7 +2,7 @@ package com.carolinarollergirls.scoreboard.event;
 
 import java.util.Collection;
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
@@ -33,6 +33,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      * The parent element.
      */
     public ScoreBoardEventProvider getParent();
+    public boolean isAncestorOf(ScoreBoardEventProvider other);
     /**
      * remove all references to this element
      */
@@ -41,6 +42,9 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      * remove all references to this element
      */
     public void delete(Source source);
+
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root);
+
     /**
      * This should return all the values, children, or commands that can be accessed
      * from the frontend

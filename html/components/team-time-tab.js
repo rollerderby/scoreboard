@@ -1,25 +1,39 @@
-function createTeamTimeTab(tab) {
+function setupGameAdvance(element, gameId, auto) {
+  element.addClass('Hide GameAdvance').text('Go To Current Game').click(function() {
+    window.location.href = window.location.href.replace(/game=[^&]*(&|$)|$/, 'game=' + WS.state['ScoreBoard.CurrentGame.Game']);
+  });
+  
+  WS.Register('ScoreBoard.CurrentGame.Game', function(k, v) {
+    var change = !(v === gameId || v == null);
+    element.toggleClass('Hide', !change);
+    if (auto && change) { 
+      window.location.href = window.location.href.replace(/game=[^&]*(&|$)|$/, 'game=' + v);
+    }
+  });
+}
+
+function createTeamTimeTab(tab, gameId) {
   var table = $('<table>').attr('id', 'TeamTime')
   .appendTo(tab);
 
   $('<tr><td/></tr>').appendTo(table).children('td')
-    .append(createMetaControlTable());
+    .append(createMetaControlTable(gameId));
   $('<tr><td/></tr>').appendTo(table).children('td')
-    .append(createJamControlTable());
+    .append(createJamControlTable(gameId));
   $('<tr><td/></tr>').appendTo(table).children('td')
-    .append(createTeamTable());
+    .append(createTeamTable(gameId));
   $('<tr><td/></tr>').appendTo(table).children('td')
-    .append(createTimeTable());
+    .append(createTimeTable(gameId));
   table.children('tr').children('td').children('table').addClass('TabTable');
 
   var sk1 = $('<div>').addClass('SKSheet').appendTo(tab);
   var sk2 = $('<div>').addClass('SKSheet').appendTo(tab);
   $('<div>').attr('id', 'TripEditor').appendTo(tab);
   $('<div>').attr('id', 'skaterSelector').appendTo(tab);
-  prepareSkSheetTable(sk1, 1, 'operator');
-  prepareSkSheetTable(sk2, 2, 'operator');
+  prepareSkSheetTable(sk1, gameId, 1, 'operator');
+  prepareSkSheetTable(sk2, gameId, 2, 'operator');
   prepareTripEditor();
-  prepareSkaterSelector();
+  prepareSkaterSelector(gameId);
 
   initialLogin();
 }
@@ -43,7 +57,7 @@ function setReplaceButton(value) {
   $('#ClockReplace').toggleClass('Hidden KeyInactive', !value);
 }
 
-function createMetaControlTable() {
+function createMetaControlTable(gameId) {
   var table = $('<table><tr><td/></tr><tr><td/></tr><tr><td/></tr></table>')
     .addClass('MetaControl');
   var buttonsTd = _crgUtils.createRowTable(1)
@@ -115,7 +129,7 @@ function createMetaControlTable() {
     .addClass('clickMe')
     .appendTo(buttonsTd)
     .button()
-    .on('click', createGameControlDialog);
+    .on('click', function() { createGameControlDialog(gameId); });
 
   var periodEndControlsLabel = $('<label>').attr('for', 'PeriodEndControlsCheckbox')
     .text('End of Period Controls')
@@ -136,26 +150,26 @@ function createMetaControlTable() {
     }
   };
   doPulse();
-  WS.Register(['ScoreBoard.Clock(Period).Time',
-      'ScoreBoard.Clock(Period).Number',
-      'ScoreBoard.Rulesets.CurrentRule(Period.Number)'], function(k, v) {
-        var under30 = (Number(WS.state['ScoreBoard.Clock(Period).Time']) < 30000);
-        var last = (WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)'] === WS.state['ScoreBoard.Clock(Period).Number']);
-        doPulseFlag = (under30 && last);
+  WS.Register(['ScoreBoard.Game(' + gameId + ').NoMoreJam',
+      'ScoreBoard.Game(' + gameId + ').Clock(Period).Number',
+      'ScoreBoard.Game(' + gameId + ').Rule(Period.Number)'], function(k, v) {
+        var noMoreJam = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Time']);
+        var last = (WS.state['ScoreBoard.Game(' + gameId + ').Rulesets.CurrentRule(Period.Number)'] === WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Number']);
+        doPulseFlag = (noMoreJam && last);
       });
 
-  var confirmedButton = toggleButton('ScoreBoard.OfficialScore', 'Official Score', 'Unofficial Score');
+  var confirmedButton = toggleButton('ScoreBoard.Game(' + gameId + ').OfficialScore', 'Official Score', 'Unofficial Score');
   confirmedButton.appendTo(periodEndTd);
-  var periodEndTimeoutDialog = createPeriodEndTimeoutDialog(periodEndTd);
+  var periodEndTimeoutDialog = createPeriodEndTimeoutDialog(periodEndTd, gameId);
   $('<button>').addClass('PeriodEndTimeout').text('Timeout before Period End')
     .appendTo(periodEndTd)
     .button()
     .on('click', function() { periodEndTimeoutDialog.dialog('open'); });
-  WS.Register('ScoreBoard.Rulesets.CurrentRule(Period.Number)');
+  WS.Register('ScoreBoard.Game(' + gameId + ').Rule(Period.Number)');
   $('<button>').text('Overtime')
     .appendTo(periodEndTd)
     .button()
-    .on('click', function() {createOvertimeDialog(WS.state['ScoreBoard.Rulesets.CurrentRule(Period.Number)']);});
+    .on('click', function() {createOvertimeDialog(WS.state['ScoreBoard.Game(' + gameId + ').Rule(Period.Number)'], gameId);});
 
   return table;
 }
@@ -172,26 +186,41 @@ function addDays(date, days) {
   return result;
 }
 
-function createGameControlDialog() {
+function createGameControlDialog(gameId) {
   var dialog = $('<div>').addClass('GameControl');
   var title = 'Start New Game';
 
-  var adhocGame = $('<div>').addClass('section').appendTo(dialog);
   var preparedGame = $('<div>').addClass('section').appendTo(dialog);
+  $("<span>").addClass("header").append("Start a prepared game").appendTo(preparedGame);
+  $('<div>')
+    .append($('<span>').append('Game: '))
+    .append($('<select>').addClass('Game').append('<option value="">No Game Selected</option>'))
+    .appendTo(preparedGame);
+  $('<button>')
+    .addClass('StartGame')
+    .append('Start Game')
+    .button({ disabled: true })
+    .appendTo(preparedGame)
+    .on('click', function() {
+      WS.Set('ScoreBoard.CurrentGame.Game', preparedGame.find('select.Game option:selected').val());
+    });
+
+  var adhocGame = $('<div>').addClass('section').appendTo(dialog);
+  var adhocState = $('<div>').addClass('section').appendTo(dialog);
 
   var adhocStartGame = function() {
     $('#GameControl').removeClass('clickMe');
     var StartTime = adhocGame.find('input.StartTime').val();
     var IntermissionClock = null;
-    var points1 = Number(preparedGame.find('input.Points.Team1').val());
-    var points2 = Number(preparedGame.find('input.Points.Team2').val());
-    var to1 = Number(preparedGame.find('input.TO.Team1').val());
-    var to2 = Number(preparedGame.find('input.TO.Team2').val());
-    var or1 = Number(preparedGame.find('input.OR.Team1').val());
-    var or2 = Number(preparedGame.find('input.OR.Team2').val());
-    var period = Number(preparedGame.find('input.Period').val());
-    var jam = Number(preparedGame.find('input.Jam').val());
-    var periodClock = _timeConversions.minSecToMs(preparedGame.find('input.PeriodClock').val());
+    var points1 = Number(adhocState.find('input.Points.Team1').val());
+    var points2 = Number(adhocState.find('input.Points.Team2').val());
+    var to1 = Number(adhocState.find('input.TO.Team1').val());
+    var to2 = Number(adhocState.find('input.TO.Team2').val());
+    var or1 = Number(adhocState.find('input.OR.Team1').val());
+    var or2 = Number(adhocState.find('input.OR.Team2').val());
+    var period = Number(adhocState.find('input.Period').val());
+    var jam = Number(adhocState.find('input.Jam').val());
+    var periodClock = _timeConversions.minSecToMs(adhocState.find('input.PeriodClock').val());
     var advance = (points1 + points2 + to1 + to2 + or1 + or2 + period + jam > 0);
     if (StartTime !== '') {
       var now = new Date();
@@ -223,6 +252,7 @@ function createGameControlDialog() {
     dialog.dialog('close');
   };
 
+  $("<span>").addClass("header").append("Start an adhoc game").appendTo(adhocGame);
   $('<div>')
     .append($('<span>').append('Team 1: '))
     .append($('<select>').addClass('Team1').append('<option value="">No Team Selected</option>'))
@@ -246,9 +276,9 @@ function createGameControlDialog() {
     .appendTo(adhocGame)
     .on('click', adhocStartGame);
 
-  $('<button>').addClass('setPrepState').text('Start Mid-Game').button().appendTo(preparedGame).on('click', function() {
-    preparedGame.children('.prepState').removeClass('Hide');
-    preparedGame.children('.setPrepState').addClass('Hide');
+  $('<button>').addClass('setPrepState').text('Start Mid-Game').button().appendTo(adhocState).on('click', function() {
+    adhocState.children('.prepState').removeClass('Hide');
+    adhocState.children('.setPrepState').addClass('Hide');
   });
   
   $('<table>').addClass('prepState perTeam Hide')
@@ -277,17 +307,38 @@ function createGameControlDialog() {
     .append($('<tr>')
       .append($('<td>').addClass('rowLabel').text('Period Clock:'))
       .append($('<td>').append($('<input>').attr('type', 'text').addClass('PeriodClock'))))
-    .appendTo(preparedGame);
+    .appendTo(adhocState);
 
-  WS.Register('ScoreBoard.PreparedTeam(*).Id', function(k, v) {
+  WS.Register(['ScoreBoard.Game(*).Name', 'ScoreBoard.Game(*).State'], function(k, v) {
+    var name = WS.state['ScoreBoard.Game('+k.Game+').Name'] ||  '';
+    var state = WS.state['ScoreBoard.Game('+k.Game+').State'] || '';
+    var include = ((state === 'Prepared' || state === 'Running') && name !== '');
+    var options = preparedGame.find('option[value="'+k.Game+'"]');
+    if (include && options.length === 0) {
+      var option = $('<option>').attr('value', k.Game).data('name', name).text(name);
+      _windowFunctions.appendAlphaSortedByData(preparedGame.find('select.Game'), option, 'name', 1);
+    } else if (include) {
+      options.text(name);
+    } else {
+      options.remove();
+    }
+  });
+  preparedGame.find('select.Game').change(function(e) {
+    preparedGame.find('button.StartGame').button('option', 'disabled', $(this).find('option:selected').val() === '');
+  });
+
+  WS.Register('ScoreBoard.PreparedTeam(*).Name', function(k, v) {
     if (v == null) {
       adhocGame.find('option[value="'+k.PreparedTeam+'"]').remove();
       return;
     }
-    if (adhocGame.find('option[value="'+k.PreparedTeam+'"]').length === 0) {
-      var option = $('<option>').attr('value', v).text(v);
+    var options = adhocGame.find('option[value="'+k.PreparedTeam+'"]');
+    if (options.length === 0) {
+      var option = $('<option>').attr('value', k.PreparedTeam).text(v);
       _windowFunctions.appendAlphaSortedByAttr(adhocGame.find('select.Team1'), option, 'value', 1);
       _windowFunctions.appendAlphaSortedByAttr(adhocGame.find('select.Team2'), option.clone(), 'value', 1);
+    } else {
+      options.text(v);
     }
   });
   adhocGame.find('select.Team1, select.Team2').on('change', function(e) {
@@ -300,8 +351,7 @@ function createGameControlDialog() {
     }
   });
 
-
-  WS.Register('ScoreBoard.Rulesets.CurrentRulesetId', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Ruleset', function(k, v) {
     adhocGame.find('select.Ruleset').val(v);
   });
   WS.Register('ScoreBoard.Rulesets.Ruleset(*).Name', function(k, v) {
@@ -312,7 +362,7 @@ function createGameControlDialog() {
     }
     var option = $('<option>').attr('value', k.Ruleset).attr('name', v).text(v);
     _windowFunctions.appendAlphaSortedByAttr(select, option, 'name');
-    select.val(WS.state['ScoreBoard.Rulesets.CurrentRulesetId']);
+    select.val(WS.state['ScoreBoard.Game(' + gameId + ').Ruleset']);
   });
 
   dialog.dialog({
@@ -325,7 +375,7 @@ function createGameControlDialog() {
   return dialog;
 }
 
-function createPeriodEndTimeoutDialog(td) {
+function createPeriodEndTimeoutDialog(td, gameId) {
   var dialog = $('<div>');
   var applyDiv = $('<div>').addClass('Apply').appendTo(dialog);
   $('<span>').text('Timeout with ').appendTo(applyDiv);
@@ -338,21 +388,21 @@ function createPeriodEndTimeoutDialog(td) {
   $('<span>').text(' seconds...').appendTo(waitDiv);
   $('<button>').addClass('Cancel').text('Cancel').appendTo(waitDiv).button();
     var applying = false;
-  WS.Register('ScoreBoard.Clock(Period).Time', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Clock(Period).Time', function(k, v) {
     checkTimeFunction(v);
   });
-  WS.Register('ScoreBoard.Clock(Period).Running');
+  WS.Register('ScoreBoard.Game(' + gameId + ').Clock(Period).Running');
   var checkTimeFunction = function(v) {
     if (!applying) { return; }
-    var currentSecs = Number(_timeConversions.msToSeconds(v, isTrue(WS.state['ScoreBoard.Clock(Period).Direction'])));
+    var currentSecs = Number(_timeConversions.msToSeconds(v, isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Direction'])));
     var targetSecs = Number(waitDiv.find('span.TargetSeconds').text());
     if (currentSecs > targetSecs) {
       return;
     }
     if (currentSecs < targetSecs) {
-      WS.Set('ScoreBoard.Clock(Period).Time', _timeConversions.secondsToMs(targetSecs));
+      WS.Set('ScoreBoard.Game(' + gameId + ').Clock(Period).Time', _timeConversions.secondsToMs(targetSecs));
     }
-    WS.Set('ScoreBoard.Timeout', true);
+    WS.Set('ScoreBoard.Game(' + gameId + ').Timeout', true);
     applying = false;
     td.find('button.PeriodEndTimeout').button('option', 'label', 'Timeout before Period End');
     applyDiv.show();
@@ -369,7 +419,7 @@ function createPeriodEndTimeoutDialog(td) {
     applyDiv.hide();
     waitDiv.show();
     applying = true;
-    checkTimeFunction(WS.state['ScoreBoard.Clock(Period).Time']);
+    checkTimeFunction(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Time']);
   });
   waitDiv.find('button.Cancel').on('click', function() {
     td.find('button.PeriodEndTimeout').button('option', 'label', 'Timeout before Period End');
@@ -387,13 +437,13 @@ function createPeriodEndTimeoutDialog(td) {
   return dialog;
 }
 
-function createOvertimeDialog(numPeriods) {
+function createOvertimeDialog(numPeriods, gameId) {
   var dialog = $('<div>');
   $('<span>').text('Note: Overtime can only be started at the end of Period ').appendTo(dialog);
   $('<span>').text(numPeriods).appendTo(dialog);
   $('<button>').addClass('StartOvertime').text('Start Overtime Lineup clock').appendTo(dialog)
     .on('click', function() {
-      WS.Set('ScoreBoard.StartOvertime', true);
+      WS.Set('ScoreBoard.Game(' + gameId + ').StartOvertime', true);
       dialog.dialog('close');
     });
   dialog.dialog({
@@ -405,23 +455,23 @@ function createOvertimeDialog(numPeriods) {
   });
 }
 
-function createJamControlTable() {
+function createJamControlTable(gameId) {
   var table = $('<table><tr><td/></tr></table>').addClass('JamControl');
   var td = table.find('td');
   var replaceInfoTr = _crgUtils.createRowTable(1).addClass('ReplaceInfo Hidden').appendTo(td);
   var controlsTr = _crgUtils.createRowTable(4,1).appendTo(td).find('tr:eq(0)').addClass('Controls');
 
   $('<span>').html('Replace &quot;<span id="replacedLabel"></span>&quot; with').appendTo(replaceInfoTr);
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Button.ReplacedLabel)', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Label(Replaced)', function(k, v) {
     $('#replacedLabel').text(v);
   });
 
   var jamStartButton = $('<button>')
     .html('<span><span class="Label">Start Jam</span></span>')
     .attr('id', 'StartJam').addClass('KeyControl').button().on('click', function() {
-      WS.Set('ScoreBoard.StartJam', true);
+      WS.Set('ScoreBoard.Game(' + gameId + ').StartJam', true);
     });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Button.StartLabel)', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Label(Start)', function(k, v) {
     jamStartButton.find('span.Label').text(v);
   });
   jamStartButton.appendTo(controlsTr.children('td:eq(0)'));
@@ -429,9 +479,9 @@ function createJamControlTable() {
   var jamStopButton = $('<button>')
     .html('<span><span class="Label">Stop Jam</span></span>')
     .attr('id', 'StopJam').addClass('KeyControl').button().on('click', function() {
-      WS.Set('ScoreBoard.StopJam', true);
+      WS.Set('ScoreBoard.Game(' + gameId + ').StopJam', true);
     });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Button.StopLabel)', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Label(Stop)', function(k, v) {
     jamStopButton.find('span.Label').text(v);
   });
   jamStopButton.appendTo(controlsTr.children('td:eq(1)'));
@@ -440,9 +490,9 @@ function createJamControlTable() {
   var timeoutButton = $('<button>')
     .html('<span><span class="Label">Timeout</span></span>')
     .attr('id', 'Timeout').addClass('KeyControl').button().on('click', function() {
-      WS.Set('ScoreBoard.Timeout', true);
+      WS.Set('ScoreBoard.Game(' + gameId + ').Timeout', true);
     });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Button.TimeoutLabel)', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Label(Timeout)', function(k, v) {
     timeoutButton.find('span.Label').text(v);
   });
   timeoutButton.appendTo(controlsTr.children('td:eq(2)'));
@@ -450,17 +500,17 @@ function createJamControlTable() {
   var undoButton = $('<button>')
     .html('<span><span class="Label">Undo</span></span>')
     .attr('id', 'ClockUndo').addClass('KeyControl').button().on('click', function() {
-      WS.Set('ScoreBoard.ClockUndo', true);
+      WS.Set('ScoreBoard.Game(' + gameId + ').ClockUndo', true);
     });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Label(Undo)', function(k, v) {
     undoButton.find('span.Label').text(v);
   });
   var replaceButton = $('<button>')
     .html('<span><span class="Label">Replace</span></span>')
     .attr('id', 'ClockReplace').addClass('KeyControl Hidden KeyInactive').button().on('click', function() {
-      WS.Set('ScoreBoard.ClockReplace', true);
+      WS.Set('ScoreBoard.Game(' + gameId + ').ClockReplace', true);
     });
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Button.UndoLabel)', function(k, v) {
+  WS.Register('ScoreBoard.Game(' + gameId + ').Label(Undo)', function(k, v) {
     replaceButton.find('span.Label').text(v);
     if (!replaceButton.hasClass('Hidden')) {
       var rep = (v === 'No Action');
@@ -478,7 +528,7 @@ function createJamControlTable() {
 }
 
 var timeoutDialog;
-function createTeamTable() {
+function createTeamTable(gameId) {
   var table = $('<table>').append('<tbody>').addClass('Team');
   var row = $('<tr></tr>');
   var nameRow = row.clone().addClass('Name').appendTo(table);
@@ -491,7 +541,7 @@ function createTeamTable() {
 
   $.each( [ '1', '2' ], function() {
     var team = String(this);
-    var prefix = 'ScoreBoard.Team('+team+')';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Team('+team+')';
     var first = (team === '1');
 
     var nameTr = _crgUtils.createRowTable(2).appendTo($('<td>').appendTo(nameRow)).find('tr');
@@ -504,31 +554,27 @@ function createTeamTable() {
 
     var nameTd = nameTr.children('td:eq('+(first?1:0)+')').addClass('Name');
     var nameDisplayDiv = $('<div>').appendTo(nameTd);
-    var nameA = $('<a>').appendTo(nameDisplayDiv);
-    var altNameA = $('<a>').appendTo(nameDisplayDiv);
+    var nameA = $('<a>').appendTo(nameDisplayDiv).text('');
+    var colorA = $('<a>').appendTo(nameDisplayDiv).text('');
+    var altNameA = $('<a>').appendTo(nameDisplayDiv).text('');
 
-    var nameEditTable = $('<table><tr><td>Team Name</td><td>Alternate Name</td></tr>' +
-        '<tr><td><input class="Name" type="text" size="15" /></td>' +
-        '<td><input class="AlternateName" type="text" size="15" /></td></tr></table>').appendTo(nameTd);
-    var nameInput = $(nameEditTable).find('.Name');
+    var nameEditTable = $('<table><tr><td>Alternate Name</td></tr>' +
+        '<tr><td><input class="AlternateName" type="text" size="15" /></td></tr></table>').appendTo(nameTd);
     var altNameInput = $(nameEditTable).find('.AlternateName');
 
     nameEditTable.hide();
     WS.Register(prefix + '.Name', function(k, v) { nameA.text(v); });
-    WSControl(prefix + '.Name', nameInput);
     var nameInputFocus = function() {
       if (nameDisplayDiv.css('display') !== 'none') {
         nameDisplayDiv.hide();
         nameEditTable.show();
-        nameInput.addClass('Editing').trigger('editstart');
         altNameInput.addClass('Editing').trigger('editstart');
       }
     };
     var nameInputBlur = function(event) {
-      if (event.relatedTarget !== nameInput[0] && event.relatedTarget !== altNameInput[0]) {
+      if (event.relatedTarget !== altNameInput[0]) {
         nameEditTable.hide();
         nameDisplayDiv.show();
-        nameInput.removeClass('Editing').trigger('editstop');
         altNameInput.removeClass('Editing').trigger('editstop');
       }
     };
@@ -540,12 +586,9 @@ function createTeamTable() {
       }
     };
 
-    nameDisplayDiv.on('click', function() { nameInput.focus(); });
-    nameInput.on('focus', nameInputFocus);
+    nameDisplayDiv.on('click', function() { altNameInput.focus(); });
     altNameInput.on('focus', nameInputFocus);
-    nameInput.on('blur', nameInputBlur);
     altNameInput.on('blur', nameInputBlur);
-    nameInput.on('keyup', nameInputKeyup);
     altNameInput.on('keyup', nameInputKeyup);
 
     altNameInput.on('change', function() {
@@ -557,10 +600,15 @@ function createTeamTable() {
       }
     });
 
+    WS.Register(prefix + '.UniformColor', function(k, v) {
+      colorA.text(v || '');
+      nameA.toggleClass('AlternateName', colorA.text() !== '' || altNameA.text() !== '');
+    });
     WS.Register(prefix + '.AlternateName(operator)', function(k, v) {
       altNameA.text(v || '');
       altNameInput.val(v || '');
-      nameA.toggleClass('AlternateName', v != null);
+      nameA.toggleClass('AlternateName', v != null || colorA.text() !== '');
+      colorA.toggleClass('AlternateName', v != null);
     });
 
     var names = nameA.add(altNameA);
@@ -686,9 +734,9 @@ function createTeamTable() {
       .appendTo(timeoutTr.children('td:eq('+(first?'3':'2')+')').addClass('OfficialReviews'));
     WS.Register(prefix + '.OfficialReviews', function(k, v) { officialReviews.text(v);});
 
-    WS.Register(['ScoreBoard.TimeoutOwner', 'ScoreBoard.OfficialReview'], function(k, v) {
-      var to = WS.state['ScoreBoard.TimeoutOwner'] === team;
-      var or = isTrue(WS.state['ScoreBoard.OfficialReview']);
+    WS.Register(['ScoreBoard.Game(' + gameId + ').TimeoutOwner', 'ScoreBoard.Game(' + gameId + ').OfficialReview'], function(k, v) {
+      var to = WS.state['ScoreBoard.Game(' + gameId + ').TimeoutOwner'] === team;
+      var or = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').OfficialReview']);
       timeoutButton.toggleClass('Active', to && !or);
       reviewButton.toggleClass('Active', to && or);
     });
@@ -700,8 +748,8 @@ function createTeamTable() {
     if (first) {
       var otoButton = $('<button>').append($('<span>').text('Official TO'))
         .attr('id', 'OfficialTimeout').addClass('KeyControl').button()
-        .on('click', function() { WS.Set('ScoreBoard.OfficialTimeout', true);} );
-      WS.Register('ScoreBoard.TimeoutOwner', function(k, v) {
+        .on('click', function() { WS.Set('ScoreBoard.Game(' + gameId + ').OfficialTimeout', true);} );
+      WS.Register('ScoreBoard.Game(' + gameId + ').TimeoutOwner', function(k, v) {
         otoButton.toggleClass('Active', v === 'O');
       });
       otoButton.appendTo(timeoutTr.children('td:eq(5)').addClass('OfficialTimeout'));
@@ -783,7 +831,7 @@ function createTeamTable() {
   return table;
 }
 
-function createTimeTable() {
+function createTimeTable(gameId) {
   var table = $('<table>').append('<tbody>').addClass('Time');
   var row = $('<tr></tr>');
   var nameRow = row.clone().addClass('Name').appendTo(table);
@@ -793,7 +841,7 @@ function createTimeTable() {
 
   $.each( [ 'Period', 'Jam', 'Lineup', 'Timeout', 'Intermission' ], function() {
     var clock = String(this);
-    var prefix = 'ScoreBoard.Clock('+clock+')';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Clock('+clock+')';
 
     var nameTd = $('<td>').appendTo(nameRow);
     var numberTr = _crgUtils.createRowTable(3).appendTo($('<td>').appendTo(numberRow)).find('tr');
@@ -815,7 +863,7 @@ function createTimeTable() {
       });
     }
     if (clock === 'Jam') {
-      WS.Register('ScoreBoard.InJam', function(k, v) {
+      WS.Register('ScoreBoard.Game(' + gameId + ').InJam', function(k, v) {
         nameTd.toggleClass('Running', isTrue(v));
       });
     } else {
@@ -823,7 +871,7 @@ function createTimeTable() {
         nameTd.toggleClass('Running', isTrue(v));
       });
     }
-    WS.Register('ScoreBoard.NoMoreJam', function(k, v) {
+    WS.Register('ScoreBoard.Game(' + gameId + ').NoMoreJam', function(k, v) {
       nameTd.toggleClass('NoMoreJam', isTrue(v));
     });
 
@@ -833,13 +881,13 @@ function createTimeTable() {
       number.text(v);
     });
     if (clock === 'Period') {
-      var periodDialog = createPeriodDialog();
+      var periodDialog = createPeriodDialog(gameId);
       numberTr.children('td:eq(1)').on('click', function() { periodDialog.dialog('open'); });
     } else if (clock === 'Jam') {
-      var jamDialog = createJamDialog();
+      var jamDialog = createJamDialog(gameId);
       numberTr.children('td:eq(1)').on('click', function() { jamDialog.dialog('open'); });      
     } else if (clock === 'Timeout') {
-      timeoutDialog = createTimeoutDialog();
+      timeoutDialog = createTimeoutDialog(gameId);
       numberTr.children('td:eq(1)').on('click', function() { timeoutDialog.dialog('open'); });
     }
 
@@ -860,7 +908,7 @@ function createTimeTable() {
     WS.Register(prefix +'.Time', function(k, v) {
       time.text(_timeConversions.msToMinSec(v, isTrue(WS.state[prefix+'.Direction'])));
     });
-    var timeDialog = createTimeDialog(clock);
+    var timeDialog = createTimeDialog(gameId, clock);
     timeTr.children('td:eq(1)').on('click', function() { timeDialog.dialog('open'); });
     $('<button>').append($('<span>').text('+1'))
       .attr('id', 'Clock'+clock+'TimeUp').addClass('KeyControl').button()
@@ -871,7 +919,7 @@ function createTimeTable() {
   return table;
 }
 
-function createPeriodDialog() {
+function createPeriodDialog(gameId) {
   var dialog = $('<div>').addClass('NumberDialog');
   var table = $('<table>').appendTo(dialog);
   var headers = $('<tr><td/><td/><td/><td/><td/></tr>').appendTo(table);
@@ -883,13 +931,13 @@ function createPeriodDialog() {
     .appendTo(headers.children('td:eq(2)').addClass('Title'));
 
   WS.Register([
-      'ScoreBoard.Period(*).CurrentJamNumber',
-      'ScoreBoard.Period(*).Duration',
-      'ScoreBoard.Period(*).Number',
-      'ScoreBoard.Period(*).Running'], function (k, v) {
+      'ScoreBoard.Game(' + gameId + ').Period(*).CurrentJamNumber',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Duration',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Number',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Running'], function (k, v) {
         var nr = k.Period;
         if (nr == null || nr === 0) { return; }
-        var prefix = 'ScoreBoard.Period(' + nr + ')';
+        var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + nr + ')';
         var key = k.field;
         if (k.parts.length > 3) { return; }
         if (!(['CurrentJamNumber', 'Duration', 'Number', 'Running'].includes(key))) { return; }
@@ -941,7 +989,7 @@ function createPeriodDialog() {
   });
 }
 
-function createJamDialog() {
+function createJamDialog(gameId) {
   var currentPeriod;
   var nextJam;
   var dialog = $('<div>').addClass('NumberDialog');
@@ -959,18 +1007,18 @@ function createJamDialog() {
     .addClass('Jam').attr('nr', 999).appendTo(tableTemplate);
   $('<span>').text('Upcoming').appendTo(footer.children('td:eq(0)'));
   $('<button>').text('Insert Before').button().on('click', function () {
-    WS.Set('ScoreBoard.Jam(' + nextJam + ').InsertBefore', true);
+    WS.Set('ScoreBoard.Game(' + gameId + ').Jam(' + nextJam + ').InsertBefore', true);
   }).appendTo(footer.children('td:eq(2)'));
 
   WS.Register([
-      'ScoreBoard.Period(*).Jam(*).Duration',
-      'ScoreBoard.Period(*).Jam(*).Number',
-      'ScoreBoard.Period(*).Jam(*).PeriodClockDisplayEnd',
-      'ScoreBoard.Period(*).Jam(*).TeamJam(*).JamScore'], function (k, v) {
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Duration',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).PeriodClockDisplayEnd',
+      'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(*).JamScore'], function (k, v) {
         var per = k.Period;
         if (per === 0) { return; }
         var nr = k.Jam;
-        var prefix = 'ScoreBoard.Period(' + per + ').Jam(' + nr + ')';
+        var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + per + ').Jam(' + nr + ')';
         var key = k.field;
 
         var table = dialog.find('table.Period[nr='+per+']');
@@ -1027,19 +1075,19 @@ function createJamDialog() {
             if (WS.state[prefix + '.WalltimeEnd'] === 0 && WS.state[prefix + '.WalltimeStart'] > 0) {
               row.children('td.PC').text('running');
             } else {
-              row.children('td.PC').text(_timeConversions.msToMinSec(v, isTrue(WS.state['ScoreBoard.Clock(Period).Direction'])));
+              row.children('td.PC').text(_timeConversions.msToMinSec(v, isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Direction'])));
             }
           }
         }
       });
 
-  WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
+  WS.Register(['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'], function(k, v) {
     currentPeriod = v;
     dialog.find('table.Period.Show').removeClass('Show');
     dialog.find('table.Period[nr='+v+']').addClass('Show');
   });
   
-  WS.Register(['ScoreBoard.Jam(*).Number'], function(k, v) {
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Jam(*).Number'], function(k, v) {
     if (v != null) {
       nextJam = v;
     }
@@ -1054,7 +1102,7 @@ function createJamDialog() {
   });
 }
 
-function createTimeoutDialog() {
+function createTimeoutDialog(gameId) {
   var firstJamListed = [0];
   var lastJamListed = [0];
   var periodDropdownTemplate = $('<select>').attr('id', 'PeriodDropdown')
@@ -1088,18 +1136,18 @@ function createTimeoutDialog() {
   var footer = $('<tr><td/><td colspan="3"/><td/><td/><td/></tr>').attr('id', 'toFooter').appendTo(table);
   periodDropdownTemplate.clone().appendTo(footer.find('td:eq(0)'));
   $('<button>').text('Add Timeout').button().on('click', function() {
-    WS.Set('ScoreBoard.Period('+footer.find('#PeriodDropdown').val()+').InsertTimeout', true);
+    WS.Set('ScoreBoard.Game(' + gameId + ').Period('+footer.find('#PeriodDropdown').val()+').InsertTimeout', true);
   }).appendTo(footer.find('td:eq(1)'));
 
-  WS.Register(['ScoreBoard.Clock(Period).Time']);
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Clock(Period).Time']);
 
-  WS.Register(['ScoreBoard.CurrentPeriodNumber'], function(k, v) {
+  WS.Register(['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber'], function(k, v) {
     footer.find('#PeriodDropdown').val(v);
   });
-  WS.Register(['ScoreBoard.Period(*).CurrentJamNumber', 'ScoreBoard.Period(*).FirstJamNumber'], processJamNumber);
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Period(*).CurrentJamNumber', 'ScoreBoard.Game(' + gameId + ').Period(*).FirstJamNumber'], processJamNumber);
 
-  WS.Register(['ScoreBoard.Period(*).CurrentJam', 'ScoreBoard.Period(*).Jam(*).Id']);
-  WS.Register(['ScoreBoard.Period(*).Timeout'], processTimeout);
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Period(*).CurrentJam', 'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Id']);
+  WS.Register(['ScoreBoard.Game(' + gameId + ').Period(*).Timeout'], processTimeout);
 
   function addJam(p, j, append) {
     var option = $('<option>').attr('value', j).text('J'+j);
@@ -1132,7 +1180,7 @@ function createTimeoutDialog() {
     table.find('#PeriodDropdown').each(function(idx, e) {
       _windowFunctions.appendAlphaNumSortedByAttr($(e), option.clone(), 'value', 0);
     });
-    footer.find('#PeriodDropdown').val(WS.state['ScoreBoard.CurrentPeriodNumber']);
+    footer.find('#PeriodDropdown').val(WS.state['ScoreBoard.Game(' + gameId + ').CurrentPeriodNumber']);
   }
 
   function processJamNumber(k, v) {
@@ -1148,8 +1196,8 @@ function createTimeoutDialog() {
     }
     if (jamDropdownTemplate[p] == null) { createJamDropdownTemplate(p); }
 
-    var newFirst = WS.state['ScoreBoard.Period('+p+').FirstJamNumber'];
-    var newLast = WS.state['ScoreBoard.Period('+p+').CurrentJamNumber'];
+    var newFirst = WS.state['ScoreBoard.Game(' + gameId + ').Period('+p+').FirstJamNumber'];
+    var newLast = WS.state['ScoreBoard.Game(' + gameId + ').Period('+p+').CurrentJamNumber'];
     var oldFirst = firstJamListed[p];
     var oldLast = lastJamListed[p];
     var j;
@@ -1178,7 +1226,7 @@ function createTimeoutDialog() {
     var id = k.Timeout;
     if (id === 'noTimeout') { return; }
     var p = Number(k.Period);
-    var prefix = 'ScoreBoard.Period('+k.Period+').Timeout('+id+')';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Period('+k.Period+').Timeout('+id+')';
     var row = table.find('tr.Timeout[toId='+id+']');
     if (k.field === 'Id' && v == null && row.length > 0) {
       row.remove();
@@ -1192,7 +1240,7 @@ function createTimeoutDialog() {
       var jam = Number(WS.state[prefix+'.PrecedingJamNumber']);
       var dur = isTrue(WS.state[prefix+'.Running']) ? 'Running' : _timeConversions.msToMinSec(WS.state[prefix+'.Duration'], true);
       var pc = _timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
-            WS.state['ScoreBoard.Clock(Period).Time'] :
+            WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Time'] :
             WS.state[prefix+'.PeriodClockEnd'],
           isTrue(WS.state[prefix+'.Direction']));
       var type = WS.state[prefix+'.Owner'] + '.' + WS.state[prefix+'.Review'];
@@ -1201,10 +1249,10 @@ function createTimeoutDialog() {
       if (jamDropdownTemplate[p] == null) { createJamDropdownTemplate(p); }
       row = $('<tr>').addClass('Timeout').attr('toId', id).attr('period', k.Period).attr('jam', jam)
         .append($('<td>').addClass('Period').append(periodDropdownTemplate.clone().val(p).on('change', function() {
-          WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+$(this).val()+').CurrentJam']);
+          WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Game(' + gameId + ').Period('+$(this).val()+').CurrentJam']);
         })))
       .append($('<td>').addClass('Jam').append(jamDropdownTemplate[p].clone().val(jam).on('change', function() {
-        WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Period('+p+').Jam('+$(this).val()+').Id']);
+        WS.Set(prefix+'.PrecedingJam', WS.state['ScoreBoard.Game(' + gameId + ').Period('+p+').Jam('+$(this).val()+').Id']);
       })))
       .append($('<td>').addClass('Duration').text(dur))
         .append($('<td>').addClass('PerClock').text(pc))
@@ -1240,7 +1288,7 @@ function createTimeoutDialog() {
       case 'Running':
       case 'PeriodClockEnd':
         row.find('.PerClock').text(_timeConversions.msToMinSec(isTrue(WS.state[prefix+'.Running']) ?
-                WS.state['ScoreBoard.Clock(Period).Time'] :
+                WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Time'] :
                 WS.state[prefix+'.PeriodClockEnd'],
               isTrue(WS.state[prefix+'.Direction'])));
         break;
@@ -1271,8 +1319,8 @@ function createTimeoutDialog() {
   });
 }
 
-function createTimeDialog(clock) {
-  var prefix = 'ScoreBoard.Clock('+clock+')';
+function createTimeDialog(gameId, clock) {
+  var prefix = 'ScoreBoard.Game(' + gameId + ').Clock('+clock+')';
   var dialog = $('<div>');
   var table = $('<table>').appendTo(dialog).addClass('TimeDialog');
   var row = $('<tr><td/></tr>');

@@ -1,17 +1,19 @@
 (function () {
-  prepareRosterSheetTable($('#roster1'), 1, 'copyToStatsbook');
-  prepareRosterSheetTable($('#roster2'), 2, 'copyToStatsbook');
+  var gameId = _windowFunctions.getParam('game');
 
-  prepareSkSheetTable($('#sk1'), 1, 'copyToStatsbook');
-  prepareSkSheetTable($('#sk2'), 2, 'copyToStatsbook');
+  prepareRosterSheetTable($('#roster1'), gameId, 1, 'copyToStatsbook');
+  prepareRosterSheetTable($('#roster2'), gameId, 2, 'copyToStatsbook');
 
-  preparePltInputTable($('#plt11'), 1, 'copyToStatsbook', 1);
-  preparePltInputTable($('#plt12'), 2, 'copyToStatsbook', 1);
-  preparePltInputTable($('#plt21'), 1, 'copyToStatsbook', 2);
-  preparePltInputTable($('#plt22'), 2, 'copyToStatsbook', 2);
+  prepareSkSheetTable($('#sk1'), gameId, 1, 'copyToStatsbook');
+  prepareSkSheetTable($('#sk2'), gameId, 2, 'copyToStatsbook');
+
+  preparePltInputTable($('#plt11'), gameId, 1, 'copyToStatsbook', 1);
+  preparePltInputTable($('#plt12'), gameId, 2, 'copyToStatsbook', 1);
+  preparePltInputTable($('#plt21'), gameId, 1, 'copyToStatsbook', 2);
+  preparePltInputTable($('#plt22'), gameId, 2, 'copyToStatsbook', 2);
   
-  prepareLtSheetTable($('#lt1'), 1, 'copyToStatsbook');
-  prepareLtSheetTable($('#lt2'), 2, 'copyToStatsbook');
+  prepareLtSheetTable($('#lt1'), gameId, 1, 'copyToStatsbook');
+  prepareLtSheetTable($('#lt2'), gameId, 2, 'copyToStatsbook');
 
   WS.AutoRegister();
   WS.Connect();

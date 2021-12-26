@@ -20,13 +20,12 @@ import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.impl.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
-import com.carolinarollergirls.scoreboard.json.JSONStateSnapshotter;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONListener;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 import com.carolinarollergirls.scoreboard.utils.Logger;
@@ -58,7 +57,7 @@ public class Main extends Logger {
         scoreBoard = new ScoreBoardImpl();
 
         // JSON updates.
-        final JSONStateManager jsm = new JSONStateManager();
+        final JSONStateManager jsm = scoreBoard.getJsm();
         new ScoreBoardJSONListener(scoreBoard, jsm);
 
         // Controllers.
@@ -66,7 +65,6 @@ public class Main extends Logger {
 
         // Viewers.
         new ScoreBoardMetricsCollector(scoreBoard).register();
-        new JSONStateSnapshotter(jsm, BasePath.get());
 
         final File autoSaveDir = new File(BasePath.get(), "config/autosave");
         scoreBoard.runInBatch(new Runnable() {

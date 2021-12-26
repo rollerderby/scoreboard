@@ -1,7 +1,9 @@
 <!DOCTYPE html>
-<html><head><title>CRG ScoreBoard Operator Controls</title>
+<html>
+  <head>
+    <title>CRG ScoreBoard Operator Controls</title>
 
-<!--
+    <!--
  Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
 
  This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
@@ -10,37 +12,35 @@
  See the file COPYING for details.
 -->
 
-<script type="text/javascript" src="/external/jquery/jquery.js"></script>
-<script type="text/javascript" src="/javascript/keycontrols.js"></script>
-<script type="text/javascript" src="/javascript/utils.js"></script>
-<script type="text/javascript" src="/json/core.js"></script>
-<script type="text/javascript" src="/json/WSutils.js"></script>
+    <script type="text/javascript" src="/external/jquery/jquery.js"></script>
+    <script type="text/javascript" src="/javascript/keycontrols.js"></script>
+    <script type="text/javascript" src="/javascript/utils.js"></script>
+    <script type="text/javascript" src="/javascript/windowfunctions.js"></script>
+    <script type="text/javascript" src="/javascript/timeconversions.js"></script>
+    <script type="text/javascript" src="/json/core.js"></script>
+    <script type="text/javascript" src="/json/WSutils.js"></script>
 
-<script type="text/javascript" src="/components/sk-sheet.js"></script>
-<script type="text/javascript" src="/components/team-time-tab.js"></script>
-<script type="text/javascript" src="/components/rulesets-tab.js"></script>
-<script type="text/javascript" src="/components/settings-tab.js"></script>
-<script type="text/javascript" src="/components/teams-tab.js"></script>
-<script type="text/javascript" src="/components/data-management-tab.js"></script>
+    <script type="text/javascript" src="/components/sk-sheet.js"></script>
+    <script type="text/javascript" src="/components/team-time-tab.js"></script>
+    <script type="text/javascript" src="/components/rulesets-tab.js"></script>
+    <script type="text/javascript" src="/components/settings-tab.js"></script>
+    <script type="text/javascript" src="/components/teams-tab.js"></script>
+    <script type="text/javascript" src="/components/igrf-tab.js"></script>
 
-<link rel="stylesheet" href="/components/sk-sheet.css" type="text/css" />
-<link rel="stylesheet" href="/components/team-time-tab.css" type="text/css" />
-<link rel="stylesheet" href="/components/rulesets-tab.css" type="text/css" />
-<link rel="stylesheet" href="/components/settings-tab.css" type="text/css" />
-<link rel="stylesheet" href="/components/teams-tab.css" type="text/css" />
-<link rel="stylesheet" href="/components/data-management-tab.css" type="text/css" />
+    <link rel="stylesheet" href="/components/sk-sheet.css" type="text/css" />
+    <link rel="stylesheet" href="/components/team-time-tab.css" type="text/css" />
+    <link rel="stylesheet" href="/components/rulesets-tab.css" type="text/css" />
+    <link rel="stylesheet" href="/components/settings-tab.css" type="text/css" />
+    <link rel="stylesheet" href="/components/teams-tab.css" type="text/css" />
+    <link rel="stylesheet" href="/components/igrf-tab.css" type="text/css" />
+  </head>
 
-
-</head>
-
-<body>
-
-<div id="tabsDiv">
-	<div id="operatorIdDiv">Operator: <a id="operatorId"></a></div>
-	<a id="indexLink" href="/">Back to index page</a>
-	<ul id="tabBar"></ul>
-</div>
-
-</body>
-
+  <body>
+    <div id="tabsDiv">
+      <div id="operatorIdDiv">Operator: <a id="operatorId"></a></div>
+      <a id="indexLink" href="/">Back to index page</a>
+      <div id="gameAdvance"></div>
+      <ul id="tabBar"></ul>
+    </div>
+  </body>
 </html>

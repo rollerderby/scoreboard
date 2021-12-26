@@ -14,6 +14,10 @@ public abstract class NumberedScoreBoardEventProviderImpl<C extends NumberedScor
         addWriteProtectionOverride(NUMBER, Source.RENUMBER);
         setNeighbors(getNumber());
     }
+    protected NumberedScoreBoardEventProviderImpl(NumberedScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+        ownType = cloned.ownType;
+    }
 
     @Override
     public String getProviderId() { return String.valueOf(getNumber()); }

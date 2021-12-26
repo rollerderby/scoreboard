@@ -10,4 +10,8 @@ public class TestParentOrderedScoreBoardEventProviderImpl
                         : TestNumberedScoreBoardEventProvider.CO_ORDERED);
         addProperties(CO_ORDERED);
     }
+    public TestParentOrderedScoreBoardEventProviderImpl(TestParentOrderedScoreBoardEventProviderImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
+
+    @Override
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new TestParentOrderedScoreBoardEventProviderImpl(this, root); }
 }

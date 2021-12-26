@@ -1,4 +1,4 @@
-function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
+function prepareRosterSheetTable(element, gameId, teamId, mode, statsbookPeriod) {
 
   /* Values supported for mode:
    * copyToStatsbook: Only roster cells for IGRF.
@@ -15,40 +15,33 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
     var table = $('<table cellpadding="0" cellspacing="0" border="1">').addClass('Roster Team').addClass('AlternateName_' + alternateName).appendTo(element);
     var thead = $('<thead>').appendTo(table);
     $('<tr>').appendTo(thead)
-      .append($('<td colspan=2 id=head>').text('Team ' + teamId));
+      .append($('<td colspan=2 id=league>'));
+    $('<tr>').appendTo(thead)
+      .append($('<td colspan=2 id=team>'))
+    $('<tr>').appendTo(thead)
+      .append($('<td colspan=2 id=color>'));
     $('<tr>').appendTo(thead)
       .append($('<td>').text('Skater #'))
       .append($('<td>').text('Skater Name'));
     tbody = $('<tbody>').appendTo(table);
 
-    WS.Register(['ScoreBoard.Team(' + teamId + ').Name'], function () { teamNameUpdate(); });
-    WS.Register(['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'], function () { teamNameUpdate(); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').LeagueName'], function (k,v) { element.find('#league').text(v); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').TeamName'], function (k,v) { element.find('#team').text(v); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor'], function (k,v) { element.find('#color').text(v); });
 
-    WS.Register(['ScoreBoard.Team(' + teamId + ').Color'], function (k, v) {
-      element.find('#head').css('background-color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_bg)'] || '');
-      element.find('#head').css('color', WS.state['ScoreBoard.Team(' + teamId + ').Color(' + alternateName + '_fg)'] || '');
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color'], function (k, v) {
+      element.find('#head').css('background-color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(' + alternateName + '_bg)'] || '');
+      element.find('#head').css('color', WS.state['ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Color(' + alternateName + '_fg)'] || '');
     });
-    WS.Register(['ScoreBoard.Team('+teamId+').Skater'], function (k, v) { skaterUpdate(teamId, k, v); });
+    WS.Register(['ScoreBoard.Game(' + gameId + ').Team('+teamId+').Skater'], function (k, v) { skaterUpdate(teamId, k, v); });
   }
-
-  function teamNameUpdate() {
-    var head = element.find('#head');
-    var teamName = WS.state['ScoreBoard.Team(' + teamId + ').Name'];
-
-    if (WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'] != null) {
-      teamName = WS.state['ScoreBoard.Team(' + teamId + ').AlternateName(' + alternateName + ')'];
-    }
-
-    head.text(teamName);
-  }
-
 
   function skaterUpdate(t, k, v) {
     if (k.Skater == null) { return; }
 
-    var prefix = 'ScoreBoard.Team(' + t + ').Skater(' + k.Skater + ')';
+    var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + t + ').Skater(' + k.Skater + ')';
     var row = tbody.children('tr.Skater[id=' + k.Skater + ']');
-    if (k.parts[3] === 'RosterNumber') {
+    if (k.field === 'RosterNumber') {
       // New skater, or number has been updated.
       if (v == null) {
         row.remove();
@@ -65,7 +58,7 @@ function prepareRosterSheetTable(element, teamId, mode, statsbookPeriod) {
     var flags = WS.state[prefix + '.Flags'];
     row.attr('flags', flags);
     row.children('.Name').text(WS.state[prefix + '.Name']);
-    row.children('.Number').text(String(WS.state[prefix + '.RosterNumber']) + ((flags === 'ALT' || flags === 'BC')?'*':''));
+    row.children('.Number').text(String(WS.state[prefix + '.RosterNumber']) + ((flags === 'ALT' || flags === 'BC' || flags === 'B')?'*':''));
   }
 }
 

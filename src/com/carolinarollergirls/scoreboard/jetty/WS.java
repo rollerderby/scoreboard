@@ -24,15 +24,18 @@ import org.eclipse.jetty.websocket.WebSocket;
 import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
 import org.eclipse.jetty.websocket.WebSocketServlet;
 
-import com.carolinarollergirls.scoreboard.core.Clients.Client;
-import com.carolinarollergirls.scoreboard.core.Clients.Device;
-import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.Jam;
-import com.carolinarollergirls.scoreboard.core.Period;
-import com.carolinarollergirls.scoreboard.core.PreparedTeam;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Team;
-import com.carolinarollergirls.scoreboard.core.Timeout;
+import com.carolinarollergirls.scoreboard.core.game.GameImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Client;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Period;
+import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Team;
+import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Flag;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.JSONStateListener;
@@ -158,65 +161,63 @@ public class WS extends WebSocketServlet {
                         public void run() {
                             PreparedTeam t1 = sb.getPreparedTeam((String) data.get("Team1"));
                             PreparedTeam t2 = sb.getPreparedTeam((String) data.get("Team2"));
-                            String rs = (String) data.get("Ruleset");
-                            sb.reset();
-                            sb.getRulesets().setCurrentRuleset(rs);
-                            sb.getTeam(Team.ID_1).loadPreparedTeam(t1);
-                            sb.getTeam(Team.ID_2).loadPreparedTeam(t2);
+                            Ruleset rs = sb.getRulesets().getRuleset((String) data.get("Ruleset"));
+                            Game g = new GameImpl(sb, t1, t2, rs);
+                            sb.add(ScoreBoard.GAME, g);
+                            sb.getCurrentGame().load(g);
 
                             if ((Boolean) data.get("Advance")) {
-                                sb.startJam();
-                                sb.timeout();
+                                g.startJam();
+                                g.timeout();
                                 for (int i = 0; i < (Integer) data.get("TO1"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_1), false);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_1), false);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
                                 for (int i = 0; i < (Integer) data.get("TO2"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_2), false);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_2), false);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
                                 for (int i = 0; i < (Integer) data.get("OR1"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_1), true);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_1), true);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
                                 for (int i = 0; i < (Integer) data.get("OR2"); i++) {
-                                    sb.setTimeoutType(sb.getTeam(Team.ID_2), true);
-                                    sb.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
-                                    sb.timeout();
+                                    g.setTimeoutType(g.getTeam(Team.ID_2), true);
+                                    g.getClock(Clock.ID_TIMEOUT).elapseTime(1000); // avoid double click detection
+                                    g.timeout();
                                 }
-                                sb.setTimeoutType(Timeout.Owners.OTO, false);
-                                sb.getTeam(Team.ID_1).set(Team.TRIP_SCORE, (Integer) data.get("Points1"));
-                                sb.getTeam(Team.ID_2).set(Team.TRIP_SCORE, (Integer) data.get("Points2"));
+                                g.setTimeoutType(Timeout.Owners.OTO, false);
+                                g.getTeam(Team.ID_1).set(Team.TRIP_SCORE, (Integer) data.get("Points1"));
+                                g.getTeam(Team.ID_2).set(Team.TRIP_SCORE, (Integer) data.get("Points2"));
                                 int period = (Integer) data.get("Period");
                                 int jam = (Integer) data.get("Jam");
                                 if (jam == 0 && period > 1) {
-                                    sb.getClock(Clock.ID_PERIOD)
-                                            .elapseTime(sb.getClock(Clock.ID_PERIOD).getMaximumTime());
-                                    sb.stopJamTO();
-                                    sb.getClock(Clock.ID_INTERMISSION)
-                                            .elapseTime(sb.getClock(Clock.ID_INTERMISSION).getMaximumTime());
+                                    g.getClock(Clock.ID_PERIOD)
+                                            .elapseTime(g.getClock(Clock.ID_PERIOD).getMaximumTime());
+                                    g.stopJamTO();
+                                    g.getClock(Clock.ID_INTERMISSION)
+                                            .elapseTime(g.getClock(Clock.ID_INTERMISSION).getMaximumTime());
                                     for (int i = 2; i < period; i++) {
-                                        sb.getCurrentPeriod().execute(Period.INSERT_BEFORE);
+                                        g.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
                                 } else {
                                     for (int i = 1; i < period; i++) {
-                                        sb.getCurrentPeriod().execute(Period.INSERT_BEFORE);
+                                        g.getCurrentPeriod().execute(Period.INSERT_BEFORE);
                                     }
                                     for (int i = 1; i < jam; i++) {
-                                        sb.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
+                                        g.getCurrentPeriod().getCurrentJam().execute(Jam.INSERT_BEFORE);
                                     }
-                                    sb.getClock(Clock.ID_PERIOD)
-                                            .setTime(Long.valueOf((String) data.get("PeriodClock")));
+                                    g.getClock(Clock.ID_PERIOD).setTime(Long.valueOf((String) data.get("PeriodClock")));
                                 }
                             } else {
                                 String intermissionClock = (String) data.get("IntermissionClock");
                                 if (intermissionClock != null) {
                                     Long ic_time = Long.valueOf(intermissionClock);
                                     ic_time = ic_time - (ic_time % 1000);
-                                    Clock c = sb.getClock(Clock.ID_INTERMISSION);
+                                    Clock c = g.getClock(Clock.ID_INTERMISSION);
                                     c.setMaximumTime(ic_time);
                                     c.restart();
                                 }

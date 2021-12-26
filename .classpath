@@ -34,5 +34,7 @@
 			<attribute name="owner.project.facets" value="java"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="lib" path="lib/deps/poi-4.1.2/poi-4.1.2.jar"/>
+	<classpathentry kind="lib" path="lib/deps/poi-4.1.2/poi-ooxml-4.1.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

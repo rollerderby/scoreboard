@@ -1,23 +1,29 @@
 #Teams { width: 100%; }
-#Teams>tr>td { text-align: center; }
-#Teams>tr.Selection>td { background: #ccc; border-radius: 12px 12px 0px 0px; }
+#Teams>tr>td { text-align: center; vertical-align: top; background: #eee; }
+#Teams>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; }
+#Teams>tr.Selection>td { background: #ccc; }
 #Teams>tr.Selection.NoneSelected>td { border-radius: 12px; }
-#Teams>tr.Team>td { background: #eee; border-radius: 0px 0px 12px 12px; }
+#Teams>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; }
+#Teams>tr:only-of-type>td { border-radius: 12px; }
+
+#Teams .Hide { display: none; }
+#Teams button.Active { background: #3f3; }
 
 #Teams table.Team { width: 100%; border-spacing: 0px; }
-#Teams table.Team.Hide { display: none; }
+#Teams table.Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; }
+#Teams table.Team tr.Name>td button { font-size: 50%; margin: 2px 5px; }
 
 #Teams table.Skaters { width: 100%; border-spacing: 0px; }
 #Teams table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; }
 #Teams table.Skaters.Empty tr:last-of-type>th:last-of-type { border-radius: 0px 0px 12px 0px; }
 #Teams table.Skaters tr:last-of-type>td:first-of-type { border-radius: 0px 0px 0px 12px; }
 #Teams table.Skaters tr:last-of-type>td:last-of-type { border-radius: 0px 0px 12px 0px; }
-#Teams table.Skaters tbody tr:nth-child(2n) { background: #ccc; }
-#Teams table.Skaters col.Name { width: 40%; }
-#Teams table.Skaters col.RosterNumber { width: 30%; }
+#Teams table.Skaters tbody tr:nth-of-type(2n)>td { background: #ddd; }
+#Teams table.Skaters col.Name { width: 50%; }
+#Teams table.Skaters col.RosterNumber { width: 20%; }
 #Teams table.Skaters col.Button { width: 15%; }
 
-#Teams table.Skaters th.Title { font-size: 200%; }
+#Teams table.Skaters th.Title { font-size: 150%; }
 #Teams table.Skaters th#skaterCount { font-size: 100%; font-weight: normal; }
 #Teams table.Skaters button.AddSkater>span { padding-top: 0em; padding-bottom: 0em; }
 #Teams table.Skaters button.RemoveSkater>span { padding-top: 0em; padding-bottom: 0em; }
@@ -65,7 +71,6 @@
 	div.TeamsRemoveDialog a.Title { font-size: 125%; }
 	div.TeamsRemoveDialog a.Remove { font-size: 150%; }
 	div.TeamsRemoveDialog a.Target { font-weight: bold; font-size: 250%; }
-	div.TeamsRemoveDialog a.Name { }
 	div.TeamsRemoveDialog a.AreYouSure { font-weight: bold; font-size: 300%; }
 	div.TeamsRemoveDialog button.No { float: left; }
 	div.TeamsRemoveDialog button.Yes { float: right; }

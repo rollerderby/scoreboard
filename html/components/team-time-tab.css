@@ -84,7 +84,7 @@ div.NumberDialog table { text-align: center; }
 /* Time Control Dialog */
 	table.TimeDialog { width: 100%; border-spacing: 0px; }
 	table.TimeDialog table { width: 100%; border-spacing: 0px; }
-	table.TimeDialog>tbody>tr>td { width: 100%; text-align: center; }
+	table.TimeDialog>tr>td { width: 100%; text-align: center; }
 	table.TimeDialog table td.Title { background: #ccc; border-radius: 12px 12px 0px 0px; }
 	table.TimeDialog table td:not(.Title) { background: #eee; }
 	table.TimeDialog table tr:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }

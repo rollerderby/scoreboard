@@ -12,9 +12,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import com.carolinarollergirls.scoreboard.core.Clock;
-import com.carolinarollergirls.scoreboard.core.ScoreBoard;
-import com.carolinarollergirls.scoreboard.core.Team;
+import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentClock;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
@@ -41,18 +44,18 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily clockNumber = new GaugeMetricFamily("crg_scoreboard_clock_number",
                 "Number on scoreboard clock.", Arrays.asList("clock"));
         mfs.add(clockNumber);
-        for (Clock c : sb.getAll(ScoreBoard.CLOCK)) {
-            clockTime.addMetric(Arrays.asList(c.getName()), (float) c.getTime() / 1000);
-            clockInvertedTime.addMetric(Arrays.asList(c.getName()), (float) c.getInvertedTime() / 1000);
-            clockRunning.addMetric(Arrays.asList(c.getName()), c.isRunning() ? 1 : 0);
-            clockNumber.addMetric(Arrays.asList(c.getName()), c.getNumber());
+        for (CurrentClock c : sb.getCurrentGame().getAll(CurrentGame.CLOCK)) {
+            clockTime.addMetric(Arrays.asList(c.get(Clock.NAME)), (float) c.get(Clock.TIME) / 1000);
+            clockInvertedTime.addMetric(Arrays.asList(c.get(Clock.NAME)), (float) c.get(Clock.INVERTED_TIME) / 1000);
+            clockRunning.addMetric(Arrays.asList(c.get(Clock.NAME)), c.get(Clock.RUNNING) ? 1 : 0);
+            clockNumber.addMetric(Arrays.asList(c.get(Clock.NAME)), c.get(Clock.NUMBER));
         }
 
         GaugeMetricFamily score = new GaugeMetricFamily("crg_scoreboard_team_score", "Score on scoreboard.",
                 Arrays.asList("team", "name"));
         mfs.add(score);
-        for (Team t : sb.getAll(ScoreBoard.TEAM)) {
-            score.addMetric(Arrays.asList(t.getId(), t.getName()), t.getScore());
+        for (CurrentTeam t : sb.getCurrentGame().getAll(CurrentGame.TEAM)) {
+            score.addMetric(Arrays.asList(t.get(CurrentTeam.ID), t.get(Team.FULL_NAME)), t.get(Team.SCORE));
         }
 
         return mfs;

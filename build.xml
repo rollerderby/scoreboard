@@ -105,7 +105,7 @@
 			<compilerarg value="-Xlint:-serial"/>
 			<compilerarg value="-Xlint:-options"/>
 			<classpath>
-				<fileset dir="${jar.dir}" includes="deps/*.jar" />
+				<fileset dir="${jar.dir}" includes="deps/*.jar deps/poi-4.1.2/*.jar" />
 			</classpath>
 		</javac>
 
@@ -120,7 +120,7 @@
 				<fileset dir="${dest.dir}" excludes="**/*.java" />
 			</main>
 			<lib>
-				<fileset dir="${jar.dir}" includes="deps/*.jar" />
+				<fileset dir="${jar.dir}" includes="deps/*.jar deps/poi-4.1.2/**/*.jar" />
 			</lib>
 		</one-jar>
 	</target>
@@ -132,11 +132,11 @@
 				debug="true"
 				includeantruntime="true">
 
-				<compilerarg value="-Xlint:all"/>
-				<compilerarg value="-Xlint:-serial"/>
-				<compilerarg value="-Xlint:-options"/>
-				<classpath refid="classpath.test"/>
-			</javac>
+			<compilerarg value="-Xlint:all"/>
+			<compilerarg value="-Xlint:-serial"/>
+			<compilerarg value="-Xlint:-options"/>
+			<classpath refid="classpath.test"/>
+		</javac>
 	</target>
 	
 	
@@ -241,6 +241,7 @@
 				<include name="html/images/teamlogo" />
 				<include name="html/images/sponsor_banner" />
 				<exclude name="html/game-data/json/*" />
+				<exclude name="html/game-data/xlsx/*" />
 				<include name="lib/crg-scoreboard.jar" />
 				<include name="config/crg.scoreboard.properties" />
 				<include name="config/penalties/**" />

@@ -1,7 +1,8 @@
 $(function() {
-  createTeamsTab($('#TeamsTab'));
+  var teamId = _windowFunctions.getParam('team');
+  createTeamsTab($('#TeamsTab'), null, teamId);
 
   WS.AutoRegister();
   WS.Connect();
 });
-//# sourceURL=settings\rulesets\index.js
+//# sourceURL=settings\teams\index.js

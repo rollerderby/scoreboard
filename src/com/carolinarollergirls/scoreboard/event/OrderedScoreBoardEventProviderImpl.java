@@ -18,6 +18,9 @@ public abstract class OrderedScoreBoardEventProviderImpl<C extends OrderedScoreB
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, PREVIOUS, NEXT));
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, NEXT, PREVIOUS));
     }
+    protected OrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
+        super(cloned, root);
+    }
 
     @Override
     public int getNumber() { return get(NUMBER); }

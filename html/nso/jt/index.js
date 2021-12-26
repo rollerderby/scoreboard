@@ -26,19 +26,23 @@ function isTrue(value) {
 }
 
 function setupJamControlPage() {
-  $('#JamControlPage button.StartJam').on('click', function() { WS.Set('ScoreBoard.StartJam', true); });
-  $('#JamControlPage button.StopJam').on('click', function() { WS.Set('ScoreBoard.StopJam', true); });
-  $('#JamControlPage button.Timeout').on('click', function() { WS.Set('ScoreBoard.Timeout', true); });
-  $('#JamControlPage button.Undo').on('click', function() { WS.Set('ScoreBoard.ClockUndo', true); });
-  $('#JamControlPage div.Timeout button.Official').on('click', function() { WS.Set('ScoreBoard.OfficialTimeout', true); });
-  $('#JamControlPage div.Timeout button.Team1').on('click', function() { WS.Set('ScoreBoard.Team(1).Timeout', true); });
-  $('#JamControlPage div.OfficialReview button.Team1').on('click', function() { WS.Set('ScoreBoard.Team(1).OfficialReview', true); });
-  $('#JamControlPage div.Timeout button.Team2').on('click', function() { WS.Set('ScoreBoard.Team(2).Timeout', true); });
-  $('#JamControlPage div.OfficialReview button.Team2').on('click', function() { WS.Set('ScoreBoard.Team(2).OfficialReview', true); });
+  $('#JamControlPage button.StartJam').on('click', function() { WS.Set('ScoreBoard.CurrentGame.StartJam', true); });
+  $('#JamControlPage button.StopJam').on('click', function() { WS.Set('ScoreBoard.CurrentGame.StopJam', true); });
+  $('#JamControlPage button.Timeout').on('click', function() { WS.Set('ScoreBoard.CurrentGame.Timeout', true); });
+  $('#JamControlPage button.Undo').on('click', function() { WS.Set('ScoreBoard.CurrentGame.ClockUndo', true); });
+  $('#JamControlPage div.Timeout button.Official').on('click', function() { WS.Set('ScoreBoard.CurrentGame.OfficialTimeout', true); });
+  $('#JamControlPage div.Timeout button.Team1').on('click', function() { WS.Set('ScoreBoard.CurrentGame.Team(1).Timeout', true); });
+  $('#JamControlPage div.OfficialReview button.Team1').on('click', function() { WS.Set('ScoreBoard.CurrentGame.Team(1).OfficialReview', true); });
+  $('#JamControlPage div.Timeout button.Team2').on('click', function() { WS.Set('ScoreBoard.CurrentGame.Team(2).Timeout', true); });
+  $('#JamControlPage div.OfficialReview button.Team2').on('click', function() { WS.Set('ScoreBoard.CurrentGame.Team(2).OfficialReview', true); });
 
-  WS.Register(['ScoreBoard.Team(*).Name', 'ScoreBoard.Team(*).AlternateName(operator)'], function(k, v) {
-    var name = WS.state['ScoreBoard.Team('+k.Team+').AlternateName(operator)'];
-    name = name || WS.state['ScoreBoard.Team('+k.Team+').Name'];
+  WS.Register(['ScoreBoard.CurrentGame.Team(*).Name', 'ScoreBoard.CurrentGame.Team(*).UniformColor', 
+               'ScoreBoard.CurrentGame.Team(*).AlternateName(operator)'], function(k, v) {
+    var name = WS.state['ScoreBoard.CurrentGame.Team('+k.Team+').AlternateName(operator)'];
+    name = name || WS.state['ScoreBoard.CurrentGame.Team('+k.Team+').UnifromColor'];
+    if (name == null || name === '') {
+      name = WS.state['ScoreBoard.CurrentGame.Team('+k.Team+').Name'];
+    }
     $('.Name.Team'+k.Team).text(name);
   });
 
@@ -50,39 +54,39 @@ function setupJamControlPage() {
   // In case no clocks are running now, default to showing only Jam
   showJamControlClock('Jam');
 
-  WS.Register('ScoreBoard.Clock(*).Running', function(k, v) {
+  WS.Register('ScoreBoard.CurrentGame.Clock(*).Running', function(k, v) {
     $('#JamControlPage span.ClockBubble.'+k.Clock).toggleClass('Running', isTrue(v));
   });
   $.each( [ 'Start', 'Stop', 'Timeout', 'Undo' ], function(i, button) {
-    WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.Button.'+button+'Label)', function(k, v) {
+    WS.Register('ScoreBoard.CurrentGame.Label('+button+')', function(k, v) {
       $('#JamControlPage span.'+button+'Label').text(v);
     });
   });
-  WS.Register('ScoreBoard.Clock(*).Running', function(k, v) {
+  WS.Register('ScoreBoard.CurrentGame.Clock(*).Running', function(k, v) {
     if (isTrue(v)) {
       showJamControlClock(k.Clock);
     }
   });
-  WS.Register('ScoreBoard.Clock(*).Direction'); // for rounding
+  WS.Register('ScoreBoard.CurrentGame.Clock(*).Direction'); // for rounding
 }
 
 function setupPeriodTimePage() {
   $('#PeriodTimePage button.TimeDown').on('click', function() {
-    WS.Set('ScoreBoard.Clock(Period).Time', -1000, 'change');
+    WS.Set('ScoreBoard.CurrentGame.Clock(Period).Time', -1000, 'change');
   });
   $('#PeriodTimePage button.TimeUp').on('click', function() {
-    WS.Set('ScoreBoard.Clock(Period).Time', 1000, 'change');
+    WS.Set('ScoreBoard.CurrentGame.Clock(Period).Time', 1000, 'change');
   });
   $('#PeriodTimePage button.SetTime').on('click', function() {
     var t = $('#PeriodTimePage input:text.SetTime');
-    WS.Set('ScoreBoard.Clock(Period).Time', _timeConversions.minSecToMs(t.val()));
+    WS.Set('ScoreBoard.CurrentGame.Clock(Period).Time', _timeConversions.minSecToMs(t.val()));
   });
 }
 
 
 function toTime(k, v) {
   k = WS._enrichProp(k);
-  var isCountDown = isTrue(WS.state['ScoreBoard.Clock(' + k.Clock + ').Direction']);
+  var isCountDown = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
 //# sourceURL=nso\jt\index.js
