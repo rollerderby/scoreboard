@@ -11,9 +11,7 @@ package com.carolinarollergirls.scoreboard.event;
 import java.util.Objects;
 
 public class ScoreBoardCondition<T> implements Cloneable {
-    public ScoreBoardCondition(ScoreBoardEvent<T> e) {
-        this(e.getProvider(), e.getProperty(), e.getValue());
-    }
+    public ScoreBoardCondition(ScoreBoardEvent<T> e) { this(e.getProvider(), e.getProperty(), e.getValue()); }
     public ScoreBoardCondition(ScoreBoardEventProvider sbeP, Property<T> p) {
         this(sbeP.getProviderClass(), sbeP.getId(), p);
     }
@@ -47,9 +45,7 @@ public class ScoreBoardCondition<T> implements Cloneable {
     @SuppressWarnings("unchecked")
     @Override
     public boolean equals(Object o) {
-        if (null == o) {
-            return false;
-        }
+        if (null == o) { return false; }
         try {
             return equals((ScoreBoardEvent<T>) o);
         } catch (ClassCastException ccE) {}
@@ -59,36 +55,20 @@ public class ScoreBoardCondition<T> implements Cloneable {
         return false;
     }
     public boolean equals(ScoreBoardEvent<T> e) {
-        Class<? extends ScoreBoardEventProvider> pc = (null == e.getProvider() ? null
-                : e.getProvider().getProviderClass());
-        if (!Objects.equals(getProviderClass(), pc)) {
-            return false;
-        }
+        Class<? extends ScoreBoardEventProvider> pc =
+            (null == e.getProvider() ? null : e.getProvider().getProviderClass());
+        if (!Objects.equals(getProviderClass(), pc)) { return false; }
         String pi = (null == e.getProvider() ? null : e.getProvider().getId());
-        if (!Objects.equals(getProviderId(), pi) && (getProviderId() != ANY_ID)) {
-            return false;
-        }
-        if (!Objects.equals(getProperty(), e.getProperty())) {
-            return false;
-        }
-        if (!Objects.equals(getValue(), e.getValue()) && !anyValue) {
-            return false;
-        }
+        if (!Objects.equals(getProviderId(), pi) && (getProviderId() != ANY_ID)) { return false; }
+        if (!Objects.equals(getProperty(), e.getProperty())) { return false; }
+        if (!Objects.equals(getValue(), e.getValue()) && !anyValue) { return false; }
         return true;
     }
     public boolean equals(ScoreBoardCondition<T> c) {
-        if (!Objects.equals(getProviderClass(), c.getProviderClass())) {
-            return false;
-        }
-        if (!Objects.equals(getProviderId(), c.getProviderId())) {
-            return false;
-        }
-        if (!Objects.equals(getProperty(), c.getProperty())) {
-            return false;
-        }
-        if (!Objects.equals(getValue(), c.getValue())) {
-            return false;
-        }
+        if (!Objects.equals(getProviderClass(), c.getProviderClass())) { return false; }
+        if (!Objects.equals(getProviderId(), c.getProviderId())) { return false; }
+        if (!Objects.equals(getProperty(), c.getProperty())) { return false; }
+        if (!Objects.equals(getValue(), c.getValue())) { return false; }
         return true;
     }
     @Override

@@ -22,3 +22,5 @@ android/assets/
 android/build/
 /rules/
 /game-data/
+/node_modules/
+/package-lock.json

@@ -1,112 +1,112 @@
 
-#GameControl.clickMe { color: green !important; font-size: 200% !important; }
+#GameControl.clickMe { color: green !important; font-size: 200% !important; } 
 
 /* Key Control */
-	.KeyControl span.Indicator { font-size: 75%; }
-	.KeyControl:not(.HasControlKey) span.Indicator { display: none; }
-	.KeyControl.Editing { border: 1px solid #f00; }
-	.KeyControl.Editing.hover { background: #faa; }
+.KeyControl span.Indicator { font-size: 75%; } 
+.KeyControl:not(.HasControlKey) span.Indicator { display: none; } 
+.KeyControl.Editing { border: 1px solid #f00; } 
+.KeyControl.Editing.hover { background: #faa; } 
 /* End Key Control */
 
-#TeamTime { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; }
-#TeamTime a { font-weight: bold; }
-#TeamTime .ui-button { font-size: 80%; line-height: 1em; padding: .4em; }
-#TeamTime .BigButton.ui-button { font-size: 100%; line-height: 1.4em; }
+#TeamTime { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; } 
+#TeamTime a { font-weight: bold; } 
+#TeamTime .ui-button { font-size: 80%; line-height: 1em; padding: .4em; } 
+#TeamTime .BigButton.ui-button { font-size: 100%; line-height: 1.4em; } 
 
-#TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; }
-#TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; }
-#TeamTime table.TabTable>tbody>tr>td { border-top: 1px dashed black; }
-#TeamTime table.TabTable>tbody>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; border-top: none; }
-#TeamTime table.TabTable>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; }
-#TeamTime table.TabTable>tbody>tr:only-of-type>td { border-radius: 12px; }
-#TeamTime table.TabTable>tbody>tr.Hidden>td { display: none; }
-#TeamTime table.TabTable .ReplaceInfo { font-weight: bold; font-size: 150%; padding: 1px; }
+#TeamTime table.TabTable { width: 100%; border-spacing: 1px 0px; } 
+#TeamTime table.TabTable>tbody>tr>td { background: #ccc; text-align: center; } 
+#TeamTime table.TabTable>tbody>tr>td { border-top: 1px dashed black; } 
+#TeamTime table.TabTable>tbody>tr:first-of-type>td { border-radius: 12px 12px 0px 0px; border-top: none; } 
+#TeamTime table.TabTable>tbody>tr:last-of-type>td { border-radius: 0px 0px 12px 12px; } 
+#TeamTime table.TabTable>tbody>tr:only-of-type>td { border-radius: 12px; } 
+#TeamTime table.TabTable>tbody>tr.Hidden>td { display: none; } 
+#TeamTime table.TabTable .ReplaceInfo { font-weight: bold; font-size: 150%; padding: 1px; } 
 
-#TeamTime table.MetaControl>tbody>tr>td { width: 100%; }
-#TeamTime table.MetaControl { font-size: 65%; }
-#TeamTime table.MetaControl .ui-button { padding: .7em; }
-#TeamTime table.MetaControl>tbody>tr>td { background: #eee; }
+#TeamTime table.MetaControl>tbody>tr>td { width: 100%; } 
+#TeamTime table.MetaControl { font-size: 65%; } 
+#TeamTime table.MetaControl .ui-button { padding: .7em; } 
+#TeamTime table.MetaControl>tbody>tr>td { background: #eee; } 
 
-#TeamTime table.JamControl>tbody>tr>td { width: 100%; }
-#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; }
-#TeamTime table.JamControl .ui-button { font-size: 100%; padding: .3em; }
-#TeamTime table.JamControl .Label { display: inline-block; min-width:50px; }
-#TeamTime table.JamControl .Hidden { display: none; }
+#TeamTime table.JamControl>tbody>tr>td { width: 100%; } 
+#TeamTime table.JamControl>tbody>tr:first-of-type>td { border-radius: 12px; } 
+#TeamTime table.JamControl .ui-button { font-size: 100%; padding: .3em; } 
+#TeamTime table.JamControl .Label { display: inline-block; min-width:50px; } 
+#TeamTime table.JamControl .Hidden { display: none; } 
 
-#TeamTime table.Team>tbody>tr>td { width: 50%; }
-#TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; }
-#TeamTime table.Team tr.Name td.Name div a.AlternateName { display: none; }
-#TeamTime table.Team tr.Name td.Logo img { height: 50px; vertical-align: middle; }
-#TeamTime table.Team tr.Score td.Score a { font-size: 300%; }
-#TeamTime table.Team tr.Score td a.TripScore { font-size: 150%; }
-#TeamTime table.Team tr.Score td a.JamScore { font-size: 150%; }
-#TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; }
-#TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; }
-#TeamTime table.Team tr.Timeout td.OfficialTimeout { position: relative; }
-#TeamTime table.Team tr.Timeout td.OfficialTimeout>div { position: absolute; left: 50%; width: 100%; }
-#TeamTime table.Team tr.Timeout td.OfficialTimeout button { transform: translateY(-50%); }
-#TeamTime table.Team tr.Jammer td.ui-controlgroup label.Lead.ui-state-active { background: #3f3; }
-#TeamTime table.Team tr.Jammer td.ui-controlgroup label.StarPass.ui-state-active { background: #3f3; }
+#TeamTime table.Team>tbody>tr>td { width: 50%; } 
+#TeamTime table.Team tr.Name td.Name div { max-height: 100px; max-width: 300px; overflow: hidden; font-size: 150%; } 
+#TeamTime table.Team tr.Name td.Name div a.AlternateName { display: none; } 
+#TeamTime table.Team tr.Name td.Logo img { height: 50px; vertical-align: middle; } 
+#TeamTime table.Team tr.Score td.Score a { font-size: 300%; } 
+#TeamTime table.Team tr.Score td a.TripScore { font-size: 150%; } 
+#TeamTime table.Team tr.Score td a.JamScore { font-size: 150%; } 
+#TeamTime table.Team tr.Timeout td.Timeouts a { font-size: 200%; } 
+#TeamTime table.Team tr.Timeout td.OfficialReviews a { font-size: 200%; } 
+#TeamTime table.Team tr.Timeout td.OfficialTimeout { position: relative; } 
+#TeamTime table.Team tr.Timeout td.OfficialTimeout>div { position: absolute; left: 50%; width: 100%; } 
+#TeamTime table.Team tr.Timeout td.OfficialTimeout button { transform: translateY(-50%); } 
+#TeamTime table.Team tr.Jammer td.ui-controlgroup label.Lead.ui-state-active { background: #3f3; } 
+#TeamTime table.Team tr.Jammer td.ui-controlgroup label.StarPass.ui-state-active { background: #3f3; } 
 
-#TeamTime .ui-controlgroup { text-align: center; }
-#TeamTime .ui-controlgroup>button { border-radius: 0; margin: 0; }
-#TeamTime .ui-controlgroup>button:first-of-type { border-radius: 6px 0px 0px 6px; }
-#TeamTime .ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; }
-#TeamTime .ui-controlgroup>button:only-of-type { border-radius: 6px; }
-#TeamTime .ui-controlgroup>button>span { padding-top: 0.3em; padding-bottom: 0.3em; }
+#TeamTime .ui-controlgroup { text-align: center; } 
+#TeamTime .ui-controlgroup>button { border-radius: 0; margin: 0; } 
+#TeamTime .ui-controlgroup>button:first-of-type { border-radius: 6px 0px 0px 6px; } 
+#TeamTime .ui-controlgroup>button:last-of-type { border-radius: 0px 6px 6px 0px; } 
+#TeamTime .ui-controlgroup>button:only-of-type { border-radius: 6px; } 
+#TeamTime .ui-controlgroup>button>span { padding-top: 0.3em; padding-bottom: 0.3em; } 
 
-#TeamTime table.Team button.Box.Hide {display: none }
-#TeamTime table.Team button.Box.Active { color: #000; background: #F33; }
-#TeamTime table.Team button.Active:not(.Box) { color: #000; background: #3F3; }
+#TeamTime table.Team button.Box.Hide { display: none } 
+#TeamTime table.Team button.Box.Active { color: #000; background: #F33; } 
+#TeamTime table.Team button.Active:not(.Box) { color: #000; background: #3F3; } 
 
-#TeamTime table.Time>tbody>tr>td { width: 20%; }
-#TeamTime table.Time tr.Name td.Name.Running { background: #3f3; }
-#TeamTime table.Time tr.Name td.Name.Running.NoMoreJam { background: #f33; }
-#TeamTime table.Time tr.Name td.Name a { font-size: 150%; }
-#TeamTime table.Time tr.Name td.Name a.InvertedTime { padding-left: 5px; font-size: 75%; }
-#TeamTime table.Time tr.Name td.Name a.InvertedTime:before { content: "("; }
-#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountDown:after { content: " elapsed)"; }
-#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountUp:after { content: " remaining)"; }
-#TeamTime table.Time tr.Number td.Number a { font-size: 150%; }
-#TeamTime table.Time tr.Time td.Time a { font-size: 200%; }
-#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; }
+#TeamTime table.Time>tbody>tr>td { width: 20%; } 
+#TeamTime table.Time tr.Name td.Name.Running { background: #3f3; } 
+#TeamTime table.Time tr.Name td.Name.Running.NoMoreJam { background: #f33; } 
+#TeamTime table.Time tr.Name td.Name a { font-size: 150%; } 
+#TeamTime table.Time tr.Name td.Name a.InvertedTime { padding-left: 5px; font-size: 75%; } 
+#TeamTime table.Time tr.Name td.Name a.InvertedTime:before { content: "("; } 
+#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountDown:after { content: " elapsed)"; } 
+#TeamTime table.Time tr.Name td.Name a.InvertedTime.CountUp:after { content: " remaining)"; } 
+#TeamTime table.Time tr.Number td.Number a { font-size: 150%; } 
+#TeamTime table.Time tr.Time td.Time a { font-size: 200%; } 
+#TeamTime table.Time tr.TimeSet td.Button button>span { padding: 0.3em .6em; } 
 
-#TeamTime tr.Control:not(.Show) { display: none; }
+#TeamTime tr.Control:not(.Show) { display: none; } 
 
-div.NumberDialog table.Period:not(.Show) { display: none; }
-div.NumberDialog table tr:nth-child(2n+1) { background-color: #d8d8d8; }
-div.NumberDialog table { text-align: center; }
+div.NumberDialog table.Period:not(.Show) { display: none; } 
+div.NumberDialog table tr:nth-child(2n+1) { background-color: #d8d8d8; } 
+div.NumberDialog table { text-align: center; } 
 
-#TeamTime .Faded { opacity: 0.2; }
+#TeamTime .Faded { opacity: 0.2; } 
 
-#TeamTimeTab .SKSheet { float: left; width: 50%; }
+#TeamTimeTab .SKSheet { float: left; width: 50%; } 
 
 /* Time Control Dialog */
-	table.TimeDialog { width: 100%; border-spacing: 0px; }
-	table.TimeDialog table { width: 100%; border-spacing: 0px; }
-	table.TimeDialog>tr>td { width: 100%; text-align: center; }
-	table.TimeDialog table td.Title { background: #ccc; border-radius: 12px 12px 0px 0px; }
-	table.TimeDialog table td:not(.Title) { background: #eee; }
-	table.TimeDialog table tr:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; }
-	table.TimeDialog table tr:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; }
-	table.TimeDialog a.Time { font-weight: bold; }
-	table.TimeDialog button.Set>span { padding: 0.1em 1em; }
+table.TimeDialog { width: 100%; border-spacing: 0px; } 
+table.TimeDialog table { width: 100%; border-spacing: 0px; } 
+table.TimeDialog>tr>td { width: 100%; text-align: center; } 
+table.TimeDialog table td.Title { background: #ccc; border-radius: 12px 12px 0px 0px; } 
+table.TimeDialog table td:not(.Title) { background: #eee; } 
+table.TimeDialog table tr:last-of-type>td:first-of-type { border-bottom-left-radius: 12px; } 
+table.TimeDialog table tr:last-of-type>td:last-of-type { border-bottom-right-radius: 12px; } 
+table.TimeDialog a.Time { font-weight: bold; } 
+table.TimeDialog button.Set>span { padding: 0.1em 1em; } 
 /* End Time Control Dialog */
 
 /* Period/Jam/Timeout Dialog */
-	div.NumberDialog .Hide { display: none; }
-	div.NumberDialog button.Active { background: #3F3; color: black; }
+div.NumberDialog .Hide { display: none; } 
+div.NumberDialog button.Active { background: #3F3; color: black; } 
 /* End Period/Jam/Timeout Dialog */
 
 
 /* Game Control Dialog */
-	div.GameControl { background-color: pink; }
-	div.GameControl div.section:not(:first-of-type) { padding-top: 10px; }
-	div.GameControl div.section:not(:last-of-type) { padding-bottom: 10px; border-bottom: solid 1px black; }
-	div.GameControl .header { font-weight: bold; }
-	div.GameControl button span { font-size: 50%; }
-	div.GameControl td>input { width: 50px; }
-	div.GameControl .rowLabel { text-align: right; }
-	div.GameControl .colLabel { text-align: center; }
-	div.GameControl .Hide { display: none; }
+div.GameControl { background-color: pink; } 
+div.GameControl div.section:not(:first-of-type) { padding-top: 10px; } 
+div.GameControl div.section:not(:last-of-type) { padding-bottom: 10px; border-bottom: solid 1px black; } 
+div.GameControl .header { font-weight: bold; } 
+div.GameControl button span { font-size: 50%; } 
+div.GameControl td>input { width: 50px; } 
+div.GameControl .rowLabel { text-align: right; } 
+div.GameControl .colLabel { text-align: center; } 
+div.GameControl .Hide { display: none; } 
 /* End Game Control Dialog */

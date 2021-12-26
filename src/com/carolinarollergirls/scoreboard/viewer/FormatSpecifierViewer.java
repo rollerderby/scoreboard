@@ -51,9 +51,7 @@ public class FormatSpecifierViewer {
     public String parse(String format) {
         StringBuffer buffer = new StringBuffer();
         Matcher m = formatPattern.matcher(format);
-        while (m.find()) {
-            m.appendReplacement(buffer, getFormatSpecifierValue(m.group()));
-        }
+        while (m.find()) { m.appendReplacement(buffer, getFormatSpecifierValue(m.group())); }
         m.appendTail(buffer);
         return buffer.toString();
     }
@@ -61,16 +59,12 @@ public class FormatSpecifierViewer {
     public boolean checkCondition(String format, ScoreBoardEvent<?> event) {
         boolean triggerCondition = true;
         Matcher m = conditionPattern.matcher(format);
-        if (!m.find()) {
-            throw new IllegalArgumentException("No conditions in format : " + format);
-        }
+        if (!m.find()) { throw new IllegalArgumentException("No conditions in format : " + format); }
         do {
             String specifier = m.group(1);
             String comparator = m.group(2);
             String targetValue = m.group(3);
-            if (null == comparator || null == targetValue) {
-                continue;
-            }
+            if (null == comparator || null == targetValue) { continue; }
             String value = scoreBoardValues.get(specifier).getValue();
             if (triggerCondition) {
                 triggerCondition = false;
@@ -82,32 +76,26 @@ public class FormatSpecifierViewer {
                 }
             }
             try {
-                if (!checkConditionValue(value, comparator, targetValue)) {
-                    return false;
-                }
-            } catch (IllegalArgumentException iaE) {
-                return false;
-            }
+                if (!checkConditionValue(value, comparator, targetValue)) { return false; }
+            } catch (IllegalArgumentException iaE) { return false; }
         } while (m.find());
         return true;
     }
 
     protected boolean checkConditionValue(String value, String comparator, String target)
-            throws IllegalArgumentException {
+        throws IllegalArgumentException {
         // Check to see if we're talking about times, and if so, de-time them.
         if (comparator.contains("<") || comparator.contains(">") || comparator.contains("%")) {
             // We're doing maths. Are they times? Times have colons.
             if (value.contains(":")) {
                 String[] s = value.split(":");
-                if (s.length == 2)
-                    try {
+                if (s.length == 2) try {
                         value = String.valueOf(Long.parseLong(s[0]) * 60 + Long.parseLong(s[1]));
                     } catch (NumberFormatException nfE) {}
             }
             if (target.contains(":")) {
                 String[] s = target.split(":");
-                if (s.length == 2)
-                    try {
+                if (s.length == 2) try {
                         target = String.valueOf(Long.parseLong(s[0]) * 60 + Long.parseLong(s[1]));
                     } catch (NumberFormatException nfE) {}
             }
@@ -162,26 +150,20 @@ public class FormatSpecifierViewer {
 
     public ScoreBoardCondition<?> getScoreBoardCondition(String format) throws IllegalArgumentException {
         Matcher m = eventPattern.matcher(format);
-        if (!m.find()) {
-            throw new IllegalArgumentException("No valid event specified");
-        }
+        if (!m.find()) { throw new IllegalArgumentException("No valid event specified"); }
         return getFormatSpecifierScoreBoardCondition(m.group(1));
     }
 
     protected ScoreBoardCondition<?> getFormatSpecifierScoreBoardCondition(String formatSpecifier)
-            throws IllegalArgumentException {
+        throws IllegalArgumentException {
         ScoreBoardValue<?> value = scoreBoardValues.get(formatSpecifier);
-        if (null == value) {
-            throw new IllegalArgumentException("Not a valid format specifier : " + formatSpecifier);
-        }
+        if (null == value) { throw new IllegalArgumentException("Not a valid format specifier : " + formatSpecifier); }
         return value.getScoreBoardCondition();
     }
 
     protected String getFormatSpecifierValue(String formatSpecifier) {
         ScoreBoardValue<?> value = scoreBoardValues.get(formatSpecifier);
-        if (null == value) {
-            return formatSpecifier;
-        }
+        if (null == value) { return formatSpecifier; }
         return value.getValue();
     }
 
@@ -189,7 +171,7 @@ public class FormatSpecifierViewer {
         return scoreBoardValues.get(formatSpecifier);
     }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void setupScoreBoardValues() {
         new ScoreBoardValue("%sbto", "ScoreBoard Timeout Owner", getGame(), Game.TIMEOUT_OWNER) {
             @Override
@@ -200,15 +182,21 @@ public class FormatSpecifierViewer {
         };
         new ScoreBoardValue("%sbip", "ScoreBoard Is In Period", getGame(), Game.IN_PERIOD) {
             @Override
-            public String getValue() { return String.valueOf(getGame().get(Game.IN_PERIOD)); }
+            public String getValue() {
+                return String.valueOf(getGame().get(Game.IN_PERIOD));
+            }
         };
         new ScoreBoardValue("%sbio", "ScoreBoard Is In Overtime", getGame(), Game.IN_OVERTIME) {
             @Override
-            public String getValue() { return String.valueOf(getGame().get(Game.IN_OVERTIME)); }
+            public String getValue() {
+                return String.valueOf(getGame().get(Game.IN_OVERTIME));
+            }
         };
         new ScoreBoardValue("%sbos", "ScoreBoard Is Score Official", getGame(), Game.OFFICIAL_SCORE) {
             @Override
-            public String getValue() { return String.valueOf(getGame().get(Game.OFFICIAL_SCORE)); }
+            public String getValue() {
+                return String.valueOf(getGame().get(Game.OFFICIAL_SCORE));
+            }
         };
 
         setupTeamValues("1", Team.ID_1);
@@ -221,116 +209,162 @@ public class FormatSpecifierViewer {
 
         StringBuffer patternBuffer = new StringBuffer();
         Iterator<String> patterns = scoreBoardValues.keySet().iterator();
-        while (patterns.hasNext()) {
-            patternBuffer.append(patterns.next() + "|");
-        }
+        while (patterns.hasNext()) { patternBuffer.append(patterns.next() + "|"); }
         String specifiersRegex = patternBuffer.toString().replaceAll("[|]$", "");
         formatPattern = Pattern.compile(specifiersRegex);
         eventPattern = Pattern.compile("^\\s*(" + specifiersRegex + ")");
         conditionPattern = Pattern.compile("(" + specifiersRegex + ")(?:(" + comparatorRegex + ")(\\S+))?");
     }
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void setupTeamValues(String t, final String id) {
         new ScoreBoardValue("%t" + t + "n", "Team " + t + " Name", getTeam(id), Team.DISPLAY_NAME) {
             @Override
-            public String getValue() { return getTeam(id).get(Team.DISPLAY_NAME); }
+            public String getValue() {
+                return getTeam(id).get(Team.DISPLAY_NAME);
+            }
         };
         new ScoreBoardValue("%t" + t + "Nt", "Team " + t + " Twitter Name", getTeam(id), Team.ALTERNATE_NAME) {
             @Override
             public String getValue() {
                 try {
                     return getTeam(id).get(Team.ALTERNATE_NAME, Team.AlternateNameId.TWITTER.toString()).getValue();
-                } catch (NullPointerException npE) {
-                    return getTeam(id).get(Team.INITIALS);
-                }
+                } catch (NullPointerException npE) { return getTeam(id).get(Team.INITIALS); }
             }
         };
         new ScoreBoardValue("%t" + t + "s", "Team " + t + " Score", getTeam(id), Team.SCORE) {
             @Override
-            public String getValue() { return String.valueOf(getTeam(id).get(Team.SCORE)); }
+            public String getValue() {
+                return String.valueOf(getTeam(id).get(Team.SCORE));
+            }
         };
         new ScoreBoardValue("%t" + t + "t", "Team " + t + " Timeouts", getTeam(id), Team.TIMEOUTS) {
             @Override
-            public String getValue() { return String.valueOf(getTeam(id).get(Team.TIMEOUTS)); }
+            public String getValue() {
+                return String.valueOf(getTeam(id).get(Team.TIMEOUTS));
+            }
         };
         new ScoreBoardValue("%t" + t + "or", "Team " + t + " Official Reviews", getTeam(id), Team.OFFICIAL_REVIEWS) {
             @Override
-            public String getValue() { return String.valueOf(getTeam(id).get(Team.OFFICIAL_REVIEWS)); }
+            public String getValue() {
+                return String.valueOf(getTeam(id).get(Team.OFFICIAL_REVIEWS));
+            }
         };
         new ScoreBoardValue("%t" + t + "l", "Team " + t + " is Lead Jammer", getTeam(id), Team.DISPLAY_LEAD) {
             @Override
-            public String getValue() { return String.valueOf(getTeam(id).get(Team.DISPLAY_LEAD)); }
+            public String getValue() {
+                return String.valueOf(getTeam(id).get(Team.DISPLAY_LEAD));
+            }
         };
         new ScoreBoardValue("%t" + t + "jn", "Team " + t + " Jammer Name",
-                getTeam(id).getPosition(FloorPosition.JAMMER), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.JAMMER), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.JAMMER)); }
+            public String getValue() {
+                return getSkaterName(getPositionSkater(id, FloorPosition.JAMMER));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterName((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterName((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "jN", "Team " + t + " Jammer Number",
-                getTeam(id).getPosition(FloorPosition.JAMMER), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.JAMMER), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.JAMMER)); }
+            public String getValue() {
+                return getSkaterNumber(getPositionSkater(id, FloorPosition.JAMMER));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterNumber((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterNumber((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "pn", "Team " + t + " Pivot Name", getTeam(id).getPosition(FloorPosition.PIVOT),
-                Position.SKATER) {
+                            Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.PIVOT)); }
+            public String getValue() {
+                return getSkaterName(getPositionSkater(id, FloorPosition.PIVOT));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterName((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterName((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "pN", "Team " + t + " Pivot Number",
-                getTeam(id).getPosition(FloorPosition.PIVOT), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.PIVOT), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.PIVOT)); }
+            public String getValue() {
+                return getSkaterNumber(getPositionSkater(id, FloorPosition.PIVOT));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterNumber((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterNumber((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "b1n", "Team " + t + " Blocker1 Name",
-                getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER1)); }
+            public String getValue() {
+                return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER1));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterName((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterName((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "b1N", "Team " + t + " Blocker1 Number",
-                getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER1)); }
+            public String getValue() {
+                return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER1));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterNumber((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterNumber((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "b2n", "Team " + t + " Blocker2 Name",
-                getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER2)); }
+            public String getValue() {
+                return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER2));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterName((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterName((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "b2N", "Team " + t + " Blocker2 Number",
-                getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER2)); }
+            public String getValue() {
+                return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER2));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterNumber((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterNumber((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "b3n", "Team " + t + " Blocker3 Name",
-                getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER3)); }
+            public String getValue() {
+                return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER3));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterName((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterName((Skater) o);
+            }
         };
         new ScoreBoardValue("%t" + t + "b3N", "Team " + t + " Blocker3 Number",
-                getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.SKATER) {
+                            getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.SKATER) {
             @Override
-            public String getValue() { return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER3)); }
+            public String getValue() {
+                return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER3));
+            }
             @Override
-            public String getPreviousValue(Object o) { return getSkaterNumber((Skater) o); }
+            public String getPreviousValue(Object o) {
+                return getSkaterNumber((Skater) o);
+            }
         };
     }
 
@@ -343,23 +377,31 @@ public class FormatSpecifierViewer {
     protected String getSkaterName(Skater s) { return (null == s ? NO_SKATER_NAME_VALUE : s.getName()); }
     protected String getSkaterNumber(Skater s) { return (null == s ? NO_SKATER_NUMBER_VALUE : s.getRosterNumber()); }
 
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void setupClockValues(String c, final String id) {
         new ScoreBoardValue("%c" + c + "n", "Clock " + id + " Name", getClock(id), Clock.NAME) {
             @Override
-            public String getValue() { return getClock(id).get(Clock.NAME); }
+            public String getValue() {
+                return getClock(id).get(Clock.NAME);
+            }
         };
         new ScoreBoardValue("%c" + c + "N", "Clock " + id + " Number", getClock(id), Clock.NUMBER) {
             @Override
-            public String getValue() { return String.valueOf(getClock(id).get(Clock.NUMBER)); }
+            public String getValue() {
+                return String.valueOf(getClock(id).get(Clock.NUMBER));
+            }
         };
         new ScoreBoardValue("%c" + c + "r", "Clock " + id + " is Running", getClock(id), Clock.RUNNING) {
             @Override
-            public String getValue() { return String.valueOf(getClock(id).get(Clock.RUNNING)); }
+            public String getValue() {
+                return String.valueOf(getClock(id).get(Clock.RUNNING));
+            }
         };
         new ScoreBoardValue("%c" + c + "ts", "Clock " + id + " Time (seconds)", getClock(id), Clock.TIME) {
             @Override
-            public String getValue() { return getClockSecs(id); }
+            public String getValue() {
+                return getClockSecs(id);
+            }
             @Override
             public String getPreviousValue(Object o) {
                 return getClockSecs(((Long) o), getClock(id).get(Clock.DIRECTION));
@@ -367,7 +409,9 @@ public class FormatSpecifierViewer {
         };
         new ScoreBoardValue("%c" + c + "tms", "Clock " + id + " Time (min:sec)", getClock(id), Clock.TIME) {
             @Override
-            public String getValue() { return getClockMinSecs(id); }
+            public String getValue() {
+                return getClockMinSecs(id);
+            }
             @Override
             public String getPreviousValue(Object o) {
                 return getClockMinSecs(((Long) o), getClock(id).get(Clock.DIRECTION));
@@ -393,9 +437,7 @@ public class FormatSpecifierViewer {
         if (roundUp && time % 1000 != 0) { roundedTime++; }
         String min = String.valueOf(roundedTime / 60);
         String sec = String.valueOf(roundedTime % 60);
-        if (sec.length() == 1) {
-            sec = "0" + sec;
-        }
+        if (sec.length() == 1) { sec = "0" + sec; }
         return min + ":" + sec;
     }
 
@@ -419,7 +461,7 @@ public class FormatSpecifierViewer {
             scoreBoardValues.put(format, this);
         }
         protected ScoreBoardValue(String f, String d, Class<? extends ScoreBoardEventProvider> c, String i,
-                Property<T> prop) {
+                                  Property<T> prop) {
             format = f;
             description = d;
             scoreBoardCondition = new ScoreBoardCondition<>(c, i, prop);

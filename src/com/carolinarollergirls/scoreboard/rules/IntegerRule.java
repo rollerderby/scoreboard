@@ -9,15 +9,15 @@ public class IntegerRule extends RuleDefinition {
     public IntegerRule(IntegerRule cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new IntegerRule(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new IntegerRule(this, root);
+    }
 
     @Override
     public boolean isValueValid(String v) {
         try {
             Integer.parseInt(v);
             return true;
-        } catch (Exception e) {
-            return false;
-        }
+        } catch (Exception e) { return false; }
     }
 }

@@ -22,26 +22,30 @@ public class HumanIdGenerator {
     // This avoids terms like "bench", "box", or "GTO", as that could be confused with a
     // tablet/laptop in that location or for that person.
     private static String[] terms = {
-        "skater", "jammer", "pivot", "blocker", "alternate", "captain",
-        "jam", "period", "timeout", "lineup", "team", "review", "start", "stop",
-        "seconds", "whistle", "rolling", "stoppage", "clock", "tweet",
+        "skater",     "jammer",     "pivot",        "blocker",  "alternate", "captain",  "jam",
+        "period",     "timeout",    "lineup",       "team",     "review",    "start",    "stop",
+        "seconds",    "whistle",    "rolling",      "stoppage", "clock",     "tweet",
 
-        "illegal", "violation", "target", "blocking", "zone", "position",
-        "multiplayer", "pass", "penalty", "score", "trip", "point", "initial",
-        "interference", "delay", "procedure", "expulsion", "gross", "foulout", "warning", "block",
-        "gaining", "report", "return", "impact", "high", "low", "contact", "direction",
-        "clockwise", "impenetrable", "pack", "split", "play", "out", "in", "skating",
-        "destruction", "bounds", "failure", "yield", "miscounduct", "false",
-        "line", "stay", "lead", "lost", "call", "engagement", "complete", "incomplete", "stand", "done",
-        "overtime", "reentry", "insubordination", "unsporting", "cut", "swap", "spectrum",
+        "illegal",    "violation",  "target",       "blocking", "zone",      "position", "multiplayer",
+        "pass",       "penalty",    "score",        "trip",     "point",     "initial",  "interference",
+        "delay",      "procedure",  "expulsion",    "gross",    "foulout",   "warning",  "block",
+        "gaining",    "report",     "return",       "impact",   "high",      "low",      "contact",
+        "direction",  "clockwise",  "impenetrable", "pack",     "split",     "play",     "out",
+        "in",         "skating",    "destruction",  "bounds",   "failure",   "yield",    "miscounduct",
+        "false",      "line",       "stay",         "lead",     "lost",      "call",     "engagement",
+        "complete",   "incomplete", "stand",        "done",     "overtime",  "reentry",  "insubordination",
+        "unsporting", "cut",        "swap",         "spectrum",
 
-        "head", "back", "shoulder", "knee", "toe", "torso", "finger", "leg", "chin", "thigh",
-        "pads", "mouth", "guard", "wrist", "elbow", "forearm", "hand", "shin", "wheel", "truck",
-        "star", "stripe", "helmet", "cover", "toestop", "face", "nose", "uniform", "number",
+        "head",       "back",       "shoulder",     "knee",     "toe",       "torso",    "finger",
+        "leg",        "chin",       "thigh",        "pads",     "mouth",     "guard",    "wrist",
+        "elbow",      "forearm",    "hand",         "shin",     "wheel",     "truck",    "star",
+        "stripe",     "helmet",     "cover",        "toestop",  "face",      "nose",     "uniform",
+        "number",
 
-        "bridge", "goat", "wall", "tripod", "recycle", "runback", "lane", "power",
+        "bridge",     "goat",       "wall",         "tripod",   "recycle",   "runback",  "lane",
+        "power",
 
-        "short", "flat", "banked", "minor", "major",
+        "short",      "flat",       "banked",       "minor",    "major",
     };
     // If there's a duplicate, we take from this list.
     private static String[] overflow = {"ball", "offside", "touchdown", "goalie", "racket", "grass"};

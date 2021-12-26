@@ -345,6 +345,7 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
 var fieldingEditor = {};
 
 function openFieldingEditor(g, p, j, t, pos, upcoming) {
+  'use strict';
   var prefix =
     'ScoreBoard.Game(' +
     g +
@@ -591,16 +592,14 @@ function prepareFieldingEditor(elem, gameId, teamId) {
       }
       return;
     }
+    var between = isTrue(WS.state[prefix + 'EndBetweenJams']);
+    var afterSP = isTrue(WS.state[prefix + 'EndAfterSP']);
     if (['StartJamNumber', 'StartBetweenJams', 'StartAfterSP'].includes(key)) {
-      var between = isTrue(WS.state[prefix + 'StartBetweenJams']);
-      var afterSP = isTrue(WS.state[prefix + 'StartAfterSP']);
       row
         .find('.tripStartText')
         .text((between ? 'Before ' : '') + 'Jam ' + WS.state[prefix + 'StartJamNumber'] + (afterSP ? ' after SP' : ''));
     }
     if (['EndJamNumber', 'EndBetweenJams', 'EndAfterSP'].includes(key)) {
-      var between = isTrue(WS.state[prefix + 'EndBetweenJams']);
-      var afterSP = isTrue(WS.state[prefix + 'EndAfterSP']);
       var jam = WS.state[prefix + 'EndJamNumber'];
       row
         .find('.tripEndText')

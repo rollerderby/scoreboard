@@ -1,4 +1,5 @@
 function createRulesetsTab(tab, id, isGame) {
+  'use strict';
   var rulesets = {};
   var activeRuleset = null;
   var definitions = {};
@@ -32,22 +33,22 @@ function createRulesetsTab(tab, id, isGame) {
   function loadDefinitions() {
     var d = tab.find('>.definitions>.rules');
     d.empty();
-    var findSection = function (def) {
-      var newSection = function (def) {
-        var name = def.Group;
-        var section = $('<div>').addClass('section folded').attr('group', def.Group);
+    function newSection(def) {
+      var name = def.Group;
+      var section = $('<div>').addClass('section folded').attr('group', def.Group);
 
-        section.append(
-          $('<div>')
-            .addClass('header')
-            .on('click', function (e) {
-              section.toggleClass('folded');
-            })
-            .append(name)
-        );
+      section.append(
+        $('<div>')
+          .addClass('header')
+          .on('click', function (e) {
+            section.toggleClass('folded');
+          })
+          .append(name)
+      );
 
-        return section;
-      };
+      return section;
+    }
+    function findSection(def) {
       var section = null;
 
       var children = d.find('.section');
@@ -68,7 +69,7 @@ function createRulesetsTab(tab, id, isGame) {
       var div = $('<div>').addClass('definition').attr('fullname', def.Fullname);
       section.append(div);
       return div;
-    };
+    }
     // Keep them in the same order they are in the Java code.
     var sortedValues = $.map(definitions, function (v) {
       return v;
@@ -193,11 +194,13 @@ function createRulesetsTab(tab, id, isGame) {
           rs.Inherited = {};
           var pid = rs.Parent;
           while (pid !== '' && rulesets[pid]) {
+            /* jshint -W083 */
             $.each(rulesets[pid].Rules, function (name, value) {
               if (rs.Inherited[name] === undefined) {
                 rs.Inherited[name] = value;
               }
             });
+            /* jshint +W083 */
             pid = rulesets[pid].Parent;
           }
         });
@@ -219,12 +222,12 @@ function createRulesetsTab(tab, id, isGame) {
       if (activeRuleset == null || activeRuleset.Readonly) {
         return;
       }
-      var definitions = tab.children('.definitions');
+      var definitionsDiv = tab.children('.definitions');
       if (activeRuleset.Effective) {
-        definitions.find('.Update, .EditNote').show();
+        definitionsDiv.find('.Update, .EditNote').show();
       } else {
-        definitions.find('.Update').show();
-        definitions.find('.EditNote').hide();
+        definitionsDiv.find('.Update').show();
+        definitionsDiv.find('.EditNote').hide();
       }
     });
   }
@@ -254,12 +257,12 @@ function createRulesetsTab(tab, id, isGame) {
     if (!activeRuleset) {
       return;
     }
-    var definitions = tab.children('.definitions');
+    var definitionsDiv = tab.children('.definitions');
 
-    definitions.find('#name').val(activeRuleset.Name);
+    definitionsDiv.find('#name').val(activeRuleset.Name);
 
     if (!isTrue(activeRuleset.Readonly)) {
-      definitions.find('.definition *').prop('disabled', false);
+      definitionsDiv.find('.definition *').prop('disabled', false);
     }
 
     $.each(activeRuleset.Inherited, function (key, val) {
@@ -271,20 +274,20 @@ function createRulesetsTab(tab, id, isGame) {
 
     if (isTrue(activeRuleset.Readonly)) {
       tab.find('#name').prop('disabled', true);
-      definitions.find('.definition *').prop('disabled', true);
-      definitions.find('.Update, .EditNote').hide();
+      definitionsDiv.find('.definition *').prop('disabled', true);
+      definitionsDiv.find('.Update, .EditNote').hide();
     } else if (activeRuleset.Effective) {
       tab.find('#name').prop('disabled', false);
-      definitions.find('.Update, .EditNote').show();
+      definitionsDiv.find('.Update, .EditNote').show();
     } else if (activeRuleset.Id === '') {
       tab.find('#name').prop('disabled', true);
-      definitions.find('.definition .Selector').prop('disabled', true);
-      definitions.find('.Update').show();
-      definitions.find('.EditNote').hide();
+      definitionsDiv.find('.definition .Selector').prop('disabled', true);
+      definitionsDiv.find('.Update').show();
+      definitionsDiv.find('.EditNote').hide();
     } else {
       tab.find('#name').prop('disabled', false);
-      definitions.find('.Update').show();
-      definitions.find('.EditNote').hide();
+      definitionsDiv.find('.Update').show();
+      definitionsDiv.find('.EditNote').hide();
     }
   }
 

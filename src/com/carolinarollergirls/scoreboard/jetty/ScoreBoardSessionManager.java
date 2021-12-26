@@ -14,21 +14,17 @@ import org.eclipse.jetty.server.session.AbstractSession;
 import org.eclipse.jetty.server.session.AbstractSessionManager;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
-import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients.Device;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 
 public class ScoreBoardSessionManager extends AbstractSessionManager {
 
-    public ScoreBoardSessionManager(ScoreBoard s) {
-        clients = s.getClients();
-    }
+    public ScoreBoardSessionManager(ScoreBoard s) { clients = s.getClients(); }
 
     @Override
     public AbstractSession getSession(String sessionId) {
         Device d = clients.getDevice(sessionId);
-        if (d == null) {
-            return null;
-        }
+        if (d == null) { return null; }
         return new Session(this, sessionId);
     }
 
@@ -56,9 +52,7 @@ public class ScoreBoardSessionManager extends AbstractSessionManager {
     private Clients clients;
 
     protected class Session extends AbstractSession {
-        protected Session(ScoreBoardSessionManager manager, HttpServletRequest request) {
-            super(manager, request);
-        }
+        protected Session(ScoreBoardSessionManager manager, HttpServletRequest request) { super(manager, request); }
 
         protected Session(ScoreBoardSessionManager manager, String sessionId) {
             super(manager, 0, System.currentTimeMillis(), sessionId);

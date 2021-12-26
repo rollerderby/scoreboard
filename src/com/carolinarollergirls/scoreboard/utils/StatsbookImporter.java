@@ -4,6 +4,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
 
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.DataFormatter;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
+
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
@@ -13,17 +20,8 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.DataFormatter;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.ss.usermodel.WorkbookFactory;
-
 public class StatsbookImporter {
-    public StatsbookImporter(ScoreBoard sb) {
-        scoreboard = sb;
-    }
+    public StatsbookImporter(ScoreBoard sb) { scoreboard = sb; }
 
     public void read(InputStream in) {
         try {
@@ -33,15 +31,10 @@ public class StatsbookImporter {
             scoreboard.runInBatch(new Runnable() {
                 @Override
                 public void run() {
-                    synchronized(coreLock) {
-                        scoreboard.add(ScoreBoard.GAME, game);
-                    }
+                    synchronized (coreLock) { scoreboard.add(ScoreBoard.GAME, game); }
                 }
             });
-        }
-        catch(IOException e) {
-            e.printStackTrace();
-        }
+        } catch (IOException e) { e.printStackTrace(); }
     }
 
     private void readIgrf() {
@@ -74,16 +67,14 @@ public class StatsbookImporter {
         team.set(Team.UNIFORM_COLOR, readCell(igrf.getRow(11), col));
         String captainName = readCell(igrf.getRow(48), col);
 
-        for(int i = 13; i < 33; ++i) {
-            readSkater(igrf.getRow(i), team, captainName);
-        }
+        for (int i = 13; i < 33; ++i) { readSkater(igrf.getRow(i), team, captainName); }
     }
 
     private void readSkater(Row row, Team team, String captainName) {
         int col = Team.ID_1.equals(team.getProviderId()) ? 1 : 8;
         String number = readCell(row, col);
         String name = readCell(row, col + 1);
-        if("".equals(number) && "".equals(name)) { return; }
+        if ("".equals(number) && "".equals(name)) { return; }
         Skater s = team.getOrCreate(Team.SKATER, UUID.randomUUID().toString());
         if (number.endsWith("*")) {
             s.setFlags("ALT");
@@ -95,41 +86,34 @@ public class StatsbookImporter {
 
     private void readOfficials(Sheet igrf) {
         Child<Official> type = Game.NSO;
-        for(int i = 59; i < 88; ++i) {
-            type = readOfficial(igrf.getRow(i), type);
-        }
+        for (int i = 59; i < 88; ++i) { type = readOfficial(igrf.getRow(i), type); }
     }
 
     private Child<Official> readOfficial(Row row, Child<Official> lastType) {
         String role = readCell(row, 0);
-        if("".equals(role)) { return Game.REF; }
+        if ("".equals(role)) { return Game.REF; }
         Child<Official> type;
-        switch(role) {
-            case Official.ROLE_HR:
-            case Official.ROLE_IPR:
-            case Official.ROLE_JR:
-            case Official.ROLE_OPR:
-            case Official.ROLE_ALTR:
-                type = Game.REF;
-                break;
-            case Official.ROLE_HNSO:
-            case Official.ROLE_JT:
-            case Official.ROLE_PLT:
-            case Official.ROLE_PT:
-            case Official.ROLE_WB:
-            case Official.ROLE_PW:
-            case Official.ROLE_SBO:
-            case Official.ROLE_SK:
-            case Official.ROLE_PBM:
-            case Official.ROLE_PBT:
-            case Official.ROLE_LT:
-                type = Game.NSO;
-                break;
-            default:
-                type = lastType;
+        switch (role) {
+        case Official.ROLE_HR:
+        case Official.ROLE_IPR:
+        case Official.ROLE_JR:
+        case Official.ROLE_OPR:
+        case Official.ROLE_ALTR: type = Game.REF; break;
+        case Official.ROLE_HNSO:
+        case Official.ROLE_JT:
+        case Official.ROLE_PLT:
+        case Official.ROLE_PT:
+        case Official.ROLE_WB:
+        case Official.ROLE_PW:
+        case Official.ROLE_SBO:
+        case Official.ROLE_SK:
+        case Official.ROLE_PBM:
+        case Official.ROLE_PBT:
+        case Official.ROLE_LT: type = Game.NSO; break;
+        default: type = lastType;
         }
         String name = readCell(row, 2);
-        if("".equals(name)) { return type; }
+        if ("".equals(name)) { return type; }
         String league = readCell(row, 7);
         String cert = readCell(row, 10);
         if (cert.endsWith("1")) {
@@ -142,37 +126,35 @@ public class StatsbookImporter {
             cert = "R";
         }
         Official newO = null;
-        if(type == Game.NSO) {
-            for(Official o : game.getAll(type)) {
-                if(o.get(Official.NAME).equals(name) && o.get(Official.LEAGUE).equals(league)) {
-                    if(Official.ROLE_HNSO.equals(role)) {
+        if (type == Game.NSO) {
+            for (Official o : game.getAll(type)) {
+                if (o.get(Official.NAME).equals(name) && o.get(Official.LEAGUE).equals(league)) {
+                    if (Official.ROLE_HNSO.equals(role)) {
                         newO = o;
                         break;
                     }
-                    if(Official.ROLE_HNSO.equals(o.get(Official.ROLE))) {
+                    if (Official.ROLE_HNSO.equals(o.get(Official.ROLE))) {
                         newO = o;
                         o.set(Official.ROLE, role);
                         break;
                     }
-                    if(Official.ROLE_PT.equals(role) && Official.ROLE_LT.equals(o.get(Official.ROLE)) ||
+                    if (Official.ROLE_PT.equals(role) && Official.ROLE_LT.equals(o.get(Official.ROLE)) ||
                         Official.ROLE_LT.equals(role) && Official.ROLE_PT.equals(o.get(Official.ROLE))) {
-                            newO = o;
-                            o.set(Official.ROLE, Official.ROLE_PLT);
-                            break;
+                        newO = o;
+                        o.set(Official.ROLE, Official.ROLE_PLT);
+                        break;
                     }
                 }
             }
         }
-        if(newO == null) {
+        if (newO == null) {
             newO = game.getOrCreate(type, UUID.randomUUID().toString());
             newO.set(Official.ROLE, role);
             newO.set(Official.NAME, name);
             newO.set(Official.LEAGUE, league);
             newO.set(Official.CERT, cert);
         }
-        if(Official.ROLE_HNSO.equals(role)) {
-            game.set(Game.HEAD_NSO, newO);
-        }
+        if (Official.ROLE_HNSO.equals(role)) { game.set(Game.HEAD_NSO, newO); }
         return type;
     }
 

@@ -20,10 +20,10 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
     public CurrentGameImpl(ScoreBoard sb) {
         super(sb, "", ScoreBoard.CURRENT_GAME);
         addProperties(GAME, Game.NAME, Game.CURRENT_PERIOD_NUMBER, Game.UPCOMING_JAM_NUMBER, Game.IN_PERIOD,
-                Game.IN_JAM, Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER,
-                Game.OFFICIAL_REVIEW, Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, CLOCK, TEAM, Game.RULE,
-                Game.LABEL, Game.START_JAM, Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE,
-                Game.START_OVERTIME, Game.OFFICIAL_TIMEOUT);
+                      Game.IN_JAM, Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER,
+                      Game.OFFICIAL_REVIEW, Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, CLOCK, TEAM, Game.RULE,
+                      Game.LABEL, Game.START_JAM, Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE,
+                      Game.START_OVERTIME, Game.OFFICIAL_TIMEOUT);
         setCopy(Game.NAME, this, GAME, Game.NAME, true);
         setCopy(Game.CURRENT_PERIOD_NUMBER, this, GAME, Game.CURRENT_PERIOD_NUMBER, true);
         setCopy(Game.UPCOMING_JAM_NUMBER, this, GAME, Game.UPCOMING_JAM_NUMBER, true);
@@ -53,25 +53,25 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
     public CurrentGameImpl(CurrentGameImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentGameImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new CurrentGameImpl(this, root);
+    }
 
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == GAME) {
             if (value != null) {
                 Game g = (Game) value;
-                for (CurrentTeam t : getAll(TEAM)) {
-                    t.load(g.getTeam(t.getProviderId()));
-                }
-                for (CurrentClock c : getAll(CLOCK)) {
-                    c.load(g.getClock(c.getProviderId()));
-                }
+                for (CurrentTeam t : getAll(TEAM)) { t.load(g.getTeam(t.getProviderId())); }
+                for (CurrentClock c : getAll(CLOCK)) { c.load(g.getClock(c.getProviderId())); }
             }
         }
     }
 
     @Override
-    public void execute(Command prop, Source source) { get(GAME).execute(prop, source); }
+    public void execute(Command prop, Source source) {
+        get(GAME).execute(prop, source);
+    }
 
     @Override
     public void postAutosaveUpdate() {
@@ -93,5 +93,7 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
     }
 
     @Override
-    public void load(Game g) { set(GAME, g); }
+    public void load(Game g) {
+        set(GAME, g);
+    }
 }

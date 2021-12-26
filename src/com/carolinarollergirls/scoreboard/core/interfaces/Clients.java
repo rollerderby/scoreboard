@@ -52,7 +52,7 @@ public interface Clients extends ScoreBoardEventProvider {
         public void write();
 
         Value<String> SESSION_ID_SECRET = new Value<>(String.class, "SessionIdSecret", ""); // The cookie.
-        Value<String> NAME = new Value<>(String.class, "Name", ""); // A human-readable name.
+        Value<String> NAME = new Value<>(String.class, "Name", "");                         // A human-readable name.
         Value<String> REMOTE_ADDR = new Value<>(String.class, "RemoteAddr", "");
         Value<String> PLATFORM = new Value<>(String.class, "Platform", "");
         Value<String> COMMENT = new Value<>(String.class, "Comment", "");

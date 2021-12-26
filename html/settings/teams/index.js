@@ -1,4 +1,5 @@
-$(function() {
+$(function () {
+  'use strict';
   var teamId = _windowFunctions.getParam('team');
   createTeamsTab($('#TeamsTab'), null, teamId);
 

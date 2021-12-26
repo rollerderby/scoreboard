@@ -10,9 +10,7 @@ public class PenaltyCode implements ValueWithId {
     private String code;
     private List<String> verbalCues;
 
-    public PenaltyCode() {
-
-    }
+    public PenaltyCode() {}
 
     public PenaltyCode(String code, List<String> verbalCues) {
         this.code = code;
@@ -25,10 +23,14 @@ public class PenaltyCode implements ValueWithId {
     }
 
     @Override
-    public String getId() { return code; }
+    public String getId() {
+        return code;
+    }
 
     @Override
-    public String getValue() { return String.join(",", verbalCues); }
+    public String getValue() {
+        return String.join(",", verbalCues);
+    }
 
     public String getCode() { return code; }
     public void setCode(String code) { this.code = code; }

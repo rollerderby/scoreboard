@@ -1,4 +1,3 @@
-
 /**
  * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
  *
@@ -13,7 +12,8 @@ var _crgUtils = {
    * This removes illegal characters from the string,
    * so it's safe to use as an element's id.
    */
-  checkSbId: function(s) {
+  checkSbId: function (s) {
+    'use strict';
     return s.replace(/['"()]/g, '');
   },
 
@@ -29,7 +29,8 @@ var _crgUtils = {
    * The useBind parameter, if true, will cause bind() to be used
    * instead of on().
    */
-  onAndRun: function(target, eventType, eventData, handler, initialParams, useBind) {
+  onAndRun: function (target, eventType, eventData, handler, initialParams, useBind) {
+    'use strict';
     if (!$.isjQuery(target)) {
       target = $(target);
     }
@@ -49,50 +50,59 @@ var _crgUtils = {
         target.live(eventType, eventData, handler);
       }
     }
-    target.each(function() {
-      var params = [ ];
+    target.each(function () {
+      var params = [];
       if (initialParams) {
         params = initialParams;
       }
-//FIXME - call once for each eventType after splitting by spaces?
+      //FIXME - call once for each eventType after splitting by spaces?
       var event = jQuery.Event(eventType);
       event.target = event.currentTarget = this;
       if (eventData) {
         event.data = eventData;
       }
-      handler.apply(this, $.merge([ event ], params));
+      handler.apply(this, $.merge([event], params));
     });
     return target;
   },
-  bindAndRun: function(target, eventType, eventData, handler, initialParams) {
+  bindAndRun: function (target, eventType, eventData, handler, initialParams) {
+    'use strict';
     return _crgUtils.onAndRun(target, eventType, eventData, handler, initialParams, true);
   },
 
-  showLoginDialog: function(titleText, nameText, buttonText, callback) {
+  showLoginDialog: function (titleText, nameText, buttonText, callback) {
+    'use strict';
     var dialog = $('<div>').append($('<a>').html(nameText)).append('<input type="text"/>');
-    var login = function() {
+    var login = function () {
       if (callback(dialog.find('input:text').val())) {
         dialog.dialog('destroy');
       }
     };
-    dialog.find('input:text').keydown(function(event) { if (event.which === 13) { login(); } });
+    dialog.find('input:text').keydown(function (event) {
+      if (event.which === 13) {
+        login();
+      }
+    });
     dialog.dialog({
       modal: true,
       closeOnEscape: false,
       title: titleText,
-      buttons: [ { text: buttonText, click: login } ],
-      close: function() { if (callback('default')) {
-        dialog.dialog('destroy');
-      }}
+      buttons: [{ text: buttonText, click: login }],
+      close: function () {
+        if (callback('default')) {
+          dialog.dialog('destroy');
+        }
+      },
     });
     // If we're in period 2, the dialog can end up off screen once all the
     // SK rows finish loading. This ensures the dialog stays up top.
-    dialog.dialog('widget').css({'top': '5em', 'position': 'fixed'});
+    dialog.dialog('widget').css({ top: '5em', position: 'fixed' });
   },
 
-  createRowTable: function(n, r) {
+  createRowTable: function (n, r) {
+    'use strict';
     var table = $('<table>').css('width', '100%').addClass('RowTable');
-    var w = (100 / n) + '%';
+    var w = 100 / n + '%';
     r = r || 1;
     while (0 < r--) {
       var count = n;
@@ -102,7 +112,6 @@ var _crgUtils = {
       }
     }
     return table;
-  }
-
+  },
 };
 //# sourceURL=javascript\utils.js

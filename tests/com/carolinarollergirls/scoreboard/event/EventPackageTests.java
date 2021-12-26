@@ -33,12 +33,9 @@ public class EventPackageTests {
 
     private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
-
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
-            synchronized (collectedEvents) {
-                collectedEvents.add(event);
-            }
+            synchronized (collectedEvents) { collectedEvents.add(event); }
         }
     };
 
@@ -60,7 +57,7 @@ public class EventPackageTests {
     @Test
     public void testSet() {
         root.addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.INT, listener));
+            new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.INT, listener));
 
         assertEquals(0, (int) root.get(TestScoreBoardEventProvider.INT));
         assertEquals(0, ((TestScoreBoardEventProviderImpl) root).valuesChanged);
@@ -85,11 +82,11 @@ public class EventPackageTests {
     @Test
     public void testAddRemoveUnordered() {
         root.addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.MULTIPLE, listener));
+            new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.MULTIPLE, listener));
         TestScoreBoardEventProvider child1 = new TestScoreBoardEventProviderImpl(root, UUID.randomUUID().toString(),
-                TestScoreBoardEventProvider.MULTIPLE);
+                                                                                 TestScoreBoardEventProvider.MULTIPLE);
         TestScoreBoardEventProvider child2 = new TestScoreBoardEventProviderImpl(root, UUID.randomUUID().toString(),
-                TestScoreBoardEventProvider.MULTIPLE);
+                                                                                 TestScoreBoardEventProvider.MULTIPLE);
 
         assertEquals(0, root.numberOf(TestScoreBoardEventProvider.MULTIPLE));
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
@@ -166,10 +163,10 @@ public class EventPackageTests {
     @Test
     public void testSingleton() {
         root.addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.SINGLETON, listener));
+            new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.SINGLETON, listener));
         TestScoreBoardEventProvider singleton = root.get(TestScoreBoardEventProvider.SINGLETON, "");
         TestScoreBoardEventProvider s1 = new TestScoreBoardEventProviderImpl(root, UUID.randomUUID().toString(),
-                TestScoreBoardEventProvider.SINGLETON);
+                                                                             TestScoreBoardEventProvider.SINGLETON);
 
         assertEquals(1, root.numberOf(TestScoreBoardEventProvider.SINGLETON));
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
@@ -192,15 +189,15 @@ public class EventPackageTests {
     @Test
     public void testAddRemoveNumbered() {
         root.addScoreBoardListener(
-                new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.NUMBERED, listener));
+            new ConditionalScoreBoardListener<>(root, TestScoreBoardEventProvider.NUMBERED, listener));
         TestNumberedScoreBoardEventProvider child1 = new TestNumberedScoreBoardEventProviderImpl(root, 1);
 
         assertEquals(1, ((TestScoreBoardEventProviderImpl) root).itemsAdded);
         assertEquals(0, ((TestScoreBoardEventProviderImpl) root).itemsRemoved);
-        TestParentOrderedScoreBoardEventProvider subchild1 = new TestParentOrderedScoreBoardEventProviderImpl(child1,
-                "A");
-        TestParentOrderedScoreBoardEventProvider subsubchild1 = new TestParentOrderedScoreBoardEventProviderImpl(
-                subchild1, "1");
+        TestParentOrderedScoreBoardEventProvider subchild1 =
+            new TestParentOrderedScoreBoardEventProviderImpl(child1, "A");
+        TestParentOrderedScoreBoardEventProvider subsubchild1 =
+            new TestParentOrderedScoreBoardEventProviderImpl(subchild1, "1");
         assertTrue(subchild1.add(TestParentOrderedScoreBoardEventProvider.CO_ORDERED, subsubchild1));
         assertTrue(child1.add(TestNumberedScoreBoardEventProvider.CO_ORDERED, subchild1));
         assertTrue(root.add(TestScoreBoardEventProvider.NUMBERED, child1));
@@ -225,10 +222,10 @@ public class EventPackageTests {
         assertNull(subsubchild1.getPrevious());
 
         TestNumberedScoreBoardEventProvider child2 = new TestNumberedScoreBoardEventProviderImpl(root, 2);
-        TestParentOrderedScoreBoardEventProvider subchild2 = new TestParentOrderedScoreBoardEventProviderImpl(child2,
-                "A");
-        TestParentOrderedScoreBoardEventProvider subsubchild2 = new TestParentOrderedScoreBoardEventProviderImpl(
-                subchild2, "1");
+        TestParentOrderedScoreBoardEventProvider subchild2 =
+            new TestParentOrderedScoreBoardEventProviderImpl(child2, "A");
+        TestParentOrderedScoreBoardEventProvider subsubchild2 =
+            new TestParentOrderedScoreBoardEventProviderImpl(subchild2, "1");
         assertTrue(root.add(TestScoreBoardEventProvider.NUMBERED, child2));
         assertTrue(child2.add(TestNumberedScoreBoardEventProvider.CO_ORDERED, subchild2));
         assertTrue(subchild2.add(TestParentOrderedScoreBoardEventProvider.CO_ORDERED, subsubchild2));
@@ -263,10 +260,10 @@ public class EventPackageTests {
         assertEquals(subsubchild1, subsubchild2.getPrevious());
 
         TestNumberedScoreBoardEventProvider child5 = new TestNumberedScoreBoardEventProviderImpl(root, 4);
-        TestParentOrderedScoreBoardEventProvider subchild5 = new TestParentOrderedScoreBoardEventProviderImpl(child5,
-                "A");
-        TestParentOrderedScoreBoardEventProvider subsubchild5 = new TestParentOrderedScoreBoardEventProviderImpl(
-                subchild5, "1");
+        TestParentOrderedScoreBoardEventProvider subchild5 =
+            new TestParentOrderedScoreBoardEventProviderImpl(child5, "A");
+        TestParentOrderedScoreBoardEventProvider subsubchild5 =
+            new TestParentOrderedScoreBoardEventProviderImpl(subchild5, "1");
         assertTrue(subchild5.add(TestParentOrderedScoreBoardEventProvider.CO_ORDERED, subsubchild5));
         assertTrue(child5.add(TestNumberedScoreBoardEventProvider.CO_ORDERED, subchild5));
         assertTrue(root.add(TestScoreBoardEventProvider.NUMBERED, child5));
@@ -312,10 +309,10 @@ public class EventPackageTests {
         assertEquals(subsubchild2, subsubchild5.getPrevious());
 
         TestNumberedScoreBoardEventProvider child3 = new TestNumberedScoreBoardEventProviderImpl(root, 3);
-        TestParentOrderedScoreBoardEventProvider subchild3 = new TestParentOrderedScoreBoardEventProviderImpl(child3,
-                "A");
-        TestParentOrderedScoreBoardEventProvider subsubchild3 = new TestParentOrderedScoreBoardEventProviderImpl(
-                subchild3, "1");
+        TestParentOrderedScoreBoardEventProvider subchild3 =
+            new TestParentOrderedScoreBoardEventProviderImpl(child3, "A");
+        TestParentOrderedScoreBoardEventProvider subsubchild3 =
+            new TestParentOrderedScoreBoardEventProviderImpl(subchild3, "1");
         assertTrue(subchild3.add(TestParentOrderedScoreBoardEventProvider.CO_ORDERED, subsubchild3));
         assertTrue(child3.add(TestNumberedScoreBoardEventProvider.CO_ORDERED, subchild3));
         assertTrue(root.add(TestScoreBoardEventProvider.NUMBERED, child3));
@@ -368,10 +365,10 @@ public class EventPackageTests {
         assertEquals(subsubchild3, subsubchild5.getPrevious());
 
         TestNumberedScoreBoardEventProvider child4 = new TestNumberedScoreBoardEventProviderImpl(root, 4);
-        TestParentOrderedScoreBoardEventProvider subchild4 = new TestParentOrderedScoreBoardEventProviderImpl(child4,
-                "A");
-        TestParentOrderedScoreBoardEventProvider subsubchild4 = new TestParentOrderedScoreBoardEventProviderImpl(
-                subchild4, "1");
+        TestParentOrderedScoreBoardEventProvider subchild4 =
+            new TestParentOrderedScoreBoardEventProviderImpl(child4, "A");
+        TestParentOrderedScoreBoardEventProvider subsubchild4 =
+            new TestParentOrderedScoreBoardEventProviderImpl(subchild4, "1");
         assertTrue(subchild4.add(TestParentOrderedScoreBoardEventProvider.CO_ORDERED, subsubchild4));
         assertTrue(child4.add(TestNumberedScoreBoardEventProvider.CO_ORDERED, subchild4));
         assertTrue(root.add(TestScoreBoardEventProvider.NUMBERED, child4));
@@ -615,10 +612,10 @@ public class EventPackageTests {
 
     @Test
     public void testInverseReference() {
-        TestScoreBoardEventProvider child1 = new TestScoreBoardEventProviderImpl(root, "ID1",
-                TestScoreBoardEventProvider.MULTIPLE);
-        TestScoreBoardEventProvider child2 = new TestScoreBoardEventProviderImpl(root, "ID2",
-                TestScoreBoardEventProvider.MULTIPLE);
+        TestScoreBoardEventProvider child1 =
+            new TestScoreBoardEventProviderImpl(root, "ID1", TestScoreBoardEventProvider.MULTIPLE);
+        TestScoreBoardEventProvider child2 =
+            new TestScoreBoardEventProviderImpl(root, "ID2", TestScoreBoardEventProvider.MULTIPLE);
         assertNull(child1.get(TestScoreBoardEventProvider.REFERENCE));
         assertNull(child2.get(TestScoreBoardEventProvider.REFERENCE));
         assertEquals(0, root.numberOf(TestScoreBoardEventProvider.MULTIPLE));
@@ -661,8 +658,8 @@ public class EventPackageTests {
 
     @Test
     public void testIndirectCopy() {
-        TestScoreBoardEventProvider child = new TestScoreBoardEventProviderImpl(root, "ID1",
-                TestScoreBoardEventProvider.MULTIPLE);
+        TestScoreBoardEventProvider child =
+            new TestScoreBoardEventProviderImpl(root, "ID1", TestScoreBoardEventProvider.MULTIPLE);
         root.add(TestScoreBoardEventProvider.MULTIPLE, child);
 
         assertEquals(0, (int) child.get(TestScoreBoardEventProvider.RO_INDIRECT_COPY));
@@ -683,8 +680,8 @@ public class EventPackageTests {
 
     @Test
     public void testRecalcuate() {
-        TestScoreBoardEventProvider child = new TestScoreBoardEventProviderImpl(root, "ID",
-                TestScoreBoardEventProvider.MULTIPLE);
+        TestScoreBoardEventProvider child =
+            new TestScoreBoardEventProviderImpl(root, "ID", TestScoreBoardEventProvider.MULTIPLE);
         root.add(TestScoreBoardEventProvider.MULTIPLE, child);
 
         assertEquals(0, (int) child.get(TestScoreBoardEventProvider.RECALCULATED));

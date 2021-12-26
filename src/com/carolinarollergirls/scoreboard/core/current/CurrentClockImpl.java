@@ -11,7 +11,7 @@ public class CurrentClockImpl extends ScoreBoardEventProviderImpl<CurrentClock> 
     CurrentClockImpl(CurrentGame g, String id) {
         super(g, id, CurrentGame.CLOCK);
         addProperties(CLOCK, Clock.NAME, Clock.NUMBER, Clock.TIME, Clock.INVERTED_TIME, Clock.MAXIMUM_TIME,
-                Clock.DIRECTION, Clock.RUNNING, Clock.START, Clock.STOP, Clock.RESET_TIME);
+                      Clock.DIRECTION, Clock.RUNNING, Clock.START, Clock.STOP, Clock.RESET_TIME);
         setCopy(Clock.NAME, this, CLOCK, Clock.NAME, true);
         setCopy(Clock.NUMBER, this, CLOCK, Clock.NUMBER, true);
         setCopy(Clock.TIME, this, CLOCK, Clock.TIME, id != Clock.ID_PERIOD);
@@ -23,11 +23,17 @@ public class CurrentClockImpl extends ScoreBoardEventProviderImpl<CurrentClock> 
     public CurrentClockImpl(CurrentClockImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentClockImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new CurrentClockImpl(this, root);
+    }
 
     @Override
-    public void execute(Command prop, Source source) { get(CLOCK).execute(prop, source); }
+    public void execute(Command prop, Source source) {
+        get(CLOCK).execute(prop, source);
+    }
 
     @Override
-    public void load(Clock t) { set(CLOCK, t); }
+    public void load(Clock t) {
+        set(CLOCK, t);
+    }
 }

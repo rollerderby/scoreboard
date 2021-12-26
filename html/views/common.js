@@ -1,5 +1,5 @@
-
 function jammer(k, v, ov) {
+  'use strict';
   var id = getTeamId(k);
   var prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
   var jammerName = WS.state[prefix + 'Position(Jammer).Name'];
@@ -9,21 +9,24 @@ function jammer(k, v, ov) {
   var inJam = isTrue(WS.state['ScoreBoard.InJam']);
 
   if (jammerName == null || jammerName === '') {
-    jammerName = (leadJammer && !ov) ? 'Lead' : '';
-    if (pivotName == null) {pivotName = '';}
+    jammerName = leadJammer && !ov ? 'Lead' : '';
+    if (pivotName == null) {
+      pivotName = '';
+    }
   }
 
   var jn = !starPass ? jammerName : pivotName;
   if (!inJam) {
-    jn = '';  // When no clocks are running, do not show jammer names.
+    jn = ''; // When no clocks are running, do not show jammer names.
   }
-  $('.Team' + id + ' .Lead').toggleClass('HasLead', (leadJammer && !starPass));
-  $('.Team' + id).toggleClass('HasJammerName', (jn !== ''));
+  $('.Team' + id + ' .Lead').toggleClass('HasLead', leadJammer && !starPass);
+  $('.Team' + id).toggleClass('HasJammerName', jn !== '');
   $('.Team' + id + ' .Lead').toggleClass('HasStarPass', starPass);
   return jn;
 }
 
 function getTeamId(k) {
+  'use strict';
   if (k.indexOf('Team(1)') > 0) {
     return '1';
   }
@@ -34,11 +37,13 @@ function getTeamId(k) {
 }
 
 function nameUpdate(k, v) {
+  'use strict';
   $('.Team' + getTeamId(k)).toggleClass('HasName', v !== '');
   return v;
 }
 
 function logoUpdate(k, v) {
+  'use strict';
   var id = getTeamId(k);
   var prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
   var logo = WS.state[prefix + 'Logo'];
@@ -58,6 +63,7 @@ function logoUpdate(k, v) {
 }
 
 function smallDescriptionUpdate(k, v) {
+  'use strict';
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
   var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
@@ -89,17 +95,17 @@ function smallDescriptionUpdate(k, v) {
       if (to === 'O') {
         ret = 'Official Timeout';
       } else {
+        var dotSel;
         if (or) {
           ret = 'Official Review';
           $('.Team' + to + '>.OfficialReviews:not(.Header)').addClass('Red');
-          var dotSel = '.Team' + to + ' .OfficialReview1';
-          $(dotSel).addClass('Active');
+          dotSel = '.Team' + to + ' .OfficialReview1';
         } else {
           ret = 'Team Timeout';
           $('.Team' + to + '>.Timeouts').addClass('Red');
-          var dotSel = '.Team' + to + ' .Timeout' + (WS.state['ScoreBoard.CurrentGame.Team(' + to + ').Timeouts'] + 1);
-          $(dotSel).addClass('Active');
+          dotSel = '.Team' + to + ' .Timeout' + (WS.state['ScoreBoard.CurrentGame.Team(' + to + ').Timeouts'] + 1);
         }
+        $(dotSel).addClass('Active');
       }
     }
   }
@@ -107,6 +113,7 @@ function smallDescriptionUpdate(k, v) {
 }
 
 function intermissionDisplay() {
+  'use strict';
   var num = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Number'];
   var max = WS.state['ScoreBoard.CurrentGame.Rule(Period.Number)'];
   var isOfficial = WS.state['ScoreBoard.CurrentGame.OfficialScore'];
@@ -127,6 +134,7 @@ function intermissionDisplay() {
 }
 
 function toClockInitialNumber(k, v) {
+  'use strict';
   var ret = '';
   $.each(['Period', 'Jam'], function (i, c) {
     if (k.indexOf('Clock(' + c + ')') > -1) {
@@ -146,16 +154,19 @@ function toClockInitialNumber(k, v) {
 }
 
 function toTime(k, v) {
+  'use strict';
   k = WS._enrichProp(k);
   var isCountDown = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
 
 function toSP(k, v) {
+  'use strict';
   return isTrue(v) ? 'SP' : '';
 }
 
-function clockRunner(k,v) {
+function clockRunner(k, v) {
+  'use strict';
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
   var ic = WS.state['ScoreBoard.CurrentGame.Clock(Intermission).Running'];
@@ -173,10 +184,12 @@ function clockRunner(k,v) {
   $('.SlideDown.ShowIn' + clock + ',.Clock.ShowIn' + clock).addClass('Show');
 }
 
-
 // Show Clocks
-WS.Register( 'ScoreBoard.CurrentGame.Clock(*).Running', function(k, v) { clockRunner(k,v); } );
-WS.Register( 'ScoreBoard.CurrentGame.Clock(*).Direction');
+WS.Register('ScoreBoard.CurrentGame.Clock(*).Running', function (k, v) {
+  'use strict';
+  clockRunner(k, v);
+});
+WS.Register('ScoreBoard.CurrentGame.Clock(*).Direction');
 
-WS.Register( 'ScoreBoard.CurrentGame.Rule(Period.Number)' );
-WS.Register( 'ScoreBoard.CurrentGame.InJam' );
+WS.Register('ScoreBoard.CurrentGame.Rule(Period.Number)');
+WS.Register('ScoreBoard.CurrentGame.InJam');

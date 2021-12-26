@@ -22,9 +22,7 @@ public class ClockConversion {
 
         try {
             return Long.parseLong(v);
-        } catch (Exception e) {
-            return null;
-        }
+        } catch (Exception e) { return null; }
     }
 
     public static String toHumanReadable(Long v) {
@@ -41,4 +39,3 @@ public class ClockConversion {
 
     private static Pattern p = Pattern.compile("(\\d+):(\\d+)(\\.(\\d+))?");
 }
-

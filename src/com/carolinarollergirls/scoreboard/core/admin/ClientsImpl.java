@@ -30,7 +30,9 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public ClientsImpl(ClientsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ClientsImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new ClientsImpl(this, root);
+    }
 
     @Override
     public void postAutosaveUpdate() {
@@ -57,9 +59,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
             d.set(Device.REMOTE_ADDR, remoteAddr);
             c.set(Client.PLATFORM, platform);
             add(CLIENT, c);
-            if (platform != null) {
-                d.set(Device.PLATFORM, platform);
-            }
+            if (platform != null) { d.set(Device.PLATFORM, platform); }
             c.set(Client.CREATED, System.currentTimeMillis());
             requestBatchEnd();
             return c;
@@ -68,9 +68,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
 
     @Override
     public void removeClient(Client c) {
-        synchronized (coreLock) {
-            c.delete(Source.UNLINK);
-        }
+        synchronized (coreLock) { c.delete(Source.UNLINK); }
     }
 
     @Override
@@ -92,9 +90,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public Device getDevice(String sessionId) {
         synchronized (coreLock) {
             for (Device d : getAll(DEVICE)) {
-                if (d.get(Device.SESSION_ID_SECRET).equals(sessionId)) {
-                    return d;
-                }
+                if (d.get(Device.SESSION_ID_SECRET).equals(sessionId)) { return d; }
             }
             return null;
         }
@@ -131,9 +127,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     protected Device getDeviceByName(String name) {
         synchronized (coreLock) {
             for (Device d : getAll(DEVICE)) {
-                if (d.get(Device.NAME).equals(name)) {
-                    return d;
-                }
+                if (d.get(Device.NAME).equals(name)) { return d; }
             }
             return null;
         }
@@ -170,8 +164,10 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         public ClientImpl(ClientImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
         @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new ClientImpl(this, root); }
-    
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+            return new ClientImpl(this, root);
+        }
+
         @Override
         public void write() {
             synchronized (coreLock) {
@@ -186,20 +182,20 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         protected DeviceImpl(Clients parent, String id) {
             super(parent, id, Clients.DEVICE);
             addProperties(SESSION_ID_SECRET, NAME, REMOTE_ADDR, PLATFORM, COMMENT, CREATED, WROTE, ACCESSED, MAY_WRITE,
-                    CLIENT);
+                          CLIENT);
             set(MAY_WRITE, parent.get(NEW_DEVICE_WRITE));
             addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         }
         public DeviceImpl(DeviceImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
         @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new DeviceImpl(this, root); }
-    
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+            return new DeviceImpl(this, root);
+        }
+
         @Override
         public String getName() {
-            synchronized (coreLock) {
-                return get(NAME);
-            }
+            synchronized (coreLock) { return get(NAME); }
         }
 
         @Override
@@ -213,18 +209,14 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         public Boolean isLocal() {
             synchronized (coreLock) {
                 String address = get(REMOTE_ADDR);
-                if ("127.0.0.1".equals(address) || "0:0:0:0:0:0:0:1".equals(address)) {
-                    return true;
-                }
+                if ("127.0.0.1".equals(address) || "0:0:0:0:0:0:0:1".equals(address)) { return true; }
                 return false;
             }
         }
 
         @Override
         public void access() {
-            synchronized (coreLock) {
-                set(ACCESSED, System.currentTimeMillis());
-            }
+            synchronized (coreLock) { set(ACCESSED, System.currentTimeMillis()); }
         }
 
         @Override
@@ -239,9 +231,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
         protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
             if (!source.isInternal() && prop != COMMENT && prop != MAY_WRITE) {
                 // Only allow changing values from WS/load if they didn't already have one.
-                if (!Objects.equals(last, prop.getDefaultValue())) {
-                    return last;
-                }
+                if (!Objects.equals(last, prop.getDefaultValue())) { return last; }
             }
             return value;
         }

@@ -25,24 +25,23 @@ import io.prometheus.client.GaugeMetricFamily;
 public class ScoreBoardMetricsCollector extends Collector {
     private ScoreBoard sb;
 
-    public ScoreBoardMetricsCollector(ScoreBoard sb) {
-        this.sb = sb;
-    }
+    public ScoreBoardMetricsCollector(ScoreBoard sb) { this.sb = sb; }
     @Override
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> mfs = new ArrayList<>();
 
         GaugeMetricFamily clockTime = new GaugeMetricFamily("crg_scoreboard_clock_time_seconds",
-                "Time on scoreboard clock.", Arrays.asList("clock"));
+                                                            "Time on scoreboard clock.", Arrays.asList("clock"));
         mfs.add(clockTime);
-        GaugeMetricFamily clockInvertedTime = new GaugeMetricFamily("crg_scoreboard_clock_inverted_time_seconds",
-                "Time on scoreboard clock, inverted.", Arrays.asList("clock"));
+        GaugeMetricFamily clockInvertedTime =
+            new GaugeMetricFamily("crg_scoreboard_clock_inverted_time_seconds", "Time on scoreboard clock, inverted.",
+                                  Arrays.asList("clock"));
         mfs.add(clockInvertedTime);
         GaugeMetricFamily clockRunning = new GaugeMetricFamily("crg_scoreboard_clock_running",
-                "Is scoreboard clock running.", Arrays.asList("clock"));
+                                                               "Is scoreboard clock running.", Arrays.asList("clock"));
         mfs.add(clockRunning);
-        GaugeMetricFamily clockNumber = new GaugeMetricFamily("crg_scoreboard_clock_number",
-                "Number on scoreboard clock.", Arrays.asList("clock"));
+        GaugeMetricFamily clockNumber =
+            new GaugeMetricFamily("crg_scoreboard_clock_number", "Number on scoreboard clock.", Arrays.asList("clock"));
         mfs.add(clockNumber);
         for (CurrentClock c : sb.getCurrentGame().getAll(CurrentGame.CLOCK)) {
             clockTime.addMetric(Arrays.asList(c.get(Clock.NAME)), (float) c.get(Clock.TIME) / 1000);
@@ -51,8 +50,8 @@ public class ScoreBoardMetricsCollector extends Collector {
             clockNumber.addMetric(Arrays.asList(c.get(Clock.NAME)), c.get(Clock.NUMBER));
         }
 
-        GaugeMetricFamily score = new GaugeMetricFamily("crg_scoreboard_team_score", "Score on scoreboard.",
-                Arrays.asList("team", "name"));
+        GaugeMetricFamily score =
+            new GaugeMetricFamily("crg_scoreboard_team_score", "Score on scoreboard.", Arrays.asList("team", "name"));
         mfs.add(score);
         for (CurrentTeam t : sb.getCurrentGame().getAll(CurrentGame.TEAM)) {
             score.addMetric(Arrays.asList(t.get(CurrentTeam.ID), t.get(Team.FULL_NAME)), t.get(Team.SCORE));

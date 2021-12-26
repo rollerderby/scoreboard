@@ -138,7 +138,9 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
 
         private AlternateNameId(String i) { id = i; }
         @Override
-        public String toString() { return id; }
+        public String toString() {
+            return id;
+        }
 
         private String id;
     }

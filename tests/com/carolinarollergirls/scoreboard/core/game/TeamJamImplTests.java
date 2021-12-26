@@ -27,12 +27,9 @@ public class TeamJamImplTests {
 
     private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
-
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
-            synchronized (collectedEvents) {
-                collectedEvents.add(event);
-            }
+            synchronized (collectedEvents) { collectedEvents.add(event); }
         }
     };
 
@@ -44,8 +41,10 @@ public class TeamJamImplTests {
 
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
-        tj = (TeamJamImpl) sb.getCurrentGame().get(CurrentGame.GAME).getTeam(Team.ID_1)
-                .get(Team.RUNNING_OR_UPCOMING_TEAM_JAM);
+        tj = (TeamJamImpl) sb.getCurrentGame()
+                 .get(CurrentGame.GAME)
+                 .getTeam(Team.ID_1)
+                 .get(Team.RUNNING_OR_UPCOMING_TEAM_JAM);
         ScoreBoardClock.getInstance().stop();
     }
 

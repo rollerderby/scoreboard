@@ -74,7 +74,7 @@ public class JettyServletScoreBoardController {
         try {
             // Only keep the first two path components.
             mf = new FilterHolder(
-                    new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
+                new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
         } catch (ServletException e) {
             // Can't actually throw an exception, so this should never happen.
             throw new RuntimeException("Could not create MetricsFilter : " + e.getMessage());
@@ -110,26 +110,18 @@ public class JettyServletScoreBoardController {
     public void start() {
         try {
             server.start();
-        } catch (Exception e) {
-            throw new RuntimeException("Could not start server : " + e.getMessage());
-        }
+        } catch (Exception e) { throw new RuntimeException("Could not start server : " + e.getMessage()); }
 
         Logger.printMessage("");
         Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
         Logger.printMessage("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
-        if (port == 8000) {
-            Logger.printMessage("Double-click/open the 'start.html' file, or");
-        }
+        if (port == 8000) { Logger.printMessage("Double-click/open the 'start.html' file, or"); }
         Logger.printMessage("Open a web browser (either Google Chrome or Mozilla Firefox recommended) to:");
         Logger.printMessage("	http://" + (host != null ? host : "localhost") + ":" + port);
         try {
             Iterator<String> urls = urlsServlet.getUrls().iterator();
-            if (urls.hasNext()) {
-                Logger.printMessage("or try one of these URLs:");
-            }
-            while (urls.hasNext()) {
-                Logger.printMessage("	" + urls.next().toString());
-            }
+            if (urls.hasNext()) { Logger.printMessage("or try one of these URLs:"); }
+            while (urls.hasNext()) { Logger.printMessage("	" + urls.next().toString()); }
         } catch (MalformedURLException muE) {
             Logger.printMessage("Internal error: malformed URL from Server Connector: " + muE.getMessage());
         } catch (SocketException sE) {
@@ -142,11 +134,9 @@ public class JettyServletScoreBoardController {
         Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
-                int removed = scoreBoard.getClients()
-                        .gcOldDevices(System.currentTimeMillis() - COOKIE_DURATION_SECONDS * 1000);
-                if (removed > 0) {
-                    Logger.printMessage("Garbage collected " + removed + " old device(s).");
-                }
+                int removed =
+                    scoreBoard.getClients().gcOldDevices(System.currentTimeMillis() - COOKIE_DURATION_SECONDS * 1000);
+                if (removed > 0) { Logger.printMessage("Garbage collected " + removed + " old device(s)."); }
             }
         }, 0, 3600, TimeUnit.SECONDS);
     }

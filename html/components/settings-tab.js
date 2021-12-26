@@ -1,4 +1,5 @@
 function createScoreBoardSettingsTab(tab) {
+  'use strict';
   var table = $('<table>').attr('id', 'ScoreBoardSettings').appendTo(tab);
 
   var usePreviewButton = $('<label for="UsePreviewButton"/><input type="checkbox" id="UsePreviewButton"/>');
@@ -75,6 +76,7 @@ function createScoreBoardSettingsTab(tab) {
 }
 
 function createScoreBoardViewPreviewRows(table, type) {
+  'use strict';
   var currentViewTd = $('<tr><td/></tr>')
     .addClass(type)
     .appendTo(table)
@@ -234,6 +236,7 @@ function createScoreBoardViewPreviewRows(table, type) {
 }
 
 function createIntermissionControlDialog() {
+  'use strict';
   var table = $('<table>').addClass('IntermissionControlDialog');
 
   var fields = [

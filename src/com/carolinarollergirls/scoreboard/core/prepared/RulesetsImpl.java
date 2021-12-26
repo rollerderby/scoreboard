@@ -29,14 +29,13 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     public RulesetsImpl(RulesetsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new RulesetsImpl(this, root); }
-
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new RulesetsImpl(this, root);
+    }
 
     @Override
     public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
-        if (prop == RULESET) {
-            return new RulesetImpl(this, "", null, id);
-        }
+        if (prop == RULESET) { return new RulesetImpl(this, "", null, id); }
         return null;
     }
     @Override
@@ -47,9 +46,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
             Ruleset removed = (Ruleset) item;
             Ruleset grandparent = removed.getParentRuleset();
             for (Ruleset rm : getAll(RULESET)) {
-                if (removed.equals(rm.getParentRuleset())) {
-                    rm.setParentRuleset(grandparent);
-                }
+                if (removed.equals(rm.getParentRuleset())) { rm.setParentRuleset(grandparent); }
             }
         }
     }
@@ -68,15 +65,15 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     }
 
     @Override
-    public RuleDefinition getRuleDefinition(String k) { return get(RULE_DEFINITION, k); }
+    public RuleDefinition getRuleDefinition(String k) {
+        return get(RULE_DEFINITION, k);
+    }
 
     @Override
     public Ruleset getRuleset(String id) {
         synchronized (coreLock) {
             Ruleset r = get(RULESET, id);
-            if (r == null) {
-                r = get(RULESET, ROOT_ID);
-            }
+            if (r == null) { r = get(RULESET, ROOT_ID); }
             return r;
         }
     }
@@ -93,7 +90,9 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         }
     }
     @Override
-    public void removeRuleset(String id) { remove(RULESET, id); }
+    public void removeRuleset(String id) {
+        remove(RULESET, id);
+    }
 
     public class RulesetImpl extends ScoreBoardEventProviderImpl<Ruleset> implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, Ruleset parent, String id) {
@@ -105,18 +104,30 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         public RulesetImpl(RulesetImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
         @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new RulesetImpl(this, root); }
-        
-        @Override
-        public String get(Rule r) { return get(RULE, r.toString()).getValue(); }
+        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+            return new RulesetImpl(this, root);
+        }
 
         @Override
-        public String getName() { return get(NAME); }
+        public String get(Rule r) {
+            return get(RULE, r.toString()).getValue();
+        }
+
         @Override
-        public void setName(String n) { set(NAME, n); }
+        public String getName() {
+            return get(NAME);
+        }
         @Override
-        public Ruleset getParentRuleset() { return get(PARENT); }
+        public void setName(String n) {
+            set(NAME, n);
+        }
         @Override
-        public void setParentRuleset(Ruleset rs) { set(PARENT, rs); }
+        public Ruleset getParentRuleset() {
+            return get(PARENT);
+        }
+        @Override
+        public void setParentRuleset(Ruleset rs) {
+            set(PARENT, rs);
+        }
     }
 }

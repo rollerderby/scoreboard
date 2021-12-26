@@ -10,7 +10,7 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
     CurrentSkaterImpl(CurrentTeam t, Skater s) {
         super(t, s.getId(), CurrentTeam.SKATER);
         addProperties(SKATER, Skater.NAME, Skater.ROSTER_NUMBER, Skater.CURRENT_BOX_SYMBOLS, Skater.ROLE,
-                Skater.BASE_ROLE, Skater.PENALTY_BOX, Skater.FLAGS);
+                      Skater.BASE_ROLE, Skater.PENALTY_BOX, Skater.FLAGS);
         setCopy(Skater.NAME, this, SKATER, Skater.NAME, true);
         setCopy(Skater.ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, true);
         setCopy(Skater.CURRENT_BOX_SYMBOLS, this, SKATER, Skater.CURRENT_BOX_SYMBOLS, true);
@@ -23,7 +23,9 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
     public CurrentSkaterImpl(CurrentSkaterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentSkaterImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new CurrentSkaterImpl(this, root);
+    }
 
     @Override
     public int compareTo(CurrentSkater other) {
@@ -35,5 +37,7 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
     }
 
     @Override
-    public String getNumber() { return get(Skater.ROSTER_NUMBER); }
+    public String getNumber() {
+        return get(Skater.ROSTER_NUMBER);
+    }
 }

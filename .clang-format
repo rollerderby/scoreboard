@@ -1,0 +1,13 @@
+BasedOnStyle: LLVM
+ColumnLimit: 120
+IndentWidth: 4
+AllowShortBlocksOnASingleLine: true
+AllowShortCaseLabelsOnASingleLine: true
+AllowShortIfStatementsOnASingleLine: AllIfsAndElse
+AllowShortFunctionsOnASingleLine: All
+AllowShortLambdasOnASingleLine: All
+AllowShortLoopsOnASingleLine: true
+AllowShortEnumsOnASingleLine: true
+BreakAfterJavaFieldAnnotations: true
+SpaceAfterCStyleCast: true
+JavaImportGroups: ['java', 'javax', 'org', 'com', 'com.carolinarollergirls']

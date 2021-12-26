@@ -21,11 +21,11 @@ public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> im
     public CurrentTeamImpl(CurrentGame g, String id) {
         super(g, id, CurrentGame.TEAM);
         addProperties(TEAM, Team.DISPLAY_NAME, Team.INITIALS, Team.LOGO, Team.FIELDING_ADVANCE_PENDING, Team.SCORE,
-                Team.JAM_SCORE, Team.TRIP_SCORE, Team.LAST_SCORE, Team.TIMEOUTS, Team.OFFICIAL_REVIEWS, Team.IN_TIMEOUT,
-                Team.IN_OFFICIAL_REVIEW, Team.NO_PIVOT, Team.RETAINED_OFFICIAL_REVIEW, Team.LOST, Team.LEAD,
-                Team.CALLOFF, Team.INJURY, Team.NO_INITIAL, Team.DISPLAY_LEAD, Team.STAR_PASS, Team.ALTERNATE_NAME,
-                Team.COLOR, SKATER, POSITION, Team.ADD_TRIP, Team.REMOVE_TRIP, Team.ADVANCE_FIELDINGS, Team.TIMEOUT,
-                Team.OFFICIAL_REVIEW);
+                      Team.JAM_SCORE, Team.TRIP_SCORE, Team.LAST_SCORE, Team.TIMEOUTS, Team.OFFICIAL_REVIEWS,
+                      Team.IN_TIMEOUT, Team.IN_OFFICIAL_REVIEW, Team.NO_PIVOT, Team.RETAINED_OFFICIAL_REVIEW, Team.LOST,
+                      Team.LEAD, Team.CALLOFF, Team.INJURY, Team.NO_INITIAL, Team.DISPLAY_LEAD, Team.STAR_PASS,
+                      Team.ALTERNATE_NAME, Team.COLOR, SKATER, POSITION, Team.ADD_TRIP, Team.REMOVE_TRIP,
+                      Team.ADVANCE_FIELDINGS, Team.TIMEOUT, Team.OFFICIAL_REVIEW);
         setCopy(Team.DISPLAY_NAME, this, TEAM, Team.DISPLAY_NAME, true);
         setCopy(Team.INITIALS, this, TEAM, Team.INITIALS, true);
         setCopy(Team.LOGO, this, TEAM, Team.LOGO, true);
@@ -49,25 +49,23 @@ public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> im
         setCopy(Team.STAR_PASS, this, TEAM, Team.STAR_PASS, true);
         setCopy(Team.ALTERNATE_NAME, this, TEAM, Team.ALTERNATE_NAME, true);
         setCopy(Team.COLOR, this, TEAM, Team.COLOR, true);
-        for (FloorPosition fp : FloorPosition.values()) {
-            add(POSITION, new CurrentPositionImpl(this, fp));
-        }
+        for (FloorPosition fp : FloorPosition.values()) { add(POSITION, new CurrentPositionImpl(this, fp)); }
         addWriteProtection(POSITION);
         providers.put(skaterListener, null);
     }
     public CurrentTeamImpl(CurrentTeamImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentTeamImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new CurrentTeamImpl(this, root);
+    }
 
     @Override
     protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == TEAM) {
             if (value != null) {
                 Team t = (Team) value;
-                for (CurrentPosition p : getAll(POSITION)) {
-                    p.load(t.getPosition(p.getFloorPosition()));
-                }
+                for (CurrentPosition p : getAll(POSITION)) { p.load(t.getPosition(p.getFloorPosition())); }
             }
         }
     }
@@ -93,24 +91,30 @@ public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> im
     }
 
     @Override
-    public void execute(Command prop, Source source) { get(TEAM).execute(prop, source); }
+    public void execute(Command prop, Source source) {
+        get(TEAM).execute(prop, source);
+    }
 
     @Override
-    public void load(Team t) { set(TEAM, t); }
+    public void load(Team t) {
+        set(TEAM, t);
+    }
 
     @Override
-    public CurrentPosition getPosition(FloorPosition fp) { return get(POSITION, fp.toString()); }
+    public CurrentPosition getPosition(FloorPosition fp) {
+        return get(POSITION, fp.toString());
+    }
 
-    protected ScoreBoardListener skaterListener = new IndirectScoreBoardListener<>(this, TEAM, Team.SKATER,
-            new ScoreBoardListener() {
-                @Override
-                public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                    Skater s = (Skater) event.getValue();
-                    if (event.isRemove()) {
-                        remove(SKATER, s.getCurrentSkater());
-                    } else {
-                        add(SKATER, new CurrentSkaterImpl(CurrentTeamImpl.this, s));
-                    }
+    protected ScoreBoardListener skaterListener =
+        new IndirectScoreBoardListener<>(this, TEAM, Team.SKATER, new ScoreBoardListener() {
+            @Override
+            public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                Skater s = (Skater) event.getValue();
+                if (event.isRemove()) {
+                    remove(SKATER, s.getCurrentSkater());
+                } else {
+                    add(SKATER, new CurrentSkaterImpl(CurrentTeamImpl.this, s));
                 }
-            });
+            }
+        });
 }

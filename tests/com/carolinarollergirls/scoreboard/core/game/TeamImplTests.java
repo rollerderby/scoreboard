@@ -40,12 +40,9 @@ public class TeamImplTests {
 
     private Queue<ScoreBoardEvent<?>> collectedEvents;
     public ScoreBoardListener listener = new ScoreBoardListener() {
-
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
-            synchronized (collectedEvents) {
-                collectedEvents.add(event);
-            }
+            synchronized (collectedEvents) { collectedEvents.add(event); }
         }
     };
 
@@ -67,9 +64,7 @@ public class TeamImplTests {
         g.stopJamTO();
     }
 
-    private void advance(long time_ms) {
-        ScoreBoardClock.getInstance().advance(time_ms);
-    }
+    private void advance(long time_ms) { ScoreBoardClock.getInstance().advance(time_ms); }
 
     @Test
     public void testStartJam() {
@@ -583,8 +578,8 @@ public class TeamImplTests {
 
     @Test
     public void testRulesetChange() {
-        Rulesets.Ruleset child = sb.getRulesets().addRuleset("child", sb.getRulesets().getRuleset(RulesetsImpl.ROOT_ID),
-                "id");
+        Rulesets.Ruleset child =
+            sb.getRulesets().addRuleset("child", sb.getRulesets().getRuleset(RulesetsImpl.ROOT_ID), "id");
         child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_TIMEOUTS.toString(), "1"));
         child.add(Ruleset.RULE, new ValWithId(Rule.NUMBER_REVIEWS.toString(), "0"));
 

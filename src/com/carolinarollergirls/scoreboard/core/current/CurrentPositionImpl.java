@@ -13,7 +13,7 @@ public class CurrentPositionImpl extends ScoreBoardEventProviderImpl<CurrentPosi
         super(t, t.getId() + "_" + fp.toString(), CurrentTeam.POSITION);
         floorPosition = fp;
         addProperties(POSITION, Position.CURRENT_BOX_SYMBOLS, Position.ANNOTATION, Position.SKATER, Position.NAME,
-                Position.ROSTER_NUMBER, Position.FLAGS, Position.PENALTY_BOX, Position.CLEAR);
+                      Position.ROSTER_NUMBER, Position.FLAGS, Position.PENALTY_BOX, Position.CLEAR);
         setCopy(Position.CURRENT_BOX_SYMBOLS, this, POSITION, Position.CURRENT_BOX_SYMBOLS, true);
         setCopy(Position.ANNOTATION, this, POSITION, Position.ANNOTATION, true);
         setCopy(Position.SKATER, this, POSITION, Position.SKATER, true);
@@ -25,19 +25,29 @@ public class CurrentPositionImpl extends ScoreBoardEventProviderImpl<CurrentPosi
     public CurrentPositionImpl(CurrentPositionImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new CurrentPositionImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new CurrentPositionImpl(this, root);
+    }
 
     @Override
-    public String getProviderId() { return floorPosition.toString(); }
+    public String getProviderId() {
+        return floorPosition.toString();
+    }
 
     @Override
-    public void execute(Command prop, Source source) { get(POSITION).execute(prop, source); }
+    public void execute(Command prop, Source source) {
+        get(POSITION).execute(prop, source);
+    }
 
     @Override
-    public void load(Position p) { set(POSITION, p); }
+    public void load(Position p) {
+        set(POSITION, p);
+    }
 
     @Override
-    public FloorPosition getFloorPosition() { return floorPosition; }
+    public FloorPosition getFloorPosition() {
+        return floorPosition;
+    }
 
     private FloorPosition floorPosition;
 }

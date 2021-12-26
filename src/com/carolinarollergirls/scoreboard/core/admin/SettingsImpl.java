@@ -22,10 +22,14 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
     public SettingsImpl(SettingsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) { return new SettingsImpl(this, root); }
+    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
+        return new SettingsImpl(this, root);
+    }
 
     @Override
-    public void reset() { removeAll(SETTING); }
+    public void reset() {
+        removeAll(SETTING);
+    }
 
     @Override
     public String get(String k) {

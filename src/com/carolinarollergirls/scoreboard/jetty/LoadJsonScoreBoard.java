@@ -22,11 +22,12 @@ import org.apache.commons.fileupload.FileItemStream;
 import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
+import com.fasterxml.jackson.jr.ob.JSON;
+
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.json.ScoreBoardJSONSetter;
 import com.carolinarollergirls.scoreboard.utils.StatsbookImporter;
-import com.fasterxml.jackson.jr.ob.JSON;
 
 public class LoadJsonScoreBoard extends HttpServlet {
     public LoadJsonScoreBoard(ScoreBoard sb) {
@@ -36,7 +37,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+        throws ServletException, IOException {
         if (scoreBoard.getClients().getDevice(request.getSession().getId()).mayWrite()) {
             scoreBoard.getClients().getDevice(request.getSession().getId()).write();
             try {
@@ -59,7 +60,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
                                 @SuppressWarnings("unchecked")
                                 public void run() {
                                     ScoreBoardJSONSetter.set(scoreBoard, (Map<String, Object>) map.get("state"),
-                                            Source.JSON);
+                                                             Source.JSON);
                                 }
                             });
                             response.setContentType("text/plain");

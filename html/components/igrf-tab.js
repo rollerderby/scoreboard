@@ -1,4 +1,5 @@
 function createIgrfTab(tab, gameId) {
+  'use strict';
   var gamePrefix = 'ScoreBoard.Game(' + gameId + ')';
   var table = $('<table>')
     .attr('id', 'Igrf')
@@ -256,16 +257,16 @@ function createIgrfTab(tab, gameId) {
       .append($('<option>').attr('value', '3').text('Level 3'));
   };
 
-  var fillNewOfficialRow = function (table, type, roles) {
-    var newRole = makeRoleDropdown(roles).appendTo(table.find('tr.AddOfficial>th:eq(0)'));
-    var newName = $('<input type="text" size="30">').addClass('Name').appendTo(table.find('tr.AddOfficial>th:eq(1)'));
-    var newLeague = $('<input type="text" size="30">').addClass('League').appendTo(table.find('tr.AddOfficial>th:eq(2)'));
-    var newCert = makeCertDropdown().appendTo(table.find('tr.AddOfficial>th:eq(3)'));
+  var fillNewOfficialRow = function (officialsTable, type, roles) {
+    var newRole = makeRoleDropdown(roles).appendTo(officialsTable.find('tr.AddOfficial>th:eq(0)'));
+    var newName = $('<input type="text" size="30">').addClass('Name').appendTo(officialsTable.find('tr.AddOfficial>th:eq(1)'));
+    var newLeague = $('<input type="text" size="30">').addClass('League').appendTo(officialsTable.find('tr.AddOfficial>th:eq(2)'));
+    var newCert = makeCertDropdown().appendTo(officialsTable.find('tr.AddOfficial>th:eq(3)'));
     var newButton = $('<button>')
       .text('Add')
       .button({ disabled: true })
       .addClass('AddOfficial')
-      .appendTo(table.find('tr.AddOfficial>th:eq(4)'))
+      .appendTo(officialsTable.find('tr.AddOfficial>th:eq(4)'))
       .on('click', function () {
         var dropdown = newRole.find('select.Role');
         var role = dropdown.val() === 'O' ? newRole.find('input.OtherRole').val() : dropdown.val();
@@ -297,7 +298,7 @@ function createIgrfTab(tab, gameId) {
 
       // Treat as a tab-seperated roster.
       var knownNames = {};
-      table.find('.Official').map(function (_, n) {
+      officialsTable.find('.Official').map(function (_, n) {
         n = $(n);
         knownNames[n.attr('role') + '_' + n.attr('offname')] = n.attr('offid');
       });
@@ -334,17 +335,17 @@ function createIgrfTab(tab, gameId) {
   fillNewOfficialRow(refTable, 'Ref', knownRefRoles);
 
   var handleUpdate = function (k, v) {
-    var table;
+    var officialsTable;
     var id;
     var prefix;
     var knownRoles;
     if (k.Nso != null) {
-      table = nsoTable;
+      officialsTable = nsoTable;
       id = k.Nso;
       prefix = gamePrefix + '.Nso(' + id + ')';
       knownRoles = knownNsoRoles;
     } else if (k.Ref != null) {
-      table = refTable;
+      officialsTable = refTable;
       id = k.Ref;
       prefix = gamePrefix + '.Ref(' + id + ')';
       knownRoles = knownRefRoles;
@@ -352,17 +353,17 @@ function createIgrfTab(tab, gameId) {
       gameName.text(v);
       return;
     }
-    var row = table.find('tr[offid="' + id + '"]');
+    var row = officialsTable.find('tr[offid="' + id + '"]');
     if (v == null && !(row.length > 0 && k.field === 'P1Team')) {
       row.remove();
-      if (!table.find('tr[offid]').length) {
-        table.children('tbody').addClass('Empty');
+      if (!officialsTable.find('tr[offid]').length) {
+        officialsTable.children('tbody').addClass('Empty');
       }
       return;
     }
 
     if (row.length === 0) {
-      table.removeClass('Empty');
+      officialsTable.removeClass('Empty');
       row = $('<tr class="Official">')
         .attr('offid', id)
         .attr('role', WS.state[prefix + '.Role'])
@@ -375,13 +376,13 @@ function createIgrfTab(tab, gameId) {
       var nameInput = $('<input type="text" size="30">')
         .appendTo(row.children('td.Name'))
         .on('change', function () {
-          WS.Set(skaterPrefix + '.Name', $(this).val());
+          WS.Set(prefix + '.Name', $(this).val());
           row.attr('offname', $(this).val());
         });
       var leagueInput = $('<input type="text" size="30">')
         .appendTo(row.children('td.League'))
         .on('change', function () {
-          WS.Set(skaterPrefix + '.League', $(this).val());
+          WS.Set(prefix + '.League', $(this).val());
         });
       $('<button>')
         .text('Remove')
@@ -397,7 +398,7 @@ function createIgrfTab(tab, gameId) {
           WS.Set(prefix + '.Cert', $(this).val());
         });
 
-      _windowFunctions.appendAlphaSortedByAttr(table.children('tbody'), row, 'role');
+      _windowFunctions.appendAlphaSortedByAttr(officialsTable.children('tbody'), row, 'role');
     }
 
     row
@@ -414,7 +415,7 @@ function createIgrfTab(tab, gameId) {
       }
       dropdown.change();
       row.attr('role', v);
-      _windowFunctions.appendAlphaSortedByAttr(table.children('tbody'), row, 'role');
+      _windowFunctions.appendAlphaSortedByAttr(officialsTable.children('tbody'), row, 'role');
     } else if (k.field === 'P1Team') {
       row.find('select.Team').val(v);
     } else if (k.field === 'Swap') {
@@ -435,6 +436,7 @@ function createIgrfTab(tab, gameId) {
 }
 
 function createOfficialRemoveDialog(prefix) {
+  'use strict';
   var dialog = $('<div>').addClass('OfficialRemoveDialog');
 
   $('<a>').addClass('Title').text('Officials').appendTo(dialog);
