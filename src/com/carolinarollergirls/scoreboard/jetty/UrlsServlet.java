@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.eclipse.jetty.server.Connector;
+import org.eclipse.jetty.server.NetworkConnector;
 import org.eclipse.jetty.server.Server;
 // import org.mortbay.jetty.*;
 
@@ -33,7 +34,11 @@ public class UrlsServlet extends HttpServlet {
 
     public Set<String> getUrls() throws MalformedURLException, SocketException {
         Set<String> urls = new TreeSet<>();
-        for (Connector c : server.getConnectors()) { addURLs(urls, c.getHost(), c.getLocalPort()); }
+        for (Connector c : server.getConnectors()) {
+            if (c instanceof NetworkConnector) {
+                addURLs(urls, ((NetworkConnector) c).getHost(), ((NetworkConnector) c).getLocalPort());
+            }
+        }
         return urls;
     }
 

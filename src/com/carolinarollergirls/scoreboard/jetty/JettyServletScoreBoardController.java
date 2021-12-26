@@ -11,16 +11,17 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.SocketException;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
-import javax.servlet.ServletException;
+import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServlet;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.DefaultServlet;
 import org.eclipse.jetty.servlet.FilterHolder;
@@ -47,39 +48,31 @@ public class JettyServletScoreBoardController {
     }
 
     protected void init() {
-        SelectChannelConnector sC = new SelectChannelConnector();
+        server = new Server();
+        ServerConnector sC = new ServerConnector(server);
         sC.setHost(host);
         sC.setPort(port);
-        server = new Server();
         server.addConnector(sC);
 
-        server.setSendDateHeader(true);
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         server.setHandler(contexts);
 
-        ServletContextHandler sch = new ServletContextHandler(contexts, "/");
+        ServletContextHandler sch = new ServletContextHandler(contexts, "/", ServletContextHandler.SESSIONS);
 
-        ScoreBoardSessionManager manager = new ScoreBoardSessionManager(scoreBoard);
-        manager.setHttpOnly(true);
-        manager.setSessionCookie("CRG_SCOREBOARD");
-        manager.setMaxCookieAge(COOKIE_DURATION_SECONDS);
+        SessionHandler sessions = new ScoreBoardSessionHandler(scoreBoard);
+        sessions.setHttpOnly(true);
+        sessions.setSessionCookie("CRG_SCOREBOARD");
+        sessions.setMaxInactiveInterval(COOKIE_DURATION_SECONDS);
         // Sessions are created per request, so they're actually refreshed on each
-        // request
-        // which is harmless.
-        manager.setRefreshCookieAge(1);
-        SessionHandler sessions = new SessionHandler(manager);
+        // request which is harmless.
+        sessions.setRefreshCookieAge(1);
         sch.setSessionHandler(sessions);
 
         FilterHolder mf;
-        try {
-            // Only keep the first two path components.
-            mf = new FilterHolder(
-                new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
-        } catch (ServletException e) {
-            // Can't actually throw an exception, so this should never happen.
-            throw new RuntimeException("Could not create MetricsFilter : " + e.getMessage());
-        }
-        sch.addFilter(mf, "/*", 1);
+        // Only keep the first two path components.
+        mf = new FilterHolder(
+            new MetricsFilter("jetty_http_request_latency_seconds", "Jetty HTTP request latency", 2, null));
+        sch.addFilter(mf, "/*", EnumSet.of(DispatcherType.REQUEST));
 
         sch.setResourceBase((new File(BasePath.get(), "html")).getPath());
         ServletHolder sh = new ServletHolder(new DefaultServlet());

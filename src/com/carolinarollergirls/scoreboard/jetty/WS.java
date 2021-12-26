@@ -8,7 +8,6 @@ package com.carolinarollergirls.scoreboard.jetty;
  * See the file COPYING for details.
  */
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -16,13 +15,18 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
-import org.eclipse.jetty.websocket.WebSocket;
-import org.eclipse.jetty.websocket.WebSocket.OnTextMessage;
-import org.eclipse.jetty.websocket.WebSocketServlet;
+import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
+import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeRequest;
+import org.eclipse.jetty.websocket.servlet.ServletUpgradeResponse;
+import org.eclipse.jetty.websocket.servlet.WebSocketCreator;
+import org.eclipse.jetty.websocket.servlet.WebSocketServlet;
+import org.eclipse.jetty.websocket.servlet.WebSocketServletFactory;
 
 import com.fasterxml.jackson.jr.ob.JSON;
 
@@ -57,18 +61,9 @@ public class WS extends WebSocketServlet {
     }
 
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-        throws ServletException, IOException {
-        getServletContext().getNamedDispatcher("default").forward(request, response);
+    public void configure(WebSocketServletFactory factory) {
+        factory.setCreator(new ScoreBoardWebSocketCreator());
     }
-
-    @Override
-    public WebSocket doWebSocketConnect(HttpServletRequest request, String arg1) {
-        return new Conn(jsm, request);
-    }
-
-    private ScoreBoard sb;
-    private JSONStateManager jsm;
 
     private boolean hasPermission(Device device, String action) {
         switch (action) {
@@ -79,6 +74,9 @@ public class WS extends WebSocketServlet {
         default: return device.mayWrite();
         }
     }
+
+    private ScoreBoard sb;
+    private JSONStateManager jsm;
 
     private static final Gauge connectionsActive =
         Gauge.build().name("crg_websocket_active_connections").help("Current WebSocket connections").register();
@@ -95,19 +93,30 @@ public class WS extends WebSocketServlet {
                                                             .help("Number of WebSocket messages we failed to send")
                                                             .register();
 
-    public class Conn implements OnTextMessage, JSONStateListener {
-        private Connection connection;
-        @SuppressWarnings("hiding")
-        private JSONStateManager jsm;
+    public class ScoreBoardWebSocketCreator implements WebSocketCreator {
+        @Override
+        public Object createWebSocket(ServletUpgradeRequest request, ServletUpgradeResponse response) {
+            HttpServletRequest baseRequest = request.getHttpServletRequest();
+            String httpSessionId = baseRequest.getSession().getId();
+            String remoteAddress = baseRequest.getRemoteAddr();
+            String source = baseRequest.getParameter("source");
+            if (source == null) { source = "CUSTOM CLIENT"; }
+            String platform = baseRequest.getParameter("platform");
+            if (platform == null) { platform = baseRequest.getHeader("User-Agent"); }
+            return new ScoreBoardWebSocket(httpSessionId, remoteAddress, source, platform);
+        }
+    }
 
-        public Conn(JSONStateManager jsm, HttpServletRequest request) {
-            this.jsm = jsm;
-            this.request = request;
-            device = sb.getClients().getDevice(request.getSession().getId());
+    @WebSocket(maxTextMessageSize = 1024 * 1024)
+    public class ScoreBoardWebSocket implements JSONStateListener {
+
+        public ScoreBoardWebSocket(String httpSessionId, String remoteAddress, String source, String platform) {
+            device = sb.getClients().getOrAddDevice(httpSessionId);
+            sbClient = sb.getClients().addClient(device.getId(), remoteAddress, source, platform);
         }
 
-        @Override
-        public synchronized void onMessage(String message_data) {
+        @OnWebSocketMessage
+        public synchronized void onMessage(Session session, String message_data) {
             messagesReceived.inc();
             try {
                 Map<String, Object> json = JSON.std.mapFrom(message_data);
@@ -249,7 +258,7 @@ public class WS extends WebSocketServlet {
         public void send(Map<String, Object> json) {
             Histogram.Timer timer = messagesSentDuration.startTimer();
             try {
-                connection.sendMessage(
+                wsSession.getRemote().sendStringByFuture(
                     JSON.std.with(JSON.Feature.WRITE_NULL_PROPERTIES).composeString().addObject(json).finish());
             } catch (Exception e) {
                 Logger.printMessage("Error sending JSON update: " + e);
@@ -258,19 +267,11 @@ public class WS extends WebSocketServlet {
             } finally { timer.observeDuration(); }
         }
 
-        @Override
-        public void onOpen(Connection conn) {
+        @OnWebSocketConnect
+        public void onOpen(Session session) {
+            wsSession = session;
             connectionsActive.inc();
-            // Some messages can be bigger than the 16k default
-            // when there is broad registration.
-            conn.setMaxTextMessageSize(1024 * 1024);
-            connection = conn;
             jsm.register(this);
-            String source = request.getParameter("source");
-            if (source == null) { source = "CUSTOM CLIENT"; }
-            String platform = request.getParameter("platform");
-            if (platform == null) { platform = request.getHeader("User-Agent"); }
-            sbClient = sb.getClients().addClient(device.getId(), request.getRemoteAddr(), source, platform);
             device.access();
 
             Map<String, Object> json = new HashMap<>();
@@ -281,12 +282,12 @@ public class WS extends WebSocketServlet {
             initialState.put("WS.Device.Id", device.getId());
             initialState.put("WS.Device.Name", device.getName());
             initialState.put("WS.Client.Id", sbClient.getId());
-            initialState.put("WS.Client.RemoteAddress", request.getRemoteAddr());
+            initialState.put("WS.Client.RemoteAddress", session.getRemoteAddress().getAddress().getHostAddress());
             json.put("state", initialState);
             send(json);
         }
 
-        @Override
+        @OnWebSocketClose
         public void onClose(int closeCode, String message) {
             connectionsActive.dec();
             jsm.unregister(this);
@@ -323,9 +324,9 @@ public class WS extends WebSocketServlet {
 
         protected Client sbClient;
         protected Device device;
-        protected HttpServletRequest request;
         protected PathTrie paths = new PathTrie();
         private Map<String, Object> state;
+        private Session wsSession;
     }
 
     protected static class PathTrie {
