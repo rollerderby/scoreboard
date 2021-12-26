@@ -93,7 +93,7 @@ function createIgrfTab(tab, gameId) {
 
       if (pc > 0) {
         text = text + 'with ' + _timeConversions.msToMinSec(pc) + ' left in period ' + curPeriod;
-      } else if (curPeriod !== lastPeriod) {
+      } else if (curPeriod != lastPeriod) {
         text = text + 'after period ' + curPeriod;
       } else {
         show = false;

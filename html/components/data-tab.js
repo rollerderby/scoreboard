@@ -37,14 +37,20 @@ function createDataTab(tab) {
     .append('<iframe id="' + iframeId + '" name="' + iframeId + '" style="display: none"/>')
     .append('<input type="file" name="file"/>')
     .appendTo(contentTd);
-  $('<button>').html('Import JSON').appendTo(uploadForm).button();
-  uploadForm.children('button').on('click', function () {
-    uploadForm.attr('action', '/Load/JSON').submit();
-  });
-  $('<button>').html('Import Statsbook').appendTo(uploadForm).button();
-  uploadForm.children('button').on('click', function () {
-    uploadForm.attr('action', '/Load/xlsx').submit();
-  });
+  $('<button>')
+    .html('Import JSON')
+    .appendTo(uploadForm)
+    .button()
+    .on('click', function () {
+      uploadForm.attr('action', '/Load/JSON').submit();
+    });
+  $('<button>')
+    .html('Import Statsbook')
+    .appendTo(uploadForm)
+    .button()
+    .on('click', function () {
+      uploadForm.attr('action', '/Load/xlsx').submit();
+    });
   _crgUtils.bindAndRun(uploadForm.children('input:file').button(), 'change', function () {
     uploadForm.children('button').button(this.value ? 'enable' : 'disable');
   });
@@ -189,7 +195,11 @@ function createDataTab(tab) {
 
   var removeDialogTemplate = $('<div>')
     .addClass('RemoveDataDialog')
-    .append($('<p>').html('This will delete <a class="Elements"></a> elements. You cannot undo this operation.'))
+    .append(
+      $('<p>').html(
+        'This will delete <a class="Elements"></a> elements. You cannot undo this operation. (But you can reimport this data if you have it stored in a JSON file.)'
+      )
+    )
     .append($('<p>').text('Are you sure?'));
 
   function createRemoveDialog(type) {
