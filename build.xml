@@ -196,33 +196,6 @@
 		</launch4j>
 	</target>
 
-	<!-- Create android apk -->
-	<target name="android" depends="-version">
-		<mkdir dir="${release.dir}" />
-		<mkdir dir="${android.dir}/assets" />
-		<zip destfile="${android.dir}/assets/BaseFiles.zip" >
-			<zipfileset dir="." filemode="755" >
-				<include name="html/**" />
-				<exclude name="html/stream/*" />
-				<exclude name="html/images/teamlogo/*" />
-				<exclude name="html/images/sponsor_banner/*" />
-				<include name="html/images/teamlogo" />
-				<include name="html/images/sponsor_banner" />
-				<include name="config/crg.scoreboard.properties" />
-				<include name="config/default/**" />
-			</zipfileset>
-		</zip>
-
-		<exec executable="gradle" dir="${android.dir}">
-			<arg value="assembleDebug"/>
-		</exec>
-
-		<property name="apk.prefix" value="crg-scoreboard_${version}"/>
-		<copy overwrite="true"
-			file="${android.dir}/build/outputs/apk/crg-scoreboard-debug.apk"
-			tofile="${release.dir}/${apk.prefix}.apk"/>
-	</target>
-
 	<!-- Create zip file -->
 	<target name="zip" depends="clean,-version,compile,test" >
 		<mkdir dir="${release.dir}" />
@@ -234,6 +207,7 @@
 				<include name="COPYING-GPL" />
 				<include name="COPYING-AL" />
 				<include name="LICENSES" />
+				<include name="NOTICE" />
 				<include name="scoreboard-Windows.exe" />
 				<include name="scoreboard.sh" />
 				<include name="start.html" />

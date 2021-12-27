@@ -5,6 +5,7 @@ test-bin
 release
 lib/crg-scoreboard.jar
 config/autosave
+config/*.xlsx
 html/stream
 html/images/teamlogo
 html/images/sponsor_banner

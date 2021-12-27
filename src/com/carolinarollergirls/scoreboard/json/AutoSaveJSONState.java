@@ -134,6 +134,7 @@ public class AutoSaveJSONState implements Runnable {
         @SuppressWarnings("unchecked")
         Map<String, Object> state = (Map<String, Object>) map.get("state");
 
+        ScoreBoardJSONSetter.updateToCurrentVersion(state);
         ScoreBoardJSONSetter.set(scoreBoard, state, source);
     }
 

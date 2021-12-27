@@ -9,8 +9,11 @@ package com.carolinarollergirls.scoreboard.json;
  */
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +34,114 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
  * Bulk set ScoreBoard atttributes with JSON paths.
  */
 public class ScoreBoardJSONSetter {
+
+    // check the version of the incoming update and update if necessary
+    public static void updateToCurrentVersion(Map<String, Object> state) {
+        String version = (String) state.get("ScoreBoard.Version(release)");
+        if (version == null) { version = getVersionFromKeys(state.keySet()); }
+
+        if (version.equals("v5")) { return; } // no update needed
+
+        // When updating to v5 we need to move stuff to a newly created game which needs an id
+        String newGameId = UUID.randomUUID().toString();
+
+        for (String oldKey : new HashSet<>(state.keySet())) {
+            String newKey = oldKey;
+            String keyVersion = version;
+
+            if (keyVersion.equals("v4")) {
+                if ((newKey.startsWith("ScoreBoard.Clock(") && newKey.endsWith(".MinimumTime"))) {
+                    newKey = "";
+                } else if (newKey.startsWith("ScoreBoard.Team(") && newKey.endsWith(".LastEndedTeamJam")) {
+                    newKey = "";
+                } else if (newKey.endsWith(".Number") &&
+                           (newKey.contains(".Position(") || newKey.contains(".Skater(")) &&
+                           !newKey.contains(".Penalty(")) {
+                    newKey = newKey.replace(".Number", ".RosterNumber");
+                }
+                keyVersion = "v4.1";
+            }
+
+            if (keyVersion.equals("v4.1")) {
+                if (newKey.startsWith("ScoreBoard.Rulesets.CurrentRule(")) {
+                    newKey =
+                        newKey.replace("ScoreBoard.Rulesets.CurrentRule(", "ScoreBoard.Game(" + newGameId + ").Rule(");
+                } else if (newKey.startsWith("ScoreBoard.Rulesets.Current") ||
+                           newKey.startsWith("ScoreBoard.Rulesets.RuleDefinition(")) {
+                    newKey = "";
+                } else if (newKey.startsWith("ScoreBoard.Rulesets.Ruleset(") && newKey.endsWith(".ParentId")) {
+                    newKey = newKey.replace(".ParentId", ".Parent");
+                } else if (newKey.startsWith("ScoreBoard.PenaltyCodes.Code(")) {
+                    newKey = newKey.replace("ScoreBoard.PenaltyCodes.Code(",
+                                            "ScoreBoard.Game(" + newGameId + ").PenaltyCode(");
+                } else if (newKey.equals("ScoreBoard.Team(1).Name") || newKey.equals("ScoreBoard.Team(2).Name")) {
+                    newKey = newKey.replace("ScoreBoard.", "ScoreBoard.Game(" + newGameId + ").")
+                                 .replace(".Name", ".TeamName");
+                } else if (newKey.startsWith("ScoreBoard.Clock(") || newKey.startsWith("ScoreBoard.Period(") ||
+                           newKey.startsWith("ScoreBoard.Jam(") || newKey.startsWith("ScoreBoard.Team(") ||
+                           newKey.equals("ScoreBoard.CurrentPeriodNumber") ||
+                           newKey.equals("ScoreBoard.CurrentPeriod") || newKey.equals("ScoreBoard.UpcomingJam") ||
+                           newKey.equals("ScoreBoard.UpcomingJamNumber") || newKey.equals("ScoreBoard.InPeriod") ||
+                           newKey.equals("ScoreBoard.InJam") || newKey.equals("ScoreBoard.InOvertime") ||
+                           newKey.equals("ScoreBoard.OfficialScore") || newKey.equals("ScoreBoard.CurrentTimeout") ||
+                           newKey.equals("ScoreBoard.TimeoutOwner") || newKey.equals("ScoreBoard.OfficialReview") ||
+                           newKey.equals("ScoreBoard.NoMoreJam")) {
+                    newKey = newKey.replace("ScoreBoard.", "ScoreBoard.Game(" + newGameId + ").");
+                }
+                keyVersion = "v5";
+            }
+
+            if (!newKey.equals(oldKey)) {
+                if (!newKey.equals("")) { state.put(newKey, state.get(oldKey)); }
+                state.remove(oldKey);
+            }
+        }
+    }
+
+    private static String getVersionFromKeys(Set<String> keys) {
+        String minVersion = "v4"; // lowest version possible from the keys seen so far
+        String maxVersion = "v5"; // highest version possible from the keys seen so far
+
+        for (String key : keys) {
+            minVersion = minVersionWith(key, minVersion);
+            maxVersion = maxVersionWith(key, maxVersion);
+            if (minVersion.equals(maxVersion)) return minVersion;
+        }
+        // return highest possible version so unaplicable updates are skippped
+        return maxVersion;
+    }
+
+    private static String minVersionWith(String key, String priorLimit) {
+        if (priorLimit.equals("v5") || key.startsWith("ScoreBoard.Game(") ||
+            key.startsWith("ScoreBoard.CurrentGame.")) {
+            return "v5";
+        }
+        if (priorLimit.equals("v4.1") || key.startsWith("ScoreBoard.Clients.") || key.endsWith(".RosterNumber") ||
+            key.endsWith(".ReadOnly") || (key.endsWith(".Annotation") && key.contains(".ScoringTrip("))) {
+            return "v4.1";
+        }
+        return priorLimit;
+    }
+    private static String maxVersionWith(String key, String priorLimit) {
+        if (priorLimit.equals("v4") || (key.startsWith("ScoreBoard.Clock(") && key.endsWith(".MinimumTime")) ||
+            (key.startsWith("ScoreBoard.Team(") && key.endsWith(".LastEndedTeamJam")) ||
+            (key.endsWith(".Number") && (key.contains(".Position(") || key.contains(".Skater(")))) {
+            return "v4";
+        }
+        if (priorLimit.equals("v4.1") || key.startsWith("ScoreBoard.Clock(") || key.startsWith("ScoreBoard.Period(") ||
+            key.startsWith("ScoreBoard.Jam(") || key.startsWith("ScoreBoard.Team(") ||
+            key.startsWith("ScoreBoard.PenaltyCodes.") || key.startsWith("ScoreBoard.Rulesets.Current") ||
+            (key.startsWith("ScoreBoard.Rulesets.Ruleset(") && key.endsWith(".ParentId")) ||
+            key.equals("ScoreBoard.CurrentPeriodNumber") || key.equals("ScoreBoard.CurrentPeriod") ||
+            key.equals("ScoreBoard.UpcomingJam") || key.equals("ScoreBoard.UpcomingJamNumber") ||
+            key.equals("ScoreBoard.InPeriod") || key.equals("ScoreBoard.InJam") ||
+            key.equals("ScoreBoard.InOvertime") || key.equals("ScoreBoard.OfficialScore") ||
+            key.equals("ScoreBoard.CurrentTimeout") || key.equals("ScoreBoard.TimeoutOwner") ||
+            key.equals("ScoreBoard.OfficialReview") || key.equals("ScoreBoard.NoMoreJam")) {
+            return "v4.1";
+        }
+        return priorLimit;
+    }
 
     // Make a list of sets to a scoreboard, with JSON paths to fields.
     public static void set(ScoreBoard sb, Map<String, Object> state, Source source) {

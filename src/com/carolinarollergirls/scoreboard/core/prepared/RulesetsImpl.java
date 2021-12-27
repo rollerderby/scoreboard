@@ -57,11 +57,45 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
             r.getRuleDefinition().setParent(this);
             r.getRuleDefinition().setIndex(r.ordinal());
             add(RULE_DEFINITION, r.getRuleDefinition());
-            root.add(Ruleset.RULE, new ValWithId(r.toString(), r.getRuleDefinition().getDefaultValue()));
+            root.setRule(r.toString(), r.getRuleDefinition().getDefaultValue());
         }
         root.set(READONLY, true);
         add(RULESET, root);
         addWriteProtection(RULE_DEFINITION);
+        addDefaultRulesets(root);
+    }
+
+    private void addDefaultRulesets(Ruleset root) {
+        RulesetImpl sevens = new RulesetImpl(this, "Sevens", root, "Sevens");
+        sevens.setRule("Intermission.Durations", "60:00");
+        sevens.setRule("Penalties.NumberToFoulout", "4");
+        sevens.setRule("Period.Duration", "21:00");
+        sevens.setRule("Period.Number", "1");
+        sevens.setRule("Team.OfficialReviews", "0");
+        sevens.setRule("Team.Timeouts", "0");
+        sevens.set(READONLY, true);
+        add(RULESET, sevens);
+
+        RulesetImpl rdcl = new RulesetImpl(this, "RDCL", root, "RDCLRuleset");
+        rdcl.setRule("Intermission.Durations", "5:00,15:00,5:00,60:00");
+        rdcl.setRule("Jam.Duration", "1:00");
+        rdcl.setRule("Jam.ResetNumberEachPeriod", "false");
+        rdcl.setRule("Penalties.DefinitionFile", "/config/penalties/RDCL.json");
+        rdcl.setRule("Period.Duration", "15:00");
+        rdcl.setRule("Period.EndBetweenJams", "false");
+        rdcl.setRule("Period.Number", "4");
+        rdcl.setRule("Team.RDCLPerHalfRules", "true");
+        rdcl.set(READONLY, true);
+        add(RULESET, rdcl);
+
+        RulesetImpl rdclHalf = new RulesetImpl(this, "RDCL half game", root, "RDCLHalfGameRuleset");
+        rdclHalf.setRule("Intermission.Durations", "5:00,60:00");
+        rdclHalf.setRule("Penalties.NumberToFoulout", "4");
+        rdclHalf.setRule("Period.Number", "2");
+        rdclHalf.setRule("Team.Timeouts", "1");
+        rdclHalf.setRule("Team.TimeoutsPer", "true");
+        rdclHalf.set(READONLY, true);
+        add(RULESET, rdclHalf);
     }
 
     @Override
@@ -128,6 +162,10 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         @Override
         public void setParentRuleset(Ruleset rs) {
             set(PARENT, rs);
+        }
+        @Override
+        public void setRule(String id, String value) {
+            add(RULE, new ValWithId(id, value));
         }
     }
 }

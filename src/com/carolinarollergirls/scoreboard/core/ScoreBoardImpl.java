@@ -25,6 +25,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
+import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.core.prepared.PreparedTeamImpl;
@@ -86,6 +87,15 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
             get(CURRENT_GAME, "").postAutosaveUpdate();
             get(CLIENTS, "").postAutosaveUpdate();
             get(TWITTER, "").postAutosaveUpdate();
+            if (getAll(PREPARED_TEAM).size() < 2) {
+                // fewer than 2 teams - create black and white so an ad hoc game can be started
+                PreparedTeam t1 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "Black");
+                t1.set(Team.TEAM_NAME, "Black");
+                t1.set(Team.UNIFORM_COLOR, "Black");
+                PreparedTeam t2 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "White");
+                t2.set(Team.TEAM_NAME, "White");
+                t1.set(Team.UNIFORM_COLOR, "White");
+            }
             initialLoadDone = true;
         }
     }

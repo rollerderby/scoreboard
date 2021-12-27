@@ -22,7 +22,6 @@ import javax.swing.JTextArea;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.jetty.JettyServletScoreBoardController;
 import com.carolinarollergirls.scoreboard.json.AutoSaveJSONState;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
@@ -67,14 +66,7 @@ public class Main extends Logger {
             @Override
             public void run() {
                 if (!AutoSaveJSONState.loadAutoSave(scoreBoard, autoSaveDir)) {
-                    try {
-                        Logger.printMessage("No autosave to load from, using default.json");
-                        AutoSaveJSONState.loadFile(scoreBoard, new File(BasePath.get(), "config/default.json"),
-                                                   Source.DEFAULTS);
-                    } catch (Exception e) {
-                        Logger.printMessage("Error loading default configuration");
-                        stop(e);
-                    }
+                    Logger.printMessage("No autosave to load from, using builtin defaults only");
                 }
                 scoreBoard.postAutosaveUpdate();
             }

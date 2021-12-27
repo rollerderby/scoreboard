@@ -134,7 +134,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
-        if (prop == PENALTY) {
+        if (prop == PENALTY && !source.isFile()) {
             Penalty p = (Penalty) item;
             if (FO_EXP_ID.equals(p.getProviderId())) { updateEligibility(); }
             if (p.getNumber() == game.getInt(Rule.FO_LIMIT)) {

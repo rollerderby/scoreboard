@@ -35,6 +35,7 @@ public interface Rulesets extends ScoreBoardEventProvider {
         public void setName(String n);
         public Ruleset getParentRuleset();
         public void setParentRuleset(Ruleset rs);
+        public void setRule(String id, String value);
 
         Value<Ruleset> PARENT = new Value<>(Ruleset.class, "Parent", null);
         Value<String> NAME = new Value<>(String.class, "Name", "");

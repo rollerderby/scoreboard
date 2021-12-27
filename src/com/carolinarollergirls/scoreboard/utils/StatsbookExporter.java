@@ -1,6 +1,6 @@
 package com.carolinarollergirls.scoreboard.utils;
 
-import static java.nio.file.StandardCopyOption.*;
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -13,6 +13,7 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
+import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -58,6 +60,7 @@ public class StatsbookExporter extends Thread {
             Files.copy(Paths.get(game.getScoreBoard().getSettings().get("ScoreBoard.Stats.InputFile")), tmpPath,
                        REPLACE_EXISTING);
             wb = WorkbookFactory.create(tmpPath.toFile());
+            evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
             fillIgrfAndPenalties();
             fillScoreLineupsAndClock();
@@ -90,7 +93,14 @@ public class StatsbookExporter extends Thread {
 
         for (Team t : game.getAll(Game.TEAM)) {
             List<Skater> skaters = new ArrayList<>(t.getAll(Team.SKATER));
-            Collections.sort(skaters);
+            Collections.sort(skaters, new Comparator<Skater>() {
+                @Override
+                public int compare(Skater s1, Skater s2) {
+                    if (s1 == s2) { return 0; }
+                    if (s1 == null) { return 1; }
+                    return s1.compareTo(s2);
+                }
+            });
             int igrfRowId = 13;
             int penRowId = 3;
             for (Skater s : skaters) {
@@ -122,10 +132,17 @@ public class StatsbookExporter extends Thread {
     }
 
     private void fillNsos(Sheet igrf) {
-        fillOfficialRow(igrf.getRow(59), game.get(Game.HEAD_NSO), true);
+        if (game.get(Game.HEAD_NSO) != null) { fillOfficialRow(igrf.getRow(59), game.get(Game.HEAD_NSO), true); }
 
         List<Official> nsos = new ArrayList<>(game.getAll(Game.NSO));
-        Collections.sort(nsos);
+        Collections.sort(nsos, new Comparator<Official>() {
+            @Override
+            public int compare(Official o1, Official o2) {
+                if (o1 == o2) { return 0; }
+                if (o1 == null) { return 1; }
+                return o1.compareTo(o2);
+            }
+        });
         int rowId = 60;
         for (Official o : nsos) {
             fillOfficialRow(igrf.getRow(rowId), o);
@@ -163,7 +180,14 @@ public class StatsbookExporter extends Thread {
 
     private void fillRefs(Sheet igrf) {
         List<Official> refs = new ArrayList<>(game.getAll(Game.REF));
-        Collections.sort(refs);
+        Collections.sort(refs, new Comparator<Official>() {
+            @Override
+            public int compare(Official o1, Official o2) {
+                if (o1 == o2) { return 0; }
+                if (o1 == null) { return 1; }
+                return o1.compareTo(o2);
+            }
+        });
         int rowId = game.get(Game.HEAD_REF) == null ? 80 : 79;
         for (Official o : refs) {
             fillOfficialRow(igrf.getRow(rowId), o);
@@ -280,7 +304,14 @@ public class StatsbookExporter extends Thread {
         Row[] toRows = {clockSheet.getRow(baseRow + 4), clockSheet.getRow(baseRow + 6)};
 
         List<Timeout> timeouts = new ArrayList<>(p.getAll(Period.TIMEOUT));
-        Collections.sort(timeouts);
+        Collections.sort(timeouts, new Comparator<Timeout>() {
+            @Override
+            public int compare(Timeout t1, Timeout t2) {
+                if (t1 == t2) { return 0; }
+                if (t1 == null) { return 1; }
+                return t1.compareTo(t2);
+            }
+        });
 
         for (Timeout t : timeouts) {
             String endTime =
@@ -493,7 +524,8 @@ public class StatsbookExporter extends Thread {
     }
 
     private void setEventInfoCell(Row row, int col, String key) {
-        setCell(row, col, game.get(Game.EVENT_INFO, key).getValue());
+        ValWithId kv = game.get(Game.EVENT_INFO, key);
+        setCell(row, col, kv == null ? "" : kv.getValue());
     }
 
     private void setCell(Row row, int col, String value) { setCell(row, col, value, ""); }
@@ -516,6 +548,7 @@ public class StatsbookExporter extends Thread {
         Cell cell = row.getCell(col);
         if (values.size() > 1) {
             cell.setCellFormula(values.stream().map(String::valueOf).collect(Collectors.joining("+")));
+            evaluator.evaluateFormulaCell(cell);
         } else if (values.size() == 1) {
             cell.setCellValue(values.get(0));
         }
@@ -558,6 +591,7 @@ public class StatsbookExporter extends Thread {
     Workbook wb;
     CellStyle strikedNum;
     CellStyle strikedName;
+    FormulaEvaluator evaluator;
 
     // Officials names for filling sheet headers
     String pt = "";

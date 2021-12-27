@@ -74,6 +74,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
 
     @Override
     public void postAutosaveUpdate() {
+        if (getAll(CONDITIONAL_TWEET).size() == 0) { addDefaultConditionalTweets(); }
         set(MANUAL_TWEET, "");
         set(ERROR, "");
         // If we were authenticated when shut down.
@@ -82,6 +83,36 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             twitter.verifyCredentials(); // This is async, and checks our credentials work.
         }
         initilized = true;
+    }
+
+    private void addDefaultConditionalTweets() {
+        addConditionalTweet("00000000-0000-0000-0000-000000000001", "%citms=5:00 %ciN=0 %cir=true",
+                            "5 minutes to Derby! %t1Nt vs %t2Nt");
+        addConditionalTweet("00000000-0000-0000-0000-000000000002", "%sbip=true %sbio=false",
+                            "Start Period %cpN, %t1Nt vs %t2Nt");
+        addConditionalTweet("00000000-0000-0000-0000-000000000003", "%cptms=25:00",
+                            "Period %cpN time %cptms, %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-000000000004", "%cptms=20:00",
+                            "Period %cpN time %cptms, %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-000000000005", "%cptms=15:00",
+                            "Period %cpN time %cptms, %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-000000000006", "%cptms=10:00",
+                            "Period %cpN time %cptms, %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-000000000007", "%cptms=5:00 %cpN=1",
+                            "Period %cpN time %cptms, %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-000000000008", "%cptms=5:00 %cpN=2",
+                            "Last 5 Minutes! %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-000000000009", "%cjr=false %cpN=2 %cptms<5:00",
+                            "End of jam %cjN, Clock %cptms, %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-00000000000a", "%sbip=false %cpN=1",
+                            "Halftime: %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-00000000000b", "%citms=5:00 %ciN=1 %cir=true",
+                            "5:00 until the Second Half Starts");
+        addConditionalTweet("00000000-0000-0000-0000-00000000000c", "%cjr=false %sbos=false %sbip=false %cpN=2",
+                            "Full time - UNOFFICIAL Final: %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-00000000000d", "%sbos=true %sbip=false %cpN=2",
+                            "Official Final Score: %t1Nt %t1s, %t2Nt %t2s");
+        addConditionalTweet("00000000-0000-0000-0000-00000000000e", "%sbio=true", "Overtime! %t1Nt %t1s, %t2Nt %t2s");
     }
 
     @Override
@@ -140,6 +171,13 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             scoreBoard.removeScoreBoardListener(conditionalListeners.get(id));
             conditionalListeners.remove(id);
         }
+    }
+
+    protected void addConditionalTweet(String id, String condition, String tweet) {
+        ConditionalTweet ct = new ConditionalTweetImpl(this, id);
+        add(CONDITIONAL_TWEET, ct);
+        ct.set(ConditionalTweet.CONDITION, condition);
+        ct.set(ConditionalTweet.TWEET, tweet);
     }
 
     protected void tweet(String tweet) {
