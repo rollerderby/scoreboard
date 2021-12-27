@@ -30,10 +30,12 @@ function createTeamTimeTab(tab, gameId) {
   var sk2 = $('<div>').addClass('SKSheet').appendTo(tab);
   $('<div>').attr('id', 'TripEditor').appendTo(tab);
   $('<div>').attr('id', 'skaterSelector').appendTo(tab);
+  $('<div>').attr('id', 'osOffsetEditor').appendTo(tab);
   prepareSkSheetTable(sk1, gameId, 1, 'operator');
   prepareSkSheetTable(sk2, gameId, 2, 'operator');
   prepareTripEditor();
   prepareSkaterSelector(gameId);
+  prepareOsOffsetEditor();
 
   initialLogin();
 }

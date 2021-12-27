@@ -66,7 +66,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     }
 
     private void addDefaultRulesets(Ruleset root) {
-        RulesetImpl sevens = new RulesetImpl(this, "Sevens", root, "Sevens");
+        RulesetImpl sevens = new RulesetImpl(this, "Sevens", root, "SevensRuleset");
         sevens.setRule("Intermission.Durations", "60:00");
         sevens.setRule("Penalties.NumberToFoulout", "4");
         sevens.setRule("Period.Duration", "21:00");
@@ -85,10 +85,11 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
         rdcl.setRule("Period.EndBetweenJams", "false");
         rdcl.setRule("Period.Number", "4");
         rdcl.setRule("Team.RDCLPerHalfRules", "true");
+        rdcl.setRule("Score.WftdaLateChangeRule", "false");
         rdcl.set(READONLY, true);
         add(RULESET, rdcl);
 
-        RulesetImpl rdclHalf = new RulesetImpl(this, "RDCL half game", root, "RDCLHalfGameRuleset");
+        RulesetImpl rdclHalf = new RulesetImpl(this, "RDCL half game", rdcl, "RDCLHalfGameRuleset");
         rdclHalf.setRule("Intermission.Durations", "5:00,60:00");
         rdclHalf.setRule("Penalties.NumberToFoulout", "4");
         rdclHalf.setRule("Period.Number", "2");

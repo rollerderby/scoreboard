@@ -1,6 +1,6 @@
-.SK, #TripEditor {font-size: 11pt;font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; } 
-table.SK, .SK .table, .SK tr, .SK td, #TripEditor table, #TripEditor tr, #TripEditor td {border-collapse: collapse;border-color:#777; } 
-body:not(.AllowSelect) .SK {user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none; } 
+.SK, #TripEditor { font-size: 11pt; font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif; } 
+table.SK, .SK .table, .SK tr, .SK td, #TripEditor table, #TripEditor tr, #TripEditor td { border-collapse: collapse; border-color:#777; } 
+body:not(.AllowSelect) .SK { user-select: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -o-user-select: none; } 
 .SK tr { color: #333; } 
 .SK .Hide { display: none; } 
 .SK.Period { width: 98%; table-layout:fixed; margin: 1%; } 
@@ -21,7 +21,7 @@ body:not(.AllowSelect) .SK {user-select: none;-webkit-user-select: none;-khtml-u
 .SK.Period #head { font-size: 200%; } 
 .SK.Period .Trip, .Period .JamTotal, .Period .GameTotal { width: 9%; } 
 .SK.Period .GameTotal, .SK.Period .JamTotal,.SK.Period .Lost, .SK.Period .Trip2 { border-left-width: 2px; } 
-.SK.Period .GameTotal { background-color: #d3ecb6; } 
+.SK.Period tr .GameTotal { background-color: #d3ecb6; } 
 .SK.Period .hasAnnotation { position: relative; } 
 .SK.Period .hasAnnotation::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 
 
@@ -36,6 +36,9 @@ body:not(.AllowSelect) .SK {user-select: none;-webkit-user-select: none;-khtml-u
 #TripEditor .Invisible { visibility: hidden; } 
 
 #skaterSelector .Hide { display: none; } 
+
+#osOffsetEditor .Offset { width: 40px; } 
+#osOffsetEditor .Reason { margin: 0px 5px; } 
 
 .SK.Period .noTripAlert { position: relative; } 
 .SK.Period .noTripAlert::after { position: absolute; right: 2px; top: 2px; height: 5px; width: 5px; background-color: red; content: ""; } 

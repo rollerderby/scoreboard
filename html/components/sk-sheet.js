@@ -46,6 +46,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').NoInitial',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').StarPass',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').TotalScore',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').OsOffset',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').OsOffsetReason',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Jammer).SkaterNumber',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Fielding(Pivot).SkaterNumber',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').ScoringTrip(*).AfterSP',
@@ -144,6 +146,15 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
           spRow.find('.JamTotal').text(WS.state[prefix + 'AfterSPScore']);
           jamRow.find('.GameTotal').text(WS.state[prefix + 'TotalScore'] - WS.state[prefix + 'AfterSPScore']);
           spRow.find('.GameTotal').text(WS.state[prefix + 'TotalScore']);
+        }
+        break;
+
+      case 'OsOffset':
+      case 'OsOffsetReason':
+        if (mode !== 'copyToStatsbook') {
+          jamRow
+            .find('.JamTotal')
+            .toggleClass('hasAnnotation', WS.state[prefix + 'OsOffset'] !== 0 || WS.state[prefix + 'OsOffsetReason'] !== '');
         }
         break;
 
@@ -340,7 +351,12 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
           .appendTo(jamRow);
       });
       if (mode !== 'copyToStatsbook') {
-        $('<td>').addClass('JamTotal').appendTo(jamRow);
+        $('<td>')
+          .addClass('JamTotal')
+          .on('click', function () {
+            showOsOffsetEditor(prefix);
+          })
+          .appendTo(jamRow);
         $('<td>').addClass('GameTotal').appendTo(jamRow);
       }
 
@@ -615,4 +631,36 @@ function prepareSkaterSelector(gameId) {
   WS.Register(['ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(*).Fielding(*).Skater']);
 }
 
+function showOsOffsetEditor(prefix) {
+  'use strict';
+  $('#osOffsetEditor .Offset').val(WS.state[prefix + 'OsOffset']);
+  $('#osOffsetEditor .Reason').val(WS.state[prefix + 'OsOffsetReason']);
+  $('#osOffsetEditor').data('prefix', prefix).dialog('open');
+}
+
+function prepareOsOffsetEditor(gameId) {
+  'use strict';
+
+  var osOffsetDialog = $('#osOffsetEditor').dialog({
+    modal: true,
+    closeOnEscape: false,
+    title: 'OS Offset',
+    autoOpen: false,
+    width: '600px',
+  });
+
+  osOffsetDialog
+    .append($('<input type="number" size="2">').addClass('Offset'))
+    .append($('<input type="text" size="40">').addClass('Reason'))
+    .append(
+      $('<button>')
+        .text('Set')
+        .button()
+        .on('click', function () {
+          WS.Set(osOffsetDialog.data('prefix') + 'OsOffset', osOffsetDialog.children('.Offset').val());
+          WS.Set(osOffsetDialog.data('prefix') + 'OsOffsetReason', osOffsetDialog.children('.Reason').val());
+          osOffsetDialog.dialog('close');
+        })
+    );
+}
 //# sourceURL=components\sk-sheet.js

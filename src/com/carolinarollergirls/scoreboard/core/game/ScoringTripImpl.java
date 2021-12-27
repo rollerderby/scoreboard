@@ -8,6 +8,7 @@ import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 
 public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<ScoringTrip> implements ScoringTrip {
     ScoringTripImpl(TeamJam parent, int number) {
@@ -45,6 +46,21 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     public void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L) {
             set(JAM_CLOCK_END, game.getClock(Clock.ID_JAM).getTimeElapsed());
+        }
+        if (prop == SCORE && source == Source.WS && game.getBoolean(Rule.WFTDA_LATE_SCORE_RULE)) {
+            TeamJam tj = (TeamJam) parent;
+            boolean nextJamNotStarted = tj.getJam() == game.getCurrentPeriod().getCurrentJam();
+            boolean nextJamNotEnded =
+                nextJamNotStarted ||
+                (game.getCurrentPeriod().getCurrentJam() == tj.getJam().getNext() && game.isInJam());
+            boolean lastTwoMinutes = (game.getClock(Clock.ID_PERIOD).getTimeRemaining() < 120000 ||
+                                      game.getCurrentPeriodNumber() == game.getInt(Rule.NUMBER_PERIODS));
+            boolean changeOk = ((!lastTwoMinutes && nextJamNotEnded) || (lastTwoMinutes && nextJamNotStarted)) &&
+                               !game.isOfficialScore();
+            if (!changeOk) {
+                int change = (Integer) value - (Integer) last;
+                tj.set(TeamJam.OS_OFFSET, -change, Flag.CHANGE);
+            }
         }
         if (prop == CURRENT && (Boolean) value && get(SCORE) == 0) { set(JAM_CLOCK_END, 0L); }
         if (prop == AFTER_S_P) {

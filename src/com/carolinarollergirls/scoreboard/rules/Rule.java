@@ -80,7 +80,11 @@ public enum Rule {
     FO_LIMIT(new IntegerRule(
         "Penalties.NumberToFoulout",
         "After how many penalties a skater has fouled out of the game. Note that the software currently does not support more than 9 penalties per skater.",
-        7));
+        7)),
+    WFTDA_LATE_SCORE_RULE(new BooleanRule(
+        "Score.WftdaLateChangeRule",
+        "Score changes after the end of the following jam don't affect the game score. With less than 2 minutes left in the game this applies to changes after the next jam starts.",
+        true, "Enabled", "Disabled"));
 
     private Rule(RuleDefinition r) { rule = r; }
 
