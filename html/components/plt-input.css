@@ -56,7 +56,7 @@ body:not(.AllowSelect) .PLT {user-select: none;-webkit-user-select: none;-khtml-
 .PLT.Team .Advance.Active { border: none; background-color: #ff9010; vertical-align: bottom; } 
 .PLT.Team tr:nth-child(6n+1) .Advance.Active::after { content: "Go To"; } 
 .PLT.Team tr:nth-child(6n+3) .Advance.Active::after { content: "Next Jam"; } 
-.PLT.Team .Advance:not(.Active).OnTrack::after { content: "..."; } 
+.PLT.Team .Advance:not(.Active).OnTrack::after { content: "☰"; } 
 
 #PenaltyEditor .Codes>div { float: left; width: 150px; height: 90px; margin: 10px; border: 1px solid black; font-weight: bold; } 
 #PenaltyEditor .Codes>div.Active { background-color: #F00; color: #FFF; } 

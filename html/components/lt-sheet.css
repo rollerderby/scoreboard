@@ -17,6 +17,8 @@ div.LT { font-size: 200%; text-align: center; background-color: #cccccc; color: 
 .LT.Period.Forwards tr.SP td { border-top-style: dotted; } 
 .LT.Period tbody .Box { background-color: #b6daff; } 
 .LT.Period .JamNumber { width: 30px; } 
+.LT.Period .CopyArrow { position: relative; }
+.LT.Period .CopyArrow::before { position: absolute; left: 0px; content: "⮬";color: #777; }
 .LT.Period .NP { width: 25px; } 
 .LT.Period .Skater { width: 12%; } 
 .LT.Period .Box { width: 8%; } 
