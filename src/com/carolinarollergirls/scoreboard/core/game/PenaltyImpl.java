@@ -1,6 +1,8 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentPenalty;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
@@ -16,6 +18,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     public PenaltyImpl(Skater s, int n) {
         super(s, n, Skater.PENALTY);
         game = s.getTeam().getGame();
+        skater = (Skater) parent;
         addProperties(TIME, JAM, PERIOD_NUMBER, JAM_NUMBER, CODE, SERVING, SERVED, FORCE_SERVED, BOX_TRIP, REMOVE);
         set(TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
         setInverseReference(JAM, Jam.PENALTY);
@@ -31,6 +34,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     public PenaltyImpl(PenaltyImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);
         game = toCloneIfInTree(cloned.game, root);
+        skater = (Skater) parent;
     }
 
     @Override
@@ -86,10 +90,15 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         if (prop == REMOVE) { delete(source); }
     }
 
+    @Override
+    public CurrentPenalty getCurrentPenalty() {
+        CurrentSkater s = skater.getCurrentSkater();
+        return s == null ? null : s.get(CurrentSkater.PENALTY, getId());
+    }
+
     private void possiblyUpdateSkater() {
         if (getCode() == "" || getId() == Skater.FO_EXP_ID) { return; }
-        Skater s = (Skater) parent;
-        s.set(Skater.CURRENT_PENALTIES, s.get(Skater.CURRENT_PENALTIES), Source.RECALCULATE);
+        skater.set(Skater.CURRENT_PENALTIES, skater.get(Skater.CURRENT_PENALTIES), Source.RECALCULATE);
     }
 
     @Override
@@ -114,4 +123,5 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
 
     private Game game;
+    private Skater skater;
 }

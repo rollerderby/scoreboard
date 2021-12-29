@@ -8,6 +8,7 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
  * See the file COPYING for details.
  */
 
+import com.carolinarollergirls.scoreboard.event.NumberedChild;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -17,4 +18,6 @@ public interface CurrentSkater extends ScoreBoardEventProvider {
     public String getNumber();
 
     Value<Skater> SKATER = new Value<>(Skater.class, "Skater", null);
+
+    NumberedChild<CurrentPenalty> PENALTY = new NumberedChild<>(CurrentPenalty.class, "Penalty");
 }
