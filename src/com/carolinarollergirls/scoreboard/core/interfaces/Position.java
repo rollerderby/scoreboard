@@ -26,6 +26,7 @@ public interface Position extends ScoreBoardEventProvider {
 
     Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
     Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
+    Value<String> CURRENT_PENALTIES = new Value<>(String.class, "CurrentPenalties", "");
     Value<String> ANNOTATION = new Value<>(String.class, "Annotation", "");
     Value<Skater> SKATER = new Value<>(Skater.class, "Skater", null);
     Value<String> NAME = new Value<>(String.class, "Name", "");

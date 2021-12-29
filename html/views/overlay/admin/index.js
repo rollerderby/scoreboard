@@ -34,6 +34,8 @@ function initialize() {
       'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)',
       'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)',
       'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)',
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)',
       'ScoreBoard.Settings.Setting(Overlay.Interactive.BackgroundColor)',
       'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
     ],
@@ -52,6 +54,33 @@ function initialize() {
           }
         }
       });
+    }
+  );
+
+  WS.Register(
+    [
+      'ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)',
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)',
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)',
+    ],
+    function (k, v) {
+      var useLineups = isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
+      var showLineups = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)'] === 'On';
+      var showJammerNames = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)'] === 'On';
+      var showAllNames = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)'] === 'On';
+      $('[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)').toggleClass('disabled', !useLineups);
+      $('[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)').toggleClass(
+        'disabled',
+        !useLineups || !showLineups
+      );
+      $('[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)').toggleClass(
+        'disabled',
+        useLineups && showLineups && showAllNames
+      );
+      $('#Preview')
+        .toggleClass('Wide', useLineups && showLineups && showJammerNames && !showAllNames)
+        .toggleClass('XWide', useLineups && showLineups && showAllNames);
     }
   );
 

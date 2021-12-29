@@ -1,4 +1,4 @@
-function jammer(k, v, ov) {
+function jammer(k, v) {
   'use strict';
   var id = getTeamId(k);
   var prefix = 'ScoreBoard.CurrentGame.Team(' + id + ').';
@@ -6,13 +6,13 @@ function jammer(k, v, ov) {
   var pivotName = WS.state[prefix + 'Position(Pivot).Name'];
   var leadJammer = isTrue(WS.state[prefix + 'DisplayLead']);
   var starPass = isTrue(WS.state[prefix + 'StarPass']);
-  var inJam = isTrue(WS.state['ScoreBoard.InJam']);
+  var inJam = isTrue(WS.state['ScoreBoard.CurrentGame.InJam']);
 
   if (jammerName == null || jammerName === '') {
-    jammerName = leadJammer && !ov ? 'Lead' : '';
-    if (pivotName == null) {
-      pivotName = '';
-    }
+    jammerName = leadJammer ? 'Lead' : '';
+  }
+  if (pivotName == null) {
+    pivotName = '';
   }
 
   var jn = !starPass ? jammerName : pivotName;

@@ -9,10 +9,12 @@ package com.carolinarollergirls.scoreboard.core.game;
  */
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
@@ -61,8 +63,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
 
     private void initialize() {
-        addProperties(PREPARED_SKATER, NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, POSITION, ROLE,
-                      BASE_ROLE, PENALTY_BOX, FLAGS, FIELDING, PENALTY);
+        addProperties(PREPARED_SKATER, NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, CURRENT_PENALTIES,
+                      POSITION, ROLE, BASE_ROLE, PENALTY_BOX, FLAGS, FIELDING, PENALTY);
         setInverseReference(FIELDING, Fielding.SKATER);
         setCopy(NAME, this, PREPARED_SKATER, NAME, false, team, Team.PREPARED_TEAM_CONNECTED);
         setCopy(ROSTER_NUMBER, this, PREPARED_SKATER, ROSTER_NUMBER, false, team, Team.PREPARED_TEAM_CONNECTED);
@@ -71,6 +73,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         setCopy(POSITION, this, CURRENT_FIELDING, Fielding.POSITION, true);
         setCopy(PENALTY_BOX, this, CURRENT_FIELDING, Fielding.PENALTY_BOX, false);
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
+        setRecalculated(CURRENT_PENALTIES).addSource(this, PENALTY).addSource(this, PENALTY_BOX);
     }
 
     @Override
@@ -87,6 +90,13 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         if (prop == ROLE && flag != Flag.SPECIAL_CASE && !source.isFile()) {
             team.field(this, (Role) value);
             return last;
+        }
+        if (prop == CURRENT_PENALTIES) {
+            List<Penalty> penalties =
+                new ArrayList<>(isPenaltyBox() ? getCurrentFielding().getCurrentBoxTrip().getAll(BoxTrip.PENALTY)
+                                               : getUnservedPenalties());
+            Collections.sort(penalties);
+            value = penalties.stream().map(Penalty::getCode).collect(Collectors.joining(" "));
         }
         return value;
     }

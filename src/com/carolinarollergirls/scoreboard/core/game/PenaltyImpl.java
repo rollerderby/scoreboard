@@ -77,12 +77,19 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
                 if (fo != null && fo.get(CODE) == "FO") { fo.set(JAM, (Jam) value); }
             }
         }
+        if (prop == CODE || prop == SERVED || prop == BOX_TRIP) { possiblyUpdateSkater(); }
         if (prop == CODE && value == null) { delete(source); }
     }
 
     @Override
     public void execute(Command prop, Source source) {
         if (prop == REMOVE) { delete(source); }
+    }
+
+    private void possiblyUpdateSkater() {
+        if (getCode() == "" || getId() == Skater.FO_EXP_ID) { return; }
+        Skater s = (Skater) parent;
+        s.set(Skater.CURRENT_PENALTIES, s.get(Skater.CURRENT_PENALTIES), Source.RECALCULATE);
     }
 
     @Override
