@@ -79,7 +79,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         setCopy(TIMEOUT_OWNER, this, CURRENT_TIMEOUT, Timeout.OWNER, false);
         setCopy(OFFICIAL_REVIEW, this, CURRENT_TIMEOUT, Timeout.REVIEW, false);
         setCopy(RULESET_NAME, this, RULESET, Ruleset.NAME, true);
-        addWriteProtectionOverride(RULE, Source.ANY_INTERNAL);
         setRuleset(rs);
         add(TEAM, new TeamImpl(this, Team.ID_1));
         add(TEAM, new TeamImpl(this, Team.ID_2));

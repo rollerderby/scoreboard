@@ -167,7 +167,7 @@ function createRulesetsTab(tab, id, isGame) {
     // If the definitions change, we'll have to redraw the rulesets too.
     var rereadProperties = ['ScoreBoard.Rulesets.RuleDefinition', 'ScoreBoard.Rulesets.Ruleset'];
     if (isGame) {
-      rereadProperties.concat('ScoreBoard.Game(' + id + ').Rule(*)');
+      rereadProperties = rereadProperties.concat('ScoreBoard.Game(' + id + ').Rule(*)');
     }
     WS.Register(rereadProperties, {
       triggerBatchFunc: function () {
@@ -253,7 +253,7 @@ function createRulesetsTab(tab, id, isGame) {
 
   function displayRuleset() {
     var activeId = isGame ? WS.state['ScoreBoard.Game(' + id + ').Ruleset'] || '' : id;
-    activeRuleset = rulesets[activeId];
+    activeRuleset = rulesets[activeId] || rulesets[''];
     if (!activeRuleset) {
       return;
     }
@@ -273,19 +273,19 @@ function createRulesetsTab(tab, id, isGame) {
     });
 
     if (isTrue(activeRuleset.Readonly)) {
-      tab.find('#name').prop('disabled', true);
+      tab.find('#name, #parent').prop('disabled', true);
       definitionsDiv.find('.definition *').prop('disabled', true);
       definitionsDiv.find('.Update, .EditNote').hide();
     } else if (activeRuleset.Effective) {
-      tab.find('#name').prop('disabled', false);
+      tab.find('#name, #parent').prop('disabled', false);
       definitionsDiv.find('.Update, .EditNote').show();
     } else if (activeRuleset.Id === '') {
-      tab.find('#name').prop('disabled', true);
+      tab.find('#name, #parent').prop('disabled', true);
       definitionsDiv.find('.definition .Selector').prop('disabled', true);
       definitionsDiv.find('.Update').show();
       definitionsDiv.find('.EditNote').hide();
     } else {
-      tab.find('#name').prop('disabled', false);
+      tab.find('#name, #parent').prop('disabled', false);
       definitionsDiv.find('.Update').show();
       definitionsDiv.find('.EditNote').hide();
     }

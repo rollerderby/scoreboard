@@ -13,7 +13,7 @@ $(function () {
   setupGameAdvance($('gameAdvance'), gameId, true);
   createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
   createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
-  createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId);
+  createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId, true);
   createIgrfTab(createTab('IGRF', 'IgrfTab'), gameId);
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {

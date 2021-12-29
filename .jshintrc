@@ -3,7 +3,7 @@
   "unused": false,
   "laxbreak": true,
   "browser": true,
-  "devel": true,
+  "devel": false,
   "curly": true,
   "esversion": 5,
   "shadow": "outer",
