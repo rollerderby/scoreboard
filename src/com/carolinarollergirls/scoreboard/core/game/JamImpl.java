@@ -5,6 +5,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
@@ -160,6 +161,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
             set(PERIOD_CLOCK_ELAPSED_END, game.getClock(Clock.ID_PERIOD).getTimeElapsed());
             set(PERIOD_CLOCK_DISPLAY_END, game.getClock(Clock.ID_PERIOD).getTime());
             set(WALLTIME_END, ScoreBoardClock.getInstance().getCurrentWalltime());
+            for (TeamJam tj : getAll(TEAM_JAM)) { tj.getCurrentScoringTrip().set(ScoringTrip.CURRENT, false); }
         }
     }
 

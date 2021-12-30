@@ -12,13 +12,16 @@ import org.junit.Test;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
+import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class TeamJamImplTests {
@@ -89,5 +92,25 @@ public class TeamJamImplTests {
         tj.getJam().set(Jam.OVERTIME, true);
         tj.set(TeamJam.LOST, true);
         assertFalse(tj.isLost());
+    }
+
+    @Test
+    public void testLateScoreChange() {
+        Game g = sb.getCurrentGame().get(CurrentGame.GAME);
+        g.startJam();
+        tj.getTeam().execute(Team.ADD_TRIP);
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 2);
+        g.stopJamTO();
+        g.startJam();
+        g.stopJamTO();
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 3, Source.WS);
+        assertEquals(-1, tj.getOsOffset());
+
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 0, Source.WS);
+        assertEquals(2, tj.getOsOffset());
+
+        g.set(Rule.WFTDA_LATE_SCORE_RULE, String.valueOf(false));
+        tj.getCurrentScoringTrip().set(ScoringTrip.SCORE, 2, Source.WS);
+        assertEquals(2, tj.getOsOffset());
     }
 }

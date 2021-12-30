@@ -46,7 +46,7 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     Value<Integer> CURRENT_TRIP_NUMBER = new Value<>(Integer.class, "CurrentTripNumber", 0);
     Value<Integer> LAST_SCORE = new Value<>(Integer.class, "LastScore", 0);
     Value<Integer> OS_OFFSET = new Value<>(Integer.class, "OsOffset", 0);
-    Value<Integer> OS_OFFSET_REASON = new Value<>(Integer.class, "OsOffsetReason", 0);
+    Value<String> OS_OFFSET_REASON = new Value<>(String.class, "OsOffsetReason", "");
     Value<Integer> JAM_SCORE = new Value<>(Integer.class, "JamScore", 0);
     Value<Integer> AFTER_S_P_SCORE = new Value<>(Integer.class, "AfterSPScore", 0);
     Value<Integer> TOTAL_SCORE = new Value<>(Integer.class, "TotalScore", 0);

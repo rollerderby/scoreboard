@@ -39,6 +39,7 @@ function createSheetsTab(tab, gameId) {
   var pt2 = $('<div>').addClass('T2 PTS Sheet Hide').appendTo(tab);
   $('<div>').attr('id', 'TripEditor').appendTo(tab);
   $('<div>').attr('id', 'skaterSelector').appendTo(tab);
+  $('<div>').attr('id', 'osOffsetEditor').appendTo(tab);
   $('<div>').attr('id', 'PenaltyEditor').appendTo(tab);
   var ae1 = $('<div>').attr('id', 'AnnotationEditor1').appendTo(tab);
   var ae2 = $('<div>').attr('id', 'AnnotationEditor2').appendTo(tab);
@@ -52,6 +53,7 @@ function createSheetsTab(tab, gameId) {
   prepareLtSheetTable(lt2, gameId, '2', 'edit');
   prepareTripEditor();
   prepareSkaterSelector(gameId);
+  prepareOsOffsetEditor();
   preparePenaltyEditor(gameId);
   prepareAnnotationEditor(ae1, gameId, '1');
   prepareAnnotationEditor(ae2, gameId, '2');
