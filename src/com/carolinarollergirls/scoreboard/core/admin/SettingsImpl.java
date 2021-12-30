@@ -31,6 +31,8 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set("Overlay.Interactive.Clock", "On");
         set("Overlay.Interactive.Score", "On");
         set("Overlay.Interactive.ShowJammers", "On");
+        set("Overlay.Interactive.ShowLineups", "On");
+        set("Overlay.Interactive.ShowAllNames", "Off");
         set("ScoreBoard.Operator_Default.StartStopButtons", "false");
         set("ScoreBoard.Operator_Default.TabBar", "true");
         set("ScoreBoard.Operator_Default.ReplaceButton", "false");

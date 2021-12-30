@@ -52,6 +52,7 @@ public interface Skater extends ScoreBoardEventProvider {
     Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
     Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
     Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
+    Value<String> CURRENT_PENALTIES = new Value<>(String.class, "CurrentPenalties", "");
     Value<Position> POSITION = new Value<>(Position.class, "Position", null);
     Value<Role> ROLE = new Value<>(Role.class, "Role", null);
     Value<Role> BASE_ROLE = new Value<>(Role.class, "BaseRole", null);

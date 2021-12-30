@@ -2,15 +2,19 @@ package com.carolinarollergirls.scoreboard.core.current;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
+import com.carolinarollergirls.scoreboard.event.IndirectScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 
 public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater> implements CurrentSkater {
     CurrentSkaterImpl(CurrentTeam t, Skater s) {
         super(t, s.getId(), CurrentTeam.SKATER);
         addProperties(SKATER, Skater.NAME, Skater.ROSTER_NUMBER, Skater.CURRENT_BOX_SYMBOLS, Skater.ROLE,
-                      Skater.BASE_ROLE, Skater.PENALTY_BOX, Skater.FLAGS);
+                      Skater.BASE_ROLE, Skater.PENALTY_BOX, Skater.FLAGS, PENALTY);
         setCopy(Skater.NAME, this, SKATER, Skater.NAME, true);
         setCopy(Skater.ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, true);
         setCopy(Skater.CURRENT_BOX_SYMBOLS, this, SKATER, Skater.CURRENT_BOX_SYMBOLS, true);
@@ -19,6 +23,7 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
         setCopy(Skater.PENALTY_BOX, this, SKATER, Skater.PENALTY_BOX, true);
         setCopy(Skater.FLAGS, this, SKATER, Skater.FLAGS, true);
         set(SKATER, s);
+        providers.put(penaltyListener, null);
     }
     public CurrentSkaterImpl(CurrentSkaterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
@@ -40,4 +45,17 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
     public String getNumber() {
         return get(Skater.ROSTER_NUMBER);
     }
+
+    protected ScoreBoardListener penaltyListener =
+        new IndirectScoreBoardListener<>(this, SKATER, Skater.PENALTY, new ScoreBoardListener() {
+            @Override
+            public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                Penalty p = (Penalty) event.getValue();
+                if (event.isRemove()) {
+                    remove(PENALTY, p.getCurrentPenalty());
+                } else {
+                    add(PENALTY, new CurrentPenaltyImpl(CurrentSkaterImpl.this, p));
+                }
+            }
+        });
 }

@@ -7,6 +7,8 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public interface Penalty extends NumberedScoreBoardEventProvider<Penalty> {
     public int compareTo(Penalty other);
 
+    public CurrentPenalty getCurrentPenalty();
+
     public int getPeriodNumber();
     public int getJamNumber();
     public Jam getJam();

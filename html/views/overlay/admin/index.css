@@ -6,6 +6,9 @@ label { font-variant: small-caps; }
 #Controls { float: left; width: 10%; } 
 #Preview { float: left; width: 89%; height: 98%; } 
 
+#Preview > iframe { border: 3px solid black; margin: 10px; width: 1080px; height: 720px; }
+#Preview.Wide > iframe { width: 1100px; }
+#Preview.XWide > iframe { width: 1440px; }
 
 h2 { margin: 0 0 10px 0; padding: 4px 4px; display: block; border-radius: 6px; text-align: center; } 
 
@@ -27,6 +30,8 @@ button.ToggleSwitch { cursor: pointer; outline: none; width: 100%; transition: a
 
 button.ToggleSwitch { border: 0px solid; border-color: #999 #999 #999 #FF0000; background: #666; border-left-width: 20px; border-right-width: 0px; text-decoration: none; } 
 button.ToggleSwitch.current { border: 0px solid; border-color: #999 #00FF00 #999 #999; background: #666; border-right-width: 20px; border-left-width: 0px; text-decoration: none; } 
+
+button.ToggleSwitch.disabled { border-left-color: #ff8888; border-right-color: #ffff33; background: #aaa; }
 
 button.Reverse  { border-color: #999 #999 #999 #FF0000; border-left-width: 20px; border-right-width: 0px; } 
 button.Reverse.current { border-color: #999 #00FF00 #999 #999; border-right-width: 20px; border-left-width: 0px; } 

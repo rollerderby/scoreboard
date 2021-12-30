@@ -103,6 +103,23 @@ function initialize() {
     createPenalty(sel, k.Penalty, v);
   });
 
+  WS.Register('ScoreBoard.CurrentGame.Team(*).Position(*).PenaltyBox', function (k, v) {
+    $('.Team' + k.Team + ' .' + k.Position).toggleClass('InBox', isTrue(v));
+  });
+
+  WS.Register('ScoreBoard.CurrentGame.Team(*).Position(*).CurrentPenalties', function (k, v) {
+    $('.Team' + k.Team + ' .' + k.Position).toggleClass('Penalized', v !== '');
+  });
+
+  WS.Register('ScoreBoard.CurrentGame.Team(*).StarPass', function (k, v) {
+    $('.Team' + k.Team + ' .Jammer').toggleClass('Jamming', !isTrue(v));
+    $('.Team' + k.Team + ' .Pivot').toggleClass('Jamming', isTrue(v));
+  });
+
+  WS.Register('ScoreBoard.CurrentGame.Team(*).Lead', function (k, v) {
+    $('.Team' + k.Team).toggleClass('Lead', isTrue(v));
+  });
+
   WS.Register(['ScoreBoard.CurrentGame.Team(*).Color'], function (k, v) {
     $(document)
       .find('.ColourTeam' + k.Team)
@@ -143,25 +160,33 @@ function initialize() {
   WS.Register(
     ['ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)', 'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)'],
     function (k, v) {
-      $('div[data-setting="' + k + '"]').each(function () {
-        if (v === 'On') {
-          $(this).addClass('Show');
-        } else {
-          $(this).removeClass('Show');
-        }
-      });
+      $('div[data-setting="' + k + '"]').toggleClass('Show', v === 'On');
     }
   );
 
-  WS.Register(['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)'], function (k, v) {
-    $('div[data-setting="' + k + '"]').each(function () {
-      if (v === 'On') {
-        $(this).addClass('ShowJammers');
-      } else {
-        $(this).removeClass('ShowJammers');
-      }
-    });
-  });
+  WS.Register(
+    [
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)',
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)',
+      'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)',
+      'ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)',
+    ],
+    function (k, v) {
+      var jammers = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)'] === 'On';
+      var lineups =
+        WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)'] === 'On' &&
+        isTrue(WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
+      var allNames = WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)'] === 'On';
+      $('.TeamBox .JammerBox')
+        .toggleClass('JammerNames', jammers || allNames)
+        .toggleClass('AllNames', allNames);
+      $('.TeamBox')
+        .toggleClass('Lineups', lineups)
+        .toggleClass('Wide', lineups && jammers && !allNames)
+        .toggleClass('XWide', lineups && allNames);
+      $('div[data-setting="ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)"]').toggleClass('ShowJammers', jammers || lineups);
+    }
+  );
 
   WS.Register('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', function (k, v) {
     $('.OverlayPanel').removeClass('Show');
@@ -196,6 +221,18 @@ function initialize() {
         WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowJammers)'] === 'On' ? 'Off' : 'On'
       );
     }
+    if (e.which === 76) {
+      WS.Set(
+        'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)',
+        WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowLineups)'] === 'On' ? 'Off' : 'On'
+      );
+    }
+    if (e.which === 78) {
+      WS.Set(
+        'ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)',
+        WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.ShowAllNames)'] === 'On' ? 'Off' : 'On'
+      );
+    }
     if (e.which === 67) {
       WS.Set(
         'ScoreBoard.Settings.Setting(Overlay.Interactive.Clock)',
@@ -206,6 +243,12 @@ function initialize() {
       WS.Set(
         'ScoreBoard.Settings.Setting(Overlay.Interactive.Score)',
         WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Score)'] === 'On' ? 'Off' : 'On'
+      );
+    }
+    if (e.which === 48) {
+      WS.Set(
+        'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
+        WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === 'PPJBox' ? '' : 'PPJBox'
       );
     }
     if (e.which === 49) {
@@ -232,6 +275,18 @@ function initialize() {
         WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === 'PenaltyTeam2' ? '' : 'PenaltyTeam2'
       );
     }
+    if (e.which === 57) {
+      WS.Set(
+        'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
+        WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === 'LowerThird' ? '' : 'LowerThird'
+      );
+    }
+    if (e.which === 85) {
+      WS.Set(
+        'ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)',
+        WS.state['ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)'] === 'Upcoming' ? '' : 'Upcoming'
+      );
+    }
     if (e.which === 32) {
       WS.Set('ScoreBoard.Settings.Setting(Overlay.Interactive.Panel)', '');
     }
@@ -255,13 +310,6 @@ function toIndicator(k, v) {
     : isTrue(WS.state[prefix + '.Lead'])
     ? '★'
     : '';
-}
-
-function jammer_ov(k, v) {
-  'use strict';
-  /* jshint -W117 */
-  return jammer(k, v, true);
-  /* jshint +W117 */
 }
 
 function ensureSkaterExists(skaterId, team) {
