@@ -133,7 +133,7 @@ function createMetaControlTable(gameId) {
       }
     });
 
-  $('<button>')
+  var startButton = $('<button>')
     .attr('id', 'GameControl')
     .text('Start New Game')
     .addClass('clickMe')
@@ -142,6 +142,11 @@ function createMetaControlTable(gameId) {
     .on('click', function () {
       createGameControlDialog(gameId);
     });
+  var firstLoad = true;
+  setTimeout(function () {
+    firstLoad = false;
+    updateHighlights();
+  }, 120000);
 
   var periodEndControlsLabel = $('<label>')
     .attr('for', 'PeriodEndControlsCheckbox')
@@ -154,30 +159,8 @@ function createMetaControlTable(gameId) {
     .button()
     .on('click', function () {
       table.find('tr.PeriodEnd').toggleClass('Hidden', !this.checked);
+      updateHighlights();
     });
-  var doPulseFlag = false;
-  var doPulse = function () {
-    if (doPulseFlag) {
-      periodEndControlsLabel.fadeTo(500, 0.25).fadeTo(500, 1, doPulse);
-    } else {
-      setTimeout(doPulse, 500);
-    }
-  };
-  doPulse();
-  WS.Register(
-    [
-      'ScoreBoard.Game(' + gameId + ').NoMoreJam',
-      'ScoreBoard.Game(' + gameId + ').Clock(Period).Number',
-      'ScoreBoard.Game(' + gameId + ').Rule(Period.Number)',
-    ],
-    function (k, v) {
-      var noMoreJam = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Time']);
-      var last =
-        WS.state['ScoreBoard.Game(' + gameId + ').Rulesets.CurrentRule(Period.Number)'] ===
-        WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Number'];
-      doPulseFlag = noMoreJam && last;
-    }
-  );
 
   var confirmedButton = toggleButton('ScoreBoard.Game(' + gameId + ').OfficialScore', 'Official Score', 'Unofficial Score');
   confirmedButton.appendTo(periodEndTd);
@@ -190,14 +173,36 @@ function createMetaControlTable(gameId) {
     .on('click', function () {
       periodEndTimeoutDialog.dialog('open');
     });
-  WS.Register('ScoreBoard.Game(' + gameId + ').Rule(Period.Number)');
-  $('<button>')
+  var otButton = $('<button>')
     .text('Overtime')
     .appendTo(periodEndTd)
     .button()
     .on('click', function () {
       createOvertimeDialog(WS.state['ScoreBoard.Game(' + gameId + ').Rule(Period.Number)'], gameId);
     });
+
+  function updateHighlights() {
+    var noPeriod = !isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InPeriod']);
+    var last =
+      WS.state['ScoreBoard.Game(' + gameId + ').Rule(Period.Number)'] == WS.state['ScoreBoard.Game(' + gameId + ').Clock(Period).Number'];
+    var tie = WS.state['ScoreBoard.Game(' + gameId + ').Team(1).Score'] === WS.state['ScoreBoard.Game(' + gameId + ').Team(2).Score'];
+    var official = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').OfficialScore']);
+
+    startButton.toggleClass('clickMe', official || firstLoad);
+    periodEndControlsLabel.toggleClass('clickMe', noPeriod && last && !official && table.find('tr.PeriodEnd').hasClass('Hidden'));
+    confirmedButton.toggleClass('clickMe', noPeriod && last && !tie && !official);
+    otButton.toggleClass('clickMe', noPeriod && last && tie && !official);
+  }
+  WS.Register(
+    [
+      'ScoreBoard.Game(' + gameId + ').InPeriod',
+      'ScoreBoard.Game(' + gameId + ').Clock(Period).Number',
+      'ScoreBoard.Game(' + gameId + ').Rule(Period.Number)',
+      'ScoreBoard.Game(' + gameId + ').Team(*).Score',
+      'ScoreBoard.Game(' + gameId + ').OfficialScore',
+    ],
+    updateHighlights
+  );
 
   return table;
 }
@@ -240,7 +245,6 @@ function createGameControlDialog(gameId) {
   var adhocState = $('<div>').addClass('section').appendTo(dialog);
 
   var adhocStartGame = function () {
-    $('#GameControl').removeClass('clickMe');
     var StartTime = adhocGame.find('input.StartTime').val();
     var IntermissionClock = null;
     var points1 = Number(adhocState.find('input.Points.Team1').val());
