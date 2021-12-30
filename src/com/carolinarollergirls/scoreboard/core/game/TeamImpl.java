@@ -139,10 +139,10 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             }
         }
         if (prop == DISPLAY_NAME) {
-            String setting = scoreBoard.getSettings().get(DISPLAY_NAME_SETTING);
-            if ("Team".equals(setting) && !"".equals(get(TEAM_NAME))) {
+            String setting = scoreBoard.getSettings().get(SETTING_DISPLAY_NAME);
+            if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
                 return get(TEAM_NAME);
-            } else if (!"Full".equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+            } else if (!OPTION_FULL_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
                 return get(LEAGUE_NAME);
             } else {
                 return get(FULL_NAME);

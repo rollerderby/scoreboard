@@ -16,7 +16,23 @@ function createIgrfTab(tab, gameId) {
     .append($('<tr><td colspan="3"/></tr>').addClass('NSOs'))
     .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Refs'));
-  var gameName = $('<span>').appendTo(table.find('tr.Name>td'));
+  var gameName = $('<span>')
+    .addClass('Name')
+    .appendTo(table.find('tr.Name>td'))
+    .on('click', function () {
+      gameName.addClass('Hide');
+      nameFormatLabel.removeClass('Hide');
+      nameFormat.removeClass('Hide').focus();
+    });
+  var nameFormatLabel = $('<span>').addClass('Hide').text('Name Format: ').appendTo(table.find('tr.Name>td'));
+  var nameFormat = WSControl(gamePrefix + '.NameFormat', $('<input type="text" size="30">'))
+    .addClass('Hide')
+    .appendTo(table.find('tr.Name>td'))
+    .on('focusout', function () {
+      nameFormat.addClass('Hide');
+      nameFormatLabel.addClass('Hide');
+      gameName.removeClass('Hide');
+    });
   var endButton = $('<button>')
     .text('End Game')
     .on('click', function () {

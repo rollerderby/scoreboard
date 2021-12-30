@@ -63,10 +63,10 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
             }
         }
         if (prop == Team.DISPLAY_NAME) {
-            String setting = scoreBoard.getSettings().get(Team.DISPLAY_NAME_SETTING);
-            if ("Team".equals(setting) && !"".equals(get(Team.TEAM_NAME))) {
+            String setting = scoreBoard.getSettings().get(Team.SETTING_DISPLAY_NAME);
+            if (Team.OPTION_TEAM_NAME.equals(setting) && !"".equals(get(Team.TEAM_NAME))) {
                 return get(Team.TEAM_NAME);
-            } else if (!"Full".equals(setting) && !"".equals(get(Team.LEAGUE_NAME))) {
+            } else if (!Team.OPTION_FULL_NAME.equals(setting) && !"".equals(get(Team.LEAGUE_NAME))) {
                 return get(Team.LEAGUE_NAME);
             } else {
                 return get(Team.FULL_NAME);

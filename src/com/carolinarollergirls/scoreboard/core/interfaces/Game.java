@@ -135,7 +135,7 @@ public interface Game extends ScoreBoardEventProvider {
     Command OFFICIAL_TIMEOUT = new Command("OfficialTimeout");
     Command EXPORT = new Command("Export");
 
-    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
+    public static final String SETTING_DEFAULT_NAME_FORMAT = "ScoreBoard.Game.DefaultNameFormat";
 
     public static final String INFO_VENUE = "Venue";
     public static final String INFO_CITY = "City";

@@ -605,6 +605,35 @@ function createJamControlTable(gameId) {
     })
     .appendTo(controlsTr.children('td:eq(3)'));
 
+  WS.Register(['ScoreBoard.CurrentGame.InJam', 'ScoreBoard.CurrentGame.Clock(Jam).Running'], function () {
+    var inJam = isTrue(WS.state['ScoreBoard.CurrentGame.InJam']);
+    var timeLeft = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(Jam).Running']);
+    jamStopButton.toggleClass('clickMe', inJam && !timeLeft);
+  });
+
+  WS.Register(
+    [
+      'ScoreBoard.CurrentGame.Rule(Lineup.Duration)',
+      'ScoreBoard.CurrentGame.Rule(Lineup.OvertimeDuration)',
+      'ScoreBoard.CurrentGame.Clock(Lineup).Running',
+      'ScoreBoard.CurrentGame.Clock(Lineup).Time',
+      'ScoreBoard.CurrentGame.InOvertime',
+    ],
+    function () {
+      var inLineup = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running']);
+      var overtime = isTrue(WS.state['ScoreBoard.CurrentGame.InOvertime']);
+      var curTime = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Time'];
+      var maxTime = _timeConversions.minSecToMs(
+        overtime
+          ? WS.state['ScoreBoard.CurrentGame.Rule(Lineup.OvertimeDuration)']
+          : WS.state['ScoreBoard.CurrentGame.Rule(Lineup.Duration)']
+      );
+
+      jamStartButton.toggleClass('clickMe', inLineup && curTime > maxTime);
+      timeoutButton.toggleClass('clickMe', inLineup && curTime > maxTime);
+    }
+  );
+
   return table;
 }
 
@@ -1189,7 +1218,7 @@ function createPeriodDialog(gameId) {
       }
       var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + nr + ')';
       var key = k.field;
-      if (k.parts.length > 3) {
+      if (k.parts.length > 4) {
         return;
       }
       if (!['CurrentJamNumber', 'Duration', 'Number', 'Running'].includes(key)) {

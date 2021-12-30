@@ -122,7 +122,7 @@ public class TeamImplTests {
 
     @Test
     public void testSetRetainedOfficialReview() {
-        sb.getSettings().set(Game.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
         assertFalse(team.retainedOfficialReview());
         assertEquals(1, team.getOfficialReviews());
         sb.addScoreBoardListener(new ConditionalScoreBoardListener<>(team, Team.RETAINED_OFFICIAL_REVIEW, listener));
@@ -161,7 +161,7 @@ public class TeamImplTests {
 
     @Test
     public void testTimeoutsResetAtHalf() {
-        sb.getSettings().set(Game.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, Clock.ID_LINEUP);
         team.timeout();
         advance(60000);
         g.timeout();
@@ -179,6 +179,7 @@ public class TeamImplTests {
 
         g.stopJamTO();
         g.startJam();
+        g.stopJamTO();
         advance(g.getLong(Rule.PERIOD_DURATION));
         advance(15 * 60 * 1000);
         g.startJam();

@@ -47,4 +47,12 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
     Child<Game> GAME = new Child<>(Game.class, "Game");
     Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam");
     Child<CurrentGame> CURRENT_GAME = new Child<>(CurrentGame.class, "CurrentGame");
+
+    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
+    public static final String SETTING_AUTO_START = "ScoreBoard.AutoStart";
+    public static final String SETTING_AUTO_START_BUFFER = "ScoreBoard.AutoStartBuffer";
+    public static final String SETTING_AUTO_END_JAM = "ScoreBoard.AutoEndJam";
+    public static final String SETTING_AUTO_END_TTO = "ScoreBoard.AutoEndTTO";
+    public static final String SETTING_USE_LT = "ScoreBoard.Penalties.UseLT";
+    public static final String SETTING_STATSBOOK_INPUT = "ScoreBoard.Stats.InputFile";
 }

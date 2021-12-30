@@ -6,8 +6,9 @@
 
 #Igrf .Hide { display: none; } 
 
-#Igrf tr.Name > td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
-#Igrf tr.Name > td > button { font-size: 50%; margin-left: 5px; } 
+#Igrf tr.Name > td { background: #ccc; border-radius: 12px 12px 0px 0px; } 
+#Igrf tr.Name > td > span.Name { font-size: 200%; font-weight: bold; } 
+#Igrf tr.Name > td > button { margin-left: 5px; } 
 #Igrf tr.Files > td { background: #ddd; } 
 #Igrf tr.Files .ui-button { margin: 1px 5px; } 
 

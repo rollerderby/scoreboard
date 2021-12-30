@@ -38,6 +38,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
@@ -57,7 +58,7 @@ public class StatsbookExporter extends Thread {
         try {
             Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
             Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
-            Files.copy(Paths.get(game.getScoreBoard().getSettings().get("ScoreBoard.Stats.InputFile")), tmpPath,
+            Files.copy(Paths.get(game.getScoreBoard().getSettings().get(ScoreBoard.SETTING_STATSBOOK_INPUT)), tmpPath,
                        REPLACE_EXISTING);
             wb = WorkbookFactory.create(tmpPath.toFile());
             evaluator = wb.getCreationHelper().createFormulaEvaluator();

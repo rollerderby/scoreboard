@@ -8,7 +8,6 @@ import org.junit.Test;
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
-import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -28,7 +27,7 @@ public class RulesetsImplTests {
     public void setUp() throws Exception {
         sb = new ScoreBoardImpl();
         sb.postAutosaveUpdate();
-        sb.getSettings().set(Game.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
         rulesets = sb.getRulesets();
         root = rulesets.getRuleset(RulesetsImpl.ROOT_ID);
     }
