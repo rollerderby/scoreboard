@@ -1,6 +1,7 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
 
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedChild;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
@@ -63,4 +64,6 @@ public interface TeamJam extends ParentOrderedScoreBoardEventProvider<TeamJam> {
     Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding");
 
     NumberedChild<ScoringTrip> SCORING_TRIP = new NumberedChild<>(ScoringTrip.class, "ScoringTrip");
+
+    Command COPY_LINEUP_TO_CURRENT = new Command("CopyLineupToCurrent");
 }

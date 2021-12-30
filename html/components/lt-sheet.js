@@ -105,13 +105,14 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
       return;
     }
     if (v == null && k == 'ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Number') {
+      element.children('#head[nr=' + k.Period + ']').remove();
       element.children('table.Period[nr=' + k.Period + ']').remove();
       delete periodElements[k.Period];
       delete jamElements[k.Period];
     } else if (v != null) {
       createPeriod(k.Period);
     }
-    if (!k.Jam || k.Jam === 0) {
+    if (!k.Jam || k.Jam === 0 || jamElements[k.Period] == null) {
       return;
     }
     var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Jam(' + k.Jam + ').';
@@ -195,6 +196,7 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
         $('<div class="LT">')
           .html('<span class ="Team">' + teamName + '</span> P' + nr)
           .prop('id', 'head')
+          .attr('nr', nr)
           .insertBefore(table);
         var header = $('<thead>').appendTo(table);
         var row = $('<tr>').appendTo(header);
@@ -270,7 +272,12 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
 
       var jamRow = $('<tr>').addClass('Jam').attr('nr', nr);
       if (mode !== 'copyToStatsbook') {
-        $('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
+        var jamNumberTd = $('<td>').addClass('JamNumber Darker').text(nr).appendTo(jamRow);
+        if (mode === 'plt') {
+          jamNumberTd.addClass('CopyArrow').on('click', function () {
+            WS.Set(prefix + 'CopyLineupToCurrent', true);
+          });
+        }
         $('<td>')
           .addClass('NP Darker')
           .on('click', function () {

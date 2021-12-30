@@ -5,10 +5,13 @@ import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
+import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.RecalculateScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -20,7 +23,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         super(j, teamId, Jam.TEAM_JAM);
         addProperties(CURRENT_TRIP, CURRENT_TRIP_NUMBER, LAST_SCORE, OS_OFFSET, OS_OFFSET_REASON, JAM_SCORE,
                       AFTER_S_P_SCORE, TOTAL_SCORE, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL, DISPLAY_LEAD, STAR_PASS,
-                      STAR_PASS_TRIP, NO_PIVOT, FIELDING, SCORING_TRIP);
+                      STAR_PASS_TRIP, NO_PIVOT, FIELDING, SCORING_TRIP, COPY_LINEUP_TO_CURRENT);
         game = j.getPeriod().getGame();
         team = game.getTeam(teamId);
         setRecalculated(CURRENT_TRIP).addSource(this, SCORING_TRIP);
@@ -124,6 +127,34 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
             if (prop == SCORING_TRIP) { return new ScoringTripImpl(this, Integer.parseInt(id)); }
             return null;
         }
+    }
+
+    @Override
+    public void execute(Command prop, Source source) {
+        if (prop == COPY_LINEUP_TO_CURRENT) { copyLineupToCurrentJam(); }
+    }
+
+    private void copyLineupToCurrentJam() {
+        if (isRunningOrUpcoming()) { return; }
+
+        TeamJam current = team.getRunningOrUpcomingTeamJam();
+
+        for (FloorPosition fp : FloorPosition.values()) { copySkaterToIfAvailable(fp, current); }
+    }
+
+    private void copySkaterToIfAvailable(FloorPosition fp, TeamJam target) {
+        Skater s = getFielding(fp).getSkater();
+        if (s == null || s.getFielding(target) != null) { return; }
+
+        boolean placeAvailable = target.getFielding(fp).getSkater() == null;
+        if (fp.getRole() == Role.BLOCKER) {
+            placeAvailable = target.getFielding(FloorPosition.BLOCKER1).getSkater() == null ||
+                             target.getFielding(FloorPosition.BLOCKER2).getSkater() == null ||
+                             target.getFielding(FloorPosition.BLOCKER3).getSkater() == null ||
+                             target.getFielding(FloorPosition.PIVOT).getSkater() == null;
+        }
+
+        if (placeAvailable) { team.field(s, fp.getRole(), target); }
     }
 
     @Override

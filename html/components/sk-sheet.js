@@ -88,7 +88,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
     } else if (v != null) {
       createPeriod(k.Period);
     }
-    if (!k.Jam || k.Jam === 0) {
+    if (!k.Jam || k.Jam === 0 || jamElements[k.Period] == null) {
       return;
     }
     var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Jam(' + k.Jam + ').';

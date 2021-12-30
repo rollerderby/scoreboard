@@ -288,6 +288,7 @@ function createEditTeamTable(element, teamPrefix, changable) {
       // Team update.
       switch (k.field) {
         case 'Logo':
+          v = v || '';
           logoSelect.val(v.substring(v.lastIndexOf('/') + 1));
           break;
         case 'AlternateName':
