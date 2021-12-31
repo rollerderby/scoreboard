@@ -203,4 +203,3 @@ var _autoFit = {
     return obj;
   },
 };
-//# sourceURL=autofit.js

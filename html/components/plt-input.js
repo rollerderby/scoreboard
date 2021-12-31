@@ -72,7 +72,7 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
     WS.Register(
       [
         'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Name',
-        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UNiformColor',
+        'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').UniformColor',
         'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').AlternateName(' + alternateName + ')',
       ],
       teamNameUpdate
@@ -722,7 +722,7 @@ function preparePenaltyEditor(gameId) {
     var div = $('#PenaltyEditor .Codes .' + type + '[code="' + code + '"]');
 
     if (verbalCues == null) {
-      div.detach();
+      div.remove();
       return;
     } else if (div.length > 0) {
       div.find('.Description').empty();
@@ -1117,4 +1117,3 @@ function setupGameAdvance(element, gameId, auto) {
     }
   });
 }
-//# sourceURL=controls\plt\plt-input.js

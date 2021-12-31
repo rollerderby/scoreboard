@@ -19,5 +19,3 @@
   WS.AutoRegister();
   WS.Connect();
 })();
-
-//# sourceURL=views\copy\copy.js

@@ -209,5 +209,3 @@ $(function () {
   WS.AutoRegister();
   WS.Connect();
 });
-
-//# sourceURL=settings\twitter\index.js

@@ -439,5 +439,3 @@ var WS = {
   },
   /* jshint +W117 */
 };
-
-//# sourceURL=json\WS.js

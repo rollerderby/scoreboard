@@ -16,6 +16,7 @@ body:not(.AllowSelect) .SK { user-select: none; -webkit-user-select: none; -khtm
 .SK.Period.Backwards tr.SP td { border-bottom-style: dotted; } 
 .SK.Period.Forwards tr.SP td { border-top-style: dotted; } 
 .SK.Period .JamNumber { width: 30px; } 
+.SK.Period .Overtime .JamNumber::after { font-size: 50%; content: "OT"; vertical-align: top; padding-left: 1px; } 
 .SK.Period .Jammer { width: 50px; } 
 .SK.Period .Narrow, .Period .SmallHead { width: 14px; } 
 .SK.Period #head { font-size: 200%; } 

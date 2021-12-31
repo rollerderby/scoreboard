@@ -97,4 +97,3 @@ var _timeConversions = {
     return _timeConversions._formatMinSec(time).split(':')[0];
   },
 };
-//# sourceURL=timeconversions.js

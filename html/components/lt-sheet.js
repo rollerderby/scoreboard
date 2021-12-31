@@ -617,5 +617,3 @@ function prepareFieldingEditor(elem, gameId, teamId) {
     }
   }
 }
-
-//# sourceURL=controls\lt\lt-sheet.js

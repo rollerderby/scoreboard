@@ -116,5 +116,3 @@ function createTab(title, tabId) {
     .appendTo('#tabsDiv>ul');
   return $('<div>').attr('id', tabId).addClass('TabContent').appendTo('#tabsDiv');
 }
-
-//# sourceURL=nso\sbo.js

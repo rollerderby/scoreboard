@@ -241,4 +241,3 @@ var _windowFunctions = {
     }
   },
 };
-//# sourceURL=windowfunctions.js

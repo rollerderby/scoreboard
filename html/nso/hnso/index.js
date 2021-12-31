@@ -5,6 +5,11 @@ $(function () {
   createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
   createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId, true);
   createSheetsTab(createTab('Sheets', 'SheetsTab'), gameId);
+
+  WS.Register('ScoreBoard.Game(' + gameId + ').Name', function (k, v) {
+    document.title = v + ' | Edit Game | CRG ScoreBoard';
+  });
+
   // Only connect after any registrations from the above are in place.
   // This avoids repeating work on the initial load.
   WS.AutoRegister();
@@ -23,5 +28,3 @@ function createTab(title, tabId) {
     .appendTo('#tabsDiv>ul');
   return $('<div>').attr('id', tabId).addClass('TabContent').appendTo('#tabsDiv');
 }
-
-//# sourceURL=nso\hnso.js

@@ -479,5 +479,3 @@ function clockType(k, v) {
 
   return ret;
 }
-
-//# sourceURL=views\overlay\index.js

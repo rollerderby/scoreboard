@@ -19,6 +19,7 @@ import java.util.concurrent.TimeUnit;
 import javax.servlet.DispatcherType;
 import javax.servlet.http.HttpServlet;
 
+import org.eclipse.jetty.http.HttpCookie.SameSite;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandlerCollection;
@@ -61,7 +62,9 @@ public class JettyServletScoreBoardController {
 
         SessionHandler sessions = new ScoreBoardSessionHandler(scoreBoard);
         sessions.setHttpOnly(true);
+        sessions.setSameSite(SameSite.LAX);
         sessions.setSessionCookie("CRG_SCOREBOARD");
+        sessions.getSessionCookieConfig().setMaxAge(COOKIE_DURATION_SECONDS);
         sessions.setMaxInactiveInterval(COOKIE_DURATION_SECONDS);
         // Sessions are created per request, so they're actually refreshed on each
         // request which is harmless.

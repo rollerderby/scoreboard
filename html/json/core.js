@@ -84,4 +84,3 @@ function newUUID() {
     return v.toString(16);
   });
 }
-//# sourceURL=json\core.js

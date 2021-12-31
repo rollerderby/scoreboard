@@ -120,4 +120,3 @@ function toTime(k, v) {
   var isCountDown = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(' + k.Clock + ').Direction']);
   return _timeConversions.msToMinSecNoZero(v, isCountDown);
 }
-//# sourceURL=nso\jt\index.js
