@@ -57,21 +57,23 @@ public class StatsbookExporter extends Thread {
     public void run() {
         boolean success = false;
         try {
-            Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
-            Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
-            Files.copy(Paths.get(game.getScoreBoard().getSettings().get(ScoreBoard.SETTING_STATSBOOK_INPUT)), tmpPath,
-                       REPLACE_EXISTING);
-            wb = WorkbookFactory.create(tmpPath.toFile());
-            evaluator = wb.getCreationHelper().createFormulaEvaluator();
+            String blankStatsbookPath = game.getScoreBoard().getSettings().get(ScoreBoard.SETTING_STATSBOOK_INPUT);
+            if (!"".equals(blankStatsbookPath)) {
+                Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
+                Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
+                Files.copy(Paths.get(blankStatsbookPath), tmpPath, REPLACE_EXISTING);
+                wb = WorkbookFactory.create(tmpPath.toFile());
+                evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
-            fillIgrfAndPenalties();
-            fillScoreLineupsAndClock();
-            if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
+                fillIgrfAndPenalties();
+                fillScoreLineupsAndClock();
+                if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
 
-            write();
+                write();
 
-            wb.close();
-            Files.move(tmpPath, fullPath, REPLACE_EXISTING);
+                wb.close();
+                Files.move(tmpPath, fullPath, REPLACE_EXISTING);
+            }
             success = true;
         } catch (IOException e) { e.printStackTrace(); } finally {
             baseGame.exportDone(success);

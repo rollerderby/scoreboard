@@ -27,12 +27,15 @@ public class JSONStateSnapshotter implements JSONStateListener {
 
     @Override
     public synchronized void sendUpdates(Map<String, Object> newState, Set<String> changed) {
+        boolean hadNonClockUpdate = false;
         for (String key : changed) {
             if ((key.startsWith(pathPrefix) || key.startsWith("ScoreBoard.Version")) && !key.endsWith("Secret")) {
+                if (!key.startsWith(pathPrefix + ".Clock")) { hadNonClockUpdate = true; }
                 state.put(key, newState.get(key));
             }
         }
-        if (writeOnNextUpdate) {
+        if (writeOnNextUpdate ||
+            (hadNonClockUpdate && game.isOfficialScore() && "Never".equals(game.get(Game.LAST_FILE_UPDATE)))) {
             writeOnNextUpdate = false;
             writeFile();
         }

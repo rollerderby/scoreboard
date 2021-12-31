@@ -40,7 +40,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set("ScoreBoard.Operator_Default.TabBar", "true");
         set("ScoreBoard.Operator_Default.ReplaceButton", "false");
         set(ScoreBoard.SETTING_USE_LT, "false");
-        set(ScoreBoard.SETTING_STATSBOOK_INPUT, "config/wftda-statsbook-full-A4.xlsx");
+        set(ScoreBoard.SETTING_STATSBOOK_INPUT, "");
         set(ScoreBoard.SETTING_AUTO_START, "");
         set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0:02");
         set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
