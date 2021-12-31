@@ -4,7 +4,11 @@ $(function () {
   createRulesetsTab($('#RulesetsTab'), rulesetId, false);
 
   WS.Register('ScoreBoard.Rulesets.Ruleset(' + rulesetId + ').Name', function (k, v) {
-    document.title = v + ' | Edit Ruleset | CRG ScoreBoard';
+    if (v == null) {
+      window.close();
+    } else {
+      document.title = v + ' | Edit Ruleset | CRG ScoreBoard';
+    }
   });
 
   WS.AutoRegister();

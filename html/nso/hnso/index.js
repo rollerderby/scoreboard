@@ -7,7 +7,11 @@ $(function () {
   createSheetsTab(createTab('Sheets', 'SheetsTab'), gameId);
 
   WS.Register('ScoreBoard.Game(' + gameId + ').Name', function (k, v) {
-    document.title = v + ' | Edit Game | CRG ScoreBoard';
+    if (v == null) {
+      window.close();
+    } else {
+      document.title = v + ' | Edit Game | CRG ScoreBoard';
+    }
   });
 
   // Only connect after any registrations from the above are in place.

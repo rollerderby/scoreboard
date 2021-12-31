@@ -4,7 +4,11 @@ $(function () {
   createTeamsTab($('#TeamsTab'), null, teamId);
 
   WS.Register('ScoreBoard.PreparedTeam(' + teamId + ').Name', function (k, v) {
-    document.title = v + ' | Edit Team | CRG ScoreBoard';
+    if (v == null) {
+      window.close();
+    } else {
+      document.title = v + ' | Edit Team | CRG ScoreBoard';
+    }
   });
 
   WS.AutoRegister();

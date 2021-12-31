@@ -27,7 +27,9 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
         setRecalculated(Team.DISPLAY_NAME)
             .addSource(this, Team.LEAGUE_NAME)
             .addSource(this, Team.TEAM_NAME)
+            .addSource(this, Team.FULL_NAME)
             .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        set(Team.FULL_NAME, "");
     }
     public PreparedTeamImpl(PreparedTeamImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 

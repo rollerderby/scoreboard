@@ -86,7 +86,9 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setRecalculated(DISPLAY_NAME)
             .addSource(this, LEAGUE_NAME)
             .addSource(this, TEAM_NAME)
+            .addSource(this, FULL_NAME)
             .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        set(FULL_NAME, "");
         setRecalculated(Team.INITIALS).addSource(this, Team.DISPLAY_NAME);
         addWriteProtectionOverride(TIMEOUTS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(OFFICIAL_REVIEWS, Source.ANY_INTERNAL);

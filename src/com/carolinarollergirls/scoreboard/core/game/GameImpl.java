@@ -110,7 +110,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             .addSource(get(TEAM, Team.ID_2), Team.DISPLAY_NAME);
         setRecalculated(STATE).addSource(this, CURRENT_PERIOD_NUMBER).addSource(this, OFFICIAL_SCORE);
         set(IN_JAM, false);
-        set(NAME_FORMAT, getSetting(SETTING_DEFAULT_NAME_FORMAT));
+        set(NAME_FORMAT, "");
         removeAll(Period.JAM);
         removeAll(PERIOD);
         set(CURRENT_PERIOD, getOrCreate(PERIOD, "0"));
@@ -165,6 +165,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 }
             }
             return true;
+        } else if (prop == NAME_FORMAT && "".equals(value)) {
+            return getSetting(SETTING_DEFAULT_NAME_FORMAT);
         } else if (prop == NAME) {
             String game = get(EVENT_INFO, INFO_GAME_NUMBER) == null ? "" : get(EVENT_INFO, INFO_GAME_NUMBER).getValue();
             String date = get(EVENT_INFO, INFO_DATE) == null ? "" : get(EVENT_INFO, INFO_DATE).getValue();

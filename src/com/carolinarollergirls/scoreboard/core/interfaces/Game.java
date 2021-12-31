@@ -93,7 +93,7 @@ public interface Game extends ScoreBoardEventProvider {
     }
 
     Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "%G %d %1 vs. %2 (%s: %S)");
+    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "");
     Value<State> STATE = new Value<>(State.class, "State", State.PREPARED);
     Value<Integer> CURRENT_PERIOD_NUMBER = new Value<>(Integer.class, "CurrentPeriodNumber", 0);
     Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null);

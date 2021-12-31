@@ -234,7 +234,7 @@ function createDataTab(tab) {
             WS.Set('ScoreBoard.PreparedTeam(' + $(this).attr('id') + ')', null);
           });
           rulesets.find(rulesetsSelector).each(function () {
-            WS.Set('ScoreBoard.Rulsets.Ruleset(' + $(this).attr('id') + ')', null);
+            WS.Set('ScoreBoard.Rulesets.Ruleset(' + $(this).attr('id') + ')', null);
           });
           div.dialog('close');
         },
