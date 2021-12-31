@@ -112,6 +112,7 @@ public interface Game extends ScoreBoardEventProvider {
     Value<String> RULESET_NAME = new Value<>(String.class, "RulesetName", "Custom");
     Value<Official> HEAD_NSO = new Value<>(Official.class, "HNSO", null);
     Value<Official> HEAD_REF = new Value<>(Official.class, "HR", null);
+    Value<String> SUSPENSIONS_SERVED = new Value<>(String.class, "SuspensionsServed", "");
     Value<String> FILENAME = new Value<>(String.class, "Filename", "STATS-0000-00-00_Team1_vs_Team_2");
     Value<String> LAST_FILE_UPDATE = new Value<>(String.class, "LastFileUpdate", "Never");
 
@@ -123,6 +124,7 @@ public interface Game extends ScoreBoardEventProvider {
     Child<ValWithId> EVENT_INFO = new Child<>(ValWithId.class, "EventInfo");
     Child<Official> NSO = new Child<>(Official.class, "Nso");
     Child<Official> REF = new Child<>(Official.class, "Ref");
+    Child<Expulsion> EXPULSION = new Child<>(Expulsion.class, "Expulsion");
 
     NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period");
 

@@ -13,6 +13,7 @@ import java.util.UUID;
 import com.fasterxml.jackson.jr.ob.JSON;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
+import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
@@ -69,9 +70,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         addProperties(NAME, NAME_FORMAT, STATE, CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM,
                       UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, ABORT_REASON,
                       CURRENT_TIMEOUT, TIMEOUT_OWNER, OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, HEAD_NSO,
-                      HEAD_REF, FILENAME, LAST_FILE_UPDATE, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL, EVENT_INFO, NSO,
-                      REF, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO, CLOCK_REPLACE, START_OVERTIME,
-                      OFFICIAL_TIMEOUT, EXPORT);
+                      HEAD_REF, SUSPENSIONS_SERVED, FILENAME, LAST_FILE_UPDATE, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL,
+                      EVENT_INFO, NSO, REF, EXPULSION, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO,
+                      CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT, EXPORT);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);
@@ -89,6 +90,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         add(CLOCK, new ClockImpl(this, Clock.ID_TIMEOUT));
         add(CLOCK, new ClockImpl(this, Clock.ID_INTERMISSION));
         addWriteProtection(CLOCK);
+        addWriteProtectionOverride(EXPULSION, Source.ANY_INTERNAL);
         setRecalculated(NO_MORE_JAM)
             .addSource(this, IN_JAM)
             .addSource(this, IN_PERIOD)
@@ -261,6 +263,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 for (Team t : getAll(TEAM)) { t.recountTimeouts(); }
             }
         }
+    }
+
+    @Override
+    protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
+        if (prop == EXPULSION) { ((Expulsion) item).delete(); }
     }
 
     @Override

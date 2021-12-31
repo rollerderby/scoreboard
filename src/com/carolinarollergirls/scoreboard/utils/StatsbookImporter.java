@@ -43,6 +43,7 @@ public class StatsbookImporter {
         readTeam(igrf, Team.ID_1);
         readTeam(igrf, Team.ID_2);
         readOfficials(igrf);
+        readExpulsionSuspensionInfo(igrf);
     }
 
     private void readIgrfHead(Sheet igrf) {
@@ -156,6 +157,10 @@ public class StatsbookImporter {
         }
         if (Official.ROLE_HNSO.equals(role)) { game.set(Game.HEAD_NSO, newO); }
         return type;
+    }
+
+    private void readExpulsionSuspensionInfo(Sheet igrf) {
+        game.set(Game.SUSPENSIONS_SERVED, readCell(igrf.getRow(39), 4));
     }
 
     private void readEventInfoCell(Row row, int col, String key) {

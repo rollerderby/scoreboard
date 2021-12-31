@@ -12,6 +12,9 @@
 #Igrf tr.Files > td { background: #ddd; } 
 #Igrf tr.Files .ui-button { margin: 1px 5px; } 
 
+#Igrf .Expulsions th { font-size: 150%; }
+#Igrf .Expulsions table { width: 100%; }
+
 #Igrf table.Officials { width: 100%; border-spacing: 0px; } 
 #Igrf table.Officials.Empty tr:last-of-type > th:first-of-type { border-radius: 0px 0px 0px 12px; } 
 #Igrf table.Officials.Empty tr:last-of-type > th:last-of-type { border-radius: 0px 0px 12px 0px; } 
@@ -28,7 +31,7 @@
 #Igrf table.Officials button.AddOfficial > span { padding-top: 0em; padding-bottom: 0em; } 
 #Igrf table.Officials button.RemoveOfficial > span { padding-top: 0em; padding-bottom: 0em; } 
 #Igrf table.Officials button.Swap { font-size: 80%; padding: 0.4em; } 
-#Igrf table.Officials button.Active { background: #3f3; } 
+#Igrf button.Active { background: #3f3; } 
 
 /* Official Remove Dialog */
 div.OfficialRemoveDialog { text-align: center; } 

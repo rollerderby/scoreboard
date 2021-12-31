@@ -20,7 +20,7 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
         super(p, id, Period.TIMEOUT);
         game = p.getGame();
         initReferences();
-        if (id == "noTimeout") {
+        if ("noTimeout".equals(id)) {
             set(RUNNING, false);
             set(READONLY, true);
         }

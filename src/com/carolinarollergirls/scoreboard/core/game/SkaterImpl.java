@@ -153,7 +153,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                     fo = getOrCreate(PENALTY, 0);
                     fo.set(Penalty.CODE, "FO");
                 }
-                if (fo.get(Penalty.CODE) == "FO") { fo.set(Penalty.JAM, p.getJam()); }
+                if ("FO".equals(fo.get(Penalty.CODE))) { fo.set(Penalty.JAM, p.getJam()); }
             }
             if (!p.isServed() && getRole() == Role.JAMMER && getCurrentFielding() != null &&
                 !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && game.isInJam()) {
@@ -173,9 +173,10 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         if (prop == PENALTY) {
             if (FO_EXP_ID.equals(((Penalty) item).getProviderId())) {
                 updateEligibility();
+                game.remove(Game.EXPULSION, item.getId());
             } else if (get(PENALTY, game.getInt(Rule.FO_LIMIT)) == null) {
                 Penalty fo = getPenalty(FO_EXP_ID);
-                if (fo != null && fo.get(Penalty.CODE) == "FO") { fo.delete(); }
+                if (fo != null && "FO".equals(fo.get(Penalty.CODE))) { fo.delete(); }
             }
         } else if (prop == FIELDING && getCurrentFielding() == item) {
             set(CURRENT_FIELDING, null);

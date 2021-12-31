@@ -10,11 +10,13 @@ function createIgrfTab(tab, gameId) {
     .append($('<tr><td colspan="2"/><td/></tr>').addClass('Event'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Host'))
     .append($('<tr><td/><td/><td/></tr>').addClass('Time'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator Abort'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator Abort'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Abort Info'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator Expulsions Hide'))
+    .append($('<tr><td colspan="3"><table><tr><th colspan="3">Expulsions</th></tr></table></td></tr>').addClass('Expulsions Hide'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator'))
     .append($('<tr><td colspan="3"/></tr>').addClass('NSOs'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Refs'));
   var gameName = $('<span>')
     .addClass('Name')
@@ -118,6 +120,34 @@ function createIgrfTab(tab, gameId) {
       $('tr.Abort').toggleClass('Hide', !show);
     }
   );
+
+  function createExpulsionRow(id) {
+    $('.Expulsions').removeClass('Hide');
+    return $('<tr>')
+      .attr('penalty', id)
+      .append($('<td>').addClass('Info'))
+      .append($('<td>').append(WSControl(gamePrefix + '.Expulsion(' + id + ').ExtraInfo', $('<input type="text" size="50">'))))
+      .append(
+        $('<td>').append(
+          WSActiveButton(gamePrefix + '.Expulsion(' + id + ').Suspension', $('<button>').text('Suspension Recommended').button())
+        )
+      )
+      .appendTo('.Expulsions table');
+  }
+
+  WS.Register(gamePrefix + '.Expulsion(*).Info', function (k, v) {
+    var row = $('.Expulsions tr[penalty=' + k.Expulsion + ']');
+    if (v == null) {
+      row.remove();
+      if ($('.Expulsions tr').length === 1) {
+        $('.Expulsions').addClass('Hide');
+      }
+      return;
+    } else if (row.length === 0) {
+      row = createExpulsionRow(k.Expulsion);
+    }
+    row.children('.Info').text(v);
+  });
 
   var createOfficialsTable = function (title) {
     return $('<table>')

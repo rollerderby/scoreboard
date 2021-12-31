@@ -19,6 +19,7 @@ import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
@@ -207,6 +208,7 @@ public class ScoreBoardJSONSetter {
                             // filter out elements that we expect to fail on each startup
                             if (prop == CurrentTeam.SKATER) { return; }
                             if (prop == Clients.CLIENT) { return; }
+                            if (prop == Game.EXPULSION) { return; }
                         }
                         Logger.printMessage("Could not get or create property " + readable);
                         return;

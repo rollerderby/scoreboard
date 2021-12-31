@@ -78,11 +78,20 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
 
             if (newPos == game.getInt(Rule.FO_LIMIT)) {
                 Penalty fo = parent.get(Skater.PENALTY, Skater.FO_EXP_ID);
-                if (fo != null && fo.get(CODE) == "FO") { fo.set(JAM, (Jam) value); }
+                if (fo != null && "FO".equals(fo.get(CODE))) { fo.set(JAM, (Jam) value); }
             }
         }
         if (prop == CODE || prop == SERVED || prop == BOX_TRIP) { possiblyUpdateSkater(); }
-        if (prop == CODE && value == null) { delete(source); }
+        if (prop == CODE) {
+            if (value == null) {
+                game.remove(Game.EXPULSION, getId());
+                delete(source);
+            } else if ("FO".equals(value)) {
+                game.remove(Game.EXPULSION, getId());
+            } else if (Skater.FO_EXP_ID.equals(getProviderId()) && game.get(Game.EXPULSION, getId()) == null) {
+                game.add(Game.EXPULSION, new ExpulsionImpl(game, this));
+            }
+        }
     }
 
     @Override
@@ -97,7 +106,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     }
 
     private void possiblyUpdateSkater() {
-        if (getCode() == "" || getId() == Skater.FO_EXP_ID) { return; }
+        if ("".equals(getCode()) || Skater.FO_EXP_ID.equals(getId())) { return; }
         skater.set(Skater.CURRENT_PENALTIES, skater.get(Skater.CURRENT_PENALTIES), Source.RECALCULATE);
     }
 
