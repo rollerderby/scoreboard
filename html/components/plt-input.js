@@ -108,9 +108,7 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
     if (mode === 'plt' || mode === 'lt') {
       prepareUseLTDialog();
       WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)'], function (k, v) {
-        if (!isTrue(v)) {
-          useLTDialog.dialog('open');
-        }
+        useLTDialog.dialog(isTrue(v) ? 'close' : 'open');
       });
     } else {
       WS.Register(['ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)']);
