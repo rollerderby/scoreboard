@@ -6,6 +6,7 @@ import java.io.Reader;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.FormatStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -170,8 +171,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         } else if (prop == NAME) {
             String game = get(EVENT_INFO, INFO_GAME_NUMBER) == null ? "" : get(EVENT_INFO, INFO_GAME_NUMBER).getValue();
             String date = get(EVENT_INFO, INFO_DATE) == null ? "" : get(EVENT_INFO, INFO_DATE).getValue();
+            String time = get(EVENT_INFO, INFO_START_TIME) == null ? "" : get(EVENT_INFO, INFO_START_TIME).getValue();
             return get(NAME_FORMAT)
                 .replace("%d", date)
+                .replace("%t", time)
                 .replace("%g", game)
                 .replace("%G", game.equals("") ? "" : ("Game " + game + ":"))
                 .replace("%1", getTeam(Team.ID_1).get(Team.DISPLAY_NAME))
@@ -229,6 +232,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             set(RULESET, null);
             getTeam(Team.ID_1).set(Team.PREPARED_TEAM_CONNECTED, false);
             getTeam(Team.ID_2).set(Team.PREPARED_TEAM_CONNECTED, false);
+            add(EVENT_INFO, new ValWithId(INFO_DATE, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+            add(EVENT_INFO,
+                new ValWithId(
+                    INFO_START_TIME,
+                    LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_TIME)));
         }
         if (prop == OFFICIAL_SCORE && (boolean) value && source == Source.WS) {
             Clock pc = getClock(Clock.ID_PERIOD);
