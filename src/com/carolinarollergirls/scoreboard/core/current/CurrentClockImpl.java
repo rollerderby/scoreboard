@@ -14,7 +14,7 @@ public class CurrentClockImpl extends ScoreBoardEventProviderImpl<CurrentClock> 
                       Clock.DIRECTION, Clock.RUNNING, Clock.START, Clock.STOP, Clock.RESET_TIME);
         setCopy(Clock.NAME, this, CLOCK, Clock.NAME, true);
         setCopy(Clock.NUMBER, this, CLOCK, Clock.NUMBER, true);
-        setCopy(Clock.TIME, this, CLOCK, Clock.TIME, id != Clock.ID_PERIOD);
+        setCopy(Clock.TIME, this, CLOCK, Clock.TIME, !Clock.ID_PERIOD.equals(id));
         setCopy(Clock.INVERTED_TIME, this, CLOCK, Clock.INVERTED_TIME, true);
         setCopy(Clock.MAXIMUM_TIME, this, CLOCK, Clock.MAXIMUM_TIME, true);
         setCopy(Clock.DIRECTION, this, CLOCK, Clock.DIRECTION, true);

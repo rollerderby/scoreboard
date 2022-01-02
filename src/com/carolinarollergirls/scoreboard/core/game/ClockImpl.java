@@ -27,8 +27,9 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clock {
     public ClockImpl(Game g, String i) {
-        super(g, i, Game.CLOCK);
+        super(g, g.getId() + "_" + i, Game.CLOCK);
         game = g;
+        subId = i;
         addProperties(NAME, NUMBER, TIME, INVERTED_TIME, MAXIMUM_TIME, DIRECTION, RUNNING, START, STOP, RESET_TIME);
         // initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
@@ -50,11 +51,17 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     public ClockImpl(ClockImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);
         game = (Game) parent;
+        subId = cloned.subId;
     }
 
     @Override
     public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
         return new ClockImpl(this, root);
+    }
+
+    @Override
+    public String getProviderId() {
+        return subId;
     }
 
     @Override
@@ -308,6 +315,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     protected boolean isRunning = false;
 
     private Game game;
+    private String subId;
 
     public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 
