@@ -605,28 +605,28 @@ function createJamControlTable(gameId) {
     })
     .appendTo(controlsTr.children('td:eq(3)'));
 
-  WS.Register(['ScoreBoard.CurrentGame.InJam', 'ScoreBoard.CurrentGame.Clock(Jam).Running'], function () {
-    var inJam = isTrue(WS.state['ScoreBoard.CurrentGame.InJam']);
-    var timeLeft = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(Jam).Running']);
+  WS.Register(['ScoreBoard.Game(' + gameId + ').InJam', 'ScoreBoard.Game(' + gameId + ').Clock(Jam).Running'], function () {
+    var inJam = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam']);
+    var timeLeft = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Jam).Running']);
     jamStopButton.toggleClass('clickMe', inJam && !timeLeft);
   });
 
   WS.Register(
     [
-      'ScoreBoard.CurrentGame.Rule(Lineup.Duration)',
-      'ScoreBoard.CurrentGame.Rule(Lineup.OvertimeDuration)',
-      'ScoreBoard.CurrentGame.Clock(Lineup).Running',
-      'ScoreBoard.CurrentGame.Clock(Lineup).Time',
-      'ScoreBoard.CurrentGame.InOvertime',
+      'ScoreBoard.Game(' + gameId + ').Rule(Lineup.Duration)',
+      'ScoreBoard.Game(' + gameId + ').Rule(Lineup.OvertimeDuration)',
+      'ScoreBoard.Game(' + gameId + ').Clock(Lineup).Running',
+      'ScoreBoard.Game(' + gameId + ').Clock(Lineup).Time',
+      'ScoreBoard.Game(' + gameId + ').InOvertime',
     ],
     function () {
-      var inLineup = isTrue(WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running']);
-      var overtime = isTrue(WS.state['ScoreBoard.CurrentGame.InOvertime']);
-      var curTime = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Time'];
+      var inLineup = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Lineup).Running']);
+      var overtime = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InOvertime']);
+      var curTime = WS.state['ScoreBoard.Game(' + gameId + ').Clock(Lineup).Time'];
       var maxTime = _timeConversions.minSecToMs(
         overtime
-          ? WS.state['ScoreBoard.CurrentGame.Rule(Lineup.OvertimeDuration)']
-          : WS.state['ScoreBoard.CurrentGame.Rule(Lineup.Duration)']
+          ? WS.state['ScoreBoard.Game(' + gameId + ').Rule(Lineup.OvertimeDuration)']
+          : WS.state['ScoreBoard.Game(' + gameId + ').Rule(Lineup.Duration)']
       );
 
       jamStartButton.toggleClass('clickMe', inLineup && curTime > maxTime);
