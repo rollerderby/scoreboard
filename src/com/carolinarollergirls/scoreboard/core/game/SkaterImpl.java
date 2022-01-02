@@ -70,6 +70,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         setCopy(ROSTER_NUMBER, this, PREPARED_SKATER, ROSTER_NUMBER, false, team, Team.PREPARED_TEAM_CONNECTED);
         set(ROLE, Role.BENCH, Flag.SPECIAL_CASE);
         set(BASE_ROLE, Role.BENCH);
+        addWriteProtectionOverride(BASE_ROLE, Source.ANY_INTERNAL);
         setCopy(POSITION, this, CURRENT_FIELDING, Fielding.POSITION, true);
         setCopy(PENALTY_BOX, this, CURRENT_FIELDING, Fielding.PENALTY_BOX, false);
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);

@@ -289,6 +289,9 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
         public FormatSpecifierImpl(Twitter t, String id) {
             super(t, id, Twitter.FORMAT_SPECIFIER);
             addProperties(KEY, DESCRIPTION, CURRENT_VALUE);
+            addWriteProtectionOverride(KEY, Source.ANY_INTERNAL);
+            addWriteProtectionOverride(DESCRIPTION, Source.ANY_INTERNAL);
+            addWriteProtectionOverride(CURRENT_VALUE, Source.ANY_INTERNAL);
         }
         public FormatSpecifierImpl(FormatSpecifierImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 

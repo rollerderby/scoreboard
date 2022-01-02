@@ -23,6 +23,7 @@ public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater
         setCopy(Skater.PENALTY_BOX, this, SKATER, Skater.PENALTY_BOX, true);
         setCopy(Skater.FLAGS, this, SKATER, Skater.FLAGS, true);
         set(SKATER, s);
+        addWriteProtection(SKATER);
         providers.put(penaltyListener, null);
     }
     public CurrentSkaterImpl(CurrentSkaterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }

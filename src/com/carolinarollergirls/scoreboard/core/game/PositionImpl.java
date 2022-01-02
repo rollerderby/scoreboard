@@ -31,6 +31,7 @@ public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implemen
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
         setCopy(CURRENT_PENALTIES, this, SKATER, Skater.CURRENT_PENALTIES, true);
         setCopy(ANNOTATION, this, CURRENT_FIELDING, Fielding.ANNOTATION, true);
+        addWriteProtectionOverride(CURRENT_FIELDING, Source.NON_WS);
     }
     public PositionImpl(PositionImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);

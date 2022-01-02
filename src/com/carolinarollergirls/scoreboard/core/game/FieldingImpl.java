@@ -36,6 +36,8 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
             .addIndirectSource(this, SKATER, Skater.ROSTER_NUMBER)
             .addSource(this, NOT_FIELDED);
         setInverseReference(BOX_TRIP, BoxTrip.FIELDING);
+        addWriteProtectionOverride(BOX_TRIP, Source.NON_WS);
+        addWriteProtectionOverride(CURRENT_BOX_TRIP, Source.NON_WS);
         setInverseReference(SKATER, Skater.FIELDING);
         setRecalculated(NOT_FIELDED).addSource(this, SKATER);
     }

@@ -56,6 +56,8 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     }
 
     private void initReferences() {
+        addWriteProtectionOverride(IS_CURRENT, Source.NON_WS);
+        addWriteProtectionOverride(CURRENT_FIELDING, Source.ANY_INTERNAL);
         setInverseReference(FIELDING, Fielding.BOX_TRIP);
         setInverseReference(PENALTY, Penalty.BOX_TRIP);
         setRecalculated(DURATION).addSource(this, JAM_CLOCK_START).addSource(this, JAM_CLOCK_END);

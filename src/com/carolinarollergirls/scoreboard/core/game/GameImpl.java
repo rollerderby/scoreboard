@@ -92,6 +92,9 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         add(CLOCK, new ClockImpl(this, Clock.ID_INTERMISSION));
         addWriteProtection(CLOCK);
         addWriteProtectionOverride(EXPULSION, Source.ANY_INTERNAL);
+        addWriteProtectionOverride(IN_JAM, Source.NON_WS);
+        addWriteProtectionOverride(IN_OVERTIME, Source.NON_WS);
+        addWriteProtectionOverride(CURRENT_TIMEOUT, Source.NON_WS);
         setRecalculated(NO_MORE_JAM)
             .addSource(this, IN_JAM)
             .addSource(this, IN_PERIOD)
@@ -115,6 +118,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         removeAll(Period.JAM);
         removeAll(PERIOD);
         set(CURRENT_PERIOD, getOrCreate(PERIOD, "0"));
+        addWriteProtectionOverride(PERIOD, Source.NON_WS);
+        addWriteProtectionOverride(Period.JAM, Source.NON_WS);
         noTimeoutDummy = new TimeoutImpl(getCurrentPeriod(), "noTimeout");
         getCurrentPeriod().add(Period.TIMEOUT, noTimeoutDummy);
         set(CURRENT_TIMEOUT, noTimeoutDummy);

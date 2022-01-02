@@ -56,6 +56,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                       ADVANCE_FIELDINGS, TIMEOUT, OFFICIAL_REVIEW);
         for (FloorPosition fp : FloorPosition.values()) { add(POSITION, new PositionImpl(this, fp)); }
         addWriteProtection(POSITION);
+        addWriteProtectionOverride(FIELDING_ADVANCE_PENDING, Source.NON_WS);
         setCopy(LEAGUE_NAME, this, PREPARED_TEAM, LEAGUE_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(TEAM_NAME, this, PREPARED_TEAM, TEAM_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(UNIFORM_COLOR, this, PREPARED_TEAM, UNIFORM_COLOR, false, PREPARED_TEAM_CONNECTED);
@@ -149,11 +150,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             } else {
                 return get(FULL_NAME);
             }
-        }
-        if (prop == LEAGUE_NAME && value != null &&
-            (game.get(Game.EVENT_INFO, Game.INFO_HOST) == null ||
-             game.get(Game.EVENT_INFO, Game.INFO_HOST).getValue().equals(""))) {
-            game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_HOST, (String) value));
         }
         if (prop == INITIALS) { return get(DISPLAY_NAME).replaceAll("[^\\p{Lu}]", ""); }
         if (prop == IN_TIMEOUT) {

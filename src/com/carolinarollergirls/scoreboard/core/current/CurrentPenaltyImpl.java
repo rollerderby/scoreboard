@@ -16,6 +16,8 @@ public class CurrentPenaltyImpl
         setCopy(Penalty.JAM_NUMBER, this, PENALTY, Penalty.JAM_NUMBER, true);
         setCopy(Penalty.CODE, this, PENALTY, Penalty.CODE, true);
         setCopy(Penalty.SERVING, this, PENALTY, Penalty.SERVING, true);
+        setCopy(Penalty.SERVED, this, PENALTY, Penalty.SERVED, true);
+        addWriteProtection(PENALTY);
         set(PENALTY, p);
     }
     public CurrentPenaltyImpl(CurrentPenaltyImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }

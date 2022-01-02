@@ -28,6 +28,9 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             set(CURRENT_JAM, getOrCreate(JAM, "0"));
         }
         setRecalculated(DURATION).addSource(this, WALLTIME_END).addSource(this, WALLTIME_START);
+        addWriteProtectionOverride(RUNNING, Source.NON_WS);
+        addWriteProtectionOverride(JAM, Source.NON_WS);
+        addWriteProtectionOverride(RUNNING, Source.NON_WS);
     }
     public PeriodImpl(PeriodImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);

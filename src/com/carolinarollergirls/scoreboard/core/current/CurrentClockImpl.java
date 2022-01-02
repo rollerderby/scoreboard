@@ -19,6 +19,7 @@ public class CurrentClockImpl extends ScoreBoardEventProviderImpl<CurrentClock> 
         setCopy(Clock.MAXIMUM_TIME, this, CLOCK, Clock.MAXIMUM_TIME, true);
         setCopy(Clock.DIRECTION, this, CLOCK, Clock.DIRECTION, true);
         setCopy(Clock.RUNNING, this, CLOCK, Clock.RUNNING, true);
+        addWriteProtectionOverride(CLOCK, Source.ANY_INTERNAL);
     }
     public CurrentClockImpl(CurrentClockImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 

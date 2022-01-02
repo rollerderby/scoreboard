@@ -94,7 +94,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public <T extends ScoreBoardEventProvider> T getOrCreate(Child<T> prop, String id, Source source);
     public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedChild<T> prop, Integer num);
     public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedChild<T> prop, Integer num,
-            Source source);
+                                                                       Source source);
     public <T extends ValueWithId> Collection<T> getAll(Child<T> prop);
     public <T extends OrderedScoreBoardEventProvider<T>> T getFirst(NumberedChild<T> prop);
     public <T extends OrderedScoreBoardEventProvider<T>> T getLast(NumberedChild<T> prop);
@@ -137,7 +137,6 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
         WS(false, false),
         AUTOSAVE(false, true),
         JSON(false, true),
-        DEFAULTS(false, true),
         INVERSE_REFERENCE(true, false),
         COPY(true, false),
         RECALCULATE(true, false),
@@ -147,7 +146,8 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
 
         // the following are intended for use as writeProtection Override only;
         ANY_INTERNAL(true, false),
-        ANY_FILE(false, true);
+        ANY_FILE(false, true),
+        NON_WS(true, true);
 
         private Source(boolean i, boolean f) {
             internal = i;

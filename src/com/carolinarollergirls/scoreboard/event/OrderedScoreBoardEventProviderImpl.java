@@ -15,6 +15,8 @@ public abstract class OrderedScoreBoardEventProviderImpl<C extends OrderedScoreB
         PREVIOUS = (Value<C>) prevProperties.get(providerClass);
         NEXT = (Value<C>) nextProperties.get(providerClass);
         addProperties(NUMBER, PREVIOUS, NEXT);
+        addWriteProtectionOverride(PREVIOUS, Source.NON_WS);
+        addWriteProtectionOverride(NEXT, Source.NON_WS);
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, PREVIOUS, NEXT));
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, NEXT, PREVIOUS));
     }

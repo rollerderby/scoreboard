@@ -51,6 +51,7 @@ public class CurrentTeamImpl extends ScoreBoardEventProviderImpl<CurrentTeam> im
         setCopy(Team.COLOR, this, TEAM, Team.COLOR, true);
         for (FloorPosition fp : FloorPosition.values()) { add(POSITION, new CurrentPositionImpl(this, fp)); }
         addWriteProtection(POSITION);
+        addWriteProtectionOverride(TEAM, Source.ANY_INTERNAL);
         providers.put(skaterListener, null);
     }
     public CurrentTeamImpl(CurrentTeamImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }

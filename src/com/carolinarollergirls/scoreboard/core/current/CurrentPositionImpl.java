@@ -23,6 +23,7 @@ public class CurrentPositionImpl extends ScoreBoardEventProviderImpl<CurrentPosi
         setCopy(Position.ROSTER_NUMBER, this, POSITION, Position.ROSTER_NUMBER, true);
         setCopy(Position.FLAGS, this, POSITION, Position.FLAGS, true);
         setCopy(Position.PENALTY_BOX, this, POSITION, Position.PENALTY_BOX, true);
+        addWriteProtectionOverride(POSITION, Source.ANY_INTERNAL);
     }
     public CurrentPositionImpl(CurrentPositionImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
