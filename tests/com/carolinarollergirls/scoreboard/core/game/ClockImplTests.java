@@ -66,7 +66,7 @@ public class ClockImplTests {
         assertEquals(ClockImpl.DEFAULT_MAXIMUM_TIME, clock.getMaximumTime());
         assertEquals(0, clock.getTime());
 
-        assertEquals(ID, clock.getId());
+        assertEquals(g.getId() + '_' + ID, clock.getId());
         assertEquals(ID, clock.getName());
         assertFalse(clock.isCountDirectionDown());
         assertFalse(clock.isRunning());
@@ -94,13 +94,13 @@ public class ClockImplTests {
         assertEquals(0, clock.getTime());
 
         // if IDs don't match no restore should be done
-        snapshot.id = "OTHER";
+        snapshot.id = "OTHER_THAN_" + clock.getId();
         clock.restoreSnapshot(snapshot);
         assertFalse(clock.isRunning());
         assertEquals(0, clock.getNumber());
         assertEquals(0, clock.getTime());
 
-        snapshot.id = ID;
+        snapshot.id = clock.getId();
         clock.restoreSnapshot(snapshot);
         assertTrue(clock.isRunning());
         assertEquals(4, clock.getNumber());

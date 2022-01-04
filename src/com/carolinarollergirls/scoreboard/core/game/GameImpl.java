@@ -139,12 +139,75 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         setLabel(Button.TIMEOUT, ACTION_TIMEOUT);
         setLabel(Button.UNDO, ACTION_NONE);
         setLabel(Button.REPLACED, ACTION_NONE);
-        addScoreBoardListener(periodEndListener);
-        addScoreBoardListener(jamEndListener);
-        addScoreBoardListener(intermissionEndListener);
-        addScoreBoardListener(lineupClockListener);
-        addScoreBoardListener(timeoutClockListener);
-        scoreBoard.getRulesets().addScoreBoardListener(rulesetChangeListener);
+
+        // handle period clock running down between jams
+        addScoreBoardListener(new ConditionalScoreBoardListener<>(
+            Clock.class, getClock(Clock.ID_PERIOD).getId(), Clock.RUNNING, Boolean.FALSE, new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                    if (getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { _possiblyEndPeriod(); }
+                }
+            }));
+
+        // handle intermission end
+        addScoreBoardListener(
+            new ConditionalScoreBoardListener<>(Clock.class, getClock(Clock.ID_INTERMISSION).getId(), Clock.RUNNING,
+                                                Boolean.FALSE, new ScoreBoardListener() {
+                                                    @Override
+                                                    public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                                                        if (getClock(Clock.ID_INTERMISSION).isTimeAtEnd()) {
+                                                            // clock has run down naturally
+                                                            _endIntermission(true);
+                                                        }
+                                                    }
+                                                }));
+
+        // handle auto-start (if enabled)
+        addScoreBoardListener(new ConditionalScoreBoardListener<>(
+            Clock.class, getClock(Clock.ID_LINEUP).getId(), Clock.TIME, new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                    if (!"".equals(getSetting(ScoreBoard.SETTING_AUTO_START))) { _possiblyAutostart(); }
+                }
+            }));
+
+        // handle auto-end jam (if enabled)
+        addScoreBoardListener(new ConditionalScoreBoardListener<>(
+            Clock.class, getClock(Clock.ID_JAM).getId(), Clock.RUNNING, Boolean.FALSE, new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                    Clock jc = getClock(Clock.ID_JAM);
+                    if (jc.isTimeAtEnd() && getBooleanSetting(ScoreBoard.SETTING_AUTO_END_JAM)) {
+                        // clock has run down naturally
+                        stopJamTO();
+                    }
+                }
+            }));
+
+        // handle auto-end TTO (if enabled) or stopping period clock after certain amount of timeout
+        addScoreBoardListener(new ConditionalScoreBoardListener<>(
+            Clock.class, getClock(Clock.ID_TIMEOUT).getId(), Clock.TIME, new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                    if (getBooleanSetting(ScoreBoard.SETTING_AUTO_END_TTO) && (getTimeoutOwner() instanceof Team) &&
+                        (Long) event.getValue() == getLong(Rule.TTO_DURATION)) {
+                        stopJamTO();
+                    }
+                    if ((Long) event.getValue() == getLong(Rule.STOP_PC_AFTER_TO_DURATION) &&
+                        getClock(Clock.ID_PERIOD).isRunning()) {
+                        getClock(Clock.ID_PERIOD).stop();
+                    }
+                }
+            }));
+
+        // handle changes to the ruleset (if following a preset ruleset)
+        scoreBoard.getRulesets().addScoreBoardListener(
+            new ConditionalScoreBoardListener<>(Ruleset.class, Ruleset.RULE, new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                    refreshRuleset((Ruleset) event.getProvider());
+                }
+            }));
     }
 
     @Override
@@ -442,8 +505,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 finishReplace();
             } else if (!lc.isRunning() && (!ic.isRunning() || ic.getTimeElapsed() > 1000L)) {
                 // just after starting intermission this is almost surely the operator trying to
-                // end
-                // a last jam that was just auto ended or accidentally hitting the button twice
+                // end a last jam that was just auto ended or accidentally hitting the button twice
                 // - ignore, as this confuses operators and makes undoing the Jam end impossible
                 createSnapshot(ACTION_LINEUP);
                 setLabels(ACTION_START_JAM, ACTION_NONE, ACTION_TIMEOUT);
@@ -455,7 +517,13 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     public void timeout() {
         synchronized (coreLock) {
-            if (getClock(Clock.ID_TIMEOUT).isRunning()) {
+            Clock tc = getClock(Clock.ID_TIMEOUT);
+            if (tc.isRunning()) {
+                if (tc.getTimeElapsed() < 1000L) {
+                    // This is almost surely an accidental double press
+                    // ignore as it messes up stats and makes undo impossible
+                    return;
+                }
                 createSnapshot(ACTION_RE_TIMEOUT);
             } else {
                 createSnapshot(ACTION_TIMEOUT);
@@ -575,11 +643,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         Clock tc = getClock(Clock.ID_TIMEOUT);
 
         if (getCurrentTimeout().isRunning()) {
-            if (tc.getTimeElapsed() < 1000L) {
-                // This is almost surely an accidental double press
-                // ignore as it messes up stats and makes undo impossible
-                return;
-            }
             // end the previous timeout before starting a new one
             _endTimeout(true);
         }
@@ -851,64 +914,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     protected StatsbookExporter statsbookExporter;
     protected JSONStateSnapshotter jsonSnapshotter;
-
-    protected ScoreBoardListener periodEndListener = new ConditionalScoreBoardListener<>(
-        Clock.class, Clock.ID_PERIOD, Clock.RUNNING, Boolean.FALSE, new ScoreBoardListener() {
-            @Override
-            public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                if (getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { _possiblyEndPeriod(); }
-            }
-        });
-    protected ScoreBoardListener jamEndListener = new ConditionalScoreBoardListener<>(
-        Clock.class, Clock.ID_JAM, Clock.RUNNING, Boolean.FALSE, new ScoreBoardListener() {
-            @Override
-            public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                Clock jc = getClock(Clock.ID_JAM);
-                if (jc.isTimeAtEnd() && getBooleanSetting(ScoreBoard.SETTING_AUTO_END_JAM)) {
-                    // clock has run down naturally
-                    stopJamTO();
-                }
-            }
-        });
-    protected ScoreBoardListener intermissionEndListener = new ConditionalScoreBoardListener<>(
-        Clock.class, Clock.ID_INTERMISSION, Clock.RUNNING, Boolean.FALSE, new ScoreBoardListener() {
-            @Override
-            public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                if (getClock(Clock.ID_INTERMISSION).isTimeAtEnd()) {
-                    // clock has run down naturally
-                    _endIntermission(true);
-                }
-            }
-        });
-    protected ScoreBoardListener lineupClockListener =
-        new ConditionalScoreBoardListener<>(Clock.class, Clock.ID_LINEUP, Clock.TIME, new ScoreBoardListener() {
-            @Override
-            public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                if (!"".equals(getSetting(ScoreBoard.SETTING_AUTO_START))) { _possiblyAutostart(); }
-            }
-        });
-    protected ScoreBoardListener timeoutClockListener =
-        new ConditionalScoreBoardListener<>(Clock.class, Clock.ID_TIMEOUT, Clock.TIME, new ScoreBoardListener() {
-            @Override
-            public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                if (getBooleanSetting(ScoreBoard.SETTING_AUTO_END_TTO) && (getTimeoutOwner() instanceof Team) &&
-                    (Long) event.getValue() == getLong(Rule.TTO_DURATION)) {
-                    stopJamTO();
-                }
-                if ((Long) event.getValue() == getLong(Rule.STOP_PC_AFTER_TO_DURATION) &&
-                    getClock(Clock.ID_PERIOD).isRunning()) {
-                    getClock(Clock.ID_PERIOD).stop();
-                }
-            }
-        });
-
-    protected ScoreBoardListener rulesetChangeListener =
-        new ConditionalScoreBoardListener<>(Ruleset.class, Ruleset.RULE, new ScoreBoardListener() {
-            @Override
-            public void scoreBoardChange(ScoreBoardEvent<?> event) {
-                refreshRuleset((Ruleset) event.getProvider());
-            }
-        });
 
     public static class GameSnapshot {
         private GameSnapshot(GameImpl g, String type) {

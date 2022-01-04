@@ -41,7 +41,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         }
         setRecalculated(TIME).addSource(this, MAXIMUM_TIME);
         setRecalculated(INVERTED_TIME).addSource(this, MAXIMUM_TIME).addSource(this, TIME);
-        setName(getId());
+        setName(subId);
 
         // Pull in settings.
         rulesetChangeListener.scoreBoardChange(null);
@@ -116,13 +116,12 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
             // Get default values from current settings or use hardcoded values
-            setCountDirectionDown(Boolean.parseBoolean(game.get(Game.RULE, getId() + ".ClockDirection").getValue()));
-            if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
-                setMaximumTime(
-                    ClockConversion.fromHumanReadable(game.get(Game.RULE, getId() + ".Duration").getValue()));
-            } else if (getId().equals(ID_INTERMISSION)) {
+            setCountDirectionDown(Boolean.parseBoolean(game.get(Game.RULE, subId + ".ClockDirection").getValue()));
+            if (subId.equals(ID_PERIOD) || subId.equals(ID_JAM)) {
+                setMaximumTime(ClockConversion.fromHumanReadable(game.get(Game.RULE, subId + ".Duration").getValue()));
+            } else if (subId.equals(ID_INTERMISSION)) {
                 setMaximumTime(getCurrentIntermissionTime());
-            } else if (getId().equals(ID_LINEUP) && isCountDirectionDown()) {
+            } else if (subId.equals(ID_LINEUP) && isCountDirectionDown()) {
                 if (game.isInOvertime()) {
                     setMaximumTime(game.getLong(Rule.OVERTIME_LINEUP_DURATION));
                 } else {
