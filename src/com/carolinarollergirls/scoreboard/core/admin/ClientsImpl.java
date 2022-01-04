@@ -184,13 +184,6 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
             addProperties(SESSION_ID_SECRET, NAME, REMOTE_ADDR, PLATFORM, COMMENT, CREATED, WROTE, ACCESSED, MAY_WRITE,
                           CLIENT);
             set(MAY_WRITE, parent.get(NEW_DEVICE_WRITE));
-            addWriteProtectionOverride(SESSION_ID_SECRET, Source.ANY_INTERNAL);
-            addWriteProtectionOverride(NAME, Source.ANY_INTERNAL);
-            addWriteProtectionOverride(REMOTE_ADDR, Source.ANY_INTERNAL);
-            addWriteProtectionOverride(PLATFORM, Source.ANY_INTERNAL);
-            addWriteProtectionOverride(CREATED, Source.ANY_INTERNAL);
-            addWriteProtectionOverride(WROTE, Source.ANY_INTERNAL);
-            addWriteProtectionOverride(ACCESSED, Source.ANY_INTERNAL);
             addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         }
         public DeviceImpl(DeviceImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
