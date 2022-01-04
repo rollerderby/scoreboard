@@ -20,8 +20,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 public class PositionImpl extends ScoreBoardEventProviderImpl<Position> implements Position {
     public PositionImpl(Team t, FloorPosition fp) {
         super(t, t.getId() + "_" + fp.toString(), Team.POSITION);
-        addProperties(CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, CURRENT_PENALTIES, ANNOTATION, SKATER, NAME, ROSTER_NUMBER,
-                      FLAGS, PENALTY_BOX, CLEAR);
+        addProperties(props);
         floorPosition = fp;
         setCopy(NAME, this, SKATER, Skater.NAME, true);
         setCopy(ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, true);

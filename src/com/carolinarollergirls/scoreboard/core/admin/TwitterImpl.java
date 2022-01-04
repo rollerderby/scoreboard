@@ -38,8 +38,7 @@ import twitter4j.conf.ConfigurationBuilder;
 public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements Twitter {
     public TwitterImpl(ScoreBoard sb) {
         super(sb, "", ScoreBoard.TWITTER);
-        addProperties(AUTH_URL, CALLBACK_URL, OAUTH_VERIFIER, ACCESS_TOKEN, ACCESS_TOKEN_SECRET, MANUAL_TWEET, STATUS,
-                      LOGGED_IN, ERROR, SCREEN_NAME, TEST_MODE, CONDITIONAL_TWEET, FORMAT_SPECIFIER, LOGIN, LOGOUT);
+        addProperties(props);
 
         formatSpecifierViewer = new FormatSpecifierViewer(sb);
         int i = 0;
@@ -250,7 +249,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
         extends ScoreBoardEventProviderImpl<ConditionalTweet> implements ConditionalTweet {
         public ConditionalTweetImpl(Twitter t, String id) {
             super(t, id, Twitter.CONDITIONAL_TWEET);
-            addProperties(CONDITION, TWEET);
+            addProperties(props);
         }
         public ConditionalTweetImpl(ConditionalTweetImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
@@ -288,7 +287,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     public class FormatSpecifierImpl extends ScoreBoardEventProviderImpl<FormatSpecifier> implements FormatSpecifier {
         public FormatSpecifierImpl(Twitter t, String id) {
             super(t, id, Twitter.FORMAT_SPECIFIER);
-            addProperties(KEY, DESCRIPTION, CURRENT_VALUE);
+            addProperties(props);
             addWriteProtectionOverride(KEY, Source.ANY_INTERNAL);
             addWriteProtectionOverride(DESCRIPTION, Source.ANY_INTERNAL);
             addWriteProtectionOverride(CURRENT_VALUE, Source.ANY_INTERNAL);

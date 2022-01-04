@@ -1,17 +1,23 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Official extends ScoreBoardEventProvider {
     public int compareTo(Official other);
 
-    Value<String> ROLE = new Value<>(String.class, "Role", "");
-    Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<String> LEAGUE = new Value<>(String.class, "League", "");
-    Value<String> CERT = new Value<>(String.class, "Cert", "");
-    Value<Team> P1_TEAM = new Value<>(Team.class, "P1Team", null);
-    Value<Boolean> SWAP = new Value<>(Boolean.class, "Swap", false);
+    public static Collection<Property<?>> props = new ArrayList<>();
+
+    public static final Value<String> ROLE = new Value<>(String.class, "Role", "", props);
+    public static final Value<String> NAME = new Value<>(String.class, "Name", "", props);
+    public static final Value<String> LEAGUE = new Value<>(String.class, "League", "", props);
+    public static final Value<String> CERT = new Value<>(String.class, "Cert", "", props);
+    public static final Value<Team> P1_TEAM = new Value<>(Team.class, "P1Team", null, props);
+    public static final Value<Boolean> SWAP = new Value<>(Boolean.class, "Swap", false, props);
 
     public static final String ROLE_HNSO = "Head Non-Skating Official";
     public static final String ROLE_PLT = "Penalty Lineup Tracker";

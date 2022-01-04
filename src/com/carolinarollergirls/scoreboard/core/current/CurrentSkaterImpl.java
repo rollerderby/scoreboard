@@ -13,8 +13,9 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 public class CurrentSkaterImpl extends ScoreBoardEventProviderImpl<CurrentSkater> implements CurrentSkater {
     CurrentSkaterImpl(CurrentTeam t, Skater s) {
         super(t, s.getId(), CurrentTeam.SKATER);
-        addProperties(SKATER, Skater.NAME, Skater.ROSTER_NUMBER, Skater.CURRENT_BOX_SYMBOLS, Skater.ROLE,
-                      Skater.BASE_ROLE, Skater.PENALTY_BOX, Skater.FLAGS, PENALTY);
+        addProperties(props);
+        addProperties(Skater.NAME, Skater.ROSTER_NUMBER, Skater.CURRENT_BOX_SYMBOLS, Skater.ROLE, Skater.BASE_ROLE,
+                      Skater.PENALTY_BOX, Skater.FLAGS);
         setCopy(Skater.NAME, this, SKATER, Skater.NAME, true);
         setCopy(Skater.ROSTER_NUMBER, this, SKATER, Skater.ROSTER_NUMBER, true);
         setCopy(Skater.CURRENT_BOX_SYMBOLS, this, SKATER, Skater.CURRENT_BOX_SYMBOLS, true);

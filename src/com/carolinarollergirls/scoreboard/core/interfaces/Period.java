@@ -1,9 +1,13 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedChild;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Period extends NumberedScoreBoardEventProvider<Period> {
@@ -25,23 +29,25 @@ public interface Period extends NumberedScoreBoardEventProvider<Period> {
     public long getWalltimeStart();
     public long getWalltimeEnd();
 
-    Value<Jam> CURRENT_JAM = new Value<>(Jam.class, "CurrentJam", null);
-    Value<Integer> CURRENT_JAM_NUMBER = new Value<>(Integer.class, "CurrentJamNumber", 0);
-    Value<Jam> FIRST_JAM = new Value<>(Jam.class, "FirstJam", null);
-    Value<Integer> FIRST_JAM_NUMBER = new Value<>(Integer.class, "FirstJamNumber", 0);
-    Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", false);
-    Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L);
-    Value<Long> WALLTIME_START = new Value<>(Long.class, "WalltimeStart", 0L);
-    Value<Long> WALLTIME_END = new Value<>(Long.class, "WalltimeEnd", 0L);
-    Value<String> LOCAL_TIME_START = new Value<>(String.class, "LocalTimeStart", "");
+    public static Collection<Property<?>> props = new ArrayList<>();
 
-    Child<Timeout> TIMEOUT = new Child<>(Timeout.class, "Timeout");
+    public static final Value<Jam> CURRENT_JAM = new Value<>(Jam.class, "CurrentJam", null, props);
+    public static final Value<Integer> CURRENT_JAM_NUMBER = new Value<>(Integer.class, "CurrentJamNumber", 0, props);
+    public static final Value<Jam> FIRST_JAM = new Value<>(Jam.class, "FirstJam", null, props);
+    public static final Value<Integer> FIRST_JAM_NUMBER = new Value<>(Integer.class, "FirstJamNumber", 0, props);
+    public static final Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", false, props);
+    public static final Value<Long> DURATION = new Value<>(Long.class, "Duration", 0L, props);
+    public static final Value<Long> WALLTIME_START = new Value<>(Long.class, "WalltimeStart", 0L, props);
+    public static final Value<Long> WALLTIME_END = new Value<>(Long.class, "WalltimeEnd", 0L, props);
+    public static final Value<String> LOCAL_TIME_START = new Value<>(String.class, "LocalTimeStart", "", props);
 
-    NumberedChild<Jam> JAM = new NumberedChild<>(Jam.class, "Jam");
+    public static final Child<Timeout> TIMEOUT = new Child<>(Timeout.class, "Timeout", props);
 
-    Command DELETE = new Command("Delete");
-    Command INSERT_BEFORE = new Command("InsertBefore");
-    Command INSERT_TIMEOUT = new Command("InsertTimeout");
+    public static final NumberedChild<Jam> JAM = new NumberedChild<>(Jam.class, "Jam", props);
+
+    public static final Command DELETE = new Command("Delete", props);
+    public static final Command INSERT_BEFORE = new Command("InsertBefore", props);
+    public static final Command INSERT_TIMEOUT = new Command("InsertTimeout", props);
 
     public static interface PeriodSnapshot {
         public String getId();

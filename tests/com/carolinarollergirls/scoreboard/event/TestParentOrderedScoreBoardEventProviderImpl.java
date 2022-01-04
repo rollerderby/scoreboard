@@ -8,7 +8,7 @@ public class TestParentOrderedScoreBoardEventProviderImpl
               parent instanceof TestParentOrderedScoreBoardEventProvider
                   ? TestParentOrderedScoreBoardEventProvider.CO_ORDERED
                   : TestNumberedScoreBoardEventProvider.CO_ORDERED);
-        addProperties(CO_ORDERED);
+        addProperties(props);
     }
     public TestParentOrderedScoreBoardEventProviderImpl(TestParentOrderedScoreBoardEventProviderImpl cloned,
                                                         ScoreBoardEventProvider root) {

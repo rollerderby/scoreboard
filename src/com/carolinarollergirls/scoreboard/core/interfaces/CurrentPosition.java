@@ -8,6 +8,10 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -16,5 +20,7 @@ public interface CurrentPosition extends ScoreBoardEventProvider {
 
     public FloorPosition getFloorPosition();
 
-    Value<Position> POSITION = new Value<>(Position.class, "Position", null);
+    public static Collection<Property<?>> props = new ArrayList<>();
+
+    public static final Value<Position> POSITION = new Value<>(Position.class, "Position", null, props);
 }

@@ -10,8 +10,8 @@ public class CurrentPenaltyImpl
     extends ReferenceOrderedScoreBoardEventProviderImpl<CurrentPenalty> implements CurrentPenalty {
     CurrentPenaltyImpl(CurrentSkater s, Penalty p) {
         super(s, p, CurrentSkater.PENALTY);
-        addProperties(PENALTY, Penalty.PERIOD_NUMBER, Penalty.JAM_NUMBER, Penalty.CODE, Penalty.SERVING,
-                      Penalty.SERVED);
+        addProperties(props);
+        addProperties(Penalty.PERIOD_NUMBER, Penalty.JAM_NUMBER, Penalty.CODE, Penalty.SERVING, Penalty.SERVED);
         setCopy(Penalty.PERIOD_NUMBER, this, PENALTY, Penalty.PERIOD_NUMBER, true);
         setCopy(Penalty.JAM_NUMBER, this, PENALTY, Penalty.JAM_NUMBER, true);
         setCopy(Penalty.CODE, this, PENALTY, Penalty.CODE, true);

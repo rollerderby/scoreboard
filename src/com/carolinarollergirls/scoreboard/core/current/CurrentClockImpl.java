@@ -10,8 +10,9 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 public class CurrentClockImpl extends ScoreBoardEventProviderImpl<CurrentClock> implements CurrentClock {
     CurrentClockImpl(CurrentGame g, String id) {
         super(g, id, CurrentGame.CLOCK);
-        addProperties(CLOCK, Clock.NAME, Clock.NUMBER, Clock.TIME, Clock.INVERTED_TIME, Clock.MAXIMUM_TIME,
-                      Clock.DIRECTION, Clock.RUNNING, Clock.START, Clock.STOP, Clock.RESET_TIME);
+        addProperties(props);
+        addProperties(Clock.NAME, Clock.NUMBER, Clock.TIME, Clock.INVERTED_TIME, Clock.MAXIMUM_TIME, Clock.DIRECTION,
+                      Clock.RUNNING, Clock.START, Clock.STOP, Clock.RESET_TIME);
         setCopy(Clock.NAME, this, CLOCK, Clock.NAME, true);
         setCopy(Clock.NUMBER, this, CLOCK, Clock.NUMBER, true);
         setCopy(Clock.TIME, this, CLOCK, Clock.TIME, !Clock.ID_PERIOD.equals(id));

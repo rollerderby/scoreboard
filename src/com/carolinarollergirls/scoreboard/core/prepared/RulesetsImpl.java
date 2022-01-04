@@ -23,7 +23,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
         super(s, "", ScoreBoard.RULESETS);
-        addProperties(RULE_DEFINITION, RULESET);
+        addProperties(props);
         initialize();
     }
     public RulesetsImpl(RulesetsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
@@ -132,7 +132,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     public class RulesetImpl extends ScoreBoardEventProviderImpl<Ruleset> implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, Ruleset parent, String id) {
             super(rulesets, id, Rulesets.RULESET);
-            addProperties(PARENT, NAME, RULE);
+            addProperties(props);
             set(NAME, name);
             set(PARENT, parent);
         }

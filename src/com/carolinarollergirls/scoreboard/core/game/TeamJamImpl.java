@@ -21,9 +21,7 @@ import com.carolinarollergirls.scoreboard.event.ValueWithId;
 public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJam> implements TeamJam {
     public TeamJamImpl(Jam j, String teamId) {
         super(j, teamId, Jam.TEAM_JAM);
-        addProperties(CURRENT_TRIP, CURRENT_TRIP_NUMBER, LAST_SCORE, OS_OFFSET, OS_OFFSET_REASON, JAM_SCORE,
-                      AFTER_S_P_SCORE, TOTAL_SCORE, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL, DISPLAY_LEAD, STAR_PASS,
-                      STAR_PASS_TRIP, NO_PIVOT, FIELDING, SCORING_TRIP, COPY_LINEUP_TO_CURRENT);
+        addProperties(props);
         game = j.getPeriod().getGame();
         team = game.getTeam(teamId);
         setRecalculated(CURRENT_TRIP).addSource(this, SCORING_TRIP);

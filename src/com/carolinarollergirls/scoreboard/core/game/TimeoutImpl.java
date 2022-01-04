@@ -45,9 +45,7 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
     }
 
     private void initReferences() {
-        addProperties(OWNER, REVIEW, RETAINED_REVIEW, RUNNING, PRECEDING_JAM, PRECEDING_JAM_NUMBER, DURATION,
-                      PERIOD_CLOCK_ELAPSED_START, PERIOD_CLOCK_ELAPSED_END, PERIOD_CLOCK_END, WALLTIME_START,
-                      WALLTIME_END, DELETE);
+        addProperties(props);
         set(OWNER, Owners.NONE);
         setInverseReference(PRECEDING_JAM, Jam.TIMEOUTS_AFTER);
         setCopy(PRECEDING_JAM_NUMBER, this, PRECEDING_JAM, Jam.NUMBER, true);

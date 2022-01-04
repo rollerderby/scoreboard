@@ -8,12 +8,19 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 
 // Roster for teams for loading in for games.
 public interface PreparedTeam extends ScoreBoardEventProvider {
-    Child<PreparedSkater> SKATER = new Child<>(PreparedSkater.class, "Skater");
+
+    public static Collection<Property<?>> props = new ArrayList<>();
+
+    public static final Child<PreparedSkater> SKATER = new Child<>(PreparedSkater.class, "Skater", props);
 
     public static interface PreparedSkater extends ScoreBoardEventProvider {}
 }

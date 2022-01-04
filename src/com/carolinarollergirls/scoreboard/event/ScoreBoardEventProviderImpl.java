@@ -9,6 +9,7 @@ package com.carolinarollergirls.scoreboard.event;
  */
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -723,7 +724,8 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         }
     }
 
-    protected void addProperties(Property<?>... props) {
+    protected void addProperties(Property<?>... props) { addProperties(Arrays.asList(props)); }
+    protected void addProperties(Collection<Property<?>> props) {
         for (Property<?> prop : props) {
             if (properties.containsKey(prop.getJsonName())) {
                 throw new IllegalArgumentException(this.getClass().getName() +
@@ -809,6 +811,6 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public Value<C> PREVIOUS;
     public Value<C> NEXT;
 
-    public final static Value<Boolean> BATCH_START = new Value<>(Boolean.class, "", true);
-    public final static Value<Boolean> BATCH_END = new Value<>(Boolean.class, "", false);
+    public final static Value<Boolean> BATCH_START = new Value<>(Boolean.class, "", true, null);
+    public final static Value<Boolean> BATCH_END = new Value<>(Boolean.class, "", false, null);
 }

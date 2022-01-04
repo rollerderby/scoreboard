@@ -22,10 +22,11 @@ public class RecalculateScoreBoardListener<T> implements SelfRemovingScoreBoardL
         element.addScoreBoardListener(l);
         return this;
     }
-    public RecalculateScoreBoardListener<T> addIndirectSource(ScoreBoardEventProvider indirectionElement,
-            Value<? extends ScoreBoardEventProvider> indirectionProperty, Property<?> watchedProperty) {
-        IndirectScoreBoardListener<?, ?> l = new IndirectScoreBoardListener<>(indirectionElement, indirectionProperty,
-                watchedProperty, this);
+    public RecalculateScoreBoardListener<T>
+    addIndirectSource(ScoreBoardEventProvider indirectionElement,
+                      Value<? extends ScoreBoardEventProvider> indirectionProperty, Property<?> watchedProperty) {
+        IndirectScoreBoardListener<?, ?> l =
+            new IndirectScoreBoardListener<>(indirectionElement, indirectionProperty, watchedProperty, this);
         sources.put(l, null);
         return this;
     }

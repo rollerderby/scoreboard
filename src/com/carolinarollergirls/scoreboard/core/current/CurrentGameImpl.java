@@ -19,10 +19,11 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> implements CurrentGame {
     public CurrentGameImpl(ScoreBoard sb) {
         super(sb, "", ScoreBoard.CURRENT_GAME);
-        addProperties(GAME, Game.NAME, Game.CURRENT_PERIOD_NUMBER, Game.UPCOMING_JAM_NUMBER, Game.IN_PERIOD,
-                      Game.IN_JAM, Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER,
-                      Game.OFFICIAL_REVIEW, Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, CLOCK, TEAM, Game.RULE,
-                      Game.LABEL, Game.START_JAM, Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE,
+        addProperties(props);
+        addProperties(Game.NAME, Game.CURRENT_PERIOD_NUMBER, Game.UPCOMING_JAM_NUMBER, Game.IN_PERIOD, Game.IN_JAM,
+                      Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER,
+                      Game.OFFICIAL_REVIEW, Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, Game.RULE, Game.LABEL,
+                      Game.START_JAM, Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE,
                       Game.START_OVERTIME, Game.OFFICIAL_TIMEOUT);
         setCopy(Game.NAME, this, GAME, Game.NAME, true);
         setCopy(Game.CURRENT_PERIOD_NUMBER, this, GAME, Game.CURRENT_PERIOD_NUMBER, true);

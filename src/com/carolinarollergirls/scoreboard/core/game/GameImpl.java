@@ -68,12 +68,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     private void initReferences(Ruleset rs) {
-        addProperties(NAME, NAME_FORMAT, STATE, CURRENT_PERIOD_NUMBER, CURRENT_PERIOD, UPCOMING_JAM,
-                      UPCOMING_JAM_NUMBER, IN_PERIOD, IN_JAM, IN_OVERTIME, OFFICIAL_SCORE, ABORT_REASON,
-                      CURRENT_TIMEOUT, TIMEOUT_OWNER, OFFICIAL_REVIEW, NO_MORE_JAM, RULESET, RULESET_NAME, HEAD_NSO,
-                      HEAD_REF, SUSPENSIONS_SERVED, FILENAME, LAST_FILE_UPDATE, CLOCK, TEAM, RULE, PENALTY_CODE, LABEL,
-                      EVENT_INFO, NSO, REF, EXPULSION, PERIOD, Period.JAM, START_JAM, STOP_JAM, TIMEOUT, CLOCK_UNDO,
-                      CLOCK_REPLACE, START_OVERTIME, OFFICIAL_TIMEOUT, EXPORT);
+        addProperties(props);
+        addProperties(Period.JAM);
 
         setCopy(CURRENT_PERIOD_NUMBER, this, CURRENT_PERIOD, Period.NUMBER, true);
         setCopy(IN_PERIOD, this, CURRENT_PERIOD, Period.RUNNING, false);

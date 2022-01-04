@@ -5,7 +5,7 @@ public class TestNumberedScoreBoardEventProviderImpl
     implements TestNumberedScoreBoardEventProvider {
     public TestNumberedScoreBoardEventProviderImpl(TestScoreBoardEventProvider parent, int number) {
         super(parent, number, TestScoreBoardEventProvider.NUMBERED);
-        addProperties(INT, RO_DIRECT_COPY, RW_DIRECT_COPY, CO_ORDERED);
+        addProperties(props);
         setCopy(RO_DIRECT_COPY, parent, TestScoreBoardEventProvider.INT, true);
         setCopy(RW_DIRECT_COPY, parent, TestScoreBoardEventProvider.INT, false);
     }

@@ -17,8 +17,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public PeriodImpl(Game g, int p) {
         super(g, p, Game.PERIOD);
         game = g;
-        addProperties(CURRENT_JAM, CURRENT_JAM_NUMBER, FIRST_JAM, FIRST_JAM_NUMBER, RUNNING, DURATION, WALLTIME_START,
-                      WALLTIME_END, LOCAL_TIME_START, TIMEOUT, JAM, DELETE, INSERT_BEFORE, INSERT_TIMEOUT);
+        addProperties(props);
         setCopy(CURRENT_JAM_NUMBER, this, CURRENT_JAM, Jam.NUMBER, true);
         setRecalculated(FIRST_JAM).addSource(this, JAM);
         setCopy(FIRST_JAM_NUMBER, this, FIRST_JAM, Jam.NUMBER, true);

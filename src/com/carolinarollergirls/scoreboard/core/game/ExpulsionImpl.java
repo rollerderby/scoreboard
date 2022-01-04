@@ -15,7 +15,7 @@ public class ExpulsionImpl extends ScoreBoardEventProviderImpl<Expulsion> implem
         super(g, p.getId(), Game.EXPULSION);
         game = g;
         penalty = p;
-        addProperties(INFO, EXTRA_INFO, SUSPENSION);
+        addProperties(props);
         setRecalculated(INFO)
             .addSource(p, Penalty.CODE)
             .addSource(p, Penalty.JAM_NUMBER)

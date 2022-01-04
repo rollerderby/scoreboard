@@ -8,9 +8,13 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.carolinarollergirls.scoreboard.event.Child;
-import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
 
 public interface Media extends ScoreBoardEventProvider {
     public MediaFormat getFormat(String format);
@@ -20,13 +24,18 @@ public interface Media extends ScoreBoardEventProvider {
 
     public boolean validFileName(String fn);
 
-    Child<MediaFormat> FORMAT = new Child<>(MediaFormat.class, "Format");
+    public static Collection<Property<?>> props = new ArrayList<>();
+
+    public static final Child<MediaFormat> FORMAT = new Child<>(MediaFormat.class, "Format", props);
 
     public static interface MediaFormat extends ScoreBoardEventProvider {
         public String getFormat();
         public MediaType getType(String type);
 
-        Child<MediaType> TYPE = new Child<>(MediaType.class, "Type");
+        @SuppressWarnings("hiding")
+        public static Collection<Property<?>> props = new ArrayList<>();
+
+        public static final Child<MediaType> TYPE = new Child<>(MediaType.class, "Type", props);
     }
 
     public static interface MediaType extends ScoreBoardEventProvider {
@@ -37,7 +46,10 @@ public interface Media extends ScoreBoardEventProvider {
         public void addFile(MediaFile file);
         public void removeFile(MediaFile file);
 
-        Child<MediaFile> FILE = new Child<>(MediaFile.class, "File");
+        @SuppressWarnings("hiding")
+        public static Collection<Property<?>> props = new ArrayList<>();
+
+        public static final Child<MediaFile> FILE = new Child<>(MediaFile.class, "File", props);
     }
 
     public static interface MediaFile extends ScoreBoardEventProvider {
@@ -49,7 +61,10 @@ public interface Media extends ScoreBoardEventProvider {
         public void setName(String s);
         public String getSrc();
 
-        Value<String> SRC = new Value<>(String.class, "Src", "");
-        Value<String> NAME = new Value<>(String.class, "Name", "");
+        @SuppressWarnings("hiding")
+        public static Collection<Property<?>> props = new ArrayList<>();
+
+        public static final Value<String> SRC = new Value<>(String.class, "Src", "", props);
+        public static final Value<String> NAME = new Value<>(String.class, "Name", "", props);
     }
 }

@@ -63,8 +63,8 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
 
     private void initialize() {
-        addProperties(PREPARED_SKATER, NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, CURRENT_PENALTIES,
-                      POSITION, ROLE, BASE_ROLE, PENALTY_BOX, FLAGS, FIELDING, PENALTY);
+        addProperties(props);
+        addProperties(preparedProps);
         setInverseReference(FIELDING, Fielding.SKATER);
         setCopy(NAME, this, PREPARED_SKATER, NAME, false, team, Team.PREPARED_TEAM_CONNECTED);
         setCopy(ROSTER_NUMBER, this, PREPARED_SKATER, ROSTER_NUMBER, false, team, Team.PREPARED_TEAM_CONNECTED);

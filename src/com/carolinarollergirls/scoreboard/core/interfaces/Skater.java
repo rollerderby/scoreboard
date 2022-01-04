@@ -8,11 +8,14 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.NumberedChild;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -47,21 +50,25 @@ public interface Skater extends ScoreBoardEventProvider {
     public List<Penalty> getUnservedPenalties();
     public boolean hasUnservedPenalties();
 
-    Value<PreparedSkater> PREPARED_SKATER = new Value<>(PreparedSkater.class, "PreparedSkater", null);
-    Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "");
-    Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null);
-    Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "");
-    Value<String> CURRENT_PENALTIES = new Value<>(String.class, "CurrentPenalties", "");
-    Value<Position> POSITION = new Value<>(Position.class, "Position", null);
-    Value<Role> ROLE = new Value<>(Role.class, "Role", null);
-    Value<Role> BASE_ROLE = new Value<>(Role.class, "BaseRole", null);
-    Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false);
-    Value<String> FLAGS = new Value<>(String.class, "Flags", "");
+    public static Collection<Property<?>> props = new ArrayList<>();
+    public static Collection<Property<?>> preparedProps = new ArrayList<>(); // also present on PreparedTeam.Skater
 
-    Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding");
+    public static final Value<PreparedSkater> PREPARED_SKATER =
+        new Value<>(PreparedSkater.class, "PreparedSkater", null, props);
+    public static final Value<String> NAME = new Value<>(String.class, "Name", "", preparedProps);
+    public static final Value<String> ROSTER_NUMBER = new Value<>(String.class, "RosterNumber", "", preparedProps);
+    public static final Value<Fielding> CURRENT_FIELDING = new Value<>(Fielding.class, "CurrentFielding", null, props);
+    public static final Value<String> CURRENT_BOX_SYMBOLS = new Value<>(String.class, "CurrentBoxSymbols", "", props);
+    public static final Value<String> CURRENT_PENALTIES = new Value<>(String.class, "CurrentPenalties", "", props);
+    public static final Value<Position> POSITION = new Value<>(Position.class, "Position", null, props);
+    public static final Value<Role> ROLE = new Value<>(Role.class, "Role", null, props);
+    public static final Value<Role> BASE_ROLE = new Value<>(Role.class, "BaseRole", null, props);
+    public static final Value<Boolean> PENALTY_BOX = new Value<>(Boolean.class, "PenaltyBox", false, props);
+    public static final Value<String> FLAGS = new Value<>(String.class, "Flags", "", preparedProps);
 
-    NumberedChild<Penalty> PENALTY = new NumberedChild<>(Penalty.class, "Penalty");
+    public static final Child<Fielding> FIELDING = new Child<>(Fielding.class, "Fielding", props);
+
+    public static final NumberedChild<Penalty> PENALTY = new NumberedChild<>(Penalty.class, "Penalty", props);
 
     public static final String FO_EXP_ID = "0";
 }

@@ -19,7 +19,7 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         super(s, n, Skater.PENALTY);
         game = s.getTeam().getGame();
         skater = (Skater) parent;
-        addProperties(TIME, JAM, PERIOD_NUMBER, JAM_NUMBER, CODE, SERVING, SERVED, FORCE_SERVED, BOX_TRIP, REMOVE);
+        addProperties(props);
         set(TIME, ScoreBoardClock.getInstance().getCurrentWalltime());
         setInverseReference(JAM, Jam.PENALTY);
         setInverseReference(BOX_TRIP, BoxTrip.PENALTY);

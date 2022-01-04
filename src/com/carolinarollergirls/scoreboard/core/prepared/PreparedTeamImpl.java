@@ -21,8 +21,8 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> implements PreparedTeam {
     public PreparedTeamImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.PREPARED_TEAM);
-        addProperties(Team.FULL_NAME, Team.LEAGUE_NAME, Team.TEAM_NAME, Team.DISPLAY_NAME, Team.UNIFORM_COLOR,
-                      Team.LOGO, Team.ALTERNATE_NAME, Team.COLOR, SKATER);
+        addProperties(props);
+        addProperties(Team.preparedProps);
         setRecalculated(Team.FULL_NAME).addSource(this, Team.LEAGUE_NAME).addSource(this, Team.TEAM_NAME);
         setRecalculated(Team.DISPLAY_NAME)
             .addSource(this, Team.LEAGUE_NAME)
@@ -89,7 +89,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
         extends ScoreBoardEventProviderImpl<PreparedSkater> implements PreparedSkater {
         public PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
             super(parent, id, PreparedTeam.SKATER);
-            addProperties(Skater.NAME, Skater.ROSTER_NUMBER, Skater.FLAGS);
+            addProperties(Skater.preparedProps);
         }
         public PreparedTeamSkaterImpl(PreparedTeamSkaterImpl cloned, ScoreBoardEventProvider root) {
             super(cloned, root);

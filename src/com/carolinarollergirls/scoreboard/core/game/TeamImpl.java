@@ -47,13 +47,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         super(g, g.getId() + "_" + i, Game.TEAM);
         game = g;
         subId = i;
-        addProperties(FULL_NAME, LEAGUE_NAME, TEAM_NAME, DISPLAY_NAME, UNIFORM_COLOR, INITIALS, LOGO,
-                      RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING, CURRENT_TRIP,
-                      SCORE, JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW, IN_TIMEOUT,
-                      IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL,
-                      DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, PREPARED_TEAM, PREPARED_TEAM_CONNECTED, CAPTAIN,
-                      ALTERNATE_NAME, COLOR, SKATER, POSITION, TIME_OUT, BOX_TRIP, ADD_TRIP, REMOVE_TRIP,
-                      ADVANCE_FIELDINGS, TIMEOUT, OFFICIAL_REVIEW);
+        addProperties(props);
+        addProperties(preparedProps);
         for (FloorPosition fp : FloorPosition.values()) { add(POSITION, new PositionImpl(this, fp)); }
         addWriteProtection(POSITION);
         addWriteProtectionOverride(FIELDING_ADVANCE_PENDING, Source.NON_WS);

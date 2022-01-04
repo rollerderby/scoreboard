@@ -1,7 +1,7 @@
 package com.carolinarollergirls.scoreboard.event;
 
 public interface OrderedScoreBoardEventProvider<C extends OrderedScoreBoardEventProvider<C>>
-        extends ScoreBoardEventProvider {
+    extends ScoreBoardEventProvider {
     public int getNumber();
 
     public C getPrevious();
@@ -11,5 +11,5 @@ public interface OrderedScoreBoardEventProvider<C extends OrderedScoreBoardEvent
     public boolean hasNext();
     public void setNext(C next);
 
-    public static final Value<Integer> NUMBER = new Value<>(Integer.class, "Number", 0);
+    public static final Value<Integer> NUMBER = new Value<>(Integer.class, "Number", 0, null);
 }

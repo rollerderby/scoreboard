@@ -30,7 +30,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         super(g, g.getId() + "_" + i, Game.CLOCK);
         game = g;
         subId = i;
-        addProperties(NAME, NUMBER, TIME, INVERTED_TIME, MAXIMUM_TIME, DIRECTION, RUNNING, START, STOP, RESET_TIME);
+        addProperties(props);
         // initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
             setCopy(NUMBER, g, Game.CURRENT_PERIOD_NUMBER, true);

@@ -25,9 +25,7 @@ import com.carolinarollergirls.scoreboard.event.ValueWithId;
 public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Fielding> implements Fielding {
     public FieldingImpl(TeamJam teamJam, Position position) {
         super(teamJam, position.getProviderId(), TeamJam.FIELDING);
-        addProperties(SKATER, SKATER_NUMBER, NOT_FIELDED, POSITION, SIT_FOR_3, PENALTY_BOX, CURRENT_BOX_TRIP,
-                      BOX_TRIP_SYMBOLS, BOX_TRIP_SYMBOLS_BEFORE_S_P, BOX_TRIP_SYMBOLS_AFTER_S_P, ANNOTATION, BOX_TRIP,
-                      ADD_BOX_TRIP, UNEND_BOX_TRIP);
+        addProperties(props);
         this.teamJam = teamJam;
         game = teamJam.getTeam().getGame();
         set(POSITION, position);

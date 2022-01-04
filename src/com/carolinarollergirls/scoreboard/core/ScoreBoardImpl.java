@@ -40,7 +40,7 @@ import com.carolinarollergirls.scoreboard.utils.Version;
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> implements ScoreBoard {
     public ScoreBoardImpl() {
         super(null, "", null);
-        addProperties(VERSION, SETTINGS, TWITTER, RULESETS, MEDIA, CLIENTS, GAME, PREPARED_TEAM, CURRENT_GAME);
+        addProperties(props);
         setupScoreBoard();
     }
     public ScoreBoardImpl(ScoreBoardImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }

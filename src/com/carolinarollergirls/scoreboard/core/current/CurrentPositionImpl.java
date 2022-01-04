@@ -12,9 +12,9 @@ public class CurrentPositionImpl extends ScoreBoardEventProviderImpl<CurrentPosi
     CurrentPositionImpl(CurrentTeam t, FloorPosition fp) {
         super(t, t.getId() + "_" + fp.toString(), CurrentTeam.POSITION);
         floorPosition = fp;
-        addProperties(POSITION, Position.CURRENT_BOX_SYMBOLS, Position.CURRENT_PENALTIES, Position.ANNOTATION,
-                      Position.SKATER, Position.NAME, Position.ROSTER_NUMBER, Position.FLAGS, Position.PENALTY_BOX,
-                      Position.CLEAR);
+        addProperties(props);
+        addProperties(Position.CURRENT_BOX_SYMBOLS, Position.CURRENT_PENALTIES, Position.ANNOTATION, Position.SKATER,
+                      Position.NAME, Position.ROSTER_NUMBER, Position.FLAGS, Position.PENALTY_BOX, Position.CLEAR);
         setCopy(Position.CURRENT_BOX_SYMBOLS, this, POSITION, Position.CURRENT_BOX_SYMBOLS, true);
         setCopy(Position.CURRENT_PENALTIES, this, POSITION, Position.CURRENT_PENALTIES, true);
         setCopy(Position.ANNOTATION, this, POSITION, Position.ANNOTATION, true);

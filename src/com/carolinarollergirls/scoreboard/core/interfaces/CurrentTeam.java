@@ -8,7 +8,11 @@ package com.carolinarollergirls.scoreboard.core.interfaces;
  * See the file COPYING for details.
  */
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -18,8 +22,10 @@ public interface CurrentTeam extends ScoreBoardEventProvider, TimeoutOwner {
 
     public CurrentPosition getPosition(FloorPosition fp);
 
-    Value<Team> TEAM = new Value<>(Team.class, "Team", null);
+    public static Collection<Property<?>> props = new ArrayList<>();
 
-    Child<CurrentSkater> SKATER = new Child<>(CurrentSkater.class, "Skater");
-    Child<CurrentPosition> POSITION = new Child<>(CurrentPosition.class, "Position");
+    public static final Value<Team> TEAM = new Value<>(Team.class, "Team", null, props);
+
+    public static final Child<CurrentSkater> SKATER = new Child<>(CurrentSkater.class, "Skater", props);
+    public static final Child<CurrentPosition> POSITION = new Child<>(CurrentPosition.class, "Position", props);
 }

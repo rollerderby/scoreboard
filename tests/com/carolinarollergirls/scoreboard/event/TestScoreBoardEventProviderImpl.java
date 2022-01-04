@@ -21,8 +21,7 @@ public class TestScoreBoardEventProviderImpl
     }
 
     private void setupReferences() {
-        addProperties(INT, RO_INDIRECT_COPY, RW_INDIRECT_COPY, RECALCULATED, REFERENCE, MULTIPLE, SINGLETON, NUMBERED,
-                      TEST_COMMAND);
+        addProperties(props);
         setInverseReference(MULTIPLE, REFERENCE);
         setInverseReference(REFERENCE, MULTIPLE);
         setCopy(RO_INDIRECT_COPY, this, REFERENCE, INT, true);

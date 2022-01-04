@@ -23,7 +23,7 @@ import com.carolinarollergirls.scoreboard.utils.Logger;
 public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements Clients {
     public ClientsImpl(ScoreBoard parent) {
         super(parent, "", ScoreBoard.CLIENTS);
-        addProperties(NEW_DEVICE_WRITE, ALL_LOCAL_DEVICES_WRITE, CLIENT, DEVICE);
+        addProperties(props);
         addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
     }
@@ -152,7 +152,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public class ClientImpl extends ScoreBoardEventProviderImpl<Client> implements Client {
         ClientImpl(Clients parent, String id) {
             super(parent, id, Clients.CLIENT);
-            addProperties(DEVICE, REMOTE_ADDR, PLATFORM, SOURCE, CREATED, WROTE);
+            addProperties(props);
             setInverseReference(DEVICE, Device.CLIENT);
             addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
             addWriteProtectionOverride(REMOTE_ADDR, Source.ANY_INTERNAL);
@@ -181,8 +181,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public class DeviceImpl extends ScoreBoardEventProviderImpl<Device> implements Device {
         protected DeviceImpl(Clients parent, String id) {
             super(parent, id, Clients.DEVICE);
-            addProperties(SESSION_ID_SECRET, NAME, REMOTE_ADDR, PLATFORM, COMMENT, CREATED, WROTE, ACCESSED, MAY_WRITE,
-                          CLIENT);
+            addProperties(props);
             set(MAY_WRITE, parent.get(NEW_DEVICE_WRITE));
             addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         }

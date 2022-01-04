@@ -20,19 +20,13 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
     public BoxTripImpl(Team t, String id) {
         super(t, id, Team.BOX_TRIP);
         game = t.getGame();
-        addProperties(IS_CURRENT, CURRENT_FIELDING, START_FIELDING, START_JAM_NUMBER, START_BETWEEN_JAMS,
-                      START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
-                      WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER,
-                      START_LATER, END_EARLIER, END_LATER, DELETE);
+        addProperties(props);
         initReferences();
     }
     public BoxTripImpl(Fielding f) {
         super(f.getTeamJam().getTeam(), UUID.randomUUID().toString(), Team.BOX_TRIP);
         game = f.getTeamJam().getTeam().getGame();
-        addProperties(IS_CURRENT, CURRENT_FIELDING, START_FIELDING, START_JAM_NUMBER, START_BETWEEN_JAMS,
-                      START_AFTER_S_P, END_FIELDING, END_JAM_NUMBER, END_BETWEEN_JAMS, END_AFTER_S_P, WALLTIME_START,
-                      WALLTIME_END, JAM_CLOCK_START, JAM_CLOCK_END, DURATION, FIELDING, PENALTY, START_EARLIER,
-                      START_LATER, END_EARLIER, END_LATER, DELETE);
+        addProperties(props);
         set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(START_AFTER_S_P, f.getTeamJam().isStarPass() && f.isCurrent());
         set(START_BETWEEN_JAMS, !game.isInJam() && !getTeam().hasFieldingAdvancePending() && f.isCurrent());

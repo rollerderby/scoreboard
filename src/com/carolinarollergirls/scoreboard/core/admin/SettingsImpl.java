@@ -20,7 +20,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implements Settings {
     public SettingsImpl(ScoreBoard s) {
         super(s, "", ScoreBoard.SETTINGS);
-        addProperties(SETTING);
+        addProperties(props);
         setDefaults();
     }
     public SettingsImpl(SettingsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
