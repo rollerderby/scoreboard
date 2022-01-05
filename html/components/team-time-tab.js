@@ -405,7 +405,7 @@ function createGameControlDialog(gameId) {
 
   dialog.dialog({
     title: title,
-    width: '600px',
+    width: '1000px',
     modal: true,
     buttons: {
       Cancel: function () {

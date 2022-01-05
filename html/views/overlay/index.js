@@ -369,6 +369,7 @@ function createPenalty(mb, pnum, v) {
 
 function jamData(k, v) {
   'use strict';
+  console.log(k, v);
   var period = k.Period;
   var jam = k.Jam;
   var team = k.TeamJam;
@@ -381,7 +382,7 @@ function jamData(k, v) {
 
   if (v == null) {
     $(me).remove();
-    $mId.sortDivs();
+    $pId.sortDivs();
     return;
   }
 
@@ -430,8 +431,8 @@ function pointsPerJamColumnWidths() {
   var wid = parseInt($('.PPJBox').innerWidth());
   var newwidth = parseInt(wid / nel) - 3;
   $('.ColumnWidth').innerWidth(newwidth);
-  $('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(1).Color(overlay_bg)']);
-  $('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(2).Color(overlay_bg)']);
+  $('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.CurrentGame.Team(1).Color(overlay_bg)']);
+  $('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.CurrentGame.Team(2).Color(overlay_bg)']);
 }
 
 function clockType(k, v) {
