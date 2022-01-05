@@ -18,7 +18,6 @@ import com.carolinarollergirls.scoreboard.core.current.CurrentGameImpl;
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -71,7 +70,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PREPARED_TEAM) { return new PreparedTeamImpl(this, id); }
             if (prop == GAME) { return new GameImpl(this, id); }
@@ -140,9 +139,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         if (id == null) { id = ""; }
         for (Timeout.Owners o : Timeout.Owners.values()) {
             if (o.getId().equals(id)) { return o; }
-        }
-        if (getCurrentGame().get(CurrentGame.TEAM, id) != null) {
-            return getCurrentGame().get(CurrentGame.TEAM, id).get(CurrentTeam.TEAM);
         }
         if (id.contains("_")) { // gameId_teamId
             String[] parts = id.split("_");

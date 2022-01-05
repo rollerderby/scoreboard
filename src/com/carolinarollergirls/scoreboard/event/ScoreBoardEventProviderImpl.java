@@ -610,7 +610,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     }
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {}
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         return null;
     }
     @Override

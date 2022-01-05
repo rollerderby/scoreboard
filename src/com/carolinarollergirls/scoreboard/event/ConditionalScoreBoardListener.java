@@ -66,6 +66,8 @@ public class ConditionalScoreBoardListener<T> implements ScoreBoardListener {
         return sbL;
     }
 
+    public void setCondition(ScoreBoardCondition<T> newCondition) { condition = newCondition; }
+
     @SuppressWarnings("unlikely-arg-type")
     protected boolean checkScoreBoardEvent(ScoreBoardEvent<?> e) {
         return condition.equals(e);

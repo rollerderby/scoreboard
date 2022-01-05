@@ -19,7 +19,7 @@ public class CopyChildScoreBoardListener<T extends ValueWithId> extends CopyScor
     @Override
     @SuppressWarnings("unchecked")
     public void scoreBoardChange(ScoreBoardEvent<T> event, Source source) {
-        if (isActive()) {
+        if (isActive() && targetElement != null) {
             if (event.isRemove()) {
                 targetElement.remove(targetProperty, event.getValue().getId(), source);
             } else {

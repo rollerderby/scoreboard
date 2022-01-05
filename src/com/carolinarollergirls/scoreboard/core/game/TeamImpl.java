@@ -244,7 +244,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == SKATER) {
                 if (get(PREPARED_TEAM_CONNECTED)) {

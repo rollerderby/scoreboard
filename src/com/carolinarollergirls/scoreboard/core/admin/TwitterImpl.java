@@ -11,6 +11,7 @@ package com.carolinarollergirls.scoreboard.core.admin;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Twitter;
 import com.carolinarollergirls.scoreboard.event.Child;
@@ -52,15 +53,25 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             fs.set(FormatSpecifier.CURRENT_VALUE,
                    formatSpecifierViewer.getFormatSpecifierScoreBoardValue(key).getValue());
             // Provide current value of each specifier to the frontend.
-            scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener<>(
+            ConditionalScoreBoardListener<?> listener = new ConditionalScoreBoardListener<>(
                 formatSpecifierViewer.getScoreBoardCondition(key), new ScoreBoardListener() {
                     @Override
                     public void scoreBoardChange(ScoreBoardEvent<?> e) {
                         fs.set(FormatSpecifier.CURRENT_VALUE, value.getValue());
                     }
-                }));
+                });
+            scoreBoard.addScoreBoardListener(listener);
         }
         addWriteProtection(FORMAT_SPECIFIER);
+        scoreBoard.addScoreBoardListener(new ConditionalScoreBoardListener<>(
+            scoreBoard.getCurrentGame(), CurrentGame.GAME, new ScoreBoardListener() {
+                @Override
+                public void scoreBoardChange(ScoreBoardEvent<?> e) {
+                    for (String key : formatSpecifierViewer.getFormatSpecifierDescriptions().keySet()) {
+                        formatSpecifierViewer.getFormatSpecifierScoreBoardValue(key).updateCondition();
+                    }
+                }
+            }));
 
         twitter.addListener(new Listener());
     }
@@ -148,7 +159,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == CONDITIONAL_TWEET) {
                 return new ConditionalTweetImpl(this, id);

@@ -72,7 +72,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == DEVICE) {
                 Device d = new DeviceImpl(this, id);

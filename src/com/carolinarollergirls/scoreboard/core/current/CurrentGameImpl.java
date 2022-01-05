@@ -1,55 +1,56 @@
 package com.carolinarollergirls.scoreboard.core.current;
 
+import java.util.UUID;
+
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
+import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentClock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
+import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
+import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Official;
+import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
+import com.carolinarollergirls.scoreboard.core.interfaces.Period;
+import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
+import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
-import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
+import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.IndirectScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.MirrorScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.MirrorScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.Property;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
 
-public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> implements CurrentGame {
+public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, CurrentGame> implements CurrentGame {
+    @SuppressWarnings("unchecked")
     public CurrentGameImpl(ScoreBoard sb) {
         super(sb, "", ScoreBoard.CURRENT_GAME);
         addProperties(props);
-        addProperties(Game.NAME, Game.CURRENT_PERIOD_NUMBER, Game.UPCOMING_JAM_NUMBER, Game.IN_PERIOD, Game.IN_JAM,
-                      Game.IN_OVERTIME, Game.OFFICIAL_SCORE, Game.CURRENT_TIMEOUT, Game.TIMEOUT_OWNER,
-                      Game.OFFICIAL_REVIEW, Game.NO_MORE_JAM, Game.RULESET, Game.RULESET_NAME, Game.RULE, Game.LABEL,
-                      Game.START_JAM, Game.STOP_JAM, Game.TIMEOUT, Game.CLOCK_UNDO, Game.CLOCK_REPLACE,
-                      Game.START_OVERTIME, Game.OFFICIAL_TIMEOUT);
-        setCopy(Game.NAME, this, GAME, Game.NAME, true);
-        setCopy(Game.CURRENT_PERIOD_NUMBER, this, GAME, Game.CURRENT_PERIOD_NUMBER, true);
-        setCopy(Game.UPCOMING_JAM_NUMBER, this, GAME, Game.UPCOMING_JAM_NUMBER, true);
-        setCopy(Game.IN_PERIOD, this, GAME, Game.IN_PERIOD, true);
-        setCopy(Game.IN_JAM, this, GAME, Game.IN_JAM, true);
-        setCopy(Game.IN_OVERTIME, this, GAME, Game.IN_OVERTIME, true);
-        setCopy(Game.OFFICIAL_SCORE, this, GAME, Game.OFFICIAL_SCORE, true);
-        setCopy(Game.CURRENT_TIMEOUT, this, GAME, Game.CURRENT_TIMEOUT, true);
-        setCopy(Game.TIMEOUT_OWNER, this, GAME, Game.TIMEOUT_OWNER, true);
-        setCopy(Game.OFFICIAL_REVIEW, this, GAME, Game.OFFICIAL_REVIEW, true);
-        setCopy(Game.NO_MORE_JAM, this, GAME, Game.NO_MORE_JAM, true);
-        setCopy(Game.RULESET, this, GAME, Game.RULESET, true);
-        setCopy(Game.RULESET_NAME, this, GAME, Game.RULESET_NAME, true);
-        setCopy(Game.RULE, this, GAME, Game.RULE, true);
-        setCopy(Game.LABEL, this, GAME, Game.LABEL, true);
-        setCopy(Game.CURRENT_PERIOD_NUMBER, this, GAME, Game.CURRENT_PERIOD_NUMBER, true);
-        add(TEAM, new CurrentTeamImpl(this, Team.ID_1));
-        add(TEAM, new CurrentTeamImpl(this, Team.ID_2));
-        addWriteProtection(TEAM);
-        add(CLOCK, new CurrentClockImpl(this, Clock.ID_PERIOD));
-        add(CLOCK, new CurrentClockImpl(this, Clock.ID_JAM));
-        add(CLOCK, new CurrentClockImpl(this, Clock.ID_LINEUP));
-        add(CLOCK, new CurrentClockImpl(this, Clock.ID_TIMEOUT));
-        add(CLOCK, new CurrentClockImpl(this, Clock.ID_INTERMISSION));
-        addWriteProtection(CLOCK);
+        fillMaps();
+        mirrorFactory = new MirrorFactoryImpl();
+        for (Property<?> prop : Game.props) {
+            if (reversePropertyMap.containsKey(prop)) {
+                addMirrorCopy((Child<? extends ScoreBoardEventProvider>) prop);
+            } else {
+                addProperties(prop);
+                if (prop instanceof Value<?>) { setCopy((Value<?>) prop); }
+                if (prop instanceof Child<?>) { setCopy((Child<?>) prop); }
+            }
+        }
     }
     public CurrentGameImpl(CurrentGameImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
@@ -59,19 +60,78 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
     }
 
     @Override
-    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if (prop == GAME) {
-            if (value != null) {
-                Game g = (Game) value;
-                for (CurrentTeam t : getAll(TEAM)) { t.load(g.getTeam(t.getProviderId())); }
-                for (CurrentClock c : getAll(CLOCK)) { c.load(g.getClock(c.getProviderId())); }
-            }
-        }
+    public String getProviderId() {
+        return "";
     }
 
     @Override
-    public void execute(Command prop, Source source) {
-        get(GAME).execute(prop, source);
+    protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == GAME && (!source.isFile() || value != null)) {
+            if (last != null) { elements.get(CurrentGame.class).remove(((Game) last).getId()); }
+            if (value == null && last != null) {
+                // having no current game will brake lots of things, so inhibit that
+                value = new GameImpl(scoreBoard, UUID.randomUUID().toString());
+                scoreBoard.add(ScoreBoard.GAME, (Game) value);
+            }
+            sourceElement = (Game) value;
+            if (value != null) { elements.get(CurrentGame.class).put(((Game) value).getId(), this); }
+        } else if (source.isFile()) {
+            return last;
+        }
+        return value;
+    }
+
+    @Override
+    protected <T> void setCopy(Value<T> prop) {
+        setCopy(prop, this, GAME, prop, false);
+    }
+    @Override
+    protected <T extends ValueWithId> void setCopy(Child<T> prop) {
+        setCopy(prop, this, GAME, prop, false);
+    }
+
+    @Override
+    protected <T extends ScoreBoardEventProvider> void addMirrorCopy(final Child<T> sourceProperty) {
+        @SuppressWarnings("unchecked")
+        Child<MirrorScoreBoardEventProvider<T>> targetProperty =
+            (Child<MirrorScoreBoardEventProvider<T>>) reversePropertyMap.get(sourceProperty);
+        propertyMap.put(targetProperty, sourceProperty);
+        reversePropertyMap.put(sourceProperty, targetProperty);
+        addProperties(targetProperty);
+        ScoreBoardListener l = new IndirectScoreBoardListener<>(
+            this, GAME, sourceProperty, new ChildToMirrorScoreBoardListener<>(this, targetProperty));
+        providers.put(l, null);
+        ScoreBoardListener reverseListener = new ConditionalScoreBoardListener<>(this, GAME, new ScoreBoardListener() {
+            @Override
+            public void scoreBoardChange(ScoreBoardEvent<?> event) {
+                reverseCopyListeners.put(
+                    targetProperty, new ChildFromMirrorScoreBoardListener<>((ScoreBoardEventProvider) event.getValue(),
+                                                                            sourceProperty));
+            }
+        });
+        addScoreBoardListener(reverseListener);
+        reverseListener.scoreBoardChange(new ScoreBoardEvent<>(this, GAME, get(GAME), null));
+    }
+
+    @Override
+    protected void fillMaps() {
+        classMap.put(Game.class, CurrentGame.class);
+        classMap.put(Clock.class, CurrentClock.class);
+        classMap.put(Team.class, CurrentTeam.class);
+        classMap.put(Skater.class, CurrentSkater.class);
+        classMap.put(Penalty.class, CurrentPenalty.class);
+        classMap.put(Position.class, CurrentPosition.class);
+        classMap.put(BoxTrip.class, CurrentBoxTrip.class);
+        classMap.put(Period.class, CurrentPeriod.class);
+        classMap.put(Jam.class, CurrentJam.class);
+        classMap.put(TeamJam.class, CurrentTeamJam.class);
+        classMap.put(Fielding.class, CurrentFielding.class);
+        classMap.put(ScoringTrip.class, CurrentScoringTrip.class);
+        classMap.put(Timeout.class, CurrentTimeout.class);
+        classMap.put(Official.class, CurrentOfficial.class);
+        classMap.put(Expulsion.class, CurrentExpulsion.class);
+
+        addPropertyMapping(Game.CLOCK, Game.TEAM, Game.PERIOD, Period.JAM, Game.REF, Game.NSO, Game.EXPULSION);
     }
 
     @Override
@@ -96,5 +156,84 @@ public class CurrentGameImpl extends ScoreBoardEventProviderImpl<CurrentGame> im
     @Override
     public void load(Game g) {
         set(GAME, g);
+    }
+
+    public static class CurrentClockImpl
+        extends MirrorScoreBoardEventProviderImpl<Clock, CurrentClock> implements CurrentClock {
+        CurrentClockImpl(ScoreBoardEventProvider parent, Clock sourceElement) { super(parent, sourceElement); }
+    }
+    public static class CurrentTeamImpl
+        extends MirrorScoreBoardEventProviderImpl<Team, CurrentTeam> implements CurrentTeam {
+        CurrentTeamImpl(ScoreBoardEventProvider parent, Team sourceElement) { super(parent, sourceElement); }
+        @Override
+        protected void fillMaps() {
+            addPropertyMapping(Team.SKATER, Team.POSITION, Team.BOX_TRIP);
+        }
+    }
+    public static class CurrentSkaterImpl
+        extends MirrorScoreBoardEventProviderImpl<Skater, CurrentSkater> implements CurrentSkater {
+        CurrentSkaterImpl(ScoreBoardEventProvider parent, Skater sourceElement) { super(parent, sourceElement); }
+        @Override
+        protected void fillMaps() {
+            addPropertyMapping(Skater.PENALTY);
+        }
+    }
+    public static class CurrentPenaltyImpl
+        extends MirrorScoreBoardEventProviderImpl<Penalty, CurrentPenalty> implements CurrentPenalty {
+        CurrentPenaltyImpl(ScoreBoardEventProvider parent, Penalty sourceElement) { super(parent, sourceElement); }
+    }
+    public static class CurrentPositionImpl
+        extends MirrorScoreBoardEventProviderImpl<Position, CurrentPosition> implements CurrentPosition {
+        CurrentPositionImpl(ScoreBoardEventProvider parent, Position sourceElement) { super(parent, sourceElement); }
+    }
+    public static class CurrentBoxTripImpl
+        extends MirrorScoreBoardEventProviderImpl<BoxTrip, CurrentBoxTrip> implements CurrentBoxTrip {
+        CurrentBoxTripImpl(ScoreBoardEventProvider parent, BoxTrip sourceElement) { super(parent, sourceElement); }
+    }
+    public static class CurrentPeriodImpl
+        extends MirrorScoreBoardEventProviderImpl<Period, CurrentPeriod> implements CurrentPeriod {
+        CurrentPeriodImpl(ScoreBoardEventProvider parent, Period sourceElement) { super(parent, sourceElement); }
+        @Override
+        protected void fillMaps() {
+            addPropertyMapping(Period.JAM, Period.TIMEOUT);
+        }
+    }
+    public static class CurrentJamImpl
+        extends MirrorScoreBoardEventProviderImpl<Jam, CurrentJam> implements CurrentJam {
+        CurrentJamImpl(ScoreBoardEventProvider parent, Jam sourceElement) { super(parent, sourceElement); }
+        @Override
+        protected void fillMaps() {
+            addPropertyMapping(Jam.TEAM_JAM);
+        }
+    }
+    public static class CurrentTeamJamImpl
+        extends MirrorScoreBoardEventProviderImpl<TeamJam, CurrentTeamJam> implements CurrentTeamJam {
+        CurrentTeamJamImpl(ScoreBoardEventProvider parent, TeamJam sourceElement) { super(parent, sourceElement); }
+        @Override
+        protected void fillMaps() {
+            addPropertyMapping(TeamJam.FIELDING, TeamJam.SCORING_TRIP);
+        }
+    }
+    public static class CurrentFieldingImpl
+        extends MirrorScoreBoardEventProviderImpl<Fielding, CurrentFielding> implements CurrentFielding {
+        CurrentFieldingImpl(ScoreBoardEventProvider parent, Fielding sourceElement) { super(parent, sourceElement); }
+    }
+    public static class CurrentScoringTripImpl
+        extends MirrorScoreBoardEventProviderImpl<ScoringTrip, CurrentScoringTrip> implements CurrentScoringTrip {
+        CurrentScoringTripImpl(ScoreBoardEventProvider parent, ScoringTrip sourceElement) {
+            super(parent, sourceElement);
+        }
+    }
+    public static class CurrentTimeoutImpl
+        extends MirrorScoreBoardEventProviderImpl<Timeout, CurrentTimeout> implements CurrentTimeout {
+        CurrentTimeoutImpl(ScoreBoardEventProvider parent, Timeout sourceElement) { super(parent, sourceElement); }
+    }
+    public static class CurrentOfficialImpl
+        extends MirrorScoreBoardEventProviderImpl<Official, CurrentOfficial> implements CurrentOfficial {
+        CurrentOfficialImpl(ScoreBoardEventProvider parent, Official sourceElement) { super(parent, sourceElement); }
+    }
+    public static class CurrentExpulsionImpl
+        extends MirrorScoreBoardEventProviderImpl<Expulsion, CurrentExpulsion> implements CurrentExpulsion {
+        CurrentExpulsionImpl(ScoreBoardEventProvider parent, Expulsion sourceElement) { super(parent, sourceElement); }
     }
 }

@@ -113,7 +113,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      * Must call an appropriate constructor for all children that are themselves a
      * ScoreBoardEventProvider and can be created from the frontend or autosave
      */
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source);
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source);
     public Integer getMinNumber(NumberedChild<?> prop);
     public Integer getMaxNumber(NumberedChild<?> prop);
 

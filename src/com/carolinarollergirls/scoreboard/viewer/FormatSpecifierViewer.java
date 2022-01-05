@@ -15,9 +15,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentClock;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame.CurrentSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Position;
@@ -25,10 +24,14 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
+import com.carolinarollergirls.scoreboard.event.ConditionalScoreBoardListener;
+import com.carolinarollergirls.scoreboard.event.MirrorScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardCondition;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEvent;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Value;
+import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class FormatSpecifierViewer {
     public FormatSpecifierViewer(ScoreBoard sb) { setScoreBoard(sb); }
@@ -171,31 +174,34 @@ public class FormatSpecifierViewer {
         return scoreBoardValues.get(formatSpecifier);
     }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void setupScoreBoardValues() {
-        new ScoreBoardValue("%sbto", "ScoreBoard Timeout Owner", getGame(), Game.TIMEOUT_OWNER) {
+        new ScoreBoardValue<TimeoutOwner>("%sbto", "ScoreBoard Timeout Owner", Game.TIMEOUT_OWNER) {
             @Override
             public String getValue() {
                 TimeoutOwner to = getGame().get(Game.TIMEOUT_OWNER);
                 return to == null ? "" : to.getId();
             }
-        };
-        new ScoreBoardValue("%sbip", "ScoreBoard Is In Period", getGame(), Game.IN_PERIOD) {
             @Override
-            public String getValue() {
-                return String.valueOf(getGame().get(Game.IN_PERIOD));
+            public ScoreBoardEventProvider getProvider() {
+                return getGame();
             }
         };
-        new ScoreBoardValue("%sbio", "ScoreBoard Is In Overtime", getGame(), Game.IN_OVERTIME) {
+        new ScoreBoardValue<Boolean>("%sbip", "ScoreBoard Is In Period", Game.IN_PERIOD) {
             @Override
-            public String getValue() {
-                return String.valueOf(getGame().get(Game.IN_OVERTIME));
+            public ScoreBoardEventProvider getProvider() {
+                return getGame();
             }
         };
-        new ScoreBoardValue("%sbos", "ScoreBoard Is Score Official", getGame(), Game.OFFICIAL_SCORE) {
+        new ScoreBoardValue<Boolean>("%sbio", "ScoreBoard Is In Overtime", Game.IN_OVERTIME) {
             @Override
-            public String getValue() {
-                return String.valueOf(getGame().get(Game.OFFICIAL_SCORE));
+            public ScoreBoardEventProvider getProvider() {
+                return getGame();
+            }
+        };
+        new ScoreBoardValue<Boolean>("%sbos", "ScoreBoard Is Score Official", Game.OFFICIAL_SCORE) {
+            @Override
+            public ScoreBoardEventProvider getProvider() {
+                return getGame();
             }
         };
 
@@ -216,188 +222,117 @@ public class FormatSpecifierViewer {
         conditionPattern = Pattern.compile("(" + specifiersRegex + ")(?:(" + comparatorRegex + ")(\\S+))?");
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     protected void setupTeamValues(String t, final String id) {
-        new ScoreBoardValue("%t" + t + "n", "Team " + t + " Name", getTeam(id), Team.DISPLAY_NAME) {
+        new ScoreBoardValue<String>("%t" + t + "n", "Team " + t + " Name", Team.DISPLAY_NAME) {
             @Override
-            public String getValue() {
-                return getTeam(id).get(Team.DISPLAY_NAME);
+            public ScoreBoardEventProvider getProvider() {
+                return getTeam(id);
             }
         };
-        new ScoreBoardValue("%t" + t + "Nt", "Team " + t + " Twitter Name", getTeam(id), Team.ALTERNATE_NAME) {
+        new ScoreBoardValue<ValWithId>("%t" + t + "Nt", "Team " + t + " Twitter Name", Team.ALTERNATE_NAME) {
             @Override
             public String getValue() {
                 try {
                     return getTeam(id).get(Team.ALTERNATE_NAME, Team.AlternateNameId.TWITTER.toString()).getValue();
-                } catch (NullPointerException npE) { return getTeam(id).get(Team.INITIALS); }
+                } catch (NullPointerException npE) {
+                    MirrorScoreBoardEventProvider<Team> team = getTeam(id);
+                    return team == null ? "" : team.get(Team.INITIALS);
+                }
+            }
+            @Override
+            public ScoreBoardEventProvider getProvider() {
+                return getTeam(id);
             }
         };
-        new ScoreBoardValue("%t" + t + "s", "Team " + t + " Score", getTeam(id), Team.SCORE) {
+        new ScoreBoardValue<Integer>("%t" + t + "s", "Team " + t + " Score", Team.SCORE) {
             @Override
-            public String getValue() {
-                return String.valueOf(getTeam(id).get(Team.SCORE));
+            public ScoreBoardEventProvider getProvider() {
+                return getTeam(id);
             }
         };
-        new ScoreBoardValue("%t" + t + "t", "Team " + t + " Timeouts", getTeam(id), Team.TIMEOUTS) {
+        new ScoreBoardValue<Integer>("%t" + t + "t", "Team " + t + " Timeouts", Team.TIMEOUTS) {
             @Override
-            public String getValue() {
-                return String.valueOf(getTeam(id).get(Team.TIMEOUTS));
+            public ScoreBoardEventProvider getProvider() {
+                return getTeam(id);
             }
         };
-        new ScoreBoardValue("%t" + t + "or", "Team " + t + " Official Reviews", getTeam(id), Team.OFFICIAL_REVIEWS) {
+        new ScoreBoardValue<Integer>("%t" + t + "or", "Team " + t + " Official Reviews", Team.OFFICIAL_REVIEWS) {
             @Override
-            public String getValue() {
-                return String.valueOf(getTeam(id).get(Team.OFFICIAL_REVIEWS));
+            public ScoreBoardEventProvider getProvider() {
+                return getTeam(id);
             }
         };
-        new ScoreBoardValue("%t" + t + "l", "Team " + t + " is Lead Jammer", getTeam(id), Team.DISPLAY_LEAD) {
+        new ScoreBoardValue<Boolean>("%t" + t + "l", "Team " + t + " is Lead Jammer", Team.DISPLAY_LEAD) {
             @Override
-            public String getValue() {
-                return String.valueOf(getTeam(id).get(Team.DISPLAY_LEAD));
+            public ScoreBoardEventProvider getProvider() {
+                return getTeam(id);
             }
         };
-        new ScoreBoardValue("%t" + t + "jn", "Team " + t + " Jammer Name",
-                            getTeam(id).getPosition(FloorPosition.JAMMER), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterName(getPositionSkater(id, FloorPosition.JAMMER));
-            }
+        setupPositionValues(t, "j", id, FloorPosition.JAMMER);
+        setupPositionValues(t, "p", id, FloorPosition.PIVOT);
+        setupPositionValues(t, "b1", id, FloorPosition.BLOCKER1);
+        setupPositionValues(t, "b2", id, FloorPosition.BLOCKER2);
+        setupPositionValues(t, "b3", id, FloorPosition.BLOCKER3);
+    }
+
+    protected void setupPositionValues(String t, String p, final String id, final FloorPosition fp) {
+        new ScoreBoardValue<String>("%t" + t + p + "n", "Team " + t + " " + fp.toString() + " Name", Position.NAME) {
             @Override
             public String getPreviousValue(Object o) {
-                return getSkaterName((Skater) o);
+                return getSkaterName((CurrentSkater) o);
+            }
+            @Override
+            public ScoreBoardEventProvider getProvider() {
+                return getPosition(id, fp);
             }
         };
-        new ScoreBoardValue("%t" + t + "jN", "Team " + t + " Jammer Number",
-                            getTeam(id).getPosition(FloorPosition.JAMMER), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterNumber(getPositionSkater(id, FloorPosition.JAMMER));
-            }
+        new ScoreBoardValue<String>("%t" + t + p + "N", "Team " + t + " " + fp.toString() + " Number",
+                                    Position.ROSTER_NUMBER) {
             @Override
             public String getPreviousValue(Object o) {
-                return getSkaterNumber((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "pn", "Team " + t + " Pivot Name", getTeam(id).getPosition(FloorPosition.PIVOT),
-                            Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterName(getPositionSkater(id, FloorPosition.PIVOT));
+                return getSkaterNumber((CurrentSkater) o);
             }
             @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterName((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "pN", "Team " + t + " Pivot Number",
-                            getTeam(id).getPosition(FloorPosition.PIVOT), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterNumber(getPositionSkater(id, FloorPosition.PIVOT));
-            }
-            @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterNumber((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "b1n", "Team " + t + " Blocker1 Name",
-                            getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER1));
-            }
-            @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterName((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "b1N", "Team " + t + " Blocker1 Number",
-                            getTeam(id).getPosition(FloorPosition.BLOCKER1), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER1));
-            }
-            @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterNumber((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "b2n", "Team " + t + " Blocker2 Name",
-                            getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER2));
-            }
-            @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterName((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "b2N", "Team " + t + " Blocker2 Number",
-                            getTeam(id).getPosition(FloorPosition.BLOCKER2), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER2));
-            }
-            @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterNumber((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "b3n", "Team " + t + " Blocker3 Name",
-                            getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterName(getPositionSkater(id, FloorPosition.BLOCKER3));
-            }
-            @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterName((Skater) o);
-            }
-        };
-        new ScoreBoardValue("%t" + t + "b3N", "Team " + t + " Blocker3 Number",
-                            getTeam(id).getPosition(FloorPosition.BLOCKER3), Position.SKATER) {
-            @Override
-            public String getValue() {
-                return getSkaterNumber(getPositionSkater(id, FloorPosition.BLOCKER3));
-            }
-            @Override
-            public String getPreviousValue(Object o) {
-                return getSkaterNumber((Skater) o);
+            public ScoreBoardEventProvider getProvider() {
+                return getPosition(id, fp);
             }
         };
     }
 
-    protected CurrentTeam getTeam(String id) { return getGame().get(CurrentGame.TEAM, id); }
+    protected MirrorScoreBoardEventProvider<Team> getTeam(String id) { return getGame().getMirror(Game.TEAM, id); }
 
-    protected Skater getPositionSkater(String id, FloorPosition position) {
-        return getTeam(id).getPosition(position).get(Position.SKATER);
+    protected MirrorScoreBoardEventProvider<Position> getPosition(String id, FloorPosition position) {
+        MirrorScoreBoardEventProvider<Team> team = getTeam(id);
+        return team == null ? null : team.getMirror(Team.POSITION, position.toString());
     }
 
-    protected String getSkaterName(Skater s) { return (null == s ? NO_SKATER_NAME_VALUE : s.getName()); }
-    protected String getSkaterNumber(Skater s) { return (null == s ? NO_SKATER_NUMBER_VALUE : s.getRosterNumber()); }
+    protected String getSkaterName(MirrorScoreBoardEventProvider<Skater> s) {
+        return (null == s ? NO_SKATER_NAME_VALUE : s.get(Skater.NAME));
+    }
+    protected String getSkaterNumber(MirrorScoreBoardEventProvider<Skater> s) {
+        return (null == s ? NO_SKATER_NUMBER_VALUE : s.get(Skater.ROSTER_NUMBER));
+    }
 
-    @SuppressWarnings({"unchecked", "rawtypes"})
     protected void setupClockValues(String c, final String id) {
-        new ScoreBoardValue("%c" + c + "n", "Clock " + id + " Name", getClock(id), Clock.NAME) {
+        new ScoreBoardValue<String>("%c" + c + "n", "Clock " + id + " Name", Clock.NAME) {
             @Override
-            public String getValue() {
-                return getClock(id).get(Clock.NAME);
+            public ScoreBoardEventProvider getProvider() {
+                return getClock(id);
             }
         };
-        new ScoreBoardValue("%c" + c + "N", "Clock " + id + " Number", getClock(id), Clock.NUMBER) {
+        new ScoreBoardValue<Integer>("%c" + c + "N", "Clock " + id + " Number", Clock.NUMBER) {
             @Override
-            public String getValue() {
-                return String.valueOf(getClock(id).get(Clock.NUMBER));
+            public ScoreBoardEventProvider getProvider() {
+                return getClock(id);
             }
         };
-        new ScoreBoardValue("%c" + c + "r", "Clock " + id + " is Running", getClock(id), Clock.RUNNING) {
+        new ScoreBoardValue<Boolean>("%c" + c + "r", "Clock " + id + " is Running", Clock.RUNNING) {
             @Override
-            public String getValue() {
-                return String.valueOf(getClock(id).get(Clock.RUNNING));
+            public ScoreBoardEventProvider getProvider() {
+                return getClock(id);
             }
         };
-        new ScoreBoardValue("%c" + c + "ts", "Clock " + id + " Time (seconds)", getClock(id), Clock.TIME) {
+        new ScoreBoardValue<Long>("%c" + c + "ts", "Clock " + id + " Time (seconds)", Clock.TIME) {
             @Override
             public String getValue() {
                 return getClockSecs(id);
@@ -406,8 +341,12 @@ public class FormatSpecifierViewer {
             public String getPreviousValue(Object o) {
                 return getClockSecs(((Long) o), getClock(id).get(Clock.DIRECTION));
             }
+            @Override
+            public ScoreBoardEventProvider getProvider() {
+                return getClock(id);
+            }
         };
-        new ScoreBoardValue("%c" + c + "tms", "Clock " + id + " Time (min:sec)", getClock(id), Clock.TIME) {
+        new ScoreBoardValue<Long>("%c" + c + "tms", "Clock " + id + " Time (min:sec)", Clock.TIME) {
             @Override
             public String getValue() {
                 return getClockMinSecs(id);
@@ -416,13 +355,18 @@ public class FormatSpecifierViewer {
             public String getPreviousValue(Object o) {
                 return getClockMinSecs(((Long) o), getClock(id).get(Clock.DIRECTION));
             }
+            @Override
+            public ScoreBoardEventProvider getProvider() {
+                return getClock(id);
+            }
         };
     }
 
-    protected CurrentClock getClock(String id) { return getGame().get(CurrentGame.CLOCK, id); }
+    protected MirrorScoreBoardEventProvider<Clock> getClock(String id) { return getGame().getMirror(Game.CLOCK, id); }
 
     protected String getClockSecs(String id) {
-        return getClockSecs(getClock(id).get(Clock.TIME), getClock(id).get(Clock.DIRECTION));
+        MirrorScoreBoardEventProvider<Clock> clock = getClock(id);
+        return clock == null ? "0" : getClockSecs(clock.get(Clock.TIME), clock.get(Clock.DIRECTION));
     }
     protected String getClockSecs(long time, boolean roundUp) {
         long roundedTime = time / 1000;
@@ -430,7 +374,8 @@ public class FormatSpecifierViewer {
         return String.valueOf(roundedTime);
     }
     protected String getClockMinSecs(String id) {
-        return getClockMinSecs(getClock(id).get(Clock.TIME), getClock(id).get(Clock.DIRECTION));
+        MirrorScoreBoardEventProvider<Clock> clock = getClock(id);
+        return clock == null ? "0" : getClockMinSecs(clock.get(Clock.TIME), clock.get(Clock.DIRECTION));
     }
     protected String getClockMinSecs(long time, boolean roundUp) {
         long roundedTime = time / 1000;
@@ -454,27 +399,33 @@ public class FormatSpecifierViewer {
     protected Map<String, ScoreBoardValue<?>> scoreBoardValues = new LinkedHashMap<>();
 
     public abstract class ScoreBoardValue<T> {
-        protected ScoreBoardValue(String f, String d, ScoreBoardEventProvider p, Property<T> prop) {
+        protected ScoreBoardValue(String f, String d, Property<T> prop) {
             format = f;
             description = d;
-            scoreBoardCondition = new ScoreBoardCondition<>(p, prop);
+            property = prop;
+            updateCondition();
             scoreBoardValues.put(format, this);
         }
-        protected ScoreBoardValue(String f, String d, Class<? extends ScoreBoardEventProvider> c, String i,
-                                  Property<T> prop) {
-            format = f;
-            description = d;
-            scoreBoardCondition = new ScoreBoardCondition<>(c, i, prop);
-            scoreBoardValues.put(format, this);
+        public String getValue() {
+            ScoreBoardEventProvider provider = getProvider();
+            return provider == null ? "" : String.valueOf(provider.get((Value<T>) property));
         }
-        public abstract String getValue();
+        public abstract ScoreBoardEventProvider getProvider();
         public String getPreviousValue(Object value) { return String.valueOf(value); }
         public String getDescription() { return description; }
         public ScoreBoardCondition<T> getScoreBoardCondition() { return scoreBoardCondition; }
+        public void setListener(ConditionalScoreBoardListener<T> listener) { this.listener = listener; }
+        public void updateCondition() {
+            ScoreBoardEventProvider provider = getProvider();
+            scoreBoardCondition = new ScoreBoardCondition<>(provider == null ? scoreBoard : provider, property);
+            if (listener != null) { listener.setCondition(scoreBoardCondition); }
+        }
 
         protected String format;
         protected String description;
+        Property<T> property;
         protected ScoreBoardCondition<T> scoreBoardCondition;
+        protected ConditionalScoreBoardListener<T> listener;
     }
 
     public static final String NO_SKATER_NAME_VALUE = "";

@@ -78,7 +78,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PreparedTeam.SKATER) { return new PreparedTeamSkaterImpl(this, id); }
             return null;

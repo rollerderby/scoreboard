@@ -4,7 +4,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider.Source;
 
 public class CopyValueScoreBoardListener<T> extends CopyScoreBoardListener<T> {
     CopyValueScoreBoardListener(ScoreBoardEventProvider targetElement, Value<T> targetProperty,
-            ScoreBoardEventProvider guardElement, Value<Boolean> guardProperty) {
+                                ScoreBoardEventProvider guardElement, Value<Boolean> guardProperty) {
         super(guardElement, guardProperty);
         this.targetElement = targetElement;
         this.targetProperty = targetProperty;
@@ -19,9 +19,7 @@ public class CopyValueScoreBoardListener<T> extends CopyScoreBoardListener<T> {
     @Override
     @SuppressWarnings("unchecked")
     public void scoreBoardChange(ScoreBoardEvent<T> event, Source source) {
-        if (isActive() && targetElement != null) {
-            targetElement.set(targetProperty, event.getValue(), source);
-        }
+        if (isActive() && targetElement != null) { targetElement.set(targetProperty, event.getValue(), source); }
     }
 
     protected ScoreBoardEventProvider targetElement;

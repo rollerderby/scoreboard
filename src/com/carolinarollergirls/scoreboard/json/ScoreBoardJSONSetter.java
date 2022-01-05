@@ -18,7 +18,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
@@ -206,7 +206,7 @@ public class ScoreBoardJSONSetter {
                     if (o == null) {
                         if (source.isFile()) {
                             // filter out elements that we expect to fail on each startup
-                            if (prop == CurrentTeam.SKATER) { return; }
+                            if (p.getProviderClass() == CurrentGame.class) { return; }
                             if (prop == Clients.CLIENT) { return; }
                             if (prop == Game.EXPULSION) { return; }
                         }

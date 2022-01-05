@@ -1,8 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.game;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentPenalty;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
@@ -97,12 +95,6 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
     @Override
     public void execute(Command prop, Source source) {
         if (prop == REMOVE) { delete(source); }
-    }
-
-    @Override
-    public CurrentPenalty getCurrentPenalty() {
-        CurrentSkater s = skater.getCurrentSkater();
-        return s == null ? null : s.get(CurrentSkater.PENALTY, getId());
     }
 
     private void possiblyUpdateSkater() {
