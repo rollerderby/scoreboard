@@ -122,7 +122,7 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
         providers.put(l, sourceElement);
         reverseCopyListeners.put(targetProperty,
                                  new ChildFromMirrorScoreBoardListener<>(sourceElement, sourceProperty));
-        for (T element : sourceElement.getAll(sourceProperty)) { add(targetProperty, toMirror(element)); }
+        for (T element : sourceElement.getAll(sourceProperty)) { add(targetProperty, toMirror(element), Source.COPY); }
     }
 
     public class ChildToMirrorScoreBoardListener<T extends ScoreBoardEventProvider> implements ScoreBoardListener {
