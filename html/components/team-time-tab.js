@@ -142,11 +142,6 @@ function createMetaControlTable(gameId) {
     .on('click', function () {
       createGameControlDialog(gameId);
     });
-  var firstLoad = true;
-  setTimeout(function () {
-    firstLoad = false;
-    updateHighlights();
-  }, 120000);
 
   var periodEndControlsLabel = $('<label>')
     .attr('for', 'PeriodEndControlsCheckbox')
@@ -188,7 +183,7 @@ function createMetaControlTable(gameId) {
     var tie = WS.state['ScoreBoard.Game(' + gameId + ').Team(1).Score'] === WS.state['ScoreBoard.Game(' + gameId + ').Team(2).Score'];
     var official = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').OfficialScore']);
 
-    startButton.toggleClass('clickMe', official || firstLoad);
+    startButton.toggleClass('clickMe', official);
     periodEndControlsLabel.toggleClass('clickMe', noPeriod && last && !official && table.find('tr.PeriodEnd').hasClass('Hidden'));
     confirmedButton.toggleClass('clickMe', noPeriod && last && !tie && !official);
     otButton.toggleClass('clickMe', noPeriod && last && tie && !official);
