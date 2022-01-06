@@ -1,19 +1,3 @@
-/**
- * Interactive Overlay
- * Copyright (C) 2015 Flat Track Protocol (Jared Quinn) <ftp@rollerder.by>
- *
- * Based on work by
- *
- * Copyright (C) 2013 Rob Thomas <xrobau@gmail.com>
- * Copyright (C) 2013 Damian Georgiou <bachomp@gmail.com>
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
-
 html { height: 100%; width: 100%; } 
 body { margin: 0 auto; } 
 

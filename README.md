@@ -1,4 +1,4 @@
-The Carolina Roller Derby Scoreboard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track full game data.
+The CRG ScoreBoard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track full game data.
 
 The topics on the [Scoreboard Wiki Main Page](https://github.com/rollerderby/scoreboard/wiki/) are the primary documentation for the scoreboard. In addition to the wiki topics, the [Derby Scoreboard Facebook group](https://www.facebook.com/groups/derbyscoreboard/) is very active and currently the best way to reach other users and developers.
 

@@ -30,7 +30,7 @@ public class Version {
         m.put(VERSION_RELEASE_KEY, "unset");
         for (String k : versionProperties.stringPropertyNames()) { m.put(k, versionProperties.getProperty(k)); }
         props = Collections.unmodifiableMap(m);
-        Logger.printMessage("Carolina Rollergirls Scoreboard version " + Version.get());
+        Logger.printMessage("CRG ScoreBoard version " + Version.get());
         return true;
     }
 

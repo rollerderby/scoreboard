@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 
-<project name="Carolina Rollergirls Scoreboard" default="test">
+<project name="CRG ScoreBoard" default="test">
 	<property name="ant.build.javac.source" value="1.8"/>
 	<property name="ant.build.javac.target" value="1.8"/>
 
@@ -48,7 +48,7 @@
 
 	<!-- Show help (the different options for this build.xml) -->
 	<target name="help">
-		<echo message="Buildfile for Carolina Rollergirls Scoreboard"/>
+		<echo message="Buildfile for CRG ScoreBoard"/>
 		<echo message=""/>
 		<echo message="Targets:"/>
 		<echo message=""/>
