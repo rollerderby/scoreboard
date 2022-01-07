@@ -14,7 +14,7 @@ function createTeamsTab(tab, gameId, teamId) {
   }
 }
 
-function createEditTeamTable(element, teamPrefix, changable) {
+function createEditTeamTable(element, teamPrefix, isGameTeam) {
   'use strict';
   var teamTable = $('<table>')
     .addClass('Team')
@@ -26,14 +26,15 @@ function createEditTeamTable(element, teamPrefix, changable) {
     .append($('<tr><td/></tr>').addClass('Skaters'))
     .appendTo(element);
 
-  var teamName = $('<span>').toggleClass('Hide', changable).appendTo(teamTable.find('tr.Name>td'));
+  var teamName = $('<span>').toggleClass('Hide', isGameTeam).appendTo(teamTable.find('tr.Name>td'));
   WS.Register(teamPrefix + '.FullName', function (k, v) {
     teamName.text(v);
   });
-  if (changable) {
+  if (isGameTeam) {
     var teamSelect = WSControl(teamPrefix + '.PreparedTeam', $('<select>')).appendTo(teamTable.find('tr.Name>td'));
     $('<option value="">No Team Selected</option>').appendTo(teamSelect);
     WSActiveButton(teamPrefix + '.PreparedTeamConnected', $('<button>'))
+      .addClass('SyncButton')
       .text('Sync Changes')
       .button()
       .appendTo(teamTable.find('tr.Name>td'));
@@ -57,8 +58,103 @@ function createEditTeamTable(element, teamPrefix, changable) {
   WSControl(teamPrefix + '.LeagueName', $('<input type="text" class="Name">')).appendTo(teamTable.find('tr.League>td'));
   $('<span>').text('Team: ').appendTo(teamTable.find('tr.LTeam>td'));
   WSControl(teamPrefix + '.TeamName', $('<input type="text" class="Name">')).appendTo(teamTable.find('tr.LTeam>td'));
-  $('<span>').text('Color: ').appendTo(teamTable.find('tr.Color>td'));
-  WSControl(teamPrefix + '.UniformColor', $('<input type="text" class="Name">')).appendTo(teamTable.find('tr.Color>td'));
+  if (isGameTeam) {
+    $('<span>').text('Uniform Color: ').appendTo(teamTable.find('tr.Color>td'));
+    var colorSelectors = $('<span>').addClass('Hide').appendTo(teamTable.find('tr.Color>td'));
+    var colorInput = WSControl(teamPrefix + '.UniformColor', $('<input type="text" class="Name" size="15">'))
+      .addClass('Hide')
+      .appendTo(teamTable.find('tr.Color>td'));
+
+    WS.Register(teamPrefix + '.PreparedTeam', function (k, v) {
+      colorSelectors.children().addClass('Hide');
+      if (v == null || v === '') {
+        colorSelectors.addClass('Hide');
+        colorInput.removeClass('Hide');
+        return;
+      }
+      colorSelectors.removeClass('Hide');
+      var selector = colorSelectors.children('[id="' + v + '"]');
+      if (!selector.length) {
+        selector = $('<select>')
+          .attr('id', v)
+          .append($('<option value="">').text('Other'))
+          .val('')
+          .on('change', function () {
+            if (!$(this).hasClass('Hide')) {
+              if ($(this).val() !== '') {
+                colorInput.val($(this).val());
+                colorInput.trigger('change');
+              }
+              colorInput.toggleClass('Hide', $(this).val() !== '');
+            }
+          })
+          .appendTo(colorSelectors);
+        WS.Register('ScoreBoard.PreparedTeam(' + v + ').UniformColor(*)', function (kk, vv) {
+          selector.children('[id="' + kk.UniformColor + '"]').remove();
+          if (vv != null) {
+            var newOption = $('<option>').attr('value', vv).attr('id', kk.UniformColor).text(vv);
+            _windowFunctions.appendAlphaSortedByAttr(selector, newOption, 'value', 1);
+          }
+          if (selector.children('[value="' + WS.state[teamPrefix + '.UniformColor'] + '"]').length) {
+            selector.val(WS.state[teamPrefix + '.UniformColor']);
+          } else {
+            selector.val('');
+          }
+          selector.trigger('change');
+        });
+      } else {
+        if (selector.children('[value=' + WS.state[teamPrefix + '.UniformColor'] + ']').length) {
+          selector.val(WS.state[teamPrefix + '.UniformColor']);
+        } else {
+          selector.val('');
+        }
+      }
+      selector.removeClass('Hide').trigger('change');
+    });
+  } else {
+    $('<span>').text('Uniform Colors: ').appendTo(teamTable.find('tr.Color>td'));
+    var colorList = $('<span>').appendTo(teamTable.find('tr.Color>td'));
+    var newColorInput = $('<input type="text" class="Name" size="15">')
+      .on('keyup', function (event) {
+        if ($(this).val() !== '' && 13 === event.which) {
+          WS.Set(teamPrefix + '.UniformColor(' + newUUID() + ')', $(this).val());
+          $(this).val('');
+        }
+      })
+      .appendTo(teamTable.find('tr.Color>td'));
+    $('<button>')
+      .text('Add')
+      .button()
+      .on('click', function () {
+        if (newColorInput.val() !== '') {
+          WS.Set(teamPrefix + '.UniformColor(' + newUUID() + ')', newColorInput.val());
+          newColorInput.val('');
+        }
+      })
+      .appendTo(teamTable.find('tr.Color>td'));
+    WS.Register(teamPrefix + '.UniformColor(*)', function (k, v) {
+      var entry = colorList.children('[id="' + k.UniformColor + '"]');
+      if (v == null) {
+        entry.remove();
+      } else if (entry.length) {
+        entry.children('span').text(v);
+      } else {
+        $('<span>')
+          .addClass('RemoveColor')
+          .attr('id', k.UniformColor)
+          .append($('<span>').text(v))
+          .append(
+            $('<button>')
+              .text('X')
+              .button()
+              .on('click', function () {
+                WS.Set(k, null);
+              })
+          )
+          .appendTo(colorList);
+      }
+    });
+  }
 
   var controlTable = _crgUtils.createRowTable(3).appendTo(teamTable.find('tr.Control>td')).addClass('Control');
   var waitingOnUpload = '';
@@ -151,7 +247,7 @@ function createEditTeamTable(element, teamPrefix, changable) {
   };
 
   var newSkaterNumber = $('<input type="text" size="5">').addClass('RosterNumber').appendTo(skatersTable.find('tr.AddSkater>th:eq(0)'));
-  var newSkaterName = $('<input type="text" size="30">').addClass('Name').appendTo(skatersTable.find('tr.AddSkater>th:eq(1)'));
+  var newSkaterName = $('<input type="text" size="20">').addClass('Name').appendTo(skatersTable.find('tr.AddSkater>th:eq(1)'));
   var newSkaterFlags = $('<select>').addClass('Flags').appendTo(skatersTable.find('tr.AddSkater>th:eq(2)'));
   var newSkaterButton = $('<button>')
     .text('Add Skater')
@@ -245,7 +341,7 @@ function createEditTeamTable(element, teamPrefix, changable) {
           .append('<td class="Flags">')
           .append('<td class="Remove">');
         var numberInput = $('<input type="text" size="5">').appendTo(skaterRow.children('td.RosterNumber'));
-        var nameInput = $('<input type="text" size="30">').appendTo(skaterRow.children('td.Name'));
+        var nameInput = $('<input type="text" size="20">').appendTo(skaterRow.children('td.Name'));
         nameInput.on('change', function () {
           WS.Set(skaterPrefix + '.Name', nameInput.val());
         });

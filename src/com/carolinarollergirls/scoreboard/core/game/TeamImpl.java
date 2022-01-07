@@ -46,7 +46,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         addWriteProtectionOverride(FIELDING_ADVANCE_PENDING, Source.NON_WS);
         setCopy(LEAGUE_NAME, this, PREPARED_TEAM, LEAGUE_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(TEAM_NAME, this, PREPARED_TEAM, TEAM_NAME, false, PREPARED_TEAM_CONNECTED);
-        setCopy(UNIFORM_COLOR, this, PREPARED_TEAM, UNIFORM_COLOR, false, PREPARED_TEAM_CONNECTED);
         setCopy(LOGO, this, PREPARED_TEAM, LOGO, false, PREPARED_TEAM_CONNECTED);
         setCopy(CURRENT_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.CURRENT_TRIP, true);
         setCopy(SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE, true);

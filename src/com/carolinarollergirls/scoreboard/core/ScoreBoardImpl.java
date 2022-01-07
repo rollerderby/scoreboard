@@ -82,10 +82,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
                 // fewer than 2 teams - create black and white so an ad hoc game can be started
                 PreparedTeam t1 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "Black");
                 t1.set(Team.TEAM_NAME, "Black");
-                t1.set(Team.UNIFORM_COLOR, "Black");
+                t1.add(PreparedTeam.UNIFORM_COLOR, new ValWithId("Black", "Black"));
                 PreparedTeam t2 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "White");
                 t2.set(Team.TEAM_NAME, "White");
-                t1.set(Team.UNIFORM_COLOR, "White");
+                t1.add(PreparedTeam.UNIFORM_COLOR, new ValWithId("White", "White"));
             }
             initialLoadDone = true;
         }

@@ -93,7 +93,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Value<String> TEAM_NAME = new Value<>(String.class, "TeamName", "", preparedProps);
     public static final Value<String> FILE_NAME = new Value<>(String.class, "FileName", "", props);
     public static final Value<String> INITIALS = new Value<>(String.class, "Initials", "", props);
-    public static final Value<String> UNIFORM_COLOR = new Value<>(String.class, "UniformColor", "", preparedProps);
+    public static final Value<String> UNIFORM_COLOR = new Value<>(String.class, "UniformColor", "", props);
     public static final Value<String> LOGO = new Value<>(String.class, "Logo", "", preparedProps);
     public static final Value<TeamJam> RUNNING_OR_UPCOMING_TEAM_JAM =
         new Value<>(TeamJam.class, "RunningOrUpcomingTeamJam", null, props);

@@ -11,7 +11,11 @@
 
 #Teams table.Team { width: 100%; border-spacing: 0px; } 
 #Teams table.Team tr.Name>td { background: #ccc; border-radius: 12px 12px 0px 0px; font-size: 200%; font-weight: bold; } 
+#Teams table.Team tr.Name>td select { font-size: 50%; } 
 #Teams table.Team tr.Name>td button { font-size: 50%; margin: 2px 5px; } 
+#Teams table.Team tr.Color>td select { margin-right: 2px; } 
+#Teams table.Team .RemoveColor button { font-size: 80%; margin-left: 5px; padding: 2px 5px; } 
+#Teams table.Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
 
 #Teams table.Skaters { width: 100%; border-spacing: 0px; } 
 #Teams table.Skaters.Empty tr:last-of-type>th:first-of-type { border-radius: 0px 0px 0px 12px; } 
