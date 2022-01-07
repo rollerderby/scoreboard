@@ -79,6 +79,7 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final String ID_1 = "1";
     public static final String ID_2 = "2";
     public static final String SETTING_DISPLAY_NAME = "ScoreBoard.Teams.DisplayName";
+    public static final String SETTING_FILE_NAME = "ScoreBoard.Teams.FileName";
     public static final String OPTION_TEAM_NAME = "Team";
     public static final String OPTION_LEAGUE_NAME = "League";
     public static final String OPTION_FULL_NAME = "Full";
@@ -86,10 +87,11 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static Collection<Property<?>> props = new ArrayList<>();
     public static Collection<Property<?>> preparedProps = new ArrayList<>(); // also present on PreparedTeam
 
+    public static final Value<String> DISPLAY_NAME = new Value<>(String.class, "Name", "", preparedProps);
     public static final Value<String> FULL_NAME = new Value<>(String.class, "FullName", "", preparedProps);
     public static final Value<String> LEAGUE_NAME = new Value<>(String.class, "LeagueName", "", preparedProps);
     public static final Value<String> TEAM_NAME = new Value<>(String.class, "TeamName", "", preparedProps);
-    public static final Value<String> DISPLAY_NAME = new Value<>(String.class, "Name", "", preparedProps);
+    public static final Value<String> FILE_NAME = new Value<>(String.class, "FileName", "", props);
     public static final Value<String> INITIALS = new Value<>(String.class, "Initials", "", props);
     public static final Value<String> UNIFORM_COLOR = new Value<>(String.class, "UniformColor", "", preparedProps);
     public static final Value<String> LOGO = new Value<>(String.class, "Logo", "", preparedProps);

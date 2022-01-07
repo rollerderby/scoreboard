@@ -125,7 +125,7 @@ function createNonViewRows(table) {
   var statsbookFile = $('<label>Blank Statsbook File: </label>').add(
     WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Stats.InputFile)', $('<input type="text" size="40">'))
   );
-  var teamDisplayName = $('<label>Teams display: </label>').add(
+  var teamDisplayName = $('<label>Team name for display: </label>').add(
     WSControl(
       'ScoreBoard.Settings.Setting(ScoreBoard.Teams.DisplayName)',
       $('<select>')
@@ -134,8 +134,17 @@ function createNonViewRows(table) {
         .append('<option value="Full">Full Name</option>')
     )
   );
+  var teamFileName = $('<label>Team name for files: </label>').add(
+    WSControl(
+      'ScoreBoard.Settings.Setting(ScoreBoard.Teams.FileName)',
+      $('<select>')
+        .append('<option value="League">League Name</option>')
+        .append('<option value="Team">Team Name</option>')
+        .append('<option value="Full">Full Name</option>')
+    )
+  );
   var defaultGameNameFormat = $('<label>Name format for new games: </label>').add(
-    WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Game.DefaultNameFormat)', $('<input type="text" size="30">'))
+    WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Game.DefaultNameFormat)', $('<input type="text" size="25">'))
   );
 
   $('<tr>')
@@ -178,12 +187,14 @@ function createNonViewRows(table) {
     .append(useLTButton)
     .next()
     .append(statsbookFile);
-  $('<tr><td/><td colspan="2"/></tr>')
+  $('<tr><td/><td/><td/></tr>')
     .appendTo(optionsTable)
     .addClass('ScoreBoardOptions EndSubSection Footer')
     .find('td')
     .first()
     .append(teamDisplayName)
+    .next()
+    .append(teamFileName)
     .next()
     .append(defaultGameNameFormat);
 }

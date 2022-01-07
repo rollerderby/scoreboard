@@ -106,8 +106,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             .addSource(get(TEAM, Team.ID_2), Team.SCORE);
         setRecalculated(FILENAME)
             .addSource(this, EVENT_INFO)
-            .addSource(get(TEAM, Team.ID_1), Team.DISPLAY_NAME)
-            .addSource(get(TEAM, Team.ID_2), Team.DISPLAY_NAME);
+            .addSource(get(TEAM, Team.ID_1), Team.FILE_NAME)
+            .addSource(get(TEAM, Team.ID_2), Team.FILE_NAME);
         setRecalculated(STATE).addSource(this, CURRENT_PERIOD_NUMBER).addSource(this, OFFICIAL_SCORE);
         set(IN_JAM, false);
         set(NAME_FORMAT, "");
@@ -247,10 +247,18 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 .replace("%S", getTeam(Team.ID_1).get(Team.SCORE) + " - " + getTeam(Team.ID_2).get(Team.SCORE))
                 .trim();
         } else if (prop == FILENAME) {
+            if (get(STATE) != State.PREPARED) { // we have already written a file
+                return source.isFile() ? value : last;
+            }
             String date = get(EVENT_INFO, INFO_DATE) == null ? "0000-00-00" : get(EVENT_INFO, INFO_DATE).getValue();
-            String team1 = getTeam(Team.ID_1).get(Team.DISPLAY_NAME).replace(" ", "");
-            String team2 = getTeam(Team.ID_2).get(Team.DISPLAY_NAME).replace(" ", "");
-            return "STATS-" + date + "_" + team1 + "_vs_" + team2;
+            String team1 = getTeam(Team.ID_1).get(Team.FILE_NAME).replace(" ", "");
+            String team2 = getTeam(Team.ID_2).get(Team.FILE_NAME).replace(" ", "");
+            String newName = "STATS-" + date + "_" + team1 + "_vs_" + team2;
+            if (newName.equals(last)) {
+                return newName;
+            } else {
+                return checkNewFilename(newName);
+            }
         } else if (prop == RULESET && value != null) {
             setCurrentRulesetRecurse(((Ruleset) value));
         } else if (prop == STATE) {
@@ -894,6 +902,24 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         return get(FILENAME);
     }
 
+    public String checkNewFilename(String baseName) {
+        String fullName = baseName;
+        int suffix = 0;
+        while (filenameIsUsed(fullName)) {
+            suffix++;
+            fullName = baseName + "_" + String.valueOf(suffix);
+        }
+        return fullName;
+    }
+
+    public boolean filenameIsUsed(String filename) {
+        for (Game g : scoreBoard.getAll(ScoreBoard.GAME)) {
+            if (filename.equals(g.getFilename())) { return true; }
+        }
+
+        return new File(jsonDirectory, filename + ".json").exists();
+    }
+
     @Override
     public void exportDone(boolean success) {
         if (success) {
@@ -905,6 +931,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     protected GameSnapshot snapshot = null;
     protected boolean replacePending = false;
+
+    protected static File jsonDirectory = new File(BasePath.get(), "html/game-data/json");
 
     protected Timeout noTimeoutDummy;
 

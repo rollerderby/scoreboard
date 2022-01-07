@@ -76,6 +76,11 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             .addSource(this, TEAM_NAME)
             .addSource(this, FULL_NAME)
             .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        setRecalculated(FILE_NAME)
+            .addSource(this, LEAGUE_NAME)
+            .addSource(this, TEAM_NAME)
+            .addSource(this, FULL_NAME)
+            .addSource(scoreBoard.getSettings(), Settings.SETTING);
         set(FULL_NAME, "");
         setRecalculated(Team.INITIALS).addSource(this, Team.DISPLAY_NAME);
         addWriteProtectionOverride(TIMEOUTS, Source.ANY_INTERNAL);
@@ -130,6 +135,16 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == DISPLAY_NAME) {
             String setting = scoreBoard.getSettings().get(SETTING_DISPLAY_NAME);
+            if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
+                return get(TEAM_NAME);
+            } else if (!OPTION_FULL_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+                return get(LEAGUE_NAME);
+            } else {
+                return get(FULL_NAME);
+            }
+        }
+        if (prop == FILE_NAME) {
+            String setting = scoreBoard.getSettings().get(SETTING_FILE_NAME);
             if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
                 return get(TEAM_NAME);
             } else if (!OPTION_FULL_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
