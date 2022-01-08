@@ -105,7 +105,6 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
       return;
     }
     if (v == null && k == 'ScoreBoard.Game(' + gameId + ').Period(' + k.Period + ').Number') {
-      element.children('#head[nr=' + k.Period + ']').remove();
       element.children('table.Period[nr=' + k.Period + ']').remove();
       delete periodElements[k.Period];
       delete jamElements[k.Period];
@@ -193,12 +192,15 @@ function prepareLtSheetTable(element, gameId, teamId, mode) {
         table.appendTo(element).addClass('Forewards');
       }
       if (mode !== 'plt') {
-        $('<div class="LT">')
-          .html('<span class ="Team">' + teamName + '</span> P' + nr)
-          .prop('id', 'head')
-          .attr('nr', nr)
-          .insertBefore(table);
         var header = $('<thead>').appendTo(table);
+        $('<tr>')
+          .append(
+            $('<td colspan="' + (mode === 'copyToStatsbook' ? '20' : '12') + '">')
+              .html('<span class ="Team">' + teamName + '</span> P' + nr)
+              .prop('id', 'head')
+              .attr('nr', nr)
+          )
+          .appendTo(header);
         var row = $('<tr>').appendTo(header);
         if (mode !== 'copyToStatsbook') {
           $('<td>').addClass('JamNumber').text('Jam').appendTo(row);
