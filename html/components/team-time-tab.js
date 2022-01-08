@@ -87,6 +87,8 @@ function createMetaControlTable(gameId) {
     )
     .appendTo(helpTd);
 
+  WSActiveButton('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndJam)', $('<button>').text('Auto End Jams').button()).appendTo(buttonsTd);
+
   $('<label>').addClass('EnableReplaceButton').text('Enable Replace on Undo').attr('for', 'EnableReplaceButton').appendTo(buttonsTd);
   $('<input type="checkbox">')
     .attr('id', 'EnableReplaceButton')
