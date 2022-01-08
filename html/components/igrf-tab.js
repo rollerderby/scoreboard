@@ -23,18 +23,29 @@ function createIgrfTab(tab, gameId) {
     .appendTo(table.find('tr.Name>td'))
     .on('click', function () {
       gameName.addClass('Hide');
-      nameFormatLabel.removeClass('Hide');
-      nameFormat.removeClass('Hide').focus();
+      $('.NameFormat').removeClass('Hide');
+      nameFormat.focus();
     });
-  var nameFormatLabel = $('<span>').addClass('Hide').text('Name Format: ').appendTo(table.find('tr.Name>td'));
+  $('<span>').addClass('NameFormat Hide').text('Name Format: ').appendTo(table.find('tr.Name>td'));
   var nameFormat = WSControl(gamePrefix + '.NameFormat', $('<input type="text" size="30">'))
-    .addClass('Hide')
+    .addClass('NameFormat Hide')
     .appendTo(table.find('tr.Name>td'))
     .on('focusout', function () {
-      nameFormat.addClass('Hide');
-      nameFormatLabel.addClass('Hide');
+      $('.NameFormat').addClass('Hide');
       gameName.removeClass('Hide');
     });
+  $('<table>')
+    .addClass('NameFormat Variables Hide')
+    .append($('<tr>').append($('<th colspan="2">').text('Supported Variables:')))
+    .append($('<tr>').append($('<td>').text('%g:')).append($('<td>').text('Game Number')))
+    .append($('<tr>').append($('<td>').text('%G:')).append($('<td>').text('"Game <Game Number>: " if game number is set, empty otherwise')))
+    .append($('<tr>').append($('<td>').text('%d:')).append($('<td>').text('Date of Game')))
+    .append($('<tr>').append($('<td>').text('%t:')).append($('<td>').text('Start Time')))
+    .append($('<tr>').append($('<td>').text('%1:')).append($('<td>').text('Team 1 Name')))
+    .append($('<tr>').append($('<td>').text('%2:')).append($('<td>').text('Team 2 Name')))
+    .append($('<tr>').append($('<td>').text('%s:')).append($('<td>').text('Game State')))
+    .append($('<tr>').append($('<td>').text('%S:')).append($('<td>').text('"<Team 1 Score> - <Team 2 Score>"')))
+    .appendTo(table.find('tr.Name>td'));
   var endButton = $('<button>')
     .text('End Game')
     .on('click', function () {

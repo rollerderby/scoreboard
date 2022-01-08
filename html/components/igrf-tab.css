@@ -9,11 +9,14 @@
 #Igrf tr.Name > td { background: #ccc; border-radius: 12px 12px 0px 0px; } 
 #Igrf tr.Name > td > span.Name { font-size: 200%; font-weight: bold; } 
 #Igrf tr.Name > td > button { margin-left: 5px; } 
+#Igrf .Variables { width: 100%; } 
+#Igrf .Variables td:first-of-type { text-align: right; } 
+#Igrf .Variables td { text-align: left; width: 50%; } 
 #Igrf tr.Files > td { background: #ddd; } 
 #Igrf tr.Files .ui-button { margin: 1px 5px; } 
 
-#Igrf .Expulsions th { font-size: 150%; }
-#Igrf .Expulsions table { width: 100%; }
+#Igrf .Expulsions th { font-size: 150%; } 
+#Igrf .Expulsions table { width: 100%; } 
 
 #Igrf table.Officials { width: 100%; border-spacing: 0px; } 
 #Igrf table.Officials.Empty tr:last-of-type > th:first-of-type { border-radius: 0px 0px 0px 12px; } 
