@@ -39,6 +39,7 @@ public interface Skater extends ScoreBoardEventProvider {
     public Penalty getPenalty(String num);
     public List<Penalty> getUnservedPenalties();
     public boolean hasUnservedPenalties();
+    public void mergeInto(PreparedSkater preparedSkater);
 
     public static Collection<Property<?>> props = new ArrayList<>();
     public static Collection<Property<?>> preparedProps = new ArrayList<>(); // also present on PreparedTeam.Skater

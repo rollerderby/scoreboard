@@ -18,12 +18,12 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
   'use strict';
   var teamTable = $('<table>')
     .addClass('Team')
-    .append($('<tr><td/></tr>').addClass('Name'))
-    .append($('<tr><td/></tr>').addClass('Control'))
-    .append($('<tr><td/></tr>').addClass('League'))
-    .append($('<tr><td/></tr>').addClass('LTeam'))
-    .append($('<tr><td/></tr>').addClass('Color'))
-    .append($('<tr><td/></tr>').addClass('Skaters'))
+    .append($('<tr><td colspan="2"/></tr>').addClass('Name'))
+    .append($('<tr><td colspan="2"/></tr>').addClass('Control'))
+    .append($('<tr><td/><td/></tr>').addClass('League'))
+    .append($('<tr><td/><td/></tr>').addClass('LTeam'))
+    .append($('<tr><td/><td/></tr>').addClass('Color'))
+    .append($('<tr><td colspan="2"/></tr>').addClass('Skaters'))
     .appendTo(element);
 
   var teamName = $('<span>').toggleClass('Hide', isGameTeam).appendTo(teamTable.find('tr.Name>td'));
@@ -32,17 +32,58 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
   });
   if (isGameTeam) {
     var teamSelect = WSControl(teamPrefix + '.PreparedTeam', $('<select>')).appendTo(teamTable.find('tr.Name>td'));
-    $('<option value="">No Team Selected</option>').appendTo(teamSelect);
-    WSActiveButton(teamPrefix + '.PreparedTeamConnected', $('<button>'))
+    $('<option value="">Custom Team</option>').appendTo(teamSelect);
+    var teamConnected = WSActiveButton(teamPrefix + '.PreparedTeamConnected', $('<button>'))
       .addClass('SyncButton')
       .text('Sync Changes')
       .button()
       .appendTo(teamTable.find('tr.Name>td'));
+    var storeTeam = $('<button>')
+      .addClass('StoreButton Hide')
+      .text('Store Team')
+      .button()
+      .on('click', function () {
+        storeTeamDialog.dialog('open');
+      })
+      .appendTo(teamTable.find('tr.Name>td'));
+
+    var mergeTeamSelect = $('<select>').append($('<option value="">').text('None'));
+    var storeTeamDialog = $('<div>')
+      .addClass('StoreTeamDialog')
+      .append($('<span>').text('Merge into: '))
+      .append(mergeTeamSelect)
+      .dialog({
+        title: 'Store Team',
+        width: '400px',
+        modal: true,
+        autoOpen: false,
+        buttons: {
+          Store: function () {
+            WS.Set(teamPrefix + '.PreparedTeam', mergeTeamSelect.val(), 'change');
+            $(this).dialog('close');
+          },
+        },
+        close: function () {
+          $(this).dialog('close');
+        },
+      });
+
+    WS.Register(teamPrefix + '.PreparedTeam', function (k, v) {
+      teamConnected.toggleClass('Hide', v === '');
+      storeTeam.toggleClass('Hide', v !== '');
+    });
 
     WS.Register('ScoreBoard.PreparedTeam(*).FullName', function (k, v) {
-      teamSelect.children('option[value="' + k.PreparedTeam + '"]').remove();
+      teamSelect
+        .add(mergeTeamSelect)
+        .children('option[value="' + k.PreparedTeam + '"]')
+        .remove();
+      if (v == null || v === '') {
+        return;
+      }
       var option = $('<option>').attr('value', k.PreparedTeam).data('name', v).text(v);
       _windowFunctions.appendAlphaSortedByData(teamSelect, option, 'name', 1);
+      _windowFunctions.appendAlphaSortedByData(mergeTeamSelect, option.clone(true), 'name', 1);
       if (WS.state[teamPrefix + '.PreparedTeam'] === k.PreparedTeam) {
         teamSelect.val(k.PreparedTeam);
       }
@@ -54,16 +95,16 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
     });
   }
 
-  $('<span>').text('League: ').appendTo(teamTable.find('tr.League>td'));
-  WSControl(teamPrefix + '.LeagueName', $('<input type="text" class="Name">')).appendTo(teamTable.find('tr.League>td'));
-  $('<span>').text('Team: ').appendTo(teamTable.find('tr.LTeam>td'));
-  WSControl(teamPrefix + '.TeamName', $('<input type="text" class="Name">')).appendTo(teamTable.find('tr.LTeam>td'));
+  $('<span>').text('League: ').appendTo(teamTable.find('tr.League>td:eq(0)'));
+  WSControl(teamPrefix + '.LeagueName', $('<input type="text" class="Name" size="30">')).appendTo(teamTable.find('tr.League>td:eq(1)'));
+  $('<span>').text('Team: ').appendTo(teamTable.find('tr.LTeam>td:eq(0)'));
+  WSControl(teamPrefix + '.TeamName', $('<input type="text" class="Name" size="30">')).appendTo(teamTable.find('tr.LTeam>td:eq(1)'));
   if (isGameTeam) {
-    $('<span>').text('Uniform Color: ').appendTo(teamTable.find('tr.Color>td'));
-    var colorSelectors = $('<span>').addClass('Hide').appendTo(teamTable.find('tr.Color>td'));
+    $('<span>').text('Uniform Color: ').appendTo(teamTable.find('tr.Color>td:eq(0)'));
+    var colorSelectors = $('<span>').addClass('Hide').appendTo(teamTable.find('tr.Color>td:eq(1)'));
     var colorInput = WSControl(teamPrefix + '.UniformColor', $('<input type="text" class="Name" size="15">'))
       .addClass('Hide')
-      .appendTo(teamTable.find('tr.Color>td'));
+      .appendTo(teamTable.find('tr.Color>td:eq(1)'));
 
     WS.Register(teamPrefix + '.PreparedTeam', function (k, v) {
       colorSelectors.children().addClass('Hide');
@@ -112,8 +153,8 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
       selector.removeClass('Hide').trigger('change');
     });
   } else {
-    $('<span>').text('Uniform Colors: ').appendTo(teamTable.find('tr.Color>td'));
-    var colorList = $('<span>').appendTo(teamTable.find('tr.Color>td'));
+    $('<span>').text('Uniform Colors: ').appendTo(teamTable.find('tr.Color>td:eq(0)'));
+    var colorList = $('<span>').appendTo(teamTable.find('tr.Color>td:eq(1)'));
     var newColorInput = $('<input type="text" class="Name" size="15">')
       .on('keyup', function (event) {
         if ($(this).val() !== '' && 13 === event.which) {
@@ -121,7 +162,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
           $(this).val('');
         }
       })
-      .appendTo(teamTable.find('tr.Color>td'));
+      .appendTo(teamTable.find('tr.Color>td:eq(1)'));
     $('<button>')
       .text('Add')
       .button()
@@ -131,7 +172,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
           newColorInput.val('');
         }
       })
-      .appendTo(teamTable.find('tr.Color>td'));
+      .appendTo(teamTable.find('tr.Color>td:eq(1)'));
     WS.Register(teamPrefix + '.UniformColor(*)', function (k, v) {
       var entry = colorList.children('[id="' + k.UniformColor + '"]');
       if (v == null) {

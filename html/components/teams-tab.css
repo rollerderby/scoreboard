@@ -14,6 +14,9 @@
 #Teams table.Team tr.Name>td select { font-size: 50%; } 
 #Teams table.Team tr.Name>td button { font-size: 50%; margin: 2px 5px; } 
 #Teams table.Team tr.Color>td select { margin-right: 2px; } 
+#Teams table.Team tr.League>td, #Teams table.Team tr.LTeam>td, #Teams table.Team tr.Color>td { text-align: left; }
+#Teams table.Team tr.League>td:first-of-type, #Teams table.Team tr.LTeam>td:first-of-type,
+#Teams table.Team tr.Color>td:first-of-type { text-align: right; }
 #Teams table.Team .RemoveColor button { font-size: 80%; margin-left: 5px; padding: 2px 5px; } 
 #Teams table.Team .RemoveColor { margin: 0px 5px; border-right: 1px solid black; }
 

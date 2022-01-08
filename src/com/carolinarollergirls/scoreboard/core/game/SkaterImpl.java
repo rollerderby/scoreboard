@@ -326,6 +326,15 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         return getUnservedPenalties().size() > 0;
     }
 
+    @Override
+    public void mergeInto(PreparedSkater ps) {
+        if ("".equals(ps.get(NAME))) { ps.set(NAME, get(NAME)); }
+        if ("".equals(ps.get(ROSTER_NUMBER))) { ps.set(ROSTER_NUMBER, get(ROSTER_NUMBER)); }
+        if ("".equals(get(NAME))) { set(NAME, ps.get(NAME)); }
+        if ("".equals(get(ROSTER_NUMBER))) { set(ROSTER_NUMBER, ps.get(ROSTER_NUMBER)); }
+        set(PREPARED_SKATER, ps);
+    }
+
     protected Team team;
     private Game game;
 }
