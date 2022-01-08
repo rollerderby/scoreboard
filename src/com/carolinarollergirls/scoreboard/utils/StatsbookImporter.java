@@ -2,6 +2,9 @@ package com.carolinarollergirls.scoreboard.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -57,7 +60,12 @@ public class StatsbookImporter {
         readEventInfoCell(row, 8, "HostLeague");
         row = igrf.getRow(6);
         readEventInfoCell(row, 1, "Date");
-        readEventInfoCell(row, 8, "StartTime");
+        String timeString = readCell(row, 8);
+        try {
+            // convert from format used in statsbook to HH:mm
+            timeString = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("h:mm a")).toString();
+        } catch (DateTimeParseException e) {}
+        game.add(Game.EVENT_INFO, new ValWithId("StartTime", timeString));
     }
 
     private void readTeam(Sheet igrf, String teamId) {
