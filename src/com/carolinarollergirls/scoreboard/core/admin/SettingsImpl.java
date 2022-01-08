@@ -30,7 +30,7 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set("Overlay.Interactive.ShowAllNames", "Off");
         set("ScoreBoard.Operator_Default.StartStopButtons", "false");
         set("ScoreBoard.Operator_Default.TabBar", "true");
-        set("ScoreBoard.Operator_Default.ReplaceButton", "false");
+        set("ScoreBoard.Operator_Default.ReplaceButton", "true");
         set(ScoreBoard.SETTING_USE_LT, "false");
         set(ScoreBoard.SETTING_STATSBOOK_INPUT, "");
         set(ScoreBoard.SETTING_AUTO_START, "");
