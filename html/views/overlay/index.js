@@ -369,7 +369,6 @@ function createPenalty(mb, pnum, v) {
 
 function jamData(k, v) {
   'use strict';
-  console.log(k, v);
   var period = k.Period;
   var jam = k.Jam;
   var team = k.TeamJam;
@@ -467,7 +466,7 @@ function clockType(k, v) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
     } else if (num === 0) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
-    } else if (num !== max) {
+    } else if (num != max) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
     } else if (!isOfficial) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
