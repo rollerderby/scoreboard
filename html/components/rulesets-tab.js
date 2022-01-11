@@ -230,6 +230,12 @@ function createRulesetsTab(tab, id, isGame) {
         definitionsDiv.find('.EditNote').hide();
       }
     });
+
+    if (isGame) {
+      WS.Register('ScoreBoard.Game(' + id + ').State', function (k, v) {
+        tab.find('#select').prop('disabled', v !== 'Prepared');
+      });
+    }
   }
 
   function markEffectiveRulesets() {

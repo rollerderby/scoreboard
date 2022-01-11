@@ -260,7 +260,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 return checkNewFilename(newName);
             }
         } else if (prop == RULESET && value != null) {
-            setCurrentRulesetRecurse(((Ruleset) value));
+            if (get(STATE) != State.PREPARED && source == Source.WS) {
+                return null; // no change after game start
+            } else {
+                setCurrentRulesetRecurse(((Ruleset) value));
+            }
         } else if (prop == STATE) {
             if (getCurrentPeriodNumber() == 0) {
                 return State.PREPARED;
