@@ -308,11 +308,15 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             set(RULESET, null);
             getTeam(Team.ID_1).set(Team.PREPARED_TEAM_CONNECTED, false);
             getTeam(Team.ID_2).set(Team.PREPARED_TEAM_CONNECTED, false);
-            add(EVENT_INFO, new ValWithId(INFO_DATE, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
-            add(EVENT_INFO,
-                new ValWithId(
-                    INFO_START_TIME,
-                    LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_TIME)));
+            if (get(EVENT_INFO, INFO_DATE) == null || "".equals(get(EVENT_INFO, INFO_DATE).getValue())) {
+                add(EVENT_INFO, new ValWithId(INFO_DATE, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+            }
+            if (get(EVENT_INFO, INFO_START_TIME) == null || "".equals(get(EVENT_INFO, INFO_START_TIME).getValue())) {
+                add(EVENT_INFO,
+                    new ValWithId(
+                        INFO_START_TIME,
+                        LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_TIME)));
+            }
         }
         if (prop == OFFICIAL_SCORE && (boolean) value && source == Source.WS) {
             Clock pc = getClock(Clock.ID_PERIOD);
