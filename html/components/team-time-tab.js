@@ -1210,7 +1210,7 @@ function createPeriodDialog(gameId) {
     ],
     function (k, v) {
       var nr = k.Period;
-      if (nr == null || nr === 0) {
+      if (nr == null || nr == 0) {
         return;
       }
       var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + nr + ')';
@@ -1327,7 +1327,7 @@ function createJamDialog(gameId) {
     ],
     function (k, v) {
       var per = k.Period;
-      if (per === 0) {
+      if (per == 0) {
         return;
       }
       var nr = k.Jam;
@@ -1337,7 +1337,7 @@ function createJamDialog(gameId) {
       var table = dialog.find('table.Period[nr=' + per + ']');
       if (table.length === 0 && v != null) {
         table = tableTemplate.clone(true).attr('nr', per).appendTo(dialog);
-        if (per === currentPeriod) {
+        if (per == currentPeriod) {
           table.addClass('Show');
         }
       }
