@@ -562,6 +562,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             return children.get(prop).size();
         }
     }
+    protected <T extends ValueWithId> boolean mayAdd(Child<T> prop, T item, Source source) { return true; }
     @Override
     public <T extends ValueWithId> boolean add(Child<T> prop, T item) {
         return add(prop, item, Source.OTHER);
@@ -576,6 +577,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                 id = ((ScoreBoardEventProvider) item).getProviderId();
             }
             if (!isWritable(prop, id, source)) { return false; }
+            if (!mayAdd(prop, item, source)) { return false; }
             if (reverseCopyListeners.containsKey(prop) && reverseCopyListeners.get(prop).isActive() &&
                 source != Source.COPY) {
                 reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent<>(this, prop, item, false), source);
@@ -605,6 +607,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
     public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         return null;
     }
+    protected <T extends ValueWithId> boolean mayRemove(Child<T> prop, T item, Source source) { return true; }
     @Override
     public <T extends ValueWithId> boolean remove(Child<T> prop, String id) {
         return remove(prop, get(prop, id), Source.OTHER);
@@ -627,6 +630,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                 id = ((ScoreBoardEventProvider) item).getProviderId();
             }
             if (!isWritable(prop, id, source)) { return false; }
+            if (!mayRemove(prop, item, source)) { return false; }
             if (reverseCopyListeners.containsKey(prop) && reverseCopyListeners.get(prop).isActive() &&
                 source != Source.COPY) {
                 reverseCopyListeners.get(prop).scoreBoardChange(new ScoreBoardEvent<>(this, prop, item, true), source);

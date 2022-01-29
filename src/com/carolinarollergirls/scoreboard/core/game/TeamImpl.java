@@ -282,6 +282,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
+    protected <T extends ValueWithId> boolean mayRemove(Child<T> prop, T item, Source source) {
+        if (prop == SKATER && item != null && !((Skater) item).getAll(Skater.FIELDING).isEmpty()) {
+            // skater has been fielded - avoid data corruption
+            return false;
+        }
+        return true;
+    }
+
+    @Override
     protected void itemRemoved(Child<?> prop, ValueWithId item, Source source) {
         if (prop == SKATER) {
             Skater s = ((Skater) item);
