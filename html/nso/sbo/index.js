@@ -1,7 +1,7 @@
 $(function () {
   'use strict';
   var gameId = _windowFunctions.getParam('game');
-  setupGameAdvance($('gameAdvance'), gameId, true);
+  setupGameAdvance($('#gameAdvance'), gameId, false);
   createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
   createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
   createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId, true);

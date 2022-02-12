@@ -236,6 +236,7 @@ function createGameControlDialog(gameId) {
     .appendTo(preparedGame)
     .on('click', function () {
       WS.Set('ScoreBoard.CurrentGame.Game', preparedGame.find('select.Game option:selected').val());
+      dialog.dialog('close');
     });
 
   var adhocGame = $('<div>').addClass('section').appendTo(dialog);
@@ -347,7 +348,7 @@ function createGameControlDialog(gameId) {
   WS.Register(['ScoreBoard.Game(*).Name', 'ScoreBoard.Game(*).State'], function (k, v) {
     var name = WS.state['ScoreBoard.Game(' + k.Game + ').Name'] || '';
     var state = WS.state['ScoreBoard.Game(' + k.Game + ').State'] || '';
-    var include = (state === 'Prepared' || state === 'Running') && name !== '';
+    var include = (state === 'Prepared' || state === 'Running') && name !== '' && k.Game != WS.state['ScoreBoard.CurrentGame.Game'];
     var options = preparedGame.find('option[value="' + k.Game + '"]');
     if (include && options.length === 0) {
       var option = $('<option>').attr('value', k.Game).data('name', name).text(name);

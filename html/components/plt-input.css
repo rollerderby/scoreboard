@@ -2,7 +2,7 @@
 table.PLT, .PLT table, .PLT tr, .PLT td, #PenaltyEditor table, #PenaltyEditor tr, #PenaltyEditor td, .GameAdvance {border-collapse: collapse;border-color:#777; } 
 body:not(.AllowSelect) .PLT {user-select: none;-webkit-user-select: none;-khtml-user-select: none;-moz-user-select: none;-o-user-select: none; } 
 
-.GameAdvance { background-color: #ff9010; width: 99%; text-align: center; padding: 0px, 5px; margin-bottom: 2px; font-size: 22pt; font-weight: bold; } 
+.GameAdvance { background-color: #ff9010; width: 99%; text-align: center; padding: 0px, 5px; margin-bottom: 2px; font-size: 200%; font-weight: bold; } 
 
 .GameAdvance.Hide { display: none; } 
 
