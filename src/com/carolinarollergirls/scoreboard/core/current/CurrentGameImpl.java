@@ -1,5 +1,9 @@
 package com.carolinarollergirls.scoreboard.core.current;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
@@ -79,6 +83,27 @@ public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, Cur
             return last;
         }
         return value;
+    }
+
+    @Override
+    protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
+        if (prop == GAME && value != null) {
+            Game g = (Game) value;
+            if (g.get(Game.EVENT_INFO, Game.INFO_START_TIME) != null &&
+                !"".equals(g.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue())) {
+                LocalTime time = LocalTime.parse(g.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue());
+                LocalDate date = "".equals(g.get(Game.EVENT_INFO, Game.INFO_DATE).getValue())
+                                     ? LocalDate.now()
+                                     : LocalDate.parse(g.get(Game.EVENT_INFO, Game.INFO_DATE).getValue());
+                long timeToStart = ChronoUnit.MILLIS.between(LocalDateTime.now(), LocalDateTime.of(date, time));
+                if (timeToStart > 0) {
+                    Clock ic = g.getClock(Clock.ID_INTERMISSION);
+                    ic.setMaximumTime(timeToStart);
+                    ic.resetTime();
+                    ic.start();
+                }
+            }
+        }
     }
 
     @Override

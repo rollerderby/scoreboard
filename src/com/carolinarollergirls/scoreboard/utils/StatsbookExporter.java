@@ -123,16 +123,16 @@ public class StatsbookExporter extends Thread {
 
     private void fillIgrfHead(Sheet igrf) {
         Row row = igrf.getRow(2);
-        setEventInfoCell(row, 1, "Venue");
-        setEventInfoCell(row, 8, "City");
-        setEventInfoCell(row, 10, "State");
-        setEventInfoCell(row, 11, "GameNo");
+        setEventInfoCell(row, 1, Game.INFO_VENUE);
+        setEventInfoCell(row, 8, Game.INFO_CITY);
+        setEventInfoCell(row, 10, Game.INFO_STATE);
+        setEventInfoCell(row, 11, Game.INFO_GAME_NUMBER);
         row = igrf.getRow(4);
-        setEventInfoCell(row, 1, "Tournament");
-        setEventInfoCell(row, 8, "HostLeague");
+        setEventInfoCell(row, 1, Game.INFO_TOURNAMENT);
+        setEventInfoCell(row, 8, Game.INFO_HOST);
         row = igrf.getRow(6);
-        LocalDate date = LocalDate.parse(game.get(Game.EVENT_INFO, "Date").getValue());
-        LocalTime time = LocalTime.parse(game.get(Game.EVENT_INFO, "StartTime").getValue());
+        LocalDate date = LocalDate.parse(game.get(Game.EVENT_INFO, Game.INFO_DATE).getValue());
+        LocalTime time = LocalTime.parse(game.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue());
         row.getCell(1).setCellValue(date);
         row.getCell(8).setCellValue(LocalDateTime.of(date, time));
     }

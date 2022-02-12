@@ -51,21 +51,21 @@ public class StatsbookImporter {
 
     private void readIgrfHead(Sheet igrf) {
         Row row = igrf.getRow(2);
-        readEventInfoCell(row, 1, "Venue");
-        readEventInfoCell(row, 8, "City");
-        readEventInfoCell(row, 10, "State");
-        readEventInfoCell(row, 11, "GameNo");
+        readEventInfoCell(row, 1, Game.INFO_VENUE);
+        readEventInfoCell(row, 8, Game.INFO_CITY);
+        readEventInfoCell(row, 10, Game.INFO_STATE);
+        readEventInfoCell(row, 11, Game.INFO_GAME_NUMBER);
         row = igrf.getRow(4);
-        readEventInfoCell(row, 1, "Tournament");
-        readEventInfoCell(row, 8, "HostLeague");
+        readEventInfoCell(row, 1, Game.INFO_TOURNAMENT);
+        readEventInfoCell(row, 8, Game.INFO_HOST);
         row = igrf.getRow(6);
-        readEventInfoCell(row, 1, "Date");
+        readEventInfoCell(row, 1, Game.INFO_DATE);
         String timeString = readCell(row, 8);
         try {
             // convert from format used in statsbook to HH:mm
             timeString = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("h:mm a")).toString();
         } catch (DateTimeParseException e) {}
-        game.add(Game.EVENT_INFO, new ValWithId("StartTime", timeString));
+        game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_START_TIME, timeString));
     }
 
     private void readTeam(Sheet igrf, String teamId) {
