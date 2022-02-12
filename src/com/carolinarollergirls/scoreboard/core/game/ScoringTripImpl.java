@@ -14,8 +14,7 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     ScoringTripImpl(TeamJam parent, int number) {
         super(parent, number, TeamJam.SCORING_TRIP);
         game = parent.getTeam().getGame();
-        addProperties(SCORE, AFTER_S_P, CURRENT, DURATION, JAM_CLOCK_START, JAM_CLOCK_END, ANNOTATION, INSERT_BEFORE,
-                      REMOVE);
+        addProperties(props);
         setCopy(JAM_CLOCK_START, this, PREVIOUS, JAM_CLOCK_END, true);
         setRecalculated(DURATION).addSource(this, JAM_CLOCK_END).addSource(this, JAM_CLOCK_START);
         set(AFTER_S_P, hasPrevious() ? getPrevious().get(AFTER_S_P) : false);

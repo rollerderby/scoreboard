@@ -81,5 +81,3 @@ function prepareRosterSheetTable(element, gameId, teamId, mode, statsbookPeriod)
       .text(String(WS.state[prefix + '.RosterNumber']) + (flags === 'ALT' || flags === 'BC' || flags === 'B' ? '*' : ''));
   }
 }
-
-//# sourceURL=views\roster-sheet.js

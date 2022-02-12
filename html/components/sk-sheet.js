@@ -37,6 +37,7 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
         'ScoreBoard.Game(' + gameId + ').Period(*).Number',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Number',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).StarPass',
+        'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).Overtime',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').AfterSPScore',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').Calloff',
         'ScoreBoard.Game(' + gameId + ').Period(*).Jam(*).TeamJam(' + teamId + ').JamScore',
@@ -118,6 +119,8 @@ function prepareSkSheetTable(element, gameId, teamId, mode) {
       } else {
         spRow.detach();
       }
+    } else if (k == prefix + 'Overtime') {
+      jamRow.toggleClass('Overtime', isTrue(v));
     }
 
     // Everything after here is team specific.
@@ -663,4 +666,3 @@ function prepareOsOffsetEditor(gameId) {
         })
     );
 }
-//# sourceURL=components\sk-sheet.js

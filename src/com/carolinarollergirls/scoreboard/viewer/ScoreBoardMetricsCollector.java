@@ -1,23 +1,14 @@
 package com.carolinarollergirls.scoreboard.viewer;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentClock;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
+import com.carolinarollergirls.scoreboard.event.MirrorScoreBoardEventProvider;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
@@ -43,7 +34,7 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily clockNumber =
             new GaugeMetricFamily("crg_scoreboard_clock_number", "Number on scoreboard clock.", Arrays.asList("clock"));
         mfs.add(clockNumber);
-        for (CurrentClock c : sb.getCurrentGame().getAll(CurrentGame.CLOCK)) {
+        for (MirrorScoreBoardEventProvider<Clock> c : sb.getCurrentGame().getAllMirrors(Game.CLOCK)) {
             clockTime.addMetric(Arrays.asList(c.get(Clock.NAME)), (float) c.get(Clock.TIME) / 1000);
             clockInvertedTime.addMetric(Arrays.asList(c.get(Clock.NAME)), (float) c.get(Clock.INVERTED_TIME) / 1000);
             clockRunning.addMetric(Arrays.asList(c.get(Clock.NAME)), c.get(Clock.RUNNING) ? 1 : 0);
@@ -53,8 +44,8 @@ public class ScoreBoardMetricsCollector extends Collector {
         GaugeMetricFamily score =
             new GaugeMetricFamily("crg_scoreboard_team_score", "Score on scoreboard.", Arrays.asList("team", "name"));
         mfs.add(score);
-        for (CurrentTeam t : sb.getCurrentGame().getAll(CurrentGame.TEAM)) {
-            score.addMetric(Arrays.asList(t.get(CurrentTeam.ID), t.get(Team.FULL_NAME)), t.get(Team.SCORE));
+        for (MirrorScoreBoardEventProvider<Team> t : sb.getCurrentGame().getAllMirrors(Game.TEAM)) {
+            score.addMetric(Arrays.asList(t.get(Team.ID), t.get(Team.FULL_NAME)), t.get(Team.SCORE));
         }
 
         return mfs;

@@ -2,6 +2,9 @@ package com.carolinarollergirls.scoreboard.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.UUID;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -43,20 +46,26 @@ public class StatsbookImporter {
         readTeam(igrf, Team.ID_1);
         readTeam(igrf, Team.ID_2);
         readOfficials(igrf);
+        readExpulsionSuspensionInfo(igrf);
     }
 
     private void readIgrfHead(Sheet igrf) {
         Row row = igrf.getRow(2);
-        readEventInfoCell(row, 1, "Venue");
-        readEventInfoCell(row, 8, "City");
-        readEventInfoCell(row, 10, "State");
-        readEventInfoCell(row, 11, "GameNo");
+        readEventInfoCell(row, 1, Game.INFO_VENUE);
+        readEventInfoCell(row, 8, Game.INFO_CITY);
+        readEventInfoCell(row, 10, Game.INFO_STATE);
+        readEventInfoCell(row, 11, Game.INFO_GAME_NUMBER);
         row = igrf.getRow(4);
-        readEventInfoCell(row, 1, "Tournament");
-        readEventInfoCell(row, 8, "HostLeague");
+        readEventInfoCell(row, 1, Game.INFO_TOURNAMENT);
+        readEventInfoCell(row, 8, Game.INFO_HOST);
         row = igrf.getRow(6);
-        readEventInfoCell(row, 1, "Date");
-        readEventInfoCell(row, 8, "StartTime");
+        readEventInfoCell(row, 1, Game.INFO_DATE);
+        String timeString = readCell(row, 8);
+        try {
+            // convert from format used in statsbook to HH:mm
+            timeString = LocalTime.parse(timeString, DateTimeFormatter.ofPattern("h:mm a")).toString();
+        } catch (DateTimeParseException e) {}
+        game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_START_TIME, timeString));
     }
 
     private void readTeam(Sheet igrf, String teamId) {
@@ -156,6 +165,10 @@ public class StatsbookImporter {
         }
         if (Official.ROLE_HNSO.equals(role)) { game.set(Game.HEAD_NSO, newO); }
         return type;
+    }
+
+    private void readExpulsionSuspensionInfo(Sheet igrf) {
+        game.set(Game.SUSPENSIONS_SERVED, readCell(igrf.getRow(39), 4));
     }
 
     private void readEventInfoCell(Row row, int col, String key) {

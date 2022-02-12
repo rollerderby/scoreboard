@@ -87,6 +87,8 @@ function createMetaControlTable(gameId) {
     )
     .appendTo(helpTd);
 
+  WSActiveButton('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndJam)', $('<button>').text('Auto End Jams').button()).appendTo(buttonsTd);
+
   $('<label>').addClass('EnableReplaceButton').text('Enable Replace on Undo').attr('for', 'EnableReplaceButton').appendTo(buttonsTd);
   $('<input type="checkbox">')
     .attr('id', 'EnableReplaceButton')
@@ -142,11 +144,6 @@ function createMetaControlTable(gameId) {
     .on('click', function () {
       createGameControlDialog(gameId);
     });
-  var firstLoad = true;
-  setTimeout(function () {
-    firstLoad = false;
-    updateHighlights();
-  }, 120000);
 
   var periodEndControlsLabel = $('<label>')
     .attr('for', 'PeriodEndControlsCheckbox')
@@ -188,7 +185,7 @@ function createMetaControlTable(gameId) {
     var tie = WS.state['ScoreBoard.Game(' + gameId + ').Team(1).Score'] === WS.state['ScoreBoard.Game(' + gameId + ').Team(2).Score'];
     var official = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').OfficialScore']);
 
-    startButton.toggleClass('clickMe', official || firstLoad);
+    startButton.toggleClass('clickMe', official);
     periodEndControlsLabel.toggleClass('clickMe', noPeriod && last && !official && table.find('tr.PeriodEnd').hasClass('Hidden'));
     confirmedButton.toggleClass('clickMe', noPeriod && last && !tie && !official);
     otButton.toggleClass('clickMe', noPeriod && last && tie && !official);
@@ -239,6 +236,7 @@ function createGameControlDialog(gameId) {
     .appendTo(preparedGame)
     .on('click', function () {
       WS.Set('ScoreBoard.CurrentGame.Game', preparedGame.find('select.Game option:selected').val());
+      dialog.dialog('close');
     });
 
   var adhocGame = $('<div>').addClass('section').appendTo(dialog);
@@ -350,7 +348,7 @@ function createGameControlDialog(gameId) {
   WS.Register(['ScoreBoard.Game(*).Name', 'ScoreBoard.Game(*).State'], function (k, v) {
     var name = WS.state['ScoreBoard.Game(' + k.Game + ').Name'] || '';
     var state = WS.state['ScoreBoard.Game(' + k.Game + ').State'] || '';
-    var include = (state === 'Prepared' || state === 'Running') && name !== '';
+    var include = (state === 'Prepared' || state === 'Running') && name !== '' && k.Game != WS.state['ScoreBoard.CurrentGame.Game'];
     var options = preparedGame.find('option[value="' + k.Game + '"]');
     if (include && options.length === 0) {
       var option = $('<option>').attr('value', k.Game).data('name', name).text(name);
@@ -604,6 +602,35 @@ function createJamControlTable(gameId) {
       undoButton.toggleClass('hover', event.type === 'mouseenter');
     })
     .appendTo(controlsTr.children('td:eq(3)'));
+
+  WS.Register(['ScoreBoard.Game(' + gameId + ').InJam', 'ScoreBoard.Game(' + gameId + ').Clock(Jam).Running'], function () {
+    var inJam = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam']);
+    var timeLeft = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Jam).Running']);
+    jamStopButton.toggleClass('clickMe', inJam && !timeLeft);
+  });
+
+  WS.Register(
+    [
+      'ScoreBoard.Game(' + gameId + ').Rule(Lineup.Duration)',
+      'ScoreBoard.Game(' + gameId + ').Rule(Lineup.OvertimeDuration)',
+      'ScoreBoard.Game(' + gameId + ').Clock(Lineup).Running',
+      'ScoreBoard.Game(' + gameId + ').Clock(Lineup).Time',
+      'ScoreBoard.Game(' + gameId + ').InOvertime',
+    ],
+    function () {
+      var inLineup = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').Clock(Lineup).Running']);
+      var overtime = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InOvertime']);
+      var curTime = WS.state['ScoreBoard.Game(' + gameId + ').Clock(Lineup).Time'];
+      var maxTime = _timeConversions.minSecToMs(
+        overtime
+          ? WS.state['ScoreBoard.Game(' + gameId + ').Rule(Lineup.OvertimeDuration)']
+          : WS.state['ScoreBoard.Game(' + gameId + ').Rule(Lineup.Duration)']
+      );
+
+      jamStartButton.toggleClass('clickMe', inLineup && curTime > maxTime);
+      timeoutButton.toggleClass('clickMe', inLineup && curTime > maxTime);
+    }
+  );
 
   return table;
 }
@@ -1184,12 +1211,12 @@ function createPeriodDialog(gameId) {
     ],
     function (k, v) {
       var nr = k.Period;
-      if (nr == null || nr === 0) {
+      if (nr == null || nr == 0) {
         return;
       }
       var prefix = 'ScoreBoard.Game(' + gameId + ').Period(' + nr + ')';
       var key = k.field;
-      if (k.parts.length > 3) {
+      if (k.parts.length > 4) {
         return;
       }
       if (!['CurrentJamNumber', 'Duration', 'Number', 'Running'].includes(key)) {
@@ -1301,7 +1328,7 @@ function createJamDialog(gameId) {
     ],
     function (k, v) {
       var per = k.Period;
-      if (per === 0) {
+      if (per == 0) {
         return;
       }
       var nr = k.Jam;
@@ -1311,7 +1338,7 @@ function createJamDialog(gameId) {
       var table = dialog.find('table.Period[nr=' + per + ']');
       if (table.length === 0 && v != null) {
         table = tableTemplate.clone(true).attr('nr', per).appendTo(dialog);
-        if (per === currentPeriod) {
+        if (per == currentPeriod) {
           table.addClass('Show');
         }
       }

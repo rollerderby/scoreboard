@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.core.prepared;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -21,13 +13,15 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> implements PreparedTeam {
     public PreparedTeamImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.PREPARED_TEAM);
-        addProperties(Team.FULL_NAME, Team.LEAGUE_NAME, Team.TEAM_NAME, Team.DISPLAY_NAME, Team.UNIFORM_COLOR,
-                      Team.LOGO, Team.ALTERNATE_NAME, Team.COLOR, SKATER);
+        addProperties(props);
+        addProperties(Team.preparedProps);
         setRecalculated(Team.FULL_NAME).addSource(this, Team.LEAGUE_NAME).addSource(this, Team.TEAM_NAME);
         setRecalculated(Team.DISPLAY_NAME)
             .addSource(this, Team.LEAGUE_NAME)
             .addSource(this, Team.TEAM_NAME)
+            .addSource(this, Team.FULL_NAME)
             .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        set(Team.FULL_NAME, "");
     }
     public PreparedTeamImpl(PreparedTeamImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
@@ -63,10 +57,10 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
             }
         }
         if (prop == Team.DISPLAY_NAME) {
-            String setting = scoreBoard.getSettings().get(Team.DISPLAY_NAME_SETTING);
-            if ("Team".equals(setting) && !"".equals(get(Team.TEAM_NAME))) {
+            String setting = scoreBoard.getSettings().get(Team.SETTING_DISPLAY_NAME);
+            if (Team.OPTION_TEAM_NAME.equals(setting) && !"".equals(get(Team.TEAM_NAME))) {
                 return get(Team.TEAM_NAME);
-            } else if (!"Full".equals(setting) && !"".equals(get(Team.LEAGUE_NAME))) {
+            } else if (!Team.OPTION_FULL_NAME.equals(setting) && !"".equals(get(Team.LEAGUE_NAME))) {
                 return get(Team.LEAGUE_NAME);
             } else {
                 return get(Team.FULL_NAME);
@@ -76,7 +70,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PreparedTeam.SKATER) { return new PreparedTeamSkaterImpl(this, id); }
             return null;
@@ -87,7 +81,7 @@ public class PreparedTeamImpl extends ScoreBoardEventProviderImpl<PreparedTeam> 
         extends ScoreBoardEventProviderImpl<PreparedSkater> implements PreparedSkater {
         public PreparedTeamSkaterImpl(PreparedTeam parent, String id) {
             super(parent, id, PreparedTeam.SKATER);
-            addProperties(Skater.NAME, Skater.ROSTER_NUMBER, Skater.FLAGS);
+            addProperties(Skater.preparedProps);
         }
         public PreparedTeamSkaterImpl(PreparedTeamSkaterImpl cloned, ScoreBoardEventProvider root) {
             super(cloned, root);

@@ -1,13 +1,3 @@
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
-
-/* This file requires base jQuery; other required jQuery plugins are automatically included below. */
 if (typeof $ === 'undefined') {
   /* jshint -W117 */
   alert('You MUST include jQuery before this file!');
@@ -84,4 +74,3 @@ function newUUID() {
     return v.toString(16);
   });
 }
-//# sourceURL=json\core.js

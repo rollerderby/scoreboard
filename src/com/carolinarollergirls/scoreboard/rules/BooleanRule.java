@@ -5,7 +5,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 public class BooleanRule extends RuleDefinition {
     public BooleanRule(String fullname, String description, boolean defaultValue, String trueValue, String falseValue) {
         super(Type.BOOLEAN, fullname, description, Boolean.valueOf(defaultValue));
-        addProperties(TRUE_VALUE, FALSE_VALUE);
+        addProperties(boolProps);
         set(TRUE_VALUE, trueValue);
         set(FALSE_VALUE, falseValue);
         addWriteProtection(TRUE_VALUE);

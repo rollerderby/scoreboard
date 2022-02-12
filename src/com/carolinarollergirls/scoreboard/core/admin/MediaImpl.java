@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.core.admin;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
@@ -34,7 +26,7 @@ import com.carolinarollergirls.scoreboard.utils.BasePath;
 public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Media {
     public MediaImpl(ScoreBoard parent) {
         super(parent, "", ScoreBoard.MEDIA);
-        addProperties(FORMAT);
+        addProperties(props);
         setup(BasePath.get().toPath().resolve("html"));
     }
     public MediaImpl(MediaImpl cloned, ScoreBoardEventProvider root) {
@@ -190,7 +182,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
     public class MediaFormatImpl extends ScoreBoardEventProviderImpl<MediaFormat> implements MediaFormat {
         MediaFormatImpl(Media parent, String format) {
             super(parent, "", Media.FORMAT);
-            addProperties(TYPE);
+            addProperties(props);
             this.format = format;
         }
         public MediaFormatImpl(MediaFormatImpl cloned, ScoreBoardEventProvider root) {
@@ -225,7 +217,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
     public class MediaTypeImpl extends ScoreBoardEventProviderImpl<MediaType> implements MediaType {
         MediaTypeImpl(MediaFormat parent, String type) {
             super(parent, "", MediaFormat.TYPE);
-            addProperties(FILE);
+            addProperties(props);
             this.parent = parent;
             this.type = type;
         }
@@ -276,7 +268,7 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
     public class MediaFileImpl extends ScoreBoardEventProviderImpl<MediaFile> implements MediaFile {
         MediaFileImpl(MediaType type, String id, String name, String src) {
             super(type, id, MediaType.FILE);
-            addProperties(SRC, NAME);
+            addProperties(props);
             this.type = type;
             set(NAME, name);
             set(SRC, src);

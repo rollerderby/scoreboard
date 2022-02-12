@@ -12,7 +12,7 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
     public OfficialImpl(Game g, String id, Child<Official> type) {
         super(g, id, type);
         game = g;
-        addProperties(ROLE, NAME, LEAGUE, CERT, P1_TEAM, SWAP);
+        addProperties(props);
     }
     public OfficialImpl(OfficialImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);

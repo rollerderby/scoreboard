@@ -23,6 +23,16 @@ function createSheetsTab(tab, gameId) {
   $('<option value=".LTS.T1">').addClass('O1').data('suffix', ' Lineups').text('Team 1 Lineups').appendTo(selector);
   $('<option value=".LTS.T2">').addClass('O2').data('suffix', ' Lineups').text('Team 2 Lineups').appendTo(selector);
   $('<option value=".LTS">').text('Both Lineups').appendTo(selector);
+  $('<option value=".LTS.T1, .SKS.T1">')
+    .addClass('O1')
+    .data('suffix', ' Score + Lineups')
+    .text('Team 1 Score + Lineups')
+    .appendTo(selector);
+  $('<option value=".LTS.T2, .SKS.T2">')
+    .addClass('O2')
+    .data('suffix', ' Score + Lineups')
+    .text('Team 2 Score + Lineups')
+    .appendTo(selector);
   selector.on('change', function (event) {
     tab.find('.Sheet').addClass('Hide');
     tab

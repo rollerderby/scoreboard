@@ -199,5 +199,3 @@ $(function () {
   WS.AutoRegister();
   WS.Connect();
 });
-
-//# sourceURL=settings\devices\index.js

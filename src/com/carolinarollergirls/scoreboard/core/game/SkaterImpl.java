@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.core.game;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,9 +9,6 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.BoxTrip;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentSkater;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
@@ -63,13 +52,14 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
 
     private void initialize() {
-        addProperties(PREPARED_SKATER, NAME, ROSTER_NUMBER, CURRENT_FIELDING, CURRENT_BOX_SYMBOLS, CURRENT_PENALTIES,
-                      POSITION, ROLE, BASE_ROLE, PENALTY_BOX, FLAGS, FIELDING, PENALTY);
+        addProperties(props);
+        addProperties(preparedProps);
         setInverseReference(FIELDING, Fielding.SKATER);
         setCopy(NAME, this, PREPARED_SKATER, NAME, false, team, Team.PREPARED_TEAM_CONNECTED);
         setCopy(ROSTER_NUMBER, this, PREPARED_SKATER, ROSTER_NUMBER, false, team, Team.PREPARED_TEAM_CONNECTED);
         set(ROLE, Role.BENCH, Flag.SPECIAL_CASE);
         set(BASE_ROLE, Role.BENCH);
+        addWriteProtectionOverride(BASE_ROLE, Source.ANY_INTERNAL);
         setCopy(POSITION, this, CURRENT_FIELDING, Fielding.POSITION, true);
         setCopy(PENALTY_BOX, this, CURRENT_FIELDING, Fielding.PENALTY_BOX, false);
         setCopy(CURRENT_BOX_SYMBOLS, this, CURRENT_FIELDING, Fielding.BOX_TRIP_SYMBOLS, true);
@@ -136,7 +126,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PENALTY) { return new PenaltyImpl(this, Integer.valueOf(id)); }
             return null;
@@ -153,7 +143,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                     fo = getOrCreate(PENALTY, 0);
                     fo.set(Penalty.CODE, "FO");
                 }
-                if (fo.get(Penalty.CODE) == "FO") { fo.set(Penalty.JAM, p.getJam()); }
+                if ("FO".equals(fo.get(Penalty.CODE))) { fo.set(Penalty.JAM, p.getJam()); }
             }
             if (!p.isServed() && getRole() == Role.JAMMER && getCurrentFielding() != null &&
                 !getCurrentFielding().getTeamJam().getOtherTeam().isLead() && game.isInJam()) {
@@ -173,19 +163,14 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
         if (prop == PENALTY) {
             if (FO_EXP_ID.equals(((Penalty) item).getProviderId())) {
                 updateEligibility();
+                game.remove(Game.EXPULSION, item.getId());
             } else if (get(PENALTY, game.getInt(Rule.FO_LIMIT)) == null) {
                 Penalty fo = getPenalty(FO_EXP_ID);
-                if (fo != null && fo.get(Penalty.CODE) == "FO") { fo.delete(); }
+                if (fo != null && "FO".equals(fo.get(Penalty.CODE))) { fo.delete(); }
             }
         } else if (prop == FIELDING && getCurrentFielding() == item) {
             set(CURRENT_FIELDING, null);
         }
-    }
-
-    @Override
-    public CurrentSkater getCurrentSkater() {
-        CurrentTeam t = scoreBoard.getCurrentGame().get(CurrentGame.TEAM, team.getProviderId());
-        return t == null ? null : t.get(CurrentTeam.SKATER, getId());
     }
 
     @Override
@@ -339,6 +324,15 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     @Override
     public boolean hasUnservedPenalties() {
         return getUnservedPenalties().size() > 0;
+    }
+
+    @Override
+    public void mergeInto(PreparedSkater ps) {
+        if ("".equals(ps.get(NAME))) { ps.set(NAME, get(NAME)); }
+        if ("".equals(ps.get(ROSTER_NUMBER))) { ps.set(ROSTER_NUMBER, get(ROSTER_NUMBER)); }
+        if ("".equals(get(NAME))) { set(NAME, ps.get(NAME)); }
+        if ("".equals(get(ROSTER_NUMBER))) { set(ROSTER_NUMBER, ps.get(ROSTER_NUMBER)); }
+        set(PREPARED_SKATER, ps);
     }
 
     protected Team team;

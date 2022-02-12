@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.core.prepared;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import java.util.UUID;
 
@@ -23,7 +15,7 @@ import com.carolinarollergirls.scoreboard.utils.ValWithId;
 public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implements Rulesets {
     public RulesetsImpl(ScoreBoard s) {
         super(s, "", ScoreBoard.RULESETS);
-        addProperties(RULE_DEFINITION, RULESET);
+        addProperties(props);
         initialize();
     }
     public RulesetsImpl(RulesetsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
@@ -34,7 +26,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         if (prop == RULESET) { return new RulesetImpl(this, "", null, id); }
         return null;
     }
@@ -132,7 +124,7 @@ public class RulesetsImpl extends ScoreBoardEventProviderImpl<Rulesets> implemen
     public class RulesetImpl extends ScoreBoardEventProviderImpl<Ruleset> implements Ruleset {
         private RulesetImpl(Rulesets rulesets, String name, Ruleset parent, String id) {
             super(rulesets, id, Rulesets.RULESET);
-            addProperties(PARENT, NAME, RULE);
+            addProperties(props);
             set(NAME, name);
             set(PARENT, parent);
         }

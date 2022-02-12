@@ -1,9 +1,13 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedChild;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
@@ -92,50 +96,57 @@ public interface Game extends ScoreBoardEventProvider {
         private String string;
     }
 
-    Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "%G %d %1 vs. %2 (%s: %S)");
-    Value<State> STATE = new Value<>(State.class, "State", State.PREPARED);
-    Value<Integer> CURRENT_PERIOD_NUMBER = new Value<>(Integer.class, "CurrentPeriodNumber", 0);
-    Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null);
-    Value<Jam> UPCOMING_JAM = new Value<>(Jam.class, "UpcomingJam", null);
-    Value<Integer> UPCOMING_JAM_NUMBER = new Value<>(Integer.class, "UpcomingJamNumber", 0);
-    Value<Boolean> IN_PERIOD = new Value<>(Boolean.class, "InPeriod", false);
-    Value<Boolean> IN_JAM = new Value<>(Boolean.class, "InJam", false);
-    Value<Boolean> IN_OVERTIME = new Value<>(Boolean.class, "InOvertime", false);
-    Value<Boolean> OFFICIAL_SCORE = new Value<>(Boolean.class, "OfficialScore", false);
-    Value<String> ABORT_REASON = new Value<>(String.class, "AbortReason", "");
-    Value<Timeout> CURRENT_TIMEOUT = new Value<>(Timeout.class, "CurrentTimeout", null);
-    Value<TimeoutOwner> TIMEOUT_OWNER = new Value<>(TimeoutOwner.class, "TimeoutOwner", null);
-    Value<Boolean> OFFICIAL_REVIEW = new Value<>(Boolean.class, "OfficialReview", false);
-    Value<Boolean> NO_MORE_JAM = new Value<>(Boolean.class, "NoMoreJam", false);
-    Value<Ruleset> RULESET = new Value<>(Ruleset.class, "Ruleset", null);
-    Value<String> RULESET_NAME = new Value<>(String.class, "RulesetName", "Custom");
-    Value<Official> HEAD_NSO = new Value<>(Official.class, "HNSO", null);
-    Value<Official> HEAD_REF = new Value<>(Official.class, "HR", null);
-    Value<String> FILENAME = new Value<>(String.class, "Filename", "STATS-0000-00-00_Team1_vs_Team_2");
-    Value<String> LAST_FILE_UPDATE = new Value<>(String.class, "LastFileUpdate", "Never");
+    public static Collection<Property<?>> props = new ArrayList<>();
 
-    Child<Clock> CLOCK = new Child<>(Clock.class, "Clock");
-    Child<Team> TEAM = new Child<>(Team.class, "Team");
-    Child<ValWithId> RULE = new Child<>(ValWithId.class, "Rule");
-    Child<PenaltyCode> PENALTY_CODE = new Child<>(PenaltyCode.class, "PenaltyCode");
-    Child<ValWithId> LABEL = new Child<>(ValWithId.class, "Label");
-    Child<ValWithId> EVENT_INFO = new Child<>(ValWithId.class, "EventInfo");
-    Child<Official> NSO = new Child<>(Official.class, "Nso");
-    Child<Official> REF = new Child<>(Official.class, "Ref");
+    public static final Value<String> NAME = new Value<>(String.class, "Name", "", props);
+    public static final Value<String> NAME_FORMAT = new Value<>(String.class, "NameFormat", "", props);
+    public static final Value<State> STATE = new Value<>(State.class, "State", State.PREPARED, props);
+    public static final Value<Integer> CURRENT_PERIOD_NUMBER =
+        new Value<>(Integer.class, "CurrentPeriodNumber", 0, props);
+    public static final Value<Period> CURRENT_PERIOD = new Value<>(Period.class, "CurrentPeriod", null, props);
+    public static final Value<Jam> UPCOMING_JAM = new Value<>(Jam.class, "UpcomingJam", null, props);
+    public static final Value<Integer> UPCOMING_JAM_NUMBER = new Value<>(Integer.class, "UpcomingJamNumber", 0, props);
+    public static final Value<Boolean> IN_PERIOD = new Value<>(Boolean.class, "InPeriod", false, props);
+    public static final Value<Boolean> IN_JAM = new Value<>(Boolean.class, "InJam", false, props);
+    public static final Value<Boolean> IN_OVERTIME = new Value<>(Boolean.class, "InOvertime", false, props);
+    public static final Value<Boolean> OFFICIAL_SCORE = new Value<>(Boolean.class, "OfficialScore", false, props);
+    public static final Value<String> ABORT_REASON = new Value<>(String.class, "AbortReason", "", props);
+    public static final Value<Timeout> CURRENT_TIMEOUT = new Value<>(Timeout.class, "CurrentTimeout", null, props);
+    public static final Value<TimeoutOwner> TIMEOUT_OWNER =
+        new Value<>(TimeoutOwner.class, "TimeoutOwner", null, props);
+    public static final Value<Boolean> OFFICIAL_REVIEW = new Value<>(Boolean.class, "OfficialReview", false, props);
+    public static final Value<Boolean> NO_MORE_JAM = new Value<>(Boolean.class, "NoMoreJam", false, props);
+    public static final Value<Ruleset> RULESET = new Value<>(Ruleset.class, "Ruleset", null, props);
+    public static final Value<String> RULESET_NAME = new Value<>(String.class, "RulesetName", "Custom", props);
+    public static final Value<Official> HEAD_NSO = new Value<>(Official.class, "HNSO", null, props);
+    public static final Value<Official> HEAD_REF = new Value<>(Official.class, "HR", null, props);
+    public static final Value<String> SUSPENSIONS_SERVED = new Value<>(String.class, "SuspensionsServed", "", props);
+    public static final Value<String> FILENAME =
+        new Value<>(String.class, "Filename", "STATS-0000-00-00_Team1_vs_Team_2", props);
+    public static final Value<String> LAST_FILE_UPDATE = new Value<>(String.class, "LastFileUpdate", "Never", props);
 
-    NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period");
+    public static final Child<Clock> CLOCK = new Child<>(Clock.class, "Clock", props);
+    public static final Child<Team> TEAM = new Child<>(Team.class, "Team", props);
+    public static final Child<ValWithId> RULE = new Child<>(ValWithId.class, "Rule", props);
+    public static final Child<PenaltyCode> PENALTY_CODE = new Child<>(PenaltyCode.class, "PenaltyCode", props);
+    public static final Child<ValWithId> LABEL = new Child<>(ValWithId.class, "Label", props);
+    public static final Child<ValWithId> EVENT_INFO = new Child<>(ValWithId.class, "EventInfo", props);
+    public static final Child<Official> NSO = new Child<>(Official.class, "Nso", props);
+    public static final Child<Official> REF = new Child<>(Official.class, "Ref", props);
+    public static final Child<Expulsion> EXPULSION = new Child<>(Expulsion.class, "Expulsion", props);
 
-    Command START_JAM = new Command("StartJam");
-    Command STOP_JAM = new Command("StopJam");
-    Command TIMEOUT = new Command("Timeout");
-    Command CLOCK_UNDO = new Command("ClockUndo");
-    Command CLOCK_REPLACE = new Command("ClockReplace");
-    Command START_OVERTIME = new Command("StartOvertime");
-    Command OFFICIAL_TIMEOUT = new Command("OfficialTimeout");
-    Command EXPORT = new Command("Export");
+    public static final NumberedChild<Period> PERIOD = new NumberedChild<>(Period.class, "Period", props);
 
-    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
+    public static final Command START_JAM = new Command("StartJam", props);
+    public static final Command STOP_JAM = new Command("StopJam", props);
+    public static final Command TIMEOUT = new Command("Timeout", props);
+    public static final Command CLOCK_UNDO = new Command("ClockUndo", props);
+    public static final Command CLOCK_REPLACE = new Command("ClockReplace", props);
+    public static final Command START_OVERTIME = new Command("StartOvertime", props);
+    public static final Command OFFICIAL_TIMEOUT = new Command("OfficialTimeout", props);
+    public static final Command EXPORT = new Command("Export", props);
+
+    public static final String SETTING_DEFAULT_NAME_FORMAT = "ScoreBoard.Game.DefaultNameFormat";
 
     public static final String INFO_VENUE = "Venue";
     public static final String INFO_CITY = "City";

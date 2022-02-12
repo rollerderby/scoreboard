@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.json;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -18,7 +10,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
+import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
+import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
@@ -205,8 +198,9 @@ public class ScoreBoardJSONSetter {
                     if (o == null) {
                         if (source.isFile()) {
                             // filter out elements that we expect to fail on each startup
-                            if (prop == CurrentTeam.SKATER) { return; }
+                            if (p.getProviderClass() == CurrentGame.class) { return; }
                             if (prop == Clients.CLIENT) { return; }
+                            if (prop == Game.EXPULSION) { return; }
                         }
                         Logger.printMessage("Could not get or create property " + readable);
                         return;

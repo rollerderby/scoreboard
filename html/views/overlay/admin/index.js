@@ -286,5 +286,3 @@ $(function () {
     }
   });
 });
-
-//# sourceURL=views\overlay\admin\index.js

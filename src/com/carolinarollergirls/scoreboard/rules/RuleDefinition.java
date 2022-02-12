@@ -1,5 +1,8 @@
 package com.carolinarollergirls.scoreboard.rules;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
@@ -9,7 +12,7 @@ import com.carolinarollergirls.scoreboard.event.Value;
 public abstract class RuleDefinition extends ScoreBoardEventProviderImpl<RuleDefinition> {
     public RuleDefinition(Type type, String name, String description, Object defaultValue) {
         super(null, name, Rulesets.RULE_DEFINITION);
-        addProperties(NAME, TYPE, DEFAULT_VALUE, DESCRIPTION, INDEX);
+        addProperties(props);
         setCopy(NAME, this, ID, true);
         set(TYPE, type);
         set(DEFAULT_VALUE, defaultValue.toString());
@@ -49,11 +52,14 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl<RuleDef
         String string;
     }
 
-    Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<Type> TYPE = new Value<>(Type.class, "Type", null);
-    Value<String> DEFAULT_VALUE = new Value<>(String.class, "DefaultValue", "");
-    Value<String> DESCRIPTION = new Value<>(String.class, "Description", "");
-    Value<Integer> INDEX = new Value<>(Integer.class, "Index", 0);
-    Value<String> TRUE_VALUE = new Value<>(String.class, "TrueValue", "");
-    Value<String> FALSE_VALUE = new Value<>(String.class, "FalseValue", "");
+    public static Collection<Property<?>> props = new ArrayList<>();
+    public static Collection<Property<?>> boolProps = new ArrayList<>(); // props only used on BooleanRule
+
+    public static final Value<String> NAME = new Value<>(String.class, "Name", "", props);
+    public static final Value<Type> TYPE = new Value<>(Type.class, "Type", null, props);
+    public static final Value<String> DEFAULT_VALUE = new Value<>(String.class, "DefaultValue", "", props);
+    public static final Value<String> DESCRIPTION = new Value<>(String.class, "Description", "", props);
+    public static final Value<Integer> INDEX = new Value<>(Integer.class, "Index", 0, props);
+    public static final Value<String> TRUE_VALUE = new Value<>(String.class, "TrueValue", "", boolProps);
+    public static final Value<String> FALSE_VALUE = new Value<>(String.class, "FalseValue", "", boolProps);
 }

@@ -10,13 +10,42 @@ function createIgrfTab(tab, gameId) {
     .append($('<tr><td colspan="2"/><td/></tr>').addClass('Event'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Host'))
     .append($('<tr><td/><td/><td/></tr>').addClass('Time'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator Abort'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator Abort'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Abort Info'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator Expulsions Hide'))
+    .append($('<tr><td colspan="3"><table><tr><th colspan="3">Expulsions</th></tr></table></td></tr>').addClass('Expulsions Hide'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator'))
     .append($('<tr><td colspan="3"/></tr>').addClass('NSOs'))
-    .append($('<tr><td colspan="3"><hr/></td/></tr>').addClass('Separator'))
+    .append($('<tr><td colspan="3"><hr/></td></tr>').addClass('Separator'))
     .append($('<tr><td colspan="3"/></tr>').addClass('Refs'));
-  var gameName = $('<span>').appendTo(table.find('tr.Name>td'));
+  var gameName = $('<span>')
+    .addClass('Name')
+    .appendTo(table.find('tr.Name>td'))
+    .on('click', function () {
+      gameName.addClass('Hide');
+      $('.NameFormat').removeClass('Hide');
+      nameFormat.focus();
+    });
+  $('<span>').addClass('NameFormat Hide').text('Name Format: ').appendTo(table.find('tr.Name>td'));
+  var nameFormat = WSControl(gamePrefix + '.NameFormat', $('<input type="text" size="30">'))
+    .addClass('NameFormat Hide')
+    .appendTo(table.find('tr.Name>td'))
+    .on('focusout', function () {
+      $('.NameFormat').addClass('Hide');
+      gameName.removeClass('Hide');
+    });
+  $('<table>')
+    .addClass('NameFormat Variables Hide')
+    .append($('<tr>').append($('<th colspan="2">').text('Supported Variables:')))
+    .append($('<tr>').append($('<td>').text('%g:')).append($('<td>').text('Game Number')))
+    .append($('<tr>').append($('<td>').text('%G:')).append($('<td>').text('"Game <Game Number>: " if game number is set, empty otherwise')))
+    .append($('<tr>').append($('<td>').text('%d:')).append($('<td>').text('Date of Game')))
+    .append($('<tr>').append($('<td>').text('%t:')).append($('<td>').text('Start Time')))
+    .append($('<tr>').append($('<td>').text('%1:')).append($('<td>').text('Team 1 Name')))
+    .append($('<tr>').append($('<td>').text('%2:')).append($('<td>').text('Team 2 Name')))
+    .append($('<tr>').append($('<td>').text('%s:')).append($('<td>').text('Game State')))
+    .append($('<tr>').append($('<td>').text('%S:')).append($('<td>').text('"<Team 1 Score> - <Team 2 Score>"')))
+    .appendTo(table.find('tr.Name>td'));
   var endButton = $('<button>')
     .text('End Game')
     .on('click', function () {
@@ -102,6 +131,34 @@ function createIgrfTab(tab, gameId) {
       $('tr.Abort').toggleClass('Hide', !show);
     }
   );
+
+  function createExpulsionRow(id) {
+    $('.Expulsions').removeClass('Hide');
+    return $('<tr>')
+      .attr('penalty', id)
+      .append($('<td>').addClass('Info'))
+      .append($('<td>').append(WSControl(gamePrefix + '.Expulsion(' + id + ').ExtraInfo', $('<input type="text" size="50">'))))
+      .append(
+        $('<td>').append(
+          WSActiveButton(gamePrefix + '.Expulsion(' + id + ').Suspension', $('<button>').text('Suspension Recommended').button())
+        )
+      )
+      .appendTo('.Expulsions table');
+  }
+
+  WS.Register(gamePrefix + '.Expulsion(*).Info', function (k, v) {
+    var row = $('.Expulsions tr[penalty=' + k.Expulsion + ']');
+    if (v == null) {
+      row.remove();
+      if ($('.Expulsions tr').length === 1) {
+        $('.Expulsions').addClass('Hide');
+      }
+      return;
+    } else if (row.length === 0) {
+      row = createExpulsionRow(k.Expulsion);
+    }
+    row.children('.Info').text(v);
+  });
 
   var createOfficialsTable = function (title) {
     return $('<table>')
@@ -238,7 +295,9 @@ function createIgrfTab(tab, gameId) {
         otherRoleInput.show();
       } else if (prefix != null) {
         WS.Set(prefix + '.Role', $(this).val());
-        if (['Penalty Lineup Tracker', 'Scorekeeper', 'Lineup Tracker', 'Jammer Referee'].indexOf($(this).val()) > 0) {
+        if (
+          ['Penalty Lineup Tracker', 'Scorekeeper', 'Lineup Tracker', 'Jammer Referee', 'Penalty Box Timer'].indexOf($(this).val()) > -1
+        ) {
           teamSelection.show();
         }
       }

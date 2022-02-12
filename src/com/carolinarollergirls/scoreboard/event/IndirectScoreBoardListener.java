@@ -1,15 +1,15 @@
 package com.carolinarollergirls.scoreboard.event;
 
 public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardListener {
-    public IndirectScoreBoardListener(ScoreBoardEventProvider indirectionElement,
-            Value<U> indirectionProperty, Property<T> watchedProperty, ScoreBoardListener listener) {
+    public IndirectScoreBoardListener(ScoreBoardEventProvider indirectionElement, Value<U> indirectionProperty,
+                                      Property<T> watchedProperty, ScoreBoardListener listener) {
         indirectionListener = new ConditionalScoreBoardListener<>(indirectionElement, indirectionProperty, this);
         this.indirectionElement = indirectionElement;
         indirectionElement.addScoreBoardListener(indirectionListener);
         this.watchedProperty = watchedProperty;
         externalListener = listener;
         scoreBoardChange(new ScoreBoardEvent<>(indirectionElement, indirectionProperty,
-                indirectionElement.get(indirectionProperty), null));
+                                               indirectionElement.get(indirectionProperty), null));
     }
 
     @SuppressWarnings("unchecked")
@@ -28,8 +28,8 @@ public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardL
             if (watchedElement != null) {
                 listener = new ConditionalScoreBoardListener<>(watchedElement, wp, externalListener);
                 watchedElement.addScoreBoardListener(listener);
-                externalListener
-                        .scoreBoardChange(new ScoreBoardEvent<>(watchedElement, wp, watchedElement.get(wp), last));
+                externalListener.scoreBoardChange(
+                    new ScoreBoardEvent<>(watchedElement, wp, watchedElement.get(wp), last));
             } else {
                 listener = null;
                 externalListener.scoreBoardChange(new ScoreBoardEvent<>(lastWatched, wp, wp.getDefaultValue(), last));
@@ -38,8 +38,8 @@ public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardL
             Child<?> wp = (Child<?>) watchedProperty;
             if (watchedElement != null) {
                 for (ValueWithId v : watchedElement.getAll(wp)) {
-                    externalListener
-                            .scoreBoardChange(new ScoreBoardEvent<>(watchedElement, watchedProperty, (T) v, true));
+                    externalListener.scoreBoardChange(
+                        new ScoreBoardEvent<>(watchedElement, watchedProperty, (T) v, true));
                 }
                 watchedElement.removeScoreBoardListener(listener);
             }
@@ -48,8 +48,8 @@ public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardL
                 listener = new ConditionalScoreBoardListener<>(watchedElement, wp, externalListener);
                 watchedElement.addScoreBoardListener(listener);
                 for (ValueWithId v : watchedElement.getAll(wp)) {
-                    externalListener
-                            .scoreBoardChange(new ScoreBoardEvent<>(watchedElement, watchedProperty, (T) v, false));
+                    externalListener.scoreBoardChange(
+                        new ScoreBoardEvent<>(watchedElement, watchedProperty, (T) v, false));
                 }
             } else {
                 listener = null;
@@ -59,9 +59,7 @@ public class IndirectScoreBoardListener<T, U> implements SelfRemovingScoreBoardL
 
     @Override
     public void delete() {
-        if (watchedElement != null) {
-            watchedElement.removeScoreBoardListener(listener);
-        }
+        if (watchedElement != null) { watchedElement.removeScoreBoardListener(listener); }
         indirectionElement.removeScoreBoardListener(indirectionListener);
     }
 

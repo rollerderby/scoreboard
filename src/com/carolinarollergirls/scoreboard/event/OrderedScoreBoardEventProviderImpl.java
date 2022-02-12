@@ -9,12 +9,14 @@ public abstract class OrderedScoreBoardEventProviderImpl<C extends OrderedScoreB
     public OrderedScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, Child<C> type) {
         super(parent, id, type);
         if (!prevProperties.containsKey(providerClass)) {
-            prevProperties.put(providerClass, new Value<>(providerClass, "Previous", null));
-            nextProperties.put(providerClass, new Value<>(providerClass, "Next", null));
+            prevProperties.put(providerClass, new Value<>(providerClass, "Previous", null, null));
+            nextProperties.put(providerClass, new Value<>(providerClass, "Next", null, null));
         }
         PREVIOUS = (Value<C>) prevProperties.get(providerClass);
         NEXT = (Value<C>) nextProperties.get(providerClass);
         addProperties(NUMBER, PREVIOUS, NEXT);
+        addWriteProtectionOverride(PREVIOUS, Source.NON_WS);
+        addWriteProtectionOverride(NEXT, Source.NON_WS);
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, PREVIOUS, NEXT));
         addScoreBoardListener(new InverseReferenceUpdateListener<>((C) this, NEXT, PREVIOUS));
     }

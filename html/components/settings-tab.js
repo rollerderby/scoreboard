@@ -1,13 +1,14 @@
 function createScoreBoardSettingsTab(tab) {
   'use strict';
-  var table = $('<table>').attr('id', 'ScoreBoardSettings').appendTo(tab);
+  var table = $('<table>').addClass('UsePreview').attr('id', 'ScoreBoardSettings').appendTo(tab);
 
-  var usePreviewButton = $('<label for="UsePreviewButton"/><input type="checkbox" id="UsePreviewButton"/>');
-  usePreviewButton.last().button();
-  _crgUtils.bindAndRun(usePreviewButton.filter('input:checkbox'), 'change', function () {
-    $(this).button('option', 'label', isTrue(this.checked) ? 'Editing Live ScoreBoard' : 'Editing Preview');
-    table.toggleClass('UsePreview', !isTrue(this.checked));
-  });
+  var usePreviewLabel = $('<span>').text('Edit: ');
+  var usePreviewDropdown = $('<select id="usePreviewDropdown"/>')
+    .append($('<option>').val('preview').text('Preview'))
+    .append($('<option>').val('live').text('Live ScoreBoard'))
+    .on('change', function () {
+      table.toggleClass('UsePreview', $(this).val() === 'preview');
+    });
   var applyPreviewButton = $('<button>Apply Preview</button>')
     .button()
     .on('click', function () {
@@ -25,14 +26,20 @@ function createScoreBoardSettingsTab(tab) {
       });
     });
 
+  createNonViewRows(table);
+
+  $('<tr>')
+    .appendTo(table)
+    .append($('<td>').addClass('Header').append($('<span>').text('Main Display Settings')));
   $('<tr><td/></tr>')
     .appendTo(table)
     .find('td')
-    .addClass('Header NoChildren PreviewControl')
+    .addClass('PreviewControl SubHeader')
     .append(_crgUtils.createRowTable(3))
     .find('td:first')
     .next()
-    .append(usePreviewButton)
+    .append(usePreviewLabel)
+    .append(usePreviewDropdown)
     .next()
     .append(applyPreviewButton);
 
@@ -43,7 +50,7 @@ function createScoreBoardSettingsTab(tab) {
   $('<tr><td/></tr>')
     .appendTo(table)
     .find('td')
-    .addClass('ViewFrames Header')
+    .addClass('ViewFrames SubHeader')
     .append(_crgUtils.createRowTable(2))
     .find('td')
     .first()
@@ -75,50 +82,15 @@ function createScoreBoardSettingsTab(tab) {
     .attr('src', sbUrl + '&preview=true');
 }
 
-function createScoreBoardViewPreviewRows(table, type) {
+function createNonViewRows(table) {
   'use strict';
-  var currentViewTd = $('<tr><td/></tr>')
-    .addClass(type)
-    .appendTo(table)
-    .children('td')
-    .addClass('Header NoChildren CurrentView')
-    .attr('ApplyPreview', 'CurrentView')
-    .append(
-      $('<span>')
-        .append('<label >ScoreBoard</label><input type="radio" value="scoreboard"/>')
-        .append('<label >WhiteBoard</label><input type="radio" value="whiteboard"/>')
-        .append('<label >Image</label><input type="radio" value="image"/>')
-        .append('<label >Video</label><input type="radio" value="video"/>')
-        .append('<label >Custom Page</label><input type="radio" value="html"/>')
-    );
-
-  currentViewTd
-    .children('span')
-    .children('input')
-    .attr('name', 'createScoreBoardViewPreviewRows' + type)
-    .each(function (_, e) {
-      e = $(e);
-      e.attr('id', 'createScoreBoardViewPreviewRows' + e.attr('value') + type);
-      e.prev().attr('for', 'createScoreBoardViewPreviewRows' + e.attr('value') + type);
-    })
-    .on('change', function (e) {
-      WS.Set('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_CurrentView)', e.target.value);
-    });
-
-  currentViewTd
-    .children('span')
-    .controlgroup({ items: { button: 'input' } })
-    .end()
-    .prepend('<a>Current View : </a>');
-
-  WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_CurrentView)', function (k, v) {
-    currentViewTd
-      .children('input[value=' + v + ']')
-      .prop('checked', true)
-      .button('refresh');
-  });
-
-  $('<tr><td><a>ScoreBoard Options</a></td></tr>').addClass(type).appendTo(table).find('td').addClass('ScoreBoardOptions Header');
+  var syncClocksButton = WSActiveButton('ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)', $('<button>').text('Sync Clocks').button());
+  var clockAfterTimeout = $('<label>Clock shown after Timeout: </label>').add(
+    WSControl(
+      'ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)',
+      $('<select>').append('<option value="Lineup">Lineup</option>').append('<option value="Timeout">Timeout</option>')
+    )
+  );
 
   var intermissionControlDialog = createIntermissionControlDialog();
   var intermissionControlButton = $('<button>Intermission Labels</button>')
@@ -128,26 +100,133 @@ function createScoreBoardViewPreviewRows(table, type) {
       intermissionControlDialog.dialog('open');
     });
 
-  var syncClocksButton = toggleButton('ScoreBoard.Settings.Setting(ScoreBoard.Clock.Sync)', 'Clocks Synced', 'Clocks Unsynced');
-  var useLTButton = toggleButton(
-    'ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)',
-    'CRG Tracks Lineups',
-    'Lineup Tracking Disabled'
-  );
-  var swapTeamsButton = toggleButton(
-    'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_SwapTeams)',
-    'Team sides swapped',
-    'Team sides normal'
-  );
-  swapTeamsButton.attr('ApplyPreview', 'SwapTeams');
-  var hideLogosButton = toggleButton('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_HideLogos)', 'Hide Logos', 'Show Logos');
-  hideLogosButton.attr('ApplyPreview', 'HideLogos');
-
-  var clockAfterTimeout = $('<label>Clock shown after Timeout: </label>').add(
+  var autoStartType = $('<label>Auto Start: </label>').add(
     WSControl(
-      'ScoreBoard.Settings.Setting(ScoreBoard.ClockAfterTimeout)',
-      $('<select>').append('<option value="Lineup">Lineup</option>').append('<option value="Timeout">Timeout</option>')
+      'ScoreBoard.Settings.Setting(ScoreBoard.AutoStart)',
+      $('<select>')
+        .append('<option value="">Off</option>')
+        .append('<option value="Jam">Jam</option>')
+        .append('<option value="Timeout">Timeout</option>')
     )
+  );
+  var autoStartBuffer = $('<label>Time between end of Lineup and auto start being applied: </label>').add(
+    WSControl('ScoreBoard.Settings.Setting(ScoreBoard.AutoStartBuffer)', $('<input type="text" size="5">'))
+  );
+  var autoEndJam = WSActiveButton('ScoreBoard.Settings.Setting(ScoreBoard.AutoEndJam)', $('<button>').text('Auto End Jams').button());
+  var autoEndTTO = WSActiveButton(
+    'ScoreBoard.Settings.Setting(ScoreBoard.AutoEndTTO)',
+    $('<button>').text('Auto End Team Timeouts').button()
+  );
+
+  var useLTButton = WSActiveButton(
+    'ScoreBoard.Settings.Setting(ScoreBoard.Penalties.UseLT)',
+    $('<button>').text('CRG Tracks Lineups').button()
+  );
+  var statsbookFile = $('<label>Blank Statsbook File: </label>').add(
+    WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Stats.InputFile)', $('<input type="text" size="40">'))
+  );
+  var teamDisplayName = $('<label>Team name for display: </label>').add(
+    WSControl(
+      'ScoreBoard.Settings.Setting(ScoreBoard.Teams.DisplayName)',
+      $('<select>')
+        .append('<option value="League">League Name</option>')
+        .append('<option value="Team">Team Name</option>')
+        .append('<option value="Full">Full Name</option>')
+    )
+  );
+  var teamFileName = $('<label>Team name for files: </label>').add(
+    WSControl(
+      'ScoreBoard.Settings.Setting(ScoreBoard.Teams.FileName)',
+      $('<select>')
+        .append('<option value="League">League Name</option>')
+        .append('<option value="Team">Team Name</option>')
+        .append('<option value="Full">Full Name</option>')
+    )
+  );
+  var defaultGameNameFormat = $('<label>Name format for new games: </label>').add(
+    WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Game.DefaultNameFormat)', $('<input type="text" size="25">'))
+  );
+
+  $('<tr>')
+    .appendTo(table)
+    .append($('<td>').addClass('Header').append($('<span>').text('General Settings')));
+  var optionsTable = $('<table/>').addClass('RowTable').css('width', '100%');
+  $('<tr>').append($('<td>').addClass('Footer').append(optionsTable)).appendTo(table);
+  $('<tr><td/><td/><td/></tr>')
+    .appendTo(optionsTable)
+    .addClass('ScoreBoardOptions EndSubSection')
+    .find('td')
+    .first()
+    .append(intermissionControlButton)
+    .next()
+    .append(syncClocksButton)
+    .next()
+    .append(clockAfterTimeout);
+  $('<tr><td/><td colspan="2"/></tr>')
+    .appendTo(optionsTable)
+    .addClass('ScoreBoardOptions')
+    .find('td')
+    .first()
+    .append(autoStartType)
+    .next()
+    .append(autoStartBuffer);
+  $('<tr><td/><td/><td/></tr>')
+    .appendTo(optionsTable)
+    .addClass('ScoreBoardOptions EndSubSection')
+    .find('td')
+    .first()
+    .next()
+    .append(autoEndJam)
+    .next()
+    .append(autoEndTTO);
+  $('<tr><td/><td colspan="2"/></tr>')
+    .appendTo(optionsTable)
+    .addClass('ScoreBoardOptions')
+    .find('td')
+    .first()
+    .append(useLTButton)
+    .next()
+    .append(statsbookFile);
+  $('<tr><td/><td/><td/></tr>')
+    .appendTo(optionsTable)
+    .addClass('ScoreBoardOptions EndSubSection Footer')
+    .find('td')
+    .first()
+    .append(teamDisplayName)
+    .next()
+    .append(teamFileName)
+    .next()
+    .append(defaultGameNameFormat);
+}
+
+function createScoreBoardViewPreviewRows(table, type) {
+  'use strict';
+  $('<tr><td/></tr>')
+    .addClass(type + ' EndSubSection')
+    .appendTo(table)
+    .children('td')
+    .addClass('NoChildren CurrentView')
+    .attr('ApplyPreview', 'CurrentView')
+    .append($('<span>').text('Current View: '))
+    .append(
+      WSControl(
+        'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_CurrentView)',
+        $('<select>')
+          .append('<option value="scoreboard">ScoreBoard</option>')
+          .append('<option value="whiteboard">WhiteBoard</option>')
+          .append('<option value="image">Image</option>')
+          .append('<option value="video">Video</option>')
+          .append('<option value="html">Custom Page</option>')
+      )
+    );
+
+  var swapTeamsButton = WSActiveButton(
+    'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_SwapTeams)',
+    $('<button>').text('Swap Team sides').button().attr('ApplyPreview', 'SwapTeams')
+  );
+  var hideLogosButton = WSActiveButton(
+    'ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_HideLogos)',
+    $('<button>').text('Hide Logos').button().attr('ApplyPreview', 'HideLogos')
   );
 
   var boxStyle = $('<label>Box Style: </label>').add(
@@ -183,56 +262,40 @@ function createScoreBoardViewPreviewRows(table, type) {
   var customPageViewSelect = $('<label>Custom Page View: </label>')
     .add(mediaSelect('ScoreBoard.Settings.Setting(ScoreBoard.' + type + '_CustomHtml)', 'custom', 'view', 'Page'))
     .attr('ApplyPreview', 'CustomHtml');
-  var statsbookFile = $('<label>Blank Statsbook File: </label>').add(
-    WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Stats.InputFile)', $('<input type="text">'))
-  );
 
   var optionsTable = $('<table/>').addClass(type).addClass('RowTable').css('width', '100%');
   $('<tr><td></td></tr>').addClass(type).appendTo(table).find('td').append(optionsTable);
   $('<tr><td/><td/><td/></tr>')
     .addClass(type)
     .appendTo(optionsTable)
+    .addClass('ScoreBoardOptions')
     .find('td')
-    .addClass('ScoreBoardOptions Footer')
     .first()
-    .append(intermissionControlButton)
+    .append(hideLogosButton)
     .next()
-    .append(swapTeamsButton)
+    .append(boxStyle)
     .next()
     .append(imageViewSelect);
   $('<tr><td/><td/><td/></tr>')
     .addClass(type)
     .appendTo(optionsTable)
+    .addClass('ScoreBoardOptions')
     .find('td')
-    .addClass('ScoreBoardOptions Footer')
     .first()
-    .append(syncClocksButton)
+    .append(swapTeamsButton)
     .next()
-    .append(boxStyle)
+    .append(sidePadding)
     .next()
     .append(videoViewSelect);
   $('<tr><td/><td/><td/></tr>')
     .addClass(type)
+    .addClass('ScoreBoardOptions EndSubSection Footer')
     .appendTo(optionsTable)
     .find('td')
-    .addClass('ScoreBoardOptions Footer')
     .first()
-    .append(clockAfterTimeout)
     .next()
-    .append(sidePadding)
     .next()
     .append(customPageViewSelect);
-  $('<tr><td/><td/><td/></tr>')
-    .addClass(type)
-    .appendTo(optionsTable)
-    .find('td')
-    .addClass('ScoreBoardOptions Footer')
-    .first()
-    .append(useLTButton)
-    .next()
-    .append(hideLogosButton)
-    .next()
-    .append(statsbookFile);
 }
 
 function createIntermissionControlDialog() {

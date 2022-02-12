@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.core.admin;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import java.util.Objects;
 import java.util.UUID;
@@ -23,7 +15,7 @@ import com.carolinarollergirls.scoreboard.utils.Logger;
 public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements Clients {
     public ClientsImpl(ScoreBoard parent) {
         super(parent, "", ScoreBoard.CLIENTS);
-        addProperties(NEW_DEVICE_WRITE, ALL_LOCAL_DEVICES_WRITE, CLIENT, DEVICE);
+        addProperties(props);
         addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
     }
@@ -72,7 +64,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == DEVICE) {
                 Device d = new DeviceImpl(this, id);
@@ -152,7 +144,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public class ClientImpl extends ScoreBoardEventProviderImpl<Client> implements Client {
         ClientImpl(Clients parent, String id) {
             super(parent, id, Clients.CLIENT);
-            addProperties(DEVICE, REMOTE_ADDR, PLATFORM, SOURCE, CREATED, WROTE);
+            addProperties(props);
             setInverseReference(DEVICE, Device.CLIENT);
             addWriteProtectionOverride(DEVICE, Source.ANY_INTERNAL);
             addWriteProtectionOverride(REMOTE_ADDR, Source.ANY_INTERNAL);
@@ -181,8 +173,7 @@ public class ClientsImpl extends ScoreBoardEventProviderImpl<Clients> implements
     public class DeviceImpl extends ScoreBoardEventProviderImpl<Device> implements Device {
         protected DeviceImpl(Clients parent, String id) {
             super(parent, id, Clients.DEVICE);
-            addProperties(SESSION_ID_SECRET, NAME, REMOTE_ADDR, PLATFORM, COMMENT, CREATED, WROTE, ACCESSED, MAY_WRITE,
-                          CLIENT);
+            addProperties(props);
             set(MAY_WRITE, parent.get(NEW_DEVICE_WRITE));
             addWriteProtectionOverride(CLIENT, Source.ANY_INTERNAL);
         }

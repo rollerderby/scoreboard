@@ -1,9 +1,9 @@
 package com.carolinarollergirls.scoreboard.event;
 
 public abstract class ParentOrderedScoreBoardEventProviderImpl<C extends ParentOrderedScoreBoardEventProvider<C>>
-        extends OrderedScoreBoardEventProviderImpl<C> implements ParentOrderedScoreBoardEventProvider<C> {
+    extends OrderedScoreBoardEventProviderImpl<C> implements ParentOrderedScoreBoardEventProvider<C> {
     protected ParentOrderedScoreBoardEventProviderImpl(OrderedScoreBoardEventProvider<?> parent, String subId,
-            Child<C> type) {
+                                                       Child<C> type) {
         super(parent, parent.getId() + "_" + subId, type);
         ownType = type;
         this.parent = parent;
@@ -14,7 +14,8 @@ public abstract class ParentOrderedScoreBoardEventProviderImpl<C extends ParentO
         set(NEXT, null, Source.RECALCULATE);
         setCopy(NUMBER, parent, NUMBER, true);
     }
-    protected ParentOrderedScoreBoardEventProviderImpl(ParentOrderedScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
+    protected ParentOrderedScoreBoardEventProviderImpl(ParentOrderedScoreBoardEventProviderImpl<C> cloned,
+                                                       ScoreBoardEventProvider root) {
         super(cloned, root);
         ownType = cloned.ownType;
         subId = cloned.subId;
@@ -22,7 +23,9 @@ public abstract class ParentOrderedScoreBoardEventProviderImpl<C extends ParentO
     }
 
     @Override
-    public String getProviderId() { return subId; }
+    public String getProviderId() {
+        return subId;
+    }
 
     @Override
     protected Object _computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {

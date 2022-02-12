@@ -27,6 +27,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets.Ruleset;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
@@ -95,7 +96,7 @@ public class GameImplTests {
         sb.addScoreBoardListener(batchCounter);
         // Clock Sync can cause clocks to be changed when started, breaking tests.
         sb.getSettings().set(Clock.SETTING_SYNC, "False");
-        sb.getSettings().set(Game.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Lineup");
     }
 
     @After
@@ -699,7 +700,7 @@ public class GameImplTests {
 
     @Test
     public void testStopJam_endTimeoutKeepTimeoutClock() {
-        sb.getSettings().set(Game.SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
+        sb.getSettings().set(ScoreBoard.SETTING_CLOCK_AFTER_TIMEOUT, "Timeout");
         assertFalse(pc.isRunning());
         assertFalse(pc.isTimeAtEnd());
         assertFalse(jc.isRunning());
@@ -1235,6 +1236,7 @@ public class GameImplTests {
 
     @Test
     public void testJamClockEnd_pcRemaining() {
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_END_JAM, "true");
         g.startJam();
         String prevStartLabel = g.getLabel(Button.START);
         String prevStopLabel = g.getLabel(Button.STOP);
@@ -1274,7 +1276,7 @@ public class GameImplTests {
 
     @Test
     public void testJamClockEnd_autoEndDisabled() {
-        g.set(Rule.AUTO_END_JAM, "false");
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
         g.startJam();
         String prevStartLabel = g.getLabel(Button.START);
         String prevStopLabel = g.getLabel(Button.STOP);
@@ -1530,8 +1532,7 @@ public class GameImplTests {
 
     @Test
     public void testAutoStartJam() {
-        g.set(Rule.AUTO_START, "true");
-        g.set(Rule.AUTO_START_JAM, "true");
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_START, Clock.ID_JAM);
 
         fastForwardJams(1);
         assertTrue(pc.isRunning());
@@ -1559,7 +1560,7 @@ public class GameImplTests {
 
     @Test
     public void testNoAutoEndJam() {
-        g.set(Rule.AUTO_END_JAM, "false");
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_END_JAM, "false");
 
         g.startJam();
         advance(jc.getMaximumTime());
@@ -1570,10 +1571,9 @@ public class GameImplTests {
 
     @Test
     public void testAutoStartAndEndTimeout() {
-        g.set(Rule.AUTO_START, "true");
-        g.set(Rule.AUTO_START_JAM, "false");
-        g.set(Rule.AUTO_START_BUFFER, "0");
-        g.set(Rule.AUTO_END_TTO, "true");
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_START, Clock.ID_TIMEOUT);
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_START_BUFFER, "0");
+        sb.getSettings().set(ScoreBoard.SETTING_AUTO_END_TTO, "true");
         g.set(Rule.TTO_DURATION, "25000");
 
         fastForwardJams(1);

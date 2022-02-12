@@ -129,7 +129,7 @@ function intermissionDisplay() {
     ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
   }
 
-  $('.Clock.Intermission .Time').toggleClass('Hide', num == max);
+  $('.Clock.Intermission .Time').toggleClass('Hide', num == max || isOfficial);
   return ret;
 }
 

@@ -10,10 +10,9 @@ html/stream
 html/images/teamlogo
 html/images/sponsor_banner
 html/images/fullscreen
-!html/images/fullscreen/American Flag.jpg
-!html/images/fullscreen/overlay.png
+!html/images/fullscreen/test-image.png
 html/videos/fullscreen
-!html/videos/fullscreen/American Flag.webm
+!html/videos/fullscreen/test-video.webm
 html/game-data
 html/custom
 !html/custom/view/example.html

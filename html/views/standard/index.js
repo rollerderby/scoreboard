@@ -172,4 +172,3 @@ function initialize() {
     nextImgFunction();
   })();
 }
-//# sourceURL=views\standard\index.js

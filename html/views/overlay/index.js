@@ -381,7 +381,7 @@ function jamData(k, v) {
 
   if (v == null) {
     $(me).remove();
-    $mId.sortDivs();
+    $pId.sortDivs();
     return;
   }
 
@@ -430,8 +430,8 @@ function pointsPerJamColumnWidths() {
   var wid = parseInt($('.PPJBox').innerWidth());
   var newwidth = parseInt(wid / nel) - 3;
   $('.ColumnWidth').innerWidth(newwidth);
-  $('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(1).Color(overlay_bg)']);
-  $('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.Team(2).Color(overlay_bg)']);
+  $('.PPJBox .Team1 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.CurrentGame.Team(1).Color(overlay_bg)']);
+  $('.PPJBox .Team2 .GraphBlock').css('backgroundColor', WS.state['ScoreBoard.CurrentGame.Team(2).Color(overlay_bg)']);
 }
 
 function clockType(k, v) {
@@ -466,7 +466,7 @@ function clockType(k, v) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Official)'];
     } else if (num === 0) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.PreGame)'];
-    } else if (num !== max) {
+    } else if (num != max) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Intermission)'];
     } else if (!isOfficial) {
       ret = WS.state['ScoreBoard.Settings.Setting(ScoreBoard.Intermission.Unofficial)'];
@@ -479,5 +479,3 @@ function clockType(k, v) {
 
   return ret;
 }
-
-//# sourceURL=views\overlay\index.js

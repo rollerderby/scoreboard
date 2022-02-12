@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.core.game;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -27,9 +19,10 @@ import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
 
 public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clock {
     public ClockImpl(Game g, String i) {
-        super(g, i, Game.CLOCK);
+        super(g, g.getId() + "_" + i, Game.CLOCK);
         game = g;
-        addProperties(NAME, NUMBER, TIME, INVERTED_TIME, MAXIMUM_TIME, DIRECTION, RUNNING, START, STOP, RESET_TIME);
+        subId = i;
+        addProperties(props);
         // initialize types
         if (i == ID_PERIOD || i == ID_INTERMISSION) {
             setCopy(NUMBER, g, Game.CURRENT_PERIOD_NUMBER, true);
@@ -40,7 +33,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         }
         setRecalculated(TIME).addSource(this, MAXIMUM_TIME);
         setRecalculated(INVERTED_TIME).addSource(this, MAXIMUM_TIME).addSource(this, TIME);
-        setName(getId());
+        setName(subId);
 
         // Pull in settings.
         rulesetChangeListener.scoreBoardChange(null);
@@ -50,11 +43,17 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     public ClockImpl(ClockImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);
         game = (Game) parent;
+        subId = cloned.subId;
     }
 
     @Override
     public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
         return new ClockImpl(this, root);
+    }
+
+    @Override
+    public String getProviderId() {
+        return subId;
     }
 
     @Override
@@ -109,13 +108,12 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
         @Override
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
             // Get default values from current settings or use hardcoded values
-            setCountDirectionDown(Boolean.parseBoolean(game.get(Game.RULE, getId() + ".ClockDirection").getValue()));
-            if (getId().equals(ID_PERIOD) || getId().equals(ID_JAM)) {
-                setMaximumTime(
-                    ClockConversion.fromHumanReadable(game.get(Game.RULE, getId() + ".Duration").getValue()));
-            } else if (getId().equals(ID_INTERMISSION)) {
+            setCountDirectionDown(Boolean.parseBoolean(game.get(Game.RULE, subId + ".ClockDirection").getValue()));
+            if (subId.equals(ID_PERIOD) || subId.equals(ID_JAM)) {
+                setMaximumTime(ClockConversion.fromHumanReadable(game.get(Game.RULE, subId + ".Duration").getValue()));
+            } else if (subId.equals(ID_INTERMISSION)) {
                 setMaximumTime(getCurrentIntermissionTime());
-            } else if (getId().equals(ID_LINEUP) && isCountDirectionDown()) {
+            } else if (subId.equals(ID_LINEUP) && isCountDirectionDown()) {
                 if (game.isInOvertime()) {
                     setMaximumTime(game.getLong(Rule.OVERTIME_LINEUP_DURATION));
                 } else {
@@ -308,6 +306,7 @@ public class ClockImpl extends ScoreBoardEventProviderImpl<Clock> implements Clo
     protected boolean isRunning = false;
 
     private Game game;
+    private String subId;
 
     public static UpdateClockTimerTask updateClockTimerTask = new UpdateClockTimerTask();
 

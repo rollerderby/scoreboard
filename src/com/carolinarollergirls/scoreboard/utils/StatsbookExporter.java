@@ -31,6 +31,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
@@ -38,6 +39,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
@@ -55,20 +57,23 @@ public class StatsbookExporter extends Thread {
     public void run() {
         boolean success = false;
         try {
-            Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
-            Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
-            Files.copy(Paths.get(game.getScoreBoard().getSettings().get("ScoreBoard.Stats.InputFile")), tmpPath,
-                       REPLACE_EXISTING);
-            wb = WorkbookFactory.create(tmpPath.toFile());
-            evaluator = wb.getCreationHelper().createFormulaEvaluator();
+            String blankStatsbookPath = game.getScoreBoard().getSettings().get(ScoreBoard.SETTING_STATSBOOK_INPUT);
+            if (!"".equals(blankStatsbookPath)) {
+                Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
+                Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
+                Files.copy(Paths.get(blankStatsbookPath), tmpPath, REPLACE_EXISTING);
+                wb = WorkbookFactory.create(tmpPath.toFile());
+                evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
-            fillIgrfAndPenalties();
-            fillScoreLineupsAndClock();
+                fillIgrfAndPenalties();
+                fillScoreLineupsAndClock();
+                if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
 
-            write();
+                write();
 
-            wb.close();
-            Files.move(tmpPath, fullPath, REPLACE_EXISTING);
+                wb.close();
+                Files.move(tmpPath, fullPath, REPLACE_EXISTING);
+            }
             success = true;
         } catch (IOException e) { e.printStackTrace(); } finally {
             baseGame.exportDone(success);
@@ -78,7 +83,10 @@ public class StatsbookExporter extends Thread {
     private void fillIgrfAndPenalties() {
         Sheet igrf = wb.getSheet("IGRF");
 
+        createCellStyles(igrf);
+
         fillIgrfHead(igrf);
+        fillExpulsionSuspensionInfo(igrf);
         fillNsos(igrf);
         fillRefs(igrf);
 
@@ -88,8 +96,6 @@ public class StatsbookExporter extends Thread {
         fillTeamData(igrf, clock, Team.ID_1);
         fillTeamData(igrf, clock, Team.ID_2);
         fillPenaltiesHead(penalties);
-
-        createCellStyles(igrf);
 
         for (Team t : game.getAll(Game.TEAM)) {
             List<Skater> skaters = new ArrayList<>(t.getAll(Team.SKATER));
@@ -117,18 +123,43 @@ public class StatsbookExporter extends Thread {
 
     private void fillIgrfHead(Sheet igrf) {
         Row row = igrf.getRow(2);
-        setEventInfoCell(row, 1, "Venue");
-        setEventInfoCell(row, 8, "City");
-        setEventInfoCell(row, 10, "State");
-        setEventInfoCell(row, 11, "GameNo");
+        setEventInfoCell(row, 1, Game.INFO_VENUE);
+        setEventInfoCell(row, 8, Game.INFO_CITY);
+        setEventInfoCell(row, 10, Game.INFO_STATE);
+        setEventInfoCell(row, 11, Game.INFO_GAME_NUMBER);
         row = igrf.getRow(4);
-        setEventInfoCell(row, 1, "Tournament");
-        setEventInfoCell(row, 8, "HostLeague");
+        setEventInfoCell(row, 1, Game.INFO_TOURNAMENT);
+        setEventInfoCell(row, 8, Game.INFO_HOST);
         row = igrf.getRow(6);
-        LocalDate date = LocalDate.parse(game.get(Game.EVENT_INFO, "Date").getValue());
-        LocalTime time = LocalTime.parse(game.get(Game.EVENT_INFO, "StartTime").getValue());
+        LocalDate date = LocalDate.parse(game.get(Game.EVENT_INFO, Game.INFO_DATE).getValue());
+        LocalTime time = LocalTime.parse(game.get(Game.EVENT_INFO, Game.INFO_START_TIME).getValue());
         row.getCell(1).setCellValue(date);
         row.getCell(8).setCellValue(LocalDateTime.of(date, time));
+    }
+
+    private void fillExpulsionSuspensionInfo(Sheet igrf) {
+        boolean suspension = !"".equals(game.get(Game.SUSPENSIONS_SERVED));
+        Row row = igrf.getRow(39);
+        row.getCell(4).setCellValue(game.get(Game.SUSPENSIONS_SERVED));
+        int rowId = 40;
+
+        for (Expulsion e : game.getAll(Game.EXPULSION)) {
+            suspension = suspension || e.get(Expulsion.SUSPENSION);
+            row = igrf.getRow(rowId);
+            row.getCell(0).setCellValue(e.get(Expulsion.INFO) + " " + e.get(Expulsion.EXTRA_INFO));
+            row.getCell(11).setCellValue(e.get(Expulsion.SUSPENSION) ? "YES" : "NO");
+
+            rowId += 2;
+            if (rowId > 45) { break; } // no more space
+        }
+        igrf.getRow(6).getCell(11).setCellValue(suspension ? "YES" : "NO");
+    }
+
+    private void fillIgrfOsOffsetInfo() {
+        Row row = wb.getSheet("IGRF").getRow(38);
+
+        row.getCell(3).setCellValue(hadOsOffset ? "yes" : "");
+        row.getCell(8).setCellValue(String.join(", ", osOffsetReasons));
     }
 
     private void fillNsos(Sheet igrf) {
@@ -365,7 +396,7 @@ public class StatsbookExporter extends Thread {
     }
 
     private void fillScoreTeamJam(Row baseRow, Row spRow, int baseCol, TeamJam tj) {
-        setCell(baseRow, baseCol, tj.getJam().getNumber());
+        setCell(baseRow, baseCol, tj.getJam().getNumber(), tj.getJam().isOvertimeJam() ? "Overtime Jam" : "");
         if (tj.getJam().get(Jam.STAR_PASS)) { setCell(spRow, baseCol, tj.isStarPass() ? "SP" : "SP*"); }
         setCell(baseRow, baseCol + 1, tj.getFielding(FloorPosition.JAMMER).get(Fielding.SKATER_NUMBER));
 
@@ -439,6 +470,8 @@ public class StatsbookExporter extends Thread {
         if (tj.getOsOffset() != 0) {
             setCell(osOffsetRow, startCol + 1, tj.getOsOffset());
             setCell(osOffsetRow, startCol + 2, tj.get(TeamJam.OS_OFFSET_REASON));
+            hadOsOffset = true;
+            osOffsetReasons.add(tj.get(TeamJam.OS_OFFSET_REASON));
         }
     }
 
@@ -600,4 +633,7 @@ public class StatsbookExporter extends Thread {
     String[][] lt = {{"", ""}, {"", ""}};
 
     List<String> injuries;
+
+    Boolean hadOsOffset = false;
+    List<String> osOffsetReasons = new ArrayList<>();
 }

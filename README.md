@@ -1,4 +1,4 @@
-The Carolina Roller Derby Scoreboard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track penalties.
+The CRG ScoreBoard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track full game data.
 
 The topics on the [Scoreboard Wiki Main Page](https://github.com/rollerderby/scoreboard/wiki/) are the primary documentation for the scoreboard. In addition to the wiki topics, the [Derby Scoreboard Facebook group](https://www.facebook.com/groups/derbyscoreboard/) is very active and currently the best way to reach other users and developers.
 
@@ -10,11 +10,9 @@ These are instructions for getting the software installed and running on a stand
 
 ## Hardware Requirements
 
-Most Apple or Windows computers that have been manufactured in the last ten years should be able to handle the scoreboard well on a standalone setup. In general, a machine with at least a dual-core 64-bit processor and 2 gigabytes of RAM should be sufficient. Using the scoreboard to provide video overlays or in a networked setup that includes a scoreboard assistant or penalty tracker typically requires more computing power.
+Most Apple or Windows computers that have been manufactured in the last ten years should be able to handle the scoreboard well on a standalone setup. In general, a machine with at least a dual-core 64-bit processor and 2 gigabytes of RAM should be sufficient. Using the scoreboard to provide video overlays or in a networked setup that includes penalty or lineup tracking typically requires more computing power.
 
 Chromebooks that have been modified to run Linux distributions have been used to host the scoreboard but hardware limitations (lack of a suitable display output or low-powered CPUs) may cause issues.
-
-There are experimental versions of the scoreboard available that will run on Android devices. Contact the developers for more information.
 
 ## Software Requirements
 
@@ -22,17 +20,17 @@ The scoreboard should be unzipped into a folder on the local machine. The user r
 
 ### Web Browser
 
-[Google Chrome](https://www.google.com/chrome/) and [Microsoft Edge]( https://www.microsoft.com/edge/) (as well as their open-source parent [Chromium](http://www.chromium.org/) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.
+[Google Chrome](https://www.google.com/chrome/) and [Microsoft Edge](https://www.microsoft.com/edge/) (as well as their open-source parent [Chromium](http://www.chromium.org/) or other borwsers derived from it) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.
 
 ### Java
 
-Java is required for providing a Java Runtime Environment (JRE) version 1.7.0 or newer. Installing the latest version of Oracle's Java is recommended.
+Java is required for providing a Java Runtime Environment (JRE) version 1.8.0 or newer. Installing the latest version of Oracle's Java is recommended.
 
-* Windows users can install the standard Java for Windows package that is available when clicking on Free Java Download from [Oracle’s Java site](https://java.com/).
+- Windows users can install the standard Java for Windows package that is available when clicking on Free Java Download from [Oracle’s Java site](https://java.com/).
 
-* Apple users must install the complete [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html), which includes the JRE, to run the scoreboard properly.
+- Apple users must install the complete [Java Platform (JDK)](http://www.oracle.com/technetwork/java/javase/downloads/index.html), which includes the JRE, to run the scoreboard properly.
 
-* Linux users may already have a JRE from the OpenJDK project installed, if not, OpenJDK can be obtained from [their repositories](http://openjdk.java.net/install/).
+- Linux users may already have a JRE from the OpenJDK project installed, if not, OpenJDK can be obtained from [their repositories](http://openjdk.java.net/install/).
 
 ## Downloading the Scoreboard
 
@@ -44,11 +42,11 @@ Please note that an older version of the project is still hosted on SourceForge 
 
 Once Chrome and Java are installed, use your file manager to navigate to the scoreboard folder and run the scoreboard background script by double-clicking on it.
 
-* Windows users: Run scoreboard-Windows.exe to start the script.
+- Windows users: Run scoreboard-Windows.exe to start the script.
 
-* Apple users: Run scoreboard.sh to start the script. (If clicking doesn't work, try pressing command+i (or right click on the file and select "Get info"). In the new info dialog in section "open with" select Terminal.app. (If it's not listed, choose other and navigate to /Applications/Utilities/Terminal.app.)
+- Apple users: Run scoreboard.sh to start the script. (If clicking doesn't work, try pressing command+i (or right click on the file and select "Get info"). In the new info dialog in section "open with" select Terminal.app. (If it's not listed, choose other and navigate to /Applications/Utilities/Terminal.app.)
 
-* Linux users: Run scoreboard.sh to start the script. If you are unable to start it, you may have to allow script files to be executable as programs.
+- Linux users: Run scoreboard.sh to start the script. If you are unable to start it, you may have to allow script files to be executable as programs.
 
 Once it starts successfully, the scoreboard script will open a new window and display a series of status messages. You must keep this script running in order for the scoreboard to function, so do not close the window. You may minimize the window without effect.
 
@@ -58,4 +56,4 @@ Assuming that your scoreboard computer is set up with a monitor/laptop screen as
 
 When the control panel displays, it will ask you for an operator name. Enter your name and click Login. This operator name is used to store your personalized settings such as key controls.
 
-Now you can go to the tab with the documentation and either go to the Quick Start Guide or dive in deep right away and proceed with the section on the Team/Time page.
+Now you can go to the tab with the documentation and either go to the Quick Start Guide or dive in deep right away and proceed with the section on the Controls page.

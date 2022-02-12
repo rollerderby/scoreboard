@@ -42,31 +42,31 @@
     }
 
     var _getKeyObject = function (k) {
-      var reSK = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.Fielding\((.+)\)\.(.+)$/;
+      var reSK = /^ScoreBoard\.CurrentGame\.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.Fielding\((.+)\)\.(.+)$/;
       var m = k.match(reSK);
       if (m) {
         return { Type: 'JamSkater', FullKey: k, Period: m[1], Jam: m[2], Team: m[3], Position: m[4], Key: m[5] };
       }
 
-      var reJT = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.(.+)$/;
+      var reJT = /^ScoreBoard\.CurrentGame\.Period\(([0-9])\)\.Jam\((.+)\)\.TeamJam\(([0-9])\)\.(.+)$/;
       m = k.match(reJT);
       if (m) {
         return { Type: 'JamTeam', FullKey: k, Period: m[1], Jam: m[2], Team: m[3], Key: m[4] };
       }
 
-      var reJD = /^ScoreBoard.Period\(([0-9])\)\.Jam\((.+)\)\.(.+)$/;
+      var reJD = /^ScoreBoard\.CurrentGame\.Period\(([0-9])\)\.Jam\((.+)\)\.(.+)$/;
       m = k.match(reJD);
       if (m) {
         return { Type: 'Jam', FullKey: k, Period: m[1], Jam: m[2], Key: m[3] };
       }
 
-      var reSk = /^ScoreBoard.Team\(([0-9])\)\.Skater\((.+)\)\.(.+)$/;
+      var reSk = /^ScoreBoard\.CurrentGame\.Team\(([0-9])\)\.Skater\((.+)\)\.(.+)$/;
       m = k.match(reSk);
       if (m) {
         return { Type: 'Skater', FullKey: k, Skater: m[2], Team: m[1], Key: m[3] };
       }
 
-      var reCF = /^ScoreBoard.Clock\((.+)\)\.(.+)$/;
+      var reCF = /^ScoreBoard\.CurrentGame\.Clock\((.+)\)\.(.+)$/;
       m = k.match(reCF);
       if (m) {
         return { Type: 'Setting', FullKey: k, ClockType: m[1], Key: m[2] };
@@ -77,7 +77,7 @@
 
     var _handleJamData = function (k, v) {
       var kd = _getKeyObject(k);
-      console.log('Using Object', kd);
+      console.debug('Using Object', kd);
       if (kd) {
         if (StatsFunction[kd.Type] && StatsFunction[kd.Type][kd.Key]) {
           StatsFunction[kd.Type][kd.Key](kd, v);
@@ -87,15 +87,15 @@
 
     StatsFunction.Skater = {
       Name: function (kd, v) {
-        console.log('Name', kd, v);
+        console.debug('Name', kd, v);
         Data.Skaters.Upsert({ Name: v }, { Team: kd.Team, Skater: kd.Skater });
       },
       RosterNumber: function (kd, v) {
-        console.log('RosterNumber', kd, v);
+        console.debug('RosterNumber', kd, v);
         Data.Skaters.Upsert({ RosterNumber: v }, { Team: kd.Team, Skater: kd.Skater });
       },
       Flags: function (kd, v) {
-        console.log('Flags', kd, v);
+        console.debug('Flags', kd, v);
         Data.Skaters.Upsert({ Flags: v }, { Team: kd.Team, Skater: kd.Skater });
       },
     };
@@ -135,7 +135,7 @@
         var mn = Math.floor(tv / 60);
         var ms = Math.floor(tv % 60);
         var tc = (10 > mn ? '0' : '') + mn + ':' + (10 > ms ? '0' : '') + ms;
-        console.log(t, dc, tv, mn, ms, tc);
+        console.debug(t, dc, tv, mn, ms, tc);
         Data.Jams.Upsert({ TimeRemaining: t, Duration: tv, DurationHuman: tc }, { Period: kd.Period, Jam: kd.Jam });
       },
       PeriodClockStart: function (kd, v) {
@@ -177,7 +177,7 @@
       if (!WS.socket) {
         WS.Connect();
       }
-      WS.Register(['ScoreBoard.Clock', 'ScoreBoard.Period', 'ScoreBoard.Team'], function (k, v) {
+      WS.Register(['ScoreBoard.CurrentGame.Clock', 'ScoreBoard.CurrentGame.Period', 'ScoreBoard.CurrentGame.Team'], function (k, v) {
         _handleJamData(k, v);
       });
       return this;

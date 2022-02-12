@@ -23,9 +23,7 @@ public class JamImpl extends NumberedScoreBoardEventProviderImpl<Jam> implements
     }
     public JamImpl(ScoreBoardEventProvider p, int j) {
         super(p, j, Period.JAM);
-        addProperties(PERIOD_NUMBER, STAR_PASS, OVERTIME, DURATION, PERIOD_CLOCK_ELAPSED_START,
-                      PERIOD_CLOCK_ELAPSED_END, PERIOD_CLOCK_DISPLAY_END, WALLTIME_START, WALLTIME_END, TEAM_JAM,
-                      PENALTY, TIMEOUTS_AFTER, DELETE, INSERT_BEFORE);
+        addProperties(props);
         setInverseReference(PENALTY, Penalty.JAM);
         setInverseReference(TIMEOUTS_AFTER, Timeout.PRECEDING_JAM);
         periodNumberListener =

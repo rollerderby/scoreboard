@@ -1,14 +1,10 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.carolinarollergirls.scoreboard.event.Child;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
@@ -38,13 +34,23 @@ public interface ScoreBoard extends ScoreBoardEventProvider {
 
     public boolean isInitialLoadDone();
 
-    Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version");
-    Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings");
-    Child<Twitter> TWITTER = new Child<>(Twitter.class, "Twitter");
-    Child<Media> MEDIA = new Child<>(Media.class, "Media");
-    Child<Clients> CLIENTS = new Child<>(Clients.class, "Clients");
-    Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets");
-    Child<Game> GAME = new Child<>(Game.class, "Game");
-    Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam");
-    Child<CurrentGame> CURRENT_GAME = new Child<>(CurrentGame.class, "CurrentGame");
+    public static Collection<Property<?>> props = new ArrayList<>();
+
+    public static final Child<ValWithId> VERSION = new Child<>(ValWithId.class, "Version", props);
+    public static final Child<Settings> SETTINGS = new Child<>(Settings.class, "Settings", props);
+    public static final Child<Twitter> TWITTER = new Child<>(Twitter.class, "Twitter", props);
+    public static final Child<Media> MEDIA = new Child<>(Media.class, "Media", props);
+    public static final Child<Clients> CLIENTS = new Child<>(Clients.class, "Clients", props);
+    public static final Child<Rulesets> RULESETS = new Child<>(Rulesets.class, "Rulesets", props);
+    public static final Child<Game> GAME = new Child<>(Game.class, "Game", props);
+    public static final Child<PreparedTeam> PREPARED_TEAM = new Child<>(PreparedTeam.class, "PreparedTeam", props);
+    public static final Child<CurrentGame> CURRENT_GAME = new Child<>(CurrentGame.class, "CurrentGame", props);
+
+    public static final String SETTING_CLOCK_AFTER_TIMEOUT = "ScoreBoard.ClockAfterTimeout";
+    public static final String SETTING_AUTO_START = "ScoreBoard.AutoStart";
+    public static final String SETTING_AUTO_START_BUFFER = "ScoreBoard.AutoStartBuffer";
+    public static final String SETTING_AUTO_END_JAM = "ScoreBoard.AutoEndJam";
+    public static final String SETTING_AUTO_END_TTO = "ScoreBoard.AutoEndTTO";
+    public static final String SETTING_USE_LT = "ScoreBoard.Penalties.UseLT";
+    public static final String SETTING_STATSBOOK_INPUT = "ScoreBoard.Stats.InputFile";
 }

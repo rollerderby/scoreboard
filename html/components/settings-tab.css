@@ -1,12 +1,17 @@
 #ScoreBoardSettings>table { width: 100%; border-spacing: 0px; } 
 #ScoreBoardSettings.UsePreview>tr.View { display: none; } 
 #ScoreBoardSettings:not(.UsePreview)>tr.Preview { display: none; } 
-#ScoreBoardSettings>tr>td { text-align: center; width: 100%; background: #eee; } 
-#ScoreBoardSettings>tr>td.Header { background: #ccc; border-radius: 12px 12px 0px 0px; } 
+#ScoreBoardSettings>tr>td { text-align: center; width: 100%; background: #eee; }
+#ScoreBoardSettings>tr>td.SubHeader { background: #ddd; }
+#ScoreBoardSettings>tr>td.CurrentView>span { font-weight: bold; font-size: 110%; }
+#ScoreBoardSettings>tr>td.Header { background: #ccc; border-radius: 12px 12px 0px 0px; font-style: bold; font-size: 150%; } 
 #ScoreBoardSettings>tr>td.Header.NoChildren { border-radius: 12px; } 
 #ScoreBoardSettings>tr>td.Footer { border-radius: 0px 0px 12px 12px; } 
 #ScoreBoardSettings>tr>td.PreviewControl a { font-size: 150%; font-weight: bold; } 
+#ScoreBoardSettings>tr>td.Header>span { font-size: 150%; font-weight: bold; } 
 #ScoreBoardSettings>tr>td.ViewFrames iframe { width: 100%; height: 300px; } 
+#ScoreBoardSettings .EndSubSection>td { padding-bottom: 10px; }
+#ScoreBoardSettings .ui-button.ui-state-active, #ScoreBoardSettings .Active { background: #3f3; color: #000; }
 
 /* Intermission Control Dialog */
 table.IntermissionControlDialog { width: 100%; border-spacing: 0px; } 

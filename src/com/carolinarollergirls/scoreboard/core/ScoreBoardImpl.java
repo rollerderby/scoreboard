@@ -1,12 +1,4 @@
 package com.carolinarollergirls.scoreboard.core;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
 import java.util.Map;
 
@@ -18,7 +10,6 @@ import com.carolinarollergirls.scoreboard.core.current.CurrentGameImpl;
 import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
-import com.carolinarollergirls.scoreboard.core.interfaces.CurrentTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Media;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -40,7 +31,7 @@ import com.carolinarollergirls.scoreboard.utils.Version;
 public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> implements ScoreBoard {
     public ScoreBoardImpl() {
         super(null, "", null);
-        addProperties(VERSION, SETTINGS, TWITTER, RULESETS, MEDIA, CLIENTS, GAME, PREPARED_TEAM, CURRENT_GAME);
+        addProperties(props);
         setupScoreBoard();
     }
     public ScoreBoardImpl(ScoreBoardImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
@@ -71,7 +62,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == PREPARED_TEAM) { return new PreparedTeamImpl(this, id); }
             if (prop == GAME) { return new GameImpl(this, id); }
@@ -91,10 +82,10 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
                 // fewer than 2 teams - create black and white so an ad hoc game can be started
                 PreparedTeam t1 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "Black");
                 t1.set(Team.TEAM_NAME, "Black");
-                t1.set(Team.UNIFORM_COLOR, "Black");
+                t1.add(PreparedTeam.UNIFORM_COLOR, new ValWithId("Black", "Black"));
                 PreparedTeam t2 = scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, "White");
                 t2.set(Team.TEAM_NAME, "White");
-                t1.set(Team.UNIFORM_COLOR, "White");
+                t1.add(PreparedTeam.UNIFORM_COLOR, new ValWithId("White", "White"));
             }
             initialLoadDone = true;
         }
@@ -140,9 +131,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         if (id == null) { id = ""; }
         for (Timeout.Owners o : Timeout.Owners.values()) {
             if (o.getId().equals(id)) { return o; }
-        }
-        if (getCurrentGame().get(CurrentGame.TEAM, id) != null) {
-            return getCurrentGame().get(CurrentGame.TEAM, id).get(CurrentTeam.TEAM);
         }
         if (id.contains("_")) { // gameId_teamId
             String[] parts = id.split("_");

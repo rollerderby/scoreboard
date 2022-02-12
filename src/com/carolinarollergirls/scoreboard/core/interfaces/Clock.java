@@ -1,14 +1,10 @@
 package com.carolinarollergirls.scoreboard.core.interfaces;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
+
+import java.util.ArrayList;
+import java.util.Collection;
 
 import com.carolinarollergirls.scoreboard.event.Command;
+import com.carolinarollergirls.scoreboard.event.Property;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -86,17 +82,19 @@ public interface Clock extends ScoreBoardEventProvider {
         public boolean isRunning();
     }
 
-    Value<String> NAME = new Value<>(String.class, "Name", "");
-    Value<Integer> NUMBER = new Value<>(Integer.class, "Number", 0);
-    Value<Long> TIME = new Value<>(Long.class, "Time", 0L);
-    Value<Long> INVERTED_TIME = new Value<>(Long.class, "InvertedTime", 0L);
-    Value<Long> MAXIMUM_TIME = new Value<>(Long.class, "MaximumTime", 0L);
-    Value<Boolean> DIRECTION = new Value<>(Boolean.class, "Direction", false);
-    Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", false);
+    public static Collection<Property<?>> props = new ArrayList<>();
 
-    Command START = new Command("Start");
-    Command STOP = new Command("Stop");
-    Command RESET_TIME = new Command("ResetTime");
+    public static final Value<String> NAME = new Value<>(String.class, "Name", "", props);
+    public static final Value<Integer> NUMBER = new Value<>(Integer.class, "Number", 0, props);
+    public static final Value<Long> TIME = new Value<>(Long.class, "Time", 0L, props);
+    public static final Value<Long> INVERTED_TIME = new Value<>(Long.class, "InvertedTime", 0L, props);
+    public static final Value<Long> MAXIMUM_TIME = new Value<>(Long.class, "MaximumTime", 0L, props);
+    public static final Value<Boolean> DIRECTION = new Value<>(Boolean.class, "Direction", false, props);
+    public static final Value<Boolean> RUNNING = new Value<>(Boolean.class, "Running", false, props);
+
+    public static final Command START = new Command("Start", props);
+    public static final Command STOP = new Command("Stop", props);
+    public static final Command RESET_TIME = new Command("ResetTime", props);
 
     public static final String SETTING_SYNC = "ScoreBoard.Clock.Sync";
 

@@ -14,4 +14,3 @@ $(function () {
     });
   });
 });
-//# sourceURL=controls\twitter_auth.js

@@ -17,8 +17,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     public PeriodImpl(Game g, int p) {
         super(g, p, Game.PERIOD);
         game = g;
-        addProperties(CURRENT_JAM, CURRENT_JAM_NUMBER, FIRST_JAM, FIRST_JAM_NUMBER, RUNNING, DURATION, WALLTIME_START,
-                      WALLTIME_END, LOCAL_TIME_START, TIMEOUT, JAM, DELETE, INSERT_BEFORE, INSERT_TIMEOUT);
+        addProperties(props);
         setCopy(CURRENT_JAM_NUMBER, this, CURRENT_JAM, Jam.NUMBER, true);
         setRecalculated(FIRST_JAM).addSource(this, JAM);
         setCopy(FIRST_JAM_NUMBER, this, FIRST_JAM, Jam.NUMBER, true);
@@ -28,6 +27,9 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
             set(CURRENT_JAM, getOrCreate(JAM, "0"));
         }
         setRecalculated(DURATION).addSource(this, WALLTIME_END).addSource(this, WALLTIME_START);
+        addWriteProtectionOverride(RUNNING, Source.NON_WS);
+        addWriteProtectionOverride(JAM, Source.NON_WS);
+        addWriteProtectionOverride(RUNNING, Source.NON_WS);
     }
     public PeriodImpl(PeriodImpl cloned, ScoreBoardEventProvider root) {
         super(cloned, root);
@@ -71,7 +73,7 @@ public class PeriodImpl extends NumberedScoreBoardEventProviderImpl<Period> impl
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == JAM) {
                 int num = Integer.parseInt(id);

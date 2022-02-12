@@ -1,13 +1,6 @@
 package com.carolinarollergirls.scoreboard.core.game;
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
 
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Timer;
@@ -24,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Position;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam.PreparedSkater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Role;
+import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
@@ -47,18 +41,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         super(g, g.getId() + "_" + i, Game.TEAM);
         game = g;
         subId = i;
-        addProperties(FULL_NAME, LEAGUE_NAME, TEAM_NAME, DISPLAY_NAME, UNIFORM_COLOR, INITIALS, LOGO,
-                      RUNNING_OR_UPCOMING_TEAM_JAM, RUNNING_OR_ENDED_TEAM_JAM, FIELDING_ADVANCE_PENDING, CURRENT_TRIP,
-                      SCORE, JAM_SCORE, TRIP_SCORE, LAST_SCORE, TIMEOUTS, OFFICIAL_REVIEWS, LAST_REVIEW, IN_TIMEOUT,
-                      IN_OFFICIAL_REVIEW, NO_PIVOT, RETAINED_OFFICIAL_REVIEW, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL,
-                      DISPLAY_LEAD, STAR_PASS, STAR_PASS_TRIP, PREPARED_TEAM, PREPARED_TEAM_CONNECTED, CAPTAIN,
-                      ALTERNATE_NAME, COLOR, SKATER, POSITION, TIME_OUT, BOX_TRIP, ADD_TRIP, REMOVE_TRIP,
-                      ADVANCE_FIELDINGS, TIMEOUT, OFFICIAL_REVIEW);
+        addProperties(props);
+        addProperties(preparedProps);
         for (FloorPosition fp : FloorPosition.values()) { add(POSITION, new PositionImpl(this, fp)); }
         addWriteProtection(POSITION);
+        addWriteProtectionOverride(FIELDING_ADVANCE_PENDING, Source.NON_WS);
         setCopy(LEAGUE_NAME, this, PREPARED_TEAM, LEAGUE_NAME, false, PREPARED_TEAM_CONNECTED);
         setCopy(TEAM_NAME, this, PREPARED_TEAM, TEAM_NAME, false, PREPARED_TEAM_CONNECTED);
-        setCopy(UNIFORM_COLOR, this, PREPARED_TEAM, UNIFORM_COLOR, false, PREPARED_TEAM_CONNECTED);
         setCopy(LOGO, this, PREPARED_TEAM, LOGO, false, PREPARED_TEAM_CONNECTED);
         setCopy(CURRENT_TRIP, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.CURRENT_TRIP, true);
         setCopy(SCORE, this, RUNNING_OR_ENDED_TEAM_JAM, TeamJam.TOTAL_SCORE, true);
@@ -86,7 +75,14 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setRecalculated(DISPLAY_NAME)
             .addSource(this, LEAGUE_NAME)
             .addSource(this, TEAM_NAME)
+            .addSource(this, FULL_NAME)
             .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        setRecalculated(FILE_NAME)
+            .addSource(this, LEAGUE_NAME)
+            .addSource(this, TEAM_NAME)
+            .addSource(this, FULL_NAME)
+            .addSource(scoreBoard.getSettings(), Settings.SETTING);
+        set(FULL_NAME, "");
         setRecalculated(Team.INITIALS).addSource(this, Team.DISPLAY_NAME);
         addWriteProtectionOverride(TIMEOUTS, Source.ANY_INTERNAL);
         addWriteProtectionOverride(OFFICIAL_REVIEWS, Source.ANY_INTERNAL);
@@ -139,19 +135,24 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
             }
         }
         if (prop == DISPLAY_NAME) {
-            String setting = scoreBoard.getSettings().get(DISPLAY_NAME_SETTING);
-            if ("Team".equals(setting) && !"".equals(get(TEAM_NAME))) {
+            String setting = scoreBoard.getSettings().get(SETTING_DISPLAY_NAME);
+            if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
                 return get(TEAM_NAME);
-            } else if (!"Full".equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+            } else if (!OPTION_FULL_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
                 return get(LEAGUE_NAME);
             } else {
                 return get(FULL_NAME);
             }
         }
-        if (prop == LEAGUE_NAME && value != null &&
-            (game.get(Game.EVENT_INFO, Game.INFO_HOST) == null ||
-             game.get(Game.EVENT_INFO, Game.INFO_HOST).getValue().equals(""))) {
-            game.add(Game.EVENT_INFO, new ValWithId(Game.INFO_HOST, (String) value));
+        if (prop == FILE_NAME) {
+            String setting = scoreBoard.getSettings().get(SETTING_FILE_NAME);
+            if (OPTION_TEAM_NAME.equals(setting) && !"".equals(get(TEAM_NAME))) {
+                return get(TEAM_NAME);
+            } else if (!OPTION_FULL_NAME.equals(setting) && !"".equals(get(LEAGUE_NAME))) {
+                return get(LEAGUE_NAME);
+            } else {
+                return get(FULL_NAME);
+            }
         }
         if (prop == INITIALS) { return get(DISPLAY_NAME).replaceAll("[^\\p{Lu}]", ""); }
         if (prop == IN_TIMEOUT) {
@@ -196,6 +197,13 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         }
         if (prop == INJURY && source != Source.COPY && (Boolean) value) { set(CALLOFF, false); }
         if (prop == CALLOFF && source != Source.COPY && (Boolean) value) { set(INJURY, false); }
+        if (prop == PREPARED_TEAM && flag == Flag.CHANGE) {
+            PreparedTeam pt =
+                (value == null ? scoreBoard.getOrCreate(ScoreBoard.PREPARED_TEAM, UUID.randomUUID().toString())
+                               : (PreparedTeam) value);
+            mergeInto(pt);
+            return last;
+        }
         if (prop == PREPARED_TEAM && value != last && source == Source.WS) {
             if (getGame().get(Game.STATE) != Game.State.PREPARED) {
                 // no team change after game start
@@ -251,7 +259,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     }
 
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == SKATER) {
                 if (get(PREPARED_TEAM_CONNECTED)) {
@@ -271,6 +279,15 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
         if (prop == TIME_OUT) { recountTimeouts(); }
+    }
+
+    @Override
+    protected <T extends ValueWithId> boolean mayRemove(Child<T> prop, T item, Source source) {
+        if (prop == SKATER && item != null && !((Skater) item).getAll(Skater.FIELDING).isEmpty()) {
+            // skater has been fielded - avoid data corruption
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -420,6 +437,115 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         synchronized (coreLock) {
             set(PREPARED_TEAM_CONNECTED, true);
             set(PREPARED_TEAM, pt);
+        }
+    }
+
+    protected void mergeInto(PreparedTeam pt) {
+        set(PREPARED_TEAM_CONNECTED, false, Flag.SPECIAL_CASE);
+
+        if ("".equals(pt.get(TEAM_NAME))) { pt.set(TEAM_NAME, get(TEAM_NAME)); }
+        if ("".equals(pt.get(LEAGUE_NAME))) { pt.set(LEAGUE_NAME, get(LEAGUE_NAME)); }
+        if ("".equals(pt.get(LOGO))) { pt.set(LOGO, get(LOGO)); }
+        if ("".equals(get(TEAM_NAME))) { set(TEAM_NAME, pt.get(TEAM_NAME)); }
+        if ("".equals(get(LEAGUE_NAME))) { set(LEAGUE_NAME, pt.get(LEAGUE_NAME)); }
+        if ("".equals(get(LOGO))) { set(LOGO, pt.get(LOGO)); }
+        boolean hasColor = "".equals(get(UNIFORM_COLOR));
+        for (ValWithId uc : pt.getAll(PreparedTeam.UNIFORM_COLOR)) {
+            if (get(UNIFORM_COLOR).equals(uc.getValue())) {
+                hasColor = true;
+                break;
+            }
+        }
+        if (!hasColor) {
+            pt.add(PreparedTeam.UNIFORM_COLOR, new ValWithId(UUID.randomUUID().toString(), get(UNIFORM_COLOR)));
+        }
+        for (ValWithId an : getAll(ALTERNATE_NAME)) {
+            if (pt.get(ALTERNATE_NAME, an.getId()) == null) {
+                pt.add(ALTERNATE_NAME, new ValWithId(an.getId(), an.getValue()));
+            }
+        }
+        for (ValWithId c : getAll(COLOR)) {
+            if (pt.get(COLOR, c.getId()) == null) { pt.add(COLOR, new ValWithId(c.getId(), c.getValue())); }
+        }
+        mergeSkaters(pt);
+
+        set(PREPARED_TEAM, pt);
+        set(PREPARED_TEAM_CONNECTED, true, Flag.SPECIAL_CASE);
+    }
+
+    private void mergeSkaters(PreparedTeam pt) {
+        Collection<PreparedSkater> preparedSkaters = pt.getAll(PreparedTeam.SKATER);
+        Collection<Skater> localSkaters = getAll(SKATER);
+        Map<String, Map<String, PreparedSkater>> preparedByNumberAndName = new HashMap<>();
+        for (PreparedSkater ps : preparedSkaters) {
+            String number = ps.get(Skater.ROSTER_NUMBER);
+            String name = ps.get(Skater.NAME);
+            if (preparedByNumberAndName.get(number) == null) { preparedByNumberAndName.put(number, new HashMap<>()); }
+            preparedByNumberAndName.get(number).put(name, ps);
+        }
+        // map full matches
+        for (Skater s : localSkaters) {
+            String number = s.get(Skater.ROSTER_NUMBER);
+            String name = s.get(Skater.NAME);
+            try {
+                s.mergeInto(preparedByNumberAndName.get(number).get(name));
+                preparedByNumberAndName.get(number).remove(name);
+                if (preparedByNumberAndName.get(number).isEmpty()) { preparedByNumberAndName.remove(number); }
+            } catch (NullPointerException e) {}
+        }
+        // map matching names with locally unset number
+        for (Skater s : localSkaters) {
+            if (s.get(Skater.PREPARED_SKATER) != null) { continue; }
+            String name = s.get(Skater.NAME);
+            try {
+                s.mergeInto(preparedByNumberAndName.get("").get(name));
+                preparedByNumberAndName.get("").remove(name);
+                if (preparedByNumberAndName.get("").isEmpty()) { preparedByNumberAndName.remove(""); }
+            } catch (NullPointerException e) {}
+        }
+        // map matching names with remotely unset number
+        for (Skater s : localSkaters) {
+            if (s.get(Skater.PREPARED_SKATER) != null) { continue; }
+            String name = s.get(Skater.NAME);
+            if ("".equals(name)) { continue; }
+            for (String number : preparedByNumberAndName.keySet()) {
+                try {
+                    s.mergeInto(preparedByNumberAndName.get(number).get(name));
+                    preparedByNumberAndName.get(number).remove(name);
+                    if (preparedByNumberAndName.get(number).isEmpty()) { preparedByNumberAndName.remove(number); }
+                    continue;
+                } catch (NullPointerException e) {}
+            }
+        }
+        // map matching numbers with locally unset name
+        for (Skater s : localSkaters) {
+            if (s.get(Skater.PREPARED_SKATER) != null) { continue; }
+            String number = s.get(Skater.ROSTER_NUMBER);
+            try {
+                s.mergeInto(preparedByNumberAndName.get(number).get(""));
+                preparedByNumberAndName.get(number).remove("");
+                if (preparedByNumberAndName.get(number).isEmpty()) { preparedByNumberAndName.remove(number); }
+                continue;
+            } catch (NullPointerException e) {}
+        }
+        // map matching numbers with remotely unset name
+        for (Skater s : localSkaters) {
+            if (s.get(Skater.PREPARED_SKATER) != null) { continue; }
+            String number = s.get(Skater.ROSTER_NUMBER);
+            if ("".equals(number) || !preparedByNumberAndName.containsKey(number)) { continue; }
+            for (String name : preparedByNumberAndName.get(number).keySet()) {
+                try {
+                    s.mergeInto(preparedByNumberAndName.get(number).get(name));
+                    preparedByNumberAndName.get(number).remove(name);
+                    if (preparedByNumberAndName.get(number).isEmpty()) { preparedByNumberAndName.remove(number); }
+                    continue;
+                } catch (NullPointerException e) {}
+            }
+        }
+        // create new prepared skater for unmatched local ones
+        for (Skater s : localSkaters) {
+            if (s.get(Skater.PREPARED_SKATER) != null) { continue; }
+            s.mergeInto(pt.getOrCreate(PreparedTeam.SKATER, UUID.randomUUID().toString()));
         }
     }
 

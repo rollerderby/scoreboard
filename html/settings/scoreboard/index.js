@@ -5,4 +5,3 @@ $(function () {
   WS.AutoRegister();
   WS.Connect();
 });
-//# sourceURL=settings\scoreboard\index.js

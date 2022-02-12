@@ -4,7 +4,6 @@
 */
 
 var DataSet = (function () {
-  'use strict';
   /* Utility Functions */
 
   var _arrayContains = function (haystack, needle) {

@@ -21,9 +21,7 @@ import com.carolinarollergirls.scoreboard.event.ValueWithId;
 public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJam> implements TeamJam {
     public TeamJamImpl(Jam j, String teamId) {
         super(j, teamId, Jam.TEAM_JAM);
-        addProperties(CURRENT_TRIP, CURRENT_TRIP_NUMBER, LAST_SCORE, OS_OFFSET, OS_OFFSET_REASON, JAM_SCORE,
-                      AFTER_S_P_SCORE, TOTAL_SCORE, LOST, LEAD, CALLOFF, INJURY, NO_INITIAL, DISPLAY_LEAD, STAR_PASS,
-                      STAR_PASS_TRIP, NO_PIVOT, FIELDING, SCORING_TRIP, COPY_LINEUP_TO_CURRENT);
+        addProperties(props);
         game = j.getPeriod().getGame();
         team = game.getTeam(teamId);
         setRecalculated(CURRENT_TRIP).addSource(this, SCORING_TRIP);
@@ -36,6 +34,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         setRecalculated(STAR_PASS).addSource(this, STAR_PASS_TRIP);
         for (Position p : team.getAll(Team.POSITION)) { add(FIELDING, new FieldingImpl(this, p)); }
         addWriteProtection(FIELDING);
+        addWriteProtectionOverride(SCORING_TRIP, Source.NON_WS);
         getOrCreate(SCORING_TRIP, 1);
     }
     public TeamJamImpl(TeamJamImpl cloned, ScoreBoardEventProvider root) {
@@ -122,7 +121,7 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         }
     }
     @Override
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source) {
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source) {
         synchronized (coreLock) {
             if (prop == SCORING_TRIP) { return new ScoringTripImpl(this, Integer.parseInt(id)); }
             return null;

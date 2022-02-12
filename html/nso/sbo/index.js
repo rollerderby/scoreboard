@@ -1,20 +1,12 @@
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard.
- * The CRG ScoreBoard is licensed under either the GNU General Public
- * License version 3 (or later), or the Apache License 2.0, at your option.
- * See the file COPYING for details.
- */
-
 $(function () {
   'use strict';
   var gameId = _windowFunctions.getParam('game');
-  setupGameAdvance($('gameAdvance'), gameId, true);
+  setupGameAdvance($('#gameAdvance'), gameId, false);
   createTeamTimeTab(createTab('Controls', 'TeamTimeTab'), gameId);
   createTeamsTab(createTab('Teams', 'TeamsTab'), gameId);
   createRulesetsTab(createTab('Rules', 'RulesetsTab'), gameId, true);
   createIgrfTab(createTab('IGRF', 'IgrfTab'), gameId);
+  createSheetsTab(createTab('Sheets', 'SheetsTab'), gameId);
   createScoreBoardSettingsTab(createTab('Settings', 'ScoreBoardSettingsTab'));
   WS.Register('ScoreBoard.Settings.Setting(ScoreBoard.*)', function (k, v) {
     setOperatorSettings(_windowFunctions.getParam('operator'));
@@ -116,5 +108,3 @@ function createTab(title, tabId) {
     .appendTo('#tabsDiv>ul');
   return $('<div>').attr('id', tabId).addClass('TabContent').appendTo('#tabsDiv');
 }
-
-//# sourceURL=nso\sbo.js

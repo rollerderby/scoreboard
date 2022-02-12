@@ -4,15 +4,6 @@ import java.util.Collection;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 
-/**
- * Copyright (C) 2008-2012 Mr Temper <MrTemper@CarolinaRollergirls.com>
- *
- * This file is part of the Carolina Rollergirls (CRG) ScoreBoard. The CRG
- * ScoreBoard is licensed under either the GNU General Public License version 3
- * (or later), or the Apache License 2.0, at your option. See the file COPYING
- * for details.
- */
-
 public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBoardEventProvider> {
     /**
      * This should be the frontend string for the Child enum value corresponding to
@@ -94,7 +85,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public <T extends ScoreBoardEventProvider> T getOrCreate(Child<T> prop, String id, Source source);
     public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedChild<T> prop, Integer num);
     public <T extends OrderedScoreBoardEventProvider<T>> T getOrCreate(NumberedChild<T> prop, Integer num,
-            Source source);
+                                                                       Source source);
     public <T extends ValueWithId> Collection<T> getAll(Child<T> prop);
     public <T extends OrderedScoreBoardEventProvider<T>> T getFirst(NumberedChild<T> prop);
     public <T extends OrderedScoreBoardEventProvider<T>> T getLast(NumberedChild<T> prop);
@@ -113,7 +104,7 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      * Must call an appropriate constructor for all children that are themselves a
      * ScoreBoardEventProvider and can be created from the frontend or autosave
      */
-    public ScoreBoardEventProvider create(Child<?> prop, String id, Source source);
+    public ScoreBoardEventProvider create(Child<? extends ScoreBoardEventProvider> prop, String id, Source source);
     public Integer getMinNumber(NumberedChild<?> prop);
     public Integer getMaxNumber(NumberedChild<?> prop);
 
@@ -130,14 +121,13 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
 
     public void checkProperty(Property<?> prop);
 
-    public static final Value<String> ID = new Value<>(String.class, "Id", "");
-    public static final Value<Boolean> READONLY = new Value<>(Boolean.class, "Readonly", false);
+    public static final Value<String> ID = new Value<>(String.class, "Id", "", null);
+    public static final Value<Boolean> READONLY = new Value<>(Boolean.class, "Readonly", false, null);
 
     public enum Source {
         WS(false, false),
         AUTOSAVE(false, true),
         JSON(false, true),
-        DEFAULTS(false, true),
         INVERSE_REFERENCE(true, false),
         COPY(true, false),
         RECALCULATE(true, false),
@@ -147,7 +137,8 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
 
         // the following are intended for use as writeProtection Override only;
         ANY_INTERNAL(true, false),
-        ANY_FILE(false, true);
+        ANY_FILE(false, true),
+        NON_WS(true, true);
 
         private Source(boolean i, boolean f) {
             internal = i;
