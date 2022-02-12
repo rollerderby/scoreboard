@@ -295,7 +295,9 @@ function createIgrfTab(tab, gameId) {
         otherRoleInput.show();
       } else if (prefix != null) {
         WS.Set(prefix + '.Role', $(this).val());
-        if (['Penalty Lineup Tracker', 'Scorekeeper', 'Lineup Tracker', 'Jammer Referee'].indexOf($(this).val()) > -1) {
+        if (
+          ['Penalty Lineup Tracker', 'Scorekeeper', 'Lineup Tracker', 'Jammer Referee', 'Penalty Box Timer'].indexOf($(this).val()) > -1
+        ) {
           teamSelection.show();
         }
       }
