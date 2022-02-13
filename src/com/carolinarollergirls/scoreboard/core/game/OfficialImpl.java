@@ -54,9 +54,18 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
         }
         if (prop == P1_TEAM && value != null && !"".equals(get(ROLE))) {
             Team t = (Team) value;
+            Official partner = null;
             for (Official other : game.getAll(ownType)) {
-                if (other != this && get(ROLE).equals(other.get(ROLE))) { other.set(P1_TEAM, t.getOtherTeam()); }
+                if (other != this && get(ROLE).equals(other.get(ROLE))) {
+                    if (partner == null) {
+                        partner = other;
+                    } else {
+                        // three or more officials with this role - don't change others
+                        return;
+                    }
+                }
             }
+            if (partner != null) { partner.set(P1_TEAM, t.getOtherTeam()); }
         }
     }
 
