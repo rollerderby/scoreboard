@@ -108,8 +108,8 @@ var _crgKeyControls = {
     },
     function () {
       'use strict';
-      return !$('#TeamTimeTab.ui-tabs-hide').length;
-    }, //disable keys when TeamTimeTab is hidden.
+      return !$('#TeamTimeTab:hidden').length;
+    }, //disable keys when Controls Tab is hidden.
   ],
 
   _start: function (operator) {
