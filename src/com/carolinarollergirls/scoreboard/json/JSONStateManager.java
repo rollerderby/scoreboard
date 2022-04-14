@@ -9,9 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.SortedMap;
+import java.util.TreeMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import io.prometheus.client.Histogram;
@@ -19,9 +20,18 @@ import io.prometheus.client.Histogram;
 public class JSONStateManager {
 
     public synchronized void register(JSONStateListener source) {
-        sources.put(source, new ThreadPoolExecutor(1, 1, 0, TimeUnit.SECONDS, new LinkedBlockingQueue<Runnable>()));
-        // Send on the current state.
-        source.sendUpdates(state, state.keySet());
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+        sources.put(source, executor);
+        // Send on the current state asynchronously.
+        final Map<String, Object> localState = state;
+        pending.incrementAndGet();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                source.sendUpdates(localState, localState.keySet());
+                pending.decrementAndGet();
+            }
+        });
     }
 
     public synchronized void unregister(JSONStateListener source) {
@@ -39,15 +49,18 @@ public class JSONStateManager {
         Histogram.Timer timer = updateStateDuration.startTimer();
         Set<String> changed = new HashSet<>();
         Set<String> toRemove = new HashSet<>();
-        Map<String, Object> newState = new HashMap<>(state);
+        SortedMap<String, Object> newState = new TreeMap<>(state);
 
         for (WSUpdate update : updates) {
             if (update.getValue() == null) {
-                for (String stateKey : newState.keySet()) {
-                    if (stateKey.equals(update.getKey()) || stateKey.startsWith(update.getKey() + ".")) {
-                        toRemove.add(stateKey);
-                        changed.add(stateKey);
-                    }
+                String removedKey = update.getKey();
+                if (newState.containsKey(removedKey)) {
+                    toRemove.add(removedKey);
+                    changed.add(removedKey);
+                }
+                for (String stateKey : newState.subMap(removedKey + ".", removedKey + "/").keySet()) {
+                    toRemove.add(stateKey);
+                    changed.add(stateKey);
                 }
             } else {
                 changed.add(update.getKey());
@@ -68,9 +81,9 @@ public class JSONStateManager {
             if (Objects.equals(cur, old)) { it.remove(); }
         }
 
-        state = Collections.unmodifiableMap(newState);
-        final Map<String, Object> localState = state;
+        state = Collections.unmodifiableSortedMap(newState);
         if (!changed.isEmpty()) {
+            final Map<String, Object> localState = state;
             final Set<String> immutableChanged = Collections.unmodifiableSet(changed);
 
             // Send updates async, as the WS connections can block if the
@@ -102,8 +115,8 @@ public class JSONStateManager {
         }
     }
 
-    private Map<JSONStateListener, ThreadPoolExecutor> sources = new HashMap<>();
-    private Map<String, Object> state = new HashMap<>();
+    private Map<JSONStateListener, ExecutorService> sources = new HashMap<>();
+    private SortedMap<String, Object> state = new TreeMap<>();
     private final AtomicInteger pending = new AtomicInteger();
 
     private static final Histogram updateStateDuration =

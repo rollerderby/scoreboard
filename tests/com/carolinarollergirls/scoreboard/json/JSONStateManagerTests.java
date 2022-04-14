@@ -50,6 +50,7 @@ public class JSONStateManagerTests {
     @Test
     public void no_update_on_noop_change() {
         jsm.register(listener);
+        jsm.waitForSent();
         assertEquals(1, listener.num_updates);
         jsm.updateState("foo", "bar");
         jsm.waitForSent();
@@ -65,6 +66,7 @@ public class JSONStateManagerTests {
         jsm.updateState("foo.12.34.56", "bar");
         jsm.updateState("foo.78.90", "bar");
         jsm.register(listener);
+        jsm.waitForSent();
         assertEquals(3, listener.state.size());
 
         jsm.updateState("foo.12", null);
@@ -78,6 +80,7 @@ public class JSONStateManagerTests {
         jsm.updateState("foo.12.34.56", "bar");
         jsm.updateState("foo.78.90", "bar");
         jsm.register(listener);
+        jsm.waitForSent();
         assertEquals(3, listener.state.size());
 
         jsm.updateState("foo.1", null);
@@ -88,6 +91,7 @@ public class JSONStateManagerTests {
     @Test
     public void no_update_when_nothing_deleted() {
         jsm.register(listener);
+        jsm.waitForSent();
         assertEquals(1, listener.num_updates);
         jsm.updateState("foo", null);
         jsm.waitForSent();
