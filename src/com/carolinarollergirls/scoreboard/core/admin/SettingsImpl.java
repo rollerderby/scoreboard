@@ -48,19 +48,19 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         set("ScoreBoard.Preview_BoxStyle", "box_flat_bright");
         set("ScoreBoard.Preview_CurrentView", "scoreboard");
         set("ScoreBoard.Preview_CustomHtml", "/customhtml/fullscreen/example.html");
-        set("ScoreBoard.Preview_Image", "/images/fullscreen/American Flag.jpg");
+        set("ScoreBoard.Preview_Image", "/images/fullscreen/test-image.png");
         set("ScoreBoard.Preview_HideLogos", "false");
         set("ScoreBoard.Preview_SidePadding", "");
         set("ScoreBoard.Preview_SwapTeams", "false");
-        set("ScoreBoard.Preview_Video", "/videos/fullscreen/American Flag.webm");
+        set("ScoreBoard.Preview_Video", "/videos/fullscreen/test-video.webm");
         set("ScoreBoard.View_BoxStyle", "box_flat_bright");
         set("ScoreBoard.View_CurrentView", "scoreboard");
         set("ScoreBoard.View_CustomHtml", "/customhtml/fullscreen/example.html");
         set("ScoreBoard.View_HideLogos", "false");
-        set("ScoreBoard.View_Image", "/images/fullscreen/American Flag.jpg");
+        set("ScoreBoard.View_Image", "/images/fullscreen/test-image.png");
         set("ScoreBoard.View_SidePadding", "");
         set("ScoreBoard.View_SwapTeams", "false");
-        set("ScoreBoard.View_Video", "/videos/fullscreen/American Flag.webm");
+        set("ScoreBoard.View_Video", "/videos/fullscreen/test-video.webm");
     }
 
     @Override
