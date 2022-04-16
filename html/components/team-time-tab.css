@@ -1,5 +1,6 @@
 
-#TeamTime .clickMe { color: black; background: #ff9010; } 
+.clickMe.ui-button { color: black; background: #ff9010; } 
+.GameAdvance.ui-button { font-size: 150%; width: calc(100% - 55px); }
 .MetaControl .ui-button.ui-state-active, .MetaControl .ui-button.Active { color: black; background: #0c0; } 
 
 /* Key Control */

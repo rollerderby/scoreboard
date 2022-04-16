@@ -1,8 +1,9 @@
 function setupGameAdvance(element, gameId, auto) {
   'use strict';
   element
-    .addClass('Hide GameAdvance')
+    .addClass('Hide GameAdvance clickMe')
     .text('Go To Current Game')
+    .button()
     .click(function () {
       window.location.href = window.location.href.replace(/game=[^&]*(&|$)|$/, 'game=' + WS.state['ScoreBoard.CurrentGame.Game']);
     });
@@ -287,15 +288,15 @@ function createGameControlDialog(gameId) {
   $('<span>').addClass('header').append('Start an adhoc game').appendTo(adhocGame);
   $('<div>')
     .append($('<span>').append('Team 1: '))
-    .append($('<select>').addClass('Team1').append('<option value="">No Team Selected</option>'))
+    .append($('<select>').addClass('Team1').append('<option value="">New Team</option>'))
     .appendTo(adhocGame);
   $('<div>')
     .append($('<span>').append('Team 2: '))
-    .append($('<select>').addClass('Team2').append('<option value="">No Team Selected</option>'))
+    .append($('<select>').addClass('Team2').append('<option value="">New Team</option>'))
     .appendTo(adhocGame);
   $('<div>').append($('<span>').append('Ruleset: ')).append($('<select>').addClass('Ruleset')).appendTo(adhocGame);
   $('<div>').append($('<span>').append('Start Time: ')).append($('<input>').attr('type', 'time').addClass('StartTime')).appendTo(adhocGame);
-  $('<button>').addClass('StartGame').append('Start Game').button({ disabled: true }).appendTo(adhocGame).on('click', adhocStartGame);
+  $('<button>').addClass('StartGame').append('Start Game').button().appendTo(adhocGame).on('click', adhocStartGame);
 
   $('<button>')
     .addClass('setPrepState')
@@ -375,15 +376,6 @@ function createGameControlDialog(gameId) {
       _windowFunctions.appendAlphaSortedByAttr(adhocGame.find('select.Team2'), option.clone(), 'value', 1);
     } else {
       options.text(v);
-    }
-  });
-  adhocGame.find('select.Team1, select.Team2').on('change', function (e) {
-    var t1 = adhocGame.find('select.Team1 option:selected');
-    var t2 = adhocGame.find('select.Team2 option:selected');
-    if (t1.val() !== '' && t2.val() !== '') {
-      adhocGame.find('button.StartGame').button('option', 'disabled', false);
-    } else {
-      adhocGame.find('button.StartGame').button('option', 'disabled', true);
     }
   });
 

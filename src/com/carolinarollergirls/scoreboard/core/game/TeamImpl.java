@@ -113,6 +113,7 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         if (prop == FULL_NAME) {
             String league = get(LEAGUE_NAME);
             String team = get(TEAM_NAME);
+            String color = get(UNIFORM_COLOR);
             String in = value == null ? "" : (String) value;
             if (!"".equals(league)) {
                 if (!"".equals(team)) {
@@ -129,6 +130,8 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
                     return team;
                 } else if (!"".equals(in)) {
                     return in;
+                } else if (!"".equals(color)) {
+                    return color;
                 } else {
                     return "Unnamed Team";
                 }
