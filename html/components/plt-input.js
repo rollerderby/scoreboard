@@ -209,6 +209,8 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
         .toggleClass('OnTrack', v === 'Jammer' || v === 'Pivot' || v === 'Blocker');
     } else if (field === 'PenaltyBox') {
       element.find('.Skater.Penalty[id=' + k.Skater + '] .Sitting').toggleClass('inBox', isTrue(v));
+    } else if (field === 'Flags') {
+      element.find('.Skater[id=' + k.Skater + ']').toggleClass('Captain', v === 'C');
     } else {
       // Look for penalty
       if (k.Penalty == null) {

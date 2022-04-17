@@ -52,6 +52,8 @@ body:not(.AllowSelect) .PLT {user-select: none;-webkit-user-select: none;-khtml-
 .PLT.Team tr[role='Pivot'] .OnTrack:not(.Advance) { background-color: #00ee00; } 
 .PLT.Team tr[role='Jammer'] .OnTrack:not(.Advance) { background-color: #00cc00; } 
 .PLT.Team .inBox { background-color: #ff4040; } 
+.PLT.Team .Captain .Number { position: relative; }
+.PLT.Team .Captain .Number::before { content: "C"; font-weight: normal; position: absolute; left: .2em; top: .15em; }
 .PLT.Team .Advance { background-color: #FFF; } 
 .PLT.Team .Advance.Active { border: none; background-color: #ff9010; vertical-align: bottom; } 
 .PLT.Team tr:nth-child(6n+1) .Advance.Active::after { content: "Go To"; } 

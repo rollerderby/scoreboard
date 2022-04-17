@@ -20,7 +20,7 @@ The scoreboard should be unzipped into a folder on the local machine. The user r
 
 ### Web Browser
 
-[Google Chrome](https://www.google.com/chrome/) and [Microsoft Edge](https://www.microsoft.com/edge/) (as well as their open-source parent [Chromium](http://www.chromium.org/) or other borwsers derived from it) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.
+[Google Chrome](https://www.google.com/chrome/) and [Microsoft Edge](https://www.microsoft.com/edge/) (as well as their open-source parent [Chromium](http://www.chromium.org/) or other browsers derived from it) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.
 
 ### Java
 

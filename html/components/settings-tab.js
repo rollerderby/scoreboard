@@ -125,7 +125,7 @@ function createNonViewRows(table) {
   var statsbookFile = $('<label>Blank Statsbook File: </label>').add(
     WSControl('ScoreBoard.Settings.Setting(ScoreBoard.Stats.InputFile)', $('<input type="text" size="40">'))
   );
-  var teamDisplayName = $('<label>Team name for display: </label>').add(
+  var teamDisplayName = $('<label>Team Name for Display: </label>').add(
     WSControl(
       'ScoreBoard.Settings.Setting(ScoreBoard.Teams.DisplayName)',
       $('<select>')
@@ -134,7 +134,7 @@ function createNonViewRows(table) {
         .append('<option value="Full">Full Name</option>')
     )
   );
-  var teamFileName = $('<label>Team name for files: </label>').add(
+  var teamFileName = $('<label>Team Name for Files: </label>').add(
     WSControl(
       'ScoreBoard.Settings.Setting(ScoreBoard.Teams.FileName)',
       $('<select>')

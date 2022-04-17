@@ -54,7 +54,7 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
       .append(mergeTeamSelect)
       .dialog({
         title: 'Store Team',
-        width: '400px',
+        width: '500px',
         modal: true,
         autoOpen: false,
         buttons: {
