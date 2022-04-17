@@ -34,7 +34,6 @@ public class TeamJamImpl extends ParentOrderedScoreBoardEventProviderImpl<TeamJa
         setRecalculated(STAR_PASS).addSource(this, STAR_PASS_TRIP);
         for (Position p : team.getAll(Team.POSITION)) { add(FIELDING, new FieldingImpl(this, p)); }
         addWriteProtection(FIELDING);
-        addWriteProtectionOverride(SCORING_TRIP, Source.NON_WS);
         getOrCreate(SCORING_TRIP, 1);
     }
     public TeamJamImpl(TeamJamImpl cloned, ScoreBoardEventProvider root) {
