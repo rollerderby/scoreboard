@@ -259,7 +259,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             } else {
                 return checkNewFilename(newName);
             }
-        } else if (prop == RULESET && value != null) {
+        } else if (prop == RULESET && value != null && !source.isFile()) {
             if (get(STATE) != State.PREPARED && source == Source.WS) {
                 return null; // no change after game start
             } else {
@@ -859,7 +859,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     private void setCurrentRulesetRecurse(Ruleset rs) {
-        if (rs != null && !rs.getId().equals(Rulesets.ROOT_ID)) { setCurrentRulesetRecurse(rs.getParentRuleset()); }
+        if (rs == null) { return; }
+        if (!rs.getId().equals(Rulesets.ROOT_ID)) { setCurrentRulesetRecurse(rs.getParentRuleset()); }
         for (ValWithId r : rs.getAll(Ruleset.RULE)) {
             if (scoreBoard.getRulesets().getRuleDefinition(r.getId()).isValueValid(r.getValue())) { add(RULE, r); }
         }
