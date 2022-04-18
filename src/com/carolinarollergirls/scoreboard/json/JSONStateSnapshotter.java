@@ -35,7 +35,8 @@ public class JSONStateSnapshotter implements JSONStateListener {
             }
         }
         if (writeOnNextUpdate ||
-            (hadNonClockUpdate && game.isOfficialScore() && "Never".equals(game.get(Game.LAST_FILE_UPDATE)))) {
+            (hadNonClockUpdate && game.isOfficialScore() &&
+             ("Never".equals(game.get(Game.LAST_FILE_UPDATE)) || "Pre Game".equals(game.get(Game.LAST_FILE_UPDATE))))) {
             writeOnNextUpdate = false;
             writeFile();
         }

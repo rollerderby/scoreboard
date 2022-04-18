@@ -317,6 +317,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                         INFO_START_TIME,
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_TIME)));
             }
+            if (!"Never".equals(get(LAST_FILE_UPDATE))) { set(LAST_FILE_UPDATE, "Pre Game"); }
         }
         if (prop == OFFICIAL_SCORE && (boolean) value && source == Source.WS) {
             Clock pc = getClock(Clock.ID_PERIOD);
