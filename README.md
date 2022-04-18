@@ -1,12 +1,12 @@
-The CRG ScoreBoard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track full game data.
+The CRG ScoreBoard is a browser-based scoreboard solution that also provides overlays for video production and the ability to track full game data and export it to a WFTDA statsbook.
 
-The topics on the [Scoreboard Wiki Main Page](https://github.com/rollerderby/scoreboard/wiki/) are the primary documentation for the scoreboard. In addition to the wiki topics, the [Derby Scoreboard Facebook group](https://www.facebook.com/groups/derbyscoreboard/) is very active and currently the best way to reach other users and developers.
+The topics on the [Scoreboard Wiki Main Page](https://github.com/rollerderby/scoreboard/wiki/) are the primary documentation for the scoreboard. In addition to the wiki topics, the [Derby Scoreboard Facebook group](https://www.facebook.com/groups/derbyscoreboard/) is very active and currently the best way to reach other users. However, currently no developer is on Facebook. In order to reach out to them, it's best to use the [Github Issues Page](https://github.com/rollerderby/scoreboard/issues).
 
 A mailing list and wiki were available on SourceForge (the original location for this project) but they are not currently used. Subscribing to the SourceForge mailing list and consulting the wiki there is not recommended.
 
 # Installing the Scoreboard Software
 
-These are instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard. If you have already done this, see **Quick Start Guide to Operating the Scoreboard** below.
+These are instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard. If you have already done this, see [Setting up the Scoreboard](#setting-up-the-scoreboard) below.
 
 ## Hardware Requirements
 
@@ -20,11 +20,11 @@ The scoreboard should be unzipped into a folder on the local machine. The user r
 
 ### Web Browser
 
-[Google Chrome](https://www.google.com/chrome/) and [Microsoft Edge](https://www.microsoft.com/edge/) (as well as their open-source parent [Chromium](http://www.chromium.org/) or other borwsers derived from it) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.
+[Google Chrome](https://www.google.com/chrome/) and [Microsoft Edge](https://www.microsoft.com/edge/) (as well as their open-source parent [Chromium](http://www.chromium.org/) or other browsers derived from it) are recommended for running the software. Some known issues may occur when using Mozilla Firefox or Apple Safari. Microsoft Internet Explorer is not recommended.
 
 ### Java
 
-Java is required for providing a Java Runtime Environment (JRE) version 1.8.0 or newer. Installing the latest version of Oracle's Java is recommended.
+Java is required for providing a Java Runtime Environment (JRE) version 8.0 or newer. Installing the latest version of Oracle's Java is recommended.
 
 - Windows users can install the standard Java for Windows package that is available when clicking on Free Java Download from [Oracle’s Java site](https://java.com/).
 

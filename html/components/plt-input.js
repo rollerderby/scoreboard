@@ -209,6 +209,8 @@ function preparePltInputTable(element, gameId, teamId, mode, statsbookPeriod, al
         .toggleClass('OnTrack', v === 'Jammer' || v === 'Pivot' || v === 'Blocker');
     } else if (field === 'PenaltyBox') {
       element.find('.Skater.Penalty[id=' + k.Skater + '] .Sitting').toggleClass('inBox', isTrue(v));
+    } else if (field === 'Flags') {
+      element.find('.Skater[id=' + k.Skater + ']').toggleClass('Captain', v === 'C');
     } else {
       // Look for penalty
       if (k.Penalty == null) {
@@ -812,7 +814,8 @@ function openAnnotationEditor(gameId, teamId, skaterId) {
   'use strict';
   var prefix = 'ScoreBoard.Game(' + gameId + ').Team(' + teamId + ').Skater(' + skaterId + ').';
   var skaterNumber = WS.state[prefix + 'RosterNumber'];
-  var position = WS.state[prefix + 'Position'].slice(2);
+  var position = WS.state[prefix + 'Position'];
+  position = position.slice(position.lastIndexOf('_') + 1);
   var fieldingPrefix = ').TeamJam(' + teamId + ').Fielding(' + position + ').';
   if (isTrue(WS.state['ScoreBoard.Game(' + gameId + ').InJam'])) {
     fieldingPrefix =
@@ -859,6 +862,7 @@ function prepareAnnotationEditor(elem, gameId, teamId) {
           .on('click', function () {
             var prefix = jamPrefix + elem.data('position') + ').';
             WS.Set(prefix + 'UnendBoxTrip', true);
+            elem.dialog('close');
           })
       )
       .append(subDropdown.addClass('Current'))

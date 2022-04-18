@@ -17,6 +17,7 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Clock;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Jam;
+import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period;
 import com.carolinarollergirls.scoreboard.core.interfaces.Period.PeriodSnapshot;
 import com.carolinarollergirls.scoreboard.core.interfaces.PreparedTeam;
@@ -87,7 +88,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         add(CLOCK, new ClockImpl(this, Clock.ID_TIMEOUT));
         add(CLOCK, new ClockImpl(this, Clock.ID_INTERMISSION));
         addWriteProtection(CLOCK);
-        addWriteProtectionOverride(EXPULSION, Source.ANY_INTERNAL);
+        addWriteProtectionOverride(EXPULSION, Source.NON_WS);
         addWriteProtectionOverride(IN_JAM, Source.NON_WS);
         addWriteProtectionOverride(IN_OVERTIME, Source.NON_WS);
         addWriteProtectionOverride(CURRENT_TIMEOUT, Source.NON_WS);
@@ -259,7 +260,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             } else {
                 return checkNewFilename(newName);
             }
-        } else if (prop == RULESET && value != null) {
+        } else if (prop == RULESET && value != null && !source.isFile()) {
             if (get(STATE) != State.PREPARED && source == Source.WS) {
                 return null; // no change after game start
             } else {
@@ -317,6 +318,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                         INFO_START_TIME,
                         LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES).format(DateTimeFormatter.ISO_LOCAL_TIME)));
             }
+            if (!"Never".equals(get(LAST_FILE_UPDATE))) { set(LAST_FILE_UPDATE, "Pre Game"); }
         }
         if (prop == OFFICIAL_SCORE && (boolean) value && source == Source.WS) {
             Clock pc = getClock(Clock.ID_PERIOD);
@@ -394,6 +396,13 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             }
             if (prop == NSO) { return new OfficialImpl(this, id, NSO); }
             if (prop == REF) { return new OfficialImpl(this, id, REF); }
+            if (prop == EXPULSION && source.isFile()) {
+                Penalty p = (Penalty) elements.get(Penalty.class).get(id);
+                if (p != null) {
+                    Expulsion e = get(EXPULSION, p.getId());
+                    return e == null ? new ExpulsionImpl(this, p) : e;
+                }
+            }
             return null;
         }
     }
@@ -859,7 +868,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     }
 
     private void setCurrentRulesetRecurse(Ruleset rs) {
-        if (rs != null && !rs.getId().equals(Rulesets.ROOT_ID)) { setCurrentRulesetRecurse(rs.getParentRuleset()); }
+        if (rs == null) { return; }
+        if (!rs.getId().equals(Rulesets.ROOT_ID)) { setCurrentRulesetRecurse(rs.getParentRuleset()); }
         for (ValWithId r : rs.getAll(Ruleset.RULE)) {
             if (scoreBoard.getRulesets().getRuleDefinition(r.getId()).isValueValid(r.getValue())) { add(RULE, r); }
         }

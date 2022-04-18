@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Clients;
 import com.carolinarollergirls.scoreboard.core.interfaces.CurrentGame;
+import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.event.Child;
@@ -197,10 +198,15 @@ public class ScoreBoardJSONSetter {
                         p.getOrCreate((Child<? extends ScoreBoardEventProvider>) prop, elementId, source);
                     if (o == null) {
                         if (source.isFile()) {
-                            // filter out elements that we expect to fail on each startup
+                            // Expulsion data can only be set after the corresponding penalty has been added
+                            if (prop == Game.EXPULSION) {
+                                postponedSets.add(new ExpulsionSet(p, (Child<Expulsion>) prop, elementId, source, flag,
+                                                                   remainder, value));
+                                return;
+                            }
+                            // filter out elements that we intentionally drop
                             if (p.getProviderClass() == CurrentGame.class) { return; }
                             if (prop == Clients.CLIENT) { return; }
-                            if (prop == Game.EXPULSION) { return; }
                         }
                         Logger.printMessage("Could not get or create property " + readable);
                         return;
@@ -277,6 +283,39 @@ public class ScoreBoardJSONSetter {
         private String id;
         private String value;
         private Source source;
+    }
+
+    protected static class ExpulsionSet implements PropertySet {
+        protected ExpulsionSet(ScoreBoardEventProvider parent, Child<Expulsion> prop, String id, Source source,
+                               Flag flag, String remainder, String value) {
+            this.parent = parent;
+            this.prop = prop;
+            this.id = id;
+            this.source = source;
+            this.flag = flag;
+            this.remainder = remainder;
+            this.value = value;
+        }
+
+        @Override
+        public void process() {
+            Expulsion e = parent.getOrCreate(prop, id, source);
+            if (e == null) {
+                Logger.printMessage("Failed to import data for expulsion " + id);
+                return;
+            }
+            List<PropertySet> postponedSets = new ArrayList<>();
+            set(e, remainder, value, source, flag, postponedSets);
+            for (PropertySet s : postponedSets) { s.process(); }
+        }
+
+        private ScoreBoardEventProvider parent;
+        private Child<Expulsion> prop;
+        private String id;
+        private Source source;
+        private Flag flag;
+        private String remainder;
+        private String value;
     }
 
     private static final Pattern pathElementPattern =

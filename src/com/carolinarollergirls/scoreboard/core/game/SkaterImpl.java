@@ -36,6 +36,7 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
     public SkaterImpl(Team t, PreparedSkater ps, String i) {
         super(t, i == null ? UUID.randomUUID().toString() : i, Team.SKATER);
         team = t;
+        game = t.getGame();
         initialize();
         set(PREPARED_SKATER, ps);
         setFlags(ps.get(FLAGS));
