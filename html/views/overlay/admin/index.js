@@ -126,7 +126,7 @@ function initialize() {
     function (k, v) {
       if (v == null || v === '') {
         $('input[data-setting="' + k + '"]').attr('cleared', 'true');
-        $('input[data-setting="' + k + '"]').val('#666666'); // Same as background color.
+        $('input[data-setting="' + k + '"]').val(k.Color === 'overlay_fg' ? '#FFFFFF' : '#333333');
       } else {
         $('input[data-setting="' + k + '"]').attr('cleared', 'false');
         $('input[data-setting="' + k + '"]').val(v);

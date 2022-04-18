@@ -123,10 +123,10 @@ function initialize() {
   WS.Register(['ScoreBoard.CurrentGame.Team(*).Color'], function (k, v) {
     $(document)
       .find('.ColourTeam' + k.Team)
-      .css('color', WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_fg)'] || '');
+      .css('color', WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').Color(overlay_fg)'] || '');
     $(document)
       .find('.ColourTeam' + k.Team)
-      .css('background', WS.state['ScoreBoard.Team(' + k.Team + ').Color(overlay_bg)'] || '');
+      .css('background', WS.state['ScoreBoard.CurrentGame.Team(' + k.Team + ').Color(overlay_bg)'] || '');
   });
 
   WS.Register('ScoreBoard.CurrentGame.Team(*).Logo', function (k, v) {
