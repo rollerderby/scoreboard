@@ -143,6 +143,8 @@ public interface Team extends ScoreBoardEventProvider, TimeoutOwner {
     public static final Command OFFICIAL_REVIEW = new Command("OfficialReview", props);
 
     public enum AlternateNameId {
+        SCOREBOARD("scoreboard"),
+        WHITEBOARD("whiteboard"),
         OPERATOR("operator"),
         OVERLAY("overlay"),
         TWITTER("twitter");

@@ -536,6 +536,7 @@ function createAlternateNamesDialog(prefix) {
         { label: 'operator (Operator Controls)', value: 'operator' },
         { label: 'overlay (Video Overlay)', value: 'overlay' },
         { label: 'scoreboard (Scoreboard Display)', value: 'scoreboard' },
+        { label: 'whiteboard (Penalty Whiteboard)', value: 'whiteboard' },
         { label: 'twitter (Twitter)', value: 'twitter' },
       ],
       appendTo: dialog.parent(),
