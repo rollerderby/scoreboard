@@ -81,6 +81,16 @@ public class ScoreBoardJSONSetter {
                            newKey.equals("ScoreBoard.TimeoutOwner") || newKey.equals("ScoreBoard.OfficialReview") ||
                            newKey.equals("ScoreBoard.NoMoreJam")) {
                     newKey = newKey.replace("ScoreBoard.", "ScoreBoard.Game(" + newGameId + ").");
+                } else if (newKey.startsWith("ScoreBoard.PreparedTeam") && newKey.endsWith(".Name") &&
+                           !newKey.contains("Skater")) {
+                    newKey = newKey.replace(".Name", ".TeamName");
+                }
+
+                // changed values
+                if (newKey.contains(".Skater(") && newKey.endsWith(".Flags")) {
+                    String oldValue = (String) state.get(oldKey);
+                    if ("BC".equals(oldValue)) { state.put(oldKey, "BA"); }
+                    if ("AC".equals(oldValue)) { state.put(oldKey, "A"); }
                 }
                 keyVersion = "v5";
             }
