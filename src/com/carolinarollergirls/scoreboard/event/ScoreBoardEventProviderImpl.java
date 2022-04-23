@@ -188,6 +188,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             }
         }
         getParent().remove(ownType, (C) this, Source.UNLINK);
+        elements.get(providerClass).remove(get(ID));
     }
 
     public void addWriteProtection(Property<?> prop) { addWriteProtectionOverride(prop, null); }
@@ -775,6 +776,15 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             }
             if (cloned.writeProtectionOverride.containsKey(prop)) {
                 writeProtectionOverride.put(prop, cloned.writeProtectionOverride.get(prop));
+            }
+        }
+    }
+
+    @Override
+    public void cleanupAliases() {
+        synchronized (coreLock) {
+            for (Map<String, ScoreBoardEventProvider> list : elements.values()) {
+                list.entrySet().removeIf(o -> (o.getValue() == null || !o.getKey().equals(o.getValue().getId())));
             }
         }
     }

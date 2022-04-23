@@ -84,7 +84,8 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
                 getParent().add(Period.TIMEOUT, this);
             }
             if (getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
-            if (value == game.getCurrentPeriod().getCurrentJam() || last == game.getCurrentPeriod().getCurrentJam()) {
+            if (game.getCurrentPeriod() != null &&
+                (value == game.getCurrentPeriod().getCurrentJam() || last == game.getCurrentPeriod().getCurrentJam())) {
                 game.set(Game.NO_MORE_JAM, game.get(Game.NO_MORE_JAM), Source.RECALCULATE);
             }
         }

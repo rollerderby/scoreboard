@@ -121,6 +121,8 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
 
     public void checkProperty(Property<?> prop);
 
+    public void cleanupAliases();
+
     public static final Value<String> ID = new Value<>(String.class, "Id", "", null);
     public static final Value<Boolean> READONLY = new Value<>(Boolean.class, "Readonly", false, null);
 

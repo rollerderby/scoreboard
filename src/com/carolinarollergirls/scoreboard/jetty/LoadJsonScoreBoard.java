@@ -3,6 +3,7 @@ package com.carolinarollergirls.scoreboard.jetty;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -44,6 +45,7 @@ public class LoadJsonScoreBoard extends HttpServlet {
                     FileItemStream item = items.next();
                     if (!item.isFormField()) {
                         if (request.getPathInfo().equalsIgnoreCase("/JSON")) {
+                            runningImports.incrementAndGet();
                             InputStream stream = item.openStream();
                             Map<String, Object> map = JSON.std.mapFrom(stream);
                             stream.close();
@@ -56,8 +58,13 @@ public class LoadJsonScoreBoard extends HttpServlet {
                                     ScoreBoardJSONSetter.set(scoreBoard, state, Source.JSON);
                                 }
                             });
+                            runningImports.decrementAndGet();
                             response.setContentType("text/plain");
                             response.setStatus(HttpServletResponse.SC_OK);
+
+                            synchronized (runningImports) {
+                                if (runningImports.get() == 0) { scoreBoard.cleanupAliases(); }
+                            }
                         } else if (request.getPathInfo().equalsIgnoreCase("/xlsx")) {
                             sbImporter.read(item.openStream());
                         }
@@ -77,4 +84,6 @@ public class LoadJsonScoreBoard extends HttpServlet {
 
     protected final ScoreBoard scoreBoard;
     protected final StatsbookImporter sbImporter;
+
+    protected static AtomicInteger runningImports = new AtomicInteger(0);
 }

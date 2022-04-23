@@ -173,6 +173,7 @@ public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, Cur
                 scoreBoard.add(ScoreBoard.GAME, g);
                 load(g);
             }
+            get(GAME).runExportDummy();
         }
     }
 

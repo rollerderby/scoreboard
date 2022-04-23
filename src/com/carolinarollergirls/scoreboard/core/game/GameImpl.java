@@ -210,7 +210,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == UPCOMING_JAM && !(value instanceof Jam)) {
-            value = new JamImpl(this, getCurrentPeriod().getCurrentJam());
+            if (getCurrentPeriod() != null) { value = new JamImpl(this, getCurrentPeriod().getCurrentJam()); }
         } else if (prop == NO_MORE_JAM) {
             if (isInJam() || !isInPeriod()) { return false; }
             if (!getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { return false; }
@@ -248,7 +248,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 .replace("%S", getTeam(Team.ID_1).get(Team.SCORE) + " - " + getTeam(Team.ID_2).get(Team.SCORE))
                 .trim();
         } else if (prop == FILENAME) {
-            if (get(STATE) != State.PREPARED) { // we have already written a file
+            if (get(STATE) != State.PREPARED && flag != Flag.SPECIAL_CASE) { // we have already written a file
                 return source.isFile() ? value : last;
             }
             String date = get(EVENT_INFO, INFO_DATE) == null ? "0000-00-00" : get(EVENT_INFO, INFO_DATE).getValue();
@@ -311,6 +311,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             getTeam(Team.ID_2).set(Team.PREPARED_TEAM_CONNECTED, false);
             if (get(EVENT_INFO, INFO_DATE) == null || "".equals(get(EVENT_INFO, INFO_DATE).getValue())) {
                 add(EVENT_INFO, new ValWithId(INFO_DATE, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+                set(FILENAME, "", Flag.SPECIAL_CASE);
             }
             if (get(EVENT_INFO, INFO_START_TIME) == null || "".equals(get(EVENT_INFO, INFO_START_TIME).getValue())) {
                 add(EVENT_INFO,
@@ -945,6 +946,11 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         }
         statsbookExporter = null;
+    }
+
+    @Override
+    public void runExportDummy() {
+        if (statsbookExporter == null) { statsbookExporter = new StatsbookExporter(this); }
     }
 
     protected GameSnapshot snapshot = null;

@@ -4,13 +4,19 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 
 import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
+
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 import com.carolinarollergirls.scoreboard.core.ScoreBoardImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
@@ -67,6 +73,17 @@ public class Main extends Logger {
         // Only start auto-saves once everything is loaded in.
         final AutoSaveJSONState autosaver = new AutoSaveJSONState(jsm, autoSaveDir);
         jetty.start();
+
+        String blankStatsbookPath = scoreBoard.getSettings().get(ScoreBoard.SETTING_STATSBOOK_INPUT);
+        if (!"".equals(blankStatsbookPath)) {
+            try {
+                Workbook wb = WorkbookFactory.create(new FileInputStream(Paths.get(blankStatsbookPath).toFile()));
+                wb.getCreationHelper().createFormulaEvaluator();
+                wb.write(new FileOutputStream(Paths.get("config/tmp.xlsx").toFile()));
+                wb.close();
+                Paths.get("config/tmp.xlsx").toFile().delete();
+            } catch (IOException e) { e.printStackTrace(); }
+        }
 
         Runtime.getRuntime().addShutdownHook(new Thread() {
             @Override

@@ -2,6 +2,7 @@ package com.carolinarollergirls.scoreboard.utils;
 
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -47,7 +48,9 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 
 public class StatsbookExporter extends Thread {
-    public StatsbookExporter(Game g) {
+    public StatsbookExporter(Game g) { this(g, false); }
+    public StatsbookExporter(Game g, boolean runAsDummy) {
+        this.runAsDummy = runAsDummy;
         baseGame = g;
         game = (Game) g.clone(g);
         start();
@@ -62,21 +65,26 @@ public class StatsbookExporter extends Thread {
                 Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
                 Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
                 Files.copy(Paths.get(blankStatsbookPath), tmpPath, REPLACE_EXISTING);
-                wb = WorkbookFactory.create(tmpPath.toFile());
+                wb = WorkbookFactory.create(new FileInputStream(tmpPath.toFile()));
                 evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
                 fillIgrfAndPenalties();
                 fillScoreLineupsAndClock();
                 if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
 
-                write();
+                wb.write(new FileOutputStream(tmpPath.toFile()));
 
                 wb.close();
-                Files.move(tmpPath, fullPath, REPLACE_EXISTING);
+                if (runAsDummy) {
+                    Files.delete(tmpPath);
+                } else {
+                    Files.move(tmpPath, fullPath, REPLACE_EXISTING);
+                }
             }
             success = true;
         } catch (IOException e) { e.printStackTrace(); } finally {
-            baseGame.exportDone(success);
+            baseGame.exportDone(success && !runAsDummy);
+            game.delete();
         }
     }
 
@@ -226,7 +234,7 @@ public class StatsbookExporter extends Thread {
             if (Official.ROLE_JR.equals(o.get(Official.ROLE))) {
                 Team t = o.get(Official.P1_TEAM);
                 if (t != null) {
-                    int tId = Integer.parseInt(t.getId()) - 1;
+                    int tId = Integer.parseInt(t.getProviderId()) - 1;
                     jr[0][tId] = o.get(Official.NAME);
                     jr[1][o.get(Official.SWAP) ? 1 - tId : tId] = o.get(Official.NAME);
                 }
@@ -305,6 +313,11 @@ public class StatsbookExporter extends Thread {
 
             Period p = game.get(Game.PERIOD, pn + 1);
             toCols = fillTimeouts(clock, toCols, p);
+
+            if (p.getCurrentJam().getPeriod() != p) {
+                // period has no jams
+                continue;
+            }
 
             rowIndex += 3;
             for (int jn = 1; jn <= p.getCurrentJamNumber(); jn++) {
@@ -389,7 +402,7 @@ public class StatsbookExporter extends Thread {
 
         tj = j.getTeamJam(Team.ID_2);
         fillScoreTeamJam(scoreRow, scoreSpRow, 19, tj);
-        fillOsOffsetTeamJam(osOffsetRow, 4, tj);
+        fillOsOffsetTeamJam(osOffsetRow, 7, tj);
         fillLineupsTeamJam(lineupsRow, lineupsSpRow, 26, tj);
 
         fillClockJam(clockRow, j);
@@ -620,20 +633,21 @@ public class StatsbookExporter extends Thread {
         strikedName.setFont(strikeFont);
     }
 
-    Game game, baseGame;
-    Workbook wb;
-    CellStyle strikedNum;
-    CellStyle strikedName;
-    FormulaEvaluator evaluator;
+    private Game game, baseGame;
+    private Workbook wb;
+    private CellStyle strikedNum;
+    private CellStyle strikedName;
+    private FormulaEvaluator evaluator;
+    private boolean runAsDummy;
 
     // Officials names for filling sheet headers
-    String pt = "";
-    String[][] sk = {{"", ""}, {"", ""}};
-    String[][] jr = {{"", ""}, {"", ""}};
-    String[][] lt = {{"", ""}, {"", ""}};
+    private String pt = "";
+    private String[][] sk = {{"", ""}, {"", ""}};
+    private String[][] jr = {{"", ""}, {"", ""}};
+    private String[][] lt = {{"", ""}, {"", ""}};
 
-    List<String> injuries;
+    private List<String> injuries;
 
-    Boolean hadOsOffset = false;
-    List<String> osOffsetReasons = new ArrayList<>();
+    private Boolean hadOsOffset = false;
+    private List<String> osOffsetReasons = new ArrayList<>();
 }

@@ -43,7 +43,8 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
     @Override
     public void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L) {
+        if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L &&
+            game.getClock(Clock.ID_JAM) != null) {
             set(JAM_CLOCK_END, game.getClock(Clock.ID_JAM).getTimeElapsed());
         }
         if (prop == SCORE && source == Source.WS && game.getBoolean(Rule.WFTDA_LATE_SCORE_RULE)) {
