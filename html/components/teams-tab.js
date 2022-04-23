@@ -144,7 +144,10 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
           selector.trigger('change');
         });
       } else {
-        if (selector.children('[value=' + WS.state[teamPrefix + '.UniformColor'] + ']').length) {
+        if (
+          WS.state[teamPrefix + '.UniformColor'] !== '' &&
+          selector.children('[value=' + WS.state[teamPrefix + '.UniformColor'] + ']').length
+        ) {
           selector.val(WS.state[teamPrefix + '.UniformColor']);
         } else {
           selector.val('');
