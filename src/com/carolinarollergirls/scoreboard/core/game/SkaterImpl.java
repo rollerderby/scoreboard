@@ -101,13 +101,6 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
                 if (f != null && lf.getTeamJam().getNext() == f.getTeamJam() && lf.isInBox()) {
                     f.add(Fielding.BOX_TRIP, lf.getCurrentBoxTrip());
                 }
-                if (lf.isCurrent()) {
-                    if (f != null) {
-                        for (BoxTrip bt : lf.getAll(Fielding.BOX_TRIP)) { f.add(Fielding.BOX_TRIP, bt); }
-                        lf.removeAll(Fielding.BOX_TRIP);
-                    }
-                    lf.setSkater(null);
-                }
             }
         }
         if (prop == FLAGS) {
@@ -132,6 +125,19 @@ public class SkaterImpl extends ScoreBoardEventProviderImpl<Skater> implements S
             if (prop == PENALTY) { return new PenaltyImpl(this, Integer.valueOf(id)); }
             return null;
         }
+    }
+    @Override
+    protected <T extends ValueWithId> boolean mayAdd(Child<T> prop, T item, Source source) {
+        if (prop == FIELDING) {
+            Fielding f = (Fielding) item;
+            Fielding lf = getFielding(f.getTeamJam());
+            if (lf != null && lf != f) {
+                for (BoxTrip bt : lf.getAll(Fielding.BOX_TRIP)) { f.add(Fielding.BOX_TRIP, bt); }
+                lf.removeAll(Fielding.BOX_TRIP);
+                lf.setSkater(null);
+            }
+        }
+        return true;
     }
     @Override
     protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
