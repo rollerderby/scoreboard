@@ -67,12 +67,6 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
 
         twitter.addListener(new Listener());
     }
-    public TwitterImpl(TwitterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new TwitterImpl(this, root);
-    }
 
     @Override
     public void postAutosaveUpdate() {
@@ -254,12 +248,6 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             super(t, id, Twitter.CONDITIONAL_TWEET);
             addProperties(props);
         }
-        public ConditionalTweetImpl(ConditionalTweetImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-        @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-            return new ConditionalTweetImpl(this, root);
-        }
 
         @Override
         protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
@@ -294,12 +282,6 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             addWriteProtectionOverride(KEY, Source.ANY_INTERNAL);
             addWriteProtectionOverride(DESCRIPTION, Source.ANY_INTERNAL);
             addWriteProtectionOverride(CURRENT_VALUE, Source.ANY_INTERNAL);
-        }
-        public FormatSpecifierImpl(FormatSpecifierImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-        @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-            return new FormatSpecifierImpl(this, root);
         }
     }
 

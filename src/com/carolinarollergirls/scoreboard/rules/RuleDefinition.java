@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Rulesets;
 import com.carolinarollergirls.scoreboard.event.Property;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -19,7 +18,6 @@ public abstract class RuleDefinition extends ScoreBoardEventProviderImpl<RuleDef
         set(DESCRIPTION, description);
         for (Property<?> prop : getProperties()) { addWriteProtection(prop); }
     }
-    public RuleDefinition(RuleDefinition cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     public Type getType() { return get(TYPE); }
     public String getName() { return get(NAME); }

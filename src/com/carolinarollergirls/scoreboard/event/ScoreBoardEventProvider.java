@@ -34,8 +34,6 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      */
     public void delete(Source source);
 
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root);
-
     /**
      * This should return all the values, children, or commands that can be accessed
      * from the frontend

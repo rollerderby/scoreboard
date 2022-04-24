@@ -9,13 +9,4 @@ public class TestNumberedScoreBoardEventProviderImpl
         setCopy(RO_DIRECT_COPY, parent, TestScoreBoardEventProvider.INT, true);
         setCopy(RW_DIRECT_COPY, parent, TestScoreBoardEventProvider.INT, false);
     }
-    public TestNumberedScoreBoardEventProviderImpl(TestNumberedScoreBoardEventProviderImpl cloned,
-                                                   ScoreBoardEventProvider root) {
-        super(cloned, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new TestNumberedScoreBoardEventProviderImpl(this, root);
-    }
 }

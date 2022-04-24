@@ -19,7 +19,6 @@ import java.util.Collection;
 
 import com.carolinarollergirls.scoreboard.core.interfaces.Media;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.utils.BasePath;
 
@@ -28,15 +27,6 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
         super(parent, "", ScoreBoard.MEDIA);
         addProperties(props);
         setup(BasePath.get().toPath().resolve("html"));
-    }
-    public MediaImpl(MediaImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        path = cloned.path;
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new MediaImpl(this, root);
     }
 
     private void setup(Path path) {
@@ -185,15 +175,6 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
             addProperties(props);
             this.format = format;
         }
-        public MediaFormatImpl(MediaFormatImpl cloned, ScoreBoardEventProvider root) {
-            super(cloned, root);
-            format = cloned.format;
-        }
-
-        @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-            return new MediaFormatImpl(this, root);
-        }
 
         @Override
         public String getId() {
@@ -220,16 +201,6 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
             addProperties(props);
             this.parent = parent;
             this.type = type;
-        }
-        public MediaTypeImpl(MediaTypeImpl cloned, ScoreBoardEventProvider root) {
-            super(cloned, root);
-            parent = (MediaFormat) super.parent;
-            type = cloned.type;
-        }
-
-        @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-            return new MediaTypeImpl(this, root);
         }
 
         @Override
@@ -273,15 +244,6 @@ public class MediaImpl extends ScoreBoardEventProviderImpl<Media> implements Med
             set(NAME, name);
             set(SRC, src);
             addWriteProtection(SRC);
-        }
-        public MediaFileImpl(MediaFileImpl cloned, ScoreBoardEventProvider root) {
-            super(cloned, root);
-            type = (MediaType) super.parent;
-        }
-
-        @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-            return new MediaFileImpl(this, root);
         }
 
         @Override

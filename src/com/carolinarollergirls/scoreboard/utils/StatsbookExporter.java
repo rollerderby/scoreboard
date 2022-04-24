@@ -32,6 +32,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
 
+import com.carolinarollergirls.scoreboard.core.game.GameImpl;
 import com.carolinarollergirls.scoreboard.core.interfaces.Expulsion;
 import com.carolinarollergirls.scoreboard.core.interfaces.Fielding;
 import com.carolinarollergirls.scoreboard.core.interfaces.FloorPosition;
@@ -48,12 +49,43 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 
 public class StatsbookExporter extends Thread {
-    public StatsbookExporter(Game g) { this(g, false); }
-    public StatsbookExporter(Game g, boolean runAsDummy) {
-        this.runAsDummy = runAsDummy;
-        baseGame = g;
-        game = (Game) g.clone(g);
+    public StatsbookExporter(Game g) {
+        game = g;
+        coreLock = GameImpl.getCoreLock();
         start();
+    }
+
+    public static void preload(String blankStatsbookPath) {
+        if ("".equals(blankStatsbookPath)) { return; }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Workbook wb = WorkbookFactory.create(new FileInputStream(Paths.get(blankStatsbookPath).toFile()));
+                    FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+
+                    Sheet igrf = wb.getSheet("IGRF");
+                    Font strikeFont = wb.createFont();
+                    strikeFont.setStrikeout(true);
+                    CellStyle strikedNum = wb.createCellStyle();
+                    strikedNum.cloneStyleFrom(igrf.getRow(13).getCell(1).getCellStyle());
+                    strikedNum.setFont(strikeFont);
+
+                    Cell cell = igrf.getRow(13).getCell(2);
+                    cell.setCellValue("Name");
+                    setComment(cell, "Comment");
+
+                    cell = wb.getSheet("Score").getRow(4).getCell(10);
+                    List<Integer> values = Arrays.asList(4, 4, 4);
+                    cell.setCellFormula(values.stream().map(String::valueOf).collect(Collectors.joining("+")));
+                    evaluator.evaluateFormulaCell(cell);
+
+                    Path tmpPath = Paths.get("config/~tmp.xlsx");
+                    wb.write(new FileOutputStream(tmpPath.toFile()));
+                    Files.delete(tmpPath);
+                } catch (IOException e) { e.printStackTrace(); }
+            }
+        }).start();
     }
 
     @Override
@@ -68,23 +100,20 @@ public class StatsbookExporter extends Thread {
                 wb = WorkbookFactory.create(new FileInputStream(tmpPath.toFile()));
                 evaluator = wb.getCreationHelper().createFormulaEvaluator();
 
-                fillIgrfAndPenalties();
-                fillScoreLineupsAndClock();
-                if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
+                synchronized (coreLock) { fillIgrfAndPenalties(); }
+                synchronized (coreLock) {
+                    fillScoreLineupsAndClock();
+                    if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
+                }
 
                 wb.write(new FileOutputStream(tmpPath.toFile()));
 
                 wb.close();
-                if (runAsDummy) {
-                    Files.delete(tmpPath);
-                } else {
-                    Files.move(tmpPath, fullPath, REPLACE_EXISTING);
-                }
+                Files.move(tmpPath, fullPath, REPLACE_EXISTING);
             }
             success = true;
         } catch (IOException e) { e.printStackTrace(); } finally {
-            baseGame.exportDone(success && !runAsDummy);
-            game.delete();
+            game.exportDone(success);
         }
     }
 
@@ -558,21 +587,6 @@ public class StatsbookExporter extends Thread {
         }
     }
 
-    private void write() throws IOException {
-        String t1Name = game.getTeam(Team.ID_1).get(Team.LEAGUE_NAME);
-        String t2Name = game.getTeam(Team.ID_2).get(Team.LEAGUE_NAME);
-        if (t1Name.equals(t2Name)) {
-            t1Name = game.getTeam(Team.ID_1).get(Team.TEAM_NAME);
-            t2Name = game.getTeam(Team.ID_2).get(Team.TEAM_NAME);
-        }
-        String outputFilename =
-            "STATS-" + game.get(Game.EVENT_INFO, "Date").getValue() + "_" + t1Name + "_vs_" + t2Name + ".xlsx";
-
-        FileOutputStream outStream = new FileOutputStream(outputFilename);
-        wb.write(outStream);
-        outStream.close();
-    }
-
     private void setEventInfoCell(Row row, int col, String key) {
         ValWithId kv = game.get(Game.EVENT_INFO, key);
         setCell(row, col, kv == null ? "" : kv.getValue());
@@ -605,7 +619,7 @@ public class StatsbookExporter extends Thread {
         setComment(cell, String.join("; ", comments));
     }
 
-    private void setComment(Cell cell, String text) {
+    private static void setComment(Cell cell, String text) {
         if ("".equals(text)) { return; }
 
         Row row = cell.getRow();
@@ -637,12 +651,12 @@ public class StatsbookExporter extends Thread {
         strikedName.setFont(strikeFont);
     }
 
-    private Game game, baseGame;
+    private Game game;
     private Workbook wb;
     private CellStyle strikedNum;
     private CellStyle strikedName;
     private FormulaEvaluator evaluator;
-    private boolean runAsDummy;
+    private Object coreLock;
 
     // Officials names for filling sheet headers
     private String pt = "";

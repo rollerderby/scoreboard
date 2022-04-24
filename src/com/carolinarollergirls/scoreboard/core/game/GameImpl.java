@@ -55,17 +55,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         getTeam(Team.ID_2).loadPreparedTeam(team2);
         jsonSnapshotter = new JSONStateSnapshotter(sb.getJsm(), this);
     }
-
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
         initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
         jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this);
-    }
-    public GameImpl(GameImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new GameImpl(this, root);
     }
 
     private void initReferences(Ruleset rs) {
@@ -948,11 +941,6 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 LocalDateTime.now().format(DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)));
         }
         statsbookExporter = null;
-    }
-
-    @Override
-    public void runExportDummy() {
-        if (statsbookExporter == null) { statsbookExporter = new StatsbookExporter(this); }
     }
 
     protected GameSnapshot snapshot = null;

@@ -92,16 +92,6 @@ public class TeamImpl extends ScoreBoardEventProviderImpl<Team> implements Team 
         setCopy(COLOR, this, PREPARED_TEAM, COLOR, false, PREPARED_TEAM_CONNECTED);
         providers.put(skaterListener, null);
     }
-    public TeamImpl(TeamImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        game = (Game) parent;
-        subId = cloned.subId;
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new TeamImpl(this, root);
-    }
 
     @Override
     public String getProviderId() {

@@ -46,18 +46,6 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
         addWriteProtection(ID);
         addWriteProtectionOverride(READONLY, Source.ANY_INTERNAL);
     }
-    protected ScoreBoardEventProviderImpl(ScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
-        providerClass = cloned.providerClass;
-        providerName = cloned.providerName;
-        ownType = cloned.ownType;
-        parent = toCloneIfInTree(cloned.parent, root);
-        scoreBoard = toCloneIfInTree(cloned.scoreBoard, root);
-        PREVIOUS = cloned.PREVIOUS;
-        NEXT = cloned.NEXT;
-        addProperties(ID);
-        set(ID, "cloned-" + cloned.getId(), Source.OTHER);
-        cloneProperties(cloned, root);
-    }
 
     @Override
     public String getId() {
@@ -731,52 +719,6 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
             }
             properties.put(prop.getJsonName(), prop);
             if (prop instanceof Child) { children.put((Child<?>) prop, new HashMap<String, ValueWithId>()); }
-        }
-    }
-
-    @SuppressWarnings("unchecked")
-    protected <T extends ScoreBoardEventProvider> T toCloneIfInTree(T source, ScoreBoardEventProvider root) {
-        T result = source;
-        if (root.isAncestorOf(source)) {
-            T clone = (T) elements.get(source.getProviderClass()).get("cloned-" + source.getId());
-            result = clone == null ? (T) source.clone(root) : clone;
-        }
-        return result;
-    }
-
-    protected void cloneProperties(ScoreBoardEventProviderImpl<C> cloned, ScoreBoardEventProvider root) {
-        for (Property<?> prop : cloned.getProperties()) {
-            if (prop == ID) { continue; }
-            properties.put(prop.getJsonName(), prop);
-            if (prop instanceof Value && cloned.values.containsKey(prop)) {
-                Object value = cloned.values.get(prop);
-                if (value instanceof ScoreBoardEventProvider) {
-                    value = toCloneIfInTree((ScoreBoardEventProvider) value, root);
-                }
-                values.put((Value<?>) prop, value);
-            } else if (prop instanceof Child) {
-                Map<String, ValueWithId> newMap = new HashMap<>();
-                for (ValueWithId child : cloned.children.get(prop).values()) {
-                    String id = "";
-                    if (child instanceof ValWithId) {
-                        child = new ValWithId(child.getId(), child.getValue());
-                        id = child.getId();
-                    } else if (child instanceof ScoreBoardEventProvider) {
-                        child = toCloneIfInTree((ScoreBoardEventProvider) child, root);
-                        ScoreBoardEventProvider c = (ScoreBoardEventProvider) child;
-                        id = c.getParent() == this ? c.getProviderId() : c.getId();
-                    }
-                    newMap.put(id, child);
-                }
-                if (prop instanceof NumberedChild<?>) {
-                    minIds.put((NumberedChild<?>) prop, cloned.minIds.get(prop));
-                    maxIds.put((NumberedChild<?>) prop, cloned.maxIds.get(prop));
-                }
-                children.put((Child<?>) prop, newMap);
-            }
-            if (cloned.writeProtectionOverride.containsKey(prop)) {
-                writeProtectionOverride.put(prop, cloned.writeProtectionOverride.get(prop));
-            }
         }
     }
 
