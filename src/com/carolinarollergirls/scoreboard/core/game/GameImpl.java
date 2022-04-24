@@ -511,6 +511,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     public void stopJamTO() {
         synchronized (coreLock) {
+            autostartRan = false;
             Clock lc = getClock(Clock.ID_LINEUP);
             Clock tc = getClock(Clock.ID_TIMEOUT);
             Clock ic = getClock(Clock.ID_INTERMISSION);
@@ -730,7 +731,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         long triggerTime =
             bufferTime + (isInOvertime() ? getLong(Rule.OVERTIME_LINEUP_DURATION) : getLong(Rule.LINEUP_DURATION));
 
-        if (lc.getTimeElapsed() >= triggerTime) {
+        if (lc.getTimeElapsed() >= triggerTime && !autostartRan) {
+            autostartRan = true;
             if (Clock.ID_JAM.equals(getSetting(ScoreBoard.SETTING_AUTO_START))) {
                 startJam();
                 jc.elapseTime(bufferTime);
@@ -955,6 +957,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     protected GameSnapshot snapshot = null;
     protected boolean replacePending = false;
+    protected boolean autostartRan = false;
 
     protected static File jsonDirectory = new File(BasePath.get(), "html/game-data/json");
 
