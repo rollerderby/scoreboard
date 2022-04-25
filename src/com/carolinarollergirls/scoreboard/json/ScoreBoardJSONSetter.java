@@ -232,7 +232,7 @@ public class ScoreBoardJSONSetter {
                 }
             } catch (Exception e) {
                 Logger.printMessage("Exception handling update for " + readable + " - " + value + ": " + e.toString());
-                e.printStackTrace();
+                Logger.printStackTrace(e);
             }
         } else {
             Logger.printMessage("Illegal path element: " + path);

@@ -52,7 +52,7 @@ public class ScoreBoardJSONListener implements ScoreBoardListener {
                     Logger.printMessage(provider + " update of unknown kind.	prop: " + prop.getJsonName() +
                                         ", v: " + v);
                 }
-            } catch (Exception e) { e.printStackTrace(); } finally {
+            } catch (Exception e) { Logger.printStackTrace(e); } finally {
                 if (batch == 0) { updateState(); }
             }
         }

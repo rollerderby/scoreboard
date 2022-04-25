@@ -25,7 +25,6 @@ import org.apache.poi.ss.usermodel.Comment;
 import org.apache.poi.ss.usermodel.CreationHelper;
 import org.apache.poi.ss.usermodel.Drawing;
 import org.apache.poi.ss.usermodel.Font;
-import org.apache.poi.ss.usermodel.FormulaEvaluator;
 import org.apache.poi.ss.usermodel.RichTextString;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
@@ -61,8 +60,9 @@ public class StatsbookExporter extends Thread {
             @Override
             public void run() {
                 try {
-                    Workbook wb = WorkbookFactory.create(new FileInputStream(Paths.get(blankStatsbookPath).toFile()));
-                    FormulaEvaluator evaluator = wb.getCreationHelper().createFormulaEvaluator();
+                    FileInputStream in = new FileInputStream(Paths.get(blankStatsbookPath).toFile());
+                    Workbook wb = WorkbookFactory.create(in);
+                    in.close();
 
                     Sheet igrf = wb.getSheet("IGRF");
                     Font strikeFont = wb.createFont();
@@ -78,12 +78,15 @@ public class StatsbookExporter extends Thread {
                     cell = wb.getSheet("Score").getRow(4).getCell(10);
                     List<Integer> values = Arrays.asList(4, 4, 4);
                     cell.setCellFormula(values.stream().map(String::valueOf).collect(Collectors.joining("+")));
-                    evaluator.evaluateFormulaCell(cell);
 
                     Path tmpPath = Paths.get("config/~tmp.xlsx");
-                    wb.write(new FileOutputStream(tmpPath.toFile()));
+                    FileOutputStream out = new FileOutputStream(tmpPath.toFile());
+                    wb.write(out);
+                    out.close();
+                    wb.close();
+
                     Files.delete(tmpPath);
-                } catch (IOException e) { e.printStackTrace(); }
+                } catch (IOException e) { Logger.printStackTrace(e); }
             }
         }).start();
     }
@@ -97,22 +100,26 @@ public class StatsbookExporter extends Thread {
                 Path tmpPath = BasePath.get().toPath().resolve("html/game-data/xlsx/~" + game.getFilename() + ".xlsx");
                 Path fullPath = BasePath.get().toPath().resolve("html/game-data/xlsx/" + game.getFilename() + ".xlsx");
                 Files.copy(Paths.get(blankStatsbookPath), tmpPath, REPLACE_EXISTING);
-                wb = WorkbookFactory.create(new FileInputStream(tmpPath.toFile()));
-                evaluator = wb.getCreationHelper().createFormulaEvaluator();
+                FileInputStream in = new FileInputStream(tmpPath.toFile());
+                wb = WorkbookFactory.create(in);
+                in.close();
 
                 synchronized (coreLock) { fillIgrfAndPenalties(); }
                 synchronized (coreLock) {
                     fillScoreLineupsAndClock();
                     if (hadOsOffset) { fillIgrfOsOffsetInfo(); }
                 }
+                wb.setForceFormulaRecalculation(true);
 
-                wb.write(new FileOutputStream(tmpPath.toFile()));
-
+                FileOutputStream out = new FileOutputStream(tmpPath.toFile());
+                wb.write(out);
+                out.close();
                 wb.close();
+
                 Files.move(tmpPath, fullPath, REPLACE_EXISTING);
             }
             success = true;
-        } catch (IOException e) { e.printStackTrace(); } finally {
+        } catch (IOException e) { Logger.printStackTrace(e); } finally {
             game.exportDone(success);
         }
     }
@@ -612,7 +619,6 @@ public class StatsbookExporter extends Thread {
         Cell cell = row.getCell(col);
         if (values.size() > 1) {
             cell.setCellFormula(values.stream().map(String::valueOf).collect(Collectors.joining("+")));
-            evaluator.evaluateFormulaCell(cell);
         } else if (values.size() == 1) {
             cell.setCellValue(values.get(0));
         }
@@ -655,7 +661,6 @@ public class StatsbookExporter extends Thread {
     private Workbook wb;
     private CellStyle strikedNum;
     private CellStyle strikedName;
-    private FormulaEvaluator evaluator;
     private Object coreLock;
 
     // Officials names for filling sheet headers

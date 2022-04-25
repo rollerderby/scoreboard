@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
 import twitter4j.AsyncTwitter;
@@ -209,7 +210,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     class Listener extends TwitterAdapter {
         @Override
         public void onException(TwitterException te, TwitterMethod method) {
-            te.printStackTrace();
+            Logger.printStackTrace(te);
             synchronized (coreLock) { set(ERROR, "Twitter Exception for " + method + ": " + te.getMessage()); }
         }
 

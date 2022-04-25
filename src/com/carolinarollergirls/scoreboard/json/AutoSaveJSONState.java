@@ -122,7 +122,7 @@ public class AutoSaveJSONState implements Runnable {
             } catch (Exception e) {
                 Logger.printMessage("Could not load auto-saved scoreboard JSON file " + f.getPath() + " : " +
                                     e.getMessage());
-                e.printStackTrace();
+                Logger.printStackTrace(e);
             }
         }
 
