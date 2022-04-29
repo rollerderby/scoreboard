@@ -188,7 +188,7 @@ public class StatsbookExporter extends Thread {
     private void fillExpulsionSuspensionInfo(Sheet igrf) {
         boolean suspension = !"".equals(game.get(Game.SUSPENSIONS_SERVED));
         Row row = igrf.getRow(39);
-        row.getCell(4).setCellValue(game.get(Game.SUSPENSIONS_SERVED));
+        if (suspension) { row.getCell(4).setCellValue(game.get(Game.SUSPENSIONS_SERVED)); }
         int rowId = 40;
 
         for (Expulsion e : game.getAll(Game.EXPULSION)) {
@@ -204,10 +204,11 @@ public class StatsbookExporter extends Thread {
     }
 
     private void fillIgrfOsOffsetInfo() {
-        Row row = wb.getSheet("IGRF").getRow(38);
-
-        row.getCell(3).setCellValue(hadOsOffset ? "yes" : "");
-        row.getCell(8).setCellValue(String.join(", ", osOffsetReasons));
+        if (hadOsOffset) {
+            Row row = wb.getSheet("IGRF").getRow(38);
+            row.getCell(3).setCellValue("yes");
+            row.getCell(8).setCellValue(String.join(", ", osOffsetReasons));
+        }
     }
 
     private void fillNsos(Sheet igrf) {
@@ -606,7 +607,11 @@ public class StatsbookExporter extends Thread {
     }
     private void setCell(Row row, int col, String value, String comment) {
         Cell cell = row.getCell(col);
-        cell.setCellValue(value);
+        if (!"".equals(value)) {
+            cell.setCellValue(value);
+        } else {
+            cell.setBlank();
+        }
         setComment(cell, comment);
     }
     private void setCell(Row row, int col, double value) { setCell(row, col, value, ""); }
