@@ -706,7 +706,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
           <div class="nav-container">
             <div class="nav-inner" id="scroll-spy" style="width: min-content; overflow: auto; top: 60px; bottom: 0; padding 10px 0 10px 0;">
               <span class="toc">Table of contents</span>
-              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 5.0.0 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
+              <p>This document is a snapshot of the <a href="https://github.com/rollerderby/scoreboard/wiki">CRG Wiki</a> bundled with the 5.0.1 release of CRG. If you have internet access it is recommended that you refer to the online version of the Wiki as it may contain relevant updates.</p>
 <h3 id="howtos">Howtos</h3>
 <ul class="nav"><li><strong><a href="#Installing-the-Scoreboard-Software">Installing the Scoreboard Software</a></strong><ul class="nav"><li><span>Instructions for getting the software installed and running on a standalone computer to provide a functioning scoreboard.</span></li></ul></li><li><strong><a href="#Quick-Start-Guide">Quick Start Guide</a></strong><ul class="nav"><li><span>Basic information to run a game with only what is mandatory for a regulation game. See the pages below for the full feature set.</span></li></ul></li><li><strong><a href="#Preparing-a-Game">Preparing a Game</a></strong></li><li><strong><a href="#Scoreboard-Operation">Scoreboard Operation</a></strong></li><li><strong><a href="#Configuring-Hotkeys">Configuring Hotkeys</a></strong></li><li><strong><a href="#Using-the-Scoreboard-on-a-Network">Using the Scoreboard on a Network</a></strong></li><li><strong><a href="#Penalty-Tracking">Penalty Tracking</a></strong></li><li><strong><a href="#Lineup-Tracking">Lineup Tracking</a></strong></li><li><span>The </span><strong>Penalty Lineup Tracking</strong> interface combines the PT and LT inputs for one team on a single screen. See those pages for info how to operate it.</li><li><strong><a href="Tweeting-from-CRG">Tweeting from CRG</a></strong></li></ul><h3 id="tips-tricks">Tips &amp; Tricks</h3>
 <ul class="nav"><li><strong><a href="#Scoreboard-Best-Practices">Scoreboard Best Practices</a></strong></li><li><strong><a href="#Graphics">Graphics</a></strong><ul class="nav"><li><span>Information on graphics for use with CRG, such as team logos and sponsor banners.</span></li></ul></li><li><strong><a href="#External-Links">External Links</a></strong><ul class="nav"><li><span>Links to other sites with information about CRG Scoreboard.</span></li></ul></li></ul><h3 id="details-about-screens-tabs">Details about Screens / Tabs</h3>
@@ -748,7 +748,7 @@ if("undefined"==typeof jQuery)throw new Error("Bootstrap's JavaScript requires j
 </li>
 <li><p>Apple users: Run scoreboard.sh to start the script. (If clicking doesn&#39;t work, try pressing command+i (or right click on the file and select &quot;Get info&quot;). In the new info dialog in section &quot;open with&quot; select Terminal.app. (If it&#39;s not listed, choose other and navigate to /Applications/Utilities/Terminal.app.)</p>
 </li>
-<li><p>Linux users: Run scoreboard.sh to start the script. If you are unable to start it, you may have to allow script files to be executable as programs.</p>
+<li><p>Linux users: Run scoreboard.sh to start the script. If you are unable to start it, you may have to allow script files to be executable as programs  (Right-click on the file &gt; Properties &gt; &quot;Allow run as program&quot;).</p>
 </li>
 </ul>
 <p>Once it starts successfully, the scoreboard script will open a new window and display a series of status messages. You must keep this script running in order for the scoreboard to function, so do not close the window. You may minimize the window without effect.</p>
@@ -1543,7 +1543,10 @@ The editor for stored teams will always be a screen with a single team while the
 <ul>
 <li>Main display: <code>scoreboard</code> alternate name, display name</li>
 <li>Stream Overlay: <code>overlay</code> alternate name, display name</li>
-<li>Penalty Whiteboard: <code>scoreboard</code> alternate name, uniform color, display name</li>
+<li>Penalty Whiteboard: <code>scoreboard</code> alternate name, uniform color, display name<ul>
+<li>From 5.0.1: <code>whiteboard</code> alternate name, uniform color, display name</li>
+</ul>
+</li>
 <li>Operator Screen, (P)(L)T input screens: <code>operator</code> alternate name, uniform color, display name</li>
 <li>Twitter %t1n, %t2n: display name</li>
 <li>Twitter %t1Nt, %t2Nt: <code>twitter</code> alternate name, initials</li>
@@ -1625,8 +1628,8 @@ The editor for stored teams will always be a screen with a single team while the
 <li>If you put the statsbook file in the base folder of your CRG installation you can simply enter the filename in the setting. If it is in a subfolder you have to give a relative path (without leading / or \).</li>
 </ul>
 </li>
-<li>Generating a statsbook will take some time (possibly well over a minute depending on the amount of data and your computer&#39;s speed). The &quot;Last Updated&quot; field will be updated after generation is complete so you can use this to check if it&#39;s done.</li>
-<li>While statsbook generation has been implemented in a way that should minimize interference with other operation, it may still cause some lag on slower computers simply due to the processor load it causes. On such computers it is recommended to only generated statsbook during sufficiently long stoppages of gameplay (e.g at half time). If you still want to update the JSON file before that, you can temporarily unset the path to the blank statsbook.</li>
+<li>Generating a statsbook may take a few seconds. The &quot;Last Updated&quot; field will be updated after generation is complete so you can use this to check if it&#39;s done.</li>
+<li>While statsbook generation has been implemented in a way that should minimize interference with other operation, it may still cause some lag on slower computers simply due to the processor load it causes. On such computers it is recommended to only generate statsbooks during stoppages of gameplay. If you still want to update the JSON file before that, you can temporarily unset the path to the blank statsbook.</li>
 </ul>
 </li>
 <li>The generated files are also available in the &quot;Game Data&quot; tab of the File management screen and will remain available there after the game is deleted from internal storage.</li>
