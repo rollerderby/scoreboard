@@ -4,7 +4,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Official;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Child;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 
@@ -13,15 +12,6 @@ public class OfficialImpl extends ScoreBoardEventProviderImpl<Official> implemen
         super(g, id, type);
         game = g;
         addProperties(props);
-    }
-    public OfficialImpl(OfficialImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        game = (Game) parent;
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new OfficialImpl(this, root);
     }
 
     @Override

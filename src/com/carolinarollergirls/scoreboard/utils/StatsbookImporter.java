@@ -37,7 +37,7 @@ public class StatsbookImporter {
                     synchronized (coreLock) { scoreboard.add(ScoreBoard.GAME, game); }
                 }
             });
-        } catch (IOException e) { e.printStackTrace(); }
+        } catch (IOException e) { Logger.printStackTrace(e); }
     }
 
     private void readIgrf() {

@@ -34,8 +34,6 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
      */
     public void delete(Source source);
 
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root);
-
     /**
      * This should return all the values, children, or commands that can be accessed
      * from the frontend
@@ -120,6 +118,8 @@ public interface ScoreBoardEventProvider extends ValueWithId, Comparable<ScoreBo
     public <T extends ValueWithId> T getElement(Class<T> type, String id);
 
     public void checkProperty(Property<?> prop);
+
+    public void cleanupAliases();
 
     public static final Value<String> ID = new Value<>(String.class, "Id", "", null);
     public static final Value<Boolean> READONLY = new Value<>(Boolean.class, "Readonly", false, null);

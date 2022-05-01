@@ -18,7 +18,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.ParentOrderedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
 
@@ -38,16 +37,6 @@ public class FieldingImpl extends ParentOrderedScoreBoardEventProviderImpl<Field
         addWriteProtectionOverride(CURRENT_BOX_TRIP, Source.NON_WS);
         setInverseReference(SKATER, Skater.FIELDING);
         setRecalculated(NOT_FIELDED).addSource(this, SKATER);
-    }
-    public FieldingImpl(FieldingImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        teamJam = (TeamJam) parent;
-        game = toCloneIfInTree(cloned.game, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new FieldingImpl(this, root);
     }
 
     @Override

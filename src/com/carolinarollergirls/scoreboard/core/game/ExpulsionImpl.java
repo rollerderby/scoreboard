@@ -5,7 +5,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.penalties.PenaltyCode;
@@ -23,16 +22,6 @@ public class ExpulsionImpl extends ScoreBoardEventProviderImpl<Expulsion> implem
             .addSource(p.getParent(), Skater.ROSTER_NUMBER)
             .addSource(p.getParent().getParent(), Team.DISPLAY_NAME);
         set(INFO, "");
-    }
-    public ExpulsionImpl(ExpulsionImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        game = (Game) parent;
-        penalty = toCloneIfInTree(cloned.penalty, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new ExpulsionImpl(this, root);
     }
 
     @Override

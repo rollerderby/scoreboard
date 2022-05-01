@@ -144,7 +144,10 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
           selector.trigger('change');
         });
       } else {
-        if (selector.children('[value=' + WS.state[teamPrefix + '.UniformColor'] + ']').length) {
+        if (
+          WS.state[teamPrefix + '.UniformColor'] !== '' &&
+          selector.children('[value=' + WS.state[teamPrefix + '.UniformColor'] + ']').length
+        ) {
           selector.val(WS.state[teamPrefix + '.UniformColor']);
         } else {
           selector.val('');
@@ -313,8 +316,9 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
   newSkaterFlags.append($('<option>').attr('value', '').text('Skater'));
   newSkaterFlags.append($('<option>').attr('value', 'ALT').text('Not Skating'));
   newSkaterFlags.append($('<option>').attr('value', 'C').text('Captain'));
-  newSkaterFlags.append($('<option>').attr('value', 'AC').text('Alt Captain'));
-  newSkaterFlags.append($('<option>').attr('value', 'BC').text('Bench Alt Captain'));
+  newSkaterFlags.append($('<option>').attr('value', 'A').text('Alt Captain'));
+  newSkaterFlags.append($('<option>').attr('value', 'BA').text('Bench Alt Captain'));
+  newSkaterFlags.append($('<option>').attr('value', 'B').text('Bench Staff'));
   var pasteHandler = function (e) {
     var text = e.originalEvent.clipboardData.getData('text');
     var lines = text.split('\n');

@@ -55,17 +55,10 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         getTeam(Team.ID_2).loadPreparedTeam(team2);
         jsonSnapshotter = new JSONStateSnapshotter(sb.getJsm(), this);
     }
-
     public GameImpl(ScoreBoard parent, String id) {
         super(parent, id, ScoreBoard.GAME);
         initReferences(scoreBoard.getRulesets().getRuleset(Rulesets.ROOT_ID));
         jsonSnapshotter = new JSONStateSnapshotter(getScoreBoard().getJsm(), this);
-    }
-    public GameImpl(GameImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new GameImpl(this, root);
     }
 
     private void initReferences(Ruleset rs) {
@@ -210,7 +203,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     protected Object computeValue(Value<?> prop, Object value, Object last, Source source, Flag flag) {
         if (prop == UPCOMING_JAM && !(value instanceof Jam)) {
-            value = new JamImpl(this, getCurrentPeriod().getCurrentJam());
+            if (getCurrentPeriod() != null) { value = new JamImpl(this, getCurrentPeriod().getCurrentJam()); }
         } else if (prop == NO_MORE_JAM) {
             if (isInJam() || !isInPeriod()) { return false; }
             if (!getBoolean(Rule.PERIOD_END_BETWEEN_JAMS)) { return false; }
@@ -248,7 +241,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
                 .replace("%S", getTeam(Team.ID_1).get(Team.SCORE) + " - " + getTeam(Team.ID_2).get(Team.SCORE))
                 .trim();
         } else if (prop == FILENAME) {
-            if (get(STATE) != State.PREPARED) { // we have already written a file
+            if (get(STATE) != State.PREPARED && flag != Flag.SPECIAL_CASE) { // we have already written a file
                 return source.isFile() ? value : last;
             }
             String date = get(EVENT_INFO, INFO_DATE) == null ? "0000-00-00" : get(EVENT_INFO, INFO_DATE).getValue();
@@ -311,6 +304,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
             getTeam(Team.ID_2).set(Team.PREPARED_TEAM_CONNECTED, false);
             if (get(EVENT_INFO, INFO_DATE) == null || "".equals(get(EVENT_INFO, INFO_DATE).getValue())) {
                 add(EVENT_INFO, new ValWithId(INFO_DATE, LocalDateTime.now().format(DateTimeFormatter.ISO_LOCAL_DATE)));
+                set(FILENAME, "", Flag.SPECIAL_CASE);
             }
             if (get(EVENT_INFO, INFO_START_TIME) == null || "".equals(get(EVENT_INFO, INFO_START_TIME).getValue())) {
                 add(EVENT_INFO,
@@ -510,6 +504,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
     @Override
     public void stopJamTO() {
         synchronized (coreLock) {
+            autostartRan = false;
             Clock lc = getClock(Clock.ID_LINEUP);
             Clock tc = getClock(Clock.ID_TIMEOUT);
             Clock ic = getClock(Clock.ID_INTERMISSION);
@@ -729,7 +724,8 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
         long triggerTime =
             bufferTime + (isInOvertime() ? getLong(Rule.OVERTIME_LINEUP_DURATION) : getLong(Rule.LINEUP_DURATION));
 
-        if (lc.getTimeElapsed() >= triggerTime) {
+        if (lc.getTimeElapsed() >= triggerTime && !autostartRan) {
+            autostartRan = true;
             if (Clock.ID_JAM.equals(getSetting(ScoreBoard.SETTING_AUTO_START))) {
                 startJam();
                 jc.elapseTime(bufferTime);
@@ -949,6 +945,7 @@ public class GameImpl extends ScoreBoardEventProviderImpl<Game> implements Game 
 
     protected GameSnapshot snapshot = null;
     protected boolean replacePending = false;
+    protected boolean autostartRan = false;
 
     protected static File jsonDirectory = new File(BasePath.get(), "html/game-data/json");
 

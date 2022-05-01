@@ -16,6 +16,7 @@ import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardListener;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.Logger;
 import com.carolinarollergirls.scoreboard.viewer.FormatSpecifierViewer;
 
 import twitter4j.AsyncTwitter;
@@ -66,12 +67,6 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             }));
 
         twitter.addListener(new Listener());
-    }
-    public TwitterImpl(TwitterImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new TwitterImpl(this, root);
     }
 
     @Override
@@ -215,7 +210,7 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
     class Listener extends TwitterAdapter {
         @Override
         public void onException(TwitterException te, TwitterMethod method) {
-            te.printStackTrace();
+            Logger.printStackTrace(te);
             synchronized (coreLock) { set(ERROR, "Twitter Exception for " + method + ": " + te.getMessage()); }
         }
 
@@ -254,12 +249,6 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             super(t, id, Twitter.CONDITIONAL_TWEET);
             addProperties(props);
         }
-        public ConditionalTweetImpl(ConditionalTweetImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-        @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-            return new ConditionalTweetImpl(this, root);
-        }
 
         @Override
         protected void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
@@ -294,12 +283,6 @@ public class TwitterImpl extends ScoreBoardEventProviderImpl<Twitter> implements
             addWriteProtectionOverride(KEY, Source.ANY_INTERNAL);
             addWriteProtectionOverride(DESCRIPTION, Source.ANY_INTERNAL);
             addWriteProtectionOverride(CURRENT_VALUE, Source.ANY_INTERNAL);
-        }
-        public FormatSpecifierImpl(FormatSpecifierImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-        @Override
-        public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-            return new FormatSpecifierImpl(this, root);
         }
     }
 

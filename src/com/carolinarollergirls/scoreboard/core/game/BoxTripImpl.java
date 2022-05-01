@@ -10,7 +10,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.Command;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.event.ValueWithId;
@@ -38,15 +37,6 @@ public class BoxTripImpl extends ScoreBoardEventProviderImpl<BoxTrip> implements
         if (f.getSkater() != null) {
             for (Penalty p : f.getSkater().getUnservedPenalties()) { add(PENALTY, p); }
         }
-    }
-    public BoxTripImpl(BoxTripImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        game = toCloneIfInTree(cloned.game, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new BoxTripImpl(this, root);
     }
 
     private void initReferences() {

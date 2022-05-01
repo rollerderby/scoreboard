@@ -13,11 +13,6 @@ public abstract class ReferenceOrderedScoreBoardEventProviderImpl<C extends Refe
         set(NEXT, null, Source.RECALCULATE);
         setCopy(NUMBER, reference, NUMBER, true);
     }
-    protected ReferenceOrderedScoreBoardEventProviderImpl(ReferenceOrderedScoreBoardEventProviderImpl<C> cloned,
-                                                          ScoreBoardEventProvider root) {
-        super(cloned, root);
-        ownType = cloned.ownType;
-    }
 
     @Override
     public String getProviderId() {

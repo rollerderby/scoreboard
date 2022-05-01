@@ -24,6 +24,7 @@ import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.json.JSONStateManager;
+import com.carolinarollergirls.scoreboard.utils.StatsbookExporter;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 import com.carolinarollergirls.scoreboard.utils.Version;
 
@@ -32,12 +33,6 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
         super(null, "", null);
         addProperties(props);
         setupScoreBoard();
-    }
-    public ScoreBoardImpl(ScoreBoardImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new ScoreBoardImpl(this, root);
     }
 
     protected void setupScoreBoard() {
@@ -78,6 +73,7 @@ public class ScoreBoardImpl extends ScoreBoardEventProviderImpl<ScoreBoard> impl
             get(CLIENTS, "").postAutosaveUpdate();
             get(TWITTER, "").postAutosaveUpdate();
             initialLoadDone = true;
+            StatsbookExporter.preload(getSettings().get(SETTING_STATSBOOK_INPUT));
         }
     }
 

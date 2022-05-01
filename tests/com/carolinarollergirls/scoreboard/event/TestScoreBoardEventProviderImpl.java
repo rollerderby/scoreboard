@@ -11,14 +11,6 @@ public class TestScoreBoardEventProviderImpl
         super(parent, id, type);
         setupReferences();
     }
-    public TestScoreBoardEventProviderImpl(TestScoreBoardEventProviderImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new TestScoreBoardEventProviderImpl(this, root);
-    }
 
     private void setupReferences() {
         addProperties(props);

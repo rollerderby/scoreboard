@@ -56,12 +56,6 @@ public class CurrentGameImpl extends MirrorScoreBoardEventProviderImpl<Game, Cur
             }
         }
     }
-    public CurrentGameImpl(CurrentGameImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new CurrentGameImpl(this, root);
-    }
 
     @Override
     public String getProviderId() {

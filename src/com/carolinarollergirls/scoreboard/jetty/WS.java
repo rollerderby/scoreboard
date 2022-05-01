@@ -243,7 +243,7 @@ public class WS extends WebSocketServlet {
                 }
             } catch (Exception je) {
                 Logger.printMessage("Error handling JSON message: " + je);
-                je.printStackTrace();
+                Logger.printStackTrace(je);
             }
         }
 
@@ -254,7 +254,7 @@ public class WS extends WebSocketServlet {
                     JSON.std.with(JSON.Feature.WRITE_NULL_PROPERTIES).composeString().addObject(json).finish());
             } catch (Exception e) {
                 Logger.printMessage("Error sending JSON update: " + e);
-                e.printStackTrace();
+                Logger.printStackTrace(e);
                 messagesSentFailures.inc();
             } finally { timer.observeDuration(); }
         }

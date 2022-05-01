@@ -82,7 +82,7 @@ public class Main extends Logger {
     }
 
     private void stop(Exception ex) {
-        if (ex != null) { ex.printStackTrace(); }
+        if (ex != null) { Logger.printStackTrace(ex); }
         Logger.printMessage("Fatal error.   Exiting in 15 seconds.");
         try {
             Thread.sleep(15000);

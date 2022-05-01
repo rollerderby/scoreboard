@@ -34,15 +34,6 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
     public MirrorScoreBoardEventProviderImpl(ScoreBoardEventProvider parent, String id, Child<C> type) {
         super(parent, id, type);
     }
-    public MirrorScoreBoardEventProviderImpl(MirrorScoreBoardEventProviderImpl<M, C> cloned,
-                                             ScoreBoardEventProvider root) {
-        super(cloned, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new MirrorScoreBoardEventProviderImpl<>(this, root);
-    }
 
     protected void fillMaps() {}
 

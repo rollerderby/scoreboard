@@ -10,7 +10,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Team;
 import com.carolinarollergirls.scoreboard.core.interfaces.Timeout;
 import com.carolinarollergirls.scoreboard.core.interfaces.TimeoutOwner;
 import com.carolinarollergirls.scoreboard.event.Command;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -33,15 +32,6 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
         set(PRECEDING_JAM, precedingJam);
         set(WALLTIME_START, ScoreBoardClock.getInstance().getCurrentWalltime());
         set(PERIOD_CLOCK_ELAPSED_START, game.getClock(Clock.ID_PERIOD).getTimeElapsed());
-    }
-    public TimeoutImpl(TimeoutImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        game = toCloneIfInTree(cloned.game, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new TimeoutImpl(this, root);
     }
 
     private void initReferences() {
@@ -84,7 +74,8 @@ public class TimeoutImpl extends ScoreBoardEventProviderImpl<Timeout> implements
                 getParent().add(Period.TIMEOUT, this);
             }
             if (getOwner() instanceof Team) { ((Team) getOwner()).recountTimeouts(); }
-            if (value == game.getCurrentPeriod().getCurrentJam() || last == game.getCurrentPeriod().getCurrentJam()) {
+            if (game.getCurrentPeriod() != null &&
+                (value == game.getCurrentPeriod().getCurrentJam() || last == game.getCurrentPeriod().getCurrentJam())) {
                 game.set(Game.NO_MORE_JAM, game.get(Game.NO_MORE_JAM), Source.RECALCULATE);
             }
         }

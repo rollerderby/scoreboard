@@ -13,6 +13,11 @@ public abstract class Logger {
         }
     }
 
+    public static void printStackTrace(Throwable e) {
+        instance.log(e.toString());
+        for (StackTraceElement element : e.getStackTrace()) { instance.log("        at " + element.toString()); }
+    }
+
     public abstract void log(String msg);
 
     static Logger instance;

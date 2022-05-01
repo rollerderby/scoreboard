@@ -7,7 +7,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Penalty;
 import com.carolinarollergirls.scoreboard.core.interfaces.Skater;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 import com.carolinarollergirls.scoreboard.utils.ScoreBoardClock;
@@ -28,16 +27,6 @@ public class PenaltyImpl extends NumberedScoreBoardEventProviderImpl<Penalty> im
         setCopy(PERIOD_NUMBER, this, JAM, Jam.PERIOD_NUMBER, true);
         if (s.isPenaltyBox()) { set(BOX_TRIP, s.getCurrentFielding().getCurrentBoxTrip()); }
         set(SERVED, get(BOX_TRIP) != null);
-    }
-    public PenaltyImpl(PenaltyImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        game = toCloneIfInTree(cloned.game, root);
-        skater = (Skater) parent;
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new PenaltyImpl(this, root);
     }
 
     @Override

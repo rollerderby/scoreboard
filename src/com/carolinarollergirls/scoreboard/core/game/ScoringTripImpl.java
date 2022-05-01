@@ -6,7 +6,6 @@ import com.carolinarollergirls.scoreboard.core.interfaces.ScoringTrip;
 import com.carolinarollergirls.scoreboard.core.interfaces.TeamJam;
 import com.carolinarollergirls.scoreboard.event.Command;
 import com.carolinarollergirls.scoreboard.event.NumberedScoreBoardEventProviderImpl;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
 import com.carolinarollergirls.scoreboard.event.Value;
 import com.carolinarollergirls.scoreboard.rules.Rule;
 
@@ -18,15 +17,6 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
         setCopy(JAM_CLOCK_START, this, PREVIOUS, JAM_CLOCK_END, true);
         setRecalculated(DURATION).addSource(this, JAM_CLOCK_END).addSource(this, JAM_CLOCK_START);
         set(AFTER_S_P, hasPrevious() ? getPrevious().get(AFTER_S_P) : false);
-    }
-    public ScoringTripImpl(ScoringTripImpl cloned, ScoreBoardEventProvider root) {
-        super(cloned, root);
-        game = toCloneIfInTree(cloned.game, root);
-    }
-
-    @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new ScoringTripImpl(this, root);
     }
 
     @Override
@@ -43,7 +33,8 @@ public class ScoringTripImpl extends NumberedScoreBoardEventProviderImpl<Scoring
     }
     @Override
     public void valueChanged(Value<?> prop, Object value, Object last, Source source, Flag flag) {
-        if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L) {
+        if ((prop == SCORE || (prop == CURRENT && !(Boolean) value)) && get(JAM_CLOCK_END) == 0L &&
+            game.getClock(Clock.ID_JAM) != null) {
             set(JAM_CLOCK_END, game.getClock(Clock.ID_JAM).getTimeElapsed());
         }
         if (prop == SCORE && source == Source.WS && game.getBoolean(Rule.WFTDA_LATE_SCORE_RULE)) {

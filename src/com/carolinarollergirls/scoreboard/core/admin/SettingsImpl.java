@@ -5,8 +5,10 @@ import com.carolinarollergirls.scoreboard.core.interfaces.Game;
 import com.carolinarollergirls.scoreboard.core.interfaces.ScoreBoard;
 import com.carolinarollergirls.scoreboard.core.interfaces.Settings;
 import com.carolinarollergirls.scoreboard.core.interfaces.Team;
-import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProvider;
+import com.carolinarollergirls.scoreboard.event.Child;
 import com.carolinarollergirls.scoreboard.event.ScoreBoardEventProviderImpl;
+import com.carolinarollergirls.scoreboard.event.ValueWithId;
+import com.carolinarollergirls.scoreboard.utils.StatsbookExporter;
 import com.carolinarollergirls.scoreboard.utils.ValWithId;
 
 public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implements Settings {
@@ -15,11 +17,12 @@ public class SettingsImpl extends ScoreBoardEventProviderImpl<Settings> implemen
         addProperties(props);
         setDefaults();
     }
-    public SettingsImpl(SettingsImpl cloned, ScoreBoardEventProvider root) { super(cloned, root); }
 
     @Override
-    public ScoreBoardEventProvider clone(ScoreBoardEventProvider root) {
-        return new SettingsImpl(this, root);
+    protected void itemAdded(Child<?> prop, ValueWithId item, Source source) {
+        if (item != null && ScoreBoard.SETTING_STATSBOOK_INPUT.equals(item.getId()) && scoreBoard.isInitialLoadDone()) {
+            StatsbookExporter.preload(item.getValue());
+        }
     }
 
     private void setDefaults() {

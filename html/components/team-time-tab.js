@@ -912,7 +912,7 @@ function createTeamTable(gameId) {
     });
 
     WS.Register(['ScoreBoard.Game(' + gameId + ').TimeoutOwner', 'ScoreBoard.Game(' + gameId + ').OfficialReview'], function (k, v) {
-      var to = WS.state['ScoreBoard.Game(' + gameId + ').TimeoutOwner'] === team;
+      var to = WS.state['ScoreBoard.Game(' + gameId + ').TimeoutOwner'].slice(-1) === team;
       var or = isTrue(WS.state['ScoreBoard.Game(' + gameId + ').OfficialReview']);
       timeoutButton.toggleClass('Active', to && !or);
       reviewButton.toggleClass('Active', to && or);
@@ -1445,10 +1445,26 @@ function createTimeoutDialog(gameId) {
     .attr('id', 'TypeDropdown')
     .append($('<option>').attr('value', '.false').text('No type'))
     .append($('<option>').attr('value', 'O.false').text('Off. Timeout'))
-    .append($('<option>').attr('value', '1.false').text('Team TO left'))
-    .append($('<option>').attr('value', '2.false').text('Team TO right'))
-    .append($('<option>').attr('value', '1.true').text('Off. Review left'))
-    .append($('<option>').attr('value', '2.true').text('Off. Review right'));
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_1.false')
+        .text('Team TO left')
+    )
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_2.false')
+        .text('Team TO right')
+    )
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_1.true')
+        .text('Off. Review left')
+    )
+    .append(
+      $('<option>')
+        .attr('value', gameId + '_2.true')
+        .text('Off. Review right')
+    );
 
   var dialog = $('<div>').addClass('NumberDialog');
   var table = $('<table>').appendTo(dialog);

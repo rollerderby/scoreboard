@@ -66,7 +66,7 @@ function smallDescriptionUpdate(k, v) {
   'use strict';
   var lc = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Running'];
   var tc = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Running'];
-  var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'];
+  var to = WS.state['ScoreBoard.CurrentGame.TimeoutOwner'].slice(-1);
   var or = WS.state['ScoreBoard.CurrentGame.OfficialReview'];
   var lcn = WS.state['ScoreBoard.CurrentGame.Clock(Lineup).Name'];
   var tcn = WS.state['ScoreBoard.CurrentGame.Clock(Timeout).Name'];
@@ -105,6 +105,7 @@ function smallDescriptionUpdate(k, v) {
           $('.Team' + to + '>.Timeouts').addClass('Red');
           dotSel = '.Team' + to + ' .Timeout' + (WS.state['ScoreBoard.CurrentGame.Team(' + to + ').Timeouts'] + 1);
         }
+        console.log(dotSel, $(dotSel).length);
         $(dotSel).addClass('Active');
       }
     }
