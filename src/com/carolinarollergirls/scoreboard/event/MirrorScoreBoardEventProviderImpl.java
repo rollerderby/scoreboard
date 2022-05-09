@@ -128,7 +128,7 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
         public void scoreBoardChange(ScoreBoardEvent<?> event) {
             T value = (T) event.getValue();
             if (event.isRemove()) {
-                targetElement.remove(targetProperty, value.getId(), Source.COPY);
+                targetElement.remove(targetProperty, value.getProviderId(), Source.COPY);
             } else {
                 targetElement.add(targetProperty, toMirror(value), Source.COPY);
             }
@@ -157,7 +157,7 @@ public class MirrorScoreBoardEventProviderImpl<M extends ScoreBoardEventProvider
             if (targetElement == null) { return; }
             MirrorScoreBoardEventProvider<T> value = event.getValue();
             if (event.isRemove()) {
-                targetElement.remove(targetProperty, value.getId(), source);
+                targetElement.remove(targetProperty, value.getProviderId(), source);
             } else {
                 targetElement.add(targetProperty, fromMirror(value), source);
             }
