@@ -216,10 +216,9 @@ function createEditTeamTable(element, teamPrefix, isGameTeam) {
       }
       var option = $('<option>').attr('name', v).attr('value', k.File).text(v);
       _windowFunctions.appendAlphaSortedByAttr(logoSelect, option, 'name', 1);
-      logoSelect.val(val);
-      logoSelect.trigger('change');
-    } else if (val === k.File) {
-      logoSelect.val('');
+    }
+    if (val === k.File) {
+      logoSelect.val(v == null ? '' : val);
       logoSelect.trigger('change');
     }
   });
