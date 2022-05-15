@@ -271,7 +271,7 @@ public abstract class ScoreBoardEventProviderImpl<C extends ScoreBoardEventProvi
                                                                                        guardElement, guardProperty));
         }
         if ((guardElement == null || guardElement.get(guardProperty))) {
-            for (T element : sourceElement.getAll(sourceProperty)) { add(targetProperty, element); }
+            for (T element : sourceElement.getAll(sourceProperty)) { add(targetProperty, element, Source.COPY); }
         }
         return l;
     }
